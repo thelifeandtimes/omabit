@@ -51,6 +51,10 @@ the current release scope.
 - Release installers reject broad desk targets, refuse symbolic-link targets,
   and do not overwrite existing installs unless `--force` is supplied. Forced
   replacements are moved to timestamped backups.
+- JSON exports contain complete visible reminder data, including shared-list
+  replicas. They exclude authentication material, are written atomically with
+  mode 0600, refuse symbolic-link targets, and require `--force` before
+  replacing an existing regular file.
 
 ## Release gates
 

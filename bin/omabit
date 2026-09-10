@@ -118,6 +118,39 @@ def emit(value: object, as_json: bool) -> None:
     print(json.dumps(value, indent=2, sort_keys=True))
 
 
+def backup_payload(state: dict[str, object], ship: str) -> dict[str, object]:
+    return {
+        "format": "tend-backup-1",
+        "exportedAt": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+        "sourceShip": ship,
+        "snapshot": state,
+    }
+
+
+def write_private_json(path: Path, value: object, force: bool = False) -> None:
+    path = path.expanduser()
+    if path.is_symlink():
+        raise CliError(f"Refusing symbolic-link backup target: {path}")
+    if path.exists() and not force:
+        raise CliError(f"Backup target already exists (use --force to replace it): {path}")
+    path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+    temporary = path.parent / f".{path.name}.tmp-{uuid.uuid4().hex}"
+    try:
+        descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(descriptor, "w", encoding="utf-8") as output:
+            json.dump(value, output, ensure_ascii=False, indent=2, sort_keys=True)
+            output.write("\n")
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(temporary, path)
+        path.chmod(0o600)
+    finally:
+        try:
+            temporary.unlink()
+        except FileNotFoundError:
+            pass
+
+
 def poke(cookie_path: Path, config_path: Path, action: dict[str, object]) -> dict[str, object]:
     return transport.poke(config_path, cookie_path, action)
 
@@ -191,6 +224,16 @@ def run_tend(args: argparse.Namespace) -> int:
     if args.tend_command == "today":
         print_rows(reminder_rows(state, True), as_json)
         return 0
+    if args.tend_command == "export":
+        status = transport.connection_status(config_path, cookie_path)
+        value = backup_payload(state, str(status.get("ship", "")))
+        if str(args.path) == "-":
+            emit(value, True)
+        else:
+            destination = Path(args.path)
+            write_private_json(destination, value, args.force)
+            emit({"status": "exported", "path": str(destination.expanduser()), "format": value["format"]}, as_json)
+        return 0
     if args.tend_command == "add":
         task_list = select_list(state, args.list_selector)
         action = {"add-reminder": {
@@ -246,6 +289,10 @@ def parser() -> argparse.ArgumentParser:
     commands.add_parser("status", help="show connection status")
     commands.add_parser("list", aliases=["ls"], help="list incomplete reminders")
     commands.add_parser("today", help="list due and overdue reminders")
+
+    export = commands.add_parser("export", help="write a private, portable JSON snapshot backup")
+    export.add_argument("path", help="destination file, or - for standard output")
+    export.add_argument("--force", action="store_true", help="replace an existing regular file")
 
     add = commands.add_parser("add", help="add a reminder")
     add.add_argument("title")

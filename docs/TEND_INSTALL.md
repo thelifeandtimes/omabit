@@ -90,6 +90,14 @@ omabit tend snooze 1 42 --minutes 20
 omabit tend open 1 42
 omabit tend open --capture
 omabit --json tend list
+omabit tend export ~/Documents/tend-backup.json
 ```
+
+`tend export` writes a versioned `tend-backup-1` JSON snapshot atomically with
+mode 0600. It includes all visible list content and preferences, including
+shared replicas, but never the Eyre cookie or `+code`. Existing files are
+refused unless `--force` is explicit; use `-` as the path to stream the backup
+to standard output. Keep the result private. Restore/import will be added only
+with a separately versioned, validation-first protocol.
 
 Run `omabit tend --help` for the complete command list.

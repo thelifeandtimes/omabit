@@ -78,6 +78,9 @@ Last verified: 2026-09-10
   all incomplete, or assigned reminders—or be disabled. Users can choose the
   default time for new all-day reminders and whether stale all-day items stay
   in Today; timed overdue reminders remain visible.
+- `omabit tend export` writes a complete `tend-backup-1` JSON snapshot without
+  authentication material. Export is atomic, mode 0600, refuses symbolic-link
+  targets, and does not replace an existing file without explicit `--force`.
 - Deterministic release packaging includes the desk, validated Omarchy plugin,
   CLI, installer, documentation, and per-file checksums. The installer refuses
   symlink targets and preserves forced replacements as timestamped backups.
@@ -89,7 +92,7 @@ Last verified: 2026-09-10
 1. Owner-hosted invitation delivery, ACL subscriptions, replicas, mutation
    routing, assignment validation, and activity across multiple ships.
 2. Batch operations and additional quick-capture refinements.
-3. Portable backups, accessibility audit, fault testing, and final release
+3. Restore/import design, accessibility audit, fault testing, and final release
    hardening.
 
 The source of truth for scope and exit criteria remains
