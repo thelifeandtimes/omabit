@@ -2,10 +2,10 @@
 /+  default-agent
 |%
 +$  card         card:agent:gall
-+$  saved-state  $%(state-0:t state-1:t state-2:t state-3:t state-4:t)
++$  saved-state  $%(state-0:t state-1:t state-2:t state-3:t state-4:t state-5:t)
 --
 ::
-=|  state=state-4:t
+=|  state=state-5:t
 ^-  agent:gall
 |_  =bowl:gall
 +*  this  .
@@ -15,7 +15,7 @@
   ^-  (quip card _this)
   =/  prefs=preferences:t
     [0 ~ ~ [%today %scheduled %all %flagged %completed ~] [300 900 3.600 ~]]
-  [~ this(state [%4 1 *lists:t *receipts:t prefs 0 ~ *snoozes:t *shares:t *replicas:t *invitations:t *in-flights:t])]
+  [~ this(state [%5 1 *lists:t *receipts:t prefs 0 ~ *snoozes:t *shares:t *replicas:t *invitations:t *in-flights:t])]
 ::
 ++  on-save  !>(state)
 ::
@@ -24,8 +24,10 @@
   ^-  (quip card _this)
   |^
   =/  old-state=saved-state  !<(saved-state old)
-  ?:  ?=(%4 -.old-state)
+  ?:  ?=(%5 -.old-state)
     (resume-timer old-state)
+  ?:  ?=(%4 -.old-state)
+    (resume-timer (upgrade-4 old-state))
   ?:  ?=(%3 -.old-state)
     (resume-timer (upgrade-3 old-state))
   ?:  ?=(%2 -.old-state)
@@ -122,7 +124,7 @@
   ::
   ++  upgrade-3
     |=  old=state-3:t
-    ^-  state-4:t
+    ^-  state-5:t
     =/  migrated=lists:t
       %-  ~(run by list-map.old)
       |=  old-list=task-list-3:t
@@ -157,7 +159,7 @@
           created-at.old-list
           modified-at.old-list
       ==
-    :*  %4
+    :*  %5
         next-id.old
         migrated
         *receipts:t
@@ -171,8 +173,33 @@
         *in-flights:t
     ==
   ::
+  ++  upgrade-4
+    |=  old=state-4:t
+    ^-  state-5:t
+    =/  shares=shares:t
+      %-  ~(run by share-map.old)
+      |=  old-share=share-4:t
+      =/  pending=pending-invites:t
+        %-  ~(run by pending.old-share)
+        |=  token=op-id:t
+        [token [%.n %.y %.y]]
+      [members.old-share pending]
+    :*  %5
+        next-id.old
+        list-map.old
+        *receipts:t
+        preferences.old
+        timer-generation.old
+        next-wake.old
+        snooze-map.old
+        shares
+        replica-map.old
+        invitation-map.old
+        in-flight-map.old
+    ==
+  ::
   ++  resume-timer
-    |=  st=state-4:t
+    |=  st=state-5:t
     ^-  (quip card _this)
     ?~  next-wake.st  [~ this(state st)]
     =/  generation=@ud  +(timer-generation.st)
@@ -218,8 +245,8 @@
         ?~  default-list.prefs
           prefs(revision +(revision.prefs), default-list (some id.lis))
         prefs
-      =/  nex=state-4:t
-        :*  %4
+      =/  nex=state-5:t
+        :*  %5
             +(next-id.state)
             (~(put by list-map.state) id.lis lis)
             receipt-map.state
@@ -288,8 +315,8 @@
         %+  skim  ~(tap by snooze-map.state)
         |=  [key=snooze-key:t until=@da]
         !=(-.key list-id.act)
-      =/  nex=state-4:t
-        :*  %4
+      =/  nex=state-5:t
+        :*  %5
             next-id.state
             remaining
             receipt-map.state
@@ -593,7 +620,7 @@
         ==
       ?:  (invalid-preferences prefs list-map.state)
         (reject op-id.act %invalid-preferences `revision.preferences.state state)
-      =/  nex=state-4:t  state(preferences prefs)
+      =/  nex=state-5:t  state(preferences prefs)
       (commit op-id.act [%preferences-updated op-id.act prefs] nex)
     ::
         %snooze-reminder
@@ -604,7 +631,7 @@
       ?:  |(completed.u.rem ?=(~ schedule.u.rem) (lte until.act now.bowl))
         (reject op-id.act %invalid-snooze `revision.u.lis state)
       =/  key=snooze-key:t  [list-id.act reminder-id.act]
-      =/  nex=state-4:t
+      =/  nex=state-5:t
         state(snooze-map (~(put by snooze-map.state) key until.act))
       (commit op-id.act [%snoozed op-id.act list-id.act reminder-id.act until.act] nex)
     ::
@@ -624,8 +651,23 @@
         ?:  =(rems reminders.lis)  lis
         lis(reminders rems, revision +(revision.lis), modified-at now.bowl)
       =/  snoozes=snoozes:t  (valid-snoozes liss snooze-map.state)
-      =/  nex=state-4:t  state(list-map liss, snooze-map snoozes)
+      =/  nex=state-5:t  state(list-map liss, snooze-map snoozes)
       (commit op-id.act [%snapshot liss preferences.state snoozes] nex)
+    ::
+        %invite-member
+      (reject op-id.act %not-implemented ~ state)
+    ::
+        %accept-invitation
+      (reject op-id.act %not-implemented ~ state)
+    ::
+        %decline-invitation
+      (reject op-id.act %not-implemented ~ state)
+    ::
+        %remove-member
+      (reject op-id.act %not-implemented ~ state)
+    ::
+        %leave-shared-list
+      (reject op-id.act %not-implemented ~ state)
     ==
   ::
   ++  invalid-title
@@ -829,17 +871,17 @@
     $(candidate u.parent-id.u.item)
   ::
   ++  save-list
-    |=  [=op-id:t lis=task-list:t st=state-4:t]
+    |=  [=op-id:t lis=task-list:t st=state-5:t]
     ^-  (quip card _state)
     (save-list-with-id op-id lis next-id.st st)
   ::
   ++  save-list-with-id
-    |=  [=op-id:t lis=task-list:t next=@ud st=state-4:t]
+    |=  [=op-id:t lis=task-list:t next=@ud st=state-5:t]
     ^-  (quip card _state)
     =/  liss=lists:t  (~(put by list-map.st) id.lis lis)
     =/  snoozes=snoozes:t  (valid-snoozes liss snooze-map.st)
-    =/  nex=state-4:t
-      :*  %4
+    =/  nex=state-5:t
+      :*  %5
           next
           liss
           receipt-map.st
@@ -868,14 +910,14 @@
     (malt kept)
   ::
   ++  reject
-    |=  [=op-id:t reason=@tas current=(unit @ud) st=state-4:t]
+    |=  [=op-id:t reason=@tas current=(unit @ud) st=state-5:t]
     ^-  (quip card _state)
     (commit op-id [%rejected op-id reason current] st)
   ::
   ++  commit
-    |=  [=op-id:t upd=update:t nex=state-4:t]
+    |=  [=op-id:t upd=update:t nex=state-5:t]
     ^-  (quip card _state)
-    =/  saved=state-4:t
+    =/  saved=state-5:t
       nex(receipt-map (~(put by receipt-map.nex) op-id upd))
     (arm-timer (give upd) saved)
   ::
@@ -885,13 +927,13 @@
     [%give %fact ~[/all] %tend-update-1 !>(upd)]~
   ::
   ++  arm-timer
-    |=  [cards=(list card) st=state-4:t]
+    |=  [cards=(list card) st=state-5:t]
     ^-  (quip card _state)
     =/  wake=(unit @da)
       (earlier (earliest-wake list-map.st) (earliest-snooze snooze-map.st))
     ?:  =(wake next-wake.st)  [cards st]
     =/  generation=@ud  +(timer-generation.st)
-    =/  armed=state-4:t
+    =/  armed=state-5:t
       st(timer-generation generation, next-wake wake)
     ?~  wake  [cards armed]
     =/  when=@da  ?:((lte u.wake now.bowl) now.bowl u.wake)
@@ -959,7 +1001,7 @@
 ++  on-watch
   |=  =path
   ^-  (quip card _this)
-  =/  st=state-4:t  state
+  =/  st=state-5:t  state
   =/  snapshot=update:t
     [%snapshot list-map.st preferences.st snooze-map.st]
   ?>  =(our.bowl src.bowl)
@@ -970,7 +1012,7 @@
 ++  on-peek
   |=  =path
   ^-  (unit (unit cage))
-  =/  st=state-4:t  state
+  =/  st=state-5:t  state
   =/  snapshot=update:t
     [%snapshot list-map.st preferences.st snooze-map.st]
   ?.  =(our.bowl src.bowl)  ~
@@ -997,7 +1039,7 @@
     =/  wake=(unit @da)
       (earlier (earliest-wake liss) (earliest-snooze snoozes))
     =/  next-generation=@ud  +(timer-generation.state)
-    =/  nex=state-4:t
+    =/  nex=state-5:t
       %_  state
           list-map          liss
           timer-generation  next-generation

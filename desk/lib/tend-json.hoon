@@ -67,6 +67,68 @@
       [item acc]
     [%a entries]
   ::
+  ++  member-policy-json
+    |=  policy=member-policy:sur
+    ^-  json
+    %-  pairs
+    :~  [%can-invite b+can-invite.policy]
+        [%notify-added b+notify-added.policy]
+        [%notify-completed b+notify-completed.policy]
+    ==
+  ::
+  ++  members-json
+    |=  values=members:sur
+    ^-  json
+    =/  entries=(list json)
+      %-  ~(rep by values)
+      |=  [[ship=@p policy=member-policy:sur] acc=(list json)]
+      =/  item=json
+        %-  pairs
+        :~  [%ship s+(scot %p ship)]
+            [%policy (member-policy-json policy)]
+        ==
+      [item acc]
+    [%a entries]
+  ::
+  ++  access-json
+    |=  value=access:sur
+    ^-  json
+    %-  pairs
+    :~  [%alias (numb alias.value)]
+        [%host s+(scot %p host.value)]
+        [%host-list-id (numb host-list-id.value)]
+        [%status s+status.value]
+        [%owner b+owner.value]
+        [%members (members-json members.value)]
+        [%pending [%a (turn pending.value |=(ship=@p s+(scot %p ship)))]]
+    ==
+  ::
+  ++  accesses-json
+    |=  values=accesses:sur
+    ^-  json
+    [%a (turn values access-json)]
+  ::
+  ++  invitation-json
+    |=  value=invitation:sur
+    ^-  json
+    %-  pairs
+    :~  [%token s+token.value]
+        [%host s+(scot %p host.value)]
+        [%host-list-id (numb host-list-id.value)]
+        [%title s+title.value]
+        [%can-invite b+can-invite.value]
+        [%received-at s+(scot %da received-at.value)]
+    ==
+  ::
+  ++  invitations-json
+    |=  values=invitations:sur
+    ^-  json
+    =/  entries=(list json)
+      %-  ~(rep by values)
+      |=  [[key=invitation-key:sur invitation=invitation:sur] acc=(list json)]
+      [(invitation-json invitation) acc]
+    [%a entries]
+  ::
   ++  month-week-json
     |=  value=(unit month-week:sur)
     ^-  json
@@ -228,6 +290,27 @@
           [%due-at s+(scot %da due-at.upd)]
           [%early-seconds (numb early-seconds.upd)]
           [%snoozed b+snoozed.upd]
+      ==
+    ::
+        %accesses
+      %+  frond  %accesses
+      (accesses-json accesses.upd)
+    ::
+        %invitations-updated
+      %+  frond  %invitations-updated
+      (invitations-json invitations.upd)
+    ::
+        %operation-pending
+      %+  frond  %operation-pending
+      %-  pairs
+      :~  [%operation-id s+op-id.upd]
+          [%list-id (numb list-id.upd)]
+      ==
+    ::
+        %operation-settled
+      %+  frond  %operation-settled
+      %-  pairs
+      :~  [%operation-id s+op-id.upd]
       ==
     ::
         %rejected
@@ -397,6 +480,31 @@
       =/  [=op-id from=@t to=(unit @t)]
         ((ot [[%operation-id so] [%from so] [%to (mu so)] ~]) body)
       [%replace-tag op-id from to]
+    ::
+        %invite-member
+      =/  [=op-id =list-id target=@p can-invite=?]
+        ((ot [[%operation-id so] [%list-id ni] [%ship ship] [%can-invite bo] ~]) body)
+      [%invite-member op-id list-id target can-invite]
+    ::
+        %accept-invitation
+      =/  [=op-id host=@p token=@t]
+        ((ot [[%operation-id so] [%host ship] [%token so] ~]) body)
+      [%accept-invitation op-id host token]
+    ::
+        %decline-invitation
+      =/  [=op-id host=@p token=@t]
+        ((ot [[%operation-id so] [%host ship] [%token so] ~]) body)
+      [%decline-invitation op-id host token]
+    ::
+        %remove-member
+      =/  [=op-id =list-id target=@p]
+        ((ot [[%operation-id so] [%list-id ni] [%ship ship] ~]) body)
+      [%remove-member op-id list-id target]
+    ::
+        %leave-shared-list
+      =/  [=op-id =list-id]
+        ((ot [[%operation-id so] [%list-id ni] ~]) body)
+      [%leave-shared-list op-id list-id]
     ==
   --
 --

@@ -273,6 +273,11 @@
       ==
       [%snooze-reminder =op-id =list-id =reminder-id until=@da]
       [%replace-tag =op-id from=@t to=(unit @t)]
+      [%invite-member =op-id =list-id ship=@p can-invite=?]
+      [%accept-invitation =op-id host=@p token=op-id]
+      [%decline-invitation =op-id host=@p token=op-id]
+      [%remove-member =op-id =list-id ship=@p]
+      [%leave-shared-list =op-id =list-id]
   ==
 ::
 +$  update-2
@@ -325,7 +330,17 @@
       notify-completed=?
   ==
 +$  members  (map @p member-policy)
-+$  pending-invites  (map @p op-id)
++$  pending-invites-4  (map @p op-id)
++$  share-4
+  $:  members=members
+      pending=pending-invites-4
+  ==
++$  shares-4  (map list-id share-4)
++$  pending-invite
+  $:  token=op-id
+      policy=member-policy
+  ==
++$  pending-invites  (map @p pending-invite)
 +$  share
   $:  members=members
       pending=pending-invites
@@ -357,7 +372,52 @@
   ==
 +$  in-flights  (map op-id in-flight)
 ::
++$  access
+  $:  alias=list-id
+      host=@p
+      host-list-id=list-id
+      status=host-status
+      owner=?
+      members=members
+      pending=(list @p)
+  ==
++$  accesses  (list access)
++$  peer-message
+  $%  $:  %invite
+          token=op-id
+          host-list-id=list-id
+          title=@t
+          =member-policy
+      ==
+      [%accept token=op-id host-list-id=list-id]
+      [%decline token=op-id host-list-id=list-id]
+      [%leave host-list-id=list-id]
+      [%mutation =action]
+      $:  %list-state
+          host-list-id=list-id
+          list=task-list
+          members=members
+          operation-id=(unit op-id)
+      ==
+      [%list-removed host-list-id=list-id]
+      [%mutation-rejected =op-id reason=@tas current-revision=(unit @ud)]
+  ==
+::
 +$  update
+  $%  [%snapshot =lists =preferences =snoozes]
+      [%list-upserted =op-id list=task-list =preferences]
+      [%list-deleted =op-id =list-id =preferences]
+      [%preferences-updated =op-id =preferences]
+      [%snoozed =op-id =list-id =reminder-id until=@da]
+      [%alert =list-id =reminder-id due-at=@da early-seconds=@ud snoozed=?]
+      [%accesses =accesses]
+      [%invitations-updated =invitations]
+      [%operation-pending =op-id =list-id]
+      [%operation-settled =op-id]
+      [%rejected =op-id reason=@tas current-revision=(unit @ud)]
+  ==
++$  receipts  (map op-id update)
++$  update-4
   $%  [%snapshot =lists =preferences =snoozes]
       [%list-upserted =op-id list=task-list =preferences]
       [%list-deleted =op-id =list-id =preferences]
@@ -366,9 +426,23 @@
       [%alert =list-id =reminder-id due-at=@da early-seconds=@ud snoozed=?]
       [%rejected =op-id reason=@tas current-revision=(unit @ud)]
   ==
-+$  receipts  (map op-id update)
++$  receipts-4  (map op-id update-4)
 +$  state-4
   $:  %4
+      next-id=@ud
+      list-map=lists
+      receipt-map=receipts-4
+      preferences=preferences
+      timer-generation=@ud
+      next-wake=(unit @da)
+      snooze-map=snoozes
+      share-map=shares-4
+      replica-map=replicas
+      invitation-map=invitations
+      in-flight-map=in-flights
+  ==
++$  state-5
+  $:  %5
       next-id=@ud
       list-map=lists
       receipt-map=receipts
