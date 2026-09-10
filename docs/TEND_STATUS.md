@@ -15,14 +15,17 @@ Last verified: 2026-09-10
   parent cycles are rejected without changing canonical list state.
 - The Omarchy service stays read-only in `Checking` and `Offline`, becoming
   writable only after its snapshot arrives.
+- The overlay can create lists, sections, and reminders; select a reminder;
+  edit its title, notes, URL, priority, flag, and tags; toggle completion; and
+  delete the reminder through revision-checked service calls.
 - Plugin validation, JavaScript reducer tests, and Python Eyre transport tests
   pass.
 
 ## Next
 
 1. Scheduling, time zones, early alerts, recurrence, and durable Behn timers.
-2. Built-in views, search/sort, pins/default-list preferences, and complete
-   single-user overlay/detail editing.
+2. Built-in views, search/sort, pins/default-list preferences, list/section
+   editing, and hierarchy/order controls in the overlay.
 3. Owner-hosted list references, invitations/ACLs, replicas, presence, and
    read-only owner-offline behavior across multiple ships.
 4. Notifications, CLI, packaging, backups, accessibility, fault testing, and

@@ -12,6 +12,7 @@ Item {
     property var service: null
     property bool opened: false
     property int selectedListId: 0
+    property int selectedReminderId: 0
     readonly property var selectedList: {
         var available = service ? service.lists : [];
         for (var i = 0; i < available.length; i++) {
@@ -20,6 +21,37 @@ Item {
 
         }
         return available.length ? available[0] : null;
+    }
+    readonly property var selectedReminder: {
+        var reminders = selectedList ? selectedList.reminders : [];
+        for (var i = 0; i < reminders.length; i++) {
+            if (reminders[i].id === selectedReminderId)
+                return reminders[i];
+
+        }
+        return null;
+    }
+
+    function sectionTitle(sectionId) {
+        if (!selectedList || sectionId === null || sectionId === undefined)
+            return "";
+
+        for (var i = 0; i < selectedList.sections.length; i++) {
+            if (selectedList.sections[i].id === sectionId)
+                return selectedList.sections[i].title;
+
+        }
+        return "";
+    }
+
+    function editReminder(reminder) {
+        selectedReminderId = reminder.id;
+        reminderTitle.text = reminder.title;
+        reminderNotes.text = reminder.notes;
+        reminderUrl.text = reminder.url || "";
+        reminderPriority.currentIndex = Math.max(0, reminderPriority.model.indexOf(reminder.priority));
+        reminderFlagged.checked = reminder.flagged;
+        reminderTags.text = reminder.tags.join(", ");
     }
 
     function open(payloadJson) {
@@ -224,7 +256,10 @@ Item {
 
                                         width: parent.width
                                         text: modelData.title
-                                        onClicked: root.selectedListId = modelData.id
+                                        onClicked: {
+                                            root.selectedListId = modelData.id;
+                                            root.selectedReminderId = 0;
+                                        }
                                     }
 
                                 }
@@ -259,17 +294,137 @@ Item {
                                 font.bold: true
                             }
 
-                            TextField {
-                                id: quickAdd
-
+                            Row {
                                 width: parent.width
-                                placeholderText: root.selectedList ? "Add a reminder" : "Create a list first"
-                                enabled: root.selectedList && service && service.connectionState === "online" && !service.mutationPending
-                                onAccepted: {
-                                    if (text.trim() && service.addReminder(root.selectedList.id, text, root.selectedList.revision))
-                                        text = "";
+                                spacing: Style.space(8)
+
+                                TextField {
+                                    id: quickAdd
+
+                                    width: parent.width * 0.66
+                                    placeholderText: root.selectedList ? "Add a reminder" : "Create a list first"
+                                    enabled: root.selectedList && service && service.connectionState === "online" && !service.mutationPending
+                                    onAccepted: {
+                                        if (text.trim() && service.addReminder(root.selectedList.id, text, root.selectedList.revision))
+                                            text = "";
+
+                                    }
+                                }
+
+                                TextField {
+                                    id: newSection
+
+                                    width: parent.width - quickAdd.width - parent.spacing
+                                    placeholderText: "Add section"
+                                    enabled: root.selectedList && service && service.connectionState === "online" && !service.mutationPending
+                                    onAccepted: {
+                                        if (!text.trim())
+                                            return ;
+
+                                        var sections = root.selectedList.sections;
+                                        var rank = sections.length ? sections[sections.length - 1].rank + 1024 : 1024;
+                                        if (service.addSection(root.selectedList.id, text, rank, root.selectedList.revision))
+                                            text = "";
+
+                                    }
+                                }
+
+                            }
+
+                            Rectangle {
+                                width: parent.width
+                                height: root.selectedReminder ? Style.space(230) : 0
+                                visible: root.selectedReminder !== null
+                                radius: Style.cornerRadius
+                                color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.05)
+
+                                Column {
+                                    anchors.fill: parent
+                                    anchors.margins: Style.space(8)
+                                    spacing: Style.space(6)
+
+                                    TextField {
+                                        id: reminderTitle
+
+                                        width: parent.width
+                                        placeholderText: "Reminder title"
+                                    }
+
+                                    TextArea {
+                                        id: reminderNotes
+
+                                        width: parent.width
+                                        height: Style.space(54)
+                                        placeholderText: "Notes"
+                                        wrapMode: TextEdit.Wrap
+                                    }
+
+                                    Row {
+                                        width: parent.width
+                                        spacing: Style.space(6)
+
+                                        TextField {
+                                            id: reminderUrl
+
+                                            width: parent.width * 0.5
+                                            placeholderText: "https://…"
+                                        }
+
+                                        ComboBox {
+                                            id: reminderPriority
+
+                                            width: parent.width * 0.24
+                                            model: ["none", "low", "medium", "high"]
+                                        }
+
+                                        CheckBox {
+                                            id: reminderFlagged
+
+                                            text: "Flag"
+                                        }
+
+                                    }
+
+                                    TextField {
+                                        id: reminderTags
+
+                                        width: parent.width
+                                        placeholderText: "tags, separated, by commas"
+                                    }
+
+                                    Row {
+                                        spacing: Style.space(8)
+
+                                        Button {
+                                            text: service && service.mutationPending ? "Saving…" : "Save"
+                                            enabled: root.selectedReminder && reminderTitle.text.trim() && service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: {
+                                                var tags = reminderTags.text.split(",").map(function(tag) {
+                                                    return tag.trim();
+                                                }).filter(function(tag) {
+                                                    return tag !== "";
+                                                });
+                                                service.updateReminder(root.selectedList.id, root.selectedReminder.id, {
+                                                    title: reminderTitle.text,
+                                                    notes: reminderNotes.text,
+                                                    url: reminderUrl.text.trim() || null,
+                                                    priority: reminderPriority.currentText,
+                                                    flagged: reminderFlagged.checked,
+                                                    tags: tags
+                                                }, root.selectedList.revision);
+                                            }
+                                        }
+
+                                        Button {
+                                            text: "Delete"
+                                            enabled: root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: service.deleteReminder(root.selectedList.id, root.selectedReminder.id, root.selectedList.revision)
+                                        }
+
+                                    }
 
                                 }
+
                             }
 
                             ListView {
@@ -300,12 +455,23 @@ Item {
 
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
-                                            text: modelData.title
+                                            width: parent.width - x
+                                            text: {
+                                                var section = root.sectionTitle(modelData.sectionId);
+                                                var prefix = modelData.parentId === null ? "" : "↳ ";
+                                                return prefix + modelData.title + (section ? "  ·  " + section : "");
+                                            }
                                             color: Color.menu.text
                                             opacity: modelData.completed ? 0.5 : 1
                                             font.family: Style.font.menuFamily
                                             font.pixelSize: Style.font.body
                                             font.strikeout: modelData.completed
+
+                                            MouseArea {
+                                                anchors.fill: parent
+                                                cursorShape: Qt.PointingHandCursor
+                                                onClicked: root.editReminder(modelData)
+                                            }
                                         }
 
                                     }
