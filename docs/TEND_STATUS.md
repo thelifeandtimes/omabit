@@ -48,13 +48,15 @@ Last verified: 2026-09-10
 - Native notifications offer Complete, Snooze, and Open actions. They are
   serialized through a desktop queue; Open deep-selects the reminder and the
   mutation actions remain disabled unless the home connection is Online.
+- Quick entry recognizes whitespace-delimited `#tag` tokens. The overlay lists
+  all known tags and can rename, merge, or delete one across hosted reminders;
+  server-side bounds and set semantics were verified through live Eyre.
 - Plugin validation, JavaScript reducer tests, and Python Eyre transport tests
   pass.
 
 ## Next
 
-1. Tag-management affordances, configurable all-day policy, and quick-capture
-   refinements.
+1. Configurable all-day policy and quick-capture refinements.
 2. Owner-hosted list references, invitations/ACLs, replicas, presence, and
    read-only owner-offline behavior across multiple ships.
 3. CLI, packaging, backups, accessibility, fault testing, and

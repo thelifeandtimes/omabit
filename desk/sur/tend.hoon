@@ -196,7 +196,7 @@
       [%add-section =op-id =list-id title=@t rank=@ud base-revision=@ud]
       [%update-section =op-id =list-id =section-id title=@t rank=@ud base-revision=@ud]
       [%delete-section =op-id =list-id =section-id base-revision=@ud]
-      [%add-reminder =op-id =list-id title=@t base-revision=@ud]
+      [%add-reminder =op-id =list-id title=@t tags=(set @t) base-revision=@ud]
       $:  %update-reminder
           =op-id
           =list-id
@@ -236,6 +236,7 @@
           base-revision=@ud
       ==
       [%snooze-reminder =op-id =list-id =reminder-id until=@da]
+      [%replace-tag =op-id from=@t to=(unit @t)]
   ==
 ::
 +$  update-2

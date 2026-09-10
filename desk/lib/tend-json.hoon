@@ -342,9 +342,9 @@
       [%delete-section op-id list-id section-id base-revision]
     ::
         %add-reminder
-      =/  [=op-id =list-id title=@t base-revision=@ud]
-        ((ot [[%operation-id so] [%list-id ni] [%title so] [%base-revision ni] ~]) body)
-      [%add-reminder op-id list-id title base-revision]
+      =/  [=op-id =list-id title=@t tags=(set @t) base-revision=@ud]
+        ((ot [[%operation-id so] [%list-id ni] [%title so] [%tags (as so)] [%base-revision ni] ~]) body)
+      [%add-reminder op-id list-id title tags base-revision]
     ::
         %update-reminder
       =/  [=op-id =list-id =reminder-id title=@t notes=@t url=(unit @t) pri=priority:sur flagged=? tags=(set @t) base-revision=@ud]
@@ -380,6 +380,11 @@
       =/  [=op-id =list-id =reminder-id until=@da]
         ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%until date] ~]) body)
       [%snooze-reminder op-id list-id reminder-id until]
+    ::
+        %replace-tag
+      =/  [=op-id from=@t to=(unit @t)]
+        ((ot [[%operation-id so] [%from so] [%to (mu so)] ~]) body)
+      [%replace-tag op-id from to]
     ==
   --
 --

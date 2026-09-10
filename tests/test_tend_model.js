@@ -197,4 +197,5 @@ test("built-in views, search, and due sorting work across lists", () => {
   assert.deepEqual(model.queryReminders(lists, { view: "completed" }, now).map((item) => item.id), [4])
   assert.deepEqual(model.queryReminders(lists, { view: "all", search: "september" }, now).map((item) => item.id), [3])
   assert.equal(model.queryReminders(lists, { view: "all" }, now).find((item) => item.id === 1).listRevision, 4)
+  assert.deepEqual(model.allTags(lists), ["shop"])
 })

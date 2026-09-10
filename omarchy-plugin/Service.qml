@@ -181,13 +181,24 @@ Item {
         });
     }
 
-    function addReminder(listId, title, baseRevision) {
+    function addReminder(listId, title, baseRevision, tags) {
         return submit({
             "add-reminder": {
                 "operation-id": operationId(),
                 "list-id": Number(listId),
                 "title": String(title || "").trim(),
+                "tags": (tags || []).map(String),
                 "base-revision": Number(baseRevision)
+            }
+        });
+    }
+
+    function replaceTag(from, to) {
+        return submit({
+            "replace-tag": {
+                "operation-id": operationId(),
+                "from": String(from || "").trim(),
+                "to": to === null || to === undefined ? null : String(to).trim()
             }
         });
     }

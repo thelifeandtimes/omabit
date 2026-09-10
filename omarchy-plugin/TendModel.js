@@ -215,6 +215,16 @@ function incompleteCount(lists) {
   return total
 }
 
+function allTags(lists) {
+  const found = new Set()
+  ;(lists || []).forEach(function(list) {
+    ;(list.reminders || []).forEach(function(reminder) {
+      ;(reminder.tags || []).forEach(function(tag) { found.add(String(tag)) })
+    })
+  })
+  return Array.from(found).sort(function(a, b) { return a.localeCompare(b) })
+}
+
 function urbitDateMs(value) {
   const match = /^~(\d+)\.(\d+)\.(\d+)\.\.(\d+)\.(\d+)\.(\d+)/.exec(String(value || ""))
   if (!match) return NaN
@@ -282,5 +292,5 @@ function queryReminders(lists, options, nowMs) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, cloneSnoozes: cloneSnoozes, reduce: reduce, incompleteCount: incompleteCount, urbitDateMs: urbitDateMs, queryReminders: queryReminders }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, cloneSnoozes: cloneSnoozes, reduce: reduce, incompleteCount: incompleteCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders }
 }

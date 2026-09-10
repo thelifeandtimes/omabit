@@ -301,6 +301,8 @@
         (reject op-id.act %stale-list `revision.u.old state)
       ?:  (invalid-title title.act)
         (reject op-id.act %invalid-title `revision.u.old state)
+      ?:  (invalid-tags tags.act)
+        (reject op-id.act %invalid-tags `revision.u.old state)
       =/  rem=reminder:t
         :*  next-id.state
             title.act
@@ -308,7 +310,7 @@
             ~
             %none
             %.n
-            *(set @t)
+            tags.act
             ~
             ~
             next-id.state
@@ -339,6 +341,8 @@
         (reject op-id.act %invalid-title `revision.u.old state)
       ?:  (invalid-url url.act)
         (reject op-id.act %unsafe-url `revision.u.old state)
+      ?:  (invalid-tags tags.act)
+        (reject op-id.act %invalid-tags `revision.u.old state)
       =/  rem=reminder:t
         %_  u.old-rem
             title       title.act
@@ -535,6 +539,25 @@
       =/  nex=state-3:t
         state(snooze-map (~(put by snooze-map.state) key until.act))
       (commit op-id.act [%snoozed op-id.act list-id.act reminder-id.act until.act] nex)
+    ::
+        %replace-tag
+      ?:  |((invalid-tag from.act) ?~(to.act %.n (invalid-tag u.to.act)))
+        (reject op-id.act %invalid-tag ~ state)
+      =/  liss=lists:t
+        %-  ~(run by list-map.state)
+        |=  lis=task-list:t
+        =/  rems=reminders:t
+          %-  ~(run by reminders.lis)
+          |=  rem=reminder:t
+          ?.  (~(has in tags.rem) from.act)  rem
+          =/  next-tags=(set @t)  (~(del in tags.rem) from.act)
+          =.  next-tags  ?~(to.act next-tags (~(put in next-tags) u.to.act))
+          rem(tags next-tags, revision +(revision.rem), modified-at now.bowl)
+        ?:  =(rems reminders.lis)  lis
+        lis(reminders rems, revision +(revision.lis), modified-at now.bowl)
+      =/  snoozes=snoozes:t  (valid-snoozes liss snooze-map.state)
+      =/  nex=state-3:t  state(list-map liss, snooze-map snoozes)
+      (commit op-id.act [%snapshot liss preferences.state snoozes] nex)
     ==
   ::
   ++  invalid-title
@@ -548,6 +571,16 @@
         =(0 symbol)
         (gth (met 3 symbol) 128)
     ==
+  ::
+  ++  invalid-tag
+    |=  tag=@t
+    |(=(0 tag) (gth (met 3 tag) 128))
+  ::
+  ++  invalid-tags
+    |=  tags=(set @t)
+    ^-  ?
+    =/  values=(list @t)  ~(tap in tags)
+    |((gth (lent values) 100) !(levy values |=(tag=@t !(invalid-tag tag))))
   ::
   ++  invalid-preferences
     |=  [prefs=preferences:t liss=lists:t]

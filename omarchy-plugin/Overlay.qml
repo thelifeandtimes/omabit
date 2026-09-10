@@ -39,6 +39,7 @@ Item {
         return null;
     }
     readonly property var orderedLists: TendModel.orderedLists(service ? service.lists : [], service ? service.preferences.pinnedLists : [])
+    readonly property var availableTags: TendModel.allTags(service ? service.lists : [])
     readonly property var addDestination: {
         if (!service || !service.lists.length)
             return null;
@@ -110,6 +111,23 @@ Item {
             pinnedViews: pinnedViews,
             snoozePresets: service.preferences.snoozePresets
         });
+    }
+
+    function parseQuickEntry(value) {
+        var words = String(value || "").trim().split(/\s+/);
+        var title = [];
+        var tags = [];
+        for (var i = 0; i < words.length; i++) {
+            if (words[i].length > 1 && words[i].charAt(0) === "#")
+                tags.push(words[i].slice(1));
+            else
+                title.push(words[i]);
+
+        }
+        return {
+            title: title.join(" ").trim(),
+            tags: tags
+        };
     }
 
     function toggleListPin() {
@@ -618,6 +636,51 @@ Item {
                             }
 
                             Row {
+                                visible: root.availableTags.length > 0
+                                width: parent.width
+                                spacing: Style.space(6)
+
+                                ComboBox {
+                                    id: tagChoice
+
+                                    width: parent.width * 0.25
+                                    model: root.availableTags
+                                }
+
+                                TextField {
+                                    id: tagReplacement
+
+                                    width: parent.width * 0.3
+                                    placeholderText: "Rename or merge tag"
+                                }
+
+                                Button {
+                                    text: "Rename tag"
+                                    enabled: tagChoice.currentIndex >= 0 && tagReplacement.text.trim() && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: {
+                                        if (service.replaceTag(tagChoice.currentText, tagReplacement.text))
+                                            tagReplacement.text = "";
+                                    }
+                                }
+
+                                Button {
+                                    text: "Delete tag"
+                                    enabled: tagChoice.currentIndex >= 0 && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: service.replaceTag(tagChoice.currentText, null)
+                                }
+
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: "Use #tag in quick add"
+                                    color: Color.menu.text
+                                    opacity: 0.68
+                                    font.family: Style.font.menuFamily
+                                    font.pixelSize: Style.font.caption
+                                }
+
+                            }
+
+                            Row {
                                 visible: root.listEditorOpen && root.selectedList !== null
                                 width: parent.width
                                 spacing: Style.space(6)
@@ -731,7 +794,8 @@ Item {
                                     placeholderText: root.addDestination ? "Add to " + root.addDestination.title : "Create a list first"
                                     enabled: root.addDestination && service && service.connectionState === "online" && !service.mutationPending
                                     onAccepted: {
-                                        if (text.trim() && service.addReminder(root.addDestination.id, text, root.addDestination.revision))
+                                        var parsed = root.parseQuickEntry(text);
+                                        if (parsed.title && service.addReminder(root.addDestination.id, parsed.title, root.addDestination.revision, parsed.tags))
                                             text = "";
 
                                     }
