@@ -19,6 +19,10 @@ Last verified: 2026-09-10
 - The overlay can create lists, sections, and reminders; select a reminder;
   edit its title, notes, URL, priority, flag, and tags; toggle completion; and
   delete the reminder through revision-checked service calls.
+- List settings edit title, color, and symbol with a guarded delete action.
+  Section settings edit title/rank or safely delete a section, and reminder
+  organization controls set parent, section, and manual rank. The corresponding
+  `%tend` actions compile and round-trip through live Eyre.
 - Today (including overdue), Scheduled, All, Flagged, and Completed views work
   across lists. The overlay can search reminder text, notes, URLs, tags, and
   list names, then sort by manual rank, due date, creation date, priority, or
@@ -36,8 +40,7 @@ Last verified: 2026-09-10
 ## Next
 
 1. Snooze actions and richer recurrence/date controls in the overlay.
-2. Pins/default-list preferences, list/section editing, and hierarchy/order
-   controls in the overlay.
+2. Pins/default-list preferences and direct drag/keyboard order controls.
 3. Owner-hosted list references, invitations/ACLs, replicas, presence, and
    read-only owner-offline behavior across multiple ships.
 4. Notifications, CLI, packaging, backups, accessibility, fault testing, and

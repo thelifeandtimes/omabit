@@ -14,9 +14,12 @@ Item {
     property bool opened: false
     property int selectedListId: 0
     property int selectedReminderId: 0
+    property int selectedSectionId: 0
     property string viewMode: "list"
     property string sortMode: "manual"
     property bool sortDescending: false
+    property bool listEditorOpen: false
+    property bool confirmDeleteList: false
     readonly property var selectedList: {
         var available = service ? service.lists : [];
         for (var i = 0; i < available.length; i++) {
@@ -47,6 +50,41 @@ Item {
             return selectedList ? selectedList.title : "Create your first list";
 
         return viewMode.charAt(0).toUpperCase() + viewMode.slice(1);
+    }
+    readonly property var parentChoices: {
+        var choices = [{
+            id: 0,
+            title: "No parent"
+        }];
+        if (!selectedList)
+            return choices;
+
+        for (var i = 0; i < selectedList.reminders.length; i++) {
+            if (selectedList.reminders[i].id !== selectedReminderId)
+                choices.push({
+                    id: selectedList.reminders[i].id,
+                    title: selectedList.reminders[i].title
+                });
+
+        }
+        return choices;
+    }
+    readonly property var sectionChoices: {
+        var choices = [{
+            id: 0,
+            title: "No section"
+        }];
+        return selectedList ? choices.concat(selectedList.sections) : choices;
+    }
+
+    function indexForId(values, id) {
+        var wanted = id === null || id === undefined ? 0 : id;
+        for (var i = 0; i < values.length; i++) {
+            if (values[i].id === wanted)
+                return i;
+
+        }
+        return 0;
     }
 
     function sectionTitle(sectionId) {
@@ -94,6 +132,35 @@ Item {
         }).join(", ") : "";
         reminderRepeat.currentIndex = reminder.schedule && reminder.schedule.recurrence ? Math.max(0, reminderRepeat.model.indexOf(reminder.schedule.recurrence.frequency)) : 0;
         reminderInterval.value = reminder.schedule && reminder.schedule.recurrence ? reminder.schedule.recurrence.interval : 1;
+        reminderRank.value = reminder.rank;
+        Qt.callLater(function() {
+            reminderParent.currentIndex = root.indexForId(root.parentChoices, reminder.parentId);
+            reminderSection.currentIndex = root.indexForId(root.sectionChoices, reminder.sectionId);
+        });
+    }
+
+    function openListEditor() {
+        if (!selectedList)
+            return ;
+
+        listTitle.text = selectedList.title;
+        listColor.text = selectedList.color;
+        listSymbol.text = selectedList.symbol;
+        listEditorOpen = true;
+        confirmDeleteList = false;
+    }
+
+    function chooseSection(index) {
+        if (!selectedList || index < 0 || index >= selectedList.sections.length) {
+            selectedSectionId = 0;
+            sectionTitleEditor.text = "";
+            return ;
+        }
+
+        var section = selectedList.sections[index];
+        selectedSectionId = section.id;
+        sectionTitleEditor.text = section.title;
+        sectionRank.value = section.rank;
     }
 
     function localTimezone() {
@@ -147,6 +214,9 @@ Item {
     onSelectedListChanged: {
         if (selectedList) {
             selectedListId = selectedList.id;
+            listEditorOpen = false;
+            confirmDeleteList = false;
+            selectedSectionId = 0;
         }
     }
 
@@ -385,12 +455,80 @@ Item {
                             height: parent.height
                             spacing: Style.space(8)
 
-                            Text {
-                                text: root.viewTitle
-                                color: Color.menu.text
-                                font.family: Style.font.menuFamily
-                                font.pixelSize: Style.font.title
-                                font.bold: true
+                            Row {
+                                width: parent.width
+                                spacing: Style.space(8)
+
+                                Text {
+                                    width: parent.width - editListButton.width - parent.spacing
+                                    text: root.viewTitle
+                                    color: Color.menu.text
+                                    font.family: Style.font.menuFamily
+                                    font.pixelSize: Style.font.title
+                                    font.bold: true
+                                }
+
+                                Button {
+                                    id: editListButton
+
+                                    visible: root.viewMode === "list" && root.selectedList !== null
+                                    text: root.listEditorOpen ? "Close list settings" : "List settings"
+                                    onClicked: {
+                                        if (root.listEditorOpen)
+                                            root.listEditorOpen = false;
+                                        else
+                                            root.openListEditor();
+                                    }
+                                }
+
+                            }
+
+                            Row {
+                                visible: root.listEditorOpen && root.selectedList !== null
+                                width: parent.width
+                                spacing: Style.space(6)
+
+                                TextField {
+                                    id: listTitle
+
+                                    width: parent.width * 0.34
+                                    placeholderText: "List title"
+                                }
+
+                                TextField {
+                                    id: listColor
+
+                                    width: parent.width * 0.2
+                                    placeholderText: "#3b82f6"
+                                }
+
+                                TextField {
+                                    id: listSymbol
+
+                                    width: parent.width * 0.16
+                                    placeholderText: "list or emoji"
+                                }
+
+                                Button {
+                                    text: "Save"
+                                    enabled: listTitle.text.trim() && listColor.text.trim() && listSymbol.text.trim() && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: service.updateList(root.selectedList.id, listTitle.text, listColor.text, listSymbol.text, root.selectedList.revision)
+                                }
+
+                                Button {
+                                    text: root.confirmDeleteList ? "Confirm delete" : "Delete"
+                                    enabled: service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: {
+                                        if (!root.confirmDeleteList) {
+                                            root.confirmDeleteList = true;
+                                            return ;
+                                        }
+                                        service.deleteList(root.selectedList.id, root.selectedList.revision);
+                                        root.confirmDeleteList = false;
+                                        root.listEditorOpen = false;
+                                    }
+                                }
+
                             }
 
                             Row {
@@ -458,9 +596,59 @@ Item {
 
                             }
 
+                            Row {
+                                visible: root.viewMode === "list" && root.selectedList !== null && root.selectedList.sections.length > 0
+                                width: parent.width
+                                spacing: Style.space(6)
+
+                                ComboBox {
+                                    id: sectionChooser
+
+                                    width: parent.width * 0.24
+                                    model: root.selectedList ? root.selectedList.sections : []
+                                    textRole: "title"
+                                    onActivated: function(index) {
+                                        root.chooseSection(index);
+                                    }
+                                }
+
+                                TextField {
+                                    id: sectionTitleEditor
+
+                                    width: parent.width * 0.3
+                                    placeholderText: "Section title"
+                                }
+
+                                SpinBox {
+                                    id: sectionRank
+
+                                    from: 0
+                                    to: 2147483647
+                                    value: 0
+                                    editable: true
+                                }
+
+                                Button {
+                                    text: "Save section"
+                                    enabled: root.selectedSectionId !== 0 && sectionTitleEditor.text.trim() && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: service.updateSection(root.selectedList.id, root.selectedSectionId, sectionTitleEditor.text, sectionRank.value, root.selectedList.revision)
+                                }
+
+                                Button {
+                                    text: "Delete"
+                                    enabled: root.selectedSectionId !== 0 && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: {
+                                        service.deleteSection(root.selectedList.id, root.selectedSectionId, root.selectedList.revision);
+                                        root.selectedSectionId = 0;
+                                        sectionTitleEditor.text = "";
+                                    }
+                                }
+
+                            }
+
                             Rectangle {
                                 width: parent.width
-                                height: root.selectedReminder ? Style.space(330) : 0
+                                height: root.selectedReminder ? Style.space(382) : 0
                                 visible: root.selectedReminder !== null
                                 radius: Style.cornerRadius
                                 color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.05)
@@ -548,6 +736,47 @@ Item {
 
                                             width: parent.width - x
                                             placeholderText: "Early min"
+                                        }
+
+                                    }
+
+                                    Row {
+                                        width: parent.width
+                                        spacing: Style.space(6)
+
+                                        ComboBox {
+                                            id: reminderParent
+
+                                            width: parent.width * 0.3
+                                            model: root.parentChoices
+                                            textRole: "title"
+                                        }
+
+                                        ComboBox {
+                                            id: reminderSection
+
+                                            width: parent.width * 0.3
+                                            model: root.sectionChoices
+                                            textRole: "title"
+                                        }
+
+                                        SpinBox {
+                                            id: reminderRank
+
+                                            from: 0
+                                            to: 2147483647
+                                            value: 0
+                                            editable: true
+                                        }
+
+                                        Button {
+                                            text: "Move"
+                                            enabled: root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: {
+                                                var parentId = reminderParent.currentIndex > 0 ? root.parentChoices[reminderParent.currentIndex].id : null;
+                                                var sectionId = reminderSection.currentIndex > 0 ? root.sectionChoices[reminderSection.currentIndex].id : null;
+                                                service.moveReminder(root.selectedList.id, root.selectedReminder.id, parentId, sectionId, reminderRank.value, root.selectedList.revision);
+                                            }
                                         }
 
                                     }

@@ -161,6 +161,25 @@
         u.old(title title.act, revision +(revision.u.old), modified-at now.bowl)
       (save-list op-id.act lis state)
     ::
+        %update-list
+      =/  old=(unit task-list:t)  (~(get by list-map.state) list-id.act)
+      ?~  old  (reject op-id.act %unknown-list ~ state)
+      ?.  =(base-revision.act revision.u.old)
+        (reject op-id.act %stale-list `revision.u.old state)
+      ?:  (invalid-title title.act)
+        (reject op-id.act %invalid-title `revision.u.old state)
+      ?:  (invalid-appearance color.act symbol.act)
+        (reject op-id.act %invalid-appearance `revision.u.old state)
+      =/  lis=task-list:t
+        %_  u.old
+            title        title.act
+            color        color.act
+            symbol       symbol.act
+            revision     +(revision.u.old)
+            modified-at  now.bowl
+        ==
+      (save-list op-id.act lis state)
+    ::
         %delete-list
       =/  old=(unit task-list:t)  (~(get by list-map.state) list-id.act)
       ?~  old  (reject op-id.act %unknown-list ~ state)
@@ -457,6 +476,14 @@
   ++  invalid-title
     |=  title=@t
     |(=(0 title) (gth (met 3 title) 1.024))
+  ::
+  ++  invalid-appearance
+    |=  [color=@t symbol=@t]
+    ?|  =(0 color)
+        (gth (met 3 color) 128)
+        =(0 symbol)
+        (gth (met 3 symbol) 128)
+    ==
   ::
   ++  advance-schedule
     |=  sch=schedule:t

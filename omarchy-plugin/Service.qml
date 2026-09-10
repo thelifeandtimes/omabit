@@ -119,6 +119,19 @@ Item {
         });
     }
 
+    function updateList(listId, title, color, symbol, baseRevision) {
+        return submit({
+            "update-list": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "title": String(title || "").trim(),
+                "color": String(color || "").trim(),
+                "symbol": String(symbol || "").trim(),
+                "base-revision": Number(baseRevision)
+            }
+        });
+    }
+
     function deleteList(listId, baseRevision) {
         return submit({
             "delete-list": {

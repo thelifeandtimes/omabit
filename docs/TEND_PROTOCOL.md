@@ -24,6 +24,7 @@ returns its recorded result without applying it twice.
 | --- | --- |
 | `create-list` | Create a standard list and select the first list as default |
 | `rename-list`, `delete-list` | Rename or remove a list |
+| `update-list` | Atomically change a list's title, color, and symbol |
 | `add-section`, `update-section`, `delete-section` | Manage ordered sections; deleting a section keeps and unsections its reminders |
 | `add-reminder`, `update-reminder` | Create a reminder or replace its editable metadata |
 | `move-reminder` | Change parent, section, and stable rank after validating references and cycles |
@@ -31,7 +32,9 @@ returns its recorded result without applying it twice.
 | `set-completed` | Complete/uncomplete a reminder tree, or advance a repeating reminder |
 | `delete-reminder` | Delete a reminder and all descendants |
 
-Editable reminder metadata currently includes title, notes, safe HTTP(S) or
+List appearance strings are non-empty and bounded; list deletion requires a
+second confirmation in the desktop UI. Editable reminder metadata currently
+includes title, notes, safe HTTP(S) or
 `mailto` URL, priority, flag, tags, parent, section, and rank. All writes are
 bounded by list revision; titles are non-empty and capped at 1 KiB.
 

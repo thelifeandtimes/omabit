@@ -173,6 +173,14 @@
 +$  action
   $%  [%create-list =op-id title=@t]
       [%rename-list =op-id =list-id title=@t base-revision=@ud]
+      $:  %update-list
+          =op-id
+          =list-id
+          title=@t
+          color=@t
+          symbol=@t
+          base-revision=@ud
+      ==
       [%delete-list =op-id =list-id base-revision=@ud]
       [%add-section =op-id =list-id title=@t rank=@ud base-revision=@ud]
       [%update-section =op-id =list-id =section-id title=@t rank=@ud base-revision=@ud]

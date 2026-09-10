@@ -247,6 +247,11 @@
         ((ot [[%operation-id so] [%list-id ni] [%title so] [%base-revision ni] ~]) body)
       [%rename-list op-id list-id title base-revision]
     ::
+        %update-list
+      =/  [=op-id =list-id title=@t color=@t symbol=@t base-revision=@ud]
+        ((ot [[%operation-id so] [%list-id ni] [%title so] [%color so] [%symbol so] [%base-revision ni] ~]) body)
+      [%update-list op-id list-id title color symbol base-revision]
+    ::
         %delete-list
       =/  [=op-id =list-id base-revision=@ud]
         ((ot [[%operation-id so] [%list-id ni] [%base-revision ni] ~]) body)
