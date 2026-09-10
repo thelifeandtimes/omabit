@@ -73,6 +73,9 @@ Last verified: 2026-09-10
   credential paths are refused, non-loopback HTTP and URL paths are rejected,
   expired authentication stops the reconnect loop, and users can disconnect or
   switch ships without retaining the reusable `+code`.
+- Eyre hardening now disables redirects for authenticated traffic, replaces
+  rather than merges cookie jars on a new login, bounds JSON/SSE/action sizes,
+  and fails closed on malformed UTF-8, JSON, event IDs, and content lengths.
 - `omabit tend` provides connect/disconnect/status, list/today, add,
   complete/uncomplete, snooze, and overlay-open commands with optional JSON
   output. Its read-only status and list flows were exercised against the live

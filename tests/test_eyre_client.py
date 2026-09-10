@@ -10,6 +10,8 @@ import tempfile
 import threading
 import unittest
 import urllib.parse
+import urllib.error
+from unittest import mock
 
 
 MODULE_PATH = Path(__file__).parents[1] / "omarchy-plugin" / "transport" / "eyre_client.py"
@@ -42,7 +44,10 @@ class EyreHandler(BaseHTTPRequestHandler):
         if self.path != "/~/login" or fields.get("password") != ["lidlut-test"]:
             self.send_bytes(403, b"forbidden", "text/plain")
             return
-        self.send_bytes(204, b"", headers=[("Set-Cookie", "urbauth-test=session; Path=/; HttpOnly")])
+        if self.server.redirect_login:
+            self.send_bytes(307, b"", headers=[("Location", self.server.redirect_target)])
+            return
+        self.send_bytes(204, b"", headers=[("Set-Cookie", f"{self.server.cookie_name}=session; Path=/; HttpOnly")])
 
     def do_PUT(self):
         length = int(self.headers.get("Content-Length", "0"))
@@ -52,17 +57,18 @@ class EyreHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/~/scry/tend/whoami.json":
-            if "urbauth-test=session" not in self.headers.get("Cookie", ""):
+            if f"{self.server.cookie_name}=session" not in self.headers.get("Cookie", ""):
                 self.send_bytes(403, b"forbidden", "text/plain")
                 return
             self.send_bytes(200, json.dumps("zod").encode("utf-8"))
             return
 
         if self.path == "/~/scry/tend/state.json":
-            if "urbauth-test=session" not in self.headers.get("Cookie", ""):
+            if f"{self.server.cookie_name}=session" not in self.headers.get("Cookie", ""):
                 self.send_bytes(403, b"forbidden", "text/plain")
                 return
-            self.send_bytes(200, json.dumps({"snapshot": {"lists": []}}).encode("utf-8"))
+            body = self.server.state_body or json.dumps({"snapshot": {"lists": []}}).encode("utf-8")
+            self.send_bytes(200, body)
             return
 
         commands = self.server.commands.get(self.path, [])
@@ -85,9 +91,16 @@ class EyreHandler(BaseHTTPRequestHandler):
 
 
 class FakeEyre:
+    def __init__(self, cookie_name="urbauth-test"):
+        self.cookie_name = cookie_name
+
     def __enter__(self):
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), EyreHandler)
         self.server.commands = {}
+        self.server.cookie_name = self.cookie_name
+        self.server.redirect_login = False
+        self.server.redirect_target = ""
+        self.server.state_body = b""
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         host, port = self.server.server_address
@@ -148,6 +161,27 @@ class EyreFlowTests(unittest.TestCase):
             )
             self.assertEqual(stat.S_IMODE(self.config.stat().st_mode), 0o600)
 
+    def test_reconnecting_replaces_prior_ship_cookie_jar(self):
+        with FakeEyre("urbauth-first") as first:
+            self.login(first)
+        self.assertIn("urbauth-first", self.cookie.read_text(encoding="utf-8"))
+        with FakeEyre("urbauth-second") as second:
+            self.login(second)
+        contents = self.cookie.read_text(encoding="utf-8")
+        self.assertIn("urbauth-second", contents)
+        self.assertNotIn("urbauth-first", contents)
+
+    def test_login_refuses_redirects_without_saving_credentials(self):
+        with FakeEyre() as fake:
+            fake.server.redirect_login = True
+            fake.server.redirect_target = fake.base_url + "/capture"
+            with self.assertRaises(urllib.error.HTTPError) as raised:
+                eyre_client.login(fake.base_url, self.cookie, self.config, "lidlut-test")
+        self.assertEqual(raised.exception.code, 307)
+        raised.exception.close()
+        self.assertFalse(self.cookie.exists())
+        self.assertFalse(self.config.exists())
+
     def test_refuses_symbolic_link_credential_paths(self):
         target = self.root / "target"
         target.write_text("keep", encoding="utf-8")
@@ -193,6 +227,38 @@ class EyreFlowTests(unittest.TestCase):
             self.assertEqual(result, {"status": "ok", "removed": ["session", "connection"]})
             self.assertFalse(self.cookie.exists())
             self.assertFalse(self.config.exists())
+
+    def test_state_scry_rejects_oversized_json(self):
+        with FakeEyre() as fake:
+            self.login(fake)
+            fake.server.state_body = b'{"padding":"' + b"x" * 100 + b'"}'
+            with mock.patch.object(eyre_client, "MAX_JSON_BYTES", 32):
+                with self.assertRaisesRegex(eyre_client.TendTransportError, "exceeds") as raised:
+                    eyre_client.scry_state(self.config, self.cookie)
+        self.assertEqual(raised.exception.code, "response-too-large")
+
+
+class EventValidationTests(unittest.TestCase):
+    def test_event_parser_rejects_oversized_and_invalid_utf8_input(self):
+        with mock.patch.object(eyre_client, "MAX_SSE_LINE_BYTES", 8):
+            with self.assertRaisesRegex(eyre_client.TendTransportError, "line exceeds"):
+                list(eyre_client.iter_sse([b"data: 1234\n"]))
+        with self.assertRaisesRegex(eyre_client.TendTransportError, "UTF-8"):
+            list(eyre_client.iter_sse([b"data: \xff\n"]))
+
+    def test_event_ids_and_json_are_validated(self):
+        self.assertEqual(eyre_client.event_id_number("42"), 42)
+        for value in ("-1", "one", "1" * 21):
+            with self.assertRaisesRegex(eyre_client.TendTransportError, "event ID"):
+                eyre_client.event_id_number(value)
+        with self.assertRaisesRegex(eyre_client.TendTransportError, "invalid JSON"):
+            eyre_client.event_json("{")
+
+    def test_oversized_action_is_rejected_before_network_access(self):
+        with mock.patch.object(eyre_client, "MAX_ACTION_BYTES", 32):
+            with self.assertRaisesRegex(eyre_client.TendTransportError, "1 MiB") as raised:
+                eyre_client.poke(Path("missing-config"), Path("missing-cookie"), {"create-list": {"title": "x" * 100}})
+        self.assertEqual(raised.exception.code, "request-too-large")
 
 
 if __name__ == "__main__":

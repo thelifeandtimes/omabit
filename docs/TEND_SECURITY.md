@@ -17,6 +17,12 @@ release and its reviewers must verify.
   mode 0600, and symbolic-link credential paths are refused.
 - Disconnecting removes the local cookie and endpoint record. Expired sessions
   stop automatic reconnects and require a fresh `+code`.
+- Authenticated requests do not follow HTTP redirects. A new login starts a
+  fresh cookie jar, so connecting directly to another ship cannot retain a
+  usable session for the previous endpoint.
+- JSON responses and SSE events are capped at 32 MiB; outbound action JSON is
+  capped at 1 MiB. Invalid UTF-8, malformed JSON, malformed event IDs, and
+  oversized data terminate the bridge with a structured error.
 - The Omarchy plugin executes unsandboxed as part of `omarchy-shell`, like every
   third-party shell plugin. Users should inspect the release before enabling it.
 

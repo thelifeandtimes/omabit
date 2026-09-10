@@ -19,12 +19,21 @@ import uuid
 
 APP = "tend"
 ACTION_MARK = "tend-action-1"
+MAX_JSON_BYTES = 32 * 1024 * 1024
+MAX_SSE_LINE_BYTES = 32 * 1024 * 1024
+MAX_SSE_EVENT_BYTES = 32 * 1024 * 1024
+MAX_ACTION_BYTES = 1024 * 1024
 
 
 class TendTransportError(RuntimeError):
     def __init__(self, message: str, code: str = "transport-error") -> None:
         super().__init__(message)
         self.code = code
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, request, file_pointer, code, message, headers, new_url):
+        return None
 
 
 def normalize_base_url(raw: str) -> str:
@@ -89,7 +98,7 @@ def load_cookie_jar(path: Path) -> http.cookiejar.MozillaCookieJar:
 
 def opener_for(cookie_path: Path) -> tuple[urllib.request.OpenerDirector, http.cookiejar.MozillaCookieJar]:
     jar = load_cookie_jar(cookie_path)
-    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+    opener = urllib.request.build_opener(NoRedirect(), urllib.request.HTTPCookieProcessor(jar))
     opener.addheaders = [("User-Agent", "Omabit-Tend/0.1")]
     return opener, jar
 
@@ -126,10 +135,22 @@ def json_request(
         headers["Content-Type"] = "application/json"
     request = urllib.request.Request(url, data=data, headers=headers, method=method)
     with opener.open(request, timeout=timeout) as response:
-        body = response.read()
+        content_length = response.headers.get("Content-Length")
+        if content_length:
+            try:
+                if int(content_length) > MAX_JSON_BYTES:
+                    raise TendTransportError("Eyre JSON response exceeds the 32 MiB limit", "response-too-large")
+            except ValueError as error:
+                raise TendTransportError("Eyre returned an invalid Content-Length header") from error
+        body = response.read(MAX_JSON_BYTES + 1)
+    if len(body) > MAX_JSON_BYTES:
+        raise TendTransportError("Eyre JSON response exceeds the 32 MiB limit", "response-too-large")
     if not body:
         return None
-    return json.loads(body.decode("utf-8"))
+    try:
+        return json.loads(body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise TendTransportError("Eyre returned invalid JSON") from error
 
 
 def scry_whoami(opener: urllib.request.OpenerDirector, base_url: str) -> str:
@@ -171,7 +192,9 @@ def login(base_url: str, cookie_path: Path, config_path: Path, code: str) -> dic
         raise TendTransportError("Enter the current +code from your ship")
     ensure_private_parent(cookie_path)
     refuse_symlink(cookie_path)
-    opener, jar = opener_for(cookie_path)
+    jar = http.cookiejar.MozillaCookieJar(str(cookie_path))
+    opener = urllib.request.build_opener(NoRedirect(), urllib.request.HTTPCookieProcessor(jar))
+    opener.addheaders = [("User-Agent", "Omabit-Tend/0.1")]
     body = urllib.parse.urlencode({"password": code.strip()}).encode("utf-8")
     request = urllib.request.Request(
         base_url + "/~/login",
@@ -180,11 +203,12 @@ def login(base_url: str, cookie_path: Path, config_path: Path, code: str) -> dic
         method="POST",
     )
     with opener.open(request, timeout=20) as response:
-        response.read()
+        if len(response.read(MAX_JSON_BYTES + 1)) > MAX_JSON_BYTES:
+            raise TendTransportError("Eyre login response exceeds the 32 MiB limit", "response-too-large")
     if not list(jar):
         raise TendTransportError("Eyre accepted the request without issuing a session cookie")
-    save_cookie_jar(jar, cookie_path)
     ship = scry_whoami(opener, base_url)
+    save_cookie_jar(jar, cookie_path)
     write_connection(config_path, base_url, ship)
     return {"status": "ok", "baseUrl": base_url, "ship": ship}
 
@@ -222,19 +246,42 @@ def send_channel_commands(
 def iter_sse(response: object):
     event_id = ""
     data_lines: list[str] = []
+    event_bytes = 0
     for raw_line in response:
-        line = raw_line.decode("utf-8").rstrip("\r\n")
+        if len(raw_line) > MAX_SSE_LINE_BYTES:
+            raise TendTransportError("Eyre SSE line exceeds the 32 MiB limit", "response-too-large")
+        event_bytes += len(raw_line)
+        if event_bytes > MAX_SSE_EVENT_BYTES:
+            raise TendTransportError("Eyre SSE event exceeds the 32 MiB limit", "response-too-large")
+        try:
+            line = raw_line.decode("utf-8").rstrip("\r\n")
+        except UnicodeDecodeError as error:
+            raise TendTransportError("Eyre returned invalid UTF-8 in the event stream") from error
         if line == "":
             if data_lines:
                 yield event_id, "\n".join(data_lines)
             event_id = ""
             data_lines = []
+            event_bytes = 0
         elif line.startswith("id:"):
             event_id = line[3:].strip()
         elif line.startswith("data:"):
             data_lines.append(line[5:].lstrip())
     if data_lines:
         yield event_id, "\n".join(data_lines)
+
+
+def event_id_number(value: str) -> int:
+    if not value.isdecimal() or len(value) > 20:
+        raise TendTransportError("Eyre returned an invalid SSE event ID")
+    return int(value)
+
+
+def event_json(value: str) -> object:
+    try:
+        return json.loads(value)
+    except json.JSONDecodeError as error:
+        raise TendTransportError("Eyre returned invalid JSON in the event stream") from error
 
 
 def open_event_stream(opener: urllib.request.OpenerDirector, url: str):
@@ -261,14 +308,14 @@ def stream(config_path: Path, cookie_path: Path, output) -> None:
     try:
         with open_event_stream(opener, url) as response:
             for event_id, raw_data in iter_sse(response):
-                message = json.loads(raw_data)
+                message = event_json(raw_data)
                 output.write(json.dumps({"eventId": event_id, "message": message}) + "\n")
                 output.flush()
                 if event_id:
                     send_channel_commands(
                         opener,
                         url,
-                        [{"action": "ack", "event-id": int(event_id)}],
+                        [{"action": "ack", "event-id": event_id_number(event_id)}],
                     )
     finally:
         try:
@@ -280,6 +327,8 @@ def stream(config_path: Path, cookie_path: Path, output) -> None:
 def poke(config_path: Path, cookie_path: Path, action: object) -> dict[str, object]:
     if not isinstance(action, dict) or len(action) != 1:
         raise TendTransportError("A Tend action must be a one-key JSON object")
+    if len(json.dumps(action, separators=(",", ":")).encode("utf-8")) > MAX_ACTION_BYTES:
+        raise TendTransportError("A Tend action must not exceed 1 MiB", "request-too-large")
     connection = read_connection(config_path)
     opener, _ = opener_for(cookie_path)
     url = channel_url(connection["baseUrl"], uuid.uuid4().hex)
@@ -298,12 +347,14 @@ def poke(config_path: Path, cookie_path: Path, action: object) -> dict[str, obje
     try:
         with open_event_stream(opener, url) as response:
             for event_id, raw_data in iter_sse(response):
-                message = json.loads(raw_data)
+                message = event_json(raw_data)
+                if not isinstance(message, dict):
+                    raise TendTransportError("Eyre returned an invalid poke response")
                 if event_id:
                     send_channel_commands(
                         opener,
                         url,
-                        [{"action": "ack", "event-id": int(event_id)}],
+                        [{"action": "ack", "event-id": event_id_number(event_id)}],
                     )
                 if message.get("id") != 1 or message.get("response") != "poke":
                     continue
