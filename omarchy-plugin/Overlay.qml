@@ -412,12 +412,20 @@ Item {
                         height: Style.space(38)
 
                         Text {
-                            width: parent.width - closeButton.width
+                            width: parent.width - closeButton.width - switchShipButton.width - Style.space(8)
                             text: service && service.ship ? "Tend · ~" + service.ship : "Tend"
                             color: Color.menu.text
                             font.family: Style.font.menuFamily
                             font.pixelSize: Style.font.heading
                             font.bold: true
+                        }
+
+                        Button {
+                            id: switchShipButton
+
+                            visible: service && service.ship !== ""
+                            text: "Switch ship"
+                            onClicked: service.disconnect()
                         }
 
                         Button {
@@ -440,7 +448,7 @@ Item {
                     }
 
                     Column {
-                        visible: !service || !service.ship
+                        visible: !service || !service.ship || service.connectionState === "authentication-required"
                         width: Math.min(560, parent.width)
                         anchors.horizontalCenter: parent.horizontalCenter
                         spacing: Style.space(12)
@@ -456,7 +464,7 @@ Item {
 
                         Text {
                             width: parent.width
-                            text: "Enter your ship domain and the current code printed by +code. Tend accepts planets, moons, and comets."
+                            text: service && service.connectionState === "authentication-required" ? "Your Eyre session expired. Enter the current +code to reconnect to this ship." : "Enter your ship domain and the current code printed by +code. Tend accepts planets, moons, and comets."
                             color: Color.menu.text
                             opacity: 0.72
                             wrapMode: Text.Wrap
@@ -468,6 +476,7 @@ Item {
                             id: shipUrl
 
                             width: parent.width
+                            text: service ? service.baseUrl : ""
                             placeholderText: "https://sampel-palnet.arvo.network"
                         }
 
@@ -494,7 +503,7 @@ Item {
                     }
 
                     Row {
-                        visible: service && service.ship !== ""
+                        visible: service && service.ship !== "" && service.connectionState !== "authentication-required"
                         width: parent.width
                         height: parent.height - y
                         spacing: Style.space(16)

@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import tempfile
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -21,7 +22,9 @@ ACTION_MARK = "tend-action-1"
 
 
 class TendTransportError(RuntimeError):
-    pass
+    def __init__(self, message: str, code: str = "transport-error") -> None:
+        super().__init__(message)
+        self.code = code
 
 
 def normalize_base_url(raw: str) -> str:
@@ -33,6 +36,8 @@ def normalize_base_url(raw: str) -> str:
         raise TendTransportError("The ship URL must not contain credentials")
     if parsed.query or parsed.fragment:
         raise TendTransportError("The ship URL must not contain a query or fragment")
+    if parsed.path not in {"", "/"}:
+        raise TendTransportError("The ship URL must not contain a path")
     if parsed.scheme == "http" and not is_loopback_host(parsed.hostname):
         raise TendTransportError("Non-loopback ship URLs must use HTTPS")
     return value
@@ -52,7 +57,30 @@ def ensure_private_parent(path: Path) -> None:
     os.chmod(path.parent, 0o700)
 
 
+def refuse_symlink(path: Path) -> None:
+    if path.is_symlink():
+        raise TendTransportError(f"Refusing symbolic-link credential path: {path}", "unsafe-path")
+
+
+def atomic_private_text(path: Path, value: str) -> None:
+    ensure_private_parent(path)
+    refuse_symlink(path)
+    descriptor, temporary_name = tempfile.mkstemp(prefix=path.name + ".", dir=path.parent, text=True)
+    temporary = Path(temporary_name)
+    try:
+        os.fchmod(descriptor, 0o600)
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            stream.write(value)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
+
+
 def load_cookie_jar(path: Path) -> http.cookiejar.MozillaCookieJar:
+    refuse_symlink(path)
     jar = http.cookiejar.MozillaCookieJar(str(path))
     if path.exists():
         jar.load(ignore_discard=True, ignore_expires=True)
@@ -64,6 +92,23 @@ def opener_for(cookie_path: Path) -> tuple[urllib.request.OpenerDirector, http.c
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
     opener.addheaders = [("User-Agent", "Omabit-Tend/0.1")]
     return opener, jar
+
+
+def save_cookie_jar(jar: http.cookiejar.MozillaCookieJar, path: Path) -> None:
+    ensure_private_parent(path)
+    refuse_symlink(path)
+    descriptor, temporary_name = tempfile.mkstemp(prefix=path.name + ".", dir=path.parent)
+    os.close(descriptor)
+    temporary = Path(temporary_name)
+    try:
+        jar.save(str(temporary), ignore_discard=True, ignore_expires=True)
+        os.chmod(temporary, 0o600)
+        with temporary.open("rb") as stream:
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary.exists():
+            temporary.unlink()
 
 
 def json_request(
@@ -94,18 +139,21 @@ def scry_whoami(opener: urllib.request.OpenerDirector, base_url: str) -> str:
     return result.strip().removeprefix("~")
 
 
+def scry_state(config_path: Path, cookie_path: Path) -> object:
+    connection = read_connection(config_path)
+    opener, _ = opener_for(cookie_path)
+    return json_request(opener, connection["baseUrl"] + "/~/scry/tend/state.json")
+
+
 def write_connection(path: Path, base_url: str, ship: str) -> None:
-    ensure_private_parent(path)
-    temporary = path.with_name(path.name + ".tmp")
-    temporary.write_text(
+    atomic_private_text(
+        path,
         json.dumps({"baseUrl": base_url, "ship": ship}, separators=(",", ":")) + "\n",
-        encoding="utf-8",
     )
-    os.chmod(temporary, 0o600)
-    os.replace(temporary, path)
 
 
 def read_connection(path: Path) -> dict[str, str]:
+    refuse_symlink(path)
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
@@ -122,6 +170,7 @@ def login(base_url: str, cookie_path: Path, config_path: Path, code: str) -> dic
     if not code.strip():
         raise TendTransportError("Enter the current +code from your ship")
     ensure_private_parent(cookie_path)
+    refuse_symlink(cookie_path)
     opener, jar = opener_for(cookie_path)
     body = urllib.parse.urlencode({"password": code.strip()}).encode("utf-8")
     request = urllib.request.Request(
@@ -134,11 +183,19 @@ def login(base_url: str, cookie_path: Path, config_path: Path, code: str) -> dic
         response.read()
     if not list(jar):
         raise TendTransportError("Eyre accepted the request without issuing a session cookie")
-    jar.save(ignore_discard=True, ignore_expires=True)
-    os.chmod(cookie_path, 0o600)
+    save_cookie_jar(jar, cookie_path)
     ship = scry_whoami(opener, base_url)
     write_connection(config_path, base_url, ship)
     return {"status": "ok", "baseUrl": base_url, "ship": ship}
+
+
+def disconnect(cookie_path: Path, config_path: Path) -> dict[str, object]:
+    removed: list[str] = []
+    for path, label in ((cookie_path, "session"), (config_path, "connection")):
+        if path.exists() or path.is_symlink():
+            path.unlink()
+            removed.append(label)
+    return {"status": "ok", "removed": removed}
 
 
 def connection_status(config_path: Path, cookie_path: Path) -> dict[str, object]:
@@ -281,6 +338,14 @@ def parser() -> argparse.ArgumentParser:
     poke_parser = commands.add_parser("poke")
     poke_parser.add_argument("--cookie", type=Path, required=True)
     poke_parser.add_argument("--config", type=Path, required=True)
+
+    state_parser = commands.add_parser("state")
+    state_parser.add_argument("--cookie", type=Path, required=True)
+    state_parser.add_argument("--config", type=Path, required=True)
+
+    disconnect_parser = commands.add_parser("disconnect")
+    disconnect_parser.add_argument("--cookie", type=Path, required=True)
+    disconnect_parser.add_argument("--config", type=Path, required=True)
     return root
 
 
@@ -296,15 +361,21 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         elif args.command == "poke":
             result = poke(args.config, args.cookie, json.load(sys.stdin))
+        elif args.command == "state":
+            result = scry_state(args.config, args.cookie)
+        elif args.command == "disconnect":
+            result = disconnect(args.cookie, args.config)
         else:
             raise AssertionError(args.command)
         print(json.dumps(result, separators=(",", ":")))
         return 0
     except (TendTransportError, urllib.error.URLError, OSError, json.JSONDecodeError) as error:
-        print(json.dumps({"status": "error", "message": str(error)}), file=sys.stderr)
+        code = error.code if isinstance(error, TendTransportError) else "transport-error"
+        if isinstance(error, urllib.error.HTTPError) and error.code in {401, 403}:
+            code = "authentication-required"
+        print(json.dumps({"status": "error", "code": code, "message": str(error)}), file=sys.stderr)
         return 1
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

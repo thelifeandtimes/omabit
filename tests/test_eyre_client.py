@@ -58,6 +58,13 @@ class EyreHandler(BaseHTTPRequestHandler):
             self.send_bytes(200, json.dumps("zod").encode("utf-8"))
             return
 
+        if self.path == "/~/scry/tend/state.json":
+            if "urbauth-test=session" not in self.headers.get("Cookie", ""):
+                self.send_bytes(403, b"forbidden", "text/plain")
+                return
+            self.send_bytes(200, json.dumps({"snapshot": {"lists": []}}).encode("utf-8"))
+            return
+
         commands = self.server.commands.get(self.path, [])
         first = next((command for command in commands if command.get("action") in {"subscribe", "poke"}), None)
         if not first:
@@ -110,6 +117,8 @@ class UrlValidationTests(unittest.TestCase):
             eyre_client.normalize_base_url("http://example.com")
         with self.assertRaisesRegex(eyre_client.TendTransportError, "credentials"):
             eyre_client.normalize_base_url("https://user:secret@example.com")
+        with self.assertRaisesRegex(eyre_client.TendTransportError, "path"):
+            eyre_client.normalize_base_url("https://example.com/urbit")
 
 
 class EyreFlowTests(unittest.TestCase):
@@ -137,6 +146,17 @@ class EyreFlowTests(unittest.TestCase):
                 json.loads(self.config.read_text(encoding="utf-8")),
                 {"baseUrl": fake.base_url, "ship": "zod"},
             )
+            self.assertEqual(stat.S_IMODE(self.config.stat().st_mode), 0o600)
+
+    def test_refuses_symbolic_link_credential_paths(self):
+        target = self.root / "target"
+        target.write_text("keep", encoding="utf-8")
+        self.cookie.parent.mkdir(parents=True)
+        self.cookie.symlink_to(target)
+        with FakeEyre() as fake:
+            with self.assertRaisesRegex(eyre_client.TendTransportError, "symbolic-link"):
+                eyre_client.login(fake.base_url, self.cookie, self.config, "lidlut-test")
+        self.assertEqual(target.read_text(encoding="utf-8"), "keep")
 
     def test_stream_subscribes_emits_events_and_acknowledges(self):
         with FakeEyre() as fake:
@@ -162,7 +182,18 @@ class EyreFlowTests(unittest.TestCase):
             self.assertEqual(poke["mark"], "tend-action-1")
             self.assertEqual(poke["json"], action)
 
+    def test_state_scry_and_disconnect(self):
+        with FakeEyre() as fake:
+            self.login(fake)
+            self.assertEqual(
+                eyre_client.scry_state(self.config, self.cookie),
+                {"snapshot": {"lists": []}},
+            )
+            result = eyre_client.disconnect(self.cookie, self.config)
+            self.assertEqual(result, {"status": "ok", "removed": ["session", "connection"]})
+            self.assertFalse(self.cookie.exists())
+            self.assertFalse(self.config.exists())
+
 
 if __name__ == "__main__":
     unittest.main()
-

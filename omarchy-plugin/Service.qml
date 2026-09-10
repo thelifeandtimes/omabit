@@ -21,6 +21,8 @@ Item {
     property var lastAlert: null
     property var notificationQueue: []
     property bool mutationPending: false
+    property int reconnectAttempt: 0
+    property bool streamAuthenticationFailed: false
     readonly property int incompleteCount: TendModel.incompleteCount(lists)
     readonly property string pluginDir: manifest && manifest.__sourceDir ? String(manifest.__sourceDir) : ""
     readonly property string bridgePath: pluginDir ? pluginDir + "/transport/eyre_client.py" : ""
@@ -89,8 +91,19 @@ Item {
             return ;
 
         root.connectionState = "checking";
+        root.streamAuthenticationFailed = false;
         streamProcess.command = ["python3", bridgePath, "stream", "--cookie", cookiePath, "--config", connectionPath];
         streamProcess.running = true;
+    }
+
+    function disconnect() {
+        if (!bridgePath || disconnectProcess.running)
+            return ;
+
+        reconnectTimer.stop();
+        streamProcess.running = false;
+        disconnectProcess.command = ["python3", bridgePath, "disconnect", "--cookie", cookiePath, "--config", connectionPath];
+        disconnectProcess.running = true;
     }
 
     function accessForList(listId) {
@@ -407,6 +420,8 @@ Item {
             root.pendingOperations = result.pendingOperations;
             if (message.json && message.json.snapshot)
                 root.connectionState = "online";
+            if (message.json && message.json.snapshot)
+                root.reconnectAttempt = 0;
 
             if (result.error)
                 root.errorMessage = result.error;
@@ -423,12 +438,37 @@ Item {
     }
 
     function processError(raw, fallback) {
+        return parseError(raw, fallback).message;
+    }
+
+    function parseError(raw, fallback) {
         try {
             var parsed = JSON.parse(String(raw || ""));
-            return String(parsed.message || fallback);
+            return {
+                code: String(parsed.code || "transport-error"),
+                message: String(parsed.message || fallback)
+            };
         } catch (error) {
-            return String(raw || fallback).trim();
+            return {
+                code: "transport-error",
+                message: String(raw || fallback).trim()
+            };
         }
+    }
+
+    function recordStreamError(raw) {
+        var failure = parseError(raw, "Eyre stream failed");
+        root.errorMessage = failure.message;
+        if (failure.code === "authentication-required") {
+            root.streamAuthenticationFailed = true;
+            root.connectionState = "authentication-required";
+        }
+    }
+
+    function scheduleReconnect() {
+        reconnectAttempt += 1;
+        reconnectTimer.interval = Math.min(300000, 5000 * Math.pow(2, reconnectAttempt - 1));
+        reconnectTimer.restart();
     }
 
     function showNotification(alert) {
@@ -563,9 +603,13 @@ Item {
         id: streamProcess
 
         onExited: function() {
+            if (root.streamAuthenticationFailed) {
+                root.connectionState = "authentication-required";
+                return ;
+            }
             if (root.ship) {
                 root.connectionState = "offline";
-                reconnectTimer.restart();
+                root.scheduleReconnect();
             } else {
                 root.connectionState = "disconnected";
             }
@@ -579,8 +623,39 @@ Item {
 
         stderr: SplitParser {
             onRead: function(line) {
-                root.errorMessage = root.processError(line, "Eyre stream failed");
+                root.recordStreamError(line);
             }
+        }
+
+    }
+
+    Process {
+        id: disconnectProcess
+
+        property string errors: ""
+
+        onExited: function(exitCode) {
+            if (exitCode !== 0) {
+                root.errorMessage = root.processError(errors, "Could not disconnect Tend");
+                return ;
+            }
+            root.ship = "";
+            root.baseUrl = "";
+            root.lists = [];
+            root.preferences = TendModel.clonePreferences(null);
+            root.snoozes = [];
+            root.accesses = [];
+            root.invitations = [];
+            root.pendingOperations = [];
+            root.connectionState = "disconnected";
+            root.errorMessage = "";
+            root.reconnectAttempt = 0;
+            root.streamAuthenticationFailed = false;
+        }
+
+        stderr: StdioCollector {
+            waitForEnd: true
+            onStreamFinished: disconnectProcess.errors = text
         }
 
     }
