@@ -1,0 +1,16 @@
+[Unit]
+Description=Omarchy Urbit per-user execution-host manager
+Documentation=file:%h/.local/share/omarchy-urbit/docs/PILOT.md
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/urbitctl daemon
+Restart=on-failure
+RestartSec=5
+UMask=0077
+TimeoutStopSec=30
+# Docker containers live outside this service's process tree. Stopping this
+# manager does not stop them. Interrupted lifecycle jobs are marked on restart.
+
+[Install]
+WantedBy=default.target

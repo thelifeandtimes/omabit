@@ -1,0 +1,64 @@
+Omarchy Urbit 0.1.0-pilot — final automated validation
+Run: 2026-09-08T22:34:12Z
+go version go1.23.2 linux/amd64
+
+$ go test -count=1 -race ./...
+ok  	omarchy-urbit/cmd/urbitctl	1.024s
+ok  	omarchy-urbit/internal/fleet	2.183s
+ok  	omarchy-urbit/internal/transport	1.061s
+
+$ go test -count=1 ./... -cover
+ok  	omarchy-urbit/cmd/urbitctl	0.009s	coverage: 36.2% of statements
+ok  	omarchy-urbit/internal/fleet	1.118s	coverage: 57.3% of statements
+ok  	omarchy-urbit/internal/transport	0.045s	coverage: 54.8% of statements
+
+$ go vet ./...
+PASS
+
+$ bash -n (all installer/pilot/runtime scripts)
+PASS
+
+$ go test ./... -list Test
+TestCLIConfiguration
+TestCLIRejectsAmbiguousOrSecretInput
+ok  	omarchy-urbit/cmd/urbitctl	0.003s
+TestGalaxyDirectory
+TestPathSafety
+TestAtomicPersistenceAndLock
+TestVersionManifest
+TestPermissions
+TestCreateValidation
+TestDockerIsolationPlan
+TestBudgetWarnings
+TestLifecycleDedupArchivePurge
+TestIndependentFakeGroupsAndRealGate
+TestRestartMarksInterrupted
+TestDockerFailureNotReportedAsStopped
+TestFailedCreationRecoverableByArchive
+TestKeyedSecretNotJournaledAndRemovedAfterIdentityCheck
+TestMetricsFailRatherThanReportZeroForUnavailableDocker
+ok  	omarchy-urbit/internal/fleet	0.003s
+TestProtocolLimitsAndNoClientRole
+TestSSHCommandDoesNotInterpolatePayload
+TestUnixRPCFixedRoles
+TestGateway
+TestInventoryRetainsStaleSnapshot
+TestLocalProxyRawStreamsAndShutdown
+TestProxyRejectsPublicBind
+TestDistinctInstanceTunnelKeys
+ok  	omarchy-urbit/internal/transport	0.004s
+
+dist/urbitctl-linux-amd64: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, Go BuildID=U5ACMNATlKqsKStMMPbD/WZ5_zSkutKqkJYbkGGBL/dUTTyBIlAnNh5iQm_lm-/f74JET5HU_OwbYwaAdrg, stripped
+dist/urbitctl-linux-arm64: ELF 64-bit LSB executable, ARM aarch64, version 1 (SYSV), statically linked, Go BuildID=QhqVwegyKelMofNh57oj/ijkWh6cONE_gSNY1Jd3M/_-GxWOoEBTF8sQlQsgyr/jvHEBkZ94FZVHjJZQwMR, stripped
+
+{
+  "schema": 1,
+  "ok": true,
+  "result": {
+    "schema": 1,
+    "version": "0.1.0-pilot"
+  }
+}
+
+25 automated tests. Lifecycle tests use a simulated Docker executor.
+No live Docker/Urbit, SSH/Tailscale, Omarchy desktop, or ARM64 execution was validated.

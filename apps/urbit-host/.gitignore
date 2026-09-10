@@ -1,0 +1,15 @@
+/urbitctl
+/dist/
+/coverage.out
+*.test
+*.log
+
+# Local operational state and credentials do not belong in this repository.
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+/.local/
+/piers/
+/archive/

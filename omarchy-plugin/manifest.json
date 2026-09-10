@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "io.omabit.tend",
+  "name": "Tend",
+  "version": "0.1.0",
+  "author": "Omabit",
+  "description": "Urbit-backed multiplayer reminders for Omarchy",
+  "kinds": [
+    "overlay",
+    "service",
+    "bar-widget"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "overlay": "Overlay.qml",
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Tend",
+    "description": "Open reminders and show incomplete item count",
+    "category": "Info",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
+

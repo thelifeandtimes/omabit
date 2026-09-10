@@ -1,0 +1,101 @@
+Compiled amd64 CLI / local daemon smoke test in an isolated temporary HOME
+No systemd installation and no Docker container creation in this test.
+dist/urbitctl-linux-amd64: OK
+dist/urbitctl-linux-arm64: OK
+{
+  "schema": 1,
+  "ok": true,
+  "result": {
+    "schema": 1,
+    "version": "0.1.0-pilot"
+  }
+}
+
+CLI installed at <temporary-home>/.local/bin/urbitctl
+{
+  "schema": 1,
+  "ok": true,
+  "result": {
+    "schema": 1,
+    "id": "8eefc832ee66155e0a5453058deb8ba9",
+    "name": "smoke-host",
+    "data_root": "<temporary-home>/data/omarchy-urbit",
+    "channel": "latest",
+    "version_url": "https://version.groundseg.app",
+    "allow_real_ships": false,
+    "fleet_cpu_warning_percent": 0,
+    "fleet_memory_warning_bytes": 0
+  }
+}
+== Doctor correctly reports Docker absent ==
+{
+  "schema": 1,
+  "ok": true,
+  "result": {
+    "backups": "out-of-scope",
+    "cross_host_devnet": "not-integrated",
+    "docker": false,
+    "docker_error": "docker info failed (exec: \"docker\": executable file not found in $PATH); inspect local Docker/service logs",
+    "host": {
+      "schema": 1,
+      "id": "8eefc832ee66155e0a5453058deb8ba9",
+      "name": "smoke-host",
+      "data_root": "<temporary-home>/data/omarchy-urbit",
+      "channel": "latest",
+      "version_url": "https://version.groundseg.app",
+      "allow_real_ships": false,
+      "fleet_cpu_warning_percent": 0,
+      "fleet_memory_warning_bytes": 0
+    },
+    "real_ships_pilot_gate": true,
+    "service_version": "0.1.0-pilot",
+    "tailscale": "checked-by-client-pilot-script"
+  }
+}
+== Restricted gateway creates dev group ==
+{
+  "schema": 1,
+  "ok": true,
+  "result": {
+    "id": "fd29744630a724bc8d046af0a9156712",
+    "name": "smoke-group",
+    "network": "ou-net-fd29744630a724bc8d046af0a9156712",
+    "namespace_container": "ou-ns-fd29744630a724bc8d046af0a9156712",
+    "http_base": 20000,
+    "created_at": "2026-09-08T22:29:12.4594082Z"
+  }
+}
+== Owner comet creation remains behind pilot gate ==
+{
+  "schema": 1,
+  "ok": false,
+  "error": {
+    "code": "pilot_gate",
+    "message": "real-network ships are disabled until the disposable-ship pilot is validated; see docs/PILOT.md"
+  }
+}
+== Agent cannot mutate real settings ==
+{
+  "schema": 1,
+  "ok": false,
+  "error": {
+    "code": "forbidden",
+    "message": "agent endpoint permits development management, but not real-ship mutation, code retrieval, logs or Dojo access"
+  }
+}
+== Persisted dev group survives service restart ==
+{
+  "schema": 1,
+  "ok": true,
+  "result": [
+    {
+      "id": "fd29744630a724bc8d046af0a9156712",
+      "name": "smoke-group",
+      "network": "ou-net-fd29744630a724bc8d046af0a9156712",
+      "namespace_container": "ou-ns-fd29744630a724bc8d046af0a9156712",
+      "http_base": 20000,
+      "created_at": "2026-09-08T22:29:12.4594082Z"
+    }
+  ]
+}
+PASS
