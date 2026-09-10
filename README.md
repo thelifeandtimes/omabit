@@ -27,6 +27,8 @@ implementation details live in [`docs/TEND_PROTOCOL.md`](docs/TEND_PROTOCOL.md)
 and [`docs/TEND_STATUS.md`](docs/TEND_STATUS.md). The keyboard and accessibility
 contract is documented in
 [`docs/TEND_ACCESSIBILITY.md`](docs/TEND_ACCESSIBILITY.md).
+Resource and model-scale gates are recorded in
+[`docs/TEND_PERFORMANCE.md`](docs/TEND_PERFORMANCE.md).
 
 ## Development
 

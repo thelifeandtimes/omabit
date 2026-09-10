@@ -97,6 +97,9 @@ Last verified: 2026-09-10
   list with arrow/Enter/Space operation, explicit names for otherwise ambiguous
   controls, textual state cues, and no custom motion. A manual Orca/theme/200%
   scaling pass remains a release-candidate gate.
+- A deterministic 10,000-reminder scale fixture now gates snapshot
+  normalization, Today, and text search at five seconds each and verifies that
+  the fixture remains below the 32 MiB Eyre event ceiling.
 
 ## Next
 

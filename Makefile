@@ -34,4 +34,4 @@ test: test-js
 	python3 -m unittest discover -s tests -p 'test_*.py'
 
 test-js:
-	node --test tests/test_tend_model.js
+	node --test tests/test_tend_*.js
