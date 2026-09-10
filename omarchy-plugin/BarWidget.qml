@@ -38,8 +38,12 @@ BarWidget {
     anchors.fill: parent
     cursorShape: Qt.PointingHandCursor
     onClicked: if (root.bar && root.bar.shell) root.bar.shell.toggle("io.omabit.tend", "{}")
-    onEntered: if (root.bar) root.bar.showTooltip(root, "Tend · " + root.taskCount + " incomplete · " + root.state)
+    onEntered: {
+      if (!root.bar) return
+      var next = root.tendService ? root.tendService.nextReminder : null
+      var suffix = next ? " · Next: " + next.title : ""
+      root.bar.showTooltip(root, "Tend · " + root.taskCount + " incomplete · " + root.state + suffix)
+    }
     onExited: if (root.bar) root.bar.hideTooltip(root)
   }
 }
-

@@ -308,6 +308,7 @@ function queryReminders(lists, options, nowMs) {
   const view = String(options.view || "list")
   const search = String(options.search || "").trim().toLocaleLowerCase()
   const selectedListId = options.listId
+  const currentShip = String(options.ship || "").replace(/^~/, "")
   const normalized = sortedLists(lists)
   const now = new Date(nowMs === undefined ? Date.now() : nowMs)
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime()
@@ -322,11 +323,12 @@ function queryReminders(lists, options, nowMs) {
       else if (view === "scheduled") matchesView = !reminder.completed && reminder.schedule !== null
       else if (view === "all") matchesView = !reminder.completed
       else if (view === "flagged") matchesView = !reminder.completed && reminder.flagged
+      else if (view === "assigned") matchesView = !reminder.completed && String(reminder.assignee || "").replace(/^~/, "") === currentShip
       else if (view === "completed") matchesView = reminder.completed
       if (!matchesView) return
 
       if (search) {
-        const haystack = [reminder.title, reminder.notes, reminder.url || "", reminder.tags.join(" "), list.title].join("\n").toLocaleLowerCase()
+        const haystack = [reminder.title, reminder.notes, reminder.url || "", reminder.tags.join(" "), reminder.assignee || "", list.title].join("\n").toLocaleLowerCase()
         if (haystack.indexOf(search) === -1) return
       }
 
@@ -363,6 +365,11 @@ function queryReminders(lists, options, nowMs) {
   return items
 }
 
+function nextReminder(lists, nowMs) {
+  const scheduled = queryReminders(lists, { view: "scheduled", sort: "due" }, nowMs)
+  return scheduled.length ? scheduled[0] : null
+}
+
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders, nextReminder: nextReminder }
 }

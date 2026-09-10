@@ -180,7 +180,7 @@ def run_tend(args: argparse.Namespace) -> int:
         emit(status, as_json)
         return 0
     if args.tend_command == "open":
-        payload = {"listId": args.list_id, "reminderId": args.reminder_id}
+        payload = {"listId": args.list_id, "reminderId": args.reminder_id, "mode": "capture" if args.capture else "full"}
         subprocess.run(["omarchy-shell", "shell", "summon", PLUGIN_ID, json.dumps(payload, separators=(",", ":"))], check=True)
         return 0
 
@@ -265,6 +265,7 @@ def parser() -> argparse.ArgumentParser:
     open_command = commands.add_parser("open", help="open the Tend overlay")
     open_command.add_argument("list_id", type=int, nargs="?", default=0)
     open_command.add_argument("reminder_id", type=int, nargs="?", default=0)
+    open_command.add_argument("--capture", action="store_true", help="open the compact quick-capture surface")
     return root
 
 

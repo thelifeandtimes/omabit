@@ -81,6 +81,14 @@ class CliDomainTests(unittest.TestCase):
         self.assertEqual(action["base-revision"], 4)
         self.assertTrue(action["completed"])
 
+    def test_open_capture_uses_omarchy_shell_payload(self):
+        args = SimpleNamespace(tend_command="open", json=False, list_id=0, reminder_id=0, capture=True)
+        with mock.patch.object(omabit.subprocess, "run") as run:
+            self.assertEqual(omabit.run_tend(args), 0)
+        command = run.call_args.args[0]
+        self.assertEqual(command[:4], ["omarchy-shell", "shell", "summon", "io.omabit.tend"])
+        self.assertEqual(json.loads(command[4])["mode"], "capture")
+
 
 if __name__ == "__main__":
     unittest.main()

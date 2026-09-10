@@ -88,6 +88,7 @@ omabit tend add "Buy milk" --list Inbox --tag groceries
 omabit tend complete 1 42
 omabit tend snooze 1 42 --minutes 20
 omabit tend open 1 42
+omabit tend open --capture
 omabit --json tend list
 ```
 

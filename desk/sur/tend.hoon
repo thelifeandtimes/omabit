@@ -205,7 +205,7 @@
   ==
 +$  lists  (map list-id task-list)
 ::
-+$  smart-view  $?(%today %scheduled %all %flagged %completed)
++$  smart-view  $?(%today %scheduled %all %flagged %assigned %completed)
 +$  preferences
   $:  revision=@ud
       default-list=(unit list-id)

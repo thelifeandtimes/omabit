@@ -358,6 +358,7 @@
       %scheduled  %scheduled
       %all        %all
       %flagged    %flagged
+      %assigned   %assigned
       %completed  %completed
     ==
   ::

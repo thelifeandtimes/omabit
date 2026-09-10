@@ -20,6 +20,7 @@ Item {
     property bool sortDescending: false
     property bool listEditorOpen: false
     property bool confirmDeleteList: false
+    property bool captureMode: false
     readonly property var selectedList: {
         var available = service ? service.lists : [];
         for (var i = 0; i < available.length; i++) {
@@ -66,7 +67,8 @@ Item {
         listId: selectedList ? selectedList.id : 0,
         search: reminderSearch.text,
         sort: sortMode,
-        descending: sortDescending
+        descending: sortDescending,
+        ship: service ? service.ship : ""
     })
     readonly property string viewTitle: {
         if (viewMode === "list")
@@ -309,6 +311,7 @@ Item {
             } catch (error) {
                 payload = {};
             }
+            root.captureMode = payload.mode === "capture";
             if (payload.listId && service) {
                 root.viewMode = "list";
                 root.selectedListId = Number(payload.listId);
@@ -324,7 +327,9 @@ Item {
                     }
                 }
             }
-            if (service && service.ship)
+            if (service && service.ship && root.captureMode)
+                captureEntry.forceActiveFocus();
+            else if (service && service.ship)
                 quickAdd.forceActiveFocus();
             else
                 shipUrl.forceActiveFocus();
@@ -333,10 +338,12 @@ Item {
 
     function close() {
         root.opened = false;
+        root.captureMode = false;
     }
 
     function dismiss() {
         root.opened = false;
+        root.captureMode = false;
         if (root.shell)
             root.shell.hide("io.omabit.tend");
 
@@ -388,8 +395,8 @@ Item {
                 id: card
 
                 anchors.centerIn: parent
-                width: Math.min(1100, parent.width - Style.space(48))
-                height: Math.min(760, parent.height - Style.space(48))
+                width: root.captureMode ? Math.min(640, parent.width - Style.space(48)) : Math.min(1100, parent.width - Style.space(48))
+                height: root.captureMode ? Math.min(210, parent.height - Style.space(48)) : Math.min(760, parent.height - Style.space(48))
                 radius: Style.cornerRadius
                 color: Color.menu.background
                 border.color: Color.menu.border
@@ -502,8 +509,74 @@ Item {
 
                     }
 
+                    Column {
+                        visible: service && service.ship !== "" && service.connectionState !== "authentication-required" && root.captureMode
+                        width: parent.width
+                        spacing: Style.space(10)
+
+                        Text {
+                            width: parent.width
+                            text: "Quick capture · " + (service ? service.connectionState.toUpperCase() : "DISCONNECTED")
+                            color: service && service.connectionState === "online" ? "#22c55e" : "#f59e0b"
+                            font.family: Style.font.menuFamily
+                            font.pixelSize: Style.font.caption
+                            font.bold: true
+                        }
+
+                        Row {
+                            width: parent.width
+                            spacing: Style.space(8)
+
+                            TextField {
+                                id: captureEntry
+
+                                width: parent.width * 0.64
+                                placeholderText: "Reminder title with optional #tags"
+                                enabled: captureList.currentIndex >= 0 && captureList.model[captureList.currentIndex] && service && service.canEditList(captureList.model[captureList.currentIndex].id) && service.connectionState === "online" && !service.mutationPending
+                                onAccepted: captureAdd.clicked()
+                                Accessible.name: "Quick reminder title and tags"
+                            }
+
+                            ComboBox {
+                                id: captureList
+
+                                width: parent.width - captureEntry.width - captureAdd.width - Style.space(16)
+                                model: service ? TendModel.orderedLists(service.lists, service.preferences.pinnedLists) : []
+                                textRole: "title"
+                                Accessible.name: "Destination list"
+                            }
+
+                            Button {
+                                id: captureAdd
+
+                                text: service && service.mutationPending ? "Adding…" : "Add"
+                                enabled: captureEntry.enabled && captureEntry.text.trim() !== ""
+                                Accessible.name: "Add reminder"
+                                onClicked: {
+                                    var parsed = root.parseQuickEntry(captureEntry.text);
+                                    var destination = captureList.currentIndex >= 0 ? captureList.model[captureList.currentIndex] : null;
+                                    if (destination && parsed.title && service.addReminder(destination.id, parsed.title, destination.revision, parsed.tags)) {
+                                        captureEntry.text = "";
+                                        root.dismiss();
+                                    }
+                                }
+                            }
+
+                        }
+
+                        Text {
+                            width: parent.width
+                            text: "Enter adds · Escape closes · use #tag to classify"
+                            color: Color.menu.text
+                            opacity: 0.68
+                            font.family: Style.font.menuFamily
+                            font.pixelSize: Style.font.caption
+                        }
+
+                    }
+
                     Row {
-                        visible: service && service.ship !== "" && service.connectionState !== "authentication-required"
+                        visible: service && service.ship !== "" && service.connectionState !== "authentication-required" && !root.captureMode
                         width: parent.width
                         height: parent.height - y
                         spacing: Style.space(16)
@@ -533,7 +606,7 @@ Item {
                                     spacing: Style.space(4)
 
                                     Repeater {
-                                        model: ["today", "scheduled", "all", "flagged", "completed"]
+                                        model: ["today", "scheduled", "all", "flagged", "assigned", "completed"]
 
                                         delegate: Button {
                                             required property var modelData
@@ -560,7 +633,7 @@ Item {
                                         id: viewPinChoice
 
                                         width: parent.width * 0.62
-                                        model: ["today", "scheduled", "all", "flagged", "completed"]
+                                        model: ["today", "scheduled", "all", "flagged", "assigned", "completed"]
                                     }
 
                                     Button {

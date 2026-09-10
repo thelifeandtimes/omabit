@@ -200,6 +200,22 @@ test("built-in views, search, and due sorting work across lists", () => {
   assert.deepEqual(model.allTags(lists), ["shop"])
 })
 
+test("assigned view, assignee search, and next reminder use normalized ships and due order", () => {
+  const lists = [{
+    id: 1,
+    title: "Team",
+    revision: 2,
+    reminders: [
+      { id: 1, title: "Later", assignee: "~zod", completed: false, schedule: { "due-at": "~2026.9.12..12.00.00" } },
+      { id: 2, title: "Soon", assignee: "zod", completed: false, schedule: { "due-at": "~2026.9.11..12.00.00" } },
+      { id: 3, title: "Other", assignee: "~nec", completed: false }
+    ]
+  }]
+  assert.deepEqual(model.queryReminders(lists, { view: "assigned", ship: "~zod" }).map((item) => item.id), [1, 2])
+  assert.deepEqual(model.queryReminders(lists, { view: "all", search: "~nec" }).map((item) => item.id), [3])
+  assert.equal(model.nextReminder(lists).id, 2)
+})
+
 test("multiplayer access state gates remote editing while keeping owned lists writable", () => {
   const owned = {
     alias: 1,

@@ -24,6 +24,7 @@ Item {
     property int reconnectAttempt: 0
     property bool streamAuthenticationFailed: false
     readonly property int incompleteCount: TendModel.incompleteCount(lists)
+    readonly property var nextReminder: TendModel.nextReminder(lists)
     readonly property string pluginDir: manifest && manifest.__sourceDir ? String(manifest.__sourceDir) : ""
     readonly property string bridgePath: pluginDir ? pluginDir + "/transport/eyre_client.py" : ""
     readonly property string runtimeRoot: (Quickshell.env("XDG_RUNTIME_DIR") || (Quickshell.env("HOME") + "/.cache")) + "/omabit/tend"
