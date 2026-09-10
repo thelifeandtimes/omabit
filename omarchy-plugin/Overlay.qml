@@ -3,6 +3,7 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Wayland
 import qs.Commons
+import "TendModel.js" as TendModel
 
 Item {
     id: root
@@ -13,6 +14,9 @@ Item {
     property bool opened: false
     property int selectedListId: 0
     property int selectedReminderId: 0
+    property string viewMode: "list"
+    property string sortMode: "manual"
+    property bool sortDescending: false
     readonly property var selectedList: {
         var available = service ? service.lists : [];
         for (var i = 0; i < available.length; i++) {
@@ -31,6 +35,19 @@ Item {
         }
         return null;
     }
+    readonly property var displayedReminders: TendModel.queryReminders(service ? service.lists : [], {
+        view: viewMode,
+        listId: selectedList ? selectedList.id : 0,
+        search: reminderSearch.text,
+        sort: sortMode,
+        descending: sortDescending
+    })
+    readonly property string viewTitle: {
+        if (viewMode === "list")
+            return selectedList ? selectedList.title : "Create your first list";
+
+        return viewMode.charAt(0).toUpperCase() + viewMode.slice(1);
+    }
 
     function sectionTitle(sectionId) {
         if (!selectedList || sectionId === null || sectionId === undefined)
@@ -44,7 +61,24 @@ Item {
         return "";
     }
 
+    function sectionTitleFor(listId, sectionId) {
+        if (sectionId === null || sectionId === undefined || !service)
+            return "";
+
+        for (var i = 0; i < service.lists.length; i++) {
+            if (service.lists[i].id !== listId)
+                continue;
+
+            for (var j = 0; j < service.lists[i].sections.length; j++) {
+                if (service.lists[i].sections[j].id === sectionId)
+                    return service.lists[i].sections[j].title;
+            }
+        }
+        return "";
+    }
+
     function editReminder(reminder) {
+        selectedListId = reminder.listId || selectedListId;
         selectedReminderId = reminder.id;
         reminderTitle.text = reminder.title;
         reminderNotes.text = reminder.notes;
@@ -276,6 +310,40 @@ Item {
                                     font.bold: true
                                 }
 
+                                Grid {
+                                    width: parent.width
+                                    columns: 2
+                                    spacing: Style.space(4)
+
+                                    Repeater {
+                                        model: ["today", "scheduled", "all", "flagged", "completed"]
+
+                                        delegate: Button {
+                                            required property var modelData
+
+                                            width: (parent.width - parent.spacing) / 2
+                                            text: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                            checkable: true
+                                            checked: root.viewMode === modelData
+                                            onClicked: {
+                                                root.viewMode = modelData;
+                                                root.selectedReminderId = 0;
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+                                Text {
+                                    text: "My Lists"
+                                    color: Color.menu.text
+                                    opacity: 0.68
+                                    font.family: Style.font.menuFamily
+                                    font.pixelSize: Style.font.caption
+                                    font.bold: true
+                                }
+
                                 Repeater {
                                     model: service ? service.lists : []
 
@@ -284,7 +352,10 @@ Item {
 
                                         width: parent.width
                                         text: modelData.title
+                                        checkable: true
+                                        checked: root.viewMode === "list" && root.selectedList && root.selectedList.id === modelData.id
                                         onClicked: {
+                                            root.viewMode = "list";
                                             root.selectedListId = modelData.id;
                                             root.selectedReminderId = 0;
                                         }
@@ -315,11 +386,38 @@ Item {
                             spacing: Style.space(8)
 
                             Text {
-                                text: root.selectedList ? root.selectedList.title : "Create your first list"
+                                text: root.viewTitle
                                 color: Color.menu.text
                                 font.family: Style.font.menuFamily
                                 font.pixelSize: Style.font.title
                                 font.bold: true
+                            }
+
+                            Row {
+                                width: parent.width
+                                spacing: Style.space(8)
+
+                                TextField {
+                                    id: reminderSearch
+
+                                    width: parent.width * 0.5
+                                    placeholderText: "Search reminders"
+                                }
+
+                                ComboBox {
+                                    id: reminderSort
+
+                                    width: parent.width * 0.25
+                                    model: ["manual", "due", "created", "priority", "title"]
+                                    onCurrentTextChanged: root.sortMode = currentText
+                                }
+
+                                CheckBox {
+                                    text: "Descending"
+                                    checked: root.sortDescending
+                                    onToggled: root.sortDescending = checked
+                                }
+
                             }
 
                             Row {
@@ -344,7 +442,8 @@ Item {
 
                                     width: parent.width - quickAdd.width - parent.spacing
                                     placeholderText: "Add section"
-                                    enabled: root.selectedList && service && service.connectionState === "online" && !service.mutationPending
+                                    visible: root.viewMode === "list"
+                                    enabled: visible && root.selectedList && service && service.connectionState === "online" && !service.mutationPending
                                     onAccepted: {
                                         if (!text.trim())
                                             return ;
@@ -549,7 +648,7 @@ Item {
                                 height: parent.height - y
                                 clip: true
                                 spacing: Style.space(4)
-                                model: root.selectedList ? root.selectedList.reminders : []
+                                model: root.displayedReminders
 
                                 delegate: Rectangle {
                                     required property var modelData
@@ -567,17 +666,18 @@ Item {
                                         CheckBox {
                                             checked: modelData.completed
                                             enabled: service && service.connectionState === "online" && !service.mutationPending
-                                            onClicked: service.setCompleted(root.selectedList.id, modelData.id, checked, root.selectedList.revision)
+                                            onClicked: service.setCompleted(modelData.listId, modelData.id, checked, modelData.listRevision)
                                         }
 
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
                                             width: parent.width - x
                                             text: {
-                                                var section = root.sectionTitle(modelData.sectionId);
+                                                var list = root.viewMode === "list" ? "" : "  ·  " + modelData.listTitle;
+                                                var section = root.sectionTitleFor(modelData.listId, modelData.sectionId);
                                                 var prefix = modelData.parentId === null ? "" : "↳ ";
                                                 var due = modelData.schedule ? "  ·  " + root.urbitToInput(modelData.schedule.dueAt).replace("T", " ") : "";
-                                                return prefix + modelData.title + (section ? "  ·  " + section : "") + due;
+                                                return prefix + modelData.title + list + (section ? "  ·  " + section : "") + due;
                                             }
                                             color: Color.menu.text
                                             opacity: modelData.completed ? 0.5 : 1

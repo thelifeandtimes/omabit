@@ -19,6 +19,10 @@ Last verified: 2026-09-10
 - The overlay can create lists, sections, and reminders; select a reminder;
   edit its title, notes, URL, priority, flag, and tags; toggle completion; and
   delete the reminder through revision-checked service calls.
+- Today (including overdue), Scheduled, All, Flagged, and Completed views work
+  across lists. The overlay can search reminder text, notes, URLs, tags, and
+  list names, then sort by manual rank, due date, creation date, priority, or
+  title in either direction.
 - Due instants, all-day policy, IANA-zone annotations, early offsets, and
   structured recurrence round-trip through Eyre. Recurring completion advances
   hourly/daily/weekly/monthly/yearly rules with end/count enforcement.
@@ -32,8 +36,8 @@ Last verified: 2026-09-10
 ## Next
 
 1. Snooze actions and richer recurrence/date controls in the overlay.
-2. Built-in views, search/sort, pins/default-list preferences, list/section
-   editing, and hierarchy/order controls in the overlay.
+2. Pins/default-list preferences, list/section editing, and hierarchy/order
+   controls in the overlay.
 3. Owner-hosted list references, invitations/ACLs, replicas, presence, and
    read-only owner-offline behavior across multiple ships.
 4. Notifications, CLI, packaging, backups, accessibility, fault testing, and

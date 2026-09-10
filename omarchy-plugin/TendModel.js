@@ -142,6 +142,72 @@ function incompleteCount(lists) {
   return total
 }
 
+function urbitDateMs(value) {
+  const match = /^~(\d+)\.(\d+)\.(\d+)\.\.(\d+)\.(\d+)\.(\d+)/.exec(String(value || ""))
+  if (!match) return NaN
+  return Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5]), Number(match[6]))
+}
+
+function queryReminders(lists, options, nowMs) {
+  options = options || {}
+  const view = String(options.view || "list")
+  const search = String(options.search || "").trim().toLocaleLowerCase()
+  const selectedListId = options.listId
+  const normalized = sortedLists(lists)
+  const now = new Date(nowMs === undefined ? Date.now() : nowMs)
+  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime()
+  const items = []
+
+  normalized.forEach(function(list) {
+    if (view === "list" && list.id !== selectedListId) return
+    list.reminders.forEach(function(reminder) {
+      const dueMs = reminder.schedule ? urbitDateMs(reminder.schedule.dueAt) : NaN
+      var matchesView = true
+      if (view === "today") matchesView = !reminder.completed && Number.isFinite(dueMs) && dueMs < tomorrow
+      else if (view === "scheduled") matchesView = !reminder.completed && reminder.schedule !== null
+      else if (view === "all") matchesView = !reminder.completed
+      else if (view === "flagged") matchesView = !reminder.completed && reminder.flagged
+      else if (view === "completed") matchesView = reminder.completed
+      if (!matchesView) return
+
+      if (search) {
+        const haystack = [reminder.title, reminder.notes, reminder.url || "", reminder.tags.join(" "), list.title].join("\n").toLocaleLowerCase()
+        if (haystack.indexOf(search) === -1) return
+      }
+
+      reminder.listId = list.id
+      reminder.listRevision = list.revision
+      reminder.listTitle = list.title
+      reminder.dueMs = dueMs
+      items.push(reminder)
+    })
+  })
+
+  const sort = String(options.sort || "manual")
+  const direction = options.descending === true ? -1 : 1
+  const priority = { high: 0, medium: 1, low: 2, none: 3 }
+  items.sort(function(a, b) {
+    var compared = 0
+    if (sort === "due") {
+      const aDue = Number.isFinite(a.dueMs) ? a.dueMs : Number.MAX_SAFE_INTEGER
+      const bDue = Number.isFinite(b.dueMs) ? b.dueMs : Number.MAX_SAFE_INTEGER
+      compared = aDue - bDue
+    } else if (sort === "created") {
+      const aCreated = urbitDateMs(a.createdAt)
+      const bCreated = urbitDateMs(b.createdAt)
+      compared = (Number.isFinite(aCreated) ? aCreated : Number.MAX_SAFE_INTEGER) - (Number.isFinite(bCreated) ? bCreated : Number.MAX_SAFE_INTEGER)
+    } else if (sort === "priority") {
+      compared = priority[a.priority] - priority[b.priority]
+    } else if (sort === "title") {
+      compared = a.title.localeCompare(b.title)
+    } else {
+      compared = a.rank - b.rank
+    }
+    return compared * direction || Number(a.listId) - Number(b.listId) || Number(a.id) - Number(b.id)
+  })
+  return items
+}
+
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, reduce: reduce, incompleteCount: incompleteCount }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, reduce: reduce, incompleteCount: incompleteCount, urbitDateMs: urbitDateMs, queryReminders: queryReminders }
 }

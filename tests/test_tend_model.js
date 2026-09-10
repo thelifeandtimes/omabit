@@ -133,3 +133,34 @@ test("canonical list upserts and deletions replace only the addressed list", () 
   })
   assert.deepEqual(deleted.lists.map((item) => item.id), [2])
 })
+
+test("built-in views, search, and due sorting work across lists", () => {
+  const lists = [
+    {
+      id: 1,
+      title: "Home",
+      revision: 4,
+      reminders: [
+        { id: 1, title: "Overdue milk", tags: ["shop"], rank: 30, flagged: true, completed: false, schedule: { "due-at": "~2026.9.9..18.00.00" } },
+        { id: 2, title: "Tomorrow", rank: 20, completed: false, schedule: { "due-at": "~2026.9.11..18.00.00" } }
+      ]
+    },
+    {
+      id: 2,
+      title: "Work",
+      revision: 2,
+      reminders: [
+        { id: 3, title: "Ship report", notes: "September", rank: 10, completed: false, schedule: { "due-at": "~2026.9.10..20.00.00" } },
+        { id: 4, title: "Filed", rank: 40, completed: true }
+      ]
+    }
+  ]
+  const now = Date.UTC(2026, 8, 10, 12)
+
+  assert.deepEqual(model.queryReminders(lists, { view: "today", sort: "due" }, now).map((item) => item.id), [1, 3])
+  assert.deepEqual(model.queryReminders(lists, { view: "scheduled", sort: "due" }, now).map((item) => item.id), [1, 3, 2])
+  assert.deepEqual(model.queryReminders(lists, { view: "flagged" }, now).map((item) => item.id), [1])
+  assert.deepEqual(model.queryReminders(lists, { view: "completed" }, now).map((item) => item.id), [4])
+  assert.deepEqual(model.queryReminders(lists, { view: "all", search: "september" }, now).map((item) => item.id), [3])
+  assert.equal(model.queryReminders(lists, { view: "all" }, now).find((item) => item.id === 1).listRevision, 4)
+})
