@@ -22,7 +22,9 @@ old and new locations.
 See [`docs/WORKSTREAMS.md`](docs/WORKSTREAMS.md) for product boundaries and
 [`docs/REPOSITORY.md`](docs/REPOSITORY.md) for the target layout and worktree
 workflow. The existing [`PRODUCT_ARCHITECTURE_PLAN.md`](PRODUCT_ARCHITECTURE_PLAN.md)
-is specifically the Tend product and architecture plan.
+is specifically the Tend product and architecture plan. Current protocol and
+implementation details live in [`docs/TEND_PROTOCOL.md`](docs/TEND_PROTOCOL.md)
+and [`docs/TEND_STATUS.md`](docs/TEND_STATUS.md).
 
 ## Development
 

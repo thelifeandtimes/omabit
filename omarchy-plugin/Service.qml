@@ -75,6 +75,63 @@ Item {
         });
     }
 
+    function renameList(listId, title, baseRevision) {
+        return submit({
+            "rename-list": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "title": String(title || "").trim(),
+                "base-revision": Number(baseRevision)
+            }
+        });
+    }
+
+    function deleteList(listId, baseRevision) {
+        return submit({
+            "delete-list": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "base-revision": Number(baseRevision)
+            }
+        });
+    }
+
+    function addSection(listId, title, rank, baseRevision) {
+        return submit({
+            "add-section": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "title": String(title || "").trim(),
+                "rank": Number(rank),
+                "base-revision": Number(baseRevision)
+            }
+        });
+    }
+
+    function updateSection(listId, sectionId, title, rank, baseRevision) {
+        return submit({
+            "update-section": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "section-id": Number(sectionId),
+                "title": String(title || "").trim(),
+                "rank": Number(rank),
+                "base-revision": Number(baseRevision)
+            }
+        });
+    }
+
+    function deleteSection(listId, sectionId, baseRevision) {
+        return submit({
+            "delete-section": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "section-id": Number(sectionId),
+                "base-revision": Number(baseRevision)
+            }
+        });
+    }
+
     function addReminder(listId, title, baseRevision) {
         return submit({
             "add-reminder": {
@@ -98,13 +155,57 @@ Item {
         });
     }
 
+    function updateReminder(listId, reminderId, fields, baseRevision) {
+        fields = fields || {
+        };
+        return submit({
+            "update-reminder": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "reminder-id": Number(reminderId),
+                "title": String(fields.title || "").trim(),
+                "notes": String(fields.notes || ""),
+                "url": fields.url ? String(fields.url) : null,
+                "priority": String(fields.priority || "none"),
+                "flagged": fields.flagged === true,
+                "tags": (fields.tags || []).map(String),
+                "base-revision": Number(baseRevision)
+            }
+        });
+    }
+
+    function moveReminder(listId, reminderId, parentId, sectionId, rank, baseRevision) {
+        return submit({
+            "move-reminder": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "reminder-id": Number(reminderId),
+                "parent-id": parentId === null || parentId === undefined ? null : Number(parentId),
+                "section-id": sectionId === null || sectionId === undefined ? null : Number(sectionId),
+                "rank": Number(rank),
+                "base-revision": Number(baseRevision)
+            }
+        });
+    }
+
+    function deleteReminder(listId, reminderId, baseRevision) {
+        return submit({
+            "delete-reminder": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "reminder-id": Number(reminderId),
+                "base-revision": Number(baseRevision)
+            }
+        });
+    }
+
     function handleStreamLine(line) {
         try {
             var envelope = JSON.parse(String(line || ""));
             var message = envelope.message || {
             };
             if (message.response === "subscribe" && message.ok !== undefined) {
-                root.connectionState = "online";
+                root.connectionState = "checking";
                 return ;
             }
             if (message.response !== "diff")
@@ -112,6 +213,9 @@ Item {
 
             var result = TendModel.reduce(root.lists, message.json);
             root.lists = result.lists;
+            if (message.json && message.json.snapshot)
+                root.connectionState = "online";
+
             if (result.error)
                 root.errorMessage = result.error;
 
