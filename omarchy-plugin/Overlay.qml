@@ -183,6 +183,13 @@ Item {
         }).join(", ") : "";
         reminderRepeat.currentIndex = reminder.schedule && reminder.schedule.recurrence ? Math.max(0, reminderRepeat.model.indexOf(reminder.schedule.recurrence.frequency)) : 0;
         reminderInterval.value = reminder.schedule && reminder.schedule.recurrence ? reminder.schedule.recurrence.interval : 1;
+        reminderWeekdays.text = reminder.schedule && reminder.schedule.recurrence ? reminder.schedule.recurrence.weekdays.join(", ") : "";
+        reminderMonthDays.text = reminder.schedule && reminder.schedule.recurrence ? reminder.schedule.recurrence.monthDays.join(", ") : "";
+        reminderOrdinal.checked = reminder.schedule && reminder.schedule.recurrence && reminder.schedule.recurrence.monthWeek !== null;
+        reminderOrdinalIndex.value = reminderOrdinal.checked ? reminder.schedule.recurrence.monthWeek.index : 1;
+        reminderOrdinalWeekday.value = reminderOrdinal.checked ? reminder.schedule.recurrence.monthWeek.weekday : 0;
+        reminderRepeatEnd.text = reminder.schedule && reminder.schedule.recurrence && reminder.schedule.recurrence.endAt ? urbitToInput(reminder.schedule.recurrence.endAt) : "";
+        reminderRepeatCount.value = reminder.schedule && reminder.schedule.recurrence && reminder.schedule.recurrence.maxOccurrences ? reminder.schedule.recurrence.maxOccurrences : 0;
         reminderRank.value = reminder.rank;
         Qt.callLater(function() {
             reminderParent.currentIndex = root.indexForId(root.parentChoices, reminder.parentId);
@@ -214,6 +221,37 @@ Item {
         sectionRank.value = section.rank;
     }
 
+    function moveSelectedRelative(delta) {
+        if (!selectedList || !selectedReminder)
+            return ;
+
+        var siblings = selectedList.reminders.filter(function(item) {
+            return item.parentId === selectedReminder.parentId && item.sectionId === selectedReminder.sectionId;
+        }).sort(function(a, b) {
+            return a.rank - b.rank || a.id - b.id;
+        });
+        var index = -1;
+        for (var i = 0; i < siblings.length; i++) {
+            if (siblings[i].id === selectedReminder.id) {
+                index = i;
+                break;
+            }
+        }
+        var target = index + delta;
+        if (index < 0 || target < 0 || target >= siblings.length)
+            return ;
+
+        var rank;
+        if (delta < 0) {
+            var lower = target > 0 ? siblings[target - 1].rank : 0;
+            rank = Math.floor((lower + siblings[target].rank) / 2);
+        } else {
+            var upper = target + 1 < siblings.length ? siblings[target + 1].rank : siblings[target].rank + 2048;
+            rank = Math.floor((siblings[target].rank + upper) / 2);
+        }
+        service.moveReminder(selectedList.id, selectedReminder.id, selectedReminder.parentId, selectedReminder.sectionId, rank, selectedList.revision);
+    }
+
     function localTimezone() {
         try {
             return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
@@ -237,6 +275,27 @@ Item {
     function open(payloadJson) {
         root.opened = true;
         Qt.callLater(function() {
+            var payload = {};
+            try {
+                payload = JSON.parse(String(payloadJson || "{}"));
+            } catch (error) {
+                payload = {};
+            }
+            if (payload.listId && service) {
+                root.viewMode = "list";
+                root.selectedListId = Number(payload.listId);
+                root.selectedReminderId = Number(payload.reminderId || 0);
+                for (var i = 0; i < service.lists.length; i++) {
+                    if (service.lists[i].id !== root.selectedListId)
+                        continue;
+
+                    for (var j = 0; j < service.lists[i].reminders.length; j++) {
+                        if (service.lists[i].reminders[j].id === root.selectedReminderId)
+                            root.editReminder(service.lists[i].reminders[j]);
+
+                    }
+                }
+            }
             if (service && service.ship)
                 quickAdd.forceActiveFocus();
             else
@@ -751,7 +810,7 @@ Item {
 
                             Rectangle {
                                 width: parent.width
-                                height: root.selectedReminder ? Style.space(382) : 0
+                                height: root.selectedReminder ? Style.space(reminderRepeat.currentText === "none" ? 382 : 430) : 0
                                 visible: root.selectedReminder !== null
                                 radius: Style.cornerRadius
                                 color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.05)
@@ -882,6 +941,79 @@ Item {
                                             }
                                         }
 
+                                        Button {
+                                            text: "↑"
+                                            enabled: root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: root.moveSelectedRelative(-1)
+                                        }
+
+                                        Button {
+                                            text: "↓"
+                                            enabled: root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: root.moveSelectedRelative(1)
+                                        }
+
+                                    }
+
+                                    Row {
+                                        visible: reminderRepeat.currentText !== "none"
+                                        width: parent.width
+                                        spacing: Style.space(5)
+
+                                        TextField {
+                                            id: reminderWeekdays
+
+                                            width: parent.width * 0.15
+                                            placeholderText: "Weekdays 0-6"
+                                        }
+
+                                        TextField {
+                                            id: reminderMonthDays
+
+                                            width: parent.width * 0.15
+                                            placeholderText: "Month days"
+                                        }
+
+                                        CheckBox {
+                                            id: reminderOrdinal
+
+                                            text: "Ordinal"
+                                        }
+
+                                        SpinBox {
+                                            id: reminderOrdinalIndex
+
+                                            from: 1
+                                            to: 5
+                                            value: 1
+                                            enabled: reminderOrdinal.checked
+                                        }
+
+                                        SpinBox {
+                                            id: reminderOrdinalWeekday
+
+                                            from: 0
+                                            to: 6
+                                            value: 0
+                                            enabled: reminderOrdinal.checked
+                                        }
+
+                                        TextField {
+                                            id: reminderRepeatEnd
+
+                                            width: parent.width * 0.2
+                                            placeholderText: "End date/time"
+                                        }
+
+                                        SpinBox {
+                                            id: reminderRepeatCount
+
+                                            from: 0
+                                            to: 9999
+                                            value: 0
+                                            editable: true
+                                        }
+
                                     }
 
                                     Row {
@@ -913,14 +1045,27 @@ Item {
                                                 }).filter(function(seconds) {
                                                     return isFinite(seconds) && seconds >= 0;
                                                 });
+                                                var weekdays = reminderWeekdays.text.split(",").map(function(day) {
+                                                    return Number(day.trim());
+                                                }).filter(function(day) {
+                                                    return isFinite(day) && day >= 0 && day <= 6;
+                                                });
+                                                var monthDays = reminderMonthDays.text.split(",").map(function(day) {
+                                                    return Number(day.trim());
+                                                }).filter(function(day) {
+                                                    return isFinite(day) && day >= 1 && day <= 31;
+                                                });
                                                 var recurrence = reminderRepeat.currentText === "none" ? null : {
                                                     frequency: reminderRepeat.currentText,
                                                     interval: reminderInterval.value,
-                                                    weekdays: [],
-                                                    monthDays: [],
-                                                    monthWeek: null,
-                                                    endAt: null,
-                                                    maxOccurrences: null
+                                                    weekdays: weekdays,
+                                                    monthDays: monthDays,
+                                                    monthWeek: reminderOrdinal.checked ? {
+                                                        index: reminderOrdinalIndex.value,
+                                                        weekday: reminderOrdinalWeekday.value
+                                                    } : null,
+                                                    endAt: reminderRepeatEnd.text.trim() || null,
+                                                    maxOccurrences: reminderRepeatCount.value > 0 ? reminderRepeatCount.value : null
                                                 };
                                                 service.setSchedule(root.selectedList.id, root.selectedReminder.id, {
                                                     dueAt: reminderDue.text.trim(),

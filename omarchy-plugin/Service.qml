@@ -16,6 +16,7 @@ Item {
     property var preferences: TendModel.clonePreferences(null)
     property var snoozes: []
     property var lastAlert: null
+    property var notificationQueue: []
     property bool mutationPending: false
     readonly property int incompleteCount: TendModel.incompleteCount(lists)
     readonly property string pluginDir: manifest && manifest.__sourceDir ? String(manifest.__sourceDir) : ""
@@ -339,22 +340,50 @@ Item {
     }
 
     function showNotification(alert) {
-        var title = "Reminder due";
-        for (var i = 0; i < lists.length; i++) {
-            if (lists[i].id !== alert.listId)
-                continue;
+        var queue = notificationQueue.slice();
+        queue.push(alert);
+        notificationQueue = queue;
+        pumpNotificationQueue();
+    }
 
-            for (var j = 0; j < lists[i].reminders.length; j++) {
-                if (lists[i].reminders[j].id === alert.reminderId) {
-                    title = lists[i].reminders[j].title;
-                    break;
-                }
-            }
+    function listById(listId) {
+        for (var i = 0; i < lists.length; i++) {
+            if (lists[i].id === listId)
+                return lists[i];
+
         }
-        if (!notificationProcess.running) {
-            notificationProcess.command = ["notify-send", "--app-name=Tend", "Tend", title];
-            notificationProcess.running = true;
+        return null;
+    }
+
+    function reminderById(list, reminderId) {
+        if (!list)
+            return null;
+
+        for (var i = 0; i < list.reminders.length; i++) {
+            if (list.reminders[i].id === reminderId)
+                return list.reminders[i];
+
         }
+        return null;
+    }
+
+    function pumpNotificationQueue() {
+        if (notificationProcess.running || notificationQueue.length === 0)
+            return ;
+
+        var queue = notificationQueue.slice();
+        var alert = queue.shift();
+        notificationQueue = queue;
+        notificationProcess.alert = alert;
+        notificationProcess.output = "";
+        var title = "Reminder due";
+        var list = listById(alert.listId);
+        var reminder = reminderById(list, alert.reminderId);
+        if (reminder)
+            title = reminder.title;
+
+        notificationProcess.command = ["notify-send", "--app-name=Tend", "--action=complete=Complete", "--action=snooze=Snooze", "--action=open=Open", alert.snoozed ? "Tend · Snoozed reminder" : "Tend", title];
+        notificationProcess.running = true;
     }
 
     onManifestChanged: {
@@ -491,6 +520,32 @@ Item {
 
     Process {
         id: notificationProcess
+
+        property var alert: null
+        property string output: ""
+
+        onExited: function() {
+            var action = output.trim();
+            var list = root.listById(alert ? alert.listId : 0);
+            var reminder = root.reminderById(list, alert ? alert.reminderId : 0);
+            if (action === "complete" && list && reminder && root.connectionState === "online")
+                root.setCompleted(list.id, reminder.id, true, list.revision);
+            else if (action === "snooze" && list && reminder && root.connectionState === "online")
+                root.snoozeReminder(list.id, reminder.id, Number(root.preferences.snoozePresets[0] || 300));
+            else if (action === "open" && root.shell)
+                root.shell.toggle("io.omabit.tend", JSON.stringify({
+                    listId: alert.listId,
+                    reminderId: alert.reminderId
+                }));
+
+            alert = null;
+            Qt.callLater(root.pumpNotificationQueue);
+        }
+
+        stdout: StdioCollector {
+            waitForEnd: true
+            onStreamFinished: notificationProcess.output = text
+        }
     }
 
     Timer {

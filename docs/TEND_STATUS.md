@@ -42,16 +42,22 @@ Last verified: 2026-09-10
   Behn wakeup scheduler, survive reloads, and are pruned when their reminder is
   no longer actionable. The `%2` to `%3` migration and both new actions were
   verified through live Eyre.
+- The schedule editor now exposes recurrence weekdays, month dates, ordinal
+  weekday, end date, and occurrence count. Reminder organization includes
+  direct up/down rank controls in addition to explicit parent/section/rank.
+- Native notifications offer Complete, Snooze, and Open actions. They are
+  serialized through a desktop queue; Open deep-selects the reminder and the
+  mutation actions remain disabled unless the home connection is Online.
 - Plugin validation, JavaScript reducer tests, and Python Eyre transport tests
   pass.
 
 ## Next
 
-1. Richer recurrence/date controls and desktop notification action buttons.
-2. Direct drag/keyboard order controls and tag-management affordances.
-3. Owner-hosted list references, invitations/ACLs, replicas, presence, and
+1. Tag-management affordances, configurable all-day policy, and quick-capture
+   refinements.
+2. Owner-hosted list references, invitations/ACLs, replicas, presence, and
    read-only owner-offline behavior across multiple ships.
-4. Notifications, CLI, packaging, backups, accessibility, fault testing, and
+3. CLI, packaging, backups, accessibility, fault testing, and
    release hardening.
 
 The source of truth for scope and exit criteria remains

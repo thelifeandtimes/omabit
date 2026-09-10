@@ -59,6 +59,12 @@ carry revisions or Urbit timestamps. `alert` identifies the reminder, due
 instant, early offset, and whether it is a snooze wake; the desktop maps that
 event to a native notification.
 
+The desktop queues native notifications so each alert can expose Complete,
+Snooze, and Open actions. Complete uses the current list revision, Snooze uses
+the user's first configured preset, and Open routes a list/reminder selection
+back into the overlay. Actions that mutate list state are submitted only while
+the home connection is Online.
+
 The Milestone 0 event shapes remain accepted by the JavaScript reducer during a
 rolling upgrade, but new agents emit only the canonical update forms.
 
