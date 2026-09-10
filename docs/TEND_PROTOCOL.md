@@ -120,3 +120,13 @@ IDs are scoped to the hosting ship. A replica receives a collision-free numeric
 alias for the desktop while preserving its canonical `[host=@p local-id]`
 reference in Gall state, without requiring a global database or identity
 provider.
+
+## Backup envelope
+
+`omabit tend export` wraps the current local snapshot in `tend-backup-1` with a
+source ship and UTC export timestamp. `omabit tend validate-backup` performs
+bounded, offline structural and referential validation before any future
+restore operation is allowed. The current snapshot contains locally hosted
+lists; the peer engine must add explicit non-authoritative replica metadata
+before shared replicas can enter this format. See `TEND_BACKUP.md` for the
+empty-state-only atomic restore contract.

@@ -91,11 +91,14 @@ Last verified: 2026-09-10
 - `omabit tend export` writes a complete `tend-backup-1` JSON snapshot without
   authentication material. Export is atomic, mode 0600, refuses symbolic-link
   targets, and does not replace an existing file without explicit `--force`.
+  `validate-backup` now performs bounded offline shape, schedule, reference,
+  URL, snooze, and parent-cycle checks without connecting to a ship.
 - Deterministic release packaging includes the desk, validated Omarchy plugin,
   CLI, installer, documentation, and per-file checksums. The installer refuses
   symlink targets and preserves forced replacements as timestamped backups.
-- Plugin validation, JavaScript reducer tests, and Python Eyre transport tests
-  pass.
+- Plugin validation, JavaScript reducer tests, and Python Eyre transport/CLI
+  tests pass. The desktop reducer ignores stale and duplicate list/preference
+  facts so a delayed event cannot roll confirmed state backward.
 - The overlay now provides documented keyboard shortcuts, a focusable reminder
   list with arrow/Enter/Space operation, explicit names for otherwise ambiguous
   controls, textual state cues, and no custom motion. A manual Orca/theme/200%
@@ -111,6 +114,9 @@ Last verified: 2026-09-10
 2. Additional quick-capture refinements.
 3. Restore/import design, manual assistive-technology validation, fault testing,
    and final release hardening.
+
+The current Core reconciliation and honest release blockers are tracked in
+[`TEND_RELEASE_CHECKLIST.md`](TEND_RELEASE_CHECKLIST.md).
 
 The source of truth for scope and exit criteria remains
 [`PRODUCT_ARCHITECTURE_PLAN.md`](../PRODUCT_ARCHITECTURE_PLAN.md).

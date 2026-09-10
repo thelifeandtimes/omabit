@@ -29,6 +29,9 @@ contract is documented in
 [`docs/TEND_ACCESSIBILITY.md`](docs/TEND_ACCESSIBILITY.md).
 Resource and model-scale gates are recorded in
 [`docs/TEND_PERFORMANCE.md`](docs/TEND_PERFORMANCE.md).
+Backup validation and the restore safety contract live in
+[`docs/TEND_BACKUP.md`](docs/TEND_BACKUP.md); the current Core gap matrix is
+[`docs/TEND_RELEASE_CHECKLIST.md`](docs/TEND_RELEASE_CHECKLIST.md).
 
 ## Development
 

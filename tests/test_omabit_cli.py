@@ -128,6 +128,89 @@ class CliDomainTests(unittest.TestCase):
             with self.assertRaisesRegex(omabit.CliError, "symbolic-link"):
                 omabit.write_private_json(destination, {"format": "tend-backup-1"}, force=True)
 
+    def test_backup_validation_is_offline_structural_and_cycle_safe(self):
+        backup = {
+            "format": "tend-backup-1",
+            "exportedAt": "2026-09-10T20:00:00Z",
+            "sourceShip": "~sampel-palnet",
+            "snapshot": {
+                "lists": [{
+                    "id": 1,
+                    "title": "Team",
+                    "revision": 5,
+                    "sections": [{"id": 2, "title": "Now", "rank": 10}],
+                    "reminders": [
+                        {
+                            "id": 3,
+                            "title": "Parent",
+                            "revision": 2,
+                            "rank": 10,
+                            "completed": False,
+                            "priority": "high",
+                            "tags": ["work"],
+                            "parent-id": None,
+                            "section-id": 2,
+                            "url": "https://example.com",
+                            "schedule": {
+                                "due-at": "~2026.9.11..20.00.00",
+                                "all-day": False,
+                                "timezone": "America/Los_Angeles",
+                                "early-seconds": [900],
+                                "recurrence": {
+                                    "frequency": "weekly",
+                                    "interval": 1,
+                                    "weekdays": [3],
+                                    "month-days": [],
+                                    "month-week": None,
+                                    "end-at": None,
+                                    "max-occurrences": 4,
+                                },
+                            },
+                        },
+                        {
+                            "id": 4,
+                            "title": "Child",
+                            "revision": 1,
+                            "rank": 20,
+                            "completed": False,
+                            "priority": "none",
+                            "tags": [],
+                            "parent-id": 3,
+                            "section-id": 2,
+                            "url": None,
+                            "schedule": None,
+                        },
+                    ],
+                }],
+                "preferences": {"revision": 1, "default-list": 1},
+                "snoozes": [{"list-id": 1, "reminder-id": 3, "until": "~2026.9.11..21.00.00"}],
+            },
+        }
+        summary = omabit.validate_backup(backup)
+        self.assertEqual(summary["status"], "valid")
+        self.assertEqual(summary["lists"], 1)
+        self.assertEqual(summary["reminders"], 2)
+
+        backup["snapshot"]["lists"][0]["reminders"][0]["parent-id"] = 4
+        with self.assertRaisesRegex(omabit.CliError, "parent cycle"):
+            omabit.validate_backup(backup)
+
+    def test_validate_backup_reads_no_ship_state_and_refuses_symlinks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "backup.json"
+            source.write_text("{}", encoding="utf-8")
+            link = root / "link.json"
+            link.symlink_to(source)
+            with self.assertRaisesRegex(omabit.CliError, "Could not open Tend backup"):
+                omabit.read_backup(link)
+
+            args = SimpleNamespace(tend_command="validate-backup", json=True, path=str(source))
+            with mock.patch.object(omabit, "snapshot") as snapshot, redirect_stdout(io.StringIO()):
+                with self.assertRaisesRegex(omabit.CliError, "format must be"):
+                    omabit.run_tend(args)
+            snapshot.assert_not_called()
+
     def test_open_capture_uses_omarchy_shell_payload(self):
         args = SimpleNamespace(tend_command="open", json=False, list_id=0, reminder_id=0, capture=True)
         with mock.patch.object(omabit.subprocess, "run") as run:

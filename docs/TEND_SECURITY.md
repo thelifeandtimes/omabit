@@ -57,10 +57,13 @@ the current release scope.
 - Release installers reject broad desk targets, refuse symbolic-link targets,
   and do not overwrite existing installs unless `--force` is supplied. Forced
   replacements are moved to timestamped backups.
-- JSON exports contain complete visible reminder data, including shared-list
-  replicas. They exclude authentication material, are written atomically with
-  mode 0600, refuse symbolic-link targets, and require `--force` before
-  replacing an existing regular file.
+- JSON exports contain complete locally hosted reminder data. They exclude
+  authentication material, are written atomically with mode 0600, refuse
+  symbolic-link targets, and require `--force` before replacing an existing
+  regular file. Offline validation opens only a regular file without following
+  a final symbolic link, caps it at 32 MiB, and validates nested references and
+  cycles before any future restore path can use it. Shared replicas will remain
+  explicitly non-authoritative when export support for them is added.
 
 ## Release gates
 

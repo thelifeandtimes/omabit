@@ -100,6 +100,12 @@ function clonePreferences(value) {
   }
 }
 
+function newestPreferences(current, candidate) {
+  const confirmed = clonePreferences(current)
+  const incoming = clonePreferences(candidate)
+  return incoming.revision >= confirmed.revision ? incoming : confirmed
+}
+
 function cloneSnoozes(values) {
   return (values || []).map(function(value) {
     return {
@@ -220,7 +226,14 @@ function reduce(currentLists, update, currentPreferences, currentSnoozes, curren
   if (update["list-upserted"]) {
     var replacement = cloneList(update["list-upserted"].list)
     var upsertOperation = String(update["list-upserted"]["operation-id"] || "")
-    return resultState(sortedLists(lists.filter(function(item) { return item.id !== replacement.id }).concat([replacement])), clonePreferences(update["list-upserted"].preferences || preferences), snoozes, accesses, invitations, pendingOperations.filter(function(item) { return item.operationId !== upsertOperation }), "", null)
+    var existing = lists.find(function(item) { return item.id === replacement.id })
+    var nextLists = existing && replacement.revision <= existing.revision
+      ? lists
+      : sortedLists(lists.filter(function(item) { return item.id !== replacement.id }).concat([replacement]))
+    var nextPreferences = update["list-upserted"].preferences
+      ? newestPreferences(preferences, update["list-upserted"].preferences)
+      : preferences
+    return resultState(nextLists, nextPreferences, snoozes, accesses, invitations, pendingOperations.filter(function(item) { return item.operationId !== upsertOperation }), "", null)
   }
 
   if (update["list-deleted"]) {
@@ -230,7 +243,7 @@ function reduce(currentLists, update, currentPreferences, currentSnoozes, curren
   }
 
   if (update["preferences-updated"]) {
-    return resultState(lists, clonePreferences(update["preferences-updated"].preferences), snoozes, accesses, invitations, pendingOperations, "", null)
+    return resultState(lists, newestPreferences(preferences, update["preferences-updated"].preferences), snoozes, accesses, invitations, pendingOperations, "", null)
   }
 
   if (update.snoozed) {
@@ -252,6 +265,7 @@ function reduce(currentLists, update, currentPreferences, currentSnoozes, curren
   if (payload) {
     var next = lists.map(function(item) {
       if (item.id !== payload["list-id"]) return item
+      if (Number(payload["list-revision"] || 0) <= item.revision) return item
       var copy = cloneList(item)
       var reminder = cloneList({ id: 0, title: "", revision: 0, reminders: [payload.reminder] }).reminders[0]
       copy.reminders = copy.reminders.filter(function(existing) { return existing.id !== reminder.id })
@@ -387,5 +401,5 @@ function badgeCount(lists, preferences, ship, nowMs) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders, nextReminder: nextReminder }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders, nextReminder: nextReminder }
 }

@@ -10,6 +10,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import stat
 import subprocess
 import sys
 import uuid
@@ -17,6 +18,7 @@ import uuid
 
 VERSION = "0.1.0"
 PLUGIN_ID = "io.omabit.tend"
+MAX_BACKUP_BYTES = 32 * 1024 * 1024
 
 
 class CliError(RuntimeError):
@@ -151,6 +153,222 @@ def write_private_json(path: Path, value: object, force: bool = False) -> None:
             pass
 
 
+def _backup_error(message: str) -> None:
+    raise CliError(f"Invalid Tend backup: {message}")
+
+
+def _backup_object(value: object, path: str) -> dict[str, object]:
+    if not isinstance(value, dict):
+        _backup_error(f"{path} must be an object")
+    return value
+
+
+def _backup_array(value: object, path: str) -> list[object]:
+    if not isinstance(value, list):
+        _backup_error(f"{path} must be an array")
+    return value
+
+
+def _backup_string(value: object, path: str, *, nonempty: bool = False) -> str:
+    if not isinstance(value, str) or (nonempty and not value):
+        _backup_error(f"{path} must be {'a non-empty' if nonempty else 'a'} string")
+    return value
+
+
+def _backup_integer(value: object, path: str, *, positive: bool = False) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value < (1 if positive else 0):
+        _backup_error(f"{path} must be a {'positive' if positive else 'non-negative'} integer")
+    return value
+
+
+def _backup_optional_id(value: object, path: str) -> int | None:
+    if value is None:
+        return None
+    return _backup_integer(value, path)
+
+
+def _validate_schedule(value: object, path: str) -> None:
+    schedule = _backup_object(value, path)
+    due = _backup_string(schedule.get("due-at"), f"{path}.due-at", nonempty=True)
+    if urbit_date_value(due) is None:
+        _backup_error(f"{path}.due-at is not a supported Urbit date")
+    if not isinstance(schedule.get("all-day"), bool):
+        _backup_error(f"{path}.all-day must be a boolean")
+    _backup_string(schedule.get("timezone"), f"{path}.timezone", nonempty=True)
+    offsets = _backup_array(schedule.get("early-seconds"), f"{path}.early-seconds")
+    for index, seconds in enumerate(offsets):
+        if _backup_integer(seconds, f"{path}.early-seconds[{index}]") > 31_536_000:
+            _backup_error(f"{path}.early-seconds[{index}] exceeds one year")
+    recurrence = schedule.get("recurrence")
+    if recurrence is None:
+        return
+    rule = _backup_object(recurrence, f"{path}.recurrence")
+    frequency = _backup_string(rule.get("frequency"), f"{path}.recurrence.frequency", nonempty=True)
+    if frequency not in {"hourly", "daily", "weekly", "monthly", "yearly"}:
+        _backup_error(f"{path}.recurrence.frequency is unsupported")
+    _backup_integer(rule.get("interval"), f"{path}.recurrence.interval", positive=True)
+    for index, weekday in enumerate(_backup_array(rule.get("weekdays"), f"{path}.recurrence.weekdays")):
+        if _backup_integer(weekday, f"{path}.recurrence.weekdays[{index}]") > 6:
+            _backup_error(f"{path}.recurrence.weekdays[{index}] must be between 0 and 6")
+    for index, day in enumerate(_backup_array(rule.get("month-days"), f"{path}.recurrence.month-days")):
+        if not 1 <= _backup_integer(day, f"{path}.recurrence.month-days[{index}]", positive=True) <= 31:
+            _backup_error(f"{path}.recurrence.month-days[{index}] must be between 1 and 31")
+    month_week = rule.get("month-week")
+    if month_week is not None:
+        ordinal = _backup_object(month_week, f"{path}.recurrence.month-week")
+        if not 1 <= _backup_integer(ordinal.get("index"), f"{path}.recurrence.month-week.index", positive=True) <= 5:
+            _backup_error(f"{path}.recurrence.month-week.index must be between 1 and 5")
+        if _backup_integer(ordinal.get("weekday"), f"{path}.recurrence.month-week.weekday") > 6:
+            _backup_error(f"{path}.recurrence.month-week.weekday must be between 0 and 6")
+    end_at = rule.get("end-at")
+    if end_at is not None and urbit_date_value(_backup_string(end_at, f"{path}.recurrence.end-at")) is None:
+        _backup_error(f"{path}.recurrence.end-at is not a supported Urbit date")
+    maximum = rule.get("max-occurrences")
+    if maximum is not None:
+        _backup_integer(maximum, f"{path}.recurrence.max-occurrences", positive=True)
+
+
+def validate_backup(value: object) -> dict[str, object]:
+    backup = _backup_object(value, "backup")
+    if backup.get("format") != "tend-backup-1":
+        _backup_error("format must be tend-backup-1")
+    exported_at = _backup_string(backup.get("exportedAt"), "backup.exportedAt", nonempty=True)
+    try:
+        datetime.fromisoformat(exported_at.replace("Z", "+00:00"))
+    except ValueError:
+        _backup_error("backup.exportedAt must be an ISO-8601 timestamp")
+    _backup_string(backup.get("sourceShip"), "backup.sourceShip", nonempty=True)
+    snapshot_value = _backup_object(backup.get("snapshot"), "backup.snapshot")
+    lists = _backup_array(snapshot_value.get("lists"), "backup.snapshot.lists")
+    _backup_object(snapshot_value.get("preferences"), "backup.snapshot.preferences")
+    snoozes = _backup_array(snapshot_value.get("snoozes"), "backup.snapshot.snoozes")
+
+    list_ids: set[int] = set()
+    reminder_refs: set[tuple[int, int]] = set()
+    reminder_count = 0
+    section_count = 0
+    for list_index, item in enumerate(lists):
+        path = f"backup.snapshot.lists[{list_index}]"
+        task_list = _backup_object(item, path)
+        list_id = _backup_integer(task_list.get("id"), f"{path}.id")
+        if list_id in list_ids:
+            _backup_error(f"{path}.id duplicates list {list_id}")
+        list_ids.add(list_id)
+        title = _backup_string(task_list.get("title"), f"{path}.title", nonempty=True)
+        if len(title.encode("utf-8")) > 1_024:
+            _backup_error(f"{path}.title exceeds 1024 UTF-8 bytes")
+        _backup_integer(task_list.get("revision"), f"{path}.revision")
+
+        sections = _backup_array(task_list.get("sections"), f"{path}.sections")
+        section_ids: set[int] = set()
+        for section_index, section_value in enumerate(sections):
+            section_path = f"{path}.sections[{section_index}]"
+            section = _backup_object(section_value, section_path)
+            section_id = _backup_integer(section.get("id"), f"{section_path}.id")
+            if section_id in section_ids:
+                _backup_error(f"{section_path}.id duplicates section {section_id}")
+            section_ids.add(section_id)
+            _backup_string(section.get("title"), f"{section_path}.title", nonempty=True)
+            _backup_integer(section.get("rank"), f"{section_path}.rank")
+        section_count += len(sections)
+
+        reminders = _backup_array(task_list.get("reminders"), f"{path}.reminders")
+        reminder_ids: set[int] = set()
+        parents: dict[int, int | None] = {}
+        for reminder_index, reminder_value in enumerate(reminders):
+            reminder_path = f"{path}.reminders[{reminder_index}]"
+            reminder = _backup_object(reminder_value, reminder_path)
+            reminder_id = _backup_integer(reminder.get("id"), f"{reminder_path}.id")
+            if reminder_id in reminder_ids:
+                _backup_error(f"{reminder_path}.id duplicates reminder {reminder_id}")
+            reminder_ids.add(reminder_id)
+            reminder_refs.add((list_id, reminder_id))
+            parents[reminder_id] = _backup_optional_id(reminder.get("parent-id"), f"{reminder_path}.parent-id")
+            section_id = _backup_optional_id(reminder.get("section-id"), f"{reminder_path}.section-id")
+            if section_id is not None and section_id not in section_ids:
+                _backup_error(f"{reminder_path}.section-id refers to a missing section")
+            reminder_title = _backup_string(reminder.get("title"), f"{reminder_path}.title", nonempty=True)
+            if len(reminder_title.encode("utf-8")) > 1_024:
+                _backup_error(f"{reminder_path}.title exceeds 1024 UTF-8 bytes")
+            _backup_integer(reminder.get("revision"), f"{reminder_path}.revision")
+            _backup_integer(reminder.get("rank"), f"{reminder_path}.rank")
+            if not isinstance(reminder.get("completed"), bool):
+                _backup_error(f"{reminder_path}.completed must be a boolean")
+            priority = _backup_string(reminder.get("priority"), f"{reminder_path}.priority")
+            if priority not in {"none", "low", "medium", "high"}:
+                _backup_error(f"{reminder_path}.priority is unsupported")
+            tags = _backup_array(reminder.get("tags"), f"{reminder_path}.tags")
+            if len(tags) > 100:
+                _backup_error(f"{reminder_path}.tags exceeds 100 entries")
+            for tag_index, tag in enumerate(tags):
+                _backup_string(tag, f"{reminder_path}.tags[{tag_index}]", nonempty=True)
+            url = reminder.get("url")
+            if url is not None:
+                url_value = _backup_string(url, f"{reminder_path}.url", nonempty=True)
+                if not url_value.startswith(("http://", "https://", "mailto:")):
+                    _backup_error(f"{reminder_path}.url uses an unsafe scheme")
+            if reminder.get("schedule") is not None:
+                _validate_schedule(reminder["schedule"], f"{reminder_path}.schedule")
+        for reminder_id, parent_id in parents.items():
+            seen = {reminder_id}
+            while parent_id is not None:
+                if parent_id not in parents:
+                    _backup_error(f"{path}.reminders parent {parent_id} is missing")
+                if parent_id in seen:
+                    _backup_error(f"{path}.reminders contains a parent cycle")
+                seen.add(parent_id)
+                parent_id = parents[parent_id]
+        reminder_count += len(reminders)
+
+    for snooze_index, snooze_value in enumerate(snoozes):
+        path = f"backup.snapshot.snoozes[{snooze_index}]"
+        snooze = _backup_object(snooze_value, path)
+        list_id = _backup_integer(snooze.get("list-id"), f"{path}.list-id")
+        reminder_id = _backup_integer(snooze.get("reminder-id"), f"{path}.reminder-id")
+        if (list_id, reminder_id) not in reminder_refs:
+            _backup_error(f"{path} refers to a missing reminder")
+        if urbit_date_value(_backup_string(snooze.get("until"), f"{path}.until")) is None:
+            _backup_error(f"{path}.until is not a supported Urbit date")
+
+    return {
+        "status": "valid",
+        "format": "tend-backup-1",
+        "sourceShip": backup["sourceShip"],
+        "exportedAt": backup["exportedAt"],
+        "lists": len(lists),
+        "sections": section_count,
+        "reminders": reminder_count,
+        "snoozes": len(snoozes),
+    }
+
+
+def read_backup(path: Path) -> object:
+    path = path.expanduser()
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError as error:
+        raise CliError(f"Could not open Tend backup {path}: {error.strerror or error}") from error
+    try:
+        details = os.fstat(descriptor)
+        if not stat.S_ISREG(details.st_mode):
+            raise CliError(f"Tend backup is not a regular file: {path}")
+        if details.st_size > MAX_BACKUP_BYTES:
+            raise CliError(f"Tend backup exceeds {MAX_BACKUP_BYTES} bytes")
+        with os.fdopen(descriptor, "rb", closefd=False) as source:
+            raw = source.read(MAX_BACKUP_BYTES + 1)
+        if len(raw) > MAX_BACKUP_BYTES:
+            raise CliError(f"Tend backup exceeds {MAX_BACKUP_BYTES} bytes")
+    finally:
+        os.close(descriptor)
+    try:
+        return json.loads(raw.decode("utf-8"), parse_constant=lambda value: _backup_error(f"JSON number {value} is not finite"))
+    except UnicodeDecodeError as error:
+        raise CliError(f"Invalid Tend backup: file is not UTF-8 ({error})") from error
+    except json.JSONDecodeError as error:
+        raise CliError(f"Invalid Tend backup JSON at line {error.lineno}, column {error.colno}: {error.msg}") from error
+
+
 def poke(cookie_path: Path, config_path: Path, action: dict[str, object]) -> dict[str, object]:
     return transport.poke(config_path, cookie_path, action)
 
@@ -215,6 +433,9 @@ def run_tend(args: argparse.Namespace) -> int:
     if args.tend_command == "open":
         payload = {"listId": args.list_id, "reminderId": args.reminder_id, "mode": "capture" if args.capture else "full"}
         subprocess.run(["omarchy-shell", "shell", "summon", PLUGIN_ID, json.dumps(payload, separators=(",", ":"))], check=True)
+        return 0
+    if args.tend_command == "validate-backup":
+        emit(validate_backup(read_backup(Path(args.path))), as_json)
         return 0
 
     state = snapshot(cookie_path, config_path)
@@ -335,6 +556,9 @@ def parser() -> argparse.ArgumentParser:
     export = commands.add_parser("export", help="write a private, portable JSON snapshot backup")
     export.add_argument("path", help="destination file, or - for standard output")
     export.add_argument("--force", action="store_true", help="replace an existing regular file")
+
+    validate = commands.add_parser("validate-backup", help="validate a Tend backup without changing ship state")
+    validate.add_argument("path")
 
     add = commands.add_parser("add", help="add a reminder")
     add.add_argument("title")

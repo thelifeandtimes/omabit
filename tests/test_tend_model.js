@@ -171,6 +171,56 @@ test("canonical list upserts and deletions replace only the addressed list", () 
   assert.deepEqual(deleted.lists.map((item) => item.id), [2])
 })
 
+test("stale and duplicate facts cannot roll confirmed desktop state backward", () => {
+  const current = [{
+    id: 1,
+    title: "Current",
+    revision: 5,
+    sections: [],
+    reminders: [{ id: 9, title: "Confirmed", revision: 3, rank: 1 }]
+  }]
+  const preferences = { revision: 7, "default-list": 1, "pinned-lists": [1] }
+  const pending = [{ operationId: "late-op", listId: 1 }]
+  const stale = model.reduce(current, {
+    "list-upserted": {
+      "operation-id": "late-op",
+      list: { id: 1, title: "Old", revision: 4, sections: [], reminders: [] },
+      preferences: { revision: 6, "default-list": null, "pinned-lists": [] }
+    }
+  }, preferences, [], [], [], pending)
+
+  assert.equal(stale.lists[0].title, "Current")
+  assert.equal(stale.lists[0].reminders[0].title, "Confirmed")
+  assert.equal(stale.preferences.revision, 7)
+  assert.equal(stale.preferences.defaultList, 1)
+  assert.deepEqual(stale.pendingOperations, [])
+
+  const duplicate = model.reduce(stale.lists, {
+    "list-upserted": {
+      list: { id: 1, title: "Conflicting duplicate", revision: 5, sections: [], reminders: [] }
+    }
+  }, stale.preferences)
+  assert.equal(duplicate.lists[0].title, "Current")
+
+  const staleLegacy = model.reduce(duplicate.lists, {
+    "reminder-completed": {
+      "list-id": 1,
+      "list-revision": 3,
+      reminder: { id: 9, title: "Old reminder", completed: true, revision: 1 }
+    }
+  })
+  assert.equal(staleLegacy.lists[0].revision, 5)
+  assert.equal(staleLegacy.lists[0].reminders[0].title, "Confirmed")
+
+  const stalePreferences = model.reduce(staleLegacy.lists, {
+    "preferences-updated": {
+      preferences: { revision: 2, "default-list": null, "pinned-lists": [] }
+    }
+  }, stale.preferences)
+  assert.equal(stalePreferences.preferences.revision, 7)
+  assert.equal(stalePreferences.preferences.defaultList, 1)
+})
+
 test("built-in views, search, and due sorting work across lists", () => {
   const lists = [
     {

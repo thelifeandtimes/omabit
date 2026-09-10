@@ -109,14 +109,17 @@ omabit tend open 1 42
 omabit tend open --capture
 omabit --json tend list
 omabit tend export ~/Documents/tend-backup.json
+omabit tend validate-backup ~/Documents/tend-backup.json
 ```
 
 `tend export` writes a versioned `tend-backup-1` JSON snapshot atomically with
-mode 0600. It includes all visible list content and preferences, including
-shared replicas, but never the Eyre cookie or `+code`. Existing files are
-refused unless `--force` is explicit; use `-` as the path to stream the backup
-to standard output. Keep the result private. Restore/import will be added only
-with a separately versioned, validation-first protocol.
+mode 0600. It includes locally hosted list content and preferences, but never
+the Eyre cookie or `+code`. Existing files are refused unless `--force` is
+explicit; use `-` as the path to stream the backup to standard output. Keep the
+result private. `validate-backup` checks an existing file offline without
+contacting a ship or changing state. Restore/import is not enabled yet; its
+validation-first, empty-state-only contract is documented in
+`docs/TEND_BACKUP.md`.
 
 Run `omabit tend --help` for the complete command list.
 
