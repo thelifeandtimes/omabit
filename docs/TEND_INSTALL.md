@@ -80,6 +80,21 @@ To remove the local session and select another ship:
 omabit tend disconnect
 ```
 
+## Optional global shortcuts
+
+The plugin does not modify Hyprland configuration during installation. Add
+user-chosen bindings to `~/.config/hypr/bindings.conf`; for example:
+
+```ini
+bindd = SUPER, R, Tend, exec, $HOME/.local/bin/omabit tend open
+bindd = SUPER SHIFT, R, Tend quick capture, exec, $HOME/.local/bin/omabit tend open --capture
+```
+
+Choose different keys if these conflict with local bindings. Hyprland reloads
+the file automatically. Inside the overlay, `Ctrl+N` focuses quick add and
+`Ctrl+F` focuses search; the full reference is in
+`docs/TEND_ACCESSIBILITY.md`.
+
 ## CLI examples
 
 ```sh

@@ -60,7 +60,7 @@ class EyreHandler(BaseHTTPRequestHandler):
             if f"{self.server.cookie_name}=session" not in self.headers.get("Cookie", ""):
                 self.send_bytes(403, b"forbidden", "text/plain")
                 return
-            self.send_bytes(200, json.dumps("zod").encode("utf-8"))
+            self.send_bytes(200, json.dumps(self.server.ship).encode("utf-8"))
             return
 
         if self.path == "/~/scry/tend/state.json":
@@ -91,13 +91,15 @@ class EyreHandler(BaseHTTPRequestHandler):
 
 
 class FakeEyre:
-    def __init__(self, cookie_name="urbauth-test"):
+    def __init__(self, cookie_name="urbauth-test", ship="zod"):
         self.cookie_name = cookie_name
+        self.ship = ship
 
     def __enter__(self):
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), EyreHandler)
         self.server.commands = {}
         self.server.cookie_name = self.cookie_name
+        self.server.ship = self.ship
         self.server.redirect_login = False
         self.server.redirect_target = ""
         self.server.state_body = b""
@@ -146,7 +148,7 @@ class EyreFlowTests(unittest.TestCase):
 
     def login(self, fake: FakeEyre):
         result = eyre_client.login(fake.base_url, self.cookie, self.config, "lidlut-test")
-        self.assertEqual(result["ship"], "zod")
+        self.assertEqual(result["ship"], fake.ship)
         self.assertEqual(result["baseUrl"], fake.base_url)
 
     def test_login_saves_only_cookie_and_connection_metadata(self):
@@ -170,6 +172,17 @@ class EyreFlowTests(unittest.TestCase):
         contents = self.cookie.read_text(encoding="utf-8")
         self.assertIn("urbauth-second", contents)
         self.assertNotIn("urbauth-first", contents)
+
+    def test_login_accepts_planet_moon_and_comet_identities(self):
+        ships = (
+            "sampel-palnet",
+            "doznec-dozzod-dozzod",
+            "doznec--dozzod-dozzod-dozzod-dozzod",
+        )
+        for index, ship in enumerate(ships):
+            with self.subTest(ship=ship), FakeEyre(f"urbauth-rank-{index}", ship) as fake:
+                self.login(fake)
+                self.assertEqual(eyre_client.read_connection(self.config)["ship"], ship)
 
     def test_login_refuses_redirects_without_saving_credentials(self):
         with FakeEyre() as fake:

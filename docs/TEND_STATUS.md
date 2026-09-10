@@ -9,6 +9,9 @@ Last verified: 2026-09-10
   schema without losing lists, reminders, schedules, preferences, or snoozes.
 - Authenticated Eyre login, identity scry, SSE subscribe/ack, reconnect, and
   poke acknowledgement work through the dependency-free desktop bridge.
+- The desktop identity path is rank-neutral and regression-tested with planet,
+  moon, and comet-shaped ship identities; Gall protocol identities remain
+  unrestricted `@p` values with no rank authorization branch.
 - List CRUD, section CRUD, rich reminder updates, hierarchy/order moves,
   completion, cascading deletion, optimistic revision checks, operation
   deduplication, and JSON snapshot/update conversion work end to end.
