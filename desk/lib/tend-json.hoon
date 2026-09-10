@@ -50,6 +50,9 @@
         [%pinned-lists (number-list-json pinned-lists.prefs)]
         [%pinned-views (smart-view-list-json pinned-views.prefs)]
         [%snooze-presets (number-list-json snooze-presets.prefs)]
+        [%badge-mode s+badge-mode.prefs]
+        [%all-day-alert-minute (numb all-day-alert-minute.prefs)]
+        [%all-day-overdue b+all-day-overdue.prefs]
     ==
   ::
   ++  snoozes-json
@@ -362,6 +365,17 @@
       %completed  %completed
     ==
   ::
+  ++  badge-mode
+    |=  jon=json
+    ^-  badge-mode:sur
+    =/  value=@t  (so jon)
+    ?+  value  !!
+      %all       %all
+      %today     %today
+      %assigned  %assigned
+      %none      %none
+    ==
+  ::
   ++  date
     |=  jon=json
     ^-  @da
@@ -471,6 +485,11 @@
       =/  [=op-id default-list=(unit @ud) pinned-lists=(list @ud) pinned-views=(list smart-view:sur) snooze-presets=(list @ud) base-revision=@ud]
         ((ot [[%operation-id so] [%default-list (mu ni)] [%pinned-lists (ar ni)] [%pinned-views (ar smart-view)] [%snooze-presets (ar ni)] [%base-revision ni] ~]) body)
       [%set-preferences op-id default-list pinned-lists pinned-views snooze-presets base-revision]
+    ::
+        %set-reminder-policy
+      =/  [=op-id badge=badge-mode:sur all-day-alert-minute=@ud all-day-overdue=? base-revision=@ud]
+        ((ot [[%operation-id so] [%badge-mode badge-mode] [%all-day-alert-minute ni] [%all-day-overdue bo] [%base-revision ni] ~]) body)
+      [%set-reminder-policy op-id badge all-day-alert-minute all-day-overdue base-revision]
     ::
         %snooze-reminder
       =/  [=op-id =list-id =reminder-id until=@da]

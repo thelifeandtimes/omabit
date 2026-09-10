@@ -206,12 +206,23 @@
 +$  lists  (map list-id task-list)
 ::
 +$  smart-view  $?(%today %scheduled %all %flagged %assigned %completed)
++$  preferences-5
+  $:  revision=@ud
+      default-list=(unit list-id)
+      pinned-lists=(list list-id)
+      pinned-views=(list smart-view)
+      snooze-presets=(list @ud)
+  ==
++$  badge-mode  $?(%all %today %assigned %none)
 +$  preferences
   $:  revision=@ud
       default-list=(unit list-id)
       pinned-lists=(list list-id)
       pinned-views=(list smart-view)
       snooze-presets=(list @ud)
+      =badge-mode
+      all-day-alert-minute=@ud
+      all-day-overdue=?
   ==
 +$  snooze-key  [list-id reminder-id]
 +$  snoozes     (map snooze-key @da)
@@ -271,6 +282,13 @@
           snooze-presets=(list @ud)
           base-revision=@ud
       ==
+      $:  %set-reminder-policy
+          =op-id
+          =badge-mode
+          all-day-alert-minute=@ud
+          all-day-overdue=?
+          base-revision=@ud
+      ==
       [%snooze-reminder =op-id =list-id =reminder-id until=@da]
       [%replace-tag =op-id from=@t to=(unit @t)]
       [%invite-member =op-id =list-id ship=@p can-invite=?]
@@ -300,10 +318,10 @@
   ==
 ::
 +$  update-3
-  $%  [%snapshot lists=lists-3 =preferences =snoozes]
-      [%list-upserted =op-id list=task-list-3 =preferences]
-      [%list-deleted =op-id =list-id =preferences]
-      [%preferences-updated =op-id =preferences]
+  $%  [%snapshot lists=lists-3 preferences=preferences-5 =snoozes]
+      [%list-upserted =op-id list=task-list-3 preferences=preferences-5]
+      [%list-deleted =op-id =list-id preferences=preferences-5]
+      [%preferences-updated =op-id preferences=preferences-5]
       [%snoozed =op-id =list-id =reminder-id until=@da]
       [%alert =list-id =reminder-id due-at=@da early-seconds=@ud snoozed=?]
       [%rejected =op-id reason=@tas current-revision=(unit @ud)]
@@ -314,7 +332,7 @@
       next-id=@ud
       list-map=lists-3
       receipt-map=receipts-3
-      preferences=preferences
+      preferences=preferences-5
       timer-generation=@ud
       next-wake=(unit @da)
       snooze-map=snoozes
@@ -418,10 +436,10 @@
   ==
 +$  receipts  (map op-id update)
 +$  update-4
-  $%  [%snapshot =lists =preferences =snoozes]
-      [%list-upserted =op-id list=task-list =preferences]
-      [%list-deleted =op-id =list-id =preferences]
-      [%preferences-updated =op-id =preferences]
+  $%  [%snapshot =lists preferences=preferences-5 =snoozes]
+      [%list-upserted =op-id list=task-list preferences=preferences-5]
+      [%list-deleted =op-id =list-id preferences=preferences-5]
+      [%preferences-updated =op-id preferences=preferences-5]
       [%snoozed =op-id =list-id =reminder-id until=@da]
       [%alert =list-id =reminder-id due-at=@da early-seconds=@ud snoozed=?]
       [%rejected =op-id reason=@tas current-revision=(unit @ud)]
@@ -432,7 +450,7 @@
       next-id=@ud
       list-map=lists
       receipt-map=receipts-4
-      preferences=preferences
+      preferences=preferences-5
       timer-generation=@ud
       next-wake=(unit @da)
       snooze-map=snoozes
@@ -443,6 +461,34 @@
   ==
 +$  state-5
   $:  %5
+      next-id=@ud
+      list-map=lists
+      receipt-map=receipts-5
+      preferences=preferences-5
+      timer-generation=@ud
+      next-wake=(unit @da)
+      snooze-map=snoozes
+      share-map=shares
+      replica-map=replicas
+      invitation-map=invitations
+      in-flight-map=in-flights
+  ==
++$  update-5
+  $%  [%snapshot =lists preferences=preferences-5 =snoozes]
+      [%list-upserted =op-id list=task-list preferences=preferences-5]
+      [%list-deleted =op-id =list-id preferences=preferences-5]
+      [%preferences-updated =op-id preferences=preferences-5]
+      [%snoozed =op-id =list-id =reminder-id until=@da]
+      [%alert =list-id =reminder-id due-at=@da early-seconds=@ud snoozed=?]
+      [%accesses =accesses]
+      [%invitations-updated =invitations]
+      [%operation-pending =op-id =list-id]
+      [%operation-settled =op-id]
+      [%rejected =op-id reason=@tas current-revision=(unit @ud)]
+  ==
++$  receipts-5  (map op-id update-5)
++$  state-6
+  $:  %6
       next-id=@ud
       list-map=lists
       receipt-map=receipts

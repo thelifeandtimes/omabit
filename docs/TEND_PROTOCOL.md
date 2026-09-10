@@ -31,6 +31,7 @@ returns its recorded result without applying it twice.
 | `set-schedule` | Set/clear due instant, all-day policy, IANA zone, early offsets, and recurrence |
 | `set-completed` | Complete/uncomplete a reminder tree, or advance a repeating reminder |
 | `set-preferences` | Atomically update revisioned default-list, pin, and snooze-preset state |
+| `set-reminder-policy` | Atomically update badge mode, all-day alert minute, and all-day-overdue behavior |
 | `snooze-reminder` | Schedule a personal one-shot alert without modifying shared reminder data |
 | `replace-tag` | Rename, merge, or delete one tag across the user's hosted reminders |
 | `delete-reminder` | Delete a reminder and all descendants |
@@ -80,7 +81,7 @@ list. `invitations-updated` replaces the local invitation inbox.
 without creating an offline mutation queue. The desktop treats an absent,
 Checking, or Offline access record as read-only.
 
-The `%tend-peer-1` noun mark and `%5` state reserve versioned peer envelopes for
+The `%tend-peer-1` noun mark and `%6` state reserve versioned peer envelopes for
 invite/accept/decline/leave, list snapshots, mutations, removals, and mutation
 rejections. The transport handlers that send these envelopes to another ship
 are not enabled in the current checkpoint; local clients cannot cause peer data
@@ -88,14 +89,20 @@ egress until that trust boundary is explicitly enabled and tested.
 
 ## Persistence
 
-Gall is authoritative. State schema `%5` contains lists, the next local ID,
+Gall is authoritative. State schema `%6` contains lists, the next local ID,
 operation receipts, revisioned personal preferences, active snoozes, Behn timer
 generation, hosted-share policies, remote replicas, invitations, and in-flight
 operations. `+on-load` migrates `%0` through `%3`, preserving IDs, titles,
 completion state, revisions, schedules, tags, preferences, and snoozes while
 filling assignee and collaboration stores with deterministic defaults. `%4` is
-frozen and migrates to `%5`; its older receipt and pending-invitation types are
-decoded separately so a protocol upgrade does not reinterpret persisted nouns.
+frozen and migrates to `%5`; `%5` is frozen and migrates to `%6`, adding badge
+and all-day reminder policy defaults without reinterpreting older receipt,
+preference, or pending-invitation nouns.
+
+Personal preferences include the default list, pinned lists/views, snooze
+presets, badge basis (`today`, `all`, `assigned`, or `none`), a local-wall-clock
+minute for newly scheduled all-day reminders, and whether old all-day reminders
+remain visible in Today. Timed overdue reminders always remain in Today.
 
 The agent keeps one earliest Behn wakeup across all outstanding due/early
 alerts and snoozes. Generation-tagged wires make replaced timers harmless. Fired offsets

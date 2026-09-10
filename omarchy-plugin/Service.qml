@@ -24,6 +24,7 @@ Item {
     property int reconnectAttempt: 0
     property bool streamAuthenticationFailed: false
     readonly property int incompleteCount: TendModel.incompleteCount(lists)
+    readonly property int badgeCount: TendModel.badgeCount(lists, preferences, ship)
     readonly property var nextReminder: TendModel.nextReminder(lists)
     readonly property string pluginDir: manifest && manifest.__sourceDir ? String(manifest.__sourceDir) : ""
     readonly property string bridgePath: pluginDir ? pluginDir + "/transport/eyre_client.py" : ""
@@ -259,9 +260,19 @@ Item {
     function setSchedule(listId, reminderId, schedule, baseRevision) {
         var value = null;
         if (schedule) {
+            var allDay = schedule.allDay === true || schedule["all-day"] === true;
+            var dueInput = schedule.dueAt || schedule["due-at"];
+            if (allDay && String(dueInput || "").charAt(0) !== "~") {
+                var localDue = new Date(dueInput);
+                if (!isNaN(localDue.getTime())) {
+                    var minute = Math.max(0, Math.min(1439, Number(preferences.allDayAlertMinute || 0)));
+                    localDue.setHours(Math.floor(minute / 60), minute % 60, 0, 0);
+                    dueInput = localDue.toISOString();
+                }
+            }
             value = {
-                "due-at": toUrbitDate(schedule.dueAt || schedule["due-at"]),
-                "all-day": schedule.allDay === true || schedule["all-day"] === true,
+                "due-at": toUrbitDate(dueInput),
+                "all-day": allDay,
                 "timezone": String(schedule.timezone || "UTC"),
                 "early-seconds": (schedule.earlySeconds || schedule["early-seconds"] || []).map(Number),
                 "recurrence": recurrencePayload(schedule.recurrence)
@@ -288,6 +299,20 @@ Item {
                 "pinned-lists": (fields.pinnedLists || []).map(Number),
                 "pinned-views": (fields.pinnedViews || []).map(String),
                 "snooze-presets": (fields.snoozePresets || []).map(Number),
+                "base-revision": Number(preferences.revision || 0)
+            }
+        });
+    }
+
+    function setReminderPolicy(fields) {
+        fields = fields || {
+        };
+        return submit({
+            "set-reminder-policy": {
+                "operation-id": operationId(),
+                "badge-mode": String(fields.badgeMode || "today"),
+                "all-day-alert-minute": Math.max(0, Math.min(1439, Number(fields.allDayAlertMinute || 0))),
+                "all-day-overdue": fields.allDayOverdue !== false,
                 "base-revision": Number(preferences.revision || 0)
             }
         });

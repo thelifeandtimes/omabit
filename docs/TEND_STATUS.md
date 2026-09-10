@@ -5,7 +5,7 @@ Last verified: 2026-09-10
 ## Working now
 
 - `%tend` installs and hot-reloads on a live fake ship.
-- Existing `%0` through `%4` state migrates to the multiplayer-ready `%5`
+- Existing `%0` through `%5` state migrates to the current `%6`
   schema without losing lists, reminders, schedules, preferences, or snoozes.
 - Authenticated Eyre login, identity scry, SSE subscribe/ack, reconnect, and
   poke acknowledgement work through the dependency-free desktop bridge.
@@ -58,6 +58,9 @@ Last verified: 2026-09-10
 - `%5` freezes `%4` before collaboration receipts and pending-invitation
   payloads change shape. A live `%4` ship migrated successfully without losing
   its reminders, preferences, schedules, assignments, or snoozes.
+- `%6` adds revisioned badge and all-day reminder policy without changing
+  canonical reminder/list nouns. A live `%5` ship migrated, accepted a policy
+  update, and preserved it across Gall suspend/revive.
 - The authenticated `/all` stream now emits one access record per visible list,
   including canonical host, owner flag, Online/Checking/Offline state, members,
   and pending invitations. The Omarchy UI visibly marks owner availability and
@@ -70,6 +73,11 @@ Last verified: 2026-09-10
   complete/uncomplete, snooze, and overlay-open commands with optional JSON
   output. Its read-only status and list flows were exercised against the live
   desk.
+- Assigned to Me is available as a smart view and search includes assignee
+  ships. Quick capture supports `#tag` entry and the bar badge can count Today,
+  all incomplete, or assigned reminders—or be disabled. Users can choose the
+  default time for new all-day reminders and whether stale all-day items stay
+  in Today; timed overdue reminders remain visible.
 - Deterministic release packaging includes the desk, validated Omarchy plugin,
   CLI, installer, documentation, and per-file checksums. The installer refuses
   symlink targets and preserves forced replacements as timestamped backups.
@@ -80,9 +88,9 @@ Last verified: 2026-09-10
 
 1. Owner-hosted invitation delivery, ACL subscriptions, replicas, mutation
    routing, assignment validation, and activity across multiple ships.
-2. Configurable all-day policy, Assigned to Me, batch operations, and
-   quick-capture refinements.
-3. Backups, accessibility audit, fault testing, and final release hardening.
+2. Batch operations and additional quick-capture refinements.
+3. Portable backups, accessibility audit, fault testing, and final release
+   hardening.
 
 The source of truth for scope and exit criteria remains
 [`PRODUCT_ARCHITECTURE_PLAN.md`](../PRODUCT_ARCHITECTURE_PLAN.md).

@@ -7,7 +7,7 @@ BarWidget {
   moduleName: "io.omabit.tend"
 
   readonly property var tendService: bar?.shell?.serviceFor("io.omabit.tend")
-  readonly property int taskCount: tendService ? tendService.incompleteCount : 0
+  readonly property int taskCount: tendService ? tendService.badgeCount : 0
   readonly property string state: tendService ? tendService.connectionState : "disconnected"
 
   implicitWidth: row.implicitWidth + Style.space(12)
@@ -42,7 +42,8 @@ BarWidget {
       if (!root.bar) return
       var next = root.tendService ? root.tendService.nextReminder : null
       var suffix = next ? " · Next: " + next.title : ""
-      root.bar.showTooltip(root, "Tend · " + root.taskCount + " incomplete · " + root.state + suffix)
+      var mode = root.tendService ? root.tendService.preferences.badgeMode : "today"
+      root.bar.showTooltip(root, "Tend · " + root.taskCount + " " + mode + " · " + root.state + suffix)
     }
     onExited: if (root.bar) root.bar.hideTooltip(root)
   }

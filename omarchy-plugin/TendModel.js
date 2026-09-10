@@ -87,12 +87,16 @@ function orderedLists(lists, pinnedIds) {
 
 function clonePreferences(value) {
   value = value || {}
+  const alertMinute = value["all-day-alert-minute"] === undefined ? value.allDayAlertMinute : value["all-day-alert-minute"]
   return {
     revision: Number(value.revision || 0),
     defaultList: value["default-list"] === undefined ? (value.defaultList ?? null) : value["default-list"],
     pinnedLists: (value["pinned-lists"] || value.pinnedLists || []).map(Number),
-    pinnedViews: (value["pinned-views"] || value.pinnedViews || ["today", "scheduled", "all", "flagged", "completed"]).map(String),
-    snoozePresets: (value["snooze-presets"] || value.snoozePresets || [300, 900, 3600]).map(Number)
+    pinnedViews: (value["pinned-views"] || value.pinnedViews || ["today", "scheduled", "all", "flagged", "assigned", "completed"]).map(String),
+    snoozePresets: (value["snooze-presets"] || value.snoozePresets || [300, 900, 3600]).map(Number),
+    badgeMode: String(value["badge-mode"] || value.badgeMode || "today"),
+    allDayAlertMinute: Number(alertMinute === undefined ? 540 : alertMinute),
+    allDayOverdue: value["all-day-overdue"] === undefined ? value.allDayOverdue !== false : value["all-day-overdue"] === true
   }
 }
 
@@ -311,6 +315,7 @@ function queryReminders(lists, options, nowMs) {
   const currentShip = String(options.ship || "").replace(/^~/, "")
   const normalized = sortedLists(lists)
   const now = new Date(nowMs === undefined ? Date.now() : nowMs)
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime()
   const items = []
 
@@ -319,7 +324,10 @@ function queryReminders(lists, options, nowMs) {
     list.reminders.forEach(function(reminder) {
       const dueMs = reminder.schedule ? urbitDateMs(reminder.schedule.dueAt) : NaN
       var matchesView = true
-      if (view === "today") matchesView = !reminder.completed && Number.isFinite(dueMs) && dueMs < tomorrow
+      if (view === "today") {
+        matchesView = !reminder.completed && Number.isFinite(dueMs) && dueMs < tomorrow
+        if (matchesView && reminder.schedule.allDay && dueMs < today && options.allDayOverdue === false) matchesView = false
+      }
       else if (view === "scheduled") matchesView = !reminder.completed && reminder.schedule !== null
       else if (view === "all") matchesView = !reminder.completed
       else if (view === "flagged") matchesView = !reminder.completed && reminder.flagged
@@ -370,6 +378,14 @@ function nextReminder(lists, nowMs) {
   return scheduled.length ? scheduled[0] : null
 }
 
+function badgeCount(lists, preferences, ship, nowMs) {
+  const prefs = clonePreferences(preferences)
+  if (prefs.badgeMode === "none") return 0
+  if (prefs.badgeMode === "all") return incompleteCount(lists)
+  const view = prefs.badgeMode === "assigned" ? "assigned" : "today"
+  return queryReminders(lists, { view: view, ship: ship, allDayOverdue: prefs.allDayOverdue }, nowMs).length
+}
+
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders, nextReminder: nextReminder }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders, nextReminder: nextReminder }
 }

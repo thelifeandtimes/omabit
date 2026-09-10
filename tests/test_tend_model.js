@@ -57,7 +57,10 @@ test("snapshot is normalized and incomplete reminders are counted", () => {
   assert.equal(result.lists[0].reminders[0].schedule.timezone, "America/Los_Angeles")
   assert.equal(result.lists[0].reminders[0].schedule.recurrence.maxOccurrences, 5)
   assert.equal(model.incompleteCount(result.lists), 1)
-  assert.deepEqual(result.preferences.pinnedViews, ["today", "scheduled", "all", "flagged", "completed"])
+  assert.deepEqual(result.preferences.pinnedViews, ["today", "scheduled", "all", "flagged", "assigned", "completed"])
+  assert.equal(result.preferences.badgeMode, "today")
+  assert.equal(result.preferences.allDayAlertMinute, 540)
+  assert.equal(result.preferences.allDayOverdue, true)
 })
 
 test("alerts preserve list state and expose normalized notification data", () => {
@@ -214,6 +217,27 @@ test("assigned view, assignee search, and next reminder use normalized ships and
   assert.deepEqual(model.queryReminders(lists, { view: "assigned", ship: "~zod" }).map((item) => item.id), [1, 2])
   assert.deepEqual(model.queryReminders(lists, { view: "all", search: "~nec" }).map((item) => item.id), [3])
   assert.equal(model.nextReminder(lists).id, 2)
+})
+
+test("reminder policy controls all-day overdue visibility and the bar badge", () => {
+  const now = new Date(2026, 8, 10, 12, 0, 0).getTime()
+  const lists = [{
+    id: 1,
+    title: "Team",
+    revision: 1,
+    reminders: [
+      { id: 1, title: "Old all-day", completed: false, assignee: "~zod", schedule: { "due-at": "~2026.9.9..09.00.00", "all-day": true } },
+      { id: 2, title: "Old timed", completed: false, assignee: "~nec", schedule: { "due-at": "~2026.9.9..12.00.00", "all-day": false } },
+      { id: 3, title: "Today", completed: false, assignee: "zod", schedule: { "due-at": "~2026.9.10..18.00.00", "all-day": true } },
+      { id: 4, title: "Unscheduled", completed: false }
+    ]
+  }]
+
+  assert.deepEqual(model.queryReminders(lists, { view: "today", allDayOverdue: false }, now).map((item) => item.id), [2, 3])
+  assert.equal(model.badgeCount(lists, { "badge-mode": "all" }, "~zod", now), 4)
+  assert.equal(model.badgeCount(lists, { "badge-mode": "today", "all-day-overdue": false }, "~zod", now), 2)
+  assert.equal(model.badgeCount(lists, { "badge-mode": "assigned" }, "~zod", now), 2)
+  assert.equal(model.badgeCount(lists, { "badge-mode": "none" }, "~zod", now), 0)
 })
 
 test("multiplayer access state gates remote editing while keeping owned lists writable", () => {

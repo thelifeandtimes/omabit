@@ -19,6 +19,7 @@ Item {
     property string sortMode: "manual"
     property bool sortDescending: false
     property bool listEditorOpen: false
+    property bool policyEditorOpen: false
     property bool confirmDeleteList: false
     property bool captureMode: false
     readonly property var selectedList: {
@@ -68,7 +69,8 @@ Item {
         search: reminderSearch.text,
         sort: sortMode,
         descending: sortDescending,
-        ship: service ? service.ship : ""
+        ship: service ? service.ship : "",
+        allDayOverdue: service ? service.preferences.allDayOverdue : true
     })
     readonly property string viewTitle: {
         if (viewMode === "list")
@@ -704,12 +706,19 @@ Item {
                                 spacing: Style.space(8)
 
                                 Text {
-                                    width: parent.width - editListButton.width - parent.spacing
+                                    width: parent.width - editListButton.width - alertSettingsButton.width - parent.spacing * 2
                                     text: root.viewTitle
                                     color: Color.menu.text
                                     font.family: Style.font.menuFamily
                                     font.pixelSize: Style.font.title
                                     font.bold: true
+                                }
+
+                                Button {
+                                    id: alertSettingsButton
+
+                                    text: root.policyEditorOpen ? "Close alerts" : "Alerts"
+                                    onClicked: root.policyEditorOpen = !root.policyEditorOpen
                                 }
 
                                 Button {
@@ -723,6 +732,59 @@ Item {
                                         else
                                             root.openListEditor();
                                     }
+                                }
+
+                            }
+
+                            Row {
+                                visible: root.policyEditorOpen
+                                width: parent.width
+                                spacing: Style.space(6)
+
+                                ComboBox {
+                                    id: badgeMode
+
+                                    width: parent.width * 0.22
+                                    model: ["today", "all", "assigned", "none"]
+                                    currentIndex: service ? Math.max(0, model.indexOf(service.preferences.badgeMode)) : 0
+                                    Accessible.name: "Bar badge count"
+                                }
+
+                                SpinBox {
+                                    id: allDayHour
+
+                                    width: parent.width * 0.18
+                                    from: 0
+                                    to: 23
+                                    value: service ? Math.floor(service.preferences.allDayAlertMinute / 60) : 9
+                                    Accessible.name: "All-day reminder hour"
+                                }
+
+                                SpinBox {
+                                    id: allDayMinute
+
+                                    width: parent.width * 0.18
+                                    from: 0
+                                    to: 59
+                                    value: service ? service.preferences.allDayAlertMinute % 60 : 0
+                                    Accessible.name: "All-day reminder minute"
+                                }
+
+                                CheckBox {
+                                    id: allDayOverdue
+
+                                    text: "Keep overdue"
+                                    checked: service ? service.preferences.allDayOverdue : true
+                                }
+
+                                Button {
+                                    text: "Save"
+                                    enabled: service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: service.setReminderPolicy({
+                                        badgeMode: badgeMode.currentText,
+                                        allDayAlertMinute: allDayHour.value * 60 + allDayMinute.value,
+                                        allDayOverdue: allDayOverdue.checked
+                                    })
                                 }
 
                             }
