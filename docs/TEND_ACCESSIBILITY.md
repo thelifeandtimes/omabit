@@ -17,6 +17,8 @@ Standard Qt controls retain their native focus indicator and tab order.
 | `Up` / `Down` | Move through the focused reminder list |
 | `Enter` | Open the focused reminder editor |
 | `Space` | Complete or uncomplete the focused reminder |
+| `Left` / `Right` | Collapse or expand the focused reminder's subtasks |
+| `Ctrl+[` / `Ctrl+]` | Outdent or indent the selected reminder |
 | `Tab` / `Shift+Tab` | Move through controls in either direction |
 
 Quick capture focuses its title field when opened. The full overlay focuses
@@ -27,9 +29,9 @@ during onboarding.
 
 - The bar widget identifies its action, count basis, count, and connection
   state through Qt Accessibility.
-- The reminder list exposes list/list-item roles and labels. Completion and
-  batch-selection checkboxes include the reminder title in their accessible
-  name.
+- The reminder list exposes list/list-item roles, hierarchy state, and labels.
+  Completion, batch-selection, and collapse/expand controls include the
+  reminder title in their accessible name.
 - Fields and non-self-describing combo/spin controls have explicit accessible
   names. Buttons and ordinary checkboxes retain their visible text labels.
 - Password entry uses Qt's password echo mode; Tend clears the `+code` field

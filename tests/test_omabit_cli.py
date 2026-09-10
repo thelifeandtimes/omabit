@@ -93,6 +93,34 @@ class CliDomainTests(unittest.TestCase):
         self.assertEqual(action["reminder-ids"], [7, 9])
         self.assertEqual(action["base-revision"], 4)
 
+    def test_snooze_accepts_an_absolute_iso_time(self):
+        args = SimpleNamespace(
+            tend_command="snooze",
+            json=True,
+            list_id=1,
+            reminder_id=7,
+            minutes=None,
+            until="2099-01-02T03:04:05Z",
+        )
+        with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            self.assertEqual(omabit.run_tend(args), 0)
+        action = poke.call_args.args[2]["snooze-reminder"]
+        self.assertEqual(action["until"], "~2099.1.2..03.04.05")
+
+    def test_snooze_rejects_a_nonpositive_duration_before_poking(self):
+        args = SimpleNamespace(
+            tend_command="snooze",
+            json=True,
+            list_id=1,
+            reminder_id=7,
+            minutes=0,
+            until=None,
+        )
+        with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke:
+            with self.assertRaisesRegex(omabit.CliError, "must be positive"):
+                omabit.run_tend(args)
+        poke.assert_not_called()
+
     def test_batch_delete_requires_explicit_confirmation(self):
         args = SimpleNamespace(tend_command="delete", json=True, list_id=1, reminder_ids=[7], yes=False)
         with mock.patch.object(omabit, "snapshot", return_value=SAMPLE):

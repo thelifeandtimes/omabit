@@ -23,6 +23,7 @@ Item {
     property bool confirmDeleteList: false
     property bool captureMode: false
     property var selectedReminderIds: []
+    property var collapsedReminderIds: []
     property bool confirmBatchDelete: false
     readonly property var selectedList: {
         var available = service ? service.lists : [];
@@ -65,7 +66,7 @@ Item {
         }
         return service.lists[0];
     }
-    readonly property var displayedReminders: TendModel.queryReminders(service ? service.lists : [], {
+    readonly property var queriedReminders: TendModel.queryReminders(service ? service.lists : [], {
         view: viewMode,
         listId: selectedList ? selectedList.id : 0,
         search: reminderSearch.text,
@@ -74,6 +75,7 @@ Item {
         ship: service ? service.ship : "",
         allDayOverdue: service ? service.preferences.allDayOverdue : true
     })
+    readonly property var displayedReminders: viewMode === "list" ? TendModel.visibleReminders(queriedReminders, collapsedReminderIds) : queriedReminders
     readonly property string viewTitle: {
         if (viewMode === "list")
             return selectedList ? selectedList.title : "Create your first list";
@@ -130,6 +132,29 @@ Item {
             ids.splice(index, 1);
         selectedReminderIds = ids;
         confirmBatchDelete = false;
+    }
+
+    function reminderIsCollapsed(reminderId) {
+        return collapsedReminderIds.indexOf(Number(reminderId)) !== -1;
+    }
+
+    function reminderHasChildren(reminderId) {
+        return TendModel.reminderHasChildren(queriedReminders, reminderId);
+    }
+
+    function setReminderCollapsed(reminderId, collapsed) {
+        var ids = collapsedReminderIds.slice();
+        var wanted = Number(reminderId);
+        var index = ids.indexOf(wanted);
+        if (collapsed && index === -1)
+            ids.push(wanted);
+        else if (!collapsed && index !== -1)
+            ids.splice(index, 1);
+        collapsedReminderIds = ids;
+    }
+
+    function toggleReminderCollapsed(reminderId) {
+        setReminderCollapsed(reminderId, !reminderIsCollapsed(reminderId));
     }
 
     function batchStartingRank() {
@@ -311,6 +336,43 @@ Item {
         service.moveReminder(selectedList.id, selectedReminder.id, selectedReminder.parentId, selectedReminder.sectionId, rank, selectedList.revision);
     }
 
+    function reminderFromSelectedList(reminderId) {
+        if (!selectedList)
+            return null;
+        for (var i = 0; i < selectedList.reminders.length; i++) {
+            if (selectedList.reminders[i].id === Number(reminderId))
+                return selectedList.reminders[i];
+        }
+        return null;
+    }
+
+    function indentSelectedReminder() {
+        if (!selectedListEditable || !selectedReminder || !service)
+            return;
+        var index = -1;
+        for (var i = 0; i < displayedReminders.length; i++) {
+            if (displayedReminders[i].id === selectedReminder.id) {
+                index = i;
+                break;
+            }
+        }
+        if (index <= 0)
+            return;
+        var parent = displayedReminders[index - 1];
+        if (parent.listId !== selectedList.id)
+            return;
+        service.moveReminder(selectedList.id, selectedReminder.id, parent.id, parent.sectionId, selectedReminder.rank, selectedList.revision);
+    }
+
+    function outdentSelectedReminder() {
+        if (!selectedListEditable || !selectedReminder || selectedReminder.parentId === null || !service)
+            return;
+        var parent = reminderFromSelectedList(selectedReminder.parentId);
+        if (!parent)
+            return;
+        service.moveReminder(selectedList.id, selectedReminder.id, parent.parentId, parent.sectionId, selectedReminder.rank, selectedList.revision);
+    }
+
     function localTimezone() {
         try {
             return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
@@ -445,6 +507,18 @@ Item {
         onActivated: root.viewMode = "completed"
     }
 
+    Shortcut {
+        sequence: "Ctrl+]"
+        enabled: root.opened && !root.captureMode && root.selectedReminder !== null
+        onActivated: root.indentSelectedReminder()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+["
+        enabled: root.opened && !root.captureMode && root.selectedReminder !== null
+        onActivated: root.outdentSelectedReminder()
+    }
+
     onSelectedListChanged: {
         if (selectedList) {
             selectedListId = selectedList.id;
@@ -452,6 +526,7 @@ Item {
             confirmDeleteList = false;
             selectedSectionId = 0;
             selectedReminderIds = [];
+            collapsedReminderIds = [];
             confirmBatchDelete = false;
         }
     }
@@ -1378,14 +1453,42 @@ Item {
 
                                         Button {
                                             text: "↑"
+                                            Accessible.name: "Move reminder up"
                                             enabled: root.selectedListEditable && root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: root.moveSelectedRelative(-1)
                                         }
 
                                         Button {
                                             text: "↓"
+                                            Accessible.name: "Move reminder down"
                                             enabled: root.selectedListEditable && root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: root.moveSelectedRelative(1)
+                                        }
+
+                                    }
+
+                                    Row {
+                                        spacing: Style.space(8)
+
+                                        Button {
+                                            text: "Indent"
+                                            enabled: root.selectedListEditable && root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: root.indentSelectedReminder()
+                                        }
+
+                                        Button {
+                                            text: "Outdent"
+                                            enabled: root.selectedListEditable && root.selectedReminder && root.selectedReminder.parentId !== null && service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: root.outdentSelectedReminder()
+                                        }
+
+                                        Text {
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            text: "Ctrl+] / Ctrl+["
+                                            color: Color.menu.text
+                                            opacity: 0.7
+                                            font.family: Style.font.menuFamily
+                                            font.pixelSize: Style.font.caption
                                         }
 
                                     }
@@ -1574,6 +1677,25 @@ Item {
 
                                     }
 
+                                    Row {
+                                        spacing: Style.space(8)
+
+                                        TextField {
+                                            id: customSnooze
+
+                                            width: Style.space(180)
+                                            placeholderText: "Snooze until YYYY-MM-DDTHH:MM"
+                                            Accessible.name: "Custom snooze date and time"
+                                        }
+
+                                        Button {
+                                            text: "Snooze until"
+                                            enabled: root.selectedReminder && root.selectedReminder.schedule && customSnooze.text.trim() && service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: service.snoozeReminderUntil(root.selectedList.id, root.selectedReminder.id, customSnooze.text.trim())
+                                        }
+
+                                    }
+
                                 }
 
                             }
@@ -1601,6 +1723,20 @@ Item {
                                     if (service.canEditList(reminder.listId) && service.connectionState === "online" && !service.mutationPending)
                                         service.setCompleted(reminder.listId, reminder.id, !reminder.completed, reminder.listRevision);
                                 }
+                                Keys.onRightPressed: {
+                                    if (currentIndex < 0 || currentIndex >= root.displayedReminders.length)
+                                        return;
+                                    var reminder = root.displayedReminders[currentIndex];
+                                    if (root.reminderHasChildren(reminder.id))
+                                        root.setReminderCollapsed(reminder.id, false);
+                                }
+                                Keys.onLeftPressed: {
+                                    if (currentIndex < 0 || currentIndex >= root.displayedReminders.length)
+                                        return;
+                                    var reminder = root.displayedReminders[currentIndex];
+                                    if (root.reminderHasChildren(reminder.id))
+                                        root.setReminderCollapsed(reminder.id, true);
+                                }
 
                                 delegate: Rectangle {
                                     required property var modelData
@@ -1611,7 +1747,7 @@ Item {
                                     radius: Style.cornerRadius
                                     color: ListView.isCurrentItem ? Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.14) : Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.04)
                                     Accessible.role: Accessible.ListItem
-                                    Accessible.name: modelData.title
+                                    Accessible.name: (Number(modelData.depth || 0) > 0 ? "Subtask, " : "") + modelData.title + (root.reminderHasChildren(modelData.id) ? (root.reminderIsCollapsed(modelData.id) ? ", collapsed" : ", expanded") : "")
 
                                     Row {
                                         anchors.fill: parent
@@ -1633,13 +1769,21 @@ Item {
                                             onClicked: root.toggleReminderSelection(modelData.id)
                                         }
 
+                                        Button {
+                                            visible: root.viewMode === "list" && root.reminderHasChildren(modelData.id)
+                                            text: root.reminderIsCollapsed(modelData.id) ? "▶" : "▼"
+                                            Accessible.name: (root.reminderIsCollapsed(modelData.id) ? "Expand " : "Collapse ") + modelData.title
+                                            onClicked: root.toggleReminderCollapsed(modelData.id)
+                                        }
+
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
                                             width: parent.width - x
                                             text: {
                                                 var list = root.viewMode === "list" ? "" : "  ·  " + modelData.listTitle;
                                                 var section = root.sectionTitleFor(modelData.listId, modelData.sectionId);
-                                                var prefix = modelData.parentId === null ? "" : "↳ ";
+                                                var depth = Math.max(0, Number(modelData.depth || 0));
+                                                var prefix = depth === 0 ? "" : Array(depth + 1).join("  ") + "↳ ";
                                                 var due = modelData.schedule ? "  ·  " + root.urbitToInput(modelData.schedule.dueAt).replace("T", " ") : "";
                                                 return prefix + modelData.title + list + (section ? "  ·  " + section : "") + due;
                                             }

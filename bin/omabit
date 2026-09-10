@@ -106,6 +106,21 @@ def urbit_date_value(value: str) -> datetime | None:
         return None
 
 
+def snooze_date(value: str) -> datetime:
+    parsed = urbit_date_value(value)
+    if parsed is None:
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except (AttributeError, ValueError) as error:
+            raise CliError("--until must be an ISO-8601 or Urbit date/time") from error
+        if parsed.tzinfo is None:
+            parsed = parsed.astimezone()
+        parsed = parsed.astimezone(timezone.utc)
+    if parsed <= datetime.now(timezone.utc):
+        raise CliError("Snooze time must be in the future")
+    return parsed
+
+
 def operation_id() -> str:
     return uuid.uuid4().hex
 
@@ -525,7 +540,9 @@ def run_tend(args: argparse.Namespace) -> int:
     if args.tend_command == "snooze":
         task_list = select_list(state, str(args.list_id))
         find_reminder(task_list, args.reminder_id)
-        until = urbit_date(datetime.now(timezone.utc) + timedelta(minutes=args.minutes))
+        if args.minutes is not None and args.minutes <= 0:
+            raise CliError("--minutes must be positive")
+        until = urbit_date(snooze_date(args.until)) if args.until else urbit_date(datetime.now(timezone.utc) + timedelta(minutes=args.minutes or 15))
         action = {"snooze-reminder": {
             "operation-id": operation_id(),
             "list-id": args.list_id,
@@ -584,7 +601,9 @@ def parser() -> argparse.ArgumentParser:
     snooze = commands.add_parser("snooze")
     snooze.add_argument("list_id", type=int)
     snooze.add_argument("reminder_id", type=int)
-    snooze.add_argument("--minutes", type=int, default=15)
+    snooze_time = snooze.add_mutually_exclusive_group()
+    snooze_time.add_argument("--minutes", type=int, help="snooze duration from now (default: 15)")
+    snooze_time.add_argument("--until", help="absolute ISO-8601 or Urbit date/time")
 
     open_command = commands.add_parser("open", help="open the Tend overlay")
     open_command.add_argument("list_id", type=int, nargs="?", default=0)

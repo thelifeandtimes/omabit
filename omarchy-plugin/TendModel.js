@@ -400,6 +400,56 @@ function badgeCount(lists, preferences, ship, nowMs) {
   return queryReminders(lists, { view: view, ship: ship, allDayOverdue: prefs.allDayOverdue }, nowMs).length
 }
 
+function hierarchyOrder(items) {
+  const byId = new Map()
+  ;(items || []).forEach(function(item) { byId.set(Number(item.id), item) })
+  const children = new Map()
+  ;(items || []).forEach(function(item) {
+    const parentId = item.parentId === null || item.parentId === undefined || !byId.has(Number(item.parentId))
+      ? null
+      : Number(item.parentId)
+    if (!children.has(parentId)) children.set(parentId, [])
+    children.get(parentId).push(item)
+  })
+  const ordered = []
+  const visited = new Set()
+  function visit(item, depth) {
+    const id = Number(item.id)
+    if (visited.has(id)) return
+    visited.add(id)
+    item.depth = depth
+    ordered.push(item)
+    ;(children.get(id) || []).forEach(function(child) { visit(child, depth + 1) })
+  }
+  ;(children.get(null) || []).forEach(function(item) { visit(item, 0) })
+  ;(items || []).forEach(function(item) { visit(item, 0) })
+  return ordered
+}
+
+function visibleReminders(items, collapsedIds) {
+  const ordered = hierarchyOrder(items)
+  const byId = new Map(ordered.map(function(item) { return [Number(item.id), item] }))
+  const collapsed = new Set((collapsedIds || []).map(Number))
+  return ordered.filter(function(item) {
+    var parentId = item.parentId
+    const visited = new Set([Number(item.id)])
+    while (parentId !== null && parentId !== undefined) {
+      const parent = Number(parentId)
+      if (collapsed.has(parent)) return false
+      if (visited.has(parent)) return true
+      visited.add(parent)
+      const value = byId.get(parent)
+      parentId = value ? value.parentId : null
+    }
+    return true
+  })
+}
+
+function reminderHasChildren(items, reminderId) {
+  const wanted = Number(reminderId)
+  return (items || []).some(function(item) { return Number(item.parentId) === wanted })
+}
+
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders, nextReminder: nextReminder }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren }
 }

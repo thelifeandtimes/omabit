@@ -32,6 +32,8 @@ Resource and model-scale gates are recorded in
 Backup validation and the restore safety contract live in
 [`docs/TEND_BACKUP.md`](docs/TEND_BACKUP.md); the current Core gap matrix is
 [`docs/TEND_RELEASE_CHECKLIST.md`](docs/TEND_RELEASE_CHECKLIST.md).
+Tested versions, update/rollback steps, and troubleshooting are in
+[`docs/TEND_OPERATIONS.md`](docs/TEND_OPERATIONS.md).
 
 ## Development
 

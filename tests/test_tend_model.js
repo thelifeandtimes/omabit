@@ -253,6 +253,28 @@ test("built-in views, search, and due sorting work across lists", () => {
   assert.deepEqual(model.allTags(lists), ["shop"])
 })
 
+test("subtasks render as a guarded hierarchy and collapse with their descendants", () => {
+  const items = [
+    { id: 4, title: "Grandchild", parentId: 3, rank: 1 },
+    { id: 3, title: "Child", parentId: 1, rank: 5 },
+    { id: 1, title: "Parent", parentId: null, rank: 10 },
+    { id: 2, title: "Sibling", parentId: null, rank: 20 }
+  ]
+  const ordered = model.hierarchyOrder(items)
+  assert.deepEqual(ordered.map((item) => item.id), [1, 3, 4, 2])
+  assert.deepEqual(ordered.map((item) => item.depth), [0, 1, 2, 0])
+  assert.equal(model.reminderHasChildren(ordered, 1), true)
+  assert.equal(model.reminderHasChildren(ordered, 4), false)
+  assert.deepEqual(model.visibleReminders(items, [1]).map((item) => item.id), [1, 2])
+  assert.deepEqual(model.visibleReminders(items, [3]).map((item) => item.id), [1, 3, 2])
+
+  const malformedCycle = [
+    { id: 8, title: "A", parentId: 9, rank: 1 },
+    { id: 9, title: "B", parentId: 8, rank: 2 }
+  ]
+  assert.deepEqual(model.visibleReminders(malformedCycle, []).map((item) => item.id), [8, 9])
+})
+
 test("assigned view, assignee search, and next reminder use normalized ships and due order", () => {
   const lists = [{
     id: 1,

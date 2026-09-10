@@ -105,6 +105,7 @@ omabit tend complete 1 42 43 44
 omabit tend move 1 42 43 --section 7 --rank 2048
 omabit tend delete 1 42 43 --yes
 omabit tend snooze 1 42 --minutes 20
+omabit tend snooze 1 42 --until 2026-09-11T09:30:00-07:00
 omabit tend open 1 42
 omabit tend open --capture
 omabit --json tend list
@@ -124,4 +125,6 @@ validation-first, empty-state-only contract is documented in
 Run `omabit tend --help` for the complete command list.
 
 See `docs/TEND_ACCESSIBILITY.md` in the release archive for the full keyboard
-reference and assistive-technology release checklist.
+reference and assistive-technology release checklist. See
+`docs/TEND_OPERATIONS.md` for the tested compatibility baseline, update,
+rollback, and troubleshooting procedures.

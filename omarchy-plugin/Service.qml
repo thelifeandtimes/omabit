@@ -356,12 +356,29 @@ Item {
 
     function snoozeReminder(listId, reminderId, seconds) {
         var until = new Date(Date.now() + Math.max(1, Number(seconds || 0)) * 1000);
+        return snoozeReminderUntil(listId, reminderId, until.toISOString());
+    }
+
+    function snoozeReminderUntil(listId, reminderId, until) {
+        var source = String(until || "").trim();
+        if (source.charAt(0) !== "~") {
+            var instant = new Date(source);
+            if (isNaN(instant.getTime()) || instant.getTime() <= Date.now()) {
+                root.errorMessage = "Enter a valid future date and time for snooze.";
+                return false;
+            }
+        }
+        var encoded = toUrbitDate(source);
+        if (!encoded || encoded.charAt(0) !== "~") {
+            root.errorMessage = "Enter a valid future date and time for snooze.";
+            return false;
+        }
         return submit({
             "snooze-reminder": {
                 "operation-id": operationId(),
                 "list-id": Number(listId),
                 "reminder-id": Number(reminderId),
-                "until": toUrbitDate(until.toISOString())
+                "until": encoded
             }
         });
     }

@@ -30,6 +30,9 @@ Last verified: 2026-09-10
   Section settings edit title/rank or safely delete a section, and reminder
   organization controls set parent, section, and manual rank. The corresponding
   `%tend` actions compile and round-trip through live Eyre.
+- Subtasks render in parent/child order with depth cues, can be collapsed or
+  expanded by pointer or arrow key, and expose explicit indent/outdent controls
+  plus `Ctrl+]` / `Ctrl+[` shortcuts. Gall remains the final cycle check.
 - Today (including overdue), Scheduled, All, Flagged, and Completed views work
   across lists. The overlay can search reminder text, notes, URLs, tags, and
   list names, then sort by manual rank, due date, creation date, priority, or
@@ -48,7 +51,8 @@ Last verified: 2026-09-10
 - Personal snoozes are stored outside canonical reminder data, share the single
   Behn wakeup scheduler, survive reloads, and are pruned when their reminder is
   no longer actionable. The `%2` to `%3` migration and both new actions were
-  verified through live Eyre.
+  verified through live Eyre. Preset durations and explicit future date/times
+  are available from the details panel and CLI.
 - The schedule editor now exposes recurrence weekdays, month dates, ordinal
   weekday, end date, and occurrence count. Reminder organization includes
   direct up/down rank controls in addition to explicit parent/section/rank.
