@@ -34,13 +34,21 @@ Last verified: 2026-09-10
   earliest Behn timer, and emits alert events that the desktop maps to native
   notifications. Live tests verified an immediate overdue wake and recurrence
   advancement.
+- Revisioned default-list, pinned-list, pinned-view, and snooze-preset
+  preferences now live on the user's ship. Smart-view quick entry targets the
+  default list, pinned lists sort first, and the overlay can update pins and the
+  default.
+- Personal snoozes are stored outside canonical reminder data, share the single
+  Behn wakeup scheduler, survive reloads, and are pruned when their reminder is
+  no longer actionable. The `%2` to `%3` migration and both new actions were
+  verified through live Eyre.
 - Plugin validation, JavaScript reducer tests, and Python Eyre transport tests
   pass.
 
 ## Next
 
-1. Snooze actions and richer recurrence/date controls in the overlay.
-2. Pins/default-list preferences and direct drag/keyboard order controls.
+1. Richer recurrence/date controls and desktop notification action buttons.
+2. Direct drag/keyboard order controls and tag-management affordances.
 3. Owner-hosted list references, invitations/ACLs, replicas, presence, and
    read-only owner-offline behavior across multiple ships.
 4. Notifications, CLI, packaging, backups, accessibility, fault testing, and

@@ -57,6 +57,7 @@ test("snapshot is normalized and incomplete reminders are counted", () => {
   assert.equal(result.lists[0].reminders[0].schedule.timezone, "America/Los_Angeles")
   assert.equal(result.lists[0].reminders[0].schedule.recurrence.maxOccurrences, 5)
   assert.equal(model.incompleteCount(result.lists), 1)
+  assert.deepEqual(result.preferences.pinnedViews, ["today", "scheduled", "all", "flagged", "completed"])
 })
 
 test("alerts preserve list state and expose normalized notification data", () => {
@@ -75,8 +76,41 @@ test("alerts preserve list state and expose normalized notification data", () =>
     listId: 1,
     reminderId: 9,
     dueAt: "~2026.9.10..21.00.00",
-    earlySeconds: 900
+    earlySeconds: 900,
+    snoozed: false
   })
+})
+
+test("preferences, snoozes, and pinned list order reduce independently", () => {
+  const lists = [
+    { id: 1, title: "Home", revision: 1, reminders: [] },
+    { id: 2, title: "Work", revision: 1, reminders: [] }
+  ]
+  const snapshot = model.reduce([], {
+    snapshot: {
+      lists,
+      preferences: { revision: 3, "default-list": 2, "pinned-lists": [2], "pinned-views": ["today"], "snooze-presets": [600] },
+      snoozes: [{ "list-id": 2, "reminder-id": 8, until: "~2026.9.10..22.00.00" }]
+    }
+  })
+
+  assert.equal(snapshot.preferences.defaultList, 2)
+  assert.deepEqual(model.orderedLists(snapshot.lists, snapshot.preferences.pinnedLists).map((item) => item.id), [2, 1])
+  assert.equal(snapshot.snoozes[0].reminderId, 8)
+
+  const updated = model.reduce(snapshot.lists, {
+    "preferences-updated": {
+      preferences: { revision: 4, "default-list": 1, "pinned-lists": [1], "pinned-views": ["all"], "snooze-presets": [300] }
+    }
+  }, snapshot.preferences, snapshot.snoozes)
+  assert.equal(updated.preferences.defaultList, 1)
+  assert.equal(updated.snoozes.length, 1)
+
+  const fired = model.reduce(updated.lists, {
+    alert: { "list-id": 2, "reminder-id": 8, "due-at": "~2026.9.10..20.00.00", "early-seconds": 0, snoozed: true }
+  }, updated.preferences, updated.snoozes)
+  assert.equal(fired.alert.snoozed, true)
+  assert.equal(fired.snoozes.length, 0)
 })
 
 test("deltas update one list without mutating the previous snapshot", () => {

@@ -26,6 +26,42 @@
     ^-  json
     [%a (turn ~(tap in values) |=(value=@ud (numb value)))]
   ::
+  ++  number-list-json
+    |=  values=(list @ud)
+    ^-  json
+    [%a (turn values |=(value=@ud (numb value)))]
+  ::
+  ++  smart-view-list-json
+    |=  values=(list smart-view:sur)
+    ^-  json
+    [%a (turn values |=(value=smart-view:sur s+value))]
+  ::
+  ++  preferences-json
+    |=  prefs=preferences:sur
+    ^-  json
+    %-  pairs
+    :~  [%revision (numb revision.prefs)]
+        [%default-list (unit-number-json default-list.prefs)]
+        [%pinned-lists (number-list-json pinned-lists.prefs)]
+        [%pinned-views (smart-view-list-json pinned-views.prefs)]
+        [%snooze-presets (number-list-json snooze-presets.prefs)]
+    ==
+  ::
+  ++  snoozes-json
+    |=  values=snoozes:sur
+    ^-  json
+    =/  entries=(list json)
+      %-  ~(rep by values)
+      |=  [[key=snooze-key:sur until=@da] acc=(list json)]
+      =/  item=json
+        %-  pairs
+        :~  [%list-id (numb -.key)]
+            [%reminder-id (numb +.key)]
+            [%until s+(scot %da until)]
+        ==
+      [item acc]
+    [%a entries]
+  ::
   ++  month-week-json
     |=  value=(unit month-week:sur)
     ^-  json
@@ -142,6 +178,8 @@
       %+  frond  %snapshot
       %-  pairs
       :~  [%lists (lists-json lists.upd)]
+          [%preferences (preferences-json preferences.upd)]
+          [%snoozes (snoozes-json snoozes.upd)]
       ==
     ::
         %list-upserted
@@ -149,6 +187,7 @@
       %-  pairs
       :~  [%operation-id s+op-id.upd]
           [%list (task-list-json list.upd)]
+          [%preferences (preferences-json preferences.upd)]
       ==
     ::
         %list-deleted
@@ -156,6 +195,23 @@
       %-  pairs
       :~  [%operation-id s+op-id.upd]
           [%list-id (numb list-id.upd)]
+          [%preferences (preferences-json preferences.upd)]
+      ==
+    ::
+        %preferences-updated
+      %+  frond  %preferences-updated
+      %-  pairs
+      :~  [%operation-id s+op-id.upd]
+          [%preferences (preferences-json preferences.upd)]
+      ==
+    ::
+        %snoozed
+      %+  frond  %snoozed
+      %-  pairs
+      :~  [%operation-id s+op-id.upd]
+          [%list-id (numb list-id.upd)]
+          [%reminder-id (numb reminder-id.upd)]
+          [%until s+(scot %da until.upd)]
       ==
     ::
         %alert
@@ -165,6 +221,7 @@
           [%reminder-id (numb reminder-id.upd)]
           [%due-at s+(scot %da due-at.upd)]
           [%early-seconds (numb early-seconds.upd)]
+          [%snoozed b+snoozed.upd]
       ==
     ::
         %rejected
@@ -201,6 +258,18 @@
       %weekly   %weekly
       %monthly  %monthly
       %yearly   %yearly
+    ==
+  ::
+  ++  smart-view
+    |=  jon=json
+    ^-  smart-view:sur
+    =/  value=@t  (so jon)
+    ?+  value  !!
+      %today      %today
+      %scheduled  %scheduled
+      %all        %all
+      %flagged    %flagged
+      %completed  %completed
     ==
   ::
   ++  date
@@ -301,6 +370,16 @@
       =/  [=op-id =list-id =reminder-id completed=? base-revision=@ud]
         ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%completed bo] [%base-revision ni] ~]) body)
       [%set-completed op-id list-id reminder-id completed base-revision]
+    ::
+        %set-preferences
+      =/  [=op-id default-list=(unit @ud) pinned-lists=(list @ud) pinned-views=(list smart-view:sur) snooze-presets=(list @ud) base-revision=@ud]
+        ((ot [[%operation-id so] [%default-list (mu ni)] [%pinned-lists (ar ni)] [%pinned-views (ar smart-view)] [%snooze-presets (ar ni)] [%base-revision ni] ~]) body)
+      [%set-preferences op-id default-list pinned-lists pinned-views snooze-presets base-revision]
+    ::
+        %snooze-reminder
+      =/  [=op-id =list-id =reminder-id until=@da]
+        ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%until date] ~]) body)
+      [%snooze-reminder op-id list-id reminder-id until]
     ==
   --
 --

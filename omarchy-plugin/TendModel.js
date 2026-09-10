@@ -71,21 +71,73 @@ function sortedLists(lists) {
   return (lists || []).map(cloneList).sort(function(a, b) { return Number(a.id) - Number(b.id) })
 }
 
-function reduce(currentLists, update) {
-  var lists = sortedLists(currentLists)
-  if (!update || typeof update !== "object") return { lists: lists, error: "Invalid Tend update", alert: null }
+function orderedLists(lists, pinnedIds) {
+  const normalized = sortedLists(lists)
+  const order = new Map((pinnedIds || []).map(function(id, index) { return [Number(id), index] }))
+  return normalized.sort(function(a, b) {
+    const aPinned = order.has(Number(a.id))
+    const bPinned = order.has(Number(b.id))
+    if (aPinned && bPinned) return order.get(Number(a.id)) - order.get(Number(b.id))
+    if (aPinned) return -1
+    if (bPinned) return 1
+    return Number(a.id) - Number(b.id)
+  })
+}
 
-  if (update.snapshot) return { lists: sortedLists(update.snapshot.lists), error: "", alert: null }
+function clonePreferences(value) {
+  value = value || {}
+  return {
+    revision: Number(value.revision || 0),
+    defaultList: value["default-list"] === undefined ? (value.defaultList ?? null) : value["default-list"],
+    pinnedLists: (value["pinned-lists"] || value.pinnedLists || []).map(Number),
+    pinnedViews: (value["pinned-views"] || value.pinnedViews || ["today", "scheduled", "all", "flagged", "completed"]).map(String),
+    snoozePresets: (value["snooze-presets"] || value.snoozePresets || [300, 900, 3600]).map(Number)
+  }
+}
+
+function cloneSnoozes(values) {
+  return (values || []).map(function(value) {
+    return {
+      listId: Number(value["list-id"] === undefined ? value.listId : value["list-id"]),
+      reminderId: Number(value["reminder-id"] === undefined ? value.reminderId : value["reminder-id"]),
+      until: String(value.until || "")
+    }
+  }).sort(function(a, b) {
+    return a.until.localeCompare(b.until) || a.listId - b.listId || a.reminderId - b.reminderId
+  })
+}
+
+function reduce(currentLists, update, currentPreferences, currentSnoozes) {
+  var lists = sortedLists(currentLists)
+  var preferences = clonePreferences(currentPreferences)
+  var snoozes = cloneSnoozes(currentSnoozes)
+  if (!update || typeof update !== "object") return { lists: lists, preferences: preferences, snoozes: snoozes, error: "Invalid Tend update", alert: null }
+
+  if (update.snapshot) return {
+    lists: sortedLists(update.snapshot.lists),
+    preferences: clonePreferences(update.snapshot.preferences),
+    snoozes: cloneSnoozes(update.snapshot.snoozes),
+    error: "",
+    alert: null
+  }
 
   if (update.alert) {
+    var isSnoozedAlert = update.alert.snoozed === true
+    var alertListId = Number(update.alert["list-id"])
+    var alertReminderId = Number(update.alert["reminder-id"])
     return {
       lists: lists,
+      preferences: preferences,
+      snoozes: isSnoozedAlert ? snoozes.filter(function(item) {
+        return item.listId !== alertListId || item.reminderId !== alertReminderId
+      }) : snoozes,
       error: "",
       alert: {
-        listId: Number(update.alert["list-id"]),
-        reminderId: Number(update.alert["reminder-id"]),
+        listId: alertListId,
+        reminderId: alertReminderId,
         dueAt: String(update.alert["due-at"] || ""),
-        earlySeconds: Number(update.alert["early-seconds"] || 0)
+        earlySeconds: Number(update.alert["early-seconds"] || 0),
+        snoozed: isSnoozedAlert
       }
     }
   }
@@ -94,6 +146,8 @@ function reduce(currentLists, update) {
     var replacement = cloneList(update["list-upserted"].list)
     return {
       lists: sortedLists(lists.filter(function(item) { return item.id !== replacement.id }).concat([replacement])),
+      preferences: clonePreferences(update["list-upserted"].preferences || preferences),
+      snoozes: snoozes,
       error: "",
       alert: null
     }
@@ -101,13 +155,32 @@ function reduce(currentLists, update) {
 
   if (update["list-deleted"]) {
     var deletedId = update["list-deleted"]["list-id"]
-    return { lists: lists.filter(function(item) { return item.id !== deletedId }), error: "", alert: null }
+    return {
+      lists: lists.filter(function(item) { return item.id !== deletedId }),
+      preferences: clonePreferences(update["list-deleted"].preferences || preferences),
+      snoozes: snoozes.filter(function(item) { return item.listId !== deletedId }),
+      error: "",
+      alert: null
+    }
+  }
+
+  if (update["preferences-updated"]) {
+    return { lists: lists, preferences: clonePreferences(update["preferences-updated"].preferences), snoozes: snoozes, error: "", alert: null }
+  }
+
+  if (update.snoozed) {
+    var snoozed = cloneSnoozes([update.snoozed])[0]
+    var nextSnoozes = snoozes.filter(function(item) {
+      return item.listId !== snoozed.listId || item.reminderId !== snoozed.reminderId
+    })
+    nextSnoozes.push(snoozed)
+    return { lists: lists, preferences: preferences, snoozes: cloneSnoozes(nextSnoozes), error: "", alert: null }
   }
 
   // Milestone 0 events remain readable during a rolling desk/plugin upgrade.
   if (update["list-created"]) {
     var created = cloneList(update["list-created"].list)
-    return { lists: sortedLists(lists.filter(function(item) { return item.id !== created.id }).concat([created])), error: "", alert: null }
+    return { lists: sortedLists(lists.filter(function(item) { return item.id !== created.id }).concat([created])), preferences: preferences, snoozes: snoozes, error: "", alert: null }
   }
 
   var payload = update["reminder-added"] || update["reminder-completed"]
@@ -122,14 +195,14 @@ function reduce(currentLists, update) {
       copy.revision = Number(payload["list-revision"] || copy.revision)
       return copy
     })
-    return { lists: next, error: "", alert: null }
+    return { lists: next, preferences: preferences, snoozes: snoozes, error: "", alert: null }
   }
 
   if (update.rejected) {
-    return { lists: lists, error: "Action rejected: " + String(update.rejected.reason || "unknown"), alert: null }
+    return { lists: lists, preferences: preferences, snoozes: snoozes, error: "Action rejected: " + String(update.rejected.reason || "unknown"), alert: null }
   }
 
-  return { lists: lists, error: "Unknown Tend update", alert: null }
+  return { lists: lists, preferences: preferences, snoozes: snoozes, error: "Unknown Tend update", alert: null }
 }
 
 function incompleteCount(lists) {
@@ -209,5 +282,5 @@ function queryReminders(lists, options, nowMs) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, reduce: reduce, incompleteCount: incompleteCount, urbitDateMs: urbitDateMs, queryReminders: queryReminders }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, cloneSnoozes: cloneSnoozes, reduce: reduce, incompleteCount: incompleteCount, urbitDateMs: urbitDateMs, queryReminders: queryReminders }
 }

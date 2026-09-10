@@ -38,6 +38,19 @@ Item {
         }
         return null;
     }
+    readonly property var orderedLists: TendModel.orderedLists(service ? service.lists : [], service ? service.preferences.pinnedLists : [])
+    readonly property var addDestination: {
+        if (!service || !service.lists.length)
+            return null;
+
+        var wanted = viewMode === "list" && selectedList ? selectedList.id : service.preferences.defaultList;
+        for (var i = 0; i < service.lists.length; i++) {
+            if (service.lists[i].id === wanted)
+                return service.lists[i];
+
+        }
+        return service.lists[0];
+    }
     readonly property var displayedReminders: TendModel.queryReminders(service ? service.lists : [], {
         view: viewMode,
         listId: selectedList ? selectedList.id : 0,
@@ -85,6 +98,44 @@ Item {
 
         }
         return 0;
+    }
+
+    function updatePreferences(defaultList, pinnedLists, pinnedViews) {
+        if (!service)
+            return false;
+
+        return service.setPreferences({
+            defaultList: defaultList,
+            pinnedLists: pinnedLists,
+            pinnedViews: pinnedViews,
+            snoozePresets: service.preferences.snoozePresets
+        });
+    }
+
+    function toggleListPin() {
+        if (!selectedList || !service)
+            return ;
+
+        var pins = service.preferences.pinnedLists.slice();
+        var index = pins.indexOf(selectedList.id);
+        if (index === -1)
+            pins.push(selectedList.id);
+        else
+            pins.splice(index, 1);
+        updatePreferences(service.preferences.defaultList, pins, service.preferences.pinnedViews);
+    }
+
+    function toggleViewPin(view) {
+        if (!service)
+            return ;
+
+        var pins = service.preferences.pinnedViews.slice();
+        var index = pins.indexOf(view);
+        if (index === -1)
+            pins.push(view);
+        else
+            pins.splice(index, 1);
+        updatePreferences(service.preferences.defaultList, service.preferences.pinnedLists, pins);
     }
 
     function sectionTitle(sectionId) {
@@ -392,7 +443,7 @@ Item {
                                             required property var modelData
 
                                             width: (parent.width - parent.spacing) / 2
-                                            text: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                            text: (service && service.preferences.pinnedViews.indexOf(modelData) !== -1 ? "★ " : "") + modelData.charAt(0).toUpperCase() + modelData.slice(1)
                                             checkable: true
                                             checked: root.viewMode === modelData
                                             onClicked: {
@@ -401,6 +452,26 @@ Item {
                                             }
                                         }
 
+                                    }
+
+                                }
+
+                                Row {
+                                    width: parent.width
+                                    spacing: Style.space(4)
+
+                                    ComboBox {
+                                        id: viewPinChoice
+
+                                        width: parent.width * 0.62
+                                        model: ["today", "scheduled", "all", "flagged", "completed"]
+                                    }
+
+                                    Button {
+                                        width: parent.width - viewPinChoice.width - parent.spacing
+                                        text: service && service.preferences.pinnedViews.indexOf(viewPinChoice.currentText) !== -1 ? "Unpin" : "Pin"
+                                        enabled: service && service.connectionState === "online" && !service.mutationPending
+                                        onClicked: root.toggleViewPin(viewPinChoice.currentText)
                                     }
 
                                 }
@@ -415,13 +486,17 @@ Item {
                                 }
 
                                 Repeater {
-                                    model: service ? service.lists : []
+                                    model: root.orderedLists
 
                                     delegate: Button {
                                         required property var modelData
 
                                         width: parent.width
-                                        text: modelData.title
+                                        text: {
+                                            var pinned = service && service.preferences.pinnedLists.indexOf(modelData.id) !== -1 ? "★ " : "";
+                                            var primary = service && service.preferences.defaultList === modelData.id ? " · default" : "";
+                                            return pinned + modelData.title + primary;
+                                        }
                                         checkable: true
                                         checked: root.viewMode === "list" && root.selectedList && root.selectedList.id === modelData.id
                                         onClicked: {
@@ -532,6 +607,34 @@ Item {
                             }
 
                             Row {
+                                visible: root.listEditorOpen && root.selectedList !== null
+                                width: parent.width
+                                spacing: Style.space(6)
+
+                                Button {
+                                    text: service && service.preferences.defaultList === root.selectedList.id ? "Default list" : "Make default"
+                                    enabled: service && service.preferences.defaultList !== root.selectedList.id && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: root.updatePreferences(root.selectedList.id, service.preferences.pinnedLists, service.preferences.pinnedViews)
+                                }
+
+                                Button {
+                                    text: service && service.preferences.pinnedLists.indexOf(root.selectedList.id) !== -1 ? "Unpin list" : "Pin list"
+                                    enabled: service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: root.toggleListPin()
+                                }
+
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: "Default list receives quick adds from smart views."
+                                    color: Color.menu.text
+                                    opacity: 0.68
+                                    font.family: Style.font.menuFamily
+                                    font.pixelSize: Style.font.caption
+                                }
+
+                            }
+
+                            Row {
                                 width: parent.width
                                 spacing: Style.space(8)
 
@@ -566,10 +669,10 @@ Item {
                                     id: quickAdd
 
                                     width: parent.width * 0.66
-                                    placeholderText: root.selectedList ? "Add a reminder" : "Create a list first"
-                                    enabled: root.selectedList && service && service.connectionState === "online" && !service.mutationPending
+                                    placeholderText: root.addDestination ? "Add to " + root.addDestination.title : "Create a list first"
+                                    enabled: root.addDestination && service && service.connectionState === "online" && !service.mutationPending
                                     onAccepted: {
-                                        if (text.trim() && service.addReminder(root.selectedList.id, text, root.selectedList.revision))
+                                        if (text.trim() && service.addReminder(root.addDestination.id, text, root.addDestination.revision))
                                             text = "";
 
                                     }
@@ -864,6 +967,19 @@ Item {
                                             text: "Delete"
                                             enabled: root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: service.deleteReminder(root.selectedList.id, root.selectedReminder.id, root.selectedList.revision)
+                                        }
+
+                                        ComboBox {
+                                            id: snoozePreset
+
+                                            model: service ? service.preferences.snoozePresets : []
+                                            displayText: currentValue ? Math.round(Number(currentValue) / 60) + " min" : "Snooze"
+                                        }
+
+                                        Button {
+                                            text: "Snooze"
+                                            enabled: root.selectedReminder && root.selectedReminder.schedule && snoozePreset.currentIndex >= 0 && service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: service.snoozeReminder(root.selectedList.id, root.selectedReminder.id, Number(snoozePreset.currentValue))
                                         }
 
                                     }

@@ -13,6 +13,8 @@ Item {
     property string baseUrl: ""
     property string ship: ""
     property var lists: []
+    property var preferences: TendModel.clonePreferences(null)
+    property var snoozes: []
     property var lastAlert: null
     property bool mutationPending: false
     readonly property int incompleteCount: TendModel.incompleteCount(lists)
@@ -223,6 +225,33 @@ Item {
         });
     }
 
+    function setPreferences(fields) {
+        fields = fields || {
+        };
+        return submit({
+            "set-preferences": {
+                "operation-id": operationId(),
+                "default-list": fields.defaultList === null || fields.defaultList === undefined ? null : Number(fields.defaultList),
+                "pinned-lists": (fields.pinnedLists || []).map(Number),
+                "pinned-views": (fields.pinnedViews || []).map(String),
+                "snooze-presets": (fields.snoozePresets || []).map(Number),
+                "base-revision": Number(preferences.revision || 0)
+            }
+        });
+    }
+
+    function snoozeReminder(listId, reminderId, seconds) {
+        var until = new Date(Date.now() + Math.max(1, Number(seconds || 0)) * 1000);
+        return submit({
+            "snooze-reminder": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "reminder-id": Number(reminderId),
+                "until": toUrbitDate(until.toISOString())
+            }
+        });
+    }
+
     function updateReminder(listId, reminderId, fields, baseRevision) {
         fields = fields || {
         };
@@ -279,8 +308,10 @@ Item {
             if (message.response !== "diff")
                 return ;
 
-            var result = TendModel.reduce(root.lists, message.json);
+            var result = TendModel.reduce(root.lists, message.json, root.preferences, root.snoozes);
             root.lists = result.lists;
+            root.preferences = result.preferences;
+            root.snoozes = result.snoozes;
             if (message.json && message.json.snapshot)
                 root.connectionState = "online";
 

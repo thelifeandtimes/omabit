@@ -170,6 +170,17 @@
   ==
 +$  lists  (map list-id task-list)
 ::
++$  smart-view  $?(%today %scheduled %all %flagged %completed)
++$  preferences
+  $:  revision=@ud
+      default-list=(unit list-id)
+      pinned-lists=(list list-id)
+      pinned-views=(list smart-view)
+      snooze-presets=(list @ud)
+  ==
++$  snooze-key  [list-id reminder-id]
++$  snoozes     (map snooze-key @da)
+::
 +$  action
   $%  [%create-list =op-id title=@t]
       [%rename-list =op-id =list-id title=@t base-revision=@ud]
@@ -216,9 +227,18 @@
           base-revision=@ud
       ==
       [%set-completed =op-id =list-id =reminder-id completed=? base-revision=@ud]
+      $:  %set-preferences
+          =op-id
+          default-list=(unit list-id)
+          pinned-lists=(list list-id)
+          pinned-views=(list smart-view)
+          snooze-presets=(list @ud)
+          base-revision=@ud
+      ==
+      [%snooze-reminder =op-id =list-id =reminder-id until=@da]
   ==
 ::
-+$  update
++$  update-2
   $%  [%snapshot =lists]
       [%list-upserted =op-id list=task-list]
       [%list-deleted =op-id =list-id]
@@ -226,14 +246,35 @@
       [%rejected =op-id reason=@tas current-revision=(unit @ud)]
   ==
 ::
-+$  receipts  (map op-id update)
++$  receipts-2  (map op-id update-2)
 +$  state-2
   $:  %2
       next-id=@ud
       list-map=lists
-      receipt-map=receipts
+      receipt-map=receipts-2
       default-list=(unit list-id)
       timer-generation=@ud
       next-wake=(unit @da)
+  ==
+::
++$  update
+  $%  [%snapshot =lists =preferences =snoozes]
+      [%list-upserted =op-id list=task-list =preferences]
+      [%list-deleted =op-id =list-id =preferences]
+      [%preferences-updated =op-id =preferences]
+      [%snoozed =op-id =list-id =reminder-id until=@da]
+      [%alert =list-id =reminder-id due-at=@da early-seconds=@ud snoozed=?]
+      [%rejected =op-id reason=@tas current-revision=(unit @ud)]
+  ==
++$  receipts  (map op-id update)
++$  state-3
+  $:  %3
+      next-id=@ud
+      list-map=lists
+      receipt-map=receipts
+      preferences=preferences
+      timer-generation=@ud
+      next-wake=(unit @da)
+      snooze-map=snoozes
   ==
 --

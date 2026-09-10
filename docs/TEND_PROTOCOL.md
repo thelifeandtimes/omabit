@@ -30,6 +30,8 @@ returns its recorded result without applying it twice.
 | `move-reminder` | Change parent, section, and stable rank after validating references and cycles |
 | `set-schedule` | Set/clear due instant, all-day policy, IANA zone, early offsets, and recurrence |
 | `set-completed` | Complete/uncomplete a reminder tree, or advance a repeating reminder |
+| `set-preferences` | Atomically update revisioned default-list, pin, and snooze-preset state |
+| `snooze-reminder` | Schedule a personal one-shot alert without modifying shared reminder data |
 | `delete-reminder` | Delete a reminder and all descendants |
 
 List appearance strings are non-empty and bounded; list deletion requires a
@@ -48,28 +50,33 @@ year.
 
 ## Updates
 
-`snapshot` contains all visible lists. `list-upserted` replaces one canonical
-list after any successful list mutation. `list-deleted` removes one list.
-`rejected` never changes canonical list state. Lists and reminders carry their
-own revisions and Urbit timestamps. `alert` identifies the reminder, due
-instant, and early offset that fired; the desktop maps that event to a native
-notification.
+`snapshot` contains all visible lists, personal preferences, and active
+snoozes. `list-upserted` replaces one canonical list after any successful list
+mutation. `list-deleted` removes one list and returns cleaned preference state.
+`preferences-updated` and `snoozed` affect only the user's own ship.
+`rejected` never changes canonical list state. Lists, reminders, and preferences
+carry revisions or Urbit timestamps. `alert` identifies the reminder, due
+instant, early offset, and whether it is a snooze wake; the desktop maps that
+event to a native notification.
 
 The Milestone 0 event shapes remain accepted by the JavaScript reducer during a
 rolling upgrade, but new agents emit only the canonical update forms.
 
 ## Persistence
 
-Gall is authoritative. State schema `%2` contains lists, the next local ID,
-operation receipts, default list, and Behn timer generation. `+on-load`
-migrates both `%0` and `%1`, preserving IDs, titles, completion state, and
-revisions while filling new fields with deterministic defaults.
+Gall is authoritative. State schema `%3` contains lists, the next local ID,
+operation receipts, revisioned personal preferences, active snoozes, and Behn
+timer generation. `+on-load` migrates `%0`, `%1`, and `%2`, preserving IDs,
+titles, completion state, revisions, schedules, and the default list while
+filling new fields with deterministic defaults.
 
 The agent keeps one earliest Behn wakeup across all outstanding due/early
-alerts. Generation-tagged wires make replaced timers harmless. Fired offsets
+alerts and snoozes. Generation-tagged wires make replaced timers harmless. Fired offsets
 are persisted on the schedule, so wake replay, agent reload, and ship restart
 cannot redeliver an already-recorded occurrence; reload re-arms an outstanding
-timer and overdue wakeups run immediately.
+timer and overdue wakeups run immediately. Snoozes are personal state keyed by
+list/reminder and are discarded if the reminder is deleted, completed, or loses
+its schedule.
 
 The current ID atoms are scoped to the hosting ship. The multiplayer protocol
 will expose them as `[host=@p local-id]` references without requiring a global
