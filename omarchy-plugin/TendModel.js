@@ -85,6 +85,23 @@ function orderedLists(lists, pinnedIds) {
   })
 }
 
+function orderedValues(values, pinnedValues) {
+  const input = (values || []).map(String)
+  const allowed = new Set(input)
+  const used = new Set()
+  const ordered = []
+  ;(pinnedValues || []).map(String).forEach(function(value) {
+    if (allowed.has(value) && !used.has(value)) {
+      used.add(value)
+      ordered.push(value)
+    }
+  })
+  input.forEach(function(value) {
+    if (!used.has(value)) ordered.push(value)
+  })
+  return ordered
+}
+
 function clonePreferences(value) {
   value = value || {}
   const alertMinute = value["all-day-alert-minute"] === undefined ? value.allDayAlertMinute : value["all-day-alert-minute"]
@@ -451,5 +468,5 @@ function reminderHasChildren(items, reminderId) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren }
 }

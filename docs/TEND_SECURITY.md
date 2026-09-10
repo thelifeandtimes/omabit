@@ -39,6 +39,8 @@ release and its reviewers must verify.
 - Membership removal must revoke active subscriptions and subsequent mutations.
   Operation IDs are deduplicated so network retries cannot apply a mutation
   twice.
+- Reminder assignment is authorized from canonical ownership/membership state;
+  a syntactically valid ship that is not a participant is rejected.
 
 ## Shared-data disclosure
 
@@ -51,8 +53,10 @@ the current release scope.
 ## Input and resource limits
 
 - Gall marks validate every incoming shape before agent logic runs.
-- Titles, notes, URLs, appearance strings, tags, recurrence sets, and list sizes
-  are bounded server-side. URL actions accept only HTTP, HTTPS, and mailto data.
+- Titles (1 KiB), notes (64 KiB), URLs (8 KiB), appearance/tag/time-zone
+  strings (128 bytes), recurrence/offset sets, preference arrays, lists,
+  sections, reminders, and batch selections are bounded server-side. URL
+  actions accept only HTTP, HTTPS, and mailto data.
 - `%tend-peer-1` is noun-only and versioned separately from Eyre JSON marks.
 - Release installers reject broad desk targets, refuse symbolic-link targets,
   and do not overwrite existing installs unless `--force` is supplied. Forced
@@ -73,3 +77,8 @@ every persisted state version, and operation across planet, moon, and comet
 identities. `make check-tend` and `make check-tend-release` cover the local
 plugin, transport, CLI, and package surfaces; live multi-ship tests cover the
 Gall boundary.
+
+The current operation-receipt map is durable but not yet retention-bounded.
+Before peer mutation is enabled, receipts need a time/size retention policy
+that preserves the documented retry window without permitting unbounded Gall
+state growth.

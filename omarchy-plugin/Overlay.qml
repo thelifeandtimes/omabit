@@ -53,6 +53,8 @@ Item {
         return "HOSTED BY " + selectedAccess.host.toUpperCase() + " · " + selectedAccess.status.toUpperCase();
     }
     readonly property var orderedLists: TendModel.orderedLists(service ? service.lists : [], service ? service.preferences.pinnedLists : [])
+    readonly property var availableViews: ["today", "scheduled", "all", "flagged", "assigned", "completed"]
+    readonly property var orderedViews: TendModel.orderedValues(availableViews, service ? service.preferences.pinnedViews : [])
     readonly property var availableTags: TendModel.allTags(service ? service.lists : [])
     readonly property var addDestination: {
         if (!service || !service.lists.length)
@@ -100,6 +102,25 @@ Item {
         }
         return choices;
     }
+    readonly property var assigneeChoices: {
+        var choices = [{
+            ship: "",
+            title: "Unassigned"
+        }];
+        if (!selectedAccess)
+            return choices;
+        var seen = {};
+        var values = [{ ship: selectedAccess.host }].concat(selectedAccess.members || []);
+        for (var i = 0; i < values.length; i++) {
+            var ship = String(values[i].ship || "");
+            var key = ship.replace(/^~/, "");
+            if (!key || seen[key])
+                continue;
+            seen[key] = true;
+            choices.push({ ship: ship, title: ship.charAt(0) === "~" ? ship : "~" + ship });
+        }
+        return choices;
+    }
     readonly property var sectionChoices: {
         var choices = [{
             id: 0,
@@ -114,6 +135,15 @@ Item {
             if (values[i].id === wanted)
                 return i;
 
+        }
+        return 0;
+    }
+
+    function indexForShip(values, ship) {
+        var wanted = String(ship || "").replace(/^~/, "");
+        for (var i = 0; i < values.length; i++) {
+            if (String(values[i].ship || "").replace(/^~/, "") === wanted)
+                return i;
         }
         return 0;
     }
@@ -221,6 +251,34 @@ Item {
         updatePreferences(service.preferences.defaultList, service.preferences.pinnedLists, pins);
     }
 
+    function movePinnedValue(values, wanted, delta) {
+        var next = values.slice();
+        var index = next.indexOf(wanted);
+        var target = index + delta;
+        if (index < 0 || target < 0 || target >= next.length)
+            return values;
+        var swap = next[target];
+        next[target] = next[index];
+        next[index] = swap;
+        return next;
+    }
+
+    function movePinnedList(delta) {
+        if (!selectedList || !service)
+            return;
+        var pins = movePinnedValue(service.preferences.pinnedLists, selectedList.id, delta);
+        if (pins !== service.preferences.pinnedLists)
+            updatePreferences(service.preferences.defaultList, pins, service.preferences.pinnedViews);
+    }
+
+    function movePinnedView(view, delta) {
+        if (!service)
+            return;
+        var pins = movePinnedValue(service.preferences.pinnedViews, view, delta);
+        if (pins !== service.preferences.pinnedViews)
+            updatePreferences(service.preferences.defaultList, service.preferences.pinnedLists, pins);
+    }
+
     function sectionTitle(sectionId) {
         if (!selectedList || sectionId === null || sectionId === undefined)
             return "";
@@ -258,7 +316,6 @@ Item {
         reminderPriority.currentIndex = Math.max(0, reminderPriority.model.indexOf(reminder.priority));
         reminderFlagged.checked = reminder.flagged;
         reminderTags.text = reminder.tags.join(", ");
-        reminderAssignee.text = reminder.assignee || "";
         reminderDue.text = reminder.schedule ? urbitToInput(reminder.schedule.dueAt) : "";
         reminderAllDay.checked = reminder.schedule ? reminder.schedule.allDay : false;
         reminderTimezone.text = reminder.schedule ? reminder.schedule.timezone : localTimezone();
@@ -278,6 +335,7 @@ Item {
         Qt.callLater(function() {
             reminderParent.currentIndex = root.indexForId(root.parentChoices, reminder.parentId);
             reminderSection.currentIndex = root.indexForId(root.sectionChoices, reminder.sectionId);
+            reminderAssignee.currentIndex = root.indexForShip(root.assigneeChoices, reminder.assignee);
         });
     }
 
@@ -780,7 +838,7 @@ Item {
                                     spacing: Style.space(4)
 
                                     Repeater {
-                                        model: ["today", "scheduled", "all", "flagged", "assigned", "completed"]
+                                        model: root.orderedViews
 
                                         delegate: Button {
                                             required property var modelData
@@ -816,6 +874,26 @@ Item {
                                         text: service && service.preferences.pinnedViews.indexOf(viewPinChoice.currentText) !== -1 ? "Unpin" : "Pin"
                                         enabled: service && service.connectionState === "online" && !service.mutationPending
                                         onClicked: root.toggleViewPin(viewPinChoice.currentText)
+                                    }
+
+                                }
+
+                                Row {
+                                    width: parent.width
+                                    spacing: Style.space(6)
+
+                                    Button {
+                                        width: (parent.width - parent.spacing) / 2
+                                        text: "Pinned view ↑"
+                                        enabled: service && service.preferences.pinnedViews.indexOf(viewPinChoice.currentText) > 0 && service.connectionState === "online" && !service.mutationPending
+                                        onClicked: root.movePinnedView(viewPinChoice.currentText, -1)
+                                    }
+
+                                    Button {
+                                        width: (parent.width - parent.spacing) / 2
+                                        text: "Pinned view ↓"
+                                        enabled: service && service.preferences.pinnedViews.indexOf(viewPinChoice.currentText) >= 0 && service.preferences.pinnedViews.indexOf(viewPinChoice.currentText) < service.preferences.pinnedViews.length - 1 && service.connectionState === "online" && !service.mutationPending
+                                        onClicked: root.movePinnedView(viewPinChoice.currentText, 1)
                                     }
 
                                 }
@@ -1098,6 +1176,18 @@ Item {
                                     onClicked: root.toggleListPin()
                                 }
 
+                                Button {
+                                    text: "Pinned ↑"
+                                    enabled: service && service.preferences.pinnedLists.indexOf(root.selectedList.id) > 0 && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: root.movePinnedList(-1)
+                                }
+
+                                Button {
+                                    text: "Pinned ↓"
+                                    enabled: service && service.preferences.pinnedLists.indexOf(root.selectedList.id) >= 0 && service.preferences.pinnedLists.indexOf(root.selectedList.id) < service.preferences.pinnedLists.length - 1 && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: root.movePinnedList(1)
+                                }
+
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: "Default list receives quick adds from smart views."
@@ -1365,11 +1455,13 @@ Item {
                                         Accessible.name: "Reminder tags"
                                     }
 
-                                    TextField {
+                                    ComboBox {
                                         id: reminderAssignee
 
                                         width: parent.width
-                                        placeholderText: "Assignee ship, for example ~sampel-palnet"
+                                        model: root.assigneeChoices
+                                        textRole: "title"
+                                        valueRole: "ship"
                                         Accessible.name: "Reminder assignee ship"
                                     }
 
@@ -1650,7 +1742,7 @@ Item {
                                                     priority: reminderPriority.currentText,
                                                     flagged: reminderFlagged.checked,
                                                     tags: tags,
-                                                    assignee: reminderAssignee.text.trim() || null
+                                                    assignee: reminderAssignee.currentValue || null
                                                 }, root.selectedList.revision);
                                             }
                                         }

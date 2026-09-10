@@ -8,12 +8,14 @@ ROOT = Path(__file__).parents[1]
 class TendAccessibilityTests(unittest.TestCase):
     def test_overlay_keeps_keyboard_navigation_contract(self):
         overlay = (ROOT / "omarchy-plugin" / "Overlay.qml").read_text(encoding="utf-8")
-        for shortcut in ("Ctrl+N", "Ctrl+F", "Ctrl+Shift+N", "Ctrl+Comma", "Alt+1", "Alt+6"):
+        for shortcut in ("Ctrl+N", "Ctrl+F", "Ctrl+Shift+N", "Ctrl+Comma", "Alt+1", "Alt+6", "Ctrl+[", "Ctrl+]"):
             self.assertIn(f'sequence: "{shortcut}"', overlay)
         self.assertIn("Keys.onReturnPressed", overlay)
         self.assertIn("Keys.onSpacePressed", overlay)
         self.assertIn("Accessible.role: Accessible.List", overlay)
         self.assertIn('Accessible.name: "Current Urbit plus code"', overlay)
+        self.assertIn("model: root.assigneeChoices", overlay)
+        self.assertIn("root.setReminderCollapsed", overlay)
 
     def test_bar_exposes_count_and_connection_state(self):
         widget = (ROOT / "omarchy-plugin" / "BarWidget.qml").read_text(encoding="utf-8")

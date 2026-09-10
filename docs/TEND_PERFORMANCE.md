@@ -10,6 +10,9 @@ without bound.
 | One Eyre SSE line/event | At most 32 MiB |
 | One frontend action | At most 1 MiB |
 | One batch reminder selection | 1–500 IDs |
+| Hosted lists / sections per list / reminders per list | 10,000 / 10,000 / 100,000 |
+| Reminder title / notes / URL | 1 KiB / 64 KiB / 8 KiB |
+| Early offsets / weekdays / month dates / snooze presets | 64 / 7 / 31 / 32 |
 | 10,000-reminder snapshot normalization | Under 5 seconds |
 | Today query over 10,000 reminders | Under 5 seconds |
 | Text search over 10,000 reminders | Under 5 seconds |
@@ -28,3 +31,5 @@ make test-js
 
 Multi-ship throughput, reconnect soak duration, and Gall-state growth budgets
 remain gated on the peer transport and its explicit data-egress approval.
+The durable operation-receipt map also needs a retention bound before that
+transport is enabled.

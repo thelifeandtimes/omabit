@@ -171,6 +171,7 @@ class CliDomainTests(unittest.TestCase):
                         {
                             "id": 3,
                             "title": "Parent",
+                            "notes": "Details",
                             "revision": 2,
                             "rank": 10,
                             "completed": False,
@@ -198,6 +199,7 @@ class CliDomainTests(unittest.TestCase):
                         {
                             "id": 4,
                             "title": "Child",
+                            "notes": "",
                             "revision": 1,
                             "rank": 20,
                             "completed": False,
@@ -210,7 +212,13 @@ class CliDomainTests(unittest.TestCase):
                         },
                     ],
                 }],
-                "preferences": {"revision": 1, "default-list": 1},
+                "preferences": {
+                    "revision": 1,
+                    "default-list": 1,
+                    "pinned-lists": [1],
+                    "pinned-views": ["today", "assigned"],
+                    "snooze-presets": [300, 900],
+                },
                 "snoozes": [{"list-id": 1, "reminder-id": 3, "until": "~2026.9.11..21.00.00"}],
             },
         }

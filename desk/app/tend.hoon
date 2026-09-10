@@ -259,6 +259,8 @@
     ?^  prior  [(give u.prior) state]
     ?-  -.act
         %create-list
+      ?:  (gte (lent ~(tap by list-map.state)) 10.000)
+        (reject op-id.act %list-limit ~ state)
       ?:  (invalid-title title.act)
         (reject op-id.act %invalid-title ~ state)
       =/  lis=task-list:t
@@ -368,6 +370,8 @@
       ?~  old  (reject op-id.act %unknown-list ~ state)
       ?.  =(base-revision.act revision.u.old)
         (reject op-id.act %stale-list `revision.u.old state)
+      ?:  (gte (lent ~(tap by sections.u.old)) 10.000)
+        (reject op-id.act %section-limit `revision.u.old state)
       ?:  (invalid-title title.act)
         (reject op-id.act %invalid-title `revision.u.old state)
       =/  sec=section:t  [next-id.state title.act rank.act]
@@ -424,6 +428,8 @@
       ?~  old  (reject op-id.act %unknown-list ~ state)
       ?.  =(base-revision.act revision.u.old)
         (reject op-id.act %stale-list `revision.u.old state)
+      ?:  (gte (lent ~(tap by reminders.u.old)) 100.000)
+        (reject op-id.act %reminder-limit `revision.u.old state)
       ?:  (invalid-title title.act)
         (reject op-id.act %invalid-title `revision.u.old state)
       ?:  (invalid-tags tags.act)
@@ -465,10 +471,14 @@
       ?~  old-rem  (reject op-id.act %unknown-reminder `revision.u.old state)
       ?:  (invalid-title title.act)
         (reject op-id.act %invalid-title `revision.u.old state)
+      ?:  (gth (met 3 notes.act) 65.536)
+        (reject op-id.act %notes-too-large `revision.u.old state)
       ?:  (invalid-url url.act)
         (reject op-id.act %unsafe-url `revision.u.old state)
       ?:  (invalid-tags tags.act)
         (reject op-id.act %invalid-tags `revision.u.old state)
+      ?.  (valid-assignee list-id.act assignee.act state)
+        (reject op-id.act %invalid-assignee `revision.u.old state)
       =/  rem=reminder:t
         %_  u.old-rem
             title       title.act
@@ -813,11 +823,23 @@
     =/  bad-default=?
       ?~(default-list.prefs %.n !(~(has by liss) u.default-list.prefs))
     ?:  bad-default  %.y
+    ?:  (gth (lent pinned-lists.prefs) 10.000)  %.y
+    ?:  (gth (lent pinned-views.prefs) 6)  %.y
+    ?:  (gth (lent snooze-presets.prefs) 32)  %.y
     ?.  (levy pinned-lists.prefs |=(id=list-id:t (~(has by liss) id)))
       %.y
     ?.  (levy snooze-presets.prefs |=(seconds=@ud &((gth seconds 0) (lte seconds 2.592.000))))
       %.y
     (gte all-day-alert-minute.prefs 1.440)
+  ::
+  ++  valid-assignee
+    |=  [=list-id:t assignee=(unit @p) st=state-6:t]
+    ^-  ?
+    ?~  assignee  %.y
+    ?:  =(u.assignee our.bowl)  %.y
+    =/  sharing=(unit share:t)  (~(get by share-map.st) list-id)
+    ?~  sharing  %.n
+    (~(has by members.u.sharing) u.assignee)
   ::
   ++  invalid-selection
     |=  [ids=(set reminder-id:t) rems=reminders:t]
@@ -966,6 +988,7 @@
   ++  invalid-url
     |=  url=(unit @t)
     ?~  url  %.n
+    ?:  (gth (met 3 u.url) 8.192)  %.y
     =/  value=tape  (trip u.url)
     ?~  value  %.n
     =/  http=(unit @ud)    (find "http://" value)
@@ -985,6 +1008,7 @@
     =/  sch=schedule-input:t  u.value
     ?:  |(=(0 timezone.sch) (gth (met 3 timezone.sch) 128))  %.y
     =/  offsets=(list @ud)  ~(tap in early-seconds.sch)
+    ?:  (gth (lent offsets) 64)  %.y
     ?.  (levy offsets |=(seconds=@ud (lte seconds 31.536.000)))  %.y
     ?~  recurrence.sch  %.n
     (invalid-recurrence u.recurrence.sch due-at.sch)
@@ -994,8 +1018,10 @@
     ^-  ?
     ?:  =(0 interval.rec)  %.y
     =/  weekdays=(list @ud)  ~(tap in weekdays.rec)
+    ?:  (gth (lent weekdays) 7)  %.y
     ?.  (levy weekdays |=(day=@ud (lth day 7)))  %.y
     =/  month-days=(list @ud)  ~(tap in month-days.rec)
+    ?:  (gth (lent month-days) 31)  %.y
     ?.  (levy month-days |=(day=@ud &((gth day 0) (lte day 31))))  %.y
     =/  bad-month-week=?
       ?~  month-week.rec  %.n

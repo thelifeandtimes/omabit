@@ -211,6 +211,8 @@ def _validate_schedule(value: object, path: str) -> None:
         _backup_error(f"{path}.all-day must be a boolean")
     _backup_string(schedule.get("timezone"), f"{path}.timezone", nonempty=True)
     offsets = _backup_array(schedule.get("early-seconds"), f"{path}.early-seconds")
+    if len(offsets) > 64:
+        _backup_error(f"{path}.early-seconds exceeds 64 entries")
     for index, seconds in enumerate(offsets):
         if _backup_integer(seconds, f"{path}.early-seconds[{index}]") > 31_536_000:
             _backup_error(f"{path}.early-seconds[{index}] exceeds one year")
@@ -222,10 +224,16 @@ def _validate_schedule(value: object, path: str) -> None:
     if frequency not in {"hourly", "daily", "weekly", "monthly", "yearly"}:
         _backup_error(f"{path}.recurrence.frequency is unsupported")
     _backup_integer(rule.get("interval"), f"{path}.recurrence.interval", positive=True)
-    for index, weekday in enumerate(_backup_array(rule.get("weekdays"), f"{path}.recurrence.weekdays")):
+    weekdays = _backup_array(rule.get("weekdays"), f"{path}.recurrence.weekdays")
+    if len(weekdays) > 7:
+        _backup_error(f"{path}.recurrence.weekdays exceeds 7 entries")
+    for index, weekday in enumerate(weekdays):
         if _backup_integer(weekday, f"{path}.recurrence.weekdays[{index}]") > 6:
             _backup_error(f"{path}.recurrence.weekdays[{index}] must be between 0 and 6")
-    for index, day in enumerate(_backup_array(rule.get("month-days"), f"{path}.recurrence.month-days")):
+    month_days = _backup_array(rule.get("month-days"), f"{path}.recurrence.month-days")
+    if len(month_days) > 31:
+        _backup_error(f"{path}.recurrence.month-days exceeds 31 entries")
+    for index, day in enumerate(month_days):
         if not 1 <= _backup_integer(day, f"{path}.recurrence.month-days[{index}]", positive=True) <= 31:
             _backup_error(f"{path}.recurrence.month-days[{index}] must be between 1 and 31")
     month_week = rule.get("month-week")
@@ -255,7 +263,9 @@ def validate_backup(value: object) -> dict[str, object]:
     _backup_string(backup.get("sourceShip"), "backup.sourceShip", nonempty=True)
     snapshot_value = _backup_object(backup.get("snapshot"), "backup.snapshot")
     lists = _backup_array(snapshot_value.get("lists"), "backup.snapshot.lists")
-    _backup_object(snapshot_value.get("preferences"), "backup.snapshot.preferences")
+    if len(lists) > 10_000:
+        _backup_error("backup.snapshot.lists exceeds 10000 entries")
+    preferences = _backup_object(snapshot_value.get("preferences"), "backup.snapshot.preferences")
     snoozes = _backup_array(snapshot_value.get("snoozes"), "backup.snapshot.snoozes")
 
     list_ids: set[int] = set()
@@ -275,6 +285,8 @@ def validate_backup(value: object) -> dict[str, object]:
         _backup_integer(task_list.get("revision"), f"{path}.revision")
 
         sections = _backup_array(task_list.get("sections"), f"{path}.sections")
+        if len(sections) > 10_000:
+            _backup_error(f"{path}.sections exceeds 10000 entries")
         section_ids: set[int] = set()
         for section_index, section_value in enumerate(sections):
             section_path = f"{path}.sections[{section_index}]"
@@ -288,6 +300,8 @@ def validate_backup(value: object) -> dict[str, object]:
         section_count += len(sections)
 
         reminders = _backup_array(task_list.get("reminders"), f"{path}.reminders")
+        if len(reminders) > 100_000:
+            _backup_error(f"{path}.reminders exceeds 100000 entries")
         reminder_ids: set[int] = set()
         parents: dict[int, int | None] = {}
         for reminder_index, reminder_value in enumerate(reminders):
@@ -305,6 +319,9 @@ def validate_backup(value: object) -> dict[str, object]:
             reminder_title = _backup_string(reminder.get("title"), f"{reminder_path}.title", nonempty=True)
             if len(reminder_title.encode("utf-8")) > 1_024:
                 _backup_error(f"{reminder_path}.title exceeds 1024 UTF-8 bytes")
+            notes = _backup_string(reminder.get("notes"), f"{reminder_path}.notes")
+            if len(notes.encode("utf-8")) > 65_536:
+                _backup_error(f"{reminder_path}.notes exceeds 65536 UTF-8 bytes")
             _backup_integer(reminder.get("revision"), f"{reminder_path}.revision")
             _backup_integer(reminder.get("rank"), f"{reminder_path}.rank")
             if not isinstance(reminder.get("completed"), bool):
@@ -316,10 +333,14 @@ def validate_backup(value: object) -> dict[str, object]:
             if len(tags) > 100:
                 _backup_error(f"{reminder_path}.tags exceeds 100 entries")
             for tag_index, tag in enumerate(tags):
-                _backup_string(tag, f"{reminder_path}.tags[{tag_index}]", nonempty=True)
+                tag_value = _backup_string(tag, f"{reminder_path}.tags[{tag_index}]", nonempty=True)
+                if len(tag_value.encode("utf-8")) > 128:
+                    _backup_error(f"{reminder_path}.tags[{tag_index}] exceeds 128 UTF-8 bytes")
             url = reminder.get("url")
             if url is not None:
                 url_value = _backup_string(url, f"{reminder_path}.url", nonempty=True)
+                if len(url_value.encode("utf-8")) > 8_192:
+                    _backup_error(f"{reminder_path}.url exceeds 8192 UTF-8 bytes")
                 if not url_value.startswith(("http://", "https://", "mailto:")):
                     _backup_error(f"{reminder_path}.url uses an unsafe scheme")
             if reminder.get("schedule") is not None:
@@ -334,6 +355,30 @@ def validate_backup(value: object) -> dict[str, object]:
                 seen.add(parent_id)
                 parent_id = parents[parent_id]
         reminder_count += len(reminders)
+
+    default_list = _backup_optional_id(preferences.get("default-list"), "backup.snapshot.preferences.default-list")
+    if default_list is not None and default_list not in list_ids:
+        _backup_error("backup.snapshot.preferences.default-list refers to a missing list")
+    pinned_lists = _backup_array(preferences.get("pinned-lists"), "backup.snapshot.preferences.pinned-lists")
+    if len(pinned_lists) > 10_000:
+        _backup_error("backup.snapshot.preferences.pinned-lists exceeds 10000 entries")
+    for index, list_id in enumerate(pinned_lists):
+        if _backup_integer(list_id, f"backup.snapshot.preferences.pinned-lists[{index}]") not in list_ids:
+            _backup_error(f"backup.snapshot.preferences.pinned-lists[{index}] refers to a missing list")
+    pinned_views = _backup_array(preferences.get("pinned-views"), "backup.snapshot.preferences.pinned-views")
+    if len(pinned_views) > 6:
+        _backup_error("backup.snapshot.preferences.pinned-views exceeds 6 entries")
+    allowed_views = {"today", "scheduled", "all", "flagged", "assigned", "completed"}
+    for index, view in enumerate(pinned_views):
+        if _backup_string(view, f"backup.snapshot.preferences.pinned-views[{index}]") not in allowed_views:
+            _backup_error(f"backup.snapshot.preferences.pinned-views[{index}] is unsupported")
+    presets = _backup_array(preferences.get("snooze-presets"), "backup.snapshot.preferences.snooze-presets")
+    if len(presets) > 32:
+        _backup_error("backup.snapshot.preferences.snooze-presets exceeds 32 entries")
+    for index, seconds in enumerate(presets):
+        value = _backup_integer(seconds, f"backup.snapshot.preferences.snooze-presets[{index}]", positive=True)
+        if value > 2_592_000:
+            _backup_error(f"backup.snapshot.preferences.snooze-presets[{index}] exceeds 30 days")
 
     for snooze_index, snooze_value in enumerate(snoozes):
         path = f"backup.snapshot.snoozes[{snooze_index}]"

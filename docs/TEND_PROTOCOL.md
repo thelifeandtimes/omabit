@@ -50,6 +50,11 @@ updates every affected list and merges duplicate target values through set
 semantics. Batch selections must be non-empty, contain only reminders in the
 addressed list, and are capped at 500 IDs.
 
+An assignee is valid only when it is the list owner or appears in that list's
+current member map. The Gall agent checks this against canonical state; the
+desktop presents the same owner/member set rather than accepting free-form
+ship text. Rank is irrelevant—the identity is an unrestricted Urbit `@p`.
+
 Schedules store a canonical Urbit `@da` due instant plus the originating IANA
 time-zone name. Recurrence is structured rather than cron text: hourly, daily,
 weekly, monthly, or yearly frequency; positive interval; optional weekdays,
@@ -57,6 +62,14 @@ month dates, ordinal weekday, end instant, and occurrence limit. Weekly
 weekday, monthly date/ordinal, month-end clamping, leap-year, end, and count
 semantics are evaluated by the Gall agent. Early offsets are capped at one
 year.
+
+The current resource ceilings are 10,000 hosted lists, 10,000 sections per
+list, and 100,000 reminders per list. Notes are capped at 64 KiB, URLs at 8
+KiB, appearance/tag/time-zone strings at 128 bytes, early-offset sets at 64,
+weekday sets at 7, month-date sets at 31, snooze presets at 32, and batch
+selections at 500. These are rejection ceilings, not recommended interaction
+sizes; the 32 MiB Eyre event ceiling will normally become the tighter snapshot
+limit.
 
 ## Updates
 

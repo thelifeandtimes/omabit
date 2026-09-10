@@ -21,6 +21,10 @@ Last verified: 2026-09-10
   are validated and capped server-side.
 - Unsafe URL schemes, invalid titles, stale revisions, missing entities, and
   parent cycles are rejected without changing canonical list state.
+- Gall now enforces explicit ceilings on note/URL bytes, list/section/reminder
+  counts, recurrence and early-offset sets, preference arrays, and batch sizes.
+  Desk revision 37 compiled on Vere 4.6; an oversized-note action left list
+  revision/content unchanged, while a bounded update and revert both committed.
 - The Omarchy service stays read-only in `Checking` and `Offline`, becoming
   writable only after its snapshot arrives.
 - The overlay can create lists, sections, and reminders; select a reminder;
@@ -46,8 +50,8 @@ Last verified: 2026-09-10
   advancement.
 - Revisioned default-list, pinned-list, pinned-view, and snooze-preset
   preferences now live on the user's ship. Smart-view quick entry targets the
-  default list, pinned lists sort first, and the overlay can update pins and the
-  default.
+  default list, pinned lists and views sort first in the user's chosen order,
+  and the overlay can update, reorder, or remove pins and change the default.
 - Personal snoozes are stored outside canonical reminder data, share the single
   Behn wakeup scheduler, survive reloads, and are pruned when their reminder is
   no longer actionable. The `%2` to `%3` migration and both new actions were
@@ -66,6 +70,9 @@ Last verified: 2026-09-10
   assignee to reminders, and durably allocates hosted-share, replica,
   invitation, and in-flight stores. A live `%3` ship migrated successfully and
   an assignment round-tripped through Eyre.
+- Assignment now uses owner/member choices in the desktop and is checked again
+  by Gall. Desk revision 38 rejected a syntactically valid non-member without
+  changing state, accepted the owner, and accepted a revert to unassigned.
 - `%5` freezes `%4` before collaboration receipts and pending-invitation
   payloads change shape. A live `%4` ship migrated successfully without losing
   its reminders, preferences, schedules, assignments, or snoozes.

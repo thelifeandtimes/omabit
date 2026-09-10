@@ -116,6 +116,14 @@ test("preferences, snoozes, and pinned list order reduce independently", () => {
   assert.equal(fired.snoozes.length, 0)
 })
 
+test("pinned smart views honor personal order and discard invalid duplicates", () => {
+  const views = ["today", "scheduled", "all", "flagged", "assigned", "completed"]
+  assert.deepEqual(
+    model.orderedValues(views, ["assigned", "today", "assigned", "missing"]),
+    ["assigned", "today", "scheduled", "all", "flagged", "completed"]
+  )
+})
+
 test("deltas update one list without mutating the previous snapshot", () => {
   const initial = [{ id: 1, title: "Inbox", revision: 1, reminders: [] }]
   const added = model.reduce(initial, {
