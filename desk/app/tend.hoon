@@ -2,10 +2,10 @@
 /+  default-agent
 |%
 +$  card         card:agent:gall
-+$  saved-state  $%(state-0:t state-1:t)
++$  saved-state  $%(state-0:t state-1:t state-2:t)
 --
 ::
-=|  state=state-1:t
+=|  state=state-2:t
 ^-  agent:gall
 |_  =bowl:gall
 +*  this  .
@@ -13,16 +13,52 @@
 ::
 ++  on-init
   ^-  (quip card _this)
-  [~ this(state [%1 1 *lists:t *receipts:t ~])]
+  [~ this(state [%2 1 *lists:t *receipts:t ~ 0 ~])]
 ::
 ++  on-save  !>(state)
 ::
 ++  on-load
   |=  old=vase
   ^-  (quip card _this)
+  |^
   =/  old-state=saved-state  !<(saved-state old)
+  ?:  ?=(%2 -.old-state)
+    (resume-timer old-state)
   ?:  ?=(%1 -.old-state)
-    [~ this(state old-state)]
+    =/  migrated=lists:t
+      %-  ~(run by list-map.old-state)
+      |=  old-list=task-list-1:t
+      =/  rems=reminders:t
+        %-  ~(run by reminders.old-list)
+        |=  old-rem=reminder-1:t
+        :*  id.old-rem
+            title.old-rem
+            notes.old-rem
+            url.old-rem
+            priority.old-rem
+            flagged.old-rem
+            tags.old-rem
+            parent-id.old-rem
+            section-id.old-rem
+            rank.old-rem
+            ~
+            completed.old-rem
+            ~
+            revision.old-rem
+            created-at.old-rem
+            modified-at.old-rem
+        ==
+      :*  id.old-list
+          title.old-list
+          color.old-list
+          symbol.old-list
+          revision.old-list
+          sections.old-list
+          rems
+          created-at.old-list
+          modified-at.old-list
+      ==
+    (resume-timer [%2 next-id.old-state migrated *receipts:t default-list.old-state 0 ~])
   ?>  ?=(%0 -.old-state)
   =/  migrated=lists:t
     %-  ~(run by list-map.old-state)
@@ -40,7 +76,9 @@
           ~
           ~
           id.old-rem
+          ~
           completed.old-rem
+          ~
           revision.old-rem
           now.bowl
           now.bowl
@@ -57,7 +95,18 @@
     ==
   =/  all=(list [list-id:t task-list:t])  ~(tap by migrated)
   =/  default=(unit list-id:t)  ?~(all ~ (some -.i.all))
-  [~ this(state [%1 next-id.old-state migrated *receipts:t default])]
+  (resume-timer [%2 next-id.old-state migrated *receipts:t default 0 ~])
+  ::
+  ++  resume-timer
+    |=  st=state-2:t
+    ^-  (quip card _this)
+    ?~  next-wake.st  [~ this(state st)]
+    =/  generation=@ud  +(timer-generation.st)
+    =/  when=@da  ?:((lte u.next-wake.st now.bowl) now.bowl u.next-wake.st)
+    =/  timer=card
+      [%pass /alerts/(scot %ud generation) %arvo %b %wait when]
+    [[timer ~] this(state st(timer-generation generation))]
+  --
 ::
 ++  on-poke
   |=  [=mark =vase]
@@ -90,12 +139,14 @@
             now.bowl
             now.bowl
         ==
-      =/  nex=state-1:t
-        :*  %1
+      =/  nex=state-2:t
+        :*  %2
             +(next-id.state)
             (~(put by list-map.state) id.lis lis)
             receipt-map.state
             ?~(default-list.state (some id.lis) default-list.state)
+            timer-generation.state
+            next-wake.state
         ==
       (commit op-id.act [%list-upserted op-id.act lis] nex)
     ::
@@ -120,8 +171,15 @@
       =/  default=(unit list-id:t)
         ?:  !=(default-list.state `list-id.act)  default-list.state
         ?~(all ~ (some -.i.all))
-      =/  nex=state-1:t
-        [%1 next-id.state remaining receipt-map.state default]
+      =/  nex=state-2:t
+        :*  %2
+            next-id.state
+            remaining
+            receipt-map.state
+            default
+            timer-generation.state
+            next-wake.state
+        ==
       (commit op-id.act [%list-deleted op-id.act list-id.act] nex)
     ::
         %add-section
@@ -198,7 +256,9 @@
             ~
             ~
             next-id.state
+            ~
             %.n
+            ~
             1
             now.bowl
             now.bowl
@@ -298,6 +358,58 @@
         ==
       (save-list op-id.act lis state)
     ::
+        %set-schedule
+      =/  old=(unit task-list:t)  (~(get by list-map.state) list-id.act)
+      ?~  old  (reject op-id.act %unknown-list ~ state)
+      ?.  =(base-revision.act revision.u.old)
+        (reject op-id.act %stale-list `revision.u.old state)
+      =/  old-rem=(unit reminder:t)
+        (~(get by reminders.u.old) reminder-id.act)
+      ?~  old-rem  (reject op-id.act %unknown-reminder `revision.u.old state)
+      ?:  (invalid-schedule schedule.act)
+        (reject op-id.act %invalid-schedule `revision.u.old state)
+      =/  next-schedule=(unit schedule:t)
+        ?~  schedule.act  ~
+        =/  input=schedule-input:t  u.schedule.act
+        =/  normalized-recurrence=(unit recurrence:t)
+          ?~  recurrence.input  ~
+          =/  rec=recurrence:t  u.recurrence.input
+          =/  needs-anchor=?
+            ?|  ?&  =(%monthly frequency.rec)
+                    ?=(~ month-week.rec)
+                    ?=(~ ~(tap in month-days.rec))
+                ==
+                ?&  =(%yearly frequency.rec)
+                    ?=(~ ~(tap in month-days.rec))
+                ==
+            ==
+          ?.  needs-anchor  (some rec)
+          =/  anchor=@ud  d.t:(yore due-at.input)
+          (some rec(month-days (~(put in month-days.rec) anchor)))
+        =/  built=schedule:t
+          :*  due-at.input
+              all-day.input
+              timezone.input
+              early-seconds.input
+              normalized-recurrence
+              0
+              *(set @ud)
+          ==
+        (some built)
+      =/  rem=reminder:t
+        %_  u.old-rem
+            schedule     next-schedule
+            revision     +(revision.u.old-rem)
+            modified-at  now.bowl
+        ==
+      =/  lis=task-list:t
+        %_  u.old
+            revision    +(revision.u.old)
+            reminders   (~(put by reminders.u.old) reminder-id.act rem)
+            modified-at  now.bowl
+        ==
+      (save-list op-id.act lis state)
+    ::
         %set-completed
       =/  old=(unit task-list:t)  (~(get by list-map.state) list-id.act)
       ?~  old  (reject op-id.act %unknown-list ~ state)
@@ -305,11 +417,34 @@
         (reject op-id.act %stale-list `revision.u.old state)
       ?.  (~(has by reminders.u.old) reminder-id.act)
         (reject op-id.act %unknown-reminder `revision.u.old state)
+      =/  target=reminder:t
+        (~(got by reminders.u.old) reminder-id.act)
+      =/  repeated=(unit reminder:t)
+        ?.  completed.act  ~
+        ?~  schedule.target  ~
+        =/  sch=schedule:t  u.schedule.target
+        ?~  recurrence.sch  ~
+        =/  advanced=(unit schedule:t)  (advance-schedule sch)
+        ?~  advanced  ~
+        `target(schedule advanced, completed %.n, last-completed-at `now.bowl, revision +(revision.target), modified-at now.bowl)
+      ?^  repeated
+        =/  lis=task-list:t
+          %_  u.old
+              revision    +(revision.u.old)
+              reminders   (~(put by reminders.u.old) reminder-id.act u.repeated)
+              modified-at  now.bowl
+          ==
+        (save-list op-id.act lis state)
       =/  rems=reminders:t
         %-  ~(run by reminders.u.old)
         |=  rem=reminder:t
         ?.  (descendant id.rem reminder-id.act reminders.u.old)  rem
-        rem(completed completed.act, revision +(revision.rem), modified-at now.bowl)
+        %_  rem
+            completed         completed.act
+            last-completed-at  ?:(completed.act `now.bowl ~)
+            revision          +(revision.rem)
+            modified-at       now.bowl
+        ==
       =/  lis=task-list:t
         %_  u.old
             revision    +(revision.u.old)
@@ -322,6 +457,118 @@
   ++  invalid-title
     |=  title=@t
     |(=(0 title) (gth (met 3 title) 1.024))
+  ::
+  ++  advance-schedule
+    |=  sch=schedule:t
+    ^-  (unit schedule:t)
+    ?~  recurrence.sch  ~
+    =/  rec=recurrence:t  u.recurrence.sch
+    =/  next-occurrence=@ud  +(occurrence.sch)
+    ?:  ?~(max-occurrences.rec %.n (gte next-occurrence u.max-occurrences.rec))
+      ~
+    =/  next-due=@da
+      ?-  frequency.rec
+          %hourly   (add due-at.sch (mul interval.rec ~h1))
+          %daily    (add due-at.sch (mul interval.rec ~d1))
+          %weekly   (next-weekly due-at.sch interval.rec weekdays.rec)
+          %monthly  (next-monthly due-at.sch interval.rec month-days.rec month-week.rec)
+          %yearly   (add-years due-at.sch interval.rec month-days.rec)
+      ==
+    ?:  ?~(end-at.rec %.n (gth next-due u.end-at.rec))  ~
+    `sch(due-at next-due, occurrence next-occurrence, alerted-offsets *(set @ud))
+  ::
+  ++  next-weekly
+    |=  [due=@da interval=@ud weekdays=(set @ud)]
+    ^-  @da
+    ?~  ~(tap in weekdays)  (add due (mul (mul interval 7) ~d1))
+    =/  current=@ud  (daws:chrono:userlib (yore due))
+    =/  later=(list @ud)
+      %+  skim  ~(tap in weekdays)
+      |=(day=@ud (gth day current))
+    =/  days=@ud
+      ?^  later
+        (sub (smallest later) current)
+      =/  first=@ud  (smallest ~(tap in weekdays))
+      (sub (add (mul interval 7) first) current)
+    (add due (mul days ~d1))
+  ::
+  ++  next-monthly
+    |=  [due=@da interval=@ud month-days=(set @ud) month-week=(unit month-week:t)]
+    ^-  @da
+    =/  dat=date  (yore due)
+    ?^  ~(tap in month-days)
+      =/  maximum=@ud  (days-in-month y.dat m.dat)
+      =/  later=(list @ud)
+        %+  skim  ~(tap in month-days)
+        |=  day=@ud
+        &((gth day d.t.dat) (lte day maximum))
+      ?^  later
+        (year dat(d.t (smallest later)))
+      =/  target=date  (shift-month dat interval)
+      =/  day=@ud  (min (smallest ~(tap in month-days)) (days-in-month y.target m.target))
+      (year target(d.t day))
+    ?^  month-week
+      =/  candidate=@ud
+        (ordinal-day y.dat m.dat index.u.month-week weekday.u.month-week)
+      ?:  (gth candidate d.t.dat)
+        (year dat(d.t candidate))
+      =/  target=date  (shift-month dat interval)
+      =/  day=@ud
+        (ordinal-day y.target m.target index.u.month-week weekday.u.month-week)
+      (year target(d.t day))
+    =/  target=date  (shift-month dat interval)
+    =/  day=@ud  (min d.t.dat (days-in-month y.target m.target))
+    (year target(d.t day))
+  ::
+  ++  add-years
+    |=  [due=@da interval=@ud month-days=(set @ud)]
+    ^-  @da
+    =/  dat=date  (yore due)
+    =/  next-year=@ud  (add y.dat interval)
+    =/  values=(list @ud)  ~(tap in month-days)
+    =/  desired=@ud  ?~(values d.t.dat (smallest values))
+    =/  day=@ud  (min desired (days-in-month next-year m.dat))
+    (year dat(y next-year, d.t day))
+  ::
+  ++  shift-month
+    |=  [dat=date interval=@ud]
+    ^-  date
+    =/  total=@ud  (add (mul y.dat 12) (dec m.dat))
+    =.  total  (add total interval)
+    =/  next-year=@ud  (div total 12)
+    =/  next-month=@ud  +((mod total 12))
+    dat(y next-year, m next-month)
+  ::
+  ++  days-in-month
+    |=  [year-number=@ud month-number=@ud]
+    ^-  @ud
+    =/  base=date  [[& year-number] month-number [1 0 0 0 ~]]
+    =/  following=date  (shift-month base 1)
+    d.t:(yore (sub (year following) ~d1))
+  ::
+  ++  ordinal-day
+    |=  [year-number=@ud month-number=@ud index=@ud weekday=@ud]
+    ^-  @ud
+    =/  maximum=@ud  (days-in-month year-number month-number)
+    =/  first=date  [[& year-number] month-number [1 0 0 0 ~]]
+    =/  first-weekday=@ud  (daws:chrono:userlib first)
+    =/  first-match=@ud  +((mod (add (sub (add weekday 7) first-weekday) 7) 7))
+    =/  candidate=@ud  (add first-match (mul (dec index) 7))
+    ?:  &(!=(index 5) (lte candidate maximum))  candidate
+    =/  last=date  first(d.t maximum)
+    =/  last-weekday=@ud  (daws:chrono:userlib last)
+    (sub maximum (mod (sub (add last-weekday 7) weekday) 7))
+  ::
+  ++  smallest
+    |=  values=(list @ud)
+    ^-  @ud
+    ?~  values  !!
+    =/  result=@ud  i.values
+    =/  remaining=(list @ud)  t.values
+    |-
+    ?~  remaining  result
+    =.  result  (min result i.remaining)
+    $(remaining t.remaining)
   ::
   ++  invalid-url
     |=  url=(unit @t)
@@ -338,6 +585,36 @@
       ==
     !safe
   ::
+  ++  invalid-schedule
+    |=  value=(unit schedule-input:t)
+    ^-  ?
+    ?~  value  %.n
+    =/  sch=schedule-input:t  u.value
+    ?:  |(=(0 timezone.sch) (gth (met 3 timezone.sch) 128))  %.y
+    =/  offsets=(list @ud)  ~(tap in early-seconds.sch)
+    ?.  (levy offsets |=(seconds=@ud (lte seconds 31.536.000)))  %.y
+    ?~  recurrence.sch  %.n
+    (invalid-recurrence u.recurrence.sch due-at.sch)
+  ::
+  ++  invalid-recurrence
+    |=  [rec=recurrence:t due=@da]
+    ^-  ?
+    ?:  =(0 interval.rec)  %.y
+    =/  weekdays=(list @ud)  ~(tap in weekdays.rec)
+    ?.  (levy weekdays |=(day=@ud (lth day 7)))  %.y
+    =/  month-days=(list @ud)  ~(tap in month-days.rec)
+    ?.  (levy month-days |=(day=@ud &((gth day 0) (lte day 31))))  %.y
+    =/  bad-month-week=?
+      ?~  month-week.rec  %.n
+      ?|  =(0 index.u.month-week.rec)
+          (gth index.u.month-week.rec 5)
+          (gth weekday.u.month-week.rec 6)
+      ==
+    ?:  bad-month-week  %.y
+    ?:  ?~(end-at.rec %.n (lte u.end-at.rec due))  %.y
+    ?:  ?~(max-occurrences.rec %.n =(0 u.max-occurrences.rec))  %.y
+    %.n
+  ::
   ++  descendant
     |=  [candidate=reminder-id:t ancestor=reminder-id:t rems=reminders:t]
     ^-  ?
@@ -348,38 +625,106 @@
     $(candidate u.parent-id.u.item)
   ::
   ++  save-list
-    |=  [=op-id:t lis=task-list:t st=state-1:t]
+    |=  [=op-id:t lis=task-list:t st=state-2:t]
     ^-  (quip card _state)
     (save-list-with-id op-id lis next-id.st st)
   ::
   ++  save-list-with-id
-    |=  [=op-id:t lis=task-list:t next=@ud st=state-1:t]
+    |=  [=op-id:t lis=task-list:t next=@ud st=state-2:t]
     ^-  (quip card _state)
-    =/  nex=state-1:t
-      [%1 next (~(put by list-map.st) id.lis lis) receipt-map.st default-list.st]
+    =/  nex=state-2:t
+      :*  %2
+          next
+          (~(put by list-map.st) id.lis lis)
+          receipt-map.st
+          default-list.st
+          timer-generation.st
+          next-wake.st
+      ==
     (commit op-id [%list-upserted op-id lis] nex)
   ::
   ++  reject
-    |=  [=op-id:t reason=@tas current=(unit @ud) st=state-1:t]
+    |=  [=op-id:t reason=@tas current=(unit @ud) st=state-2:t]
     ^-  (quip card _state)
     (commit op-id [%rejected op-id reason current] st)
   ::
   ++  commit
-    |=  [=op-id:t upd=update:t nex=state-1:t]
+    |=  [=op-id:t upd=update:t nex=state-2:t]
     ^-  (quip card _state)
-    :_  nex(receipt-map (~(put by receipt-map.nex) op-id upd))
-    (give upd)
+    =/  saved=state-2:t
+      nex(receipt-map (~(put by receipt-map.nex) op-id upd))
+    (arm-timer (give upd) saved)
   ::
   ++  give
     |=  upd=update:t
     ^-  (list card)
     [%give %fact ~[/all] %tend-update-1 !>(upd)]~
+  ::
+  ++  arm-timer
+    |=  [cards=(list card) st=state-2:t]
+    ^-  (quip card _state)
+    =/  wake=(unit @da)  (earliest-wake list-map.st)
+    ?:  =(wake next-wake.st)  [cards st]
+    =/  generation=@ud  +(timer-generation.st)
+    =/  armed=state-2:t
+      st(timer-generation generation, next-wake wake)
+    ?~  wake  [cards armed]
+    =/  when=@da  ?:((lte u.wake now.bowl) now.bowl u.wake)
+    :_  armed
+    [[%pass /alerts/(scot %ud generation) %arvo %b %wait when] cards]
+  ::
+  ++  earliest-wake
+    |=  liss=lists:t
+    ^-  (unit @da)
+    =/  entries=(list [list-id:t task-list:t])  ~(tap by liss)
+    =/  result=(unit @da)  ~
+    |-
+    ?~  entries  result
+    =.  result  (earlier result (earliest-reminders reminders.+.i.entries))
+    $(entries t.entries)
+  ::
+  ++  earliest-reminders
+    |=  rems=reminders:t
+    ^-  (unit @da)
+    =/  entries=(list [reminder-id:t reminder:t])  ~(tap by rems)
+    =/  result=(unit @da)  ~
+    |-
+    ?~  entries  result
+    =.  result  (earlier result (reminder-wake +.i.entries))
+    $(entries t.entries)
+  ::
+  ++  reminder-wake
+    |=  rem=reminder:t
+    ^-  (unit @da)
+    ?:  completed.rem  ~
+    ?~  schedule.rem  ~
+    =/  sch=schedule:t  u.schedule.rem
+    =/  offsets=(set @ud)  (~(put in early-seconds.sch) 0)
+    =/  pending=(list @ud)
+      %+  skim  ~(tap in offsets)
+      |=  seconds=@ud
+      !(~(has in alerted-offsets.sch) seconds)
+    =/  result=(unit @da)  ~
+    |-
+    ?~  pending  result
+    =/  delta=@dr  (mul i.pending ~s1)
+    =/  candidate=@da
+      ?:((lte due-at.sch delta) `@da`0 (sub due-at.sch delta))
+    =.  result  (earlier result `candidate)
+    $(pending t.pending)
+  ::
+  ++  earlier
+    |=  [a=(unit @da) b=(unit @da)]
+    ^-  (unit @da)
+    ?~  a  b
+    ?~  b  a
+    ?:((lth u.a u.b) a b)
   --
 ::
 ++  on-watch
   |=  =path
   ^-  (quip card _this)
-  =/  st=state-1:t  state
+  =/  st=state-2:t  state
   =/  snapshot=update:t  [%snapshot list-map.st]
   ?>  =(our.bowl src.bowl)
   ?.  ?=([%all ~] path)  (on-watch:def path)
@@ -389,7 +734,7 @@
 ++  on-peek
   |=  =path
   ^-  (unit (unit cage))
-  =/  st=state-1:t  state
+  =/  st=state-2:t  state
   =/  snapshot=update:t  [%snapshot list-map.st]
   ?.  =(our.bowl src.bowl)  ~
   ?+  path  [~ ~]
@@ -397,7 +742,142 @@
     [%x %whoami ~]  ``json+!>(s+(scot %p our.bowl))
   ==
 ::
-++  on-arvo   on-arvo:def
+++  on-arvo
+  |=  [=wire =sign-arvo]
+  ^-  (quip card _this)
+  |^
+  ?+  +<.sign-arvo  (on-arvo:def wire sign-arvo)
+      %wake
+    ?.  ?=([%alerts @ ~] wire)  (on-arvo:def wire sign-arvo)
+    =/  generation=(unit @ud)  (slaw %ud i.t.wire)
+    ?~  generation  [~ this]
+    ?.  =(u.generation timer-generation.state)  [~ this]
+    =/  [liss=lists:t emitted=(list card)]
+      (fire-lists list-map.state now.bowl)
+    =/  wake=(unit @da)  (earliest-wake liss)
+    =/  next-generation=@ud  +(timer-generation.state)
+    =/  nex=state-2:t
+      %_  state
+          list-map          liss
+          timer-generation  next-generation
+          next-wake         wake
+      ==
+    ?~  wake  [emitted this(state nex)]
+    =/  when=@da  ?:((lte u.wake now.bowl) now.bowl u.wake)
+    =/  timer=card
+      [%pass /alerts/(scot %ud next-generation) %arvo %b %wait when]
+    :_  this(state nex)
+    (weld emitted [timer ~])
+  ==
+  ::
+  ++  fire-lists
+    |=  [liss=lists:t now=@da]
+    ^-  [lists:t (list card)]
+    =/  entries=(list [list-id:t task-list:t])  ~(tap by liss)
+    =/  result=lists:t  *lists:t
+    =/  cards=(list card)  ~
+    |-
+    ?~  entries  [result cards]
+    =/  lis=task-list:t  +.i.entries
+    =/  [rems=reminders:t emitted=(list card)]
+      (fire-reminders id.lis reminders.lis now)
+    =/  next-list=task-list:t  lis(reminders rems)
+    =.  result  (~(put by result) id.lis next-list)
+    =.  cards  (weld cards emitted)
+    $(entries t.entries)
+  ::
+  ++  fire-reminders
+    |=  [=list-id:t rems=reminders:t now=@da]
+    ^-  [reminders:t (list card)]
+    =/  entries=(list [reminder-id:t reminder:t])  ~(tap by rems)
+    =/  result=reminders:t  *reminders:t
+    =/  cards=(list card)  ~
+    |-
+    ?~  entries  [result cards]
+    =/  rem=reminder:t  +.i.entries
+    ?~  schedule.rem
+      =.  result  (~(put by result) id.rem rem)
+      $(entries t.entries)
+    =/  sch=schedule:t  u.schedule.rem
+    =/  offsets=(list @ud)  (due-offsets rem now)
+    ?~  offsets
+      =.  result  (~(put by result) id.rem rem)
+      $(entries t.entries)
+    =/  next-sch=schedule:t
+      sch(alerted-offsets (~(gas in alerted-offsets.sch) offsets))
+    =/  next-rem=reminder:t  rem(schedule (some next-sch))
+    =/  emitted=(list card)
+      %+  turn  offsets
+      |=  seconds=@ud
+      =/  upd=update:t
+        [%alert list-id id.rem due-at.sch seconds]
+      [%give %fact ~[/all] %tend-update-1 !>(upd)]
+    =.  result  (~(put by result) id.rem next-rem)
+    =.  cards  (weld cards emitted)
+    $(entries t.entries)
+  ::
+  ++  due-offsets
+    |=  [rem=reminder:t now=@da]
+    ^-  (list @ud)
+    ?:  completed.rem  ~
+    ?~  schedule.rem  ~
+    =/  sch=schedule:t  u.schedule.rem
+    =/  offsets=(set @ud)  (~(put in early-seconds.sch) 0)
+    %+  skim  ~(tap in offsets)
+    |=  seconds=@ud
+    ?.  !(~(has in alerted-offsets.sch) seconds)  %.n
+    =/  delta=@dr  (mul seconds ~s1)
+    =/  candidate=@da
+      ?:((lte due-at.sch delta) `@da`0 (sub due-at.sch delta))
+    (lte candidate now)
+  ::
+  ++  earliest-wake
+    |=  liss=lists:t
+    ^-  (unit @da)
+    =/  entries=(list [list-id:t task-list:t])  ~(tap by liss)
+    =/  result=(unit @da)  ~
+    |-
+    ?~  entries  result
+    =.  result  (earlier result (earliest-reminders reminders.+.i.entries))
+    $(entries t.entries)
+  ::
+  ++  earliest-reminders
+    |=  rems=reminders:t
+    ^-  (unit @da)
+    =/  entries=(list [reminder-id:t reminder:t])  ~(tap by rems)
+    =/  result=(unit @da)  ~
+    |-
+    ?~  entries  result
+    =.  result  (earlier result (reminder-wake +.i.entries))
+    $(entries t.entries)
+  ::
+  ++  reminder-wake
+    |=  rem=reminder:t
+    ^-  (unit @da)
+    ?:  completed.rem  ~
+    ?~  schedule.rem  ~
+    =/  sch=schedule:t  u.schedule.rem
+    =/  offsets=(set @ud)  (~(put in early-seconds.sch) 0)
+    =/  pending=(list @ud)
+      %+  skim  ~(tap in offsets)
+      |=  seconds=@ud
+      !(~(has in alerted-offsets.sch) seconds)
+    =/  result=(unit @da)  ~
+    |-
+    ?~  pending  result
+    =/  delta=@dr  (mul i.pending ~s1)
+    =/  candidate=@da
+      ?:((lte due-at.sch delta) `@da`0 (sub due-at.sch delta))
+    =.  result  (earlier result `candidate)
+    $(pending t.pending)
+  ::
+  ++  earlier
+    |=  [a=(unit @da) b=(unit @da)]
+    ^-  (unit @da)
+    ?~  a  b
+    ?~  b  a
+    ?:((lth u.a u.b) a b)
+  --
 ++  on-agent  on-agent:def
 ++  on-leave  on-leave:def
 ++  on-fail   on-fail:def

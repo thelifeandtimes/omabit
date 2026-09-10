@@ -41,8 +41,94 @@
       receipt-map=receipts-0
   ==
 ::
-::  Core single-user schema. IDs are scoped to the hosting ship; the
+::  Frozen Milestone 1A schema. This remains loadable after scheduling is
+::  introduced in %2.
+::
++$  section-1
+  $:  id=section-id
+      title=@t
+      rank=@ud
+  ==
++$  sections-1  (map section-id section-1)
+::
++$  reminder-1
+  $:  id=reminder-id
+      title=@t
+      notes=@t
+      url=(unit @t)
+      =priority
+      flagged=?
+      tags=(set @t)
+      parent-id=(unit reminder-id)
+      section-id=(unit section-id)
+      rank=@ud
+      completed=?
+      revision=@ud
+      created-at=@da
+      modified-at=@da
+  ==
++$  reminders-1  (map reminder-id reminder-1)
+::
++$  task-list-1
+  $:  id=list-id
+      title=@t
+      color=@t
+      symbol=@t
+      revision=@ud
+      sections=sections-1
+      reminders=reminders-1
+      created-at=@da
+      modified-at=@da
+  ==
++$  lists-1  (map list-id task-list-1)
++$  update-1
+  $%  [%snapshot lists=lists-1]
+      [%list-upserted =op-id list=task-list-1]
+      [%list-deleted =op-id =list-id]
+      [%rejected =op-id reason=@tas current-revision=(unit @ud)]
+  ==
++$  receipts-1  (map op-id update-1)
++$  state-1
+  $:  %1
+      next-id=@ud
+      list-map=lists-1
+      receipt-map=receipts-1
+      default-list=(unit list-id)
+  ==
+::
+::  Scheduled single-user schema. IDs are scoped to the hosting ship; the
 ::  multiplayer schema wraps them with the host's @p.
+::
++$  frequency  $?(%hourly %daily %weekly %monthly %yearly)
++$  month-week
+  $:  index=@ud
+      weekday=@ud
+  ==
++$  recurrence
+  $:  =frequency
+      interval=@ud
+      weekdays=(set @ud)
+      month-days=(set @ud)
+      month-week=(unit month-week)
+      end-at=(unit @da)
+      max-occurrences=(unit @ud)
+  ==
++$  schedule
+  $:  due-at=@da
+      all-day=?
+      timezone=@t
+      early-seconds=(set @ud)
+      recurrence=(unit recurrence)
+      occurrence=@ud
+      alerted-offsets=(set @ud)
+  ==
++$  schedule-input
+  $:  due-at=@da
+      all-day=?
+      timezone=@t
+      early-seconds=(set @ud)
+      recurrence=(unit recurrence)
+  ==
 ::
 +$  section
   $:  id=section-id
@@ -62,7 +148,9 @@
       parent-id=(unit reminder-id)
       section-id=(unit section-id)
       rank=@ud
+      schedule=(unit schedule)
       completed=?
+      last-completed-at=(unit @da)
       revision=@ud
       created-at=@da
       modified-at=@da
@@ -112,6 +200,13 @@
           base-revision=@ud
       ==
       [%delete-reminder =op-id =list-id =reminder-id base-revision=@ud]
+      $:  %set-schedule
+          =op-id
+          =list-id
+          =reminder-id
+          schedule=(unit schedule-input)
+          base-revision=@ud
+      ==
       [%set-completed =op-id =list-id =reminder-id completed=? base-revision=@ud]
   ==
 ::
@@ -119,15 +214,18 @@
   $%  [%snapshot =lists]
       [%list-upserted =op-id list=task-list]
       [%list-deleted =op-id =list-id]
+      [%alert =list-id =reminder-id due-at=@da early-seconds=@ud]
       [%rejected =op-id reason=@tas current-revision=(unit @ud)]
   ==
 ::
 +$  receipts  (map op-id update)
-+$  state-1
-  $:  %1
++$  state-2
+  $:  %2
       next-id=@ud
       list-map=lists
       receipt-map=receipts
       default-list=(unit list-id)
+      timer-generation=@ud
+      next-wake=(unit @da)
   ==
 --

@@ -13,6 +13,7 @@ Item {
     property string baseUrl: ""
     property string ship: ""
     property var lists: []
+    property var lastAlert: null
     property bool mutationPending: false
     readonly property int incompleteCount: TendModel.incompleteCount(lists)
     readonly property string pluginDir: manifest && manifest.__sourceDir ? String(manifest.__sourceDir) : ""
@@ -21,9 +22,41 @@ Item {
     readonly property string configRoot: (Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config")) + "/omabit/tend"
     readonly property string cookiePath: runtimeRoot + "/cookies.txt"
     readonly property string connectionPath: configRoot + "/connection.json"
+    signal reminderAlert(var alert)
 
     function operationId() {
         return Date.now().toString(36) + "-" + Math.floor(Math.random() * 2.14748e+09).toString(36);
+    }
+
+    function pad2(value) {
+        return value < 10 ? "0" + value : String(value);
+    }
+
+    function toUrbitDate(value) {
+        var text = String(value || "").trim();
+        if (text.charAt(0) === "~")
+            return text;
+
+        var date = new Date(text);
+        if (isNaN(date.getTime()))
+            return text;
+
+        return "~" + date.getUTCFullYear() + "." + (date.getUTCMonth() + 1) + "." + date.getUTCDate() + ".." + pad2(date.getUTCHours()) + "." + pad2(date.getUTCMinutes()) + "." + pad2(date.getUTCSeconds());
+    }
+
+    function recurrencePayload(recurrence) {
+        if (!recurrence)
+            return null;
+
+        return {
+            "frequency": String(recurrence.frequency || "daily"),
+            "interval": Math.max(1, Number(recurrence.interval || 1)),
+            "weekdays": (recurrence.weekdays || []).map(Number),
+            "month-days": (recurrence.monthDays || recurrence["month-days"] || []).map(Number),
+            "month-week": recurrence.monthWeek || recurrence["month-week"] || null,
+            "end-at": recurrence.endAt || recurrence["end-at"] ? toUrbitDate(recurrence.endAt || recurrence["end-at"]) : null,
+            "max-occurrences": recurrence.maxOccurrences === undefined ? (recurrence["max-occurrences"] ?? null) : recurrence.maxOccurrences
+        };
     }
 
     function login(url, code) {
@@ -155,6 +188,28 @@ Item {
         });
     }
 
+    function setSchedule(listId, reminderId, schedule, baseRevision) {
+        var value = null;
+        if (schedule) {
+            value = {
+                "due-at": toUrbitDate(schedule.dueAt || schedule["due-at"]),
+                "all-day": schedule.allDay === true || schedule["all-day"] === true,
+                "timezone": String(schedule.timezone || "UTC"),
+                "early-seconds": (schedule.earlySeconds || schedule["early-seconds"] || []).map(Number),
+                "recurrence": recurrencePayload(schedule.recurrence)
+            };
+        }
+        return submit({
+            "set-schedule": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "reminder-id": Number(reminderId),
+                "schedule": value,
+                "base-revision": Number(baseRevision)
+            }
+        });
+    }
+
     function updateReminder(listId, reminderId, fields, baseRevision) {
         fields = fields || {
         };
@@ -219,6 +274,12 @@ Item {
             if (result.error)
                 root.errorMessage = result.error;
 
+            if (result.alert) {
+                root.lastAlert = result.alert;
+                root.reminderAlert(result.alert);
+                root.showNotification(result.alert);
+            }
+
         } catch (error) {
             root.errorMessage = "Could not parse an Eyre event: " + error;
         }
@@ -230,6 +291,25 @@ Item {
             return String(parsed.message || fallback);
         } catch (error) {
             return String(raw || fallback).trim();
+        }
+    }
+
+    function showNotification(alert) {
+        var title = "Reminder due";
+        for (var i = 0; i < lists.length; i++) {
+            if (lists[i].id !== alert.listId)
+                continue;
+
+            for (var j = 0; j < lists[i].reminders.length; j++) {
+                if (lists[i].reminders[j].id === alert.reminderId) {
+                    title = lists[i].reminders[j].title;
+                    break;
+                }
+            }
+        }
+        if (!notificationProcess.running) {
+            notificationProcess.command = ["notify-send", "--app-name=Tend", "Tend", title];
+            notificationProcess.running = true;
         }
     }
 
@@ -363,6 +443,10 @@ Item {
             onStreamFinished: pokeProcess.errors = text
         }
 
+    }
+
+    Process {
+        id: notificationProcess
     }
 
     Timer {

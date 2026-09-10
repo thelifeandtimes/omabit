@@ -17,7 +17,33 @@ test("snapshot is normalized and incomplete reminders are counted", () => {
         ],
         reminders: [
           { id: 4, title: "Done", completed: true, revision: 2, rank: 20 },
-          { id: 3, title: "Open", notes: "Details", priority: "high", flagged: true, tags: ["work"], completed: false, revision: 1, rank: 10 }
+          {
+            id: 3,
+            title: "Open",
+            notes: "Details",
+            priority: "high",
+            flagged: true,
+            tags: ["work"],
+            completed: false,
+            revision: 1,
+            rank: 10,
+            schedule: {
+              "due-at": "~2026.9.11..21.00.00",
+              "all-day": false,
+              timezone: "America/Los_Angeles",
+              "early-seconds": [900],
+              occurrence: 1,
+              recurrence: {
+                frequency: "daily",
+                interval: 1,
+                weekdays: [],
+                "month-days": [],
+                "month-week": null,
+                "end-at": null,
+                "max-occurrences": 5
+              }
+            }
+          }
         ]
       }]
     }
@@ -28,7 +54,29 @@ test("snapshot is normalized and incomplete reminders are counted", () => {
   assert.deepEqual(result.lists[0].reminders.map((item) => item.id), [3, 4])
   assert.equal(result.lists[0].reminders[0].priority, "high")
   assert.equal(result.lists[0].reminders[0].flagged, true)
+  assert.equal(result.lists[0].reminders[0].schedule.timezone, "America/Los_Angeles")
+  assert.equal(result.lists[0].reminders[0].schedule.recurrence.maxOccurrences, 5)
   assert.equal(model.incompleteCount(result.lists), 1)
+})
+
+test("alerts preserve list state and expose normalized notification data", () => {
+  const initial = [{ id: 1, title: "Inbox", revision: 1, reminders: [] }]
+  const result = model.reduce(initial, {
+    alert: {
+      "list-id": 1,
+      "reminder-id": 9,
+      "due-at": "~2026.9.10..21.00.00",
+      "early-seconds": 900
+    }
+  })
+
+  assert.deepEqual(result.lists, model.sortedLists(initial))
+  assert.deepEqual(result.alert, {
+    listId: 1,
+    reminderId: 9,
+    dueAt: "~2026.9.10..21.00.00",
+    earlySeconds: 900
+  })
 })
 
 test("deltas update one list without mutating the previous snapshot", () => {

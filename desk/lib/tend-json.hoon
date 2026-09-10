@@ -21,6 +21,46 @@
     ^-  json
     [%a (turn ~(tap in values) |=(value=@t s+value))]
   ::
+  ++  numbers-json
+    |=  values=(set @ud)
+    ^-  json
+    [%a (turn ~(tap in values) |=(value=@ud (numb value)))]
+  ::
+  ++  month-week-json
+    |=  value=(unit month-week:sur)
+    ^-  json
+    ?~  value  ~
+    %-  pairs
+    :~  [%index (numb index.u.value)]
+        [%weekday (numb weekday.u.value)]
+    ==
+  ::
+  ++  recurrence-json
+    |=  rec=recurrence:sur
+    ^-  json
+    %-  pairs
+    :~  [%frequency s+frequency.rec]
+        [%interval (numb interval.rec)]
+        [%weekdays (numbers-json weekdays.rec)]
+        [%month-days (numbers-json month-days.rec)]
+        [%month-week (month-week-json month-week.rec)]
+        [%end-at ?~(end-at.rec ~ s+(scot %da u.end-at.rec))]
+        [%max-occurrences (unit-number-json max-occurrences.rec)]
+    ==
+  ::
+  ++  schedule-json
+    |=  value=(unit schedule:sur)
+    ^-  json
+    ?~  value  ~
+    %-  pairs
+    :~  [%due-at s+(scot %da due-at.u.value)]
+        [%all-day b+all-day.u.value]
+        [%timezone s+timezone.u.value]
+        [%early-seconds (numbers-json early-seconds.u.value)]
+        [%recurrence ?~(recurrence.u.value ~ (recurrence-json u.recurrence.u.value))]
+        [%occurrence (numb occurrence.u.value)]
+    ==
+  ::
   ++  section-json
     |=  sec=section:sur
     ^-  json
@@ -53,7 +93,9 @@
         [%parent-id (unit-number-json parent-id.rem)]
         [%section-id (unit-number-json section-id.rem)]
         [%rank (numb rank.rem)]
+        [%schedule (schedule-json schedule.rem)]
         [%completed b+completed.rem]
+        [%last-completed-at ?~(last-completed-at.rem ~ s+(scot %da u.last-completed-at.rem))]
         [%revision (numb revision.rem)]
         [%created-at s+(scot %da created-at.rem)]
         [%modified-at s+(scot %da modified-at.rem)]
@@ -116,6 +158,15 @@
           [%list-id (numb list-id.upd)]
       ==
     ::
+        %alert
+      %+  frond  %alert
+      %-  pairs
+      :~  [%list-id (numb list-id.upd)]
+          [%reminder-id (numb reminder-id.upd)]
+          [%due-at s+(scot %da due-at.upd)]
+          [%early-seconds (numb early-seconds.upd)]
+      ==
+    ::
         %rejected
       %+  frond  %rejected
       %-  pairs
@@ -139,6 +190,43 @@
       %medium  %medium
       %high    %high
     ==
+  ::
+  ++  frequency
+    |=  jon=json
+    ^-  frequency:sur
+    =/  value=@t  (so jon)
+    ?+  value  !!
+      %hourly   %hourly
+      %daily    %daily
+      %weekly   %weekly
+      %monthly  %monthly
+      %yearly   %yearly
+    ==
+  ::
+  ++  date
+    |=  jon=json
+    ^-  @da
+    =/  parsed=(unit @da)  (slaw %da (so jon))
+    ?~(parsed !! u.parsed)
+  ::
+  ++  month-week
+    |=  jon=json
+    ^-  month-week:sur
+    ((ot [[%index ni] [%weekday ni] ~]) jon)
+  ::
+  ++  recurrence
+    |=  jon=json
+    ^-  recurrence:sur
+    =/  [freq=frequency:sur interval=@ud weekdays=(set @ud) month-days=(set @ud) month-week=(unit month-week:sur) end-at=(unit @da) max-occurrences=(unit @ud)]
+      ((ot [[%frequency frequency] [%interval ni] [%weekdays (as ni)] [%month-days (as ni)] [%month-week (mu month-week)] [%end-at (mu date)] [%max-occurrences (mu ni)] ~]) jon)
+    [freq interval weekdays month-days month-week end-at max-occurrences]
+  ::
+  ++  schedule-input
+    |=  jon=json
+    ^-  schedule-input:sur
+    =/  [due-at=@da all-day=? timezone=@t early-seconds=(set @ud) recurrence=(unit recurrence:sur)]
+      ((ot [[%due-at date] [%all-day bo] [%timezone so] [%early-seconds (as ni)] [%recurrence (mu recurrence)] ~]) jon)
+    [due-at all-day timezone early-seconds recurrence]
   ::
   ++  action
     |=  jon=json
@@ -198,6 +286,11 @@
       =/  [=op-id =list-id =reminder-id base-revision=@ud]
         ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%base-revision ni] ~]) body)
       [%delete-reminder op-id list-id reminder-id base-revision]
+    ::
+        %set-schedule
+      =/  [=op-id =list-id =reminder-id schedule=(unit schedule-input:sur) base-revision=@ud]
+        ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%schedule (mu schedule-input)] [%base-revision ni] ~]) body)
+      [%set-schedule op-id list-id reminder-id schedule base-revision]
     ::
         %set-completed
       =/  [=op-id =list-id =reminder-id completed=? base-revision=@ud]

@@ -52,6 +52,34 @@ Item {
         reminderPriority.currentIndex = Math.max(0, reminderPriority.model.indexOf(reminder.priority));
         reminderFlagged.checked = reminder.flagged;
         reminderTags.text = reminder.tags.join(", ");
+        reminderDue.text = reminder.schedule ? urbitToInput(reminder.schedule.dueAt) : "";
+        reminderAllDay.checked = reminder.schedule ? reminder.schedule.allDay : false;
+        reminderTimezone.text = reminder.schedule ? reminder.schedule.timezone : localTimezone();
+        reminderEarly.text = reminder.schedule ? reminder.schedule.earlySeconds.map(function(seconds) {
+            return seconds / 60;
+        }).join(", ") : "";
+        reminderRepeat.currentIndex = reminder.schedule && reminder.schedule.recurrence ? Math.max(0, reminderRepeat.model.indexOf(reminder.schedule.recurrence.frequency)) : 0;
+        reminderInterval.value = reminder.schedule && reminder.schedule.recurrence ? reminder.schedule.recurrence.interval : 1;
+    }
+
+    function localTimezone() {
+        try {
+            return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+        } catch (error) {
+            return "UTC";
+        }
+    }
+
+    function pad2(value) {
+        return Number(value) < 10 ? "0" + Number(value) : String(value);
+    }
+
+    function urbitToInput(value) {
+        var match = /^~(\d+)\.(\d+)\.(\d+)\.\.(\d+)\.(\d+)/.exec(String(value || ""));
+        if (!match)
+            return String(value || "");
+
+        return match[1] + "-" + pad2(match[2]) + "-" + pad2(match[3]) + "T" + pad2(match[4]) + ":" + pad2(match[5]);
     }
 
     function open(payloadJson) {
@@ -333,7 +361,7 @@ Item {
 
                             Rectangle {
                                 width: parent.width
-                                height: root.selectedReminder ? Style.space(230) : 0
+                                height: root.selectedReminder ? Style.space(330) : 0
                                 visible: root.selectedReminder !== null
                                 radius: Style.cornerRadius
                                 color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.05)
@@ -390,6 +418,95 @@ Item {
 
                                         width: parent.width
                                         placeholderText: "tags, separated, by commas"
+                                    }
+
+                                    Row {
+                                        width: parent.width
+                                        spacing: Style.space(6)
+
+                                        TextField {
+                                            id: reminderDue
+
+                                            width: parent.width * 0.34
+                                            placeholderText: "2026-09-10T17:30"
+                                        }
+
+                                        TextField {
+                                            id: reminderTimezone
+
+                                            width: parent.width * 0.28
+                                            placeholderText: "America/Los_Angeles"
+                                        }
+
+                                        CheckBox {
+                                            id: reminderAllDay
+
+                                            text: "All day"
+                                        }
+
+                                        TextField {
+                                            id: reminderEarly
+
+                                            width: parent.width - x
+                                            placeholderText: "Early min"
+                                        }
+
+                                    }
+
+                                    Row {
+                                        width: parent.width
+                                        spacing: Style.space(6)
+
+                                        ComboBox {
+                                            id: reminderRepeat
+
+                                            width: parent.width * 0.25
+                                            model: ["none", "hourly", "daily", "weekly", "monthly", "yearly"]
+                                        }
+
+                                        SpinBox {
+                                            id: reminderInterval
+
+                                            from: 1
+                                            to: 999
+                                            value: 1
+                                            editable: true
+                                        }
+
+                                        Button {
+                                            text: "Save schedule"
+                                            enabled: root.selectedReminder && reminderDue.text.trim() && reminderTimezone.text.trim() && service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: {
+                                                var early = reminderEarly.text.split(",").map(function(minutes) {
+                                                    return Math.round(Number(minutes.trim()) * 60);
+                                                }).filter(function(seconds) {
+                                                    return isFinite(seconds) && seconds >= 0;
+                                                });
+                                                var recurrence = reminderRepeat.currentText === "none" ? null : {
+                                                    frequency: reminderRepeat.currentText,
+                                                    interval: reminderInterval.value,
+                                                    weekdays: [],
+                                                    monthDays: [],
+                                                    monthWeek: null,
+                                                    endAt: null,
+                                                    maxOccurrences: null
+                                                };
+                                                service.setSchedule(root.selectedList.id, root.selectedReminder.id, {
+                                                    dueAt: reminderDue.text.trim(),
+                                                    allDay: reminderAllDay.checked,
+                                                    timezone: reminderTimezone.text.trim(),
+                                                    earlySeconds: early,
+                                                    recurrence: recurrence
+                                                }, root.selectedList.revision);
+                                            }
+                                        }
+
+                                        Button {
+                                            text: "Clear"
+                                            enabled: root.selectedReminder && root.selectedReminder.schedule && service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: service.setSchedule(root.selectedList.id, root.selectedReminder.id, null, root.selectedList.revision)
+                                        }
+
                                     }
 
                                     Row {
@@ -459,7 +576,8 @@ Item {
                                             text: {
                                                 var section = root.sectionTitle(modelData.sectionId);
                                                 var prefix = modelData.parentId === null ? "" : "↳ ";
-                                                return prefix + modelData.title + (section ? "  ·  " + section : "");
+                                                var due = modelData.schedule ? "  ·  " + root.urbitToInput(modelData.schedule.dueAt).replace("T", " ") : "";
+                                                return prefix + modelData.title + (section ? "  ·  " + section : "") + due;
                                             }
                                             color: Color.menu.text
                                             opacity: modelData.completed ? 0.5 : 1
