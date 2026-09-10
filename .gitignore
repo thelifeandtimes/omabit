@@ -5,3 +5,4 @@ __pycache__/
 .pytest_cache/
 .tend-test/
 /omarchy-urbit-project-starter.tar.gz
+/dist/

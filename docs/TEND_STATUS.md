@@ -5,7 +5,7 @@ Last verified: 2026-09-10
 ## Working now
 
 - `%tend` installs and hot-reloads on a live fake ship.
-- Existing `%0` through `%3` state migrates to the multiplayer-ready `%4`
+- Existing `%0` through `%4` state migrates to the multiplayer-ready `%5`
   schema without losing lists, reminders, schedules, preferences, or snoozes.
 - Authenticated Eyre login, identity scry, SSE subscribe/ack, reconnect, and
   poke acknowledgement work through the dependency-free desktop bridge.
@@ -55,16 +55,34 @@ Last verified: 2026-09-10
   assignee to reminders, and durably allocates hosted-share, replica,
   invitation, and in-flight stores. A live `%3` ship migrated successfully and
   an assignment round-tripped through Eyre.
+- `%5` freezes `%4` before collaboration receipts and pending-invitation
+  payloads change shape. A live `%4` ship migrated successfully without losing
+  its reminders, preferences, schedules, assignments, or snoozes.
+- The authenticated `/all` stream now emits one access record per visible list,
+  including canonical host, owner flag, Online/Checking/Offline state, members,
+  and pending invitations. The Omarchy UI visibly marks owner availability and
+  disables every shared-list mutation while the host is Checking or Offline.
+- Eyre connection files are written atomically with mode 0600, symbolic-link
+  credential paths are refused, non-loopback HTTP and URL paths are rejected,
+  expired authentication stops the reconnect loop, and users can disconnect or
+  switch ships without retaining the reusable `+code`.
+- `omabit tend` provides connect/disconnect/status, list/today, add,
+  complete/uncomplete, snooze, and overlay-open commands with optional JSON
+  output. Its read-only status and list flows were exercised against the live
+  desk.
+- Deterministic release packaging includes the desk, validated Omarchy plugin,
+  CLI, installer, documentation, and per-file checksums. The installer refuses
+  symlink targets and preserves forced replacements as timestamped backups.
 - Plugin validation, JavaScript reducer tests, and Python Eyre transport tests
   pass.
 
 ## Next
 
-1. Configurable all-day policy and quick-capture refinements.
-2. Owner-hosted list references, invitations/ACLs, replicas, presence, and
-   read-only owner-offline behavior across multiple ships.
-3. CLI, packaging, backups, accessibility, fault testing, and
-   release hardening.
+1. Owner-hosted invitation delivery, ACL subscriptions, replicas, mutation
+   routing, assignment validation, and activity across multiple ships.
+2. Configurable all-day policy, Assigned to Me, batch operations, and
+   quick-capture refinements.
+3. Backups, accessibility audit, fault testing, and final release hardening.
 
 The source of truth for scope and exit criteria remains
 [`PRODUCT_ARCHITECTURE_PLAN.md`](../PRODUCT_ARCHITECTURE_PLAN.md).

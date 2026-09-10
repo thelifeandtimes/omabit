@@ -1,0 +1,287 @@
+#!/usr/bin/env python3
+"""Omabit command-line entry point."""
+
+from __future__ import annotations
+
+import argparse
+from datetime import datetime, timedelta, timezone
+import getpass
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import uuid
+
+
+VERSION = "0.1.0"
+PLUGIN_ID = "io.omabit.tend"
+
+
+class CliError(RuntimeError):
+    pass
+
+
+def transport_candidates() -> list[Path]:
+    override = os.environ.get("OMABIT_TEND_TRANSPORT")
+    config_home = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+    here = Path(__file__).resolve()
+    values = []
+    if override:
+        values.append(Path(override))
+    values.extend([
+        here.parents[1] / "omarchy-plugin" / "transport" / "eyre_client.py",
+        config_home / "omarchy" / "plugins" / PLUGIN_ID / "transport" / "eyre_client.py",
+    ])
+    return values
+
+
+def load_transport():
+    for path in transport_candidates():
+        if not path.is_file():
+            continue
+        spec = importlib.util.spec_from_file_location("omabit_tend_transport", path)
+        if spec and spec.loader:
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return module
+    raise CliError("Tend transport is not installed; install the io.omabit.tend plugin")
+
+
+transport = load_transport()
+
+
+def default_paths() -> tuple[Path, Path]:
+    config_home = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+    runtime_home = Path(os.environ.get("XDG_RUNTIME_DIR", Path.home() / ".cache"))
+    return (
+        Path(os.environ.get("OMABIT_TEND_COOKIE", runtime_home / "omabit" / "tend" / "cookies.txt")),
+        Path(os.environ.get("OMABIT_TEND_CONFIG", config_home / "omabit" / "tend" / "connection.json")),
+    )
+
+
+def snapshot(cookie_path: Path, config_path: Path) -> dict[str, object]:
+    value = transport.scry_state(config_path, cookie_path)
+    if not isinstance(value, dict) or not isinstance(value.get("snapshot"), dict):
+        raise CliError("The Tend agent returned an invalid snapshot")
+    return value["snapshot"]
+
+
+def select_list(state: dict[str, object], selector: str | None) -> dict[str, object]:
+    lists = state.get("lists") or []
+    if not isinstance(lists, list) or not lists:
+        raise CliError("No Tend lists exist")
+    if selector:
+        for item in lists:
+            if str(item.get("id")) == selector or str(item.get("title", "")).casefold() == selector.casefold():
+                return item
+        raise CliError(f"No Tend list matches {selector!r}")
+    preferences = state.get("preferences") or {}
+    wanted = preferences.get("default-list") if isinstance(preferences, dict) else None
+    return next((item for item in lists if item.get("id") == wanted), lists[0])
+
+
+def find_reminder(task_list: dict[str, object], reminder_id: int) -> dict[str, object]:
+    for reminder in task_list.get("reminders") or []:
+        if int(reminder.get("id", -1)) == reminder_id:
+            return reminder
+    raise CliError(f"Reminder {reminder_id} does not exist in list {task_list.get('id')}")
+
+
+def urbit_date(value: datetime) -> str:
+    utc = value.astimezone(timezone.utc).replace(microsecond=0)
+    return f"~{utc.year}.{utc.month}.{utc.day}..{utc.hour:02d}.{utc.minute:02d}.{utc.second:02d}"
+
+
+def urbit_date_value(value: str) -> datetime | None:
+    try:
+        date, clock = value.removeprefix("~").split("..", 1)
+        year, month, day = (int(part) for part in date.split(".")[:3])
+        hour, minute, second = (int(part) for part in clock.split(".")[:3])
+        return datetime(year, month, day, hour, minute, second, tzinfo=timezone.utc)
+    except (AttributeError, TypeError, ValueError):
+        return None
+
+
+def operation_id() -> str:
+    return uuid.uuid4().hex
+
+
+def emit(value: object, as_json: bool) -> None:
+    if as_json:
+        print(json.dumps(value, separators=(",", ":"), sort_keys=True))
+        return
+    if isinstance(value, str):
+        print(value)
+        return
+    print(json.dumps(value, indent=2, sort_keys=True))
+
+
+def poke(cookie_path: Path, config_path: Path, action: dict[str, object]) -> dict[str, object]:
+    return transport.poke(config_path, cookie_path, action)
+
+
+def reminder_rows(state: dict[str, object], today_only: bool = False) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    tomorrow = datetime.now().astimezone().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
+    tomorrow_utc = tomorrow.astimezone(timezone.utc)
+    for task_list in state.get("lists") or []:
+        for reminder in task_list.get("reminders") or []:
+            if reminder.get("completed") is True:
+                continue
+            schedule = reminder.get("schedule") or {}
+            due = urbit_date_value(schedule.get("due-at", "")) if isinstance(schedule, dict) else None
+            if today_only and (due is None or due >= tomorrow_utc):
+                continue
+            rows.append({
+                "listId": int(task_list.get("id", 0)),
+                "list": str(task_list.get("title", "")),
+                "id": int(reminder.get("id", 0)),
+                "title": str(reminder.get("title", "")),
+                "dueAt": schedule.get("due-at") if isinstance(schedule, dict) else None,
+                "priority": str(reminder.get("priority", "none")),
+                "assignee": reminder.get("assignee"),
+            })
+    return sorted(rows, key=lambda row: (row["dueAt"] is None, row["dueAt"] or "", row["listId"], row["id"]))
+
+
+def print_rows(rows: list[dict[str, object]], as_json: bool) -> None:
+    if as_json:
+        emit(rows, True)
+        return
+    if not rows:
+        print("No reminders")
+        return
+    for row in rows:
+        due = f" · {row['dueAt']}" if row.get("dueAt") else ""
+        assignee = f" · {row['assignee']}" if row.get("assignee") else ""
+        print(f"{row['listId']}:{row['id']}  {row['title']}  [{row['list']}]{due}{assignee}")
+
+
+def run_tend(args: argparse.Namespace) -> int:
+    cookie_path, config_path = default_paths()
+    as_json = args.json
+    if args.tend_command == "connect":
+        code = sys.stdin.readline().strip() if not sys.stdin.isatty() else getpass.getpass("Urbit +code: ")
+        emit(transport.login(args.url, cookie_path, config_path, code), as_json)
+        return 0
+    if args.tend_command == "disconnect":
+        emit(transport.disconnect(cookie_path, config_path), as_json)
+        return 0
+    if args.tend_command == "status":
+        status = transport.connection_status(config_path, cookie_path)
+        try:
+            snapshot(cookie_path, config_path)
+            status["reachable"] = True
+        except Exception as error:
+            status["reachable"] = False
+            status["error"] = str(error)
+        emit(status, as_json)
+        return 0
+    if args.tend_command == "open":
+        payload = {"listId": args.list_id, "reminderId": args.reminder_id}
+        subprocess.run(["omarchy-shell", "shell", "summon", PLUGIN_ID, json.dumps(payload, separators=(",", ":"))], check=True)
+        return 0
+
+    state = snapshot(cookie_path, config_path)
+    if args.tend_command == "list":
+        print_rows(reminder_rows(state), as_json)
+        return 0
+    if args.tend_command == "today":
+        print_rows(reminder_rows(state, True), as_json)
+        return 0
+    if args.tend_command == "add":
+        task_list = select_list(state, args.list_selector)
+        action = {"add-reminder": {
+            "operation-id": operation_id(),
+            "list-id": int(task_list["id"]),
+            "title": args.title.strip(),
+            "tags": args.tag,
+            "base-revision": int(task_list.get("revision", 0)),
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "accepted", "listId": task_list["id"]}, as_json)
+        return 0
+    if args.tend_command in {"complete", "uncomplete"}:
+        task_list = select_list(state, str(args.list_id))
+        find_reminder(task_list, args.reminder_id)
+        action = {"set-completed": {
+            "operation-id": operation_id(),
+            "list-id": args.list_id,
+            "reminder-id": args.reminder_id,
+            "completed": args.tend_command == "complete",
+            "base-revision": int(task_list.get("revision", 0)),
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "accepted", "listId": args.list_id, "reminderId": args.reminder_id}, as_json)
+        return 0
+    if args.tend_command == "snooze":
+        task_list = select_list(state, str(args.list_id))
+        find_reminder(task_list, args.reminder_id)
+        until = urbit_date(datetime.now(timezone.utc) + timedelta(minutes=args.minutes))
+        action = {"snooze-reminder": {
+            "operation-id": operation_id(),
+            "list-id": args.list_id,
+            "reminder-id": args.reminder_id,
+            "until": until,
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "accepted", "until": until}, as_json)
+        return 0
+    raise AssertionError(args.tend_command)
+
+
+def parser() -> argparse.ArgumentParser:
+    root = argparse.ArgumentParser(prog="omabit")
+    root.add_argument("--version", action="version", version=f"%(prog)s {VERSION}")
+    root.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    products = root.add_subparsers(dest="product", required=True)
+    tend = products.add_parser("tend", help="work with Tend reminders")
+    commands = tend.add_subparsers(dest="tend_command", required=True)
+
+    connect = commands.add_parser("connect", help="authenticate to an Eyre endpoint")
+    connect.add_argument("url")
+    commands.add_parser("disconnect", help="remove the local Eyre session and connection")
+    commands.add_parser("status", help="show connection status")
+    commands.add_parser("list", aliases=["ls"], help="list incomplete reminders")
+    commands.add_parser("today", help="list due and overdue reminders")
+
+    add = commands.add_parser("add", help="add a reminder")
+    add.add_argument("title")
+    add.add_argument("--list", dest="list_selector")
+    add.add_argument("--tag", action="append", default=[])
+
+    for name in ("complete", "uncomplete"):
+        complete = commands.add_parser(name)
+        complete.add_argument("list_id", type=int)
+        complete.add_argument("reminder_id", type=int)
+
+    snooze = commands.add_parser("snooze")
+    snooze.add_argument("list_id", type=int)
+    snooze.add_argument("reminder_id", type=int)
+    snooze.add_argument("--minutes", type=int, default=15)
+
+    open_command = commands.add_parser("open", help="open the Tend overlay")
+    open_command.add_argument("list_id", type=int, nargs="?", default=0)
+    open_command.add_argument("reminder_id", type=int, nargs="?", default=0)
+    return root
+
+
+def main(argv: list[str] | None = None) -> int:
+    try:
+        args = parser().parse_args(argv)
+        if args.product == "tend":
+            return run_tend(args)
+        raise AssertionError(args.product)
+    except (CliError, transport.TendTransportError, OSError, subprocess.CalledProcessError) as error:
+        message = {"status": "error", "message": str(error)}
+        if "--json" in (argv if argv is not None else sys.argv[1:]):
+            print(json.dumps(message, separators=(",", ":")), file=sys.stderr)
+        else:
+            print(f"omabit: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

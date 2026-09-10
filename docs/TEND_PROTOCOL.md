@@ -18,7 +18,7 @@ Every action is a one-key JSON object. Its body includes a unique
 returns a `rejected` event with the current revision. Replaying an operation ID
 returns its recorded result without applying it twice.
 
-## Implemented action kinds
+## Implemented local action kinds
 
 | Action | Effect |
 | --- | --- |
@@ -73,14 +73,29 @@ the home connection is Online.
 The Milestone 0 event shapes remain accepted by the JavaScript reducer during a
 rolling upgrade, but new agents emit only the canonical update forms.
 
+`accesses` publishes the local alias, authoritative host and host-local list ID,
+owner flag, host status, member policies, and pending invitees for every visible
+list. `invitations-updated` replaces the local invitation inbox.
+`operation-pending` and `operation-settled` expose the remote in-flight ledger
+without creating an offline mutation queue. The desktop treats an absent,
+Checking, or Offline access record as read-only.
+
+The `%tend-peer-1` noun mark and `%5` state reserve versioned peer envelopes for
+invite/accept/decline/leave, list snapshots, mutations, removals, and mutation
+rejections. The transport handlers that send these envelopes to another ship
+are not enabled in the current checkpoint; local clients cannot cause peer data
+egress until that trust boundary is explicitly enabled and tested.
+
 ## Persistence
 
-Gall is authoritative. State schema `%4` contains lists, the next local ID,
+Gall is authoritative. State schema `%5` contains lists, the next local ID,
 operation receipts, revisioned personal preferences, active snoozes, Behn timer
 generation, hosted-share policies, remote replicas, invitations, and in-flight
 operations. `+on-load` migrates `%0` through `%3`, preserving IDs, titles,
 completion state, revisions, schedules, tags, preferences, and snoozes while
-filling assignee and collaboration stores with deterministic defaults.
+filling assignee and collaboration stores with deterministic defaults. `%4` is
+frozen and migrates to `%5`; its older receipt and pending-invitation types are
+decoded separately so a protocol upgrade does not reinterpret persisted nouns.
 
 The agent keeps one earliest Behn wakeup across all outstanding due/early
 alerts and snoozes. Generation-tagged wires make replaced timers harmless. Fired offsets
@@ -90,6 +105,7 @@ timer and overdue wakeups run immediately. Snoozes are personal state keyed by
 list/reminder and are discarded if the reminder is deleted, completed, or loses
 its schedule.
 
-The current ID atoms are scoped to the hosting ship. The multiplayer protocol
-will expose them as `[host=@p local-id]` references without requiring a global
-database or identity provider.
+IDs are scoped to the hosting ship. A replica receives a collision-free numeric
+alias for the desktop while preserving its canonical `[host=@p local-id]`
+reference in Gall state, without requiring a global database or identity
+provider.

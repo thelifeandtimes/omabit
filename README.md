@@ -38,8 +38,10 @@ Monorepo commands:
 
 ```bash
 make check-tend
+make check-tend-release
 make check-urbit-host
 make check-all
+make dist-tend
 make build-urbit-host
 make urbit-host-version
 ```
@@ -54,6 +56,18 @@ make -C apps/urbit-host build
 Read [`apps/urbit-host/AGENTS.md`](apps/urbit-host/AGENTS.md) before changing or
 operating the host manager. Its live Docker, SSH, service-installation, and ship
 lifecycle steps have stricter authorization requirements than repository tests.
+
+Tend also exposes a dependency-free umbrella CLI:
+
+```bash
+bin/omabit tend status
+bin/omabit tend today
+bin/omabit tend add "Buy milk" --list Inbox --tag groceries
+bin/omabit --json tend list
+```
+
+See [`docs/TEND_INSTALL.md`](docs/TEND_INSTALL.md) for desk, plugin, CLI, and
+release installation instructions.
 
 ## Repository State
 
