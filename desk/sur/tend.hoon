@@ -130,6 +130,40 @@
       recurrence=(unit recurrence)
   ==
 ::
+::  Frozen %3 reminder/list schema used while loading pre-multiplayer state.
+::
++$  reminder-3
+  $:  id=reminder-id
+      title=@t
+      notes=@t
+      url=(unit @t)
+      =priority
+      flagged=?
+      tags=(set @t)
+      parent-id=(unit reminder-id)
+      section-id=(unit section-id)
+      rank=@ud
+      schedule=(unit schedule)
+      completed=?
+      last-completed-at=(unit @da)
+      revision=@ud
+      created-at=@da
+      modified-at=@da
+  ==
++$  reminders-3  (map reminder-id reminder-3)
++$  task-list-3
+  $:  id=list-id
+      title=@t
+      color=@t
+      symbol=@t
+      revision=@ud
+      sections=sections
+      reminders=reminders-3
+      created-at=@da
+      modified-at=@da
+  ==
++$  lists-3  (map list-id task-list-3)
+::
 +$  section
   $:  id=section-id
       title=@t
@@ -148,6 +182,7 @@
       parent-id=(unit reminder-id)
       section-id=(unit section-id)
       rank=@ud
+      assignee=(unit @p)
       schedule=(unit schedule)
       completed=?
       last-completed-at=(unit @da)
@@ -207,6 +242,7 @@
           =priority
           flagged=?
           tags=(set @t)
+          assignee=(unit @p)
           base-revision=@ud
       ==
       $:  %move-reminder
@@ -240,8 +276,8 @@
   ==
 ::
 +$  update-2
-  $%  [%snapshot =lists]
-      [%list-upserted =op-id list=task-list]
+  $%  [%snapshot lists=lists-3]
+      [%list-upserted =op-id list=task-list-3]
       [%list-deleted =op-id =list-id]
       [%alert =list-id =reminder-id due-at=@da early-seconds=@ud]
       [%rejected =op-id reason=@tas current-revision=(unit @ud)]
@@ -251,12 +287,75 @@
 +$  state-2
   $:  %2
       next-id=@ud
-      list-map=lists
+      list-map=lists-3
       receipt-map=receipts-2
       default-list=(unit list-id)
       timer-generation=@ud
       next-wake=(unit @da)
   ==
+::
++$  update-3
+  $%  [%snapshot lists=lists-3 =preferences =snoozes]
+      [%list-upserted =op-id list=task-list-3 =preferences]
+      [%list-deleted =op-id =list-id =preferences]
+      [%preferences-updated =op-id =preferences]
+      [%snoozed =op-id =list-id =reminder-id until=@da]
+      [%alert =list-id =reminder-id due-at=@da early-seconds=@ud snoozed=?]
+      [%rejected =op-id reason=@tas current-revision=(unit @ud)]
+  ==
++$  receipts-3  (map op-id update-3)
++$  state-3
+  $:  %3
+      next-id=@ud
+      list-map=lists-3
+      receipt-map=receipts-3
+      preferences=preferences
+      timer-generation=@ud
+      next-wake=(unit @da)
+      snooze-map=snoozes
+  ==
+::
+::  Multiplayer state. Hosted list IDs remain local atoms; replicas receive a
+::  collision-free local alias while retaining their owner's canonical ID.
+::
++$  host-status  $?(%checking %online %offline)
++$  member-policy
+  $:  can-invite=?
+      notify-added=?
+      notify-completed=?
+  ==
++$  members  (map @p member-policy)
++$  pending-invites  (map @p op-id)
++$  share
+  $:  members=members
+      pending=pending-invites
+  ==
++$  shares  (map list-id share)
++$  list-ref  [host=@p id=list-id]
++$  replica
+  $:  alias=list-id
+      ref=list-ref
+      list=task-list
+      members=members
+      status=host-status
+      last-seen=@da
+  ==
++$  replicas  (map list-id replica)
++$  invitation
+  $:  token=op-id
+      host=@p
+      host-list-id=list-id
+      title=@t
+      can-invite=?
+      received-at=@da
+  ==
++$  invitation-key  [@p op-id]
++$  invitations     (map invitation-key invitation)
++$  in-flight
+  $:  alias=list-id
+      submitted-at=@da
+  ==
++$  in-flights  (map op-id in-flight)
 ::
 +$  update
   $%  [%snapshot =lists =preferences =snoozes]
@@ -268,8 +367,8 @@
       [%rejected =op-id reason=@tas current-revision=(unit @ud)]
   ==
 +$  receipts  (map op-id update)
-+$  state-3
-  $:  %3
++$  state-4
+  $:  %4
       next-id=@ud
       list-map=lists
       receipt-map=receipts
@@ -277,5 +376,9 @@
       timer-generation=@ud
       next-wake=(unit @da)
       snooze-map=snoozes
+      share-map=shares
+      replica-map=replicas
+      invitation-map=invitations
+      in-flight-map=in-flights
   ==
 --

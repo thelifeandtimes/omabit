@@ -16,6 +16,11 @@
     ^-  json
     ?~(val ~ (numb u.val))
   ::
+  ++  unit-ship-json
+    |=  val=(unit @p)
+    ^-  json
+    ?~(val ~ s+(scot %p u.val))
+  ::
   ++  strings-json
     |=  values=(set @t)
     ^-  json
@@ -129,6 +134,7 @@
         [%parent-id (unit-number-json parent-id.rem)]
         [%section-id (unit-number-json section-id.rem)]
         [%rank (numb rank.rem)]
+        [%assignee (unit-ship-json assignee.rem)]
         [%schedule (schedule-json schedule.rem)]
         [%completed b+completed.rem]
         [%last-completed-at ?~(last-completed-at.rem ~ s+(scot %da u.last-completed-at.rem))]
@@ -278,6 +284,12 @@
     =/  parsed=(unit @da)  (slaw %da (so jon))
     ?~(parsed !! u.parsed)
   ::
+  ++  ship
+    |=  jon=json
+    ^-  @p
+    =/  parsed=(unit @p)  (slaw %p (so jon))
+    ?~(parsed !! u.parsed)
+  ::
   ++  month-week
     |=  jon=json
     ^-  month-week:sur
@@ -347,9 +359,9 @@
       [%add-reminder op-id list-id title tags base-revision]
     ::
         %update-reminder
-      =/  [=op-id =list-id =reminder-id title=@t notes=@t url=(unit @t) pri=priority:sur flagged=? tags=(set @t) base-revision=@ud]
-        ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%title so] [%notes so] [%url (mu so)] [%priority priority] [%flagged bo] [%tags (as so)] [%base-revision ni] ~]) body)
-      [%update-reminder op-id list-id reminder-id title notes url pri flagged tags base-revision]
+      =/  [=op-id =list-id =reminder-id title=@t notes=@t url=(unit @t) pri=priority:sur flagged=? tags=(set @t) assignee=(unit @p) base-revision=@ud]
+        ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%title so] [%notes so] [%url (mu so)] [%priority priority] [%flagged bo] [%tags (as so)] [%assignee (mu ship)] [%base-revision ni] ~]) body)
+      [%update-reminder op-id list-id reminder-id title notes url pri flagged tags assignee base-revision]
     ::
         %move-reminder
       =/  [=op-id =list-id =reminder-id parent-id=(unit @ud) section-id=(unit @ud) rank=@ud base-revision=@ud]

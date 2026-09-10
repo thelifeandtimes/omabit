@@ -54,6 +54,7 @@ function cloneList(list) {
         parentId: reminder["parent-id"] === undefined ? (reminder.parentId ?? null) : reminder["parent-id"],
         sectionId: reminder["section-id"] === undefined ? (reminder.sectionId ?? null) : reminder["section-id"],
         rank: Number(reminder.rank || 0),
+        assignee: reminder.assignee === null || reminder.assignee === undefined ? null : String(reminder.assignee),
         schedule: cloneSchedule(reminder.schedule),
         completed: reminder.completed === true,
         lastCompletedAt: String(reminder["last-completed-at"] || reminder.lastCompletedAt || ""),

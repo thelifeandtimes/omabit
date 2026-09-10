@@ -5,8 +5,8 @@ Last verified: 2026-09-10
 ## Working now
 
 - `%tend` installs and hot-reloads on a live fake ship.
-- Existing `%0` and `%1` state migrates to the scheduled `%2` schema without
-  losing lists or reminders.
+- Existing `%0` through `%3` state migrates to the multiplayer-ready `%4`
+  schema without losing lists, reminders, schedules, preferences, or snoozes.
 - Authenticated Eyre login, identity scry, SSE subscribe/ack, reconnect, and
   poke acknowledgement work through the dependency-free desktop bridge.
 - List CRUD, section CRUD, rich reminder updates, hierarchy/order moves,
@@ -51,6 +51,10 @@ Last verified: 2026-09-10
 - Quick entry recognizes whitespace-delimited `#tag` tokens. The overlay lists
   all known tags and can rename, merge, or delete one across hosted reminders;
   server-side bounds and set semantics were verified through live Eyre.
+- `%4` freezes the complete `%3` schema, adds a canonical optional Urbit
+  assignee to reminders, and durably allocates hosted-share, replica,
+  invitation, and in-flight stores. A live `%3` ship migrated successfully and
+  an assignment round-tripped through Eyre.
 - Plugin validation, JavaScript reducer tests, and Python Eyre transport tests
   pass.
 

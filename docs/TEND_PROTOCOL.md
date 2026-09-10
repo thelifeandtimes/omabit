@@ -38,7 +38,7 @@ returns its recorded result without applying it twice.
 List appearance strings are non-empty and bounded; list deletion requires a
 second confirmation in the desktop UI. Editable reminder metadata currently
 includes title, notes, safe HTTP(S) or
-`mailto` URL, priority, flag, tags, parent, section, and rank. All writes are
+`mailto` URL, priority, flag, tags, assignee ship, parent, section, and rank. All writes are
 bounded by list revision; titles are non-empty and capped at 1 KiB. Tags are
 non-empty, bounded strings with at most 100 on one reminder. Quick entry strips
 whitespace-delimited `#tag` tokens into the initial tag set; replacing a tag
@@ -75,11 +75,12 @@ rolling upgrade, but new agents emit only the canonical update forms.
 
 ## Persistence
 
-Gall is authoritative. State schema `%3` contains lists, the next local ID,
-operation receipts, revisioned personal preferences, active snoozes, and Behn
-timer generation. `+on-load` migrates `%0`, `%1`, and `%2`, preserving IDs,
-titles, completion state, revisions, schedules, and the default list while
-filling new fields with deterministic defaults.
+Gall is authoritative. State schema `%4` contains lists, the next local ID,
+operation receipts, revisioned personal preferences, active snoozes, Behn timer
+generation, hosted-share policies, remote replicas, invitations, and in-flight
+operations. `+on-load` migrates `%0` through `%3`, preserving IDs, titles,
+completion state, revisions, schedules, tags, preferences, and snoozes while
+filling assignee and collaboration stores with deterministic defaults.
 
 The agent keeps one earliest Behn wakeup across all outstanding due/early
 alerts and snoozes. Generation-tagged wires make replaced timers harmless. Fired offsets

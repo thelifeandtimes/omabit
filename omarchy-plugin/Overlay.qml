@@ -193,6 +193,7 @@ Item {
         reminderPriority.currentIndex = Math.max(0, reminderPriority.model.indexOf(reminder.priority));
         reminderFlagged.checked = reminder.flagged;
         reminderTags.text = reminder.tags.join(", ");
+        reminderAssignee.text = reminder.assignee || "";
         reminderDue.text = reminder.schedule ? urbitToInput(reminder.schedule.dueAt) : "";
         reminderAllDay.checked = reminder.schedule ? reminder.schedule.allDay : false;
         reminderTimezone.text = reminder.schedule ? reminder.schedule.timezone : localTimezone();
@@ -874,7 +875,7 @@ Item {
 
                             Rectangle {
                                 width: parent.width
-                                height: root.selectedReminder ? Style.space(reminderRepeat.currentText === "none" ? 382 : 430) : 0
+                                height: root.selectedReminder ? Style.space(reminderRepeat.currentText === "none" ? 422 : 470) : 0
                                 visible: root.selectedReminder !== null
                                 radius: Style.cornerRadius
                                 color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.05)
@@ -931,6 +932,13 @@ Item {
 
                                         width: parent.width
                                         placeholderText: "tags, separated, by commas"
+                                    }
+
+                                    TextField {
+                                        id: reminderAssignee
+
+                                        width: parent.width
+                                        placeholderText: "Assignee ship, for example ~sampel-palnet"
                                     }
 
                                     Row {
@@ -1167,7 +1175,8 @@ Item {
                                                     url: reminderUrl.text.trim() || null,
                                                     priority: reminderPriority.currentText,
                                                     flagged: reminderFlagged.checked,
-                                                    tags: tags
+                                                    tags: tags,
+                                                    assignee: reminderAssignee.text.trim() || null
                                                 }, root.selectedList.revision);
                                             }
                                         }

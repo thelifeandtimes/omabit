@@ -278,6 +278,7 @@ Item {
                 "priority": String(fields.priority || "none"),
                 "flagged": fields.flagged === true,
                 "tags": (fields.tags || []).map(String),
+                "assignee": fields.assignee ? String(fields.assignee) : null,
                 "base-revision": Number(baseRevision)
             }
         });
