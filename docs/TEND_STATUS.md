@@ -90,14 +90,18 @@ Last verified: 2026-09-10
   symlink targets and preserves forced replacements as timestamped backups.
 - Plugin validation, JavaScript reducer tests, and Python Eyre transport tests
   pass.
+- The overlay now provides documented keyboard shortcuts, a focusable reminder
+  list with arrow/Enter/Space operation, explicit names for otherwise ambiguous
+  controls, textual state cues, and no custom motion. A manual Orca/theme/200%
+  scaling pass remains a release-candidate gate.
 
 ## Next
 
 1. Owner-hosted invitation delivery, ACL subscriptions, replicas, mutation
    routing, assignment validation, and activity across multiple ships.
 2. Additional quick-capture refinements.
-3. Restore/import design, accessibility audit, fault testing, and final release
-   hardening.
+3. Restore/import design, manual assistive-technology validation, fault testing,
+   and final release hardening.
 
 The source of truth for scope and exit criteria remains
 [`PRODUCT_ARCHITECTURE_PLAN.md`](../PRODUCT_ARCHITECTURE_PLAN.md).

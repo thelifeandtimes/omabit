@@ -385,6 +385,66 @@ Item {
             root.open("{}");
     }
 
+    Shortcut {
+        sequence: "Ctrl+N"
+        enabled: root.opened && !root.captureMode && service && service.ship !== ""
+        onActivated: quickAdd.forceActiveFocus()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+F"
+        enabled: root.opened && !root.captureMode && service && service.ship !== ""
+        onActivated: reminderSearch.forceActiveFocus()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+Shift+N"
+        enabled: root.opened && !root.captureMode && service && service.ship !== ""
+        onActivated: newList.forceActiveFocus()
+    }
+
+    Shortcut {
+        sequence: "Ctrl+Comma"
+        enabled: root.opened && !root.captureMode && service && service.ship !== ""
+        onActivated: root.policyEditorOpen = !root.policyEditorOpen
+    }
+
+    Shortcut {
+        sequence: "Alt+1"
+        enabled: root.opened && !root.captureMode
+        onActivated: root.viewMode = "today"
+    }
+
+    Shortcut {
+        sequence: "Alt+2"
+        enabled: root.opened && !root.captureMode
+        onActivated: root.viewMode = "scheduled"
+    }
+
+    Shortcut {
+        sequence: "Alt+3"
+        enabled: root.opened && !root.captureMode
+        onActivated: root.viewMode = "all"
+    }
+
+    Shortcut {
+        sequence: "Alt+4"
+        enabled: root.opened && !root.captureMode
+        onActivated: root.viewMode = "flagged"
+    }
+
+    Shortcut {
+        sequence: "Alt+5"
+        enabled: root.opened && !root.captureMode
+        onActivated: root.viewMode = "assigned"
+    }
+
+    Shortcut {
+        sequence: "Alt+6"
+        enabled: root.opened && !root.captureMode
+        onActivated: root.viewMode = "completed"
+    }
+
     onSelectedListChanged: {
         if (selectedList) {
             selectedListId = selectedList.id;
@@ -468,6 +528,7 @@ Item {
 
                             visible: service && service.ship !== ""
                             text: "Switch ship"
+                            Accessible.name: "Disconnect and switch Urbit ship"
                             onClicked: service.disconnect()
                         }
 
@@ -521,6 +582,7 @@ Item {
                             width: parent.width
                             text: service ? service.baseUrl : ""
                             placeholderText: "https://sampel-palnet.arvo.network"
+                            Accessible.name: "Urbit Eyre URL"
                         }
 
                         TextField {
@@ -529,6 +591,7 @@ Item {
                             width: parent.width
                             placeholderText: "lidlut-tabwed-pillex-ridrup"
                             echoMode: TextInput.Password
+                            Accessible.name: "Current Urbit plus code"
                             onAccepted: connectButton.clicked()
                         }
 
@@ -670,6 +733,7 @@ Item {
 
                                         width: parent.width * 0.62
                                         model: ["today", "scheduled", "all", "flagged", "assigned", "completed"]
+                                        Accessible.name: "Smart view to pin"
                                     }
 
                                     Button {
@@ -718,12 +782,23 @@ Item {
 
                                     width: parent.width
                                     placeholderText: "New list"
+                                    Accessible.name: "New list title"
                                     enabled: service && service.connectionState === "online" && !service.mutationPending
                                     onAccepted: {
                                         if (text.trim() && service.createList(text))
                                             text = "";
 
                                     }
+                                }
+
+                                Text {
+                                    width: parent.width
+                                    text: "Keys: Ctrl+N add · Ctrl+F search · Ctrl+Shift+N list · Alt+1…6 views · Enter edit · Space complete"
+                                    color: Color.menu.text
+                                    opacity: 0.68
+                                    wrapMode: Text.Wrap
+                                    font.family: Style.font.menuFamily
+                                    font.pixelSize: Style.font.caption
                                 }
 
                             }
@@ -843,6 +918,7 @@ Item {
 
                                     width: parent.width * 0.25
                                     model: root.availableTags
+                                    Accessible.name: "Tag to rename or delete"
                                 }
 
                                 TextField {
@@ -850,6 +926,7 @@ Item {
 
                                     width: parent.width * 0.3
                                     placeholderText: "Rename or merge tag"
+                                    Accessible.name: "Replacement tag"
                                 }
 
                                 Button {
@@ -888,6 +965,7 @@ Item {
 
                                     width: parent.width * 0.34
                                     placeholderText: "List title"
+                                    Accessible.name: "List title"
                                 }
 
                                 TextField {
@@ -895,6 +973,7 @@ Item {
 
                                     width: parent.width * 0.2
                                     placeholderText: "#3b82f6"
+                                    Accessible.name: "List color"
                                 }
 
                                 TextField {
@@ -902,6 +981,7 @@ Item {
 
                                     width: parent.width * 0.16
                                     placeholderText: "list or emoji"
+                                    Accessible.name: "List symbol or emoji"
                                 }
 
                                 Button {
@@ -963,6 +1043,7 @@ Item {
 
                                     width: parent.width * 0.5
                                     placeholderText: "Search reminders"
+                                    Accessible.name: "Search reminders"
                                 }
 
                                 ComboBox {
@@ -970,6 +1051,7 @@ Item {
 
                                     width: parent.width * 0.25
                                     model: ["manual", "due", "created", "priority", "title"]
+                                    Accessible.name: "Reminder sort order"
                                     onCurrentTextChanged: root.sortMode = currentText
                                 }
 
@@ -990,6 +1072,7 @@ Item {
 
                                     width: parent.width * 0.66
                                     placeholderText: root.addDestination ? "Add to " + root.addDestination.title : "Create a list first"
+                                    Accessible.name: "Quick reminder title and tags"
                                     enabled: root.addDestination && service && service.canEditList(root.addDestination.id) && service.connectionState === "online" && !service.mutationPending
                                     onAccepted: {
                                         var parsed = root.parseQuickEntry(text);
@@ -1004,6 +1087,7 @@ Item {
 
                                     width: parent.width - quickAdd.width - parent.spacing
                                     placeholderText: "Add section"
+                                    Accessible.name: "New section title"
                                     visible: root.viewMode === "list"
                                     enabled: visible && root.selectedListEditable && root.selectedList && service && service.connectionState === "online" && !service.mutationPending
                                     onAccepted: {
@@ -1031,6 +1115,7 @@ Item {
                                     width: parent.width * 0.24
                                     model: root.selectedList ? root.selectedList.sections : []
                                     textRole: "title"
+                                    Accessible.name: "Section to edit"
                                     onActivated: function(index) {
                                         root.chooseSection(index);
                                     }
@@ -1041,6 +1126,7 @@ Item {
 
                                     width: parent.width * 0.3
                                     placeholderText: "Section title"
+                                    Accessible.name: "Section title"
                                 }
 
                                 SpinBox {
@@ -1050,6 +1136,7 @@ Item {
                                     to: 2147483647
                                     value: 0
                                     editable: true
+                                    Accessible.name: "Section rank"
                                 }
 
                                 Button {
@@ -1154,6 +1241,7 @@ Item {
 
                                         width: parent.width
                                         placeholderText: "Reminder title"
+                                        Accessible.name: "Reminder title"
                                     }
 
                                     TextArea {
@@ -1163,6 +1251,7 @@ Item {
                                         height: Style.space(54)
                                         placeholderText: "Notes"
                                         wrapMode: TextEdit.Wrap
+                                        Accessible.name: "Reminder notes"
                                     }
 
                                     Row {
@@ -1174,6 +1263,7 @@ Item {
 
                                             width: parent.width * 0.5
                                             placeholderText: "https://…"
+                                            Accessible.name: "Reminder URL"
                                         }
 
                                         ComboBox {
@@ -1181,6 +1271,7 @@ Item {
 
                                             width: parent.width * 0.24
                                             model: ["none", "low", "medium", "high"]
+                                            Accessible.name: "Reminder priority"
                                         }
 
                                         CheckBox {
@@ -1196,6 +1287,7 @@ Item {
 
                                         width: parent.width
                                         placeholderText: "tags, separated, by commas"
+                                        Accessible.name: "Reminder tags"
                                     }
 
                                     TextField {
@@ -1203,6 +1295,7 @@ Item {
 
                                         width: parent.width
                                         placeholderText: "Assignee ship, for example ~sampel-palnet"
+                                        Accessible.name: "Reminder assignee ship"
                                     }
 
                                     Row {
@@ -1214,6 +1307,7 @@ Item {
 
                                             width: parent.width * 0.34
                                             placeholderText: "2026-09-10T17:30"
+                                            Accessible.name: "Reminder due date and time"
                                         }
 
                                         TextField {
@@ -1221,6 +1315,7 @@ Item {
 
                                             width: parent.width * 0.28
                                             placeholderText: "America/Los_Angeles"
+                                            Accessible.name: "Reminder time zone"
                                         }
 
                                         CheckBox {
@@ -1234,6 +1329,7 @@ Item {
 
                                             width: parent.width - x
                                             placeholderText: "Early min"
+                                            Accessible.name: "Early reminder minutes"
                                         }
 
                                     }
@@ -1248,6 +1344,7 @@ Item {
                                             width: parent.width * 0.3
                                             model: root.parentChoices
                                             textRole: "title"
+                                            Accessible.name: "Parent reminder"
                                         }
 
                                         ComboBox {
@@ -1256,6 +1353,7 @@ Item {
                                             width: parent.width * 0.3
                                             model: root.sectionChoices
                                             textRole: "title"
+                                            Accessible.name: "Reminder section"
                                         }
 
                                         SpinBox {
@@ -1265,6 +1363,7 @@ Item {
                                             to: 2147483647
                                             value: 0
                                             editable: true
+                                            Accessible.name: "Reminder rank"
                                         }
 
                                         Button {
@@ -1301,6 +1400,7 @@ Item {
 
                                             width: parent.width * 0.15
                                             placeholderText: "Weekdays 0-6"
+                                            Accessible.name: "Repeat weekdays from zero through six"
                                         }
 
                                         TextField {
@@ -1308,6 +1408,7 @@ Item {
 
                                             width: parent.width * 0.15
                                             placeholderText: "Month days"
+                                            Accessible.name: "Repeat month days"
                                         }
 
                                         CheckBox {
@@ -1323,6 +1424,7 @@ Item {
                                             to: 5
                                             value: 1
                                             enabled: reminderOrdinal.checked
+                                            Accessible.name: "Ordinal week index"
                                         }
 
                                         SpinBox {
@@ -1332,6 +1434,7 @@ Item {
                                             to: 6
                                             value: 0
                                             enabled: reminderOrdinal.checked
+                                            Accessible.name: "Ordinal weekday"
                                         }
 
                                         TextField {
@@ -1339,6 +1442,7 @@ Item {
 
                                             width: parent.width * 0.2
                                             placeholderText: "End date/time"
+                                            Accessible.name: "Repeat end date and time"
                                         }
 
                                         SpinBox {
@@ -1348,6 +1452,7 @@ Item {
                                             to: 9999
                                             value: 0
                                             editable: true
+                                            Accessible.name: "Maximum repeat occurrences"
                                         }
 
                                     }
@@ -1361,6 +1466,7 @@ Item {
 
                                             width: parent.width * 0.25
                                             model: ["none", "hourly", "daily", "weekly", "monthly", "yearly"]
+                                            Accessible.name: "Repeat frequency"
                                         }
 
                                         SpinBox {
@@ -1370,6 +1476,7 @@ Item {
                                             to: 999
                                             value: 1
                                             editable: true
+                                            Accessible.name: "Repeat interval"
                                         }
 
                                         Button {
@@ -1456,6 +1563,7 @@ Item {
 
                                             model: service ? service.preferences.snoozePresets : []
                                             displayText: currentValue ? Math.round(Number(currentValue) / 60) + " min" : "Snooze"
+                                            Accessible.name: "Snooze duration"
                                         }
 
                                         Button {
@@ -1471,19 +1579,39 @@ Item {
                             }
 
                             ListView {
+                                id: reminderList
+
                                 width: parent.width
                                 height: parent.height - y
                                 clip: true
                                 spacing: Style.space(4)
                                 model: root.displayedReminders
+                                activeFocusOnTab: true
+                                keyNavigationEnabled: true
+                                Accessible.role: Accessible.List
+                                Accessible.name: "Reminders"
+                                Keys.onReturnPressed: {
+                                    if (currentIndex >= 0 && currentIndex < root.displayedReminders.length)
+                                        root.editReminder(root.displayedReminders[currentIndex]);
+                                }
+                                Keys.onSpacePressed: {
+                                    if (currentIndex < 0 || currentIndex >= root.displayedReminders.length || !service)
+                                        return ;
+                                    var reminder = root.displayedReminders[currentIndex];
+                                    if (service.canEditList(reminder.listId) && service.connectionState === "online" && !service.mutationPending)
+                                        service.setCompleted(reminder.listId, reminder.id, !reminder.completed, reminder.listRevision);
+                                }
 
                                 delegate: Rectangle {
                                     required property var modelData
+                                    required property int index
 
                                     width: ListView.view.width
                                     height: Style.space(44)
                                     radius: Style.cornerRadius
-                                    color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.04)
+                                    color: ListView.isCurrentItem ? Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.14) : Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.04)
+                                    Accessible.role: Accessible.ListItem
+                                    Accessible.name: modelData.title
 
                                     Row {
                                         anchors.fill: parent
@@ -1524,7 +1652,10 @@ Item {
                                             MouseArea {
                                                 anchors.fill: parent
                                                 cursorShape: Qt.PointingHandCursor
-                                                onClicked: root.editReminder(modelData)
+                                                onClicked: {
+                                                    reminderList.currentIndex = index;
+                                                    root.editReminder(modelData);
+                                                }
                                             }
                                         }
 

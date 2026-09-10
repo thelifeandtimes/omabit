@@ -9,6 +9,8 @@ BarWidget {
   readonly property var tendService: bar?.shell?.serviceFor("io.omabit.tend")
   readonly property int taskCount: tendService ? tendService.badgeCount : 0
   readonly property string state: tendService ? tendService.connectionState : "disconnected"
+  Accessible.role: Accessible.Button
+  Accessible.name: "Open Tend; " + taskCount + " reminders in " + (tendService ? tendService.preferences.badgeMode : "today") + " badge; " + state
 
   implicitWidth: row.implicitWidth + Style.space(12)
   implicitHeight: barSize

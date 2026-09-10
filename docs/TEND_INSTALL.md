@@ -104,3 +104,6 @@ to standard output. Keep the result private. Restore/import will be added only
 with a separately versioned, validation-first protocol.
 
 Run `omabit tend --help` for the complete command list.
+
+See `docs/TEND_ACCESSIBILITY.md` in the release archive for the full keyboard
+reference and assistive-technology release checklist.

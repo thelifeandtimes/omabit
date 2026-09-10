@@ -24,6 +24,7 @@ cp "$repo_dir/docs/TEND_INSTALL.md" "$release_dir/README.md"
 cp "$repo_dir/docs/TEND_INSTALL.md" "$release_dir/docs/TEND_INSTALL.md"
 cp "$repo_dir/docs/TEND_PROTOCOL.md" "$release_dir/docs/TEND_PROTOCOL.md"
 cp "$repo_dir/docs/TEND_SECURITY.md" "$release_dir/docs/TEND_SECURITY.md"
+cp "$repo_dir/docs/TEND_ACCESSIBILITY.md" "$release_dir/docs/TEND_ACCESSIBILITY.md"
 chmod 0755 "$release_dir/bin/omabit" "$release_dir/install.sh"
 
 (
