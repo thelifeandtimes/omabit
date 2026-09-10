@@ -76,12 +76,28 @@ class CliDomainTests(unittest.TestCase):
         self.assertEqual(action["tags"], ["shop"])
 
     def test_complete_checks_entity_before_poking(self):
-        args = SimpleNamespace(tend_command="complete", json=True, list_id=1, reminder_id=7)
+        args = SimpleNamespace(tend_command="complete", json=True, list_id=1, reminder_ids=[7])
         with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
             self.assertEqual(omabit.run_tend(args), 0)
         action = poke.call_args.args[2]["set-completed"]
         self.assertEqual(action["base-revision"], 4)
         self.assertTrue(action["completed"])
+
+    def test_multiple_completions_use_one_atomic_batch_action(self):
+        sample = json.loads(json.dumps(SAMPLE))
+        sample["lists"][0]["reminders"].append({"id": 9, "title": "Call", "completed": False})
+        args = SimpleNamespace(tend_command="complete", json=True, list_id=1, reminder_ids=[7, 9])
+        with mock.patch.object(omabit, "snapshot", return_value=sample), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            self.assertEqual(omabit.run_tend(args), 0)
+        action = poke.call_args.args[2]["batch-set-completed"]
+        self.assertEqual(action["reminder-ids"], [7, 9])
+        self.assertEqual(action["base-revision"], 4)
+
+    def test_batch_delete_requires_explicit_confirmation(self):
+        args = SimpleNamespace(tend_command="delete", json=True, list_id=1, reminder_ids=[7], yes=False)
+        with mock.patch.object(omabit, "snapshot", return_value=SAMPLE):
+            with self.assertRaisesRegex(omabit.CliError, "without --yes"):
+                omabit.run_tend(args)
 
     def test_export_writes_private_versioned_snapshot_without_credentials(self):
         with tempfile.TemporaryDirectory() as directory:

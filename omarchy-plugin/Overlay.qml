@@ -22,6 +22,8 @@ Item {
     property bool policyEditorOpen: false
     property bool confirmDeleteList: false
     property bool captureMode: false
+    property var selectedReminderIds: []
+    property bool confirmBatchDelete: false
     readonly property var selectedList: {
         var available = service ? service.lists : [];
         for (var i = 0; i < available.length; i++) {
@@ -112,6 +114,31 @@ Item {
 
         }
         return 0;
+    }
+
+    function reminderIsSelected(reminderId) {
+        return selectedReminderIds.indexOf(Number(reminderId)) !== -1;
+    }
+
+    function toggleReminderSelection(reminderId) {
+        var ids = selectedReminderIds.slice();
+        var wanted = Number(reminderId);
+        var index = ids.indexOf(wanted);
+        if (index === -1)
+            ids.push(wanted);
+        else
+            ids.splice(index, 1);
+        selectedReminderIds = ids;
+        confirmBatchDelete = false;
+    }
+
+    function batchStartingRank() {
+        var highest = 0;
+        if (selectedList) {
+            for (var i = 0; i < selectedList.reminders.length; i++)
+                highest = Math.max(highest, Number(selectedList.reminders[i].rank || 0));
+        }
+        return highest + 1024;
     }
 
     function updatePreferences(defaultList, pinnedLists, pinnedViews) {
@@ -364,7 +391,14 @@ Item {
             listEditorOpen = false;
             confirmDeleteList = false;
             selectedSectionId = 0;
+            selectedReminderIds = [];
+            confirmBatchDelete = false;
         }
+    }
+
+    onViewModeChanged: {
+        selectedReminderIds = [];
+        confirmBatchDelete = false;
     }
 
     PanelWindow {
@@ -1036,6 +1070,73 @@ Item {
 
                             }
 
+                            Row {
+                                visible: root.viewMode === "list" && root.selectedList !== null && root.selectedReminderIds.length > 0
+                                width: parent.width
+                                spacing: Style.space(6)
+
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: root.selectedReminderIds.length + " selected"
+                                    color: Color.menu.text
+                                    font.family: Style.font.menuFamily
+                                    font.pixelSize: Style.font.caption
+                                }
+
+                                ComboBox {
+                                    id: batchSection
+
+                                    width: parent.width * 0.24
+                                    model: root.sectionChoices
+                                    textRole: "title"
+                                    Accessible.name: "Batch destination section"
+                                }
+
+                                Button {
+                                    text: "Move"
+                                    enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: {
+                                        var sectionId = batchSection.currentIndex > 0 ? root.sectionChoices[batchSection.currentIndex].id : null;
+                                        if (service.batchMoveReminders(root.selectedList.id, root.selectedReminderIds, sectionId, root.batchStartingRank(), root.selectedList.revision))
+                                            root.selectedReminderIds = [];
+                                    }
+                                }
+
+                                Button {
+                                    text: "Complete"
+                                    enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: {
+                                        if (service.batchSetCompleted(root.selectedList.id, root.selectedReminderIds, true, root.selectedList.revision))
+                                            root.selectedReminderIds = [];
+                                    }
+                                }
+
+                                Button {
+                                    text: "Uncomplete"
+                                    enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: {
+                                        if (service.batchSetCompleted(root.selectedList.id, root.selectedReminderIds, false, root.selectedList.revision))
+                                            root.selectedReminderIds = [];
+                                    }
+                                }
+
+                                Button {
+                                    text: root.confirmBatchDelete ? "Confirm delete" : "Delete"
+                                    enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: {
+                                        if (!root.confirmBatchDelete) {
+                                            root.confirmBatchDelete = true;
+                                            return ;
+                                        }
+                                        if (service.batchDeleteReminders(root.selectedList.id, root.selectedReminderIds, root.selectedList.revision)) {
+                                            root.selectedReminderIds = [];
+                                            root.confirmBatchDelete = false;
+                                        }
+                                    }
+                                }
+
+                            }
+
                             Rectangle {
                                 width: parent.width
                                 height: root.selectedReminder ? Style.space(reminderRepeat.currentText === "none" ? 422 : 470) : 0
@@ -1392,7 +1493,16 @@ Item {
                                         CheckBox {
                                             checked: modelData.completed
                                             enabled: service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
+                                            Accessible.name: (modelData.completed ? "Uncomplete " : "Complete ") + modelData.title
                                             onClicked: service.setCompleted(modelData.listId, modelData.id, checked, modelData.listRevision)
+                                        }
+
+                                        CheckBox {
+                                            visible: root.viewMode === "list"
+                                            checked: root.reminderIsSelected(modelData.id)
+                                            enabled: visible && service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
+                                            Accessible.name: "Select " + modelData.title + " for batch action"
+                                            onClicked: root.toggleReminderSelection(modelData.id)
                                         }
 
                                         Text {

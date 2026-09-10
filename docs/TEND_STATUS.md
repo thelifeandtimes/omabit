@@ -12,6 +12,10 @@ Last verified: 2026-09-10
 - List CRUD, section CRUD, rich reminder updates, hierarchy/order moves,
   completion, cascading deletion, optimistic revision checks, operation
   deduplication, and JSON snapshot/update conversion work end to end.
+- List-local multi-selection supports atomic batch complete/uncomplete,
+  move-to-section, and guarded cascading deletion. Batch recurrence completion
+  follows the same advancement rules as a single completion, and selections
+  are validated and capped server-side.
 - Unsafe URL schemes, invalid titles, stale revisions, missing entities, and
   parent cycles are rejected without changing canonical list state.
 - The Omarchy service stays read-only in `Checking` and `Offline`, becoming
@@ -91,7 +95,7 @@ Last verified: 2026-09-10
 
 1. Owner-hosted invitation delivery, ACL subscriptions, replicas, mutation
    routing, assignment validation, and activity across multiple ships.
-2. Batch operations and additional quick-capture refinements.
+2. Additional quick-capture refinements.
 3. Restore/import design, accessibility audit, fault testing, and final release
    hardening.
 

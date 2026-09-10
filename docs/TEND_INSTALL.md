@@ -86,6 +86,9 @@ omabit tend disconnect
 omabit tend today
 omabit tend add "Buy milk" --list Inbox --tag groceries
 omabit tend complete 1 42
+omabit tend complete 1 42 43 44
+omabit tend move 1 42 43 --section 7 --rank 2048
+omabit tend delete 1 42 43 --yes
 omabit tend snooze 1 42 --minutes 20
 omabit tend open 1 42
 omabit tend open --capture

@@ -248,16 +248,58 @@ def run_tend(args: argparse.Namespace) -> int:
         return 0
     if args.tend_command in {"complete", "uncomplete"}:
         task_list = select_list(state, str(args.list_id))
-        find_reminder(task_list, args.reminder_id)
-        action = {"set-completed": {
+        for reminder_id in args.reminder_ids:
+            find_reminder(task_list, reminder_id)
+        if len(args.reminder_ids) == 1:
+            action = {"set-completed": {
+                "operation-id": operation_id(),
+                "list-id": args.list_id,
+                "reminder-id": args.reminder_ids[0],
+                "completed": args.tend_command == "complete",
+                "base-revision": int(task_list.get("revision", 0)),
+            }}
+        else:
+            action = {"batch-set-completed": {
+                "operation-id": operation_id(),
+                "list-id": args.list_id,
+                "reminder-ids": args.reminder_ids,
+                "completed": args.tend_command == "complete",
+                "base-revision": int(task_list.get("revision", 0)),
+            }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "accepted", "listId": args.list_id, "reminderIds": args.reminder_ids}, as_json)
+        return 0
+    if args.tend_command == "delete":
+        if not args.yes:
+            raise CliError("Refusing batch delete without --yes")
+        task_list = select_list(state, str(args.list_id))
+        for reminder_id in args.reminder_ids:
+            find_reminder(task_list, reminder_id)
+        action = {"batch-delete-reminders": {
             "operation-id": operation_id(),
             "list-id": args.list_id,
-            "reminder-id": args.reminder_id,
-            "completed": args.tend_command == "complete",
+            "reminder-ids": args.reminder_ids,
             "base-revision": int(task_list.get("revision", 0)),
         }}
         poke(cookie_path, config_path, action)
-        emit({"status": "accepted", "listId": args.list_id, "reminderId": args.reminder_id}, as_json)
+        emit({"status": "accepted", "listId": args.list_id, "reminderIds": args.reminder_ids}, as_json)
+        return 0
+    if args.tend_command == "move":
+        task_list = select_list(state, str(args.list_id))
+        for reminder_id in args.reminder_ids:
+            find_reminder(task_list, reminder_id)
+        if args.section_id is not None and not any(int(section.get("id", -1)) == args.section_id for section in task_list.get("sections") or []):
+            raise CliError(f"Section {args.section_id} does not exist in list {args.list_id}")
+        action = {"batch-move-reminders": {
+            "operation-id": operation_id(),
+            "list-id": args.list_id,
+            "reminder-ids": args.reminder_ids,
+            "section-id": args.section_id,
+            "starting-rank": args.rank,
+            "base-revision": int(task_list.get("revision", 0)),
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "accepted", "listId": args.list_id, "reminderIds": args.reminder_ids}, as_json)
         return 0
     if args.tend_command == "snooze":
         task_list = select_list(state, str(args.list_id))
@@ -302,7 +344,18 @@ def parser() -> argparse.ArgumentParser:
     for name in ("complete", "uncomplete"):
         complete = commands.add_parser(name)
         complete.add_argument("list_id", type=int)
-        complete.add_argument("reminder_id", type=int)
+        complete.add_argument("reminder_ids", type=int, nargs="+")
+
+    delete = commands.add_parser("delete", help="delete one or more reminders and their subtasks")
+    delete.add_argument("list_id", type=int)
+    delete.add_argument("reminder_ids", type=int, nargs="+")
+    delete.add_argument("--yes", action="store_true", help="confirm permanent deletion")
+
+    move = commands.add_parser("move", help="move one or more reminders to a section in the same list")
+    move.add_argument("list_id", type=int)
+    move.add_argument("reminder_ids", type=int, nargs="+")
+    move.add_argument("--section", dest="section_id", type=int)
+    move.add_argument("--rank", type=int, default=1024)
 
     snooze = commands.add_parser("snooze")
     snooze.add_argument("list_id", type=int)

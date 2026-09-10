@@ -63,6 +63,7 @@ Tend also exposes a dependency-free umbrella CLI:
 bin/omabit tend status
 bin/omabit tend today
 bin/omabit tend add "Buy milk" --list Inbox --tag groceries
+bin/omabit tend complete 1 42 43
 bin/omabit tend export ~/Documents/tend-backup.json
 bin/omabit --json tend list
 ```

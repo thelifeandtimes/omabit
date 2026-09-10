@@ -257,6 +257,42 @@ Item {
         }, listId);
     }
 
+    function batchSetCompleted(listId, reminderIds, completed, baseRevision) {
+        return submit({
+            "batch-set-completed": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "reminder-ids": (reminderIds || []).map(Number),
+                "completed": completed === true,
+                "base-revision": Number(baseRevision)
+            }
+        }, listId);
+    }
+
+    function batchDeleteReminders(listId, reminderIds, baseRevision) {
+        return submit({
+            "batch-delete-reminders": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "reminder-ids": (reminderIds || []).map(Number),
+                "base-revision": Number(baseRevision)
+            }
+        }, listId);
+    }
+
+    function batchMoveReminders(listId, reminderIds, sectionId, startingRank, baseRevision) {
+        return submit({
+            "batch-move-reminders": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "reminder-ids": (reminderIds || []).map(Number),
+                "section-id": sectionId === null || sectionId === undefined ? null : Number(sectionId),
+                "starting-rank": Number(startingRank || 0),
+                "base-revision": Number(baseRevision)
+            }
+        }, listId);
+    }
+
     function setSchedule(listId, reminderId, schedule, baseRevision) {
         var value = null;
         if (schedule) {

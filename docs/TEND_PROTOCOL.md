@@ -28,6 +28,9 @@ returns its recorded result without applying it twice.
 | `add-section`, `update-section`, `delete-section` | Manage ordered sections; deleting a section keeps and unsections its reminders |
 | `add-reminder`, `update-reminder` | Create a reminder with initial tags or replace its editable metadata |
 | `move-reminder` | Change parent, section, and stable rank after validating references and cycles |
+| `batch-set-completed` | Complete/uncomplete up to 500 selected reminders atomically, cascading through subtasks and advancing selected recurrence rules |
+| `batch-move-reminders` | Move up to 500 selected reminder trees to a section in one list revision |
+| `batch-delete-reminders` | Delete up to 500 selected reminder trees atomically |
 | `set-schedule` | Set/clear due instant, all-day policy, IANA zone, early offsets, and recurrence |
 | `set-completed` | Complete/uncomplete a reminder tree, or advance a repeating reminder |
 | `set-preferences` | Atomically update revisioned default-list, pin, and snooze-preset state |
@@ -44,7 +47,8 @@ bounded by list revision; titles are non-empty and capped at 1 KiB. Tags are
 non-empty, bounded strings with at most 100 on one reminder. Quick entry strips
 whitespace-delimited `#tag` tokens into the initial tag set; replacing a tag
 updates every affected list and merges duplicate target values through set
-semantics.
+semantics. Batch selections must be non-empty, contain only reminders in the
+addressed list, and are capped at 500 IDs.
 
 Schedules store a canonical Urbit `@da` due instant plus the originating IANA
 time-zone name. Recurrence is structured rather than cron text: hourly, daily,

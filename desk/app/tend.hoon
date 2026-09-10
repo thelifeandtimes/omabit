@@ -545,6 +545,54 @@
         ==
       (save-list op-id.act lis state)
     ::
+        %batch-delete-reminders
+      =/  old=(unit task-list:t)  (~(get by list-map.state) list-id.act)
+      ?~  old  (reject op-id.act %unknown-list ~ state)
+      ?.  =(base-revision.act revision.u.old)
+        (reject op-id.act %stale-list `revision.u.old state)
+      ?:  (invalid-selection reminder-ids.act reminders.u.old)
+        (reject op-id.act %invalid-selection `revision.u.old state)
+      =/  kept=(list [reminder-id:t reminder:t])
+        %+  skim  ~(tap by reminders.u.old)
+        |=  [rid=reminder-id:t rem=reminder:t]
+        !(selected-tree rid reminder-ids.act reminders.u.old)
+      =/  lis=task-list:t
+        %_  u.old
+            revision    +(revision.u.old)
+            reminders   (malt kept)
+            modified-at  now.bowl
+        ==
+      (save-list op-id.act lis state)
+    ::
+        %batch-move-reminders
+      =/  old=(unit task-list:t)  (~(get by list-map.state) list-id.act)
+      ?~  old  (reject op-id.act %unknown-list ~ state)
+      ?.  =(base-revision.act revision.u.old)
+        (reject op-id.act %stale-list `revision.u.old state)
+      ?:  (invalid-selection reminder-ids.act reminders.u.old)
+        (reject op-id.act %invalid-selection `revision.u.old state)
+      ?:  ?~(section-id.act %.n !(~(has by sections.u.old) u.section-id.act))
+        (reject op-id.act %unknown-section `revision.u.old state)
+      =/  rems=reminders:t
+        %-  ~(run by reminders.u.old)
+        |=  rem=reminder:t
+        ?.  (selected-tree id.rem reminder-ids.act reminders.u.old)  rem
+        =/  root=?  (~(has in reminder-ids.act) id.rem)
+        %_  rem
+            parent-id   ?:(root ~ parent-id.rem)
+            section-id  section-id.act
+            rank        ?:(root (add starting-rank.act id.rem) rank.rem)
+            revision    +(revision.rem)
+            modified-at  now.bowl
+        ==
+      =/  lis=task-list:t
+        %_  u.old
+            revision    +(revision.u.old)
+            reminders   rems
+            modified-at  now.bowl
+        ==
+      (save-list op-id.act lis state)
+    ::
         %set-schedule
       =/  old=(unit task-list:t)  (~(get by list-map.state) list-id.act)
       ?~  old  (reject op-id.act %unknown-list ~ state)
@@ -632,6 +680,25 @@
             revision          +(revision.rem)
             modified-at       now.bowl
         ==
+      =/  lis=task-list:t
+        %_  u.old
+            revision    +(revision.u.old)
+            reminders   rems
+            modified-at  now.bowl
+        ==
+      (save-list op-id.act lis state)
+    ::
+        %batch-set-completed
+      =/  old=(unit task-list:t)  (~(get by list-map.state) list-id.act)
+      ?~  old  (reject op-id.act %unknown-list ~ state)
+      ?.  =(base-revision.act revision.u.old)
+        (reject op-id.act %stale-list `revision.u.old state)
+      ?:  (invalid-selection reminder-ids.act reminders.u.old)
+        (reject op-id.act %invalid-selection `revision.u.old state)
+      =/  rems=reminders:t
+        %-  ~(run by reminders.u.old)
+        |=  rem=reminder:t
+        (batch-complete-reminder rem reminder-ids.act completed.act reminders.u.old now.bowl)
       =/  lis=task-list:t
         %_  u.old
             revision    +(revision.u.old)
@@ -751,6 +818,38 @@
     ?.  (levy snooze-presets.prefs |=(seconds=@ud &((gth seconds 0) (lte seconds 2.592.000))))
       %.y
     (gte all-day-alert-minute.prefs 1.440)
+  ::
+  ++  invalid-selection
+    |=  [ids=(set reminder-id:t) rems=reminders:t]
+    ^-  ?
+    =/  values=(list reminder-id:t)  ~(tap in ids)
+    ?:  ?=(~ values)  %.y
+    ?:  (gth (lent values) 500)  %.y
+    =/  remaining=(list reminder-id:t)  values
+    |-
+    ?~  remaining  %.n
+    ?.  (~(has by rems) i.remaining)  %.y
+    $(remaining t.remaining)
+  ::
+  ++  selected-tree
+    |=  [candidate=reminder-id:t ids=(set reminder-id:t) rems=reminders:t]
+    ^-  ?
+    (lien ~(tap in ids) |=(ancestor=reminder-id:t (descendant candidate ancestor rems)))
+  ::
+  ++  batch-complete-reminder
+    |=  [rem=reminder:t ids=(set reminder-id:t) completed=? rems=reminders:t now=@da]
+    ^-  reminder:t
+    =/  advanced=(unit schedule:t)
+      ?.  completed  ~
+      ?.  (~(has in ids) id.rem)  ~
+      ?~  schedule.rem  ~
+      =/  sch=schedule:t  u.schedule.rem
+      ?~  recurrence.sch  ~
+      (advance-schedule sch)
+    ?^  advanced
+      rem(schedule advanced, completed %.n, last-completed-at `now, revision +(revision.rem), modified-at now)
+    ?.  (selected-tree id.rem ids rems)  rem
+    rem(completed completed, last-completed-at ?:(completed `now ~), revision +(revision.rem), modified-at now)
   ::
   ++  advance-schedule
     |=  sch=schedule:t

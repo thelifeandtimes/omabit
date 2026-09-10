@@ -471,6 +471,16 @@
         ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%base-revision ni] ~]) body)
       [%delete-reminder op-id list-id reminder-id base-revision]
     ::
+        %batch-delete-reminders
+      =/  [=op-id =list-id reminder-ids=(set @ud) base-revision=@ud]
+        ((ot [[%operation-id so] [%list-id ni] [%reminder-ids (as ni)] [%base-revision ni] ~]) body)
+      [%batch-delete-reminders op-id list-id reminder-ids base-revision]
+    ::
+        %batch-move-reminders
+      =/  [=op-id =list-id reminder-ids=(set @ud) section-id=(unit @ud) starting-rank=@ud base-revision=@ud]
+        ((ot [[%operation-id so] [%list-id ni] [%reminder-ids (as ni)] [%section-id (mu ni)] [%starting-rank ni] [%base-revision ni] ~]) body)
+      [%batch-move-reminders op-id list-id reminder-ids section-id starting-rank base-revision]
+    ::
         %set-schedule
       =/  [=op-id =list-id =reminder-id schedule=(unit schedule-input:sur) base-revision=@ud]
         ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%schedule (mu schedule-input)] [%base-revision ni] ~]) body)
@@ -480,6 +490,11 @@
       =/  [=op-id =list-id =reminder-id completed=? base-revision=@ud]
         ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%completed bo] [%base-revision ni] ~]) body)
       [%set-completed op-id list-id reminder-id completed base-revision]
+    ::
+        %batch-set-completed
+      =/  [=op-id =list-id reminder-ids=(set @ud) completed=? base-revision=@ud]
+        ((ot [[%operation-id so] [%list-id ni] [%reminder-ids (as ni)] [%completed bo] [%base-revision ni] ~]) body)
+      [%batch-set-completed op-id list-id reminder-ids completed base-revision]
     ::
         %set-preferences
       =/  [=op-id default-list=(unit @ud) pinned-lists=(list @ud) pinned-views=(list smart-view:sur) snooze-presets=(list @ud) base-revision=@ud]
