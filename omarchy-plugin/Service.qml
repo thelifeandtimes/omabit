@@ -15,6 +15,9 @@ Item {
     property var lists: []
     property var preferences: TendModel.clonePreferences(null)
     property var snoozes: []
+    property var accesses: []
+    property var invitations: []
+    property var pendingOperations: []
     property var lastAlert: null
     property var notificationQueue: []
     property bool mutationPending: false
@@ -90,9 +93,33 @@ Item {
         streamProcess.running = true;
     }
 
-    function submit(action) {
+    function accessForList(listId) {
+        return TendModel.accessForList(accesses, listId);
+    }
+
+    function canEditList(listId) {
+        return TendModel.canEditList(accesses, listId);
+    }
+
+    function listMutationPending(listId) {
+        for (var i = 0; i < pendingOperations.length; i++) {
+            if (pendingOperations[i].listId === Number(listId))
+                return true;
+
+        }
+        return false;
+    }
+
+    function submit(action, listId) {
         if (connectionState !== "online" || mutationPending || pokeProcess.running)
             return false;
+
+        if (listId !== undefined && listId !== null && !canEditList(listId)) {
+            var access = accessForList(listId);
+            var host = access ? access.host : "the list owner";
+            root.errorMessage = host + " is " + (access ? access.status : "checking") + "; this shared list is read-only until its host is online.";
+            return false;
+        }
 
         root.mutationPending = true;
         root.errorMessage = "";
@@ -119,7 +146,7 @@ Item {
                 "title": String(title || "").trim(),
                 "base-revision": Number(baseRevision)
             }
-        });
+        }, listId);
     }
 
     function updateList(listId, title, color, symbol, baseRevision) {
@@ -132,7 +159,7 @@ Item {
                 "symbol": String(symbol || "").trim(),
                 "base-revision": Number(baseRevision)
             }
-        });
+        }, listId);
     }
 
     function deleteList(listId, baseRevision) {
@@ -142,7 +169,7 @@ Item {
                 "list-id": Number(listId),
                 "base-revision": Number(baseRevision)
             }
-        });
+        }, listId);
     }
 
     function addSection(listId, title, rank, baseRevision) {
@@ -154,7 +181,7 @@ Item {
                 "rank": Number(rank),
                 "base-revision": Number(baseRevision)
             }
-        });
+        }, listId);
     }
 
     function updateSection(listId, sectionId, title, rank, baseRevision) {
@@ -167,7 +194,7 @@ Item {
                 "rank": Number(rank),
                 "base-revision": Number(baseRevision)
             }
-        });
+        }, listId);
     }
 
     function deleteSection(listId, sectionId, baseRevision) {
@@ -178,7 +205,7 @@ Item {
                 "section-id": Number(sectionId),
                 "base-revision": Number(baseRevision)
             }
-        });
+        }, listId);
     }
 
     function addReminder(listId, title, baseRevision, tags) {
@@ -190,7 +217,7 @@ Item {
                 "tags": (tags || []).map(String),
                 "base-revision": Number(baseRevision)
             }
-        });
+        }, listId);
     }
 
     function replaceTag(from, to) {
@@ -212,7 +239,7 @@ Item {
                 "completed": completed === true,
                 "base-revision": Number(baseRevision)
             }
-        });
+        }, listId);
     }
 
     function setSchedule(listId, reminderId, schedule, baseRevision) {
@@ -234,7 +261,7 @@ Item {
                 "schedule": value,
                 "base-revision": Number(baseRevision)
             }
-        });
+        }, listId);
     }
 
     function setPreferences(fields) {
@@ -281,6 +308,56 @@ Item {
                 "assignee": fields.assignee ? String(fields.assignee) : null,
                 "base-revision": Number(baseRevision)
             }
+        }, listId);
+    }
+
+    function inviteMember(listId, targetShip, canInvite) {
+        return submit({
+            "invite-member": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "ship": String(targetShip || "").trim(),
+                "can-invite": canInvite === true
+            }
+        }, listId);
+    }
+
+    function acceptInvitation(invitation) {
+        return submit({
+            "accept-invitation": {
+                "operation-id": operationId(),
+                "host": String(invitation.host || ""),
+                "token": String(invitation.token || "")
+            }
+        });
+    }
+
+    function declineInvitation(invitation) {
+        return submit({
+            "decline-invitation": {
+                "operation-id": operationId(),
+                "host": String(invitation.host || ""),
+                "token": String(invitation.token || "")
+            }
+        });
+    }
+
+    function removeMember(listId, targetShip) {
+        return submit({
+            "remove-member": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "ship": String(targetShip || "")
+            }
+        }, listId);
+    }
+
+    function leaveSharedList(listId) {
+        return submit({
+            "leave-shared-list": {
+                "operation-id": operationId(),
+                "list-id": Number(listId)
+            }
         });
     }
 
@@ -295,7 +372,7 @@ Item {
                 "rank": Number(rank),
                 "base-revision": Number(baseRevision)
             }
-        });
+        }, listId);
     }
 
     function deleteReminder(listId, reminderId, baseRevision) {
@@ -306,7 +383,7 @@ Item {
                 "reminder-id": Number(reminderId),
                 "base-revision": Number(baseRevision)
             }
-        });
+        }, listId);
     }
 
     function handleStreamLine(line) {
@@ -321,10 +398,13 @@ Item {
             if (message.response !== "diff")
                 return ;
 
-            var result = TendModel.reduce(root.lists, message.json, root.preferences, root.snoozes);
+            var result = TendModel.reduce(root.lists, message.json, root.preferences, root.snoozes, root.accesses, root.invitations, root.pendingOperations);
             root.lists = result.lists;
             root.preferences = result.preferences;
             root.snoozes = result.snoozes;
+            root.accesses = result.accesses;
+            root.invitations = result.invitations;
+            root.pendingOperations = result.pendingOperations;
             if (message.json && message.json.snapshot)
                 root.connectionState = "online";
 

@@ -1001,13 +1001,40 @@
 ++  on-watch
   |=  =path
   ^-  (quip card _this)
+  |^
   =/  st=state-5:t  state
   =/  snapshot=update:t
     [%snapshot list-map.st preferences.st snooze-map.st]
   ?>  =(our.bowl src.bowl)
   ?.  ?=([%all ~] path)  (on-watch:def path)
   :_  this
-  [%give %fact ~ %tend-update-1 !>(snapshot)]~
+  :~  [%give %fact ~ %tend-update-1 !>(snapshot)]
+      [%give %fact ~ %tend-update-1 !>([%accesses (accesses-for st)])]
+      [%give %fact ~ %tend-update-1 !>([%invitations-updated invitation-map.st])]
+  ==
+  ::
+  ++  accesses-for
+    |=  st=state-5:t
+    ^-  accesses:t
+    =/  hosted=accesses:t
+      %-  ~(rep by list-map.st)
+      |=  [[id=list-id:t lis=task-list:t] acc=accesses:t]
+      ?:  (~(has by replica-map.st) id)  acc
+      =/  found=(unit share:t)  (~(get by share-map.st) id)
+      =/  mem=members:t  ?~(found *members:t members.u.found)
+      =/  pending=(list @p)
+        ?~  found  ~
+        %+  turn  ~(tap by pending.u.found)
+        |=  [ship=@p invite=pending-invite:t]
+        ship
+      [[id our.bowl id %online %.y mem pending] acc]
+    =/  remote=accesses:t
+      %-  ~(rep by replica-map.st)
+      |=  [[alias=list-id:t rep=replica:t] acc=accesses:t]
+      :_  acc
+      [alias host.ref.rep id.ref.rep status.rep %.n members.rep ~]
+    (weld hosted remote)
+  --
 ::
 ++  on-peek
   |=  =path

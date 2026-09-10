@@ -38,6 +38,15 @@ Item {
         }
         return null;
     }
+    readonly property var selectedAccess: service && selectedList ? service.accessForList(selectedList.id) : null
+    readonly property bool selectedListEditable: service && selectedList ? service.canEditList(selectedList.id) : false
+    readonly property string selectedHostStatus: {
+        if (!selectedAccess)
+            return "CHECKING OWNER";
+        if (selectedAccess.owner)
+            return "OWNED HERE · ONLINE";
+        return "HOSTED BY " + selectedAccess.host.toUpperCase() + " · " + selectedAccess.status.toUpperCase();
+    }
     readonly property var orderedLists: TendModel.orderedLists(service ? service.lists : [], service ? service.preferences.pinnedLists : [])
     readonly property var availableTags: TendModel.allTags(service ? service.lists : [])
     readonly property var addDestination: {
@@ -636,6 +645,16 @@ Item {
 
                             }
 
+                            Text {
+                                visible: root.viewMode === "list" && root.selectedList !== null
+                                width: parent.width
+                                text: root.selectedHostStatus + (root.selectedListEditable ? "" : " · READ-ONLY UNTIL HOST RETURNS")
+                                color: root.selectedListEditable ? "#22c55e" : "#f59e0b"
+                                font.family: Style.font.menuFamily
+                                font.pixelSize: Style.font.caption
+                                font.bold: true
+                            }
+
                             Row {
                                 visible: root.availableTags.length > 0
                                 width: parent.width
@@ -709,13 +728,13 @@ Item {
 
                                 Button {
                                     text: "Save"
-                                    enabled: listTitle.text.trim() && listColor.text.trim() && listSymbol.text.trim() && service && service.connectionState === "online" && !service.mutationPending
+                                    enabled: root.selectedListEditable && listTitle.text.trim() && listColor.text.trim() && listSymbol.text.trim() && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: service.updateList(root.selectedList.id, listTitle.text, listColor.text, listSymbol.text, root.selectedList.revision)
                                 }
 
                                 Button {
                                     text: root.confirmDeleteList ? "Confirm delete" : "Delete"
-                                    enabled: service && service.connectionState === "online" && !service.mutationPending
+                                    enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: {
                                         if (!root.confirmDeleteList) {
                                             root.confirmDeleteList = true;
@@ -793,7 +812,7 @@ Item {
 
                                     width: parent.width * 0.66
                                     placeholderText: root.addDestination ? "Add to " + root.addDestination.title : "Create a list first"
-                                    enabled: root.addDestination && service && service.connectionState === "online" && !service.mutationPending
+                                    enabled: root.addDestination && service && service.canEditList(root.addDestination.id) && service.connectionState === "online" && !service.mutationPending
                                     onAccepted: {
                                         var parsed = root.parseQuickEntry(text);
                                         if (parsed.title && service.addReminder(root.addDestination.id, parsed.title, root.addDestination.revision, parsed.tags))
@@ -808,7 +827,7 @@ Item {
                                     width: parent.width - quickAdd.width - parent.spacing
                                     placeholderText: "Add section"
                                     visible: root.viewMode === "list"
-                                    enabled: visible && root.selectedList && service && service.connectionState === "online" && !service.mutationPending
+                                    enabled: visible && root.selectedListEditable && root.selectedList && service && service.connectionState === "online" && !service.mutationPending
                                     onAccepted: {
                                         if (!text.trim())
                                             return ;
@@ -857,13 +876,13 @@ Item {
 
                                 Button {
                                     text: "Save section"
-                                    enabled: root.selectedSectionId !== 0 && sectionTitleEditor.text.trim() && service && service.connectionState === "online" && !service.mutationPending
+                                    enabled: root.selectedListEditable && root.selectedSectionId !== 0 && sectionTitleEditor.text.trim() && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: service.updateSection(root.selectedList.id, root.selectedSectionId, sectionTitleEditor.text, sectionRank.value, root.selectedList.revision)
                                 }
 
                                 Button {
                                     text: "Delete"
-                                    enabled: root.selectedSectionId !== 0 && service && service.connectionState === "online" && !service.mutationPending
+                                    enabled: root.selectedListEditable && root.selectedSectionId !== 0 && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: {
                                         service.deleteSection(root.selectedList.id, root.selectedSectionId, root.selectedList.revision);
                                         root.selectedSectionId = 0;
@@ -1005,7 +1024,7 @@ Item {
 
                                         Button {
                                             text: "Move"
-                                            enabled: root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
+                                            enabled: root.selectedListEditable && root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: {
                                                 var parentId = reminderParent.currentIndex > 0 ? root.parentChoices[reminderParent.currentIndex].id : null;
                                                 var sectionId = reminderSection.currentIndex > 0 ? root.sectionChoices[reminderSection.currentIndex].id : null;
@@ -1015,13 +1034,13 @@ Item {
 
                                         Button {
                                             text: "↑"
-                                            enabled: root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
+                                            enabled: root.selectedListEditable && root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: root.moveSelectedRelative(-1)
                                         }
 
                                         Button {
                                             text: "↓"
-                                            enabled: root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
+                                            enabled: root.selectedListEditable && root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: root.moveSelectedRelative(1)
                                         }
 
@@ -1110,7 +1129,7 @@ Item {
 
                                         Button {
                                             text: "Save schedule"
-                                            enabled: root.selectedReminder && reminderDue.text.trim() && reminderTimezone.text.trim() && service && service.connectionState === "online" && !service.mutationPending
+                                            enabled: root.selectedListEditable && root.selectedReminder && reminderDue.text.trim() && reminderTimezone.text.trim() && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: {
                                                 var early = reminderEarly.text.split(",").map(function(minutes) {
                                                     return Math.round(Number(minutes.trim()) * 60);
@@ -1151,7 +1170,7 @@ Item {
 
                                         Button {
                                             text: "Clear"
-                                            enabled: root.selectedReminder && root.selectedReminder.schedule && service && service.connectionState === "online" && !service.mutationPending
+                                            enabled: root.selectedListEditable && root.selectedReminder && root.selectedReminder.schedule && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: service.setSchedule(root.selectedList.id, root.selectedReminder.id, null, root.selectedList.revision)
                                         }
 
@@ -1162,7 +1181,7 @@ Item {
 
                                         Button {
                                             text: service && service.mutationPending ? "Saving…" : "Save"
-                                            enabled: root.selectedReminder && reminderTitle.text.trim() && service && service.connectionState === "online" && !service.mutationPending
+                                            enabled: root.selectedListEditable && root.selectedReminder && reminderTitle.text.trim() && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: {
                                                 var tags = reminderTags.text.split(",").map(function(tag) {
                                                     return tag.trim();
@@ -1183,7 +1202,7 @@ Item {
 
                                         Button {
                                             text: "Delete"
-                                            enabled: root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
+                                            enabled: root.selectedListEditable && root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: service.deleteReminder(root.selectedList.id, root.selectedReminder.id, root.selectedList.revision)
                                         }
 
@@ -1228,7 +1247,7 @@ Item {
 
                                         CheckBox {
                                             checked: modelData.completed
-                                            enabled: service && service.connectionState === "online" && !service.mutationPending
+                                            enabled: service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
                                             onClicked: service.setCompleted(modelData.listId, modelData.id, checked, modelData.listRevision)
                                         }
 

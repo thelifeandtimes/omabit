@@ -108,65 +108,125 @@ function cloneSnoozes(values) {
   })
 }
 
-function reduce(currentLists, update, currentPreferences, currentSnoozes) {
+function cloneMemberPolicy(value) {
+  value = value || {}
+  return {
+    canInvite: value["can-invite"] === true || value.canInvite === true,
+    notifyAdded: value["notify-added"] === undefined ? value.notifyAdded !== false : value["notify-added"] === true,
+    notifyCompleted: value["notify-completed"] === undefined ? value.notifyCompleted !== false : value["notify-completed"] === true
+  }
+}
+
+function cloneAccesses(values) {
+  return (values || []).map(function(value) {
+    return {
+      alias: Number(value.alias),
+      host: String(value.host || ""),
+      hostListId: Number(value["host-list-id"] === undefined ? value.hostListId : value["host-list-id"]),
+      status: String(value.status || "checking"),
+      owner: value.owner === true,
+      members: (value.members || []).map(function(member) {
+        return { ship: String(member.ship || ""), policy: cloneMemberPolicy(member.policy) }
+      }).sort(function(a, b) { return a.ship.localeCompare(b.ship) }),
+      pending: (value.pending || []).map(String).sort(function(a, b) { return a.localeCompare(b) })
+    }
+  }).sort(function(a, b) { return a.alias - b.alias })
+}
+
+function cloneInvitations(values) {
+  return (values || []).map(function(value) {
+    return {
+      token: String(value.token || ""),
+      host: String(value.host || ""),
+      hostListId: Number(value["host-list-id"] === undefined ? value.hostListId : value["host-list-id"]),
+      title: String(value.title || ""),
+      canInvite: value["can-invite"] === true || value.canInvite === true,
+      receivedAt: String(value["received-at"] || value.receivedAt || "")
+    }
+  }).sort(function(a, b) {
+    return a.receivedAt.localeCompare(b.receivedAt) || a.host.localeCompare(b.host) || a.token.localeCompare(b.token)
+  })
+}
+
+function clonePendingOperations(values) {
+  return (values || []).map(function(value) {
+    return {
+      operationId: String(value.operationId || value["operation-id"] || ""),
+      listId: Number(value.listId === undefined ? value["list-id"] : value.listId)
+    }
+  })
+}
+
+function resultState(lists, preferences, snoozes, accesses, invitations, pendingOperations, error, alert) {
+  return {
+    lists: lists,
+    preferences: preferences,
+    snoozes: snoozes,
+    accesses: accesses,
+    invitations: invitations,
+    pendingOperations: pendingOperations,
+    error: error || "",
+    alert: alert || null
+  }
+}
+
+function reduce(currentLists, update, currentPreferences, currentSnoozes, currentAccesses, currentInvitations, currentPendingOperations) {
   var lists = sortedLists(currentLists)
   var preferences = clonePreferences(currentPreferences)
   var snoozes = cloneSnoozes(currentSnoozes)
-  if (!update || typeof update !== "object") return { lists: lists, preferences: preferences, snoozes: snoozes, error: "Invalid Tend update", alert: null }
+  var accesses = cloneAccesses(currentAccesses)
+  var invitations = cloneInvitations(currentInvitations)
+  var pendingOperations = clonePendingOperations(currentPendingOperations)
+  if (!update || typeof update !== "object") return resultState(lists, preferences, snoozes, accesses, invitations, pendingOperations, "Invalid Tend update", null)
 
-  if (update.snapshot) return {
-    lists: sortedLists(update.snapshot.lists),
-    preferences: clonePreferences(update.snapshot.preferences),
-    snoozes: cloneSnoozes(update.snapshot.snoozes),
-    error: "",
-    alert: null
+  if (update.snapshot) return resultState(sortedLists(update.snapshot.lists), clonePreferences(update.snapshot.preferences), cloneSnoozes(update.snapshot.snoozes), accesses, invitations, pendingOperations, "", null)
+
+  if (update.accesses) return resultState(lists, preferences, snoozes, cloneAccesses(update.accesses), invitations, pendingOperations, "", null)
+
+  if (update["invitations-updated"]) return resultState(lists, preferences, snoozes, accesses, cloneInvitations(update["invitations-updated"]), pendingOperations, "", null)
+
+  if (update["operation-pending"]) {
+    var pending = update["operation-pending"]
+    var pendingId = String(pending["operation-id"] || "")
+    var nextPending = pendingOperations.filter(function(item) { return item.operationId !== pendingId })
+    nextPending.push({ operationId: pendingId, listId: Number(pending["list-id"]) })
+    return resultState(lists, preferences, snoozes, accesses, invitations, nextPending, "", null)
+  }
+
+  if (update["operation-settled"]) {
+    var settledId = String(update["operation-settled"]["operation-id"] || "")
+    return resultState(lists, preferences, snoozes, accesses, invitations, pendingOperations.filter(function(item) { return item.operationId !== settledId }), "", null)
   }
 
   if (update.alert) {
     var isSnoozedAlert = update.alert.snoozed === true
     var alertListId = Number(update.alert["list-id"])
     var alertReminderId = Number(update.alert["reminder-id"])
-    return {
-      lists: lists,
-      preferences: preferences,
-      snoozes: isSnoozedAlert ? snoozes.filter(function(item) {
+    return resultState(lists, preferences, isSnoozedAlert ? snoozes.filter(function(item) {
         return item.listId !== alertListId || item.reminderId !== alertReminderId
-      }) : snoozes,
-      error: "",
-      alert: {
+      }) : snoozes, accesses, invitations, pendingOperations, "", {
         listId: alertListId,
         reminderId: alertReminderId,
         dueAt: String(update.alert["due-at"] || ""),
         earlySeconds: Number(update.alert["early-seconds"] || 0),
         snoozed: isSnoozedAlert
-      }
-    }
+      })
   }
 
   if (update["list-upserted"]) {
     var replacement = cloneList(update["list-upserted"].list)
-    return {
-      lists: sortedLists(lists.filter(function(item) { return item.id !== replacement.id }).concat([replacement])),
-      preferences: clonePreferences(update["list-upserted"].preferences || preferences),
-      snoozes: snoozes,
-      error: "",
-      alert: null
-    }
+    var upsertOperation = String(update["list-upserted"]["operation-id"] || "")
+    return resultState(sortedLists(lists.filter(function(item) { return item.id !== replacement.id }).concat([replacement])), clonePreferences(update["list-upserted"].preferences || preferences), snoozes, accesses, invitations, pendingOperations.filter(function(item) { return item.operationId !== upsertOperation }), "", null)
   }
 
   if (update["list-deleted"]) {
     var deletedId = update["list-deleted"]["list-id"]
-    return {
-      lists: lists.filter(function(item) { return item.id !== deletedId }),
-      preferences: clonePreferences(update["list-deleted"].preferences || preferences),
-      snoozes: snoozes.filter(function(item) { return item.listId !== deletedId }),
-      error: "",
-      alert: null
-    }
+    var deleteOperation = String(update["list-deleted"]["operation-id"] || "")
+    return resultState(lists.filter(function(item) { return item.id !== deletedId }), clonePreferences(update["list-deleted"].preferences || preferences), snoozes.filter(function(item) { return item.listId !== deletedId }), accesses.filter(function(item) { return item.alias !== Number(deletedId) }), invitations, pendingOperations.filter(function(item) { return item.operationId !== deleteOperation }), "", null)
   }
 
   if (update["preferences-updated"]) {
-    return { lists: lists, preferences: clonePreferences(update["preferences-updated"].preferences), snoozes: snoozes, error: "", alert: null }
+    return resultState(lists, clonePreferences(update["preferences-updated"].preferences), snoozes, accesses, invitations, pendingOperations, "", null)
   }
 
   if (update.snoozed) {
@@ -175,13 +235,13 @@ function reduce(currentLists, update, currentPreferences, currentSnoozes) {
       return item.listId !== snoozed.listId || item.reminderId !== snoozed.reminderId
     })
     nextSnoozes.push(snoozed)
-    return { lists: lists, preferences: preferences, snoozes: cloneSnoozes(nextSnoozes), error: "", alert: null }
+    return resultState(lists, preferences, cloneSnoozes(nextSnoozes), accesses, invitations, pendingOperations, "", null)
   }
 
   // Milestone 0 events remain readable during a rolling desk/plugin upgrade.
   if (update["list-created"]) {
     var created = cloneList(update["list-created"].list)
-    return { lists: sortedLists(lists.filter(function(item) { return item.id !== created.id }).concat([created])), preferences: preferences, snoozes: snoozes, error: "", alert: null }
+    return resultState(sortedLists(lists.filter(function(item) { return item.id !== created.id }).concat([created])), preferences, snoozes, accesses, invitations, pendingOperations, "", null)
   }
 
   var payload = update["reminder-added"] || update["reminder-completed"]
@@ -196,14 +256,25 @@ function reduce(currentLists, update, currentPreferences, currentSnoozes) {
       copy.revision = Number(payload["list-revision"] || copy.revision)
       return copy
     })
-    return { lists: next, preferences: preferences, snoozes: snoozes, error: "", alert: null }
+    return resultState(next, preferences, snoozes, accesses, invitations, pendingOperations, "", null)
   }
 
   if (update.rejected) {
-    return { lists: lists, preferences: preferences, snoozes: snoozes, error: "Action rejected: " + String(update.rejected.reason || "unknown"), alert: null }
+    var rejectedId = String(update.rejected["operation-id"] || "")
+    return resultState(lists, preferences, snoozes, accesses, invitations, pendingOperations.filter(function(item) { return item.operationId !== rejectedId }), "Action rejected: " + String(update.rejected.reason || "unknown"), null)
   }
 
-  return { lists: lists, preferences: preferences, snoozes: snoozes, error: "Unknown Tend update", alert: null }
+  return resultState(lists, preferences, snoozes, accesses, invitations, pendingOperations, "Unknown Tend update", null)
+}
+
+function accessForList(accesses, listId) {
+  const wanted = Number(listId)
+  return cloneAccesses(accesses).find(function(access) { return access.alias === wanted }) || null
+}
+
+function canEditList(accesses, listId) {
+  const access = accessForList(accesses, listId)
+  return access !== null && (access.owner || access.status === "online")
 }
 
 function incompleteCount(lists) {
@@ -293,5 +364,5 @@ function queryReminders(lists, options, nowMs) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, cloneSnoozes: cloneSnoozes, reduce: reduce, incompleteCount: incompleteCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, clonePreferences: clonePreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders }
 }

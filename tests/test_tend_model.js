@@ -199,3 +199,60 @@ test("built-in views, search, and due sorting work across lists", () => {
   assert.equal(model.queryReminders(lists, { view: "all" }, now).find((item) => item.id === 1).listRevision, 4)
   assert.deepEqual(model.allTags(lists), ["shop"])
 })
+
+test("multiplayer access state gates remote editing while keeping owned lists writable", () => {
+  const owned = {
+    alias: 1,
+    host: "~zod",
+    "host-list-id": 1,
+    status: "online",
+    owner: true,
+    members: [{ ship: "~nec", policy: { "can-invite": false, "notify-added": true, "notify-completed": true } }],
+    pending: ["~bud"]
+  }
+  const offline = {
+    alias: 2,
+    host: "~nec",
+    "host-list-id": 7,
+    status: "offline",
+    owner: false,
+    members: [],
+    pending: []
+  }
+  const checking = { ...offline, alias: 3, status: "checking" }
+  const online = { ...offline, alias: 4, status: "online" }
+  const result = model.reduce([], { accesses: [owned, offline, checking, online] })
+
+  assert.equal(result.accesses[0].members[0].policy.canInvite, false)
+  assert.deepEqual(result.accesses[0].pending, ["~bud"])
+  assert.equal(model.canEditList(result.accesses, 1), true)
+  assert.equal(model.canEditList(result.accesses, 2), false)
+  assert.equal(model.canEditList(result.accesses, 3), false)
+  assert.equal(model.canEditList(result.accesses, 4), true)
+  assert.equal(model.canEditList(result.accesses, 99), false)
+})
+
+test("invitations and remote operation lifecycle reduce independently", () => {
+  const invited = model.reduce([], {
+    "invitations-updated": [{
+      token: "invite-1",
+      host: "~sampel-palnet",
+      "host-list-id": 12,
+      title: "House",
+      "can-invite": true,
+      "received-at": "~2026.9.10..22.00.00"
+    }]
+  })
+  assert.equal(invited.invitations[0].title, "House")
+  assert.equal(invited.invitations[0].canInvite, true)
+
+  const pending = model.reduce([], {
+    "operation-pending": { "operation-id": "edit-1", "list-id": 8 }
+  }, null, null, null, invited.invitations)
+  assert.deepEqual(pending.pendingOperations, [{ operationId: "edit-1", listId: 8 }])
+
+  const settled = model.reduce([], {
+    "operation-settled": { "operation-id": "edit-1" }
+  }, null, null, null, invited.invitations, pending.pendingOperations)
+  assert.deepEqual(settled.pendingOperations, [])
+})
