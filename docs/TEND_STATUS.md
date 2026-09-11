@@ -189,6 +189,12 @@ Last verified: 2026-09-11
   list with arrow/Enter/Space operation, explicit names for otherwise ambiguous
   controls, textual state cues, and no custom motion. A manual Orca/theme/200%
   scaling pass remains a release-candidate gate.
+- Bar clicks route the overlay to their output, keyboard/CLI summons use
+  Hyprland's focused output, and scaled card limits clamp to that screen. Quick
+  capture stacks vertically on narrow outputs. QML syntax/import lint now runs
+  on the overlay and service in both source and packaged-release gates; the bar
+  entrypoint's filename/type collision is covered by validation and static
+  contracts instead.
 - A deterministic 10,000-reminder scale fixture now gates snapshot
   normalization, Today, and text search at five seconds each and verifies that
   the fixture remains below the 32 MiB Eyre event ceiling.
@@ -197,7 +203,8 @@ Last verified: 2026-09-11
 
 1. Complete manual assistive-technology validation and run a longer real-ship
    release-candidate key-continuity soak using the documented lockstep matrix.
-2. Finish compact-surface and multi-monitor refinement.
+2. Exercise the responsive capture and focused-output routing in the manual
+   multi-monitor release-candidate pass.
 
 The current Core reconciliation and honest release blockers are tracked in
 [`TEND_RELEASE_CHECKLIST.md`](TEND_RELEASE_CHECKLIST.md).

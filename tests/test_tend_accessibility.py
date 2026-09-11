@@ -28,6 +28,17 @@ class TendAccessibilityTests(unittest.TestCase):
         for animation in ("NumberAnimation", "PropertyAnimation", "SmoothedAnimation", "SpringAnimation"):
             self.assertNotIn(animation, plugin_text)
 
+    def test_overlay_targets_the_invoking_or_focused_monitor_and_scales(self):
+        overlay = (ROOT / "omarchy-plugin" / "Overlay.qml").read_text(encoding="utf-8")
+        widget = (ROOT / "omarchy-plugin" / "BarWidget.qml").read_text(encoding="utf-8")
+        self.assertIn("Hyprland.focusedMonitor", overlay)
+        self.assertIn("window.screen = chosen", overlay)
+        self.assertIn("root.chooseOpenScreen(payload.screen)", overlay)
+        self.assertIn("root.QsWindow.window", widget)
+        self.assertIn('JSON.stringify({ screen: screenName })', widget)
+        self.assertIn("Math.min(Style.space(640)", overlay)
+        self.assertIn("columns: width < Style.space(520) ? 1 : 3", overlay)
+
 
 if __name__ == "__main__":
     unittest.main()

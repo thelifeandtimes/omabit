@@ -1,13 +1,15 @@
 .PHONY: check check-all check-tend check-tend-release check-tend-migrations \
 	check-tend-multiship check-urbit-host \
 	build-urbit-host dist-tend urbit-host-version test test-js \
-	validate-plugin lint-python
+	validate-plugin lint-qml lint-python
+
+OMARCHY_ROOT ?= $(if $(OMARCHY_PATH),$(OMARCHY_PATH),$(HOME)/.local/share/omarchy)
 
 check: check-tend
 
 check-all: check-tend check-urbit-host
 
-check-tend: validate-plugin lint-python test
+check-tend: validate-plugin lint-qml lint-python test
 
 check-urbit-host:
 	$(MAKE) -C apps/urbit-host check
@@ -46,6 +48,9 @@ urbit-host-version: build-urbit-host
 
 validate-plugin:
 	omarchy plugin validate omarchy-plugin
+
+lint-qml:
+	qmllint -I "$(OMARCHY_ROOT)/shell" omarchy-plugin/Overlay.qml omarchy-plugin/Service.qml
 
 lint-python:
 	python3 -m py_compile omarchy-plugin/transport/eyre_client.py

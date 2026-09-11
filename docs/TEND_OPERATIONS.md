@@ -25,6 +25,7 @@ requirements:
 | Python / Node used by gates | 3.14.7 / 25.2.1 |
 | Time-zone database | System IANA tzdata through Python `zoneinfo` |
 | Notification client | `notify-send` 0.8.8 |
+| QML validation | `qmllint` against the installed Omarchy shell imports |
 
 Install the desk, plugin, and CLI from the same Tend release, and update all
 ships in a sharing group together. A protocol-1 desktop refuses a missing or

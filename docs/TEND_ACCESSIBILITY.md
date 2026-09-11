@@ -25,6 +25,15 @@ Quick capture focuses its title field when opened. The full overlay focuses
 quick add after an authenticated session is available, or the Eyre URL field
 during onboarding.
 
+The overlay binds to the output named by the invoking bar widget. Keyboard and
+CLI summons fall back to Hyprland's focused output. Card limits use Omarchy's
+scaled spacing, are clamped to the selected output, and quick capture changes
+from one row to a vertical form when its usable width is below 520 scaled
+pixels. `make check-tend` runs `qmllint` against the supported Omarchy imports.
+The entry file named `BarWidget.qml` is covered by the plugin validator and
+source-contract tests because Qt's linter recursively resolves that filename as
+the imported `BarWidget` base type.
+
 ## Assistive technology
 
 - The bar widget identifies its action, count basis, count, and connection

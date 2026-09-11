@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Wayland
 import qs.Commons
 import "TendModel.js" as TendModel
@@ -548,16 +549,39 @@ Item {
         return service ? service.localTimezone : "UTC";
     }
 
+    function screenNamed(name) {
+        var wanted = String(name || "");
+        if (!wanted)
+            return null;
+        var screens = Quickshell.screens || [];
+        for (var i = 0; i < screens.length; i++) {
+            if (String(screens[i].name || "") === wanted)
+                return screens[i];
+        }
+        return null;
+    }
+
+    function chooseOpenScreen(requestedName) {
+        var focused = Hyprland.focusedMonitor;
+        var focusedName = focused ? String(focused.name || "") : "";
+        var chosen = screenNamed(requestedName) || screenNamed(focusedName);
+        if (chosen)
+            window.screen = chosen;
+    }
+
     function open(payloadJson) {
+        var payload = {};
+        try {
+            payload = JSON.parse(String(payloadJson || "{}"));
+        } catch (error) {
+            payload = {};
+        }
+        if (!payload || typeof payload !== "object")
+            payload = {};
+        root.chooseOpenScreen(payload.screen);
+        root.captureMode = payload.mode === "capture";
         root.opened = true;
         Qt.callLater(function() {
-            var payload = {};
-            try {
-                payload = JSON.parse(String(payloadJson || "{}"));
-            } catch (error) {
-                payload = {};
-            }
-            root.captureMode = payload.mode === "capture";
             if (payload.listId && service) {
                 root.viewMode = "list";
                 root.selectedListId = Number(payload.listId);
@@ -721,8 +745,8 @@ Item {
                 id: card
 
                 anchors.centerIn: parent
-                width: root.captureMode ? Math.min(640, parent.width - Style.space(48)) : Math.min(1100, parent.width - Style.space(48))
-                height: root.captureMode ? Math.min(210, parent.height - Style.space(48)) : Math.min(760, parent.height - Style.space(48))
+                width: root.captureMode ? Math.min(Style.space(640), parent.width - Style.space(48)) : Math.min(Style.space(1100), parent.width - Style.space(48))
+                height: root.captureMode ? Math.min(captureControls.columns === 1 ? Style.space(300) : Style.space(210), parent.height - Style.space(48)) : Math.min(Style.space(760), parent.height - Style.space(48))
                 radius: Style.cornerRadius
                 color: Color.menu.background
                 border.color: Color.menu.border
@@ -905,14 +929,18 @@ Item {
                             font.bold: true
                         }
 
-                        Row {
+                        Grid {
+                            id: captureControls
+
                             width: parent.width
-                            spacing: Style.space(8)
+                            columns: width < Style.space(520) ? 1 : 3
+                            columnSpacing: Style.space(8)
+                            rowSpacing: Style.space(8)
 
                             TextField {
                                 id: captureEntry
 
-                                width: parent.width * 0.64
+                                width: captureControls.columns === 1 ? parent.width : parent.width * 0.64
                                 placeholderText: "Reminder title with optional #tags"
                                 enabled: captureList.currentIndex >= 0 && captureList.model[captureList.currentIndex] && service && service.canEditList(captureList.model[captureList.currentIndex].id) && service.connectionState === "online" && !service.mutationPending
                                 onAccepted: captureAdd.clicked()
@@ -922,7 +950,7 @@ Item {
                             ComboBox {
                                 id: captureList
 
-                                width: parent.width - captureEntry.width - captureAdd.width - Style.space(16)
+                                width: captureControls.columns === 1 ? parent.width : parent.width - captureEntry.width - captureAdd.width - captureControls.columnSpacing * 2
                                 model: service ? TendModel.orderedLists(service.lists, service.preferences.pinnedLists, service.localSettings.listOrder) : []
                                 textRole: "title"
                                 Accessible.name: "Destination list"
@@ -931,6 +959,7 @@ Item {
                             Button {
                                 id: captureAdd
 
+                                width: captureControls.columns === 1 ? parent.width : implicitWidth
                                 text: service && service.mutationPending ? "Adding…" : "Add"
                                 enabled: captureEntry.enabled && captureEntry.text.trim() !== ""
                                 Accessible.name: "Add reminder"

@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell
 import qs.Commons
 import qs.Ui
 
@@ -14,6 +15,12 @@ BarWidget {
 
   implicitWidth: row.implicitWidth + Style.space(12)
   implicitHeight: barSize
+
+  function overlayPayload() {
+    var barWindow = root.QsWindow.window
+    var screenName = barWindow && barWindow.screen ? String(barWindow.screen.name || "") : ""
+    return JSON.stringify({ screen: screenName })
+  }
 
   Row {
     id: row
@@ -39,7 +46,7 @@ BarWidget {
   MouseArea {
     anchors.fill: parent
     cursorShape: Qt.PointingHandCursor
-    onClicked: if (root.bar && root.bar.shell) root.bar.shell.toggle("io.omabit.tend", "{}")
+    onClicked: if (root.bar && root.bar.shell) root.bar.shell.toggle("io.omabit.tend", root.overlayPayload())
     onEntered: {
       if (!root.bar) return
       var next = root.tendService ? root.tendService.nextReminder : null
