@@ -45,13 +45,13 @@ shapes, but mixed-version mutation compatibility is not a release promise.
 5. On a disposable ship with the candidate desk committed, run the shared-code
    migration matrix:
 
-   ```hoon
-   +tend!tend-migrations
+   ```bash
+   TEND_TEST_PIER=/path/to/running/fake-ship-pier make check-tend-migrations
    ```
 
-   The command must report that `%0` through `%10` passed. It constructs a
-   non-empty saved noun for every schema and executes the same migration
-   library called by Gall `+on-load`.
+   The gate must report that `%0` through `%10` passed. It constructs a
+   non-empty saved noun for every schema inside the running ship and executes
+   the same migration library called by Gall `+on-load`.
 
 ## Update
 

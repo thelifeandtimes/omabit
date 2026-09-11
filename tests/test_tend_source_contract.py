@@ -10,7 +10,9 @@ class TendGallSourceContractTests(unittest.TestCase):
     def setUpClass(cls):
         cls.agent = (ROOT / "desk" / "app" / "tend.hoon").read_text(encoding="utf-8")
         cls.migration = (ROOT / "desk" / "lib" / "tend-migrate.hoon").read_text(encoding="utf-8")
-        cls.migration_fixtures = (ROOT / "desk" / "gen" / "tend-migrations.hoon").read_text(encoding="utf-8")
+        cls.migration_fixtures = (ROOT / "desk" / "lib" / "tend-migration-fixtures.hoon").read_text(encoding="utf-8")
+        cls.migration_generator = (ROOT / "desk" / "gen" / "tend-migrations.hoon").read_text(encoding="utf-8")
+        cls.migration_thread = (ROOT / "desk" / "ted" / "tend-migrations.hoon").read_text(encoding="utf-8")
         cls.surface = (ROOT / "desk" / "sur" / "tend.hoon").read_text(encoding="utf-8")
 
     def test_mutation_resource_ceilings_remain_server_side(self):
@@ -64,7 +66,8 @@ class TendGallSourceContractTests(unittest.TestCase):
             self.assertIn(f"[{version} [%{version} ", self.migration_fixtures)
         self.assertIn("'fixture-list'", self.migration_fixtures)
         self.assertIn("(~(has by reminders.u.migrated-list) 7)", self.migration_fixtures)
-        self.assertIn("Tend saved-state migrations %0 through %10 passed", self.migration_fixtures)
+        self.assertIn("Tend saved-state migrations %0 through %10 passed", self.migration_generator)
+        self.assertIn("[%tend-migrations %10 %.y]", self.migration_thread)
 
     def test_private_settings_are_not_routed_as_shared_mutations(self):
         for source_contract in (

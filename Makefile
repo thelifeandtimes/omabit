@@ -1,4 +1,4 @@
-.PHONY: check check-all check-tend check-tend-release check-urbit-host \
+.PHONY: check check-all check-tend check-tend-release check-tend-migrations check-urbit-host \
 	build-urbit-host dist-tend urbit-host-version test test-js \
 	validate-plugin lint-python
 
@@ -13,6 +13,10 @@ check-urbit-host:
 
 check-tend-release:
 	scripts/check-tend-release.sh
+
+check-tend-migrations:
+	@test -n "$(TEND_TEST_PIER)" || { echo "set TEND_TEST_PIER to a running fake-ship pier" >&2; exit 64; }
+	scripts/check-tend-migrations.sh "$(TEND_TEST_PIER)"
 
 dist-tend:
 	scripts/build-tend-release.sh
