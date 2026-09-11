@@ -234,12 +234,17 @@ function reduce(currentLists, update, currentPreferences, currentSnoozes, curren
     return resultState(lists, preferences, isSnoozedAlert ? snoozes.filter(function(item) {
         return item.listId !== alertListId || item.reminderId !== alertReminderId
       }) : snoozes, accesses, invitations, pendingOperations, "", {
+        notificationId: String(update.alert["notification-id"] || ""),
         listId: alertListId,
         reminderId: alertReminderId,
         dueAt: String(update.alert["due-at"] || ""),
         earlySeconds: Number(update.alert["early-seconds"] || 0),
         snoozed: isSnoozedAlert
       })
+  }
+
+  if (update["notification-acked"]) {
+    return resultState(lists, preferences, snoozes, accesses, invitations, pendingOperations, "", null)
   }
 
   if (update["list-upserted"]) {

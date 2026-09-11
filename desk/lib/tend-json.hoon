@@ -288,11 +288,19 @@
         %alert
       %+  frond  %alert
       %-  pairs
-      :~  [%list-id (numb list-id.upd)]
+      :~  [%notification-id s+notification-id.upd]
+          [%list-id (numb list-id.upd)]
           [%reminder-id (numb reminder-id.upd)]
           [%due-at s+(scot %da due-at.upd)]
           [%early-seconds (numb early-seconds.upd)]
           [%snoozed b+snoozed.upd]
+      ==
+    ::
+        %notification-acked
+      %+  frond  %notification-acked
+      %-  pairs
+      :~  [%operation-id s+op-id.upd]
+          [%notification-id s+notification-id.upd]
       ==
     ::
         %accesses
@@ -550,6 +558,11 @@
       =/  [=op-id =list-id]
         ((ot [[%operation-id so] [%list-id ni] ~]) body)
       [%leave-shared-list op-id list-id]
+    ::
+        %ack-notification
+      =/  [=op-id notification-id=@t]
+        ((ot [[%operation-id so] [%notification-id so] ~]) body)
+      [%ack-notification op-id notification-id]
     ==
   --
 --

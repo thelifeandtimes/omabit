@@ -21,6 +21,7 @@ Item {
     property var pendingOperations: []
     property var lastAlert: null
     property var notificationQueue: []
+    property var notificationAckQueue: []
     property bool mutationPending: false
     property int reconnectAttempt: 0
     property bool streamAuthenticationFailed: false
@@ -523,6 +524,8 @@ Item {
                 root.connectionState = "online";
             if (message.json && message.json.snapshot)
                 root.reconnectAttempt = 0;
+            if (message.json && message.json.snapshot)
+                Qt.callLater(root.pumpNotificationAckQueue);
 
             if (result.error)
                 root.errorMessage = result.error;
@@ -573,10 +576,52 @@ Item {
     }
 
     function showNotification(alert) {
+        var notificationId = String(alert.notificationId || "");
+        if (notificationId && notificationProcess.alert && String(notificationProcess.alert.notificationId || "") === notificationId)
+            return ;
+
         var queue = notificationQueue.slice();
+        for (var i = 0; notificationId && i < queue.length; i++) {
+            if (String(queue[i].notificationId || "") === notificationId)
+                return ;
+        }
         queue.push(alert);
         notificationQueue = queue;
         pumpNotificationQueue();
+    }
+
+    function acknowledgeNotification(notificationId) {
+        var id = String(notificationId || "");
+        if (!id)
+            return ;
+
+        if (notificationAckProcess.notificationId === id)
+            return ;
+
+        var queue = notificationAckQueue.slice();
+        if (queue.indexOf(id) === -1)
+            queue.push(id);
+        notificationAckQueue = queue;
+        pumpNotificationAckQueue();
+    }
+
+    function pumpNotificationAckQueue() {
+        if (connectionState !== "online" || notificationAckProcess.running || notificationAckQueue.length === 0)
+            return ;
+
+        var queue = notificationAckQueue.slice();
+        var notificationId = queue.shift();
+        notificationAckQueue = queue;
+        notificationAckProcess.notificationId = notificationId;
+        notificationAckProcess.errors = "";
+        notificationAckProcess.payload = JSON.stringify({
+            "ack-notification": {
+                "operation-id": "ack-" + notificationId,
+                "notification-id": notificationId
+            }
+        });
+        notificationAckProcess.command = ["python3", bridgePath, "poke", "--cookie", cookiePath, "--config", connectionPath];
+        notificationAckProcess.running = true;
     }
 
     function listById(listId) {
@@ -751,6 +796,8 @@ Item {
             root.accesses = [];
             root.invitations = [];
             root.pendingOperations = [];
+            root.notificationQueue = [];
+            root.notificationAckQueue = [];
             root.connectionState = "disconnected";
             root.errorMessage = "";
             root.reconnectAttempt = 0;
@@ -795,10 +842,12 @@ Item {
         property var alert: null
         property string output: ""
 
-        onExited: function() {
+        onExited: function(exitCode) {
             var action = output.trim();
             var list = root.listById(alert ? alert.listId : 0);
             var reminder = root.reminderById(list, alert ? alert.reminderId : 0);
+            if (exitCode === 0 && alert)
+                root.acknowledgeNotification(alert.notificationId);
             if (action === "complete" && list && reminder && root.connectionState === "online")
                 root.setCompleted(list.id, reminder.id, true, list.revision);
             else if (action === "snooze" && list && reminder && root.connectionState === "online")
@@ -819,12 +868,52 @@ Item {
         }
     }
 
+    Process {
+        id: notificationAckProcess
+
+        property string notificationId: ""
+        property string payload: ""
+        property string errors: ""
+
+        stdinEnabled: true
+        onStarted: {
+            write(payload);
+            payload = "";
+        }
+        onExited: function(exitCode) {
+            var failedId = notificationId;
+            notificationId = "";
+            if (exitCode !== 0 && failedId) {
+                var queue = root.notificationAckQueue.slice();
+                if (queue.indexOf(failedId) === -1)
+                    queue.unshift(failedId);
+                root.notificationAckQueue = queue;
+                notificationAckRetryTimer.restart();
+                return ;
+            }
+            Qt.callLater(root.pumpNotificationAckQueue);
+        }
+
+        stderr: StdioCollector {
+            waitForEnd: true
+            onStreamFinished: notificationAckProcess.errors = text
+        }
+    }
+
     Timer {
         id: reconnectTimer
 
         interval: 5000
         repeat: false
         onTriggered: root.startStream()
+    }
+
+    Timer {
+        id: notificationAckRetryTimer
+
+        interval: 5000
+        repeat: false
+        onTriggered: root.pumpNotificationAckQueue()
     }
 
 }

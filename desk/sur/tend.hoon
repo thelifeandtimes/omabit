@@ -315,6 +315,7 @@
       [%decline-invitation =op-id host=@p token=op-id]
       [%remove-member =op-id =list-id ship=@p]
       [%leave-shared-list =op-id =list-id]
+      [%ack-notification =op-id notification-id=op-id]
   ==
 ::
 +$  update-2
@@ -442,7 +443,7 @@
       [%mutation-rejected =op-id reason=@tas current-revision=(unit @ud)]
   ==
 ::
-+$  update
++$  update-7
   $%  [%snapshot =lists =preferences =snoozes]
       [%list-upserted =op-id list=task-list =preferences]
       [%list-deleted =op-id =list-id =preferences]
@@ -455,8 +456,35 @@
       [%operation-settled =op-id]
       [%rejected =op-id reason=@tas current-revision=(unit @ud)]
   ==
++$  receipts-7  (map op-id update-7)
++$  update
+  $%  [%snapshot =lists =preferences =snoozes]
+      [%list-upserted =op-id list=task-list =preferences]
+      [%list-deleted =op-id =list-id =preferences]
+      [%preferences-updated =op-id =preferences]
+      [%snoozed =op-id =list-id =reminder-id until=@da]
+      [%alert notification-id=op-id =list-id =reminder-id due-at=@da early-seconds=@ud snoozed=?]
+      [%notification-acked =op-id notification-id=op-id]
+      [%accesses =accesses]
+      [%invitations-updated =invitations]
+      [%operation-pending =op-id =list-id]
+      [%operation-settled =op-id]
+      [%rejected =op-id reason=@tas current-revision=(unit @ud)]
+  ==
 +$  receipts  (map op-id update)
 +$  peer-sessions  (map list-id @da)
++$  alert-key  [=list-id =reminder-id due-at=@da early-seconds=@ud snoozed=?]
++$  replica-alerts  (set alert-key)
++$  notification
+  $:  id=op-id
+      =list-id
+      =reminder-id
+      due-at=@da
+      early-seconds=@ud
+      snoozed=?
+      created-at=@da
+  ==
++$  notifications  (map op-id notification)
 +$  update-4
   $%  [%snapshot =lists preferences=preferences-5 =snoozes]
       [%list-upserted =op-id list=task-list preferences=preferences-5]
@@ -513,7 +541,7 @@
   $:  %6
       next-id=@ud
       list-map=lists
-      receipt-map=receipts
+      receipt-map=receipts-7
       preferences=preferences
       timer-generation=@ud
       next-wake=(unit @da)
@@ -532,6 +560,26 @@
   $:  %7
       next-id=@ud
       list-map=lists
+      receipt-map=receipts-7
+      preferences=preferences
+      timer-generation=@ud
+      next-wake=(unit @da)
+      snooze-map=snoozes
+      share-map=shares
+      replica-map=replicas
+      invitation-map=invitations
+      in-flight-map=in-flights
+      host-session=@da
+      peer-session-map=peer-sessions
+      liveness-generation=@ud
+  ==
+::
+::  Durable desktop delivery and bounded operation-id retention.
+::
++$  state-8
+  $:  %8
+      next-id=@ud
+      list-map=lists
       receipt-map=receipts
       preferences=preferences
       timer-generation=@ud
@@ -544,5 +592,8 @@
       host-session=@da
       peer-session-map=peer-sessions
       liveness-generation=@ud
+      notification-map=notifications
+      replica-alert-set=replica-alerts
+      receipt-order=(list op-id)
   ==
 --

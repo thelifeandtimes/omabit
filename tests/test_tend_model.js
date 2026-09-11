@@ -67,6 +67,7 @@ test("alerts preserve list state and expose normalized notification data", () =>
   const initial = [{ id: 1, title: "Inbox", revision: 1, reminders: [] }]
   const result = model.reduce(initial, {
     alert: {
+      "notification-id": "notice-1",
       "list-id": 1,
       "reminder-id": 9,
       "due-at": "~2026.9.10..21.00.00",
@@ -76,6 +77,7 @@ test("alerts preserve list state and expose normalized notification data", () =>
 
   assert.deepEqual(result.lists, model.sortedLists(initial))
   assert.deepEqual(result.alert, {
+    notificationId: "notice-1",
     listId: 1,
     reminderId: 9,
     dueAt: "~2026.9.10..21.00.00",
@@ -110,10 +112,21 @@ test("preferences, snoozes, and pinned list order reduce independently", () => {
   assert.equal(updated.snoozes.length, 1)
 
   const fired = model.reduce(updated.lists, {
-    alert: { "list-id": 2, "reminder-id": 8, "due-at": "~2026.9.10..20.00.00", "early-seconds": 0, snoozed: true }
+    alert: { "notification-id": "notice-2", "list-id": 2, "reminder-id": 8, "due-at": "~2026.9.10..20.00.00", "early-seconds": 0, snoozed: true }
   }, updated.preferences, updated.snoozes)
   assert.equal(fired.alert.snoozed, true)
   assert.equal(fired.snoozes.length, 0)
+})
+
+test("notification acknowledgements are harmless model events", () => {
+  const initial = [{ id: 1, title: "Inbox", revision: 1, reminders: [] }]
+  const result = model.reduce(initial, {
+    "notification-acked": { "operation-id": "ack-1", "notification-id": "notice-1" }
+  })
+
+  assert.equal(result.error, "")
+  assert.deepEqual(result.lists, model.sortedLists(initial))
+  assert.equal(result.alert, null)
 })
 
 test("pinned smart views honor personal order and discard invalid duplicates", () => {
