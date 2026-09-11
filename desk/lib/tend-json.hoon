@@ -111,6 +111,24 @@
     ^-  json
     [%a (turn values access-json)]
   ::
+  ++  activity-json
+    |=  value=activity:sur
+    ^-  json
+    %-  pairs
+    :~  [%id s+id.value]
+        [%actor s+(scot %p actor.value)]
+        [%kind s+activity-kind.value]
+        [%list-id (numb list-id.value)]
+        [%reminder-id (unit-number-json reminder-id.value)]
+        [%occurred-at ?~(occurred-at.value ~ s+(scot %da u.occurred-at.value))]
+        [%at s+(scot %da at.value)]
+    ==
+  ::
+  ++  activities-json
+    |=  values=activity-log:sur
+    ^-  json
+    [%a (turn values activity-json)]
+  ::
   ++  invitation-json
     |=  value=invitation:sur
     ^-  json
@@ -301,6 +319,13 @@
       %-  pairs
       :~  [%operation-id s+op-id.upd]
           [%notification-id s+notification-id.upd]
+      ==
+    ::
+        %activities-updated
+      %+  frond  %activities-updated
+      %-  pairs
+      :~  [%list-id (numb list-id.upd)]
+          [%activities (activities-json activities.upd)]
       ==
     ::
         %accesses

@@ -421,6 +421,18 @@
       pending=(list @p)
   ==
 +$  accesses  (list access)
++$  activity-kind  $?(%list-edited %section-added %section-edited %section-moved %section-deleted %reminder-added %reminder-edited %reminder-moved %reminder-deleted %completed %uncompleted %assigned %schedule-changed %member-invited %member-removed)
++$  activity
+  $:  id=op-id
+      actor=@p
+      =activity-kind
+      =list-id
+      reminder-id=(unit reminder-id)
+      occurred-at=(unit @da)
+      at=@da
+  ==
++$  activity-log  (list activity)
++$  activity-map  (map list-id activity-log)
 +$  peer-message
   $%  $:  %invite
           token=op-id
@@ -437,6 +449,7 @@
           host-list-id=list-id
           list=task-list
           members=members
+          activities=activity-log
           host-session=@da
           operation-id=(unit op-id)
       ==
@@ -466,6 +479,7 @@
       [%snoozed =op-id =list-id =reminder-id until=@da]
       [%alert notification-id=op-id =list-id =reminder-id due-at=@da early-seconds=@ud snoozed=?]
       [%notification-acked =op-id notification-id=op-id]
+      [%activities-updated =list-id activities=activity-log]
       [%accesses =accesses]
       [%invitations-updated =invitations]
       [%operation-pending =op-id =list-id]
@@ -596,5 +610,32 @@
       notification-map=notifications
       replica-alert-set=replica-alerts
       receipt-order=(list op-id)
+  ==
+::
+::  Bounded, actor-attributed collaboration and occurrence history. Hosted and
+::  replica logs are separate so restoring or exporting a replica can never
+::  make it authoritative.
+::
++$  state-9
+  $:  %9
+      next-id=@ud
+      list-map=lists
+      receipt-map=receipts
+      preferences=preferences
+      timer-generation=@ud
+      next-wake=(unit @da)
+      snooze-map=snoozes
+      share-map=shares
+      replica-map=replicas
+      invitation-map=invitations
+      in-flight-map=in-flights
+      host-session=@da
+      peer-session-map=peer-sessions
+      liveness-generation=@ud
+      notification-map=notifications
+      replica-alert-set=replica-alerts
+      receipt-order=(list op-id)
+      hosted-activity-map=activity-map
+      replica-activity-map=activity-map
   ==
 --

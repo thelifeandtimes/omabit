@@ -67,6 +67,7 @@ Item {
             return "OWNED HERE · ONLINE";
         return "HOSTED BY " + selectedAccess.host.toUpperCase() + " · " + selectedAccess.status.toUpperCase();
     }
+    readonly property var selectedActivities: TendModel.activitiesForList(service ? service.activities : [], selectedList ? selectedList.id : 0)
     readonly property var orderedLists: TendModel.orderedLists(service ? service.lists : [], service ? service.preferences.pinnedLists : [])
     readonly property var availableViews: ["today", "scheduled", "all", "flagged", "assigned", "completed"]
     readonly property var orderedViews: TendModel.orderedValues(availableViews, service ? service.preferences.pinnedViews : [])
@@ -117,6 +118,21 @@ Item {
 
         }
         return choices;
+    }
+
+    function activityLabel(event) {
+        var subject = "";
+        if (selectedList && event.reminderId !== null) {
+            for (var i = 0; i < selectedList.reminders.length; i++) {
+                if (Number(selectedList.reminders[i].id) === Number(event.reminderId)) {
+                    subject = " · " + selectedList.reminders[i].title;
+                    break;
+                }
+            }
+        }
+        var action = String(event.kind || "changed").replace(/-/g, " ");
+        var occurrence = event.occurredAt ? " · occurrence " + event.occurredAt : "";
+        return String(event.actor || "Unknown ship") + " · " + action + subject + occurrence;
     }
     readonly property var assigneeChoices: {
         var choices = [{
@@ -1394,6 +1410,32 @@ Item {
                                     enabled: service && service.connectionState === "online" && !service.mutationPending
                                     Accessible.name: "Leave selected shared list"
                                     onClicked: service.leaveSharedList(root.selectedList.id)
+                                }
+
+                                Text {
+                                    visible: root.selectedActivities.length > 0
+                                    text: "Recent activity"
+                                    color: Color.menu.text
+                                    font.family: Style.font.menuFamily
+                                    font.pixelSize: Style.font.caption
+                                    font.bold: true
+                                }
+
+                                Repeater {
+                                    model: root.selectedActivities.slice(0, 20)
+
+                                    delegate: Text {
+                                        required property var modelData
+
+                                        width: parent.width
+                                        text: root.activityLabel(modelData)
+                                        wrapMode: Text.Wrap
+                                        color: Color.menu.text
+                                        opacity: 0.75
+                                        font.family: Style.font.menuFamily
+                                        font.pixelSize: Style.font.caption
+                                        Accessible.name: "Tend activity: " + text
+                                    }
                                 }
                             }
 

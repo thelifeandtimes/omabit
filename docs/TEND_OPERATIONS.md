@@ -17,7 +17,7 @@ requirements:
 | Plugin manifest schema | 1 |
 | Urbit runtime | Vere 4.6 |
 | Urbit userspace | `%zuse` 409 |
-| Tend save state | `%8` (loads `%0` through `%8`) |
+| Tend save state | `%9` (loads `%0` through `%9`) |
 | Tend JSON marks | `%tend-action-1`, `%tend-update-1` |
 | Python / Node used by gates | 3.14.7 / 25.2.1 |
 | Time-zone database | System IANA tzdata through Python `zoneinfo` |

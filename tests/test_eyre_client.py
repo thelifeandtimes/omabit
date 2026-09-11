@@ -87,6 +87,14 @@ class EyreHandler(BaseHTTPRequestHandler):
             self.send_bytes(200, body)
             return
 
+        if self.path.startswith("/~/scry/tend/activities/"):
+            if f"{self.server.cookie_name}=session" not in self.headers.get("Cookie", ""):
+                self.send_bytes(403, b"forbidden", "text/plain")
+                return
+            body = self.server.activities_body or json.dumps({"activities-updated": {"list-id": 1, "activities": []}}).encode("utf-8")
+            self.send_bytes(200, body)
+            return
+
         if self.path.startswith("/~/scry/tend/receipt/"):
             if f"{self.server.cookie_name}=session" not in self.headers.get("Cookie", ""):
                 self.send_bytes(403, b"forbidden", "text/plain")
@@ -131,6 +139,7 @@ class FakeEyre:
         self.server.state_body = b""
         self.server.accesses_body = b""
         self.server.invitations_body = b""
+        self.server.activities_body = b""
         self.server.receipt_body = b""
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -390,6 +399,11 @@ class EyreFlowTests(unittest.TestCase):
             self.assertEqual(
                 eyre_client.scry_invitations(self.config, self.cookie),
                 [{"token": "invite-1"}],
+            )
+            fake.server.activities_body = json.dumps({"activities-updated": {"list-id": 1, "activities": [{"id": "event-1"}]}}).encode("utf-8")
+            self.assertEqual(
+                eyre_client.scry_activities(self.config, self.cookie, 1),
+                [{"id": "event-1"}],
             )
             self.assertIsNone(eyre_client.scry_receipt(self.config, self.cookie, "missing"))
             fake.server.receipt_body = json.dumps({"snapshot": {"lists": []}}).encode("utf-8")

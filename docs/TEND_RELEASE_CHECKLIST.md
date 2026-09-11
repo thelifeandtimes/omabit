@@ -11,7 +11,7 @@ Last reconciled: 2026-09-10
 | Lists, sections, reminder CRUD, rich metadata | Verified | Gall actions, Eyre round trips, atomic section ordering, reducer and CLI tests |
 | Completion, batch actions, subtasks, stable ranks | Verified | Cascades, hierarchy controls, pointer drag/drop, keyboard placement, atomic rank normalization, and stale rejection are tested/live-verified |
 | Dates, all-day policy, time zones, early alerts | Verified | `%tend` validation, Behn wake test, `zoneinfo` gap/fold tests, and live local-wall-time-to-`@da` round trip |
-| Recurrence and next occurrence | Partial | Hourly through yearly advancement and boundary rules compile/live-test; full occurrence history remains |
+| Recurrence and next occurrence | Partial | Hourly through yearly advancement and boundary rules compile/live-test; individual recurring completions retain the completed due instant in replicated activity, while batch occurrence records remain |
 | Snooze | Verified | Durable presets, explicit future date/time, and notification action are exposed in both desktop and CLI paths |
 | Tags, flag, priority, safe URL, search | Verified | Gall validation and reducer/query tests |
 | Built-in views | Partial | Today, Scheduled, All, Flagged, Assigned, Completed verified; grocery behavior is outside the immediate Core build |
@@ -27,9 +27,9 @@ Last reconciled: 2026-09-10
 | Owner host Online/Checking/Offline gating | Verified | Gall, model, UI, and CLI block shared mutation while the owner is not Online; replicas remain readable |
 | Assignment | Verified | Desktop choices and Gall enforcement allow only the owner/current members; authorization has no rank branch |
 | Invitations, ACLs, replicas, shared edits | Verified | Live three-ship matrix covers convergence, restart catch-up, duplicate/stale edits, revocation, and leave; complete selected-list disclosure is documented |
-| Activity and collaboration notifications | Not implemented | Actor-attributed feed and participant-local add/complete/assignment notification preferences remain Core work |
+| Activity and collaboration notifications | Partial | Bounded actor-attributed activity and individual occurrence records survive reload and converge across live owner/participant subscription paths; participant-local add/complete/assignment notification preferences remain |
 | Packaging/install/rollback | Verified | Deterministic archive/checksum and refusal/backup installer tests |
-| State migrations | Partial | `%0`–`%8` paths compile and were exercised incrementally on a live fake ship; automated fixture-per-version gate remains |
+| State migrations | Partial | `%0`–`%9` paths compile and were exercised incrementally on live fake ships; automated fixture-per-version gate remains |
 | Scale | Verified locally | 10,000-reminder normalization/Today/search and transport ceilings |
 | Gall resource retention | Verified | Input and collection ceilings are enforced; the receipt ledger retains the newest 4,096 results |
 
@@ -42,10 +42,10 @@ learning, and urgent alarms) is also deferred under the current directive.
 
 The first multiplayer release cannot be called complete until:
 
-- activity history and participant-local add/complete/assignment notifications
-  satisfy the remaining Core collaboration contract;
-- recurrence stores adequate occurrence history, and per-participant sort/list
-  ordering preferences are durable;
+- participant-local add/complete/assignment notifications satisfy the remaining
+  Core collaboration contract;
+- batch recurrence completions retain occurrence history, and per-participant
+  sort/list ordering preferences are durable;
 - every released Gall schema has an automated migration fixture;
 - the multi-ship harness covers backpressure, outstanding-edit removal,
   mixed-version behavior, and a longer restart/key-continuity soak;

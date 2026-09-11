@@ -691,6 +691,19 @@ def run_tend(args: argparse.Namespace) -> int:
     if args.tend_command == "today":
         print_rows(reminder_rows(state, True), as_json)
         return 0
+    if args.tend_command == "activity":
+        task_list = select_list(state, args.list_selector)
+        events = transport.scry_activities(config_path, cookie_path, int(task_list["id"]))
+        if as_json:
+            emit(events, True)
+        elif not events:
+            print("No activity")
+        else:
+            for event in events:
+                occurrence = f" · occurrence {event['occurred-at']}" if event.get("occurred-at") else ""
+                reminder = f" · reminder {event['reminder-id']}" if event.get("reminder-id") is not None else ""
+                print(f"{event.get('actor', 'unknown')}  {str(event.get('kind', 'changed')).replace('-', ' ')}{reminder}{occurrence}  [{event.get('at', '')}]")
+        return 0
     if args.tend_command == "export":
         status = transport.connection_status(config_path, cookie_path)
         exported = owned_snapshot(state, transport.scry_accesses(config_path, cookie_path))
@@ -840,6 +853,9 @@ def parser() -> argparse.ArgumentParser:
     commands.add_parser("list", aliases=["ls"], help="list incomplete reminders")
     commands.add_parser("today", help="list due and overdue reminders")
 
+    activity = commands.add_parser("activity", help="show actor-attributed activity for a list")
+    activity.add_argument("list_selector", help="list ID or title")
+
     export = commands.add_parser("export", help="write a private, portable JSON snapshot backup")
     export.add_argument("path", help="destination file, or - for standard output")
     export.add_argument("--force", action="store_true", help="replace an existing regular file")
@@ -859,7 +875,13 @@ def parser() -> argparse.ArgumentParser:
     share = commands.add_parser("share", help="invite an Urbit ship to a list")
     share.add_argument("list_selector", help="list ID or title")
     share.add_argument("ship", help="planet, moon, or comet name")
-    share.add_argument("--allow-invites", action="store_true", help="let this member invite other ships")
+    share.add_argument(
+        "--can-invite",
+        "--allow-invites",
+        dest="allow_invites",
+        action="store_true",
+        help="let this member invite other ships",
+    )
 
     unshare = commands.add_parser("unshare", help="remove an Urbit ship from a list")
     unshare.add_argument("list_selector", help="list ID or title")

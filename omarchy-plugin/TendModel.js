@@ -186,6 +186,47 @@ function clonePendingOperations(values) {
   })
 }
 
+function cloneActivity(value) {
+  value = value || {}
+  return {
+    id: String(value.id || ""),
+    actor: String(value.actor || ""),
+    kind: String(value.kind || "reminder-edited"),
+    listId: Number(value["list-id"] === undefined ? value.listId : value["list-id"]),
+    reminderId: value["reminder-id"] === undefined
+      ? (value.reminderId === undefined ? null : value.reminderId)
+      : value["reminder-id"],
+    occurredAt: String(value["occurred-at"] || value.occurredAt || ""),
+    at: String(value.at || "")
+  }
+}
+
+function cloneActivities(values) {
+  return (values || []).map(function(entry) {
+    return {
+      listId: Number(entry.listId === undefined ? entry["list-id"] : entry.listId),
+      events: (entry.events || entry.activities || []).map(cloneActivity)
+    }
+  }).sort(function(a, b) { return a.listId - b.listId })
+}
+
+function reduceActivities(current, update) {
+  const normalized = cloneActivities(current)
+  if (!update || !update["activities-updated"]) return normalized
+  const body = update["activities-updated"]
+  const listId = Number(body["list-id"])
+  const events = (body.activities || []).map(cloneActivity)
+  return normalized.filter(function(entry) { return entry.listId !== listId }).concat([{ listId: listId, events: events }]).sort(function(a, b) {
+    return a.listId - b.listId
+  })
+}
+
+function activitiesForList(values, listId) {
+  const wanted = Number(listId)
+  const entry = cloneActivities(values).find(function(item) { return item.listId === wanted })
+  return entry ? entry.events : []
+}
+
 function resultState(lists, preferences, snoozes, accesses, invitations, pendingOperations, error, alert) {
   return {
     lists: lists,
@@ -531,5 +572,5 @@ function safeExternalUrl(value) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, scheduleInputValue: scheduleInputValue, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren, manualDropPlacement: manualDropPlacement, safeExternalUrl: safeExternalUrl }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, cloneActivity: cloneActivity, cloneActivities: cloneActivities, reduceActivities: reduceActivities, activitiesForList: activitiesForList, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, scheduleInputValue: scheduleInputValue, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren, manualDropPlacement: manualDropPlacement, safeExternalUrl: safeExternalUrl }
 }

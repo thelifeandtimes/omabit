@@ -8,7 +8,7 @@ Last run: 2026-09-10
 Runtime: Vere 4.6  
 Userspace: `%zuse` 409 on the owner; locally compatible `%zuse` 408 fake-ship
 bases on the two participants  
-Tend state: `%8`
+Tend state: `%9`
 
 ## Topology
 
@@ -30,6 +30,7 @@ cover planet-, moon-, and comet-shaped identities.
 | Invite policy | `~bus` receives `can-invite`; `~nec` does not | Pass |
 | Both accept | Each home agent allocates a local alias and stores a non-authoritative replica | Pass |
 | Participant edit | `~bus` adds one reminder while owner is Online | Pass; owner and both replicas converged |
+| Activity convergence | Owner and participant mutate the shared list | Pass; authenticated actors, local aliases, and a recurring occurrence timestamp converged through snapshot and live subscription paths |
 | Owner offline | Stop `~zod` and wait beyond the liveness threshold | Pass; both replicas remained readable and became Offline |
 | Offline write | Attempt `add` through `~bus` | Pass; CLI rejected before poke and Gall remained unchanged |
 | Owner restart | Restart `~zod` with the same pier | Pass; rotated session forced catch-up, then both replicas returned Online |

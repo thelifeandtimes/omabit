@@ -126,15 +126,22 @@ list. `invitations-updated` replaces the local invitation inbox.
 without creating an offline mutation queue. The desktop treats an absent,
 Checking, or Offline access record as read-only.
 
+`activities-updated` replaces the bounded activity log for one locally visible
+list. Entries identify the authenticated Urbit actor, event kind, event time,
+optional reminder, and—for an individually completed scheduled occurrence—the
+exact due instant that was completed. The overlay renders this log in list
+settings, and `omabit tend activity LIST` exposes the same data to scripts and
+terminals. A log retains the newest 1,000 entries per list.
+
 The `%tend-peer-1` noun mark carries invite/accept/decline/leave, canonical list
 snapshots, mutations, removals, liveness messages, and mutation rejections.
-Inviting a ship transmits the complete selected list and its membership
-metadata to that ship. The participant stores the list as a non-authoritative
-replica and receives later owner snapshots in order. Remote edits are accepted
-only while the owner's application-level session is Online, then routed to the
-owner for authenticated authorization and sequencing. A restart rotates the
-owner session and forces every participant through Checking and catch-up before
-writes are enabled again.
+Inviting a ship transmits the complete selected list, its membership metadata,
+and its activity log to that ship. The participant stores them as a
+non-authoritative replica and receives later owner snapshots in order. Remote
+edits are accepted only while the owner's application-level session is Online,
+then routed to the owner for authenticated authorization and sequencing. A
+restart rotates the owner session and forces every participant through Checking
+and catch-up before writes are enabled again.
 
 Current liveness timing is a five-second heartbeat with an Offline transition
 after twelve seconds without a valid acknowledgement. A remote mutation must
@@ -143,20 +150,23 @@ in the future. Those constants are protocol behavior in the current pre-release
 and may be tuned before a stable wire-version commitment.
 
 Authenticated scries expose `/state`, `/accesses`, `/invitations`,
-`/receipt/<operation-id>`, and `/whoami`. Restore uses the receipt scry to prove
-that Gall durably accepted or rejected the operation; an Eyre poke
-acknowledgement by itself is not reported as restore success.
+`/activities/<local-list-id>`, `/receipt/<operation-id>`, and `/whoami`.
+Restore uses the receipt scry to prove that Gall durably accepted or rejected
+the operation; an Eyre poke acknowledgement by itself is not reported as
+restore success.
 
 ## Persistence
 
-Gall is authoritative. State schema `%8` contains lists, the next local ID,
+Gall is authoritative. State schema `%9` contains lists, the next local ID,
 bounded operation receipts, revisioned personal preferences, active snoozes,
 Behn timer generation, hosted-share policies, remote replicas, invitations,
 in-flight operations, peer sessions/liveness generations, durable pending
-notifications, and replica alert-delivery state. `+on-load` migrates `%0`
-through `%8`, preserving canonical reminder data while filling newer fields
-with deterministic defaults. `%7` adds host and peer sessions plus liveness
-generation. `%8` adds durable notifications and bounded receipt ordering.
+notifications, replica alert-delivery state, and separate hosted/replica
+activity maps. `+on-load` migrates `%0` through `%9`, preserving canonical
+reminder data while filling newer fields with deterministic defaults. `%7`
+adds host and peer sessions plus liveness generation. `%8` adds durable
+notifications and bounded receipt ordering. `%9` adds actor-attributed activity
+and scheduled-occurrence records without changing canonical list nouns.
 
 The operation receipt ledger retains the newest 4,096 receipts. Peer retries
 are deduplicated while their receipt is retained; clients must not treat an

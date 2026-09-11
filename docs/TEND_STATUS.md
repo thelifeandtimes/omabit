@@ -5,7 +5,7 @@ Last verified: 2026-09-10
 ## Working now
 
 - `%tend` installs and hot-reloads on a live fake ship.
-- Existing `%0` through `%7` state migrates to the current `%8`
+- Existing `%0` through `%8` state migrates to the current `%9`
   schema without losing lists, reminders, schedules, preferences, or snoozes.
 - Authenticated Eyre login, identity scry, SSE subscribe/ack, reconnect, and
   poke acknowledgement work through the dependency-free desktop bridge.
@@ -100,7 +100,9 @@ Last verified: 2026-09-10
   update, and preserved it across Gall suspend/revive.
 - `%7` adds restart-safe owner and peer sessions plus liveness generations.
   `%8` adds durable notification presentation and a newest-4,096 operation
-  receipt order. Both migrations compiled and were exercised on the live desk.
+  receipt order. `%9` adds separate hosted and replica activity stores. All
+  three migrations compiled and were exercised on live desks without losing
+  existing lists.
 - The authenticated `/all` stream now emits one access record per visible list,
   including canonical host, owner flag, Online/Checking/Offline state, members,
   and pending invitations. The Omarchy UI visibly marks owner availability and
@@ -122,7 +124,7 @@ Last verified: 2026-09-10
 - Eyre hardening now disables redirects for authenticated traffic, replaces
   rather than merges cookie jars on a new login, bounds JSON/SSE/action sizes,
   and fails closed on malformed UTF-8, JSON, event IDs, and content lengths.
-- `omabit tend` provides connect/disconnect/status, list/today, add,
+- `omabit tend` provides connect/disconnect/status, list/today/activity, add,
   complete/uncomplete, move/delete, snooze, share/unshare/leave,
   invitations/accept/decline, restore, and overlay-open commands with optional
   JSON output. It fails closed before shared writes when owner access is not
@@ -145,6 +147,12 @@ Last verified: 2026-09-10
 - Notification presentation is durable across desktop disconnects. Gall keeps
   stable pending IDs until `ack-alert`; a live reconnect replayed one alert,
   acknowledgement removed it, and the next subscription did not replay it.
+- Successful owner and remote list mutations append bounded, actor-attributed
+  activity records. The log includes reminder targets and preserves the due
+  instant of an individually completed scheduled occurrence. Activity survives
+  `%8` to `%9` migration, appears in the list-sharing panel and CLI, and was
+  verified across both initial-snapshot and live-subscription replication with
+  participant-local list aliases.
 - Deterministic release packaging includes the desk, validated Omarchy plugin,
   CLI, installer, documentation, and per-file checksums. The installer refuses
   symlink targets and preserves forced replacements as timestamped backups.
@@ -161,8 +169,8 @@ Last verified: 2026-09-10
 
 ## Next
 
-1. Add actor-attributed activity history, add/complete/assignment notification
-   preferences, and full recurrence occurrence history.
+1. Add participant-local add/complete/assignment notification preferences and
+   preserve per-reminder occurrence records for batch recurrence completion.
 2. Persist per-participant sort direction and general list ordering, then finish
    compact-surface and multi-monitor refinement.
 3. Add automated migration fixtures for every saved-state version, extend the

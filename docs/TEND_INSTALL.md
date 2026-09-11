@@ -110,7 +110,7 @@ omabit tend share 1 ~sampel-palnet --can-invite
 omabit tend invitations
 omabit tend accept 7
 omabit tend unshare 1 ~sampel-palnet
-omabit tend leave 1 --yes
+omabit tend leave 1
 omabit tend open 1 42
 omabit tend open --capture
 omabit --json tend list

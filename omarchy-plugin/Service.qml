@@ -19,6 +19,7 @@ Item {
     property var accesses: []
     property var invitations: []
     property var pendingOperations: []
+    property var activities: []
     property var lastAlert: null
     property var notificationQueue: []
     property var notificationAckQueue: []
@@ -513,6 +514,11 @@ Item {
             if (message.response !== "diff")
                 return ;
 
+            if (message.json && message.json["activities-updated"]) {
+                root.activities = TendModel.reduceActivities(root.activities, message.json);
+                return ;
+            }
+
             var result = TendModel.reduce(root.lists, message.json, root.preferences, root.snoozes, root.accesses, root.invitations, root.pendingOperations);
             root.lists = result.lists;
             root.preferences = result.preferences;
@@ -520,6 +526,12 @@ Item {
             root.accesses = result.accesses;
             root.invitations = result.invitations;
             root.pendingOperations = result.pendingOperations;
+            if (message.json && message.json["list-deleted"]) {
+                var deletedListId = Number(message.json["list-deleted"]["list-id"]);
+                root.activities = root.activities.filter(function(entry) {
+                    return Number(entry.listId) !== deletedListId;
+                });
+            }
             if (message.json && message.json.snapshot)
                 root.connectionState = "online";
             if (message.json && message.json.snapshot)
@@ -796,6 +808,7 @@ Item {
             root.accesses = [];
             root.invitations = [];
             root.pendingOperations = [];
+            root.activities = [];
             root.notificationQueue = [];
             root.notificationAckQueue = [];
             root.connectionState = "disconnected";

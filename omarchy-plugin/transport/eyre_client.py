@@ -335,6 +335,18 @@ def scry_invitations(config_path: Path, cookie_path: Path) -> list[object]:
     return result["invitations-updated"]
 
 
+def scry_activities(config_path: Path, cookie_path: Path, list_id: int) -> list[object]:
+    if list_id < 0:
+        raise TendTransportError("The Tend list ID is invalid")
+    connection = read_connection(config_path)
+    opener, _ = opener_for(cookie_path)
+    result = json_request(opener, connection["baseUrl"] + f"/~/scry/tend/activities/{list_id}.json")
+    body = result.get("activities-updated") if isinstance(result, dict) else None
+    if not isinstance(body, dict) or int(body.get("list-id", -1)) != list_id or not isinstance(body.get("activities"), list):
+        raise TendTransportError("The Tend agent returned an invalid activity log")
+    return body["activities"]
+
+
 def scry_receipt(config_path: Path, cookie_path: Path, operation_id: str) -> dict[str, object] | None:
     if not operation_id or len(operation_id.encode("utf-8")) > 256:
         raise TendTransportError("The Tend operation ID is invalid")

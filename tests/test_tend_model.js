@@ -457,3 +457,32 @@ test("invitations and remote operation lifecycle reduce independently", () => {
   }, null, null, null, invited.invitations, pending.pendingOperations)
   assert.deepEqual(settled.pendingOperations, [])
 })
+
+test("actor-attributed activity replaces one list log and preserves occurrence history", () => {
+  const current = [{ listId: 1, events: [{ id: "old", actor: "~zod", kind: "reminder-added", "list-id": 1, "reminder-id": 7, at: "~2026.9.10" }] }]
+  const updated = model.reduceActivities(current, {
+    "activities-updated": {
+      "list-id": 2,
+      activities: [{
+        id: "complete-1",
+        actor: "~bus",
+        kind: "completed",
+        "list-id": 2,
+        "reminder-id": 9,
+        "occurred-at": "~2026.9.11..16.00.00",
+        at: "~2026.9.10..20.00.00"
+      }]
+    }
+  })
+  assert.deepEqual(updated.map(function(entry) { return entry.listId }), [1, 2])
+  const events = model.activitiesForList(updated, 2)
+  assert.equal(events[0].actor, "~bus")
+  assert.equal(events[0].reminderId, 9)
+  assert.equal(events[0].occurredAt, "~2026.9.11..16.00.00")
+
+  const replaced = model.reduceActivities(updated, {
+    "activities-updated": { "list-id": 2, activities: [] }
+  })
+  assert.deepEqual(model.activitiesForList(replaced, 2), [])
+  assert.equal(model.activitiesForList(replaced, 1)[0].id, "old")
+})

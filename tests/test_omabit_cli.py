@@ -119,11 +119,28 @@ class CliDomainTests(unittest.TestCase):
         self.assertEqual(removed["list-id"], 1)
         self.assertEqual(removed["ship"], "~sampel-palnet")
 
+    def test_share_accepts_documented_can_invite_flag_and_legacy_alias(self):
+        for flag in ("--can-invite", "--allow-invites"):
+            args = omabit.parser().parse_args(["tend", "share", "Inbox", "~sampel-palnet", flag])
+            self.assertTrue(args.allow_invites)
+
     def test_leave_uses_local_alias(self):
         args = SimpleNamespace(tend_command="leave", json=True, list_selector="1")
         with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
             self.assertEqual(omabit.run_tend(args), 0)
         self.assertEqual(poke.call_args.args[2]["leave-shared-list"]["list-id"], 1)
+
+    def test_activity_uses_selected_local_list_alias(self):
+        args = SimpleNamespace(tend_command="activity", json=True, list_selector="Inbox")
+        events = [{"id": "event-1", "actor": "~bus", "kind": "completed"}]
+        with (
+            mock.patch.object(omabit, "snapshot", return_value=SAMPLE),
+            mock.patch.object(omabit.transport, "scry_activities", return_value=events) as scry,
+            redirect_stdout(io.StringIO()) as output,
+        ):
+            self.assertEqual(omabit.run_tend(args), 0)
+        scry.assert_called_once_with(mock.ANY, mock.ANY, 1)
+        self.assertEqual(json.loads(output.getvalue()), events)
 
     def test_invitation_cli_lists_accepts_and_declines(self):
         listing = SimpleNamespace(tend_command="invitations", json=True)
