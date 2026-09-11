@@ -220,6 +220,7 @@ class CliDomainTests(unittest.TestCase):
             with (
                 mock.patch.object(omabit, "snapshot", return_value={"lists": []}),
                 mock.patch.object(omabit, "poke") as poke,
+                mock.patch.object(omabit.transport, "scry_receipt", return_value={"snapshot": {"lists": []}}),
                 redirect_stdout(io.StringIO()),
             ):
                 self.assertEqual(omabit.run_tend(accepted), 0)
@@ -227,6 +228,25 @@ class CliDomainTests(unittest.TestCase):
             self.assertEqual(body["lists"], [])
             self.assertEqual(body["preferences"]["badge-mode"], "today")
             self.assertEqual(body["preferences"]["all-day-alert-minute"], 540)
+
+    def test_restore_surfaces_a_gall_rejection(self):
+        backup = {
+            "format": "tend-backup-1",
+            "exportedAt": "2026-09-10T20:00:00Z",
+            "sourceShip": "~zod",
+            "snapshot": {"lists": [], "preferences": {"revision": 0, "default-list": None, "pinned-lists": [], "pinned-views": [], "snooze-presets": []}, "snoozes": []},
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "backup.json"
+            source.write_text(json.dumps(backup), encoding="utf-8")
+            args = SimpleNamespace(tend_command="restore", json=True, path=str(source), yes=True)
+            with (
+                mock.patch.object(omabit, "snapshot", return_value={"lists": []}),
+                mock.patch.object(omabit, "poke"),
+                mock.patch.object(omabit.transport, "scry_receipt", return_value={"rejected": {"reason": "not-empty"}}),
+            ):
+                with self.assertRaisesRegex(omabit.CliError, "not-empty"):
+                    omabit.run_tend(args)
 
     def test_restore_refuses_a_nonempty_agent_before_poking(self):
         backup = {

@@ -326,6 +326,24 @@ def scry_accesses(config_path: Path, cookie_path: Path) -> list[object]:
     return result["accesses"]
 
 
+def scry_receipt(config_path: Path, cookie_path: Path, operation_id: str) -> dict[str, object] | None:
+    if not operation_id or len(operation_id.encode("utf-8")) > 256:
+        raise TendTransportError("The Tend operation ID is invalid")
+    connection = read_connection(config_path)
+    opener, _ = opener_for(cookie_path)
+    encoded_id = urllib.parse.quote(operation_id, safe="")
+    try:
+        result = json_request(opener, connection["baseUrl"] + f"/~/scry/tend/receipt/{encoded_id}.json")
+    except urllib.error.HTTPError as error:
+        if error.code == 404:
+            error.close()
+            return None
+        raise
+    if not isinstance(result, dict) or len(result) != 1:
+        raise TendTransportError("The Tend agent returned an invalid operation receipt")
+    return result
+
+
 def write_connection(path: Path, base_url: str, ship: str) -> None:
     atomic_private_text(
         path,

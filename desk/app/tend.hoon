@@ -2500,6 +2500,10 @@
   ?+  path  [~ ~]
     [%x %state ~]   ``tend-update-1+!>(snapshot)
     [%x %accesses ~]  ``tend-update-1+!>([%accesses (accesses-for st)])
+    [%x %receipt @ ~]
+      =/  found=(unit update:t)
+        (~(get by receipt-map.st) i.t.t.path)
+      ?~(found [~ ~] ``tend-update-1+!>(u.found))
     [%x %whoami ~]  ``json+!>(s+(scot %p our.bowl))
   ==
   ::

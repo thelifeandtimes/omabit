@@ -616,11 +616,20 @@ def run_tend(args: argparse.Namespace) -> int:
         current = snapshot(cookie_path, config_path)
         if current.get("lists"):
             raise CliError("Tend restore requires an empty agent")
+        op_id = operation_id()
         action = {"restore-empty": {
-            "operation-id": operation_id(),
+            "operation-id": op_id,
             **restore_snapshot(backup),
         }}
         poke(cookie_path, config_path, action)
+        receipt = transport.scry_receipt(config_path, cookie_path, op_id)
+        if receipt is None:
+            raise CliError("Tend did not retain the restore receipt")
+        rejection = receipt.get("rejected")
+        if isinstance(rejection, dict):
+            raise CliError(f"Tend rejected the restore: {rejection.get('reason', 'unknown reason')}")
+        if "snapshot" not in receipt:
+            raise CliError("Tend returned an unexpected restore receipt")
         emit({**summary, "status": "restored"}, as_json)
         return 0
 
