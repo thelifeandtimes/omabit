@@ -415,6 +415,100 @@
       ((ot [[%due-at date] [%all-day bo] [%timezone so] [%early-seconds (as ni)] [%recurrence (mu recurrence)] ~]) jon)
     [due-at all-day timezone early-seconds recurrence]
   ::
+  ++  restore-schedule
+    |=  jon=json
+    ^-  schedule:sur
+    =/  [due-at=@da all-day=? timezone=@t early-seconds=(set @ud) recurrence=(unit recurrence:sur) occurrence=@ud]
+      ((ot [[%due-at date] [%all-day bo] [%timezone so] [%early-seconds (as ni)] [%recurrence (mu recurrence)] [%occurrence ni] ~]) jon)
+    [due-at all-day timezone early-seconds recurrence occurrence *(set @ud)]
+  ::
+  ++  section
+    |=  jon=json
+    ^-  section:sur
+    =/  [id=@ud title=@t rank=@ud]
+      ((ot [[%id ni] [%title so] [%rank ni] ~]) jon)
+    [id title rank]
+  ::
+  ++  sections
+    |=  jon=json
+    ^-  sections:sur
+    =/  values=(list section:sur)  ((ar section) jon)
+    %-  malt
+    %+  turn  values
+    |=(value=section:sur [id.value value])
+  ::
+  ++  reminder
+    |=  jon=json
+    ^-  reminder:sur
+    ?>  ?=([%o *] jon)
+    =/  [id=@ud title=@t notes=@t url=(unit @t) pri=priority:sur flagged=?]
+      ((ot-raw [[%id ni] [%title so] [%notes so] [%url (mu so)] [%priority priority] [%flagged bo] ~]) p.jon)
+    =/  [tags=(set @t) parent-id=(unit @ud) section-id=(unit @ud) rank=@ud assignee=(unit @p) schedule=(unit schedule:sur)]
+      ((ot-raw [[%tags (as so)] [%parent-id (mu ni)] [%section-id (mu ni)] [%rank ni] [%assignee (mu ship)] [%schedule (mu restore-schedule)] ~]) p.jon)
+    =/  [completed=? last-completed-at=(unit @da) revision=@ud created-at=@da modified-at=@da]
+      ((ot-raw [[%completed bo] [%last-completed-at (mu date)] [%revision ni] [%created-at date] [%modified-at date] ~]) p.jon)
+    :*  id
+        title
+        notes
+        url
+        pri
+        flagged
+        tags
+        parent-id
+        section-id
+        rank
+        assignee
+        schedule
+        completed
+        last-completed-at
+        revision
+        created-at
+        modified-at
+    ==
+  ::
+  ++  reminders
+    |=  jon=json
+    ^-  reminders:sur
+    =/  values=(list reminder:sur)  ((ar reminder) jon)
+    %-  malt
+    %+  turn  values
+    |=(value=reminder:sur [id.value value])
+  ::
+  ++  task-list
+    |=  jon=json
+    ^-  task-list:sur
+    ?>  ?=([%o *] jon)
+    =/  [id=@ud title=@t color=@t symbol=@t revision=@ud]
+      ((ot-raw [[%id ni] [%title so] [%color so] [%symbol so] [%revision ni] ~]) p.jon)
+    =/  [sections=sections:sur reminders=reminders:sur created-at=@da modified-at=@da]
+      ((ot-raw [[%sections sections] [%reminders reminders] [%created-at date] [%modified-at date] ~]) p.jon)
+    [id title color symbol revision sections reminders created-at modified-at]
+  ::
+  ++  lists
+    |=  jon=json
+    ^-  lists:sur
+    =/  values=(list task-list:sur)  ((ar task-list) jon)
+    %-  malt
+    %+  turn  values
+    |=(value=task-list:sur [id.value value])
+  ::
+  ++  preferences
+    |=  jon=json
+    ^-  preferences:sur
+    ((ot [[%revision ni] [%default-list (mu ni)] [%pinned-lists (ar ni)] [%pinned-views (ar smart-view)] [%snooze-presets (ar ni)] [%badge-mode badge-mode] [%all-day-alert-minute ni] [%all-day-overdue bo] ~]) jon)
+  ::
+  ++  snooze
+    |=  jon=json
+    ^-  [snooze-key:sur @da]
+    =/  [list-id=@ud reminder-id=@ud until=@da]
+      ((ot [[%list-id ni] [%reminder-id ni] [%until date] ~]) jon)
+    [[list-id reminder-id] until]
+  ::
+  ++  snoozes
+    |=  jon=json
+    ^-  snoozes:sur
+    (malt ((ar snooze) jon))
+  ::
   ++  action
     |=  jon=json
     ^-  action:sur
@@ -563,6 +657,11 @@
       =/  [=op-id notification-id=@t]
         ((ot [[%operation-id so] [%notification-id so] ~]) body)
       [%ack-notification op-id notification-id]
+    ::
+        %restore-empty
+      =/  [=op-id liss=lists:sur prefs=preferences:sur values=snoozes:sur]
+        ((ot [[%operation-id so] [%lists lists] [%preferences preferences] [%snoozes snoozes] ~]) body)
+      [%restore-empty op-id liss prefs values]
     ==
   --
 --

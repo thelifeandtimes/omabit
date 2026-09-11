@@ -163,6 +163,7 @@ class CliDomainTests(unittest.TestCase):
             with (
                 mock.patch.object(omabit, "snapshot", return_value=SAMPLE),
                 mock.patch.object(omabit.transport, "connection_status", return_value=status),
+                mock.patch.object(omabit.transport, "scry_accesses", return_value=[{"alias": 1, "owner": True}]),
                 redirect_stdout(io.StringIO()),
             ):
                 self.assertEqual(omabit.run_tend(args), 0)
@@ -170,11 +171,78 @@ class CliDomainTests(unittest.TestCase):
             exported = json.loads(destination.read_text(encoding="utf-8"))
             self.assertEqual(exported["format"], "tend-backup-1")
             self.assertEqual(exported["sourceShip"], "~zod")
-            self.assertEqual(exported["snapshot"], SAMPLE)
+            self.assertEqual(exported["snapshot"]["lists"], SAMPLE["lists"])
+            self.assertEqual(exported["snapshot"]["preferences"]["default-list"], 1)
+            self.assertEqual(exported["snapshot"]["snoozes"], [])
             self.assertNotIn("cookie", json.dumps(exported).casefold())
             self.assertEqual(os.stat(destination).st_mode & 0o777, 0o600)
             with self.assertRaisesRegex(omabit.CliError, "already exists"):
                 omabit.write_private_json(destination, exported)
+
+    def test_export_excludes_non_authoritative_replicas(self):
+        state = json.loads(json.dumps(SAMPLE))
+        state["lists"].append({"id": 9, "title": "Remote", "revision": 2, "reminders": []})
+        state["preferences"]["pinned-lists"] = [9, 1]
+        state["snoozes"] = [{"list-id": 9, "reminder-id": 4, "until": "~2099.1.1..00.00.00"}]
+        exported = omabit.owned_snapshot(state, [
+            {"alias": 1, "owner": True},
+            {"alias": 9, "owner": False},
+        ])
+        self.assertEqual([item["id"] for item in exported["lists"]], [1])
+        self.assertEqual(exported["preferences"]["pinned-lists"], [1])
+        self.assertEqual(exported["snoozes"], [])
+
+    def test_restore_requires_confirmation_and_submits_one_atomic_action(self):
+        backup = {
+            "format": "tend-backup-1",
+            "exportedAt": "2026-09-10T20:00:00Z",
+            "sourceShip": "~sampel-palnet",
+            "snapshot": {
+                "lists": [],
+                "preferences": {
+                    "revision": 0,
+                    "default-list": None,
+                    "pinned-lists": [],
+                    "pinned-views": ["today", "all"],
+                    "snooze-presets": [300],
+                },
+                "snoozes": [],
+            },
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "backup.json"
+            source.write_text(json.dumps(backup), encoding="utf-8")
+            refused = SimpleNamespace(tend_command="restore", json=True, path=str(source), yes=False)
+            with self.assertRaisesRegex(omabit.CliError, "without --yes"):
+                omabit.run_tend(refused)
+
+            accepted = SimpleNamespace(tend_command="restore", json=True, path=str(source), yes=True)
+            with (
+                mock.patch.object(omabit, "snapshot", return_value={"lists": []}),
+                mock.patch.object(omabit, "poke") as poke,
+                redirect_stdout(io.StringIO()),
+            ):
+                self.assertEqual(omabit.run_tend(accepted), 0)
+            body = poke.call_args.args[2]["restore-empty"]
+            self.assertEqual(body["lists"], [])
+            self.assertEqual(body["preferences"]["badge-mode"], "today")
+            self.assertEqual(body["preferences"]["all-day-alert-minute"], 540)
+
+    def test_restore_refuses_a_nonempty_agent_before_poking(self):
+        backup = {
+            "format": "tend-backup-1",
+            "exportedAt": "2026-09-10T20:00:00Z",
+            "sourceShip": "~zod",
+            "snapshot": {"lists": [], "preferences": {"revision": 0, "default-list": None, "pinned-lists": [], "pinned-views": [], "snooze-presets": []}, "snoozes": []},
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "backup.json"
+            source.write_text(json.dumps(backup), encoding="utf-8")
+            args = SimpleNamespace(tend_command="restore", json=True, path=str(source), yes=True)
+            with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke:
+                with self.assertRaisesRegex(omabit.CliError, "requires an empty agent"):
+                    omabit.run_tend(args)
+            poke.assert_not_called()
 
     def test_export_refuses_symbolic_link_target(self):
         with tempfile.TemporaryDirectory() as directory:

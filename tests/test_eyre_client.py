@@ -71,6 +71,14 @@ class EyreHandler(BaseHTTPRequestHandler):
             self.send_bytes(200, body)
             return
 
+        if self.path == "/~/scry/tend/accesses.json":
+            if f"{self.server.cookie_name}=session" not in self.headers.get("Cookie", ""):
+                self.send_bytes(403, b"forbidden", "text/plain")
+                return
+            body = self.server.accesses_body or json.dumps({"accesses": []}).encode("utf-8")
+            self.send_bytes(200, body)
+            return
+
         commands = self.server.commands.get(self.path, [])
         first = next((command for command in commands if command.get("action") in {"subscribe", "poke"}), None)
         if not first:
@@ -103,6 +111,7 @@ class FakeEyre:
         self.server.redirect_login = False
         self.server.redirect_target = ""
         self.server.state_body = b""
+        self.server.accesses_body = b""
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
         host, port = self.server.server_address
@@ -351,6 +360,11 @@ class EyreFlowTests(unittest.TestCase):
             self.assertEqual(
                 eyre_client.scry_state(self.config, self.cookie),
                 {"snapshot": {"lists": []}},
+            )
+            fake.server.accesses_body = json.dumps({"accesses": [{"alias": 1, "owner": True}]}).encode("utf-8")
+            self.assertEqual(
+                eyre_client.scry_accesses(self.config, self.cookie),
+                [{"alias": 1, "owner": True}],
             )
             result = eyre_client.disconnect(self.cookie, self.config)
             self.assertEqual(result, {"status": "ok", "removed": ["session", "connection"]})

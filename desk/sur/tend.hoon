@@ -316,6 +316,7 @@
       [%remove-member =op-id =list-id ship=@p]
       [%leave-shared-list =op-id =list-id]
       [%ack-notification =op-id notification-id=op-id]
+      [%restore-empty =op-id =lists =preferences =snoozes]
   ==
 ::
 +$  update-2

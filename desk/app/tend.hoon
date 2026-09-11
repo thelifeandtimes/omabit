@@ -1067,6 +1067,35 @@
       =/  nex=state-8:t
         state(notification-map (~(del by notification-map.state) notification-id.act))
       (commit op-id.act [%notification-acked op-id.act notification-id.act] nex)
+    ::
+        %restore-empty
+      ?.  (restorable-empty state)
+        (reject op-id.act %not-empty ~ state)
+      ?:  (invalid-restore lists.act preferences.act snoozes.act)
+        (reject op-id.act %invalid-backup ~ state)
+      =/  snoozes=snoozes:t
+        (restored-snoozes lists.act snoozes.act now.bowl)
+      =/  nex=state-8:t
+        :*  %8
+            (next-id-for lists.act)
+            lists.act
+            *receipts:t
+            preferences.act
+            timer-generation.state
+            ~
+            snoozes
+            *shares:t
+            *replicas:t
+            *invitations:t
+            *in-flights:t
+            host-session.state
+            *peer-sessions:t
+            liveness-generation.state
+            *notifications:t
+            *replica-alerts:t
+            ~
+        ==
+      (commit op-id.act [%snapshot lists.act preferences.act snoozes] nex)
     ==
   ::
   ++  action-list-id
@@ -1101,6 +1130,7 @@
         %remove-member            `list-id.act
         %leave-shared-list        `list-id.act
         %ack-notification         ~
+        %restore-empty            ~
     ==
   ::
   ++  retarget-action
@@ -1135,6 +1165,7 @@
         %remove-member            act(list-id target)
         %leave-shared-list        act(list-id target)
         %ack-notification         act
+        %restore-empty            act
     ==
   ::
   ++  accept-local
@@ -1282,6 +1313,7 @@
         %remove-member            %.n
         %leave-shared-list        %.n
         %ack-notification         %.n
+        %restore-empty            %.n
         %invite-member
       =/  policy=(unit member-policy:t)  (~(get by members.rep) our.bowl)
       ?~(policy %.n can-invite.u.policy)
@@ -1502,6 +1534,7 @@
         %remove-member            %.n
         %leave-shared-list        %.n
         %ack-notification         %.n
+        %restore-empty            %.n
         %invite-member
       =/  policy=(unit member-policy:t)  (~(get by members.sharing) sender)
       ?~(policy %.n can-invite.u.policy)
@@ -1805,6 +1838,114 @@
     ?.  (levy snooze-presets.prefs |=(seconds=@ud &((gth seconds 0) (lte seconds 2.592.000))))
       %.y
     (gte all-day-alert-minute.prefs 1.440)
+  ::
+  ++  restorable-empty
+    |=  st=state-8:t
+    ^-  ?
+    ?&  ?=(~ ~(tap by list-map.st))
+        ?=(~ ~(tap by snooze-map.st))
+        ?=(~ ~(tap by share-map.st))
+        ?=(~ ~(tap by replica-map.st))
+        ?=(~ ~(tap by invitation-map.st))
+        ?=(~ ~(tap by in-flight-map.st))
+        ?=(~ ~(tap by notification-map.st))
+    ==
+  ::
+  ++  invalid-restore
+    |=  [liss=lists:t prefs=preferences:t values=snoozes:t]
+    ^-  ?
+    =/  entries=(list [list-id:t task-list:t])  ~(tap by liss)
+    ?:  (gth (lent entries) 10.000)  %.y
+    ?:  (invalid-preferences prefs liss)  %.y
+    =/  remaining=(list [list-id:t task-list:t])  entries
+    =/  invalid-list=?
+      |-
+      ?~  remaining  %.n
+      ?:  (invalid-restore-list +.i.remaining)  %.y
+      $(remaining t.remaining)
+    ?:  invalid-list  %.y
+    =/  snooze-entries=(list [snooze-key:t @da])  ~(tap by values)
+    ?:  (gth (lent snooze-entries) 100.000)  %.y
+    |-
+    ?~  snooze-entries  %.n
+    =/  key=snooze-key:t  -.i.snooze-entries
+    =/  lis=(unit task-list:t)  (~(get by liss) -.key)
+    ?~  lis  %.y
+    ?.  (~(has by reminders.u.lis) +.key)  %.y
+    $(snooze-entries t.snooze-entries)
+  ::
+  ++  invalid-restore-list
+    |=  lis=task-list:t
+    ^-  ?
+    ?:  (invalid-title title.lis)  %.y
+    ?:  (invalid-appearance color.lis symbol.lis)  %.y
+    =/  sections=(list [section-id:t section:t])  ~(tap by sections.lis)
+    ?:  (gth (lent sections) 10.000)  %.y
+    =/  remaining-sections=(list [section-id:t section:t])  sections
+    =/  invalid-section=?
+      |-
+      ?~  remaining-sections  %.n
+      ?:  (invalid-title title.+.i.remaining-sections)  %.y
+      $(remaining-sections t.remaining-sections)
+    ?:  invalid-section  %.y
+    =/  reminders=(list [reminder-id:t reminder:t])  ~(tap by reminders.lis)
+    ?:  (gth (lent reminders) 100.000)  %.y
+    =/  remaining=(list [reminder-id:t reminder:t])  reminders
+    |-
+    ?~  remaining  %.n
+    =/  rem=reminder:t  +.i.remaining
+    ?:  (invalid-title title.rem)  %.y
+    ?:  (gth (met 3 notes.rem) 65.536)  %.y
+    ?:  (invalid-url url.rem)  %.y
+    ?:  (invalid-tags tags.rem)  %.y
+    ?:  ?~(section-id.rem %.n !(~(has by sections.lis) u.section-id.rem))
+      %.y
+    ?:  ?~(parent-id.rem %.n !(~(has by reminders.lis) u.parent-id.rem))
+      %.y
+    ?:  ?~(parent-id.rem %.n (descendant u.parent-id.rem id.rem reminders.lis))
+      %.y
+    ?:  (invalid-stored-schedule schedule.rem)  %.y
+    $(remaining t.remaining)
+  ::
+  ++  invalid-stored-schedule
+    |=  value=(unit schedule:t)
+    ^-  ?
+    ?~  value  %.n
+    =/  sch=schedule:t  u.value
+    =/  input=schedule-input:t
+      [due-at.sch all-day.sch timezone.sch early-seconds.sch recurrence.sch]
+    (invalid-schedule `input)
+  ::
+  ++  restored-snoozes
+    |=  [liss=lists:t values=snoozes:t now=@da]
+    ^-  snoozes:t
+    =/  valid=snoozes:t  (valid-snoozes liss values)
+    =/  kept=(list [snooze-key:t @da])
+      %+  skim  ~(tap by valid)
+      |=  [key=snooze-key:t until=@da]
+      (gth until now)
+    (malt kept)
+  ::
+  ++  next-id-for
+    |=  liss=lists:t
+    ^-  @ud
+    =/  entries=(list [list-id:t task-list:t])  ~(tap by liss)
+    =/  highest=@ud  0
+    |-
+    ?~  entries  +(highest)
+    =/  lis=task-list:t  +.i.entries
+    =.  highest  (max highest id.lis)
+    =/  sections=(list [section-id:t section:t])  ~(tap by sections.lis)
+    =.  highest
+      %+  roll  sections
+      |=  [[id=section-id:t sec=section:t] acc=@ud]
+      (max id acc)
+    =/  reminders=(list [reminder-id:t reminder:t])  ~(tap by reminders.lis)
+    =.  highest
+      %+  roll  reminders
+      |=  [[id=reminder-id:t rem=reminder:t] acc=@ud]
+      (max id acc)
+    $(entries t.entries)
   ::
   ++  valid-assignee
     |=  [=list-id:t assignee=(unit @p) st=state-8:t]
@@ -2340,6 +2481,7 @@
 ++  on-peek
   |=  =path
   ^-  (unit (unit cage))
+  |^
   =/  st=state-8:t  state
   =/  snapshot=update:t
     =/  entries=(list [list-id:t replica:t])  ~(tap by replica-map.st)
@@ -2357,8 +2499,32 @@
   ?.  =(our.bowl src.bowl)  ~
   ?+  path  [~ ~]
     [%x %state ~]   ``tend-update-1+!>(snapshot)
+    [%x %accesses ~]  ``tend-update-1+!>([%accesses (accesses-for st)])
     [%x %whoami ~]  ``json+!>(s+(scot %p our.bowl))
   ==
+  ::
+  ++  accesses-for
+    |=  value=state-8:t
+    ^-  accesses:t
+    =/  hosted=accesses:t
+      %-  ~(rep by list-map.value)
+      |=  [[id=list-id:t lis=task-list:t] acc=accesses:t]
+      ?:  (~(has by replica-map.value) id)  acc
+      =/  found=(unit share:t)  (~(get by share-map.value) id)
+      =/  mem=members:t  ?~(found *members:t members.u.found)
+      =/  pending=(list @p)
+        ?~  found  ~
+        %+  turn  ~(tap by pending.u.found)
+        |=  [ship=@p invite=pending-invite:t]
+        ship
+      [[id our.bowl id %online %.y mem pending] acc]
+    =/  remote=accesses:t
+      %-  ~(rep by replica-map.value)
+      |=  [[alias=list-id:t rep=replica:t] acc=accesses:t]
+      :_  acc
+      [alias host.ref.rep id.ref.rep status.rep %.n members.rep ~]
+    (weld hosted remote)
+  --
 ::
 ++  on-arvo
   |=  [=wire =sign-arvo]

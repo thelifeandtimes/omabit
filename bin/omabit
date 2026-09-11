@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 from datetime import datetime, timedelta, timezone
 import getpass
 import importlib.util
@@ -142,6 +143,115 @@ def backup_payload(state: dict[str, object], ship: str) -> dict[str, object]:
         "sourceShip": ship,
         "snapshot": state,
     }
+
+
+def owned_snapshot(state: dict[str, object], accesses: list[object]) -> dict[str, object]:
+    access_by_alias = {
+        int(item["alias"]): item
+        for item in accesses
+        if isinstance(item, dict) and isinstance(item.get("alias"), int)
+    }
+    lists = state.get("lists") or []
+    if not isinstance(lists, list):
+        raise CliError("The Tend agent returned invalid list data")
+    for item in lists:
+        if not isinstance(item, dict) or int(item.get("id", -1)) not in access_by_alias:
+            raise CliError("The Tend agent did not identify every list's owner; refusing an ambiguous backup")
+    owned_ids = {
+        alias for alias, access in access_by_alias.items()
+        if access.get("owner") is True
+    }
+    exported = copy.deepcopy(state)
+    exported["lists"] = [item for item in lists if int(item.get("id", -1)) in owned_ids]
+    exported["snoozes"] = [
+        item for item in state.get("snoozes") or []
+        if isinstance(item, dict) and int(item.get("list-id", -1)) in owned_ids
+    ]
+    preferences = copy.deepcopy(state.get("preferences") or {})
+    owned_order = [int(item["id"]) for item in exported["lists"]]
+    default_list = preferences.get("default-list")
+    if default_list not in owned_ids:
+        preferences["default-list"] = owned_order[0] if owned_order else None
+    preferences["pinned-lists"] = [
+        int(list_id) for list_id in preferences.get("pinned-lists") or []
+        if int(list_id) in owned_ids
+    ]
+    exported["preferences"] = preferences
+    return exported
+
+
+def restore_snapshot(backup: dict[str, object]) -> dict[str, object]:
+    snapshot_value = backup["snapshot"]
+    assert isinstance(snapshot_value, dict)
+    exported_at = datetime.fromisoformat(str(backup["exportedAt"]).replace("Z", "+00:00"))
+    fallback_date = urbit_date(exported_at)
+
+    restored_lists: list[dict[str, object]] = []
+    for source_list in snapshot_value.get("lists") or []:
+        task_list = dict(source_list)
+        restored_reminders: list[dict[str, object]] = []
+        for source_reminder in task_list.get("reminders") or []:
+            reminder = dict(source_reminder)
+            source_schedule = reminder.get("schedule")
+            schedule = None
+            if isinstance(source_schedule, dict):
+                recurrence = source_schedule.get("recurrence")
+                schedule = {
+                    "due-at": source_schedule["due-at"],
+                    "all-day": source_schedule.get("all-day") is True,
+                    "timezone": str(source_schedule.get("timezone") or "UTC"),
+                    "early-seconds": list(source_schedule.get("early-seconds") or []),
+                    "recurrence": copy.deepcopy(recurrence),
+                    "occurrence": int(source_schedule.get("occurrence", 0)),
+                }
+            restored_reminders.append({
+                "id": int(reminder["id"]),
+                "title": str(reminder["title"]),
+                "notes": str(reminder.get("notes") or ""),
+                "url": reminder.get("url"),
+                "priority": str(reminder.get("priority") or "none"),
+                "flagged": reminder.get("flagged") is True,
+                "tags": list(reminder.get("tags") or []),
+                "parent-id": reminder.get("parent-id"),
+                "section-id": reminder.get("section-id"),
+                "rank": int(reminder.get("rank", reminder["id"])),
+                "assignee": reminder.get("assignee"),
+                "schedule": schedule,
+                "completed": reminder.get("completed") is True,
+                "last-completed-at": reminder.get("last-completed-at"),
+                "revision": int(reminder.get("revision", 0)),
+                "created-at": str(reminder.get("created-at") or fallback_date),
+                "modified-at": str(reminder.get("modified-at") or fallback_date),
+            })
+        restored_lists.append({
+            "id": int(task_list["id"]),
+            "title": str(task_list["title"]),
+            "color": str(task_list.get("color") or "#3b82f6"),
+            "symbol": str(task_list.get("symbol") or "list"),
+            "revision": int(task_list.get("revision", 0)),
+            "sections": copy.deepcopy(task_list.get("sections") or []),
+            "reminders": restored_reminders,
+            "created-at": str(task_list.get("created-at") or fallback_date),
+            "modified-at": str(task_list.get("modified-at") or fallback_date),
+        })
+
+    source_preferences = snapshot_value.get("preferences") or {}
+    preferences = {
+        "revision": int(source_preferences.get("revision", 0)),
+        "default-list": source_preferences.get("default-list"),
+        "pinned-lists": list(source_preferences.get("pinned-lists") or []),
+        "pinned-views": list(source_preferences.get("pinned-views") or ["today", "scheduled", "all", "flagged", "assigned", "completed"]),
+        "snooze-presets": list(source_preferences.get("snooze-presets") or [300, 900, 3600]),
+        "badge-mode": str(source_preferences.get("badge-mode") or "today"),
+        "all-day-alert-minute": int(source_preferences.get("all-day-alert-minute", 540)),
+        "all-day-overdue": source_preferences.get("all-day-overdue") is not False,
+    }
+    snoozes = [{
+        "list-id": int(item["list-id"]),
+        "reminder-id": int(item["reminder-id"]),
+        "until": str(item["until"]),
+    } for item in snapshot_value.get("snoozes") or []]
+    return {"lists": restored_lists, "preferences": preferences, "snoozes": snoozes}
 
 
 def write_private_json(path: Path, value: object, force: bool = False) -> None:
@@ -497,6 +607,22 @@ def run_tend(args: argparse.Namespace) -> int:
     if args.tend_command == "validate-backup":
         emit(validate_backup(read_backup(Path(args.path))), as_json)
         return 0
+    if args.tend_command == "restore":
+        if not args.yes:
+            raise CliError("Refusing to restore without --yes; restore is atomic and only allowed into an empty Tend agent")
+        backup = read_backup(Path(args.path))
+        summary = validate_backup(backup)
+        assert isinstance(backup, dict)
+        current = snapshot(cookie_path, config_path)
+        if current.get("lists"):
+            raise CliError("Tend restore requires an empty agent")
+        action = {"restore-empty": {
+            "operation-id": operation_id(),
+            **restore_snapshot(backup),
+        }}
+        poke(cookie_path, config_path, action)
+        emit({**summary, "status": "restored"}, as_json)
+        return 0
 
     state = snapshot(cookie_path, config_path)
     if args.tend_command == "list":
@@ -507,7 +633,8 @@ def run_tend(args: argparse.Namespace) -> int:
         return 0
     if args.tend_command == "export":
         status = transport.connection_status(config_path, cookie_path)
-        value = backup_payload(state, str(status.get("ship", "")))
+        exported = owned_snapshot(state, transport.scry_accesses(config_path, cookie_path))
+        value = backup_payload(exported, str(status.get("ship", "")))
         if str(args.path) == "-":
             emit(value, True)
         else:
@@ -651,6 +778,10 @@ def parser() -> argparse.ArgumentParser:
 
     validate = commands.add_parser("validate-backup", help="validate a Tend backup without changing ship state")
     validate.add_argument("path")
+
+    restore = commands.add_parser("restore", help="atomically restore a validated backup into an empty Tend agent")
+    restore.add_argument("path")
+    restore.add_argument("--yes", action="store_true", help="confirm the empty-state restore")
 
     add = commands.add_parser("add", help="add a reminder")
     add.add_argument("title")

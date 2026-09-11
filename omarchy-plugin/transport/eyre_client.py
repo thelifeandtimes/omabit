@@ -317,6 +317,15 @@ def scry_state(config_path: Path, cookie_path: Path) -> object:
     return json_request(opener, connection["baseUrl"] + "/~/scry/tend/state.json")
 
 
+def scry_accesses(config_path: Path, cookie_path: Path) -> list[object]:
+    connection = read_connection(config_path)
+    opener, _ = opener_for(cookie_path)
+    result = json_request(opener, connection["baseUrl"] + "/~/scry/tend/accesses.json")
+    if not isinstance(result, dict) or not isinstance(result.get("accesses"), list):
+        raise TendTransportError("The Tend agent returned invalid ownership metadata")
+    return result["accesses"]
+
+
 def write_connection(path: Path, base_url: str, ship: str) -> None:
     atomic_private_text(
         path,
@@ -481,8 +490,10 @@ def poke(config_path: Path, cookie_path: Path, action: object) -> dict[str, obje
     if not isinstance(action, dict) or len(action) != 1:
         raise TendTransportError("A Tend action must be a one-key JSON object")
     action = normalize_tend_action(action)
-    if len(json.dumps(action, separators=(",", ":")).encode("utf-8")) > MAX_ACTION_BYTES:
-        raise TendTransportError("A Tend action must not exceed 1 MiB", "request-too-large")
+    action_limit = MAX_JSON_BYTES if "restore-empty" in action else MAX_ACTION_BYTES
+    if len(json.dumps(action, separators=(",", ":")).encode("utf-8")) > action_limit:
+        label = "32 MiB" if action_limit == MAX_JSON_BYTES else "1 MiB"
+        raise TendTransportError(f"A Tend action must not exceed {label}", "request-too-large")
     connection = read_connection(config_path)
     opener, _ = opener_for(cookie_path)
     url = channel_url(connection["baseUrl"], uuid.uuid4().hex)
