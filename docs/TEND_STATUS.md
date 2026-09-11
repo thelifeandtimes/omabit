@@ -29,7 +29,9 @@ Last verified: 2026-09-10
   writable only after its snapshot arrives.
 - The overlay can create lists, sections, and reminders; select a reminder;
   edit its title, notes, URL, priority, flag, and tags; toggle completion; and
-  delete the reminder through revision-checked service calls.
+  delete the reminder through revision-checked service calls. Saved HTTP(S)
+  and mailto links can be opened explicitly through Qt's default application
+  handler; the client mirrors Gall's scheme allowlist before enabling it.
 - List settings edit title, color, and symbol with a guarded delete action.
   Section settings edit title/rank or safely delete a section, and reminder
   organization controls set parent, section, and manual rank. The corresponding

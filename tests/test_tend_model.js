@@ -356,6 +356,16 @@ test("manual drop placement accepts only changed sibling order", () => {
   assert.equal(model.manualDropPlacement(reminders, 1, 1, true), null)
 })
 
+test("external reminder links match the Gall allowlist", () => {
+  assert.equal(model.safeExternalUrl("https://example.com/task"), true)
+  assert.equal(model.safeExternalUrl(" http://127.0.0.1/path "), true)
+  assert.equal(model.safeExternalUrl("mailto:person@example.com"), true)
+  assert.equal(model.safeExternalUrl("javascript:alert(1)"), false)
+  assert.equal(model.safeExternalUrl("file:///tmp/private"), false)
+  assert.equal(model.safeExternalUrl("HTTPS://example.com"), false)
+  assert.equal(model.safeExternalUrl(""), false)
+})
+
 test("multiplayer access state gates remote editing while keeping owned lists writable", () => {
   const owned = {
     alias: 1,

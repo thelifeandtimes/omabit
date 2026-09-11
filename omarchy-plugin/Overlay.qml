@@ -1412,15 +1412,22 @@ Item {
                                         TextField {
                                             id: reminderUrl
 
-                                            width: parent.width * 0.5
+                                            width: parent.width * 0.42
                                             placeholderText: "https://…"
                                             Accessible.name: "Reminder URL"
+                                        }
+
+                                        Button {
+                                            text: "Open link"
+                                            enabled: TendModel.safeExternalUrl(reminderUrl.text)
+                                            Accessible.name: "Open reminder link in the default application"
+                                            onClicked: Qt.openUrlExternally(reminderUrl.text.trim())
                                         }
 
                                         ComboBox {
                                             id: reminderPriority
 
-                                            width: parent.width * 0.24
+                                            width: parent.width * 0.2
                                             model: ["none", "low", "medium", "high"]
                                             Accessible.name: "Reminder priority"
                                         }
