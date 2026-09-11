@@ -75,6 +75,34 @@ class CliDomainTests(unittest.TestCase):
         self.assertEqual(action["base-revision"], 4)
         self.assertEqual(action["tags"], ["shop"])
 
+    def test_share_and_unshare_use_selected_list_without_rank_assumptions(self):
+        share = SimpleNamespace(
+            tend_command="share",
+            json=True,
+            list_selector="Inbox",
+            ship="~sampel-palnet",
+            allow_invites=True,
+        )
+        with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            self.assertEqual(omabit.run_tend(share), 0)
+        invited = poke.call_args.args[2]["invite-member"]
+        self.assertEqual(invited["list-id"], 1)
+        self.assertEqual(invited["ship"], "~sampel-palnet")
+        self.assertTrue(invited["can-invite"])
+
+        unshare = SimpleNamespace(tend_command="unshare", json=True, list_selector="1", ship="~sampel-palnet")
+        with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            self.assertEqual(omabit.run_tend(unshare), 0)
+        removed = poke.call_args.args[2]["remove-member"]
+        self.assertEqual(removed["list-id"], 1)
+        self.assertEqual(removed["ship"], "~sampel-palnet")
+
+    def test_leave_uses_local_alias(self):
+        args = SimpleNamespace(tend_command="leave", json=True, list_selector="1")
+        with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            self.assertEqual(omabit.run_tend(args), 0)
+        self.assertEqual(poke.call_args.args[2]["leave-shared-list"]["list-id"], 1)
+
     def test_complete_checks_entity_before_poking(self):
         args = SimpleNamespace(tend_command="complete", json=True, list_id=1, reminder_ids=[7])
         with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):

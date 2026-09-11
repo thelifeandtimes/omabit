@@ -527,6 +527,36 @@ def run_tend(args: argparse.Namespace) -> int:
         poke(cookie_path, config_path, action)
         emit({"status": "accepted", "listId": task_list["id"]}, as_json)
         return 0
+    if args.tend_command == "share":
+        task_list = select_list(state, args.list_selector)
+        action = {"invite-member": {
+            "operation-id": operation_id(),
+            "list-id": int(task_list["id"]),
+            "ship": args.ship,
+            "can-invite": args.allow_invites,
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "invited", "listId": task_list["id"], "ship": args.ship}, as_json)
+        return 0
+    if args.tend_command == "unshare":
+        task_list = select_list(state, args.list_selector)
+        action = {"remove-member": {
+            "operation-id": operation_id(),
+            "list-id": int(task_list["id"]),
+            "ship": args.ship,
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "removed", "listId": task_list["id"], "ship": args.ship}, as_json)
+        return 0
+    if args.tend_command == "leave":
+        task_list = select_list(state, args.list_selector)
+        action = {"leave-shared-list": {
+            "operation-id": operation_id(),
+            "list-id": int(task_list["id"]),
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "left", "listId": task_list["id"]}, as_json)
+        return 0
     if args.tend_command in {"complete", "uncomplete"}:
         task_list = select_list(state, str(args.list_id))
         for reminder_id in args.reminder_ids:
@@ -626,6 +656,18 @@ def parser() -> argparse.ArgumentParser:
     add.add_argument("title")
     add.add_argument("--list", dest="list_selector")
     add.add_argument("--tag", action="append", default=[])
+
+    share = commands.add_parser("share", help="invite an Urbit ship to a list")
+    share.add_argument("list_selector", help="list ID or title")
+    share.add_argument("ship", help="planet, moon, or comet name")
+    share.add_argument("--allow-invites", action="store_true", help="let this member invite other ships")
+
+    unshare = commands.add_parser("unshare", help="remove an Urbit ship from a list")
+    unshare.add_argument("list_selector", help="list ID or title")
+    unshare.add_argument("ship", help="member ship to remove")
+
+    leave = commands.add_parser("leave", help="leave a list hosted by another ship")
+    leave.add_argument("list_selector", help="list ID or title")
 
     for name in ("complete", "uncomplete"):
         complete = commands.add_parser(name)

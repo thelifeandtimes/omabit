@@ -46,6 +46,20 @@ Item {
     }
     readonly property var selectedAccess: service && selectedList ? service.accessForList(selectedList.id) : null
     readonly property bool selectedListEditable: service && selectedList ? service.canEditList(selectedList.id) : false
+    readonly property bool selectedMayInvite: {
+        if (!selectedAccess || !service)
+            return false;
+        if (selectedAccess.owner)
+            return true;
+        var mine = String(service.ship || "").replace(/^~/, "");
+        var members = selectedAccess.members || [];
+        for (var i = 0; i < members.length; i++) {
+            var member = members[i];
+            if (String(member.ship || "").replace(/^~/, "") === mine)
+                return member.policy && member.policy.canInvite === true;
+        }
+        return false;
+    }
     readonly property string selectedHostStatus: {
         if (!selectedAccess)
             return "CHECKING OWNER";
@@ -698,6 +712,59 @@ Item {
                     }
 
                     Column {
+                        visible: service && service.ship !== "" && !root.captureMode && service.invitations.length > 0
+                        width: parent.width
+                        spacing: Style.space(6)
+
+                        Text {
+                            text: "Shared-list invitations"
+                            color: Color.menu.text
+                            font.family: Style.font.menuFamily
+                            font.pixelSize: Style.font.caption
+                            font.bold: true
+                        }
+
+                        Repeater {
+                            model: service ? service.invitations : []
+
+                            delegate: Row {
+                                required property var modelData
+
+                                width: parent.width
+                                spacing: Style.space(6)
+
+                                Text {
+                                    width: parent.width - acceptInvitationButton.width - declineInvitationButton.width - parent.spacing * 2
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: modelData.title + " from " + modelData.host + (modelData.canInvite ? " · may invite" : "")
+                                    elide: Text.ElideRight
+                                    color: Color.menu.text
+                                    font.family: Style.font.menuFamily
+                                    font.pixelSize: Style.font.body
+                                }
+
+                                Button {
+                                    id: acceptInvitationButton
+
+                                    text: "Accept"
+                                    enabled: service && service.connectionState === "online" && !service.mutationPending
+                                    Accessible.name: "Accept invitation to " + modelData.title
+                                    onClicked: service.acceptInvitation(modelData)
+                                }
+
+                                Button {
+                                    id: declineInvitationButton
+
+                                    text: "Decline"
+                                    enabled: service && service.connectionState === "online" && !service.mutationPending
+                                    Accessible.name: "Decline invitation to " + modelData.title
+                                    onClicked: service.declineInvitation(modelData)
+                                }
+                            }
+                        }
+                    }
+
+                    Column {
                         visible: !service || !service.ship || service.connectionState === "authentication-required"
                         width: Math.min(560, parent.width)
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -1210,6 +1277,102 @@ Item {
                                     font.pixelSize: Style.font.caption
                                 }
 
+                            }
+
+                            Column {
+                                visible: root.listEditorOpen && root.selectedList !== null && root.selectedAccess !== null
+                                width: parent.width
+                                spacing: Style.space(6)
+
+                                Text {
+                                    width: parent.width
+                                    text: root.selectedAccess && root.selectedAccess.owner ? "Sharing · hosted by this ship" : "Sharing · hosted by " + (root.selectedAccess ? root.selectedAccess.host : "")
+                                    color: Color.menu.text
+                                    font.family: Style.font.menuFamily
+                                    font.pixelSize: Style.font.caption
+                                    font.bold: true
+                                }
+
+                                Row {
+                                    visible: root.selectedMayInvite
+                                    width: parent.width
+                                    spacing: Style.space(6)
+
+                                    TextField {
+                                        id: inviteShip
+
+                                        width: parent.width * 0.38
+                                        placeholderText: "~sampel-palnet, moon, or comet"
+                                        Accessible.name: "Urbit ship to invite"
+                                    }
+
+                                    CheckBox {
+                                        id: inviteCanInvite
+
+                                        text: "May invite"
+                                        Accessible.name: "Allow invited member to invite others"
+                                    }
+
+                                    Button {
+                                        text: "Invite"
+                                        enabled: root.selectedListEditable && inviteShip.text.trim() !== "" && service && service.connectionState === "online" && !service.mutationPending
+                                        Accessible.name: "Invite Urbit ship to selected list"
+                                        onClicked: {
+                                            if (service.inviteMember(root.selectedList.id, inviteShip.text.trim(), inviteCanInvite.checked))
+                                                inviteShip.text = "";
+                                        }
+                                    }
+                                }
+
+                                Text {
+                                    visible: root.selectedAccess && root.selectedAccess.pending && root.selectedAccess.pending.length > 0
+                                    width: parent.width
+                                    text: "Awaiting response: " + (root.selectedAccess ? root.selectedAccess.pending.join(", ") : "")
+                                    color: Color.menu.text
+                                    opacity: 0.72
+                                    wrapMode: Text.Wrap
+                                    font.family: Style.font.menuFamily
+                                    font.pixelSize: Style.font.caption
+                                }
+
+                                Repeater {
+                                    model: root.selectedAccess ? root.selectedAccess.members : []
+
+                                    delegate: Row {
+                                        required property var modelData
+
+                                        width: parent.width
+                                        spacing: Style.space(6)
+
+                                        Text {
+                                            width: parent.width - removeMemberButton.width - parent.spacing
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            text: modelData.ship + (modelData.policy && modelData.policy.canInvite ? " · may invite" : " · member")
+                                            elide: Text.ElideRight
+                                            color: Color.menu.text
+                                            font.family: Style.font.menuFamily
+                                            font.pixelSize: Style.font.body
+                                        }
+
+                                        Button {
+                                            id: removeMemberButton
+
+                                            visible: root.selectedAccess && root.selectedAccess.owner
+                                            text: "Remove"
+                                            enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                            Accessible.name: "Remove " + modelData.ship + " from selected list"
+                                            onClicked: service.removeMember(root.selectedList.id, modelData.ship)
+                                        }
+                                    }
+                                }
+
+                                Button {
+                                    visible: root.selectedAccess && !root.selectedAccess.owner
+                                    text: "Leave shared list"
+                                    enabled: service && service.connectionState === "online" && !service.mutationPending
+                                    Accessible.name: "Leave selected shared list"
+                                    onClicked: service.leaveSharedList(root.selectedList.id)
+                                }
                             }
 
                             Row {
