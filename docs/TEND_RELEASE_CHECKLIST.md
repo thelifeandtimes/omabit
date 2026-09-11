@@ -9,7 +9,7 @@ Last reconciled: 2026-09-10
 
 | Area | Status | Evidence / remaining gate |
 | --- | --- | --- |
-| Lists, sections, reminder CRUD, rich metadata | Verified | Gall actions, Eyre round trips, reducer and CLI tests |
+| Lists, sections, reminder CRUD, rich metadata | Verified | Gall actions, Eyre round trips, atomic section ordering, reducer and CLI tests |
 | Completion, batch actions, subtasks, stable ranks | Verified | Cascades, hierarchy controls, pointer drag/drop, keyboard placement, atomic rank normalization, and stale rejection are tested/live-verified |
 | Dates, all-day policy, time zones, early alerts | Verified | `%tend` validation, Behn wake test, `zoneinfo` gap/fold tests, and live local-wall-time-to-`@da` round trip |
 | Recurrence and next occurrence | Partial | Hourly through yearly advancement and boundary rules compile/live-test; full occurrence history remains |

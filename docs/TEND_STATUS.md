@@ -33,9 +33,12 @@ Last verified: 2026-09-10
   and mailto links can be opened explicitly through Qt's default application
   handler; the client mirrors Gall's scheme allowlist before enabling it.
 - List settings edit title, color, and symbol with a guarded delete action.
-  Section settings edit title/rank or safely delete a section, and reminder
-  organization controls set parent, section, and manual rank. The corresponding
-  `%tend` actions compile and round-trip through live Eyre.
+  Section settings edit titles, atomically move a section up/down, or safely
+  delete it; owner-side placement normalizes tightly packed section ranks. A
+  live three-section fixture verified ordering, stale rejection, and cleanup
+  on desk revision 41. Reminder organization controls set parent, section, and
+  manual rank. The corresponding `%tend` actions compile and round-trip through
+  live Eyre.
 - Subtasks render in parent/child order with depth cues, can be collapsed or
   expanded by pointer or arrow key, and expose explicit indent/outdent controls
   plus `Ctrl+]` / `Ctrl+[` shortcuts. Manual rows can be reordered with a

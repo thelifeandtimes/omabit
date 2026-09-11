@@ -213,6 +213,19 @@ Item {
         }, listId);
     }
 
+    function placeSection(listId, sectionId, targetId, after, baseRevision) {
+        return submit({
+            "place-section": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "section-id": Number(sectionId),
+                "target-id": Number(targetId),
+                "after": after === true,
+                "base-revision": Number(baseRevision)
+            }
+        }, listId);
+    }
+
     function deleteSection(listId, sectionId, baseRevision) {
         return submit({
             "delete-section": {

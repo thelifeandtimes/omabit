@@ -26,6 +26,7 @@ returns its recorded result without applying it twice.
 | `rename-list`, `delete-list` | Rename or remove a list |
 | `update-list` | Atomically change a list's title, color, and symbol |
 | `add-section`, `update-section`, `delete-section` | Manage ordered sections; deleting a section keeps and unsections its reminders |
+| `place-section` | Place a section before/after another and atomically normalize sparse ranks |
 | `add-reminder`, `update-reminder` | Create a reminder with initial tags or replace its editable metadata |
 | `move-reminder` | Change parent, section, and stable rank after validating references and cycles |
 | `place-reminder` | Place a reminder before/after a sibling and atomically normalize that sibling group's sparse ranks |

@@ -241,6 +241,7 @@
       [%delete-list =op-id =list-id base-revision=@ud]
       [%add-section =op-id =list-id title=@t rank=@ud base-revision=@ud]
       [%update-section =op-id =list-id =section-id title=@t rank=@ud base-revision=@ud]
+      [%place-section =op-id =list-id =section-id target-id=section-id after=? base-revision=@ud]
       [%delete-section =op-id =list-id =section-id base-revision=@ud]
       [%add-reminder =op-id =list-id title=@t tags=(set @t) base-revision=@ud]
       $:  %update-reminder

@@ -401,6 +401,30 @@
         ==
       (save-list op-id.act lis state)
     ::
+        %place-section
+      =/  old=(unit task-list:t)  (~(get by list-map.state) list-id.act)
+      ?~  old  (reject op-id.act %unknown-list ~ state)
+      ?.  =(base-revision.act revision.u.old)
+        (reject op-id.act %stale-list `revision.u.old state)
+      =/  source=(unit section:t)  (~(get by sections.u.old) section-id.act)
+      ?~  source  (reject op-id.act %unknown-section `revision.u.old state)
+      =/  target=(unit section:t)  (~(get by sections.u.old) target-id.act)
+      ?~  target  (reject op-id.act %unknown-target `revision.u.old state)
+      ?:  =(section-id.act target-id.act)
+        (reject op-id.act %invalid-placement `revision.u.old state)
+      =/  ordered=(list section:t)  (ordered-sections sections.u.old)
+      =/  placed=(list section:t)
+        (place-section-in-order ordered u.source target-id.act after.act)
+      ?:  (same-section-order ordered placed)
+        (reject op-id.act %invalid-placement `revision.u.old state)
+      =/  lis=task-list:t
+        %_  u.old
+            revision    +(revision.u.old)
+            sections    (rerank-sections placed sections.u.old)
+            modified-at  now.bowl
+        ==
+      (save-list op-id.act lis state)
+    ::
         %delete-section
       =/  old=(unit task-list:t)  (~(get by list-map.state) list-id.act)
       ?~  old  (reject op-id.act %unknown-list ~ state)
@@ -1095,6 +1119,53 @@
     |=  [a=reminder:t b=reminder:t]
     ?:  =(rank.a rank.b)  (lth id.a id.b)
     (lth rank.a rank.b)
+  ::
+  ++  ordered-sections
+    |=  secs=sections:t
+    ^-  (list section:t)
+    =/  values=(list section:t)
+      %+  turn  ~(tap by secs)
+      |=  [sid=section-id:t sec=section:t]
+      sec
+    %+  sort  values
+    |=  [a=section:t b=section:t]
+    ?:  =(rank.a rank.b)  (lth id.a id.b)
+    (lth rank.a rank.b)
+  ::
+  ++  place-section-in-order
+    |=  [ordered=(list section:t) source=section:t target=section-id:t after=?]
+    ^-  (list section:t)
+    =/  remaining=(list section:t)
+      %+  skim  ordered
+      |=  sec=section:t
+      !=(id.sec id.source)
+    |-
+    ?~  remaining  [source ~]
+    ?:  =(id.i.remaining target)
+      ?:  after  [i.remaining source t.remaining]
+      [source remaining]
+    [i.remaining $(remaining t.remaining)]
+  ::
+  ++  same-section-order
+    |=  [a=(list section:t) b=(list section:t)]
+    ^-  ?
+    ?~  a  ?=(~ b)
+    ?~  b  %.n
+    ?&  =(id.i.a id.i.b)
+        $(a t.a, b t.b)
+    ==
+  ::
+  ++  rerank-sections
+    |=  [ordered=(list section:t) secs=sections:t]
+    ^-  sections:t
+    =/  next-rank=@ud  1.024
+    |-
+    ?~  ordered  secs
+    =/  sec=section:t  i.ordered
+    =/  next-secs=sections:t
+      ?:  =(rank.sec next-rank)  secs
+      (~(put by secs) id.sec sec(rank next-rank))
+    $(ordered t.ordered, secs next-secs, next-rank (add next-rank 1.024))
   ::
   ++  place-sibling
     |=  [ordered=(list reminder:t) source=reminder:t target=reminder-id:t after=?]

@@ -360,7 +360,32 @@ Item {
         var section = selectedList.sections[index];
         selectedSectionId = section.id;
         sectionTitleEditor.text = section.title;
-        sectionRank.value = section.rank;
+    }
+
+    function selectedSectionValue() {
+        if (!selectedList)
+            return null;
+        for (var i = 0; i < selectedList.sections.length; i++) {
+            if (Number(selectedList.sections[i].id) === Number(selectedSectionId))
+                return selectedList.sections[i];
+        }
+        return null;
+    }
+
+    function moveSelectedSectionRelative(delta) {
+        var section = selectedSectionValue();
+        if (!section || !selectedList || !service)
+            return false;
+        var sections = selectedList.sections.slice().sort(function(left, right) {
+            return Number(left.rank) - Number(right.rank) || Number(left.id) - Number(right.id);
+        });
+        var index = sections.findIndex(function(value) {
+            return Number(value.id) === Number(section.id);
+        });
+        var target = index + delta;
+        if (index < 0 || target < 0 || target >= sections.length)
+            return false;
+        return service.placeSection(selectedList.id, section.id, sections[target].id, delta > 0, selectedList.revision);
     }
 
     function moveSelectedRelative(delta) {
@@ -1266,6 +1291,7 @@ Item {
                                     width: parent.width * 0.24
                                     model: root.selectedList ? root.selectedList.sections : []
                                     textRole: "title"
+                                    currentIndex: root.indexForId(root.selectedList ? root.selectedList.sections : [], root.selectedSectionId)
                                     Accessible.name: "Section to edit"
                                     onActivated: function(index) {
                                         root.chooseSection(index);
@@ -1275,25 +1301,33 @@ Item {
                                 TextField {
                                     id: sectionTitleEditor
 
-                                    width: parent.width * 0.3
+                                    width: parent.width * 0.32
                                     placeholderText: "Section title"
                                     Accessible.name: "Section title"
                                 }
 
-                                SpinBox {
-                                    id: sectionRank
+                                Button {
+                                    text: "Up"
+                                    enabled: root.selectedListEditable && root.selectedSectionId !== 0 && sectionChooser.currentIndex > 0 && service && service.connectionState === "online" && !service.mutationPending
+                                    Accessible.name: "Move selected section up"
+                                    onClicked: root.moveSelectedSectionRelative(-1)
+                                }
 
-                                    from: 0
-                                    to: 2147483647
-                                    value: 0
-                                    editable: true
-                                    Accessible.name: "Section rank"
+                                Button {
+                                    text: "Down"
+                                    enabled: root.selectedListEditable && root.selectedSectionId !== 0 && sectionChooser.currentIndex >= 0 && sectionChooser.currentIndex < sectionChooser.count - 1 && service && service.connectionState === "online" && !service.mutationPending
+                                    Accessible.name: "Move selected section down"
+                                    onClicked: root.moveSelectedSectionRelative(1)
                                 }
 
                                 Button {
                                     text: "Save section"
                                     enabled: root.selectedListEditable && root.selectedSectionId !== 0 && sectionTitleEditor.text.trim() && service && service.connectionState === "online" && !service.mutationPending
-                                    onClicked: service.updateSection(root.selectedList.id, root.selectedSectionId, sectionTitleEditor.text, sectionRank.value, root.selectedList.revision)
+                                    onClicked: {
+                                        var section = root.selectedSectionValue();
+                                        if (section)
+                                            service.updateSection(root.selectedList.id, root.selectedSectionId, sectionTitleEditor.text, section.rank, root.selectedList.revision);
+                                    }
                                 }
 
                                 Button {

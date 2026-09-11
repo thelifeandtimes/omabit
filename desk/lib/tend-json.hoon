@@ -446,6 +446,11 @@
         ((ot [[%operation-id so] [%list-id ni] [%section-id ni] [%title so] [%rank ni] [%base-revision ni] ~]) body)
       [%update-section op-id list-id section-id title rank base-revision]
     ::
+        %place-section
+      =/  [=op-id =list-id =section-id target-id=@ud after=? base-revision=@ud]
+        ((ot [[%operation-id so] [%list-id ni] [%section-id ni] [%target-id ni] [%after bo] [%base-revision ni] ~]) body)
+      [%place-section op-id list-id section-id target-id after base-revision]
+    ::
         %delete-section
       =/  [=op-id =list-id =section-id base-revision=@ud]
         ((ot [[%operation-id so] [%list-id ni] [%section-id ni] [%base-revision ni] ~]) body)
