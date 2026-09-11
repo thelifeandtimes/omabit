@@ -429,11 +429,13 @@
       [%accept token=op-id host-list-id=list-id]
       [%decline token=op-id host-list-id=list-id]
       [%leave host-list-id=list-id]
-      [%mutation =action]
+      [%mutation host-session=@da expires-at=@da =action]
+      [%heartbeat host-list-id=list-id host-session=@da sent-at=@da]
       $:  %list-state
           host-list-id=list-id
           list=task-list
           members=members
+          host-session=@da
           operation-id=(unit op-id)
       ==
       [%list-removed host-list-id=list-id]
@@ -454,6 +456,7 @@
       [%rejected =op-id reason=@tas current-revision=(unit @ud)]
   ==
 +$  receipts  (map op-id update)
++$  peer-sessions  (map list-id @da)
 +$  update-4
   $%  [%snapshot =lists preferences=preferences-5 =snoozes]
       [%list-upserted =op-id list=task-list preferences=preferences-5]
@@ -519,5 +522,27 @@
       replica-map=replicas
       invitation-map=invitations
       in-flight-map=in-flights
+  ==
+::
+::  Durable liveness generation.  Peer heartbeats are runtime facts, while the
+::  generation prevents pre-upgrade or pre-reload Behn wakes from creating
+::  duplicate timer loops.
+::
++$  state-7
+  $:  %7
+      next-id=@ud
+      list-map=lists
+      receipt-map=receipts
+      preferences=preferences
+      timer-generation=@ud
+      next-wake=(unit @da)
+      snooze-map=snoozes
+      share-map=shares
+      replica-map=replicas
+      invitation-map=invitations
+      in-flight-map=in-flights
+      host-session=@da
+      peer-session-map=peer-sessions
+      liveness-generation=@ud
   ==
 --
