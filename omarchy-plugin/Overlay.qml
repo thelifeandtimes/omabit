@@ -1324,15 +1324,37 @@ Item {
                                     }
                                 }
 
-                                Text {
+                                Repeater {
                                     visible: root.selectedAccess && root.selectedAccess.pending && root.selectedAccess.pending.length > 0
-                                    width: parent.width
-                                    text: "Awaiting response: " + (root.selectedAccess ? root.selectedAccess.pending.join(", ") : "")
-                                    color: Color.menu.text
-                                    opacity: 0.72
-                                    wrapMode: Text.Wrap
-                                    font.family: Style.font.menuFamily
-                                    font.pixelSize: Style.font.caption
+                                    model: root.selectedAccess ? root.selectedAccess.pending : []
+
+                                    delegate: Row {
+                                        required property string modelData
+
+                                        width: parent.width
+                                        spacing: Style.space(6)
+
+                                        Text {
+                                            width: parent.width - revokeInviteButton.width - parent.spacing
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            text: modelData + " · awaiting response"
+                                            elide: Text.ElideRight
+                                            color: Color.menu.text
+                                            opacity: 0.72
+                                            font.family: Style.font.menuFamily
+                                            font.pixelSize: Style.font.caption
+                                        }
+
+                                        Button {
+                                            id: revokeInviteButton
+
+                                            visible: root.selectedAccess && root.selectedAccess.owner
+                                            text: "Revoke"
+                                            enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                            Accessible.name: "Revoke invitation for " + modelData
+                                            onClicked: service.removeMember(root.selectedList.id, modelData)
+                                        }
+                                    }
                                 }
 
                                 Repeater {

@@ -1029,10 +1029,15 @@
       ?~  lis  (reject op-id.act %unknown-list ~ state)
       =/  current=(unit share:t)  (~(get by share-map.state) list-id.act)
       ?~  current  (reject op-id.act %not-shared `revision.u.lis state)
-      ?.  (~(has by members.u.current) ship.act)
+      =/  member=?  (~(has by members.u.current) ship.act)
+      =/  invited=?  (~(has by pending.u.current) ship.act)
+      ?.  |(member invited)
         (reject op-id.act %unknown-member `revision.u.lis state)
       =/  next-share=share:t
-        u.current(members (~(del by members.u.current) ship.act))
+        %_  u.current
+            members  ?:(member (~(del by members.u.current) ship.act) members.u.current)
+            pending  ?:(invited (~(del by pending.u.current) ship.act) pending.u.current)
+        ==
       =/  shares=shares:t
         ?:  ?&  ?=(~ ~(tap by members.next-share))
                 ?=(~ ~(tap by pending.next-share))
@@ -1043,9 +1048,13 @@
       =^  cards  nex  (commit op-id.act [%accesses (accesses-for nex)] nex)
       =/  removed=card
         (peer-poke /peer/remove/(scot %ud list-id.act) ship.act [%list-removed list-id.act])
-      =/  kicked=card
-        [%give %kick ~[/list/(scot %ud list-id.act)] `ship.act]
-      [(weld cards [removed kicked ~]) nex]
+      =/  revocation=(list card)
+        ?:  member
+          :~  removed
+              [%give %kick ~[/list/(scot %ud list-id.act)] `ship.act]
+          ==
+        [removed ~]
+      [(weld cards revocation) nex]
     ::
         %leave-shared-list
       (leave-local act)
@@ -1605,10 +1614,19 @@
   ++  take-list-removed
     |=  [sender=@p host-list-id=list-id:t]
     ^-  (quip card _state)
+    =/  invites=invitations:t
+      (drop-invitations sender host-list-id invitation-map.state)
+    =/  nex=state-8:t  state(invitation-map invites)
+    =/  invite-cards=(list card)
+      ?:  =(invites invitation-map.state)
+        ~
+      (give [%invitations-updated invites])
     =/  found=(unit [list-id:t replica:t])
-      (replica-by-ref sender host-list-id replica-map.state)
-    ?~  found  [~ state]
-    (drop-replica -.u.found state)
+      (replica-by-ref sender host-list-id replica-map.nex)
+    ?~  found  [invite-cards nex]
+    =/  [replica-cards=(list card) final=state-8:t]
+      (drop-replica -.u.found nex)
+    [(weld invite-cards replica-cards) final]
   ::
   ++  take-mutation-rejected
     |=  [sender=@p message=peer-message:t]
