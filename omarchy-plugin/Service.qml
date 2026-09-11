@@ -463,6 +463,19 @@ Item {
         }, listId);
     }
 
+    function placeReminder(listId, reminderId, targetId, after, baseRevision) {
+        return submit({
+            "place-reminder": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "reminder-id": Number(reminderId),
+                "target-id": Number(targetId),
+                "after": after === true,
+                "base-revision": Number(baseRevision)
+            }
+        }, listId);
+    }
+
     function deleteReminder(listId, reminderId, baseRevision) {
         return submit({
             "delete-reminder": {

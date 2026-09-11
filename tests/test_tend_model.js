@@ -340,6 +340,22 @@ test("transport-enriched wall-clock schedule fields survive model normalization"
   assert.equal(schedule.recurrence.localEnd, "2026-10-01T17:30")
 })
 
+test("manual drop placement accepts only changed sibling order", () => {
+  const reminders = [
+    { id: 1, parentId: null, sectionId: 4, rank: 1 },
+    { id: 2, parentId: null, sectionId: 4, rank: 2 },
+    { id: 3, parentId: null, sectionId: 4, rank: 3 },
+    { id: 4, parentId: 1, sectionId: 4, rank: 1 },
+    { id: 5, parentId: null, sectionId: 8, rank: 1 }
+  ]
+  assert.deepEqual(model.manualDropPlacement(reminders, 3, 1, false), { targetId: 1, after: false })
+  assert.deepEqual(model.manualDropPlacement(reminders, 1, 3, true), { targetId: 3, after: true })
+  assert.equal(model.manualDropPlacement(reminders, 1, 2, false), null)
+  assert.equal(model.manualDropPlacement(reminders, 1, 4, true), null)
+  assert.equal(model.manualDropPlacement(reminders, 1, 5, true), null)
+  assert.equal(model.manualDropPlacement(reminders, 1, 1, true), null)
+})
+
 test("multiplayer access state gates remote editing while keeping owned lists writable", () => {
   const owned = {
     alias: 1,

@@ -528,10 +528,48 @@
             revision    +(revision.u.old-rem)
             modified-at  now.bowl
         ==
+      =/  rems=reminders:t
+        %-  ~(run by reminders.u.old)
+        |=  item=reminder:t
+        ?:  =(id.item reminder-id.act)  rem
+        ?.  (descendant id.item reminder-id.act reminders.u.old)  item
+        ?:  =(section-id.item section-id.act)  item
+        item(section-id section-id.act, revision +(revision.item), modified-at now.bowl)
       =/  lis=task-list:t
         %_  u.old
             revision    +(revision.u.old)
-            reminders   (~(put by reminders.u.old) reminder-id.act rem)
+            reminders   rems
+            modified-at  now.bowl
+        ==
+      (save-list op-id.act lis state)
+    ::
+        %place-reminder
+      =/  old=(unit task-list:t)  (~(get by list-map.state) list-id.act)
+      ?~  old  (reject op-id.act %unknown-list ~ state)
+      ?.  =(base-revision.act revision.u.old)
+        (reject op-id.act %stale-list `revision.u.old state)
+      =/  source=(unit reminder:t)
+        (~(get by reminders.u.old) reminder-id.act)
+      ?~  source  (reject op-id.act %unknown-reminder `revision.u.old state)
+      =/  target=(unit reminder:t)
+        (~(get by reminders.u.old) target-id.act)
+      ?~  target  (reject op-id.act %unknown-target `revision.u.old state)
+      ?:  =(reminder-id.act target-id.act)
+        (reject op-id.act %invalid-placement `revision.u.old state)
+      ?.  =([parent-id.u.source section-id.u.source] [parent-id.u.target section-id.u.target])
+        (reject op-id.act %different-group `revision.u.old state)
+      =/  ordered=(list reminder:t)
+        (ordered-siblings reminders.u.old parent-id.u.source section-id.u.source)
+      =/  placed=(list reminder:t)
+        (place-sibling ordered u.source target-id.act after.act)
+      ?:  (same-reminder-order ordered placed)
+        (reject op-id.act %invalid-placement `revision.u.old state)
+      =/  rems=reminders:t
+        (rerank-siblings placed reminders.u.old)
+      =/  lis=task-list:t
+        %_  u.old
+            revision    +(revision.u.old)
+            reminders   rems
             modified-at  now.bowl
         ==
       (save-list op-id.act lis state)
@@ -1042,6 +1080,58 @@
     ?~  item  %.n
     ?~  parent-id.u.item  %.n
     $(candidate u.parent-id.u.item)
+  ::
+  ++  ordered-siblings
+    |=  [rems=reminders:t parent=(unit reminder-id:t) section=(unit section-id:t)]
+    ^-  (list reminder:t)
+    =/  selected=(list reminder:t)
+      %+  turn
+        %+  skim  ~(tap by rems)
+        |=  [rid=reminder-id:t rem=reminder:t]
+        =([parent section] [parent-id.rem section-id.rem])
+      |=  [rid=reminder-id:t rem=reminder:t]
+      rem
+    %+  sort  selected
+    |=  [a=reminder:t b=reminder:t]
+    ?:  =(rank.a rank.b)  (lth id.a id.b)
+    (lth rank.a rank.b)
+  ::
+  ++  place-sibling
+    |=  [ordered=(list reminder:t) source=reminder:t target=reminder-id:t after=?]
+    ^-  (list reminder:t)
+    =/  remaining=(list reminder:t)
+      %+  skim  ordered
+      |=  rem=reminder:t
+      !=(id.rem id.source)
+    |-
+    ?~  remaining  [source ~]
+    ?:  =(id.i.remaining target)
+      ?:  after  [i.remaining source t.remaining]
+      [source remaining]
+    [i.remaining $(remaining t.remaining)]
+  ::
+  ++  same-reminder-order
+    |=  [a=(list reminder:t) b=(list reminder:t)]
+    ^-  ?
+    ?~  a  ?=(~ b)
+    ?~  b  %.n
+    ?&  =(id.i.a id.i.b)
+        $(a t.a, b t.b)
+    ==
+  ::
+  ++  rerank-siblings
+    |=  [ordered=(list reminder:t) rems=reminders:t]
+    ^-  reminders:t
+    =/  next-rank=@ud  1.024
+    |-
+    ?~  ordered  rems
+    =/  rem=reminder:t  i.ordered
+    =/  next-rems=reminders:t
+      ?:  =(rank.rem next-rank)  rems
+      =/  changed=reminder:t
+        rem(rank next-rank, revision +(revision.rem), modified-at now.bowl)
+      (~(put by rems) id.changed changed)
+    $(ordered t.ordered, rems next-rems, next-rank (add next-rank 1.024))
   ::
   ++  save-list
     |=  [=op-id:t lis=task-list:t st=state-6:t]

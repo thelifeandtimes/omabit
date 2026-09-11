@@ -60,7 +60,7 @@ The tables below define the active target. “Core” is the daily-driver and mu
 | Tags | Create, suggest, rename, merge, delete, and filter tags; recognize `#tag` in quick entry | Core |
 | URL | Validated clickable URL with safe protocol handling | Core |
 | Subtasks | Nested reminders, collapse/expand, indent/outdent; parent complete/delete/move cascades | Core |
-| Manual ordering | Stable fractional rank keys, drag/drop, and keyboard move commands | Core |
+| Manual ordering | Sparse integer rank keys, atomic sibling normalization, drag/drop, and keyboard move commands | Core |
 | Search | Search title, notes, tags, assignee, list, and attachment metadata | Core |
 | Snooze/defer from notification | Configurable presets plus custom date/time | Core |
 | Urgent alarm | Persistent full-screen/overlay alert with sound and explicit complete/snooze/dismiss actions | Parity |
@@ -238,7 +238,9 @@ Use host revisions for canonical ordering and ordinary optimistic concurrency, n
 - Complete/uncomplete is an explicit idempotent operation, not a boolean overwrite.
 - Delete creates a tombstone; edits based before deletion cannot silently resurrect it.
 - Moving a parent moves all descendants atomically.
-- Reordering uses fractional rank keys. The host periodically normalizes ranks in one revision.
+- Reordering uses sparse integer rank keys. A before/after placement normalizes
+  that sibling group atomically in one host revision, so tightly packed or
+  duplicate legacy ranks cannot make a move ambiguous.
 - ACL and ownership changes never use last-writer-wins; only the owner may commit them.
 
 This gives an Apple-like “changes just appear” experience for concurrent online participants. Offline shared lists never enter this merge path because they are read-only.
@@ -329,7 +331,7 @@ priority         none | low | medium | high
 flagged          boolean
 parent           optional reminder-id
 section          optional section-id
-rank             fractional order key
+rank             sparse integer order key
 assignee         optional @p
 schedule         optional all-day/timed wall time + IANA zone
 recurrence       optional structured recurrence rule

@@ -36,7 +36,14 @@ Last verified: 2026-09-10
   `%tend` actions compile and round-trip through live Eyre.
 - Subtasks render in parent/child order with depth cues, can be collapsed or
   expanded by pointer or arrow key, and expose explicit indent/outdent controls
-  plus `Ctrl+]` / `Ctrl+[` shortcuts. Gall remains the final cycle check.
+  plus `Ctrl+]` / `Ctrl+[` shortcuts. Manual rows can be reordered with a
+  pointer drag handle or keyboard up/down controls. Both paths submit an
+  atomic before/after operation; Gall normalizes the sibling group to sparse
+  ranks and rejects stale placement without mutation. A live tightly
+  packed-rank fixture verified the canonical order.
+- Moving a parent between sections updates every descendant's section in the
+  same host revision. A live parent/child fixture verified the cascade and
+  revision bump, then was removed cleanly.
 - Today (including overdue), Scheduled, All, Flagged, and Completed views work
   across lists. The overlay can search reminder text, notes, URLs, tags, and
   list names, then sort by manual rank, due date, creation date, priority, or
@@ -64,7 +71,7 @@ Last verified: 2026-09-10
   are available from the details panel and CLI.
 - The schedule editor now exposes recurrence weekdays, month dates, ordinal
   weekday, end date, and occurrence count. Reminder organization includes
-  direct up/down rank controls in addition to explicit parent/section/rank.
+  direct up/down placement controls in addition to explicit parent/section/rank.
 - Native notifications offer Complete, Snooze, and Open actions. They are
   serialized through a desktop queue; Open deep-selects the reminder and the
   mutation actions remain disabled unless the home connection is Online.

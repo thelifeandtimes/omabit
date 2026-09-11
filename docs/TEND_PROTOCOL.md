@@ -28,6 +28,7 @@ returns its recorded result without applying it twice.
 | `add-section`, `update-section`, `delete-section` | Manage ordered sections; deleting a section keeps and unsections its reminders |
 | `add-reminder`, `update-reminder` | Create a reminder with initial tags or replace its editable metadata |
 | `move-reminder` | Change parent, section, and stable rank after validating references and cycles |
+| `place-reminder` | Place a reminder before/after a sibling and atomically normalize that sibling group's sparse ranks |
 | `batch-set-completed` | Complete/uncomplete up to 500 selected reminders atomically, cascading through subtasks and advancing selected recurrence rules |
 | `batch-move-reminders` | Move up to 500 selected reminder trees to a section in one list revision |
 | `batch-delete-reminders` | Delete up to 500 selected reminder trees atomically |
@@ -49,6 +50,14 @@ whitespace-delimited `#tag` tokens into the initial tag set; replacing a tag
 updates every affected list and merges duplicate target values through set
 semantics. Batch selections must be non-empty, contain only reminders in the
 addressed list, and are capped at 500 IDs.
+
+Pointer drag/drop and keyboard up/down placement use `place-reminder`. Source
+and target must be distinct reminders in the same parent/section sibling
+group. Gall derives the complete order from canonical state and rewrites that
+group to ranks 1024, 2048, … in the same list revision; it does not trust a
+client-computed midpoint. Explicit parent or section moves use
+`move-reminder`, and changing a parent's section updates all descendants in
+the same atomic revision.
 
 An assignee is valid only when it is the list owner or appears in that list's
 current member map. The Gall agent checks this against canonical state; the

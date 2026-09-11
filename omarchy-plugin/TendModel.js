@@ -469,6 +469,32 @@ function reminderHasChildren(items, reminderId) {
   return (items || []).some(function(item) { return Number(item.parentId) === wanted })
 }
 
+function sameOptionalId(left, right) {
+  const a = left === null || left === undefined ? null : Number(left)
+  const b = right === null || right === undefined ? null : Number(right)
+  return a === b
+}
+
+function manualDropPlacement(reminders, sourceId, targetId, after) {
+  const source = (reminders || []).find(function(reminder) { return Number(reminder.id) === Number(sourceId) })
+  const target = (reminders || []).find(function(reminder) { return Number(reminder.id) === Number(targetId) })
+  if (!source || !target || Number(source.id) === Number(target.id)) return null
+  if (!sameOptionalId(source.parentId, target.parentId) || !sameOptionalId(source.sectionId, target.sectionId)) return null
+
+  const siblings = (reminders || []).filter(function(reminder) {
+    return sameOptionalId(reminder.parentId, source.parentId) && sameOptionalId(reminder.sectionId, source.sectionId)
+  }).slice().sort(function(left, right) {
+    return Number(left.rank) - Number(right.rank) || Number(left.id) - Number(right.id)
+  })
+  const current = siblings.map(function(reminder) { return Number(reminder.id) })
+  const wanted = siblings.filter(function(reminder) { return Number(reminder.id) !== Number(source.id) })
+  const targetIndex = wanted.findIndex(function(reminder) { return Number(reminder.id) === Number(target.id) })
+  if (targetIndex < 0) return null
+  wanted.splice(targetIndex + (after === true ? 1 : 0), 0, source)
+  if (wanted.every(function(reminder, index) { return Number(reminder.id) === current[index] })) return null
+  return { targetId: Number(target.id), after: after === true }
+}
+
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren, manualDropPlacement: manualDropPlacement }
 }

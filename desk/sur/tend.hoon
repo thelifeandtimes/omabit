@@ -265,6 +265,14 @@
           rank=@ud
           base-revision=@ud
       ==
+      $:  %place-reminder
+          =op-id
+          =list-id
+          =reminder-id
+          target-id=reminder-id
+          after=?
+          base-revision=@ud
+      ==
       [%delete-reminder =op-id =list-id =reminder-id base-revision=@ud]
       [%batch-delete-reminders =op-id =list-id reminder-ids=(set reminder-id) base-revision=@ud]
       $:  %batch-move-reminders

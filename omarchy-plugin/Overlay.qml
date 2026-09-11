@@ -383,15 +383,17 @@ Item {
         if (index < 0 || target < 0 || target >= siblings.length)
             return ;
 
-        var rank;
-        if (delta < 0) {
-            var lower = target > 0 ? siblings[target - 1].rank : 0;
-            rank = Math.floor((lower + siblings[target].rank) / 2);
-        } else {
-            var upper = target + 1 < siblings.length ? siblings[target + 1].rank : siblings[target].rank + 2048;
-            rank = Math.floor((siblings[target].rank + upper) / 2);
-        }
-        service.moveReminder(selectedList.id, selectedReminder.id, selectedReminder.parentId, selectedReminder.sectionId, rank, selectedList.revision);
+        service.placeReminder(selectedList.id, selectedReminder.id, siblings[target].id, delta > 0, selectedList.revision);
+    }
+
+    function placeReminder(source, target, after) {
+        if (!selectedList || !source || !target || !service || service.mutationPending)
+            return false;
+        var placement = TendModel.manualDropPlacement(selectedList.reminders, source.id, target.id, after);
+        if (!placement)
+            return false;
+        selectedReminderId = Number(source.id);
+        return service.placeReminder(selectedList.id, source.id, placement.targetId, placement.after, selectedList.revision);
     }
 
     function reminderFromSelectedList(reminderId) {
@@ -1815,6 +1817,8 @@ Item {
                                 }
 
                                 delegate: Rectangle {
+                                    id: reminderRow
+
                                     required property var modelData
                                     required property int index
 
@@ -1822,8 +1826,22 @@ Item {
                                     height: Style.space(44)
                                     radius: Style.cornerRadius
                                     color: ListView.isCurrentItem ? Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.14) : Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.04)
+                                    border.width: reminderDropArea.containsDrag ? Math.max(1, Style.space(1)) : 0
+                                    border.color: reminderDropArea.containsDrag ? Color.menu.text : "transparent"
                                     Accessible.role: Accessible.ListItem
                                     Accessible.name: (Number(modelData.depth || 0) > 0 ? "Subtask, " : "") + modelData.title + (root.reminderHasChildren(modelData.id) ? (root.reminderIsCollapsed(modelData.id) ? ", collapsed" : ", expanded") : "")
+
+                                    DropArea {
+                                        id: reminderDropArea
+
+                                        anchors.fill: parent
+                                        enabled: root.viewMode === "list" && root.sortMode === "manual" && root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                        keys: ["tend-reminder"]
+                                        onDropped: function(drop) {
+                                            if (drop.source && root.placeReminder(drop.source.modelData, modelData, drop.y >= height / 2))
+                                                drop.acceptProposedAction();
+                                        }
+                                    }
 
                                     Row {
                                         anchors.fill: parent
@@ -1843,6 +1861,54 @@ Item {
                                             enabled: visible && service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
                                             Accessible.name: "Select " + modelData.title + " for batch action"
                                             onClicked: root.toggleReminderSelection(modelData.id)
+                                        }
+
+                                        Rectangle {
+                                            id: reminderDragHandle
+
+                                            visible: root.viewMode === "list" && root.sortMode === "manual"
+                                            width: visible ? Style.space(24) : 0
+                                            height: Style.space(24)
+                                            radius: Style.cornerRadius
+                                            color: reminderDragArea.drag.active ? Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.2) : "transparent"
+                                            z: reminderDragArea.drag.active ? 100 : 0
+                                            Drag.active: reminderDragArea.drag.active
+                                            Drag.source: reminderRow
+                                            Drag.keys: ["tend-reminder"]
+                                            Drag.supportedActions: Qt.MoveAction
+                                            Drag.proposedAction: Qt.MoveAction
+                                            Drag.hotSpot.x: width / 2
+                                            Drag.hotSpot.y: height / 2
+                                            Accessible.role: Accessible.Button
+                                            Accessible.name: "Drag to reorder " + modelData.title
+
+                                            Text {
+                                                anchors.centerIn: parent
+                                                text: "↕"
+                                                color: Color.menu.text
+                                                opacity: 0.7
+                                                font.family: Style.font.menuFamily
+                                                font.pixelSize: Style.font.body
+                                            }
+
+                                            MouseArea {
+                                                id: reminderDragArea
+
+                                                anchors.fill: parent
+                                                enabled: reminderDragHandle.visible && service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
+                                                cursorShape: drag.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+                                                drag.target: reminderDragHandle
+                                                drag.axis: Drag.YAxis
+                                                onPressed: reminderList.currentIndex = index
+                                                onReleased: {
+                                                    reminderDragHandle.Drag.drop();
+                                                    reminderDragHandle.y = 0;
+                                                }
+                                                onCanceled: {
+                                                    reminderDragHandle.Drag.cancel();
+                                                    reminderDragHandle.y = 0;
+                                                }
+                                            }
                                         }
 
                                         Button {

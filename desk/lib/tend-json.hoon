@@ -466,6 +466,11 @@
         ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%parent-id (mu ni)] [%section-id (mu ni)] [%rank ni] [%base-revision ni] ~]) body)
       [%move-reminder op-id list-id reminder-id parent-id section-id rank base-revision]
     ::
+        %place-reminder
+      =/  [=op-id =list-id =reminder-id target-id=@ud after=? base-revision=@ud]
+        ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%target-id ni] [%after bo] [%base-revision ni] ~]) body)
+      [%place-reminder op-id list-id reminder-id target-id after base-revision]
+    ::
         %delete-reminder
       =/  [=op-id =list-id =reminder-id base-revision=@ud]
         ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%base-revision ni] ~]) body)

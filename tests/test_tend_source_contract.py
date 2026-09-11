@@ -27,6 +27,16 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("=(u.assignee our.bowl)", self.agent)
         self.assertIn("(~(has by members.u.sharing) u.assignee)", self.agent)
 
+    def test_manual_placement_is_atomic_and_normalizes_sibling_ranks(self):
+        self.assertIn("%place-reminder", self.agent)
+        self.assertIn("(ordered-siblings reminders.u.old parent-id.u.source section-id.u.source)", self.agent)
+        self.assertIn("(rerank-siblings placed reminders.u.old)", self.agent)
+        self.assertIn("next-rank (add next-rank 1.024)", self.agent)
+
+    def test_moving_a_parent_cascades_section_to_descendants(self):
+        self.assertIn("(descendant id.item reminder-id.act reminders.u.old)", self.agent)
+        self.assertIn("item(section-id section-id.act, revision +(revision.item), modified-at now.bowl)", self.agent)
+
 
 if __name__ == "__main__":
     unittest.main()
