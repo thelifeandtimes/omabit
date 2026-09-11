@@ -326,6 +326,15 @@ def scry_accesses(config_path: Path, cookie_path: Path) -> list[object]:
     return result["accesses"]
 
 
+def scry_invitations(config_path: Path, cookie_path: Path) -> list[object]:
+    connection = read_connection(config_path)
+    opener, _ = opener_for(cookie_path)
+    result = json_request(opener, connection["baseUrl"] + "/~/scry/tend/invitations.json")
+    if not isinstance(result, dict) or not isinstance(result.get("invitations-updated"), list):
+        raise TendTransportError("The Tend agent returned an invalid invitation inbox")
+    return result["invitations-updated"]
+
+
 def scry_receipt(config_path: Path, cookie_path: Path, operation_id: str) -> dict[str, object] | None:
     if not operation_id or len(operation_id.encode("utf-8")) > 256:
         raise TendTransportError("The Tend operation ID is invalid")

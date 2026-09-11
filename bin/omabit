@@ -126,6 +126,43 @@ def operation_id() -> str:
     return uuid.uuid4().hex
 
 
+def normalize_ship(value: object) -> str:
+    name = str(value or "").strip().removeprefix("~")
+    if not name or len(name.encode("ascii", errors="ignore")) != len(name) or len(name) > 255:
+        raise CliError("Urbit ship name is invalid")
+    if any(character not in "abcdefghijklmnopqrstuvwxyz-" for character in name):
+        raise CliError("Urbit ship name is invalid")
+    return "~" + name
+
+
+def list_access(list_id: int, accesses: list[object]) -> dict[str, object]:
+    matches = [
+        item for item in accesses
+        if isinstance(item, dict) and item.get("alias") == list_id
+    ]
+    if len(matches) != 1:
+        raise CliError("Tend did not return unambiguous ownership metadata for this list")
+    return matches[0]
+
+
+def require_list_writable(list_id: int, accesses: list[object]) -> dict[str, object]:
+    access = list_access(list_id, accesses)
+    if access.get("owner") is True:
+        return access
+    status = str(access.get("status") or "checking")
+    if status != "online":
+        host = str(access.get("host") or "The owner")
+        raise CliError(f"{host} is {status}; this shared list is read-only until its owner is online")
+    return access
+
+
+def require_list_owner(list_id: int, accesses: list[object]) -> dict[str, object]:
+    access = list_access(list_id, accesses)
+    if access.get("owner") is not True:
+        raise CliError("Only the owner ship can remove a member from this list")
+    return access
+
+
 def emit(value: object, as_json: bool) -> None:
     if as_json:
         print(json.dumps(value, separators=(",", ":"), sort_keys=True))
@@ -600,6 +637,20 @@ def run_tend(args: argparse.Namespace) -> int:
             status["error"] = str(error)
         emit(status, as_json)
         return 0
+    if args.tend_command == "invitations":
+        emit(transport.scry_invitations(config_path, cookie_path), as_json)
+        return 0
+    if args.tend_command in {"accept", "decline"}:
+        action_name = "accept-invitation" if args.tend_command == "accept" else "decline-invitation"
+        host = normalize_ship(args.host)
+        action = {action_name: {
+            "operation-id": operation_id(),
+            "host": host,
+            "token": args.token,
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "accepted", "host": host, "token": args.token}, as_json)
+        return 0
     if args.tend_command == "open":
         payload = {"listId": args.list_id, "reminderId": args.reminder_id, "mode": "capture" if args.capture else "full"}
         subprocess.run(["omarchy-shell", "shell", "summon", PLUGIN_ID, json.dumps(payload, separators=(",", ":"))], check=True)
@@ -653,6 +704,7 @@ def run_tend(args: argparse.Namespace) -> int:
         return 0
     if args.tend_command == "add":
         task_list = select_list(state, args.list_selector)
+        require_list_writable(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
         action = {"add-reminder": {
             "operation-id": operation_id(),
             "list-id": int(task_list["id"]),
@@ -665,24 +717,28 @@ def run_tend(args: argparse.Namespace) -> int:
         return 0
     if args.tend_command == "share":
         task_list = select_list(state, args.list_selector)
+        require_list_writable(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
+        ship = normalize_ship(args.ship)
         action = {"invite-member": {
             "operation-id": operation_id(),
             "list-id": int(task_list["id"]),
-            "ship": args.ship,
+            "ship": ship,
             "can-invite": args.allow_invites,
         }}
         poke(cookie_path, config_path, action)
-        emit({"status": "invited", "listId": task_list["id"], "ship": args.ship}, as_json)
+        emit({"status": "invited", "listId": task_list["id"], "ship": ship}, as_json)
         return 0
     if args.tend_command == "unshare":
         task_list = select_list(state, args.list_selector)
+        require_list_owner(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
+        ship = normalize_ship(args.ship)
         action = {"remove-member": {
             "operation-id": operation_id(),
             "list-id": int(task_list["id"]),
-            "ship": args.ship,
+            "ship": ship,
         }}
         poke(cookie_path, config_path, action)
-        emit({"status": "removed", "listId": task_list["id"], "ship": args.ship}, as_json)
+        emit({"status": "removed", "listId": task_list["id"], "ship": ship}, as_json)
         return 0
     if args.tend_command == "leave":
         task_list = select_list(state, args.list_selector)
@@ -695,6 +751,7 @@ def run_tend(args: argparse.Namespace) -> int:
         return 0
     if args.tend_command in {"complete", "uncomplete"}:
         task_list = select_list(state, str(args.list_id))
+        require_list_writable(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
         for reminder_id in args.reminder_ids:
             find_reminder(task_list, reminder_id)
         if len(args.reminder_ids) == 1:
@@ -720,6 +777,7 @@ def run_tend(args: argparse.Namespace) -> int:
         if not args.yes:
             raise CliError("Refusing batch delete without --yes")
         task_list = select_list(state, str(args.list_id))
+        require_list_writable(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
         for reminder_id in args.reminder_ids:
             find_reminder(task_list, reminder_id)
         action = {"batch-delete-reminders": {
@@ -733,6 +791,7 @@ def run_tend(args: argparse.Namespace) -> int:
         return 0
     if args.tend_command == "move":
         task_list = select_list(state, str(args.list_id))
+        require_list_writable(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
         for reminder_id in args.reminder_ids:
             find_reminder(task_list, reminder_id)
         if args.section_id is not None and not any(int(section.get("id", -1)) == args.section_id for section in task_list.get("sections") or []):
@@ -808,6 +867,16 @@ def parser() -> argparse.ArgumentParser:
 
     leave = commands.add_parser("leave", help="leave a list hosted by another ship")
     leave.add_argument("list_selector", help="list ID or title")
+
+    commands.add_parser("invitations", help="list pending shared-list invitations")
+
+    accept = commands.add_parser("accept", help="accept a shared-list invitation")
+    accept.add_argument("host", help="inviting Urbit ship")
+    accept.add_argument("token", help="invitation token")
+
+    decline = commands.add_parser("decline", help="decline a shared-list invitation")
+    decline.add_argument("host", help="inviting Urbit ship")
+    decline.add_argument("token", help="invitation token")
 
     for name in ("complete", "uncomplete"):
         complete = commands.add_parser(name)

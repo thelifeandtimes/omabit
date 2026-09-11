@@ -2500,6 +2500,8 @@
   ?+  path  [~ ~]
     [%x %state ~]   ``tend-update-1+!>(snapshot)
     [%x %accesses ~]  ``tend-update-1+!>([%accesses (accesses-for st)])
+    [%x %invitations ~]
+      ``tend-update-1+!>([%invitations-updated invitation-map.st])
     [%x %receipt @ ~]
       =/  found=(unit update:t)
         (~(get by receipt-map.st) i.t.t.path)

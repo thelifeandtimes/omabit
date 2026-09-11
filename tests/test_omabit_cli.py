@@ -39,6 +39,17 @@ SAMPLE = {
 
 
 class CliDomainTests(unittest.TestCase):
+    def setUp(self):
+        self.accesses = mock.patch.object(
+            omabit.transport,
+            "scry_accesses",
+            return_value=[{"alias": 1, "host": "~zod", "owner": True, "status": "online"}],
+        )
+        self.accesses.start()
+
+    def tearDown(self):
+        self.accesses.stop()
+
     def test_version_matches_release_and_plugin_manifest(self):
         root = Path(__file__).parents[1]
         version = (root / "VERSION").read_text(encoding="utf-8").strip()
@@ -75,6 +86,17 @@ class CliDomainTests(unittest.TestCase):
         self.assertEqual(action["base-revision"], 4)
         self.assertEqual(action["tags"], ["shop"])
 
+    def test_shared_mutation_is_blocked_before_poke_when_owner_is_offline(self):
+        args = SimpleNamespace(tend_command="add", json=True, title="Blocked", list_selector=None, tag=[])
+        with (
+            mock.patch.object(omabit, "snapshot", return_value=SAMPLE),
+            mock.patch.object(omabit.transport, "scry_accesses", return_value=[{"alias": 1, "host": "~bus", "owner": False, "status": "offline"}]),
+            mock.patch.object(omabit, "poke") as poke,
+        ):
+            with self.assertRaisesRegex(omabit.CliError, "read-only"):
+                omabit.run_tend(args)
+        poke.assert_not_called()
+
     def test_share_and_unshare_use_selected_list_without_rank_assumptions(self):
         share = SimpleNamespace(
             tend_command="share",
@@ -102,6 +124,24 @@ class CliDomainTests(unittest.TestCase):
         with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
             self.assertEqual(omabit.run_tend(args), 0)
         self.assertEqual(poke.call_args.args[2]["leave-shared-list"]["list-id"], 1)
+
+    def test_invitation_cli_lists_accepts_and_declines(self):
+        listing = SimpleNamespace(tend_command="invitations", json=True)
+        with (
+            mock.patch.object(omabit.transport, "scry_invitations", return_value=[{"token": "invite-1"}]),
+            redirect_stdout(io.StringIO()) as output,
+        ):
+            self.assertEqual(omabit.run_tend(listing), 0)
+        self.assertEqual(json.loads(output.getvalue()), [{"token": "invite-1"}])
+
+        for command, action_name in (("accept", "accept-invitation"), ("decline", "decline-invitation")):
+            args = SimpleNamespace(tend_command=command, json=True, host="~sampel-palnet", token="invite-1")
+            with mock.patch.object(omabit, "snapshot") as snapshot, mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+                self.assertEqual(omabit.run_tend(args), 0)
+            snapshot.assert_not_called()
+            body = poke.call_args.args[2][action_name]
+            self.assertEqual(body["host"], "~sampel-palnet")
+            self.assertEqual(body["token"], "invite-1")
 
     def test_complete_checks_entity_before_poking(self):
         args = SimpleNamespace(tend_command="complete", json=True, list_id=1, reminder_ids=[7])
