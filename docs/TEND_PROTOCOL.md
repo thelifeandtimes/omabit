@@ -63,6 +63,16 @@ weekday, monthly date/ordinal, month-end clamping, leap-year, end, and count
 semantics are evaluated by the Gall agent. Early offsets are capped at one
 year.
 
+The desktop submits date/time editor values as local wall-clock text. The
+Python bridge resolves them with the operating system's IANA `zoneinfo` data
+and sends only canonical `@da` instants to Gall. Explicit `Z` or numeric-offset
+inputs retain their stated instant. A nonexistent wall time in a daylight
+saving gap is rejected; an ambiguous fold selects the earlier instant. For an
+all-day reminder, the user's configured all-day alert minute is interpreted in
+the selected zone. Stream updates add display-only `local-due` and `local-end`
+fields derived from the canonical instant and stored zone. Those fields are
+never persisted or sent in `%tend-action-1`.
+
 The current resource ceilings are 10,000 hosted lists, 10,000 sections per
 list, and 100,000 reminders per list. Notes are capped at 64 KiB, URLs at 8
 KiB, appearance/tag/time-zone strings at 128 bytes, early-offset sets at 64,

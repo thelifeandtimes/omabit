@@ -12,6 +12,7 @@ Item {
     property string errorMessage: ""
     property string baseUrl: ""
     property string ship: ""
+    property string localTimezone: "UTC"
     property var lists: []
     property var preferences: TendModel.clonePreferences(null)
     property var snoozes: []
@@ -64,7 +65,7 @@ Item {
             "weekdays": (recurrence.weekdays || []).map(Number),
             "month-days": (recurrence.monthDays || recurrence["month-days"] || []).map(Number),
             "month-week": recurrence.monthWeek || recurrence["month-week"] || null,
-            "end-at": recurrence.endAt || recurrence["end-at"] ? toUrbitDate(recurrence.endAt || recurrence["end-at"]) : null,
+            "end-at": recurrence.endAt || recurrence["end-at"] || null,
             "max-occurrences": recurrence.maxOccurrences === undefined ? (recurrence["max-occurrences"] ?? null) : recurrence.maxOccurrences
         };
     }
@@ -298,20 +299,15 @@ Item {
         if (schedule) {
             var allDay = schedule.allDay === true || schedule["all-day"] === true;
             var dueInput = schedule.dueAt || schedule["due-at"];
-            if (allDay && String(dueInput || "").charAt(0) !== "~") {
-                var localDue = new Date(dueInput);
-                if (!isNaN(localDue.getTime())) {
-                    var minute = Math.max(0, Math.min(1439, Number(preferences.allDayAlertMinute || 0)));
-                    localDue.setHours(Math.floor(minute / 60), minute % 60, 0, 0);
-                    dueInput = localDue.toISOString();
-                }
-            }
+            var timezone = String(schedule.timezone || "UTC");
+            var recurrence = recurrencePayload(schedule.recurrence);
             value = {
-                "due-at": toUrbitDate(dueInput),
+                "due-at": String(dueInput || "").trim(),
                 "all-day": allDay,
-                "timezone": String(schedule.timezone || "UTC"),
+                "timezone": timezone,
+                "_all-day-alert-minute": Number(preferences.allDayAlertMinute || 0),
                 "early-seconds": (schedule.earlySeconds || schedule["early-seconds"] || []).map(Number),
-                "recurrence": recurrencePayload(schedule.recurrence)
+                "recurrence": recurrence
             };
         }
         return submit({
@@ -617,6 +613,7 @@ Item {
                 var status = JSON.parse(output);
                 root.baseUrl = status.baseUrl || "";
                 root.ship = status.ship || "";
+                root.localTimezone = status.localTimezone || "UTC";
                 if (status.authenticated)
                     root.startStream();
 
@@ -659,6 +656,7 @@ Item {
                 var result = JSON.parse(output);
                 root.baseUrl = result.baseUrl;
                 root.ship = result.ship;
+                root.localTimezone = result.localTimezone || "UTC";
                 root.startStream();
             } catch (error) {
                 root.connectionState = "error";
@@ -720,6 +718,7 @@ Item {
             }
             root.ship = "";
             root.baseUrl = "";
+            root.localTimezone = "UTC";
             root.lists = [];
             root.preferences = TendModel.clonePreferences(null);
             root.snoozes = [];

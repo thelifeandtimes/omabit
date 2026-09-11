@@ -20,6 +20,7 @@ requirements:
 | Tend save state | `%6` (loads `%0` through `%6`) |
 | Tend JSON marks | `%tend-action-1`, `%tend-update-1` |
 | Python / Node used by gates | 3.14.7 / 25.2.1 |
+| Time-zone database | System IANA tzdata through Python `zoneinfo` |
 | Notification client | `notify-send` 0.8.8 |
 
 Until a broader matrix is tested, install the desk, plugin, and CLI from the
@@ -112,6 +113,13 @@ revision. Wait for the stream update and retry against the current view.
 Validation errors leave canonical state unchanged. Use the JSON CLI form when
 collecting a reproducible error, but never attach a cookie jar, pier key, or
 `+code` to a report.
+
+### A date or time zone is rejected
+
+Tend resolves local wall-clock values with the system IANA time-zone database.
+Install or update the distribution's `tzdata` package if a valid IANA zone is
+reported as unavailable. A wall time skipped by a daylight-saving transition
+is intentionally rejected; choose the first valid time after the gap.
 
 ### Notifications do not appear
 

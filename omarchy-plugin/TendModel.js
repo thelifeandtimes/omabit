@@ -8,6 +8,7 @@ function cloneRecurrence(recurrence) {
     monthDays: (recurrence["month-days"] || recurrence.monthDays || []).map(Number).sort(function(a, b) { return a - b }),
     monthWeek: monthWeek ? { index: Number(monthWeek.index), weekday: Number(monthWeek.weekday) } : null,
     endAt: recurrence["end-at"] === undefined ? (recurrence.endAt || null) : recurrence["end-at"],
+    localEnd: String(recurrence["local-end"] || recurrence.localEnd || ""),
     maxOccurrences: recurrence["max-occurrences"] === undefined ? (recurrence.maxOccurrences ?? null) : recurrence["max-occurrences"]
   }
 }
@@ -16,6 +17,7 @@ function cloneSchedule(schedule) {
   if (!schedule) return null
   return {
     dueAt: String(schedule["due-at"] || schedule.dueAt || ""),
+    localDue: String(schedule["local-due"] || schedule.localDue || ""),
     allDay: schedule["all-day"] === undefined ? schedule.allDay === true : schedule["all-day"] === true,
     timezone: String(schedule.timezone || "UTC"),
     earlySeconds: (schedule["early-seconds"] || schedule.earlySeconds || []).map(Number).sort(function(a, b) { return a - b }),

@@ -42,8 +42,13 @@ Last verified: 2026-09-10
   list names, then sort by manual rank, due date, creation date, priority, or
   title in either direction.
 - Due instants, all-day policy, IANA-zone annotations, early offsets, and
-  structured recurrence round-trip through Eyre. Recurring completion advances
-  hourly/daily/weekly/monthly/yearly rules with end/count enforcement.
+  structured recurrence round-trip through Eyre. The dependency-free bridge
+  converts local wall-clock input with system `zoneinfo`, rejects daylight
+  saving gaps, selects the earlier fold, and enriches stream data with local
+  display values while Gall stores canonical `@da` instants. A live
+  Los Angeles wall-time action was verified against its UTC value. Recurring
+  completion advances hourly/daily/weekly/monthly/yearly rules with end/count
+  enforcement.
 - The agent persists delivered alert offsets, keeps one generation-tagged
   earliest Behn timer, and emits alert events that the desktop maps to native
   notifications. Live tests verified an immediate overdue wake and recurrence

@@ -136,6 +136,97 @@ class UrlValidationTests(unittest.TestCase):
             eyre_client.normalize_base_url("https://example.com/urbit")
 
 
+class TimeZoneConversionTests(unittest.TestCase):
+    def test_normalizes_timed_all_day_and_explicit_offset_values(self):
+        self.assertEqual(
+            eyre_client.normalize_wall_time("2026-09-10T17:30", "America/Los_Angeles"),
+            "~2026.9.11..00.30.00",
+        )
+        self.assertEqual(
+            eyre_client.normalize_wall_time(
+                "2026-09-10",
+                "America/Los_Angeles",
+                all_day=True,
+                all_day_minute=540,
+            ),
+            "~2026.9.10..16.00.00",
+        )
+        self.assertEqual(
+            eyre_client.normalize_wall_time("2026-09-10T17:30:00-07:00", "UTC"),
+            "~2026.9.11..00.30.00",
+        )
+        self.assertEqual(
+            eyre_client.normalize_wall_time("~2026.9.11..00.30.00..abcd", "UTC"),
+            "~2026.9.11..00.30.00",
+        )
+
+    def test_rejects_dst_gap_and_chooses_earlier_fold(self):
+        with self.assertRaisesRegex(eyre_client.TendTransportError, "does not exist") as raised:
+            eyre_client.normalize_wall_time("2026-03-08T02:30", "America/Los_Angeles")
+        self.assertEqual(raised.exception.code, "invalid-schedule-time")
+        self.assertEqual(
+            eyre_client.normalize_wall_time("2026-11-01T01:30", "America/Los_Angeles"),
+            "~2026.11.1..08.30.00",
+        )
+        with self.assertRaisesRegex(eyre_client.TendTransportError, "Unknown IANA"):
+            eyre_client.normalize_wall_time("2026-09-10T12:00", "Not/A_Zone")
+        with self.assertRaisesRegex(eyre_client.TendTransportError, "Unknown IANA"):
+            eyre_client.normalize_wall_time("~2026.9.10..12.00.00", "Not/A_Zone")
+        with self.assertRaisesRegex(eyre_client.TendTransportError, "invalid Urbit date"):
+            eyre_client.normalize_wall_time("~2026.9.10..12.00.00junk", "UTC")
+
+    def test_normalizes_schedule_action_without_mutating_input(self):
+        action = {
+            "set-schedule": {
+                "operation-id": "zone-op",
+                "list-id": 1,
+                "reminder-id": 2,
+                "base-revision": 3,
+                "schedule": {
+                    "due-at": "2026-09-10T17:30",
+                    "all-day": False,
+                    "timezone": "America/Los_Angeles",
+                    "_all-day-alert-minute": 540,
+                    "early-seconds": [],
+                    "recurrence": {
+                        "frequency": "weekly",
+                        "interval": 1,
+                        "weekdays": [4],
+                        "month-days": [],
+                        "month-week": None,
+                        "end-at": "2026-10-01T17:30",
+                        "max-occurrences": None,
+                    },
+                },
+            }
+        }
+        normalized = eyre_client.normalize_tend_action(action)
+        schedule = normalized["set-schedule"]["schedule"]
+        self.assertEqual(schedule["due-at"], "~2026.9.11..00.30.00")
+        self.assertEqual(schedule["recurrence"]["end-at"], "~2026.10.2..00.30.00")
+        self.assertNotIn("_all-day-alert-minute", schedule)
+        self.assertEqual(action["set-schedule"]["schedule"]["due-at"], "2026-09-10T17:30")
+
+    def test_enriches_canonical_schedule_for_wall_clock_display(self):
+        update = {
+            "snapshot": {
+                "lists": [{
+                    "reminders": [{
+                        "schedule": {
+                            "due-at": "~2026.9.11..00.30.00",
+                            "timezone": "America/Los_Angeles",
+                            "recurrence": {"end-at": "~2026.10.2..00.30.00"},
+                        }
+                    }]
+                }]
+            }
+        }
+        eyre_client.enrich_tend_json(update)
+        schedule = update["snapshot"]["lists"][0]["reminders"][0]["schedule"]
+        self.assertEqual(schedule["local-due"], "2026-09-10T17:30")
+        self.assertEqual(schedule["recurrence"]["local-end"], "2026-10-01T17:30")
+
+
 class EyreFlowTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -228,6 +319,31 @@ class EyreFlowTests(unittest.TestCase):
             self.assertEqual(poke["app"], "tend")
             self.assertEqual(poke["mark"], "tend-action-1")
             self.assertEqual(poke["json"], action)
+
+    def test_poke_normalizes_wall_clock_schedule_before_eyre(self):
+        with FakeEyre() as fake:
+            self.login(fake)
+            action = {
+                "set-schedule": {
+                    "operation-id": "zone-poke",
+                    "list-id": 1,
+                    "reminder-id": 2,
+                    "base-revision": 3,
+                    "schedule": {
+                        "due-at": "2026-09-10T17:30",
+                        "all-day": False,
+                        "timezone": "America/Los_Angeles",
+                        "_all-day-alert-minute": 540,
+                        "early-seconds": [],
+                        "recurrence": None,
+                    },
+                }
+            }
+            self.assertEqual(eyre_client.poke(self.config, self.cookie, action), {"status": "ok"})
+            poke = next(command for command in fake.all_commands if command.get("action") == "poke")
+            schedule = poke["json"]["set-schedule"]["schedule"]
+            self.assertEqual(schedule["due-at"], "~2026.9.11..00.30.00")
+            self.assertNotIn("_all-day-alert-minute", schedule)
 
     def test_state_scry_and_disconnect(self):
         with FakeEyre() as fake:

@@ -316,7 +316,7 @@ Item {
         reminderPriority.currentIndex = Math.max(0, reminderPriority.model.indexOf(reminder.priority));
         reminderFlagged.checked = reminder.flagged;
         reminderTags.text = reminder.tags.join(", ");
-        reminderDue.text = reminder.schedule ? urbitToInput(reminder.schedule.dueAt) : "";
+        reminderDue.text = reminder.schedule ? (reminder.schedule.localDue || reminder.schedule.dueAt) : "";
         reminderAllDay.checked = reminder.schedule ? reminder.schedule.allDay : false;
         reminderTimezone.text = reminder.schedule ? reminder.schedule.timezone : localTimezone();
         reminderEarly.text = reminder.schedule ? reminder.schedule.earlySeconds.map(function(seconds) {
@@ -329,7 +329,7 @@ Item {
         reminderOrdinal.checked = reminder.schedule && reminder.schedule.recurrence && reminder.schedule.recurrence.monthWeek !== null;
         reminderOrdinalIndex.value = reminderOrdinal.checked ? reminder.schedule.recurrence.monthWeek.index : 1;
         reminderOrdinalWeekday.value = reminderOrdinal.checked ? reminder.schedule.recurrence.monthWeek.weekday : 0;
-        reminderRepeatEnd.text = reminder.schedule && reminder.schedule.recurrence && reminder.schedule.recurrence.endAt ? urbitToInput(reminder.schedule.recurrence.endAt) : "";
+        reminderRepeatEnd.text = reminder.schedule && reminder.schedule.recurrence && reminder.schedule.recurrence.endAt ? (reminder.schedule.recurrence.localEnd || reminder.schedule.recurrence.endAt) : "";
         reminderRepeatCount.value = reminder.schedule && reminder.schedule.recurrence && reminder.schedule.recurrence.maxOccurrences ? reminder.schedule.recurrence.maxOccurrences : 0;
         reminderRank.value = reminder.rank;
         Qt.callLater(function() {
@@ -432,23 +432,7 @@ Item {
     }
 
     function localTimezone() {
-        try {
-            return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-        } catch (error) {
-            return "UTC";
-        }
-    }
-
-    function pad2(value) {
-        return Number(value) < 10 ? "0" + Number(value) : String(value);
-    }
-
-    function urbitToInput(value) {
-        var match = /^~(\d+)\.(\d+)\.(\d+)\.\.(\d+)\.(\d+)/.exec(String(value || ""));
-        if (!match)
-            return String(value || "");
-
-        return match[1] + "-" + pad2(match[2]) + "-" + pad2(match[3]) + "T" + pad2(match[4]) + ":" + pad2(match[5]);
+        return service ? service.localTimezone : "UTC";
     }
 
     function open(payloadJson) {
@@ -1876,7 +1860,7 @@ Item {
                                                 var section = root.sectionTitleFor(modelData.listId, modelData.sectionId);
                                                 var depth = Math.max(0, Number(modelData.depth || 0));
                                                 var prefix = depth === 0 ? "" : Array(depth + 1).join("  ") + "↳ ";
-                                                var due = modelData.schedule ? "  ·  " + root.urbitToInput(modelData.schedule.dueAt).replace("T", " ") : "";
+                                                var due = modelData.schedule ? "  ·  " + String(modelData.schedule.localDue || modelData.schedule.dueAt).replace("T", " ") : "";
                                                 return prefix + modelData.title + list + (section ? "  ·  " + section : "") + due;
                                             }
                                             color: Color.menu.text

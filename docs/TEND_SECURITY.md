@@ -23,6 +23,10 @@ release and its reviewers must verify.
 - JSON responses and SSE events are capped at 32 MiB; outbound action JSON is
   capped at 1 MiB. Invalid UTF-8, malformed JSON, malformed event IDs, and
   oversized data terminate the bridge with a structured error.
+- Date/time editor values are converted to canonical Urbit instants in the
+  bridge with system `zoneinfo`. The bridge strips its private all-day-minute
+  hint before measuring or sending the action; Gall continues to validate the
+  resulting schedule noun and never trusts display-only local-time fields.
 - The Omarchy plugin executes unsandboxed as part of `omarchy-shell`, like every
   third-party shell plugin. Users should inspect the release before enabling it.
 

@@ -320,6 +320,26 @@ test("reminder policy controls all-day overdue visibility and the bar badge", ()
   assert.equal(model.badgeCount(lists, { "badge-mode": "none" }, "~zod", now), 0)
 })
 
+test("transport-enriched wall-clock schedule fields survive model normalization", () => {
+  const schedule = model.cloneSchedule({
+    "due-at": "~2026.9.11..00.30.00",
+    "local-due": "2026-09-10T17:30",
+    timezone: "America/Los_Angeles",
+    recurrence: {
+      frequency: "weekly",
+      interval: 1,
+      weekdays: [4],
+      "month-days": [],
+      "month-week": null,
+      "end-at": "~2026.10.2..00.30.00",
+      "local-end": "2026-10-01T17:30",
+      "max-occurrences": null
+    }
+  })
+  assert.equal(schedule.localDue, "2026-09-10T17:30")
+  assert.equal(schedule.recurrence.localEnd, "2026-10-01T17:30")
+})
+
 test("multiplayer access state gates remote editing while keeping owned lists writable", () => {
   const owned = {
     alias: 1,

@@ -4,17 +4,21 @@
 from __future__ import annotations
 
 import argparse
+import copy
+from datetime import datetime, timezone
 import http.cookiejar
 import ipaddress
 import json
 import os
 from pathlib import Path
+import re
 import sys
 import tempfile
 import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 
 APP = "tend"
@@ -23,6 +27,10 @@ MAX_JSON_BYTES = 32 * 1024 * 1024
 MAX_SSE_LINE_BYTES = 32 * 1024 * 1024
 MAX_SSE_EVENT_BYTES = 32 * 1024 * 1024
 MAX_ACTION_BYTES = 1024 * 1024
+URBIT_DATE_PATTERN = re.compile(
+    r"^~(\d+)\.(\d+)\.(\d+)\.\.(\d+)\.(\d+)\.(\d+)(?:\.\.[0-9a-fA-F]+)?$"
+)
+LOCAL_DATE_PATTERN = re.compile(r"^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2}))?)?$")
 
 
 class TendTransportError(RuntimeError):
@@ -34,6 +42,149 @@ class TendTransportError(RuntimeError):
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, request, file_pointer, code, message, headers, new_url):
         return None
+
+
+def urbit_datetime(value: str) -> datetime:
+    match = URBIT_DATE_PATTERN.match(str(value or ""))
+    if not match:
+        raise TendTransportError("Schedule contains an invalid Urbit date", "invalid-schedule-time")
+    try:
+        return datetime(*(int(part) for part in match.groups()), tzinfo=timezone.utc)
+    except ValueError as error:
+        raise TendTransportError("Schedule contains an invalid Urbit date", "invalid-schedule-time") from error
+
+
+def urbit_date(value: datetime) -> str:
+    instant = value.astimezone(timezone.utc).replace(microsecond=0)
+    return f"~{instant.year}.{instant.month}.{instant.day}..{instant.hour:02d}.{instant.minute:02d}.{instant.second:02d}"
+
+
+def zone(value: str) -> ZoneInfo:
+    try:
+        return ZoneInfo(value)
+    except (ZoneInfoNotFoundError, ValueError) as error:
+        raise TendTransportError(f"Unknown IANA time zone: {value}", "invalid-schedule-time") from error
+
+
+def local_timezone_name() -> str:
+    candidates: list[str] = []
+    if os.environ.get("TZ"):
+        candidates.append(os.environ["TZ"])
+    try:
+        localtime = Path("/etc/localtime").resolve()
+        zone_root = Path("/usr/share/zoneinfo").resolve()
+        candidates.append(str(localtime.relative_to(zone_root)))
+    except (OSError, ValueError):
+        pass
+    try:
+        candidates.append(Path("/etc/timezone").read_text(encoding="utf-8").strip())
+    except OSError:
+        pass
+    for candidate in candidates:
+        try:
+            ZoneInfo(candidate)
+            return candidate
+        except (ZoneInfoNotFoundError, ValueError):
+            continue
+    return "UTC"
+
+
+def normalize_wall_time(value: object, timezone_name: str, *, all_day: bool = False, all_day_minute: int = 540) -> str:
+    raw = str(value or "").strip()
+    timezone_value = zone(timezone_name)
+    if raw.startswith("~"):
+        return urbit_date(urbit_datetime(raw))
+    if re.search(r"(?:[zZ]|[+-]\d{2}:\d{2})$", raw):
+        try:
+            explicit = datetime.fromisoformat(raw.replace("Z", "+00:00").replace("z", "+00:00"))
+        except ValueError as error:
+            raise TendTransportError("Schedule contains an invalid ISO-8601 time", "invalid-schedule-time") from error
+        if explicit.tzinfo is None:
+            raise TendTransportError("Schedule time is missing an offset", "invalid-schedule-time")
+        return urbit_date(explicit)
+
+    match = LOCAL_DATE_PATTERN.match(raw)
+    if not match:
+        raise TendTransportError("Schedule time must use YYYY-MM-DDTHH:MM", "invalid-schedule-time")
+    year, month, day, hour, minute, second = (int(part) if part is not None else None for part in match.groups())
+    if all_day:
+        if not 0 <= all_day_minute < 1440:
+            raise TendTransportError("All-day alert minute is outside the day", "invalid-schedule-time")
+        hour, minute, second = all_day_minute // 60, all_day_minute % 60, 0
+    elif hour is None or minute is None:
+        raise TendTransportError("Timed reminder requires an hour and minute", "invalid-schedule-time")
+    else:
+        second = second or 0
+    try:
+        wall = datetime(year, month, day, hour, minute, second)
+    except ValueError as error:
+        raise TendTransportError("Schedule contains an invalid calendar time", "invalid-schedule-time") from error
+    candidates: list[datetime] = []
+    for fold in (0, 1):
+        candidate = wall.replace(tzinfo=timezone_value, fold=fold).astimezone(timezone.utc)
+        round_trip = candidate.astimezone(timezone_value).replace(tzinfo=None)
+        if round_trip == wall and candidate not in candidates:
+            candidates.append(candidate)
+    if not candidates:
+        raise TendTransportError(
+            f"{raw} does not exist in {timezone_name} because of a clock change",
+            "invalid-schedule-time",
+        )
+    return urbit_date(min(candidates))
+
+
+def normalize_tend_action(action: object) -> object:
+    normalized = copy.deepcopy(action)
+    if not isinstance(normalized, dict) or len(normalized) != 1 or "set-schedule" not in normalized:
+        return normalized
+    body = normalized["set-schedule"]
+    if not isinstance(body, dict) or body.get("schedule") is None:
+        return normalized
+    schedule = body["schedule"]
+    if not isinstance(schedule, dict):
+        raise TendTransportError("Schedule must be an object", "invalid-schedule-time")
+    timezone_name = str(schedule.get("timezone") or "")
+    all_day_minute = schedule.pop("_all-day-alert-minute", 540)
+    if isinstance(all_day_minute, bool) or not isinstance(all_day_minute, int):
+        raise TendTransportError("All-day alert minute must be an integer", "invalid-schedule-time")
+    schedule["due-at"] = normalize_wall_time(
+        schedule.get("due-at"),
+        timezone_name,
+        all_day=schedule.get("all-day") is True,
+        all_day_minute=all_day_minute,
+    )
+    recurrence = schedule.get("recurrence")
+    if isinstance(recurrence, dict) and recurrence.get("end-at") is not None:
+        recurrence["end-at"] = normalize_wall_time(recurrence["end-at"], timezone_name)
+    return normalized
+
+
+def display_wall_time(value: object, timezone_name: str) -> str | None:
+    try:
+        return urbit_datetime(str(value)).astimezone(zone(timezone_name)).strftime("%Y-%m-%dT%H:%M")
+    except TendTransportError:
+        return None
+
+
+def enrich_tend_json(value: object) -> object:
+    if isinstance(value, list):
+        for item in value:
+            enrich_tend_json(item)
+        return value
+    if not isinstance(value, dict):
+        return value
+    if "due-at" in value and "timezone" in value:
+        local_due = display_wall_time(value.get("due-at"), str(value.get("timezone") or ""))
+        if local_due:
+            value["local-due"] = local_due
+        recurrence = value.get("recurrence")
+        if isinstance(recurrence, dict) and recurrence.get("end-at") is not None:
+            local_end = display_wall_time(recurrence["end-at"], str(value.get("timezone") or ""))
+            if local_end:
+                recurrence["local-end"] = local_end
+    for child in value.values():
+        enrich_tend_json(child)
+    return value
 
 
 def normalize_base_url(raw: str) -> str:
@@ -210,7 +361,7 @@ def login(base_url: str, cookie_path: Path, config_path: Path, code: str) -> dic
     ship = scry_whoami(opener, base_url)
     save_cookie_jar(jar, cookie_path)
     write_connection(config_path, base_url, ship)
-    return {"status": "ok", "baseUrl": base_url, "ship": ship}
+    return {"status": "ok", "baseUrl": base_url, "ship": ship, "localTimezone": local_timezone_name()}
 
 
 def disconnect(cookie_path: Path, config_path: Path) -> dict[str, object]:
@@ -228,6 +379,7 @@ def connection_status(config_path: Path, cookie_path: Path) -> dict[str, object]
         "status": "configured",
         **connection,
         "authenticated": cookie_path.exists() and cookie_path.stat().st_size > 0,
+        "localTimezone": local_timezone_name(),
     }
 
 
@@ -309,6 +461,7 @@ def stream(config_path: Path, cookie_path: Path, output) -> None:
         with open_event_stream(opener, url) as response:
             for event_id, raw_data in iter_sse(response):
                 message = event_json(raw_data)
+                message = enrich_tend_json(message)
                 output.write(json.dumps({"eventId": event_id, "message": message}) + "\n")
                 output.flush()
                 if event_id:
@@ -327,6 +480,7 @@ def stream(config_path: Path, cookie_path: Path, output) -> None:
 def poke(config_path: Path, cookie_path: Path, action: object) -> dict[str, object]:
     if not isinstance(action, dict) or len(action) != 1:
         raise TendTransportError("A Tend action must be a one-key JSON object")
+    action = normalize_tend_action(action)
     if len(json.dumps(action, separators=(",", ":")).encode("utf-8")) > MAX_ACTION_BYTES:
         raise TendTransportError("A Tend action must not exceed 1 MiB", "request-too-large")
     connection = read_connection(config_path)
