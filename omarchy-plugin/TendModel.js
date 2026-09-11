@@ -362,6 +362,7 @@ function queryReminders(lists, options, nowMs) {
   options = options || {}
   const view = String(options.view || "list")
   const search = String(options.search || "").trim().toLocaleLowerCase()
+  const tag = String(options.tag || "")
   const selectedListId = options.listId
   const currentShip = String(options.ship || "").replace(/^~/, "")
   const normalized = sortedLists(lists)
@@ -374,6 +375,7 @@ function queryReminders(lists, options, nowMs) {
   normalized.forEach(function(list) {
     if (view === "list" && list.id !== selectedListId) return
     list.reminders.forEach(function(reminder) {
+      if (tag && reminder.tags.indexOf(tag) === -1) return
       const dueMs = reminder.schedule ? urbitDateMs(reminder.schedule.dueAt) : NaN
       var matchesView = true
       if (view === "today") {

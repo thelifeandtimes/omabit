@@ -82,8 +82,9 @@ Last verified: 2026-09-10
   serialized through a desktop queue; Open deep-selects the reminder and the
   mutation actions remain disabled unless the home connection is Online.
 - Quick entry recognizes whitespace-delimited `#tag` tokens. The overlay lists
-  all known tags and can rename, merge, or delete one across hosted reminders;
-  server-side bounds and set semantics were verified through live Eyre.
+  all known tags, filters any list or built-in view by exact tag, and can
+  rename, merge, or delete one across hosted reminders; server-side bounds and
+  set semantics were verified through live Eyre.
 - `%4` freezes the complete `%3` schema, adds a canonical optional Urbit
   assignee to reminders, and durably allocates hosted-share, replica,
   invitation, and in-flight stores. A live `%3` ship migrated successfully and

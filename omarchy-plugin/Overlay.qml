@@ -17,6 +17,7 @@ Item {
     property int selectedSectionId: 0
     property string viewMode: "list"
     property string sortMode: "manual"
+    property string tagFilter: ""
     property bool sortDescending: false
     property bool listEditorOpen: false
     property bool policyEditorOpen: false
@@ -72,6 +73,7 @@ Item {
         view: viewMode,
         listId: selectedList ? selectedList.id : 0,
         search: reminderSearch.text,
+        tag: tagFilter,
         sort: sortMode,
         descending: sortDescending,
         ship: service ? service.ship : "",
@@ -1217,15 +1219,24 @@ Item {
                                 TextField {
                                     id: reminderSearch
 
-                                    width: parent.width * 0.5
+                                    width: parent.width * 0.34
                                     placeholderText: "Search reminders"
                                     Accessible.name: "Search reminders"
                                 }
 
                                 ComboBox {
+                                    id: reminderTagFilter
+
+                                    width: parent.width * 0.2
+                                    model: ["All tags"].concat(root.availableTags)
+                                    Accessible.name: "Filter reminders by tag"
+                                    onCurrentIndexChanged: root.tagFilter = currentIndex > 0 ? currentText : ""
+                                }
+
+                                ComboBox {
                                     id: reminderSort
 
-                                    width: parent.width * 0.25
+                                    width: parent.width * 0.2
                                     model: ["manual", "due", "created", "priority", "title"]
                                     Accessible.name: "Reminder sort order"
                                     onCurrentTextChanged: root.sortMode = currentText
