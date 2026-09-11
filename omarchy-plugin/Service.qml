@@ -25,6 +25,9 @@ Item {
     property var notificationQueue: []
     property var notificationAckQueue: []
     property bool mutationPending: false
+    property string lastInvitationUri: ""
+    property int lastInvitationListId: 0
+    property string lastInvitationTarget: ""
     property int reconnectAttempt: 0
     property bool streamAuthenticationFailed: false
     readonly property int incompleteCount: TendModel.incompleteCount(lists)
@@ -448,14 +451,23 @@ Item {
     }
 
     function inviteMember(listId, targetShip, canInvite) {
-        return submit({
+        var opId = operationId();
+        var accepted = submit({
             "invite-member": {
-                "operation-id": operationId(),
+                "operation-id": opId,
                 "list-id": Number(listId),
                 "ship": String(targetShip || "").trim(),
                 "can-invite": canInvite === true
             }
         }, listId);
+        if (accepted) {
+            var access = accessForList(listId);
+            var owner = String(access ? access.host : "").replace(/^~/, "");
+            root.lastInvitationUri = "omabit://tend/invite/" + owner + "/" + encodeURIComponent(opId);
+            root.lastInvitationListId = Number(listId);
+            root.lastInvitationTarget = String(targetShip || "").trim();
+        }
+        return accepted;
     }
 
     function acceptInvitation(invitation) {
@@ -855,6 +867,9 @@ Item {
             root.localSettings = TendModel.cloneLocalSettings(null);
             root.notificationQueue = [];
             root.notificationAckQueue = [];
+            root.lastInvitationUri = "";
+            root.lastInvitationListId = 0;
+            root.lastInvitationTarget = "";
             root.connectionState = "disconnected";
             root.errorMessage = "";
             root.reconnectAttempt = 0;

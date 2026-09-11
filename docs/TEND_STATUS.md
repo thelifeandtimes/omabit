@@ -122,6 +122,10 @@ Last verified: 2026-09-11
   distribute complete canonical list replicas. Invitees can accept or decline;
   participants can leave; all authorization is derived from the Gall source
   ship rather than a claimed payload identity.
+- Successful invite submission exposes a copyable recipient-bound
+  `omabit://tend/invite/<owner>/<token>` reference without list contents. The
+  CLI accepts that URI for accept/decline while Gall still authenticates the
+  originally invited ship; system URI-handler registration remains deferred.
 - A repeatable three-ship harness verified two simultaneous replicas, participant
   editing, convergence, owner-offline readable replicas with blocked writes,
   owner restart/catch-up, duplicate-operation idempotence, stale rejection,

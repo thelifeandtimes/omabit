@@ -105,12 +105,14 @@ class CliDomainTests(unittest.TestCase):
             ship="~sampel-palnet",
             allow_invites=True,
         )
-        with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+        with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()) as output:
             self.assertEqual(omabit.run_tend(share), 0)
         invited = poke.call_args.args[2]["invite-member"]
         self.assertEqual(invited["list-id"], 1)
         self.assertEqual(invited["ship"], "~sampel-palnet")
         self.assertTrue(invited["can-invite"])
+        response = json.loads(output.getvalue())
+        self.assertEqual(response["invitationUri"], f"omabit://tend/invite/zod/{invited['operation-id']}")
 
         unshare = SimpleNamespace(tend_command="unshare", json=True, list_selector="1", ship="~sampel-palnet")
         with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
@@ -159,6 +161,21 @@ class CliDomainTests(unittest.TestCase):
             body = poke.call_args.args[2][action_name]
             self.assertEqual(body["host"], "~sampel-palnet")
             self.assertEqual(body["token"], "invite-1")
+
+    def test_invitation_uri_round_trips_and_is_accepted_by_cli(self):
+        uri = omabit.invitation_uri("~sampel-palnet", "invite token/1")
+        self.assertEqual(uri, "omabit://tend/invite/sampel-palnet/invite%20token%2F1")
+        self.assertEqual(omabit.invitation_reference(uri), ("~sampel-palnet", "invite token/1"))
+
+        args = SimpleNamespace(tend_command="accept", json=True, host=uri, token=None)
+        with mock.patch.object(omabit, "snapshot", return_value={"protocol-version": 1}), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            self.assertEqual(omabit.run_tend(args), 0)
+        body = poke.call_args.args[2]["accept-invitation"]
+        self.assertEqual((body["host"], body["token"]), ("~sampel-palnet", "invite token/1"))
+
+        for invalid in ("omabit://other/invite/zod/x", "omabit://tend/invite/zod", "omabit://tend/invite/zod/x?leak=1"):
+            with self.assertRaises(omabit.CliError):
+                omabit.invitation_reference(invalid)
 
     def test_status_reports_the_negotiated_protocol(self):
         args = SimpleNamespace(tend_command="status", json=True)

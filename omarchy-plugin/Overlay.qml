@@ -1452,6 +1452,30 @@ Item {
                                     }
                                 }
 
+                                Column {
+                                    visible: service && service.lastInvitationUri !== "" && service.lastInvitationListId === root.selectedList.id
+                                    width: parent.width
+                                    spacing: Style.space(4)
+
+                                    Text {
+                                        width: parent.width
+                                        text: "Invitation link for " + service.lastInvitationTarget + " · bound to that Urbit ship"
+                                        color: Color.menu.text
+                                        opacity: 0.72
+                                        wrapMode: Text.Wrap
+                                        font.family: Style.font.menuFamily
+                                        font.pixelSize: Style.font.caption
+                                    }
+
+                                    TextField {
+                                        width: parent.width
+                                        text: service ? service.lastInvitationUri : ""
+                                        readOnly: true
+                                        selectByMouse: true
+                                        Accessible.name: "Copy recipient-bound Tend invitation link"
+                                    }
+                                }
+
                                 Repeater {
                                     visible: root.selectedAccess && root.selectedAccess.pending && root.selectedAccess.pending.length > 0
                                     model: root.selectedAccess ? root.selectedAccess.pending : []

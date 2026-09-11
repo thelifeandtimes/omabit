@@ -84,6 +84,11 @@ To remove the local session and select another ship:
 omabit tend disconnect
 ```
 
+`omabit tend share LIST SHIP` prints a recipient-bound capability URI in its
+result. The invited user normally sees the invitation in-app, but can also run
+`omabit tend accept 'omabit://tend/invite/OWNER/TOKEN'`. The URI contains a
+single-use invitation token, so share it only with the named recipient.
+
 ## Optional global shortcuts
 
 The plugin does not modify Hyprland configuration during installation. Add

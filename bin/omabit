@@ -14,6 +14,7 @@ from pathlib import Path
 import stat
 import subprocess
 import sys
+import urllib.parse
 import uuid
 
 
@@ -133,6 +134,38 @@ def normalize_ship(value: object) -> str:
     if any(character not in "abcdefghijklmnopqrstuvwxyz-" for character in name):
         raise CliError("Urbit ship name is invalid")
     return "~" + name
+
+
+def normalize_invitation_token(value: object) -> str:
+    token = str(value or "")
+    if not token or len(token.encode("utf-8")) > 256 or any(ord(character) < 32 or ord(character) == 127 for character in token):
+        raise CliError("Tend invitation token is invalid")
+    return token
+
+
+def invitation_uri(host: object, token: object) -> str:
+    owner = normalize_ship(host).removeprefix("~")
+    invitation_token = normalize_invitation_token(token)
+    encoded = urllib.parse.quote(invitation_token, safe="")
+    return f"omabit://tend/invite/{owner}/{encoded}"
+
+
+def invitation_reference(value: object, token: object | None = None) -> tuple[str, str]:
+    raw = str(value or "").strip()
+    if not raw.startswith("omabit:"):
+        if token is None:
+            raise CliError("Provide an invitation token or an omabit://tend invitation URI")
+        return normalize_ship(raw), normalize_invitation_token(token)
+
+    parsed = urllib.parse.urlsplit(raw)
+    pieces = parsed.path.split("/")
+    if parsed.scheme != "omabit" or parsed.netloc != "tend" or parsed.query or parsed.fragment or len(pieces) != 4 or pieces[1] != "invite" or not pieces[2] or not pieces[3]:
+        raise CliError("Tend invitation URI is invalid")
+    try:
+        decoded_token = urllib.parse.unquote_to_bytes(pieces[3]).decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise CliError("Tend invitation URI token is invalid") from error
+    return normalize_ship(pieces[2]), normalize_invitation_token(decoded_token)
 
 
 def list_access(list_id: int, accesses: list[object]) -> dict[str, object]:
@@ -647,14 +680,14 @@ def run_tend(args: argparse.Namespace) -> int:
         # exact JSON protocol this client understands.
         snapshot(cookie_path, config_path)
         action_name = "accept-invitation" if args.tend_command == "accept" else "decline-invitation"
-        host = normalize_ship(args.host)
+        host, token = invitation_reference(args.host, args.token)
         action = {action_name: {
             "operation-id": operation_id(),
             "host": host,
-            "token": args.token,
+            "token": token,
         }}
         poke(cookie_path, config_path, action)
-        emit({"status": "accepted", "host": host, "token": args.token}, as_json)
+        emit({"status": "accepted", "host": host, "token": token}, as_json)
         return 0
     if args.tend_command == "open":
         payload = {"listId": args.list_id, "reminderId": args.reminder_id, "mode": "capture" if args.capture else "full"}
@@ -735,16 +768,22 @@ def run_tend(args: argparse.Namespace) -> int:
         return 0
     if args.tend_command == "share":
         task_list = select_list(state, args.list_selector)
-        require_list_writable(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
+        access = require_list_writable(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
         ship = normalize_ship(args.ship)
+        op_id = operation_id()
         action = {"invite-member": {
-            "operation-id": operation_id(),
+            "operation-id": op_id,
             "list-id": int(task_list["id"]),
             "ship": ship,
             "can-invite": args.allow_invites,
         }}
         poke(cookie_path, config_path, action)
-        emit({"status": "invited", "listId": task_list["id"], "ship": ship}, as_json)
+        emit({
+            "status": "invited",
+            "listId": task_list["id"],
+            "ship": ship,
+            "invitationUri": invitation_uri(access.get("host"), op_id),
+        }, as_json)
         return 0
     if args.tend_command == "unshare":
         task_list = select_list(state, args.list_selector)
@@ -898,12 +937,12 @@ def parser() -> argparse.ArgumentParser:
     commands.add_parser("invitations", help="list pending shared-list invitations")
 
     accept = commands.add_parser("accept", help="accept a shared-list invitation")
-    accept.add_argument("host", help="inviting Urbit ship")
-    accept.add_argument("token", help="invitation token")
+    accept.add_argument("host", help="inviting Urbit ship or omabit://tend invitation URI")
+    accept.add_argument("token", nargs="?", help="invitation token when HOST is supplied")
 
     decline = commands.add_parser("decline", help="decline a shared-list invitation")
-    decline.add_argument("host", help="inviting Urbit ship")
-    decline.add_argument("token", help="invitation token")
+    decline.add_argument("host", help="inviting Urbit ship or omabit://tend invitation URI")
+    decline.add_argument("token", nargs="?", help="invitation token when HOST is supplied")
 
     for name in ("complete", "uncomplete"):
         complete = commands.add_parser(name)

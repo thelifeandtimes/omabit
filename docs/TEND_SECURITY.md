@@ -58,6 +58,11 @@ and membership metadata to that ship. The owner UI must present the target ship
 and disclosure boundary before sending an invitation. Attachments are not in
 the current release scope.
 
+The optional `omabit://tend/invite/<owner>/<token>` reference contains the owner
+ship and invitation token but no list data. Treat it as a capability until it is
+accepted or revoked. It is bound to the originally invited Urbit ship: possession
+by another ship does not satisfy the owner's authenticated ACL check.
+
 ## Input and resource limits
 
 - Gall marks validate every incoming shape before agent logic runs.

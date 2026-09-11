@@ -175,6 +175,14 @@ Restore uses the receipt scry to prove that Gall durably accepted or rejected
 the operation; an Eyre poke acknowledgement by itself is not reported as
 restore success.
 
+An invitation's operation ID is also its single invitation token. Clients may
+render the recipient-bound reference as
+`omabit://tend/invite/<owner>/<percent-encoded-token>`. The URI carries no list
+content and does not bypass Gall: acceptance still reaches the recipient's home
+agent, then the owner verifies the authenticated source ship against its pending
+invite. `omabit tend accept` and `decline` accept either this URI or the explicit
+owner/token pair. System-wide URI-handler registration remains deferred.
+
 ## Persistence
 
 Gall is authoritative. State schema `%10` contains lists, the next local ID,

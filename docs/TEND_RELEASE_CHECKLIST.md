@@ -27,7 +27,7 @@ Last reconciled: 2026-09-11
 | Accessibility | Partial | Static labels, keyboard operation, visible state cues, scaled/clamped surfaces, responsive capture, no custom motion, and QML lint; manual Orca/theme/200% scale pass remains |
 | Owner host Online/Checking/Offline gating | Verified | Gall, model, UI, and CLI block shared mutation while the owner is not Online; replicas remain readable |
 | Assignment | Verified | Desktop choices and Gall enforcement allow only the owner/current members; authorization has no rank branch |
-| Invitations, ACLs, replicas, shared edits | Verified | Repeatable three-ship harness covers convergence, 12-operation Ames pressure, restart catch-up, duplicate/stale edits, in-flight revocation, cleanup, and complete selected-list disclosure |
+| Invitations, ACLs, replicas, shared edits | Verified | Repeatable three-ship harness covers convergence, 12-operation Ames pressure, restart catch-up, duplicate/stale edits, in-flight revocation, cleanup, complete selected-list disclosure, and recipient-bound capability URI parsing |
 | Activity and collaboration notifications | Verified | Bounded actor-attributed activity and occurrence records converge; participant-local add/complete/assignment policy, suppression, durable replay/ack, and cleanup are live-verified |
 | Packaging/install/rollback | Verified | Deterministic archive/checksum and refusal/backup installer tests |
 | State migrations | Verified | The application and table-driven Hoon fixture generator call the same migration library; non-empty `%0`–`%10` fixtures preserve sentinel list/reminder data and pass on Vere 4.6 |

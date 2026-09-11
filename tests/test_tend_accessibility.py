@@ -39,6 +39,13 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("Math.min(Style.space(640)", overlay)
         self.assertIn("columns: width < Style.space(520) ? 1 : 3", overlay)
 
+    def test_recipient_bound_invitation_link_is_selectable(self):
+        overlay = (ROOT / "omarchy-plugin" / "Overlay.qml").read_text(encoding="utf-8")
+        service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
+        self.assertIn('root.lastInvitationUri = "omabit://tend/invite/"', service)
+        self.assertIn('Accessible.name: "Copy recipient-bound Tend invitation link"', overlay)
+        self.assertIn("selectByMouse: true", overlay)
+
 
 if __name__ == "__main__":
     unittest.main()

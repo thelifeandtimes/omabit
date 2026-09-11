@@ -76,7 +76,7 @@ Apple's documented recurrence includes hourly through yearly custom schedules, s
 | Apple capability | Tend behavior | Tier |
 |---|---|---|
 | Standard lists | Create, rename, recolor, choose icon/emoji, reorder, and delete | Core |
-| Built-in smart lists | Today (including overdue), Scheduled, All, Flagged, Completed, Assigned to Me, and Groceries | Core |
+| Built-in smart lists | Today (including overdue), Scheduled, All, Flagged, Completed, and Assigned to Me | Core |
 | Custom smart lists | Any/all predicates over tags, dates/ranges, time, priority, flag, location, list, completion, and assignment | Parity |
 | Sections | Create, rename, reorder, delete, and move reminders between sections | Core |
 | List and column/Kanban views | Sections become columns; unsectioned items appear under Other | Parity |
@@ -94,7 +94,7 @@ Smart lists are saved queries, not containers. Deleting one must not delete matc
 
 | Apple capability | Tend behavior | Tier |
 |---|---|---|
-| Invite and accept | Invite any Urbit `@p`—planet, moon, or comet; deliver an in-app invitation and a copyable `omabit://tend/…` capability URI | Core |
+| Invite and accept | Invite any Urbit `@p`—planet, moon, or comet; deliver an in-app invitation and a recipient-bound, copyable `omabit://tend/…` capability URI | Core |
 | Live shared edits | Initial snapshot followed by ordered deltas over Gall subscriptions | Core |
 | Host availability | Show Online, Checking, or Offline for each shared list; enable mutations only while the owner ship is Online | Core |
 | Work offline | Keep a full read-only replica; do not accept or queue new shared-list edits while the owner ship is Offline or Checking | Core |
@@ -113,7 +113,7 @@ Apple notifies each collaborator independently: sharing a list does not make one
 | Surface | Required behavior | Tier |
 |---|---|---|
 | Full app | Summonable full-screen `overlay` optimized for keyboard navigation, with sidebar, list, details drawer, and list/column modes | Core |
-| Quick capture | Small summonable capture mode with natural-language preview and default-list selection | Core |
+| Quick capture | Small summonable capture mode with `#tag` recognition and default-list selection | Core |
 | Bar widget | Overdue/today count, next item, sync state, and click-to-open | Core |
 | Badge and Today policy | Configurable badge count, all-day notification time, and whether all-day items become overdue the next day | Core |
 | Headless plugin service | Maintains the Eyre channel, receives updates, dispatches notifications, and recovers after shell reload | Core |
@@ -462,9 +462,10 @@ Build throwaway vertical proofs before committing the public schema.
 - Omarchy service: authenticate to a remote HTTPS Eyre endpoint with URL plus `+code` (and to explicit loopback endpoints), subscribe over SSE, acknowledge events, survive shell restart, and render a task count.
 - Repeat the authentication and basic CRUD spike with a planet, moon, and comet to prove that no client or Gall authorization path assumes a ship rank.
 - Behn: enqueue a durable alert and recover an overdue alert after restart.
-- Measure a 100 KB, 1 MB, and 5 MB attachment transfer over Ames.
+- Defer attachment-transfer measurement to the attachment parity milestone.
 
-Exit: written ADRs confirm hosting model, channel transport, snapshot/delta form, attachment limit, and notification ownership.
+Exit: written ADRs confirm hosting model, channel transport, snapshot/delta form,
+and notification ownership.
 
 ### Milestone 1 — single-user daily driver
 
