@@ -9,6 +9,11 @@ Last verified: 2026-09-11
   schema without losing lists, reminders, schedules, preferences, or snoozes.
 - Authenticated Eyre login, identity scry, SSE subscribe/ack, reconnect, and
   poke acknowledgement work through the dependency-free desktop bridge.
+- Every complete state snapshot advertises desktop protocol 1. Fresh login
+  validates it before writing credentials; status, direct reads, invitation
+  mutations, and streamed replacement fail closed on missing or different
+  versions. The supported pre-release deployment is now explicitly lockstep
+  across each sharing group.
 - The desktop identity path is rank-neutral and regression-tested with planet,
   moon, and comet-shaped ship identities; Gall protocol identities remain
   unrestricted `@p` values with no rank authorization branch.
@@ -190,9 +195,8 @@ Last verified: 2026-09-11
 
 ## Next
 
-1. Establish supported mixed desk/client combinations, complete manual
-   assistive-technology validation, and run a longer real-ship release-candidate
-   key-continuity soak.
+1. Complete manual assistive-technology validation and run a longer real-ship
+   release-candidate key-continuity soak using the documented lockstep matrix.
 2. Finish compact-surface and multi-monitor refinement.
 
 The current Core reconciliation and honest release blockers are tracked in

@@ -630,8 +630,9 @@ def run_tend(args: argparse.Namespace) -> int:
     if args.tend_command == "status":
         status = transport.connection_status(config_path, cookie_path)
         try:
-            snapshot(cookie_path, config_path)
+            current = snapshot(cookie_path, config_path)
             status["reachable"] = True
+            status["protocolVersion"] = current.get("protocol-version")
         except Exception as error:
             status["reachable"] = False
             status["error"] = str(error)
@@ -641,6 +642,10 @@ def run_tend(args: argparse.Namespace) -> int:
         emit(transport.scry_invitations(config_path, cookie_path), as_json)
         return 0
     if args.tend_command in {"accept", "decline"}:
+        # Existing connection files can outlive a desktop upgrade. Refuse the
+        # invitation mutation unless the currently installed desk speaks the
+        # exact JSON protocol this client understands.
+        snapshot(cookie_path, config_path)
         action_name = "accept-invitation" if args.tend_command == "accept" else "decline-invitation"
         host = normalize_ship(args.host)
         action = {action_name: {

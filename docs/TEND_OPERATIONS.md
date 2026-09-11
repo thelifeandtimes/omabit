@@ -2,7 +2,8 @@
 
 Tend `0.1.0` is a pre-release multiplayer build. Its owner-authoritative peer
 protocol is enabled and has passed the documented three-ship live matrix, but
-it has not completed the longer release-candidate soak and compatibility gates.
+it has not completed the longer release-candidate soak and manual desktop
+gates.
 
 ## Verified baseline
 
@@ -18,14 +19,18 @@ requirements:
 | Urbit runtime | Vere 4.6 |
 | Urbit userspace | `%zuse` 409 |
 | Tend save state | `%10` (loads `%0` through `%10`) |
+| Tend desktop protocol | 1 (exact match required) |
 | Tend JSON marks | `%tend-action-1`, `%tend-update-1` |
+| Tend peer mark | `%tend-peer-1`, same release on every sharing peer |
 | Python / Node used by gates | 3.14.7 / 25.2.1 |
 | Time-zone database | System IANA tzdata through Python `zoneinfo` |
 | Notification client | `notify-send` 0.8.8 |
 
-Until a broader matrix is tested, install the desk, plugin, and CLI from the
-same Tend release. An older client can read the frozen Milestone 0 update
-shapes, but mixed-version mutation compatibility is not a release promise.
+Install the desk, plugin, and CLI from the same Tend release, and update all
+ships in a sharing group together. A protocol-1 desktop refuses a missing or
+different snapshot protocol before becoming Online; mixed pre-release peer
+builds are unsupported. The exact matrix and version-bump rules are in
+`TEND_COMPATIBILITY.md`.
 
 ## Pre-update drill
 
@@ -98,6 +103,15 @@ run `omabit tend status`, and verify a read plus one reversible mutation.
 The Eyre session expired or authentication failed. Run `+code` on the intended
 ship and reconnect. Tend intentionally stops automatic retries on an explicit
 authentication failure. It never saves the reusable code.
+
+### Tend reports an incompatible desk protocol
+
+Install the desk, plugin, and CLI from one release. A fresh login validates the
+desk before saving the new cookie or endpoint, while an existing connection is
+reported unreachable and never becomes Online. For a shared list, update every
+participating ship to the same release before resuming edits. Do not work around
+the check by sending raw Eyre actions; use the matrix in
+`TEND_COMPATIBILITY.md`.
 
 ### HTTPS works in a browser but Tend refuses the URL
 

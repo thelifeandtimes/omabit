@@ -67,7 +67,7 @@ class EyreHandler(BaseHTTPRequestHandler):
             if f"{self.server.cookie_name}=session" not in self.headers.get("Cookie", ""):
                 self.send_bytes(403, b"forbidden", "text/plain")
                 return
-            body = self.server.state_body or json.dumps({"snapshot": {"lists": []}}).encode("utf-8")
+            body = self.server.state_body or json.dumps({"snapshot": {"protocol-version": 1, "lists": []}}).encode("utf-8")
             self.send_bytes(200, body)
             return
 
@@ -121,7 +121,7 @@ class EyreHandler(BaseHTTPRequestHandler):
         if first["action"] == "subscribe":
             events = [
                 (1, {"id": 1, "response": "subscribe", "ok": None}),
-                (2, {"id": 1, "response": "diff", "json": {"snapshot": {"lists": []}}}),
+                (2, {"id": 1, "response": "diff", "json": {"snapshot": {"protocol-version": 1, "lists": []}}}),
             ]
         else:
             events = [(1, {"id": 1, "response": "poke", "ok": None})]
@@ -288,6 +288,7 @@ class EyreFlowTests(unittest.TestCase):
         result = eyre_client.login(fake.base_url, self.cookie, self.config, "lidlut-test")
         self.assertEqual(result["ship"], fake.ship)
         self.assertEqual(result["baseUrl"], fake.base_url)
+        self.assertEqual(result["protocolVersion"], 1)
 
     def test_login_saves_only_cookie_and_connection_metadata(self):
         with FakeEyre() as fake:
@@ -350,7 +351,10 @@ class EyreFlowTests(unittest.TestCase):
             eyre_client.stream(self.config, self.cookie, output)
             envelopes = [json.loads(line) for line in output.getvalue().splitlines()]
             self.assertEqual(envelopes[0]["message"]["response"], "subscribe")
-            self.assertEqual(envelopes[1]["message"]["json"], {"snapshot": {"lists": []}})
+            self.assertEqual(
+                envelopes[1]["message"]["json"],
+                {"snapshot": {"protocol-version": 1, "lists": []}},
+            )
             self.assertEqual(
                 [command["event-id"] for command in fake.all_commands if command.get("action") == "ack"],
                 [1, 2],
@@ -397,7 +401,7 @@ class EyreFlowTests(unittest.TestCase):
             self.login(fake)
             self.assertEqual(
                 eyre_client.scry_state(self.config, self.cookie),
-                {"snapshot": {"lists": []}},
+                {"snapshot": {"protocol-version": 1, "lists": []}},
             )
             fake.server.accesses_body = json.dumps({"accesses": [{"alias": 1, "owner": True}]}).encode("utf-8")
             self.assertEqual(
@@ -436,6 +440,22 @@ class EyreFlowTests(unittest.TestCase):
                 with self.assertRaisesRegex(eyre_client.TendTransportError, "exceeds") as raised:
                     eyre_client.scry_state(self.config, self.cookie)
         self.assertEqual(raised.exception.code, "response-too-large")
+
+    def test_login_and_state_refuse_an_incompatible_desk_protocol(self):
+        with FakeEyre() as fake:
+            fake.server.state_body = json.dumps({"snapshot": {"lists": []}}).encode("utf-8")
+            with self.assertRaisesRegex(eyre_client.TendTransportError, "incompatible") as raised:
+                eyre_client.login(fake.base_url, self.cookie, self.config, "lidlut-test")
+            self.assertEqual(raised.exception.code, "incompatible-protocol")
+            self.assertFalse(self.cookie.exists())
+            self.assertFalse(self.config.exists())
+
+        with FakeEyre() as fake:
+            self.login(fake)
+            fake.server.state_body = json.dumps({"snapshot": {"protocol-version": 2, "lists": []}}).encode("utf-8")
+            with self.assertRaisesRegex(eyre_client.TendTransportError, "incompatible") as raised:
+                eyre_client.scry_state(self.config, self.cookie)
+            self.assertEqual(raised.exception.code, "incompatible-protocol")
 
 
 class EventValidationTests(unittest.TestCase):

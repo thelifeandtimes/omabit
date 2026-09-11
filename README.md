@@ -35,7 +35,9 @@ Backup validation and the restore safety contract live in
 The live three-ship collaboration evidence is recorded in
 [`docs/TEND_MULTISHIP_MATRIX.md`](docs/TEND_MULTISHIP_MATRIX.md).
 Tested versions, update/rollback steps, and troubleshooting are in
-[`docs/TEND_OPERATIONS.md`](docs/TEND_OPERATIONS.md).
+[`docs/TEND_OPERATIONS.md`](docs/TEND_OPERATIONS.md); the exact pre-release
+desk/client/peer matrix is in
+[`docs/TEND_COMPATIBILITY.md`](docs/TEND_COMPATIBILITY.md).
 
 ## Development
 

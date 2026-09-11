@@ -13,6 +13,7 @@ class TendGallSourceContractTests(unittest.TestCase):
         cls.migration_fixtures = (ROOT / "desk" / "lib" / "tend-migration-fixtures.hoon").read_text(encoding="utf-8")
         cls.migration_generator = (ROOT / "desk" / "gen" / "tend-migrations.hoon").read_text(encoding="utf-8")
         cls.migration_thread = (ROOT / "desk" / "ted" / "tend-migrations.hoon").read_text(encoding="utf-8")
+        cls.json = (ROOT / "desk" / "lib" / "tend-json.hoon").read_text(encoding="utf-8")
         cls.surface = (ROOT / "desk" / "sur" / "tend.hoon").read_text(encoding="utf-8")
 
     def test_mutation_resource_ceilings_remain_server_side(self):
@@ -88,6 +89,9 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("replica-alert-set  (without-replica-alerts alias replica-alert-set.st)", self.agent)
         self.assertIn("(prune-notifications-load notification-map.st visible)", self.agent)
         self.assertIn("(prune-replica-alerts-load replica-alert-set.st visible)", self.agent)
+
+    def test_snapshot_publishes_the_desktop_protocol_version(self):
+        self.assertIn("[%protocol-version (numb 1)]", self.json)
 
 
 if __name__ == "__main__":

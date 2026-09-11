@@ -11,6 +11,10 @@ the normalized endpoint/ship identity. Non-loopback HTTP is rejected.
 The client opens one Eyre channel, subscribes to `%tend` at `/all`, acknowledges
 every SSE event, and remains in `Checking` until it receives a complete
 snapshot. Mutations use `%tend-action-1`; updates use `%tend-update-1`.
+Every complete snapshot carries integer `protocol-version` 1. The desktop
+requires an exact match during login, direct state reads, and streamed snapshot
+replacement; a missing or different value fails closed before editing is
+enabled. See `TEND_COMPATIBILITY.md` for the pre-release lockstep policy.
 
 Every action is a one-key JSON object. Its body includes a unique
 `operation-id`. Mutations against an existing list also include
@@ -120,7 +124,8 @@ back into the overlay. Actions that mutate list state are submitted only while
 the home connection is Online.
 
 The Milestone 0 event shapes remain accepted by the JavaScript reducer during a
-rolling upgrade, but new agents emit only the canonical update forms.
+rolling desktop reload, but new agents emit only the canonical update forms.
+That reducer tolerance does not make mixed desk/client releases supported.
 
 `accesses` publishes the local alias, authoritative host and host-local list ID,
 owner flag, host status, member policies, and pending invitees for every visible

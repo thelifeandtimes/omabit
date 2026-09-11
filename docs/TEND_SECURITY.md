@@ -20,6 +20,10 @@ release and its reviewers must verify.
 - Authenticated requests do not follow HTTP redirects. A new login starts a
   fresh cookie jar, so connecting directly to another ship cannot retain a
   usable session for the previous endpoint.
+- A new login requires the desk's exact snapshot protocol before persisting its
+  Eyre cookie or connection metadata. State reads and streamed snapshots repeat
+  that check, so an incompatible desk never makes the client reachable or
+  Online and cannot enable normal mutation paths.
 - JSON responses and SSE events are capped at 32 MiB; outbound action JSON is
   capped at 1 MiB. Invalid UTF-8, malformed JSON, malformed event IDs, and
   oversized data terminate the bridge with a structured error.
@@ -89,6 +93,7 @@ idempotent only while their receipt remains in that window; clients reject
 offline writes and bound mutation age so an old request is not silently treated
 as a safe retry. The live three-ship evidence is recorded in
 `TEND_MULTISHIP_MATRIX.md`; the automated gate covers Ames-held bursts,
-in-flight revocation, and local restart/resubscription cycles. Mixed desk/client
-versions and a longer real-ship key-continuity soak remain release-candidate
-gates.
+in-flight revocation, and local restart/resubscription cycles. The supported
+lockstep version matrix is frozen in `TEND_COMPATIBILITY.md`; mixed pre-release
+desk builds are explicitly unsupported. A longer real-ship key-continuity soak
+remains a release-candidate gate.

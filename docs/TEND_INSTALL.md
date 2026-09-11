@@ -73,6 +73,10 @@ omabit tend list
 Planets, moons, and comets use the same flow. Plain HTTP is accepted only for a
 loopback development endpoint. Tend saves only the resulting Eyre session
 cookie, in a mode-0600 runtime directory; it never saves the `+code`.
+Login also requires desktop protocol 1 from the installed desk before either
+the cookie or endpoint is saved. Install all components from the same release
+and update every ship in a sharing group together; see
+`TEND_COMPATIBILITY.md`.
 
 To remove the local session and select another ship:
 

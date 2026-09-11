@@ -23,6 +23,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 APP = "tend"
 ACTION_MARK = "tend-action-1"
+PROTOCOL_VERSION = 1
 MAX_JSON_BYTES = 32 * 1024 * 1024
 MAX_SSE_LINE_BYTES = 32 * 1024 * 1024
 MAX_SSE_EVENT_BYTES = 32 * 1024 * 1024
@@ -42,6 +43,17 @@ class TendTransportError(RuntimeError):
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, request, file_pointer, code, message, headers, new_url):
         return None
+
+
+def validate_snapshot_protocol(value: object) -> object:
+    snapshot = value.get("snapshot") if isinstance(value, dict) else None
+    version = snapshot.get("protocol-version") if isinstance(snapshot, dict) else None
+    if version != PROTOCOL_VERSION:
+        raise TendTransportError(
+            f"Tend desk protocol is incompatible; expected version {PROTOCOL_VERSION}",
+            "incompatible-protocol",
+        )
+    return value
 
 
 def urbit_datetime(value: str) -> datetime:
@@ -314,7 +326,8 @@ def scry_whoami(opener: urllib.request.OpenerDirector, base_url: str) -> str:
 def scry_state(config_path: Path, cookie_path: Path) -> object:
     connection = read_connection(config_path)
     opener, _ = opener_for(cookie_path)
-    return json_request(opener, connection["baseUrl"] + "/~/scry/tend/state.json")
+    result = json_request(opener, connection["baseUrl"] + "/~/scry/tend/state.json")
+    return validate_snapshot_protocol(result)
 
 
 def scry_accesses(config_path: Path, cookie_path: Path) -> list[object]:
@@ -417,9 +430,17 @@ def login(base_url: str, cookie_path: Path, config_path: Path, code: str) -> dic
     if not list(jar):
         raise TendTransportError("Eyre accepted the request without issuing a session cookie")
     ship = scry_whoami(opener, base_url)
+    state = json_request(opener, base_url + "/~/scry/tend/state.json")
+    validate_snapshot_protocol(state)
     save_cookie_jar(jar, cookie_path)
     write_connection(config_path, base_url, ship)
-    return {"status": "ok", "baseUrl": base_url, "ship": ship, "localTimezone": local_timezone_name()}
+    return {
+        "status": "ok",
+        "baseUrl": base_url,
+        "ship": ship,
+        "protocolVersion": PROTOCOL_VERSION,
+        "localTimezone": local_timezone_name(),
+    }
 
 
 def disconnect(cookie_path: Path, config_path: Path) -> dict[str, object]:
@@ -520,6 +541,10 @@ def stream(config_path: Path, cookie_path: Path, output) -> None:
             for event_id, raw_data in iter_sse(response):
                 message = event_json(raw_data)
                 message = enrich_tend_json(message)
+                if isinstance(message, dict) and message.get("response") == "diff":
+                    body = message.get("json")
+                    if isinstance(body, dict) and "snapshot" in body:
+                        validate_snapshot_protocol(body)
                 output.write(json.dumps({"eventId": event_id, "message": message}) + "\n")
                 output.flush()
                 if event_id:

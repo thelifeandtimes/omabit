@@ -153,12 +153,23 @@ class CliDomainTests(unittest.TestCase):
 
         for command, action_name in (("accept", "accept-invitation"), ("decline", "decline-invitation")):
             args = SimpleNamespace(tend_command=command, json=True, host="~sampel-palnet", token="invite-1")
-            with mock.patch.object(omabit, "snapshot") as snapshot, mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            with mock.patch.object(omabit, "snapshot", return_value={"protocol-version": 1}) as snapshot, mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
                 self.assertEqual(omabit.run_tend(args), 0)
-            snapshot.assert_not_called()
+            snapshot.assert_called_once()
             body = poke.call_args.args[2][action_name]
             self.assertEqual(body["host"], "~sampel-palnet")
             self.assertEqual(body["token"], "invite-1")
+
+    def test_status_reports_the_negotiated_protocol(self):
+        args = SimpleNamespace(tend_command="status", json=True)
+        configured = {"ship": "zod", "baseUrl": "http://127.0.0.1:8080"}
+        with (
+            mock.patch.object(omabit.transport, "connection_status", return_value=configured),
+            mock.patch.object(omabit, "snapshot", return_value={"protocol-version": 1}),
+            redirect_stdout(io.StringIO()) as output,
+        ):
+            self.assertEqual(omabit.run_tend(args), 0)
+        self.assertEqual(json.loads(output.getvalue())["protocolVersion"], 1)
 
     def test_complete_checks_entity_before_poking(self):
         args = SimpleNamespace(tend_command="complete", json=True, list_id=1, reminder_ids=[7])

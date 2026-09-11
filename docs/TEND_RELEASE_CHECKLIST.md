@@ -19,6 +19,7 @@ Last reconciled: 2026-09-11
 | Full overlay and quick capture | Partial | Keyboard-first full/capture surfaces and `#tag` capture work; final compact-surface and manual multi-monitor checks remain |
 | Bar widget and connection state | Verified | Configurable badge, next reminder, sync state, shared-host state, click-to-open |
 | Eyre domain + `+code` authentication | Verified | Redirect/size/UTF-8/cookie hardening and rank-neutral planet/moon/comet-shaped identities |
+| Desk/client compatibility boundary | Verified | Snapshot protocol 1 is required at login, direct state reads, and live replacement; mismatches fail before credential persistence or Online state |
 | Desktop reconnect and stale-event safety | Verified | Bounded reconnect, auth-expiry stop, canonical snapshot recovery, monotonic list/preference reducers |
 | Native notifications | Verified | Complete/Snooze/Open actions plus stable-ID replay-until-desktop-ack pass reducer, transport, and live reconnect tests |
 | CLI and JSON output | Verified | Collaboration, mutation, snooze, backup/restore, and open commands work; shared mutations fail closed unless owner status is Online |
@@ -42,7 +43,7 @@ learning, and urgent alarms) is also deferred under the current directive.
 
 The first multiplayer release cannot be called complete until:
 
-- supported mixed-client/mixed-desk combinations and a longer real-ship
-  restart/key-continuity soak pass;
+- a longer real-ship restart/key-continuity soak passes using the lockstep
+  deployment policy in `TEND_COMPATIBILITY.md`;
 - the manual Omarchy accessibility and multi-monitor checklist passes on a
   supported release candidate.

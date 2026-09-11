@@ -297,7 +297,8 @@
         %snapshot
       %+  frond  %snapshot
       %-  pairs
-      :~  [%lists (lists-json lists.upd)]
+      :~  [%protocol-version (numb 1)]
+          [%lists (lists-json lists.upd)]
           [%preferences (preferences-json preferences.upd)]
           [%snoozes (snoozes-json snoozes.upd)]
       ==

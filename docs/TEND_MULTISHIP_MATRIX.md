@@ -30,6 +30,7 @@ cover planet-, moon-, and comet-shaped identities.
 | Scenario | Expected invariant | Result |
 | --- | --- | --- |
 | Owner invites two ships | Each target receives an authenticated invitation; disclosure is limited to the selected complete list | Pass |
+| Desktop protocol handshake | All three state scries require exact snapshot protocol 1 | Pass; current desktop transport accepted all three live desks |
 | Invite policy | `~bus` receives `can-invite`; `~nec` does not | Pass |
 | Both accept | Each home agent allocates a local alias and stores a non-authoritative replica | Pass |
 | Participant edit | `~bus` adds one reminder while owner is Online | Pass; owner and both replicas converged |
@@ -83,9 +84,10 @@ it uses the supplied private Eyre cookie jars.
 
 ## Remaining release-candidate cases
 
-- Verify supported mixed-client and mixed-desk version combinations.
 - Run a longer real-ship soak, including pier continuity/key rotation and
   planet, moon, and comet identities rather than fake identities.
 
-Until those gates pass, the peer protocol is a working pre-release protocol,
-not a stable compatibility promise.
+Mixed pre-release desk versions are explicitly unsupported; the frozen
+lockstep deployment matrix is in `TEND_COMPATIBILITY.md`. Until the real-ship
+gate passes, the peer protocol is a working pre-release protocol, not a stable
+compatibility promise.
