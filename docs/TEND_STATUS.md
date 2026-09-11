@@ -57,7 +57,8 @@ Last verified: 2026-09-10
   display values while Gall stores canonical `@da` instants. A live
   Los Angeles wall-time action was verified against its UTC value. Recurring
   completion advances hourly/daily/weekly/monthly/yearly rules with end/count
-  enforcement.
+  enforcement. All-day rows and editors show the calendar date without the
+  policy alert time, and Today compares that date rather than the UTC instant.
 - The agent persists delivered alert offsets, keeps one generation-tagged
   earliest Behn timer, and emits alert events that the desktop maps to native
   notifications. Live tests verified an immediate overdue wake and recurrence

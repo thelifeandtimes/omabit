@@ -80,7 +80,9 @@ saving gap is rejected; an ambiguous fold selects the earlier instant. For an
 all-day reminder, the user's configured all-day alert minute is interpreted in
 the selected zone. Stream updates add display-only `local-due` and `local-end`
 fields derived from the canonical instant and stored zone. Those fields are
-never persisted or sent in `%tend-action-1`.
+never persisted or sent in `%tend-action-1`. Today evaluates enriched all-day
+reminders by that local calendar date rather than by the UTC alert instant;
+the user's all-day-overdue preference decides whether earlier dates remain.
 
 The current resource ceilings are 10,000 hosted lists, 10,000 sections per
 list, and 100,000 reminders per list. Notes are capped at 64 KiB, URLs at 8

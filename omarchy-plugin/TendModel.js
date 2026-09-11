@@ -340,6 +340,24 @@ function urbitDateMs(value) {
   return Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5]), Number(match[6]))
 }
 
+function localDateKey(value) {
+  const match = /^(\d{4}-\d{2}-\d{2})(?:T|$)/.exec(String(value || ""))
+  return match ? match[1] : ""
+}
+
+function dateKey(date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return year + "-" + month + "-" + day
+}
+
+function scheduleInputValue(schedule) {
+  if (!schedule) return ""
+  const value = String(schedule.localDue || schedule["local-due"] || schedule.dueAt || schedule["due-at"] || "")
+  return (schedule.allDay === true || schedule["all-day"] === true) && localDateKey(value) ? localDateKey(value) : value
+}
+
 function queryReminders(lists, options, nowMs) {
   options = options || {}
   const view = String(options.view || "list")
@@ -350,6 +368,7 @@ function queryReminders(lists, options, nowMs) {
   const now = new Date(nowMs === undefined ? Date.now() : nowMs)
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime()
+  const todayKey = dateKey(now)
   const items = []
 
   normalized.forEach(function(list) {
@@ -358,8 +377,13 @@ function queryReminders(lists, options, nowMs) {
       const dueMs = reminder.schedule ? urbitDateMs(reminder.schedule.dueAt) : NaN
       var matchesView = true
       if (view === "today") {
-        matchesView = !reminder.completed && Number.isFinite(dueMs) && dueMs < tomorrow
-        if (matchesView && reminder.schedule.allDay && dueMs < today && options.allDayOverdue === false) matchesView = false
+        const allDayKey = reminder.schedule && reminder.schedule.allDay ? localDateKey(reminder.schedule.localDue) : ""
+        if (allDayKey) {
+          matchesView = !reminder.completed && (options.allDayOverdue === false ? allDayKey === todayKey : allDayKey <= todayKey)
+        } else {
+          matchesView = !reminder.completed && Number.isFinite(dueMs) && dueMs < tomorrow
+          if (matchesView && reminder.schedule.allDay && dueMs < today && options.allDayOverdue === false) matchesView = false
+        }
       }
       else if (view === "scheduled") matchesView = !reminder.completed && reminder.schedule !== null
       else if (view === "all") matchesView = !reminder.completed
@@ -500,5 +524,5 @@ function safeExternalUrl(value) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren, manualDropPlacement: manualDropPlacement, safeExternalUrl: safeExternalUrl }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, scheduleInputValue: scheduleInputValue, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren, manualDropPlacement: manualDropPlacement, safeExternalUrl: safeExternalUrl }
 }

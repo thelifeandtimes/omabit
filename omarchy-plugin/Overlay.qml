@@ -316,7 +316,7 @@ Item {
         reminderPriority.currentIndex = Math.max(0, reminderPriority.model.indexOf(reminder.priority));
         reminderFlagged.checked = reminder.flagged;
         reminderTags.text = reminder.tags.join(", ");
-        reminderDue.text = reminder.schedule ? (reminder.schedule.localDue || reminder.schedule.dueAt) : "";
+        reminderDue.text = TendModel.scheduleInputValue(reminder.schedule);
         reminderAllDay.checked = reminder.schedule ? reminder.schedule.allDay : false;
         reminderTimezone.text = reminder.schedule ? reminder.schedule.timezone : localTimezone();
         reminderEarly.text = reminder.schedule ? reminder.schedule.earlySeconds.map(function(seconds) {
@@ -1933,7 +1933,7 @@ Item {
                                                 var section = root.sectionTitleFor(modelData.listId, modelData.sectionId);
                                                 var depth = Math.max(0, Number(modelData.depth || 0));
                                                 var prefix = depth === 0 ? "" : Array(depth + 1).join("  ") + "↳ ";
-                                                var due = modelData.schedule ? "  ·  " + String(modelData.schedule.localDue || modelData.schedule.dueAt).replace("T", " ") : "";
+                                                var due = modelData.schedule ? "  ·  " + TendModel.scheduleInputValue(modelData.schedule).replace("T", " ") : "";
                                                 return prefix + modelData.title + list + (section ? "  ·  " + section : "") + due;
                                             }
                                             color: Color.menu.text

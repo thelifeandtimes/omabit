@@ -338,6 +338,25 @@ test("transport-enriched wall-clock schedule fields survive model normalization"
   })
   assert.equal(schedule.localDue, "2026-09-10T17:30")
   assert.equal(schedule.recurrence.localEnd, "2026-10-01T17:30")
+  assert.equal(model.scheduleInputValue(schedule), "2026-09-10T17:30")
+  schedule.allDay = true
+  assert.equal(model.scheduleInputValue(schedule), "2026-09-10")
+})
+
+test("Today evaluates enriched all-day reminders by calendar date", () => {
+  const now = new Date(2026, 8, 10, 12, 0, 0).getTime()
+  const lists = [{
+    id: 1,
+    title: "Dates",
+    revision: 1,
+    reminders: [
+      { id: 1, title: "Yesterday", completed: false, schedule: { "due-at": "~2026.9.10..23.00.00", "all-day": true, "local-due": "2026-09-09T09:00" } },
+      { id: 2, title: "Today", completed: false, schedule: { "due-at": "~2026.9.11..23.00.00", "all-day": true, "local-due": "2026-09-10T09:00" } },
+      { id: 3, title: "Tomorrow but early UTC", completed: false, schedule: { "due-at": "~2026.9.10..16.00.00", "all-day": true, "local-due": "2026-09-11T09:00" } }
+    ]
+  }]
+  assert.deepEqual(model.queryReminders(lists, { view: "today", allDayOverdue: true }, now).map(item => item.title), ["Yesterday", "Today"])
+  assert.deepEqual(model.queryReminders(lists, { view: "today", allDayOverdue: false }, now).map(item => item.title), ["Today"])
 })
 
 test("manual drop placement accepts only changed sibling order", () => {
