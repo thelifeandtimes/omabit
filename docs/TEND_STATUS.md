@@ -5,7 +5,7 @@ Last verified: 2026-09-10
 ## Working now
 
 - `%tend` installs and hot-reloads on a live fake ship.
-- Existing `%0` through `%8` state migrates to the current `%9`
+- Existing `%0` through `%9` state migrates to the current `%10`
   schema without losing lists, reminders, schedules, preferences, or snoozes.
 - Authenticated Eyre login, identity scry, SSE subscribe/ack, reconnect, and
   poke acknowledgement work through the dependency-free desktop bridge.
@@ -100,9 +100,10 @@ Last verified: 2026-09-10
   update, and preserved it across Gall suspend/revive.
 - `%7` adds restart-safe owner and peer sessions plus liveness generations.
   `%8` adds durable notification presentation and a newest-4,096 operation
-  receipt order. `%9` adds separate hosted and replica activity stores. All
-  three migrations compiled and were exercised on live desks without losing
-  existing lists.
+  receipt order. `%9` adds separate hosted and replica activity stores. `%10`
+  adds participant-local list order, per-list presentation, collaboration-alert
+  policy, and durable collaboration notifications. These migrations compile
+  and were exercised on live desks without losing existing lists.
 - The authenticated `/all` stream now emits one access record per visible list,
   including canonical host, owner flag, Online/Checking/Offline state, members,
   and pending invitations. The Omarchy UI visibly marks owner availability and
@@ -155,6 +156,18 @@ Last verified: 2026-09-10
   live-subscription replication with participant-local list aliases. A live
   two-reminder recurrence batch produced distinct stable IDs and preserved both
   completed due instants before the reminders were removed.
+- Each ship now persists its own complete list ordering and per-list
+  sort/direction without modifying the shared list. Pinned lists remain first;
+  the overlay exposes explicit unpinned-list movement and restores each list's
+  view when selection or local settings change. The `/settings` scry and live
+  settings updates round-tripped on both owner and participant fake ships.
+- Add, complete, and assignment collaboration notifications are generated from
+  authenticated activity and filtered by a participant-local policy. They use
+  stable durable IDs, replay until acknowledged, never notify an actor about
+  their own operation, and clean up with removed lists. A live owner/participant
+  run verified category suppression, completion and assignment delivery,
+  reconnect replay, acknowledgement, leave cleanup, and restart pruning of an
+  older orphaned due alert.
 - Deterministic release packaging includes the desk, validated Omarchy plugin,
   CLI, installer, documentation, and per-file checksums. The installer refuses
   symlink targets and preserves forced replacements as timestamped backups.
@@ -171,12 +184,10 @@ Last verified: 2026-09-10
 
 ## Next
 
-1. Add participant-local add/complete/assignment notification preferences.
-2. Persist per-participant sort direction and general list ordering, then finish
-   compact-surface and multi-monitor refinement.
-3. Add automated migration fixtures for every saved-state version, extend the
+1. Add automated migration fixtures for every saved-state version, extend the
    multi-ship fault/mixed-version harness, complete manual assistive-technology
    validation, and run release-candidate soak tests.
+2. Finish compact-surface and multi-monitor refinement.
 
 The current Core reconciliation and honest release blockers are tracked in
 [`TEND_RELEASE_CHECKLIST.md`](TEND_RELEASE_CHECKLIST.md).

@@ -347,6 +347,16 @@ def scry_activities(config_path: Path, cookie_path: Path, list_id: int) -> list[
     return body["activities"]
 
 
+def scry_settings(config_path: Path, cookie_path: Path) -> dict[str, object]:
+    connection = read_connection(config_path)
+    opener, _ = opener_for(cookie_path)
+    result = json_request(opener, connection["baseUrl"] + "/~/scry/tend/settings.json")
+    body = result.get("local-settings-updated") if isinstance(result, dict) else None
+    if not isinstance(body, dict):
+        raise TendTransportError("Tend returned an invalid local-settings response")
+    return body
+
+
 def scry_receipt(config_path: Path, cookie_path: Path, operation_id: str) -> dict[str, object] | None:
     if not operation_id or len(operation_id.encode("utf-8")) > 256:
         raise TendTransportError("The Tend operation ID is invalid")
@@ -598,6 +608,10 @@ def parser() -> argparse.ArgumentParser:
     state_parser.add_argument("--cookie", type=Path, required=True)
     state_parser.add_argument("--config", type=Path, required=True)
 
+    settings_parser = commands.add_parser("settings")
+    settings_parser.add_argument("--cookie", type=Path, required=True)
+    settings_parser.add_argument("--config", type=Path, required=True)
+
     disconnect_parser = commands.add_parser("disconnect")
     disconnect_parser.add_argument("--cookie", type=Path, required=True)
     disconnect_parser.add_argument("--config", type=Path, required=True)
@@ -618,6 +632,8 @@ def main(argv: list[str] | None = None) -> int:
             result = poke(args.config, args.cookie, json.load(sys.stdin))
         elif args.command == "state":
             result = scry_state(args.config, args.cookie)
+        elif args.command == "settings":
+            result = scry_settings(args.config, args.cookie)
         elif args.command == "disconnect":
             result = disconnect(args.cookie, args.config)
         else:

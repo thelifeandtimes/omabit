@@ -129,6 +129,37 @@
     ^-  json
     [%a (turn values activity-json)]
   ::
+  ++  presentations-json
+    |=  values=list-presentations:sur
+    ^-  json
+    =/  entries=(list json)
+      %-  ~(rep by values)
+      |=  [[id=list-id:sur value=list-presentation:sur] acc=(list json)]
+      =/  item=json
+        %-  pairs
+        :~  [%list-id (numb id)]
+            [%sort s+sort.value]
+            [%descending b+descending.value]
+        ==
+      [item acc]
+    [%a entries]
+  ::
+  ++  collaboration-policies-json
+    |=  values=collaboration-policies:sur
+    ^-  json
+    =/  entries=(list json)
+      %-  ~(rep by values)
+      |=  [[id=list-id:sur policy=collaboration-policy:sur] acc=(list json)]
+      =/  item=json
+        %-  pairs
+        :~  [%list-id (numb id)]
+            [%notify-added b+notify-added.policy]
+            [%notify-completed b+notify-completed.policy]
+            [%notify-assigned b+notify-assigned.policy]
+        ==
+      [item acc]
+    [%a entries]
+  ::
   ++  invitation-json
     |=  value=invitation:sur
     ^-  json
@@ -328,6 +359,24 @@
           [%activities (activities-json activities.upd)]
       ==
     ::
+        %local-settings-updated
+      %+  frond  %local-settings-updated
+      %-  pairs
+      :~  [%list-order (number-list-json list-order.upd)]
+          [%presentations (presentations-json presentations.upd)]
+          [%collaboration-policies (collaboration-policies-json collaboration-policies.upd)]
+      ==
+    ::
+        %collaboration-alert
+      %+  frond  %collaboration-alert
+      %-  pairs
+      :~  [%notification-id s+notification-id.upd]
+          [%list-id (numb list-id.upd)]
+          [%reminder-id (unit-number-json reminder-id.upd)]
+          [%actor s+(scot %p actor.upd)]
+          [%kind s+kind.upd]
+      ==
+    ::
         %accesses
       %+  frond  %accesses
       (accesses-json accesses.upd)
@@ -407,6 +456,18 @@
       %today     %today
       %assigned  %assigned
       %none      %none
+    ==
+  ::
+  ++  list-sort
+    |=  jon=json
+    ^-  list-sort:sur
+    =/  value=@t  (so jon)
+    ?+  value  !!
+      %manual    %manual
+      %due       %due
+      %created   %created
+      %priority  %priority
+      %title     %title
     ==
   ::
   ++  date
@@ -642,6 +703,21 @@
       =/  [=op-id badge=badge-mode:sur all-day-alert-minute=@ud all-day-overdue=? base-revision=@ud]
         ((ot [[%operation-id so] [%badge-mode badge-mode] [%all-day-alert-minute ni] [%all-day-overdue bo] [%base-revision ni] ~]) body)
       [%set-reminder-policy op-id badge all-day-alert-minute all-day-overdue base-revision]
+    ::
+        %set-list-order
+      =/  [=op-id list-ids=(list @ud)]
+        ((ot [[%operation-id so] [%list-ids (ar ni)] ~]) body)
+      [%set-list-order op-id list-ids]
+    ::
+        %set-list-presentation
+      =/  [=op-id =list-id sort=list-sort:sur descending=?]
+        ((ot [[%operation-id so] [%list-id ni] [%sort list-sort] [%descending bo] ~]) body)
+      [%set-list-presentation op-id list-id sort descending]
+    ::
+        %set-collaboration-policy
+      =/  [=op-id =list-id notify-added=? notify-completed=? notify-assigned=?]
+        ((ot [[%operation-id so] [%list-id ni] [%notify-added bo] [%notify-completed bo] [%notify-assigned bo] ~]) body)
+      [%set-collaboration-policy op-id list-id notify-added notify-completed notify-assigned]
     ::
         %snooze-reminder
       =/  [=op-id =list-id =reminder-id until=@da]

@@ -68,7 +68,9 @@ Item {
         return "HOSTED BY " + selectedAccess.host.toUpperCase() + " · " + selectedAccess.status.toUpperCase();
     }
     readonly property var selectedActivities: TendModel.activitiesForList(service ? service.activities : [], selectedList ? selectedList.id : 0)
-    readonly property var orderedLists: TendModel.orderedLists(service ? service.lists : [], service ? service.preferences.pinnedLists : [])
+    readonly property var selectedPresentation: TendModel.presentationForList(service ? service.localSettings : null, selectedList ? selectedList.id : 0)
+    readonly property var selectedCollaborationPolicy: TendModel.collaborationPolicyForList(service ? service.localSettings : null, selectedList ? selectedList.id : 0)
+    readonly property var orderedLists: TendModel.orderedLists(service ? service.lists : [], service ? service.preferences.pinnedLists : [], service ? service.localSettings.listOrder : [])
     readonly property var availableViews: ["today", "scheduled", "all", "flagged", "assigned", "completed"]
     readonly property var orderedViews: TendModel.orderedValues(availableViews, service ? service.preferences.pinnedViews : [])
     readonly property var availableTags: TendModel.allTags(service ? service.lists : [])
@@ -301,6 +303,58 @@ Item {
         var pins = movePinnedValue(service.preferences.pinnedLists, selectedList.id, delta);
         if (pins !== service.preferences.pinnedLists)
             updatePreferences(service.preferences.defaultList, pins, service.preferences.pinnedViews);
+    }
+
+    function loadSelectedPresentation() {
+        if (!selectedList)
+            return ;
+        var presentation = TendModel.presentationForList(service ? service.localSettings : null, selectedList.id);
+        sortMode = presentation.sort;
+        sortDescending = presentation.descending;
+    }
+
+    function saveSelectedPresentation() {
+        if (service && selectedList)
+            service.setListPresentation(selectedList.id, sortMode, sortDescending);
+    }
+
+    function unpinnedListIds() {
+        if (!service)
+            return [];
+        var pins = service.preferences.pinnedLists || [];
+        return TendModel.orderedLists(service.lists, [], service.localSettings.listOrder).filter(function(list) {
+            return pins.indexOf(list.id) === -1;
+        }).map(function(list) { return list.id; });
+    }
+
+    function canMoveList(delta) {
+        if (!selectedList || !service || service.preferences.pinnedLists.indexOf(selectedList.id) !== -1)
+            return false;
+        var ids = unpinnedListIds();
+        var index = ids.indexOf(selectedList.id);
+        return index >= 0 && index + delta >= 0 && index + delta < ids.length;
+    }
+
+    function moveList(delta) {
+        if (!canMoveList(delta))
+            return ;
+        var order = TendModel.orderedLists(service.lists, [], service.localSettings.listOrder).map(function(list) { return list.id; });
+        var unpinned = unpinnedListIds();
+        var index = unpinned.indexOf(selectedList.id);
+        var targetId = unpinned[index + delta];
+        var sourceIndex = order.indexOf(selectedList.id);
+        var targetIndex = order.indexOf(targetId);
+        var swap = order[targetIndex];
+        order[targetIndex] = order[sourceIndex];
+        order[sourceIndex] = swap;
+        service.setListOrder(order);
+    }
+
+    onSelectedListIdChanged: loadSelectedPresentation()
+
+    Connections {
+        target: root.service
+        function onLocalSettingsChanged() { root.loadSelectedPresentation(); }
     }
 
     function movePinnedView(view, delta) {
@@ -869,7 +923,7 @@ Item {
                                 id: captureList
 
                                 width: parent.width - captureEntry.width - captureAdd.width - Style.space(16)
-                                model: service ? TendModel.orderedLists(service.lists, service.preferences.pinnedLists) : []
+                                model: service ? TendModel.orderedLists(service.lists, service.preferences.pinnedLists, service.localSettings.listOrder) : []
                                 textRole: "title"
                                 Accessible.name: "Destination list"
                             }
@@ -1295,6 +1349,35 @@ Item {
 
                             }
 
+                            Row {
+                                visible: root.listEditorOpen && root.selectedList !== null && service && service.preferences.pinnedLists.indexOf(root.selectedList.id) === -1
+                                width: parent.width
+                                spacing: Style.space(6)
+
+                                Button {
+                                    text: "List ↑"
+                                    enabled: root.canMoveList(-1) && service.connectionState === "online" && !service.mutationPending
+                                    Accessible.name: "Move selected unpinned list up"
+                                    onClicked: root.moveList(-1)
+                                }
+
+                                Button {
+                                    text: "List ↓"
+                                    enabled: root.canMoveList(1) && service.connectionState === "online" && !service.mutationPending
+                                    Accessible.name: "Move selected unpinned list down"
+                                    onClicked: root.moveList(1)
+                                }
+
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: "List order is private to this ship."
+                                    color: Color.menu.text
+                                    opacity: 0.68
+                                    font.family: Style.font.menuFamily
+                                    font.pixelSize: Style.font.caption
+                                }
+                            }
+
                             Column {
                                 visible: root.listEditorOpen && root.selectedList !== null && root.selectedAccess !== null
                                 width: parent.width
@@ -1413,6 +1496,46 @@ Item {
                                 }
 
                                 Text {
+                                    text: "My collaboration notifications"
+                                    color: Color.menu.text
+                                    font.family: Style.font.menuFamily
+                                    font.pixelSize: Style.font.caption
+                                    font.bold: true
+                                }
+
+                                Row {
+                                    width: parent.width
+                                    spacing: Style.space(8)
+
+                                    CheckBox {
+                                        id: notifyAdded
+                                        text: "Items added"
+                                        checked: root.selectedCollaborationPolicy.notifyAdded
+                                        enabled: service && service.connectionState === "online" && !service.mutationPending
+                                        Accessible.name: "Notify when another collaborator adds an item"
+                                        onClicked: service.setCollaborationPolicy(root.selectedList.id, checked, notifyCompleted.checked, notifyAssigned.checked)
+                                    }
+
+                                    CheckBox {
+                                        id: notifyCompleted
+                                        text: "Items completed"
+                                        checked: root.selectedCollaborationPolicy.notifyCompleted
+                                        enabled: service && service.connectionState === "online" && !service.mutationPending
+                                        Accessible.name: "Notify when another collaborator completes an item"
+                                        onClicked: service.setCollaborationPolicy(root.selectedList.id, notifyAdded.checked, checked, notifyAssigned.checked)
+                                    }
+
+                                    CheckBox {
+                                        id: notifyAssigned
+                                        text: "Assigned to me"
+                                        checked: root.selectedCollaborationPolicy.notifyAssigned
+                                        enabled: service && service.connectionState === "online" && !service.mutationPending
+                                        Accessible.name: "Notify when another collaborator assigns an item to me"
+                                        onClicked: service.setCollaborationPolicy(root.selectedList.id, notifyAdded.checked, notifyCompleted.checked, checked)
+                                    }
+                                }
+
+                                Text {
                                     visible: root.selectedActivities.length > 0
                                     text: "Recent activity"
                                     color: Color.menu.text
@@ -1465,14 +1588,23 @@ Item {
 
                                     width: parent.width * 0.2
                                     model: ["manual", "due", "created", "priority", "title"]
+                                    currentIndex: Math.max(0, model.indexOf(root.sortMode))
                                     Accessible.name: "Reminder sort order"
-                                    onCurrentTextChanged: root.sortMode = currentText
+                                    onActivated: {
+                                        root.sortMode = currentText;
+                                        if (root.viewMode === "list")
+                                            root.saveSelectedPresentation();
+                                    }
                                 }
 
                                 CheckBox {
                                     text: "Descending"
                                     checked: root.sortDescending
-                                    onToggled: root.sortDescending = checked
+                                    onClicked: {
+                                        root.sortDescending = checked;
+                                        if (root.viewMode === "list")
+                                            root.saveSelectedPresentation();
+                                    }
                                 }
 
                             }

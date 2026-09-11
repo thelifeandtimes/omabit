@@ -20,6 +20,7 @@ Item {
     property var invitations: []
     property var pendingOperations: []
     property var activities: []
+    property var localSettings: TendModel.cloneLocalSettings(null)
     property var lastAlert: null
     property var notificationQueue: []
     property var notificationAckQueue: []
@@ -365,6 +366,38 @@ Item {
         });
     }
 
+    function setListOrder(listIds) {
+        return submit({
+            "set-list-order": {
+                "operation-id": operationId(),
+                "list-ids": (listIds || []).map(Number)
+            }
+        });
+    }
+
+    function setListPresentation(listId, sort, descending) {
+        return submit({
+            "set-list-presentation": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "sort": String(sort || "manual"),
+                "descending": descending === true
+            }
+        });
+    }
+
+    function setCollaborationPolicy(listId, notifyAdded, notifyCompleted, notifyAssigned) {
+        return submit({
+            "set-collaboration-policy": {
+                "operation-id": operationId(),
+                "list-id": Number(listId),
+                "notify-added": notifyAdded === true,
+                "notify-completed": notifyCompleted === true,
+                "notify-assigned": notifyAssigned === true
+            }
+        });
+    }
+
     function snoozeReminder(listId, reminderId, seconds) {
         var until = new Date(Date.now() + Math.max(1, Number(seconds || 0)) * 1000);
         return snoozeReminderUntil(listId, reminderId, until.toISOString());
@@ -516,6 +549,11 @@ Item {
 
             if (message.json && message.json["activities-updated"]) {
                 root.activities = TendModel.reduceActivities(root.activities, message.json);
+                return ;
+            }
+
+            if (message.json && message.json["local-settings-updated"]) {
+                root.localSettings = TendModel.reduceLocalSettings(root.localSettings, message.json);
                 return ;
             }
 
@@ -671,8 +709,13 @@ Item {
         var reminder = reminderById(list, alert.reminderId);
         if (reminder)
             title = reminder.title;
-
-        notificationProcess.command = ["notify-send", "--app-name=Tend", "--action=complete=Complete", "--action=snooze=Snooze", "--action=open=Open", alert.snoozed ? "Tend · Snoozed reminder" : "Tend", title];
+        if (alert.type === "collaboration") {
+            var actor = String(alert.actor || "A collaborator");
+            var summary = alert.kind === "completed" ? actor + " completed" : alert.kind === "assigned" ? actor + " assigned to you" : actor + " added";
+            notificationProcess.command = ["notify-send", "--app-name=Tend", "--action=open=Open", "Tend · " + summary, title];
+        } else {
+            notificationProcess.command = ["notify-send", "--app-name=Tend", "--action=complete=Complete", "--action=snooze=Snooze", "--action=open=Open", alert.snoozed ? "Tend · Snoozed reminder" : "Tend", title];
+        }
         notificationProcess.running = true;
     }
 
@@ -809,6 +852,7 @@ Item {
             root.invitations = [];
             root.pendingOperations = [];
             root.activities = [];
+            root.localSettings = TendModel.cloneLocalSettings(null);
             root.notificationQueue = [];
             root.notificationAckQueue = [];
             root.connectionState = "disconnected";

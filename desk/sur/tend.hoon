@@ -224,6 +224,18 @@
       all-day-alert-minute=@ud
       all-day-overdue=?
   ==
++$  list-sort  $?(%manual %due %created %priority %title)
++$  list-presentation
+  $:  sort=list-sort
+      descending=?
+  ==
++$  list-presentations  (map list-id list-presentation)
++$  collaboration-policy
+  $:  notify-added=?
+      notify-completed=?
+      notify-assigned=?
+  ==
++$  collaboration-policies  (map list-id collaboration-policy)
 +$  snooze-key  [list-id reminder-id]
 +$  snoozes     (map snooze-key @da)
 ::
@@ -307,6 +319,15 @@
           all-day-alert-minute=@ud
           all-day-overdue=?
           base-revision=@ud
+      ==
+      [%set-list-order =op-id list-ids=(list list-id)]
+      [%set-list-presentation =op-id =list-id sort=list-sort descending=?]
+      $:  %set-collaboration-policy
+          =op-id
+          =list-id
+          notify-added=?
+          notify-completed=?
+          notify-assigned=?
       ==
       [%snooze-reminder =op-id =list-id =reminder-id until=@da]
       [%replace-tag =op-id from=@t to=(unit @t)]
@@ -433,6 +454,16 @@
   ==
 +$  activity-log  (list activity)
 +$  activity-map  (map list-id activity-log)
++$  collaboration-kind  $?(%added %completed %assigned)
++$  collaboration-notification
+  $:  id=op-id
+      =list-id
+      reminder-id=(unit reminder-id)
+      actor=@p
+      kind=collaboration-kind
+      created-at=@da
+  ==
++$  collaboration-notifications  (map op-id collaboration-notification)
 +$  peer-message
   $%  $:  %invite
           token=op-id
@@ -480,6 +511,18 @@
       [%alert notification-id=op-id =list-id =reminder-id due-at=@da early-seconds=@ud snoozed=?]
       [%notification-acked =op-id notification-id=op-id]
       [%activities-updated =list-id activities=activity-log]
+      $:  %local-settings-updated
+          list-order=(list list-id)
+          presentations=list-presentations
+          collaboration-policies=collaboration-policies
+      ==
+      $:  %collaboration-alert
+          notification-id=op-id
+          =list-id
+          reminder-id=(unit reminder-id)
+          actor=@p
+          kind=collaboration-kind
+      ==
       [%accesses =accesses]
       [%invitations-updated =invitations]
       [%operation-pending =op-id =list-id]
@@ -637,5 +680,35 @@
       receipt-order=(list op-id)
       hosted-activity-map=activity-map
       replica-activity-map=activity-map
+  ==
+::
+::  Participant-local presentation and collaboration notification state.
+::  None of these fields are replicated to a list owner or another member.
+::
++$  state-10
+  $:  %10
+      next-id=@ud
+      list-map=lists
+      receipt-map=receipts
+      preferences=preferences
+      timer-generation=@ud
+      next-wake=(unit @da)
+      snooze-map=snoozes
+      share-map=shares
+      replica-map=replicas
+      invitation-map=invitations
+      in-flight-map=in-flights
+      host-session=@da
+      peer-session-map=peer-sessions
+      liveness-generation=@ud
+      notification-map=notifications
+      replica-alert-set=replica-alerts
+      receipt-order=(list op-id)
+      hosted-activity-map=activity-map
+      replica-activity-map=activity-map
+      list-order=(list list-id)
+      presentation-map=list-presentations
+      collaboration-policy-map=collaboration-policies
+      collaboration-notification-map=collaboration-notifications
   ==
 --

@@ -95,6 +95,14 @@ class EyreHandler(BaseHTTPRequestHandler):
             self.send_bytes(200, body)
             return
 
+        if self.path == "/~/scry/tend/settings.json":
+            if f"{self.server.cookie_name}=session" not in self.headers.get("Cookie", ""):
+                self.send_bytes(403, b"forbidden", "text/plain")
+                return
+            body = self.server.settings_body or json.dumps({"local-settings-updated": {"list-order": [], "presentations": [], "collaboration-policies": []}}).encode("utf-8")
+            self.send_bytes(200, body)
+            return
+
         if self.path.startswith("/~/scry/tend/receipt/"):
             if f"{self.server.cookie_name}=session" not in self.headers.get("Cookie", ""):
                 self.send_bytes(403, b"forbidden", "text/plain")
@@ -140,6 +148,7 @@ class FakeEyre:
         self.server.accesses_body = b""
         self.server.invitations_body = b""
         self.server.activities_body = b""
+        self.server.settings_body = b""
         self.server.receipt_body = b""
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -405,6 +414,9 @@ class EyreFlowTests(unittest.TestCase):
                 eyre_client.scry_activities(self.config, self.cookie, 1),
                 [{"id": "event-1"}],
             )
+            settings = {"list-order": [2, 1], "presentations": [], "collaboration-policies": []}
+            fake.server.settings_body = json.dumps({"local-settings-updated": settings}).encode("utf-8")
+            self.assertEqual(eyre_client.scry_settings(self.config, self.cookie), settings)
             self.assertIsNone(eyre_client.scry_receipt(self.config, self.cookie, "missing"))
             fake.server.receipt_body = json.dumps({"snapshot": {"lists": []}}).encode("utf-8")
             self.assertEqual(

@@ -37,6 +37,9 @@ returns its recorded result without applying it twice.
 | `set-completed` | Complete/uncomplete a reminder tree, or advance a repeating reminder |
 | `set-preferences` | Atomically update revisioned default-list, pin, and snooze-preset state |
 | `set-reminder-policy` | Atomically update badge mode, all-day alert minute, and all-day-overdue behavior |
+| `set-list-order` | Replace this ship's private order for every currently visible list |
+| `set-list-presentation` | Save this ship's private sort and direction for one visible list |
+| `set-collaboration-policy` | Save this ship's private add/complete/assignment notification choices for one visible list |
 | `snooze-reminder` | Schedule a personal one-shot alert without modifying shared reminder data |
 | `replace-tag` | Rename, merge, or delete one tag across the user's hosted reminders |
 | `delete-reminder` | Delete a reminder and all descendants |
@@ -108,7 +111,7 @@ carry revisions or Urbit timestamps. `alert` identifies the reminder, due
 instant, early offset, whether it is a snooze wake, and a stable notification
 ID; the desktop maps that event to a native notification. Alerts remain in
 Gall's durable pending-notification map and are replayed to a newly subscribed
-desktop until `ack-alert` removes them.
+desktop until `ack-notification` removes them.
 
 The desktop queues native notifications so each alert can expose Complete,
 Snooze, and Open actions. Complete uses the current list revision, Snooze uses
@@ -135,6 +138,15 @@ keeps its own history. The overlay renders this log in list settings, and
 `omabit tend activity LIST` exposes the same data to scripts and terminals. A
 log retains the newest 1,000 entries per list.
 
+`local-settings-updated` replaces private list order, per-list presentation,
+and collaboration-notification policy for the currently authenticated ship.
+Those settings are never included in peer snapshots. `collaboration-alert`
+identifies the list, optional reminder, authenticated actor, event category,
+and stable notification ID. Each participant derives these alerts from newly
+received activity using its local policy; the actor never receives one for its
+own operation. Collaboration alerts share the durable replay and
+`ack-notification` lifecycle used by due alerts.
+
 The `%tend-peer-1` noun mark carries invite/accept/decline/leave, canonical list
 snapshots, mutations, removals, liveness messages, and mutation rejections.
 Inviting a ship transmits the complete selected list, its membership metadata,
@@ -152,23 +164,28 @@ in the future. Those constants are protocol behavior in the current pre-release
 and may be tuned before a stable wire-version commitment.
 
 Authenticated scries expose `/state`, `/accesses`, `/invitations`,
-`/activities/<local-list-id>`, `/receipt/<operation-id>`, and `/whoami`.
+`/activities/<local-list-id>`, `/settings`, `/receipt/<operation-id>`, and
+`/whoami`.
 Restore uses the receipt scry to prove that Gall durably accepted or rejected
 the operation; an Eyre poke acknowledgement by itself is not reported as
 restore success.
 
 ## Persistence
 
-Gall is authoritative. State schema `%9` contains lists, the next local ID,
+Gall is authoritative. State schema `%10` contains lists, the next local ID,
 bounded operation receipts, revisioned personal preferences, active snoozes,
 Behn timer generation, hosted-share policies, remote replicas, invitations,
 in-flight operations, peer sessions/liveness generations, durable pending
-notifications, replica alert-delivery state, and separate hosted/replica
-activity maps. `+on-load` migrates `%0` through `%9`, preserving canonical
+notifications, replica alert-delivery state, separate hosted/replica activity
+maps, private list/presentation/collaboration policy, and durable collaboration
+notifications. `+on-load` migrates `%0` through `%10`, preserving canonical
 reminder data while filling newer fields with deterministic defaults. `%7`
 adds host and peer sessions plus liveness generation. `%8` adds durable
 notifications and bounded receipt ordering. `%9` adds actor-attributed activity
-and scheduled-occurrence records without changing canonical list nouns.
+and scheduled-occurrence records without changing canonical list nouns. `%10`
+adds participant-local presentation and collaboration-notification state with
+deterministic defaults. Loading also prunes pending alert records whose list is
+no longer visible.
 
 The operation receipt ledger retains the newest 4,096 receipts. Peer retries
 are deduplicated while their receipt is retained; clients must not treat an

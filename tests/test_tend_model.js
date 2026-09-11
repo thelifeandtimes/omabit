@@ -118,6 +118,62 @@ test("preferences, snoozes, and pinned list order reduce independently", () => {
   assert.equal(fired.snoozes.length, 0)
 })
 
+test("participant-local list order, presentation, and notification policy reduce independently", () => {
+  const update = {
+    "local-settings-updated": {
+      "list-order": [3, 1, 2],
+      presentations: [{ "list-id": 2, sort: "priority", descending: true }],
+      "collaboration-policies": [{
+        "list-id": 2,
+        "notify-added": false,
+        "notify-completed": true,
+        "notify-assigned": false
+      }]
+    }
+  }
+  const settings = model.reduceLocalSettings(null, update)
+  assert.deepEqual(settings.listOrder, [3, 1, 2])
+  assert.deepEqual(model.presentationForList(settings, 2), { listId: 2, sort: "priority", descending: true })
+  assert.deepEqual(model.presentationForList(settings, 99), { listId: 99, sort: "manual", descending: false })
+  assert.deepEqual(model.collaborationPolicyForList(settings, 2), {
+    listId: 2,
+    notifyAdded: false,
+    notifyCompleted: true,
+    notifyAssigned: false
+  })
+  assert.equal(model.collaborationPolicyForList(settings, 99).notifyAssigned, true)
+
+  const lists = [
+    { id: 1, title: "One", revision: 1, reminders: [] },
+    { id: 2, title: "Two", revision: 1, reminders: [] },
+    { id: 3, title: "Three", revision: 1, reminders: [] }
+  ]
+  assert.deepEqual(model.orderedLists(lists, [2], settings.listOrder).map((item) => item.id), [2, 3, 1])
+})
+
+test("collaboration alerts preserve canonical state and expose actor context", () => {
+  const initial = [{ id: 1, title: "Shared", revision: 4, reminders: [{ id: 7, title: "Milk" }] }]
+  const result = model.reduce(initial, {
+    "collaboration-alert": {
+      "notification-id": "collab-1",
+      "list-id": 1,
+      "reminder-id": 7,
+      actor: "~bus",
+      kind: "completed"
+    }
+  })
+  assert.equal(result.error, "")
+  assert.equal(result.lists[0].revision, 4)
+  assert.deepEqual(result.alert, {
+    type: "collaboration",
+    notificationId: "collab-1",
+    listId: 1,
+    reminderId: 7,
+    actor: "~bus",
+    kind: "completed"
+  })
+})
+
 test("notification acknowledgements are harmless model events", () => {
   const initial = [{ id: 1, title: "Inbox", revision: 1, reminders: [] }]
   const result = model.reduce(initial, {

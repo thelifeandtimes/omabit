@@ -47,6 +47,34 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("(scot %uv (sham [op-id.act id]))", self.agent)
         self.assertIn("?:(completed.act (activity-occurrence-for u.target id before) ~)", self.agent)
 
+    def test_state_ten_migrates_private_presentation_and_notification_defaults(self):
+        self.assertIn("state-9:t state-10:t", self.agent)
+        self.assertIn("(resume-timer (upgrade-9 old-state))", self.agent)
+        self.assertIn("++  upgrade-9", self.agent)
+        self.assertIn("*list-presentations:t", self.agent)
+        self.assertIn("*collaboration-policies:t", self.agent)
+        self.assertIn("*collaboration-notifications:t", self.agent)
+
+    def test_private_settings_are_not_routed_as_shared_mutations(self):
+        for source_contract in (
+            "%set-list-order           ~",
+            "%set-list-presentation    ~",
+            "%set-collaboration-policy  ~",
+        ):
+            self.assertIn(source_contract, self.agent)
+
+    def test_collaboration_alerts_are_local_durable_and_actor_filtered(self):
+        self.assertIn("?:  =(actor.event our.bowl)  $(events t.events)", self.agent)
+        self.assertIn("(collaboration-policy-enabled u.kind policy)", self.agent)
+        self.assertIn("nex(collaboration-notification-map notices)", self.agent)
+        self.assertIn("(queue-collaboration-activities-fact new-activities visible nex)", self.agent)
+
+    def test_removed_lists_prune_all_local_alert_state(self):
+        self.assertIn("notification-map  (without-notifications alias notification-map.st)", self.agent)
+        self.assertIn("replica-alert-set  (without-replica-alerts alias replica-alert-set.st)", self.agent)
+        self.assertIn("(prune-notifications-load notification-map.st visible)", self.agent)
+        self.assertIn("(prune-replica-alerts-load replica-alert-set.st visible)", self.agent)
+
 
 if __name__ == "__main__":
     unittest.main()

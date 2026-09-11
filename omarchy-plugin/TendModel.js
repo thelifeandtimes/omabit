@@ -74,16 +74,19 @@ function sortedLists(lists) {
   return (lists || []).map(cloneList).sort(function(a, b) { return Number(a.id) - Number(b.id) })
 }
 
-function orderedLists(lists, pinnedIds) {
+function orderedLists(lists, pinnedIds, listOrder) {
   const normalized = sortedLists(lists)
-  const order = new Map((pinnedIds || []).map(function(id, index) { return [Number(id), index] }))
+  const pinned = new Map((pinnedIds || []).map(function(id, index) { return [Number(id), index] }))
+  const general = new Map((listOrder || []).map(function(id, index) { return [Number(id), index] }))
   return normalized.sort(function(a, b) {
-    const aPinned = order.has(Number(a.id))
-    const bPinned = order.has(Number(b.id))
-    if (aPinned && bPinned) return order.get(Number(a.id)) - order.get(Number(b.id))
+    const aPinned = pinned.has(Number(a.id))
+    const bPinned = pinned.has(Number(b.id))
+    if (aPinned && bPinned) return pinned.get(Number(a.id)) - pinned.get(Number(b.id))
     if (aPinned) return -1
     if (bPinned) return 1
-    return Number(a.id) - Number(b.id)
+    const aOrder = general.has(Number(a.id)) ? general.get(Number(a.id)) : Number.MAX_SAFE_INTEGER
+    const bOrder = general.has(Number(b.id)) ? general.get(Number(b.id)) : Number.MAX_SAFE_INTEGER
+    return aOrder - bOrder || Number(a.id) - Number(b.id)
   })
 }
 
@@ -227,6 +230,52 @@ function activitiesForList(values, listId) {
   return entry ? entry.events : []
 }
 
+function cloneLocalSettings(value) {
+  value = value || {}
+  return {
+    listOrder: (value["list-order"] || value.listOrder || []).map(Number),
+    presentations: (value.presentations || []).map(function(entry) {
+      return {
+        listId: Number(entry["list-id"] === undefined ? entry.listId : entry["list-id"]),
+        sort: String(entry.sort || "manual"),
+        descending: entry.descending === true
+      }
+    }).sort(function(a, b) { return a.listId - b.listId }),
+    collaborationPolicies: (value["collaboration-policies"] || value.collaborationPolicies || []).map(function(entry) {
+      return {
+        listId: Number(entry["list-id"] === undefined ? entry.listId : entry["list-id"]),
+        notifyAdded: entry["notify-added"] === undefined ? entry.notifyAdded !== false : entry["notify-added"] === true,
+        notifyCompleted: entry["notify-completed"] === undefined ? entry.notifyCompleted !== false : entry["notify-completed"] === true,
+        notifyAssigned: entry["notify-assigned"] === undefined ? entry.notifyAssigned !== false : entry["notify-assigned"] === true
+      }
+    }).sort(function(a, b) { return a.listId - b.listId })
+  }
+}
+
+function reduceLocalSettings(current, update) {
+  if (!update || !update["local-settings-updated"]) return cloneLocalSettings(current)
+  return cloneLocalSettings(update["local-settings-updated"])
+}
+
+function presentationForList(settings, listId) {
+  const wanted = Number(listId)
+  return cloneLocalSettings(settings).presentations.find(function(entry) { return entry.listId === wanted }) || {
+    listId: wanted,
+    sort: "manual",
+    descending: false
+  }
+}
+
+function collaborationPolicyForList(settings, listId) {
+  const wanted = Number(listId)
+  return cloneLocalSettings(settings).collaborationPolicies.find(function(entry) { return entry.listId === wanted }) || {
+    listId: wanted,
+    notifyAdded: true,
+    notifyCompleted: true,
+    notifyAssigned: true
+  }
+}
+
 function resultState(lists, preferences, snoozes, accesses, invitations, pendingOperations, error, alert) {
   return {
     lists: lists,
@@ -282,6 +331,19 @@ function reduce(currentLists, update, currentPreferences, currentSnoozes, curren
         earlySeconds: Number(update.alert["early-seconds"] || 0),
         snoozed: isSnoozedAlert
       })
+  }
+
+  if (update["collaboration-alert"]) {
+    var collaboration = update["collaboration-alert"]
+    var collaborationReminder = collaboration["reminder-id"]
+    return resultState(lists, preferences, snoozes, accesses, invitations, pendingOperations, "", {
+      type: "collaboration",
+      notificationId: String(collaboration["notification-id"] || ""),
+      listId: Number(collaboration["list-id"]),
+      reminderId: collaborationReminder === null || collaborationReminder === undefined ? null : Number(collaborationReminder),
+      actor: String(collaboration.actor || ""),
+      kind: String(collaboration.kind || "added")
+    })
   }
 
   if (update["notification-acked"]) {
@@ -572,5 +634,5 @@ function safeExternalUrl(value) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, cloneActivity: cloneActivity, cloneActivities: cloneActivities, reduceActivities: reduceActivities, activitiesForList: activitiesForList, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, scheduleInputValue: scheduleInputValue, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren, manualDropPlacement: manualDropPlacement, safeExternalUrl: safeExternalUrl }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, cloneActivity: cloneActivity, cloneActivities: cloneActivities, reduceActivities: reduceActivities, activitiesForList: activitiesForList, cloneLocalSettings: cloneLocalSettings, reduceLocalSettings: reduceLocalSettings, presentationForList: presentationForList, collaborationPolicyForList: collaborationPolicyForList, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, scheduleInputValue: scheduleInputValue, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren, manualDropPlacement: manualDropPlacement, safeExternalUrl: safeExternalUrl }
 }
