@@ -117,6 +117,9 @@ Last verified: 2026-09-11
   including canonical host, owner flag, Online/Checking/Offline state, members,
   and pending invitations. The Omarchy UI visibly marks owner availability and
   disables every shared-list mutation while the host is Checking or Offline.
+- The same list status line reports when an operation submitted while Online is
+  still in Gall's in-flight ledger, including after the host transitions away
+  from Online; it is an explicit pending indicator, not an offline edit queue.
 - Owner-authoritative sharing is active. Owners can invite any valid Urbit
   ship, delegate invite permission, revoke pending or accepted access, and
   distribute complete canonical list replicas. Invitees can accept or decline;

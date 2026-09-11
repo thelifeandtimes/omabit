@@ -14,9 +14,9 @@ Last reconciled: 2026-09-11
 | Recurrence and next occurrence | Verified | Hourly through yearly advancement and boundary rules compile/live-test; individual and atomic batch completions retain one completed due instant per recurring reminder in bounded history |
 | Snooze | Verified | Durable presets, explicit future date/time, and notification action are exposed in both desktop and CLI paths |
 | Tags, flag, priority, safe URL, search | Verified | Gall validation and reducer/query tests |
-| Built-in views | Partial | Today, Scheduled, All, Flagged, Assigned, Completed verified; grocery behavior is outside the immediate Core build |
+| Built-in views | Verified | Today, Scheduled, All, Flagged, Assigned, and Completed query behavior is reducer-tested; grocery categorization remains in the deferred Parity tier |
 | Sorting, pins, default list | Verified | All sort modes, ordered list/view pins, default list, participant-local per-list sort/direction, and private unpinned-list order are durable and live-verified |
-| Full overlay and quick capture | Partial | Keyboard-first full/capture surfaces and `#tag` capture work; capture stacks on narrow outputs and opens on the invoking/focused monitor; manual multi-monitor checks remain |
+| Full overlay and quick capture | Verified locally | Keyboard-first full/capture surfaces and `#tag` capture work; capture stacks on narrow outputs and opens on the invoking/focused monitor; the physical multi-monitor pass remains a release gate |
 | Bar widget and connection state | Verified | Configurable badge, next reminder, sync state, shared-host state, click-to-open |
 | Eyre domain + `+code` authentication | Verified | Redirect/size/UTF-8/cookie hardening and rank-neutral planet/moon/comet-shaped identities |
 | Desk/client compatibility boundary | Verified | Snapshot protocol 1 is required at login, direct state reads, and live replacement; mismatches fail before credential persistence or Online state |
@@ -24,8 +24,8 @@ Last reconciled: 2026-09-11
 | Native notifications | Verified | Complete/Snooze/Open actions plus stable-ID replay-until-desktop-ack pass reducer, transport, and live reconnect tests |
 | CLI and JSON output | Verified | Collaboration, mutation, snooze, backup/restore, and open commands work; shared mutations fail closed unless owner status is Online |
 | Backup/export | Verified | Owner-only private export, offline validation, atomic empty-state restore, durable receipt verification, and second-restore rejection are tested/live-verified |
-| Accessibility | Partial | Static labels, keyboard operation, visible state cues, scaled/clamped surfaces, responsive capture, no custom motion, and QML lint; manual Orca/theme/200% scale pass remains |
-| Owner host Online/Checking/Offline gating | Verified | Gall, model, UI, and CLI block shared mutation while the owner is not Online; replicas remain readable |
+| Accessibility | Verified locally | Static labels, keyboard operation, visible state cues, scaled/clamped surfaces, responsive capture, no custom motion, and QML lint; manual Orca/theme/200% scale pass remains |
+| Owner host Online/Checking/Offline gating | Verified | Gall, model, UI, and CLI block shared mutation while the owner is not Online; replicas remain readable and the overlay labels any previously submitted edit still in flight |
 | Assignment | Verified | Desktop choices and Gall enforcement allow only the owner/current members; authorization has no rank branch |
 | Invitations, ACLs, replicas, shared edits | Verified | Repeatable three-ship harness covers convergence, 12-operation Ames pressure, restart catch-up, duplicate/stale edits, in-flight revocation, cleanup, complete selected-list disclosure, and recipient-bound capability URI parsing |
 | Activity and collaboration notifications | Verified | Bounded actor-attributed activity and occurrence records converge; participant-local add/complete/assignment policy, suppression, durable replay/ack, and cleanup are live-verified |

@@ -46,6 +46,12 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn('Accessible.name: "Copy recipient-bound Tend invitation link"', overlay)
         self.assertIn("selectByMouse: true", overlay)
 
+    def test_shared_list_status_exposes_in_flight_edits_as_text(self):
+        overlay = (ROOT / "omarchy-plugin" / "Overlay.qml").read_text(encoding="utf-8")
+        self.assertIn("service.listMutationPending(selectedList.id)", overlay)
+        self.assertIn("PREVIOUS EDIT STILL IN FLIGHT", overlay)
+        self.assertIn("Accessible.name: text", overlay)
+
 
 if __name__ == "__main__":
     unittest.main()

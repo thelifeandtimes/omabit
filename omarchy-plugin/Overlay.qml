@@ -47,6 +47,7 @@ Item {
     }
     readonly property var selectedAccess: service && selectedList ? service.accessForList(selectedList.id) : null
     readonly property bool selectedListEditable: service && selectedList ? service.canEditList(selectedList.id) : false
+    readonly property bool selectedListHasPendingOperation: service && selectedList ? service.listMutationPending(selectedList.id) : false
     readonly property bool selectedMayInvite: {
         if (!selectedAccess || !service)
             return false;
@@ -1233,11 +1234,13 @@ Item {
                             Text {
                                 visible: root.viewMode === "list" && root.selectedList !== null
                                 width: parent.width
-                                text: root.selectedHostStatus + (root.selectedListEditable ? "" : " · READ-ONLY UNTIL HOST RETURNS")
+                                text: root.selectedHostStatus + (root.selectedListEditable ? "" : " · READ-ONLY UNTIL HOST RETURNS") + (root.selectedListHasPendingOperation ? " · PREVIOUS EDIT STILL IN FLIGHT" : "")
                                 color: root.selectedListEditable ? "#22c55e" : "#f59e0b"
                                 font.family: Style.font.menuFamily
                                 font.pixelSize: Style.font.caption
                                 font.bold: true
+                                wrapMode: Text.Wrap
+                                Accessible.name: text
                             }
 
                             Row {

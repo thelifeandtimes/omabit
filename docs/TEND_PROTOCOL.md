@@ -132,7 +132,8 @@ owner flag, host status, member policies, and pending invitees for every visible
 list. `invitations-updated` replaces the local invitation inbox.
 `operation-pending` and `operation-settled` expose the remote in-flight ledger
 without creating an offline mutation queue. The desktop treats an absent,
-Checking, or Offline access record as read-only.
+Checking, or Offline access record as read-only and labels any previously
+submitted operation that is still settling.
 
 `activities-updated` replaces the bounded activity log for one locally visible
 list. Entries identify the authenticated Urbit actor, event kind, event time,

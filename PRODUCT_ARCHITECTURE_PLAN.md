@@ -100,7 +100,7 @@ Smart lists are saved queries, not containers. Deleting one must not delete matc
 | Work offline | Keep a full read-only replica; do not accept or queue new shared-list edits while the owner ship is Offline or Checking | Core |
 | Assign a reminder | Zero or one assignee from the current participant set; assignment notification | Core |
 | Add/remove people and stop sharing | Owner-controlled ACL; removing a ship kicks subscriptions and rejects later actions | Core |
-| Allow others to invite | Global default and per-participant `can-invite` permission | Core |
+| Allow others to invite | Per-participant `can-invite` permission chosen when inviting | Core |
 | Notify on item added/completed | Per-participant switches, evaluated by that participant's local agent | Core |
 | Activity | Actor-attributed event feed with add/edit/move/complete/assign/member events | Core |
 | Connection/pending status | Show host reachability and any operation that was already in flight when connectivity changed | Core |
@@ -112,7 +112,7 @@ Apple notifies each collaborator independently: sharing a list does not make one
 
 | Surface | Required behavior | Tier |
 |---|---|---|
-| Full app | Summonable full-screen `overlay` optimized for keyboard navigation, with sidebar, list, details drawer, and list/column modes | Core |
+| Full app | Summonable full-screen `overlay` optimized for keyboard navigation, with sidebar, list, and details editor | Core |
 | Quick capture | Small summonable capture mode with `#tag` recognition and default-list selection | Core |
 | Bar widget | Overdue/today count, next item, sync state, and click-to-open | Core |
 | Badge and Today policy | Configurable badge count, all-day notification time, and whether all-day items become overdue the next day | Core |
@@ -364,12 +364,15 @@ invitation-id    random 128+ bit value
 list-id
 inviter/recipient @p
 permission       edit + optional can-invite
-expires-at
-status           pending | accepted | declined | revoked
+created-at
+status           pending (record removed on accept, decline, or revoke)
 membership-epoch monotonic owner-controlled revision
 ```
 
-A copied capability URI includes only what is needed to locate and redeem an invitation. It expires, is single-use by default, and is still bound to the intended recipient ship unless the owner explicitly chooses an open link.
+A copied capability URI includes only what is needed to locate and redeem an
+invitation. It remains pending until accepted, declined, or owner-revoked, and
+is always bound to the intended recipient ship in the first release. Anonymous
+open links are not supported.
 
 ## 5. Security and decentralization properties
 
@@ -539,7 +542,7 @@ Run scripted fake ships for:
 - participant-offline reading and owner-offline edit blocking;
 - recovery of an operation submitted while Online whose acknowledgement was lost;
 - Gall kick/backpressure and bounded resubscribe;
-- invite expiry/replay/wrong recipient;
+- invitation replay and wrong-recipient rejection;
 - member removal during an outstanding edit;
 - assignment to a removed member;
 - continuity breach/key rotation behavior;
