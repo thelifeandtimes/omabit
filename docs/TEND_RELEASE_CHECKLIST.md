@@ -11,7 +11,7 @@ Last reconciled: 2026-09-10
 | Lists, sections, reminder CRUD, rich metadata | Verified | Gall actions, Eyre round trips, atomic section ordering, reducer and CLI tests |
 | Completion, batch actions, subtasks, stable ranks | Verified | Cascades, hierarchy controls, pointer drag/drop, keyboard placement, atomic rank normalization, and stale rejection are tested/live-verified |
 | Dates, all-day policy, time zones, early alerts | Verified | `%tend` validation, Behn wake test, `zoneinfo` gap/fold tests, and live local-wall-time-to-`@da` round trip |
-| Recurrence and next occurrence | Partial | Hourly through yearly advancement and boundary rules compile/live-test; individual recurring completions retain the completed due instant in replicated activity, while batch occurrence records remain |
+| Recurrence and next occurrence | Verified | Hourly through yearly advancement and boundary rules compile/live-test; individual and atomic batch completions retain one completed due instant per recurring reminder in bounded history |
 | Snooze | Verified | Durable presets, explicit future date/time, and notification action are exposed in both desktop and CLI paths |
 | Tags, flag, priority, safe URL, search | Verified | Gall validation and reducer/query tests |
 | Built-in views | Partial | Today, Scheduled, All, Flagged, Assigned, Completed verified; grocery behavior is outside the immediate Core build |
@@ -44,8 +44,7 @@ The first multiplayer release cannot be called complete until:
 
 - participant-local add/complete/assignment notifications satisfy the remaining
   Core collaboration contract;
-- batch recurrence completions retain occurrence history, and per-participant
-  sort/list ordering preferences are durable;
+- per-participant sort/list ordering preferences are durable;
 - every released Gall schema has an automated migration fixture;
 - the multi-ship harness covers backpressure, outstanding-edit removal,
   mixed-version behavior, and a longer restart/key-continuity soak;

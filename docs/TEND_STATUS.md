@@ -149,10 +149,12 @@ Last verified: 2026-09-10
   acknowledgement removed it, and the next subscription did not replay it.
 - Successful owner and remote list mutations append bounded, actor-attributed
   activity records. The log includes reminder targets and preserves the due
-  instant of an individually completed scheduled occurrence. Activity survives
-  `%8` to `%9` migration, appears in the list-sharing panel and CLI, and was
-  verified across both initial-snapshot and live-subscription replication with
-  participant-local list aliases.
+  instant of each individually or atomically batch-completed scheduled
+  occurrence. Activity survives `%8` to `%9` migration, appears in the
+  list-sharing panel and CLI, and was verified across both initial-snapshot and
+  live-subscription replication with participant-local list aliases. A live
+  two-reminder recurrence batch produced distinct stable IDs and preserved both
+  completed due instants before the reminders were removed.
 - Deterministic release packaging includes the desk, validated Omarchy plugin,
   CLI, installer, documentation, and per-file checksums. The installer refuses
   symlink targets and preserves forced replacements as timestamped backups.
@@ -169,8 +171,7 @@ Last verified: 2026-09-10
 
 ## Next
 
-1. Add participant-local add/complete/assignment notification preferences and
-   preserve per-reminder occurrence records for batch recurrence completion.
+1. Add participant-local add/complete/assignment notification preferences.
 2. Persist per-participant sort direction and general list ordering, then finish
    compact-surface and multi-monitor refinement.
 3. Add automated migration fixtures for every saved-state version, extend the

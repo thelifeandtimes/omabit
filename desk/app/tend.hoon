@@ -1394,22 +1394,45 @@
     ?.  (~(has by list-map.after) u.target)  [~ after]
     =/  kind=(unit activity-kind:t)  (activity-kind-for act before)
     ?~  kind  [~ after]
-    =/  item=activity:t
-      :*  op-id.act
-          actor
-          u.kind
-          u.target
-          (activity-reminder-id act before)
-          (activity-occurrence act before)
-          now.bowl
-      ==
+    =/  items=activity-log:t
+      ?:  ?=(%batch-set-completed -.act)
+        %+  turn  ~(tap in reminder-ids.act)
+        |=  id=reminder-id:t
+        :*  (scot %uv (sham [op-id.act id]))
+            actor
+            u.kind
+            u.target
+            `id
+            ?:(completed.act (activity-occurrence-for u.target id before) ~)
+            now.bowl
+        ==
+      =/  item=activity:t
+        :*  op-id.act
+            actor
+            u.kind
+            u.target
+            (activity-reminder-id act before)
+            (activity-occurrence act before)
+            now.bowl
+        ==
+      [item ~]
+    ?~  items  [~ after]
     =/  previous=activity-log:t  (hosted-activities u.target after)
-    =/  unbounded=activity-log:t  [item previous]
+    =/  unbounded=activity-log:t  (weld items previous)
     =/  log=activity-log:t  (scag 1.000 unbounded)
     =/  activities=activity-map:t
       (~(put by hosted-activity-map.after) u.target log)
     =/  nex=state-9:t  after(hosted-activity-map activities)
     [(give [%activities-updated u.target log]) nex]
+  ::
+  ++  activity-occurrence-for
+    |=  [=list-id:t =reminder-id:t before=state-9:t]
+    ^-  (unit @da)
+    =/  lis=(unit task-list:t)  (~(get by list-map.before) list-id)
+    ?~  lis  ~
+    =/  rem=(unit reminder:t)  (~(get by reminders.u.lis) reminder-id)
+    ?~  rem  ~
+    ?~(schedule.u.rem ~ `due-at.u.schedule.u.rem)
   ::
   ++  activity-kind-for
     |=  [act=action:t before=state-9:t]
@@ -1496,11 +1519,7 @@
             completed.act
         ==
       ~
-    =/  lis=(unit task-list:t)  (~(get by list-map.before) list-id.act)
-    ?~  lis  ~
-    =/  rem=(unit reminder:t)  (~(get by reminders.u.lis) reminder-id.act)
-    ?~  rem  ~
-    ?~(schedule.u.rem ~ `due-at.u.schedule.u.rem)
+    (activity-occurrence-for list-id.act reminder-id.act before)
   ::
   ++  broadcast-action
     |=  [act=action:t before=state-9:t after=state-9:t]

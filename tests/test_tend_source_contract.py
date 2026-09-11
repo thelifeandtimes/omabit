@@ -42,6 +42,11 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("(descendant id.item reminder-id.act reminders.u.old)", self.agent)
         self.assertIn("item(section-id section-id.act, revision +(revision.item), modified-at now.bowl)", self.agent)
 
+    def test_batch_completion_records_each_scheduled_occurrence(self):
+        self.assertIn("%batch-set-completed -.act", self.agent)
+        self.assertIn("(scot %uv (sham [op-id.act id]))", self.agent)
+        self.assertIn("?:(completed.act (activity-occurrence-for u.target id before) ~)", self.agent)
+
 
 if __name__ == "__main__":
     unittest.main()

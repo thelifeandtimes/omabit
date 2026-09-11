@@ -128,10 +128,12 @@ Checking, or Offline access record as read-only.
 
 `activities-updated` replaces the bounded activity log for one locally visible
 list. Entries identify the authenticated Urbit actor, event kind, event time,
-optional reminder, and—for an individually completed scheduled occurrence—the
-exact due instant that was completed. The overlay renders this log in list
-settings, and `omabit tend activity LIST` exposes the same data to scripts and
-terminals. A log retains the newest 1,000 entries per list.
+optional reminder, and—for every individually or batch-completed scheduled
+occurrence—the exact due instant that was completed. Batch entries derive a
+stable event ID from the operation and reminder, so every selected recurrence
+keeps its own history. The overlay renders this log in list settings, and
+`omabit tend activity LIST` exposes the same data to scripts and terminals. A
+log retains the newest 1,000 entries per list.
 
 The `%tend-peer-1` noun mark carries invite/accept/decline/leave, canonical list
 snapshots, mutations, removals, liveness messages, and mutation rejections.
