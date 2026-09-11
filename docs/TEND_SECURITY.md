@@ -65,13 +65,15 @@ the current release scope.
 - Release installers reject broad desk targets, refuse symbolic-link targets,
   and do not overwrite existing installs unless `--force` is supplied. Forced
   replacements are moved to timestamped backups.
-- JSON exports contain complete locally hosted reminder data. They exclude
+- JSON exports contain complete owner-authoritative reminder data. They exclude
   authentication material, are written atomically with mode 0600, refuse
   symbolic-link targets, and require `--force` before replacing an existing
   regular file. Offline validation opens only a regular file without following
   a final symbolic link, caps it at 32 MiB, and validates nested references and
-  cycles before any future restore path can use it. Shared replicas will remain
-  explicitly non-authoritative when export support for them is added.
+  cycles before restore can use it. Export filters visible replicas from
+  authenticated access metadata. Restore requires explicit confirmation,
+  accepts only empty Gall state, commits atomically, verifies a durable receipt,
+  and resets all ACL/subscription/transient peer state.
 
 ## Release gates
 
@@ -82,7 +84,9 @@ identities. `make check-tend` and `make check-tend-release` cover the local
 plugin, transport, CLI, and package surfaces; live multi-ship tests cover the
 Gall boundary.
 
-The current operation-receipt map is durable but not yet retention-bounded.
-Before peer mutation is enabled, receipts need a time/size retention policy
-that preserves the documented retry window without permitting unbounded Gall
-state growth.
+The operation-receipt map retains the newest 4,096 results. Peer operations are
+idempotent only while their receipt remains in that window; clients reject
+offline writes and bound mutation age so an old request is not silently treated
+as a safe retry. The live three-ship evidence is recorded in
+`TEND_MULTISHIP_MATRIX.md`; backpressure, mixed-version, and longer soak cases
+remain release-candidate gates.

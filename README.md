@@ -32,6 +32,8 @@ Resource and model-scale gates are recorded in
 Backup validation and the restore safety contract live in
 [`docs/TEND_BACKUP.md`](docs/TEND_BACKUP.md); the current Core gap matrix is
 [`docs/TEND_RELEASE_CHECKLIST.md`](docs/TEND_RELEASE_CHECKLIST.md).
+The live three-ship collaboration evidence is recorded in
+[`docs/TEND_MULTISHIP_MATRIX.md`](docs/TEND_MULTISHIP_MATRIX.md).
 Tested versions, update/rollback steps, and troubleshooting are in
 [`docs/TEND_OPERATIONS.md`](docs/TEND_OPERATIONS.md).
 
@@ -73,7 +75,10 @@ bin/omabit tend status
 bin/omabit tend today
 bin/omabit tend add "Buy milk" --list Inbox --tag groceries
 bin/omabit tend complete 1 42 43
+bin/omabit tend share 1 ~sampel-palnet --can-invite
+bin/omabit tend invitations
 bin/omabit tend export ~/Documents/tend-backup.json
+bin/omabit tend restore ~/Documents/tend-backup.json --yes
 bin/omabit --json tend list
 ```
 

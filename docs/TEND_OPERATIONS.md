@@ -1,8 +1,8 @@
 # Tend operations and compatibility
 
-Tend `0.1.0` is a pre-release local daily-driver build. Its peer protocol is
-defined but disabled, so this document does not describe it as a multiplayer
-release.
+Tend `0.1.0` is a pre-release multiplayer build. Its owner-authoritative peer
+protocol is enabled and has passed the documented three-ship live matrix, but
+it has not completed the longer release-candidate soak and compatibility gates.
 
 ## Verified baseline
 
@@ -17,7 +17,7 @@ requirements:
 | Plugin manifest schema | 1 |
 | Urbit runtime | Vere 4.6 |
 | Urbit userspace | `%zuse` 409 |
-| Tend save state | `%6` (loads `%0` through `%6`) |
+| Tend save state | `%8` (loads `%0` through `%8`) |
 | Tend JSON marks | `%tend-action-1`, `%tend-update-1` |
 | Python / Node used by gates | 3.14.7 / 25.2.1 |
 | Time-zone database | System IANA tzdata through Python `zoneinfo` |
@@ -37,8 +37,9 @@ shapes, but mixed-version mutation compatibility is not a release promise.
    omabit tend validate-backup ~/Documents/tend-before-update.json
    ```
 
-3. Keep a recoverable pier-level backup or host snapshot. The portable Tend
-   restore transition is not implemented yet.
+3. Keep a recoverable pier-level backup or host snapshot. A portable export can
+   be restored only into an empty Tend state and does not recreate sharing
+   relationships; a pier-level backup remains the complete rollback boundary.
 4. Build and run `make check-tend` and `make check-tend-release` from the exact
    source revision being installed.
 
@@ -94,6 +95,13 @@ HTTPS and must pass the operating system's certificate validation.
 `omabit --json tend status` to distinguish saved authentication from actual
 reachability. Shared-list writes remain disabled unless their owner is Online.
 
+If only one shared list stays Offline, its owner ship is unavailable or the
+peer subscription is catching up. The last confirmed replica remains readable.
+Do not repeatedly submit mutations: the Gall agent and CLI both reject new
+writes until the owner is Online. After an owner restart, Checking is expected
+until the new owner session has sent a fresh snapshot and liveness
+acknowledgement.
+
 ### The plugin is not discovered
 
 ```sh
@@ -124,6 +132,19 @@ is intentionally rejected; choose the first valid time after the gap.
 ### Notifications do not appear
 
 Confirm `notify-send` exists and that the desktop notification service allows
-Tend notifications. Alert offsets are recorded durably in Gall, but replay
-until explicit desktop acknowledgement is still a release blocker; a client
-that is disconnected at the firing instant can currently miss presentation.
+Tend notifications. Alert presentation is durable: a stable notification is
+replayed after a desktop reconnect until the client acknowledges it. If an
+alert repeatedly returns, inspect the bridge logs for a failed `ack-alert`
+operation rather than deleting Gall state.
+
+### Restore is rejected
+
+`omabit tend restore FILE --yes` works only when Gall has no hosted lists,
+replicas, invitations, or in-flight operations. Run `omabit tend list` and
+`omabit tend invitations` to inspect the visible blockers. The command verifies
+Gall's durable operation receipt and reports its rejection reason; an Eyre HTTP
+acknowledgement alone is not success. Restore never recreates ACLs or peer
+subscriptions.
+
+The live multiplayer evidence and remaining fault cases are recorded in
+`docs/TEND_MULTISHIP_MATRIX.md`.

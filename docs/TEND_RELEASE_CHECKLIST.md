@@ -2,8 +2,7 @@
 
 This checklist reconciles the active implementation with the Core scope in
 `PRODUCT_ARCHITECTURE_PLAN.md`. “Verified” means an automated or live-desk gate
-exists. “Partial” is usable but still misses a stated Core behavior. “Blocked”
-means the implementation is deliberately disabled at a trust boundary.
+exists. “Partial” is usable but still misses a stated Core behavior.
 
 Last reconciled: 2026-09-10
 
@@ -21,17 +20,18 @@ Last reconciled: 2026-09-10
 | Bar widget and connection state | Verified | Configurable badge, next reminder, sync state, shared-host state, click-to-open |
 | Eyre domain + `+code` authentication | Verified | Redirect/size/UTF-8/cookie hardening and rank-neutral planet/moon/comet-shaped identities |
 | Desktop reconnect and stale-event safety | Verified | Bounded reconnect, auth-expiry stop, canonical snapshot recovery, monotonic list/preference reducers |
-| Native notifications | Partial | Complete/Snooze/Open actions work; durable replay-until-desktop-ack requires an approved Gall state migration |
-| CLI and JSON output | Partial | Connect/status/list/today/add/complete/snooze/open/export/validate work; `share` depends on the peer engine |
-| Backup/export | Partial | Private atomic export and offline structural validation verified; atomic empty-state restore remains |
+| Native notifications | Verified | Complete/Snooze/Open actions plus stable-ID replay-until-desktop-ack pass reducer, transport, and live reconnect tests |
+| CLI and JSON output | Verified | Collaboration, mutation, snooze, backup/restore, and open commands work; shared mutations fail closed unless owner status is Online |
+| Backup/export | Verified | Owner-only private export, offline validation, atomic empty-state restore, durable receipt verification, and second-restore rejection are tested/live-verified |
 | Accessibility | Partial | Static labels, keyboard operation, visible state cues, no custom motion; manual Orca/theme/200% scale pass remains |
-| Owner host Online/Checking/Offline gating | Verified locally | Model and UI block every shared mutation when a non-owner host is not Online |
-| Assignment | Verified locally | Desktop choices and Gall enforcement allow only the owner/current members; owner assignment live-tested and authorization has no rank branch |
-| Invitations, ACLs, replicas, shared edits, activity | Blocked | Peer nouns/state boundary exist; outbound data transmission awaits explicit approval and three-ship tests |
+| Owner host Online/Checking/Offline gating | Verified | Gall, model, UI, and CLI block shared mutation while the owner is not Online; replicas remain readable |
+| Assignment | Verified | Desktop choices and Gall enforcement allow only the owner/current members; authorization has no rank branch |
+| Invitations, ACLs, replicas, shared edits | Verified | Live three-ship matrix covers convergence, restart catch-up, duplicate/stale edits, revocation, and leave; complete selected-list disclosure is documented |
+| Activity and collaboration notifications | Not implemented | Actor-attributed feed and participant-local add/complete/assignment notification preferences remain Core work |
 | Packaging/install/rollback | Verified | Deterministic archive/checksum and refusal/backup installer tests |
-| State migrations | Partial | `%0`–`%6` paths compile and were exercised incrementally on a live fake ship; automated fixture-per-version gate remains |
+| State migrations | Partial | `%0`–`%8` paths compile and were exercised incrementally on a live fake ship; automated fixture-per-version gate remains |
 | Scale | Verified locally | 10,000-reminder normalization/Today/search and transport ceilings |
-| Gall resource retention | Partial | Input and collection ceilings are enforced; durable operation receipts still need bounded retry-window retention |
+| Gall resource retention | Verified | Input and collection ceilings are enforced; the receipt ledger retains the newest 4,096 results |
 
 Calendar integration and Tlon Messenger-specific triggers are intentionally out
 of scope. The Parity tier (attachments, location triggers, custom smart lists,
@@ -42,11 +42,12 @@ learning, and urgent alarms) is also deferred under the current directive.
 
 The first multiplayer release cannot be called complete until:
 
-- the owner-hosted peer engine is approved, implemented, and passes its
-  authorization/revocation/fault matrix on three ships;
+- activity history and participant-local add/complete/assignment notifications
+  satisfy the remaining Core collaboration contract;
+- recurrence stores adequate occurrence history, and per-participant sort/list
+  ordering preferences are durable;
 - every released Gall schema has an automated migration fixture;
-- alerts are replayed until the desktop acknowledges delivery;
-- the operation-receipt ledger has a tested retention bound;
-- restore into an empty `%tend` state is atomic and tested;
+- the multi-ship harness covers backpressure, outstanding-edit removal,
+  mixed-version behavior, and a longer restart/key-continuity soak;
 - the manual Omarchy accessibility and multi-monitor checklist passes on a
   supported release candidate.

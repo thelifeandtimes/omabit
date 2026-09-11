@@ -26,36 +26,44 @@ backup metadata; it does not change Gall state.
 
 ## Included data
 
-The current exporter captures the authenticated ship's locally hosted lists,
-sections, reminder metadata, schedules, assignments, preferences, and active
-snoozes. It also records the source ship and export time. Authentication
-material is never part of the envelope.
-
-Shared-list replicas are not exportable until Tend's peer engine is enabled.
-When replicas become visible in the snapshot, the backup protocol must label
-them as non-authoritative copies and preserve their canonical owner/list
-reference. A restore must never turn a participant's replica into an owned
-list silently.
+The current exporter captures only the authenticated ship's owner-authoritative
+lists, sections, reminder metadata, schedules, assignments, preferences, and
+active snoozes. It consults authenticated access metadata to exclude every
+visible shared-list replica. It also records the source ship and export time.
+Authentication material is never part of the envelope, and a participant's
+replica can never silently become an owned list through export/restore.
 
 Treat the file as private: reminder notes, URLs, schedules, and assignments may
 be sensitive, and mode 0600 does not encrypt the file at rest.
 
 ## Restore safety contract
 
-Restore is intentionally not enabled in this checkpoint. Its first supported
-form will follow these rules:
+Restore is enabled as an explicit empty-state-only operation:
+
+```sh
+omabit tend restore ~/Documents/tend-backup.json --yes
+```
+
+It follows these rules:
 
 1. Run exactly the same bounded validation before sending any noun to Gall.
 2. Accept a backup only into an empty `%tend` state; never merge or replace a
    non-empty ship implicitly.
-3. Show source ship, object counts, and any skipped non-authoritative replica
-   before requiring an explicit confirmation.
+3. Show source ship and object counts before requiring `--yes`. Replicas were
+   already excluded from the export and are never sent to Gall.
 4. Commit all imported owned lists, preferences, snoozes, and next-ID state in
    one Gall transition or commit nothing.
-5. Allocate fresh operation receipts and timer generation, revalidate snoozes,
-   and arm the earliest outstanding alert after commit.
+5. Allocate a fresh timer generation, discard expired snoozes, recompute the
+   next global ID, and arm the earliest outstanding alert after commit.
 6. Preserve canonical content but do not restore Eyre sessions, active
    subscriptions, in-flight peer mutations, or stale operation receipts.
 
-Until that state transition and its migration fixtures exist, do not post a
-backup through an ad hoc poke or edit a pier by hand.
+The CLI verifies the durable `/receipt/<operation-id>` result after Eyre accepts
+the poke. A second restore is rejected because the target is no longer empty.
+Do not post a backup through an ad hoc poke or edit a pier by hand.
+
+Sharing state is deliberately not portable in `tend-backup-1`: hosted ACLs,
+pending invitations, replicas, subscriptions, liveness sessions, in-flight
+mutations, and old receipts are reset. Assignee values remain reminder metadata,
+so an imported reminder may name a ship that is not yet a member; re-establish
+sharing deliberately before relying on assignment workflows.

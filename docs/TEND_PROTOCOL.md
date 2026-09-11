@@ -18,7 +18,7 @@ Every action is a one-key JSON object. Its body includes a unique
 returns a `rejected` event with the current revision. Replaying an operation ID
 returns its recorded result without applying it twice.
 
-## Implemented local action kinds
+## Implemented action kinds
 
 | Action | Effect |
 | --- | --- |
@@ -40,6 +40,10 @@ returns its recorded result without applying it twice.
 | `snooze-reminder` | Schedule a personal one-shot alert without modifying shared reminder data |
 | `replace-tag` | Rename, merge, or delete one tag across the user's hosted reminders |
 | `delete-reminder` | Delete a reminder and all descendants |
+| `invite`, `unshare` | Owner grants or revokes list access, with optional participant invite permission |
+| `accept-invite`, `decline-invite` | Accept or discard an authenticated inter-ship invitation |
+| `leave-list` | Remove the local replica and ask the owner to remove this participant |
+| `restore-empty` | Atomically restore one validated owner-only `tend-backup-1` envelope into empty state |
 
 List appearance strings are non-empty and bounded; list deletion requires a
 second confirmation in the desktop UI. Editable reminder metadata currently
@@ -101,8 +105,10 @@ mutation. `list-deleted` removes one list and returns cleaned preference state.
 `preferences-updated` and `snoozed` affect only the user's own ship.
 `rejected` never changes canonical list state. Lists, reminders, and preferences
 carry revisions or Urbit timestamps. `alert` identifies the reminder, due
-instant, early offset, and whether it is a snooze wake; the desktop maps that
-event to a native notification.
+instant, early offset, whether it is a snooze wake, and a stable notification
+ID; the desktop maps that event to a native notification. Alerts remain in
+Gall's durable pending-notification map and are replayed to a newly subscribed
+desktop until `ack-alert` removes them.
 
 The desktop queues native notifications so each alert can expose Complete,
 Snooze, and Open actions. Complete uses the current list revision, Snooze uses
@@ -120,23 +126,41 @@ list. `invitations-updated` replaces the local invitation inbox.
 without creating an offline mutation queue. The desktop treats an absent,
 Checking, or Offline access record as read-only.
 
-The `%tend-peer-1` noun mark and `%6` state reserve versioned peer envelopes for
-invite/accept/decline/leave, list snapshots, mutations, removals, and mutation
-rejections. The transport handlers that send these envelopes to another ship
-are not enabled in the current checkpoint; local clients cannot cause peer data
-egress until that trust boundary is explicitly enabled and tested.
+The `%tend-peer-1` noun mark carries invite/accept/decline/leave, canonical list
+snapshots, mutations, removals, liveness messages, and mutation rejections.
+Inviting a ship transmits the complete selected list and its membership
+metadata to that ship. The participant stores the list as a non-authoritative
+replica and receives later owner snapshots in order. Remote edits are accepted
+only while the owner's application-level session is Online, then routed to the
+owner for authenticated authorization and sequencing. A restart rotates the
+owner session and forces every participant through Checking and catch-up before
+writes are enabled again.
+
+Current liveness timing is a five-second heartbeat with an Offline transition
+after twelve seconds without a valid acknowledgement. A remote mutation must
+have been submitted within ten seconds and may not be more than thirty seconds
+in the future. Those constants are protocol behavior in the current pre-release
+and may be tuned before a stable wire-version commitment.
+
+Authenticated scries expose `/state`, `/accesses`, `/invitations`,
+`/receipt/<operation-id>`, and `/whoami`. Restore uses the receipt scry to prove
+that Gall durably accepted or rejected the operation; an Eyre poke
+acknowledgement by itself is not reported as restore success.
 
 ## Persistence
 
-Gall is authoritative. State schema `%6` contains lists, the next local ID,
-operation receipts, revisioned personal preferences, active snoozes, Behn timer
-generation, hosted-share policies, remote replicas, invitations, and in-flight
-operations. `+on-load` migrates `%0` through `%3`, preserving IDs, titles,
-completion state, revisions, schedules, tags, preferences, and snoozes while
-filling assignee and collaboration stores with deterministic defaults. `%4` is
-frozen and migrates to `%5`; `%5` is frozen and migrates to `%6`, adding badge
-and all-day reminder policy defaults without reinterpreting older receipt,
-preference, or pending-invitation nouns.
+Gall is authoritative. State schema `%8` contains lists, the next local ID,
+bounded operation receipts, revisioned personal preferences, active snoozes,
+Behn timer generation, hosted-share policies, remote replicas, invitations,
+in-flight operations, peer sessions/liveness generations, durable pending
+notifications, and replica alert-delivery state. `+on-load` migrates `%0`
+through `%8`, preserving canonical reminder data while filling newer fields
+with deterministic defaults. `%7` adds host and peer sessions plus liveness
+generation. `%8` adds durable notifications and bounded receipt ordering.
+
+The operation receipt ledger retains the newest 4,096 receipts. Peer retries
+are deduplicated while their receipt is retained; clients must not treat an
+operation older than that bounded window as safely replayable.
 
 Personal preferences include the default list, pinned lists/views, snooze
 presets, badge basis (`today`, `all`, `assigned`, or `none`), a local-wall-clock
@@ -144,12 +168,12 @@ minute for newly scheduled all-day reminders, and whether old all-day reminders
 remain visible in Today. Timed overdue reminders always remain in Today.
 
 The agent keeps one earliest Behn wakeup across all outstanding due/early
-alerts and snoozes. Generation-tagged wires make replaced timers harmless. Fired offsets
-are persisted on the schedule, so wake replay, agent reload, and ship restart
-cannot redeliver an already-recorded occurrence; reload re-arms an outstanding
-timer and overdue wakeups run immediately. Snoozes are personal state keyed by
-list/reminder and are discarded if the reminder is deleted, completed, or loses
-its schedule.
+alerts and snoozes. Generation-tagged wires make replaced timers harmless.
+Fired offsets are persisted on the schedule, while presentation remains pending
+until a desktop acknowledges the stable notification ID. Reload re-arms an
+outstanding timer and replays unacknowledged presentation; overdue wakeups run
+immediately. Snoozes are personal state keyed by list/reminder and are
+discarded if the reminder is deleted, completed, or loses its schedule.
 
 IDs are scoped to the hosting ship. A replica receives a collision-free numeric
 alias for the desktop while preserving its canonical `[host=@p local-id]`
@@ -158,10 +182,14 @@ provider.
 
 ## Backup envelope
 
-`omabit tend export` wraps the current local snapshot in `tend-backup-1` with a
-source ship and UTC export timestamp. `omabit tend validate-backup` performs
-bounded, offline structural and referential validation before any future
-restore operation is allowed. The current snapshot contains locally hosted
-lists; the peer engine must add explicit non-authoritative replica metadata
-before shared replicas can enter this format. See `TEND_BACKUP.md` for the
-empty-state-only atomic restore contract.
+`omabit tend export` wraps owner-authoritative lists from the current local
+snapshot in `tend-backup-1` with a source ship and UTC export timestamp. Visible
+replicas are deliberately excluded using `/accesses`; restoring one can never
+silently convert it into an owned list. `omabit tend validate-backup` performs
+bounded, offline structural and referential validation. `omabit tend restore`
+revalidates the same envelope, requires `--yes`, sends one `restore-empty`
+transition, and verifies the durable Gall receipt. Gall accepts it only when no
+hosted lists, replicas, invitations, or in-flight operations exist, and either
+commits all imported content or none. Sharing relationships, subscriptions,
+transient peer state, old operation receipts, and authentication material are
+not restored. See `TEND_BACKUP.md` for the complete contract.

@@ -106,20 +106,27 @@ omabit tend move 1 42 43 --section 7 --rank 2048
 omabit tend delete 1 42 43 --yes
 omabit tend snooze 1 42 --minutes 20
 omabit tend snooze 1 42 --until 2026-09-11T09:30:00-07:00
+omabit tend share 1 ~sampel-palnet --can-invite
+omabit tend invitations
+omabit tend accept 7
+omabit tend unshare 1 ~sampel-palnet
+omabit tend leave 1 --yes
 omabit tend open 1 42
 omabit tend open --capture
 omabit --json tend list
 omabit tend export ~/Documents/tend-backup.json
 omabit tend validate-backup ~/Documents/tend-backup.json
+omabit tend restore ~/Documents/tend-backup.json --yes
 ```
 
 `tend export` writes a versioned `tend-backup-1` JSON snapshot atomically with
-mode 0600. It includes locally hosted list content and preferences, but never
-the Eyre cookie or `+code`. Existing files are refused unless `--force` is
-explicit; use `-` as the path to stream the backup to standard output. Keep the
-result private. `validate-backup` checks an existing file offline without
-contacting a ship or changing state. Restore/import is not enabled yet; its
-validation-first, empty-state-only contract is documented in
+mode 0600. It includes owner-authoritative list content and preferences, omits
+visible replicas, and never includes the Eyre cookie or `+code`. Existing files
+are refused unless `--force` is explicit; use `-` as the path to stream the
+backup to standard output. Keep the result private. `validate-backup` checks an
+existing file offline without contacting a ship or changing state. `restore`
+repeats validation, requires `--yes`, and succeeds only against empty Gall
+state. It does not recreate list sharing; the full contract is documented in
 `docs/TEND_BACKUP.md`.
 
 Run `omabit tend --help` for the complete command list.

@@ -5,7 +5,7 @@ Last verified: 2026-09-10
 ## Working now
 
 - `%tend` installs and hot-reloads on a live fake ship.
-- Existing `%0` through `%5` state migrates to the current `%6`
+- Existing `%0` through `%7` state migrates to the current `%8`
   schema without losing lists, reminders, schedules, preferences, or snoozes.
 - Authenticated Eyre login, identity scry, SSE subscribe/ack, reconnect, and
   poke acknowledgement work through the dependency-free desktop bridge.
@@ -98,10 +98,23 @@ Last verified: 2026-09-10
 - `%6` adds revisioned badge and all-day reminder policy without changing
   canonical reminder/list nouns. A live `%5` ship migrated, accepted a policy
   update, and preserved it across Gall suspend/revive.
+- `%7` adds restart-safe owner and peer sessions plus liveness generations.
+  `%8` adds durable notification presentation and a newest-4,096 operation
+  receipt order. Both migrations compiled and were exercised on the live desk.
 - The authenticated `/all` stream now emits one access record per visible list,
   including canonical host, owner flag, Online/Checking/Offline state, members,
   and pending invitations. The Omarchy UI visibly marks owner availability and
   disables every shared-list mutation while the host is Checking or Offline.
+- Owner-authoritative sharing is active. Owners can invite any valid Urbit
+  ship, delegate invite permission, revoke pending or accepted access, and
+  distribute complete canonical list replicas. Invitees can accept or decline;
+  participants can leave; all authorization is derived from the Gall source
+  ship rather than a claimed payload identity.
+- A live three-ship matrix verified two simultaneous replicas, participant
+  editing, convergence, owner-offline readable replicas with blocked writes,
+  owner restart/catch-up, duplicate-operation idempotence, stale rejection,
+  targeted revocation, participant leave, and cleanup. The reproducible record
+  is in `TEND_MULTISHIP_MATRIX.md`.
 - Eyre connection files are written atomically with mode 0600, symbolic-link
   credential paths are refused, non-loopback HTTP and URL paths are rejected,
   expired authentication stops the reconnect loop, and users can disconnect or
@@ -110,9 +123,10 @@ Last verified: 2026-09-10
   rather than merges cookie jars on a new login, bounds JSON/SSE/action sizes,
   and fails closed on malformed UTF-8, JSON, event IDs, and content lengths.
 - `omabit tend` provides connect/disconnect/status, list/today, add,
-  complete/uncomplete, snooze, and overlay-open commands with optional JSON
-  output. Its read-only status and list flows were exercised against the live
-  desk.
+  complete/uncomplete, move/delete, snooze, share/unshare/leave,
+  invitations/accept/decline, restore, and overlay-open commands with optional
+  JSON output. It fails closed before shared writes when owner access is not
+  Online and applies no planet/moon/comet rank restriction.
 - Assigned to Me is available as a smart view and search includes assignee
   ships. Quick capture supports `#tag` entry and the bar badge can count Today,
   all incomplete, or assigned reminders—or be disabled. Users can choose the
@@ -123,6 +137,14 @@ Last verified: 2026-09-10
   targets, and does not replace an existing file without explicit `--force`.
   `validate-backup` now performs bounded offline shape, schedule, reference,
   URL, snooze, and parent-cycle checks without connecting to a ship.
+- Export filters visible replicas using authenticated access metadata. Restore
+  revalidates the envelope, requires explicit confirmation, commits atomically
+  only into empty Gall state, and verifies a durable operation receipt. Live
+  tests restored one list with five reminders and a section, rejected a second
+  restore without mutation, and preserved the owner-only boundary.
+- Notification presentation is durable across desktop disconnects. Gall keeps
+  stable pending IDs until `ack-alert`; a live reconnect replayed one alert,
+  acknowledgement removed it, and the next subscription did not replay it.
 - Deterministic release packaging includes the desk, validated Omarchy plugin,
   CLI, installer, documentation, and per-file checksums. The installer refuses
   symlink targets and preserves forced replacements as timestamped backups.
@@ -139,11 +161,13 @@ Last verified: 2026-09-10
 
 ## Next
 
-1. Owner-hosted invitation delivery, ACL subscriptions, replicas, mutation
-   routing, assignment validation, and activity across multiple ships.
-2. Additional quick-capture refinements.
-3. Restore/import design, manual assistive-technology validation, fault testing,
-   and final release hardening.
+1. Add actor-attributed activity history, add/complete/assignment notification
+   preferences, and full recurrence occurrence history.
+2. Persist per-participant sort direction and general list ordering, then finish
+   compact-surface and multi-monitor refinement.
+3. Add automated migration fixtures for every saved-state version, extend the
+   multi-ship fault/mixed-version harness, complete manual assistive-technology
+   validation, and run release-candidate soak tests.
 
 The current Core reconciliation and honest release blockers are tracked in
 [`TEND_RELEASE_CHECKLIST.md`](TEND_RELEASE_CHECKLIST.md).
