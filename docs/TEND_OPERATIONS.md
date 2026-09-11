@@ -42,6 +42,16 @@ shapes, but mixed-version mutation compatibility is not a release promise.
    relationships; a pier-level backup remains the complete rollback boundary.
 4. Build and run `make check-tend` and `make check-tend-release` from the exact
    source revision being installed.
+5. On a disposable ship with the candidate desk committed, run the shared-code
+   migration matrix:
+
+   ```hoon
+   +tend!tend-migrations
+   ```
+
+   The command must report that `%0` through `%10` passed. It constructs a
+   non-empty saved noun for every schema and executes the same migration
+   library called by Gall `+on-load`.
 
 ## Update
 

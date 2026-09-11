@@ -9,6 +9,9 @@ class TendGallSourceContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.agent = (ROOT / "desk" / "app" / "tend.hoon").read_text(encoding="utf-8")
+        cls.migration = (ROOT / "desk" / "lib" / "tend-migrate.hoon").read_text(encoding="utf-8")
+        cls.migration_fixtures = (ROOT / "desk" / "gen" / "tend-migrations.hoon").read_text(encoding="utf-8")
+        cls.surface = (ROOT / "desk" / "sur" / "tend.hoon").read_text(encoding="utf-8")
 
     def test_mutation_resource_ceilings_remain_server_side(self):
         for source_contract in (
@@ -48,12 +51,20 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("?:(completed.act (activity-occurrence-for u.target id before) ~)", self.agent)
 
     def test_state_ten_migrates_private_presentation_and_notification_defaults(self):
-        self.assertIn("state-9:t state-10:t", self.agent)
-        self.assertIn("(resume-timer (upgrade-9 old-state))", self.agent)
-        self.assertIn("++  upgrade-9", self.agent)
-        self.assertIn("*list-presentations:t", self.agent)
-        self.assertIn("*collaboration-policies:t", self.agent)
-        self.assertIn("*collaboration-notifications:t", self.agent)
+        self.assertIn("(migrate:tend-migrate now.bowl old-state)", self.agent)
+        self.assertIn("++  migrate", self.migration)
+        self.assertIn("++  upgrade-9", self.migration)
+        self.assertIn("+$  saved-state", self.surface)
+        self.assertIn("*list-presentations:t", self.migration)
+        self.assertIn("*collaboration-policies:t", self.migration)
+        self.assertIn("*collaboration-notifications:t", self.migration)
+
+    def test_every_saved_schema_has_a_nonempty_executable_fixture(self):
+        for version in range(11):
+            self.assertIn(f"[{version} [%{version} ", self.migration_fixtures)
+        self.assertIn("'fixture-list'", self.migration_fixtures)
+        self.assertIn("(~(has by reminders.u.migrated-list) 7)", self.migration_fixtures)
+        self.assertIn("Tend saved-state migrations %0 through %10 passed", self.migration_fixtures)
 
     def test_private_settings_are_not_routed_as_shared_mutations(self):
         for source_contract in (

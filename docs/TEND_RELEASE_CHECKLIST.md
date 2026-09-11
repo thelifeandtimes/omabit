@@ -29,7 +29,7 @@ Last reconciled: 2026-09-10
 | Invitations, ACLs, replicas, shared edits | Verified | Live three-ship matrix covers convergence, restart catch-up, duplicate/stale edits, revocation, and leave; complete selected-list disclosure is documented |
 | Activity and collaboration notifications | Verified | Bounded actor-attributed activity and occurrence records converge; participant-local add/complete/assignment policy, suppression, durable replay/ack, and cleanup are live-verified |
 | Packaging/install/rollback | Verified | Deterministic archive/checksum and refusal/backup installer tests |
-| State migrations | Partial | `%0`–`%10` paths compile and were exercised incrementally on live fake ships; automated fixture-per-version gate remains |
+| State migrations | Verified | The application and table-driven Hoon fixture generator call the same migration library; non-empty `%0`–`%10` fixtures preserve sentinel list/reminder data and pass on Vere 4.6 |
 | Scale | Verified locally | 10,000-reminder normalization/Today/search and transport ceilings |
 | Gall resource retention | Verified | Input and collection ceilings are enforced; the receipt ledger retains the newest 4,096 results |
 
@@ -42,7 +42,6 @@ learning, and urgent alarms) is also deferred under the current directive.
 
 The first multiplayer release cannot be called complete until:
 
-- every released Gall schema has an automated migration fixture;
 - the multi-ship harness covers backpressure, outstanding-edit removal,
   mixed-version behavior, and a longer restart/key-continuity soak;
 - the manual Omarchy accessibility and multi-monitor checklist passes on a

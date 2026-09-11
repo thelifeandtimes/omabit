@@ -44,7 +44,9 @@ cover planet-, moon-, and comet-shaped identities.
 
 The same live environment also verified durable alert replay/acknowledgement and
 owner-only atomic export/restore, including a no-mutation rejection when restore
-was attempted against non-empty state.
+was attempted against non-empty state. The table-driven
+`+tend!tend-migrations` generator separately passed non-empty `%0` through
+`%10` saved-state fixtures against the same library used by Gall load.
 
 ## Remaining release-candidate cases
 

@@ -104,6 +104,10 @@ Last verified: 2026-09-10
   adds participant-local list order, per-list presentation, collaboration-alert
   policy, and durable collaboration notifications. These migrations compile
   and were exercised on live desks without losing existing lists.
+- Gall load and the `+tend!tend-migrations` release gate now call the same
+  migration library. The table-driven gate constructs a non-empty noun for
+  every `%0` through `%10` schema and verifies the sentinel list, reminder, and
+  next-ID survive as `%10`; the complete matrix passes on Vere 4.6.
 - The authenticated `/all` stream now emits one access record per visible list,
   including canonical host, owner flag, Online/Checking/Offline state, members,
   and pending invitations. The Omarchy UI visibly marks owner availability and
@@ -184,9 +188,8 @@ Last verified: 2026-09-10
 
 ## Next
 
-1. Add automated migration fixtures for every saved-state version, extend the
-   multi-ship fault/mixed-version harness, complete manual assistive-technology
-   validation, and run release-candidate soak tests.
+1. Extend the multi-ship fault/mixed-version harness, complete manual
+   assistive-technology validation, and run release-candidate soak tests.
 2. Finish compact-surface and multi-monitor refinement.
 
 The current Core reconciliation and honest release blockers are tracked in

@@ -187,6 +187,12 @@ adds participant-local presentation and collaboration-notification state with
 deterministic defaults. Loading also prunes pending alert records whose list is
 no longer visible.
 
+The migration implementation lives in `lib/tend-migrate.hoon`. Gall `+on-load`
+and the `+tend!tend-migrations` table-driven release generator both call that
+library, preventing a fixture from silently testing a duplicate implementation.
+Every `%0` through `%10` fixture contains a sentinel list and reminder and checks
+their IDs and content after migration.
+
 The operation receipt ledger retains the newest 4,096 receipts. Peer retries
 are deduplicated while their receipt is retained; clients must not treat an
 operation older than that bounded window as safely replayable.

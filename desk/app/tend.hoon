@@ -1,8 +1,7 @@
 /-  t=tend
-/+  default-agent
+/+  default-agent, tend-migrate
 |%
 +$  card         card:agent:gall
-+$  saved-state  $%(state-0:t state-1:t state-2:t state-3:t state-4:t state-5:t state-6:t state-7:t state-8:t state-9:t state-10:t)
 --
 ::
 =|  state=state-10:t
@@ -27,126 +26,9 @@
   |=  old=vase
   ^-  (quip card _this)
   |^
-  =/  old-state=saved-state  !<(saved-state old)
-  ?:  ?=(%10 -.old-state)
-    (resume-timer old-state)
-  ?:  ?=(%9 -.old-state)
-    (resume-timer (upgrade-9 old-state))
-  ?:  ?=(%8 -.old-state)
-    (resume-timer (upgrade-9 (upgrade-8 old-state)))
-  ?:  ?=(%7 -.old-state)
-    (resume-timer (upgrade-9 (upgrade-8 (upgrade-7 old-state))))
-  ?:  ?=(%6 -.old-state)
-    (resume-timer (upgrade-9 (upgrade-8 (upgrade-7 (upgrade-6 old-state)))))
-  ?:  ?=(%5 -.old-state)
-    (resume-timer (upgrade-9 (upgrade-8 (upgrade-7 (upgrade-5 old-state)))))
-  ?:  ?=(%4 -.old-state)
-    (resume-timer (upgrade-9 (upgrade-8 (upgrade-7 (upgrade-5 (upgrade-4 old-state))))))
-  ?:  ?=(%3 -.old-state)
-    (resume-timer (upgrade-9 (upgrade-8 (upgrade-7 (upgrade-5 (upgrade-3 old-state))))))
-  ?:  ?=(%2 -.old-state)
-    =/  prefs=preferences-5:t
-      :*  0
-          default-list.old-state
-          ~
-          [%today %scheduled %all %flagged %completed ~]
-          [300 900 3.600 ~]
-      ==
-    %-  resume-timer
-    %-  upgrade-9
-    %-  upgrade-8
-    %-  upgrade-7
-    %-  upgrade-5
-    %-  upgrade-3
-    [%3 next-id.old-state list-map.old-state *receipts-3:t prefs timer-generation.old-state next-wake.old-state *snoozes:t]
-  ?:  ?=(%1 -.old-state)
-    =/  migrated=lists-3:t
-      %-  ~(run by list-map.old-state)
-      |=  old-list=task-list-1:t
-      =/  rems=reminders-3:t
-        %-  ~(run by reminders.old-list)
-        |=  old-rem=reminder-1:t
-        :*  id.old-rem
-            title.old-rem
-            notes.old-rem
-            url.old-rem
-            priority.old-rem
-            flagged.old-rem
-            tags.old-rem
-            parent-id.old-rem
-            section-id.old-rem
-            rank.old-rem
-            ~
-            completed.old-rem
-            ~
-            revision.old-rem
-            created-at.old-rem
-            modified-at.old-rem
-        ==
-      :*  id.old-list
-          title.old-list
-          color.old-list
-          symbol.old-list
-          revision.old-list
-          sections.old-list
-          rems
-          created-at.old-list
-          modified-at.old-list
-      ==
-    =/  prefs=preferences-5:t
-      [0 default-list.old-state ~ [%today %scheduled %all %flagged %completed ~] [300 900 3.600 ~]]
-    %-  resume-timer
-    %-  upgrade-9
-    %-  upgrade-8
-    %-  upgrade-7
-    %-  upgrade-5
-    %-  upgrade-3
-    [%3 next-id.old-state migrated *receipts-3:t prefs 0 ~ *snoozes:t]
-  ?>  ?=(%0 -.old-state)
-  =/  migrated=lists-3:t
-    %-  ~(run by list-map.old-state)
-    |=  old-list=task-list-0:t
-    =/  rems=reminders-3:t
-      %-  ~(run by reminders.old-list)
-      |=  old-rem=reminder-0:t
-      :*  id.old-rem
-          title.old-rem
-          ''
-          ~
-          %none
-          %.n
-          *(set @t)
-          ~
-          ~
-          id.old-rem
-          ~
-          completed.old-rem
-          ~
-          revision.old-rem
-          now.bowl
-          now.bowl
-      ==
-    :*  id.old-list
-        title.old-list
-        '#3b82f6'
-        'list'
-        revision.old-list
-        *sections:t
-        rems
-        now.bowl
-        now.bowl
-    ==
-  =/  all=(list [list-id:t task-list-3:t])  ~(tap by migrated)
-  =/  default=(unit list-id:t)  ?~(all ~ (some -.i.all))
-  =/  prefs=preferences-5:t
-    [0 default ~ [%today %scheduled %all %flagged %completed ~] [300 900 3.600 ~]]
-  %-  resume-timer
-  %-  upgrade-9
-  %-  upgrade-8
-  %-  upgrade-7
-  %-  upgrade-5
-  %-  upgrade-3
-  [%3 next-id.old-state migrated *receipts-3:t prefs 0 ~ *snoozes:t]
+  =/  old-state=saved-state:t  !<(saved-state:t old)
+  =/  migrated=state-10:t  (migrate:tend-migrate now.bowl old-state)
+  (resume-timer migrated)
   ::
   ++  upgrade-3
     |=  old=state-3:t
