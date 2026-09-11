@@ -88,5 +88,7 @@ The operation-receipt map retains the newest 4,096 results. Peer operations are
 idempotent only while their receipt remains in that window; clients reject
 offline writes and bound mutation age so an old request is not silently treated
 as a safe retry. The live three-ship evidence is recorded in
-`TEND_MULTISHIP_MATRIX.md`; backpressure, mixed-version, and longer soak cases
-remain release-candidate gates.
+`TEND_MULTISHIP_MATRIX.md`; the automated gate covers Ames-held bursts,
+in-flight revocation, and local restart/resubscription cycles. Mixed desk/client
+versions and a longer real-ship key-continuity soak remain release-candidate
+gates.

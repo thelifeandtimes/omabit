@@ -50,6 +50,9 @@ Monorepo commands:
 ```bash
 make check-tend
 make check-tend-release
+TEND_TEST_PIER=/path/to/pier make check-tend-migrations
+# See docs/TEND_MULTISHIP_MATRIX.md for the nine fake-ship path variables.
+make check-tend-multiship
 make check-urbit-host
 make check-all
 make dist-tend

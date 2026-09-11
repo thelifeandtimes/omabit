@@ -4,7 +4,7 @@ This checklist reconciles the active implementation with the Core scope in
 `PRODUCT_ARCHITECTURE_PLAN.md`. “Verified” means an automated or live-desk gate
 exists. “Partial” is usable but still misses a stated Core behavior.
 
-Last reconciled: 2026-09-10
+Last reconciled: 2026-09-11
 
 | Area | Status | Evidence / remaining gate |
 | --- | --- | --- |
@@ -26,7 +26,7 @@ Last reconciled: 2026-09-10
 | Accessibility | Partial | Static labels, keyboard operation, visible state cues, no custom motion; manual Orca/theme/200% scale pass remains |
 | Owner host Online/Checking/Offline gating | Verified | Gall, model, UI, and CLI block shared mutation while the owner is not Online; replicas remain readable |
 | Assignment | Verified | Desktop choices and Gall enforcement allow only the owner/current members; authorization has no rank branch |
-| Invitations, ACLs, replicas, shared edits | Verified | Live three-ship matrix covers convergence, restart catch-up, duplicate/stale edits, revocation, and leave; complete selected-list disclosure is documented |
+| Invitations, ACLs, replicas, shared edits | Verified | Repeatable three-ship harness covers convergence, 12-operation Ames pressure, restart catch-up, duplicate/stale edits, in-flight revocation, cleanup, and complete selected-list disclosure |
 | Activity and collaboration notifications | Verified | Bounded actor-attributed activity and occurrence records converge; participant-local add/complete/assignment policy, suppression, durable replay/ack, and cleanup are live-verified |
 | Packaging/install/rollback | Verified | Deterministic archive/checksum and refusal/backup installer tests |
 | State migrations | Verified | The application and table-driven Hoon fixture generator call the same migration library; non-empty `%0`–`%10` fixtures preserve sentinel list/reminder data and pass on Vere 4.6 |
@@ -42,7 +42,7 @@ learning, and urgent alarms) is also deferred under the current directive.
 
 The first multiplayer release cannot be called complete until:
 
-- the multi-ship harness covers backpressure, outstanding-edit removal,
-  mixed-version behavior, and a longer restart/key-continuity soak;
+- supported mixed-client/mixed-desk combinations and a longer real-ship
+  restart/key-continuity soak pass;
 - the manual Omarchy accessibility and multi-monitor checklist passes on a
   supported release candidate.

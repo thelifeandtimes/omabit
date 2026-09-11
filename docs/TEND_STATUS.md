@@ -1,6 +1,6 @@
 # Tend implementation status
 
-Last verified: 2026-09-10
+Last verified: 2026-09-11
 
 ## Working now
 
@@ -117,11 +117,13 @@ Last verified: 2026-09-10
   distribute complete canonical list replicas. Invitees can accept or decline;
   participants can leave; all authorization is derived from the Gall source
   ship rather than a claimed payload identity.
-- A live three-ship matrix verified two simultaneous replicas, participant
+- A repeatable three-ship harness verified two simultaneous replicas, participant
   editing, convergence, owner-offline readable replicas with blocked writes,
   owner restart/catch-up, duplicate-operation idempotence, stale rejection,
-  targeted revocation, participant leave, and cleanup. The reproducible record
-  is in `TEND_MULTISHIP_MATRIX.md`.
+  a 12-submission Ames-held pressure burst, targeted revocation with an
+  already-submitted edit still in flight, two participant/owner restart and
+  resubscription cycles, and cleanup. The reproducible command and record are
+  in `TEND_MULTISHIP_MATRIX.md`.
 - Eyre connection files are written atomically with mode 0600, symbolic-link
   credential paths are refused, non-loopback HTTP and URL paths are rejected,
   expired authentication stops the reconnect loop, and users can disconnect or
@@ -188,8 +190,9 @@ Last verified: 2026-09-10
 
 ## Next
 
-1. Extend the multi-ship fault/mixed-version harness, complete manual
-   assistive-technology validation, and run release-candidate soak tests.
+1. Establish supported mixed desk/client combinations, complete manual
+   assistive-technology validation, and run a longer real-ship release-candidate
+   key-continuity soak.
 2. Finish compact-surface and multi-monitor refinement.
 
 The current Core reconciliation and honest release blockers are tracked in

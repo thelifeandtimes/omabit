@@ -46,12 +46,19 @@ shapes, but mixed-version mutation compatibility is not a release promise.
    migration matrix:
 
    ```bash
-   TEND_TEST_PIER=/path/to/running/fake-ship-pier make check-tend-migrations
+   scripts/check-tend-migrations.sh /path/to/running/fake-ship-pier
    ```
 
    The gate must report that `%0` through `%10` passed. It constructs a
    non-empty saved noun for every schema inside the running ship and executes
    the same migration library called by Gall `+on-load`.
+
+6. On three disposable fake ships with authenticated Eyre connection files,
+   run the multiplayer fault gate described in `TEND_MULTISHIP_MATRIX.md`.
+   The release bundle includes `scripts/check-tend-multiship.py`; the source
+   tree also exposes it as `make check-tend-multiship` through nine documented
+   path variables. The gate temporarily changes Ames policy and suspends Gall
+   agents, so it must never target a production pier.
 
 ## Update
 

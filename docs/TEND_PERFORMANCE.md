@@ -16,6 +16,9 @@ without bound.
 | 10,000-reminder snapshot normalization | Under 5 seconds |
 | Today query over 10,000 reminders | Under 5 seconds |
 | Text search over 10,000 reminders | Under 5 seconds |
+| Pending remote operations per participant ship | At most 1,000 |
+| Automated Ames-held fault burst | 12 concurrent submissions by default |
+| Local restart/resubscription soak | 2 participant/owner cycles by default |
 
 The JavaScript timing ceiling is intentionally generous for slow CI and is not
 the interaction target. A release-candidate desktop pass should still confirm
@@ -29,7 +32,8 @@ Run the deterministic scale gate with:
 make test-js
 ```
 
-Multi-ship throughput, reconnect soak duration, and Gall-state growth budgets
-remain gated on the peer transport and its explicit data-egress approval.
-The durable operation-receipt map also needs a retention bound before that
-transport is enabled.
+The three-ship harness gates owner sequencing under an Ames-held burst and
+repeated Gall restarts. Twelve submissions and two cycles are a deterministic
+local regression floor, not a production throughput claim. Longer real-network
+soaks and representative hardware latency measurements remain release-candidate
+work. The durable operation-receipt map retains the newest 4,096 results.

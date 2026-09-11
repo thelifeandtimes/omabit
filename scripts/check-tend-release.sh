@@ -20,7 +20,9 @@ release_dir=$(find "$work_dir/extracted" -mindepth 1 -maxdepth 1 -type d -name '
 
 omarchy plugin validate "$release_dir/omarchy-plugin"
 python3 -m py_compile "$release_dir/omarchy-plugin/transport/eyre_client.py" "$release_dir/bin/omabit"
+python3 -m py_compile "$release_dir/scripts/check-tend-multiship.py"
 bash -n "$release_dir/install.sh"
+bash -n "$release_dir/scripts/check-tend-migrations.sh"
 [[ "$(cat "$release_dir/VERSION")" == "$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' "$release_dir/omarchy-plugin/manifest.json")" ]]
 "$release_dir/bin/omabit" --version | grep -q "$(cat "$release_dir/VERSION")"
 
