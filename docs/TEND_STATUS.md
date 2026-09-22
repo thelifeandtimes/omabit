@@ -1,6 +1,6 @@
 # Tend implementation status
 
-Last verified: 2026-09-11
+Last verified: 2026-09-22
 
 ## Working now
 
@@ -17,6 +17,15 @@ Last verified: 2026-09-11
 - The desktop identity path is rank-neutral and regression-tested with planet,
   moon, and comet-shaped ship identities; Gall protocol identities remain
   unrestricted `@p` values with no rank authorization branch.
+- The `%tend` desk now supplies a Landscape card and a browser interface at
+  `/apps/tend` in addition to the Omarchy plugin. A live two-ship run installed
+  and published the desk directly on `~rus`, installed it on bare `~wex` with
+  `|install ~rus %tend`, and loaded the web UI on the participant.
+- The same run completed the requested mixed-client loop: the `~rus` overlay
+  authenticated over Eyre, created the exact private verification todo, created
+  and shared a list, and assigned a reminder to the pending `~wex` invitee;
+  the `~wex` browser accepted, edited, and completed it; membership and both
+  mutations appeared live in the `~rus` overlay.
 - List CRUD, section CRUD, rich reminder updates, hierarchy/order moves,
   completion, cascading deletion, optimistic revision checks, operation
   deduplication, and JSON snapshot/update conversion work end to end.

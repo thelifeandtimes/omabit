@@ -4,7 +4,7 @@ This is the reproducible release evidence for Tend's owner-authoritative peer
 path. It intentionally uses fake ships so transport, authorization, persistence,
 and UI-facing access state can be exercised without production identities.
 
-Last run: 2026-09-11
+Automated fault-matrix last run: 2026-09-11
 
 Runtime: Vere 4.6
 
@@ -48,6 +48,31 @@ cover planet-, moon-, and comet-shaped identities.
 | Participant leave | `~bus` leaves | Pass; its replica, private settings, collaboration alerts, and list-scoped due-alert state were deleted and the owner ACL became empty |
 | Restart/resubscription soak | Two cycles each of participant and owner Gall suspend/revive | Pass; every cycle returned through Checking/Offline to Online with field-equivalent canonical content after normalizing `%zuse` date rendering |
 | Cleanup | Owner deletes the temporary list | Pass |
+
+## Desktop/browser two-ship loop
+
+Last run: 2026-09-22
+
+The release was also exercised through its actual user surfaces with two live
+fake ships. `~rus` was the publisher/list owner on `localhost:8080`; `~wex` was
+the participant on `localhost:8081`. No `+code`, Eyre cookie, or invitation
+token is retained in this document.
+
+| Step | Surface and result | Result |
+| --- | --- | --- |
+| Direct publisher install | A mounted `%tend` desk on `~rus` committed and loaded successfully, then `:treaty|publish %tend` published it | Pass |
+| Remote participant install | A bare `~wex` installed with `|install ~rus %tend`; the Gall agent, Landscape docket, and `/apps/tend` web UI loaded | Pass |
+| Omarchy authentication | The Quickshell plugin authenticated to `~rus` over Eyre using its loopback domain and one-time `+code`, then restored the saved session without retaining the code | Pass |
+| Private plugin mutation | The `~rus` overlay created `this todo was added at 2026-09-22 09:08:11 PDT` and read it back from live Gall state | Pass |
+| Shared setup | The `~rus` overlay created a list, invited `~wex`, added a reminder, and assigned it to the pending invitee before acceptance | Pass |
+| Browser acceptance | The `~wex` `/apps/tend` page displayed and accepted the invitation; the `~rus` overlay changed `~wex` from pending to member | Pass |
+| Participant edit | The `~wex` browser changed the assigned reminder title; the subscribed `~rus` overlay displayed the new title without restart | Pass |
+| Participant completion | The `~wex` browser completed the reminder; the `~rus` overlay displayed it checked and struck through, and canonical state reported revision 6, assignee `~wex`, and `completed=true` | Pass |
+
+This loop verifies the intended mixed-client deployment: the list owner uses
+the Omarchy plugin while a participant uses the ship-hosted web UI, with Urbit
+identity, storage, distribution, and peer transport providing the shared
+backend.
 
 The same live environment also verified durable alert replay/acknowledgement and
 owner-only atomic export/restore, including a no-mutation rejection when restore

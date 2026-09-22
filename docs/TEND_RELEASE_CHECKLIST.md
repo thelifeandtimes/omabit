@@ -4,7 +4,7 @@ This checklist reconciles the active implementation with the Core scope in
 `PRODUCT_ARCHITECTURE_PLAN.md`. “Verified” means an automated or live-desk gate
 exists. “Partial” is usable but still misses a stated Core behavior.
 
-Last reconciled: 2026-09-21
+Last reconciled: 2026-09-22
 
 | Area | Status | Evidence / remaining gate |
 | --- | --- | --- |
@@ -16,7 +16,7 @@ Last reconciled: 2026-09-21
 | Tags, flag, priority, safe URL, search | Verified | Gall validation and reducer/query tests |
 | Built-in views | Verified | Today, Scheduled, All, Flagged, Assigned, and Completed query behavior is reducer-tested; grocery categorization remains in the deferred Parity tier |
 | Sorting, pins, default list | Verified | All sort modes, ordered list/view pins, default list, participant-local per-list sort/direction, and private unpinned-list order are durable and live-verified |
-| Full overlay and quick capture | Verified locally | Keyboard-first full/capture surfaces and `#tag` capture work; capture stacks on narrow outputs and opens on the invoking/focused monitor; the physical multi-monitor pass remains a release gate |
+| Full overlay, quick capture, and web UI | Verified locally | Keyboard-first full/capture surfaces and `#tag` capture work; the same desk provides a Landscape card and `/apps/tend`; a live `~rus` overlay / `~wex` browser loop passed; capture stacks on narrow outputs and opens on the invoking/focused monitor; the physical multi-monitor pass remains a release gate |
 | Bar widget and connection state | Verified | Configurable badge, next reminder, sync state, shared-host state, click-to-open |
 | Eyre domain + `+code` authentication | Verified | Redirect/size/UTF-8/cookie hardening and rank-neutral planet/moon/comet-shaped identities |
 | Desk/client compatibility boundary | Verified | Snapshot protocol 1 is required at login, direct state reads, and live replacement; mismatches fail before credential persistence or Online state |
@@ -27,9 +27,9 @@ Last reconciled: 2026-09-21
 | Accessibility | Verified locally | Static labels, keyboard operation, visible state cues, scaled/clamped surfaces, responsive capture, no custom motion, and QML lint; manual Orca/theme/200% scale pass remains |
 | Owner host Online/Checking/Offline gating | Verified | Gall, model, UI, and CLI block shared mutation while the owner is not Online; replicas remain readable and the overlay labels any previously submitted edit still in flight |
 | Assignment | Verified | Desktop choices and Gall enforcement allow only the owner/current members; authorization has no rank branch |
-| Invitations, ACLs, replicas, shared edits | Verified | Repeatable three-ship harness covers convergence, 12-operation Ames pressure, restart catch-up, duplicate/stale edits, in-flight revocation, cleanup, complete selected-list disclosure, and recipient-bound capability URI parsing |
+| Invitations, ACLs, replicas, shared edits | Verified | Repeatable three-ship harness covers convergence, 12-operation Ames pressure, restart catch-up, duplicate/stale edits, in-flight revocation, cleanup, complete selected-list disclosure, and recipient-bound capability URI parsing; a live mixed-client loop also verified pending-invite assignment, browser acceptance, membership, edit, and completion propagation |
 | Activity and collaboration notifications | Verified | Bounded actor-attributed activity and occurrence records converge; participant-local add/complete/assignment policy, suppression, durable replay/ack, and cleanup are live-verified |
-| Packaging/install/rollback | Verified | Deterministic archive/checksum plus required Urbit dependency closure, refusal, full-desk backup, base-mark preservation, mounted-Kelvin preservation, and preflight atomicity tests |
+| Packaging/install/rollback | Verified | Deterministic archive/checksum plus required Urbit dependency closure, refusal, full-desk backup, base-mark preservation, mounted-Kelvin preservation, preflight atomicity tests, and a documented publisher/participant install across two machines |
 | State migrations | Verified | The application and table-driven Hoon fixture generator call the same migration library; non-empty `%0`–`%10` fixtures preserve sentinel list/reminder data and pass on Vere 4.6 |
 | Scale | Verified locally | 10,000-reminder normalization/Today/search and transport ceilings |
 | Gall resource retention | Verified | Input and collection ceilings are enforced; the receipt ledger retains the newest 4,096 results |

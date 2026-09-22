@@ -25,7 +25,30 @@ cd "dist/unpacked/omabit-tend-$version"
 sha256sum --check SHA256SUMS
 ```
 
-## Prepare the Gall desk
+Use the same release archive for every Omarchy desktop that participates in a
+sharing group. One ship publishes the `%tend` desk; the other ships install
+that desk through Urbit's normal `%treaty` distribution. There is no central
+Omabit service between them.
+
+## Two machines and two ships
+
+For the simplest multiplayer deployment, choose one ship as the Tend desk
+publisher and list owner. In the examples below it is `~publisher`. The second
+ship is `~participant`. Either ship may be a planet, moon, or comet; Tend does
+not branch authorization on ship rank.
+
+Each machine needs:
+
+- a running, independently keyed Urbit ship with a reachable HTTPS domain;
+- the current `+code` for that local ship when the desktop is connected;
+- Omarchy with Quickshell and the verified Tend runtime dependencies; and
+- the same extracted Tend release for installing the Omarchy plugin and CLI.
+
+Only the publisher machine needs to overlay the release's Gall source into a
+mounted desk. The participant receives the desk from the publisher with
+`|install ~publisher %tend`.
+
+## Prepare the publisher's Gall desk
 
 Create and mount a `%tend` desk from your ship's dojo:
 
@@ -39,7 +62,7 @@ the four minimal marks and a `sys.kelvin` compatible with that ship's
 userspace. The release supplies the additional standard Urbit marks and
 libraries that Tend imports, including `%bill`, `%mime`, and `%json`.
 
-## Install the release
+## Install the release on the publisher machine
 
 From the root of the extracted release, inspect the plugin (Omarchy plugins
 execute unsandboxed in the shell process), then install all three pieces in one
@@ -71,12 +94,18 @@ The installer refuses existing desktop files and symbolic-link targets.
 `--force` moves existing desktop installations to timestamped backups before
 replacing them. For a desktop-only install, omit `--desk-path`.
 
-After the combined install, commit and start the desk:
+After the combined install, commit the desk and install it from the publisher
+ship's own Clay source:
 
 ```hoon
 |commit %tend
-|rein %tend [& %tend]
+|install our %tend
 ```
+
+The `|install our %tend` step is required for a new locally mounted desk. On a
+later source update, `|commit %tend` builds and reloads the already installed
+agent. If the agent was intentionally suspended, revive it with
+`|revive %tend`; do not reinstall it merely to unsuspend it.
 
 The desk overlay source is also present as `desk/` in the archive for remote or
 custom deployment workflows. Do not replace a mounted desk wholesale with
@@ -84,6 +113,36 @@ that directory: it intentionally does not contain the four ship-generated
 minimal marks, and its packaged `sys.kelvin` may not match the mounted ship.
 Never copy a pier, key material, `+code`, or Eyre cookie into the repository or
 release artifact.
+
+## Publish the desk and install it on the participant
+
+On the publisher ship, publish the committed desk:
+
+```hoon
+:treaty|publish %tend
+```
+
+Leave that ship running long enough for the participant to fetch the desk. On
+the participant ship, install directly from the publisher:
+
+```hoon
+|install ~publisher %tend
+```
+
+The participant does not create or mount a `%tend` desk first. A successful
+install starts the Gall agent and installs the web files and Landscape docket.
+The participant desk follows the publisher's `%treaty` source; later published
+desk revisions are delivered through Urbit's normal update path.
+
+On the participant's Omarchy machine, install only the desktop pieces from the
+same extracted release:
+
+```sh
+./install.sh --enable
+```
+
+Do not point this desktop-only command at the publisher's mounted desk. Each
+desktop connects over Eyre/HTTP to its own local ship.
 
 ## Recover a desk replaced by an older installer
 
@@ -114,7 +173,7 @@ the complete dependency set:
 Then retry `|commit %tend`. Keep the original backup until the desk has
 committed and Tend has started successfully.
 
-## Connect
+## Connect each desktop and browser
 
 Open the Tend overlay and enter the ship's HTTPS domain plus the current
 `+code`, or use the CLI (the code is read from a hidden prompt):
@@ -133,6 +192,21 @@ the cookie or endpoint is saved. Install all components from the same release
 and update every ship in a sharing group together; see
 `TEND_COMPATIBILITY.md`.
 
+Repeat the connection on the participant machine using the participant ship's
+domain and `+code`, not the publisher's credentials. The Omarchy overlay header
+shows the authenticated ship so that a user can confirm which identity is
+active.
+
+The same installed desk exposes the browser interface at:
+
+```text
+https://SHIP-DOMAIN/apps/tend
+```
+
+It also supplies a Tend card in Landscape. If the card does not appear after a
+successful commit or remote install, reload Landscape and verify that `%tend`
+is running before troubleshooting the desktop plugin.
+
 To remove the local session and select another ship:
 
 ```sh
@@ -143,6 +217,26 @@ omabit tend disconnect
 result. The invited user normally sees the invitation in-app, but can also run
 `omabit tend accept 'omabit://tend/invite/OWNER/TOKEN'`. The URI contains a
 single-use invitation token, so share it only with the named recipient.
+
+## Verify the multiplayer loop
+
+Before treating a two-machine deployment as ready:
+
+1. On the publisher's Omarchy overlay, create a private reminder and confirm it
+   appears after reopening the overlay.
+2. Create a shared list, invite the participant ship, add a reminder, and
+   assign it to that ship.
+3. On the participant's `/apps/tend` page, accept the invitation. The
+   publisher's overlay must change the participant from pending to member.
+4. Edit the assigned reminder in the participant browser. Confirm the changed
+   title appears in the publisher overlay.
+5. Complete it in the participant browser. Confirm the publisher overlay shows
+   it checked and completed.
+
+If the publisher/list-owner ship is Offline, Tend deliberately leaves the
+participant replica readable but disables edits. Bring the owner back Online
+and wait for the list status to return through Checking to Online before
+retrying.
 
 ## Optional global shortcuts
 

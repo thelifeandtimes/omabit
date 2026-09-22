@@ -33,6 +33,12 @@ different snapshot protocol before becoming Online; mixed pre-release peer
 builds are unsupported. The exact matrix and version-bump rules are in
 `TEND_COMPATIBILITY.md`.
 
+For a two-machine deployment, one ship owns the mounted source desk and
+publishes it with `:treaty|publish %tend`; each other ship installs it once with
+`|install ~publisher %tend`. Every Omarchy machine installs the plugin and CLI
+from the same release archive and connects over Eyre to its own ship. The
+complete clean-install sequence is in `TEND_INSTALL.md`.
+
 ## Pre-update drill
 
 1. Confirm the current client can reach its ship with `omabit tend status`.
@@ -87,7 +93,23 @@ dojo:
 ```
 
 Watch the dojo for a successful build and reload. Then reconnect the desktop,
-run `omabit tend status`, and verify a read plus one reversible mutation.
+publish the new publisher revision:
+
+```hoon
+:treaty|publish %tend
+```
+
+Existing participant desks that were installed from that publisher receive
+the published update through their `%treaty` source; do not create a second
+local desk or rerun the source overlay on those machines. Wait for every peer
+to finish the update, install the matching desktop-only release with
+`./install.sh --force --enable`, reconnect each desktop, and run
+`omabit tend status`. Verify a read plus one reversible mutation only after the
+sharing group reports compatible Online peers. If an agent was intentionally
+suspended during maintenance, use `|revive %tend`; an already installed agent
+needs no separate start command after a normal successful commit or remote
+update. The one-time `|install our %tend` command is only part of the initial
+locally mounted publisher setup documented in `TEND_INSTALL.md`.
 
 ## Rollback
 
