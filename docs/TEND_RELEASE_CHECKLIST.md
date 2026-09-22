@@ -4,7 +4,7 @@ This checklist reconciles the active implementation with the Core scope in
 `PRODUCT_ARCHITECTURE_PLAN.md`. “Verified” means an automated or live-desk gate
 exists. “Partial” is usable but still misses a stated Core behavior.
 
-Last reconciled: 2026-09-22
+Last reconciled: 2026-09-21
 
 | Area | Status | Evidence / remaining gate |
 | --- | --- | --- |
