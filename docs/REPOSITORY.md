@@ -34,15 +34,15 @@ while its active implementation task uses the existing paths. `apps/pals/` and
 
 ## Worktree workflow
 
-The primary checkout uses `main` as the integration branch. After the baseline
+The primary checkout uses `master` as the integration branch. After the baseline
 commit, create one worktree per concurrently active workstream:
 
 ```bash
 mkdir -p ../omabit-worktrees
-git worktree add ../omabit-worktrees/tend -b codex/tend main
-git worktree add ../omabit-worktrees/urbit-host -b codex/urbit-host main
-git worktree add ../omabit-worktrees/pals -b codex/pals main
-git worktree add ../omabit-worktrees/tlon-messenger -b codex/tlon-messenger main
+git worktree add ../omabit-worktrees/tend -b codex/tend master
+git worktree add ../omabit-worktrees/urbit-host -b codex/urbit-host master
+git worktree add ../omabit-worktrees/pals -b codex/pals master
+git worktree add ../omabit-worktrees/tlon-messenger -b codex/tlon-messenger master
 ```
 
 Use distinct branch names when branches already exist. Do not point two coding

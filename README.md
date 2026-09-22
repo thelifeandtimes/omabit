@@ -92,6 +92,6 @@ release installation instructions.
 
 ## Repository State
 
-The canonical checkout is named `omabit`, uses `main` as its integration branch,
+The canonical checkout is named `omabit`, uses `master` as its integration branch,
 and is ready for checkpoint commits. Keep one active coding task per checkout;
 use Git worktrees for parallel workstreams after the baseline commit.
