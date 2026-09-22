@@ -35,7 +35,9 @@ Create and mount a `%tend` desk from your ship's dojo:
 ```
 
 Do this before running the release installer. The mounted directory supplies
-standard marks and a `sys.kelvin` compatible with that ship's userspace.
+the four minimal marks and a `sys.kelvin` compatible with that ship's
+userspace. The release supplies the additional standard Urbit marks and
+libraries that Tend imports, including `%bill`, `%mime`, and `%json`.
 
 ## Install the release
 
@@ -53,11 +55,12 @@ Omit `--enable` if you want to enable the plugin separately after inspection:
 omarchy plugin enable io.omabit.tend
 ```
 
-The installer overlays only Tend-owned files into the mounted desk. It keeps
-the desk's standard marks and `sys.kelvin`, and makes a timestamped backup of
-the complete pre-install desk. It refuses a directory that does not look like
-a fresh or previously installed mounted desk. On an update, differing
-Tend-owned files require `--force`; the mounted base files are still preserved.
+The installer overlays Tend-owned files and Tend's bundled Urbit dependencies
+into the mounted desk. It keeps the desk's ship-generated minimal marks and
+`sys.kelvin`, and makes a timestamped backup of the complete pre-install desk.
+It refuses a directory that does not look like a fresh or previously installed
+mounted desk. On an update, differing installed files require `--force`; the
+mounted base files are still preserved.
 
 The default desktop targets are:
 
@@ -77,10 +80,10 @@ After the combined install, commit and start the desk:
 
 The desk overlay source is also present as `desk/` in the archive for remote or
 custom deployment workflows. Do not replace a mounted desk wholesale with
-that directory: it intentionally does not contain the standard base marks,
-and its packaged `sys.kelvin` may not match the mounted ship. Never copy a
-pier, key material, `+code`, or Eyre cookie into the repository or release
-artifact.
+that directory: it intentionally does not contain the four ship-generated
+minimal marks, and its packaged `sys.kelvin` may not match the mounted ship.
+Never copy a pier, key material, `+code`, or Eyre cookie into the repository or
+release artifact.
 
 ## Recover a desk replaced by an older installer
 
@@ -100,9 +103,16 @@ done
 cp -a "$backup/sys.kelvin" "$desk/sys.kelvin"
 ```
 
-Then retry `|commit %tend`. You do not need to rerun the installer merely to
-complete this recovery. Keep the backup until the desk has committed and Tend
-has started successfully.
+After restoring those files, unpack the latest corrected release into a fresh
+directory and run its installer with `--force` so the mounted desk receives
+the complete dependency set:
+
+```sh
+./install.sh --force --desk-path "$desk"
+```
+
+Then retry `|commit %tend`. Keep the original backup until the desk has
+committed and Tend has started successfully.
 
 ## Connect
 

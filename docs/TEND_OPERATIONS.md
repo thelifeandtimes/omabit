@@ -70,8 +70,9 @@ builds are unsupported. The exact matrix and version-bump rules are in
 
 Run the release installer against the exact mounted desk. It preflights all
 three targets, moves replaced desktop files to timestamped backups, backs up
-the complete mounted desk, overlays Tend-owned source, and preserves the
-mounted desk's standard marks and `sys.kelvin`:
+the complete mounted desk, overlays Tend-owned source plus its bundled Urbit
+dependencies, and preserves the mounted desk's ship-generated minimal marks
+and `sys.kelvin`:
 
 ```sh
 ./install.sh --force --desk-path /absolute/path/to/your/pier/tend

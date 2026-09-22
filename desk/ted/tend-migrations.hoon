@@ -1,10 +1,10 @@
 /-  spider
-/+  strandio, tend-migration-fixtures
+/+  tend-migration-fixtures
 =,  strand=strand:spider
 ^-  thread:spider
 |=  arg=vase
 =/  m  (strand ,vase)
 ^-  form:m
-;<  now=@da  bind:m  get-time:strandio
-?>  (verify:tend-migration-fixtures now)
-(pure:m !>([%tend-migrations %10 %.y]))
+|=  tin=strand-input:strand
+?>  (verify:tend-migration-fixtures now.bowl.tin)
+[~ %done !>([%tend-migrations %10 %.y])]

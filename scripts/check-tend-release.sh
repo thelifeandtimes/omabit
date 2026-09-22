@@ -30,6 +30,25 @@ bash -n "$release_dir/scripts/check-tend-migrations.sh"
 [[ "$(cat "$release_dir/VERSION")" == "$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' "$release_dir/omarchy-plugin/manifest.json")" ]]
 "$release_dir/bin/omabit" --version | grep -q "$(cat "$release_dir/VERSION")"
 
+for desk_dependency in \
+  mar/bill.hoon \
+  mar/mime.hoon \
+  mar/json.hoon \
+  lib/default-agent.hoon \
+  lib/skeleton.hoon \
+  lib/strand.hoon \
+  sur/spider.hoon
+do
+  [[ -f "$release_dir/desk/$desk_dependency" ]] || {
+    echo "Release desk is missing required Urbit dependency: $desk_dependency" >&2
+    exit 1
+  }
+done
+if grep -q 'strandio' "$release_dir/desk/ted/tend-migrations.hoon"; then
+  echo "Migration thread must not vendor userspace-specific strandio" >&2
+  exit 1
+fi
+
 install_root="$work_dir/install-root"
 HOME="$install_root/home" XDG_CONFIG_HOME="$install_root/config" \
   "$release_dir/install.sh" --plugin-dir "$install_root/plugin" --bin-dir "$install_root/bin"
@@ -67,6 +86,10 @@ for mark in hoon kelvin noun txt; do
 done
 cmp "$work_dir/mounted-originals/sys.kelvin" "$mounted_desk/sys.kelvin"
 cmp "$release_dir/desk/app/tend.hoon" "$mounted_desk/app/tend.hoon"
+cmp "$release_dir/desk/mar/bill.hoon" "$mounted_desk/mar/bill.hoon"
+cmp "$release_dir/desk/mar/mime.hoon" "$mounted_desk/mar/mime.hoon"
+cmp "$release_dir/desk/mar/json.hoon" "$mounted_desk/mar/json.hoon"
+cmp "$release_dir/desk/lib/default-agent.hoon" "$mounted_desk/lib/default-agent.hoon"
 mounted_backup=$(find "$work_dir" -maxdepth 1 -type d -name 'mounted-tend.backup.*' -print -quit)
 [[ -n "$mounted_backup" ]] || { echo "Mounted desk backup is missing" >&2; exit 1; }
 cmp "$work_dir/mounted-originals/hoon.hoon" "$mounted_backup/mar/hoon.hoon"
