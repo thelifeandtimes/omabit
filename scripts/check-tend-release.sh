@@ -31,12 +31,19 @@ bash -n "$release_dir/scripts/check-tend-migrations.sh"
 "$release_dir/bin/omabit" --version | grep -q "$(cat "$release_dir/VERSION")"
 
 for desk_dependency in \
+  desk.docket-0 \
+  app/tend.html \
   mar/bill.hoon \
+  mar/docket-0.hoon \
+  mar/html.hoon \
   mar/mime.hoon \
   mar/json.hoon \
   lib/default-agent.hoon \
+  lib/docket.hoon \
+  lib/server.hoon \
   lib/skeleton.hoon \
   lib/strand.hoon \
+  sur/docket.hoon \
   sur/spider.hoon
 do
   [[ -f "$release_dir/desk/$desk_dependency" ]] || {
@@ -91,10 +98,17 @@ for mark in hoon kelvin noun txt; do
 done
 cmp "$work_dir/mounted-originals/sys.kelvin" "$mounted_desk/sys.kelvin"
 cmp "$release_dir/desk/app/tend.hoon" "$mounted_desk/app/tend.hoon"
+cmp "$release_dir/desk/app/tend.html" "$mounted_desk/app/tend.html"
+cmp "$release_dir/desk/desk.docket-0" "$mounted_desk/desk.docket-0"
 cmp "$release_dir/desk/mar/bill.hoon" "$mounted_desk/mar/bill.hoon"
+cmp "$release_dir/desk/mar/docket-0.hoon" "$mounted_desk/mar/docket-0.hoon"
+cmp "$release_dir/desk/mar/html.hoon" "$mounted_desk/mar/html.hoon"
 cmp "$release_dir/desk/mar/mime.hoon" "$mounted_desk/mar/mime.hoon"
 cmp "$release_dir/desk/mar/json.hoon" "$mounted_desk/mar/json.hoon"
 cmp "$release_dir/desk/lib/default-agent.hoon" "$mounted_desk/lib/default-agent.hoon"
+cmp "$release_dir/desk/lib/docket.hoon" "$mounted_desk/lib/docket.hoon"
+cmp "$release_dir/desk/lib/server.hoon" "$mounted_desk/lib/server.hoon"
+cmp "$release_dir/desk/sur/docket.hoon" "$mounted_desk/sur/docket.hoon"
 mounted_backup=$(find "$work_dir" -maxdepth 1 -type d -name 'mounted-tend.backup.*' -print -quit)
 [[ -n "$mounted_backup" ]] || { echo "Mounted desk backup is missing" >&2; exit 1; }
 cmp "$work_dir/mounted-originals/hoon.hoon" "$mounted_backup/mar/hoon.hoon"

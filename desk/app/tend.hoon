@@ -1,5 +1,6 @@
 /-  t=tend
-/+  default-agent, tend-migrate
+/+  default-agent, tend-migrate, server
+/*  ui  %html  /app/tend/html
 |%
 +$  card         card:agent:gall
 --
@@ -18,7 +19,9 @@
     [%10 1 *lists:t *receipts:t prefs 0 ~ *snoozes:t *shares:t *replicas:t *invitations:t *in-flights:t now.bowl *peer-sessions:t 1 *notifications:t *replica-alerts:t ~ *activity-map:t *activity-map:t ~ *list-presentations:t *collaboration-policies:t *collaboration-notifications:t]
   =/  timer=card
     [%pass /liveness/1 %arvo %b %wait (add now.bowl ~s5)]
-  [[timer ~] this(state initial)]
+  =/  site=card
+    [%pass /eyre/connect %arvo %e %connect `/apps/tend %tend]
+  [[site timer ~] this(state initial)]
 ::
 ++  on-save  !>(state)
 ::
@@ -288,7 +291,9 @@
     =/  live-generation=@ud  +(liveness-generation.ready)
     =/  live-timer=card
       [%pass /liveness/(scot %ud live-generation) %arvo %b %wait (add now.bowl ~s5)]
-    =/  base=(list card)  (weld watches [live-timer ~])
+    =/  site=card
+      [%pass /eyre/connect %arvo %e %connect `/apps/tend %tend]
+    =/  base=(list card)  (weld watches [site live-timer ~])
     =.  ready  ready(liveness-generation live-generation)
     ?~  next-wake.ready  [base this(state ready)]
     =/  generation=@ud  +(timer-generation.ready)
@@ -354,11 +359,28 @@
     =^  cards  state  (take-local !<(action:t vase))
     [cards this]
   ::
+      %handle-http-request
+    =^  cards  state
+      (handle-http !<([eyre-id=@ta =inbound-request:eyre] vase))
+    [cards this]
+  ::
       %tend-peer-1
     ?>  !=(our.bowl src.bowl)
     =^  cards  state  (take-peer src.bowl !<(peer-message:t vase))
     [cards this]
   ==
+  ::
+  ++  handle-http
+    |=  [eyre-id=@ta req=inbound-request:eyre]
+    ^-  (quip card _state)
+    =/  payload=simple-payload:http
+      %+  require-authorization:app:server  req
+      |=  inbound=inbound-request:eyre
+      ?+  method.request.inbound  not-found:gen:server
+          %'GET'
+        (html-response:gen:server (as-octs:mimes:html ui))
+      ==
+    [(give-simple-payload:app:server eyre-id payload) state]
   ::
   ++  take-local
     |=  act=action:t
@@ -2806,6 +2828,7 @@
   |=  =path
   ^-  (quip card _this)
   |^
+  ?:  ?=([%http-response *] path)  [~ this]
   =/  st=state-10:t  state
   =/  snapshot=update:t
     [%snapshot (visible-for st) preferences.st snooze-map.st]
@@ -2976,6 +2999,10 @@
   |=  [=wire =sign-arvo]
   ^-  (quip card _this)
   |^
+  ?:  ?=([%eyre %bound *] sign-arvo)
+    ~?  !accepted.sign-arvo
+      [dap.bowl 'Tend web route bind rejected' binding.sign-arvo]
+    [~ this]
   ?+  +<.sign-arvo  (on-arvo:def wire sign-arvo)
       %wake
     ?:  ?=([%liveness @ ~] wire)

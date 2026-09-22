@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Tend</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f5f7;
+      --panel: rgba(255,255,255,.86);
+      --panel-solid: #fff;
+      --text: #17181a;
+      --muted: #6d7178;
+      --line: rgba(23,24,26,.12);
+      --accent: #356df3;
+      --accent-soft: #e8efff;
+      --danger: #c4362e;
+      --success: #23875c;
+      --shadow: 0 18px 50px rgba(31,36,48,.12);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111214;
+        --panel: rgba(27,29,33,.9);
+        --panel-solid: #1b1d21;
+        --text: #f5f6f8;
+        --muted: #a1a6af;
+        --line: rgba(255,255,255,.12);
+        --accent: #78a0ff;
+        --accent-soft: #243252;
+        --danger: #ff766e;
+        --success: #64c99d;
+        --shadow: 0 18px 50px rgba(0,0,0,.36);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 10%, rgba(67,113,244,.16), transparent 34rem),
+        radial-gradient(circle at 90% 80%, rgba(255,112,80,.12), transparent 30rem),
+        var(--bg);
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled, input:disabled { cursor: not-allowed; opacity: .58; }
+    .shell { max-width: 1320px; margin: 0 auto; padding: 28px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .mark {
+      width: 42px; height: 42px; border-radius: 14px;
+      display: grid; place-items: center; color: white; font-weight: 850; font-size: 22px;
+      background: linear-gradient(145deg, #4a7cff, #234fd4); box-shadow: 0 10px 24px rgba(53,109,243,.28);
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 2px; font-size: 24px; letter-spacing: -.02em; }
+    h2 { margin-bottom: 6px; font-size: 22px; letter-spacing: -.02em; }
+    h3 { margin-bottom: 10px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+    .subtle { color: var(--muted); font-size: 13px; }
+    .top-actions { display: flex; gap: 9px; align-items: center; }
+    .button {
+      border: 1px solid var(--line); border-radius: 10px; padding: 9px 13px;
+      background: var(--panel-solid); color: var(--text); font-weight: 680;
+    }
+    .button:hover:not(:disabled) { border-color: var(--accent); }
+    .button.primary { color: white; background: var(--accent); border-color: transparent; }
+    .button.quiet { background: transparent; }
+    .button.danger { color: var(--danger); }
+    .status { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 12px; color: var(--muted); }
+    .status::before { content: ""; width: 8px; height: 8px; border-radius: 99px; background: var(--muted); }
+    .status.online::before { background: var(--success); }
+    .status.offline::before { background: var(--danger); }
+    .notice { display: none; margin-bottom: 16px; border-radius: 12px; padding: 11px 14px; border: 1px solid var(--line); background: var(--panel-solid); }
+    .notice.show { display: block; }
+    .notice.error { border-color: color-mix(in srgb, var(--danger) 50%, transparent); color: var(--danger); }
+    .notice.success { border-color: color-mix(in srgb, var(--success) 50%, transparent); color: var(--success); }
+    .invitations { display: none; margin-bottom: 18px; }
+    .invitations.show { display: block; }
+    .invite-card { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 15px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel-solid); box-shadow: var(--shadow); }
+    .grid { display: grid; grid-template-columns: 290px minmax(0,1fr); gap: 18px; min-height: 660px; }
+    .panel { border: 1px solid var(--line); border-radius: 18px; background: var(--panel); box-shadow: var(--shadow); backdrop-filter: blur(20px); }
+    aside { padding: 16px; }
+    main { padding: 24px; min-width: 0; }
+    .list-nav { display: grid; gap: 7px; margin: 14px 0 18px; }
+    .list-button { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 0; border-radius: 11px; padding: 10px 11px; background: transparent; color: var(--text); text-align: left; }
+    .list-button:hover, .list-button.active { background: var(--accent-soft); }
+    .list-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+    .count { color: var(--muted); font-size: 12px; }
+    .stack { display: grid; gap: 9px; }
+    .row { display: flex; gap: 9px; align-items: center; }
+    .field { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 10px 11px; color: var(--text); background: var(--panel-solid); outline: none; }
+    .field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+    .list-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .pill { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 999px; padding: 5px 8px; color: var(--muted); font-size: 12px; }
+    .composer, .sharing { padding: 15px; margin-bottom: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel-solid); }
+    .composer-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(150px,220px) auto; gap: 9px; }
+    .task-list { display: grid; gap: 9px; }
+    .task { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 12px; align-items: start; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel-solid); }
+    .task.done { opacity: .68; }
+    .task.done .task-title { text-decoration: line-through; }
+    .check { width: 21px; height: 21px; margin-top: 7px; accent-color: var(--accent); }
+    .task-title { font-weight: 720; line-height: 1.35; }
+    .task-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 7px; color: var(--muted); font-size: 12px; }
+    .edit-grid { display: none; grid-template-columns: minmax(0,1fr) minmax(130px,190px) auto; gap: 8px; margin-top: 10px; }
+    .task.editing .edit-grid { display: grid; }
+    .empty { padding: 70px 20px; text-align: center; color: var(--muted); }
+    .members { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 0; }
+    .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 800px) {
+      .shell { padding: 16px; }
+      .grid { grid-template-columns: 1fr; }
+      .composer-grid, .edit-grid { grid-template-columns: 1fr; }
+      header, .list-head, .invite-card { align-items: stretch; flex-direction: column; }
+      .top-actions { justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true">✓</div>
+        <div><h1>Tend</h1><div class="subtle" id="identity">Connecting to your ship…</div></div>
+      </div>
+      <div class="top-actions">
+        <span class="status" id="connection">Checking</span>
+        <button class="button" id="refresh" type="button">Refresh</button>
+      </div>
+    </header>
+
+    <div class="notice" id="notice" role="status" aria-live="polite"></div>
+
+    <section class="invitations" id="invitations" aria-labelledby="invitation-heading">
+      <h3 id="invitation-heading">Invitations</h3>
+      <div class="stack" id="invitation-list"></div>
+    </section>
+
+    <div class="grid">
+      <aside class="panel">
+        <h3>Lists</h3>
+        <nav class="list-nav" id="lists" aria-label="Reminder lists"></nav>
+        <form class="stack" id="new-list-form">
+          <label class="subtle" for="new-list-title">New list</label>
+          <div class="row">
+            <input class="field" id="new-list-title" maxlength="1024" placeholder="List name" required>
+            <button class="button primary" type="submit">Add</button>
+          </div>
+        </form>
+      </aside>
+
+      <main class="panel" id="main">
+        <div class="empty">Create or select a list to begin.</div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const state = {
+        ship: "",
+        lists: [],
+        accesses: [],
+        invitations: [],
+        selectedListId: null,
+        busy: false,
+        editingReminderId: null
+      };
+
+      const $ = id => document.getElementById(id);
+      const escapeHtml = value => String(value ?? "").replace(/[&<>'"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[char]);
+      const opId = () => Date.now().toString(36) + "-" + Math.floor(Math.random() * 2147483647).toString(36);
+      const normalizeShip = value => {
+        const raw = String(value || "").trim();
+        return raw && !raw.startsWith("~") ? "~" + raw : raw;
+      };
+
+      function showNotice(message, kind = "") {
+        const node = $("notice");
+        node.textContent = message || "";
+        node.className = "notice" + (message ? " show" : "") + (kind ? " " + kind : "");
+      }
+
+      async function json(url) {
+        const response = await fetch(url, { credentials: "same-origin", headers: { Accept: "application/json" } });
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+        return response.json();
+      }
+
+      function accessFor(listId) {
+        return state.accesses.find(item => Number(item.alias) === Number(listId)) || null;
+      }
+
+      function selectedList() {
+        return state.lists.find(item => Number(item.id) === Number(state.selectedListId)) || null;
+      }
+
+      function canEdit(listId) {
+        const access = accessFor(listId);
+        return !!access && (access.owner === true || access.status === "online");
+      }
+
+      async function load({ quiet = false } = {}) {
+        if (state.busy) return;
+        if (!quiet) {
+          $("connection").innerHTML = '<span class="spinner" aria-hidden="true"></span> Checking';
+          $("connection").className = "status";
+        }
+        try {
+          const [ship, snapshotEnvelope, accessEnvelope, invitationEnvelope] = await Promise.all([
+            json("/~/scry/tend/whoami.json"),
+            json("/~/scry/tend/state.json"),
+            json("/~/scry/tend/accesses.json"),
+            json("/~/scry/tend/invitations.json")
+          ]);
+          const snapshot = snapshotEnvelope.snapshot || {};
+          if (snapshot["protocol-version"] !== 1) throw new Error("This Tend web client requires protocol version 1.");
+          state.ship = normalizeShip(ship);
+          state.lists = Array.isArray(snapshot.lists) ? snapshot.lists : [];
+          state.accesses = Array.isArray(accessEnvelope.accesses) ? accessEnvelope.accesses : [];
+          state.invitations = Array.isArray(invitationEnvelope["invitations-updated"]) ? invitationEnvelope["invitations-updated"] : [];
+          if (!state.lists.some(item => Number(item.id) === Number(state.selectedListId))) {
+            state.selectedListId = state.lists.length ? Number(state.lists[0].id) : null;
+          }
+          $("identity").textContent = state.ship ? `Signed in as ${state.ship}` : "Signed in";
+          $("connection").textContent = "Online";
+          $("connection").className = "status online";
+          render();
+          if (!quiet) showNotice("");
+        } catch (error) {
+          $("connection").textContent = "Unavailable";
+          $("connection").className = "status offline";
+          showNotice(`Tend could not load: ${error.message}`, "error");
+        }
+      }
+
+      async function sendChannelCommand(url, commands) {
+        const response = await fetch(url, {
+          method: "PUT",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(commands)
+        });
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      }
+
+      async function poke(action) {
+        if (state.busy) return;
+        state.busy = true;
+        render();
+        const channelId = `tend-web-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+        const url = `/~/channel/${channelId}`;
+        let source = null;
+        let timeout = null;
+        try {
+          await sendChannelCommand(url, [{
+            id: 1,
+            action: "poke",
+            ship: state.ship.replace(/^~/, ""),
+            app: "tend",
+            mark: "tend-action-1",
+            json: action
+          }]);
+
+          await new Promise((resolve, reject) => {
+            timeout = setTimeout(() => reject(new Error("Tend did not acknowledge the action.")), 15000);
+            source = new EventSource(url);
+            source.onerror = () => reject(new Error("The Tend event channel closed unexpectedly."));
+            source.onmessage = async event => {
+              let message;
+              try { message = JSON.parse(event.data); } catch (_) { return; }
+              if (event.lastEventId) {
+                sendChannelCommand(url, [{ action: "ack", "event-id": Number(event.lastEventId) }]).catch(() => {});
+              }
+              if (message.id !== 1 || message.response !== "poke") return;
+              if (message.err) reject(new Error(String(message.err)));
+              else resolve();
+            };
+          });
+
+          showNotice("Saved.", "success");
+          await new Promise(resolve => setTimeout(resolve, 350));
+          await load({ quiet: true });
+        } catch (error) {
+          showNotice(`Tend action failed: ${error.message}`, "error");
+        } finally {
+          if (timeout) clearTimeout(timeout);
+          if (source) source.close();
+          sendChannelCommand(url, [{ id: 2, action: "delete" }]).catch(() => {});
+          state.busy = false;
+          render();
+        }
+      }
+
+      function renderInvitations() {
+        const section = $("invitations");
+        const list = $("invitation-list");
+        section.className = "invitations" + (state.invitations.length ? " show" : "");
+        list.innerHTML = state.invitations.map((invite, index) => `
+          <article class="invite-card">
+            <div>
+              <strong>${escapeHtml(invite.title || "Shared list")}</strong>
+              <div class="subtle">${escapeHtml(invite.host)} invited you to collaborate.</div>
+            </div>
+            <div class="row">
+              <button class="button primary" data-accept-invite="${index}" ${state.busy ? "disabled" : ""}>Accept</button>
+              <button class="button quiet danger" data-decline-invite="${index}" ${state.busy ? "disabled" : ""}>Decline</button>
+            </div>
+          </article>`).join("");
+      }
+
+      function renderLists() {
+        $("lists").innerHTML = state.lists.map(list => {
+          const incomplete = (list.reminders || []).filter(item => !item.completed).length;
+          return `<button class="list-button ${Number(list.id) === Number(state.selectedListId) ? "active" : ""}" data-list-id="${Number(list.id)}">
+            <span class="list-name">${escapeHtml(list.title)}</span><span class="count">${incomplete}</span>
+          </button>`;
+        }).join("") || '<div class="subtle">No lists yet.</div>';
+      }
+
+      function renderMain() {
+        const list = selectedList();
+        if (!list) {
+          $("main").innerHTML = '<div class="empty">Create or select a list to begin.</div>';
+          return;
+        }
+        const access = accessFor(list.id);
+        const editable = canEdit(list.id) && !state.busy;
+        const owner = access && access.owner === true;
+        const members = access && Array.isArray(access.members) ? access.members : [];
+        const pending = access && Array.isArray(access.pending) ? access.pending : [];
+        const remoteStatus = owner ? "Hosted on this ship" : `${access ? access.host : "Owner"} is ${access ? access.status : "checking"}`;
+        const statusClass = owner || (access && access.status === "online") ? "online" : "offline";
+        const memberPills = [state.ship, ...members.map(member => member.ship), ...pending.map(ship => `${ship} (invited)`)]
+          .filter((value, index, values) => value && values.indexOf(value) === index)
+          .map(value => `<span class="pill">${escapeHtml(value)}</span>`).join("");
+        const reminders = (list.reminders || []).slice().sort((a, b) => Number(a.rank || 0) - Number(b.rank || 0) || Number(a.id) - Number(b.id));
+
+        $("main").innerHTML = `
+          <div class="list-head">
+            <div>
+              <h2>${escapeHtml(list.title)}</h2>
+              <div class="meta"><span class="status ${statusClass}">${escapeHtml(remoteStatus)}</span><span class="pill">revision ${Number(list.revision || 0)}</span></div>
+            </div>
+            <button class="button" id="refresh-list" type="button">Refresh list</button>
+          </div>
+
+          ${!editable && !owner ? `<div class="notice show error">${escapeHtml(access ? access.host : "The list owner")} is ${escapeHtml(access ? access.status : "checking")}; editing is blocked until the host ship is online.</div>` : ""}
+
+          <section class="sharing">
+            <h3>People</h3>
+            <div class="members">${memberPills || '<span class="subtle">Only you</span>'}</div>
+            ${owner ? `<form class="row" id="invite-form" style="margin-top:12px">
+              <input class="field" id="invite-ship" placeholder="~sampel-palnet" aria-label="Ship to invite" required ${editable ? "" : "disabled"}>
+              <button class="button" type="submit" ${editable ? "" : "disabled"}>Invite</button>
+            </form>` : ""}
+          </section>
+
+          <form class="composer" id="new-reminder-form">
+            <h3>New reminder</h3>
+            <div class="composer-grid">
+              <input class="field" id="new-reminder-title" maxlength="1024" placeholder="What needs doing?" required ${editable ? "" : "disabled"}>
+              <input class="field" id="new-reminder-assignee" placeholder="Assignee (optional)" ${editable ? "" : "disabled"}>
+              <button class="button primary" type="submit" ${editable ? "" : "disabled"}>Add reminder</button>
+            </div>
+          </form>
+
+          <section>
+            <h3>Reminders</h3>
+            <div class="task-list">
+              ${reminders.map(reminder => {
+                const editing = Number(state.editingReminderId) === Number(reminder.id);
+                return `<article class="task ${reminder.completed ? "done" : ""} ${editing ? "editing" : ""}" data-reminder-id="${Number(reminder.id)}">
+                  <input class="check" type="checkbox" data-complete="${Number(reminder.id)}" ${reminder.completed ? "checked" : ""} ${editable ? "" : "disabled"} aria-label="Mark ${escapeHtml(reminder.title)} complete">
+                  <div>
+                    <div class="task-title">${escapeHtml(reminder.title)}</div>
+                    <div class="task-meta">${reminder.assignee ? `<span>Assigned to ${escapeHtml(reminder.assignee)}</span>` : "<span>Unassigned</span>"}${reminder.notes ? `<span>${escapeHtml(reminder.notes)}</span>` : ""}</div>
+                    <form class="edit-grid" data-edit-form="${Number(reminder.id)}">
+                      <input class="field" name="title" value="${escapeHtml(reminder.title)}" maxlength="1024" required ${editable ? "" : "disabled"}>
+                      <input class="field" name="assignee" value="${escapeHtml(reminder.assignee || "")}" placeholder="Assignee" ${editable ? "" : "disabled"}>
+                      <button class="button primary" type="submit" ${editable ? "" : "disabled"}>Save</button>
+                    </form>
+                  </div>
+                  <button class="button quiet" type="button" data-edit="${Number(reminder.id)}" ${editable ? "" : "disabled"}>${editing ? "Cancel" : "Edit"}</button>
+                </article>`;
+              }).join("") || '<div class="empty">No reminders in this list.</div>'}
+            </div>
+          </section>`;
+      }
+
+      function render() {
+        renderInvitations();
+        renderLists();
+        renderMain();
+      }
+
+      document.addEventListener("click", event => {
+        const listButton = event.target.closest("[data-list-id]");
+        if (listButton) {
+          state.selectedListId = Number(listButton.dataset.listId);
+          state.editingReminderId = null;
+          render();
+          return;
+        }
+        const edit = event.target.closest("[data-edit]");
+        if (edit) {
+          const id = Number(edit.dataset.edit);
+          state.editingReminderId = Number(state.editingReminderId) === id ? null : id;
+          renderMain();
+          return;
+        }
+        const accept = event.target.closest("[data-accept-invite]");
+        if (accept) {
+          const invite = state.invitations[Number(accept.dataset.acceptInvite)];
+          poke({ "accept-invitation": { "operation-id": opId(), host: invite.host, token: invite.token } });
+          return;
+        }
+        const decline = event.target.closest("[data-decline-invite]");
+        if (decline) {
+          const invite = state.invitations[Number(decline.dataset.declineInvite)];
+          poke({ "decline-invitation": { "operation-id": opId(), host: invite.host, token: invite.token } });
+          return;
+        }
+        if (event.target.closest("#refresh-list")) load();
+      });
+
+      document.addEventListener("change", event => {
+        const checkbox = event.target.closest("[data-complete]");
+        if (!checkbox) return;
+        const list = selectedList();
+        if (!list) return;
+        poke({ "set-completed": {
+          "operation-id": opId(), "list-id": Number(list.id), "reminder-id": Number(checkbox.dataset.complete),
+          completed: checkbox.checked, "base-revision": Number(list.revision)
+        }});
+      });
+
+      document.addEventListener("submit", event => {
+        event.preventDefault();
+        const form = event.target;
+        if (form.id === "new-list-form") {
+          const title = $("new-list-title").value.trim();
+          if (title) poke({ "create-list": { "operation-id": opId(), title } }).then(() => { $("new-list-title").value = ""; });
+          return;
+        }
+        const list = selectedList();
+        if (!list) return;
+        if (form.id === "invite-form") {
+          const ship = normalizeShip($("invite-ship").value);
+          if (ship) poke({ "invite-member": { "operation-id": opId(), "list-id": Number(list.id), ship, "can-invite": false } });
+          return;
+        }
+        if (form.id === "new-reminder-form") {
+          const title = $("new-reminder-title").value.trim();
+          const assignee = normalizeShip($("new-reminder-assignee").value);
+          if (!title) return;
+          const add = { "operation-id": opId(), "list-id": Number(list.id), title, tags: [], "base-revision": Number(list.revision) };
+          poke({ "add-reminder": add }).then(async () => {
+            $("new-reminder-title") && ($("new-reminder-title").value = "");
+            if (!assignee) return;
+            await load({ quiet: true });
+            const current = selectedList();
+            const newest = current && (current.reminders || []).slice().sort((a,b) => Number(b.id) - Number(a.id))[0];
+            if (newest && newest.title === title) updateReminder(current, newest, title, assignee);
+          });
+          return;
+        }
+        if (form.matches("[data-edit-form]")) {
+          const reminder = (list.reminders || []).find(item => Number(item.id) === Number(form.dataset.editForm));
+          if (!reminder) return;
+          updateReminder(list, reminder, form.elements.title.value.trim(), normalizeShip(form.elements.assignee.value));
+        }
+      });
+
+      function updateReminder(list, reminder, title, assignee) {
+        state.editingReminderId = null;
+        return poke({ "update-reminder": {
+          "operation-id": opId(), "list-id": Number(list.id), "reminder-id": Number(reminder.id),
+          title, notes: String(reminder.notes || ""), url: reminder.url || null,
+          priority: String(reminder.priority || "none"), flagged: reminder.flagged === true,
+          tags: Array.isArray(reminder.tags) ? reminder.tags : [], assignee: assignee || null,
+          "base-revision": Number(list.revision)
+        }});
+      }
+
+      $("refresh").addEventListener("click", () => load());
+      setInterval(() => {
+        const active = document.activeElement;
+        if (!state.busy && (!active || !["INPUT","TEXTAREA","SELECT"].includes(active.tagName))) load({ quiet: true });
+      }, 3000);
+      load();
+    })();
+  </script>
+</body>
+</html>

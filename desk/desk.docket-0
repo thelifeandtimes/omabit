@@ -1,0 +1,9 @@
+:~
+  title+'Tend'
+  info+'Peer-to-peer reminders and shared todo lists.'
+  color+0x35.6df3
+  version+[0 1 0]
+  website+'https://github.com'
+  license+'MIT'
+  site+/apps/tend
+==
