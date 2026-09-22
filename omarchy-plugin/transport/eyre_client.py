@@ -654,7 +654,7 @@ def main(argv: list[str] | None = None) -> int:
             stream(args.config, args.cookie, sys.stdout)
             return 0
         elif args.command == "poke":
-            result = poke(args.config, args.cookie, json.load(sys.stdin))
+            result = poke(args.config, args.cookie, json.loads(sys.stdin.readline()))
         elif args.command == "state":
             result = scry_state(args.config, args.cookie)
         elif args.command == "settings":

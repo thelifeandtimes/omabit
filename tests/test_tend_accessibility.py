@@ -82,6 +82,13 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertEqual(service.count('["python3", "-B", bridgePath,'), 6)
         self.assertNotIn('["python3", bridgePath,', service)
 
+    def test_mutation_processes_use_newline_delimited_json(self):
+        service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
+        bridge = (ROOT / "omarchy-plugin" / "transport" / "eyre_client.py").read_text(encoding="utf-8")
+        self.assertEqual(service.count('write(payload + "\\n")'), 2)
+        self.assertIn("json.loads(sys.stdin.readline())", bridge)
+        self.assertNotIn("json.load(sys.stdin)", bridge)
+
 
 if __name__ == "__main__":
     unittest.main()

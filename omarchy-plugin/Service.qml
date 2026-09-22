@@ -906,7 +906,7 @@ Item {
 
         stdinEnabled: true
         onStarted: {
-            write(payload);
+            write(payload + "\n");
             payload = "";
         }
         onExited: function(exitCode) {
@@ -964,7 +964,7 @@ Item {
 
         stdinEnabled: true
         onStarted: {
-            write(payload);
+            write(payload + "\n");
             payload = "";
         }
         onExited: function(exitCode) {
