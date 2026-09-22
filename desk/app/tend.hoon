@@ -2368,9 +2368,7 @@
     ?:  =(u.assignee our.bowl)  %.y
     =/  sharing=(unit share:t)  (~(get by share-map.st) list-id)
     ?~  sharing  %.n
-    |(  (~(has by members.u.sharing) u.assignee)
-        (~(has by pending.u.sharing) u.assignee)
-    )
+    |((~(has by members.u.sharing) u.assignee) (~(has by pending.u.sharing) u.assignee))
   ::
   ++  invalid-selection
     |=  [ids=(set reminder-id:t) rems=reminders:t]
