@@ -333,7 +333,8 @@
           return;
         }
         const access = accessFor(list.id);
-        const editable = canEdit(list.id) && !state.busy;
+        const hostWritable = canEdit(list.id);
+        const editable = hostWritable && !state.busy;
         const owner = access && access.owner === true;
         const members = access && Array.isArray(access.members) ? access.members : [];
         const pending = access && Array.isArray(access.pending) ? access.pending : [];
@@ -353,7 +354,7 @@
             <button class="button" id="refresh-list" type="button">Refresh list</button>
           </div>
 
-          ${!editable && !owner ? `<div class="notice show error">${escapeHtml(access ? access.host : "The list owner")} is ${escapeHtml(access ? access.status : "checking")}; editing is blocked until the host ship is online.</div>` : ""}
+          ${!hostWritable && !owner ? `<div class="notice show error">${escapeHtml(access ? access.host : "The list owner")} is ${escapeHtml(access ? access.status : "checking")}; editing is blocked until the host ship is online.</div>` : ""}
 
           <section class="sharing">
             <h3>People</h3>

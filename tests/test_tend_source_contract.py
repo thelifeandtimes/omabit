@@ -103,6 +103,8 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("site+/apps/tend", docket)
         self.assertIn("/~/scry/tend/state.json", web_ui)
         self.assertIn("/~/channel/", web_ui)
+        self.assertIn("const hostWritable = canEdit(list.id);", web_ui)
+        self.assertIn("${!hostWritable && !owner ?", web_ui)
 
 
 if __name__ == "__main__":
