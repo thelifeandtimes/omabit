@@ -357,6 +357,7 @@ Item {
     Connections {
         target: root.service
         function onLocalSettingsChanged() { root.loadSelectedPresentation(); }
+        function onLoginSucceeded() { loginCode.text = ""; }
     }
 
     function movePinnedView(view, delta) {
@@ -910,7 +911,6 @@ Item {
                             enabled: service && service.connectionState !== "authenticating" && shipUrl.text.trim() !== "" && loginCode.text.trim() !== ""
                             onClicked: {
                                 service.login(shipUrl.text, loginCode.text);
-                                loginCode.text = "";
                             }
                         }
 
@@ -1347,26 +1347,26 @@ Item {
                                 spacing: Style.space(6)
 
                                 Button {
-                                    text: service && service.preferences.defaultList === root.selectedList.id ? "Default list" : "Make default"
-                                    enabled: service && service.preferences.defaultList !== root.selectedList.id && service.connectionState === "online" && !service.mutationPending
-                                    onClicked: root.updatePreferences(root.selectedList.id, service.preferences.pinnedLists, service.preferences.pinnedViews)
+                                    text: service && service.preferences.defaultList === root.selectedListId ? "Default list" : "Make default"
+                                    enabled: service && root.selectedListId > 0 && service.preferences.defaultList !== root.selectedListId && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: root.updatePreferences(root.selectedListId, service.preferences.pinnedLists, service.preferences.pinnedViews)
                                 }
 
                                 Button {
-                                    text: service && service.preferences.pinnedLists.indexOf(root.selectedList.id) !== -1 ? "Unpin list" : "Pin list"
-                                    enabled: service && service.connectionState === "online" && !service.mutationPending
+                                    text: service && service.preferences.pinnedLists.indexOf(root.selectedListId) !== -1 ? "Unpin list" : "Pin list"
+                                    enabled: service && root.selectedListId > 0 && service.connectionState === "online" && !service.mutationPending
                                     onClicked: root.toggleListPin()
                                 }
 
                                 Button {
                                     text: "Pinned ↑"
-                                    enabled: service && service.preferences.pinnedLists.indexOf(root.selectedList.id) > 0 && service.connectionState === "online" && !service.mutationPending
+                                    enabled: service && root.selectedListId > 0 && service.preferences.pinnedLists.indexOf(root.selectedListId) > 0 && service.connectionState === "online" && !service.mutationPending
                                     onClicked: root.movePinnedList(-1)
                                 }
 
                                 Button {
                                     text: "Pinned ↓"
-                                    enabled: service && service.preferences.pinnedLists.indexOf(root.selectedList.id) >= 0 && service.preferences.pinnedLists.indexOf(root.selectedList.id) < service.preferences.pinnedLists.length - 1 && service.connectionState === "online" && !service.mutationPending
+                                    enabled: service && root.selectedListId > 0 && service.preferences.pinnedLists.indexOf(root.selectedListId) >= 0 && service.preferences.pinnedLists.indexOf(root.selectedListId) < service.preferences.pinnedLists.length - 1 && service.connectionState === "online" && !service.mutationPending
                                     onClicked: root.movePinnedList(1)
                                 }
 

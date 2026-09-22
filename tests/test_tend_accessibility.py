@@ -52,6 +52,16 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("PREVIOUS EDIT STILL IN FLIGHT", overlay)
         self.assertIn("Accessible.name: text", overlay)
 
+    def test_login_keeps_the_code_visible_until_authentication_succeeds(self):
+        overlay = (ROOT / "omarchy-plugin" / "Overlay.qml").read_text(encoding="utf-8")
+        service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
+        self.assertIn("signal loginSucceeded()", service)
+        self.assertIn("loginProcess.output = \"\"", service)
+        self.assertIn("loginProcess.errors = \"\"", service)
+        self.assertIn("root.loginSucceeded()", service)
+        self.assertIn('function onLoginSucceeded() { loginCode.text = ""; }', overlay)
+        self.assertNotIn('service.login(shipUrl.text, loginCode.text);\n                                loginCode.text = "";', overlay)
+
 
 if __name__ == "__main__":
     unittest.main()

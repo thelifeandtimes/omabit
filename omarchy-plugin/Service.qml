@@ -40,6 +40,7 @@ Item {
     readonly property string cookiePath: runtimeRoot + "/cookies.txt"
     readonly property string connectionPath: configRoot + "/connection.json"
     signal reminderAlert(var alert)
+    signal loginSucceeded()
 
     function operationId() {
         return Date.now().toString(36) + "-" + Math.floor(Math.random() * 2.14748e+09).toString(36);
@@ -82,6 +83,8 @@ Item {
 
         root.errorMessage = "";
         root.connectionState = "authenticating";
+        loginProcess.output = "";
+        loginProcess.errors = "";
         loginProcess.secret = String(code || "");
         loginProcess.command = ["python3", bridgePath, "login", "--url", String(url || ""), "--cookie", cookiePath, "--config", connectionPath];
         loginProcess.running = true;
@@ -795,6 +798,7 @@ Item {
                 root.baseUrl = result.baseUrl;
                 root.ship = result.ship;
                 root.localTimezone = result.localTimezone || "UTC";
+                root.loginSucceeded();
                 root.startStream();
             } catch (error) {
                 root.connectionState = "error";

@@ -93,6 +93,17 @@ class TendGallSourceContractTests(unittest.TestCase):
     def test_snapshot_publishes_the_desktop_protocol_version(self):
         self.assertIn("[%protocol-version (numb 1)]", self.json)
 
+    def test_agent_serves_the_authenticated_landscape_application(self):
+        docket = (ROOT / "desk" / "desk.docket-0").read_text(encoding="utf-8")
+        web_ui = (ROOT / "desk" / "app" / "tend.html").read_text(encoding="utf-8")
+        self.assertIn("%connect `/apps/tend %tend", self.agent)
+        self.assertIn("[%eyre %bound *]", self.agent)
+        self.assertIn("%handle-http-request", self.agent)
+        self.assertIn("require-authorization:app:server", self.agent)
+        self.assertIn("site+/apps/tend", docket)
+        self.assertIn("/~/scry/tend/state.json", web_ui)
+        self.assertIn("/~/channel/", web_ui)
+
 
 if __name__ == "__main__":
     unittest.main()
