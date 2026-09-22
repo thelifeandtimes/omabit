@@ -62,6 +62,11 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn('function onLoginSucceeded() { loginCode.text = ""; }', overlay)
         self.assertNotIn('service.login(shipUrl.text, loginCode.text);\n                                loginCode.text = "";', overlay)
 
+    def test_transport_path_is_component_relative(self):
+        service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
+        self.assertIn('Qt.resolvedUrl("transport/eyre_client.py")', service)
+        self.assertNotIn("manifest.__sourceDir", service)
+
 
 if __name__ == "__main__":
     unittest.main()

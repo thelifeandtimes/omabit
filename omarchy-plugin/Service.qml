@@ -33,8 +33,14 @@ Item {
     readonly property int incompleteCount: TendModel.incompleteCount(lists)
     readonly property int badgeCount: TendModel.badgeCount(lists, preferences, ship)
     readonly property var nextReminder: TendModel.nextReminder(lists)
-    readonly property string pluginDir: manifest && manifest.__sourceDir ? String(manifest.__sourceDir) : ""
-    readonly property string bridgePath: pluginDir ? pluginDir + "/transport/eyre_client.py" : ""
+    // Omarchy deliberately removes private registry fields such as
+    // `__sourceDir` before exposing a third-party manifest. Resolve the
+    // bundled bridge relative to this component instead of depending on host
+    // implementation details that are unavailable to the service at runtime.
+    readonly property string bridgePath: {
+        var resolved = String(Qt.resolvedUrl("transport/eyre_client.py"));
+        return resolved.indexOf("file://") === 0 ? decodeURIComponent(resolved.substring(7)) : resolved;
+    }
     readonly property string runtimeRoot: (Quickshell.env("XDG_RUNTIME_DIR") || (Quickshell.env("HOME") + "/.cache")) + "/omabit/tend"
     readonly property string configRoot: (Quickshell.env("XDG_CONFIG_HOME") || (Quickshell.env("HOME") + "/.config")) + "/omabit/tend"
     readonly property string cookiePath: runtimeRoot + "/cookies.txt"
