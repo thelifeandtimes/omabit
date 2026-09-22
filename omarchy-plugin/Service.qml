@@ -97,7 +97,7 @@ Item {
         loginProcess.output = "";
         loginProcess.errors = "";
         loginProcess.secret = String(code || "");
-        loginProcess.command = ["python3", bridgePath, "login", "--url", String(url || ""), "--cookie", cookiePath, "--config", connectionPath];
+        loginProcess.command = ["python3", "-B", bridgePath, "login", "--url", String(url || ""), "--cookie", cookiePath, "--config", connectionPath];
         loginProcess.running = true;
     }
 
@@ -105,7 +105,7 @@ Item {
         if (!bridgePath || statusProcess.running)
             return ;
 
-        statusProcess.command = ["python3", bridgePath, "status", "--cookie", cookiePath, "--config", connectionPath];
+        statusProcess.command = ["python3", "-B", bridgePath, "status", "--cookie", cookiePath, "--config", connectionPath];
         statusProcess.running = true;
     }
 
@@ -115,7 +115,7 @@ Item {
 
         root.connectionState = "checking";
         root.streamAuthenticationFailed = false;
-        streamProcess.command = ["python3", bridgePath, "stream", "--cookie", cookiePath, "--config", connectionPath];
+        streamProcess.command = ["python3", "-B", bridgePath, "stream", "--cookie", cookiePath, "--config", connectionPath];
         streamProcess.running = true;
     }
 
@@ -125,7 +125,7 @@ Item {
 
         reconnectTimer.stop();
         streamProcess.running = false;
-        disconnectProcess.command = ["python3", bridgePath, "disconnect", "--cookie", cookiePath, "--config", connectionPath];
+        disconnectProcess.command = ["python3", "-B", bridgePath, "disconnect", "--cookie", cookiePath, "--config", connectionPath];
         disconnectProcess.running = true;
     }
 
@@ -160,7 +160,7 @@ Item {
         root.mutationPending = true;
         root.errorMessage = "";
         pokeProcess.payload = JSON.stringify(action);
-        pokeProcess.command = ["python3", bridgePath, "poke", "--cookie", cookiePath, "--config", connectionPath];
+        pokeProcess.command = ["python3", "-B", bridgePath, "poke", "--cookie", cookiePath, "--config", connectionPath];
         pokeProcess.running = true;
         return true;
     }
@@ -696,7 +696,7 @@ Item {
                 "notification-id": notificationId
             }
         });
-        notificationAckProcess.command = ["python3", bridgePath, "poke", "--cookie", cookiePath, "--config", connectionPath];
+        notificationAckProcess.command = ["python3", "-B", bridgePath, "poke", "--cookie", cookiePath, "--config", connectionPath];
         notificationAckProcess.running = true;
     }
 

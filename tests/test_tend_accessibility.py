@@ -77,6 +77,11 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("function diagnostics(unused)", overlay)
         self.assertIn('bridgeReady: service ? service.bridgePath !== "" : false', overlay)
 
+    def test_transport_processes_do_not_mutate_the_watched_plugin_tree(self):
+        service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
+        self.assertEqual(service.count('["python3", "-B", bridgePath,'), 6)
+        self.assertNotIn('["python3", bridgePath,', service)
+
 
 if __name__ == "__main__":
     unittest.main()
