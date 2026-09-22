@@ -41,7 +41,11 @@ chmod 0755 "$release_dir/bin/omabit" "$release_dir/install.sh" \
   find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
 )
 
-archive="$output_dir/$release_name.tar.gz"
+archive_name="$release_name.tar.gz"
+archive="$output_dir/$archive_name"
 tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner -czf "$archive" -C "$work_dir" "$release_name"
-sha256sum "$archive" > "$archive.sha256"
+(
+  cd "$output_dir"
+  sha256sum "$archive_name" > "$archive_name.sha256"
+)
 printf '%s\n' "$archive"

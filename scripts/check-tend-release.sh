@@ -8,7 +8,16 @@ mkdir -p "$work_dir/build-a" "$work_dir/build-b"
 archive=$($repo_dir/scripts/build-tend-release.sh "$work_dir/build-a")
 second_archive=$($repo_dir/scripts/build-tend-release.sh "$work_dir/build-b")
 cmp "$archive" "$second_archive"
-sha256sum --check "$archive.sha256"
+checksum_file="$archive.sha256"
+checksum_entry=$(cut -d ' ' -f 3- "$checksum_file")
+[[ "$checksum_entry" == "$(basename "$archive")" ]] || {
+  echo "Release checksum must name only the portable archive basename" >&2
+  exit 1
+}
+(
+  cd "$(dirname "$archive")"
+  sha256sum --check "$(basename "$checksum_file")"
+)
 mkdir -p "$work_dir/extracted"
 tar -xzf "$archive" -C "$work_dir/extracted"
 release_dir=$(find "$work_dir/extracted" -mindepth 1 -maxdepth 1 -type d -name 'omabit-tend-*' -print -quit)
