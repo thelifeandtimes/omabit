@@ -62,7 +62,12 @@ fi
 
 HOME="$install_root/home" XDG_CONFIG_HOME="$install_root/config" \
   "$release_dir/install.sh" --force --plugin-dir "$install_root/plugin" --bin-dir "$install_root/bin"
-find "$install_root" -maxdepth 1 -type d -name 'plugin.backup.*' -print -quit | grep -q .
+plugin_backup_root="$install_root/config/omarchy/plugin-backups"
+find "$plugin_backup_root" -maxdepth 1 -type d -name 'plugin.backup.*' -print -quit | grep -q .
+if find "$(dirname "$install_root/plugin")" -maxdepth 1 -type d -name 'plugin.backup.*' -print -quit | grep -q .; then
+  echo "Installer left a plugin backup beside the live plugin target" >&2
+  exit 1
+fi
 find "$install_root/bin" -maxdepth 1 -type f -name 'omabit.backup.*' -print -quit | grep -q .
 
 mounted_desk="$work_dir/mounted-tend"

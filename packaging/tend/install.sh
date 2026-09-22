@@ -17,6 +17,7 @@ enable_plugin=false
 force=false
 desk_path=""
 plugin_dir="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugins/io.omabit.tend"
+plugin_backup_dir="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugin-backups"
 bin_dir="$HOME/.local/bin"
 
 while (($#)); do
@@ -147,13 +148,20 @@ install_tree() {
   local source_dir=$1
   local target_dir=$2
   local label=$3
+  local backup_parent=${4:-}
   local parent_dir
   parent_dir=$(dirname "$target_dir")
 
   mkdir -p "$parent_dir"
   if [[ -e "$target_dir" ]]; then
     local backup_dir
-    backup_dir=$(next_backup_path "$target_dir")
+    if [[ -n "$backup_parent" ]]; then
+      [[ ! -L "$backup_parent" ]] || { echo "Refusing symbolic-link backup directory: $backup_parent" >&2; exit 1; }
+      mkdir -p "$backup_parent"
+      backup_dir=$(next_backup_path "$backup_parent/$(basename "$target_dir")")
+    else
+      backup_dir=$(next_backup_path "$target_dir")
+    fi
     mv "$target_dir" "$backup_dir"
     echo "Backed up $label to $backup_dir"
   fi
@@ -204,10 +212,11 @@ fi
 
 if [[ -n "$desk_path" ]]; then
   install_desk_overlay "$release_dir/desk" "$desk_path"
-  echo "Commit and start the mounted desk from dojo: |commit %tend  then  |rein %tend [& %tend]"
+  echo "Commit and install the mounted desk from dojo: |commit %tend  then  |install our %tend"
+  echo "If %tend already exists but is suspended, run: |revive %tend"
 fi
 
-install_tree "$release_dir/omarchy-plugin" "$plugin_dir" "Omarchy plugin"
+install_tree "$release_dir/omarchy-plugin" "$plugin_dir" "Omarchy plugin" "$plugin_backup_dir"
 
 mkdir -p "$bin_dir"
 if [[ -e "$cli_target" ]]; then
