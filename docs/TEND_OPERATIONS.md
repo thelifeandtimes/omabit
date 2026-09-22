@@ -68,14 +68,18 @@ builds are unsupported. The exact matrix and version-bump rules are in
 
 ## Update
 
-The release installer moves replaced desktop files to timestamped backups:
+Run the release installer against the exact mounted desk. It preflights all
+three targets, moves replaced desktop files to timestamped backups, backs up
+the complete mounted desk, overlays Tend-owned source, and preserves the
+mounted desk's standard marks and `sys.kelvin`:
 
 ```sh
-./install.sh --force
+./install.sh --force --desk-path /absolute/path/to/your/pier/tend
 ```
 
-For a mounted desk, copy the new release's `desk/` contents into the exact
-mounted `%tend` directory, then commit from the dojo:
+Do not replace a mounted desk with the release's `desk/` directory or copy its
+`sys.kelvin` over the mounted value. Commit the installed overlay from the
+dojo:
 
 ```hoon
 |commit %tend
@@ -89,6 +93,9 @@ run `omabit tend status`, and verify a read plus one reversible mutation.
 - Disable a broken desktop plugin with `omarchy plugin disable io.omabit.tend`.
 - Restore the timestamped plugin and CLI backups created by `install.sh
   --force`, or reinstall a known release.
+- The installer also creates a timestamped backup beside the mounted `%tend`
+  directory before every desk overlay. Restore that complete directory and
+  commit it to return to the immediately preceding desk source.
 - Replacing mounted desk source with a prior release and committing it is safe
   only when that release understands the currently saved Gall schema. Tend
   rejects unknown saved-state shapes; do not force a code downgrade across a

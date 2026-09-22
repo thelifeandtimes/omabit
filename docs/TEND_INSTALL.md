@@ -13,51 +13,96 @@ make dist-tend
 make check-tend-release
 ```
 
-The deterministic archive and its checksum are written under `dist/`.
-
-## Install the desktop pieces
-
-Extract the archive, inspect the plugin (Omarchy plugins execute unsandboxed in
-the shell process), and run:
+The deterministic archive and its checksum are written under `dist/`. The
+tarball is the installable release: unpack it, enter the release directory,
+and verify its internal manifest before running the installer. For example:
 
 ```sh
-./install.sh
-omarchy plugin enable io.omabit.tend
+version=$(cat VERSION)
+mkdir -p dist/unpacked
+tar -xzf "dist/omabit-tend-$version.tar.gz" -C dist/unpacked
+cd "dist/unpacked/omabit-tend-$version"
+sha256sum --check SHA256SUMS
 ```
 
-Pass `--enable` to combine the second step with installation. The default
-targets are:
+## Prepare the Gall desk
 
-- `${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugins/io.omabit.tend`
-- `$HOME/.local/bin/omabit`
-
-The installer refuses existing files and symbolic-link targets. `--force`
-moves an existing installation to a timestamped backup before replacing it.
-
-## Install the Gall desk
-
-Create and mount a `%tend` desk from your ship's dojo, then provide that exact
-mounted directory to the installer:
+Create and mount a `%tend` desk from your ship's dojo:
 
 ```hoon
 |new-desk %tend
 |mount %tend
 ```
 
+Do this before running the release installer. The mounted directory supplies
+standard marks and a `sys.kelvin` compatible with that ship's userspace.
+
+## Install the release
+
+From the root of the extracted release, inspect the plugin (Omarchy plugins
+execute unsandboxed in the shell process), then install all three pieces in one
+command:
+
 ```sh
-./install.sh --desk-path /absolute/path/to/your/pier/tend
+./install.sh --desk-path /absolute/path/to/your/pier/tend --enable
 ```
 
-Then commit and start it:
+Omit `--enable` if you want to enable the plugin separately after inspection:
+
+```sh
+omarchy plugin enable io.omabit.tend
+```
+
+The installer overlays only Tend-owned files into the mounted desk. It keeps
+the desk's standard marks and `sys.kelvin`, and makes a timestamped backup of
+the complete pre-install desk. It refuses a directory that does not look like
+a fresh or previously installed mounted desk. On an update, differing
+Tend-owned files require `--force`; the mounted base files are still preserved.
+
+The default desktop targets are:
+
+- `${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugins/io.omabit.tend`
+- `$HOME/.local/bin/omabit`
+
+The installer refuses existing desktop files and symbolic-link targets.
+`--force` moves existing desktop installations to timestamped backups before
+replacing them. For a desktop-only install, omit `--desk-path`.
+
+After the combined install, commit and start the desk:
 
 ```hoon
 |commit %tend
 |rein %tend [& %tend]
 ```
 
-The desk source is also present as `desk/` in the archive for remote or custom
-deployment workflows. Never copy a pier, key material, `+code`, or Eyre cookie
-into the repository or release artifact.
+The desk overlay source is also present as `desk/` in the archive for remote or
+custom deployment workflows. Do not replace a mounted desk wholesale with
+that directory: it intentionally does not contain the standard base marks,
+and its packaged `sys.kelvin` may not match the mounted ship. Never copy a
+pier, key material, `+code`, or Eyre cookie into the repository or release
+artifact.
+
+## Recover a desk replaced by an older installer
+
+If `|commit %tend` reports deletions of `mar/hoon`, `mar/kelvin`, `mar/noun`,
+and `mar/txt`, an older installer replaced the mounted desk with the release
+overlay instead of merging it. It created a full backup immediately before the
+replacement. Restore the five ship-provided files from that backup while
+leaving the installed Tend files in place:
+
+```sh
+desk=/absolute/path/to/your/pier/tend
+backup=/absolute/path/to/your/pier/tend.backup.TIMESTAMP
+install -d "$desk/mar"
+for mark in hoon kelvin noun txt; do
+  cp -a "$backup/mar/$mark.hoon" "$desk/mar/$mark.hoon"
+done
+cp -a "$backup/sys.kelvin" "$desk/sys.kelvin"
+```
+
+Then retry `|commit %tend`. You do not need to rerun the installer merely to
+complete this recovery. Keep the backup until the desk has committed and Tend
+has started successfully.
 
 ## Connect
 

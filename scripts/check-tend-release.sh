@@ -45,4 +45,64 @@ HOME="$install_root/home" XDG_CONFIG_HOME="$install_root/config" \
   "$release_dir/install.sh" --force --plugin-dir "$install_root/plugin" --bin-dir "$install_root/bin"
 find "$install_root" -maxdepth 1 -type d -name 'plugin.backup.*' -print -quit | grep -q .
 find "$install_root/bin" -maxdepth 1 -type f -name 'omabit.backup.*' -print -quit | grep -q .
+
+mounted_desk="$work_dir/mounted-tend"
+mkdir -p "$mounted_desk/mar" "$work_dir/mounted-originals"
+for mark in hoon kelvin noun txt; do
+  printf '%s\n' "base-$mark" > "$mounted_desk/mar/$mark.hoon"
+  cp "$mounted_desk/mar/$mark.hoon" "$work_dir/mounted-originals/$mark.hoon"
+done
+printf '%s\n' '[%zuse 408]' > "$mounted_desk/sys.kelvin"
+cp "$mounted_desk/sys.kelvin" "$work_dir/mounted-originals/sys.kelvin"
+
+desk_install_root="$work_dir/desk-install-root"
+HOME="$desk_install_root/home" XDG_CONFIG_HOME="$desk_install_root/config" \
+  "$release_dir/install.sh" \
+  --desk-path "$mounted_desk" \
+  --plugin-dir "$desk_install_root/plugin" \
+  --bin-dir "$desk_install_root/bin"
+
+for mark in hoon kelvin noun txt; do
+  cmp "$work_dir/mounted-originals/$mark.hoon" "$mounted_desk/mar/$mark.hoon"
+done
+cmp "$work_dir/mounted-originals/sys.kelvin" "$mounted_desk/sys.kelvin"
+cmp "$release_dir/desk/app/tend.hoon" "$mounted_desk/app/tend.hoon"
+mounted_backup=$(find "$work_dir" -maxdepth 1 -type d -name 'mounted-tend.backup.*' -print -quit)
+[[ -n "$mounted_backup" ]] || { echo "Mounted desk backup is missing" >&2; exit 1; }
+cmp "$work_dir/mounted-originals/hoon.hoon" "$mounted_backup/mar/hoon.hoon"
+
+printf '%s\n' 'locally-modified' > "$mounted_desk/app/tend.hoon"
+conflict_install_root="$work_dir/conflict-install-root"
+if HOME="$conflict_install_root/home" XDG_CONFIG_HOME="$conflict_install_root/config" \
+  "$release_dir/install.sh" \
+  --desk-path "$mounted_desk" \
+  --plugin-dir "$conflict_install_root/plugin" \
+  --bin-dir "$conflict_install_root/bin" >/dev/null 2>&1; then
+  echo "Installer unexpectedly overwrote conflicting Tend source without --force" >&2
+  exit 1
+fi
+[[ ! -e "$conflict_install_root/plugin" ]]
+[[ ! -e "$conflict_install_root/bin/omabit" ]]
+
+HOME="$desk_install_root/home" XDG_CONFIG_HOME="$desk_install_root/config" \
+  "$release_dir/install.sh" --force \
+  --desk-path "$mounted_desk" \
+  --plugin-dir "$desk_install_root/plugin" \
+  --bin-dir "$desk_install_root/bin"
+cmp "$release_dir/desk/app/tend.hoon" "$mounted_desk/app/tend.hoon"
+cmp "$work_dir/mounted-originals/sys.kelvin" "$mounted_desk/sys.kelvin"
+
+broken_desk="$work_dir/broken-tend"
+broken_install_root="$work_dir/broken-install-root"
+mkdir -p "$broken_desk"
+if HOME="$broken_install_root/home" XDG_CONFIG_HOME="$broken_install_root/config" \
+  "$release_dir/install.sh" \
+  --desk-path "$broken_desk" \
+  --plugin-dir "$broken_install_root/plugin" \
+  --bin-dir "$broken_install_root/bin" >/dev/null 2>&1; then
+  echo "Installer unexpectedly accepted a mounted desk without its base files" >&2
+  exit 1
+fi
+[[ ! -e "$broken_install_root/plugin" ]]
+[[ ! -e "$broken_install_root/bin/omabit" ]]
 echo "Tend release verification passed"
