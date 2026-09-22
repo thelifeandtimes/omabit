@@ -84,7 +84,12 @@ Item {
     }
 
     function login(url, code) {
-        if (!bridgePath || loginProcess.running)
+        if (!bridgePath) {
+            root.connectionState = "error";
+            root.errorMessage = "The bundled Tend transport could not be located";
+            return ;
+        }
+        if (loginProcess.running)
             return ;
 
         root.errorMessage = "";

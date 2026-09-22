@@ -146,7 +146,10 @@ Item {
         if (!selectedAccess)
             return choices;
         var seen = {};
-        var values = [{ ship: selectedAccess.host }].concat(selectedAccess.members || []);
+        var pending = (selectedAccess.pending || []).map(function(ship) {
+            return { ship: ship };
+        });
+        var values = [{ ship: selectedAccess.host }].concat(selectedAccess.members || [], pending);
         for (var i = 0; i < values.length; i++) {
             var ship = String(values[i].ship || "");
             var key = ship.replace(/^~/, "");
@@ -599,18 +602,48 @@ Item {
                     }
                 }
             }
-            if (service && service.ship && root.captureMode)
-                captureEntry.forceActiveFocus();
-            else if (service && service.ship)
-                quickAdd.forceActiveFocus();
-            else
-                shipUrl.forceActiveFocus();
+            Qt.callLater(function() {
+                root.focusOpenTarget(String(payload.focus || ""));
+            });
         });
+    }
+
+    function focusOpenTarget(target) {
+        if (!service || !service.ship) {
+            shipUrl.forceActiveFocus();
+            return ;
+        }
+        if (target === "new-list") {
+            newList.forceActiveFocus();
+        } else if (target === "invite") {
+            root.openListEditor();
+            Qt.callLater(function() {
+                inviteShip.forceActiveFocus();
+            });
+        } else if (target === "reminder-assignee") {
+            reminderAssignee.forceActiveFocus();
+        } else if (target === "reminder-save") {
+            reminderSave.forceActiveFocus();
+        } else if (root.captureMode) {
+            captureEntry.forceActiveFocus();
+        } else {
+            quickAdd.forceActiveFocus();
+        }
     }
 
     function close() {
         root.opened = false;
         root.captureMode = false;
+    }
+
+    function diagnostics(unused) {
+        return JSON.stringify({
+            connectionState: service ? service.connectionState : "unavailable",
+            ship: service ? service.ship : "",
+            baseUrl: service ? service.baseUrl : "",
+            bridgeReady: service ? service.bridgePath !== "" : false,
+            error: service ? service.errorMessage : "Tend service unavailable"
+        });
     }
 
     function dismiss() {
@@ -1435,6 +1468,7 @@ Item {
                                         width: parent.width * 0.38
                                         placeholderText: "~sampel-palnet, moon, or comet"
                                         Accessible.name: "Urbit ship to invite"
+                                        onAccepted: inviteButton.clicked()
                                     }
 
                                     CheckBox {
@@ -1445,6 +1479,8 @@ Item {
                                     }
 
                                     Button {
+                                        id: inviteButton
+
                                         text: "Invite"
                                         enabled: root.selectedListEditable && inviteShip.text.trim() !== "" && service && service.connectionState === "online" && !service.mutationPending
                                         Accessible.name: "Invite Urbit ship to selected list"
@@ -2180,6 +2216,8 @@ Item {
                                         spacing: Style.space(8)
 
                                         Button {
+                                            id: reminderSave
+
                                             text: service && service.mutationPending ? "Saving…" : "Save"
                                             enabled: root.selectedListEditable && root.selectedReminder && reminderTitle.text.trim() && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: {

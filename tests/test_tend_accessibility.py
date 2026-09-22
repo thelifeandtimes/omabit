@@ -15,6 +15,12 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("Accessible.role: Accessible.List", overlay)
         self.assertIn('Accessible.name: "Current Urbit plus code"', overlay)
         self.assertIn("model: root.assigneeChoices", overlay)
+        self.assertIn("selectedAccess.pending", overlay)
+        self.assertIn('target === "new-list"', overlay)
+        self.assertIn('target === "invite"', overlay)
+        self.assertIn('target === "reminder-assignee"', overlay)
+        self.assertIn('target === "reminder-save"', overlay)
+        self.assertIn("onAccepted: inviteButton.clicked()", overlay)
         self.assertIn("root.setReminderCollapsed", overlay)
 
     def test_bar_exposes_count_and_connection_state(self):
@@ -63,9 +69,13 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertNotIn('service.login(shipUrl.text, loginCode.text);\n                                loginCode.text = "";', overlay)
 
     def test_transport_path_is_component_relative(self):
+        overlay = (ROOT / "omarchy-plugin" / "Overlay.qml").read_text(encoding="utf-8")
         service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
         self.assertIn('Qt.resolvedUrl("transport/eyre_client.py")', service)
         self.assertNotIn("manifest.__sourceDir", service)
+        self.assertIn('root.errorMessage = "The bundled Tend transport could not be located"', service)
+        self.assertIn("function diagnostics(unused)", overlay)
+        self.assertIn('bridgeReady: service ? service.bridgePath !== "" : false', overlay)
 
 
 if __name__ == "__main__":

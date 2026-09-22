@@ -71,10 +71,12 @@ client-computed midpoint. Explicit parent or section moves use
 `move-reminder`, and changing a parent's section updates all descendants in
 the same atomic revision.
 
-An assignee is valid only when it is the list owner or appears in that list's
-current member map. The Gall agent checks this against canonical state; the
-desktop presents the same owner/member set rather than accepting free-form
-ship text. Rank is irrelevant—the identity is an unrestricted Urbit `@p`.
+An assignee is valid only when it is the list owner, appears in that list's
+current member map, or has a pending recipient-bound invitation. This lets an
+owner assign work while the invited ship is offline and before it accepts.
+The Gall agent checks this against canonical state; the desktop presents the
+same owner/member/pending-invite set rather than accepting free-form ship text.
+Rank is irrelevant—the identity is an unrestricted Urbit `@p`.
 
 Schedules store a canonical Urbit `@da` due instant plus the originating IANA
 time-zone name. Recurrence is structured rather than cron text: hourly, daily,

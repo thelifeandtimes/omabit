@@ -28,10 +28,11 @@ class TendGallSourceContractTests(unittest.TestCase):
         ):
             self.assertIn(source_contract, self.agent)
 
-    def test_assignment_is_checked_against_owner_or_member(self):
+    def test_assignment_is_checked_against_owner_member_or_pending_invitee(self):
         self.assertIn("(valid-assignee list-id.act assignee.act state)", self.agent)
         self.assertIn("=(u.assignee our.bowl)", self.agent)
         self.assertIn("(~(has by members.u.sharing) u.assignee)", self.agent)
+        self.assertIn("(~(has by pending.u.sharing) u.assignee)", self.agent)
 
     def test_manual_placement_is_atomic_and_normalizes_sibling_ranks(self):
         self.assertIn("%place-reminder", self.agent)
