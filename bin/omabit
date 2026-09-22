@@ -18,6 +18,12 @@ import urllib.parse
 import uuid
 
 
+# The installed transport lives inside Omarchy's watched plugin directory.
+# Import it without creating or refreshing __pycache__, which would otherwise
+# be mistaken for a plugin source edit and tear down an open Tend panel.
+sys.dont_write_bytecode = True
+
+
 VERSION = "0.1.0"
 PLUGIN_ID = "io.omabit.tend"
 MAX_BACKUP_BYTES = 32 * 1024 * 1024

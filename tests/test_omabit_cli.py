@@ -57,6 +57,9 @@ class CliDomainTests(unittest.TestCase):
         self.assertEqual(omabit.VERSION, version)
         self.assertEqual(manifest["version"], version)
 
+    def test_cli_import_does_not_mutate_the_watched_plugin_tree(self):
+        self.assertTrue(omabit.sys.dont_write_bytecode)
+
     def test_selects_default_or_named_list_and_validates_reminder(self):
         self.assertEqual(omabit.select_list(SAMPLE, None)["id"], 1)
         self.assertEqual(omabit.select_list(SAMPLE, "inbox")["id"], 1)
