@@ -34,6 +34,13 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("(~(has by members.u.sharing) u.assignee)", self.agent)
         self.assertIn("(~(has by pending.u.sharing) u.assignee)", self.agent)
 
+    def test_local_list_lifecycle_refreshes_access_state(self):
+        create_branch = self.agent.split("%create-list", 1)[1].split("%rename-list", 1)[0]
+        delete_branch = self.agent.split("%delete-list", 1)[1].split("%add-section", 1)[0]
+        update = "(give [%accesses (accesses-for nex)])"
+        self.assertIn(update, create_branch)
+        self.assertIn(update, delete_branch)
+
     def test_manual_placement_is_atomic_and_normalizes_sibling_ranks(self):
         self.assertIn("%place-reminder", self.agent)
         self.assertIn("(ordered-siblings reminders.u.old parent-id.u.source section-id.u.source)", self.agent)

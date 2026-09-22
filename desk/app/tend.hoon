@@ -458,6 +458,7 @@
             collaboration-notification-map.state
         ==
       =^  cards  nex  (commit op-id.act [%list-upserted op-id.act lis prefs] nex)
+      =.  cards  (weld cards (give [%accesses (accesses-for nex)]))
       [(weld cards (give (local-settings-update nex))) nex]
     ::
         %rename-list
@@ -541,6 +542,7 @@
             (without-collaboration-notifications list-id.act collaboration-notification-map.state)
         ==
       =^  cards  nex  (commit op-id.act [%list-deleted op-id.act list-id.act prefs] nex)
+      =.  cards  (weld cards (give [%accesses (accesses-for nex)]))
       [(weld cards (give (local-settings-update nex))) nex]
     ::
         %add-section
