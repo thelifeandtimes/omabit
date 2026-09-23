@@ -160,6 +160,9 @@ Item {
         allDayOverdue: service ? service.preferences.allDayOverdue : true
     })
     readonly property var displayedReminders: viewMode === "list" ? TendModel.visibleReminders(queriedReminders, collapsedReminderIds) : queriedReminders
+    readonly property var displayedRows: viewMode === "list" && selectedList
+        ? TendModel.sectionedRows(displayedReminders, selectedList, true)
+        : displayedReminders
     readonly property string viewTitle: {
         if (viewMode === "list")
             return selectedList ? selectedList.title : "Create your first list";
@@ -786,78 +789,6 @@ Item {
             root.open("{}");
     }
 
-    Shortcut {
-        sequence: "Ctrl+N"
-        enabled: root.opened && !root.captureMode && service && service.ship !== ""
-        onActivated: quickAdd.forceActiveFocus()
-    }
-
-    Shortcut {
-        sequence: "Ctrl+F"
-        enabled: root.opened && !root.captureMode && service && service.ship !== ""
-        onActivated: reminderSearch.forceActiveFocus()
-    }
-
-    Shortcut {
-        sequence: "Ctrl+Shift+N"
-        enabled: root.opened && !root.captureMode && service && service.ship !== ""
-        onActivated: newList.forceActiveFocus()
-    }
-
-    Shortcut {
-        sequence: "Ctrl+,"
-        enabled: root.opened && !root.captureMode && service && service.ship !== ""
-        onActivated: root.openAppSettings()
-    }
-
-    Shortcut {
-        sequence: "Alt+1"
-        enabled: root.opened && !root.captureMode
-        onActivated: root.viewMode = "today"
-    }
-
-    Shortcut {
-        sequence: "Alt+2"
-        enabled: root.opened && !root.captureMode
-        onActivated: root.viewMode = "scheduled"
-    }
-
-    Shortcut {
-        sequence: "Alt+3"
-        enabled: root.opened && !root.captureMode
-        onActivated: root.viewMode = "all"
-    }
-
-    Shortcut {
-        sequence: "Alt+4"
-        enabled: root.opened && !root.captureMode
-        onActivated: root.viewMode = "flagged"
-    }
-
-    Shortcut {
-        sequence: "Alt+5"
-        enabled: root.opened && !root.captureMode
-        onActivated: root.viewMode = "assigned"
-    }
-
-    Shortcut {
-        sequence: "Alt+6"
-        enabled: root.opened && !root.captureMode
-        onActivated: root.viewMode = "completed"
-    }
-
-    Shortcut {
-        sequence: "Ctrl+]"
-        enabled: root.opened && !root.captureMode && root.selectedReminder !== null
-        onActivated: root.indentSelectedReminder()
-    }
-
-    Shortcut {
-        sequence: "Ctrl+["
-        enabled: root.opened && !root.captureMode && root.selectedReminder !== null
-        onActivated: root.outdentSelectedReminder()
-    }
-
     onSelectedListChanged: {
         if (selectedList) {
             listEditorOpen = false;
@@ -911,7 +842,6 @@ Item {
                 radius: 0
                 color: root.opaqueMenuBackground
                 border.width: 0
-                Keys.onEscapePressed: root.dismiss()
 
                 MouseArea {
                     anchors.fill: parent
@@ -973,14 +903,18 @@ Item {
 
                     }
 
-                    Text {
+                    TextEdit {
                         width: parent.width
                         visible: service && service.errorMessage !== ""
                         text: service ? service.errorMessage : ""
+                        readOnly: true
+                        selectByMouse: true
                         color: "#ef4444"
                         wrapMode: Text.Wrap
+                        textFormat: TextEdit.PlainText
                         font.family: Style.font.menuFamily
                         font.pixelSize: Style.font.body
+                        Accessible.name: "Tend error message; selectable for copying"
                     }
 
                     BorderSurface {
@@ -1435,16 +1369,6 @@ Item {
                                     }
                                 }
 
-                                Text {
-                                    width: parent.width
-                                    text: "Keys: Ctrl+N add · Ctrl+F search · Ctrl+Shift+N list · Alt+1…6 views · Enter edit · Space complete"
-                                    color: Color.menu.text
-                                    opacity: 0.68
-                                    wrapMode: Text.Wrap
-                                    font.family: Style.font.menuFamily
-                                    font.pixelSize: Style.font.caption
-                                }
-
                                 }
                             }
 
@@ -1516,7 +1440,7 @@ Item {
                                 }
 
                                 Text {
-                                    width: parent.width - compactSidebarButton.width - editListButton.width - selectModeButton.width - parent.spacing * 3
+                                    width: parent.width - compactSidebarButton.width - editListButton.width - parent.spacing * 2
                                     text: root.viewTitle
                                     elide: Text.ElideRight
                                     color: Color.menu.text
@@ -1531,21 +1455,12 @@ Item {
                                 }
 
                                 TendButton {
-                                    id: selectModeButton
-                                    visible: root.viewMode === "list"
-                                    text: root.selectionMode ? "Done selecting" : "Select"
-                                    onClicked: {
-                                        root.selectionMode = !root.selectionMode;
-                                        if (!root.selectionMode)
-                                            root.selectedReminderIds = [];
-                                    }
-                                }
-
-                                TendButton {
                                     id: editListButton
 
                                     visible: root.viewMode === "list" && root.selectedList !== null
-                                    text: root.rightTrayMode === "list" ? "Close list" : (root.compactMode ? "List" : "List settings")
+                                    text: "✎"
+                                    tooltipText: root.rightTrayMode === "list" ? "Close list settings" : "Edit list"
+                                    Accessible.name: tooltipText
                                     onClicked: {
                                         root.openListEditor();
                                     }
@@ -2072,6 +1987,16 @@ Item {
                                 Item {
                                     Layout.fillWidth: true
                                 }
+
+                                TendButton {
+                                    id: selectModeButton
+                                    text: root.selectionMode ? "Done selecting" : "Select"
+                                    onClicked: {
+                                        root.selectionMode = !root.selectionMode;
+                                        if (!root.selectionMode)
+                                            root.selectedReminderIds = [];
+                                    }
+                                }
                             }
 
                             Row {
@@ -2422,15 +2347,6 @@ Item {
                                             onClicked: root.outdentSelectedReminder()
                                         }
 
-                                        Text {
-                                            anchors.verticalCenter: parent.verticalCenter
-                                            text: "Ctrl+] / Ctrl+["
-                                            color: Color.menu.text
-                                            opacity: 0.7
-                                            font.family: Style.font.menuFamily
-                                            font.pixelSize: Style.font.caption
-                                        }
-
                                     }
 
                                     Row {
@@ -2649,127 +2565,135 @@ Item {
                                 height: parent.height - y
                                 clip: true
                                 spacing: Style.space(4)
-                                model: root.displayedReminders
-                                activeFocusOnTab: true
-                                keyNavigationEnabled: true
+                                model: root.displayedRows
                                 Accessible.role: Accessible.List
                                 Accessible.name: "Reminders"
-                                Keys.onReturnPressed: {
-                                    if (currentIndex >= 0 && currentIndex < root.displayedReminders.length)
-                                        root.editReminder(root.displayedReminders[currentIndex]);
-                                }
-                                Keys.onSpacePressed: {
-                                    if (currentIndex < 0 || currentIndex >= root.displayedReminders.length || !service)
-                                        return ;
-                                    var reminder = root.displayedReminders[currentIndex];
-                                    if (service.canEditList(reminder.listId) && service.connectionState === "online" && !service.mutationPending)
-                                        service.toggleCompletedWithGrace(reminder.listId, reminder.id, reminder.completed);
-                                }
-                                Keys.onRightPressed: {
-                                    if (currentIndex < 0 || currentIndex >= root.displayedReminders.length)
-                                        return;
-                                    var reminder = root.displayedReminders[currentIndex];
-                                    if (root.reminderHasChildren(reminder.id))
-                                        root.setReminderCollapsed(reminder.id, false);
-                                }
-                                Keys.onLeftPressed: {
-                                    if (currentIndex < 0 || currentIndex >= root.displayedReminders.length)
-                                        return;
-                                    var reminder = root.displayedReminders[currentIndex];
-                                    if (root.reminderHasChildren(reminder.id))
-                                        root.setReminderCollapsed(reminder.id, true);
-                                }
 
                                 delegate: Rectangle {
                                     id: reminderRow
 
                                     required property var modelData
                                     required property int index
-                                    readonly property real indentPixels: Math.max(0, Number(modelData.depth || 0)) * Style.space(22)
+                                    readonly property bool sectionRow: modelData.kind === "section"
+                                    readonly property var reminderData: sectionRow ? null : (modelData.reminder || modelData)
+                                    readonly property real indentPixels: sectionRow ? 0 : Math.max(0, Number(reminderData.depth || 0)) * Style.space(22)
 
                                     x: indentPixels
                                     width: Math.max(Style.space(120), ListView.view.width - indentPixels)
-                                    height: Style.space(44)
-                                    opacity: service ? service.completionOpacity(modelData.listId, modelData.id) : 1
+                                    height: sectionRow ? Style.space(38) : Style.space(44)
+                                    opacity: !sectionRow && service ? service.completionOpacity(reminderData.listId, reminderData.id) : 1
                                     radius: Style.cornerRadius
-                                    color: ListView.isCurrentItem ? Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.14) : Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.04)
-                                    border.width: reminderDropArea.containsDrag ? Math.max(1, Style.space(1)) : 0
+                                    color: sectionRow ? "transparent" : (root.selectionMode && root.reminderIsSelected(reminderData.id)
+                                        ? Style.selectedFillFor(Color.menu.text, Color.accent)
+                                        : (rowHover.hovered || ListView.isCurrentItem
+                                            ? Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.14)
+                                            : Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.04)))
+                                    border.width: !sectionRow && reminderDropArea.containsDrag ? Math.max(1, Style.space(1)) : 0
                                     border.color: reminderDropArea.containsDrag ? Color.menu.text : "transparent"
-                                    Accessible.role: Accessible.ListItem
-                                    Accessible.name: (Number(modelData.depth || 0) > 0 ? "Subtask, " : "") + modelData.title + (root.reminderHasChildren(modelData.id) ? (root.reminderIsCollapsed(modelData.id) ? ", collapsed" : ", expanded") : "")
+                                    Accessible.role: sectionRow ? Accessible.Heading : Accessible.ListItem
+                                    Accessible.name: sectionRow
+                                        ? modelData.section.title + ", " + modelData.count + " reminders"
+                                        : (Number(reminderData.depth || 0) > 0 ? "Subtask, " : "") + reminderData.title + (root.reminderHasChildren(reminderData.id) ? (root.reminderIsCollapsed(reminderData.id) ? ", collapsed" : ", expanded") : "")
+
+                                    Row {
+                                        visible: sectionRow
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.leftMargin: Style.space(8)
+                                        anchors.rightMargin: Style.space(8)
+                                        spacing: Style.space(8)
+
+                                        Text {
+                                            width: parent.width - sectionCount.width - parent.spacing
+                                            text: modelData.section ? modelData.section.title : "Section"
+                                            color: Color.menu.text
+                                            opacity: 0.72
+                                            elide: Text.ElideRight
+                                            font.family: Style.font.menuFamily
+                                            font.pixelSize: Style.font.caption
+                                            font.bold: true
+                                        }
+
+                                        Text {
+                                            id: sectionCount
+                                            text: String(Number(modelData.count || 0))
+                                            color: Color.menu.text
+                                            opacity: 0.5
+                                            font.family: Style.font.menuFamily
+                                            font.pixelSize: Style.font.caption
+                                        }
+                                    }
 
                                     DropArea {
                                         id: reminderDropArea
 
                                         anchors.fill: parent
-                                        enabled: root.viewMode === "list" && root.sortMode === "manual" && root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                        enabled: !reminderRow.sectionRow && root.viewMode === "list" && root.sortMode === "manual" && root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
                                         keys: ["tend-reminder"]
                                         onDropped: function(drop) {
-                                            if (drop.source && root.placeReminder(drop.source.modelData, modelData, drop.y >= height / 2))
+                                            if (drop.source && root.placeReminder(drop.source.modelData, reminderRow.reminderData, drop.y >= height / 2))
                                                 drop.acceptProposedAction();
                                         }
                                     }
 
                                     Row {
+                                        visible: !reminderRow.sectionRow
                                         anchors.fill: parent
                                         anchors.margins: Style.space(8)
                                         spacing: Style.space(10)
 
                                         TendCheckbox {
-                                            checked: service ? service.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) : modelData.completed
-                                            enabled: service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
-                                            Accessible.name: (checked ? "Mark open " : "Complete ") + modelData.title
-                                            onClicked: service.toggleCompletedWithGrace(modelData.listId, modelData.id, modelData.completed)
+                                            checked: service ? service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) : reminderRow.reminderData.completed
+                                            enabled: service && service.canEditList(reminderRow.reminderData.listId) && service.connectionState === "online" && !service.mutationPending
+                                            Accessible.name: (checked ? "Mark open " : "Complete ") + reminderRow.reminderData.title
+                                            onClicked: service.toggleCompletedWithGrace(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed)
                                         }
 
                                         TendFlagButton {
-                                            flagged: modelData.flagged === true
-                                            enabled: service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
-                                            onToggled: function(flagged) { service.setReminderFlagged(modelData.listId, modelData.id, flagged) }
-                                        }
-
-                                        TendCheckbox {
-                                            visible: root.selectionMode && root.viewMode === "list"
-                                            width: visible ? implicitWidth : 0
-                                            checked: root.reminderIsSelected(modelData.id)
-                                            enabled: visible && service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
-                                            Accessible.name: "Select " + modelData.title + " for batch action"
-                                            onClicked: root.toggleReminderSelection(modelData.id)
+                                            flagged: reminderRow.reminderData.flagged === true
+                                            enabled: service && service.canEditList(reminderRow.reminderData.listId) && service.connectionState === "online" && !service.mutationPending
+                                            onToggled: function(flagged) { service.setReminderFlagged(reminderRow.reminderData.listId, reminderRow.reminderData.id, flagged) }
                                         }
 
                                         TendButton {
-                                            visible: root.viewMode === "list" && root.reminderHasChildren(modelData.id)
-                                            text: root.reminderIsCollapsed(modelData.id) ? "▶" : "▼"
-                                            Accessible.name: (root.reminderIsCollapsed(modelData.id) ? "Expand " : "Collapse ") + modelData.title
-                                            onClicked: root.toggleReminderCollapsed(modelData.id)
+                                            visible: root.viewMode === "list" && root.reminderHasChildren(reminderRow.reminderData.id)
+                                            text: root.reminderIsCollapsed(reminderRow.reminderData.id) ? "▶" : "▼"
+                                            Accessible.name: (root.reminderIsCollapsed(reminderRow.reminderData.id) ? "Expand " : "Collapse ") + reminderRow.reminderData.title
+                                            onClicked: root.toggleReminderCollapsed(reminderRow.reminderData.id)
                                         }
 
                                         Text {
                                             anchors.verticalCenter: parent.verticalCenter
                                             width: parent.width - x
                                             text: {
-                                                var list = root.viewMode === "list" ? "" : "  ·  " + modelData.listTitle;
-                                                var section = root.sectionTitleFor(modelData.listId, modelData.sectionId);
-                                                var due = modelData.schedule ? "  ·  " + TendModel.scheduleInputValue(modelData.schedule).replace("T", " ") : "";
-                                                return modelData.title + list + (section ? "  ·  " + section : "") + due;
+                                                var list = root.viewMode === "list" ? "" : "  ·  " + reminderRow.reminderData.listTitle;
+                                                var section = root.sectionTitleFor(reminderRow.reminderData.listId, reminderRow.reminderData.sectionId);
+                                                var due = reminderRow.reminderData.schedule ? "  ·  " + TendModel.scheduleInputValue(reminderRow.reminderData.schedule).replace("T", " ") : "";
+                                                return reminderRow.reminderData.title + list + (section ? "  ·  " + section : "") + due;
                                             }
                                             color: Color.menu.text
-                                            opacity: service && service.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) ? 0.5 : 1
+                                            opacity: service && service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) ? 0.5 : 1
                                             font.family: Style.font.menuFamily
                                             font.pixelSize: Style.font.body
-                                            font.strikeout: service ? service.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) : modelData.completed
+                                            font.strikeout: service ? service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) : reminderRow.reminderData.completed
 
                                             MouseArea {
                                                 anchors.fill: parent
                                                 cursorShape: Qt.PointingHandCursor
                                                 onClicked: {
                                                     reminderList.currentIndex = index;
-                                                    Qt.callLater(function() { root.editReminder(modelData); });
+                                                    if (root.selectionMode && root.viewMode === "list")
+                                                        root.toggleReminderSelection(reminderRow.reminderData.id);
+                                                    else
+                                                        Qt.callLater(function() { root.editReminder(reminderRow.reminderData); });
                                                 }
                                             }
                                         }
 
                                     }
+
+                                    HoverHandler { id: rowHover }
 
                                 }
 

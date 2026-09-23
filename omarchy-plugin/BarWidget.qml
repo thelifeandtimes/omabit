@@ -22,6 +22,7 @@ Panel {
     sort: "priority",
     allDayOverdue: tendService ? tendService.preferences.allDayOverdue : true
   })
+  readonly property var reminderRows: TendModel.menubarRows(tendService ? tendService.lists : [], visibleReminders)
   readonly property int taskCount: visibleReminders.length
   readonly property var destinationLists: tendService
     ? TendModel.orderedLists(tendService.lists, tendService.preferences.pinnedLists, tendService.localSettings.listOrder)
@@ -169,7 +170,7 @@ Panel {
     bar: root.bar
     open: root.opened
     focusTarget: popupKeys
-    contentWidth: popup.fittedContentWidth(Style.space(760))
+    contentWidth: popup.fittedContentWidth(Style.space(650))
     contentHeight: Math.min(
       popup.cappedContentHeight(root.visibleReminders.length > 0
         ? Style.space(350 + Math.min(8, root.visibleReminders.length) * 54)
@@ -321,7 +322,7 @@ Panel {
           clip: true
           boundsBehavior: Flickable.StopAtBounds
           spacing: Style.space(4)
-          model: root.visibleReminders
+          model: root.reminderRows
 
           Text {
             anchors.centerIn: parent
@@ -334,40 +335,77 @@ Panel {
           }
 
           delegate: Rectangle {
+              id: reminderRowDelegate
               required property var modelData
+              readonly property bool summaryRow: modelData.kind === "summary"
+              readonly property var reminder: summaryRow ? null : modelData.reminder
+              readonly property real indentPixels: Math.max(0, Number(modelData.depth || 0)) * Style.space(18)
               width: ListView.view.width
-              height: Style.space(54)
-              opacity: root.tendService ? root.tendService.completionOpacity(modelData.listId, modelData.id) : 1
+              height: summaryRow ? Style.space(30) : Style.space(54)
+              opacity: !summaryRow && root.tendService ? root.tendService.completionOpacity(reminder.listId, reminder.id) : 1
               radius: Style.cornerRadius
               color: rowMouse.hovered
                 ? Style.hoverFillFor(root.barForeground, Color.accent)
-                : Qt.rgba(root.barForeground.r, root.barForeground.g, root.barForeground.b, 0.045)
+                : (summaryRow ? "transparent" : Qt.rgba(root.barForeground.r, root.barForeground.g, root.barForeground.b, 0.045))
+
+              Text {
+                visible: summaryRow
+                anchors.left: parent.left
+                anchors.leftMargin: Style.space(10) + parent.indentPixels
+                anchors.verticalCenter: parent.verticalCenter
+                text: Number(modelData.count || 0) + " filtered subitem" + (Number(modelData.count || 0) === 1 ? "" : "s")
+                color: root.dim
+                font.family: root.bar ? root.bar.fontFamily : Style.font.family
+                font.pixelSize: Style.font.caption
+              }
+
+              MouseArea {
+                visible: summaryRow
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.openFullPanel(modelData.listId, modelData.parentReminderId)
+              }
 
               Row {
+                visible: !summaryRow
                 anchors.fill: parent
                 anchors.margins: Style.space(7)
+                anchors.leftMargin: Style.space(7) + reminderRowDelegate.indentPixels
                 spacing: Style.space(8)
+
+                TendButton {
+                  visible: modelData.orphanParentId !== null && modelData.orphanParentId !== undefined
+                  width: visible ? Style.space(26) : 0
+                  height: Style.space(30)
+                  anchors.verticalCenter: parent.verticalCenter
+                  text: "↳"
+                  bordered: false
+                  tooltipText: "Open parent reminder"
+                  Accessible.name: "Open parent reminder"
+                  onClicked: root.openFullPanel(reminder.listId, modelData.orphanParentId)
+                }
 
                 TendCheckbox {
                   anchors.verticalCenter: parent.verticalCenter
-                  checked: root.tendService ? root.tendService.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) : modelData.completed
-                  Accessible.name: (checked ? "Mark open " : "Complete ") + modelData.title
-                  enabled: root.tendService && root.tendService.canEditList(modelData.listId) && root.state === "online" && !root.tendService.mutationPending
-                  onClicked: root.tendService.toggleCompletedWithGrace(modelData.listId, modelData.id, modelData.completed)
+                  checked: root.tendService ? root.tendService.effectiveCompleted(reminder.listId, reminder.id, reminder.completed) : reminder.completed
+                  Accessible.name: (checked ? "Mark open " : "Complete ") + reminder.title
+                  enabled: root.tendService && root.tendService.canEditList(reminder.listId) && root.state === "online" && !root.tendService.mutationPending
+                  onClicked: root.tendService.toggleCompletedWithGrace(reminder.listId, reminder.id, reminder.completed)
                 }
 
                 TendFlagButton {
                   anchors.verticalCenter: parent.verticalCenter
-                  flagged: modelData.flagged === true
-                  enabled: root.tendService && root.tendService.canEditList(modelData.listId) && root.state === "online" && !root.tendService.mutationPending
-                  onToggled: function(flagged) { root.tendService.setReminderFlagged(modelData.listId, modelData.id, flagged) }
+                  flagged: reminder.flagged === true
+                  enabled: root.tendService && root.tendService.canEditList(reminder.listId) && root.state === "online" && !root.tendService.mutationPending
+                  onToggled: function(flagged) { root.tendService.setReminderFlagged(reminder.listId, reminder.id, flagged) }
                 }
 
                 Text {
                   width: Style.space(26)
                   anchors.verticalCenter: parent.verticalCenter
-                  text: root.priorityGlyph(modelData.priority)
-                  color: root.priorityColor(modelData.priority)
+                  text: root.priorityGlyph(reminder.priority)
+                  color: root.priorityColor(reminder.priority)
                   font.family: root.bar ? root.bar.fontFamily : Style.font.family
                   font.pixelSize: Style.font.caption
                   font.bold: true
@@ -385,17 +423,17 @@ Panel {
 
                     Text {
                       width: parent.width
-                      text: modelData.title || "Untitled reminder"
+                      text: reminder.title || "Untitled reminder"
                       color: root.barForeground
                       font.family: root.bar ? root.bar.fontFamily : Style.font.family
                       font.pixelSize: Style.font.body
                       elide: Text.ElideRight
-                      font.strikeout: root.tendService ? root.tendService.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) : modelData.completed
+                      font.strikeout: root.tendService ? root.tendService.effectiveCompleted(reminder.listId, reminder.id, reminder.completed) : reminder.completed
                     }
 
                     Text {
                       width: parent.width
-                      text: root.dueLabel(modelData) + "  ·  " + modelData.listTitle
+                      text: root.dueLabel(reminder) + (Number(modelData.depth || 0) > 0 ? "" : "  ·  " + reminder.listTitle)
                       color: root.dim
                       font.family: root.bar ? root.bar.fontFamily : Style.font.family
                       font.pixelSize: Style.font.caption
@@ -407,7 +445,7 @@ Panel {
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: root.openFullPanel(modelData.listId, modelData.id)
+                    onClicked: root.openFullPanel(reminder.listId, reminder.id)
                   }
                 }
               }

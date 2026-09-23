@@ -6,12 +6,13 @@ ROOT = Path(__file__).parents[1]
 
 
 class TendAccessibilityTests(unittest.TestCase):
-    def test_panel_keeps_keyboard_navigation_contract(self):
+    def test_panel_does_not_advertise_unimplemented_keyboard_shortcuts(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         for shortcut in ("Ctrl+N", "Ctrl+F", "Ctrl+Shift+N", "Ctrl+,", "Alt+1", "Alt+6", "Ctrl+[", "Ctrl+]"):
-            self.assertIn(f'sequence: "{shortcut}"', panel)
-        self.assertIn("Keys.onReturnPressed", panel)
-        self.assertIn("Keys.onSpacePressed", panel)
+            self.assertNotIn(f'sequence: "{shortcut}"', panel)
+        self.assertNotIn("Keys.onReturnPressed", panel)
+        self.assertNotIn("Keys.onSpacePressed", panel)
+        self.assertNotIn("Keys.on", panel)
         self.assertIn("Accessible.role: Accessible.List", panel)
         self.assertIn('Accessible.name: "Current Urbit plus code"', panel)
         self.assertIn("assigneeChoices: root.assigneeChoices", panel)
@@ -21,7 +22,7 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn('target === "reminder-assignee"', panel)
         self.assertIn('target === "reminder-save"', panel)
         self.assertIn("onAccepted: inviteButton.clicked()", panel)
-        self.assertIn("root.setReminderCollapsed", panel)
+        self.assertIn("root.toggleReminderCollapsed", panel)
 
     def test_bar_exposes_count_and_connection_state(self):
         widget = (ROOT / "omarchy-plugin" / "BarWidget.qml").read_text(encoding="utf-8")
@@ -37,6 +38,18 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("smartViewKeys", widget)
         self.assertIn("quickDue", widget)
         self.assertIn("assigneePicker", widget)
+        self.assertIn("TendModel.menubarRows", widget)
+        self.assertIn("filtered subitem", widget)
+        self.assertIn("Math.floor(popup.screenH * 0.5)", widget)
+
+    def test_picker_popups_are_clamped_to_the_window_overlay(self):
+        date_picker = (ROOT / "omarchy-plugin" / "TendDateTimePicker.qml").read_text(encoding="utf-8")
+        assignee_picker = (ROOT / "omarchy-plugin" / "TendAssigneePicker.qml").read_text(encoding="utf-8")
+        for picker in (date_picker, assignee_picker):
+            self.assertIn("parent: QQC.Overlay.overlay", picker)
+            self.assertIn("function placePopup()", picker)
+            self.assertIn("parent.width", picker)
+            self.assertIn("parent.height", picker)
 
     def test_plugin_adds_no_custom_motion(self):
         plugin_text = "\n".join(path.read_text(encoding="utf-8") for path in (ROOT / "omarchy-plugin").glob("*.qml"))
@@ -68,6 +81,8 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("anchors.right: parent.right", panel)
         self.assertIn("singleTrayMode", panel)
         self.assertIn("overlayTrayMode", panel)
+        self.assertIn("TendModel.sectionedRows", panel)
+        self.assertIn("displayedRows", panel)
         self.assertIn('text: "REMINDER DETAILS"', details)
         self.assertIn("TendAssigneePicker", details)
         self.assertIn("TendDateTimePicker", details)

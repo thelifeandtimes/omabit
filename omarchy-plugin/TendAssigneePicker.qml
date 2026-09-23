@@ -114,10 +114,11 @@ Item {
 
   QQC.Popup {
     id: popup
+    parent: QQC.Overlay.overlay
     x: 0
     y: root.height + Style.space(4)
     width: root.width
-    height: search.implicitHeight + Style.space(2) + Math.min(6, results.count) * Style.space(36) + padding * 2
+    height: contentColumn.implicitHeight + topPadding + bottomPadding
     padding: Style.space(1)
     focus: true
     closePolicy: QQC.Popup.CloseOnEscape | QQC.Popup.CloseOnPressOutside
@@ -129,6 +130,7 @@ Item {
     }
 
     contentItem: Column {
+      id: contentColumn
       spacing: Style.space(2)
 
       TextField {
@@ -141,7 +143,8 @@ Item {
       ListView {
         id: results
         width: parent.width
-        height: parent.height - search.height - parent.spacing
+        height: implicitHeight
+        implicitHeight: Math.min(6, count) * Style.space(36) + Math.max(0, Math.min(6, count) - 1) * spacing
         clip: true
         boundsBehavior: Flickable.StopAtBounds
         model: root.filteredOptions
@@ -192,6 +195,6 @@ Item {
       }
     }
 
-    onOpened: Qt.callLater(function() { search.forceActiveFocus() })
+    onOpened: Qt.callLater(function() { root.placePopup(); search.forceActiveFocus() })
   }
 }

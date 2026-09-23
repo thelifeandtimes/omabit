@@ -66,6 +66,17 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("(broadcast-list destination-list-id.act", self.agent)
         self.assertIn("(peer-list-result sender source-list-id.act", self.agent)
         self.assertIn("(peer-list-result sender destination-list-id.act", self.agent)
+        web = (ROOT / "desk" / "app" / "tend.html").read_text(encoding="utf-8")
+        service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
+        self.assertIn('"move-reminder-to-list"', web)
+        self.assertIn('"move-reminder-to-list"', service)
+        self.assertNotIn("copyReminderToList", web)
+
+    def test_web_navigation_remains_available_at_narrow_widths(self):
+        web = (ROOT / "desk" / "app" / "tend.html").read_text(encoding="utf-8")
+        self.assertIn('id="open-navigation"', web)
+        self.assertIn("workspace.nav-open .nav", web)
+        self.assertIn("mobileNavigationOpen", web)
 
     def test_batch_completion_records_each_scheduled_occurrence(self):
         self.assertIn("%batch-set-completed -.act", self.agent)

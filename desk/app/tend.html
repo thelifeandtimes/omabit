@@ -67,6 +67,7 @@
     .brand-mark { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; color: #fff; background: var(--accent); font-weight: 900; }
     .identity { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .top-actions { gap: 8px; }
+    .mobile-only { display: none; }
     .dot { width: 9px; height: 9px; flex: 0 0 auto; border-radius: 50%; background: var(--danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 14%, transparent); }
     .dot.online { background: var(--success); box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 14%, transparent); }
     .icon-button, .button {
@@ -193,7 +194,9 @@
     @media (max-width: 650px) {
       :root { --nav-width: 0px; }
       .workspace { grid-template-columns: 1fr; }
-      .nav { display: none; }
+      .nav { display: none; position: absolute; inset: 0 auto 0 0; z-index: 35; width: min(330px, 88vw); box-shadow: var(--shadow); }
+      .workspace.nav-open .nav { display: block; }
+      .mobile-only { display: grid; }
       .tray { width: min(430px, 94vw); }
       .composer-row { grid-template-columns: 1fr; }
       .composer-row .button { width: 100%; }
@@ -210,6 +213,7 @@
         <div><h1>Tend</h1><div class="identity" id="identity">Connecting to your ship…</div></div>
       </div>
       <div class="top-actions">
+        <button class="icon-button mobile-only" id="open-navigation" type="button" aria-label="Open navigation" title="Lists and views">☰</button>
         <span class="dot" id="connection" role="status" aria-label="Connection unavailable" title="Connection unavailable"></span>
         <button class="icon-button" id="refresh" type="button" aria-label="Refresh" title="Refresh">↻</button>
         <button class="icon-button" id="open-settings" type="button" aria-label="Open settings" title="Settings">⚙</button>
@@ -234,7 +238,7 @@
         ship: "", lists: [], accesses: [], invitations: [], preferences: {},
         selectedListId: null, selectedReminderId: null, view: "all", search: "", tag: "", sort: "manual", descending: false,
         rightTray: "", busy: false, online: false, detailDraft: null, completionGrace: new Map(), saveTimer: null,
-        selectionMode: false, selectedReminderIds: new Set(), hiddenInvitationKeys: new Set()
+        selectionMode: false, selectedReminderIds: new Set(), hiddenInvitationKeys: new Set(), mobileNavigationOpen: false
       };
       const views = [
         ["today", "Today"], ["all", "All"], ["flagged", "Flagged"], ["assigned", "Assigned"], ["completed", "Completed"]
@@ -426,6 +430,7 @@
         const workspace = $("workspace");
         workspace.classList.toggle("detail-open", !!state.selectedReminderId);
         workspace.classList.toggle("settings-open", !!state.rightTray);
+        workspace.classList.toggle("nav-open", state.mobileNavigationOpen === true);
       }
       function renderNavigation() {
         const active = state.view;
@@ -703,7 +708,7 @@
 
       document.addEventListener("click", async event => {
         const listButton = event.target.closest("[data-list-id]");
-        if (listButton) { state.selectedListId = Number(listButton.dataset.listId); state.view = "list"; state.selectedReminderId = null; state.rightTray = ""; state.selectionMode = false; state.selectedReminderIds.clear(); render(); return; }
+        if (listButton) { state.selectedListId = Number(listButton.dataset.listId); state.view = "list"; state.selectedReminderId = null; state.rightTray = ""; state.selectionMode = false; state.selectedReminderIds.clear(); state.mobileNavigationOpen = false; render(); return; }
         const viewButton = event.target.closest("[data-view]");
         if (viewButton) { state.view = viewButton.dataset.view; state.selectedReminderId = null; state.selectionMode = false; state.selectedReminderIds.clear(); render(); return; }
         const task = event.target.closest(".task");
@@ -818,6 +823,7 @@
         if (form.id === "defaults-form") { await poke({"set-reminder-policy":{"operation-id":opId(),"badge-mode":form.elements.badge.value,"all-day-alert-minute":timeToMinutes(form.elements.alert.value),"all-day-overdue":form.elements.overdue.checked,"base-revision":Number(state.preferences.revision || 0)}}); return; }
       });
       $("refresh").addEventListener("click", () => load());
+      $("open-navigation").addEventListener("click", () => { state.mobileNavigationOpen = !state.mobileNavigationOpen; render(); });
       window.addEventListener("resize", () => { if (window.innerWidth < 1200 && state.selectedReminderId && state.rightTray) state.rightTray = ""; render(); });
       setInterval(() => { const active = document.activeElement; if (!state.busy && (!active || !["INPUT","TEXTAREA","SELECT"].includes(active.tagName))) load({quiet:true}); }, 4000);
       load();

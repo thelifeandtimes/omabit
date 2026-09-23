@@ -140,6 +140,7 @@ BorderSurface {
 
   onReminderChanged: loadReminder()
   onAssigneeChoicesChanged: loadReminder()
+  onListChoicesChanged: loadReminder()
   Component.onCompleted: loadReminder()
 
   Timer { id: textSaveTimer; interval: 300; repeat: false; onTriggered: root.saveDetailsNow() }

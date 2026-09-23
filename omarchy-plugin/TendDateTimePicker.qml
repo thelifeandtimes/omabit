@@ -118,13 +118,15 @@ Item {
 
   QQC.Popup {
     id: picker
+    parent: QQC.Overlay.overlay
     x: 0
     y: root.height + Style.space(4)
-    width: Style.space(326)
-    height: Style.space(394)
+    width: Math.min(Style.space(326), parent ? Math.max(Style.space(260), parent.width - Style.space(16)) : Style.space(326))
+    height: Math.min(Style.space(394), parent ? Math.max(0, parent.height - Style.space(16)) : Style.space(394))
     padding: Style.space(12)
     focus: true
     closePolicy: QQC.Popup.CloseOnEscape | QQC.Popup.CloseOnPressOutside
+    onOpened: Qt.callLater(root.placePopup)
 
     background: BorderSurface {
       color: root.background
