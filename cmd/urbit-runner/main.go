@@ -16,7 +16,24 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/localrpc"
 )
 
-const usage = `Usage: urbit-runner demo --socket /private/directory/runner.sock [--operation-delay 2s]
+const usage = `Usage: urbit-runner COMMAND
+
+Commands:
+  preflight                  Read local prerequisites without contacting Docker.
+  setup-plan                 Show the rootless installation review plan as JSON.
+  prepare-rootless --output /absolute/new/directory
+                             Fetch pinned, inert rootless setup review artifacts.
+  install-rootless --bundle /absolute/bundle --acknowledge-host-changes
+                             OS-authorized DEVELOPMENT first install (requires root).
+  demo --socket /private/directory/runner.sock [--operation-delay 2s]
+                             Run the checkpoint 1 in-memory simulator.
+
+Only install-rootless changes host configuration and starts a private rootless
+engine. No command installs packages or boots ships.
+Use COMMAND --help for details.
+`
+
+const demoUsage = `Usage: urbit-runner demo --socket /private/directory/runner.sock [--operation-delay 2s]
 
 Runs a local, memory-only simulator with two synthetic instances. No Docker,
 Vere, network ports, credentials, or real piers are used. All history is lost
@@ -27,13 +44,16 @@ the current user, and have no group/other permissions (normally mode 0700).
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
-	os.Exit(run(ctx, os.Args[1:], os.Stderr))
+	os.Exit(run(ctx, os.Args[1:], os.Stdout, os.Stderr))
 }
 
-func run(ctx context.Context, args []string, stderr io.Writer) int {
+func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	if len(args) == 1 && (args[0] == "--help" || args[0] == "-h") {
-		fmt.Fprint(stderr, usage)
+		fmt.Fprint(stdout, usage)
 		return 0
+	}
+	if len(args) > 0 && (args[0] == "preflight" || args[0] == "setup-plan" || args[0] == "prepare-rootless" || args[0] == "install-rootless") {
+		return runSetup(ctx, args, stdout, stderr)
 	}
 	if len(args) == 0 || args[0] != "demo" {
 		fmt.Fprint(stderr, usage)
@@ -41,7 +61,7 @@ func run(ctx context.Context, args []string, stderr io.Writer) int {
 	}
 	flags := flag.NewFlagSet("demo", flag.ContinueOnError)
 	flags.SetOutput(stderr)
-	flags.Usage = func() { fmt.Fprint(stderr, usage) }
+	flags.Usage = func() { fmt.Fprint(stderr, demoUsage) }
 	socket := flags.String("socket", "", "explicit absolute path in a private directory")
 	delay := flags.Duration("operation-delay", 2*time.Second, "simulated job duration (100ms to 1m)")
 	if err := flags.Parse(args[1:]); err != nil {
@@ -51,7 +71,7 @@ func run(ctx context.Context, args []string, stderr io.Writer) int {
 		return 2
 	}
 	if *socket == "" || flags.NArg() != 0 || *delay < 100*time.Millisecond || *delay > time.Minute {
-		fmt.Fprint(stderr, usage)
+		fmt.Fprint(stderr, demoUsage)
 		return 2
 	}
 	listener, err := localrpc.Listen(*socket)

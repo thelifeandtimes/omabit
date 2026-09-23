@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -24,7 +25,7 @@ func TestUsage(t *testing.T) {
 		{[]string{"demo", "--socket", "relative"}, 1},
 	} {
 		var output bytes.Buffer
-		if code := run(context.Background(), tc.args, &output); code != tc.code {
+		if code := run(context.Background(), tc.args, &output, &output); code != tc.code {
 			t.Fatalf("%v: exit %d, want %d; %s", tc.args, code, tc.code, &output)
 		}
 	}
@@ -40,7 +41,7 @@ func TestServeAndShutdown(t *testing.T) {
 	defer cancel()
 	var output bytes.Buffer
 	exit := make(chan int, 1)
-	go func() { exit <- run(ctx, []string{"demo", "--socket", socket}, &output) }()
+	go func() { exit <- run(ctx, []string{"demo", "--socket", socket}, io.Discard, &output) }()
 	c := client.New(socket)
 	defer c.Close()
 	deadline := time.Now().Add(3 * time.Second)
