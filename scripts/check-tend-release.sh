@@ -33,10 +33,13 @@ qmllint -I "$omarchy_root/shell" \
   "$release_dir/omarchy-plugin/TendPanel.qml" \
   "$release_dir/omarchy-plugin/BarWidget.qml" \
   "$release_dir/omarchy-plugin/ReminderDetail.qml" \
+  "$release_dir/omarchy-plugin/ReminderDefaults.qml" \
   "$release_dir/omarchy-plugin/TendButton.qml" \
+  "$release_dir/omarchy-plugin/TendCheckbox.qml" \
   "$release_dir/omarchy-plugin/TendCheck.qml" \
   "$release_dir/omarchy-plugin/TendDropdown.qml" \
   "$release_dir/omarchy-plugin/TendNumber.qml" \
+  "$release_dir/omarchy-plugin/TendTextArea.qml" \
   "$release_dir/omarchy-plugin/Service.qml"
 python3 -m py_compile "$release_dir/omarchy-plugin/transport/eyre_client.py" "$release_dir/bin/omabit"
 python3 -m py_compile "$release_dir/scripts/check-tend-multiship.py"

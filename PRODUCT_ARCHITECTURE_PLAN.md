@@ -433,6 +433,9 @@ These boundaries must be stated plainly in documentation and threat-model tests.
 │   ├── TendPanel.qml
 │   ├── BarWidget.qml
 │   ├── ReminderDetail.qml
+│   ├── ReminderDefaults.qml
+│   ├── TendCheckbox.qml
+│   ├── TendTextArea.qml
 │   ├── components/
 │   ├── models/
 │   ├── transport/

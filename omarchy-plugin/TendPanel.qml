@@ -31,6 +31,7 @@ Item {
     property var selectedReminderIds: []
     property var collapsedReminderIds: []
     property bool confirmBatchDelete: false
+    property real sidebarWidth: Style.space(230)
     readonly property bool compactMode: window.width < Style.space(820)
     property var selectedList: null
     readonly property var selectedReminder: {
@@ -135,28 +136,48 @@ Item {
         var occurrence = event.occurredAt ? " · occurrence " + event.occurredAt : "";
         return String(event.actor || "Unknown ship") + " · " + action + subject + occurrence;
     }
-    readonly property var assigneeChoices: {
+    function normalizedShip(value) {
+        var name = String(value || "").replace(/^~/, "");
+        return name ? "~" + name : "";
+    }
+
+    function assigneeChoicesForList(list) {
         var choices = [{
             ship: "",
-            title: "Unassigned"
+            title: "Unassigned",
+            description: "No owner",
+            status: "unassigned"
         }];
-        if (!selectedAccess)
+        if (!service || !list)
+            return choices;
+        var access = service.accessForList(list.id);
+        if (!access)
             return choices;
         var seen = {};
-        var pending = (selectedAccess.pending || []).map(function(ship) {
-            return { ship: ship };
-        });
-        var values = [{ ship: selectedAccess.host }].concat(selectedAccess.members || [], pending);
-        for (var i = 0; i < values.length; i++) {
-            var ship = String(values[i].ship || "");
-            var key = ship.replace(/^~/, "");
+        function append(ship, status, description) {
+            var normalized = root.normalizedShip(ship);
+            var key = normalized.replace(/^~/, "");
             if (!key || seen[key])
-                continue;
+                return;
             seen[key] = true;
-            choices.push({ ship: ship, title: ship.charAt(0) === "~" ? ship : "~" + ship });
+            choices.push({
+                ship: normalized,
+                title: normalized + (status ? " · " + status : ""),
+                description: description || "",
+                status: status || "member"
+            });
         }
+        append(service.ship, "you", "Default assignee");
+        append(access.host, "owner", "List owner");
+        (access.members || []).forEach(function(member) { append(member.ship, "member", "Can edit this list"); });
+        (access.pending || []).forEach(function(ship) { append(ship, "invited", "Invitation not yet accepted"); });
         return choices;
     }
+    readonly property var assigneeChoices: assigneeChoicesForList(selectedList)
+    readonly property var addAssigneeChoices: assigneeChoicesForList(addDestination)
+    readonly property var addAssigneeOptions: addAssigneeChoices.map(function(choice) {
+        return { value: choice.ship, label: choice.title, description: choice.description };
+    })
     readonly property var sectionChoices: {
         var choices = [{
             id: 0,
@@ -259,6 +280,11 @@ Item {
             title: title.join(" ").trim(),
             tags: tags
         };
+    }
+
+    function selectSelfForQuickAdd() {
+        if (service)
+            quickAssignee.value = normalizedShip(service.ship);
     }
 
     function toggleListPin() {
@@ -424,33 +450,7 @@ Item {
     function editReminder(reminder) {
         selectedListId = reminder.listId || selectedListId;
         selectedReminderId = reminder.id;
-        reminderTitle.text = reminder.title;
-        reminderNotes.text = reminder.notes;
-        reminderUrl.text = reminder.url || "";
-        reminderPriority.currentIndex = Math.max(0, reminderPriority.model.indexOf(reminder.priority));
-        reminderFlagged.checked = reminder.flagged;
-        reminderTags.text = reminder.tags.join(", ");
-        reminderDue.text = TendModel.scheduleInputValue(reminder.schedule);
-        reminderAllDay.checked = reminder.schedule ? reminder.schedule.allDay : false;
-        reminderTimezone.text = reminder.schedule ? reminder.schedule.timezone : localTimezone();
-        reminderEarly.text = reminder.schedule ? reminder.schedule.earlySeconds.map(function(seconds) {
-            return seconds / 60;
-        }).join(", ") : "";
-        reminderRepeat.currentIndex = reminder.schedule && reminder.schedule.recurrence ? Math.max(0, reminderRepeat.model.indexOf(reminder.schedule.recurrence.frequency)) : 0;
-        reminderInterval.value = reminder.schedule && reminder.schedule.recurrence ? reminder.schedule.recurrence.interval : 1;
-        reminderWeekdays.text = reminder.schedule && reminder.schedule.recurrence ? reminder.schedule.recurrence.weekdays.join(", ") : "";
-        reminderMonthDays.text = reminder.schedule && reminder.schedule.recurrence ? reminder.schedule.recurrence.monthDays.join(", ") : "";
-        reminderOrdinal.checked = reminder.schedule && reminder.schedule.recurrence && reminder.schedule.recurrence.monthWeek !== null;
-        reminderOrdinalIndex.value = reminderOrdinal.checked ? reminder.schedule.recurrence.monthWeek.index : 1;
-        reminderOrdinalWeekday.value = reminderOrdinal.checked ? reminder.schedule.recurrence.monthWeek.weekday : 0;
-        reminderRepeatEnd.text = reminder.schedule && reminder.schedule.recurrence && reminder.schedule.recurrence.endAt ? (reminder.schedule.recurrence.localEnd || reminder.schedule.recurrence.endAt) : "";
-        reminderRepeatCount.value = reminder.schedule && reminder.schedule.recurrence && reminder.schedule.recurrence.maxOccurrences ? reminder.schedule.recurrence.maxOccurrences : 0;
-        reminderRank.value = reminder.rank;
-        Qt.callLater(function() {
-            reminderParent.currentIndex = root.indexForId(root.parentChoices, reminder.parentId);
-            reminderSection.currentIndex = root.indexForId(root.sectionChoices, reminder.sectionId);
-            reminderAssignee.currentIndex = root.indexForShip(root.assigneeChoices, reminder.assignee);
-        });
+        policyEditorOpen = false;
     }
 
     function openListEditor() {
@@ -609,6 +609,7 @@ Item {
         root.captureMode = payload.mode === "capture";
         root.opened = true;
         Qt.callLater(function() {
+            root.selectSelfForQuickAdd();
             if (payload.listId && service) {
                 root.viewMode = "list";
                 root.selectedListId = Number(payload.listId);
@@ -643,9 +644,9 @@ Item {
                 inviteShip.forceActiveFocus();
             });
         } else if (target === "reminder-assignee") {
-            reminderAssignee.forceActiveFocus();
+            detailSidebar.focusAssignee();
         } else if (target === "reminder-save") {
-            reminderSave.forceActiveFocus();
+            detailSidebar.focusSave();
         } else if (root.captureMode) {
             captureEntry.forceActiveFocus();
         } else {
@@ -770,6 +771,8 @@ Item {
         selectedReminderIds = [];
         confirmBatchDelete = false;
     }
+
+    onAddDestinationChanged: Qt.callLater(root.selectSelfForQuickAdd)
 
     FloatingWindow {
         id: window
@@ -1045,13 +1048,13 @@ Item {
                         visible: service && service.ship !== "" && service.connectionState !== "authentication-required" && !root.captureMode
                         width: parent.width
                         height: parent.height - y
-                        spacing: sidebar.visible ? Style.space(16) : 0
+                        spacing: 0
 
                         Rectangle {
                             id: sidebar
 
                             visible: !root.compactMode || root.compactSidebarOpen
-                            width: visible ? Style.space(230) : 0
+                            width: visible ? root.sidebarWidth : 0
                             height: parent.height
                             radius: Style.cornerRadius
                             color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.05)
@@ -1160,6 +1163,7 @@ Item {
                                     model: root.orderedLists
 
                                     delegate: Row {
+                                        id: listRow
                                         required property var modelData
                                         readonly property bool pinned: service && service.preferences.pinnedLists.indexOf(modelData.id) !== -1
 
@@ -1171,11 +1175,29 @@ Item {
                                         TendButton {
                                             width: parent.width - listPin.width - parent.spacing
                                             height: parent.height
-                                            text: modelData.title + (service && service.preferences.defaultList === modelData.id ? " · default" : "")
+                                            text: ""
                                             leftAlign: true
                                             bordered: false
                                             checkable: true
+                                            clip: true
                                             checked: root.viewMode === "list" && root.selectedList && root.selectedList.id === modelData.id
+                                            Accessible.name: modelData.title + (service && service.preferences.defaultList === modelData.id ? ", default list" : "")
+
+                                            Text {
+                                                anchors.left: parent.left
+                                                anchors.right: parent.right
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                anchors.leftMargin: Style.spacing.controlPaddingX
+                                                anchors.rightMargin: Style.spacing.controlPaddingX
+                                                text: listRow.modelData.title + (service && service.preferences.defaultList === listRow.modelData.id ? " · default" : "")
+                                                textFormat: Text.PlainText
+                                                elide: Text.ElideRight
+                                                color: Color.menu.text
+                                                font.family: Style.font.menuFamily
+                                                font.pixelSize: Style.font.body
+                                                font.bold: parent.checked
+                                            }
+
                                             onClicked: {
                                                 root.viewMode = "list";
                                                 root.selectedListId = modelData.id;
@@ -1258,16 +1280,45 @@ Item {
 
                             }
 
+                        Item {
+                            id: sidebarResizeHandle
+                            visible: sidebar.visible && !root.compactMode
+                            width: visible ? Style.space(14) : 0
+                            height: parent.height
+
+                            Rectangle {
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                width: Math.max(1, Style.space(1))
+                                height: parent.height
+                                color: resizeHover.hovered || resizeDrag.active ? Color.accent : Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.18)
+                            }
+
+                            HoverHandler {
+                                id: resizeHover
+                                cursorShape: Qt.SizeHorCursor
+                            }
+
+                            DragHandler {
+                                id: resizeDrag
+                                target: null
+                                xAxis.enabled: true
+                                yAxis.enabled: false
+                                property real startingWidth: root.sidebarWidth
+                                onActiveChanged: if (active) startingWidth = root.sidebarWidth
+                                onTranslationChanged: root.sidebarWidth = Math.max(Style.space(180), Math.min(Style.space(420), startingWidth + translation.x))
+                            }
+                        }
+
 
                         Item {
                             id: workspace
-                            width: parent.width - sidebar.width - parent.spacing
+                            width: parent.width - sidebar.width - sidebarResizeHandle.width
                             height: parent.height
 
                             Column {
                                 id: mainContent
-                                visible: !(root.compactMode && root.selectedReminder)
-                                width: root.selectedReminder && !root.compactMode ? parent.width - detailSidebar.width - Style.space(12) : parent.width
+                                visible: !(root.compactMode && (root.selectedReminder || root.policyEditorOpen))
+                                width: (root.selectedReminder || root.policyEditorOpen) && !root.compactMode ? parent.width - Math.max(detailSidebar.width, defaultsSidebar.width) - Style.space(12) : parent.width
                                 height: parent.height
                                 spacing: Style.space(8)
 
@@ -1296,7 +1347,11 @@ Item {
                                     id: alertSettingsButton
 
                                     text: root.policyEditorOpen ? "Close defaults" : (root.compactMode ? "Defaults" : "Reminder defaults")
-                                    onClicked: root.policyEditorOpen = !root.policyEditorOpen
+                                    onClicked: {
+                                        root.policyEditorOpen = !root.policyEditorOpen;
+                                        if (root.policyEditorOpen)
+                                            root.selectedReminderId = 0;
+                                    }
                                 }
 
                                 TendButton {
@@ -1325,62 +1380,6 @@ Item {
 
                             }
 
-                            Row {
-                                visible: root.policyEditorOpen
-                                width: parent.width
-                                spacing: Style.space(6)
-
-                                TendDropdown {
-                                    id: badgeMode
-
-                                    width: parent.width * 0.22
-                                    label: "Bar badge"
-                                    model: ["today", "all", "assigned", "none"]
-                                    currentIndex: service ? Math.max(0, model.indexOf(service.preferences.badgeMode)) : 0
-                                    Accessible.name: "Bar badge count"
-                                }
-
-                                TendNumber {
-                                    id: allDayHour
-
-                                    width: parent.width * 0.18
-                                    label: "All-day hour"
-                                    from: 0
-                                    to: 23
-                                    value: service ? Math.floor(service.preferences.allDayAlertMinute / 60) : 9
-                                    Accessible.name: "All-day reminder hour"
-                                }
-
-                                TendNumber {
-                                    id: allDayMinute
-
-                                    width: parent.width * 0.18
-                                    label: "Minute"
-                                    from: 0
-                                    to: 59
-                                    value: service ? service.preferences.allDayAlertMinute % 60 : 0
-                                    Accessible.name: "All-day reminder minute"
-                                }
-
-                                TendCheck {
-                                    id: allDayOverdue
-
-                                    text: "Keep all-day reminders overdue"
-                                    checked: service ? service.preferences.allDayOverdue : true
-                                }
-
-                                TendButton {
-                                    text: "Save defaults"
-                                    enabled: service && service.connectionState === "online" && !service.mutationPending
-                                    onClicked: service.setReminderPolicy({
-                                        badgeMode: badgeMode.currentText,
-                                        allDayAlertMinute: allDayHour.value * 60 + allDayMinute.value,
-                                        allDayOverdue: allDayOverdue.checked
-                                    })
-                                }
-
-                            }
-
                             Text {
                                 visible: root.viewMode === "list" && root.selectedList !== null
                                 width: parent.width
@@ -1391,53 +1390,6 @@ Item {
                                 font.bold: true
                                 wrapMode: Text.Wrap
                                 Accessible.name: text
-                            }
-
-                            Row {
-                                visible: root.availableTags.length > 0
-                                width: parent.width
-                                spacing: Style.space(6)
-
-                                TendDropdown {
-                                    id: tagChoice
-
-                                    width: parent.width * 0.25
-                                    model: root.availableTags
-                                    Accessible.name: "Tag to rename or delete"
-                                }
-
-                                TextField {
-                                    id: tagReplacement
-
-                                    width: parent.width * 0.3
-                                    placeholderText: "Rename or merge tag"
-                                    Accessible.name: "Replacement tag"
-                                }
-
-                                TendButton {
-                                    text: "Rename tag"
-                                    enabled: tagChoice.currentIndex >= 0 && tagReplacement.text.trim() && service && service.connectionState === "online" && !service.mutationPending
-                                    onClicked: {
-                                        if (service.replaceTag(tagChoice.currentText, tagReplacement.text))
-                                            tagReplacement.text = "";
-                                    }
-                                }
-
-                                TendButton {
-                                    text: "Delete tag"
-                                    enabled: tagChoice.currentIndex >= 0 && service && service.connectionState === "online" && !service.mutationPending
-                                    onClicked: service.replaceTag(tagChoice.currentText, null)
-                                }
-
-                                Text {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    text: "Use #tag in quick add"
-                                    color: Color.menu.text
-                                    opacity: 0.68
-                                    font.family: Style.font.menuFamily
-                                    font.pixelSize: Style.font.caption
-                                }
-
                             }
 
                             Row {
@@ -1810,7 +1762,7 @@ Item {
 
                                 TendCheck {
                                     visible: !root.compactMode
-                                    text: "Descending"
+                                    text: root.sortDescending ? "Descending" : "Ascending"
                                     checked: root.sortDescending
                                     onClicked: {
                                         root.sortDescending = checked;
@@ -1829,8 +1781,8 @@ Item {
                                     id: quickAdd
 
                                     width: root.compactMode ? parent.width - quickAddButton.width - parent.spacing : parent.width * 0.52
-                                    placeholderText: root.addDestination ? "Add to " + root.addDestination.title : "Create a list first"
-                                    Accessible.name: "Quick reminder title and tags"
+                                    placeholderText: root.addDestination ? "Describe a new reminder" : "Create a list first"
+                                    Accessible.name: "New reminder description"
                                     enabled: root.addDestination && service && service.canEditList(root.addDestination.id) && service.connectionState === "online" && !service.mutationPending
                                     onAccepted: quickAddButton.clicked()
                                 }
@@ -1840,9 +1792,16 @@ Item {
                                     text: "Add reminder"
                                     enabled: quickAdd.enabled && quickAdd.text.trim() !== ""
                                     onClicked: {
-                                        var parsed = root.parseQuickEntry(quickAdd.text);
-                                        if (parsed.title && service.addReminder(root.addDestination.id, parsed.title, root.addDestination.revision, parsed.tags))
+                                        if (service.addReminderWithDetails(root.addDestination.id, quickAdd.text.trim(), root.addDestination.revision, {
+                                            tags: [],
+                                            due: quickDue.text.trim(),
+                                            allDay: quickDue.text.trim().length === 10,
+                                            timezone: root.localTimezone(),
+                                            assignee: quickAssignee.value || root.normalizedShip(service.ship)
+                                        })) {
                                             quickAdd.text = "";
+                                            quickDue.text = "";
+                                        }
                                     }
                                 }
 
@@ -1866,6 +1825,30 @@ Item {
                                     }
                                 }
 
+                            }
+
+                            Row {
+                                width: parent.width
+                                spacing: Style.space(8)
+
+                                TextField {
+                                    id: quickDue
+                                    width: root.compactMode ? parent.width : parent.width * 0.42
+                                    placeholderText: "Due date · YYYY-MM-DD or YYYY-MM-DDTHH:MM"
+                                    Accessible.name: "New reminder due date"
+                                    enabled: quickAdd.enabled
+                                }
+
+                                SearchableDropdown {
+                                    id: quickAssignee
+                                    visible: !root.compactMode
+                                    width: visible ? parent.width - quickDue.width - parent.spacing : 0
+                                    label: "Assignee"
+                                    options: root.addAssigneeOptions
+                                    placeholderText: "Find a ship"
+                                    emptyText: "No matching ships"
+                                    Accessible.name: "New reminder assignee"
+                                }
                             }
 
                             Row {
@@ -2430,7 +2413,7 @@ Item {
                                         return ;
                                     var reminder = root.displayedReminders[currentIndex];
                                     if (service.canEditList(reminder.listId) && service.connectionState === "online" && !service.mutationPending)
-                                        service.setCompleted(reminder.listId, reminder.id, !reminder.completed, reminder.listRevision);
+                                        service.toggleCompletedWithGrace(reminder.listId, reminder.id, reminder.completed);
                                 }
                                 Keys.onRightPressed: {
                                     if (currentIndex < 0 || currentIndex >= root.displayedReminders.length)
@@ -2455,6 +2438,7 @@ Item {
 
                                     width: ListView.view.width
                                     height: Style.space(44)
+                                    opacity: service ? service.completionOpacity(modelData.listId, modelData.id) : 1
                                     radius: Style.cornerRadius
                                     color: ListView.isCurrentItem ? Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.14) : Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.04)
                                     border.width: reminderDropArea.containsDrag ? Math.max(1, Style.space(1)) : 0
@@ -2479,14 +2463,14 @@ Item {
                                         anchors.margins: Style.space(8)
                                         spacing: Style.space(10)
 
-                                        TendCheck {
-                                            checked: modelData.completed
+                                        TendCheckbox {
+                                            checked: service ? service.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) : modelData.completed
                                             enabled: service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
-                                            Accessible.name: (modelData.completed ? "Uncomplete " : "Complete ") + modelData.title
-                                            onClicked: service.setCompleted(modelData.listId, modelData.id, checked, modelData.listRevision)
+                                            Accessible.name: (checked ? "Mark open " : "Complete ") + modelData.title
+                                            onClicked: service.toggleCompletedWithGrace(modelData.listId, modelData.id, modelData.completed)
                                         }
 
-                                        TendCheck {
+                                        TendCheckbox {
                                             visible: root.selectionMode && root.viewMode === "list"
                                             width: visible ? implicitWidth : 0
                                             checked: root.reminderIsSelected(modelData.id)
@@ -2562,10 +2546,10 @@ Item {
                                                 return prefix + modelData.title + list + (section ? "  ·  " + section : "") + due;
                                             }
                                             color: Color.menu.text
-                                            opacity: modelData.completed ? 0.5 : 1
+                                            opacity: service && service.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) ? 0.5 : 1
                                             font.family: Style.font.menuFamily
                                             font.pixelSize: Style.font.body
-                                            font.strikeout: modelData.completed
+                                            font.strikeout: service ? service.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) : modelData.completed
 
                                             MouseArea {
                                                 anchors.fill: parent
@@ -2588,15 +2572,27 @@ Item {
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
                                 anchors.right: parent.right
-                                width: root.selectedReminder ? (root.compactMode ? parent.width : Style.space(330)) : 0
-                                visible: root.selectedReminder !== null
+                                width: root.selectedReminder && !root.policyEditorOpen ? (root.compactMode ? parent.width : Style.space(360)) : 0
+                                visible: root.selectedReminder !== null && !root.policyEditorOpen
                                 service: root.service
                                 list: root.selectedList
                                 reminder: root.selectedReminder
                                 assigneeChoices: root.assigneeChoices
+                                availableTags: root.availableTags
                                 editable: root.selectedListEditable
                                 timezone: root.localTimezone()
                                 onCloseRequested: root.selectedReminderId = 0
+                            }
+
+                            ReminderDefaults {
+                                id: defaultsSidebar
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                anchors.right: parent.right
+                                width: root.policyEditorOpen ? (root.compactMode ? parent.width : Style.space(360)) : 0
+                                visible: root.policyEditorOpen
+                                service: root.service
+                                onCloseRequested: root.policyEditorOpen = false
                             }
 
                         }

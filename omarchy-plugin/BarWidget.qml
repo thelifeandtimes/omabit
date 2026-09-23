@@ -13,16 +13,63 @@ Panel {
 
   readonly property var tendService: bar && bar.shell ? bar.shell.serviceFor(moduleName) : null
   readonly property string state: tendService ? tendService.connectionState : "disconnected"
-  readonly property var assignedReminders: TendModel.queryReminders(tendService ? tendService.lists : [], {
-    view: "assigned",
+  property string selectedView: "assigned"
+  readonly property var smartViewKeys: ["today", "scheduled", "all", "flagged", "assigned", "completed"]
+  readonly property var smartViewLabels: ["Today", "Scheduled", "All", "Flagged", "Assigned to me", "Completed"]
+  readonly property var visibleReminders: TendModel.queryReminders(tendService ? tendService.lists : [], {
+    view: selectedView,
     ship: tendService ? tendService.ship : "",
-    sort: "priority"
+    sort: "priority",
+    allDayOverdue: tendService ? tendService.preferences.allDayOverdue : true
   })
-  readonly property int taskCount: assignedReminders.length
+  readonly property int taskCount: visibleReminders.length
   readonly property var destinationLists: tendService
     ? TendModel.orderedLists(tendService.lists, tendService.preferences.pinnedLists, tendService.localSettings.listOrder)
     : []
+  readonly property var selectedDestination: destinationList.currentIndex >= 0 && destinationList.currentIndex < destinationLists.length
+    ? destinationLists[destinationList.currentIndex]
+    : null
+  readonly property var assigneeOptions: assigneeOptionsForList(selectedDestination)
   readonly property color dim: Qt.rgba(barForeground.r, barForeground.g, barForeground.b, 0.6)
+
+  function normalizedShip(value) {
+    var name = String(value || "").replace(/^~/, "")
+    return name ? "~" + name : ""
+  }
+
+  function assigneeOptionsForList(list) {
+    var choices = [{ value: "", label: "Unassigned", description: "No owner" }]
+    if (!tendService || !list) return choices
+    var access = tendService.accessForList(list.id)
+    var seen = ({})
+    function append(ship, suffix, description) {
+      var normalized = root.normalizedShip(ship)
+      if (!normalized || seen[normalized]) return
+      seen[normalized] = true
+      choices.push({
+        value: normalized,
+        label: normalized + (suffix ? " · " + suffix : ""),
+        description: description || ""
+      })
+    }
+    append(tendService.ship, "you", "Default assignee")
+    if (!access) return choices
+    append(access.host, "owner", "List owner")
+    ;(access.members || []).forEach(function(member) { append(member.ship, "member", "Can edit this list") })
+    ;(access.pending || []).forEach(function(ship) { append(ship, "invited", "Invitation not yet accepted") })
+    return choices
+  }
+
+  function selectSelfAssignee() {
+    var self = normalizedShip(tendService ? tendService.ship : "")
+    assigneePicker.value = self
+  }
+
+  function dueLabel(reminder) {
+    if (!reminder || !reminder.schedule) return "No due date"
+    var value = TendModel.scheduleInputValue(reminder.schedule)
+    return value ? value.replace("T", " ") : "No due date"
+  }
 
   function priorityGlyph(priority) {
     if (priority === "high") return "!!!"
@@ -45,34 +92,31 @@ Panel {
     Qt.callLater(function() { root.bar.shell.summon(root.moduleName, payload) })
   }
 
-  function parseQuickEntry(value) {
-    var tokens = String(value || "").trim().split(/\s+/)
-    var tags = []
-    var words = []
-    for (var i = 0; i < tokens.length; i++) {
-      if (tokens[i].charAt(0) === "#" && tokens[i].length > 1)
-        tags.push(tokens[i].substring(1))
-      else
-        words.push(tokens[i])
-    }
-    return { title: words.join(" ").trim(), tags: tags }
-  }
-
   function addReminder() {
     if (!tendService || destinationList.currentIndex < 0 || !quickAdd.text.trim()) return
     var list = destinationLists[destinationList.currentIndex]
     if (!list) return
-    var parsed = parseQuickEntry(quickAdd.text)
-    var title = parsed.title || quickAdd.text.trim()
-    var tags = parsed.tags
-    if (tendService.addReminderAssignedToMe(list.id, title, list.revision, tags)) quickAdd.text = ""
+    if (tendService.addReminderWithDetails(list.id, quickAdd.text.trim(), list.revision, {
+      tags: [],
+      due: quickDue.text.trim(),
+      allDay: quickDue.text.trim().length === 10,
+      timezone: tendService.localTimezone,
+      assignee: assigneePicker.value || normalizedShip(tendService.ship)
+    })) {
+      quickAdd.text = ""
+      quickDue.text = ""
+    }
   }
 
   visible: true
   implicitWidth: widgetButton.implicitWidth
   implicitHeight: widgetButton.implicitHeight
 
-  onOpenedChanged: if (opened) Qt.callLater(function() { quickAdd.forceActiveFocus() })
+  onOpenedChanged: if (opened) Qt.callLater(function() {
+    root.selectSelfAssignee()
+    quickAdd.forceActiveFocus()
+  })
+  onSelectedDestinationChanged: Qt.callLater(root.selectSelfAssignee)
 
   WidgetButton {
     id: widgetButton
@@ -82,9 +126,9 @@ Panel {
     hasVisualContent: true
     fixedWidth: vertical ? barSize : widgetContents.implicitWidth + Style.space(16)
     fixedHeight: vertical ? barSize : -1
-    tooltipText: "Tend · " + taskCount + " assigned · " + state
+    tooltipText: "Tend · " + taskCount + " in " + selectedView + " · " + state
     Accessible.role: Accessible.Button
-    Accessible.name: "Open Tend assigned reminders; " + taskCount + " incomplete; " + state
+    Accessible.name: "Open Tend reminders; " + taskCount + " in " + selectedView + "; " + state
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.LeftButton) root.toggle()
     }
@@ -123,10 +167,10 @@ Panel {
     bar: root.bar
     open: root.opened
     focusTarget: popupKeys
-    contentWidth: popup.fittedContentWidth(Style.space(440))
-    contentHeight: popup.cappedContentHeight(root.assignedReminders.length > 0
-      ? Style.space(250 + Math.min(8, root.assignedReminders.length) * 46)
-      : Style.space(300))
+    contentWidth: popup.fittedContentWidth(Style.space(560))
+    contentHeight: popup.cappedContentHeight(root.visibleReminders.length > 0
+      ? Style.space(350 + Math.min(8, root.visibleReminders.length) * 54)
+      : Style.space(400))
 
     PanelKeyCatcher {
       id: popupKeys
@@ -182,27 +226,51 @@ Panel {
           foreground: root.barForeground
         }
 
-        RowLayout {
+        GridLayout {
+          columns: 2
           Layout.fillWidth: true
-          spacing: Style.space(7)
+          columnSpacing: Style.space(7)
+          rowSpacing: Style.space(7)
 
           TextField {
             id: quickAdd
             Layout.fillWidth: true
-            placeholderText: "New reminder"
+            placeholderText: "Describe a new reminder"
             enabled: destinationList.currentIndex >= 0 && root.tendService && root.tendService.connectionState === "online" && !root.tendService.mutationPending
+            onAccepted: root.addReminder()
+          }
+
+          TextField {
+            id: quickDue
+            Layout.fillWidth: true
+            placeholderText: "Due date · YYYY-MM-DD or YYYY-MM-DDTHH:MM"
+            enabled: quickAdd.enabled
+            Accessible.name: "Reminder due date"
             onAccepted: root.addReminder()
           }
 
           TendDropdown {
             id: destinationList
-            Layout.preferredWidth: Style.space(132)
+            Layout.fillWidth: true
+            label: "List"
             model: root.destinationLists
             textRole: "title"
             Accessible.name: "Destination list"
           }
 
+          SearchableDropdown {
+            id: assigneePicker
+            Layout.fillWidth: true
+            label: "Assignee"
+            options: root.assigneeOptions
+            placeholderText: "Find a ship"
+            emptyText: "No matching ships"
+            Accessible.name: "Reminder assignee"
+          }
+
           Button {
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
             text: "Add"
             focusable: true
             bordered: true
@@ -213,10 +281,24 @@ Panel {
 
         PanelSeparator { Layout.fillWidth: true; foreground: root.barForeground }
 
-        PanelSectionHeader {
+        RowLayout {
           Layout.fillWidth: true
-          text: "ASSIGNED TO ME · PRIORITY ORDER"
-          foreground: root.barForeground
+          spacing: Style.space(8)
+
+          PanelSectionHeader {
+            Layout.fillWidth: true
+            text: "REMINDERS · PRIORITY ORDER"
+            foreground: root.barForeground
+          }
+
+          TendDropdown {
+            id: smartView
+            Layout.preferredWidth: Style.space(165)
+            model: root.smartViewLabels
+            currentIndex: Math.max(0, root.smartViewKeys.indexOf(root.selectedView))
+            Accessible.name: "Smart list"
+            onActivated: root.selectedView = root.smartViewKeys[currentIndex]
+          }
         }
 
         Column {
@@ -224,9 +306,9 @@ Panel {
           spacing: Style.space(4)
 
           Text {
-            visible: root.assignedReminders.length === 0
+            visible: root.visibleReminders.length === 0
             width: parent.width
-            text: root.state === "online" ? "Nothing assigned to you." : "Connect Tend to load assigned reminders."
+            text: root.state === "online" ? "Nothing in this view." : "Connect Tend to load reminders."
             color: root.dim
             font.family: root.bar ? root.bar.fontFamily : Style.font.family
             font.pixelSize: Style.font.body
@@ -234,12 +316,13 @@ Panel {
           }
 
           Repeater {
-            model: root.assignedReminders.slice(0, 8)
+            model: root.visibleReminders.slice(0, 8)
 
             delegate: Rectangle {
               required property var modelData
               width: parent.width
-              height: Style.space(46)
+              height: Style.space(54)
+              opacity: root.tendService ? root.tendService.completionOpacity(modelData.listId, modelData.id) : 1
               radius: Style.cornerRadius
               color: rowMouse.hovered
                 ? Style.hoverFillFor(root.barForeground, Color.accent)
@@ -250,14 +333,12 @@ Panel {
                 anchors.margins: Style.space(7)
                 spacing: Style.space(8)
 
-                Button {
+                TendCheckbox {
                   anchors.verticalCenter: parent.verticalCenter
-                  text: "○"
-                  tooltipText: "Complete"
-                  focusable: true
-                  bordered: false
+                  checked: root.tendService ? root.tendService.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) : modelData.completed
+                  Accessible.name: (checked ? "Mark open " : "Complete ") + modelData.title
                   enabled: root.tendService && root.tendService.canEditList(modelData.listId) && root.state === "online" && !root.tendService.mutationPending
-                  onClicked: root.tendService.setCompleted(modelData.listId, modelData.id, true, modelData.listRevision)
+                  onClicked: root.tendService.toggleCompletedWithGrace(modelData.listId, modelData.id, modelData.completed)
                 }
 
                 Text {
@@ -277,16 +358,17 @@ Panel {
 
                   Text {
                     width: parent.width
-                    text: modelData.title
+                    text: modelData.title || "Untitled reminder"
                     color: root.barForeground
                     font.family: root.bar ? root.bar.fontFamily : Style.font.family
                     font.pixelSize: Style.font.body
                     elide: Text.ElideRight
+                    font.strikeout: root.tendService ? root.tendService.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) : modelData.completed
                   }
 
                   Text {
                     width: parent.width
-                    text: modelData.listTitle
+                    text: root.dueLabel(modelData) + "  ·  " + modelData.listTitle
                     color: root.dim
                     font.family: root.bar ? root.bar.fontFamily : Style.font.family
                     font.pixelSize: Style.font.caption
@@ -307,9 +389,9 @@ Panel {
           }
 
           Text {
-            visible: root.assignedReminders.length > 8
+            visible: root.visibleReminders.length > 8
             width: parent.width
-            text: "+ " + (root.assignedReminders.length - 8) + " more"
+            text: "+ " + (root.visibleReminders.length - 8) + " more"
             color: root.dim
             font.family: root.bar ? root.bar.fontFamily : Style.font.family
             font.pixelSize: Style.font.caption

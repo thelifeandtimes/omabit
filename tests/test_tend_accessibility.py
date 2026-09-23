@@ -14,8 +14,8 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("Keys.onSpacePressed", panel)
         self.assertIn("Accessible.role: Accessible.List", panel)
         self.assertIn('Accessible.name: "Current Urbit plus code"', panel)
-        self.assertIn("model: root.assigneeChoices", panel)
-        self.assertIn("selectedAccess.pending", panel)
+        self.assertIn("assigneeChoices: root.assigneeChoices", panel)
+        self.assertIn("access.pending", panel)
         self.assertIn('target === "new-list"', panel)
         self.assertIn('target === "invite"', panel)
         self.assertIn('target === "reminder-assignee"', panel)
@@ -29,10 +29,14 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("taskCount", widget)
         self.assertIn("state", widget)
         self.assertIn("KeyboardPanel", widget)
-        self.assertIn('view: "assigned"', widget)
+        self.assertIn('property string selectedView: "assigned"', widget)
+        self.assertIn("view: selectedView", widget)
         self.assertIn('sort: "priority"', widget)
         self.assertIn("openFullPanel", widget)
-        self.assertIn("addReminderAssignedToMe", widget)
+        self.assertIn("addReminderWithDetails", widget)
+        self.assertIn("smartViewKeys", widget)
+        self.assertIn("quickDue", widget)
+        self.assertIn("assigneePicker", widget)
 
     def test_plugin_adds_no_custom_motion(self):
         plugin_text = "\n".join(path.read_text(encoding="utf-8") for path in (ROOT / "omarchy-plugin").glob("*.qml"))
@@ -60,7 +64,11 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn('text: "Add reminder"', panel)
         self.assertIn("visible: root.selectionMode", panel)
         self.assertIn("anchors.right: parent.right", panel)
-        self.assertIn('text: "DETAILS"', details)
+        self.assertIn('text: "REMINDER DETAILS"', details)
+        self.assertIn("SearchableDropdown", details)
+        self.assertIn("MultiSelect", details)
+        self.assertIn("TendTextArea", details)
+        self.assertIn("Color.popups.background", details)
 
     def test_recipient_bound_invitation_link_is_selectable(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
@@ -99,11 +107,31 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertEqual(service.count('["python3", "-B", bridgePath,'), 6)
         self.assertNotIn('["python3", bridgePath,', service)
 
-    def test_bar_quick_add_is_followed_by_self_assignment(self):
+    def test_quick_add_normalizes_self_assignment_and_supports_details(self):
         service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
         self.assertIn("function addReminderAssignedToMe", service)
-        self.assertIn("function queueAssignmentForCreatedReminder", service)
-        self.assertIn("assignee: ship", service)
+        self.assertIn("function addReminderWithDetails", service)
+        self.assertIn("function queueDetailsForCreatedReminder", service)
+        self.assertIn("normalizeShip(fields.assignee)", service)
+        self.assertIn('kind: "schedule"', service)
+
+    def test_completion_uses_checkbox_and_ten_second_grace_period(self):
+        service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+        widget = (ROOT / "omarchy-plugin" / "BarWidget.qml").read_text(encoding="utf-8")
+        self.assertIn("function toggleCompletedWithGrace", service)
+        self.assertIn("elapsed <= 5000", service)
+        self.assertIn("< 10000", service)
+        self.assertIn("TendCheckbox", panel)
+        self.assertIn("TendCheckbox", widget)
+
+    def test_panel_uses_resizable_sidebar_and_opaque_inspectors(self):
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+        defaults = (ROOT / "omarchy-plugin" / "ReminderDefaults.qml").read_text(encoding="utf-8")
+        self.assertIn("sidebarResizeHandle", panel)
+        self.assertIn("Text.ElideRight", panel)
+        self.assertIn("ReminderDefaults", panel)
+        self.assertIn("Color.popups.background", defaults)
 
     def test_mutation_processes_use_newline_delimited_json(self):
         service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")

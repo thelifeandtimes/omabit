@@ -54,10 +54,13 @@ lint-qml:
 		omarchy-plugin/TendPanel.qml \
 		omarchy-plugin/BarWidget.qml \
 		omarchy-plugin/ReminderDetail.qml \
+		omarchy-plugin/ReminderDefaults.qml \
 		omarchy-plugin/TendButton.qml \
+		omarchy-plugin/TendCheckbox.qml \
 		omarchy-plugin/TendCheck.qml \
 		omarchy-plugin/TendDropdown.qml \
 		omarchy-plugin/TendNumber.qml \
+		omarchy-plugin/TendTextArea.qml \
 		omarchy-plugin/Service.qml
 
 lint-python:

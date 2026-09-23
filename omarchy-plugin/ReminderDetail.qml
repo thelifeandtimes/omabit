@@ -4,43 +4,69 @@ import qs.Commons
 import qs.Ui
 import "TendModel.js" as TendModel
 
-Rectangle {
+BorderSurface {
   id: root
 
   property var service: null
   property var list: null
   property var reminder: null
   property var assigneeChoices: []
+  property var availableTags: []
   property bool editable: false
   property string timezone: "UTC"
   signal closeRequested()
 
+  readonly property var assigneeOptions: (assigneeChoices || []).map(function(choice) {
+    return {
+      value: String(choice.ship || ""),
+      label: String(choice.title || choice.ship || "Unassigned"),
+      description: String(choice.description || "")
+    }
+  })
+  readonly property var tagOptions: {
+    var values = (availableTags || []).concat(tagPicker.values || [])
+    var seen = ({})
+    return values.filter(function(tag) {
+      var value = String(tag || "").trim()
+      if (!value || seen[value]) return false
+      seen[value] = true
+      return true
+    })
+  }
+
+  color: Color.popups.background
+  borderSpec: Border.localOrSurfaceSpec("popups", "border", Color.popups.border, Color.menu.border, Style.normalBorderWidth)
   radius: Style.cornerRadius
-  color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.05)
-  border.color: Color.menu.border
-  border.width: Math.max(1, Style.space(1))
+
+  function normalizedShip(value) {
+    var name = String(value || "").replace(/^~/, "")
+    return name ? "~" + name : ""
+  }
 
   function loadReminder() {
-    if (!reminder)
-      return
+    if (!reminder) return
     titleField.text = reminder.title || ""
     notesField.text = reminder.notes || ""
     urlField.text = reminder.url || ""
     priorityField.currentIndex = Math.max(0, priorityField.model.indexOf(reminder.priority || "none"))
     flaggedField.checked = reminder.flagged === true
-    tagsField.text = (reminder.tags || []).join(", ")
-    var wantedAssignee = reminder.assignee || ""
-    var assigneeIndex = 0
-    for (var i = 0; i < assigneeChoices.length; i++) {
-      if (String(assigneeChoices[i].ship || "") === String(wantedAssignee)) {
-        assigneeIndex = i
-        break
-      }
-    }
-    assigneeField.currentIndex = assigneeIndex
+    tagPicker.values = (reminder.tags || []).slice()
+    assigneeField.value = normalizedShip(reminder.assignee)
     dueField.text = TendModel.scheduleInputValue(reminder.schedule)
     allDayField.checked = reminder.schedule ? reminder.schedule.allDay === true : false
   }
+
+  function addTag() {
+    var tag = newTagField.text.trim()
+    if (!tag) return
+    var tags = (tagPicker.values || []).slice()
+    if (tags.indexOf(tag) === -1) tags.push(tag)
+    tagPicker.values = tags
+    newTagField.text = ""
+  }
+
+  function focusAssignee() { assigneeField.open() }
+  function focusSave() { saveButton.forceActiveFocus() }
 
   onReminderChanged: loadReminder()
   onAssigneeChoicesChanged: loadReminder()
@@ -59,14 +85,27 @@ Rectangle {
       Row {
         width: parent.width
 
-        Text {
+        Column {
           width: parent.width - closeButton.width
-          anchors.verticalCenter: parent.verticalCenter
-          text: "DETAILS"
-          color: Color.menu.text
-          font.family: Style.font.menuFamily
-          font.pixelSize: Style.font.caption
-          font.bold: true
+          spacing: Style.space(2)
+
+          Text {
+            width: parent.width
+            text: "REMINDER DETAILS"
+            color: Color.popups.text
+            font.family: Style.font.family
+            font.pixelSize: Style.font.caption
+            font.bold: true
+          }
+
+          Text {
+            width: parent.width
+            text: root.list ? root.list.title : ""
+            color: Qt.darker(Color.popups.text, 1.45)
+            elide: Text.ElideRight
+            font.family: Style.font.family
+            font.pixelSize: Style.font.caption
+          }
         }
 
         TendButton {
@@ -78,6 +117,16 @@ Rectangle {
         }
       }
 
+      TendCheckbox {
+        id: completedBox
+        text: "Completed"
+        checked: root.service && root.reminder
+          ? root.service.effectiveCompleted(root.list.id, root.reminder.id, root.reminder.completed)
+          : false
+        enabled: root.editable && root.reminder && root.service && root.service.connectionState === "online" && !root.service.mutationPending
+        onClicked: root.service.toggleCompletedWithGrace(root.list.id, root.reminder.id, root.reminder.completed)
+      }
+
       TextField {
         id: titleField
         width: parent.width
@@ -85,10 +134,10 @@ Rectangle {
         Accessible.name: "Reminder title"
       }
 
-      QQC.TextArea {
+      TendTextArea {
         id: notesField
         width: parent.width
-        height: Style.space(86)
+        height: Style.space(92)
         placeholderText: "Notes"
         wrapMode: TextEdit.Wrap
         Accessible.name: "Reminder notes"
@@ -119,29 +168,54 @@ Rectangle {
         }
       }
 
-      TendDropdown {
+      SearchableDropdown {
         id: assigneeField
         width: parent.width
         label: "Assigned to"
-        model: root.assigneeChoices
-        textRole: "title"
-        valueRole: "ship"
+        options: root.assigneeOptions
+        placeholderText: "Find a ship"
+        emptyText: "No matching ships"
+        Accessible.name: "Reminder assignee ship"
       }
 
-      TextField {
-        id: tagsField
+      MultiSelect {
+        id: tagPicker
         width: parent.width
-        placeholderText: "Tags, separated by commas"
+        label: "Tags"
+        options: root.tagOptions
+        placeholderText: "Find a tag"
+        emptyText: "No matching tags"
+        noSelectionText: "No tags"
         Accessible.name: "Reminder tags"
       }
 
-      PanelSeparator { width: parent.width }
+      Row {
+        width: parent.width
+        spacing: Style.space(8)
+
+        TextField {
+          id: newTagField
+          width: parent.width - addTagButton.width - parent.spacing
+          placeholderText: "Add a new tag"
+          Accessible.name: "New reminder tag"
+          onAccepted: root.addTag()
+        }
+
+        TendButton {
+          id: addTagButton
+          text: "Add tag"
+          enabled: newTagField.text.trim() !== ""
+          onClicked: root.addTag()
+        }
+      }
+
+      PanelSeparator { width: parent.width; foreground: Color.popups.text }
 
       Text {
         text: "SCHEDULE"
-        color: Color.menu.text
+        color: Color.popups.text
         opacity: 0.68
-        font.family: Style.font.menuFamily
+        font.family: Style.font.family
         font.pixelSize: Style.font.caption
         font.bold: true
       }
@@ -149,7 +223,7 @@ Rectangle {
       TextField {
         id: dueField
         width: parent.width
-        placeholderText: "YYYY-MM-DDTHH:MM"
+        placeholderText: "YYYY-MM-DD or YYYY-MM-DDTHH:MM"
         Accessible.name: "Reminder due date and time"
       }
 
@@ -181,7 +255,7 @@ Rectangle {
         }
       }
 
-      PanelSeparator { width: parent.width }
+      PanelSeparator { width: parent.width; foreground: Color.popups.text }
 
       Row {
         width: parent.width
@@ -190,20 +264,17 @@ Rectangle {
         TendButton {
           id: saveButton
           width: parent.width - deleteButton.width - parent.spacing
-          text: "Save changes"
+          text: root.service && root.service.mutationPending ? "Saving…" : "Save changes"
           enabled: root.editable && root.reminder && titleField.text.trim() && root.service && root.service.connectionState === "online" && !root.service.mutationPending
-          onClicked: {
-            var tags = tagsField.text.split(",").map(function(tag) { return tag.trim() }).filter(function(tag) { return tag.length > 0 })
-            root.service.updateReminder(root.list.id, root.reminder.id, {
-              title: titleField.text,
-              notes: notesField.text,
-              url: urlField.text.trim() || null,
-              priority: priorityField.currentText,
-              flagged: flaggedField.checked,
-              tags: tags,
-              assignee: assigneeField.currentValue || null
-            }, root.list.revision)
-          }
+          onClicked: root.service.updateReminder(root.list.id, root.reminder.id, {
+            title: titleField.text,
+            notes: notesField.text,
+            url: urlField.text.trim() || null,
+            priority: priorityField.currentText,
+            flagged: flaggedField.checked,
+            tags: tagPicker.values || [],
+            assignee: assigneeField.value || null
+          }, root.list.revision)
         }
 
         TendButton {
