@@ -32,6 +32,8 @@ Commands:
   http-plan                  Describe the host-loopback HTTP checkpoint.
   qualify-http --acknowledge-disposable-run
                              Test private HTTP publication and replacement.
+  serve-fake --acknowledge-development
+                             Serve the persistent fake-ship management API.
   demo --socket /private/directory/runner.sock [--operation-delay 2s]
                              Run the checkpoint 1 in-memory simulator.
 
@@ -68,6 +70,9 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	}
 	if len(args) > 0 && (args[0] == "http-plan" || args[0] == "qualify-http") {
 		return runRuntime(ctx, args, stdout, stderr, runtimequalify.RunHTTP)
+	}
+	if len(args) > 0 && args[0] == "serve-fake" {
+		return runManaged(ctx, args[1:], stdout, stderr)
 	}
 	if len(args) == 0 || args[0] != "demo" {
 		fmt.Fprint(stderr, usage)

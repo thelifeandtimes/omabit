@@ -347,13 +347,53 @@ func TestHelp(t *testing.T) {
 			if code := run(context.Background(), args, &stdout, &stderr); code != 0 || stderr.Len() != 0 {
 				t.Fatalf("exit = %d, stderr = %q", code, &stderr)
 			}
-			for _, text := range []string{"Usage:", "simulator checkpoint", "not a full collector daemon", "absolute path", "before the subcommand"} {
+			for _, text := range []string{"Usage:", "Development management client", "not a full collector daemon", "absolute path", "before the subcommand"} {
 				if !strings.Contains(stdout.String(), text) {
 					t.Errorf("help must include %q: %s", text, &stdout)
 				}
 			}
 			if args[0] == "configure" && (!strings.Contains(stdout.String(), "31..33") || !strings.Contains(stdout.String(), "not universal runtime bounds")) {
 				t.Errorf("help must explain demo loom bounds: %s", &stdout)
+			}
+		})
+	}
+}
+
+func TestCreateFakeCapabilityAndPayload(t *testing.T) {
+	for _, supported := range []bool{false, true} {
+		t.Run(strconv.FormatBool(supported), func(t *testing.T) {
+			var posts atomic.Int32
+			socket := fakeRunner(t, func(w http.ResponseWriter, r *http.Request) {
+				if r.URL.Path == "/hello" {
+					features := []string{}
+					if supported {
+						features = append(features, "create-fake")
+					}
+					reply(t, w, protocol.Hello{ProtocolVersion: protocol.Version, Features: features})
+					return
+				}
+				posts.Add(1)
+				if r.Method != "POST" || r.URL.Path != "/v1/instances" {
+					t.Errorf("unexpected route: %s %s", r.Method, r.URL.Path)
+				}
+				var req protocol.CreateFakeRequest
+				if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+					t.Fatal(err)
+				}
+				if req.ID != "alpha" || req.Label != "Workstation test" || req.RequestID != "register-alpha" || req.Config.HTTPPort != 18080 || req.Config.AmesPort != 34343 || req.Config.Loom != 31 {
+					t.Errorf("bad payload: %+v", req)
+				}
+				w.WriteHeader(201)
+				reply(t, w, protocol.Operation{ID: "op-registration", Status: "succeeded", Kind: "register-fake"})
+			})
+			var stdout, stderr bytes.Buffer
+			code := run(context.Background(), []string{"--socket", socket, "create-fake", "alpha", "--http-port", "18080", "--request-id", "register-alpha", "--label", "Workstation test"}, &stdout, &stderr)
+			if supported {
+				if code != 0 || posts.Load() != 1 || !strings.Contains(stdout.String(), "op-registration") {
+					t.Fatalf("registration: exit%d %s %s", code, &stdout, &stderr)
+				}
+			} else if code != 1 || posts.Load() != 0 || !strings.Contains(stderr.String(), "does not support create-fake") {
+				t.Fatalf("unsupported mutation: exit%d posts%d %s", code, posts.Load(), &stderr)
 			}
 		})
 	}

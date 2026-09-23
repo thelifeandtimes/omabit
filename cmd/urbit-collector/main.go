@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"slices"
 	"syscall"
 	"time"
 
@@ -17,7 +18,8 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
-const scope = `Initial simulator checkpoint, not a full collector daemon or production runtime manager.
+const scope = `Development management client; inspect hello.mode/features for server capabilities.
+This is not a full collector daemon or production runtime manager.
 The socket must be an explicit absolute path, supplied before the subcommand.
 Every command checks Hello compatibility before performing any operations.
 Revisions and request IDs are never inferred; mutations are never automatically retried.
@@ -54,7 +56,9 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 
 Commands:
   hello       Verify compatibility and show runner capabilities.
-  snapshot    Show the current simulator snapshot.
+  snapshot    Show the current runner snapshot.
+  create-fake INSTANCE --http-port PORT --request-id ID [--label TEXT]
+              Register a fresh fake instance (does not start it).
   configure INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT
               Replace configuration; all flags are required. Demo loom: 31..33,
               not universal runtime bounds.
@@ -82,10 +86,16 @@ Use COMMAND --help for command flags and constraints.
 	var revision uint64
 	var httpPort, amesPort, loom uint
 	var requestID string
+	var label string
 	var interval time.Duration
 	usage := command
 	switch command {
 	case "hello", "snapshot":
+	case "create-fake":
+		usage += " INSTANCE --http-port PORT --request-id ID [--label TEXT]"
+		flags.UintVar(&httpPort, "http-port", 0, "required loopback host HTTP port, 1024..65535")
+		flags.StringVar(&requestID, "request-id", "", "required caller-chosen idempotency key")
+		flags.StringVar(&label, "label", "", "optional display label")
 	case "configure":
 		usage += " INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT"
 		flags.Uint64Var(&revision, "revision", 0, "required positive expected configuration revision")
@@ -104,7 +114,7 @@ Use COMMAND --help for command flags and constraints.
 	}
 
 	var instanceID, kind string
-	if command == "configure" || command == "operate" {
+	if command == "configure" || command == "operate" || command == "create-fake" {
 		if len(args) > 0 && args[0] != "--help" && args[0] != "-h" {
 			instanceID, args = args[0], args[1:]
 		}
@@ -136,6 +146,10 @@ Use COMMAND --help for command flags and constraints.
 		}
 	}
 	switch command {
+	case "create-fake":
+		if !validID(instanceID) || !validID(requestID) || httpPort < 1024 || httpPort > 65535 {
+			return fail(errors.New("create-fake requires valid instance/request IDs and --http-port in 1024..65535"), 2)
+		}
 	case "configure":
 		if httpPort == 0 || httpPort > 65535 || amesPort == 0 || amesPort > 65535 {
 			return fail(errors.New("--http-port and --ames-port are required and must be in 1..65535"), 2)
@@ -173,6 +187,11 @@ Use COMMAND --help for command flags and constraints.
 		result = hello
 	case "snapshot":
 		result, err = c.Snapshot(ctx)
+	case "create-fake":
+		if !slices.Contains(hello.Features, "create-fake") {
+			return fail(errors.New("this runner does not support create-fake"), 1)
+		}
+		result, err = c.CreateFake(ctx, protocol.CreateFakeRequest{ID: instanceID, Label: label, RequestID: requestID, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: 31}})
 	case "configure":
 		result, err = c.Configure(ctx, instanceID, protocol.ConfigureRequest{
 			ExpectedRevision: revision,

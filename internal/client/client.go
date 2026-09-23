@@ -1,4 +1,4 @@
-// Package client implements the demo runner RPC over a private Unix socket.
+// Package client implements runner RPC over a private Unix socket.
 package client
 
 import (
@@ -88,6 +88,17 @@ func (c *Client) Operate(ctx context.Context, id string, req protocol.OperationR
 	}
 	var result protocol.Operation
 	if err := c.do(ctx, http.MethodPost, "/v1/instances/"+id+"/operations", req, &result, true); err != nil {
+		return protocol.Operation{}, err
+	}
+	return result, nil
+}
+
+func (c *Client) CreateFake(ctx context.Context, req protocol.CreateFakeRequest) (protocol.Operation, error) {
+	if err := validateID(req.ID); err != nil {
+		return protocol.Operation{}, err
+	}
+	var result protocol.Operation
+	if err := c.do(ctx, http.MethodPost, "/v1/instances", req, &result, true); err != nil {
 		return protocol.Operation{}, err
 	}
 	return result, nil
