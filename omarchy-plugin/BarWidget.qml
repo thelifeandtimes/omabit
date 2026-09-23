@@ -351,28 +351,34 @@ Panel {
                   font.bold: true
                 }
 
-                Column {
+                Item {
                   width: parent.width - x
-                  anchors.verticalCenter: parent.verticalCenter
-                  spacing: 0
+                  height: parent.height
 
-                  Text {
-                    width: parent.width
-                    text: modelData.title || "Untitled reminder"
-                    color: root.barForeground
-                    font.family: root.bar ? root.bar.fontFamily : Style.font.family
-                    font.pixelSize: Style.font.body
-                    elide: Text.ElideRight
-                    font.strikeout: root.tendService ? root.tendService.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) : modelData.completed
-                  }
+                  Column {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 0
 
-                  Text {
-                    width: parent.width
-                    text: root.dueLabel(modelData) + "  ·  " + modelData.listTitle
-                    color: root.dim
-                    font.family: root.bar ? root.bar.fontFamily : Style.font.family
-                    font.pixelSize: Style.font.caption
-                    elide: Text.ElideRight
+                    Text {
+                      width: parent.width
+                      text: modelData.title || "Untitled reminder"
+                      color: root.barForeground
+                      font.family: root.bar ? root.bar.fontFamily : Style.font.family
+                      font.pixelSize: Style.font.body
+                      elide: Text.ElideRight
+                      font.strikeout: root.tendService ? root.tendService.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) : modelData.completed
+                    }
+
+                    Text {
+                      width: parent.width
+                      text: root.dueLabel(modelData) + "  ·  " + modelData.listTitle
+                      color: root.dim
+                      font.family: root.bar ? root.bar.fontFamily : Style.font.family
+                      font.pixelSize: Style.font.caption
+                      elide: Text.ElideRight
+                    }
                   }
 
                   MouseArea {

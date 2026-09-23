@@ -8,7 +8,7 @@ ROOT = Path(__file__).parents[1]
 class TendAccessibilityTests(unittest.TestCase):
     def test_panel_keeps_keyboard_navigation_contract(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
-        for shortcut in ("Ctrl+N", "Ctrl+F", "Ctrl+Shift+N", "Ctrl+Comma", "Alt+1", "Alt+6", "Ctrl+[", "Ctrl+]"):
+        for shortcut in ("Ctrl+N", "Ctrl+F", "Ctrl+Shift+N", "Ctrl+,", "Alt+1", "Alt+6", "Ctrl+[", "Ctrl+]"):
             self.assertIn(f'sequence: "{shortcut}"', panel)
         self.assertIn("Keys.onReturnPressed", panel)
         self.assertIn("Keys.onSpacePressed", panel)

@@ -32,6 +32,7 @@ Item {
     property var collapsedReminderIds: []
     property bool confirmBatchDelete: false
     property real sidebarWidth: Style.space(230)
+    readonly property color opaqueMenuBackground: Qt.rgba(Color.menu.background.r, Color.menu.background.g, Color.menu.background.b, 1)
     readonly property bool compactMode: window.width < Style.space(820)
     property var selectedList: null
     readonly property var selectedReminder: {
@@ -703,7 +704,7 @@ Item {
     }
 
     Shortcut {
-        sequence: "Ctrl+Comma"
+        sequence: "Ctrl+,"
         enabled: root.opened && !root.captureMode && service && service.ship !== ""
         onActivated: root.policyEditorOpen = !root.policyEditorOpen
     }
@@ -779,7 +780,7 @@ Item {
 
         title: service && service.ship ? "Tend · ~" + service.ship : "Tend"
         visible: root.opened
-        color: Color.menu.background
+        color: root.opaqueMenuBackground
         implicitWidth: Style.space(1180)
         implicitHeight: Style.space(780)
         minimumSize: Qt.size(Style.space(840), Style.space(600))
@@ -795,7 +796,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            color: Color.menu.background
+            color: root.opaqueMenuBackground
 
             MouseArea {
                 anchors.fill: parent
@@ -807,7 +808,7 @@ Item {
 
                 anchors.fill: parent
                 radius: 0
-                color: Color.menu.background
+                color: root.opaqueMenuBackground
                 border.width: 0
                 Keys.onEscapePressed: root.dismiss()
 

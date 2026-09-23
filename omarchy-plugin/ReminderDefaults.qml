@@ -9,7 +9,7 @@ BorderSurface {
   property var service: null
   signal closeRequested()
 
-  color: Color.popups.background
+  color: Qt.rgba(Color.popups.background.r, Color.popups.background.g, Color.popups.background.b, 1)
   borderSpec: Border.localOrSurfaceSpec("popups", "border", Color.popups.border, Color.menu.border, Style.normalBorderWidth)
   radius: Style.cornerRadius
 
