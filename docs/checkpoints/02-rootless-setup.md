@@ -133,16 +133,42 @@ removing your own build artifacts.
 ## 3. Install missing repository prerequisites
 
 This step requires OS authorization and adds packages. For this workstation the
-missing packages are:
+missing packages are `rootlesskit` and `slirp4netns`:
 
 ```bash
-sudo pacman -S --needed rootlesskit slirp4netns
+omarchy pkg add rootlesskit slirp4netns
 ```
 
-Review the package transaction. Use the configured Omarchy repositories. Do not
-add AUR packages, swap mirrors, use `pacman -Sy`, or pipe a remote script into a
-shell. If repository metadata is stale or versions conflict, stop and use the
-normal Omarchy update workflow before regenerating the preflight report.
+Review the requested packages before authorizing this command; Omarchy's wrapper
+uses pacman's noninteractive installation mode. Use the configured Omarchy
+repositories. Do not add AUR packages, swap mirrors, use `pacman -Sy`, or pipe a
+remote script into a shell. If repository metadata is stale or versions conflict,
+stop and use the normal Omarchy update workflow before regenerating the preflight
+report.
+
+If a package download returns HTTP 404 and pacman says the transaction was not
+committed, no packages from that transaction were installed. A stale local
+database can request an archive the mirror no longer serves. Refresh through a
+complete system update, not a standalone `pacman -Sy` or a manual package download:
+
+```bash
+omarchy update
+omarchy pkg add rootlesskit slirp4netns
+./build/urbit-runner preflight
+```
+
+`omarchy update` updates the system, not just repository metadata, and may offer a
+reboot. Recheck the Docker version afterward; stop on a changed version rather
+than bypassing the launcher's version check. If an update/reboot opens a new
+terminal, reestablish `BUNDLE` as the absolute path to the bundle already reviewed.
+If a download still returns 404 after a successful update, stop and inspect the
+mirror state rather than changing mirrors or repeatedly forcing refreshes.
+
+An installer error beginning `missing prerequisite /usr/bin/rootlesskit` or
+`missing prerequisite /usr/bin/slirp4netns` means the dependencies are absent, not
+that their ownership needs changing. Do not try to solve it with `chmod` or
+Docker-group membership. Earlier binaries used an ambiguous ownership/permissions
+message for missing files; rebuilding gives the clearer diagnostic.
 
 Other Quattro systems may need additional prerequisites reported by preflight;
 the helper does not install them automatically. In particular, newuidmap and

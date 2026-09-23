@@ -32,8 +32,18 @@ func (i *installer) helper(ctx context.Context, path string) error {
 		return err
 	}
 	info, err := i.lstat(i.path(path))
+	if errors.Is(err, os.ErrNotExist) {
+		hint := "install its repository package, then rerun urbit-runner preflight"
+		if path == "/usr/bin/rootlesskit" || path == "/usr/bin/slirp4netns" {
+			hint = "install repository packages rootlesskit and slirp4netns, then rerun urbit-runner preflight"
+		}
+		return fmt.Errorf("missing prerequisite %s: %s", path, hint)
+	}
+	if err != nil {
+		return fmt.Errorf("inspect prerequisite %s: %w", path, err)
+	}
 	uid, _, ok := ownership(info)
-	if err != nil || !ok || !info.Mode().IsRegular() || uid != 0 || info.Mode().Perm()&0111 == 0 || info.Mode().Perm()&0022 != 0 {
+	if !ok || !info.Mode().IsRegular() || uid != 0 || info.Mode().Perm()&0111 == 0 || info.Mode().Perm()&0022 != 0 {
 		return fmt.Errorf("%s must already be a regular root-owned executable, not a symlink or group/world writable", path)
 	}
 	return nil

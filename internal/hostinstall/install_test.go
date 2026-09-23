@@ -407,6 +407,49 @@ func TestValidationNeverMutates(t *testing.T) {
 	}
 }
 
+func TestMissingPrerequisiteDiagnostic(t *testing.T) {
+	for _, name := range []string{"rootlesskit", "slirp4netns", "getsubids"} {
+		t.Run(name, func(t *testing.T) {
+			f := newFixture(t)
+			path := "/usr/bin/" + name
+			if err := os.Remove(f.i.path(path)); err != nil {
+				t.Fatal(err)
+			}
+			before := tree(t, f.i.root)
+			result, err := f.i.install(context.Background(), "/bundle")
+			if err == nil || !strings.Contains(err.Error(), "missing prerequisite "+path) ||
+				!strings.Contains(err.Error(), "rerun urbit-runner preflight") ||
+				strings.Contains(err.Error(), "group/world writable") {
+				t.Fatalf("misleading missing-package error: %v", err)
+			}
+			if name != "getsubids" && !strings.Contains(err.Error(), "packages rootlesskit and slirp4netns") {
+				t.Fatalf("missing rootless package names: %v", err)
+			}
+			if result != (Result{}) || f.i.mutated || len(f.calls) != 0 || !reflect.DeepEqual(before, tree(t, f.i.root)) {
+				t.Fatal("missing prerequisites must stop before commands or host changes")
+			}
+		})
+	}
+}
+
+func TestUnreadablePrerequisiteDiagnostic(t *testing.T) {
+	f := newFixture(t)
+	lstat := f.i.lstat
+	f.i.lstat = func(path string) (os.FileInfo, error) {
+		if path == f.i.path("/usr/bin/rootlesskit") {
+			return nil, fs.ErrPermission
+		}
+		return lstat(path)
+	}
+	result, err := f.i.install(context.Background(), "/bundle")
+	if !errors.Is(err, fs.ErrPermission) || !strings.Contains(err.Error(), "inspect prerequisite /usr/bin/rootlesskit") || strings.Contains(err.Error(), "missing prerequisite") {
+		t.Fatalf("unreadable evidence misreported: %v", err)
+	}
+	if result != (Result{}) || f.i.mutated || len(f.calls) != 0 {
+		t.Fatal("unreadable prerequisites must stop before commands or host changes")
+	}
+}
+
 func TestContextValidation(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
