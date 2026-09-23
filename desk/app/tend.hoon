@@ -744,8 +744,97 @@
             revision    +(revision.u.old)
             reminders   rems
             modified-at  now.bowl
-        ==
+      ==
       (save-list op-id.act lis state)
+    ::
+        %move-reminder-to-list
+      ?:  =(source-list-id.act destination-list-id.act)
+        (reject op-id.act %same-list ~ state)
+      =/  source=(unit task-list:t)
+        (~(get by list-map.state) source-list-id.act)
+      ?~  source  (reject op-id.act %unknown-source-list ~ state)
+      =/  destination=(unit task-list:t)
+        (~(get by list-map.state) destination-list-id.act)
+      ?~  destination  (reject op-id.act %cross-host-move ~ state)
+      ?.  =(source-base-revision.act revision.u.source)
+        (reject op-id.act %stale-source-list `revision.u.source state)
+      ?.  =(destination-base-revision.act revision.u.destination)
+        (reject op-id.act %stale-destination-list `revision.u.destination state)
+      =/  root=(unit reminder:t)
+        (~(get by reminders.u.source) reminder-id.act)
+      ?~  root
+        (reject op-id.act %unknown-reminder `revision.u.source state)
+      =/  original=(list [reminder-id:t reminder:t])
+        %+  skim  ~(tap by reminders.u.source)
+        |=  [rid=reminder-id:t rem=reminder:t]
+        (descendant rid reminder-id.act reminders.u.source)
+      =/  moved-count=@ud  (lent original)
+      ?:  (gth (add moved-count (lent ~(tap by reminders.u.destination))) 100.000)
+        (reject op-id.act %reminder-limit `revision.u.destination state)
+      =/  destination-rank=@ud
+        (next-root-rank reminders.u.destination)
+      =/  [id-map=(map reminder-id:t reminder-id:t) next=@ud]
+        (allocate-moved-ids original next-id.state)
+      =/  moved=(list [reminder-id:t reminder:t])
+        %+  turn  original
+        |=  [rid=reminder-id:t rem=reminder:t]
+        =/  new-id=reminder-id:t  (~(got by id-map) rid)
+        =/  valid=(unit @p)
+          ?:  (valid-assignee destination-list-id.act assignee.rem state)
+            assignee.rem
+          ~
+        =/  new-parent=(unit reminder-id:t)
+          ?:  =(rid reminder-id.act)  ~
+          ?~(parent-id.rem ~ `(~(got by id-map) u.parent-id.rem))
+        :-  new-id
+        %_  rem
+            id          new-id
+            parent-id   new-parent
+            section-id  ~
+            rank        ?:(=(rid reminder-id.act) destination-rank rank.rem)
+            assignee    valid
+            revision    +(revision.rem)
+            modified-at  now.bowl
+        ==
+      =/  source-entries=(list [reminder-id:t reminder:t])
+        %+  skim  ~(tap by reminders.u.source)
+        |=  [rid=reminder-id:t rem=reminder:t]
+        !(descendant rid reminder-id.act reminders.u.source)
+      =/  destination-rems=reminders:t
+        =/  entries=(list [reminder-id:t reminder:t])  moved
+        =/  result=reminders:t  reminders.u.destination
+        |-
+        ?~  entries  result
+        $(entries t.entries, result (~(put by result) -.i.entries +.i.entries))
+      =/  next-source=task-list:t
+        %_  u.source
+            revision    +(revision.u.source)
+            reminders   (malt source-entries)
+            modified-at  now.bowl
+        ==
+      =/  next-destination=task-list:t
+        %_  u.destination
+            revision    +(revision.u.destination)
+            reminders   destination-rems
+            modified-at  now.bowl
+        ==
+      =/  liss=lists:t
+        %-  ~(put by (~(put by list-map.state) source-list-id.act next-source))
+        [destination-list-id.act next-destination]
+      =/  moved-snoozes=(list [snooze-key:t @da])
+        %+  turn  ~(tap by snooze-map.state)
+        |=  [key=snooze-key:t until=@da]
+        ?:  ?&  =(-.key source-list-id.act)
+                (descendant +.key reminder-id.act reminders.u.source)
+            ==
+          [[destination-list-id.act (~(got by id-map) +.key)] until]
+        [key until]
+      =/  interim=state-10:t
+        state(next-id next, list-map liss, snooze-map (malt moved-snoozes))
+      =/  snoozes=snoozes:t
+        (valid-snoozes (visible-lists interim) snooze-map.interim)
+      =/  nex=state-10:t  interim(snooze-map snoozes)
+      (commit op-id.act [%snapshot (visible-lists nex) preferences.nex snoozes] nex)
     ::
         %place-reminder
       =/  old=(unit task-list:t)  (~(get by list-map.state) list-id.act)
@@ -1184,6 +1273,7 @@
         %add-reminder             `list-id.act
         %update-reminder          `list-id.act
         %move-reminder            `list-id.act
+        %move-reminder-to-list    `source-list-id.act
         %place-reminder           `list-id.act
         %delete-reminder          `list-id.act
         %batch-delete-reminders   `list-id.act
@@ -1222,6 +1312,7 @@
         %add-reminder             act(list-id target)
         %update-reminder          act(list-id target)
         %move-reminder            act(list-id target)
+        %move-reminder-to-list    act(source-list-id target)
         %place-reminder           act(list-id target)
         %delete-reminder          act(list-id target)
         %batch-delete-reminders   act(list-id target)
@@ -1370,7 +1461,24 @@
       (reject op-id.act %not-authorized `revision.list.rep state)
     ?:  (gte (lent ~(tap by in-flight-map.state)) 1.000)
       (reject op-id.act %operation-limit `revision.list.rep state)
+    ?:  ?=(%move-reminder-to-list -.act)
+      =/  destination=(unit replica:t)
+        (~(get by replica-map.state) destination-list-id.act)
+      ?~  destination
+        (reject op-id.act %cross-host-move `revision.list.rep state)
+      ?.  =(host.ref.rep host.ref.u.destination)
+        (reject op-id.act %cross-host-move `revision.list.rep state)
+      ?.  =(%online status.u.destination)
+        (reject op-id.act %host-offline `revision.list.u.destination state)
+      =/  canonical=action:t
+        act(source-list-id id.ref.rep, destination-list-id id.ref.u.destination)
+      (queue-remote act canonical rep u.session)
     =/  canonical=action:t  (retarget-action act id.ref.rep)
+    (queue-remote act canonical rep u.session)
+  ::
+  ++  queue-remote
+    |=  [act=action:t canonical=action:t rep=replica:t session=@da]
+    ^-  (quip card _state)
     =/  flight=in-flight:t  [alias.rep now.bowl]
     =/  nex=state-10:t
       state(in-flight-map (~(put by in-flight-map.state) op-id.act flight))
@@ -1380,7 +1488,7 @@
       %-  peer-poke
       :*  /peer/mutation/(scot %ud alias.rep)/(scot %uv (sham op-id.act))
           host.ref.rep
-          [%mutation u.session (add now.bowl ~s10) canonical]
+          [%mutation session (add now.bowl ~s10) canonical]
       ==
     [[pending outbound ~] nex]
   ::
@@ -1416,6 +1524,7 @@
         %add-reminder             %.y
         %update-reminder          %.y
         %move-reminder            %.y
+        %move-reminder-to-list    %.y
         %place-reminder           %.y
         %delete-reminder          %.y
         %batch-delete-reminders   %.y
@@ -1578,6 +1687,7 @@
       `%assigned
     ::
         %move-reminder            `%reminder-moved
+        %move-reminder-to-list    `%reminder-moved
         %place-reminder           `%reminder-moved
         %delete-reminder          `%reminder-deleted
         %batch-delete-reminders   `%reminder-deleted
@@ -1608,6 +1718,7 @@
         %add-reminder             `next-id.before
         %update-reminder          `reminder-id.act
         %move-reminder            `reminder-id.act
+        %move-reminder-to-list    `reminder-id.act
         %place-reminder           `reminder-id.act
         %delete-reminder          `reminder-id.act
         %set-schedule             `reminder-id.act
@@ -1651,28 +1762,37 @@
   ++  broadcast-action
     |=  [act=action:t before=state-10:t after=state-10:t]
     ^-  (list card)
+    ?:  ?=(%move-reminder-to-list -.act)
+      %+  weld
+        (broadcast-list source-list-id.act op-id.act before after)
+      (broadcast-list destination-list-id.act op-id.act before after)
     =/  target=(unit list-id:t)  (action-list-id act)
     ?~  target  ~
-    =/  old-share=(unit share:t)  (~(get by share-map.before) u.target)
-    =/  new-share=(unit share:t)  (~(get by share-map.after) u.target)
-    =/  current=(unit task-list:t)  (~(get by list-map.after) u.target)
+    (broadcast-list u.target op-id.act before after)
+  ::
+  ++  broadcast-list
+    |=  [target=list-id:t =op-id:t before=state-10:t after=state-10:t]
+    ^-  (list card)
+    =/  old-share=(unit share:t)  (~(get by share-map.before) target)
+    =/  new-share=(unit share:t)  (~(get by share-map.after) target)
+    =/  current=(unit task-list:t)  (~(get by list-map.after) target)
     ?^  current
       ?~  new-share  ~
       =/  message=peer-message:t
-        [%list-state u.target u.current members.u.new-share (hosted-activities u.target after) host-session.after `op-id.act]
-      [%give %fact ~[/list/(scot %ud u.target)] %tend-peer-1 !>(message)]~
+        [%list-state target u.current members.u.new-share (hosted-activities target after) host-session.after `op-id]
+      [%give %fact ~[/list/(scot %ud target)] %tend-peer-1 !>(message)]~
     ?~  old-share  ~
     =/  removed=(list card)
       %+  turn  ~(tap by members.u.old-share)
       |=  [ship=@p policy=member-policy:t]
       %-  peer-poke
-      :*  /peer/remove/(scot %ud u.target)/(scot %p ship)
+      :*  /peer/remove/(scot %ud target)/(scot %p ship)
           ship
-          [%list-removed u.target]
+          [%list-removed target]
       ==
     =/  final=(list card)
-      :~  [%give %fact ~[/list/(scot %ud u.target)] %tend-peer-1 !>([%list-removed u.target])]
-          [%give %kick ~[/list/(scot %ud u.target)] ~]
+      :~  [%give %fact ~[/list/(scot %ud target)] %tend-peer-1 !>([%list-removed target])]
+          [%give %kick ~[/list/(scot %ud target)] ~]
       ==
     (weld removed final)
   ::
@@ -1805,6 +1925,8 @@
     ?~  sharing  !!
     ?.  (~(has by members.u.sharing) sender)  !!
     ?.  (allowed-peer sender act u.sharing)  !!
+    ?.  (peer-move-destination-allowed sender act state)
+      (reject-peer sender act %not-authorized `revision.u.lis)
     ?.  =(host-session.message host-session.state)
       (reject-peer sender act %host-restarted `revision.u.lis)
     ?.  (gth expires-at.message now.bowl)
@@ -1862,6 +1984,7 @@
         %add-reminder             %.y
         %update-reminder          %.y
         %move-reminder            %.y
+        %move-reminder-to-list    %.y
         %place-reminder           %.y
         %delete-reminder          %.y
         %batch-delete-reminders   %.y
@@ -1870,6 +1993,18 @@
         %set-completed            %.y
         %batch-set-completed      %.y
     ==
+  ::
+  ++  peer-move-destination-allowed
+    |=  [sender=@p act=action:t st=state-10:t]
+    ^-  ?
+    ?.  ?=(%move-reminder-to-list -.act)  %.y
+    =/  destination=(unit task-list:t)
+      (~(get by list-map.st) destination-list-id.act)
+    ?~  destination  %.n
+    =/  sharing=(unit share:t)
+      (~(get by share-map.st) destination-list-id.act)
+    ?~  sharing  %.n
+    (~(has by members.u.sharing) sender)
   ::
   ++  peer-result
     |=  [sender=@p act=action:t st=state-10:t]
@@ -1880,15 +2015,24 @@
       =/  message=peer-message:t
         [%mutation-rejected op-id.act reason.u.result current-revision.u.result]
       [(peer-poke /peer/rejected/(scot %uv (sham op-id.act)) sender message) ~]
+    ?:  ?=(%move-reminder-to-list -.act)
+      %+  weld
+        (peer-list-result sender source-list-id.act op-id.act st)
+      (peer-list-result sender destination-list-id.act op-id.act st)
     =/  target=(unit list-id:t)  (action-list-id act)
     ?~  target  ~
-    =/  lis=(unit task-list:t)  (~(get by list-map.st) u.target)
+    (peer-list-result sender u.target op-id.act st)
+  ::
+  ++  peer-list-result
+    |=  [sender=@p target=list-id:t =op-id:t st=state-10:t]
+    ^-  (list card)
+    =/  lis=(unit task-list:t)  (~(get by list-map.st) target)
     ?~  lis  ~
-    =/  sharing=(unit share:t)  (~(get by share-map.st) u.target)
+    =/  sharing=(unit share:t)  (~(get by share-map.st) target)
     ?~  sharing  ~
     =/  message=peer-message:t
-      [%list-state u.target u.lis members.u.sharing (hosted-activities u.target st) host-session.st `op-id.act]
-    [(peer-poke /peer/result/(scot %uv (sham op-id.act)) sender message) ~]
+      [%list-state target u.lis members.u.sharing (hosted-activities target st) host-session.st `op-id]
+    [(peer-poke /peer/result/(scot %uv (sham op-id)) sender message) ~]
   ::
   ++  take-list-state
     |=  [sender=@p message=peer-message:t]
@@ -2573,6 +2717,24 @@
     ?~  item  %.n
     ?~  parent-id.u.item  %.n
     $(candidate u.parent-id.u.item)
+  ::
+  ++  next-root-rank
+    |=  rems=reminders:t
+    ^-  @ud
+    =/  greatest=@ud
+      %+  roll  ~(tap by rems)
+      |=  [[rid=reminder-id:t rem=reminder:t] highest=@ud]
+      ?:  ?|(?=(^ parent-id.rem) ?=(^ section-id.rem))  highest
+      ?:((gth rank.rem highest) rank.rem highest)
+    (add greatest 1.024)
+  ::
+  ++  allocate-moved-ids
+    |=  [entries=(list [reminder-id:t reminder:t]) next=@ud]
+    ^-  [(map reminder-id:t reminder-id:t) @ud]
+    =/  result=(map reminder-id:t reminder-id:t)  *(map reminder-id:t reminder-id:t)
+    |-
+    ?~  entries  [result next]
+    $(entries t.entries, next +(next), result (~(put by result) -.i.entries next))
   ::
   ++  ordered-siblings
     |=  [rems=reminders:t parent=(unit reminder-id:t) section=(unit section-id:t)]

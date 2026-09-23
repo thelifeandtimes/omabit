@@ -794,6 +794,19 @@ Item {
         }, listId);
     }
 
+    function moveReminderToList(sourceListId, destinationListId, reminderId, sourceBaseRevision, destinationBaseRevision) {
+        return submit({
+            "move-reminder-to-list": {
+                "operation-id": operationId(),
+                "source-list-id": Number(sourceListId),
+                "destination-list-id": Number(destinationListId),
+                "reminder-id": Number(reminderId),
+                "source-base-revision": Number(sourceBaseRevision),
+                "destination-base-revision": Number(destinationBaseRevision)
+            }
+        }, sourceListId);
+    }
+
     function placeReminder(listId, reminderId, targetId, after, baseRevision) {
         return submit({
             "place-reminder": {

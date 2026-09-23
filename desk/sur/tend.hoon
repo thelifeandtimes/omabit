@@ -278,6 +278,14 @@
           rank=@ud
           base-revision=@ud
       ==
+      $:  %move-reminder-to-list
+          =op-id
+          source-list-id=list-id
+          destination-list-id=list-id
+          =reminder-id
+          source-base-revision=@ud
+          destination-base-revision=@ud
+      ==
       $:  %place-reminder
           =op-id
           =list-id

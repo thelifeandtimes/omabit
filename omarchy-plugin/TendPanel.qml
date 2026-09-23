@@ -114,6 +114,25 @@ Item {
         var access = listAccess(listId);
         return service && service.connectionState === "online" && access && (access.owner || access.status === "online");
     }
+
+    function sameShip(left, right) {
+        return root.normalizedShip(left).replace(/^~/, "") === root.normalizedShip(right).replace(/^~/, "");
+    }
+
+    function movableListChoicesForList(list) {
+        if (!service || !list)
+            return [];
+        var sourceAccess = service.accessForList(list.id);
+        if (!sourceAccess)
+            return [];
+        var sourceHost = sourceAccess.host || service.ship;
+        return service.lists.filter(function(candidate) {
+            var access = service.accessForList(candidate.id);
+            return service.canEditList(candidate.id) && access && root.sameShip(access.host || service.ship, sourceHost);
+        }).map(function(candidate) {
+            return { id: candidate.id, title: candidate.title };
+        });
+    }
     readonly property var availableViews: ["today", "scheduled", "all", "flagged", "assigned", "completed"]
     readonly property var orderedViews: TendModel.orderedValues(availableViews, service ? service.preferences.pinnedViews : [])
     readonly property var availableTags: TendModel.allTags(service ? service.lists : [])
@@ -220,6 +239,7 @@ Item {
     }
     readonly property var assigneeChoices: assigneeChoicesForList(selectedList)
     readonly property var addAssigneeChoices: assigneeChoicesForList(addDestination)
+    readonly property var movableListChoices: movableListChoicesForList(selectedList)
     readonly property var addAssigneeOptions: addAssigneeChoices.map(function(choice) {
         return { value: choice.ship, label: choice.label, role: choice.role };
     })
@@ -2769,10 +2789,24 @@ Item {
                                 list: root.selectedList
                                 reminder: root.selectedReminder
                                 assigneeChoices: root.assigneeChoices
+                                listChoices: root.movableListChoices
                                 availableTags: root.availableTags
                                 editable: root.selectedListEditable
                                 timezone: root.localTimezone()
                                 onCloseRequested: root.selectedReminderId = 0
+                                onMoveRequested: function(destinationListId) {
+                                    if (!root.selectedList || !root.selectedReminder || !service)
+                                        return;
+                                    var destination = null;
+                                    for (var i = 0; i < service.lists.length; i++)
+                                        if (Number(service.lists[i].id) === Number(destinationListId)) destination = service.lists[i];
+                                    if (!destination || Number(destination.id) === Number(root.selectedList.id))
+                                        return;
+                                    if (service.moveReminderToList(root.selectedList.id, destination.id, root.selectedReminder.id, root.selectedList.revision, destination.revision)) {
+                                        root.selectedListId = destination.id;
+                                        root.selectedReminderId = 0;
+                                    }
+                                }
                             }
 
                             TendSettings {

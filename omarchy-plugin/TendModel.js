@@ -603,6 +603,99 @@ function reminderHasChildren(items, reminderId) {
   return (items || []).some(function(item) { return Number(item.parentId) === wanted })
 }
 
+function sectionedRows(reminders, list, groupSections) {
+  const items = reminders || []
+  const reminderRow = function(reminder) { return { kind: "reminder", reminder: reminder } }
+  if (!groupSections || !list || !(list.sections || []).length) return items.map(reminderRow)
+
+  const sections = (list.sections || []).slice().sort(function(left, right) {
+    return Number(left.rank || 0) - Number(right.rank || 0) || Number(left.id) - Number(right.id)
+  })
+  const rows = items.filter(function(reminder) {
+    return reminder.sectionId === null || reminder.sectionId === undefined
+  }).map(reminderRow)
+
+  sections.forEach(function(section) {
+    const sectionReminders = items.filter(function(reminder) {
+      return Number(reminder.sectionId) === Number(section.id)
+    })
+    rows.push({ kind: "section", section: section, count: sectionReminders.length })
+    sectionReminders.forEach(function(reminder) { rows.push(reminderRow(reminder)) })
+  })
+  return rows
+}
+
+function menubarRows(lists, filteredReminders) {
+  const visible = filteredReminders || []
+  const visibleByKey = new Map()
+  const visibleIndex = new Map()
+  const fullByKey = new Map()
+  const childrenByKey = new Map()
+  const keyFor = function(listId, reminderId) { return Number(listId) + ":" + Number(reminderId) }
+
+  visible.forEach(function(reminder, index) {
+    const key = keyFor(reminder.listId, reminder.id)
+    visibleByKey.set(key, reminder)
+    visibleIndex.set(key, index)
+  })
+  ;(lists || []).forEach(function(list) {
+    ;(list.reminders || []).forEach(function(reminder) {
+      const reminderKey = keyFor(list.id, reminder.id)
+      const parentKey = reminder.parentId === null || reminder.parentId === undefined
+        ? keyFor(list.id, 0)
+        : keyFor(list.id, reminder.parentId)
+      fullByKey.set(reminderKey, reminder)
+      if (!childrenByKey.has(parentKey)) childrenByKey.set(parentKey, [])
+      childrenByKey.get(parentKey).push(reminder)
+    })
+  })
+
+  const rows = []
+  const visited = new Set()
+  function visit(reminder, depth, parentVisible) {
+    const key = keyFor(reminder.listId, reminder.id)
+    if (visited.has(key)) return
+    visited.add(key)
+    const parentId = reminder.parentId === null || reminder.parentId === undefined ? null : Number(reminder.parentId)
+    const parentKey = parentId === null ? "" : keyFor(reminder.listId, parentId)
+    rows.push({
+      kind: "reminder",
+      reminder: reminder,
+      depth: depth,
+      parentVisible: parentVisible === true,
+      orphanParentId: parentId !== null && !visibleByKey.has(parentKey) && fullByKey.has(parentKey) ? parentId : null
+    })
+
+    const children = (childrenByKey.get(key) || []).slice().sort(function(left, right) {
+      const leftKey = keyFor(reminder.listId, left.id)
+      const rightKey = keyFor(reminder.listId, right.id)
+      return (visibleIndex.get(leftKey) ?? Number.MAX_SAFE_INTEGER) - (visibleIndex.get(rightKey) ?? Number.MAX_SAFE_INTEGER)
+        || Number(left.rank || 0) - Number(right.rank || 0)
+        || Number(left.id) - Number(right.id)
+    })
+    const visibleChildren = children.filter(function(child) { return visibleByKey.has(keyFor(reminder.listId, child.id)) })
+    visibleChildren.forEach(function(child) {
+      visit(visibleByKey.get(keyFor(reminder.listId, child.id)), depth + 1, true)
+    })
+    const filteredCount = children.length - visibleChildren.length
+    if (filteredCount > 0) rows.push({
+      kind: "summary",
+      listId: Number(reminder.listId),
+      parentReminderId: Number(reminder.id),
+      depth: depth + 1,
+      count: filteredCount
+    })
+  }
+
+  visible.forEach(function(reminder) {
+    const parentId = reminder.parentId === null || reminder.parentId === undefined ? null : Number(reminder.parentId)
+    const parentVisible = parentId !== null && visibleByKey.has(keyFor(reminder.listId, parentId))
+    if (!parentVisible) visit(reminder, 0, false)
+  })
+  visible.forEach(function(reminder) { visit(reminder, 0, false) })
+  return rows
+}
+
 function sameOptionalId(left, right) {
   const a = left === null || left === undefined ? null : Number(left)
   const b = right === null || right === undefined ? null : Number(right)
@@ -634,5 +727,5 @@ function safeExternalUrl(value) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, cloneActivity: cloneActivity, cloneActivities: cloneActivities, reduceActivities: reduceActivities, activitiesForList: activitiesForList, cloneLocalSettings: cloneLocalSettings, reduceLocalSettings: reduceLocalSettings, presentationForList: presentationForList, collaborationPolicyForList: collaborationPolicyForList, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, scheduleInputValue: scheduleInputValue, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren, manualDropPlacement: manualDropPlacement, safeExternalUrl: safeExternalUrl }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, cloneActivity: cloneActivity, cloneActivities: cloneActivities, reduceActivities: reduceActivities, activitiesForList: activitiesForList, cloneLocalSettings: cloneLocalSettings, reduceLocalSettings: reduceLocalSettings, presentationForList: presentationForList, collaborationPolicyForList: collaborationPolicyForList, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, scheduleInputValue: scheduleInputValue, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren, sectionedRows: sectionedRows, menubarRows: menubarRows, manualDropPlacement: manualDropPlacement, safeExternalUrl: safeExternalUrl }
 }

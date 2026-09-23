@@ -33,6 +33,7 @@ returns its recorded result without applying it twice.
 | `place-section` | Place a section before/after another and atomically normalize sparse ranks |
 | `add-reminder`, `update-reminder` | Create a reminder with initial tags or replace its editable metadata |
 | `move-reminder` | Change parent, section, and stable rank after validating references and cycles |
+| `move-reminder-to-list` | Atomically move a reminder subtree between two lists hosted by the same ship |
 | `place-reminder` | Place a reminder before/after a sibling and atomically normalize that sibling group's sparse ranks |
 | `batch-set-completed` | Complete/uncomplete up to 500 selected reminders atomically, cascading through subtasks and advancing selected recurrence rules |
 | `batch-move-reminders` | Move up to 500 selected reminder trees to a section in one list revision |
@@ -70,6 +71,15 @@ group to ranks 1024, 2048, … in the same list revision; it does not trust a
 client-computed midpoint. Explicit parent or section moves use
 `move-reminder`, and changing a parent's section updates all descendants in
 the same atomic revision.
+
+Cross-list moves use `move-reminder-to-list`. Gall validates both list
+revisions, allocates fresh destination reminder IDs for the complete subtree,
+detaches the root from its former parent, clears section membership, preserves
+descendant relationships, schedules, and personal snoozes, and drops any
+assignee that is not valid on the destination list. The source and destination must be hosted by
+the same ship; clients must not approximate a cross-host move with a
+copy/delete sequence. Both affected shared-list subscriptions receive fresh
+canonical list state after the move.
 
 An assignee is valid only when it is the list owner, appears in that list's
 current member map, or has a pending recipient-bound invitation. This lets an

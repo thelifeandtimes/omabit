@@ -11,12 +11,14 @@ BorderSurface {
   property var list: null
   property var reminder: null
   property var assigneeChoices: []
+  property var listChoices: []
   property var availableTags: []
   property bool editable: false
   property string timezone: "UTC"
   property bool loadingFields: false
   property bool pendingTextSave: false
   signal closeRequested()
+  signal moveRequested(int destinationListId)
 
   readonly property var assigneeOptions: (assigneeChoices || []).map(function(choice) {
     return {
@@ -55,10 +57,17 @@ BorderSurface {
     flaggedField.flagged = reminder.flagged === true
     tagPicker.values = (reminder.tags || []).slice()
     assigneeField.value = normalizedShip(reminder.assignee)
+    listField.currentIndex = indexForList(list ? list.id : 0)
     duePicker.value = TendModel.scheduleInputValue(reminder.schedule)
     duePicker.allDay = reminder.schedule ? reminder.schedule.allDay === true : false
     allDayField.checked = duePicker.allDay
     loadingFields = false
+  }
+
+  function indexForList(listId) {
+    for (var i = 0; i < (listChoices || []).length; i++)
+      if (Number(listChoices[i].id) === Number(listId)) return i
+    return (listChoices || []).length ? 0 : -1
   }
 
   function canSave() {
@@ -201,6 +210,20 @@ BorderSurface {
       TendDropdown { id: priorityField; width: parent.width; label: "Priority"; model: ["none", "low", "medium", "high"]; onActivated: root.saveDetailsNow() }
 
       TendAssigneePicker { id: assigneeField; width: parent.width; options: root.assigneeOptions; placeholderText: "Assignee"; Accessible.name: "Reminder assignee ship"; onChanged: root.saveDetailsNow() }
+
+      TendDropdown {
+        id: listField
+        width: parent.width
+        label: "List"
+        model: root.listChoices || []
+        textRole: "title"
+        valueRole: "id"
+        enabled: root.editable && count > 1 && root.service && !root.service.mutationPending
+        onActivated: {
+          var destinationId = Number(currentValue)
+          if (root.list && destinationId !== Number(root.list.id)) root.moveRequested(destinationId)
+        }
+      }
 
       MultiSelect {
         id: tagPicker

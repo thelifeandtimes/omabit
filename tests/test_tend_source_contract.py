@@ -56,6 +56,17 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("(descendant id.item reminder-id.act reminders.u.old)", self.agent)
         self.assertIn("item(section-id section-id.act, revision +(revision.item), modified-at now.bowl)", self.agent)
 
+    def test_cross_list_move_is_a_single_host_owned_gall_primitive(self):
+        self.assertIn("%move-reminder-to-list", self.surface)
+        self.assertIn("%move-reminder-to-list", self.json)
+        self.assertIn("source-base-revision=@ud", self.surface)
+        self.assertIn("destination-base-revision=@ud", self.surface)
+        self.assertIn("(reject op-id.act %cross-host-move", self.agent)
+        self.assertIn("(broadcast-list source-list-id.act", self.agent)
+        self.assertIn("(broadcast-list destination-list-id.act", self.agent)
+        self.assertIn("(peer-list-result sender source-list-id.act", self.agent)
+        self.assertIn("(peer-list-result sender destination-list-id.act", self.agent)
+
     def test_batch_completion_records_each_scheduled_occurrence(self):
         self.assertIn("%batch-set-completed -.act", self.agent)
         self.assertIn("(scot %uv (sham [op-id.act id]))", self.agent)

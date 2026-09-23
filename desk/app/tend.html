@@ -131,6 +131,8 @@
       transition: opacity 5s ease, transform .18s ease, border-color .15s ease;
     }
     .task:hover, .task.selected { border-color: var(--line); background: var(--surface-solid); }
+    .task.selectable { grid-template-columns: minmax(0,1fr) auto; cursor: pointer; padding-left: 14px; }
+    .task.batch-selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 3px 0 var(--accent); }
     .task.completing { opacity: .28; }
     .task-title { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 700; }
     .task.done .task-title { color: var(--muted); text-decoration: line-through; }
@@ -142,6 +144,8 @@
     .flag-control .flag { width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); font-size: 18px; }
     .flag-control .flag:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
     .selection-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-bottom: 14px; padding: 10px; border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line)); border-radius: 11px; background: var(--accent-soft); }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 34px; margin-top: 10px; padding: 4px 8px; border-bottom: 1px solid var(--line); color: var(--muted); }
+    .section-heading:first-child { margin-top: 0; }
     .mini { width: 28px; height: 28px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); }
     .mini:hover { color: var(--text); background: var(--accent-soft); }
     .check { width: 18px; height: 18px; accent-color: var(--accent); }
@@ -267,6 +271,15 @@
       function canEdit(listId) {
         const access = accessFor(listId);
         return state.online && !!access && (access.owner === true || access.status === "online");
+      }
+      function movableListsFrom(sourceListId) {
+        const sourceAccess = accessFor(sourceListId);
+        if (!sourceAccess) return [];
+        const sourceHost = normalizeShip(sourceAccess.host || state.ship);
+        return state.lists.filter(item => {
+          const access = accessFor(item.id);
+          return canEdit(item.id) && !!access && sameShip(access.host || state.ship, sourceHost);
+        });
       }
       function showNotice(message, kind = "success") {
         const node = $("notice");
@@ -483,19 +496,30 @@
         const selectedIds = [...state.selectedReminderIds].filter(id => list && (list.reminders || []).some(reminder => Number(reminder.id) === Number(id)));
         const sectionOptions = [{value:"",label:"No section"}, ...((list && list.sections) || []).map(section => ({value:section.id,label:section.title}))];
         $("main").innerHTML = `
-          <div class="view-head"><div class="view-title"><h2>${escapeHtml(title)}</h2>${list ? `<div class="status-line"><span class="dot ${hostWritable ? "online" : ""}"></span><span>${escapeHtml(normalizeShip(access && access.host ? access.host : state.ship))}${owner ? " · owner" : ""}</span></div>` : ""}</div><div class="row" style="gap:7px">${list ? `<button class="button" data-toggle-selection type="button">${state.selectionMode ? "Done selecting" : "Select"}</button><button class="button" data-open-list-settings type="button">List settings</button>` : ""}</div></div>
+          <div class="view-head"><div class="view-title"><h2>${escapeHtml(title)}</h2>${list ? `<div class="status-line"><span class="dot ${hostWritable ? "online" : ""}"></span><span>${escapeHtml(normalizeShip(access && access.host ? access.host : state.ship))}${owner ? " · owner" : ""}</span></div>` : ""}</div>${list ? `<button class="icon-button" data-open-list-settings type="button" aria-label="Edit list" title="Edit list">✎</button>` : ""}</div>
           ${!hostWritable && list && !owner ? `<div class="form-section" style="color:var(--danger)">Editing is unavailable while ${escapeHtml(access ? access.host : "the list owner")} is offline.</div>` : ""}
           <div class="filters"><input class="field" id="search" value="${escapeHtml(state.search)}" placeholder="Search reminders"><select class="select" id="tag-filter"><option value="">All tags</option>${allTags().map(tag => `<option ${tag === state.tag ? "selected" : ""}>${escapeHtml(tag)}</option>`).join("")}</select><select class="select" id="sort"><option value="manual" ${state.sort === "manual" ? "selected" : ""}>Manual</option><option value="due" ${state.sort === "due" ? "selected" : ""}>Due date</option><option value="priority" ${state.sort === "priority" ? "selected" : ""}>Priority</option><option value="title" ${state.sort === "title" ? "selected" : ""}>Title</option></select><button class="button sort-direction" id="sort-direction" type="button" aria-label="Sort ${state.descending ? "ascending" : "descending"}"><span aria-hidden="true">${state.descending ? "↓" : "↑"}</span>${state.descending ? "Descending" : "Ascending"}</button></div>
-          <section class="composer"><div class="composer-head"><span class="eyebrow">Add new reminder</span><select class="select" id="quick-list" style="width:min(240px,44%)">${optionHtml(listOptions, destination && destination.id)}</select></div><form class="composer-row" id="new-reminder-form"><input class="field" id="new-reminder-title" placeholder="Describe a new reminder" required ${editable ? "" : "disabled"}><select class="select" id="new-reminder-assignee" ${editable ? "" : "disabled"}>${optionHtml(dueList, state.ship)}</select><input class="field" id="new-reminder-due" type="datetime-local" ${editable ? "" : "disabled"}><button class="button primary" type="submit" aria-label="Add reminder" ${editable ? "" : "disabled"}>+</button></form></section>
-          ${state.view === "list" && list ? `<form class="section-adder" id="new-section-form"><input class="field" id="new-section-title" placeholder="Section title" ${hostWritable ? "" : "disabled"}><button class="button tertiary" type="submit" ${hostWritable ? "" : "disabled"}>+ Add section</button></form>` : ""}
+          <section class="composer"><div class="composer-head"><span class="eyebrow">Add new reminder</span>${state.view === "list" ? "" : `<select class="select" id="quick-list" style="width:min(240px,44%)">${optionHtml(listOptions, destination && destination.id)}</select>`}</div><form class="composer-row" id="new-reminder-form"><input class="field" id="new-reminder-title" placeholder="Describe a new reminder" required ${editable ? "" : "disabled"}><select class="select" id="new-reminder-assignee" ${editable ? "" : "disabled"}>${optionHtml(dueList, state.ship)}</select><input class="field" id="new-reminder-due" type="datetime-local" ${editable ? "" : "disabled"}><button class="button primary" type="submit" aria-label="Add reminder" ${editable ? "" : "disabled"}>+</button></form></section>
+          ${state.view === "list" && list ? `<form class="section-adder" id="new-section-form"><input class="field" id="new-section-title" placeholder="Section title" ${hostWritable ? "" : "disabled"}><button class="button tertiary" type="submit" ${hostWritable ? "" : "disabled"}>+ Add section</button><span style="flex:1"></span><button class="button" data-toggle-selection type="button">${state.selectionMode ? "Done selecting" : "Select"}</button></form>` : ""}
           ${state.selectionMode && state.view === "list" && list ? `<div class="selection-bar"><strong class="tiny">SELECT MODE · ${selectedIds.length} selected</strong><select class="select" id="selection-section" style="width:170px">${optionHtml(sectionOptions, "")}</select><button class="button" data-selection-action="section" ${selectedIds.length ? "" : "disabled"}>Move to section</button><button class="button" data-selection-action="up" ${selectedIds.length === 1 ? "" : "disabled"}>↑</button><button class="button" data-selection-action="down" ${selectedIds.length === 1 ? "" : "disabled"}>↓</button><button class="button" data-selection-action="indent" ${selectedIds.length === 1 ? "" : "disabled"}>Indent</button><button class="button" data-selection-action="outdent" ${selectedIds.length === 1 ? "" : "disabled"}>Outdent</button><button class="button" data-selection-action="complete" ${selectedIds.length ? "" : "disabled"}>Complete</button><button class="button" data-selection-action="open" ${selectedIds.length ? "" : "disabled"}>Reopen</button><button class="button danger" data-selection-action="delete" ${selectedIds.length ? "" : "disabled"}>Delete</button></div>` : ""}
-          <section class="task-list">${reminders.map(reminder => renderReminder(reminder)).join("") || `<div class="empty">No reminders here.</div>`}</section>`;
+          <section class="task-list">${renderReminderRows(reminders, list) || `<div class="empty">No reminders here.</div>`}</section>`;
         if (focusId) requestAnimationFrame(() => {
           const field = $(focusId);
           if (!field) return;
           field.focus({preventScroll:true});
           if (focusStart !== null && typeof field.setSelectionRange === "function") field.setSelectionRange(focusStart, focusEnd);
         });
+      }
+      function renderReminderRows(reminders, list) {
+        if (state.view !== "list" || !list || !(list.sections || []).length) return reminders.map(renderReminder).join("");
+        const unsectioned = reminders.filter(reminder => (reminder["section-id"] ?? reminder.sectionId ?? null) === null);
+        const sections = (list.sections || []).slice().sort((a,b) => Number(a.rank || 0) - Number(b.rank || 0) || Number(a.id) - Number(b.id));
+        let html = unsectioned.map(renderReminder).join("");
+        for (const section of sections) {
+          const sectionReminders = reminders.filter(reminder => Number(reminder["section-id"] ?? reminder.sectionId) === Number(section.id));
+          html += `<div class="section-heading"><strong>${escapeHtml(section.title)}</strong><span class="tiny">${sectionReminders.length}</span></div>${sectionReminders.map(renderReminder).join("")}`;
+        }
+        return html;
       }
       function renderReminder(reminder) {
         const editable = canEdit(reminder.listId) && !state.busy;
@@ -506,7 +530,8 @@
         const selected = state.selectedReminderIds.has(Number(reminder.id));
         const list = state.lists.find(item => Number(item.id) === Number(reminder.listId));
         const depth = reminderDepth(list, reminder);
-        return `<article class="task ${reminder.completed ? "done" : ""} ${completing ? "completing" : ""} ${Number(state.selectedReminderId) === Number(reminder.id) && Number(state.selectedListId) === Number(reminder.listId) ? "selected" : ""}" style="margin-left:${depth * 24}px;width:calc(100% - ${depth * 24}px)" data-reminder-id="${Number(reminder.id)}" data-reminder-list="${Number(reminder.listId)}">${state.selectionMode && state.view === "list" ? `<input class="check" type="checkbox" data-select-reminder="${Number(reminder.id)}" ${selected ? "checked" : ""} aria-label="Select ${escapeHtml(reminder.title)}">` : `<input class="check" type="checkbox" data-complete="${Number(reminder.id)}" data-complete-list="${Number(reminder.listId)}" ${reminder.completed || grace ? "checked" : ""} ${editable ? "" : "disabled"} aria-label="Mark ${escapeHtml(reminder.title)} complete">`}<div class="task-copy"><div class="task-title">${escapeHtml(reminder.title)}</div><div class="task-meta">${state.view !== "list" ? `<span>${escapeHtml(reminder.listTitle)}</span>` : ""}${reminder.assignee ? `<span>${escapeHtml(sameShip(reminder.assignee,state.ship) ? "me" : reminder.assignee)}</span>` : ""}${due ? `<span>${escapeHtml(due)}</span>` : ""}${(reminder.tags || []).map(tag => `<span>#${escapeHtml(tag)}</span>`).join("")}</div></div><div class="task-actions"><button class="mini flag ${reminder.flagged ? "active" : ""}" data-toggle-flag="${Number(reminder.id)}" data-flag-list="${Number(reminder.listId)}" aria-label="${reminder.flagged ? "Remove flag" : "Flag reminder"}" title="${reminder.flagged ? "Remove flag" : "Flag reminder"}">⚑</button><button class="mini" data-open-detail aria-label="Open details" title="Open details">›</button></div></article>`;
+        const selecting = state.selectionMode && state.view === "list";
+        return `<article class="task ${selecting ? "selectable" : ""} ${selected ? "batch-selected" : ""} ${reminder.completed ? "done" : ""} ${completing ? "completing" : ""} ${Number(state.selectedReminderId) === Number(reminder.id) && Number(state.selectedListId) === Number(reminder.listId) ? "selected" : ""}" style="margin-left:${depth * 24}px;width:calc(100% - ${depth * 24}px)" data-reminder-id="${Number(reminder.id)}" data-reminder-list="${Number(reminder.listId)}" aria-selected="${selecting ? selected : "false"}">${selecting ? "" : `<input class="check" type="checkbox" data-complete="${Number(reminder.id)}" data-complete-list="${Number(reminder.listId)}" ${reminder.completed || grace ? "checked" : ""} ${editable ? "" : "disabled"} aria-label="Mark ${escapeHtml(reminder.title)} complete">`}<div class="task-copy"><div class="task-title">${escapeHtml(reminder.title)}</div><div class="task-meta">${state.view !== "list" ? `<span>${escapeHtml(reminder.listTitle)}</span>` : ""}${reminder.assignee ? `<span>${escapeHtml(sameShip(reminder.assignee,state.ship) ? "me" : reminder.assignee)}</span>` : ""}${due ? `<span>${escapeHtml(due)}</span>` : ""}${(reminder.tags || []).map(tag => `<span>#${escapeHtml(tag)}</span>`).join("")}</div></div>${selecting ? "" : `<div class="task-actions"><button class="mini flag ${reminder.flagged ? "active" : ""}" data-toggle-flag="${Number(reminder.id)}" data-flag-list="${Number(reminder.listId)}" aria-label="${reminder.flagged ? "Remove flag" : "Flag reminder"}" title="${reminder.flagged ? "Remove flag" : "Flag reminder"}">⚑</button><button class="mini" data-open-detail aria-label="Open details" title="Open details">›</button></div>`}</article>`;
       }
       function draftFor(reminder) {
         if (state.detailDraft && Number(state.detailDraft.id) === Number(reminder.id)) return state.detailDraft;
@@ -515,17 +540,29 @@
       }
       function renderDetail() {
         const tray = $("detail-tray");
+        const active = document.activeElement;
+        const activeInTray = active && active.closest && active.closest("#detail-tray");
+        const focusField = activeInTray ? String(active.dataset.field || active.id || "") : "";
+        const focusStart = activeInTray && typeof active.selectionStart === "number" ? active.selectionStart : null;
+        const focusEnd = activeInTray && typeof active.selectionEnd === "number" ? active.selectionEnd : null;
         const list = selectedList(); const reminder = selectedReminder();
         tray.classList.toggle("open", !!reminder);
         if (!list || !reminder) { tray.innerHTML = ""; return; }
         const draft = draftFor(reminder); const editable = canEdit(list.id) && !state.busy;
+        const movableLists = movableListsFrom(list.id).map(item => ({value:item.id,label:item.title}));
         tray.innerHTML = `<div class="tray-head"><div><div class="eyebrow">Reminder details</div><div class="muted tiny">${escapeHtml(list.title)}</div></div><button class="icon-button" data-close-detail aria-label="Close details">×</button></div>
           <div class="form-section"><label class="check-row"><input class="check detail-immediate" data-field="completed" type="checkbox" ${draft.completed ? "checked" : ""} ${editable ? "" : "disabled"}> Completed</label><div class="flag-control"><button class="flag ${draft.flagged ? "active" : ""}" type="button" data-detail-flag ${editable ? "" : "disabled"} aria-pressed="${draft.flagged}" aria-label="${draft.flagged ? "Remove flag" : "Flag reminder"}">⚑</button><span>${draft.flagged ? "Flagged" : "Not flagged"}</span></div></div>
           <div class="form-section"><label class="label">Title<input class="field detail-text" data-field="title" value="${escapeHtml(draft.title)}" ${editable ? "" : "disabled"}></label><label class="label">Notes<textarea class="textarea detail-text" data-field="notes" ${editable ? "" : "disabled"}>${escapeHtml(draft.notes)}</textarea></label><label class="label">Link<input class="field detail-text" data-field="url" value="${escapeHtml(draft.url)}" placeholder="https://" ${editable ? "" : "disabled"}></label></div>
-          <div class="form-section"><div class="two-col"><label class="label">Priority<select class="select detail-immediate" data-field="priority" ${editable ? "" : "disabled"}>${["none","low","medium","high"].map(value => `<option ${draft.priority === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label class="label">Assignee<select class="select detail-immediate" data-field="assignee" ${editable ? "" : "disabled"}>${optionHtml(assigneeOptions(list), draft.assignee)}</select></label></div></div>
+          <div class="form-section"><div class="two-col"><label class="label">Priority<select class="select detail-immediate" data-field="priority" ${editable ? "" : "disabled"}>${["none","low","medium","high"].map(value => `<option ${draft.priority === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label class="label">Assignee<select class="select detail-immediate" data-field="assignee" ${editable ? "" : "disabled"}>${optionHtml(assigneeOptions(list), draft.assignee)}</select></label></div><label class="label">List<select class="select" data-move-list ${editable && movableLists.length > 1 ? "" : "disabled"}>${optionHtml(movableLists, list.id)}</select></label></div>
           <div class="form-section"><label class="label">Tags<div class="tag-box" id="tag-box">${draft.tags.map(tag => `<span class="chip">#${escapeHtml(tag)}<button data-remove-tag="${escapeHtml(tag)}" aria-label="Remove ${escapeHtml(tag)}">×</button></span>`).join("")}<input id="tag-input" list="tag-suggestions" placeholder="Find or add a tag" ${editable ? "" : "disabled"}></div></label><datalist id="tag-suggestions">${allTags().filter(tag => !draft.tags.includes(tag)).map(tag => `<option value="${escapeHtml(tag)}">`).join("")}</datalist></div>
           <div class="form-section"><span class="eyebrow">Schedule</span><input class="field detail-immediate" data-field="due" type="datetime-local" value="${escapeHtml(draft.due)}" ${editable ? "" : "disabled"}><label class="check-row"><input class="check detail-immediate" data-field="allDay" type="checkbox" ${draft.allDay ? "checked" : ""} ${editable ? "" : "disabled"}> All day</label></div>
           <div class="divider"></div><button class="button danger" data-delete-reminder ${editable ? "" : "disabled"}>Delete reminder</button>`;
+        if (focusField) requestAnimationFrame(() => {
+          const field = focusField === "tag-input" ? tray.querySelector("#tag-input") : tray.querySelector(`[data-field="${focusField}"]`);
+          if (!field || field.disabled) return;
+          field.focus({preventScroll:true});
+          if (focusStart !== null && typeof field.setSelectionRange === "function") field.setSelectionRange(focusStart, focusEnd);
+        });
       }
       function renderSettings() {
         const tray = $("settings-tray"); const list = selectedList(); const access = list && accessFor(list.id);
@@ -582,6 +619,24 @@
           await poke({"set-schedule":{"operation-id":opId(),"list-id":Number(refreshedList.id),"reminder-id":Number(refreshedReminder.id),schedule:draft.due ? {"due-at":draft.due,"all-day":draft.allDay,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,"_all-day-alert-minute":Number(state.preferences["all-day-alert-minute"] || 0),"early-seconds":[],recurrence:null} : null,"base-revision":Number(refreshedList.revision)}},{quiet:true});
         }
         showNotice("Details saved");
+      }
+      async function moveReminderToList(destinationListId) {
+        clearTimeout(state.saveTimer);
+        await saveDetail();
+        const sourceList = selectedList(); const reminder = selectedReminder();
+        const destinationId = Number(destinationListId);
+        const destination = state.lists.find(item => Number(item.id) === destinationId);
+        if (!sourceList || !reminder || !destination || Number(sourceList.id) === destinationId) return true;
+        const eligible = movableListsFrom(sourceList.id).some(item => Number(item.id) === destinationId);
+        if (!eligible) { showNotice("Reminders can only move between editable lists on the same host.", "error"); return false; }
+        const moved = await poke({"move-reminder-to-list":{"operation-id":opId(),"source-list-id":Number(sourceList.id),"destination-list-id":destinationId,"reminder-id":Number(reminder.id),"source-base-revision":Number(sourceList.revision),"destination-base-revision":Number(destination.revision)}},{quiet:true});
+        if (!moved) return false;
+        state.selectedListId = destinationId;
+        state.view = "list";
+        state.detailDraft = null;
+        render();
+        showNotice("Reminder and subitems moved");
+        return true;
       }
       async function setReminderFlagged(listId, reminderId, flagged) {
         const list = state.lists.find(item => Number(item.id) === Number(listId));
@@ -716,6 +771,7 @@
         if (event.target.id === "tag-filter") { state.tag = event.target.value; renderMain(); return; }
         if (event.target.id === "sort") { state.sort = event.target.value; renderMain(); return; }
         if (event.target.id === "quick-list") { state.selectedListId = Number(event.target.value); if (state.view === "list") render(); else renderMain(); return; }
+        if (event.target.matches("[data-move-list]")) { const destinationId = Number(event.target.value); await moveReminderToList(destinationId); return; }
         const selected = event.target.closest("[data-select-reminder]");
         if (selected) { const id = Number(selected.dataset.selectReminder); selected.checked ? state.selectedReminderIds.add(id) : state.selectedReminderIds.delete(id); renderMain(); return; }
         const sectionTitle = event.target.closest("[data-section-title]");
@@ -745,7 +801,7 @@
         event.preventDefault(); const form = event.target;
         if (form.id === "new-list-form") { const title = $("new-list-title").value.trim(); if (title) await poke({"create-list":{"operation-id":opId(),title}}); return; }
         if (form.id === "new-reminder-form") {
-          const listId = Number($("quick-list").value); const list = state.lists.find(item => Number(item.id) === listId); const title = $("new-reminder-title").value.trim(); if (!list || !title) return;
+          const quickList = $("quick-list"); const listId = state.view === "list" ? Number(state.selectedListId) : Number(quickList && quickList.value); const list = state.lists.find(item => Number(item.id) === listId); const title = $("new-reminder-title").value.trim(); if (!list || !title) return;
           const assignee = normalizeShip($("new-reminder-assignee").value); const due = $("new-reminder-due").value;
           const added = await poke({"add-reminder":{"operation-id":opId(),"list-id":listId,title,tags:[],"base-revision":Number(list.revision)}},{quiet:true});
           if (!added) return;

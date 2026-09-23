@@ -355,6 +355,50 @@ test("subtasks render as a guarded hierarchy and collapse with their descendants
   assert.deepEqual(model.visibleReminders(malformedCycle, []).map((item) => item.id), [8, 9])
 })
 
+test("list rows expose empty sections and preserve reminders beneath their section headers", () => {
+  const list = {
+    sections: [
+      { id: 8, title: "Later", rank: 20 },
+      { id: 7, title: "Now", rank: 10 }
+    ]
+  }
+  const reminders = [
+    { id: 1, title: "Loose", sectionId: null },
+    { id: 2, title: "In now", sectionId: 7 }
+  ]
+  const rows = model.sectionedRows(reminders, list, true)
+  assert.deepEqual(rows.map((row) => row.kind === "section" ? `section:${row.section.id}:${row.count}` : `reminder:${row.reminder.id}`), [
+    "reminder:1",
+    "section:7:1",
+    "reminder:2",
+    "section:8:0"
+  ])
+})
+
+test("menubar rows keep visible children with parents and summarize filtered subitems", () => {
+  const lists = [{
+    id: 4,
+    reminders: [
+      { id: 1, title: "Parent", parentId: null, rank: 1 },
+      { id: 2, title: "Visible child", parentId: 1, rank: 2 },
+      { id: 3, title: "Filtered child", parentId: 1, rank: 3 },
+      { id: 4, title: "Orphaned by filter", parentId: 3, rank: 4 }
+    ]
+  }]
+  const visible = [
+    { id: 1, listId: 4, title: "Parent", parentId: null, rank: 1 },
+    { id: 2, listId: 4, title: "Visible child", parentId: 1, rank: 2 },
+    { id: 4, listId: 4, title: "Orphaned by filter", parentId: 3, rank: 4 }
+  ]
+  const rows = model.menubarRows(lists, visible)
+  assert.deepEqual(rows.map((row) => row.kind === "summary" ? `summary:${row.parentReminderId}:${row.count}` : `reminder:${row.reminder.id}:${row.depth}:${row.orphanParentId || 0}`), [
+    "reminder:1:0:0",
+    "reminder:2:1:0",
+    "summary:1:1",
+    "reminder:4:0:3"
+  ])
+})
+
 test("assigned view, assignee search, and next reminder use normalized ships and due order", () => {
   const lists = [{
     id: 1,
