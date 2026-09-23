@@ -9,6 +9,7 @@ Item {
   property string value: ""
   property bool allDay: false
   property string placeholderText: "Due date"
+  property bool iconOnly: false
   property color foreground: Color.foreground
   property color background: Color.popups.background
   property color accent: Color.accent
@@ -20,7 +21,7 @@ Item {
   property int selectedHour: 9
   property int selectedMinute: 0
 
-  implicitWidth: Style.space(190)
+  implicitWidth: iconOnly ? Style.spacing.controlHeight : Style.space(190)
   implicitHeight: Style.spacing.controlHeight
 
   function pad2(number) { return number < 10 ? "0" + number : String(number) }
@@ -54,7 +55,26 @@ Item {
   function monthTitle() {
     return new Date(shownYear, shownMonth, 1).toLocaleString(Qt.locale(), "MMMM yyyy")
   }
-  function open() { loadValue(); picker.open() }
+  function placePopup() {
+    if (!picker.parent) return
+    var point = root.mapToItem(picker.parent, 0, 0)
+    var gap = Style.space(4)
+    var margin = Style.space(8)
+    var maxX = Math.max(margin, picker.parent.width - picker.width - margin)
+    picker.x = Math.max(margin, Math.min(point.x + root.width - picker.width, maxX))
+    var below = point.y + root.height + gap
+    var above = point.y - picker.height - gap
+    var roomBelow = picker.parent.height - below - margin
+    picker.y = roomBelow >= picker.height || above < margin
+      ? Math.max(margin, Math.min(below, picker.parent.height - picker.height - margin))
+      : Math.max(margin, above)
+  }
+
+  function open() {
+    loadValue()
+    picker.open()
+    Qt.callLater(root.placePopup)
+  }
 
   TendButton {
     id: trigger
@@ -73,6 +93,7 @@ Item {
       spacing: Style.space(6)
 
       Text {
+        visible: !root.iconOnly
         width: parent.width - calendarGlyph.width - parent.spacing
         anchors.verticalCenter: parent.verticalCenter
         text: root.displayValue()
@@ -97,7 +118,7 @@ Item {
 
   QQC.Popup {
     id: picker
-    x: Math.max(0, root.width - width)
+    x: 0
     y: root.height + Style.space(4)
     width: Style.space(326)
     height: Style.space(394)

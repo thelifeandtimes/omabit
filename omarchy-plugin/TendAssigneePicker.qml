@@ -32,7 +32,27 @@ Item {
     })
   }
 
-  function open() { search.text = ""; filterOptions(); popup.open() }
+  function placePopup() {
+    if (!popup.parent) return
+    var point = root.mapToItem(popup.parent, 0, 0)
+    var gap = Style.space(4)
+    var margin = Style.space(8)
+    var maxX = Math.max(margin, popup.parent.width - popup.width - margin)
+    popup.x = Math.max(margin, Math.min(point.x, maxX))
+    var below = point.y + root.height + gap
+    var above = point.y - popup.height - gap
+    var roomBelow = popup.parent.height - below - margin
+    popup.y = roomBelow >= popup.height || above < margin
+      ? Math.max(margin, Math.min(below, popup.parent.height - popup.height - margin))
+      : Math.max(margin, above)
+  }
+
+  function open() {
+    search.text = ""
+    filterOptions()
+    popup.open()
+    Qt.callLater(root.placePopup)
+  }
 
   onOptionsChanged: filterOptions()
   Component.onCompleted: filterOptions()
@@ -94,10 +114,10 @@ Item {
 
   QQC.Popup {
     id: popup
-    x: Math.max(0, root.width - width)
+    x: 0
     y: root.height + Style.space(4)
-    width: Math.max(root.width, Style.space(250))
-    height: Math.min(Style.space(310), Style.space(64) + results.count * Style.space(38))
+    width: root.width
+    height: search.implicitHeight + Style.space(2) + Math.min(6, results.count) * Style.space(36) + padding * 2
     padding: Style.space(1)
     focus: true
     closePolicy: QQC.Popup.CloseOnEscape | QQC.Popup.CloseOnPressOutside
@@ -123,6 +143,7 @@ Item {
         width: parent.width
         height: parent.height - search.height - parent.spacing
         clip: true
+        boundsBehavior: Flickable.StopAtBounds
         model: root.filteredOptions
         spacing: Style.space(2)
 

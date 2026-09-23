@@ -170,9 +170,12 @@ Panel {
     open: root.opened
     focusTarget: popupKeys
     contentWidth: popup.fittedContentWidth(Style.space(760))
-    contentHeight: popup.cappedContentHeight(root.visibleReminders.length > 0
-      ? Style.space(350 + Math.min(8, root.visibleReminders.length) * 54)
-      : Style.space(400))
+    contentHeight: Math.min(
+      popup.cappedContentHeight(root.visibleReminders.length > 0
+        ? Style.space(350 + Math.min(8, root.visibleReminders.length) * 54)
+        : Style.space(400)),
+      popup.screenH > 0 ? Math.floor(popup.screenH * 0.5) : Style.space(520)
+    )
 
     PanelKeyCatcher {
       id: popupKeys
@@ -189,25 +192,27 @@ Panel {
           Layout.fillWidth: true
           spacing: Style.space(8)
 
-          Column {
+          Row {
             Layout.fillWidth: true
-            spacing: Style.space(2)
+            spacing: Style.space(7)
 
             Text {
-              width: parent.width
-              text: "TEND"
+              anchors.verticalCenter: parent.verticalCenter
+              text: "TEND · ~" + (root.tendService ? root.tendService.ship : "")
               color: root.barForeground
               font.family: root.bar ? root.bar.fontFamily : Style.font.family
               font.pixelSize: Style.font.caption
               font.bold: true
             }
 
-            Text {
-              width: parent.width
-              text: "~" + (root.tendService ? root.tendService.ship : "") + " · " + root.state
-              color: root.dim
-              font.family: root.bar ? root.bar.fontFamily : Style.font.family
-              font.pixelSize: Style.font.caption
+            Rectangle {
+              anchors.verticalCenter: parent.verticalCenter
+              width: Style.space(8)
+              height: width
+              radius: width / 2
+              color: root.state === "online" ? "#22c55e" : "#ef4444"
+              Accessible.role: Accessible.Indicator
+              Accessible.name: root.state === "online" ? "Connected to Tend" : "Tend connection unavailable"
             }
           }
 
@@ -234,6 +239,7 @@ Panel {
           TendDropdown {
             id: destinationList
             Layout.preferredWidth: Style.space(220)
+            Layout.preferredHeight: Style.spacing.controlHeight
             showLabel: false
             model: root.destinationLists
             textRole: "title"
@@ -248,6 +254,7 @@ Panel {
           TextField {
             id: quickAdd
             Layout.fillWidth: true
+            Layout.preferredHeight: Style.spacing.controlHeight
             placeholderText: "Describe a new reminder"
             enabled: destinationList.currentIndex >= 0 && root.tendService && root.tendService.connectionState === "online" && !root.tendService.mutationPending
             onAccepted: root.addReminder()
@@ -256,6 +263,7 @@ Panel {
           TendAssigneePicker {
             id: assigneePicker
             Layout.preferredWidth: Style.space(170)
+            Layout.preferredHeight: Style.spacing.controlHeight
             options: root.assigneeOptions
             placeholderText: "Assignee"
             Accessible.name: "Reminder assignee"
@@ -263,14 +271,18 @@ Panel {
 
           TendDateTimePicker {
             id: quickDue
-            Layout.preferredWidth: Style.space(190)
+            Layout.preferredWidth: Style.spacing.controlHeight
+            Layout.preferredHeight: Style.spacing.controlHeight
             placeholderText: "Due date"
+            iconOnly: true
             enabled: quickAdd.enabled
             Accessible.name: "Reminder due date"
           }
 
           Button {
             text: "+"
+            Layout.preferredWidth: Style.spacing.controlHeight
+            Layout.preferredHeight: Style.spacing.controlHeight
             tooltipText: "Add reminder"
             focusable: true
             bordered: true
@@ -301,13 +313,19 @@ Panel {
           }
         }
 
-        Column {
+        ListView {
+          id: menubarReminderList
           Layout.fillWidth: true
+          Layout.fillHeight: true
+          Layout.minimumHeight: Style.space(64)
+          clip: true
+          boundsBehavior: Flickable.StopAtBounds
           spacing: Style.space(4)
+          model: root.visibleReminders
 
           Text {
+            anchors.centerIn: parent
             visible: root.visibleReminders.length === 0
-            width: parent.width
             text: root.state === "online" ? "Nothing in this view." : "Connect Tend to load reminders."
             color: root.dim
             font.family: root.bar ? root.bar.fontFamily : Style.font.family
@@ -315,12 +333,9 @@ Panel {
             wrapMode: Text.WordWrap
           }
 
-          Repeater {
-            model: root.visibleReminders.slice(0, 8)
-
-            delegate: Rectangle {
+          delegate: Rectangle {
               required property var modelData
-              width: parent.width
+              width: ListView.view.width
               height: Style.space(54)
               opacity: root.tendService ? root.tendService.completionOpacity(modelData.listId, modelData.id) : 1
               radius: Style.cornerRadius
@@ -339,6 +354,13 @@ Panel {
                   Accessible.name: (checked ? "Mark open " : "Complete ") + modelData.title
                   enabled: root.tendService && root.tendService.canEditList(modelData.listId) && root.state === "online" && !root.tendService.mutationPending
                   onClicked: root.tendService.toggleCompletedWithGrace(modelData.listId, modelData.id, modelData.completed)
+                }
+
+                TendFlagButton {
+                  anchors.verticalCenter: parent.verticalCenter
+                  flagged: modelData.flagged === true
+                  enabled: root.tendService && root.tendService.canEditList(modelData.listId) && root.state === "online" && !root.tendService.mutationPending
+                  onToggled: function(flagged) { root.tendService.setReminderFlagged(modelData.listId, modelData.id, flagged) }
                 }
 
                 Text {
@@ -392,16 +414,6 @@ Panel {
 
               HoverHandler { id: rowMouse }
             }
-          }
-
-          Text {
-            visible: root.visibleReminders.length > 8
-            width: parent.width
-            text: "+ " + (root.visibleReminders.length - 8) + " more"
-            color: root.dim
-            font.family: root.bar ? root.bar.fontFamily : Style.font.family
-            font.pixelSize: Style.font.caption
-          }
         }
       }
     }

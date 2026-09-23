@@ -705,6 +705,22 @@ Item {
         }, listId);
     }
 
+    function setReminderFlagged(listId, reminderId, flagged) {
+        var list = listById(listId);
+        var reminder = reminderById(list, reminderId);
+        if (!list || !reminder)
+            return false;
+        return updateReminder(list.id, reminder.id, {
+            title: reminder.title,
+            notes: reminder.notes,
+            url: reminder.url,
+            priority: reminder.priority,
+            flagged: flagged === true,
+            tags: reminder.tags,
+            assignee: reminder.assignee
+        }, list.revision);
+    }
+
     function inviteMember(listId, targetShip, canInvite) {
         var opId = operationId();
         var accepted = submit({
@@ -1057,8 +1073,11 @@ Item {
                 root.baseUrl = result.baseUrl;
                 root.ship = result.ship;
                 root.localTimezone = result.localTimezone || "UTC";
+                reconnectTimer.stop();
+                if (streamProcess.running)
+                    streamProcess.running = false;
                 root.loginSucceeded();
-                root.startStream();
+                Qt.callLater(root.startStream);
             } catch (error) {
                 root.connectionState = "error";
                 root.errorMessage = "Eyre returned an invalid login response";

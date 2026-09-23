@@ -35,6 +35,9 @@ qmllint -I "$omarchy_root/shell" \
   "$release_dir/omarchy-plugin/ReminderDetail.qml" \
   "$release_dir/omarchy-plugin/TendAssigneePicker.qml" \
   "$release_dir/omarchy-plugin/TendDateTimePicker.qml" \
+  "$release_dir/omarchy-plugin/TendEditMenu.qml" \
+  "$release_dir/omarchy-plugin/TendFlagButton.qml" \
+  "$release_dir/omarchy-plugin/TendMenuItem.qml" \
   "$release_dir/omarchy-plugin/TendSettings.qml" \
   "$release_dir/omarchy-plugin/ReminderDefaults.qml" \
   "$release_dir/omarchy-plugin/TendButton.qml" \

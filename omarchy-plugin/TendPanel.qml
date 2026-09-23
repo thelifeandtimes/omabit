@@ -30,6 +30,8 @@ Item {
     property bool compactSidebarOpen: false
     property bool confirmDeleteList: false
     property bool captureMode: false
+    property bool switchingShip: false
+    property var hiddenInvitationKeys: []
     property var selectedReminderIds: []
     property var collapsedReminderIds: []
     property bool confirmBatchDelete: false
@@ -40,6 +42,9 @@ Item {
     readonly property bool overlayTrayMode: window.width < Style.space(980)
     readonly property bool detailTrayOpen: selectedReminder !== null
     readonly property bool settingsTrayOpen: rightTrayMode !== ""
+    readonly property var visibleInvitations: service ? service.invitations.filter(function(invitation) {
+        return root.hiddenInvitationKeys.indexOf(root.invitationKey(invitation)) === -1;
+    }) : []
     readonly property color opaqueMenuBackground: Qt.rgba(Color.menu.background.r, Color.menu.background.g, Color.menu.background.b, 1)
     readonly property bool compactMode: window.width < Style.space(820)
     property var selectedList: null
@@ -81,6 +86,34 @@ Item {
     readonly property var selectedPresentation: TendModel.presentationForList(service ? service.localSettings : null, selectedList ? selectedList.id : 0)
     readonly property var selectedCollaborationPolicy: TendModel.collaborationPolicyForList(service ? service.localSettings : null, selectedList ? selectedList.id : 0)
     readonly property var orderedLists: TendModel.orderedLists(service ? service.lists : [], service ? service.preferences.pinnedLists : [], service ? service.localSettings.listOrder : [])
+
+    function invitationKey(invitation) {
+        return [invitation && invitation.host, invitation && invitation.token, invitation && invitation.title].join(":");
+    }
+
+    function hideInvitation(invitation) {
+        var keys = hiddenInvitationKeys.slice();
+        var key = invitationKey(invitation);
+        if (keys.indexOf(key) === -1)
+            keys.push(key);
+        hiddenInvitationKeys = keys;
+    }
+
+    function listAccess(listId) {
+        return service ? service.accessForList(listId) : null;
+    }
+
+    function listHost(listId) {
+        var access = listAccess(listId);
+        if (access && access.host)
+            return root.normalizedShip(access.host);
+        return service && service.ship ? root.normalizedShip(service.ship) : "";
+    }
+
+    function listHostOnline(listId) {
+        var access = listAccess(listId);
+        return service && service.connectionState === "online" && access && (access.owner || access.status === "online");
+    }
     readonly property var availableViews: ["today", "scheduled", "all", "flagged", "assigned", "completed"]
     readonly property var orderedViews: TendModel.orderedValues(availableViews, service ? service.preferences.pinnedViews : [])
     readonly property var availableTags: TendModel.allTags(service ? service.lists : [])
@@ -401,6 +434,10 @@ Item {
         function onLocalSettingsChanged() { root.loadSelectedPresentation(); }
         function onListsChanged() { Qt.callLater(root.ensureSelectedList); }
         function onLoginSucceeded() { loginCode.text = ""; }
+        function onConnectionStateChanged() {
+            if (root.service && root.service.connectionState === "online")
+                root.switchingShip = false;
+        }
     }
 
     function movePinnedView(view, delta) {
@@ -463,8 +500,7 @@ Item {
         selectedListId = reminder.listId || selectedListId;
         selectedReminderId = reminder.id;
         policyEditorOpen = false;
-        if (singleTrayMode)
-            rightTrayMode = "";
+        rightTrayMode = "";
     }
 
     function openListEditor() {
@@ -473,7 +509,7 @@ Item {
         listEditorOpen = false;
         policyEditorOpen = false;
         rightTrayMode = rightTrayMode === "list" ? "" : "list";
-        if (rightTrayMode && singleTrayMode)
+        if (rightTrayMode)
             selectedReminderId = 0;
     }
 
@@ -481,7 +517,7 @@ Item {
         listEditorOpen = false;
         policyEditorOpen = false;
         rightTrayMode = rightTrayMode === "app" ? "" : "app";
-        if (rightTrayMode && singleTrayMode)
+        if (rightTrayMode)
             selectedReminderId = 0;
     }
 
@@ -585,31 +621,37 @@ Item {
         return null;
     }
 
-    function indentSelectedReminder() {
-        if (!selectedListEditable || !selectedReminder || !service)
+    function selectedBatchReminder() {
+        return selectedReminderIds.length === 1 ? reminderFromSelectedList(selectedReminderIds[0]) : null;
+    }
+
+    function indentReminder(reminder) {
+        if (!selectedListEditable || !reminder || !service)
             return;
-        var index = -1;
-        for (var i = 0; i < displayedReminders.length; i++) {
-            if (displayedReminders[i].id === selectedReminder.id) {
-                index = i;
-                break;
-            }
-        }
+        var index = displayedReminders.findIndex(function(item) { return Number(item.id) === Number(reminder.id); });
         if (index <= 0)
             return;
         var parent = displayedReminders[index - 1];
-        if (parent.listId !== selectedList.id)
+        if (parent.listId !== selectedList.id || Number(parent.id) === Number(reminder.id))
             return;
-        service.moveReminder(selectedList.id, selectedReminder.id, parent.id, parent.sectionId, selectedReminder.rank, selectedList.revision);
+        service.moveReminder(selectedList.id, reminder.id, parent.id, parent.sectionId, reminder.rank, selectedList.revision);
+    }
+
+    function outdentReminder(reminder) {
+        if (!selectedListEditable || !reminder || reminder.parentId === null || !service)
+            return;
+        var parent = reminderFromSelectedList(reminder.parentId);
+        if (!parent)
+            return;
+        service.moveReminder(selectedList.id, reminder.id, parent.parentId, parent.sectionId, reminder.rank, selectedList.revision);
+    }
+
+    function indentSelectedReminder() {
+        indentReminder(selectedReminder);
     }
 
     function outdentSelectedReminder() {
-        if (!selectedListEditable || !selectedReminder || selectedReminder.parentId === null || !service)
-            return;
-        var parent = reminderFromSelectedList(selectedReminder.parentId);
-        if (!parent)
-            return;
-        service.moveReminder(selectedList.id, selectedReminder.id, parent.parentId, parent.sectionId, selectedReminder.rank, selectedList.revision);
+        outdentReminder(selectedReminder);
     }
 
     function localTimezone() {
@@ -866,13 +908,28 @@ Item {
                         width: parent.width
                         height: Style.space(38)
 
-                        Text {
+                        Row {
                             width: parent.width - closeButton.width - settingsButton.width - Style.space(8)
-                            text: service && service.ship ? "Tend · ~" + service.ship : "Tend"
-                            color: Color.menu.text
-                            font.family: Style.font.menuFamily
-                            font.pixelSize: Style.font.heading
-                            font.bold: true
+                            spacing: Style.space(8)
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: service && service.ship ? "Tend · ~" + service.ship : "Tend"
+                                color: Color.menu.text
+                                font.family: Style.font.menuFamily
+                                font.pixelSize: Style.font.heading
+                                font.bold: true
+                            }
+
+                            Rectangle {
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: Style.space(9)
+                                height: width
+                                radius: width / 2
+                                color: service && service.connectionState === "online" ? "#22c55e" : "#ef4444"
+                                Accessible.role: Accessible.Indicator
+                                Accessible.name: service && service.connectionState === "online" ? "Connected to Tend" : "Tend connection unavailable"
+                            }
                         }
 
                         TendButton {
@@ -887,7 +944,10 @@ Item {
                         TendButton {
                             id: closeButton
 
-                            text: "Close"
+                            text: "󰅖"
+                            tooltipText: "Close Tend"
+                            Accessible.name: "Close Tend"
+                            bordered: false
                             onClicked: root.dismiss()
                         }
 
@@ -903,10 +963,21 @@ Item {
                         font.pixelSize: Style.font.body
                     }
 
-                    Column {
-                        visible: service && service.ship !== "" && !root.captureMode && service.invitations.length > 0
+                    BorderSurface {
+                        visible: service && service.ship !== "" && !root.captureMode && root.visibleInvitations.length > 0
                         width: parent.width
-                        spacing: Style.space(6)
+                        height: visible ? invitationColumn.implicitHeight + Style.space(20) : 0
+                        color: Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, 0.09)
+                        borderSpec: Border.controlSpec("normal", Color.menu.text, Color.accent)
+                        radius: Style.cornerRadius
+
+                        Column {
+                            id: invitationColumn
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.margins: Style.space(10)
+                            spacing: Style.space(6)
 
                         Text {
                             text: "Shared-list invitations"
@@ -917,7 +988,7 @@ Item {
                         }
 
                         Repeater {
-                            model: service ? service.invitations : []
+                            model: root.visibleInvitations
 
                             delegate: Row {
                                 required property var modelData
@@ -926,7 +997,7 @@ Item {
                                 spacing: Style.space(6)
 
                                 Text {
-                                    width: parent.width - acceptInvitationButton.width - declineInvitationButton.width - parent.spacing * 2
+                                    width: parent.width - acceptInvitationButton.width - declineInvitationButton.width - hideInvitationButton.width - parent.spacing * 3
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: modelData.title + " from " + modelData.host + (modelData.canInvite ? " · may invite" : "")
                                     elide: Text.ElideRight
@@ -952,12 +1023,22 @@ Item {
                                     Accessible.name: "Decline invitation to " + modelData.title
                                     onClicked: service.declineInvitation(modelData)
                                 }
+
+                                TendButton {
+                                    id: hideInvitationButton
+
+                                    text: "Hide"
+                                    bordered: false
+                                    Accessible.name: "Hide invitation to " + modelData.title
+                                    onClicked: root.hideInvitation(modelData)
+                                }
                             }
+                        }
                         }
                     }
 
                     Column {
-                        visible: !service || !service.ship || service.connectionState === "authentication-required"
+                        visible: root.switchingShip || !service || !service.ship || service.connectionState === "authentication-required"
                         width: Math.min(560, parent.width)
                         anchors.horizontalCenter: parent.horizontalCenter
                         spacing: Style.space(12)
@@ -973,12 +1054,20 @@ Item {
 
                         Text {
                             width: parent.width
-                            text: service && service.connectionState === "authentication-required" ? "Your Eyre session expired. Enter the current +code to reconnect to this ship." : "Enter your ship domain and the current code printed by +code. Tend accepts planets, moons, and comets."
+                            text: root.switchingShip ? "Connect another Urbit. The current ship remains saved unless you explicitly remove it from Settings." : (service && service.connectionState === "authentication-required" ? "Your Eyre session expired. Enter the current +code to reconnect to this ship." : "Enter your ship domain and the current code printed by +code. Tend accepts planets, moons, and comets.")
                             color: Color.menu.text
                             opacity: 0.72
                             wrapMode: Text.Wrap
                             font.family: Style.font.menuFamily
                             font.pixelSize: Style.font.body
+                        }
+
+                        TendButton {
+                            visible: root.switchingShip && service && service.ship !== ""
+                            width: parent.width
+                            text: "Cancel switching"
+                            bordered: false
+                            onClicked: root.switchingShip = false
                         }
 
                         TextField {
@@ -1099,19 +1188,18 @@ Item {
                             radius: Style.cornerRadius
                             color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.05)
 
-                            Column {
+                            Flickable {
                                 anchors.fill: parent
                                 anchors.margins: Style.space(10)
-                                spacing: Style.space(6)
+                                contentWidth: width
+                                contentHeight: sidebarContent.implicitHeight
+                                clip: true
+                                boundsBehavior: Flickable.StopAtBounds
 
-                                Rectangle {
-                                    width: Style.space(9)
-                                    height: width
-                                    radius: width / 2
-                                    color: service && service.connectionState === "online" ? "#22c55e" : "#ef4444"
-                                    Accessible.role: Accessible.Indicator
-                                    Accessible.name: service && service.connectionState === "online" ? "Connected to Tend" : "Tend connection unavailable"
-                                }
+                                Column {
+                                    id: sidebarContent
+                                    width: parent.width
+                                    spacing: Style.space(6)
 
                                 Row {
                                     width: parent.width
@@ -1207,10 +1295,11 @@ Item {
                                         id: listRow
                                         required property var modelData
                                         readonly property bool pinned: service && service.preferences.pinnedLists.indexOf(modelData.id) !== -1
+                                        readonly property var access: root.listAccess(modelData.id)
 
                                         visible: pinned || root.unpinnedListsVisible || (root.selectedList && root.selectedList.id === modelData.id)
                                         width: parent.width
-                                        height: visible ? Style.space(34) : 0
+                                        height: visible ? Style.space(46) : 0
                                         spacing: Style.space(4)
 
                                         TendButton {
@@ -1224,19 +1313,38 @@ Item {
                                             checked: root.viewMode === "list" && root.selectedList && root.selectedList.id === modelData.id
                                             Accessible.name: modelData.title + (service && service.preferences.defaultList === modelData.id ? ", default list" : "")
 
-                                            Text {
+                                            Row {
                                                 anchors.left: parent.left
                                                 anchors.right: parent.right
                                                 anchors.verticalCenter: parent.verticalCenter
                                                 anchors.leftMargin: Style.spacing.controlPaddingX
                                                 anchors.rightMargin: Style.spacing.controlPaddingX
-                                                text: listRow.modelData.title + (service && service.preferences.defaultList === listRow.modelData.id ? " · default" : "")
-                                                textFormat: Text.PlainText
-                                                elide: Text.ElideRight
-                                                color: Color.menu.text
-                                                font.family: Style.font.menuFamily
-                                                font.pixelSize: Style.font.body
-                                                font.bold: parent.checked
+                                                spacing: Style.space(7)
+
+                                                Rectangle {
+                                                    width: Style.space(24)
+                                                    height: width
+                                                    radius: width / 2
+                                                    color: listRow.modelData.color || "#3b82f6"
+                                                    Text { anchors.centerIn: parent; text: listRow.modelData.symbol && listRow.modelData.symbol !== "list" ? listRow.modelData.symbol : "≡"; color: "white"; font.family: Style.font.menuFamily; font.pixelSize: Style.font.caption; font.bold: true }
+                                                }
+
+                                                Column {
+                                                    width: parent.width - x - hostDot.width - parent.spacing
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    spacing: 0
+                                                    Text { width: parent.width; text: listRow.modelData.title + (service && service.preferences.defaultList === listRow.modelData.id ? " · default" : ""); textFormat: Text.PlainText; elide: Text.ElideRight; color: Color.menu.text; font.family: Style.font.menuFamily; font.pixelSize: Style.font.body }
+                                                    Text { width: parent.width; text: root.listHost(listRow.modelData.id); textFormat: Text.PlainText; elide: Text.ElideRight; color: Color.menu.text; opacity: 0.58; font.family: Style.font.menuFamily; font.pixelSize: Style.font.caption }
+                                                }
+
+                                                Rectangle {
+                                                    id: hostDot
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    width: Style.space(7)
+                                                    height: width
+                                                    radius: width / 2
+                                                    color: root.listHostOnline(listRow.modelData.id) ? "#22c55e" : "#ef4444"
+                                                }
                                             }
 
                                             onClicked: {
@@ -1317,6 +1425,12 @@ Item {
                                     font.pixelSize: Style.font.caption
                                 }
 
+                                }
+                            }
+
+                            TapHandler {
+                                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                                onTapped: if (root.selectedReminderId !== 0) root.selectedReminderId = 0
                             }
 
                             }
@@ -1358,8 +1472,10 @@ Item {
 
                             Column {
                                 id: mainContent
-                                x: root.detailTrayOpen && !root.overlayTrayMode ? detailSidebar.width + Style.space(10) : 0
-                                width: parent.width - x - (root.settingsTrayOpen && !root.overlayTrayMode ? settingsSidebar.width + Style.space(10) : 0)
+                                x: 0
+                                width: parent.width - (!root.overlayTrayMode && (root.detailTrayOpen || root.settingsTrayOpen)
+                                  ? (root.detailTrayOpen ? detailSidebar.width : settingsSidebar.width) + Style.space(10)
+                                  : 0)
                                 height: parent.height
                                 spacing: Style.space(8)
 
@@ -1939,7 +2055,7 @@ Item {
                             }
 
                             Row {
-                                visible: root.viewMode === "list" && root.selectedList !== null && root.selectedList.sections.length > 0
+                                visible: false
                                 width: parent.width
                                 spacing: Style.space(6)
 
@@ -2000,14 +2116,14 @@ Item {
 
                             }
 
-                            Row {
-                                visible: root.selectionMode && root.viewMode === "list" && root.selectedList !== null && root.selectedReminderIds.length > 0
+                            Flow {
+                                visible: root.selectionMode && root.viewMode === "list" && root.selectedList !== null
                                 width: parent.width
                                 spacing: Style.space(6)
 
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    text: root.selectedReminderIds.length + " selected"
+                                    text: "SELECT MODE · " + root.selectedReminderIds.length + " selected"
                                     color: Color.menu.text
                                     font.family: Style.font.menuFamily
                                     font.pixelSize: Style.font.caption
@@ -2016,7 +2132,7 @@ Item {
                                 TendDropdown {
                                     id: batchSection
 
-                                    width: parent.width * 0.24
+                                    width: Style.space(190)
                                     model: root.sectionChoices
                                     textRole: "title"
                                     Accessible.name: "Batch destination section"
@@ -2030,6 +2146,32 @@ Item {
                                         if (service.batchMoveReminders(root.selectedList.id, root.selectedReminderIds, sectionId, root.batchStartingRank(), root.selectedList.revision))
                                             root.selectedReminderIds = [];
                                     }
+                                }
+
+                                TendButton {
+                                    text: "↑"
+                                    tooltipText: "Move selected reminder up"
+                                    enabled: root.selectedReminderIds.length === 1 && root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: root.moveReminderRelative(root.selectedBatchReminder(), -1)
+                                }
+
+                                TendButton {
+                                    text: "↓"
+                                    tooltipText: "Move selected reminder down"
+                                    enabled: root.selectedReminderIds.length === 1 && root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: root.moveReminderRelative(root.selectedBatchReminder(), 1)
+                                }
+
+                                TendButton {
+                                    text: "Indent"
+                                    enabled: root.selectedReminderIds.length === 1 && root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: root.indentReminder(root.selectedBatchReminder())
+                                }
+
+                                TendButton {
+                                    text: "Outdent"
+                                    enabled: root.selectedReminderIds.length === 1 && root.selectedBatchReminder() && root.selectedBatchReminder().parentId !== null && root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                    onClicked: root.outdentReminder(root.selectedBatchReminder())
                                 }
 
                                 TendButton {
@@ -2522,8 +2664,10 @@ Item {
 
                                     required property var modelData
                                     required property int index
+                                    readonly property real indentPixels: Math.max(0, Number(modelData.depth || 0)) * Style.space(22)
 
-                                    width: ListView.view.width
+                                    x: indentPixels
+                                    width: Math.max(Style.space(120), ListView.view.width - indentPixels)
                                     height: Style.space(44)
                                     opacity: service ? service.completionOpacity(modelData.listId, modelData.id) : 1
                                     radius: Style.cornerRadius
@@ -2557,6 +2701,12 @@ Item {
                                             onClicked: service.toggleCompletedWithGrace(modelData.listId, modelData.id, modelData.completed)
                                         }
 
+                                        TendFlagButton {
+                                            flagged: modelData.flagged === true
+                                            enabled: service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
+                                            onToggled: function(flagged) { service.setReminderFlagged(modelData.listId, modelData.id, flagged) }
+                                        }
+
                                         TendCheckbox {
                                             visible: root.selectionMode && root.viewMode === "list"
                                             width: visible ? implicitWidth : 0
@@ -2564,28 +2714,6 @@ Item {
                                             enabled: visible && service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
                                             Accessible.name: "Select " + modelData.title + " for batch action"
                                             onClicked: root.toggleReminderSelection(modelData.id)
-                                        }
-
-                                        Row {
-                                            visible: root.viewMode === "list" && root.sortMode === "manual"
-                                            width: visible ? implicitWidth : 0
-                                            spacing: Style.space(2)
-
-                                            TendButton {
-                                                text: "↑"
-                                                bordered: false
-                                                enabled: service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
-                                                Accessible.name: "Move " + modelData.title + " up"
-                                                onClicked: root.moveReminderRelative(modelData, -1)
-                                            }
-
-                                            TendButton {
-                                                text: "↓"
-                                                bordered: false
-                                                enabled: service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
-                                                Accessible.name: "Move " + modelData.title + " down"
-                                                onClicked: root.moveReminderRelative(modelData, 1)
-                                            }
                                         }
 
                                         TendButton {
@@ -2601,10 +2729,8 @@ Item {
                                             text: {
                                                 var list = root.viewMode === "list" ? "" : "  ·  " + modelData.listTitle;
                                                 var section = root.sectionTitleFor(modelData.listId, modelData.sectionId);
-                                                var depth = Math.max(0, Number(modelData.depth || 0));
-                                                var prefix = depth === 0 ? "" : Array(depth + 1).join("  ") + "↳ ";
                                                 var due = modelData.schedule ? "  ·  " + TendModel.scheduleInputValue(modelData.schedule).replace("T", " ") : "";
-                                                return prefix + modelData.title + list + (section ? "  ·  " + section : "") + due;
+                                                return modelData.title + list + (section ? "  ·  " + section : "") + due;
                                             }
                                             color: Color.menu.text
                                             opacity: service && service.effectiveCompleted(modelData.listId, modelData.id, modelData.completed) ? 0.5 : 1
@@ -2632,7 +2758,7 @@ Item {
                                 id: detailSidebar
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
-                                anchors.left: parent.left
+                                anchors.right: parent.right
                                 width: root.detailTrayOpen ? root.detailTrayWidth : 0
                                 visible: root.detailTrayOpen
                                 z: root.overlayTrayMode ? 20 : 2
@@ -2644,10 +2770,6 @@ Item {
                                 editable: root.selectedListEditable
                                 timezone: root.localTimezone()
                                 onCloseRequested: root.selectedReminderId = 0
-                                onMoveUpRequested: root.moveSelectedRelative(-1)
-                                onMoveDownRequested: root.moveSelectedRelative(1)
-                                onIndentRequested: root.indentSelectedReminder()
-                                onOutdentRequested: root.outdentSelectedReminder()
                             }
 
                             TendSettings {
@@ -2664,11 +2786,18 @@ Item {
                                 access: root.selectedAccess
                                 editable: root.selectedListEditable
                                 mayInvite: root.selectedMayInvite
+                                invitations: root.service ? root.service.invitations : []
                                 activities: root.selectedActivities
                                 collaborationPolicy: root.selectedCollaborationPolicy
                                 onCloseRequested: root.rightTrayMode = ""
                                 onSwitchShipRequested: {
                                     root.rightTrayMode = "";
+                                    root.switchingShip = true;
+                                    Qt.callLater(function() { shipUrl.forceActiveFocus(); });
+                                }
+                                onRemoveShipRequested: {
+                                    root.rightTrayMode = "";
+                                    root.switchingShip = false;
                                     root.service.disconnect();
                                 }
                                 onListDeleted: {

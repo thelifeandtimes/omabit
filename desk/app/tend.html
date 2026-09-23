@@ -82,15 +82,15 @@
     .workspace { position: relative; min-height: 0; display: grid; grid-template-columns: var(--nav-width) minmax(0,1fr); overflow: hidden; }
     .nav, .tray, .center { min-height: 0; background: var(--surface); }
     .nav { border-right: 1px solid var(--line); padding: 18px 14px; overflow-y: auto; }
-    .center { min-width: 0; padding: 22px; overflow-y: auto; }
+    .center { min-width: 0; padding: 22px; overflow-y: auto; container-type: inline-size; }
     .tray {
       position: absolute; inset-block: 0; width: min(var(--tray-width), 90vw); z-index: 20;
       display: none; overflow-y: auto; padding: 18px; background: var(--surface-solid); box-shadow: var(--shadow);
     }
     .tray.open { display: block; }
-    .detail-tray { left: var(--nav-width); border-right: 1px solid var(--line); }
+    .detail-tray { right: 0; border-left: 1px solid var(--line); }
     .settings-tray { right: 0; border-left: 1px solid var(--line); }
-    .workspace.detail-open .center { margin-left: var(--tray-width); }
+    .workspace.detail-open .center { margin-right: var(--tray-width); }
     .workspace.settings-open .center { margin-right: var(--tray-width); }
     .workspace.detail-open .detail-tray, .workspace.settings-open .settings-tray { box-shadow: none; }
     .tray-head, .view-head, .section-head, .composer-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -99,6 +99,8 @@
     .nav-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .nav-list { display: grid; gap: 4px; }
     .nav-button { width: 100%; min-width: 0; display: flex; align-items: center; gap: 9px; border: 0; border-radius: 9px; padding: 9px 10px; background: transparent; text-align: left; }
+    .list-avatar { width: 26px; height: 26px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; color: #fff; font-size: 12px; font-weight: 900; }
+    .nav-copy { min-width: 0; flex: 1; display: grid; gap: 1px; }
     .nav-button:hover, .nav-button.active { background: var(--accent-soft); }
     .nav-label { min-width: 0; flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
     .muted { color: var(--muted); }
@@ -115,9 +117,11 @@
     .view-title { min-width: 0; }
     .status-line { gap: 8px; margin-top: 6px; color: var(--muted); font-size: 12px; }
     .filters { display: grid; grid-template-columns: minmax(170px,1fr) 180px 150px auto; gap: 8px; margin-bottom: 18px; }
+    .sort-direction { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; white-space: nowrap; }
     .composer { padding: 15px; margin-bottom: 18px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-soft); }
     .composer-head { margin-bottom: 10px; }
-    .composer-row { display: grid; grid-template-columns: minmax(180px,1fr) 190px 205px 40px; gap: 8px; }
+    .composer-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(135px,190px) minmax(155px,205px) 40px; gap: 8px; }
+    .composer-row > * { min-width: 0; max-width: 100%; }
     .section-adder { display: flex; align-items: center; gap: 7px; margin: 0 0 14px; }
     .section-adder .field { width: 210px; min-height: 32px; }
     .task-list { display: grid; gap: 5px; }
@@ -132,6 +136,12 @@
     .task.done .task-title { color: var(--muted); text-decoration: line-through; }
     .task-meta { display: flex; flex-wrap: wrap; gap: 5px 12px; margin-top: 3px; color: var(--muted); font-size: 12px; }
     .task-actions { display: flex; gap: 2px; }
+    .flag { color: var(--muted); }
+    .flag.active { color: var(--danger); }
+    .flag-control { display: inline-flex; align-items: center; gap: 8px; }
+    .flag-control .flag { width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); font-size: 18px; }
+    .flag-control .flag:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+    .selection-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-bottom: 14px; padding: 10px; border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line)); border-radius: 11px; background: var(--accent-soft); }
     .mini { width: 28px; height: 28px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); }
     .mini:hover { color: var(--text); background: var(--accent-soft); }
     .check { width: 18px; height: 18px; accent-color: var(--accent); }
@@ -146,6 +156,12 @@
     .chip button { border: 0; padding: 0; background: transparent; color: inherit; }
     .people { display: grid; gap: 6px; }
     .person { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 9px; border: 1px solid var(--line); border-radius: 9px; }
+    .appearance-preview { display: flex; align-items: center; gap: 11px; padding: 11px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-soft); }
+    .appearance-preview .list-avatar { width: 38px; height: 38px; font-size: 16px; }
+    .invitation-card { padding: 12px; border: 1px solid color-mix(in srgb, var(--accent) 48%, var(--line)); border-radius: 11px; background: var(--accent-soft); }
+    .section-settings { display: grid; gap: 7px; }
+    .section-setting { display: grid; grid-template-columns: minmax(0,1fr) auto auto auto; gap: 6px; align-items: center; }
+    input[type="datetime-local"] { min-width: 0; max-width: 100%; }
     .invites { position: fixed; right: 18px; bottom: 18px; z-index: 50; display: grid; gap: 8px; width: min(390px, calc(100vw - 36px)); }
     .invite { padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-solid); box-shadow: var(--shadow); }
     .notice { position: fixed; left: 50%; bottom: 18px; z-index: 60; transform: translate(-50%, 12px); opacity: 0; pointer-events: none; padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-solid); box-shadow: var(--shadow); transition: .18s ease; }
@@ -159,6 +175,11 @@
       .detail-tray, .settings-tray { box-shadow: var(--shadow); }
       .filters { grid-template-columns: minmax(150px,1fr) 160px 140px auto; }
     }
+    @container (max-width: 760px) {
+      .composer-row { grid-template-columns: minmax(0,1fr) minmax(150px, .65fr); }
+      .composer-row .button.primary { width: 100%; }
+      .filters { grid-template-columns: 1fr 1fr; }
+    }
     @media (max-width: 860px) {
       :root { --nav-width: 220px; }
       .center { padding: 16px; }
@@ -169,7 +190,6 @@
       :root { --nav-width: 0px; }
       .workspace { grid-template-columns: 1fr; }
       .nav { display: none; }
-      .detail-tray { left: 0; }
       .tray { width: min(430px, 94vw); }
       .composer-row { grid-template-columns: 1fr; }
       .composer-row .button { width: 100%; }
@@ -209,7 +229,8 @@
       const state = {
         ship: "", lists: [], accesses: [], invitations: [], preferences: {},
         selectedListId: null, selectedReminderId: null, view: "all", search: "", tag: "", sort: "manual", descending: false,
-        rightTray: "", busy: false, online: false, detailDraft: null, completionGrace: new Map(), saveTimer: null
+        rightTray: "", busy: false, online: false, detailDraft: null, completionGrace: new Map(), saveTimer: null,
+        selectionMode: false, selectedReminderIds: new Set(), hiddenInvitationKeys: new Set()
       };
       const views = [
         ["today", "Today"], ["all", "All"], ["flagged", "Flagged"], ["assigned", "Assigned"], ["completed", "Completed"]
@@ -221,10 +242,28 @@
       const sameShip = (a, b) => normalizeShip(a).replace(/^~/, "") === normalizeShip(b).replace(/^~/, "");
       const selectedList = () => state.lists.find(item => Number(item.id) === Number(state.selectedListId)) || null;
       const accessFor = listId => state.accesses.find(item => Number(item.alias) === Number(listId)) || null;
+      const invitationKey = invitation => [invitation && invitation.host, invitation && invitation.token, invitation && invitation.title].join(":");
       const selectedReminder = () => {
         const list = selectedList();
         return list ? (list.reminders || []).find(item => Number(item.id) === Number(state.selectedReminderId)) || null : null;
       };
+      function reminderDepth(list, reminder) {
+        if (!list || !reminder) return 0;
+        const reminders = list.reminders || [];
+        const seen = new Set([Number(reminder.id)]);
+        let parentId = reminder["parent-id"] ?? reminder.parentId ?? null;
+        let depth = 0;
+        while (parentId !== null && parentId !== undefined && depth < 24) {
+          const numeric = Number(parentId);
+          if (seen.has(numeric)) break;
+          seen.add(numeric);
+          const parent = reminders.find(item => Number(item.id) === numeric);
+          if (!parent) break;
+          depth += 1;
+          parentId = parent["parent-id"] ?? parent.parentId ?? null;
+        }
+        return depth;
+      }
       function canEdit(listId) {
         const access = accessFor(listId);
         return state.online && !!access && (access.owner === true || access.status === "online");
@@ -360,13 +399,13 @@
       function openDetail(reminderId) {
         state.selectedReminderId = Number(reminderId);
         state.detailDraft = null;
-        if (window.innerWidth < 1200) state.rightTray = "";
+        state.rightTray = "";
         render();
       }
       function closeDetail() { state.selectedReminderId = null; state.detailDraft = null; clearTimeout(state.saveTimer); render(); }
       function openSettings(mode) {
         state.rightTray = state.rightTray === mode ? "" : mode;
-        if (state.rightTray && window.innerWidth < 1200) { state.selectedReminderId = null; state.detailDraft = null; }
+        if (state.rightTray) { state.selectedReminderId = null; state.detailDraft = null; }
         render();
       }
       function render() {
@@ -377,7 +416,13 @@
       }
       function renderNavigation() {
         const active = state.view;
-        const list = selectedList();
+        const lists = state.lists.map(item => {
+          const access = accessFor(item.id);
+          const online = state.online && !!access && (access.owner === true || access.status === "online");
+          const host = normalizeShip(access && access.host ? access.host : state.ship);
+          const symbol = item.symbol && item.symbol !== "list" ? item.symbol : "≡";
+          return `<button class="nav-button ${state.view === "list" && Number(item.id) === Number(state.selectedListId) ? "active" : ""}" data-list-id="${Number(item.id)}" type="button"><span class="list-avatar" style="background:${escapeHtml(item.color || "#3b82f6")}">${escapeHtml(symbol)}</span><span class="nav-copy"><span class="nav-label">${escapeHtml(item.title)}</span><span class="tiny muted">${escapeHtml(host)}</span></span><span class="dot ${online ? "online" : ""}" aria-label="${online ? "Host online" : "Host offline"}"></span><span class="tiny muted">${(item.reminders || []).filter(r => !r.completed).length}</span></button>`;
+        }).join("");
         $("navigation").innerHTML = `
           <section class="nav-section">
             <div class="nav-head"><span class="eyebrow">Views</span></div>
@@ -385,7 +430,7 @@
           </section>
           <section class="nav-section">
             <div class="nav-head"><span class="eyebrow">Lists</span><button class="button quiet tiny" type="button" data-toggle-lists>Hide</button></div>
-            <div class="nav-list">${state.lists.map(item => `<button class="nav-button ${state.view === "list" && Number(item.id) === Number(state.selectedListId) ? "active" : ""}" data-list-id="${Number(item.id)}" type="button"><span class="nav-label">${escapeHtml(item.title)}</span><span class="tiny muted">${(item.reminders || []).filter(r => !r.completed).length}</span></button>`).join("") || `<div class="muted tiny">No lists yet</div>`}</div>
+            <div class="nav-list">${lists || `<div class="muted tiny">No lists yet</div>`}</div>
           </section>
           <form class="stack" id="new-list-form"><span class="eyebrow">New list</span><input class="field" id="new-list-title" placeholder="List name" required><button class="button" type="submit">Add list</button></form>`;
       }
@@ -421,6 +466,10 @@
         return reminders;
       }
       function renderMain() {
+        const active = document.activeElement;
+        const focusId = active && active.closest && active.closest("#main") ? active.id : "";
+        const focusStart = focusId && typeof active.selectionStart === "number" ? active.selectionStart : null;
+        const focusEnd = focusId && typeof active.selectionEnd === "number" ? active.selectionEnd : null;
         const list = selectedList();
         const access = list && accessFor(list.id);
         const owner = !!(access && access.owner);
@@ -431,13 +480,22 @@
         const editable = !!destination && canEdit(destination.id) && !state.busy;
         const dueList = destination ? assigneeOptions(destination) : [];
         const listOptions = state.lists.map(item => ({value:item.id,label:item.title}));
+        const selectedIds = [...state.selectedReminderIds].filter(id => list && (list.reminders || []).some(reminder => Number(reminder.id) === Number(id)));
+        const sectionOptions = [{value:"",label:"No section"}, ...((list && list.sections) || []).map(section => ({value:section.id,label:section.title}))];
         $("main").innerHTML = `
-          <div class="view-head"><div class="view-title"><h2>${escapeHtml(title)}</h2>${list ? `<div class="status-line"><span class="dot ${hostWritable ? "online" : ""}"></span><span>${owner ? "Hosted here" : escapeHtml(access && access.host ? access.host : "Remote host")}</span></div>` : ""}</div>${list ? `<button class="button" data-open-list-settings type="button">List settings</button>` : ""}</div>
+          <div class="view-head"><div class="view-title"><h2>${escapeHtml(title)}</h2>${list ? `<div class="status-line"><span class="dot ${hostWritable ? "online" : ""}"></span><span>${escapeHtml(normalizeShip(access && access.host ? access.host : state.ship))}${owner ? " · owner" : ""}</span></div>` : ""}</div><div class="row" style="gap:7px">${list ? `<button class="button" data-toggle-selection type="button">${state.selectionMode ? "Done selecting" : "Select"}</button><button class="button" data-open-list-settings type="button">List settings</button>` : ""}</div></div>
           ${!hostWritable && list && !owner ? `<div class="form-section" style="color:var(--danger)">Editing is unavailable while ${escapeHtml(access ? access.host : "the list owner")} is offline.</div>` : ""}
-          <div class="filters"><input class="field" id="search" value="${escapeHtml(state.search)}" placeholder="Search reminders"><select class="select" id="tag-filter"><option value="">All tags</option>${allTags().map(tag => `<option ${tag === state.tag ? "selected" : ""}>${escapeHtml(tag)}</option>`).join("")}</select><select class="select" id="sort"><option value="manual" ${state.sort === "manual" ? "selected" : ""}>Manual</option><option value="due" ${state.sort === "due" ? "selected" : ""}>Due date</option><option value="priority" ${state.sort === "priority" ? "selected" : ""}>Priority</option><option value="title" ${state.sort === "title" ? "selected" : ""}>Title</option></select><label class="check-row"><input class="check" id="descending" type="checkbox" ${state.descending ? "checked" : ""}> Descending</label></div>
+          <div class="filters"><input class="field" id="search" value="${escapeHtml(state.search)}" placeholder="Search reminders"><select class="select" id="tag-filter"><option value="">All tags</option>${allTags().map(tag => `<option ${tag === state.tag ? "selected" : ""}>${escapeHtml(tag)}</option>`).join("")}</select><select class="select" id="sort"><option value="manual" ${state.sort === "manual" ? "selected" : ""}>Manual</option><option value="due" ${state.sort === "due" ? "selected" : ""}>Due date</option><option value="priority" ${state.sort === "priority" ? "selected" : ""}>Priority</option><option value="title" ${state.sort === "title" ? "selected" : ""}>Title</option></select><button class="button sort-direction" id="sort-direction" type="button" aria-label="Sort ${state.descending ? "ascending" : "descending"}"><span aria-hidden="true">${state.descending ? "↓" : "↑"}</span>${state.descending ? "Descending" : "Ascending"}</button></div>
           <section class="composer"><div class="composer-head"><span class="eyebrow">Add new reminder</span><select class="select" id="quick-list" style="width:min(240px,44%)">${optionHtml(listOptions, destination && destination.id)}</select></div><form class="composer-row" id="new-reminder-form"><input class="field" id="new-reminder-title" placeholder="Describe a new reminder" required ${editable ? "" : "disabled"}><select class="select" id="new-reminder-assignee" ${editable ? "" : "disabled"}>${optionHtml(dueList, state.ship)}</select><input class="field" id="new-reminder-due" type="datetime-local" ${editable ? "" : "disabled"}><button class="button primary" type="submit" aria-label="Add reminder" ${editable ? "" : "disabled"}>+</button></form></section>
           ${state.view === "list" && list ? `<form class="section-adder" id="new-section-form"><input class="field" id="new-section-title" placeholder="Section title" ${hostWritable ? "" : "disabled"}><button class="button tertiary" type="submit" ${hostWritable ? "" : "disabled"}>+ Add section</button></form>` : ""}
+          ${state.selectionMode && list ? `<div class="selection-bar"><strong class="tiny">SELECT MODE · ${selectedIds.length} selected</strong><select class="select" id="selection-section" style="width:170px">${optionHtml(sectionOptions, "")}</select><button class="button" data-selection-action="section" ${selectedIds.length ? "" : "disabled"}>Move to section</button><button class="button" data-selection-action="up" ${selectedIds.length === 1 ? "" : "disabled"}>↑</button><button class="button" data-selection-action="down" ${selectedIds.length === 1 ? "" : "disabled"}>↓</button><button class="button" data-selection-action="indent" ${selectedIds.length === 1 ? "" : "disabled"}>Indent</button><button class="button" data-selection-action="outdent" ${selectedIds.length === 1 ? "" : "disabled"}>Outdent</button><button class="button" data-selection-action="complete" ${selectedIds.length ? "" : "disabled"}>Complete</button><button class="button" data-selection-action="open" ${selectedIds.length ? "" : "disabled"}>Reopen</button><button class="button danger" data-selection-action="delete" ${selectedIds.length ? "" : "disabled"}>Delete</button></div>` : ""}
           <section class="task-list">${reminders.map(reminder => renderReminder(reminder)).join("") || `<div class="empty">No reminders here.</div>`}</section>`;
+        if (focusId) requestAnimationFrame(() => {
+          const field = $(focusId);
+          if (!field) return;
+          field.focus({preventScroll:true});
+          if (focusStart !== null && typeof field.setSelectionRange === "function") field.setSelectionRange(focusStart, focusEnd);
+        });
       }
       function renderReminder(reminder) {
         const editable = canEdit(reminder.listId) && !state.busy;
@@ -445,7 +503,10 @@
         const grace = state.completionGrace.get(key);
         const completing = grace && Date.now() - grace.started >= 5000;
         const due = formatDue(reminder.schedule);
-        return `<article class="task ${reminder.completed ? "done" : ""} ${completing ? "completing" : ""} ${Number(state.selectedReminderId) === Number(reminder.id) && Number(state.selectedListId) === Number(reminder.listId) ? "selected" : ""}" data-reminder-id="${Number(reminder.id)}" data-reminder-list="${Number(reminder.listId)}"><input class="check" type="checkbox" data-complete="${Number(reminder.id)}" data-complete-list="${Number(reminder.listId)}" ${reminder.completed || grace ? "checked" : ""} ${editable ? "" : "disabled"} aria-label="Mark ${escapeHtml(reminder.title)} complete"><div class="task-copy"><div class="task-title">${escapeHtml(reminder.title)}</div><div class="task-meta">${state.view !== "list" ? `<span>${escapeHtml(reminder.listTitle)}</span>` : ""}${reminder.assignee ? `<span>${escapeHtml(sameShip(reminder.assignee,state.ship) ? "me" : reminder.assignee)}</span>` : ""}${due ? `<span>${escapeHtml(due)}</span>` : ""}${(reminder.tags || []).map(tag => `<span>#${escapeHtml(tag)}</span>`).join("")}</div></div>${state.view === "list" && state.sort === "manual" ? `<div class="task-actions"><button class="mini" data-move="up" aria-label="Move up" title="Move up">↑</button><button class="mini" data-move="down" aria-label="Move down" title="Move down">↓</button></div>` : `<button class="mini" data-open-detail aria-label="Open details" title="Open details">›</button>`}</article>`;
+        const selected = state.selectedReminderIds.has(Number(reminder.id));
+        const list = state.lists.find(item => Number(item.id) === Number(reminder.listId));
+        const depth = reminderDepth(list, reminder);
+        return `<article class="task ${reminder.completed ? "done" : ""} ${completing ? "completing" : ""} ${Number(state.selectedReminderId) === Number(reminder.id) && Number(state.selectedListId) === Number(reminder.listId) ? "selected" : ""}" style="margin-left:${depth * 24}px;width:calc(100% - ${depth * 24}px)" data-reminder-id="${Number(reminder.id)}" data-reminder-list="${Number(reminder.listId)}">${state.selectionMode && state.view === "list" ? `<input class="check" type="checkbox" data-select-reminder="${Number(reminder.id)}" ${selected ? "checked" : ""} aria-label="Select ${escapeHtml(reminder.title)}">` : `<input class="check" type="checkbox" data-complete="${Number(reminder.id)}" data-complete-list="${Number(reminder.listId)}" ${reminder.completed || grace ? "checked" : ""} ${editable ? "" : "disabled"} aria-label="Mark ${escapeHtml(reminder.title)} complete">`}<div class="task-copy"><div class="task-title">${escapeHtml(reminder.title)}</div><div class="task-meta">${state.view !== "list" ? `<span>${escapeHtml(reminder.listTitle)}</span>` : ""}${reminder.assignee ? `<span>${escapeHtml(sameShip(reminder.assignee,state.ship) ? "me" : reminder.assignee)}</span>` : ""}${due ? `<span>${escapeHtml(due)}</span>` : ""}${(reminder.tags || []).map(tag => `<span>#${escapeHtml(tag)}</span>`).join("")}</div></div><div class="task-actions"><button class="mini flag ${reminder.flagged ? "active" : ""}" data-toggle-flag="${Number(reminder.id)}" data-flag-list="${Number(reminder.listId)}" aria-label="${reminder.flagged ? "Remove flag" : "Flag reminder"}" title="${reminder.flagged ? "Remove flag" : "Flag reminder"}">⚑</button><button class="mini" data-open-detail aria-label="Open details" title="Open details">›</button></div></article>`;
       }
       function draftFor(reminder) {
         if (state.detailDraft && Number(state.detailDraft.id) === Number(reminder.id)) return state.detailDraft;
@@ -459,12 +520,11 @@
         if (!list || !reminder) { tray.innerHTML = ""; return; }
         const draft = draftFor(reminder); const editable = canEdit(list.id) && !state.busy;
         tray.innerHTML = `<div class="tray-head"><div><div class="eyebrow">Reminder details</div><div class="muted tiny">${escapeHtml(list.title)}</div></div><button class="icon-button" data-close-detail aria-label="Close details">×</button></div>
-          <div class="form-section"><label class="check-row"><input class="check detail-immediate" data-field="completed" type="checkbox" ${draft.completed ? "checked" : ""} ${editable ? "" : "disabled"}> Completed</label><label class="check-row"><input class="check detail-immediate" data-field="flagged" type="checkbox" ${draft.flagged ? "checked" : ""} ${editable ? "" : "disabled"}> Flagged</label></div>
+          <div class="form-section"><label class="check-row"><input class="check detail-immediate" data-field="completed" type="checkbox" ${draft.completed ? "checked" : ""} ${editable ? "" : "disabled"}> Completed</label><div class="flag-control"><button class="flag ${draft.flagged ? "active" : ""}" type="button" data-detail-flag ${editable ? "" : "disabled"} aria-pressed="${draft.flagged}" aria-label="${draft.flagged ? "Remove flag" : "Flag reminder"}">⚑</button><span>${draft.flagged ? "Flagged" : "Not flagged"}</span></div></div>
           <div class="form-section"><label class="label">Title<input class="field detail-text" data-field="title" value="${escapeHtml(draft.title)}" ${editable ? "" : "disabled"}></label><label class="label">Notes<textarea class="textarea detail-text" data-field="notes" ${editable ? "" : "disabled"}>${escapeHtml(draft.notes)}</textarea></label><label class="label">Link<input class="field detail-text" data-field="url" value="${escapeHtml(draft.url)}" placeholder="https://" ${editable ? "" : "disabled"}></label></div>
           <div class="form-section"><div class="two-col"><label class="label">Priority<select class="select detail-immediate" data-field="priority" ${editable ? "" : "disabled"}>${["none","low","medium","high"].map(value => `<option ${draft.priority === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label class="label">Assignee<select class="select detail-immediate" data-field="assignee" ${editable ? "" : "disabled"}>${optionHtml(assigneeOptions(list), draft.assignee)}</select></label></div></div>
           <div class="form-section"><label class="label">Tags<div class="tag-box" id="tag-box">${draft.tags.map(tag => `<span class="chip">#${escapeHtml(tag)}<button data-remove-tag="${escapeHtml(tag)}" aria-label="Remove ${escapeHtml(tag)}">×</button></span>`).join("")}<input id="tag-input" list="tag-suggestions" placeholder="Find or add a tag" ${editable ? "" : "disabled"}></div></label><datalist id="tag-suggestions">${allTags().filter(tag => !draft.tags.includes(tag)).map(tag => `<option value="${escapeHtml(tag)}">`).join("")}</datalist></div>
           <div class="form-section"><span class="eyebrow">Schedule</span><input class="field detail-immediate" data-field="due" type="datetime-local" value="${escapeHtml(draft.due)}" ${editable ? "" : "disabled"}><label class="check-row"><input class="check detail-immediate" data-field="allDay" type="checkbox" ${draft.allDay ? "checked" : ""} ${editable ? "" : "disabled"}> All day</label></div>
-          <div class="form-section"><span class="eyebrow">Organize</span><div class="row" style="gap:7px;flex-wrap:wrap"><button class="button" data-detail-move="up" ${editable ? "" : "disabled"}>Move up</button><button class="button" data-detail-move="down" ${editable ? "" : "disabled"}>Move down</button><button class="button" data-indent ${editable ? "" : "disabled"}>Make sub-item</button><button class="button" data-outdent ${editable ? "" : "disabled"}>Promote</button></div></div>
           <div class="divider"></div><button class="button danger" data-delete-reminder ${editable ? "" : "disabled"}>Delete reminder</button>`;
       }
       function renderSettings() {
@@ -473,21 +533,26 @@
         if (!state.rightTray) { tray.innerHTML = ""; return; }
         if (state.rightTray === "app") {
           const badge = state.preferences["badge-mode"] || "today";
+          const invitations = state.invitations.map((invite,index) => `<div class="invitation-card"><div><strong>${escapeHtml(invite.title || "Shared list")}</strong><div class="muted tiny">from ${escapeHtml(invite.host)}</div></div><div class="row" style="gap:7px;margin-top:9px"><button class="button primary" data-accept-invite="${index}">Accept</button><button class="button" data-decline-invite="${index}">Decline</button></div></div>`).join("");
           tray.innerHTML = `<div class="tray-head"><div><div class="eyebrow">Settings</div><div class="status-line"><span class="dot ${state.online ? "online" : ""}"></span><span>${escapeHtml(state.ship)}</span></div></div><button class="icon-button" data-close-settings aria-label="Close settings">×</button></div>
-            <div class="form-section"><span class="eyebrow">Account</span><button class="button" data-switch-ship>Switch ship</button></div><div class="divider"></div>
+            <div class="form-section"><span class="eyebrow">Account</span><button class="button" data-switch-ship>Sign in as another ship</button><p class="muted tiny">The web app uses this browser's Urbit session.</p></div>
+            ${invitations ? `<div class="divider"></div><div class="form-section"><span class="eyebrow">Open invitations</span>${invitations}</div>` : ""}<div class="divider"></div>
             <form class="form-section" id="defaults-form"><span class="eyebrow">Reminder defaults</span><label class="label">Badge count<select class="select" name="badge"><option value="today" ${badge === "today" ? "selected" : ""}>Due today</option><option value="scheduled" ${badge === "scheduled" ? "selected" : ""}>Scheduled</option><option value="all" ${badge === "all" ? "selected" : ""}>All open</option></select></label><label class="label">All-day alert time<input class="field" name="alert" type="time" value="${minutesToTime(Number(state.preferences["all-day-alert-minute"] || 0))}"></label><label class="check-row"><input class="check" name="overdue" type="checkbox" ${state.preferences["all-day-overdue"] !== false ? "checked" : ""}> Keep all-day reminders overdue</label><button class="button primary" type="submit">Save defaults</button></form>`;
           return;
         }
         if (!list || !access) { tray.innerHTML = ""; return; }
         const owner = access.owner === true; const editable = canEdit(list.id) && !state.busy;
         const people = [{ship:access.host, role:"admin"}, ...(access.members || []).map(member => ({ship:member.ship, role:member.policy && (member.policy["can-invite"] || member.policy.canInvite) ? "admin" : "editor"})), ...(access.pending || []).map(ship => ({ship,role:"invited"}))];
+        const symbol = list.symbol && list.symbol !== "list" ? list.symbol : "≡";
+        const sections = (list.sections || []).slice().sort((a,b) => Number(a.rank || 0) - Number(b.rank || 0) || Number(a.id) - Number(b.id));
         tray.innerHTML = `<div class="tray-head"><div><div class="eyebrow">List settings</div><div class="muted tiny">${escapeHtml(list.title)}</div></div><button class="icon-button" data-close-settings aria-label="Close settings">×</button></div>
-          <form class="form-section" id="list-settings-form"><span class="eyebrow">Appearance</span><label class="label">Name<input class="field" name="title" value="${escapeHtml(list.title)}" ${editable ? "" : "disabled"}></label><div class="two-col"><label class="label">Color<input class="field" name="color" value="${escapeHtml(list.color || "")}" placeholder="#356df3" ${editable ? "" : "disabled"}></label><label class="label">Symbol<input class="field" name="symbol" value="${escapeHtml(list.symbol || "")}" placeholder="✓" ${editable ? "" : "disabled"}></label></div><button class="button primary" type="submit" ${editable ? "" : "disabled"}>Save list</button><button class="button" type="button" data-make-default ${Number(state.preferences["default-list"]) === Number(list.id) ? "disabled" : ""}>${Number(state.preferences["default-list"]) === Number(list.id) ? "Default list" : "Make default"}</button></form>
+          <form class="form-section" id="list-settings-form"><span class="eyebrow">Appearance</span><div class="appearance-preview"><span class="list-avatar" style="background:${escapeHtml(list.color || "#356df3")}">${escapeHtml(symbol)}</span><div><strong>${escapeHtml(list.title)}</strong><div class="status-line"><span class="dot ${canEdit(list.id) ? "online" : ""}"></span><span>${escapeHtml(normalizeShip(access.host))}</span></div></div></div><label class="label">Name<input class="field" name="title" value="${escapeHtml(list.title)}" ${editable ? "" : "disabled"}></label><div class="two-col"><label class="label">Color<input class="field" name="color" value="${escapeHtml(list.color || "")}" placeholder="#356df3" ${editable ? "" : "disabled"}></label><label class="label">Icon or emoji<input class="field" name="symbol" value="${escapeHtml(list.symbol === "list" ? "" : (list.symbol || ""))}" placeholder="≡" ${editable ? "" : "disabled"}></label></div><p class="muted tiny">The icon is the short mark shown inside the list's colored circle.</p><button class="button primary" type="submit" ${editable ? "" : "disabled"}>Save list</button><button class="button" type="button" data-make-default ${Number(state.preferences["default-list"]) === Number(list.id) ? "disabled" : ""}>${Number(state.preferences["default-list"]) === Number(list.id) ? "Default list" : "Make default"}</button></form>
+          ${sections.length ? `<div class="divider"></div><div class="form-section"><span class="eyebrow">Sections</span><div class="section-settings">${sections.map((section,index) => `<div class="section-setting"><input class="field" value="${escapeHtml(section.title)}" data-section-title="${Number(section.id)}" ${editable ? "" : "disabled"}><button class="icon-button" data-section-action="up" data-section-id="${Number(section.id)}" ${editable && index > 0 ? "" : "disabled"} aria-label="Move section up">↑</button><button class="icon-button" data-section-action="down" data-section-id="${Number(section.id)}" ${editable && index < sections.length - 1 ? "" : "disabled"} aria-label="Move section down">↓</button><button class="icon-button" data-section-action="delete" data-section-id="${Number(section.id)}" ${editable ? "" : "disabled"} aria-label="Delete section">×</button></div>`).join("")}</div></div>` : ""}
           <div class="divider"></div><div class="form-section"><span class="eyebrow">People</span><div class="people">${people.filter((person,index,array) => person.ship && array.findIndex(other => sameShip(other.ship,person.ship)) === index).map(person => `<div class="person"><span>${escapeHtml(sameShip(person.ship,state.ship) ? "me" : person.ship)}</span><span class="muted tiny">${person.role}</span></div>`).join("")}</div>${owner ? `<form class="row" id="invite-form" style="gap:7px"><input class="field" id="invite-ship" placeholder="~sampel-palnet" required ${editable ? "" : "disabled"}><button class="button" type="submit" ${editable ? "" : "disabled"}>Invite</button></form>` : ""}</div>
           <div class="divider"></div>${owner ? `<button class="button danger" data-delete-list ${editable ? "" : "disabled"}>Delete list</button>` : `<button class="button danger" data-leave-list ${editable ? "" : "disabled"}>Leave list</button>`}`;
       }
       function renderInvitations() {
-        $("invitations").innerHTML = state.invitations.map((invite,index) => `<div class="invite"><div class="eyebrow">Shared list invitation</div><p style="margin:7px 0 11px"><strong>${escapeHtml(invite.title || "Shared list")}</strong><br><span class="muted tiny">from ${escapeHtml(invite.host)}</span></p><div class="row" style="gap:7px"><button class="button primary" data-accept-invite="${index}">Accept</button><button class="button" data-decline-invite="${index}">Decline</button></div></div>`).join("");
+        $("invitations").innerHTML = state.invitations.map((invite,index) => ({invite,index})).filter(({invite}) => !state.hiddenInvitationKeys.has(invitationKey(invite))).map(({invite,index}) => `<div class="invite invitation-card"><div class="eyebrow">Shared list invitation</div><p style="margin:7px 0 11px"><strong>${escapeHtml(invite.title || "Shared list")}</strong><br><span class="muted tiny">from ${escapeHtml(invite.host)}</span></p><div class="row" style="gap:7px"><button class="button primary" data-accept-invite="${index}">Accept</button><button class="button" data-decline-invite="${index}">Decline</button><button class="button quiet" data-hide-invite="${index}">Hide</button></div></div>`).join("");
       }
       const minutesToTime = minutes => `${String(Math.floor(minutes / 60)).padStart(2,"0")}:${String(minutes % 60).padStart(2,"0")}`;
       const timeToMinutes = value => { const [hours,minutes] = String(value || "00:00").split(":").map(Number); return hours * 60 + minutes; };
@@ -518,6 +583,13 @@
         }
         showNotice("Details saved");
       }
+      async function setReminderFlagged(listId, reminderId, flagged) {
+        const list = state.lists.find(item => Number(item.id) === Number(listId));
+        const reminder = list && (list.reminders || []).find(item => Number(item.id) === Number(reminderId));
+        if (!list || !reminder || !canEdit(list.id)) return;
+        if (state.detailDraft && Number(state.detailDraft.id) === Number(reminderId)) state.detailDraft.flagged = flagged;
+        await poke({"update-reminder":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(reminder.id),title:reminder.title,notes:reminder.notes || "",url:reminder.url || null,priority:reminder.priority || "none",flagged:flagged,tags:reminder.tags || [],assignee:reminder.assignee || null,"base-revision":Number(list.revision)}},{quiet:true});
+      }
       async function moveReminder(reminderId, direction) {
         const list = selectedList(); if (!list) return;
         const reminder = (list.reminders || []).find(item => Number(item.id) === Number(reminderId)); if (!reminder) return;
@@ -527,8 +599,10 @@
         if (index < 0 || target < 0 || target >= siblings.length) return;
         await poke({"place-reminder":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(reminder.id),"target-id":Number(siblings[target].id),after:direction !== "up","base-revision":Number(list.revision)}});
       }
-      async function indentReminder(outdent = false) {
-        const list = selectedList(); const reminder = selectedReminder(); if (!list || !reminder) return;
+      async function indentReminder(reminderId, outdent = false) {
+        const list = selectedList();
+        const reminder = list && (list.reminders || []).find(item => Number(item.id) === Number(reminderId));
+        if (!list || !reminder) return;
         const parentId = reminder["parent-id"] ?? reminder.parentId ?? null;
         let targetParent = null;
         if (outdent) {
@@ -543,26 +617,90 @@
         }
         await poke({"move-reminder":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(reminder.id),"parent-id":targetParent,"section-id":reminder["section-id"] ?? reminder.sectionId ?? null,rank:Number(reminder.rank || 1024),"base-revision":Number(list.revision)}});
       }
+      async function moveSelectedToSection(sectionId) {
+        const ids = [...state.selectedReminderIds];
+        for (const id of ids) {
+          const list = selectedList();
+          const reminder = list && (list.reminders || []).find(item => Number(item.id) === Number(id));
+          if (!list || !reminder) continue;
+          await poke({"move-reminder":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(reminder.id),"parent-id":null,"section-id":sectionId ? Number(sectionId) : null,rank:Number(reminder.rank || 1024),"base-revision":Number(list.revision)}},{quiet:true});
+        }
+      }
+      async function setSelectedCompleted(completed) {
+        const ids = [...state.selectedReminderIds];
+        for (const id of ids) {
+          const list = selectedList();
+          const reminder = list && (list.reminders || []).find(item => Number(item.id) === Number(id));
+          if (!list || !reminder || reminder.completed === completed) continue;
+          await poke({"set-completed":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(id),completed,"base-revision":Number(list.revision)}},{quiet:true});
+        }
+      }
+      async function deleteSelected() {
+        const ids = [...state.selectedReminderIds];
+        for (const id of ids) {
+          const list = selectedList();
+          const reminder = list && (list.reminders || []).find(item => Number(item.id) === Number(id));
+          if (!list || !reminder) continue;
+          await poke({"delete-reminder":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(id),"base-revision":Number(list.revision)}},{quiet:true});
+        }
+        state.selectedReminderIds.clear();
+      }
 
       document.addEventListener("click", async event => {
         const listButton = event.target.closest("[data-list-id]");
-        if (listButton) { state.selectedListId = Number(listButton.dataset.listId); state.view = "list"; state.selectedReminderId = null; state.rightTray = ""; render(); return; }
+        if (listButton) { state.selectedListId = Number(listButton.dataset.listId); state.view = "list"; state.selectedReminderId = null; state.rightTray = ""; state.selectionMode = false; state.selectedReminderIds.clear(); render(); return; }
         const viewButton = event.target.closest("[data-view]");
-        if (viewButton) { state.view = viewButton.dataset.view; state.selectedReminderId = null; render(); return; }
+        if (viewButton) { state.view = viewButton.dataset.view; state.selectedReminderId = null; state.selectionMode = false; state.selectedReminderIds.clear(); render(); return; }
         const task = event.target.closest(".task");
-        if (task && !event.target.closest("button,input")) { state.selectedListId = Number(task.dataset.reminderList); state.view = state.view; openDetail(task.dataset.reminderId); return; }
+        if (task && !event.target.closest("button,input")) {
+          if (state.selectionMode && state.view === "list") {
+            const id = Number(task.dataset.reminderId);
+            state.selectedReminderIds.has(id) ? state.selectedReminderIds.delete(id) : state.selectedReminderIds.add(id);
+            renderMain(); return;
+          }
+          state.selectedListId = Number(task.dataset.reminderList); openDetail(task.dataset.reminderId); return;
+        }
         if (event.target.closest("[data-open-detail]") && task) { state.selectedListId = Number(task.dataset.reminderList); openDetail(task.dataset.reminderId); return; }
+        if (event.target.closest("#sort-direction")) { state.descending = !state.descending; renderMain(); return; }
+        if (event.target.closest("[data-toggle-selection]")) { state.selectionMode = !state.selectionMode; state.selectedReminderIds.clear(); closeDetail(); return; }
         if (event.target.closest("[data-close-detail]")) { closeDetail(); return; }
         if (event.target.closest("[data-close-settings]")) { state.rightTray = ""; render(); return; }
         if (event.target.closest("#open-settings")) { openSettings("app"); return; }
         if (event.target.closest("[data-open-list-settings]")) { openSettings("list"); return; }
-        const move = event.target.closest("[data-move]"); if (move && task) { await moveReminder(task.dataset.reminderId, move.dataset.move); return; }
-        const detailMove = event.target.closest("[data-detail-move]"); if (detailMove) { await moveReminder(state.selectedReminderId, detailMove.dataset.detailMove); return; }
-        if (event.target.closest("[data-indent]")) { await indentReminder(false); return; }
-        if (event.target.closest("[data-outdent]")) { await indentReminder(true); return; }
+        const toggleFlag = event.target.closest("[data-toggle-flag]");
+        if (toggleFlag) {
+          const listId = Number(toggleFlag.dataset.flagList); const reminderId = Number(toggleFlag.dataset.toggleFlag);
+          const list = state.lists.find(item => Number(item.id) === listId); const reminder = list && (list.reminders || []).find(item => Number(item.id) === reminderId);
+          if (reminder) await setReminderFlagged(listId, reminderId, !reminder.flagged);
+          return;
+        }
+        if (event.target.closest("[data-detail-flag]")) { const reminder = selectedReminder(); if (reminder) await setReminderFlagged(selectedList().id, reminder.id, !reminder.flagged); return; }
+        const selectionAction = event.target.closest("[data-selection-action]");
+        if (selectionAction) {
+          const action = selectionAction.dataset.selectionAction; const ids = [...state.selectedReminderIds];
+          if (action === "section") await moveSelectedToSection($("selection-section").value);
+          else if (action === "up" && ids.length === 1) await moveReminder(ids[0], "up");
+          else if (action === "down" && ids.length === 1) await moveReminder(ids[0], "down");
+          else if (action === "indent" && ids.length === 1) await indentReminder(ids[0], false);
+          else if (action === "outdent" && ids.length === 1) await indentReminder(ids[0], true);
+          else if (action === "complete") await setSelectedCompleted(true);
+          else if (action === "open") await setSelectedCompleted(false);
+          else if (action === "delete" && confirm(`Delete ${ids.length} selected reminder${ids.length === 1 ? "" : "s"}?`)) await deleteSelected();
+          renderMain(); return;
+        }
+        const sectionAction = event.target.closest("[data-section-action]");
+        if (sectionAction) {
+          const list = selectedList(); const sections = list && (list.sections || []).slice().sort((a,b) => Number(a.rank || 0) - Number(b.rank || 0)); const id = Number(sectionAction.dataset.sectionId); const index = sections ? sections.findIndex(section => Number(section.id) === id) : -1; const action = sectionAction.dataset.sectionAction;
+          if (!list || index < 0) return;
+          if (action === "delete" && confirm(`Delete section ${sections[index].title}?`)) await poke({"delete-section":{"operation-id":opId(),"list-id":Number(list.id),"section-id":id,"base-revision":Number(list.revision)}});
+          else if (action === "up" && index > 0) await poke({"place-section":{"operation-id":opId(),"list-id":Number(list.id),"section-id":id,"target-id":Number(sections[index - 1].id),after:false,"base-revision":Number(list.revision)}});
+          else if (action === "down" && index < sections.length - 1) await poke({"place-section":{"operation-id":opId(),"list-id":Number(list.id),"section-id":id,"target-id":Number(sections[index + 1].id),after:true,"base-revision":Number(list.revision)}});
+          return;
+        }
         const removeTag = event.target.closest("[data-remove-tag]"); if (removeTag && state.detailDraft) { state.detailDraft.tags = state.detailDraft.tags.filter(tag => tag !== removeTag.dataset.removeTag); renderDetail(); await saveDetail(); return; }
         const accept = event.target.closest("[data-accept-invite]"); if (accept) { const invite = state.invitations[Number(accept.dataset.acceptInvite)]; await poke({"accept-invitation":{"operation-id":opId(),host:invite.host,token:invite.token}}); return; }
         const decline = event.target.closest("[data-decline-invite]"); if (decline) { const invite = state.invitations[Number(decline.dataset.declineInvite)]; await poke({"decline-invitation":{"operation-id":opId(),host:invite.host,token:invite.token}}); return; }
+        const hide = event.target.closest("[data-hide-invite]"); if (hide) { const invite = state.invitations[Number(hide.dataset.hideInvite)]; if (invite) state.hiddenInvitationKeys.add(invitationKey(invite)); renderInvitations(); return; }
         if (event.target.closest("[data-make-default]")) { const list = selectedList(); await poke({"set-preferences":{"operation-id":opId(),"default-list":Number(list.id),"pinned-lists":state.preferences["pinned-lists"] || [],"pinned-views":state.preferences["pinned-views"] || [],"snooze-presets":state.preferences["snooze-presets"] || [],"base-revision":Number(state.preferences.revision || 0)}}); return; }
         if (event.target.closest("[data-switch-ship]")) { location.href = "/~/logout"; return; }
         if (event.target.closest("[data-delete-reminder]")) { const list = selectedList(); const reminder = selectedReminder(); if (list && reminder && confirm("Delete this reminder?")) { await poke({"delete-reminder":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(reminder.id),"base-revision":Number(list.revision)}}); closeDetail(); } return; }
@@ -577,8 +715,11 @@
       document.addEventListener("change", async event => {
         if (event.target.id === "tag-filter") { state.tag = event.target.value; renderMain(); return; }
         if (event.target.id === "sort") { state.sort = event.target.value; renderMain(); return; }
-        if (event.target.id === "descending") { state.descending = event.target.checked; renderMain(); return; }
         if (event.target.id === "quick-list") { state.selectedListId = Number(event.target.value); if (state.view === "list") render(); else renderMain(); return; }
+        const selected = event.target.closest("[data-select-reminder]");
+        if (selected) { const id = Number(selected.dataset.selectReminder); selected.checked ? state.selectedReminderIds.add(id) : state.selectedReminderIds.delete(id); renderMain(); return; }
+        const sectionTitle = event.target.closest("[data-section-title]");
+        if (sectionTitle) { const list = selectedList(); const section = list && (list.sections || []).find(item => Number(item.id) === Number(sectionTitle.dataset.sectionTitle)); const title = sectionTitle.value.trim(); if (list && section && title && title !== section.title) await poke({"update-section":{"operation-id":opId(),"list-id":Number(list.id),"section-id":Number(section.id),title,rank:Number(section.rank || 1024),"base-revision":Number(list.revision)}}); return; }
         const complete = event.target.closest("[data-complete]");
         if (complete) {
           const listId = Number(complete.dataset.completeList); const list = state.lists.find(item => Number(item.id) === listId); const reminderId = Number(complete.dataset.complete); if (!list) return;
@@ -617,7 +758,7 @@
         }
         if (form.id === "new-section-form") { const list = selectedList(); const title = $("new-section-title").value.trim(); if (!list || !title) return; const sections = list.sections || []; const rank = sections.length ? Number(sections[sections.length-1].rank || 0) + 1024 : 1024; await poke({"add-section":{"operation-id":opId(),"list-id":Number(list.id),title,rank,"base-revision":Number(list.revision)}}); return; }
         if (form.id === "invite-form") { const list = selectedList(); const ship = normalizeShip($("invite-ship").value); if (list && ship) await poke({"invite-member":{"operation-id":opId(),"list-id":Number(list.id),ship,"can-invite":false}}); return; }
-        if (form.id === "list-settings-form") { const list = selectedList(); if (!list) return; await poke({"update-list":{"operation-id":opId(),"list-id":Number(list.id),title:form.elements.title.value.trim(),color:form.elements.color.value.trim(),symbol:form.elements.symbol.value.trim(),"base-revision":Number(list.revision)}}); return; }
+        if (form.id === "list-settings-form") { const list = selectedList(); if (!list) return; await poke({"update-list":{"operation-id":opId(),"list-id":Number(list.id),title:form.elements.title.value.trim(),color:form.elements.color.value.trim(),symbol:form.elements.symbol.value.trim() || "list","base-revision":Number(list.revision)}}); return; }
         if (form.id === "defaults-form") { await poke({"set-reminder-policy":{"operation-id":opId(),"badge-mode":form.elements.badge.value,"all-day-alert-minute":timeToMinutes(form.elements.alert.value),"all-day-overdue":form.elements.overdue.checked,"base-revision":Number(state.preferences.revision || 0)}}); return; }
       });
       $("refresh").addEventListener("click", () => load());

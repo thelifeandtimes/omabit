@@ -17,10 +17,6 @@ BorderSurface {
   property bool loadingFields: false
   property bool pendingTextSave: false
   signal closeRequested()
-  signal moveUpRequested()
-  signal moveDownRequested()
-  signal indentRequested()
-  signal outdentRequested()
 
   readonly property var assigneeOptions: (assigneeChoices || []).map(function(choice) {
     return {
@@ -56,7 +52,7 @@ BorderSurface {
     notesField.text = reminder.notes || ""
     urlField.text = reminder.url || ""
     priorityField.currentIndex = Math.max(0, priorityField.model.indexOf(reminder.priority || "none"))
-    flaggedField.checked = reminder.flagged === true
+    flaggedField.flagged = reminder.flagged === true
     tagPicker.values = (reminder.tags || []).slice()
     assigneeField.value = normalizedShip(reminder.assignee)
     duePicker.value = TendModel.scheduleInputValue(reminder.schedule)
@@ -94,7 +90,7 @@ BorderSurface {
       notes: notesField.text,
       url: urlField.text.trim() || null,
       priority: priorityField.currentText,
-      flagged: flaggedField.checked,
+      flagged: flaggedField.flagged,
       tags: tagPicker.values || [],
       assignee: assigneeField.value || null
     }, list.revision)
@@ -188,17 +184,19 @@ BorderSurface {
           onClicked: root.service.toggleCompletedWithGrace(root.list.id, root.reminder.id, root.reminder.completed)
         }
 
-        TendCheckbox {
+        TendFlagButton {
           id: flaggedField
-          text: "Flagged"
+          flagged: false
           enabled: root.canSave()
-          onClicked: { flaggedField.checked = !flaggedField.checked; root.saveDetailsNow() }
+          onToggled: function(flagged) { flaggedField.flagged = flagged; root.saveDetailsNow() }
         }
+
+        Text { anchors.verticalCenter: parent.verticalCenter; text: flaggedField.flagged ? "Flagged" : "Flag reminder"; color: flaggedField.flagged ? Color.urgent : Qt.darker(Color.popups.text, 1.45); font.family: Style.font.family; font.pixelSize: Style.font.body }
       }
 
-      TextField { id: titleField; width: parent.width; placeholderText: "Reminder title"; Accessible.name: "Reminder title"; onTextEdited: root.scheduleTextSave() }
+      TextField { id: titleField; width: parent.width; placeholderText: "Reminder title"; Accessible.name: "Reminder title"; onTextEdited: root.scheduleTextSave(); QQC.ContextMenu.menu: TendEditMenu { target: titleField } }
       TendTextArea { id: notesField; width: parent.width; height: Style.space(96); placeholderText: "Notes"; wrapMode: TextEdit.Wrap; Accessible.name: "Reminder notes"; onTextChanged: root.scheduleTextSave() }
-      TextField { id: urlField; width: parent.width; placeholderText: "Link"; Accessible.name: "Reminder URL"; onTextEdited: root.scheduleTextSave() }
+      TextField { id: urlField; width: parent.width; placeholderText: "Link"; Accessible.name: "Reminder URL"; onTextEdited: root.scheduleTextSave(); QQC.ContextMenu.menu: TendEditMenu { target: urlField } }
 
       TendDropdown { id: priorityField; width: parent.width; label: "Priority"; model: ["none", "low", "medium", "high"]; onActivated: root.saveDetailsNow() }
 
@@ -219,7 +217,7 @@ BorderSurface {
       Row {
         width: parent.width
         spacing: Style.space(8)
-        TextField { id: newTagField; width: parent.width - addTagButton.width - parent.spacing; placeholderText: "Add a new tag"; Accessible.name: "New reminder tag"; onAccepted: root.addTag() }
+        TextField { id: newTagField; width: parent.width - addTagButton.width - parent.spacing; placeholderText: "Add a new tag"; Accessible.name: "New reminder tag"; onAccepted: root.addTag(); QQC.ContextMenu.menu: TendEditMenu { target: newTagField } }
         TendButton { id: addTagButton; text: "Add tag"; enabled: newTagField.text.trim() !== ""; onClicked: root.addTag() }
       }
 
@@ -238,20 +236,6 @@ BorderSurface {
         text: "All day"
         enabled: root.canSave() && duePicker.value !== ""
         onClicked: { checked = !checked; duePicker.allDay = checked; root.saveSchedule() }
-      }
-
-      PanelSeparator { width: parent.width; foreground: Color.popups.text }
-      Text { text: "ORGANIZE"; color: Color.popups.text; opacity: 0.68; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
-
-      Grid {
-        width: parent.width
-        columns: 2
-        columnSpacing: Style.space(6)
-        rowSpacing: Style.space(6)
-        TendButton { width: (parent.width - parent.columnSpacing) / 2; text: "Move up"; onClicked: root.moveUpRequested() }
-        TendButton { width: (parent.width - parent.columnSpacing) / 2; text: "Move down"; onClicked: root.moveDownRequested() }
-        TendButton { width: (parent.width - parent.columnSpacing) / 2; text: "Make sub-item"; onClicked: root.indentRequested() }
-        TendButton { width: (parent.width - parent.columnSpacing) / 2; text: "Promote"; enabled: root.reminder && root.reminder.parentId !== null; onClicked: root.outdentRequested() }
       }
 
       PanelSeparator { width: parent.width; foreground: Color.popups.text }

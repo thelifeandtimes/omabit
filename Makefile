@@ -56,6 +56,9 @@ lint-qml:
 		omarchy-plugin/ReminderDetail.qml \
 		omarchy-plugin/TendAssigneePicker.qml \
 		omarchy-plugin/TendDateTimePicker.qml \
+		omarchy-plugin/TendEditMenu.qml \
+		omarchy-plugin/TendFlagButton.qml \
+		omarchy-plugin/TendMenuItem.qml \
 		omarchy-plugin/TendSettings.qml \
 		omarchy-plugin/ReminderDefaults.qml \
 		omarchy-plugin/TendButton.qml \

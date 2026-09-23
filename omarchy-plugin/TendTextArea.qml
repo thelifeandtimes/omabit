@@ -9,6 +9,7 @@ BorderSurface {
   property alias text: editor.text
   property alias placeholderText: editor.placeholderText
   property alias wrapMode: editor.wrapMode
+  property alias readOnly: editor.readOnly
   property color foreground: Color.foreground
   property color accent: Color.accent
 
@@ -34,6 +35,8 @@ BorderSurface {
     font.family: Style.font.family
     font.pixelSize: Style.font.body
     background: Item {}
+
+    QQC.ContextMenu.menu: TendEditMenu { target: editor }
   }
 
   HoverHandler { id: hover }

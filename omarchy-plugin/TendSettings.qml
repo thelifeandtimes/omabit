@@ -13,10 +13,12 @@ BorderSurface {
   property bool editable: false
   property bool mayInvite: false
   property var activities: []
+  property var invitations: []
   property var collaborationPolicy: ({ notifyAdded: true, notifyCompleted: true, notifyAssigned: true })
   property bool confirmDelete: false
   signal closeRequested()
   signal switchShipRequested()
+  signal removeShipRequested()
   signal listDeleted()
 
   color: Qt.rgba(Color.popups.background.r, Color.popups.background.g, Color.popups.background.b, 1)
@@ -75,6 +77,17 @@ BorderSurface {
     var action = String(event.action || "activity").replace(/-/g, " ")
     var title = String(event.reminderTitle || event.title || "")
     return actor + " · " + action + (title ? " · " + title : "")
+  }
+
+  function moveSection(sectionId, delta) {
+    if (!service || !list) return
+    var sections = (list.sections || []).slice().sort(function(left, right) {
+      return Number(left.rank) - Number(right.rank) || Number(left.id) - Number(right.id)
+    })
+    var index = sections.findIndex(function(section) { return Number(section.id) === Number(sectionId) })
+    var target = index + delta
+    if (index < 0 || target < 0 || target >= sections.length) return
+    service.placeSection(list.id, sectionId, sections[target].id, delta > 0, list.revision)
   }
 
   onVisibleChanged: if (visible) load()
@@ -147,8 +160,54 @@ BorderSurface {
         TendButton {
           width: parent.width
           text: "Switch ship"
-          Accessible.name: "Disconnect and switch Urbit ship"
+          Accessible.name: "Connect a different Urbit ship"
           onClicked: root.switchShipRequested()
+        }
+
+        TendButton {
+          width: parent.width
+          text: "Remove ship"
+          foreground: Color.urgent
+          accent: Color.urgent
+          bordered: true
+          Accessible.name: "Remove the saved Urbit ship from Tend"
+          onClicked: root.removeShipRequested()
+        }
+
+        Column {
+          visible: root.invitations.length > 0
+          width: parent.width
+          spacing: Style.space(8)
+
+          PanelSeparator { width: parent.width; foreground: Color.popups.text }
+          Text { text: "OPEN INVITATIONS"; color: Color.popups.text; opacity: 0.68; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
+
+          Repeater {
+            model: root.invitations
+            delegate: BorderSurface {
+              required property var modelData
+              width: parent.width
+              height: invitationSettingsRow.implicitHeight + Style.space(16)
+              color: Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, 0.08)
+              borderSpec: Border.controlSpec("normal", Color.popups.text, Color.accent)
+              radius: Style.cornerRadius
+              Row {
+                id: invitationSettingsRow
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.margins: Style.space(8)
+                spacing: Style.space(6)
+                Column {
+                  width: parent.width - acceptSettingsInvite.width - declineSettingsInvite.width - parent.spacing * 2
+                  Text { width: parent.width; text: modelData.title; color: Color.popups.text; elide: Text.ElideRight; font.family: Style.font.family; font.pixelSize: Style.font.body; font.bold: true }
+                  Text { width: parent.width; text: "From " + modelData.host; color: Qt.darker(Color.popups.text, 1.4); elide: Text.ElideRight; font.family: Style.font.family; font.pixelSize: Style.font.caption }
+                }
+                TendButton { id: acceptSettingsInvite; text: "Accept"; enabled: root.service && root.service.connectionState === "online" && !root.service.mutationPending; onClicked: root.service.acceptInvitation(modelData) }
+                TendButton { id: declineSettingsInvite; text: "Decline"; bordered: false; enabled: root.service && root.service.connectionState === "online" && !root.service.mutationPending; onClicked: root.service.declineInvitation(modelData) }
+              }
+            }
+          }
         }
 
         PanelSeparator { width: parent.width; foreground: Color.popups.text }
@@ -183,13 +242,41 @@ BorderSurface {
         spacing: Style.space(12)
 
         Text { text: "APPEARANCE"; color: Color.popups.text; opacity: 0.68; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
+
+        Row {
+          width: parent.width
+          spacing: Style.space(10)
+          Rectangle {
+            width: Style.space(42)
+            height: width
+            radius: width / 2
+            color: listColor.text || "#3b82f6"
+            Text { anchors.centerIn: parent; text: listSymbol.text && listSymbol.text !== "list" ? listSymbol.text : "≡"; color: "white"; font.family: Style.font.family; font.pixelSize: Style.font.heading; font.bold: true }
+          }
+          Column {
+            width: parent.width - x
+            spacing: Style.space(2)
+            Text { width: parent.width; text: listTitle.text || "List preview"; color: Color.popups.text; elide: Text.ElideRight; font.family: Style.font.family; font.pixelSize: Style.font.body; font.bold: true }
+            Text { width: parent.width; text: root.access && root.access.host ? root.access.host : "Hosted on this ship"; color: Qt.darker(Color.popups.text, 1.4); elide: Text.ElideRight; font.family: Style.font.family; font.pixelSize: Style.font.caption }
+          }
+        }
         TextField { id: listTitle; width: parent.width; placeholderText: "List title"; Accessible.name: "List title" }
 
         Row {
           width: parent.width
           spacing: Style.space(8)
-          TextField { id: listColor; width: (parent.width - parent.spacing) * 0.62; placeholderText: "#3b82f6"; Accessible.name: "List color" }
-          TextField { id: listSymbol; width: parent.width - listColor.width - parent.spacing; placeholderText: "Symbol"; Accessible.name: "List symbol or emoji" }
+          Column {
+            width: (parent.width - parent.spacing) * 0.62
+            spacing: Style.space(4)
+            Text { text: "COLOR"; color: Color.popups.text; opacity: 0.62; font.family: Style.font.family; font.pixelSize: Style.font.caption }
+            TextField { id: listColor; width: parent.width; placeholderText: "#3b82f6"; Accessible.name: "List color" }
+          }
+          Column {
+            width: (parent.width - parent.spacing) * 0.38
+            spacing: Style.space(4)
+            Text { text: "ICON"; color: Color.popups.text; opacity: 0.62; font.family: Style.font.family; font.pixelSize: Style.font.caption }
+            TextField { id: listSymbol; width: parent.width; placeholderText: "Icon or emoji"; Accessible.name: "List icon or emoji" }
+          }
         }
 
         TendButton {
@@ -204,6 +291,33 @@ BorderSurface {
           spacing: Style.space(8)
           TendButton { width: (parent.width - parent.spacing) / 2; text: root.service && root.list && root.service.preferences.defaultList === root.list.id ? "Default list" : "Make default"; enabled: root.service && root.list && root.service.connectionState === "online" && !root.service.mutationPending; onClicked: root.setDefaultList() }
           TendButton { width: (parent.width - parent.spacing) / 2; text: root.pinned() ? "Unpin list" : "Pin list"; enabled: root.service && root.service.connectionState === "online" && !root.service.mutationPending; onClicked: root.togglePinned() }
+        }
+
+        Column {
+          visible: root.list && (root.list.sections || []).length > 0
+          width: parent.width
+          spacing: Style.space(6)
+          PanelSeparator { width: parent.width; foreground: Color.popups.text }
+          Text { text: "SECTIONS"; color: Color.popups.text; opacity: 0.68; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
+          Repeater {
+            model: root.list ? root.list.sections || [] : []
+            delegate: Row {
+              required property var modelData
+              required property int index
+              width: parent.width
+              spacing: Style.space(6)
+              TextField {
+                id: sectionName
+                width: parent.width - sectionUp.width - sectionDown.width - sectionDelete.width - parent.spacing * 3
+                text: modelData.title
+                Accessible.name: "Section title"
+                onEditingFinished: if (text.trim() && text.trim() !== modelData.title) root.service.updateSection(root.list.id, modelData.id, text.trim(), modelData.rank, root.list.revision)
+              }
+              TendButton { id: sectionUp; text: "↑"; bordered: false; enabled: index > 0 && root.editable; onClicked: root.moveSection(modelData.id, -1) }
+              TendButton { id: sectionDown; text: "↓"; bordered: false; enabled: index < (root.list.sections || []).length - 1 && root.editable; onClicked: root.moveSection(modelData.id, 1) }
+              TendButton { id: sectionDelete; text: "󰆴"; bordered: false; foreground: Color.urgent; enabled: root.editable; onClicked: root.service.deleteSection(root.list.id, modelData.id, root.list.revision) }
+            }
+          }
         }
 
         PanelSeparator { width: parent.width; foreground: Color.popups.text }
