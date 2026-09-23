@@ -2569,7 +2569,7 @@ Item {
                                 Accessible.role: Accessible.List
                                 Accessible.name: "Reminders"
 
-                                delegate: Rectangle {
+                                delegate: Item {
                                     id: reminderRow
 
                                     required property var modelData
@@ -2577,89 +2577,96 @@ Item {
                                     readonly property bool sectionRow: modelData.kind === "section"
                                     readonly property var reminderData: sectionRow ? null : (modelData.reminder || modelData)
                                     readonly property real indentPixels: sectionRow ? 0 : Math.max(0, Number(reminderData.depth || 0)) * Style.space(22)
+                                    readonly property bool currentRow: ListView.isCurrentItem
 
-                                    x: indentPixels
-                                    width: Math.max(Style.space(120), ListView.view.width - indentPixels)
+                                    width: ListView.view.width
                                     height: sectionRow ? Style.space(38) : Style.space(44)
                                     opacity: !sectionRow && service ? service.completionOpacity(reminderData.listId, reminderData.id) : 1
-                                    radius: Style.cornerRadius
-                                    color: sectionRow ? "transparent" : (root.selectionMode && root.reminderIsSelected(reminderData.id)
-                                        ? Style.selectedFillFor(Color.menu.text, Color.accent)
-                                        : (rowHover.hovered || ListView.isCurrentItem
-                                            ? Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.14)
-                                            : Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.04)))
-                                    border.width: !sectionRow && reminderDropArea.containsDrag ? Math.max(1, Style.space(1)) : 0
-                                    border.color: reminderDropArea.containsDrag ? Color.menu.text : "transparent"
                                     Accessible.role: sectionRow ? Accessible.Heading : Accessible.ListItem
                                     Accessible.name: sectionRow
                                         ? modelData.section.title + ", " + modelData.count + " reminders"
                                         : (Number(reminderData.depth || 0) > 0 ? "Subtask, " : "") + reminderData.title + (root.reminderHasChildren(reminderData.id) ? (root.reminderIsCollapsed(reminderData.id) ? ", collapsed" : ", expanded") : "")
 
-                                    Row {
-                                        visible: sectionRow
-                                        anchors.left: parent.left
-                                        anchors.right: parent.right
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        anchors.leftMargin: Style.space(8)
-                                        anchors.rightMargin: Style.space(8)
-                                        spacing: Style.space(8)
+                                    Rectangle {
+                                        id: reminderCard
 
-                                        Text {
-                                            width: parent.width - sectionCount.width - parent.spacing
-                                            text: modelData.section ? modelData.section.title : "Section"
-                                            color: Color.menu.text
-                                            opacity: 0.72
-                                            elide: Text.ElideRight
-                                            font.family: Style.font.menuFamily
-                                            font.pixelSize: Style.font.caption
-                                            font.bold: true
+                                        x: reminderRow.indentPixels
+                                        width: Math.max(Style.space(120), reminderRow.width - x)
+                                        height: parent.height
+                                        radius: Style.cornerRadius
+                                        color: reminderRow.sectionRow ? "transparent" : (root.selectionMode && root.reminderIsSelected(reminderRow.reminderData.id)
+                                            ? Style.selectedFillFor(Color.menu.text, Color.accent)
+                                            : (rowHover.hovered || reminderRow.currentRow
+                                                ? Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.14)
+                                                : Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.04)))
+                                        border.width: !reminderRow.sectionRow && reminderDropArea.containsDrag ? Math.max(1, Style.space(1)) : 0
+                                        border.color: reminderDropArea.containsDrag ? Color.menu.text : "transparent"
+
+                                        Row {
+                                            visible: reminderRow.sectionRow
+                                            anchors.left: parent.left
+                                            anchors.right: parent.right
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            anchors.leftMargin: Style.space(8)
+                                            anchors.rightMargin: Style.space(8)
+                                            spacing: Style.space(8)
+
+                                            Text {
+                                                width: parent.width - sectionCount.width - parent.spacing
+                                                text: modelData.section ? modelData.section.title : "Section"
+                                                color: Color.menu.text
+                                                opacity: 0.72
+                                                elide: Text.ElideRight
+                                                font.family: Style.font.menuFamily
+                                                font.pixelSize: Style.font.caption
+                                                font.bold: true
+                                            }
+
+                                            Text {
+                                                id: sectionCount
+                                                text: String(Number(modelData.count || 0))
+                                                color: Color.menu.text
+                                                opacity: 0.5
+                                                font.family: Style.font.menuFamily
+                                                font.pixelSize: Style.font.caption
+                                            }
                                         }
 
-                                        Text {
-                                            id: sectionCount
-                                            text: String(Number(modelData.count || 0))
-                                            color: Color.menu.text
-                                            opacity: 0.5
-                                            font.family: Style.font.menuFamily
-                                            font.pixelSize: Style.font.caption
+                                        DropArea {
+                                            id: reminderDropArea
+
+                                            anchors.fill: parent
+                                            enabled: !reminderRow.sectionRow && root.viewMode === "list" && root.sortMode === "manual" && root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
+                                            keys: ["tend-reminder"]
+                                            onDropped: function(drop) {
+                                                if (drop.source && root.placeReminder(drop.source.modelData, reminderRow.reminderData, drop.y >= height / 2))
+                                                    drop.acceptProposedAction();
+                                            }
                                         }
-                                    }
 
-                                    DropArea {
-                                        id: reminderDropArea
-
-                                        anchors.fill: parent
-                                        enabled: !reminderRow.sectionRow && root.viewMode === "list" && root.sortMode === "manual" && root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
-                                        keys: ["tend-reminder"]
-                                        onDropped: function(drop) {
-                                            if (drop.source && root.placeReminder(drop.source.modelData, reminderRow.reminderData, drop.y >= height / 2))
-                                                drop.acceptProposedAction();
-                                        }
-                                    }
-
-                                    Row {
-                                        visible: !reminderRow.sectionRow
-                                        anchors.fill: parent
-                                        anchors.margins: Style.space(8)
-                                        spacing: Style.space(10)
+                                        Row {
+                                            visible: !reminderRow.sectionRow
+                                            anchors.fill: parent
+                                            anchors.margins: Style.space(8)
+                                            spacing: Style.space(10)
 
                                         TendCheckbox {
-                                            checked: service ? service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) : reminderRow.reminderData.completed
-                                            enabled: service && service.canEditList(reminderRow.reminderData.listId) && service.connectionState === "online" && !service.mutationPending
-                                            Accessible.name: (checked ? "Mark open " : "Complete ") + reminderRow.reminderData.title
+                                            checked: !reminderRow.sectionRow && (service ? service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) : reminderRow.reminderData.completed)
+                                            enabled: !reminderRow.sectionRow && service && service.canEditList(reminderRow.reminderData.listId) && service.connectionState === "online" && !service.mutationPending
+                                            Accessible.name: reminderRow.sectionRow ? "" : (checked ? "Mark open " : "Complete ") + reminderRow.reminderData.title
                                             onClicked: service.toggleCompletedWithGrace(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed)
                                         }
 
                                         TendFlagButton {
-                                            flagged: reminderRow.reminderData.flagged === true
-                                            enabled: service && service.canEditList(reminderRow.reminderData.listId) && service.connectionState === "online" && !service.mutationPending
+                                            flagged: !reminderRow.sectionRow && reminderRow.reminderData.flagged === true
+                                            enabled: !reminderRow.sectionRow && service && service.canEditList(reminderRow.reminderData.listId) && service.connectionState === "online" && !service.mutationPending
                                             onToggled: function(flagged) { service.setReminderFlagged(reminderRow.reminderData.listId, reminderRow.reminderData.id, flagged) }
                                         }
 
                                         TendButton {
-                                            visible: root.viewMode === "list" && root.reminderHasChildren(reminderRow.reminderData.id)
-                                            text: root.reminderIsCollapsed(reminderRow.reminderData.id) ? "▶" : "▼"
-                                            Accessible.name: (root.reminderIsCollapsed(reminderRow.reminderData.id) ? "Expand " : "Collapse ") + reminderRow.reminderData.title
+                                            visible: !reminderRow.sectionRow && root.viewMode === "list" && root.reminderHasChildren(reminderRow.reminderData.id)
+                                            text: reminderRow.sectionRow ? "" : (root.reminderIsCollapsed(reminderRow.reminderData.id) ? "▶" : "▼")
+                                            Accessible.name: reminderRow.sectionRow ? "" : (root.reminderIsCollapsed(reminderRow.reminderData.id) ? "Expand " : "Collapse ") + reminderRow.reminderData.title
                                             onClicked: root.toggleReminderCollapsed(reminderRow.reminderData.id)
                                         }
 
@@ -2667,16 +2674,18 @@ Item {
                                             anchors.verticalCenter: parent.verticalCenter
                                             width: parent.width - x
                                             text: {
+                                                if (reminderRow.sectionRow)
+                                                    return "";
                                                 var list = root.viewMode === "list" ? "" : "  ·  " + reminderRow.reminderData.listTitle;
                                                 var section = root.sectionTitleFor(reminderRow.reminderData.listId, reminderRow.reminderData.sectionId);
                                                 var due = reminderRow.reminderData.schedule ? "  ·  " + TendModel.scheduleInputValue(reminderRow.reminderData.schedule).replace("T", " ") : "";
                                                 return reminderRow.reminderData.title + list + (section ? "  ·  " + section : "") + due;
                                             }
                                             color: Color.menu.text
-                                            opacity: service && service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) ? 0.5 : 1
+                                            opacity: !reminderRow.sectionRow && service && service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) ? 0.5 : 1
                                             font.family: Style.font.menuFamily
                                             font.pixelSize: Style.font.body
-                                            font.strikeout: service ? service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) : reminderRow.reminderData.completed
+                                            font.strikeout: !reminderRow.sectionRow && (service ? service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) : reminderRow.reminderData.completed)
 
                                             MouseArea {
                                                 anchors.fill: parent
@@ -2691,9 +2700,11 @@ Item {
                                             }
                                         }
 
-                                    }
+                                        }
 
-                                    HoverHandler { id: rowHover }
+                                        HoverHandler { id: rowHover }
+
+                                    }
 
                                 }
 

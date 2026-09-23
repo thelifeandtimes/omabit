@@ -157,6 +157,14 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("ScrollView", settings)
         self.assertIn("Color.popups.background", details)
 
+    def test_panel_tree_indents_the_entire_reminder_card_from_the_left(self):
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+        self.assertIn("delegate: Item {\n                                    id: reminderRow", panel)
+        self.assertIn("width: ListView.view.width", panel)
+        self.assertIn("x: reminderRow.indentPixels", panel)
+        self.assertIn("width: Math.max(Style.space(120), reminderRow.width - x)", panel)
+        self.assertNotIn("\n                                    x: indentPixels", panel)
+
     def test_mutation_processes_use_newline_delimited_json(self):
         service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
         bridge = (ROOT / "omarchy-plugin" / "transport" / "eyre_client.py").read_text(encoding="utf-8")
