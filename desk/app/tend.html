@@ -244,7 +244,7 @@
       const accessFor = listId => state.accesses.find(item => Number(item.alias) === Number(listId)) || null;
       const invitationKey = invitation => [invitation && invitation.host, invitation && invitation.token, invitation && invitation.title].join(":");
       const selectedReminder = () => {
-        const list = state.view === "list" ? selectedList() : null;
+        const list = selectedList();
         return list ? (list.reminders || []).find(item => Number(item.id) === Number(state.selectedReminderId)) || null : null;
       };
       function reminderDepth(list, reminder) {
@@ -470,7 +470,7 @@
         const focusId = active && active.closest && active.closest("#main") ? active.id : "";
         const focusStart = focusId && typeof active.selectionStart === "number" ? active.selectionStart : null;
         const focusEnd = focusId && typeof active.selectionEnd === "number" ? active.selectionEnd : null;
-        const list = selectedList();
+        const list = state.view === "list" ? selectedList() : null;
         const access = list && accessFor(list.id);
         const owner = !!(access && access.owner);
         const hostWritable = list ? canEdit(list.id) : false;

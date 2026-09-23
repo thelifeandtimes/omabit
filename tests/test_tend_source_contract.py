@@ -117,6 +117,9 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn('class=\"tray settings-tray\"', web_ui)
         self.assertIn('type=\"datetime-local\"', web_ui)
         self.assertIn("scheduleDetailSave", web_ui)
+        self.assertIn('const list = state.view === "list" ? selectedList() : null;', web_ui)
+        self.assertIn('state.selectionMode && state.view === "list" && list', web_ui)
+        self.assertIn("const selectedReminder = () => {\n        const list = selectedList();", web_ui)
 
 
 if __name__ == "__main__":
