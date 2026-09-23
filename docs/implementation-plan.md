@@ -9,7 +9,9 @@ automated test.
 ## Progress
 
 - Architecture and sequence: recorded.
-- Checkpoint 1 protocol/simulator: not implemented yet.
+- Checkpoint 1 protocol/simulator: implemented and automated tests pass; awaiting
+  user acceptance of the [local walkthrough](checkpoints/01-local-protocol.md).
+- Protocol contract: [experimental version 1](protocol.md).
 - Real Docker/runtime qualification: not performed.
 - No production deployment is supported yet.
 
