@@ -1,7 +1,8 @@
 # Runner protocol: checkpoint 1
 
-Status: experimental version 1, implemented only by the in-memory simulator.
-This is a starting contract, not a supported production API or durable journal.
+Status: experimental version 1. The original `simulation` server implements this
+checkpoint contract. The `development-managed-fake` server adds the durable
+extension below. Neither mode is a supported production runtime manager.
 
 ## Transport and negotiation
 
@@ -131,3 +132,52 @@ are 0 for success, 1 for request/transport failures, and 2 for usage errors.
 `watch` polls snapshots and emits newline-delimited JSON. Cancellation exits 0;
 connection failure exits 1 rather than presenting stale state as current. There
 is not yet an event stream or automatic reconnect loop.
+
+## Checkpoint 3A: durable development extension
+
+`hello.mode` is `development-managed-fake`; features include `create-fake`,
+`durable-operations`, and `local-peer-credentials`. The collector checks the
+creation capability before sending a new registration. Existing simulation
+behavior remains available and memory-only.
+
+`POST /v1/instances` accepts:
+
+```json
+{
+  "id": "alpha",
+  "label": "Workstation test",
+  "request_id": "register-alpha",
+  "config": {"http_port": 18080, "ames_port": 34343, "loom": 31}
+}
+```
+
+It registers a fresh fake instance without booting it and returns a completed
+`register-fake` operation (201 new, 200 exact replay). Start/stop retain the
+existing operations endpoint, now with durable `queued`, `running`, `succeeded`,
+`failed`, and `interrupted` states. `message` optionally describes a failure.
+All mutations, including configuration edits, are attributed to the Unix peer
+obtained using SO_PEERCRED; JSON/header actor overrides are not trusted.
+
+Request IDs are scoped to the stable runner and authenticated actor and survive
+restart. Replays are checked before current configuration/busy-state checks.
+Changing an existing ID's input is a conflict. Configuration continues to use
+explicit compare-and-swap revisions, without automatic retry. Its audit entry
+uses a server-generated request ID because the configuration endpoint itself has
+no caller idempotency key.
+
+Instance responses add optional `mode`, `ship`, `endpoint`, `health`,
+`recovery_required`, and `observed_at`. Desired configuration can differ from the
+applied revision/endpoint until stop/start. The desired and still-applied HTTP
+ports remain reserved while needed. Observations older than 30 seconds display
+unknown health rather than claiming current reachability.
+
+Snapshots return the latest 128 operations, but older replay records remain
+stored. SQLite transactions atomically record registration, revision changes,
+operation acceptance, and runtime intents. Runner restart marks unfinished work
+interrupted and observes the runtime; it does not blindly re-execute requests.
+
+Development constraints: private same-account/root Unix clients, at most eight
+registered fake ships, pinned image/pill, loom 31, reserved/unpublished Ames value
+34343, and IPv4 loopback HTTP ports 1024..65535. Keys, pier import, deletion,
+maintenance scheduling, SSH authorization, and multi-operator key attribution
+remain later milestones. Stopping management leaves running ships alive.

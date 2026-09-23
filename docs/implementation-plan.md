@@ -31,11 +31,13 @@ automated test.
 - Checkpoint 2C is accepted: run `e9f766ae9854e04f35eb9991d39fb9ba` verified
   loopback HTTP on ports 32768/32769 across replacement, then removed all three
   containers and the per-run network with resolved outcomes.
-- Checkpoint 3A begins the persistent development runner/collector workflow,
+- Checkpoint 3A implements the persistent development runner/collector workflow,
   restricted to fresh fake ships and the qualified image/HTTP/stop behavior.
   SQLite holds registrations, configuration revisions, idempotency, and operation
   history. Unqualified real-key bootstrap, Ames, meld, and control-socket monitoring
-  remain disabled rather than delaying the bounded control-plane milestone.
+  remain disabled rather than delaying the bounded control-plane milestone. The
+  [persistent-runner walkthrough](checkpoints/05-persistent-runner.md) is the next
+  manual gate; developer tests use real SQLite and an injected fake runtime.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator

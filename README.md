@@ -25,10 +25,12 @@ Checkpoint 1's memory-only runner/collector protocol has passed manual validatio
 Checkpoint 2A's dedicated rootless engine setup has also passed manual validation.
 Checkpoint 2B's pinned-image fake-ship lifecycle, resource checks, container
 replacement, offline pack, and cleanup have passed manual validation. Checkpoint
-2C adds host-loopback HTTP publication and replacement/reconnect testing on a
-dedicated NAT bridge. Production ship management is not supported yet.
+2C's host HTTP publication and replacement/reconnect have also passed. Checkpoint
+3A introduces a persistent fake-only runner and collector workflow with
+SQLite-backed state. Production ship management is not supported yet.
 
-- [Next: host-loopback HTTP checkpoint](docs/checkpoints/04-host-http.md)
+- [Next: persistent development runner](docs/checkpoints/05-persistent-runner.md)
+- [Accepted: host-loopback HTTP checkpoint](docs/checkpoints/04-host-http.md)
 - [Accepted: disposable runtime checkpoint](docs/checkpoints/03-disposable-runtime.md)
 - [Accepted: rootless setup checkpoint](docs/checkpoints/02-rootless-setup.md)
 - [Accepted: checkpoint 1 walkthrough](docs/checkpoints/01-local-protocol.md)
@@ -37,7 +39,8 @@ dedicated NAT bridge. Production ship management is not supported yet.
 - [Implemented experimental protocol](docs/protocol.md)
 - [Runtime qualification checklist](docs/runtime-qualification.md)
 
-Development requires Go 1.24 or later. There are no third-party Go dependencies.
+Development requires Go 1.25 or later. The pure-Go SQLite driver is compiled into
+the binaries; no additional database service or host SQLite package is required.
 
 ```bash
 go test ./...

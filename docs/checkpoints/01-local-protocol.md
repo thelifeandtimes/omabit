@@ -14,9 +14,10 @@ attribution, persistence, pill fetching/booting, and actual runtime operations a
 not implemented yet. Two CLI processes here demonstrate independent clients of
 one local account, not two authenticated operators.
 
-Requirements: Linux, Go 1.24 or later, and Bash. `curl` is optional for the protocol
-mismatch check. No third-party Go dependencies. Run repository commands from the
-repository root in each terminal.
+Requirements when using the current checkout: Linux, Go 1.25 or later, and Bash.
+`curl` is optional for the protocol mismatch check. The later persistent-runner
+milestone adds a compiled-in Go SQLite dependency; this simulator still accesses
+no real runtime or database. Run commands from the repository root in each terminal.
 
 ## Verification record
 
@@ -32,8 +33,8 @@ September 22, 2026, Linux x86-64, Go 1.27.0:
 User acceptance: passed. The user reported that the instructions were clear and
 all steps worked as expected, and authorized progressing to checkpoint 2.
 
-The declared Go minimum has not yet been independently tested with a Go 1.24
-toolchain.
+At this original checkpoint the declared Go 1.24 minimum was not independently
+tested with a Go 1.24 toolchain. See the current build requirement above.
 
 ## 1. Build and test
 
