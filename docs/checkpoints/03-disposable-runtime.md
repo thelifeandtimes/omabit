@@ -7,8 +7,11 @@ This checkpoint runs **real containers and a fresh fake Urbit**, not the earlier
 simulator. It uses no existing pier, real identity, bootstrap key, Dojo command,
 login code, or Vere control socket. It does not change the Docker installation.
 
-Status: implementation and fixture tests complete; manual runtime acceptance is
-pending. Follow this gate before moving to the production runner implementation.
+Status: accepted by the user. Run `35aac1083d71188d9782ec64b49ba771` passed every
+phase with `checkpoint_passed: true`, `cleanup_complete: true`, and all five
+containers removed with no uncertain creates. Live cgroup observations and
+persisted pier metadata were confirmed. `runtime_qualified` remains false because
+the remaining gates below have not all been exercised.
 
 ## Scope
 

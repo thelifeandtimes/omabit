@@ -1,8 +1,8 @@
 # Runtime qualification record
 
-Status: rootless engine setup accepted by the user; the
-[disposable Vere walkthrough](checkpoints/03-disposable-runtime.md) is ready for
-manual validation. Do not interpret the checklist as supported runtime behavior.
+Status: rootless setup and the isolated disposable Vere lifecycle are accepted by
+the user. The next slice is host-side HTTP publication. This is still a partial
+qualification, not production-runtime support.
 
 ## Accepted engine setup
 
@@ -15,8 +15,27 @@ The user reported successful checkpoint 2A installation and checks:
 - Subsequent read-only metadata inspection found Docker 29.7.2, RootlessKit 3.1.0,
   and slirp4netns 1.3.5 installed. No developer Docker API call was made.
 
-This establishes the engine setup gate, not container resource enforcement,
-Vere operation, Ames reachability, or a separately observed reboot.
+This established the engine setup gate. Container/runtime evidence is recorded
+separately below; Ames and a separately observed reboot remain outstanding.
+
+## Accepted isolated lifecycle (checkpoint 2B)
+
+User-supplied report for run `35aac1083d71188d9782ec64b49ba771`:
+
+- Every phase passed: engine, image, pill, probe, boot, restart, pack, post-pack,
+  and cleanup.
+- `checkpoint_passed: true`, `cleanup_complete: true`, `limits_observed: true`,
+  `pier_metadata_seen: true`; `runtime_qualified: false` as designed.
+- All five containers were removed; every create outcome was resolved.
+- Docker 29.7.2 reported the pinned manifest as its backend image ID; Vere
+  reported `4.6-5a7614f`.
+- Available memory at admission: 7,298,469,888 bytes; available disk:
+  453,037,428,736 bytes. These are observations from that run, not reservations.
+- The verified 217,421,172-byte pill matched the generation and SHA-256 below.
+- The fake pier and report remain in the account's private qualification storage.
+  No existing pier was adopted.
+
+This is operator-reported execution evidence, not an independent developer rerun.
 
 Checkpoint 1 has been accepted by the user. The qualification pill will initially
 be the upstream default bootstrap pill for the selected Vere version, not the
@@ -53,18 +72,19 @@ copy while its original is running.
 | Area | Required observation | Result |
 | --- | --- | --- |
 | Isolation | No desktop Docker-group grant or rootful socket exposure | Accepted in checkpoint 2A (operator-reported) |
-| Image | Correct x86-64 binary and explicit invocation | Not run |
-| URL pill | HTTPS source downloads and verifies before boot | Not run |
+| Image | Correct x86-64 binary and explicit invocation | Passed in 2B |
+| URL pill | HTTPS source downloads and verifies before boot | Passed in 2B |
 | Local pill | Explicit import verifies before boot | Not run |
 | Download errors | Missing source, redirect policy, oversize, timeout, and bad hash fail closed | Not run |
-| Bootstrap | Expected identity mode and desks; no unrelated personal state | Not run |
-| Persistence | Stop/start preserves pier; containers are replaceable | Not run |
-| Networking | Private HTTP access and intended Ames connectivity | Not run |
-| Shutdown | Graceful signal handling and adequate stop timeout | Not run |
+| Bootstrap | Expected identity mode and desks; no unrelated personal state | Fake boot passed; desk/content checks pending |
+| Persistence | Stop/start preserves pier; containers are replaceable | Local replacement restart passed in 2B; application data semantics pending |
+| Networking | Private HTTP access and intended Ames connectivity | In-container HTTP passed; host publication and Ames pending |
+| Shutdown | Graceful signal handling and adequate stop timeout | Passed in 2B |
 | Reboot | Engine/runner start without desktop login | Not run |
-| Offline pack | Exclusive pier access and successful restart | Not run |
+| Offline pack | Exclusive pier access and successful restart | Passed in 2B |
 | Offline meld | RAM admission and successful restart | Not run |
 | Metrics | Correct capacity/open/idle units and per-metric freshness | Not run |
+| Resource limits | Live memory, swap, PID, and CPU cgroup values | Observed in 2B; overload/failure enforcement tests pending |
 | Socket safety | In-flight disconnect and collector termination do not crash runtime | Not run |
 | Failures | Low disk, OOM, killed job, and invalid pier are bounded and diagnosable | Not run |
 
@@ -91,8 +111,8 @@ manager's normal security-update workflow.
 
 ## Gates
 
-Checkpoint 2B has fixed image/pill provenance and injected tests, but its runtime
-checklist rows above remain pending until executed. The image is pinned to
+Checkpoint 2B has fixed image/pill provenance, injected tests, and the accepted
+execution record above. The image is pinned to
 `sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd`;
 the default 4.6 pill is pinned to SHA-256
 `f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b` and

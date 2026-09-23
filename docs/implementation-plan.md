@@ -12,7 +12,8 @@ automated test.
 - Checkpoint 1 protocol/simulator: implemented; automated tests and user acceptance
   of the [local walkthrough](checkpoints/01-local-protocol.md) passed.
 - Protocol contract: [experimental version 1](protocol.md).
-- Real Docker/runtime qualification: not performed.
+- Real Docker/runtime qualification: the isolated lifecycle subset has passed;
+  networking, application health, meld, reboot, and failure gates remain.
 - Qualification pill: use the selected Vere runtime's upstream default bootstrap
   pill until the Omabit release is available. Verify the expected base, webterm,
   and groups desks after boot; this does not qualify the future Omabit bundle.
@@ -23,12 +24,12 @@ automated test.
   UID/GID 959 on this host, with socket `/run/user/959/urbit-docker.sock` and
   `rootless_verified: true`. Runtime qualification remains false; the UID is not
   a portable configuration default.
-- Checkpoint 2B tooling is implemented and fixture-tested; the
-  [disposable-runtime walkthrough](checkpoints/03-disposable-runtime.md) awaits
-  manual acceptance. It uses a digest-pinned image and content-pinned upstream
-  pill with a fresh network-isolated fake ship. No real identity or control
-  socket is used. Boot, shutdown, container replacement, and offline pack are the
-  first runtime gate; Ames, meld, and socket-failure qualification remain later.
+- Checkpoint 2B is accepted: run `35aac1083d71188d9782ec64b49ba771` verified
+  image/pill pins, live cgroup limits, fake boot, clean shutdown, replacement
+  restart, offline pack, and post-pack restart. All five containers were removed.
+- Checkpoint 2C will qualify host-side loopback HTTP publication on a fresh
+  per-run internal network, including replacement-container reconnect and owned
+  network cleanup. The accepted network-none lifecycle mode remains available.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator
