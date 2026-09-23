@@ -147,10 +147,28 @@ preparation and consistent backups.
 
 ## Host deployment and storage
 
-Initial support: x86-64 Linux, systemd, Docker. Prefer a dedicated-account
-rootless deployment after qualification. Do not enable Sudoless Docker or grant
-the desktop account access to the rootful socket. If required, a privileged
-runner installation is explicit, with its root-equivalent authority explained.
+Initial support: x86-64 Linux, systemd, Docker. The default installation is a
+dedicated-account rootless deployment. Qualification must validate this path;
+there is no silent fallback to a privileged engine. Do not enable Sudoless Docker,
+grant the desktop account access to the rootful socket, disable existing system
+Docker services, or change the desktop's Docker context.
+
+The target onboarding remains: enable Omabit, choose local hosting, review the
+installation and permissions, authorize through the OS, then set up a ship.
+Rootless complexity belongs in our setup tooling rather than manual user
+configuration. Initial development checkpoints may require terminal steps before
+the plugin installer exists.
+
+Use an isolated `urbit-runner` account with a private home, non-overlapping
+subordinate UID/GID ranges, no Docker/admin group membership, and lingering for
+unattended systemd user services. Keep the package-managed Docker engine and
+helpers. Supply the missing upstream rootless launcher at a reviewed version and
+digest; do not pipe a remote script into a shell or install a second static
+Docker engine. Keep launcher code root-owned outside the plugin checkout.
+
+Use a dedicated user service and explicit account-private Docker socket. Do not
+expose the engine socket to desktop clients; only the runner API will be exposed.
+Prove rootless mode and cgroup limits before using the engine for ship operations.
 
 Example dedicated-account locations:
 

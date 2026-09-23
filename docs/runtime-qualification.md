@@ -12,10 +12,10 @@ Docker socket is enabled but inaccessible to the desktop user, as intended by
 Quattro. Rootless setup scripts, RootlessKit, and a rootless networking backend
 are absent. No engine was activated and no host configuration was changed.
 
-The deployment choice is under discussion: compare the originally proposed
-dedicated-account rootless engine with using Quattro's existing rootful engine
-through a privileged, narrowly exposed runner service. Do not treat the rootless
-checklist below as an approved package-installation requirement until resolved.
+The user confirmed dedicated-account rootless Docker as the default. Preserve
+Quattro's existing system Docker services and the desktop's context and group
+membership. Rootless installation has its own reviewed OS-authorization step;
+there is no automatic privileged fallback.
 
 Run only after the protocol walkthrough is accepted and the user approves any
 host setup. Use disposable development ships. Never boot an existing identity's

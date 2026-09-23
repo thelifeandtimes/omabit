@@ -16,9 +16,11 @@ automated test.
 - Qualification pill: use the selected Vere runtime's upstream default bootstrap
   pill until the Omabit release is available. Verify the expected base, webterm,
   and groups desks after boot; this does not qualify the future Omabit bundle.
-- Host deployment is being reconsidered for minimal Quattro setup: rootless
-  tooling is not installed locally, while rootful Docker is already provided.
-  No package, account, service, or Docker-access changes are authorized yet.
+- Default deployment is confirmed: dedicated-account rootless Docker, with the
+  same intended five-step plugin onboarding. Existing Docker services, contexts,
+  and desktop group membership remain unchanged. No automatic privileged fallback.
+- Checkpoint 2 begins with preflight and reviewed rootless setup tooling; actual
+  host installation needs OS authorization and a separate execution record.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator
