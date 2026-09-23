@@ -50,7 +50,15 @@ validate-plugin:
 	omarchy plugin validate omarchy-plugin
 
 lint-qml:
-	qmllint -I "$(OMARCHY_ROOT)/shell" omarchy-plugin/Overlay.qml omarchy-plugin/Service.qml
+	qmllint -I "$(OMARCHY_ROOT)/shell" \
+		omarchy-plugin/FullPanel.qml \
+		omarchy-plugin/BarWidget.qml \
+		omarchy-plugin/ReminderDetail.qml \
+		omarchy-plugin/TendButton.qml \
+		omarchy-plugin/TendCheck.qml \
+		omarchy-plugin/TendDropdown.qml \
+		omarchy-plugin/TendNumber.qml \
+		omarchy-plugin/Service.qml
 
 lint-python:
 	python3 -m py_compile omarchy-plugin/transport/eyre_client.py

@@ -30,7 +30,13 @@ release_dir=$(find "$work_dir/extracted" -mindepth 1 -maxdepth 1 -type d -name '
 omarchy plugin validate "$release_dir/omarchy-plugin"
 omarchy_root=${OMARCHY_PATH:-"$HOME/.local/share/omarchy"}
 qmllint -I "$omarchy_root/shell" \
-  "$release_dir/omarchy-plugin/Overlay.qml" \
+  "$release_dir/omarchy-plugin/FullPanel.qml" \
+  "$release_dir/omarchy-plugin/BarWidget.qml" \
+  "$release_dir/omarchy-plugin/ReminderDetail.qml" \
+  "$release_dir/omarchy-plugin/TendButton.qml" \
+  "$release_dir/omarchy-plugin/TendCheck.qml" \
+  "$release_dir/omarchy-plugin/TendDropdown.qml" \
+  "$release_dir/omarchy-plugin/TendNumber.qml" \
   "$release_dir/omarchy-plugin/Service.qml"
 python3 -m py_compile "$release_dir/omarchy-plugin/transport/eyre_client.py" "$release_dir/bin/omabit"
 python3 -m py_compile "$release_dir/scripts/check-tend-multiship.py"

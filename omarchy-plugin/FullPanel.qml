@@ -1,9 +1,9 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls as QQC
 import Quickshell
 import Quickshell.Hyprland
-import Quickshell.Wayland
 import qs.Commons
+import qs.Ui
 import "TendModel.js" as TendModel
 
 Item {
@@ -22,6 +22,9 @@ Item {
     property bool sortDescending: false
     property bool listEditorOpen: false
     property bool policyEditorOpen: false
+    property bool selectionMode: false
+    property bool unpinnedViewsVisible: false
+    property bool unpinnedListsVisible: false
     property bool confirmDeleteList: false
     property bool captureMode: false
     property var selectedReminderIds: []
@@ -750,42 +753,41 @@ Item {
         confirmBatchDelete = false;
     }
 
-    PanelWindow {
+    FloatingWindow {
         id: window
 
+        title: service && service.ship ? "Tend · ~" + service.ship : "Tend"
         visible: root.opened
-        color: "transparent"
-        WlrLayershell.namespace: "omabit-tend"
-        WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-        exclusionMode: ExclusionMode.Ignore
+        color: Color.menu.background
+        implicitWidth: Style.space(1180)
+        implicitHeight: Style.space(780)
+        minimumSize: Qt.size(Style.space(840), Style.space(600))
 
-        anchors {
-            top: true
-            bottom: true
-            left: true
-            right: true
+        onVisibleChanged: {
+            if (!visible && root.opened) {
+                root.opened = false;
+                root.captureMode = false;
+                if (root.shell && typeof root.shell.hide === "function")
+                    root.shell.hide("io.omabit.tend");
+            }
         }
 
         Rectangle {
             anchors.fill: parent
-            color: Color.menu.scrim
+            color: Color.menu.background
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: root.dismiss()
+                enabled: false
             }
 
             Rectangle {
                 id: card
 
-                anchors.centerIn: parent
-                width: root.captureMode ? Math.min(Style.space(640), parent.width - Style.space(48)) : Math.min(Style.space(1100), parent.width - Style.space(48))
-                height: root.captureMode ? Math.min(captureControls.columns === 1 ? Style.space(300) : Style.space(210), parent.height - Style.space(48)) : Math.min(Style.space(760), parent.height - Style.space(48))
-                radius: Style.cornerRadius
+                anchors.fill: parent
+                radius: 0
                 color: Color.menu.background
-                border.color: Color.menu.border
-                border.width: Math.max(1, Style.space(1))
+                border.width: 0
                 Keys.onEscapePressed: root.dismiss()
 
                 MouseArea {
@@ -812,7 +814,7 @@ Item {
                             font.bold: true
                         }
 
-                        Button {
+                        TendButton {
                             id: switchShipButton
 
                             visible: service && service.ship !== ""
@@ -821,7 +823,7 @@ Item {
                             onClicked: service.disconnect()
                         }
 
-                        Button {
+                        TendButton {
                             id: closeButton
 
                             text: "Close"
@@ -872,7 +874,7 @@ Item {
                                     font.pixelSize: Style.font.body
                                 }
 
-                                Button {
+                                TendButton {
                                     id: acceptInvitationButton
 
                                     text: "Accept"
@@ -881,7 +883,7 @@ Item {
                                     onClicked: service.acceptInvitation(modelData)
                                 }
 
-                                Button {
+                                TendButton {
                                     id: declineInvitationButton
 
                                     text: "Decline"
@@ -937,7 +939,7 @@ Item {
                             onAccepted: connectButton.clicked()
                         }
 
-                        Button {
+                        TendButton {
                             id: connectButton
 
                             text: service && service.connectionState === "authenticating" ? "Connecting…" : "Connect"
@@ -981,7 +983,7 @@ Item {
                                 Accessible.name: "Quick reminder title and tags"
                             }
 
-                            ComboBox {
+                            TendDropdown {
                                 id: captureList
 
                                 width: captureControls.columns === 1 ? parent.width : parent.width - captureEntry.width - captureAdd.width - captureControls.columnSpacing * 2
@@ -990,7 +992,7 @@ Item {
                                 Accessible.name: "Destination list"
                             }
 
-                            Button {
+                            TendButton {
                                 id: captureAdd
 
                                 width: captureControls.columns === 1 ? parent.width : implicitWidth
@@ -1007,7 +1009,8 @@ Item {
                                 }
                             }
 
-                        }
+                            }
+
 
                         Text {
                             width: parent.width
@@ -1045,19 +1048,47 @@ Item {
                                     font.bold: true
                                 }
 
-                                Grid {
+                                Row {
                                     width: parent.width
-                                    columns: 2
-                                    spacing: Style.space(4)
+                                    height: Style.space(28)
 
-                                    Repeater {
-                                        model: root.orderedViews
+                                    Text {
+                                        width: parent.width - viewsReveal.width
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: "VIEWS"
+                                        color: Color.menu.text
+                                        opacity: 0.68
+                                        font.family: Style.font.menuFamily
+                                        font.pixelSize: Style.font.caption
+                                        font.bold: true
+                                    }
 
-                                        delegate: Button {
-                                            required property var modelData
+                                    TendButton {
+                                        id: viewsReveal
+                                        text: root.unpinnedViewsVisible ? "Hide" : "Show all"
+                                        bordered: false
+                                        onClicked: root.unpinnedViewsVisible = !root.unpinnedViewsVisible
+                                    }
+                                }
 
-                                            width: (parent.width - parent.spacing) / 2
-                                            text: (service && service.preferences.pinnedViews.indexOf(modelData) !== -1 ? "★ " : "") + modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                Repeater {
+                                    model: root.orderedViews
+
+                                    delegate: Row {
+                                        required property var modelData
+                                        readonly property bool pinned: service && service.preferences.pinnedViews.indexOf(modelData) !== -1
+
+                                        visible: pinned || root.unpinnedViewsVisible
+                                        width: parent.width
+                                        height: visible ? Style.space(34) : 0
+                                        spacing: Style.space(4)
+
+                                        TendButton {
+                                            width: parent.width - viewPin.width - parent.spacing
+                                            height: parent.height
+                                            text: modelData.charAt(0).toUpperCase() + modelData.slice(1)
+                                            leftAlign: true
+                                            bordered: false
                                             checkable: true
                                             checked: root.viewMode === modelData
                                             onClicked: {
@@ -1066,94 +1097,129 @@ Item {
                                             }
                                         }
 
+                                        TendButton {
+                                            id: viewPin
+                                            width: Style.space(34)
+                                            height: parent.height
+                                            text: parent.pinned ? "󰐃" : "󰐄"
+                                            tooltipText: parent.pinned ? "Unpin view" : "Pin view"
+                                            bordered: false
+                                            enabled: service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: root.toggleViewPin(modelData)
+                                        }
                                     }
-
                                 }
+
+                                PanelSeparator { width: parent.width }
 
                                 Row {
                                     width: parent.width
-                                    spacing: Style.space(4)
+                                    height: Style.space(28)
 
-                                    ComboBox {
-                                        id: viewPinChoice
-
-                                        width: parent.width * 0.62
-                                        model: ["today", "scheduled", "all", "flagged", "assigned", "completed"]
-                                        Accessible.name: "Smart view to pin"
+                                    Text {
+                                        width: parent.width - listsReveal.width
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: "LISTS"
+                                        color: Color.menu.text
+                                        opacity: 0.68
+                                        font.family: Style.font.menuFamily
+                                        font.pixelSize: Style.font.caption
+                                        font.bold: true
                                     }
 
-                                    Button {
-                                        width: parent.width - viewPinChoice.width - parent.spacing
-                                        text: service && service.preferences.pinnedViews.indexOf(viewPinChoice.currentText) !== -1 ? "Unpin" : "Pin"
-                                        enabled: service && service.connectionState === "online" && !service.mutationPending
-                                        onClicked: root.toggleViewPin(viewPinChoice.currentText)
+                                    TendButton {
+                                        id: listsReveal
+                                        text: root.unpinnedListsVisible ? "Hide" : "Show all"
+                                        bordered: false
+                                        onClicked: root.unpinnedListsVisible = !root.unpinnedListsVisible
                                     }
-
-                                }
-
-                                Row {
-                                    width: parent.width
-                                    spacing: Style.space(6)
-
-                                    Button {
-                                        width: (parent.width - parent.spacing) / 2
-                                        text: "Pinned view ↑"
-                                        enabled: service && service.preferences.pinnedViews.indexOf(viewPinChoice.currentText) > 0 && service.connectionState === "online" && !service.mutationPending
-                                        onClicked: root.movePinnedView(viewPinChoice.currentText, -1)
-                                    }
-
-                                    Button {
-                                        width: (parent.width - parent.spacing) / 2
-                                        text: "Pinned view ↓"
-                                        enabled: service && service.preferences.pinnedViews.indexOf(viewPinChoice.currentText) >= 0 && service.preferences.pinnedViews.indexOf(viewPinChoice.currentText) < service.preferences.pinnedViews.length - 1 && service.connectionState === "online" && !service.mutationPending
-                                        onClicked: root.movePinnedView(viewPinChoice.currentText, 1)
-                                    }
-
-                                }
-
-                                Text {
-                                    text: "My Lists"
-                                    color: Color.menu.text
-                                    opacity: 0.68
-                                    font.family: Style.font.menuFamily
-                                    font.pixelSize: Style.font.caption
-                                    font.bold: true
                                 }
 
                                 Repeater {
                                     model: root.orderedLists
 
-                                    delegate: Button {
+                                    delegate: Row {
                                         required property var modelData
+                                        readonly property bool pinned: service && service.preferences.pinnedLists.indexOf(modelData.id) !== -1
 
+                                        visible: pinned || root.unpinnedListsVisible || (root.selectedList && root.selectedList.id === modelData.id)
                                         width: parent.width
-                                        text: {
-                                            var pinned = service && service.preferences.pinnedLists.indexOf(modelData.id) !== -1 ? "★ " : "";
-                                            var primary = service && service.preferences.defaultList === modelData.id ? " · default" : "";
-                                            return pinned + modelData.title + primary;
+                                        height: visible ? Style.space(34) : 0
+                                        spacing: Style.space(4)
+
+                                        TendButton {
+                                            width: parent.width - listPin.width - parent.spacing
+                                            height: parent.height
+                                            text: modelData.title + (service && service.preferences.defaultList === modelData.id ? " · default" : "")
+                                            leftAlign: true
+                                            bordered: false
+                                            checkable: true
+                                            checked: root.viewMode === "list" && root.selectedList && root.selectedList.id === modelData.id
+                                            onClicked: {
+                                                root.viewMode = "list";
+                                                root.selectedListId = modelData.id;
+                                                root.selectedReminderId = 0;
+                                            }
                                         }
-                                        checkable: true
-                                        checked: root.viewMode === "list" && root.selectedList && root.selectedList.id === modelData.id
-                                        onClicked: {
-                                            root.viewMode = "list";
-                                            root.selectedListId = modelData.id;
-                                            root.selectedReminderId = 0;
+
+                                        TendButton {
+                                            id: listPin
+                                            width: Style.space(34)
+                                            height: parent.height
+                                            text: parent.pinned ? "󰐃" : "󰐄"
+                                            tooltipText: parent.pinned ? "Unpin list" : "Pin list"
+                                            bordered: false
+                                            enabled: service && service.connectionState === "online" && !service.mutationPending
+                                            onClicked: {
+                                                root.selectedListId = modelData.id;
+                                                root.toggleListPin();
+                                            }
                                         }
                                     }
-
                                 }
 
-                                TextField {
-                                    id: newList
-
+                                Rectangle {
                                     width: parent.width
-                                    placeholderText: "New list"
-                                    Accessible.name: "New list title"
-                                    enabled: service && service.connectionState === "online" && !service.mutationPending
-                                    onAccepted: {
-                                        if (text.trim() && service.createList(text))
-                                            text = "";
+                                    height: addListColumn.implicitHeight + Style.space(16)
+                                    radius: Style.cornerRadius
+                                    color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.05)
 
+                                    Column {
+                                        id: addListColumn
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        anchors.margins: Style.space(8)
+                                        spacing: Style.space(6)
+
+                                        Text {
+                                            text: "NEW LIST"
+                                            color: Color.menu.text
+                                            opacity: 0.68
+                                            font.family: Style.font.menuFamily
+                                            font.pixelSize: Style.font.caption
+                                            font.bold: true
+                                        }
+
+                                        TextField {
+                                            id: newList
+                                            width: parent.width
+                                            placeholderText: "List name"
+                                            Accessible.name: "New list title"
+                                            enabled: service && service.connectionState === "online" && !service.mutationPending
+                                            onAccepted: addListButton.clicked()
+                                        }
+
+                                        TendButton {
+                                            id: addListButton
+                                            width: parent.width
+                                            text: "Add list"
+                                            enabled: newList.enabled && newList.text.trim() !== ""
+                                            onClicked: {
+                                                if (newList.text.trim() && service.createList(newList.text))
+                                                    newList.text = "";
+                                            }
+                                        }
                                     }
                                 }
 
@@ -1169,19 +1235,26 @@ Item {
 
                             }
 
-                        }
+                            }
 
-                        Column {
+
+                        Item {
+                            id: workspace
                             width: parent.width - Style.space(246)
                             height: parent.height
-                            spacing: Style.space(8)
+
+                            Column {
+                                id: mainContent
+                                width: root.selectedReminder ? parent.width - detailSidebar.width - Style.space(12) : parent.width
+                                height: parent.height
+                                spacing: Style.space(8)
 
                             Row {
                                 width: parent.width
                                 spacing: Style.space(8)
 
                                 Text {
-                                    width: parent.width - editListButton.width - alertSettingsButton.width - parent.spacing * 2
+                                    width: parent.width - editListButton.width - alertSettingsButton.width - selectModeButton.width - parent.spacing * 3
                                     text: root.viewTitle
                                     color: Color.menu.text
                                     font.family: Style.font.menuFamily
@@ -1189,14 +1262,25 @@ Item {
                                     font.bold: true
                                 }
 
-                                Button {
+                                TendButton {
                                     id: alertSettingsButton
 
-                                    text: root.policyEditorOpen ? "Close alerts" : "Alerts"
+                                    text: root.policyEditorOpen ? "Close defaults" : "Reminder defaults"
                                     onClicked: root.policyEditorOpen = !root.policyEditorOpen
                                 }
 
-                                Button {
+                                TendButton {
+                                    id: selectModeButton
+                                    visible: root.viewMode === "list"
+                                    text: root.selectionMode ? "Done selecting" : "Select"
+                                    onClicked: {
+                                        root.selectionMode = !root.selectionMode;
+                                        if (!root.selectionMode)
+                                            root.selectedReminderIds = [];
+                                    }
+                                }
+
+                                TendButton {
                                     id: editListButton
 
                                     visible: root.viewMode === "list" && root.selectedList !== null
@@ -1216,44 +1300,47 @@ Item {
                                 width: parent.width
                                 spacing: Style.space(6)
 
-                                ComboBox {
+                                TendDropdown {
                                     id: badgeMode
 
                                     width: parent.width * 0.22
+                                    label: "Bar badge"
                                     model: ["today", "all", "assigned", "none"]
                                     currentIndex: service ? Math.max(0, model.indexOf(service.preferences.badgeMode)) : 0
                                     Accessible.name: "Bar badge count"
                                 }
 
-                                SpinBox {
+                                TendNumber {
                                     id: allDayHour
 
                                     width: parent.width * 0.18
+                                    label: "All-day hour"
                                     from: 0
                                     to: 23
                                     value: service ? Math.floor(service.preferences.allDayAlertMinute / 60) : 9
                                     Accessible.name: "All-day reminder hour"
                                 }
 
-                                SpinBox {
+                                TendNumber {
                                     id: allDayMinute
 
                                     width: parent.width * 0.18
+                                    label: "Minute"
                                     from: 0
                                     to: 59
                                     value: service ? service.preferences.allDayAlertMinute % 60 : 0
                                     Accessible.name: "All-day reminder minute"
                                 }
 
-                                CheckBox {
+                                TendCheck {
                                     id: allDayOverdue
 
-                                    text: "Keep overdue"
+                                    text: "Keep all-day reminders overdue"
                                     checked: service ? service.preferences.allDayOverdue : true
                                 }
 
-                                Button {
-                                    text: "Save"
+                                TendButton {
+                                    text: "Save defaults"
                                     enabled: service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: service.setReminderPolicy({
                                         badgeMode: badgeMode.currentText,
@@ -1281,7 +1368,7 @@ Item {
                                 width: parent.width
                                 spacing: Style.space(6)
 
-                                ComboBox {
+                                TendDropdown {
                                     id: tagChoice
 
                                     width: parent.width * 0.25
@@ -1297,7 +1384,7 @@ Item {
                                     Accessible.name: "Replacement tag"
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "Rename tag"
                                     enabled: tagChoice.currentIndex >= 0 && tagReplacement.text.trim() && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: {
@@ -1306,7 +1393,7 @@ Item {
                                     }
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "Delete tag"
                                     enabled: tagChoice.currentIndex >= 0 && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: service.replaceTag(tagChoice.currentText, null)
@@ -1352,13 +1439,13 @@ Item {
                                     Accessible.name: "List symbol or emoji"
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "Save"
                                     enabled: root.selectedListEditable && listTitle.text.trim() && listColor.text.trim() && listSymbol.text.trim() && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: service.updateList(root.selectedList.id, listTitle.text, listColor.text, listSymbol.text, root.selectedList.revision)
                                 }
 
-                                Button {
+                                TendButton {
                                     text: root.confirmDeleteList ? "Confirm delete" : "Delete"
                                     enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: {
@@ -1379,25 +1466,25 @@ Item {
                                 width: parent.width
                                 spacing: Style.space(6)
 
-                                Button {
+                                TendButton {
                                     text: service && service.preferences.defaultList === root.selectedListId ? "Default list" : "Make default"
                                     enabled: service && root.selectedListId > 0 && service.preferences.defaultList !== root.selectedListId && service.connectionState === "online" && !service.mutationPending
                                     onClicked: root.updatePreferences(root.selectedListId, service.preferences.pinnedLists, service.preferences.pinnedViews)
                                 }
 
-                                Button {
+                                TendButton {
                                     text: service && service.preferences.pinnedLists.indexOf(root.selectedListId) !== -1 ? "Unpin list" : "Pin list"
                                     enabled: service && root.selectedListId > 0 && service.connectionState === "online" && !service.mutationPending
                                     onClicked: root.toggleListPin()
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "Pinned ↑"
                                     enabled: service && root.selectedListId > 0 && service.preferences.pinnedLists.indexOf(root.selectedListId) > 0 && service.connectionState === "online" && !service.mutationPending
                                     onClicked: root.movePinnedList(-1)
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "Pinned ↓"
                                     enabled: service && root.selectedListId > 0 && service.preferences.pinnedLists.indexOf(root.selectedListId) >= 0 && service.preferences.pinnedLists.indexOf(root.selectedListId) < service.preferences.pinnedLists.length - 1 && service.connectionState === "online" && !service.mutationPending
                                     onClicked: root.movePinnedList(1)
@@ -1419,14 +1506,14 @@ Item {
                                 width: parent.width
                                 spacing: Style.space(6)
 
-                                Button {
+                                TendButton {
                                     text: "List ↑"
                                     enabled: root.canMoveList(-1) && service.connectionState === "online" && !service.mutationPending
                                     Accessible.name: "Move selected unpinned list up"
                                     onClicked: root.moveList(-1)
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "List ↓"
                                     enabled: root.canMoveList(1) && service.connectionState === "online" && !service.mutationPending
                                     Accessible.name: "Move selected unpinned list down"
@@ -1471,14 +1558,14 @@ Item {
                                         onAccepted: inviteButton.clicked()
                                     }
 
-                                    CheckBox {
+                                    TendCheck {
                                         id: inviteCanInvite
 
                                         text: "May invite"
                                         Accessible.name: "Allow invited member to invite others"
                                     }
 
-                                    Button {
+                                    TendButton {
                                         id: inviteButton
 
                                         text: "Invite"
@@ -1536,7 +1623,7 @@ Item {
                                             font.pixelSize: Style.font.caption
                                         }
 
-                                        Button {
+                                        TendButton {
                                             id: revokeInviteButton
 
                                             visible: root.selectedAccess && root.selectedAccess.owner
@@ -1567,7 +1654,7 @@ Item {
                                             font.pixelSize: Style.font.body
                                         }
 
-                                        Button {
+                                        TendButton {
                                             id: removeMemberButton
 
                                             visible: root.selectedAccess && root.selectedAccess.owner
@@ -1579,7 +1666,7 @@ Item {
                                     }
                                 }
 
-                                Button {
+                                TendButton {
                                     visible: root.selectedAccess && !root.selectedAccess.owner
                                     text: "Leave shared list"
                                     enabled: service && service.connectionState === "online" && !service.mutationPending
@@ -1599,7 +1686,7 @@ Item {
                                     width: parent.width
                                     spacing: Style.space(8)
 
-                                    CheckBox {
+                                    TendCheck {
                                         id: notifyAdded
                                         text: "Items added"
                                         checked: root.selectedCollaborationPolicy.notifyAdded
@@ -1608,7 +1695,7 @@ Item {
                                         onClicked: service.setCollaborationPolicy(root.selectedList.id, checked, notifyCompleted.checked, notifyAssigned.checked)
                                     }
 
-                                    CheckBox {
+                                    TendCheck {
                                         id: notifyCompleted
                                         text: "Items completed"
                                         checked: root.selectedCollaborationPolicy.notifyCompleted
@@ -1617,7 +1704,7 @@ Item {
                                         onClicked: service.setCollaborationPolicy(root.selectedList.id, notifyAdded.checked, checked, notifyAssigned.checked)
                                     }
 
-                                    CheckBox {
+                                    TendCheck {
                                         id: notifyAssigned
                                         text: "Assigned to me"
                                         checked: root.selectedCollaborationPolicy.notifyAssigned
@@ -1666,7 +1753,7 @@ Item {
                                     Accessible.name: "Search reminders"
                                 }
 
-                                ComboBox {
+                                TendDropdown {
                                     id: reminderTagFilter
 
                                     width: parent.width * 0.2
@@ -1675,7 +1762,7 @@ Item {
                                     onCurrentIndexChanged: root.tagFilter = currentIndex > 0 ? currentText : ""
                                 }
 
-                                ComboBox {
+                                TendDropdown {
                                     id: reminderSort
 
                                     width: parent.width * 0.2
@@ -1689,7 +1776,7 @@ Item {
                                     }
                                 }
 
-                                CheckBox {
+                                TendCheck {
                                     text: "Descending"
                                     checked: root.sortDescending
                                     onClicked: {
@@ -1708,22 +1795,28 @@ Item {
                                 TextField {
                                     id: quickAdd
 
-                                    width: parent.width * 0.66
+                                    width: parent.width * 0.52
                                     placeholderText: root.addDestination ? "Add to " + root.addDestination.title : "Create a list first"
                                     Accessible.name: "Quick reminder title and tags"
                                     enabled: root.addDestination && service && service.canEditList(root.addDestination.id) && service.connectionState === "online" && !service.mutationPending
-                                    onAccepted: {
-                                        var parsed = root.parseQuickEntry(text);
-                                        if (parsed.title && service.addReminder(root.addDestination.id, parsed.title, root.addDestination.revision, parsed.tags))
-                                            text = "";
+                                    onAccepted: quickAddButton.clicked()
+                                }
 
+                                TendButton {
+                                    id: quickAddButton
+                                    text: "Add reminder"
+                                    enabled: quickAdd.enabled && quickAdd.text.trim() !== ""
+                                    onClicked: {
+                                        var parsed = root.parseQuickEntry(quickAdd.text);
+                                        if (parsed.title && service.addReminder(root.addDestination.id, parsed.title, root.addDestination.revision, parsed.tags))
+                                            quickAdd.text = "";
                                     }
                                 }
 
                                 TextField {
                                     id: newSection
 
-                                    width: parent.width - quickAdd.width - parent.spacing
+                                    width: parent.width - quickAdd.width - quickAddButton.width - parent.spacing * 2
                                     placeholderText: "Add section"
                                     Accessible.name: "New section title"
                                     visible: root.viewMode === "list"
@@ -1747,7 +1840,7 @@ Item {
                                 width: parent.width
                                 spacing: Style.space(6)
 
-                                ComboBox {
+                                TendDropdown {
                                     id: sectionChooser
 
                                     width: parent.width * 0.24
@@ -1768,21 +1861,21 @@ Item {
                                     Accessible.name: "Section title"
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "Up"
                                     enabled: root.selectedListEditable && root.selectedSectionId !== 0 && sectionChooser.currentIndex > 0 && service && service.connectionState === "online" && !service.mutationPending
                                     Accessible.name: "Move selected section up"
                                     onClicked: root.moveSelectedSectionRelative(-1)
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "Down"
                                     enabled: root.selectedListEditable && root.selectedSectionId !== 0 && sectionChooser.currentIndex >= 0 && sectionChooser.currentIndex < sectionChooser.count - 1 && service && service.connectionState === "online" && !service.mutationPending
                                     Accessible.name: "Move selected section down"
                                     onClicked: root.moveSelectedSectionRelative(1)
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "Save section"
                                     enabled: root.selectedListEditable && root.selectedSectionId !== 0 && sectionTitleEditor.text.trim() && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: {
@@ -1792,7 +1885,7 @@ Item {
                                     }
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "Delete"
                                     enabled: root.selectedListEditable && root.selectedSectionId !== 0 && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: {
@@ -1805,7 +1898,7 @@ Item {
                             }
 
                             Row {
-                                visible: root.viewMode === "list" && root.selectedList !== null && root.selectedReminderIds.length > 0
+                                visible: root.selectionMode && root.viewMode === "list" && root.selectedList !== null && root.selectedReminderIds.length > 0
                                 width: parent.width
                                 spacing: Style.space(6)
 
@@ -1817,7 +1910,7 @@ Item {
                                     font.pixelSize: Style.font.caption
                                 }
 
-                                ComboBox {
+                                TendDropdown {
                                     id: batchSection
 
                                     width: parent.width * 0.24
@@ -1826,7 +1919,7 @@ Item {
                                     Accessible.name: "Batch destination section"
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "Move"
                                     enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: {
@@ -1836,7 +1929,7 @@ Item {
                                     }
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "Complete"
                                     enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: {
@@ -1845,7 +1938,7 @@ Item {
                                     }
                                 }
 
-                                Button {
+                                TendButton {
                                     text: "Uncomplete"
                                     enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: {
@@ -1854,7 +1947,7 @@ Item {
                                     }
                                 }
 
-                                Button {
+                                TendButton {
                                     text: root.confirmBatchDelete ? "Confirm delete" : "Delete"
                                     enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: {
@@ -1873,8 +1966,8 @@ Item {
 
                             Rectangle {
                                 width: parent.width
-                                height: root.selectedReminder ? Style.space(reminderRepeat.currentText === "none" ? 422 : 470) : 0
-                                visible: root.selectedReminder !== null
+                                height: 0
+                                visible: false
                                 radius: Style.cornerRadius
                                 color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.05)
 
@@ -1891,7 +1984,7 @@ Item {
                                         Accessible.name: "Reminder title"
                                     }
 
-                                    TextArea {
+                                    QQC.TextArea {
                                         id: reminderNotes
 
                                         width: parent.width
@@ -1913,14 +2006,14 @@ Item {
                                             Accessible.name: "Reminder URL"
                                         }
 
-                                        Button {
+                                        TendButton {
                                             text: "Open link"
                                             enabled: TendModel.safeExternalUrl(reminderUrl.text)
                                             Accessible.name: "Open reminder link in the default application"
                                             onClicked: Qt.openUrlExternally(reminderUrl.text.trim())
                                         }
 
-                                        ComboBox {
+                                        TendDropdown {
                                             id: reminderPriority
 
                                             width: parent.width * 0.2
@@ -1928,7 +2021,7 @@ Item {
                                             Accessible.name: "Reminder priority"
                                         }
 
-                                        CheckBox {
+                                        TendCheck {
                                             id: reminderFlagged
 
                                             text: "Flag"
@@ -1944,7 +2037,7 @@ Item {
                                         Accessible.name: "Reminder tags"
                                     }
 
-                                    ComboBox {
+                                    TendDropdown {
                                         id: reminderAssignee
 
                                         width: parent.width
@@ -1974,7 +2067,7 @@ Item {
                                             Accessible.name: "Reminder time zone"
                                         }
 
-                                        CheckBox {
+                                        TendCheck {
                                             id: reminderAllDay
 
                                             text: "All day"
@@ -1994,7 +2087,7 @@ Item {
                                         width: parent.width
                                         spacing: Style.space(6)
 
-                                        ComboBox {
+                                        TendDropdown {
                                             id: reminderParent
 
                                             width: parent.width * 0.3
@@ -2003,7 +2096,7 @@ Item {
                                             Accessible.name: "Parent reminder"
                                         }
 
-                                        ComboBox {
+                                        TendDropdown {
                                             id: reminderSection
 
                                             width: parent.width * 0.3
@@ -2012,7 +2105,7 @@ Item {
                                             Accessible.name: "Reminder section"
                                         }
 
-                                        SpinBox {
+                                        TendNumber {
                                             id: reminderRank
 
                                             from: 0
@@ -2022,7 +2115,7 @@ Item {
                                             Accessible.name: "Reminder rank"
                                         }
 
-                                        Button {
+                                        TendButton {
                                             text: "Move"
                                             enabled: root.selectedListEditable && root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: {
@@ -2032,14 +2125,14 @@ Item {
                                             }
                                         }
 
-                                        Button {
+                                        TendButton {
                                             text: "↑"
                                             Accessible.name: "Move reminder up"
                                             enabled: root.selectedListEditable && root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: root.moveSelectedRelative(-1)
                                         }
 
-                                        Button {
+                                        TendButton {
                                             text: "↓"
                                             Accessible.name: "Move reminder down"
                                             enabled: root.selectedListEditable && root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
@@ -2051,13 +2144,13 @@ Item {
                                     Row {
                                         spacing: Style.space(8)
 
-                                        Button {
+                                        TendButton {
                                             text: "Indent"
                                             enabled: root.selectedListEditable && root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: root.indentSelectedReminder()
                                         }
 
-                                        Button {
+                                        TendButton {
                                             text: "Outdent"
                                             enabled: root.selectedListEditable && root.selectedReminder && root.selectedReminder.parentId !== null && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: root.outdentSelectedReminder()
@@ -2095,13 +2188,13 @@ Item {
                                             Accessible.name: "Repeat month days"
                                         }
 
-                                        CheckBox {
+                                        TendCheck {
                                             id: reminderOrdinal
 
                                             text: "Ordinal"
                                         }
 
-                                        SpinBox {
+                                        TendNumber {
                                             id: reminderOrdinalIndex
 
                                             from: 1
@@ -2111,7 +2204,7 @@ Item {
                                             Accessible.name: "Ordinal week index"
                                         }
 
-                                        SpinBox {
+                                        TendNumber {
                                             id: reminderOrdinalWeekday
 
                                             from: 0
@@ -2129,7 +2222,7 @@ Item {
                                             Accessible.name: "Repeat end date and time"
                                         }
 
-                                        SpinBox {
+                                        TendNumber {
                                             id: reminderRepeatCount
 
                                             from: 0
@@ -2145,7 +2238,7 @@ Item {
                                         width: parent.width
                                         spacing: Style.space(6)
 
-                                        ComboBox {
+                                        TendDropdown {
                                             id: reminderRepeat
 
                                             width: parent.width * 0.25
@@ -2153,7 +2246,7 @@ Item {
                                             Accessible.name: "Repeat frequency"
                                         }
 
-                                        SpinBox {
+                                        TendNumber {
                                             id: reminderInterval
 
                                             from: 1
@@ -2163,7 +2256,7 @@ Item {
                                             Accessible.name: "Repeat interval"
                                         }
 
-                                        Button {
+                                        TendButton {
                                             text: "Save schedule"
                                             enabled: root.selectedListEditable && root.selectedReminder && reminderDue.text.trim() && reminderTimezone.text.trim() && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: {
@@ -2204,7 +2297,7 @@ Item {
                                             }
                                         }
 
-                                        Button {
+                                        TendButton {
                                             text: "Clear"
                                             enabled: root.selectedListEditable && root.selectedReminder && root.selectedReminder.schedule && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: service.setSchedule(root.selectedList.id, root.selectedReminder.id, null, root.selectedList.revision)
@@ -2215,7 +2308,7 @@ Item {
                                     Row {
                                         spacing: Style.space(8)
 
-                                        Button {
+                                        TendButton {
                                             id: reminderSave
 
                                             text: service && service.mutationPending ? "Saving…" : "Save"
@@ -2238,13 +2331,13 @@ Item {
                                             }
                                         }
 
-                                        Button {
+                                        TendButton {
                                             text: "Delete"
                                             enabled: root.selectedListEditable && root.selectedReminder && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: service.deleteReminder(root.selectedList.id, root.selectedReminder.id, root.selectedList.revision)
                                         }
 
-                                        ComboBox {
+                                        TendDropdown {
                                             id: snoozePreset
 
                                             model: service ? service.preferences.snoozePresets : []
@@ -2252,7 +2345,7 @@ Item {
                                             Accessible.name: "Snooze duration"
                                         }
 
-                                        Button {
+                                        TendButton {
                                             text: "Snooze"
                                             enabled: root.selectedReminder && root.selectedReminder.schedule && snoozePreset.currentIndex >= 0 && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: service.snoozeReminder(root.selectedList.id, root.selectedReminder.id, Number(snoozePreset.currentValue))
@@ -2271,7 +2364,7 @@ Item {
                                             Accessible.name: "Custom snooze date and time"
                                         }
 
-                                        Button {
+                                        TendButton {
                                             text: "Snooze until"
                                             enabled: root.selectedReminder && root.selectedReminder.schedule && customSnooze.text.trim() && service && service.connectionState === "online" && !service.mutationPending
                                             onClicked: service.snoozeReminderUntil(root.selectedList.id, root.selectedReminder.id, customSnooze.text.trim())
@@ -2353,15 +2446,16 @@ Item {
                                         anchors.margins: Style.space(8)
                                         spacing: Style.space(10)
 
-                                        CheckBox {
+                                        TendCheck {
                                             checked: modelData.completed
                                             enabled: service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
                                             Accessible.name: (modelData.completed ? "Uncomplete " : "Complete ") + modelData.title
                                             onClicked: service.setCompleted(modelData.listId, modelData.id, checked, modelData.listRevision)
                                         }
 
-                                        CheckBox {
-                                            visible: root.viewMode === "list"
+                                        TendCheck {
+                                            visible: root.selectionMode && root.viewMode === "list"
+                                            width: visible ? implicitWidth : 0
                                             checked: root.reminderIsSelected(modelData.id)
                                             enabled: visible && service && service.canEditList(modelData.listId) && service.connectionState === "online" && !service.mutationPending
                                             Accessible.name: "Select " + modelData.title + " for batch action"
@@ -2416,7 +2510,7 @@ Item {
                                             }
                                         }
 
-                                        Button {
+                                        TendButton {
                                             visible: root.viewMode === "list" && root.reminderHasChildren(modelData.id)
                                             text: root.reminderIsCollapsed(modelData.id) ? "▶" : "▼"
                                             Accessible.name: (root.reminderIsCollapsed(modelData.id) ? "Expand " : "Collapse ") + modelData.title
@@ -2455,6 +2549,24 @@ Item {
                                 }
 
                             }
+
+                            ReminderDetail {
+                                id: detailSidebar
+                                anchors.top: parent.top
+                                anchors.bottom: parent.bottom
+                                anchors.right: parent.right
+                                width: root.selectedReminder ? Style.space(330) : 0
+                                visible: root.selectedReminder !== null
+                                service: root.service
+                                list: root.selectedList
+                                reminder: root.selectedReminder
+                                assigneeChoices: root.assigneeChoices
+                                editable: root.selectedListEditable
+                                timezone: root.localTimezone()
+                                onCloseRequested: root.selectedReminderId = 0
+                            }
+
+                        }
 
                         }
 

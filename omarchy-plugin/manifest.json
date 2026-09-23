@@ -6,22 +6,21 @@
   "author": "Omabit",
   "description": "Urbit-backed multiplayer reminders for Omarchy",
   "kinds": [
-    "overlay",
+    "panel",
     "service",
     "bar-widget"
   ],
   "keepLoaded": true,
   "entryPoints": {
-    "overlay": "Overlay.qml",
+    "panel": "FullPanel.qml",
     "service": "Service.qml",
     "barWidget": "BarWidget.qml"
   },
   "barWidget": {
     "displayName": "Tend",
-    "description": "Open reminders and show incomplete item count",
+    "description": "See and add reminders assigned to you",
     "category": "Info",
     "allowMultiple": false,
     "defaultSection": "right"
   }
 }
-
