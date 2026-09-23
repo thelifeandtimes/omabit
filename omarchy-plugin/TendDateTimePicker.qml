@@ -21,7 +21,7 @@ Item {
   property int selectedMinute: 0
 
   implicitWidth: Style.space(190)
-  implicitHeight: trigger.implicitHeight
+  implicitHeight: Style.spacing.controlHeight
 
   function pad2(number) { return number < 10 ? "0" + number : String(number) }
 

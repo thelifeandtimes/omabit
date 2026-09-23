@@ -202,7 +202,7 @@ BorderSurface {
         Row {
           width: parent.width
           spacing: Style.space(8)
-          TendButton { width: (parent.width - parent.spacing) / 2; text: root.service && root.service.preferences.defaultList === root.list.id ? "Default list" : "Make default"; enabled: root.service && root.service.connectionState === "online" && !root.service.mutationPending; onClicked: root.setDefaultList() }
+          TendButton { width: (parent.width - parent.spacing) / 2; text: root.service && root.list && root.service.preferences.defaultList === root.list.id ? "Default list" : "Make default"; enabled: root.service && root.list && root.service.connectionState === "online" && !root.service.mutationPending; onClicked: root.setDefaultList() }
           TendButton { width: (parent.width - parent.spacing) / 2; text: root.pinned() ? "Unpin list" : "Pin list"; enabled: root.service && root.service.connectionState === "online" && !root.service.mutationPending; onClicked: root.togglePinned() }
         }
 

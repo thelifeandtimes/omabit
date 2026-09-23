@@ -16,7 +16,7 @@ Item {
   signal changed(string value)
 
   implicitWidth: Style.space(180)
-  implicitHeight: trigger.implicitHeight
+  implicitHeight: Style.spacing.controlHeight
 
   function selectedOption() {
     for (var i = 0; i < options.length; i++)
