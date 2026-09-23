@@ -29,9 +29,11 @@ September 22, 2026, Linux x86-64, Go 1.27.0:
   protocol mismatch, watch cancellation, shutdown, and fresh-state restart.
 - All validation processes were stopped; no production resources were touched.
 
-This records developer validation. User acceptance of the steps below is still
-pending. The declared Go minimum has not yet been independently tested with a
-Go 1.24 toolchain.
+User acceptance: passed. The user reported that the instructions were clear and
+all steps worked as expected, and authorized progressing to checkpoint 2.
+
+The declared Go minimum has not yet been independently tested with a Go 1.24
+toolchain.
 
 ## 1. Build and test
 

@@ -9,10 +9,16 @@ automated test.
 ## Progress
 
 - Architecture and sequence: recorded.
-- Checkpoint 1 protocol/simulator: implemented and automated tests pass; awaiting
-  user acceptance of the [local walkthrough](checkpoints/01-local-protocol.md).
+- Checkpoint 1 protocol/simulator: implemented; automated tests and user acceptance
+  of the [local walkthrough](checkpoints/01-local-protocol.md) passed.
 - Protocol contract: [experimental version 1](protocol.md).
 - Real Docker/runtime qualification: not performed.
+- Qualification pill: use the selected Vere runtime's upstream default bootstrap
+  pill until the Omabit release is available. Verify the expected base, webterm,
+  and groups desks after boot; this does not qualify the future Omabit bundle.
+- Host deployment is being reconsidered for minimal Quattro setup: rootless
+  tooling is not installed locally, while rootful Docker is already provided.
+  No package, account, service, or Docker-access changes are authorized yet.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator

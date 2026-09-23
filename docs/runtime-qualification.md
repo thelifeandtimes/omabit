@@ -2,6 +2,21 @@
 
 Status: not executed. Do not interpret this checklist as supported behavior.
 
+Checkpoint 1 has been accepted by the user. The qualification pill will initially
+be the upstream default bootstrap pill for the selected Vere version, not the
+unreleased Omabit pill. Record its resolved URL and content digest for repeatable
+checks; verify the expected base, webterm, and groups desks after boot.
+
+Read-only preflight found x86-64 Linux, systemd, and Docker available. The rootful
+Docker socket is enabled but inaccessible to the desktop user, as intended by
+Quattro. Rootless setup scripts, RootlessKit, and a rootless networking backend
+are absent. No engine was activated and no host configuration was changed.
+
+The deployment choice is under discussion: compare the originally proposed
+dedicated-account rootless engine with using Quattro's existing rootful engine
+through a privileged, narrowly exposed runner service. Do not treat the rootless
+checklist below as an approved package-installation requirement until resolved.
+
 Run only after the protocol walkthrough is accepted and the user approves any
 host setup. Use disposable development ships. Never boot an existing identity's
 copy while its original is running.
