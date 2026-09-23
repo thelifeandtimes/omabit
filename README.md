@@ -22,11 +22,13 @@ separate codebases.
 ## Status
 
 Checkpoint 1's memory-only runner/collector protocol has passed manual validation.
-Checkpoint 2A adds rootless preflight, pinned artifact preparation, and an
-explicitly authorized development first-install helper. It is ready for manual
-engine setup validation; no real ship management is supported yet.
+Checkpoint 2A's dedicated rootless engine setup has also passed manual validation.
+Checkpoint 2B is ready: a pinned-image, verified-pill fake-ship lifecycle test with
+resource checks, container replacement, offline pack, and bounded cleanup.
+Production ship management is not supported yet.
 
-- [Next: rootless setup checkpoint](docs/checkpoints/02-rootless-setup.md)
+- [Next: disposable runtime checkpoint](docs/checkpoints/03-disposable-runtime.md)
+- [Accepted: rootless setup checkpoint](docs/checkpoints/02-rootless-setup.md)
 - [Accepted: checkpoint 1 walkthrough](docs/checkpoints/01-local-protocol.md)
 - [Architecture](docs/architecture.md)
 - [Implementation plan and validation gates](docs/implementation-plan.md)
@@ -40,6 +42,7 @@ go test ./...
 go build -o ./build/ ./cmd/...
 ./build/urbit-runner preflight
 ./build/urbit-runner setup-plan
+./build/urbit-runner runtime-plan
 ```
 
 The default is dedicated-account rootless Docker, preserving existing system

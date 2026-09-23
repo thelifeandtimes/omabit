@@ -1,7 +1,8 @@
 # Runtime qualification record
 
-Status: rootless engine setup accepted by the user; Vere qualification is next.
-Do not interpret the checklist as supported runtime behavior.
+Status: rootless engine setup accepted by the user; the
+[disposable Vere walkthrough](checkpoints/03-disposable-runtime.md) is ready for
+manual validation. Do not interpret the checklist as supported runtime behavior.
 
 ## Accepted engine setup
 
@@ -22,9 +23,9 @@ be the upstream default bootstrap pill for the selected Vere version, not the
 unreleased Omabit pill. Record its resolved URL and content digest for repeatable
 checks; verify the expected base, webterm, and groups desks after boot.
 
-Before installation, read-only preflight found x86-64 Linux, systemd, and Docker available. The rootful
-Docker socket is enabled but inaccessible to the desktop user, as intended by
-Quattro. Rootless setup scripts, RootlessKit, and a rootless networking backend
+Before installation, read-only preflight found x86-64 Linux, systemd, and Docker
+available. The rootful Docker socket was enabled but inaccessible to the desktop
+user, as intended by Quattro. Rootless setup scripts, RootlessKit, and a networking backend
 were absent. No engine was activated and no host configuration was changed by
 that preflight.
 
@@ -51,7 +52,7 @@ copy while its original is running.
 
 | Area | Required observation | Result |
 | --- | --- | --- |
-| Isolation | No desktop Docker-group grant or rootful socket exposure | Not run |
+| Isolation | No desktop Docker-group grant or rootful socket exposure | Accepted in checkpoint 2A (operator-reported) |
 | Image | Correct x86-64 binary and explicit invocation | Not run |
 | URL pill | HTTPS source downloads and verifies before boot | Not run |
 | Local pill | Explicit import verifies before boot | Not run |
@@ -89,6 +90,16 @@ reviewed baseline, not a bypass or a system downgrade. Preserve the package
 manager's normal security-update workflow.
 
 ## Gates
+
+Checkpoint 2B has fixed image/pill provenance and injected tests, but its runtime
+checklist rows above remain pending until executed. The image is pinned to
+`sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd`;
+the default 4.6 pill is pinned to SHA-256
+`f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b` and
+217,421,172 bytes, using object generation `1790171686269740`. The mutable default
+was replaced during development; the old object was no longer publicly
+retrievable. The new generation's hash was independently computed from its full
+HTTPS content; no separate publisher signature was verified.
 
 Do not enable continuous socket collection on an affected runtime. A draining
 client is mitigation, not proof against collector hard-kill/OOM.

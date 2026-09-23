@@ -23,8 +23,10 @@ automated test.
   UID/GID 959 on this host, with socket `/run/user/959/urbit-docker.sock` and
   `rootless_verified: true`. Runtime qualification remains false; the UID is not
   a portable configuration default.
-- Checkpoint 2B: qualify a digest-pinned image and content-pinned upstream pill
-  using a disposable, network-isolated fake ship. No real identity or control
+- Checkpoint 2B tooling is implemented and fixture-tested; the
+  [disposable-runtime walkthrough](checkpoints/03-disposable-runtime.md) awaits
+  manual acceptance. It uses a digest-pinned image and content-pinned upstream
+  pill with a fresh network-isolated fake ship. No real identity or control
   socket is used. Boot, shutdown, container replacement, and offline pack are the
   first runtime gate; Ames, meld, and socket-failure qualification remain later.
 - No production deployment is supported yet.
