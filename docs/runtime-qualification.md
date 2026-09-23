@@ -1,18 +1,32 @@
 # Runtime qualification record
 
-Status: rootless setup tooling implemented; live engine/runtime qualification not
-executed. Do not interpret the checklist as supported behavior. Start with the
-[rootless setup checkpoint](checkpoints/02-rootless-setup.md).
+Status: rootless engine setup accepted by the user; Vere qualification is next.
+Do not interpret the checklist as supported runtime behavior.
+
+## Accepted engine setup
+
+The user reported successful checkpoint 2A installation and checks:
+
+- Dedicated account `urbit-runner`, UID/GID **959/959** on this host only.
+- Service `urbit-docker.service`; socket `/run/user/959/urbit-docker.sock`.
+- Installer result: `account_created: true`, `rootless_verified: true`,
+  `runtime_qualified: false`, `partial: false`.
+- Subsequent read-only metadata inspection found Docker 29.7.2, RootlessKit 3.1.0,
+  and slirp4netns 1.3.5 installed. No developer Docker API call was made.
+
+This establishes the engine setup gate, not container resource enforcement,
+Vere operation, Ames reachability, or a separately observed reboot.
 
 Checkpoint 1 has been accepted by the user. The qualification pill will initially
 be the upstream default bootstrap pill for the selected Vere version, not the
 unreleased Omabit pill. Record its resolved URL and content digest for repeatable
 checks; verify the expected base, webterm, and groups desks after boot.
 
-Read-only preflight found x86-64 Linux, systemd, and Docker available. The rootful
+Before installation, read-only preflight found x86-64 Linux, systemd, and Docker available. The rootful
 Docker socket is enabled but inaccessible to the desktop user, as intended by
 Quattro. Rootless setup scripts, RootlessKit, and a rootless networking backend
-are absent. No engine was activated and no host configuration was changed.
+were absent. No engine was activated and no host configuration was changed by
+that preflight.
 
 The user confirmed dedicated-account rootless Docker as the default. Preserve
 Quattro's existing system Docker services and the desktop's context and group

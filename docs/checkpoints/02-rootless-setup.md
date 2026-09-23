@@ -1,5 +1,11 @@
 # Checkpoint 2A: dedicated rootless Docker setup
 
+Status: accepted by the user. Installation completed with account `urbit-runner`,
+UID/GID 959, service `urbit-docker.service`, socket
+`/run/user/959/urbit-docker.sock`, `rootless_verified: true`, and `partial: false`.
+The user reported the remaining checks passed. This is operator-reported evidence;
+Vere qualification and a separately recorded reboot test remain outstanding.
+
 Checkpoint 1 was accepted. This checkpoint prepares and optionally installs the
 rootless engine that the real runner will use. It does **not** boot a ship, pull
 an image, install a production runner daemon, or qualify Vere yet.
@@ -301,5 +307,5 @@ the actual host.
 Live validation so far is limited to preflight, HTTPS bundle preparation, and
 shell syntax checks. Systemd's static verifier reports the expected missing
 installed executable paths before installation. The dedicated engine has **not**
-yet been installed or started by the developer; this walkthrough establishes that
-next layer of evidence.
+been installed or started by the developer. The user subsequently completed this
+walkthrough successfully; see the acceptance record at the top of this document.

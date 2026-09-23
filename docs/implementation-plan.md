@@ -19,10 +19,14 @@ automated test.
 - Default deployment is confirmed: dedicated-account rootless Docker, with the
   same intended five-step plugin onboarding. Existing Docker services, contexts,
   and desktop group membership remain unchanged. No automatic privileged fallback.
-- Checkpoint 2A preflight, pinned bundle preparation, and explicitly authorized
-  development first-install tooling are implemented. Automated validation and
-  live unprivileged preparation pass; [host installation](checkpoints/02-rootless-setup.md)
-  is awaiting manual OS-authorized execution and evidence.
+- Checkpoint 2A rootless setup: accepted by the user. The dedicated account is
+  UID/GID 959 on this host, with socket `/run/user/959/urbit-docker.sock` and
+  `rootless_verified: true`. Runtime qualification remains false; the UID is not
+  a portable configuration default.
+- Checkpoint 2B: qualify a digest-pinned image and content-pinned upstream pill
+  using a disposable, network-isolated fake ship. No real identity or control
+  socket is used. Boot, shutdown, container replacement, and offline pack are the
+  first runtime gate; Ames, meld, and socket-failure qualification remain later.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator
