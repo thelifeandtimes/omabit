@@ -32,6 +32,7 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn('view: "assigned"', widget)
         self.assertIn('sort: "priority"', widget)
         self.assertIn("openFullPanel", widget)
+        self.assertIn("addReminderAssignedToMe", widget)
 
     def test_plugin_adds_no_custom_motion(self):
         plugin_text = "\n".join(path.read_text(encoding="utf-8") for path in (ROOT / "omarchy-plugin").glob("*.qml"))
@@ -97,6 +98,12 @@ class TendAccessibilityTests(unittest.TestCase):
         service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
         self.assertEqual(service.count('["python3", "-B", bridgePath,'), 6)
         self.assertNotIn('["python3", bridgePath,', service)
+
+    def test_bar_quick_add_is_followed_by_self_assignment(self):
+        service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
+        self.assertIn("function addReminderAssignedToMe", service)
+        self.assertIn("function queueAssignmentForCreatedReminder", service)
+        self.assertIn("assignee: ship", service)
 
     def test_mutation_processes_use_newline_delimited_json(self):
         service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")

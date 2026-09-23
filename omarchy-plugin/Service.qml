@@ -21,6 +21,8 @@ Item {
     property var pendingOperations: []
     property var activities: []
     property var localSettings: TendModel.cloneLocalSettings(null)
+    property var pendingAssignedAdds: []
+    property var pendingAssignmentUpdates: []
     property var lastAlert: null
     property var notificationQueue: []
     property var notificationAckQueue: []
@@ -267,6 +269,99 @@ Item {
                 "base-revision": Number(baseRevision)
             }
         }, listId);
+    }
+
+    function addReminderAssignedToMe(listId, title, baseRevision, tags) {
+        var list = listById(Number(listId));
+        if (!list || !ship)
+            return false;
+        var opId = operationId();
+        var existingIds = list.reminders.map(function(reminder) { return Number(reminder.id); });
+        var accepted = submit({
+            "add-reminder": {
+                "operation-id": opId,
+                "list-id": Number(listId),
+                "title": String(title || "").trim(),
+                "tags": (tags || []).map(String),
+                "base-revision": Number(baseRevision)
+            }
+        }, listId);
+        if (accepted) {
+            var queued = pendingAssignedAdds.slice();
+            queued.push({
+                operationId: opId,
+                listId: Number(listId),
+                title: String(title || "").trim(),
+                existingIds: existingIds
+            });
+            pendingAssignedAdds = queued;
+        }
+        return accepted;
+    }
+
+    function queueAssignmentForCreatedReminder(update) {
+        if (!update || !update["list-upserted"])
+            return;
+        var body = update["list-upserted"];
+        var opId = String(body["operation-id"] || "");
+        var pendingIndex = -1;
+        for (var i = 0; i < pendingAssignedAdds.length; i++) {
+            if (pendingAssignedAdds[i].operationId === opId) {
+                pendingIndex = i;
+                break;
+            }
+        }
+        if (pendingIndex < 0)
+            return;
+
+        var pending = pendingAssignedAdds[pendingIndex];
+        var list = listById(pending.listId);
+        var created = null;
+        if (list) {
+            for (var j = 0; j < list.reminders.length; j++) {
+                var candidate = list.reminders[j];
+                if (pending.existingIds.indexOf(Number(candidate.id)) === -1 && candidate.title === pending.title) {
+                    created = candidate;
+                    break;
+                }
+            }
+        }
+        var remaining = pendingAssignedAdds.slice();
+        remaining.splice(pendingIndex, 1);
+        pendingAssignedAdds = remaining;
+        if (!created)
+            return;
+
+        var updates = pendingAssignmentUpdates.slice();
+        updates.push({ listId: pending.listId, reminderId: Number(created.id) });
+        pendingAssignmentUpdates = updates;
+        assignmentTimer.restart();
+    }
+
+    function pumpAssignmentUpdates() {
+        if (mutationPending || connectionState !== "online" || pendingAssignmentUpdates.length === 0)
+            return;
+        var queued = pendingAssignmentUpdates.slice();
+        var update = queued[0];
+        var list = listById(update.listId);
+        var reminder = reminderById(list, update.reminderId);
+        if (!list || !reminder) {
+            queued.shift();
+            pendingAssignmentUpdates = queued;
+            return;
+        }
+        if (updateReminder(list.id, reminder.id, {
+            title: reminder.title,
+            notes: reminder.notes,
+            url: reminder.url,
+            priority: reminder.priority,
+            flagged: reminder.flagged,
+            tags: reminder.tags,
+            assignee: ship
+        }, list.revision)) {
+            queued.shift();
+            pendingAssignmentUpdates = queued;
+        }
     }
 
     function replaceTag(from, to) {
@@ -590,6 +685,13 @@ Item {
             root.accesses = result.accesses;
             root.invitations = result.invitations;
             root.pendingOperations = result.pendingOperations;
+            root.queueAssignmentForCreatedReminder(message.json);
+            if (message.json && message.json.rejected) {
+                var rejectedOp = String(message.json.rejected["operation-id"] || "");
+                root.pendingAssignedAdds = root.pendingAssignedAdds.filter(function(entry) {
+                    return entry.operationId !== rejectedOp;
+                });
+            }
             if (message.json && message.json["list-deleted"]) {
                 var deletedListId = Number(message.json["list-deleted"]["list-id"]);
                 root.activities = root.activities.filter(function(entry) {
@@ -878,6 +980,8 @@ Item {
             root.accesses = [];
             root.invitations = [];
             root.pendingOperations = [];
+            root.pendingAssignedAdds = [];
+            root.pendingAssignmentUpdates = [];
             root.activities = [];
             root.localSettings = TendModel.cloneLocalSettings(null);
             root.notificationQueue = [];
@@ -985,6 +1089,14 @@ Item {
             waitForEnd: true
             onStreamFinished: notificationAckProcess.errors = text
         }
+    }
+
+    Timer {
+        id: assignmentTimer
+        interval: 150
+        repeat: pendingAssignmentUpdates.length > 0
+        running: repeat
+        onTriggered: root.pumpAssignmentUpdates()
     }
 
     Timer {

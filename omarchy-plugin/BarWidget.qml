@@ -65,7 +65,7 @@ Panel {
     var parsed = parseQuickEntry(quickAdd.text)
     var title = parsed.title || quickAdd.text.trim()
     var tags = parsed.tags
-    if (tendService.addReminder(list.id, title, list.revision, tags)) quickAdd.text = ""
+    if (tendService.addReminderAssignedToMe(list.id, title, list.revision, tags)) quickAdd.text = ""
   }
 
   visible: true
