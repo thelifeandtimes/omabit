@@ -18,12 +18,14 @@ import (
 
 type timings struct{ command, pull, download, ready, poll, stop, cleanup, pack, cleanupCommand time.Duration }
 type dependencies struct {
+	profile          string
 	home, runtimeDir string
 	identity         func() (identity, error)
 	stat             func(string) (node, error)
 	admission        func(string) (uint64, uint64, error)
 	execute          func(context.Context, []string, []string) (string, error)
 	download         func(context.Context, string) (candidate.Artifact, error)
+	hostProbe        func(context.Context, string) error
 	randomID         func() (string, error)
 	pillSHA          string
 	pillBytes        int64
@@ -47,8 +49,17 @@ func Run(ctx context.Context, progress func(string)) (Result, error) {
 	return run(ctx, progress, defaults())
 }
 
+// RunHTTP is the separate host-loopback publication checkpoint. The accepted
+// Run lifecycle continues to use network=none and never publishes a port.
+func RunHTTP(ctx context.Context, progress func(string)) (Result, error) {
+	d := defaults()
+	d.profile = ProfileHTTP
+	return run(ctx, progress, d)
+}
+
 func defaults() dependencies {
 	return dependencies{
+		profile: ProfileLifecycle, hostProbe: probeHostHTTP,
 		home: rootless.HomeDir, identity: currentIdentity, stat: statNode,
 		admission: available, execute: executeDocker, download: candidate.DownloadPill,
 		randomID: func() (string, error) {
@@ -64,6 +75,9 @@ func defaults() dependencies {
 
 func run(ctx context.Context, progress func(string), d dependencies) (result Result, err error) {
 	q := &qualifier{d: d, progress: progress}
+	if d.profile != ProfileLifecycle && d.profile != ProfileHTTP {
+		return Result{}, errors.New("unknown qualification profile")
+	}
 	if err = ctx.Err(); err != nil {
 		return
 	}
@@ -87,7 +101,7 @@ func run(ctx context.Context, progress func(string), d dependencies) (result Res
 	if err = os.Mkdir(dir, 0700); err != nil {
 		return Result{}, errors.New("fresh run directory unavailable")
 	}
-	q.r = Result{RunID: id, Directory: dir, ReportPath: filepath.Join(dir, "report.json"),
+	q.r = Result{Profile: d.profile, RunID: id, Directory: dir, ReportPath: filepath.Join(dir, "report.json"),
 		Image: candidate.Image, Platform: candidate.Platform,
 		EngineVersion: rootless.EngineVersion, VereVersion: candidate.VereVersion,
 		PillURL: candidate.PillURL, PillSHA256: d.pillSHA, PillBytes: d.pillBytes,
@@ -132,18 +146,29 @@ func run(ctx context.Context, progress func(string), d dependencies) (result Res
 			return q.r, errors.New("cannot secure run storage")
 		}
 	}
-	steps := []struct {
+	type step struct {
 		name, detail string
 		work         func(context.Context) error
-	}{
+	}
+	steps := []step{
 		{"engine", "pinned private rootless engine; no leftover qualification containers", q.engine},
 		{"image", "candidate image ID, platform and repository digest verified", q.image},
 		{"pill", "local pill size and SHA-256 verified", q.pill},
 		{"probe", "live cgroup limits and Vere version verified", q.probe},
-		{"boot", "fake zod alive with private HTTP reachability; clean shutdown", func(c context.Context) error { return q.boot(c, "boot") }},
-		{"restart", "local restart and private HTTP reachability; clean shutdown", func(c context.Context) error { return q.boot(c, "restart") }},
-		{"pack", "offline pack exited successfully", q.pack},
-		{"post-pack", "post-pack restart and private HTTP reachability; clean shutdown", func(c context.Context) error { return q.boot(c, "post-pack") }},
+	}
+	if d.profile == ProfileHTTP {
+		steps = append(steps,
+			step{"network", "run-owned IPv4 NAT bridge verified; normal outbound access", q.createNetwork},
+			step{"host-http-boot", "fake zod verified via host-loopback HTTP; clean shutdown", func(c context.Context) error { return q.boot(c, "http-boot") }},
+			step{"host-http-restart", "replacement container verified via host-loopback HTTP; clean shutdown", func(c context.Context) error { return q.boot(c, "http-restart") }},
+		)
+	} else {
+		steps = append(steps,
+			step{"boot", "fake zod alive with private HTTP reachability; clean shutdown", func(c context.Context) error { return q.boot(c, "boot") }},
+			step{"restart", "local restart and private HTTP reachability; clean shutdown", func(c context.Context) error { return q.boot(c, "restart") }},
+			step{"pack", "offline pack exited successfully", q.pack},
+			step{"post-pack", "post-pack restart and private HTTP reachability; clean shutdown", func(c context.Context) error { return q.boot(c, "post-pack") }},
+		)
 	}
 	for _, step := range steps {
 		q.phase = step.name

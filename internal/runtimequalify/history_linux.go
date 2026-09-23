@@ -79,6 +79,7 @@ func (q *qualifier) priorReport(id string) error {
 	// Completed legacy reports are accepted only with full container IDs; their
 	// old Removed=true/ID-empty outcome cannot prove an uncertain create absent.
 	var wire struct {
+		Profile          string `json:"profile"`
 		RunID            string `json:"run_id"`
 		Directory        string `json:"directory"`
 		ReportPath       string `json:"report_path"`
@@ -92,6 +93,13 @@ func (q *qualifier) priorReport(id string) error {
 			CreateDispatched *bool  `json:"create_dispatched"`
 			CreateUncertain  *bool  `json:"create_uncertain"`
 		} `json:"containers"`
+		Network *struct {
+			Name             string `json:"name"`
+			ID               string `json:"id"`
+			Removed          *bool  `json:"removed"`
+			CreateDispatched *bool  `json:"create_dispatched"`
+			CreateUncertain  *bool  `json:"create_uncertain"`
+		} `json:"network"`
 	}
 	if json.Unmarshal(data, &wire) != nil || wire.RunID != id || wire.Directory != dir || wire.ReportPath != path || wire.CleanupComplete == nil || wire.RuntimeQualified == nil || *wire.RuntimeQualified {
 		return errors.New("malformed report identity or outcome metadata")
@@ -99,10 +107,35 @@ func (q *qualifier) priorReport(id string) error {
 	if wire.Containers == nil || len(*wire.Containers) > 5 {
 		return errors.New("malformed container intent metadata")
 	}
+	if wire.Profile == "" {
+		wire.Profile = ProfileLifecycle // accepted checkpoint 2B reports
+	}
+	if wire.Profile != ProfileLifecycle && wire.Profile != ProfileHTTP {
+		return errors.New("unknown prior qualification profile")
+	}
+	if wire.Profile == ProfileLifecycle && wire.Network != nil {
+		return errors.New("isolated lifecycle report contains a network intent")
+	}
+	if wire.Network != nil {
+		n := wire.Network
+		if n.Name != "urbit-qualification-"+id+"-http" || n.Removed == nil || !*n.Removed ||
+			n.CreateDispatched == nil || n.CreateUncertain == nil || *n.CreateUncertain ||
+			(*n.CreateDispatched && !containerIDPattern.MatchString(n.ID)) || (!*n.CreateDispatched && n.ID != "") {
+			return errors.New("malformed or unresolved network intent")
+		}
+	}
 	seen := make(map[string]bool)
 	for _, record := range *wire.Containers {
 		switch record.Kind {
-		case "probe", "boot", "restart", "pack", "post-pack":
+		case "probe":
+		case "boot", "restart", "pack", "post-pack":
+			if wire.Profile != ProfileLifecycle {
+				return errors.New("container kind does not match the HTTP profile")
+			}
+		case "http-boot", "http-restart":
+			if wire.Profile != ProfileHTTP || wire.Network == nil || !*wire.Network.CreateDispatched {
+				return errors.New("HTTP container lacks a resolved network intent")
+			}
 		default:
 			return errors.New("invalid recorded container kind")
 		}

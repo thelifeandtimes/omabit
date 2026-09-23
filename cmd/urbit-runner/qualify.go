@@ -14,9 +14,10 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
 
-func runtimePlan() any {
+func runtimePlan() map[string]any {
 	return map[string]any{
-		"mode": "disposable-fake-only", "account": rootless.AccountName, "home": rootless.HomeDir,
+		"profile": runtimequalify.ProfileLifecycle,
+		"mode":    "disposable-fake-only", "account": rootless.AccountName, "home": rootless.HomeDir,
 		"engine_version": rootless.EngineVersion, "image": candidate.Image, "manifest_digest": candidate.ManifestDigest,
 		"config_digest": candidate.ConfigDigest, "platform": candidate.Platform, "vere_version": candidate.VereVersion,
 		"pill_default_url": candidate.PillDefaultURL, "pill_generation": candidate.PillGeneration,
@@ -30,23 +31,48 @@ func runtimePlan() any {
 	}
 }
 
+func httpPlan() map[string]any {
+	plan := runtimePlan()
+	plan["profile"] = runtimequalify.ProfileHTTP
+	plan["mode"] = "disposable-fake-host-http"
+	plan["network"] = "one run-owned IPv4 NAT bridge with normal outbound access; only 127.0.0.1:ephemeral -> 8080/tcp is published"
+	plan["host_probe"] = "credential-free HTTP 200 with public identity ~zod at /~/host; no proxies or redirects"
+	plan["steps"] = []string{"engine verification", "pinned image and pill", "isolated limits/version probe", "dedicated NAT bridge creation", "fake boot and host HTTP identity", "replacement and rediscovered host HTTP endpoint", "owned-container and network cleanup; retain data/report"}
+	plan["remaining_gates"] = []string{"application authentication and desk inventory", "Ames and remote/tailnet connectivity", "meld", "reboot", "control-socket safety", "failure recovery and production runner"}
+	return plan
+}
+
 func runRuntime(ctx context.Context, args []string, stdout, stderr io.Writer, qualify func(context.Context, func(string)) (runtimequalify.Result, error)) int {
 	fail := func(err error, status int) int {
 		_ = json.NewEncoder(stderr).Encode(protocol.ErrorResponse{Error: protocol.APIError{Code: "qualification_error", Message: err.Error()}})
 		return status
 	}
 	command := args[0]
+	isPlan := command == "runtime-plan" || command == "http-plan"
 	flags := flag.NewFlagSet(command, flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
 	flags.Usage = func() {}
 	var acknowledged bool
-	if command == "qualify-runtime" {
+	if !isPlan {
 		flags.BoolVar(&acknowledged, "acknowledge-disposable-run", false, "authorize bounded downloads and a new disposable fake-ship workflow")
 	}
 	if err := flags.Parse(args[1:]); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
-			if command == "runtime-plan" {
-				fmt.Fprintln(stdout, "Usage: urbit-runner runtime-plan\n\nPrints pinned candidate and checkpoint scope without inspecting the host or contacting Docker.")
+			if isPlan {
+				fmt.Fprintf(stdout, "Usage: urbit-runner %s\n\nPrints pinned candidate and checkpoint scope without inspecting the host or contacting Docker.\n", command)
+			} else if command == "qualify-http" {
+				fmt.Fprint(stdout, `Usage: urbit-runner qualify-http --acknowledge-disposable-run
+
+DEVELOPMENT host HTTP checkpoint. Run as the dedicated urbit-runner account,
+never root. Creates a fresh fake zod, a per-run NAT bridge, and only an
+ephemeral IPv4 loopback publication. Verifies public Eyre identity from the host,
+replaces the container and reconnects, then cleans up owned containers/network.
+The dedicated bridge permits normal outbound access; Ames remains disabled.
+No real identity, existing pier, login cookie, Ames port or control socket is used.
+Requires >=5 GiB available RAM and >=8 GiB free disk. Downloads ~207 MiB of pill
+data plus the pinned image. Progress is JSON lines on stderr; the report is on
+stdout and in private storage. Cancellation cleanup can take several minutes.
+`)
 			} else {
 				fmt.Fprint(stdout, `Usage: urbit-runner qualify-runtime --acknowledge-disposable-run
 
@@ -65,13 +91,17 @@ Uncertain or incomplete cleanup requires manual review, not an automatic retry.
 		}
 		return fail(err, 2)
 	}
-	if flags.NArg() != 0 || (command == "qualify-runtime" && !acknowledged) {
-		return fail(errors.New("unexpected arguments or missing --acknowledge-disposable-run; review runtime-plan first"), 2)
+	if flags.NArg() != 0 || (!isPlan && !acknowledged) {
+		return fail(errors.New("unexpected arguments or missing --acknowledge-disposable-run; review the corresponding plan first"), 2)
 	}
 	encoder := json.NewEncoder(stdout)
 	encoder.SetIndent("", "  ")
-	if command == "runtime-plan" {
-		if err := encoder.Encode(runtimePlan()); err != nil {
+	if isPlan {
+		plan := runtimePlan()
+		if command == "http-plan" {
+			plan = httpPlan()
+		}
+		if err := encoder.Encode(plan); err != nil {
 			return fail(err, 1)
 		}
 		return 0

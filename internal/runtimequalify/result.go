@@ -2,9 +2,15 @@
 // disposable fake zod. It is not a production runner or an identity provisioner.
 package runtimequalify
 
+const (
+	ProfileLifecycle = "isolated-lifecycle"
+	ProfileHTTP      = "host-http"
+)
+
 // Result is also the private report.json schema. RuntimeQualified is always
 // false: reachability, local restart and offline pack do not qualify a runtime.
 type Result struct {
+	Profile            string            `json:"profile,omitempty"`
 	RunID              string            `json:"run_id"`
 	Directory          string            `json:"directory"`
 	ReportPath         string            `json:"report_path"`
@@ -13,6 +19,7 @@ type Result struct {
 	CleanupComplete    bool              `json:"cleanup_complete"`
 	Phases             []Phase           `json:"phases"`
 	Containers         []ContainerRecord `json:"containers"`
+	Network            *NetworkRecord    `json:"network,omitempty"`
 	Image              string            `json:"image"`
 	ImageID            string            `json:"image_id"`
 	RepoDigest         string            `json:"repo_digest"`
@@ -49,4 +56,16 @@ type ContainerRecord struct {
 	CreateUncertain      bool   `json:"create_uncertain"`
 	AliveObserved        bool   `json:"alive_observed"`
 	PrivateHTTPReachable bool   `json:"private_http_reachable"`
+	HostEndpoint         string `json:"host_endpoint,omitempty"`
+	HostHTTPVerified     bool   `json:"host_http_verified,omitempty"`
+}
+
+// NetworkRecord is a persisted intent for one dedicated, run-owned bridge. An
+// empty inventory cannot resolve an uncertain create, just as for containers.
+type NetworkRecord struct {
+	Name             string `json:"name"`
+	ID               string `json:"id"`
+	Removed          bool   `json:"removed"`
+	CreateDispatched bool   `json:"create_dispatched"`
+	CreateUncertain  bool   `json:"create_uncertain"`
 }

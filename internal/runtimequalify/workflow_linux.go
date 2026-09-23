@@ -47,6 +47,15 @@ func (q *qualifier) engine(ctx context.Context) error {
 	if strings.TrimSpace(out) != "" {
 		return errors.New("leftover qualification containers require manual review")
 	}
+	// Also gate the network-none profile: an unresolved HTTP checkpoint must not
+	// be bypassed simply by selecting a different workflow.
+	out, err = q.docker(ctx, q.d.times.command, "network", "ls", "--filter", "label="+label+"=true", "--format", "{{.Name}}")
+	if err != nil {
+		return err
+	}
+	if strings.TrimSpace(out) != "" {
+		return errors.New("leftover qualification networks require manual review")
+	}
 	return nil
 }
 
@@ -174,7 +183,7 @@ func (q *qualifier) boot(ctx context.Context, kind string) error {
 	if !q.r.LimitsObserved {
 		return errors.New("live cgroup verification is required before Vere boot")
 	}
-	if kind == "boot" {
+	if kind == "boot" || kind == "http-boot" {
 		entries, err := os.ReadDir(filepath.Join(q.r.Directory, "data"))
 		if err != nil || len(entries) != 0 {
 			return errors.New("fake-zod data must be absent before first boot")
@@ -189,7 +198,11 @@ func (q *qualifier) boot(ctx context.Context, kind string) error {
 	if _, err := q.control(ctx, i, q.d.times.command, "start"); err != nil {
 		return err
 	}
-	if err := q.ready(ctx, i); err != nil {
+	ready := q.ready
+	if isHTTPKind(kind) {
+		ready = q.readyHostHTTP
+	}
+	if err := ready(ctx, i); err != nil {
 		return err
 	}
 	if err := q.stop(ctx, i, true); err != nil {

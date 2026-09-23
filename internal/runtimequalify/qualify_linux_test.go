@@ -42,6 +42,8 @@ type fakeEngine struct {
 	oom, earlyExit         bool
 	downloads              int
 	imageID                string
+	networks               map[string]*fakeNetwork
+	editNetwork            func(map[string]any)
 }
 type fakeContainer struct {
 	id, name, kind string
@@ -51,7 +53,7 @@ type fakeContainer struct {
 func fixture(t *testing.T) *fakeEngine {
 	t.Helper()
 	root := t.TempDir()
-	f := &fakeEngine{t: t, containers: map[string]*fakeContainer{}, cgroups: "4294967296\n0\n256\n200000 100000\n", version: "urbit " + candidate.VereVersion + "\n", http: "302"}
+	f := &fakeEngine{t: t, containers: map[string]*fakeContainer{}, networks: map[string]*fakeNetwork{}, cgroups: "4294967296\n0\n256\n200000 100000\n", version: "urbit " + candidate.VereVersion + "\n", http: "302"}
 	f.imageID = candidate.ManifestDigest
 	f.d = defaults()
 	f.d.home, f.d.runtimeDir = filepath.Join(root, "home"), filepath.Join(root, "runtime")
@@ -140,7 +142,7 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 	args := append([]string(nil), full[4:]...)
 	f.calls = append(f.calls, args)
 	for _, arg := range args {
-		if arg == "logs" || arg == "--force" || arg == "-f" || arg == "-v" || arg == "--publish" || arg == "--privileged" || arg == "--net=host" || arg == "--keys" || arg == "-u" || strings.Contains(arg, "conn.sock") || strings.HasPrefix(arg, "tcp://") {
+		if arg == "logs" || arg == "--force" || arg == "-f" || arg == "-v" || (arg == "--publish" && f.d.profile != ProfileHTTP) || arg == "--privileged" || arg == "--net=host" || arg == "--keys" || arg == "-u" || strings.Contains(arg, "conn.sock") || strings.HasPrefix(arg, "tcp://") {
 			t.Fatalf("forbidden operation: %q", args)
 		}
 	}
@@ -169,6 +171,8 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 			f.editImage(image)
 		}
 		return encode(t, []any{image}), nil
+	case "network":
+		return f.networkCommand(args, full[3])
 	case "container":
 	default:
 		t.Fatalf("unexpected command %q", args)
@@ -233,13 +237,16 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 	case "start":
 		f.events = append(f.events, "start-"+c.kind)
 		state["Running"] = true
-		if c.kind == "boot" {
+		if c.kind == "boot" || c.kind == "http-boot" {
 			if err := os.MkdirAll(filepath.Join(filepath.Dir(full[3]), "data/fake-zod/.urb"), 0700); err != nil {
 				t.Fatal(err)
 			}
 			if f.earlyExit {
 				state["Running"], state["ExitCode"] = false, 1
 			}
+		}
+		if isHTTPKind(c.kind) {
+			f.publishHTTP(c)
 		}
 	case "exec":
 		if state["Running"] != true {
@@ -287,6 +294,9 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 			t.Fatal("removing live container")
 		}
 		f.events = append(f.events, "rm-"+c.kind)
+		for _, n := range f.networks {
+			delete(mapAt(n.doc, "Containers"), c.id)
+		}
 		delete(f.containers, c.name)
 	default:
 		t.Fatalf("unexpected control: %q", args)
@@ -380,6 +390,20 @@ func (f *fakeEngine) create(args []string, config string) (string, error) {
 		"HostConfig": map[string]any{"NetworkMode": value("--network"), "IpcMode": value("--ipc"), "CgroupnsMode": value("--cgroupns"), "CapDrop": opts["--cap-drop"], "SecurityOpt": opts["--security-opt"], "Memory": number("--memory"), "MemorySwap": number("--memory-swap"), "PidsLimit": number("--pids-limit"), "NanoCpus": number("--cpus") * 1_000_000_000, "RestartPolicy": map[string]any{"Name": value("--restart")}, "LogConfig": map[string]any{"Type": value("--log-driver"), "Config": logOpts}},
 		"Mounts":     mounts, "NetworkSettings": map[string]any{"Networks": map[string]any{"none": map[string]any{}}},
 		"State": map[string]any{"Running": false, "ExitCode": 0, "OOMKilled": false},
+	}
+	if isHTTPKind(kind) {
+		if f.d.profile != ProfileHTTP || value("--publish") != "127.0.0.1::8080/tcp" {
+			t.Fatal("unsafe HTTP publication")
+		}
+		n := f.networkByID(value("--network"))
+		if n == nil {
+			t.Fatal("HTTP container did not use the owned network ID")
+		}
+		mapAt(doc, "HostConfig")["PortBindings"] = map[string]any{"8080/tcp": []any{map[string]any{"HostIp": "127.0.0.1", "HostPort": ""}}}
+		doc["NetworkSettings"] = map[string]any{
+			"Networks": map[string]any{n.name: map[string]any{"NetworkID": ""}},
+			"Ports":    map[string]any{"80/tcp": nil, "34343/udp": nil, "8080/tcp": nil},
+		}
 	}
 	f.containers[name] = &fakeContainer{id, name, kind, doc}
 	return id + "\n", nil

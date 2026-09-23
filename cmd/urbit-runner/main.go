@@ -29,11 +29,14 @@ Commands:
   runtime-plan               Describe the pinned disposable-runtime checkpoint.
   qualify-runtime --acknowledge-disposable-run
                              Run it as the dedicated account (never as root).
+  http-plan                  Describe the host-loopback HTTP checkpoint.
+  qualify-http --acknowledge-disposable-run
+                             Test private HTTP publication and replacement.
   demo --socket /private/directory/runner.sock [--operation-delay 2s]
                              Run the checkpoint 1 in-memory simulator.
 
 Only install-rootless changes host configuration and starts a private rootless
-engine. qualify-runtime creates a fresh fake ship and disposable containers.
+engine. Qualification commands create fresh fake ships and disposable resources.
 No command installs packages or provisions a real ship.
 Use COMMAND --help for details.
 `
@@ -62,6 +65,9 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	}
 	if len(args) > 0 && (args[0] == "runtime-plan" || args[0] == "qualify-runtime") {
 		return runRuntime(ctx, args, stdout, stderr, runtimequalify.Run)
+	}
+	if len(args) > 0 && (args[0] == "http-plan" || args[0] == "qualify-http") {
+		return runRuntime(ctx, args, stdout, stderr, runtimequalify.RunHTTP)
 	}
 	if len(args) == 0 || args[0] != "demo" {
 		fmt.Fprint(stderr, usage)

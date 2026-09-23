@@ -37,6 +37,35 @@ func TestRuntimePlanAndHelp(t *testing.T) {
 	}
 }
 
+func TestHTTPPlanAndAcknowledgement(t *testing.T) {
+	for _, args := range [][]string{{"http-plan"}, {"http-plan", "--help"}, {"qualify-http", "--help"}} {
+		var stdout, stderr bytes.Buffer
+		if code := runRuntime(context.Background(), args, &stdout, &stderr, noQualification(t)); code != 0 || stderr.Len() != 0 {
+			t.Fatalf("%v: exit %d, %s", args, code, &stderr)
+		}
+		if len(args) == 1 {
+			var plan map[string]any
+			if err := json.Unmarshal(stdout.Bytes(), &plan); err != nil || plan["profile"] != runtimequalify.ProfileHTTP || !strings.Contains(plan["network"].(string), "127.0.0.1:ephemeral") || plan["runtime_qualified"] != false {
+				t.Fatalf("HTTP plan: %s, %v", &stdout, err)
+			}
+		}
+	}
+	for _, args := range [][]string{{"qualify-http"}, {"qualify-http", "--acknowledge-disposable-run", "--publish", "0.0.0.0:8080"}} {
+		if code := runRuntime(context.Background(), args, io.Discard, io.Discard, noQualification(t)); code != 2 {
+			t.Fatalf("unsafe HTTP invocation: %v, exit %d", args, code)
+		}
+	}
+	called := false
+	code := runRuntime(context.Background(), []string{"qualify-http", "--acknowledge-disposable-run"}, io.Discard, io.Discard,
+		func(context.Context, func(string)) (runtimequalify.Result, error) {
+			called = true
+			return runtimequalify.Result{Profile: runtimequalify.ProfileHTTP}, nil
+		})
+	if code != 0 || !called {
+		t.Fatal("acknowledged HTTP command did not dispatch")
+	}
+}
+
 func TestRuntimeUsage(t *testing.T) {
 	for _, args := range [][]string{
 		{"qualify-runtime"}, {"qualify-runtime", "--acknowledge-disposable-run=false"},

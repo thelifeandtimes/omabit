@@ -172,8 +172,12 @@ func command(kind string) (string, []string) {
 	case "pack":
 		return "/bin/urbit", []string{"pack", "--loom", "31", "/urbit/fake-zod"}
 	default:
-		args := []string{"-t", "-L", "--no-conn", "--no-dock", "--loom", "31", "-b", "127.0.0.1", "--http-port", "8080"}
-		if kind == "boot" {
+		bind := "127.0.0.1"
+		if isHTTPKind(kind) {
+			bind = "0.0.0.0" // inside the dedicated bridge, never a host binding
+		}
+		args := []string{"-t", "-L", "--no-conn", "--no-dock", "--loom", "31", "-b", bind, "--http-port", "8080"}
+		if kind == "boot" || kind == "http-boot" {
 			args = append(args, "-F", "zod", "-B", "/artifacts/boot.pill", "-c")
 		}
 		return "/bin/urbit", append(args, "/urbit/fake-zod")
@@ -184,24 +188,15 @@ func (q *qualifier) containment(c container, kind string) error {
 	h := c.HostConfig
 	entry, args := command(kind)
 	ok := c.Config.User == "0:0" && c.Config.StopSignal == "SIGTERM" && c.Config.StopTimeout == 300 && !c.Config.Tty && !c.Config.OpenStdin && reflect.DeepEqual(c.Config.Entrypoint, []string{entry}) && reflect.DeepEqual(c.Config.Cmd, args) &&
-		h.NetworkMode == "none" && h.PidMode == "" && h.IpcMode == "private" && h.UTSMode == "" && h.UsernsMode == "" && h.CgroupnsMode == "private" && !h.Privileged && !h.PublishAllPorts && !h.AutoRemove &&
-		len(h.CapAdd) == 0 && reflect.DeepEqual(h.CapDrop, []string{"ALL"}) && reflect.DeepEqual(h.SecurityOpt, []string{"no-new-privileges=true"}) && len(h.Binds) == 0 && len(h.VolumesFrom) == 0 && len(h.Links) == 0 && len(h.Devices) == 0 && len(h.DeviceRequests) == 0 && len(h.PortBindings) == 0 &&
+		h.PidMode == "" && h.IpcMode == "private" && h.UTSMode == "" && h.UsernsMode == "" && h.CgroupnsMode == "private" && !h.Privileged && !h.PublishAllPorts && !h.AutoRemove &&
+		len(h.CapAdd) == 0 && reflect.DeepEqual(h.CapDrop, []string{"ALL"}) && reflect.DeepEqual(h.SecurityOpt, []string{"no-new-privileges=true"}) && len(h.Binds) == 0 && len(h.VolumesFrom) == 0 && len(h.Links) == 0 && len(h.Devices) == 0 && len(h.DeviceRequests) == 0 &&
 		h.Memory == memoryLimit && h.MemorySwap == memoryLimit && h.PidsLimit != nil && *h.PidsLimit == 256 && h.NanoCpus == 2_000_000_000 && h.CpuQuota == 0 && h.CpuPeriod == 0 &&
 		h.RestartPolicy.Name == "no" && h.RestartPolicy.MaximumRetryCount == 0 && h.LogConfig.Type == "local" && reflect.DeepEqual(h.LogConfig.Config, map[string]string{"max-size": "10m", "max-file": "2"})
-	// EXPOSE declarations can appear as null metadata even with network=none.
-	// Any actual binding (including an unexpected non-null shape) is refused.
-	for _, binding := range c.NetworkSettings.Ports {
-		if string(bytes.TrimSpace(binding)) != "null" {
-			ok = false
-		}
-	}
-	for network := range c.NetworkSettings.Networks {
-		if network != "none" {
-			ok = false
-		}
+	if err := q.networkContainment(c, kind); err != nil {
+		return err
 	}
 	want := []mount{{"bind", filepath.Join(q.r.Directory, "data"), "/urbit", true, "rprivate"}}
-	if kind == "boot" {
+	if kind == "boot" || kind == "http-boot" {
 		want = append(want, mount{"bind", q.r.PillPath, "/artifacts/boot.pill", false, "rprivate"})
 	}
 	if len(c.Mounts) != len(want) {
@@ -226,6 +221,20 @@ func (q *qualifier) containment(c container, kind string) error {
 
 func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 	index := len(q.r.Containers)
+	allowed := kind == "probe" ||
+		(q.d.profile == ProfileLifecycle && (kind == "boot" || kind == "restart" || kind == "pack" || kind == "post-pack")) ||
+		(q.d.profile == ProfileHTTP && isHTTPKind(kind))
+	if !allowed {
+		return index, errors.New("container kind is not allowed for this qualification profile")
+	}
+	network := "none"
+	if isHTTPKind(kind) {
+		n, err := q.inspectNetwork(ctx)
+		if err != nil {
+			return index, err
+		}
+		network = n.ID
+	}
 	if !acceptedImageID(q.r.ImageID) || q.r.RepoDigest == "" {
 		return index, errors.New("verified backend image identity required before create")
 	}
@@ -237,12 +246,15 @@ func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 	entry, cmd := command(kind)
 	args := []string{"container", "create", "--name", name, "--label", label + "=true", "--label", runLabel + "=" + q.r.RunID,
 		"--platform", candidate.Platform, "--pull", "never", "--entrypoint", entry,
-		"--network", "none", "--user", "0:0", "--cap-drop", "ALL", "--security-opt", "no-new-privileges=true",
+		"--network", network, "--user", "0:0", "--cap-drop", "ALL", "--security-opt", "no-new-privileges=true",
 		"--cgroupns", "private", "--ipc", "private", "--restart", "no", "--stop-signal", "SIGTERM", "--stop-timeout", "300",
 		"--memory", "4294967296", "--memory-swap", "4294967296", "--pids-limit", "256", "--cpus", "2",
 		"--log-driver", "local", "--log-opt", "max-size=10m", "--log-opt", "max-file=2",
 		"--mount", "type=bind,src=" + filepath.Join(q.r.Directory, "data") + ",dst=/urbit,bind-propagation=rprivate"}
-	if kind == "boot" {
+	if isHTTPKind(kind) {
+		args = append(args, "--publish", "127.0.0.1::8080/tcp")
+	}
+	if kind == "boot" || kind == "http-boot" {
 		args = append(args, "--mount", "type=bind,src="+q.r.PillPath+",dst=/artifacts/boot.pill,readonly,bind-propagation=rprivate")
 	}
 	args = append(append(args, q.r.ImageID), cmd...)
@@ -289,6 +301,11 @@ func (q *qualifier) control(ctx context.Context, index int, timeout time.Duratio
 		return "", err
 	}
 	if verb == "start" || verb == "exec" || verb == "wait" {
+		if isHTTPKind(q.r.Containers[index].Kind) {
+			if _, err := q.inspectNetwork(ctx); err != nil {
+				return "", err
+			}
+		}
 		if err := q.containment(c, q.r.Containers[index].Kind); err != nil {
 			return "", err
 		}
@@ -347,6 +364,9 @@ func (q *qualifier) cleanup() error {
 		if err != nil {
 			errs = append(errs, fmt.Errorf("cleanup incomplete for %s: %w", q.r.Containers[i].Name, err))
 		}
+	}
+	if err := q.cleanupNetwork(); err != nil {
+		errs = append(errs, err)
 	}
 	return errors.Join(errs...)
 }
