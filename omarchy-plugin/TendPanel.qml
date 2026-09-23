@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls as QQC
+import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 import qs.Commons
