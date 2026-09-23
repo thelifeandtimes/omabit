@@ -652,6 +652,16 @@ function menubarRows(lists, filteredReminders) {
 
   const rows = []
   const visited = new Set()
+  function filteredBranchCount(listId, reminder, ancestors) {
+    const key = keyFor(listId, reminder.id)
+    if (visibleByKey.has(key)) return 0
+    const visited = new Set(ancestors || [])
+    if (visited.has(key)) return 0
+    visited.add(key)
+    return 1 + (childrenByKey.get(key) || []).reduce(function(total, child) {
+      return total + filteredBranchCount(listId, child, visited)
+    }, 0)
+  }
   function visit(reminder, depth, parentVisible) {
     const key = keyFor(reminder.listId, reminder.id)
     if (visited.has(key)) return
@@ -677,7 +687,9 @@ function menubarRows(lists, filteredReminders) {
     visibleChildren.forEach(function(child) {
       visit(visibleByKey.get(keyFor(reminder.listId, child.id)), depth + 1, true)
     })
-    const filteredCount = children.length - visibleChildren.length
+    const filteredCount = children.reduce(function(total, child) {
+      return total + filteredBranchCount(reminder.listId, child)
+    }, 0)
     if (filteredCount > 0) rows.push({
       kind: "summary",
       listId: Number(reminder.listId),

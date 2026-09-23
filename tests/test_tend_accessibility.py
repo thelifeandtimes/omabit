@@ -40,6 +40,10 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("assigneePicker", widget)
         self.assertIn("TendModel.menubarRows", widget)
         self.assertIn("filtered subitem", widget)
+        self.assertIn("id: filteredSummaryButton", widget)
+        self.assertIn("id: reminderCard", widget)
+        self.assertIn("x: reminderRowDelegate.indentPixels", widget)
+        self.assertNotIn("anchors.leftMargin: Style.space(7) + reminderRowDelegate.indentPixels", widget)
         self.assertIn("Math.floor(popup.screenH * 0.5)", widget)
 
     def test_picker_popups_are_clamped_to_the_window_overlay(self):

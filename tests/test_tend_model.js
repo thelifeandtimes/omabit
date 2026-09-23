@@ -382,21 +382,28 @@ test("menubar rows keep visible children with parents and summarize filtered sub
       { id: 1, title: "Parent", parentId: null, rank: 1 },
       { id: 2, title: "Visible child", parentId: 1, rank: 2 },
       { id: 3, title: "Filtered child", parentId: 1, rank: 3 },
-      { id: 4, title: "Orphaned by filter", parentId: 3, rank: 4 }
+      { id: 4, title: "Orphaned by filter", parentId: 3, rank: 4 },
+      { id: 5, title: "Visible grandchild", parentId: 2, rank: 5 },
+      { id: 6, title: "Filtered grandchild", parentId: 3, rank: 6 },
+      { id: 7, title: "Filtered under visible child", parentId: 2, rank: 7 }
     ]
   }]
   const visible = [
     { id: 1, listId: 4, title: "Parent", parentId: null, rank: 1 },
     { id: 2, listId: 4, title: "Visible child", parentId: 1, rank: 2 },
-    { id: 4, listId: 4, title: "Orphaned by filter", parentId: 3, rank: 4 }
+    { id: 4, listId: 4, title: "Orphaned by filter", parentId: 3, rank: 4 },
+    { id: 5, listId: 4, title: "Visible grandchild", parentId: 2, rank: 5 }
   ]
   const rows = model.menubarRows(lists, visible)
   assert.deepEqual(rows.map((row) => row.kind === "summary" ? `summary:${row.parentReminderId}:${row.count}` : `reminder:${row.reminder.id}:${row.depth}:${row.orphanParentId || 0}`), [
     "reminder:1:0:0",
     "reminder:2:1:0",
-    "summary:1:1",
+    "reminder:5:2:0",
+    "summary:2:1",
+    "summary:1:2",
     "reminder:4:0:3"
   ])
+  assert.deepEqual(rows.filter((row) => row.kind === "summary").map((row) => row.depth), [2, 1])
 })
 
 test("assigned view, assignee search, and next reminder use normalized ships and due order", () => {

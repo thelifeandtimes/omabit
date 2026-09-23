@@ -334,123 +334,134 @@ Panel {
             wrapMode: Text.WordWrap
           }
 
-          delegate: Rectangle {
+          delegate: Item {
               id: reminderRowDelegate
               required property var modelData
               readonly property bool summaryRow: modelData.kind === "summary"
-              readonly property var reminder: summaryRow ? null : modelData.reminder
-              readonly property real indentPixels: Math.max(0, Number(modelData.depth || 0)) * Style.space(18)
+              readonly property var reminder: summaryRow ? ({}) : (modelData.reminder || {})
+              readonly property real indentPixels: Math.min(
+                Math.max(0, Number(modelData.depth || 0)) * Style.space(18),
+                Math.max(0, width - Style.space(120))
+              )
               width: ListView.view.width
               height: summaryRow ? Style.space(30) : Style.space(54)
-              opacity: !summaryRow && root.tendService ? root.tendService.completionOpacity(reminder.listId, reminder.id) : 1
-              radius: Style.cornerRadius
-              color: rowMouse.hovered
-                ? Style.hoverFillFor(root.barForeground, Color.accent)
-                : (summaryRow ? "transparent" : Qt.rgba(root.barForeground.r, root.barForeground.g, root.barForeground.b, 0.045))
+              opacity: summaryRow || !root.tendService ? 1 : root.tendService.completionOpacity(reminder.listId, reminder.id)
+              Accessible.role: Accessible.ListItem
+              Accessible.name: summaryRow
+                ? Number(modelData.count || 0) + " filtered subitems"
+                : (Number(modelData.depth || 0) > 0 ? "Subtask, " : "") + (reminder.title || "Untitled reminder")
 
-              Text {
+              TendButton {
+                id: filteredSummaryButton
                 visible: summaryRow
-                anchors.left: parent.left
-                anchors.leftMargin: Style.space(10) + parent.indentPixels
+                x: reminderRowDelegate.indentPixels
                 anchors.verticalCenter: parent.verticalCenter
                 text: Number(modelData.count || 0) + " filtered subitem" + (Number(modelData.count || 0) === 1 ? "" : "s")
-                color: root.dim
-                font.family: root.bar ? root.bar.fontFamily : Style.font.family
-                font.pixelSize: Style.font.caption
-              }
-
-              MouseArea {
-                visible: summaryRow
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
+                width: Math.min(implicitWidth, Math.max(0, parent.width - x))
+                height: Style.space(28)
+                bordered: false
+                tooltipText: "Open parent reminder"
+                Accessible.name: text + ". Open parent reminder."
                 onClicked: root.openFullPanel(modelData.listId, modelData.parentReminderId)
               }
 
-              Row {
-                visible: !summaryRow
-                anchors.fill: parent
-                anchors.margins: Style.space(7)
-                anchors.leftMargin: Style.space(7) + reminderRowDelegate.indentPixels
-                spacing: Style.space(8)
+              Loader {
+                id: reminderCard
 
-                TendButton {
-                  visible: modelData.orphanParentId !== null && modelData.orphanParentId !== undefined
-                  width: visible ? Style.space(26) : 0
-                  height: Style.space(30)
-                  anchors.verticalCenter: parent.verticalCenter
-                  text: "↳"
-                  bordered: false
-                  tooltipText: "Open parent reminder"
-                  Accessible.name: "Open parent reminder"
-                  onClicked: root.openFullPanel(reminder.listId, modelData.orphanParentId)
-                }
+                active: !summaryRow
+                x: reminderRowDelegate.indentPixels
+                width: Math.max(0, parent.width - x)
+                height: parent.height
+                sourceComponent: Rectangle {
+                  radius: Style.cornerRadius
+                  color: rowMouse.hovered
+                    ? Style.hoverFillFor(root.barForeground, Color.accent)
+                    : Qt.rgba(root.barForeground.r, root.barForeground.g, root.barForeground.b, 0.045)
 
-                TendCheckbox {
-                  anchors.verticalCenter: parent.verticalCenter
-                  checked: root.tendService ? root.tendService.effectiveCompleted(reminder.listId, reminder.id, reminder.completed) : reminder.completed
-                  Accessible.name: (checked ? "Mark open " : "Complete ") + reminder.title
-                  enabled: root.tendService && root.tendService.canEditList(reminder.listId) && root.state === "online" && !root.tendService.mutationPending
-                  onClicked: root.tendService.toggleCompletedWithGrace(reminder.listId, reminder.id, reminder.completed)
-                }
-
-                TendFlagButton {
-                  anchors.verticalCenter: parent.verticalCenter
-                  flagged: reminder.flagged === true
-                  enabled: root.tendService && root.tendService.canEditList(reminder.listId) && root.state === "online" && !root.tendService.mutationPending
-                  onToggled: function(flagged) { root.tendService.setReminderFlagged(reminder.listId, reminder.id, flagged) }
-                }
-
-                Text {
-                  width: Style.space(26)
-                  anchors.verticalCenter: parent.verticalCenter
-                  text: root.priorityGlyph(reminder.priority)
-                  color: root.priorityColor(reminder.priority)
-                  font.family: root.bar ? root.bar.fontFamily : Style.font.family
-                  font.pixelSize: Style.font.caption
-                  font.bold: true
-                }
-
-                Item {
-                  width: parent.width - x
-                  height: parent.height
-
-                  Column {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 0
-
-                    Text {
-                      width: parent.width
-                      text: reminder.title || "Untitled reminder"
-                      color: root.barForeground
-                      font.family: root.bar ? root.bar.fontFamily : Style.font.family
-                      font.pixelSize: Style.font.body
-                      elide: Text.ElideRight
-                      font.strikeout: root.tendService ? root.tendService.effectiveCompleted(reminder.listId, reminder.id, reminder.completed) : reminder.completed
-                    }
-
-                    Text {
-                      width: parent.width
-                      text: root.dueLabel(reminder) + (Number(modelData.depth || 0) > 0 ? "" : "  ·  " + reminder.listTitle)
-                      color: root.dim
-                      font.family: root.bar ? root.bar.fontFamily : Style.font.family
-                      font.pixelSize: Style.font.caption
-                      elide: Text.ElideRight
-                    }
-                  }
-
-                  MouseArea {
+                  Row {
                     anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: root.openFullPanel(reminder.listId, reminder.id)
+                    anchors.margins: Style.space(7)
+                    spacing: Style.space(8)
+
+                  TendButton {
+                    visible: modelData.orphanParentId !== null && modelData.orphanParentId !== undefined
+                    width: visible ? Style.space(26) : 0
+                    height: Style.space(30)
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "↳"
+                    bordered: false
+                    tooltipText: "Open parent reminder"
+                    Accessible.name: "Open parent reminder"
+                    onClicked: root.openFullPanel(reminder.listId, modelData.orphanParentId)
                   }
+
+                  TendCheckbox {
+                    anchors.verticalCenter: parent.verticalCenter
+                    checked: !summaryRow && (root.tendService ? root.tendService.effectiveCompleted(reminder.listId, reminder.id, reminder.completed) : reminder.completed)
+                    Accessible.name: summaryRow ? "" : (checked ? "Mark open " : "Complete ") + reminder.title
+                    enabled: !summaryRow && root.tendService && root.tendService.canEditList(reminder.listId) && root.state === "online" && !root.tendService.mutationPending
+                    onClicked: root.tendService.toggleCompletedWithGrace(reminder.listId, reminder.id, reminder.completed)
+                  }
+
+                  TendFlagButton {
+                    anchors.verticalCenter: parent.verticalCenter
+                    flagged: !summaryRow && reminder.flagged === true
+                    enabled: !summaryRow && root.tendService && root.tendService.canEditList(reminder.listId) && root.state === "online" && !root.tendService.mutationPending
+                    onToggled: function(flagged) { root.tendService.setReminderFlagged(reminder.listId, reminder.id, flagged) }
+                  }
+
+                  Text {
+                    width: Style.space(26)
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: summaryRow ? "" : root.priorityGlyph(reminder.priority)
+                    color: root.priorityColor(reminder.priority)
+                    font.family: root.bar ? root.bar.fontFamily : Style.font.family
+                    font.pixelSize: Style.font.caption
+                    font.bold: true
+                  }
+
+                  Item {
+                    width: parent.width - x
+                    height: parent.height
+
+                    Column {
+                      anchors.left: parent.left
+                      anchors.right: parent.right
+                      anchors.verticalCenter: parent.verticalCenter
+                      spacing: 0
+
+                      Text {
+                        width: parent.width
+                        text: summaryRow ? "" : (reminder.title || "Untitled reminder")
+                        color: root.barForeground
+                        font.family: root.bar ? root.bar.fontFamily : Style.font.family
+                        font.pixelSize: Style.font.body
+                        elide: Text.ElideRight
+                        font.strikeout: !summaryRow && (root.tendService ? root.tendService.effectiveCompleted(reminder.listId, reminder.id, reminder.completed) : reminder.completed)
+                      }
+
+                      Text {
+                        width: parent.width
+                        text: summaryRow ? "" : root.dueLabel(reminder) + (Number(modelData.depth || 0) > 0 ? "" : "  ·  " + reminder.listTitle)
+                        color: root.dim
+                        font.family: root.bar ? root.bar.fontFamily : Style.font.family
+                        font.pixelSize: Style.font.caption
+                        elide: Text.ElideRight
+                      }
+                    }
+
+                    MouseArea {
+                      anchors.fill: parent
+                      hoverEnabled: true
+                      cursorShape: Qt.PointingHandCursor
+                      onClicked: root.openFullPanel(reminder.listId, reminder.id)
+                    }
+                  }
+                  }
+
+                  HoverHandler { id: rowMouse }
                 }
               }
-
-              HoverHandler { id: rowMouse }
             }
         }
       }
