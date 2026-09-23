@@ -7,7 +7,7 @@ ROOT = Path(__file__).parents[1]
 
 class TendAccessibilityTests(unittest.TestCase):
     def test_panel_keeps_keyboard_navigation_contract(self):
-        panel = (ROOT / "omarchy-plugin" / "FullPanel.qml").read_text(encoding="utf-8")
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         for shortcut in ("Ctrl+N", "Ctrl+F", "Ctrl+Shift+N", "Ctrl+Comma", "Alt+1", "Alt+6", "Ctrl+[", "Ctrl+]"):
             self.assertIn(f'sequence: "{shortcut}"', panel)
         self.assertIn("Keys.onReturnPressed", panel)
@@ -39,18 +39,18 @@ class TendAccessibilityTests(unittest.TestCase):
             self.assertNotIn(animation, plugin_text)
 
     def test_panel_is_a_normal_window_and_bar_popup_opens_it(self):
-        panel = (ROOT / "omarchy-plugin" / "FullPanel.qml").read_text(encoding="utf-8")
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         widget = (ROOT / "omarchy-plugin" / "BarWidget.qml").read_text(encoding="utf-8")
         manifest = (ROOT / "omarchy-plugin" / "manifest.json").read_text(encoding="utf-8")
         self.assertIn("FloatingWindow", panel)
         self.assertNotIn("WlrLayershell", panel)
-        self.assertIn('"panel": "FullPanel.qml"', manifest)
+        self.assertIn('"panel": "TendPanel.qml"', manifest)
         self.assertNotIn('"overlay"', manifest)
         self.assertIn("bar.shell.summon", widget)
         self.assertIn("columns: width < Style.space(520) ? 1 : 3", panel)
 
     def test_panel_uses_omarchy_controls_and_right_side_details(self):
-        panel = (ROOT / "omarchy-plugin" / "FullPanel.qml").read_text(encoding="utf-8")
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         details = (ROOT / "omarchy-plugin" / "ReminderDetail.qml").read_text(encoding="utf-8")
         self.assertIn("TendButton", panel)
         self.assertIn("TendDropdown", panel)
@@ -62,20 +62,20 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn('text: "DETAILS"', details)
 
     def test_recipient_bound_invitation_link_is_selectable(self):
-        panel = (ROOT / "omarchy-plugin" / "FullPanel.qml").read_text(encoding="utf-8")
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
         self.assertIn('root.lastInvitationUri = "omabit://tend/invite/"', service)
         self.assertIn('Accessible.name: "Copy recipient-bound Tend invitation link"', panel)
         self.assertIn("selectByMouse: true", panel)
 
     def test_shared_list_status_exposes_in_flight_edits_as_text(self):
-        panel = (ROOT / "omarchy-plugin" / "FullPanel.qml").read_text(encoding="utf-8")
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         self.assertIn("service.listMutationPending(selectedList.id)", panel)
         self.assertIn("PREVIOUS EDIT STILL IN FLIGHT", panel)
         self.assertIn("Accessible.name: text", panel)
 
     def test_login_keeps_the_code_visible_until_authentication_succeeds(self):
-        panel = (ROOT / "omarchy-plugin" / "FullPanel.qml").read_text(encoding="utf-8")
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
         self.assertIn("signal loginSucceeded()", service)
         self.assertIn("loginProcess.output = \"\"", service)
@@ -85,7 +85,7 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertNotIn('service.login(shipUrl.text, loginCode.text);\n                                loginCode.text = "";', panel)
 
     def test_transport_path_is_component_relative(self):
-        panel = (ROOT / "omarchy-plugin" / "FullPanel.qml").read_text(encoding="utf-8")
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
         self.assertIn('Qt.resolvedUrl("transport/eyre_client.py")', service)
         self.assertNotIn("manifest.__sourceDir", service)

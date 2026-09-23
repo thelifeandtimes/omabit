@@ -30,7 +30,7 @@ release_dir=$(find "$work_dir/extracted" -mindepth 1 -maxdepth 1 -type d -name '
 omarchy plugin validate "$release_dir/omarchy-plugin"
 omarchy_root=${OMARCHY_PATH:-"$HOME/.local/share/omarchy"}
 qmllint -I "$omarchy_root/shell" \
-  "$release_dir/omarchy-plugin/FullPanel.qml" \
+  "$release_dir/omarchy-plugin/TendPanel.qml" \
   "$release_dir/omarchy-plugin/BarWidget.qml" \
   "$release_dir/omarchy-plugin/ReminderDetail.qml" \
   "$release_dir/omarchy-plugin/TendButton.qml" \

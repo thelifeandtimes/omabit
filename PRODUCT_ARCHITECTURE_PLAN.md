@@ -430,7 +430,7 @@ These boundaries must be stated plainly in documentation and threat-model tests.
 ├── omarchy-plugin/
 │   ├── manifest.json
 │   ├── Service.qml
-│   ├── FullPanel.qml
+│   ├── TendPanel.qml
 │   ├── BarWidget.qml
 │   ├── ReminderDetail.qml
 │   ├── components/

@@ -12,7 +12,7 @@
   ],
   "keepLoaded": true,
   "entryPoints": {
-    "panel": "FullPanel.qml",
+    "panel": "TendPanel.qml",
     "service": "Service.qml",
     "barWidget": "BarWidget.qml"
   },

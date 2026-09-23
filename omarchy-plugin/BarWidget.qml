@@ -124,7 +124,9 @@ Panel {
     open: root.opened
     focusTarget: popupKeys
     contentWidth: popup.fittedContentWidth(Style.space(440))
-    contentHeight: popup.cappedContentHeight(Style.space(650))
+    contentHeight: popup.cappedContentHeight(root.assignedReminders.length > 0
+      ? Style.space(250 + Math.min(8, root.assignedReminders.length) * 46)
+      : Style.space(300))
 
     PanelKeyCatcher {
       id: popupKeys

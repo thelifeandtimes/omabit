@@ -25,20 +25,14 @@ Item {
     property bool selectionMode: false
     property bool unpinnedViewsVisible: false
     property bool unpinnedListsVisible: false
+    property bool compactSidebarOpen: false
     property bool confirmDeleteList: false
     property bool captureMode: false
     property var selectedReminderIds: []
     property var collapsedReminderIds: []
     property bool confirmBatchDelete: false
-    readonly property var selectedList: {
-        var available = service ? service.lists : [];
-        for (var i = 0; i < available.length; i++) {
-            if (available[i].id === selectedListId)
-                return available[i];
-
-        }
-        return available.length ? available[0] : null;
-    }
+    readonly property bool compactMode: window.width < Style.space(820)
+    property var selectedList: null
     readonly property var selectedReminder: {
         var reminders = selectedList ? selectedList.reminders : [];
         for (var i = 0; i < reminders.length; i++) {
@@ -358,11 +352,16 @@ Item {
         service.setListOrder(order);
     }
 
-    onSelectedListIdChanged: loadSelectedPresentation()
+    onSelectedListIdChanged: {
+        ensureSelectedList();
+        loadSelectedPresentation();
+    }
+    onServiceChanged: Qt.callLater(root.ensureSelectedList)
 
     Connections {
         target: root.service
         function onLocalSettingsChanged() { root.loadSelectedPresentation(); }
+        function onListsChanged() { Qt.callLater(root.ensureSelectedList); }
         function onLoginSucceeded() { loginCode.text = ""; }
     }
 
@@ -372,6 +371,26 @@ Item {
         var pins = movePinnedValue(service.preferences.pinnedViews, view, delta);
         if (pins !== service.preferences.pinnedViews)
             updatePreferences(service.preferences.defaultList, service.preferences.pinnedLists, pins);
+    }
+
+    function ensureSelectedList() {
+        if (!service || !service.lists.length) {
+            selectedListId = 0;
+            selectedList = null;
+            return;
+        }
+        var next = null;
+        for (var i = 0; i < service.lists.length; i++) {
+            if (service.lists[i].id === selectedListId) {
+                next = service.lists[i];
+                break;
+            }
+        }
+        if (!next) {
+            next = service.lists[0];
+            selectedListId = next.id;
+        }
+        selectedList = next;
     }
 
     function sectionTitle(sectionId) {
@@ -738,7 +757,6 @@ Item {
 
     onSelectedListChanged: {
         if (selectedList) {
-            selectedListId = selectedList.id;
             listEditorOpen = false;
             confirmDeleteList = false;
             selectedSectionId = 0;
@@ -1027,10 +1045,13 @@ Item {
                         visible: service && service.ship !== "" && service.connectionState !== "authentication-required" && !root.captureMode
                         width: parent.width
                         height: parent.height - y
-                        spacing: Style.space(16)
+                        spacing: sidebar.visible ? Style.space(16) : 0
 
                         Rectangle {
-                            width: Style.space(230)
+                            id: sidebar
+
+                            visible: !root.compactMode || root.compactSidebarOpen
+                            width: visible ? Style.space(230) : 0
                             height: parent.height
                             radius: Style.cornerRadius
                             color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.05)
@@ -1240,12 +1261,13 @@ Item {
 
                         Item {
                             id: workspace
-                            width: parent.width - Style.space(246)
+                            width: parent.width - sidebar.width - parent.spacing
                             height: parent.height
 
                             Column {
                                 id: mainContent
-                                width: root.selectedReminder ? parent.width - detailSidebar.width - Style.space(12) : parent.width
+                                visible: !(root.compactMode && root.selectedReminder)
+                                width: root.selectedReminder && !root.compactMode ? parent.width - detailSidebar.width - Style.space(12) : parent.width
                                 height: parent.height
                                 spacing: Style.space(8)
 
@@ -1253,9 +1275,17 @@ Item {
                                 width: parent.width
                                 spacing: Style.space(8)
 
+                                TendButton {
+                                    id: compactSidebarButton
+                                    visible: root.compactMode
+                                    text: root.compactSidebarOpen ? "Hide lists" : "Lists"
+                                    onClicked: root.compactSidebarOpen = !root.compactSidebarOpen
+                                }
+
                                 Text {
-                                    width: parent.width - editListButton.width - alertSettingsButton.width - selectModeButton.width - parent.spacing * 3
+                                    width: parent.width - compactSidebarButton.width - editListButton.width - alertSettingsButton.width - selectModeButton.width - parent.spacing * 4
                                     text: root.viewTitle
+                                    elide: Text.ElideRight
                                     color: Color.menu.text
                                     font.family: Style.font.menuFamily
                                     font.pixelSize: Style.font.title
@@ -1265,7 +1295,7 @@ Item {
                                 TendButton {
                                     id: alertSettingsButton
 
-                                    text: root.policyEditorOpen ? "Close defaults" : "Reminder defaults"
+                                    text: root.policyEditorOpen ? "Close defaults" : (root.compactMode ? "Defaults" : "Reminder defaults")
                                     onClicked: root.policyEditorOpen = !root.policyEditorOpen
                                 }
 
@@ -1284,7 +1314,7 @@ Item {
                                     id: editListButton
 
                                     visible: root.viewMode === "list" && root.selectedList !== null
-                                    text: root.listEditorOpen ? "Close list settings" : "List settings"
+                                    text: root.listEditorOpen ? "Close list" : (root.compactMode ? "List" : "List settings")
                                     onClicked: {
                                         if (root.listEditorOpen)
                                             root.listEditorOpen = false;
@@ -1748,7 +1778,7 @@ Item {
                                 TextField {
                                     id: reminderSearch
 
-                                    width: parent.width * 0.34
+                                    width: root.compactMode ? parent.width : parent.width * 0.34
                                     placeholderText: "Search reminders"
                                     Accessible.name: "Search reminders"
                                 }
@@ -1756,6 +1786,7 @@ Item {
                                 TendDropdown {
                                     id: reminderTagFilter
 
+                                    visible: !root.compactMode
                                     width: parent.width * 0.2
                                     model: ["All tags"].concat(root.availableTags)
                                     Accessible.name: "Filter reminders by tag"
@@ -1765,6 +1796,7 @@ Item {
                                 TendDropdown {
                                     id: reminderSort
 
+                                    visible: !root.compactMode
                                     width: parent.width * 0.2
                                     model: ["manual", "due", "created", "priority", "title"]
                                     currentIndex: Math.max(0, model.indexOf(root.sortMode))
@@ -1777,6 +1809,7 @@ Item {
                                 }
 
                                 TendCheck {
+                                    visible: !root.compactMode
                                     text: "Descending"
                                     checked: root.sortDescending
                                     onClicked: {
@@ -1795,7 +1828,7 @@ Item {
                                 TextField {
                                     id: quickAdd
 
-                                    width: parent.width * 0.52
+                                    width: root.compactMode ? parent.width - quickAddButton.width - parent.spacing : parent.width * 0.52
                                     placeholderText: root.addDestination ? "Add to " + root.addDestination.title : "Create a list first"
                                     Accessible.name: "Quick reminder title and tags"
                                     enabled: root.addDestination && service && service.canEditList(root.addDestination.id) && service.connectionState === "online" && !service.mutationPending
@@ -1816,10 +1849,10 @@ Item {
                                 TextField {
                                     id: newSection
 
+                                    visible: root.viewMode === "list" && !root.compactMode
                                     width: parent.width - quickAdd.width - quickAddButton.width - parent.spacing * 2
                                     placeholderText: "Add section"
                                     Accessible.name: "New section title"
-                                    visible: root.viewMode === "list"
                                     enabled: visible && root.selectedListEditable && root.selectedList && service && service.connectionState === "online" && !service.mutationPending
                                     onAccepted: {
                                         if (!text.trim())
@@ -2555,7 +2588,7 @@ Item {
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
                                 anchors.right: parent.right
-                                width: root.selectedReminder ? Style.space(330) : 0
+                                width: root.selectedReminder ? (root.compactMode ? parent.width : Style.space(330)) : 0
                                 visible: root.selectedReminder !== null
                                 service: root.service
                                 list: root.selectedList

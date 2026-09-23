@@ -51,7 +51,7 @@ validate-plugin:
 
 lint-qml:
 	qmllint -I "$(OMARCHY_ROOT)/shell" \
-		omarchy-plugin/FullPanel.qml \
+		omarchy-plugin/TendPanel.qml \
 		omarchy-plugin/BarWidget.qml \
 		omarchy-plugin/ReminderDetail.qml \
 		omarchy-plugin/TendButton.qml \
