@@ -1,0 +1,12 @@
+Offline test fixtures only; not embedded in the production bundle preparer.
+Unmodified files independently fetched from the immutable Moby commit below.
+The launcher's Unicode comments are retained to preserve its pinned bytes.
+
+https://raw.githubusercontent.com/moby/moby/6a43e3d5afddf4111da0f864bbc7cae5d7e95001/contrib/dockerd-rootless.sh
+SHA-256: 904c9b9e35f6927c0a5e65afb4d35b6bc9eb1278c878044501281fc728c9be46
+
+https://raw.githubusercontent.com/moby/moby/6a43e3d5afddf4111da0f864bbc7cae5d7e95001/LICENSE
+SHA-256: 7c87873291f289713ac5df48b1f2010eb6963752bbd6b530416ab99fc37914a8
+
+https://raw.githubusercontent.com/moby/moby/6a43e3d5afddf4111da0f864bbc7cae5d7e95001/NOTICE
+SHA-256: b40ec5b16182103ef1cd69d42a21c98369e35bd483b3973902da4807c0755446
