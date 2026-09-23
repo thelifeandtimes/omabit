@@ -67,7 +67,7 @@ func fixture(t *testing.T) *fakeEngine {
 			return node{mode: 0755, links: 1}, nil
 		}
 		if path == filepath.Join(f.d.runtimeDir, rootless.SocketName) {
-			return node{mode: os.ModeSocket | 0660, uid: 12345, gid: 12345, links: 1}, nil
+			return node{mode: os.ModeSocket | os.ModeSticky | 0660, uid: 12345, gid: 12345, links: 1}, nil
 		}
 		for _, base := range []string{f.d.home, f.d.runtimeDir, "/usr/bin/docker"} {
 			for p := filepath.Dir(base); ; p = filepath.Dir(p) {

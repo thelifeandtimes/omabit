@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -20,8 +21,13 @@ import (
 )
 
 func TestPrivateSocketModes(t *testing.T) {
-	for _, mode := range []os.FileMode{0600, 0660, 0666, 0664, 0606, 0640, 0760} {
-		t.Run(fmt.Sprintf("%04o", mode), func(t *testing.T) {
+	for _, mode := range []os.FileMode{
+		0600, 0660, os.ModeSticky | 0600, os.ModeSticky | 0660,
+		0666, 0664, 0606, 0640, 0760, os.ModeSticky | 0666,
+		os.ModeSetuid | 0660, os.ModeSetgid | 0660,
+		os.ModeSticky | os.ModeSetuid | 0660, os.ModeSticky | os.ModeSetgid | 0660,
+	} {
+		t.Run(mode.String(), func(t *testing.T) {
 			f := fixture(t)
 			stat := f.d.stat
 			f.d.stat = func(path string) (node, error) {
@@ -32,13 +38,15 @@ func TestPrivateSocketModes(t *testing.T) {
 				return n, err
 			}
 			r, err := run(context.Background(), nil, f.d)
-			if mode == 0600 || mode == 0660 {
+			if mode == 0600 || mode == 0660 || mode == os.ModeSticky|0600 || mode == os.ModeSticky|0660 {
 				if err != nil || !r.CheckpointPassed {
 					t.Fatalf("installed/private socket refused: %v", err)
 				}
 				assertReport(t, r)
 			} else if err == nil || !reflect.DeepEqual(r, Result{}) || len(f.calls) != 0 || !strings.Contains(err.Error(), "socket requires mode") {
 				t.Fatalf("unsafe socket accepted or unclear error: %+v %v", r, err)
+			} else if !strings.Contains(err.Error(), (os.ModeSocket | mode).String()) {
+				t.Fatalf("rejection omitted observed mode: %v", err)
 			}
 		})
 	}
@@ -66,6 +74,45 @@ func TestPrivateSocketModes(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestStickySocketMetadata(t *testing.T) {
+	f := fixture(t)
+	path := filepath.Join(f.d.runtimeDir, rootless.SocketName)
+	listener, err := net.ListenUnix("unix", &net.UnixAddr{Name: path, Net: "unix"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer listener.Close()
+	// Reproduce Docker's StickRuntimeDirContents using a real temporary Unix
+	// socket. No connections are accepted and no Docker process is executed.
+	if err := os.Chmod(path, os.ModeSticky|0660); err != nil {
+		t.Fatal(err)
+	}
+	actual, err := statNode(path)
+	if err != nil || actual.mode != os.ModeSocket|os.ModeSticky|0660 {
+		t.Fatalf("could not reproduce Docker socket metadata: %+v, %v", actual, err)
+	}
+	stat := f.d.stat
+	f.d.stat = func(name string) (node, error) {
+		if name == path {
+			n, err := statNode(name)
+			// Ownership follows the synthetic account used by the fake engine;
+			// the complete FileMode comes from the real Linux socket above.
+			n.uid, n.gid = uint32(f.i.uid), uint32(f.i.gid)
+			return n, err
+		}
+		return stat(name)
+	}
+	r, err := run(context.Background(), nil, f.d)
+	if err != nil || !r.CheckpointPassed || !r.CleanupComplete {
+		t.Fatalf("valid sticky runtime socket refused: %+v, %v", r, err)
+	}
+	after, err := statNode(path)
+	if err != nil || after.mode != actual.mode {
+		t.Fatal("qualification changed socket permissions")
+	}
+	assertReport(t, r)
 }
 
 func TestImageBackendsUseOnlyVerifiedActualID(t *testing.T) {

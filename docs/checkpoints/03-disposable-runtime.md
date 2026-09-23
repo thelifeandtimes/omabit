@@ -123,6 +123,9 @@ This installs a development executable, not a new service. Do not replace it whi
 a qualification run is active. Future packaged releases will provide this binary
 without a manual copy step.
 
+After a code fix, rebuild and repeat this copy: rebuilding `./build/urbit-runner`
+alone does not update the executable used by the dedicated account.
+
 ## 3. Run as the dedicated account
 
 ```bash
@@ -135,6 +138,12 @@ sudo runuser -u urbit-runner -- /usr/bin/env -i \
 The outer sudo authorizes switching accounts. **The qualifier itself runs as
 `urbit-runner`, not root.** Calling `sudo ./build/urbit-runner qualify-runtime`
 directly will be refused, as will running it as the desktop user.
+
+Docker adds a sticky bit to its runtime socket to protect it from periodic
+cleanup. Mode `1660` (`0660` plus that bit) is expected and accepted, as is `1600`.
+The qualifier still requires the dedicated UID/GID, a private `0700` runtime
+directory, and no public socket access. Do not strip the sticky bit or change
+permissions to work around an older qualifier's exact-mode rejection.
 
 Progress appears as JSON lines on stderr:
 
@@ -197,6 +206,11 @@ force-kill the qualifier unless necessary.
 On failure, the command exits 1 and emits the report plus a JSON error. If failure
 occurred before a run directory was created, its directory/report fields are
 empty. A normal argument/acknowledgement error exits 2 without starting work.
+
+If it refuses before any progress phase and `run_id` is empty, no Docker workload
+was created. In that case `cleanup_complete: false` means cleanup was not needed
+or attempted, not that a container was left behind. Correct the reported
+precondition and retry without deleting runtime state.
 
 If `cleanup_complete` is false, or a container has `create_uncertain: true`, stop
 and share the report. An empty `docker ps` result is not proof that an accepted

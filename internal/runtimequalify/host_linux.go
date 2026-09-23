@@ -126,8 +126,9 @@ func (q *qualifier) boundary() error {
 			return fmt.Errorf("private directory %s: %w", p, err)
 		}
 	}
-	// The installed socket is 0660, protected by the private primary group and
-	// the same-account 0700 runtime parent checked above. Files/dirs stay strict.
+	// Docker marks runtime sockets sticky to protect them from periodic cleanup.
+	// That flag grants no access. Keep 0600/0660 access permissions, private
+	// ownership and the 0700 runtime parent, and reject all other extra flags.
 	socket, err := q.d.stat(q.socket)
 	if err != nil || socket.mode.Type() != os.ModeSocket {
 		return errors.New("private Docker socket missing, wrong type or symlink")
@@ -135,8 +136,9 @@ func (q *qualifier) boundary() error {
 	if socket.uid != uint32(q.uid) || socket.gid != uint32(q.gid) {
 		return errors.New("private Docker socket UID/GID does not match the dedicated account")
 	}
-	if socket.mode != os.ModeSocket|0600 && socket.mode != os.ModeSocket|0660 {
-		return errors.New("private Docker socket requires mode 0600 or 0660")
+	accessMode := socket.mode &^ os.ModeSticky
+	if accessMode != os.ModeSocket|0600 && accessMode != os.ModeSocket|0660 {
+		return fmt.Errorf("private Docker socket requires mode 0600 or 0660 with an optional sticky bit; got %s (permissions %04o)", socket.mode, socket.mode.Perm())
 	}
 	if err := q.ancestors("/usr/bin/docker"); err != nil {
 		return err
