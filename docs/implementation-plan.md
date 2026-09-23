@@ -19,8 +19,10 @@ automated test.
 - Default deployment is confirmed: dedicated-account rootless Docker, with the
   same intended five-step plugin onboarding. Existing Docker services, contexts,
   and desktop group membership remain unchanged. No automatic privileged fallback.
-- Checkpoint 2 begins with preflight and reviewed rootless setup tooling; actual
-  host installation needs OS authorization and a separate execution record.
+- Checkpoint 2A preflight, pinned bundle preparation, and explicitly authorized
+  development first-install tooling are implemented. Automated validation and
+  live unprivileged preparation pass; [host installation](checkpoints/02-rootless-setup.md)
+  is awaiting manual OS-authorized execution and evidence.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator

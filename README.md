@@ -21,13 +21,13 @@ separate codebases.
 
 ## Status
 
-Checkpoint 1 is ready for manual validation: a memory-only simulated runner and
-collector CLI exercise protocol negotiation, shared snapshots, configuration
-conflicts, asynchronous operations, request replay, and incidents over a private
-Unix socket. There is no production runner, installer, Docker integration, or
-supported real-ship management yet.
+Checkpoint 1's memory-only runner/collector protocol has passed manual validation.
+Checkpoint 2A adds rootless preflight, pinned artifact preparation, and an
+explicitly authorized development first-install helper. It is ready for manual
+engine setup validation; no real ship management is supported yet.
 
-- [Start here: checkpoint 1 walkthrough](docs/checkpoints/01-local-protocol.md)
+- [Next: rootless setup checkpoint](docs/checkpoints/02-rootless-setup.md)
+- [Accepted: checkpoint 1 walkthrough](docs/checkpoints/01-local-protocol.md)
 - [Architecture](docs/architecture.md)
 - [Implementation plan and validation gates](docs/implementation-plan.md)
 - [Implemented experimental protocol](docs/protocol.md)
@@ -38,7 +38,13 @@ Development requires Go 1.24 or later. There are no third-party Go dependencies.
 ```bash
 go test ./...
 go build -o ./build/ ./cmd/...
+./build/urbit-runner preflight
+./build/urbit-runner setup-plan
 ```
+
+The default is dedicated-account rootless Docker, preserving existing system
+Docker and desktop access restrictions. Read the checkpoint before running the
+development install helper; it is not an updater or production installer.
 
 The first supported platform will be x86-64 Linux with systemd and Docker.
 Laptops are supported with an acknowledgement that sleeping hosts make their

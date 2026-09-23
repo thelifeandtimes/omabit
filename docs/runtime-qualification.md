@@ -1,6 +1,8 @@
 # Runtime qualification record
 
-Status: not executed. Do not interpret this checklist as supported behavior.
+Status: rootless setup tooling implemented; live engine/runtime qualification not
+executed. Do not interpret the checklist as supported behavior. Start with the
+[rootless setup checkpoint](checkpoints/02-rootless-setup.md).
 
 Checkpoint 1 has been accepted by the user. The qualification pill will initially
 be the upstream default bootstrap pill for the selected Vere version, not the
@@ -50,6 +52,27 @@ copy while its original is running.
 | Metrics | Correct capacity/open/idle units and per-metric freshness | Not run |
 | Socket safety | In-flight disconnect and collector termination do not crash runtime | Not run |
 | Failures | Low disk, OOM, killed job, and invalid pier are bounded and diagnosable | Not run |
+
+## Preparation evidence
+
+- New `preflight` and `setup-plan` commands inspected this host without subprocess,
+  Docker API, or network use and identified the missing rootless prerequisites.
+- `prepare-rootless` fetched the immutable Docker 29.7.2 launcher and legal files
+  over HTTPS and verified their compiled-in content pins.
+- Generated scripts passed `sh -n`; systemd static verification only complained
+  that the intended installed executable paths do not yet exist.
+- Fixture tests cover the elevated first-install path without executing actual
+  administrative commands. Bundle contents are reverified independently of its
+  manifest before any host mutation.
+- No packages, accounts, services, Docker contexts, group membership, or piers
+  have been changed during developer validation. The existing rootful service
+  remains inactive/disabled and its socket remains active/enabled.
+
+Candidate dependency baseline: package-managed Docker 29.7.2, repository
+RootlessKit and slirp4netns, and the launcher from Moby commit
+`6a43e3d5afddf4111da0f864bbc7cae5d7e95001`. A changed engine version requires a new
+reviewed baseline, not a bypass or a system downgrade. Preserve the package
+manager's normal security-update workflow.
 
 ## Gates
 
