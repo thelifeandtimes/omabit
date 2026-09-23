@@ -33,6 +33,25 @@ var (
 	errUntrustedContainer = errors.New("container ownership, identity or inspection mismatch")
 )
 
+func (q *qualifier) resourceLabel() string {
+	if q.d.managed {
+		return "org.urbit-runner.managed-fake"
+	}
+	return label
+}
+
+func (q *qualifier) resourceRunLabel() string {
+	return q.resourceLabel() + ".run"
+}
+
+func (q *qualifier) resourceName(kind string) string {
+	prefix := "urbit-qualification-"
+	if q.d.managed {
+		prefix = "urbit-managed-fake-"
+	}
+	return prefix + q.r.RunID + "-" + kind
+}
+
 type limitedOutput struct {
 	buffer bytes.Buffer
 	cancel context.CancelFunc
@@ -157,7 +176,7 @@ func (q *qualifier) inspect(ctx context.Context, index int) (container, error) {
 	if c.State == nil || c.State.Running == nil || c.State.OOMKilled == nil || c.State.ExitCode == nil {
 		return c, errUntrustedContainer
 	}
-	if !acceptedImageID(q.r.ImageID) || !containerIDPattern.MatchString(c.ID) || c.Name != "/"+r.Name || c.Image != q.r.ImageID || c.Config.Image != q.r.ImageID || c.Config.Labels[label] != "true" || c.Config.Labels[runLabel] != q.r.RunID || (r.ID != "" && r.ID != c.ID) {
+	if !acceptedImageID(q.r.ImageID) || !containerIDPattern.MatchString(c.ID) || c.Name != "/"+r.Name || c.Image != q.r.ImageID || c.Config.Image != q.r.ImageID || c.Config.Labels[q.resourceLabel()] != "true" || c.Config.Labels[q.resourceRunLabel()] != q.r.RunID || (r.ID != "" && r.ID != c.ID) {
 		return c, errUntrustedContainer
 	}
 	r.ID = c.ID
@@ -238,13 +257,13 @@ func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 	if !acceptedImageID(q.r.ImageID) || q.r.RepoDigest == "" {
 		return index, errors.New("verified backend image identity required before create")
 	}
-	name := "urbit-qualification-" + q.r.RunID + "-" + kind
+	name := q.resourceName(kind)
 	q.r.Containers = append(q.r.Containers, ContainerRecord{Name: name, Kind: kind})
 	if err := q.save(); err != nil {
 		return index, err
 	}
 	entry, cmd := command(kind)
-	args := []string{"container", "create", "--name", name, "--label", label + "=true", "--label", runLabel + "=" + q.r.RunID,
+	args := []string{"container", "create", "--name", name, "--label", q.resourceLabel() + "=true", "--label", q.resourceRunLabel() + "=" + q.r.RunID,
 		"--platform", candidate.Platform, "--pull", "never", "--entrypoint", entry,
 		"--network", network, "--user", "0:0", "--cap-drop", "ALL", "--security-opt", "no-new-privileges=true",
 		"--cgroupns", "private", "--ipc", "private", "--restart", "no", "--stop-signal", "SIGTERM", "--stop-timeout", "300",
@@ -252,7 +271,11 @@ func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 		"--log-driver", "local", "--log-opt", "max-size=10m", "--log-opt", "max-file=2",
 		"--mount", "type=bind,src=" + filepath.Join(q.r.Directory, "data") + ",dst=/urbit,bind-propagation=rprivate"}
 	if isHTTPKind(kind) {
-		args = append(args, "--publish", "127.0.0.1::8080/tcp")
+		port := ""
+		if q.d.hostPort != 0 {
+			port = fmt.Sprint(q.d.hostPort)
+		}
+		args = append(args, "--publish", "127.0.0.1:"+port+":8080/tcp")
 	}
 	if kind == "boot" || kind == "http-boot" {
 		args = append(args, "--mount", "type=bind,src="+q.r.PillPath+",dst=/artifacts/boot.pill,readonly,bind-propagation=rprivate")
@@ -391,7 +414,7 @@ func (q *qualifier) cleanupOne(ctx context.Context, index int) error {
 			return errors.Join(reportErr, err) // terminal; never control a mismatch
 		}
 		if err != nil {
-			out, listErr := q.docker(ctx, q.d.times.cleanupCommand, "container", "ls", "--all", "--filter", "label="+label+"=true", "--filter", "label="+runLabel+"="+q.r.RunID, "--filter", "name=^/"+r.Name+"$", "--format", "{{.Names}}")
+			out, listErr := q.docker(ctx, q.d.times.cleanupCommand, "container", "ls", "--all", "--filter", "label="+q.resourceLabel()+"=true", "--filter", "label="+q.resourceRunLabel()+"="+q.r.RunID, "--filter", "name=^/"+r.Name+"$", "--format", "{{.Names}}")
 			lastErr = errors.Join(err, listErr)
 			if listErr == nil && strings.TrimSpace(out) == "" {
 				// Absence also cannot distinguish a lost removal response from

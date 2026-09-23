@@ -32,7 +32,7 @@ func (f *fakeEngine) networkByID(id string) *fakeNetwork {
 func (f *fakeEngine) networkCommand(args []string, config string) (string, error) {
 	t := f.t
 	if args[1] == "ls" {
-		if !reflect.DeepEqual(args, []string{"network", "ls", "--filter", "label=" + label + "=true", "--format", "{{.Name}}"}) {
+		if !reflect.DeepEqual(args, []string{"network", "ls", "--filter", "label=" + f.labelName() + "=true", "--format", "{{.Name}}"}) {
 			t.Fatalf("unscoped network inventory: %q", args)
 		}
 		var names []string
@@ -52,7 +52,7 @@ func (f *fakeEngine) networkCommand(args []string, config string) (string, error
 			t.Fatal("network intent was not persisted before dispatch")
 		}
 		name := report.Network.Name
-		want := []string{"network", "create", "--driver", "bridge", "--internal=false", "--ipv4=true", "--ipv6=false", "--label", label + "=true", "--label", runLabel + "=" + report.RunID,
+		want := []string{"network", "create", "--driver", "bridge", "--internal=false", "--ipv4=true", "--ipv6=false", "--label", f.labelName() + "=true", "--label", f.runLabelName() + "=" + report.RunID,
 			"--opt", "com.docker.network.bridge.host_binding_ipv4=127.0.0.1", "--opt", "com.docker.network.bridge.gateway_mode_ipv4=nat", name}
 		if !reflect.DeepEqual(args, want) || f.networks[name] != nil {
 			t.Fatalf("unsafe/repeated network create: %q", args)
@@ -61,7 +61,7 @@ func (f *fakeEngine) networkCommand(args []string, config string) (string, error
 		n := &fakeNetwork{id, name, map[string]any{
 			"Id": id, "Name": name, "Driver": "bridge", "Scope": "local", "Internal": false, "EnableIPv4": true,
 			"EnableIPv6": false, "Attachable": false, "Ingress": false, "ConfigOnly": false,
-			"Options": bridgeOptions(), "Labels": map[string]any{label: "true", runLabel: report.RunID}, "Containers": map[string]any{},
+			"Options": bridgeOptions(), "Labels": map[string]any{f.labelName(): "true", f.runLabelName(): report.RunID}, "Containers": map[string]any{},
 		}}
 		f.networks[name] = n
 		f.events = append(f.events, "network-create")
@@ -102,6 +102,9 @@ func (f *fakeEngine) publishHTTP(c *fakeContainer) {
 	if c.kind == "http-restart" {
 		port = "38102"
 	}
+	if f.d.hostPort != 0 {
+		port = fmt.Sprint(f.d.hostPort)
+	}
 	mapAt(n.doc, "Containers")[c.id] = map[string]any{"Name": c.name}
 	c.doc["NetworkSettings"] = map[string]any{
 		"Networks": map[string]any{n.name: map[string]any{"NetworkID": n.id}},
@@ -121,6 +124,9 @@ func httpFixture(t *testing.T) *fakeEngine {
 				port := "38101"
 				if c.kind == "http-restart" {
 					port = "38102"
+				}
+				if f.d.hostPort != 0 {
+					port = fmt.Sprint(f.d.hostPort)
 				}
 				if endpoint != "http://127.0.0.1:"+port+"/~/host" {
 					t.Fatalf("unsafe host probe endpoint: %s", endpoint)

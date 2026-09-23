@@ -1,5 +1,6 @@
-// Package runtimequalify implements a one-shot DEVELOPMENT checkpoint using a
-// disposable fake zod. It is not a production runner or an identity provisioner.
+// Package runtimequalify implements disposable development checkpoints and the
+// bounded fake-runtime adapter shared by the persistent development runner.
+// It is not a production runtime or a real-identity provisioner.
 package runtimequalify
 
 const (

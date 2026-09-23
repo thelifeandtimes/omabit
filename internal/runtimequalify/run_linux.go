@@ -19,6 +19,9 @@ import (
 type timings struct{ command, pull, download, ready, poll, stop, cleanup, pack, cleanupCommand time.Duration }
 type dependencies struct {
 	profile          string
+	managed          bool
+	hostPort         uint16
+	persist          func(Result) error
 	home, runtimeDir string
 	identity         func() (identity, error)
 	stat             func(string) (node, error)
@@ -202,6 +205,9 @@ func (q *qualifier) emit() {
 }
 
 func (q *qualifier) save() error {
+	if q.d.persist != nil {
+		return q.d.persist(q.r)
+	}
 	data, err := json.MarshalIndent(q.r, "", "  ")
 	if err != nil {
 		return errors.New("encode private report failed")

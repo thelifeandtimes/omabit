@@ -20,6 +20,27 @@ import (
 )
 
 func (q *qualifier) engine(ctx context.Context) error {
+	if err := q.verifyEngine(ctx); err != nil {
+		return err
+	}
+	out, err := q.docker(ctx, q.d.times.command, "container", "ls", "--all", "--filter", "label="+label+"=true", "--format", "{{.Names}}")
+	if err != nil {
+		return err
+	}
+	if strings.TrimSpace(out) != "" {
+		return errors.New("leftover qualification containers require manual review")
+	}
+	out, err = q.docker(ctx, q.d.times.command, "network", "ls", "--filter", "label="+label+"=true", "--format", "{{.Name}}")
+	if err != nil {
+		return err
+	}
+	if strings.TrimSpace(out) != "" {
+		return errors.New("leftover qualification networks require manual review")
+	}
+	return nil
+}
+
+func (q *qualifier) verifyEngine(ctx context.Context) error {
 	out, err := q.docker(ctx, q.d.times.command, "info", "--format", "{{json .}}")
 	if err != nil {
 		return err
@@ -40,22 +61,6 @@ func (q *qualifier) engine(ctx context.Context) error {
 	if !rootlessOption || info.ServerVersion != rootless.EngineVersion || info.CgroupDriver != "systemd" || info.CgroupVersion != "2" || info.DockerRootDir != filepath.Join(q.d.home, ".local/share/urbit-runner/docker") {
 		return errors.New("engine does not match the pinned private rootless configuration")
 	}
-	out, err = q.docker(ctx, q.d.times.command, "container", "ls", "--all", "--filter", "label="+label+"=true", "--format", "{{.Names}}")
-	if err != nil {
-		return err
-	}
-	if strings.TrimSpace(out) != "" {
-		return errors.New("leftover qualification containers require manual review")
-	}
-	// Also gate the network-none profile: an unresolved HTTP checkpoint must not
-	// be bypassed simply by selecting a different workflow.
-	out, err = q.docker(ctx, q.d.times.command, "network", "ls", "--filter", "label="+label+"=true", "--format", "{{.Name}}")
-	if err != nil {
-		return err
-	}
-	if strings.TrimSpace(out) != "" {
-		return errors.New("leftover qualification networks require manual review")
-	}
 	return nil
 }
 
@@ -63,9 +68,15 @@ func (q *qualifier) image(ctx context.Context) error {
 	if _, err := q.docker(ctx, q.d.times.pull, "image", "pull", "--platform", candidate.Platform, candidate.Image); err != nil {
 		return err
 	}
+	return q.inspectImage(ctx)
+}
+
+var errImageUnavailable = errors.New("candidate image inspection unavailable")
+
+func (q *qualifier) inspectImage(ctx context.Context) error {
 	out, err := q.docker(ctx, q.d.times.command, "image", "inspect", candidate.Image)
 	if err != nil {
-		return err
+		return errors.Join(errImageUnavailable, err)
 	}
 	var images []struct {
 		ID               string `json:"Id"`
@@ -91,6 +102,17 @@ func (q *qualifier) image(ctx context.Context) error {
 	return nil
 }
 
+func (q *qualifier) managedImage(ctx context.Context) error {
+	err := q.inspectImage(ctx)
+	if err == nil {
+		return nil
+	}
+	if !errors.Is(err, errImageUnavailable) || ctx.Err() != nil {
+		return err
+	}
+	return q.image(ctx)
+}
+
 func acceptedImageID(id string) bool {
 	return id == candidate.ConfigDigest || id == candidate.ManifestDigest
 }
@@ -108,14 +130,18 @@ func (q *qualifier) pill(ctx context.Context) error {
 	if a.Path != q.r.PillPath || a.SHA256 != q.d.pillSHA || a.Bytes != q.d.pillBytes || a.URL != candidate.PillURL {
 		return errors.New("candidate pill provenance mismatch")
 	}
-	if err := q.owned(a.Path, 0, true); err != nil {
+	return q.verifyLocalPill(ctx)
+}
+
+func (q *qualifier) verifyLocalPill(ctx context.Context) error {
+	if err := q.owned(q.r.PillPath, 0, true); err != nil {
 		return err
 	}
-	n, err := q.d.stat(a.Path)
+	n, err := q.d.stat(q.r.PillPath)
 	if err != nil || n.links != 1 {
 		return errors.New("candidate pill must be an exclusive regular file")
 	}
-	f, err := os.Open(a.Path)
+	f, err := os.Open(q.r.PillPath)
 	if err != nil {
 		return errors.New("cannot verify local pill")
 	}

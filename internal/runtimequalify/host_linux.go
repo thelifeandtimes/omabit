@@ -100,6 +100,10 @@ func (q *qualifier) ancestors(path string) error {
 
 // Repeated before EVERY Docker invocation, including cancellation cleanup.
 func (q *qualifier) boundary() error {
+	return q.accountBoundary(true)
+}
+
+func (q *qualifier) accountBoundary(requireEngine bool) error {
 	i, err := q.d.identity()
 	if err != nil || i.platform != "linux/amd64" || i.uid <= 0 || i.gid <= 0 || i.uid != i.accountUID || i.gid != i.accountGID || i.account != rootless.AccountName || i.group != rootless.AccountName || i.home != q.d.home {
 		return errors.New("qualification requires the dedicated private linux/amd64 account")
@@ -125,6 +129,9 @@ func (q *qualifier) boundary() error {
 		if err := q.owned(p, os.ModeDir, true); err != nil {
 			return fmt.Errorf("private directory %s: %w", p, err)
 		}
+	}
+	if !requireEngine {
+		return nil
 	}
 	// Docker marks runtime sockets sticky to protect them from periodic cleanup.
 	// That flag grants no access. Keep 0600/0660 access permissions, private

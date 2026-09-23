@@ -50,6 +50,14 @@ type fakeContainer struct {
 	doc            map[string]any
 }
 
+func (f *fakeEngine) labelName() string {
+	if f.d.managed {
+		return "org.urbit-runner.managed-fake"
+	}
+	return label
+}
+func (f *fakeEngine) runLabelName() string { return f.labelName() + ".run" }
+
 func fixture(t *testing.T) *fakeEngine {
 	t.Helper()
 	root := t.TempDir()
@@ -179,7 +187,7 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 	}
 	verb := args[1]
 	if verb == "ls" {
-		if !strings.Contains(strings.Join(args, " "), "--filter label="+label+"=true") || args[len(args)-1] != "{{.Names}}" {
+		if !strings.Contains(strings.Join(args, " "), "--filter label="+f.labelName()+"=true") || args[len(args)-1] != "{{.Names}}" {
 			t.Fatalf("unscoped inventory: %q", args)
 		}
 		if len(args) == 7 && f.leftover {
@@ -192,7 +200,7 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 				if strings.HasPrefix(arg, "name=^/") && arg != "name=^/"+name+"$" {
 					match = false
 				}
-				if strings.HasPrefix(arg, "label="+runLabel+"=") && strings.TrimPrefix(arg, "label="+runLabel+"=") != mapAt(mapAt(c.doc, "Config"), "Labels")[runLabel] {
+				if strings.HasPrefix(arg, "label="+f.runLabelName()+"=") && strings.TrimPrefix(arg, "label="+f.runLabelName()+"=") != mapAt(mapAt(c.doc, "Config"), "Labels")[f.runLabelName()] {
 					match = false
 				}
 			}
@@ -392,14 +400,18 @@ func (f *fakeEngine) create(args []string, config string) (string, error) {
 		"State": map[string]any{"Running": false, "ExitCode": 0, "OOMKilled": false},
 	}
 	if isHTTPKind(kind) {
-		if f.d.profile != ProfileHTTP || value("--publish") != "127.0.0.1::8080/tcp" {
+		port := ""
+		if f.d.hostPort != 0 {
+			port = fmt.Sprint(f.d.hostPort)
+		}
+		if f.d.profile != ProfileHTTP || value("--publish") != "127.0.0.1:"+port+":8080/tcp" {
 			t.Fatal("unsafe HTTP publication")
 		}
 		n := f.networkByID(value("--network"))
 		if n == nil {
 			t.Fatal("HTTP container did not use the owned network ID")
 		}
-		mapAt(doc, "HostConfig")["PortBindings"] = map[string]any{"8080/tcp": []any{map[string]any{"HostIp": "127.0.0.1", "HostPort": ""}}}
+		mapAt(doc, "HostConfig")["PortBindings"] = map[string]any{"8080/tcp": []any{map[string]any{"HostIp": "127.0.0.1", "HostPort": port}}}
 		doc["NetworkSettings"] = map[string]any{
 			"Networks": map[string]any{n.name: map[string]any{"NetworkID": ""}},
 			"Ports":    map[string]any{"80/tcp": nil, "34343/udp": nil, "8080/tcp": nil},

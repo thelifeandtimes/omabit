@@ -53,7 +53,7 @@ func (q *qualifier) inspectNetwork(ctx context.Context) (bridge, error) {
 	}
 	n := list[0]
 	if !containerIDPattern.MatchString(n.ID) || n.Name != r.Name ||
-		(r.ID != "" && r.ID != n.ID) || n.Labels[label] != "true" || n.Labels[runLabel] != q.r.RunID ||
+		(r.ID != "" && r.ID != n.ID) || n.Labels[q.resourceLabel()] != "true" || n.Labels[q.resourceRunLabel()] != q.r.RunID ||
 		n.Driver != "bridge" || n.Scope != "local" || n.Internal == nil || *n.Internal ||
 		n.EnableIPv4 == nil || !*n.EnableIPv4 || n.EnableIPv6 || n.Attachable || n.Ingress || n.ConfigOnly ||
 		!reflect.DeepEqual(n.Options, bridgeOptions()) {
@@ -77,7 +77,7 @@ func (q *qualifier) createNetwork(ctx context.Context) error {
 	if q.d.profile != ProfileHTTP || q.r.Network != nil {
 		return errors.New("network creation is only available once in the HTTP profile")
 	}
-	q.r.Network = &NetworkRecord{Name: "urbit-qualification-" + q.r.RunID + "-http"}
+	q.r.Network = &NetworkRecord{Name: q.resourceName("http")}
 	if err := q.save(); err != nil {
 		return err
 	}
@@ -91,7 +91,7 @@ func (q *qualifier) createNetwork(ctx context.Context) error {
 	}
 	out, err := q.docker(ctx, q.d.times.command, "network", "create",
 		"--driver", "bridge", "--internal=false", "--ipv4=true", "--ipv6=false",
-		"--label", label+"=true", "--label", runLabel+"="+q.r.RunID,
+		"--label", q.resourceLabel()+"=true", "--label", q.resourceRunLabel()+"="+q.r.RunID,
 		"--opt", "com.docker.network.bridge.host_binding_ipv4=127.0.0.1",
 		"--opt", "com.docker.network.bridge.gateway_mode_ipv4=nat", q.r.Network.Name)
 	if id := strings.TrimSpace(out); containerIDPattern.MatchString(id) {
@@ -198,8 +198,12 @@ func (q *qualifier) networkContainment(c container, kind string) error {
 	if len(c.HostConfig.PortBindings) != 1 {
 		return errors.New("HTTP container must request exactly one published TCP port")
 	}
-	if _, err := decodeLoopbackBinding(c.HostConfig.PortBindings["8080/tcp"], true); err != nil {
+	binding, err := decodeLoopbackBinding(c.HostConfig.PortBindings["8080/tcp"], true)
+	if err != nil {
 		return err
+	}
+	if q.d.hostPort != 0 && binding.HostPort != strconv.Itoa(int(q.d.hostPort)) {
+		return errors.New("managed HTTP port differs from the recorded configuration")
 	}
 	if len(c.NetworkSettings.Networks) > 1 {
 		return errors.New("HTTP container joined additional networks")
@@ -242,6 +246,9 @@ func (q *qualifier) publishedEndpoint(c container, kind string) (string, error) 
 	b, err := decodeLoopbackBinding(raw, false)
 	if err != nil {
 		return "", err
+	}
+	if q.d.hostPort != 0 && b.HostPort != strconv.Itoa(int(q.d.hostPort)) {
+		return "", errors.New("published port differs from the recorded managed port")
 	}
 	return fmt.Sprintf("http://%s/~/host", net.JoinHostPort("127.0.0.1", b.HostPort)), nil
 }
