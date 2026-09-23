@@ -37,7 +37,7 @@ BorderSurface {
     if (!list) return
     listTitle.text = list.title || ""
     listColor.text = list.color || "#3b82f6"
-    listSymbol.text = list.symbol || "list"
+    listSymbol.text = list.symbol && list.symbol !== "list" ? list.symbol : ""
     notifyAdded.checked = collaborationPolicy.notifyAdded === true
     notifyCompleted.checked = collaborationPolicy.notifyCompleted === true
     notifyAssigned.checked = collaborationPolicy.notifyAssigned === true
@@ -279,11 +279,21 @@ BorderSurface {
           }
         }
 
+        Text {
+          width: parent.width
+          text: "Optional. This short icon appears inside the list's colored circle. Blank uses the default list mark."
+          wrapMode: Text.Wrap
+          color: Color.popups.text
+          opacity: 0.58
+          font.family: Style.font.family
+          font.pixelSize: Style.font.caption
+        }
+
         TendButton {
           width: parent.width
           text: "Save list appearance"
-          enabled: root.editable && listTitle.text.trim() && listColor.text.trim() && listSymbol.text.trim() && root.service && root.service.connectionState === "online" && !root.service.mutationPending
-          onClicked: root.service.updateList(root.list.id, listTitle.text, listColor.text, listSymbol.text, root.list.revision)
+          enabled: root.editable && listTitle.text.trim() && listColor.text.trim() && root.service && root.service.connectionState === "online" && !root.service.mutationPending
+          onClicked: root.service.updateList(root.list.id, listTitle.text, listColor.text, listSymbol.text.trim() || "list", root.list.revision)
         }
 
         Row {

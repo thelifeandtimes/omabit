@@ -2122,7 +2122,8 @@ Item {
                                 spacing: Style.space(6)
 
                                 Text {
-                                    anchors.verticalCenter: parent.verticalCenter
+                                    height: Style.space(34)
+                                    verticalAlignment: Text.AlignVCenter
                                     text: "SELECT MODE · " + root.selectedReminderIds.length + " selected"
                                     color: Color.menu.text
                                     font.family: Style.font.menuFamily
@@ -2754,6 +2755,8 @@ Item {
 
                             }
 
+                            }
+
                             ReminderDetail {
                                 id: detailSidebar
                                 anchors.top: parent.top
@@ -2805,8 +2808,6 @@ Item {
                                     root.selectedListId = 0;
                                 }
                             }
-
-                        }
 
                         }
 
