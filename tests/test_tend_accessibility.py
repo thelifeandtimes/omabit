@@ -54,21 +54,28 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("bar.shell.summon", widget)
         self.assertIn("columns: width < Style.space(520) ? 1 : 3", panel)
 
-    def test_panel_uses_omarchy_controls_and_right_side_details(self):
+    def test_panel_uses_omarchy_controls_and_responsive_trays(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         details = (ROOT / "omarchy-plugin" / "ReminderDetail.qml").read_text(encoding="utf-8")
+        settings = (ROOT / "omarchy-plugin" / "TendSettings.qml").read_text(encoding="utf-8")
         self.assertIn("TendButton", panel)
         self.assertIn("TendDropdown", panel)
         self.assertIn('text: "VIEWS"', panel)
         self.assertIn('text: "Add list"', panel)
-        self.assertIn('text: "Add reminder"', panel)
+        self.assertIn('text: "ADD NEW REMINDER"', panel)
         self.assertIn("visible: root.selectionMode", panel)
+        self.assertIn("anchors.left: parent.left", panel)
         self.assertIn("anchors.right: parent.right", panel)
+        self.assertIn("singleTrayMode", panel)
+        self.assertIn("overlayTrayMode", panel)
         self.assertIn('text: "REMINDER DETAILS"', details)
-        self.assertIn("SearchableDropdown", details)
+        self.assertIn("TendAssigneePicker", details)
+        self.assertIn("TendDateTimePicker", details)
         self.assertIn("MultiSelect", details)
         self.assertIn("TendTextArea", details)
         self.assertIn("Color.popups.background", details)
+        self.assertIn('mode === "app"', settings)
+        self.assertIn('mode === "list"', settings)
 
     def test_recipient_bound_invitation_link_is_selectable(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
@@ -125,13 +132,15 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("TendCheckbox", panel)
         self.assertIn("TendCheckbox", widget)
 
-    def test_panel_uses_resizable_sidebar_and_opaque_inspectors(self):
+    def test_panel_uses_resizable_navigation_and_scrolling_inspectors(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
-        defaults = (ROOT / "omarchy-plugin" / "ReminderDefaults.qml").read_text(encoding="utf-8")
+        details = (ROOT / "omarchy-plugin" / "ReminderDetail.qml").read_text(encoding="utf-8")
+        settings = (ROOT / "omarchy-plugin" / "TendSettings.qml").read_text(encoding="utf-8")
         self.assertIn("sidebarResizeHandle", panel)
         self.assertIn("Text.ElideRight", panel)
-        self.assertIn("ReminderDefaults", panel)
-        self.assertIn("Color.popups.background", defaults)
+        self.assertIn("ScrollView", details)
+        self.assertIn("ScrollView", settings)
+        self.assertIn("Color.popups.background", details)
 
     def test_mutation_processes_use_newline_delimited_json(self):
         service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")

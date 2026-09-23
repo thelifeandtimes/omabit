@@ -572,7 +572,7 @@ Item {
         var value = null;
         if (schedule) {
             var allDay = schedule.allDay === true || schedule["all-day"] === true;
-            var dueInput = schedule.dueAt || schedule["due-at"];
+            var dueInput = schedule.dueAt || schedule["due-at"] || schedule.due;
             var timezone = String(schedule.timezone || "UTC");
             var recurrence = recurrencePayload(schedule.recurrence);
             value = {

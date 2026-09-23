@@ -38,25 +38,26 @@ Panel {
   }
 
   function assigneeOptionsForList(list) {
-    var choices = [{ value: "", label: "Unassigned", description: "No owner" }]
+    var choices = [{ value: "", label: "Unassigned", role: "" }]
     if (!tendService || !list) return choices
     var access = tendService.accessForList(list.id)
     var seen = ({})
-    function append(ship, suffix, description) {
+    function append(ship, role) {
       var normalized = root.normalizedShip(ship)
       if (!normalized || seen[normalized]) return
       seen[normalized] = true
+      var self = normalized.replace(/^~/, "") === String(tendService.ship || "").replace(/^~/, "")
       choices.push({
         value: normalized,
-        label: normalized + (suffix ? " · " + suffix : ""),
-        description: description || ""
+        label: self ? "me" : normalized,
+        role: role || "editor"
       })
     }
-    append(tendService.ship, "you", "Default assignee")
     if (!access) return choices
-    append(access.host, "owner", "List owner")
-    ;(access.members || []).forEach(function(member) { append(member.ship, "member", "Can edit this list") })
-    ;(access.pending || []).forEach(function(ship) { append(ship, "invited", "Invitation not yet accepted") })
+    append(access.host, "admin")
+    ;(access.members || []).forEach(function(member) { append(member.ship, member.policy && member.policy.canInvite ? "admin" : "editor") })
+    ;(access.pending || []).forEach(function(ship) { append(ship, "invited") })
+    if (!seen[root.normalizedShip(tendService.ship)]) append(tendService.ship, access.owner ? "admin" : "editor")
     return choices
   }
 
@@ -98,13 +99,14 @@ Panel {
     if (!list) return
     if (tendService.addReminderWithDetails(list.id, quickAdd.text.trim(), list.revision, {
       tags: [],
-      due: quickDue.text.trim(),
-      allDay: quickDue.text.trim().length === 10,
+      due: quickDue.value,
+      allDay: quickDue.allDay,
       timezone: tendService.localTimezone,
       assignee: assigneePicker.value || normalizedShip(tendService.ship)
     })) {
       quickAdd.text = ""
-      quickDue.text = ""
+      quickDue.value = ""
+      quickDue.allDay = false
     }
   }
 
@@ -167,7 +169,7 @@ Panel {
     bar: root.bar
     open: root.opened
     focusTarget: popupKeys
-    contentWidth: popup.fittedContentWidth(Style.space(560))
+    contentWidth: popup.fittedContentWidth(Style.space(760))
     contentHeight: popup.cappedContentHeight(root.visibleReminders.length > 0
       ? Style.space(350 + Math.min(8, root.visibleReminders.length) * 54)
       : Style.space(400))
@@ -210,8 +212,8 @@ Panel {
           }
 
           Button {
-            text: "Open Tend"
-            iconText: "󰈔"
+            text: "↗"
+            tooltipText: "Open Tend"
             focusable: true
             bordered: true
             onClicked: root.openFullPanel(0, 0)
@@ -220,17 +222,28 @@ Panel {
 
         PanelSeparator { Layout.fillWidth: true; foreground: root.barForeground }
 
-        PanelSectionHeader {
+        RowLayout {
           Layout.fillWidth: true
-          text: "QUICK ADD"
-          foreground: root.barForeground
+
+          PanelSectionHeader {
+            Layout.fillWidth: true
+            text: "QUICK ADD"
+            foreground: root.barForeground
+          }
+
+          TendDropdown {
+            id: destinationList
+            Layout.preferredWidth: Style.space(220)
+            showLabel: false
+            model: root.destinationLists
+            textRole: "title"
+            Accessible.name: "Destination list"
+          }
         }
 
-        GridLayout {
-          columns: 2
+        RowLayout {
           Layout.fillWidth: true
-          columnSpacing: Style.space(7)
-          rowSpacing: Style.space(7)
+          spacing: Style.space(7)
 
           TextField {
             id: quickAdd
@@ -240,38 +253,25 @@ Panel {
             onAccepted: root.addReminder()
           }
 
-          TextField {
-            id: quickDue
-            Layout.fillWidth: true
-            placeholderText: "Due date · YYYY-MM-DD or YYYY-MM-DDTHH:MM"
-            enabled: quickAdd.enabled
-            Accessible.name: "Reminder due date"
-            onAccepted: root.addReminder()
-          }
-
-          TendDropdown {
-            id: destinationList
-            Layout.fillWidth: true
-            label: "List"
-            model: root.destinationLists
-            textRole: "title"
-            Accessible.name: "Destination list"
-          }
-
-          SearchableDropdown {
+          TendAssigneePicker {
             id: assigneePicker
-            Layout.fillWidth: true
-            label: "Assignee"
+            Layout.preferredWidth: Style.space(170)
             options: root.assigneeOptions
-            placeholderText: "Find a ship"
-            emptyText: "No matching ships"
+            placeholderText: "Assignee"
             Accessible.name: "Reminder assignee"
           }
 
+          TendDateTimePicker {
+            id: quickDue
+            Layout.preferredWidth: Style.space(190)
+            placeholderText: "Due date"
+            enabled: quickAdd.enabled
+            Accessible.name: "Reminder due date"
+          }
+
           Button {
-            Layout.columnSpan: 2
-            Layout.fillWidth: true
-            text: "Add"
+            text: "+"
+            tooltipText: "Add reminder"
             focusable: true
             bordered: true
             enabled: quickAdd.enabled && quickAdd.text.trim() !== ""

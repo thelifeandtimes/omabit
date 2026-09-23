@@ -8,495 +8,621 @@
   <style>
     :root {
       color-scheme: light dark;
-      --bg: #f4f5f7;
-      --panel: rgba(255,255,255,.86);
-      --panel-solid: #fff;
-      --text: #17181a;
-      --muted: #6d7178;
-      --line: rgba(23,24,26,.12);
+      --bg: #f2f3f5;
+      --surface: rgba(255,255,255,.92);
+      --surface-solid: #fff;
+      --surface-soft: #f7f8fa;
+      --text: #181a1d;
+      --muted: #70757d;
+      --line: rgba(24,26,29,.12);
       --accent: #356df3;
-      --accent-soft: #e8efff;
-      --danger: #c4362e;
-      --success: #23875c;
-      --shadow: 0 18px 50px rgba(31,36,48,.12);
+      --accent-soft: #e9efff;
+      --success: #24875e;
+      --danger: #bd3f39;
+      --danger-soft: #fff0ef;
+      --shadow: 0 18px 48px rgba(29,34,45,.13);
+      --nav-width: 278px;
+      --tray-width: 370px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #111214;
-        --panel: rgba(27,29,33,.9);
-        --panel-solid: #1b1d21;
-        --text: #f5f6f8;
-        --muted: #a1a6af;
+        --bg: #111316;
+        --surface: rgba(27,29,33,.94);
+        --surface-solid: #1b1d21;
+        --surface-soft: #22252a;
+        --text: #f4f5f7;
+        --muted: #a4a9b1;
         --line: rgba(255,255,255,.12);
-        --accent: #78a0ff;
-        --accent-soft: #243252;
-        --danger: #ff766e;
-        --success: #64c99d;
-        --shadow: 0 18px 50px rgba(0,0,0,.36);
+        --accent: #7da3ff;
+        --accent-soft: #263453;
+        --success: #65ca9e;
+        --danger: #ff7c74;
+        --danger-soft: #3f2828;
+        --shadow: 0 18px 48px rgba(0,0,0,.35);
       }
     }
     * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
       margin: 0;
-      min-height: 100vh;
+      overflow: hidden;
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
-      background:
-        radial-gradient(circle at 12% 10%, rgba(67,113,244,.16), transparent 34rem),
-        radial-gradient(circle at 90% 80%, rgba(255,112,80,.12), transparent 30rem),
-        var(--bg);
+      background: var(--bg);
     }
-    button, input, select, textarea { font: inherit; }
+    button, input, select, textarea { font: inherit; color: inherit; }
     button { cursor: pointer; }
-    button:disabled, input:disabled { cursor: not-allowed; opacity: .58; }
-    .shell { max-width: 1320px; margin: 0 auto; padding: 28px; }
-    header { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
-    .brand { display: flex; align-items: center; gap: 13px; }
-    .mark {
-      width: 42px; height: 42px; border-radius: 14px;
-      display: grid; place-items: center; color: white; font-weight: 850; font-size: 22px;
-      background: linear-gradient(145deg, #4a7cff, #234fd4); box-shadow: 0 10px 24px rgba(53,109,243,.28);
-    }
+    button:disabled, input:disabled, select:disabled, textarea:disabled { cursor: not-allowed; opacity: .5; }
     h1, h2, h3, p { margin-top: 0; }
-    h1 { margin-bottom: 2px; font-size: 24px; letter-spacing: -.02em; }
-    h2 { margin-bottom: 6px; font-size: 22px; letter-spacing: -.02em; }
-    h3 { margin-bottom: 10px; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
-    .subtle { color: var(--muted); font-size: 13px; }
-    .top-actions { display: flex; gap: 9px; align-items: center; }
-    .button {
-      border: 1px solid var(--line); border-radius: 10px; padding: 9px 13px;
-      background: var(--panel-solid); color: var(--text); font-weight: 680;
+    h1 { margin: 0; font-size: 21px; letter-spacing: -.02em; }
+    h2 { margin: 0; font-size: 24px; letter-spacing: -.025em; }
+    h3, .eyebrow { margin: 0; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .app { height: 100%; display: grid; grid-template-rows: 64px minmax(0,1fr); }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 0 18px; border-bottom: 1px solid var(--line); background: var(--surface-solid);
     }
-    .button:hover:not(:disabled) { border-color: var(--accent); }
-    .button.primary { color: white; background: var(--accent); border-color: transparent; }
-    .button.quiet { background: transparent; }
-    .button.danger { color: var(--danger); }
-    .status { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 12px; color: var(--muted); }
-    .status::before { content: ""; width: 8px; height: 8px; border-radius: 99px; background: var(--muted); }
-    .status.online::before { background: var(--success); }
-    .status.offline::before { background: var(--danger); }
-    .notice { display: none; margin-bottom: 16px; border-radius: 12px; padding: 11px 14px; border: 1px solid var(--line); background: var(--panel-solid); }
-    .notice.show { display: block; }
-    .notice.error { border-color: color-mix(in srgb, var(--danger) 50%, transparent); color: var(--danger); }
-    .notice.success { border-color: color-mix(in srgb, var(--success) 50%, transparent); color: var(--success); }
-    .invitations { display: none; margin-bottom: 18px; }
-    .invitations.show { display: block; }
-    .invite-card { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 15px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel-solid); box-shadow: var(--shadow); }
-    .grid { display: grid; grid-template-columns: 290px minmax(0,1fr); gap: 18px; min-height: 660px; }
-    .panel { border: 1px solid var(--line); border-radius: 18px; background: var(--panel); box-shadow: var(--shadow); backdrop-filter: blur(20px); }
-    aside { padding: 16px; }
-    main { padding: 24px; min-width: 0; }
-    .list-nav { display: grid; gap: 7px; margin: 14px 0 18px; }
-    .list-button { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 0; border-radius: 11px; padding: 10px 11px; background: transparent; color: var(--text); text-align: left; }
-    .list-button:hover, .list-button.active { background: var(--accent-soft); }
-    .list-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
-    .count { color: var(--muted); font-size: 12px; }
-    .stack { display: grid; gap: 9px; }
-    .row { display: flex; gap: 9px; align-items: center; }
-    .field { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 10px 11px; color: var(--text); background: var(--panel-solid); outline: none; }
-    .field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
-    .list-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 22px; }
-    .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .pill { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 999px; padding: 5px 8px; color: var(--muted); font-size: 12px; }
-    .composer, .sharing { padding: 15px; margin-bottom: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel-solid); }
-    .composer-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(150px,220px) auto; gap: 9px; }
-    .task-list { display: grid; gap: 9px; }
-    .task { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: 12px; align-items: start; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel-solid); }
-    .task.done { opacity: .68; }
-    .task.done .task-title { text-decoration: line-through; }
-    .check { width: 21px; height: 21px; margin-top: 7px; accent-color: var(--accent); }
-    .task-title { font-weight: 720; line-height: 1.35; }
-    .task-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 7px; color: var(--muted); font-size: 12px; }
-    .edit-grid { display: none; grid-template-columns: minmax(0,1fr) minmax(130px,190px) auto; gap: 8px; margin-top: 10px; }
-    .task.editing .edit-grid { display: grid; }
-    .empty { padding: 70px 20px; text-align: center; color: var(--muted); }
-    .members { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 0; }
+    .brand, .top-actions, .row, .inline, .status-line { display: flex; align-items: center; }
+    .brand { gap: 11px; min-width: 0; }
+    .brand-mark { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; color: #fff; background: var(--accent); font-weight: 900; }
+    .identity { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .top-actions { gap: 8px; }
+    .dot { width: 9px; height: 9px; flex: 0 0 auto; border-radius: 50%; background: var(--danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 14%, transparent); }
+    .dot.online { background: var(--success); box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 14%, transparent); }
+    .icon-button, .button {
+      border: 1px solid var(--line); border-radius: 9px; background: var(--surface-solid); font-weight: 700;
+    }
+    .icon-button { width: 36px; height: 36px; display: grid; place-items: center; padding: 0; }
+    .button { min-height: 36px; padding: 7px 12px; }
+    .button:hover:not(:disabled), .icon-button:hover:not(:disabled) { border-color: var(--accent); }
+    .button.primary { color: #fff; background: var(--accent); border-color: transparent; }
+    .button.quiet { background: transparent; border-color: transparent; color: var(--muted); }
+    .button.tertiary { min-height: 30px; padding: 4px 8px; background: transparent; color: var(--muted); border-style: dashed; }
+    .button.danger { color: var(--danger); background: var(--danger-soft); border-color: color-mix(in srgb, var(--danger) 36%, transparent); }
+    .workspace { position: relative; min-height: 0; display: grid; grid-template-columns: var(--nav-width) minmax(0,1fr); overflow: hidden; }
+    .nav, .tray, .center { min-height: 0; background: var(--surface); }
+    .nav { border-right: 1px solid var(--line); padding: 18px 14px; overflow-y: auto; }
+    .center { min-width: 0; padding: 22px; overflow-y: auto; }
+    .tray {
+      position: absolute; inset-block: 0; width: min(var(--tray-width), 90vw); z-index: 20;
+      display: none; overflow-y: auto; padding: 18px; background: var(--surface-solid); box-shadow: var(--shadow);
+    }
+    .tray.open { display: block; }
+    .detail-tray { left: var(--nav-width); border-right: 1px solid var(--line); }
+    .settings-tray { right: 0; border-left: 1px solid var(--line); }
+    .workspace.detail-open .center { margin-left: var(--tray-width); }
+    .workspace.settings-open .center { margin-right: var(--tray-width); }
+    .workspace.detail-open .detail-tray, .workspace.settings-open .settings-tray { box-shadow: none; }
+    .tray-head, .view-head, .section-head, .composer-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .tray-head { position: sticky; top: -18px; z-index: 2; margin: -18px -18px 16px; padding: 16px 18px; border-bottom: 1px solid var(--line); background: var(--surface-solid); }
+    .nav-section { margin-bottom: 22px; }
+    .nav-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .nav-list { display: grid; gap: 4px; }
+    .nav-button { width: 100%; min-width: 0; display: flex; align-items: center; gap: 9px; border: 0; border-radius: 9px; padding: 9px 10px; background: transparent; text-align: left; }
+    .nav-button:hover, .nav-button.active { background: var(--accent-soft); }
+    .nav-label { min-width: 0; flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .muted { color: var(--muted); }
+    .tiny { font-size: 11px; }
+    .field, .select, .textarea {
+      width: 100%; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); outline: none;
+    }
+    .field, .select { min-height: 38px; padding: 8px 10px; }
+    .textarea { min-height: 108px; padding: 10px; resize: vertical; }
+    .field:focus, .select:focus, .textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 13%, transparent); }
+    .stack { display: grid; gap: 10px; }
+    .divider { height: 1px; background: var(--line); margin: 16px 0; }
+    .view-head { margin-bottom: 18px; }
+    .view-title { min-width: 0; }
+    .status-line { gap: 8px; margin-top: 6px; color: var(--muted); font-size: 12px; }
+    .filters { display: grid; grid-template-columns: minmax(170px,1fr) 180px 150px auto; gap: 8px; margin-bottom: 18px; }
+    .composer { padding: 15px; margin-bottom: 18px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-soft); }
+    .composer-head { margin-bottom: 10px; }
+    .composer-row { display: grid; grid-template-columns: minmax(180px,1fr) 190px 205px 40px; gap: 8px; }
+    .section-adder { display: flex; align-items: center; gap: 7px; margin: 0 0 14px; }
+    .section-adder .field { width: 210px; min-height: 32px; }
+    .task-list { display: grid; gap: 5px; }
+    .task {
+      display: grid; grid-template-columns: 27px minmax(0,1fr) auto; gap: 10px; align-items: center;
+      min-height: 54px; padding: 9px 10px; border: 1px solid transparent; border-radius: 10px; background: var(--surface-soft);
+      transition: opacity 5s ease, transform .18s ease, border-color .15s ease;
+    }
+    .task:hover, .task.selected { border-color: var(--line); background: var(--surface-solid); }
+    .task.completing { opacity: .28; }
+    .task-title { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 700; }
+    .task.done .task-title { color: var(--muted); text-decoration: line-through; }
+    .task-meta { display: flex; flex-wrap: wrap; gap: 5px 12px; margin-top: 3px; color: var(--muted); font-size: 12px; }
+    .task-actions { display: flex; gap: 2px; }
+    .mini { width: 28px; height: 28px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); }
+    .mini:hover { color: var(--text); background: var(--accent-soft); }
+    .check { width: 18px; height: 18px; accent-color: var(--accent); }
+    .empty { padding: 70px 18px; text-align: center; color: var(--muted); }
+    .form-section { display: grid; gap: 10px; margin-bottom: 19px; }
+    .label { display: grid; gap: 5px; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .check-row { display: flex; align-items: center; gap: 8px; min-height: 34px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .tag-box { display: flex; flex-wrap: wrap; gap: 6px; padding: 7px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); }
+    .tag-box input { min-width: 110px; flex: 1; border: 0; outline: 0; background: transparent; }
+    .chip { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; padding: 4px 7px; border-radius: 999px; background: var(--accent-soft); font-size: 12px; }
+    .chip button { border: 0; padding: 0; background: transparent; color: inherit; }
+    .people { display: grid; gap: 6px; }
+    .person { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 9px; border: 1px solid var(--line); border-radius: 9px; }
+    .invites { position: fixed; right: 18px; bottom: 18px; z-index: 50; display: grid; gap: 8px; width: min(390px, calc(100vw - 36px)); }
+    .invite { padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-solid); box-shadow: var(--shadow); }
+    .notice { position: fixed; left: 50%; bottom: 18px; z-index: 60; transform: translate(-50%, 12px); opacity: 0; pointer-events: none; padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-solid); box-shadow: var(--shadow); transition: .18s ease; }
+    .notice.show { opacity: 1; transform: translate(-50%, 0); }
+    .notice.error { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 45%, transparent); }
+    .notice.success { color: var(--success); }
     .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    @media (max-width: 800px) {
-      .shell { padding: 16px; }
-      .grid { grid-template-columns: 1fr; }
-      .composer-grid, .edit-grid { grid-template-columns: 1fr; }
-      header, .list-head, .invite-card { align-items: stretch; flex-direction: column; }
-      .top-actions { justify-content: space-between; }
+    @media (max-width: 1200px) {
+      .workspace.detail-open .center, .workspace.settings-open .center { margin-left: 0; margin-right: 0; }
+      .detail-tray, .settings-tray { box-shadow: var(--shadow); }
+      .filters { grid-template-columns: minmax(150px,1fr) 160px 140px auto; }
+    }
+    @media (max-width: 860px) {
+      :root { --nav-width: 220px; }
+      .center { padding: 16px; }
+      .composer-row { grid-template-columns: minmax(140px,1fr) 150px 175px 40px; }
+      .filters { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 650px) {
+      :root { --nav-width: 0px; }
+      .workspace { grid-template-columns: 1fr; }
+      .nav { display: none; }
+      .detail-tray { left: 0; }
+      .tray { width: min(430px, 94vw); }
+      .composer-row { grid-template-columns: 1fr; }
+      .composer-row .button { width: 100%; }
+      .task-actions { display: none; }
+      .topbar { padding-inline: 12px; }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <header>
+  <div class="app">
+    <header class="topbar">
       <div class="brand">
-        <div class="mark" aria-hidden="true">✓</div>
-        <div><h1>Tend</h1><div class="subtle" id="identity">Connecting to your ship…</div></div>
+        <div class="brand-mark" aria-hidden="true">✓</div>
+        <div><h1>Tend</h1><div class="identity" id="identity">Connecting to your ship…</div></div>
       </div>
       <div class="top-actions">
-        <span class="status" id="connection">Checking</span>
-        <button class="button" id="refresh" type="button">Refresh</button>
+        <span class="dot" id="connection" role="status" aria-label="Connection unavailable" title="Connection unavailable"></span>
+        <button class="icon-button" id="refresh" type="button" aria-label="Refresh" title="Refresh">↻</button>
+        <button class="icon-button" id="open-settings" type="button" aria-label="Open settings" title="Settings">⚙</button>
       </div>
     </header>
 
-    <div class="notice" id="notice" role="status" aria-live="polite"></div>
-
-    <section class="invitations" id="invitations" aria-labelledby="invitation-heading">
-      <h3 id="invitation-heading">Invitations</h3>
-      <div class="stack" id="invitation-list"></div>
-    </section>
-
-    <div class="grid">
-      <aside class="panel">
-        <h3>Lists</h3>
-        <nav class="list-nav" id="lists" aria-label="Reminder lists"></nav>
-        <form class="stack" id="new-list-form">
-          <label class="subtle" for="new-list-title">New list</label>
-          <div class="row">
-            <input class="field" id="new-list-title" maxlength="1024" placeholder="List name" required>
-            <button class="button primary" type="submit">Add</button>
-          </div>
-        </form>
-      </aside>
-
-      <main class="panel" id="main">
-        <div class="empty">Create or select a list to begin.</div>
-      </main>
+    <div class="workspace" id="workspace">
+      <aside class="nav" id="navigation" aria-label="Tend navigation"></aside>
+      <aside class="tray detail-tray" id="detail-tray" aria-label="Reminder details"></aside>
+      <main class="center" id="main"><div class="empty">Loading Tend…</div></main>
+      <aside class="tray settings-tray" id="settings-tray" aria-label="Settings"></aside>
     </div>
   </div>
+  <div class="invites" id="invitations"></div>
+  <div class="notice" id="notice" role="status" aria-live="polite"></div>
 
   <script>
     (() => {
       "use strict";
 
       const state = {
-        ship: "",
-        lists: [],
-        accesses: [],
-        invitations: [],
-        selectedListId: null,
-        busy: false,
-        editingReminderId: null
+        ship: "", lists: [], accesses: [], invitations: [], preferences: {},
+        selectedListId: null, selectedReminderId: null, view: "all", search: "", tag: "", sort: "manual", descending: false,
+        rightTray: "", busy: false, online: false, detailDraft: null, completionGrace: new Map(), saveTimer: null
       };
-
+      const views = [
+        ["today", "Today"], ["all", "All"], ["flagged", "Flagged"], ["assigned", "Assigned"], ["completed", "Completed"]
+      ];
       const $ = id => document.getElementById(id);
       const escapeHtml = value => String(value ?? "").replace(/[&<>'"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[char]);
       const opId = () => Date.now().toString(36) + "-" + Math.floor(Math.random() * 2147483647).toString(36);
-      const normalizeShip = value => {
-        const raw = String(value || "").trim();
-        return raw && !raw.startsWith("~") ? "~" + raw : raw;
+      const normalizeShip = value => { const raw = String(value || "").trim(); return raw && !raw.startsWith("~") ? "~" + raw : raw; };
+      const sameShip = (a, b) => normalizeShip(a).replace(/^~/, "") === normalizeShip(b).replace(/^~/, "");
+      const selectedList = () => state.lists.find(item => Number(item.id) === Number(state.selectedListId)) || null;
+      const accessFor = listId => state.accesses.find(item => Number(item.alias) === Number(listId)) || null;
+      const selectedReminder = () => {
+        const list = selectedList();
+        return list ? (list.reminders || []).find(item => Number(item.id) === Number(state.selectedReminderId)) || null : null;
       };
-
-      function showNotice(message, kind = "") {
+      function canEdit(listId) {
+        const access = accessFor(listId);
+        return state.online && !!access && (access.owner === true || access.status === "online");
+      }
+      function showNotice(message, kind = "success") {
         const node = $("notice");
         node.textContent = message || "";
         node.className = "notice" + (message ? " show" : "") + (kind ? " " + kind : "");
+        clearTimeout(showNotice.timer);
+        showNotice.timer = setTimeout(() => node.className = "notice", kind === "error" ? 5000 : 2200);
       }
+      function formatDue(schedule) {
+        const raw = schedule && (schedule["due-at"] || schedule.dueAt);
+        if (!raw) return "";
+        const urbit = String(raw).match(/^~(\d+)\.(\d+)\.(\d+)\.\.(\d+)\.(\d+)\.(\d+)/);
+        if (urbit) {
+          const date = new Date(Date.UTC(+urbit[1], +urbit[2] - 1, +urbit[3], +urbit[4], +urbit[5], +urbit[6]));
+          return schedule["all-day"] ? date.toLocaleDateString() : date.toLocaleString([], {dateStyle:"medium", timeStyle:"short"});
+        }
+        const parsed = new Date(raw);
+        return Number.isNaN(parsed.getTime()) ? String(raw) : (schedule["all-day"] ? parsed.toLocaleDateString() : parsed.toLocaleString([], {dateStyle:"medium", timeStyle:"short"}));
+      }
+      function inputDue(schedule) {
+        const raw = schedule && (schedule["due-at"] || schedule.dueAt);
+        if (!raw) return "";
+        const urbit = String(raw).match(/^~(\d+)\.(\d+)\.(\d+)\.\.(\d+)\.(\d+)/);
+        if (urbit) return `${urbit[1]}-${String(urbit[2]).padStart(2,"0")}-${String(urbit[3]).padStart(2,"0")}T${String(urbit[4]).padStart(2,"0")}:${String(urbit[5]).padStart(2,"0")}`;
+        const date = new Date(raw);
+        if (Number.isNaN(date.getTime())) return String(raw).slice(0,16);
+        const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+        return local.toISOString().slice(0,16);
+      }
+      function allTags() {
+        return [...new Set(state.lists.flatMap(list => (list.reminders || []).flatMap(reminder => reminder.tags || [])))].sort();
+      }
+      function assigneeOptions(list) {
+        const access = list && accessFor(list.id);
+        const seen = new Set();
+        const result = [{value:"", label:"Unassigned", role:""}];
+        const add = (ship, role) => {
+          const normalized = normalizeShip(ship); const key = normalized.replace(/^~/, "");
+          if (!key || seen.has(key)) return;
+          seen.add(key);
+          result.push({value:normalized, label:sameShip(normalized, state.ship) ? "me" : normalized, role});
+        };
+        if (access) {
+          add(access.host, "admin");
+          (access.members || []).forEach(member => add(member.ship, member.policy && (member.policy["can-invite"] || member.policy.canInvite) ? "admin" : "editor"));
+          (access.pending || []).forEach(ship => add(ship, "invited"));
+        }
+        add(state.ship, access && access.owner ? "admin" : "editor");
+        return result;
+      }
+      const optionHtml = (options, selected) => options.map(option => `<option value="${escapeHtml(option.value)}" ${String(option.value) === String(selected || "") ? "selected" : ""}>${escapeHtml(option.label)}${option.role ? ` (${escapeHtml(option.role)})` : ""}</option>`).join("");
 
       async function json(url) {
-        const response = await fetch(url, { credentials: "same-origin", headers: { Accept: "application/json" } });
+        const response = await fetch(url, {credentials:"same-origin", headers:{Accept:"application/json"}});
         if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
         return response.json();
       }
-
-      function accessFor(listId) {
-        return state.accesses.find(item => Number(item.alias) === Number(listId)) || null;
-      }
-
-      function selectedList() {
-        return state.lists.find(item => Number(item.id) === Number(state.selectedListId)) || null;
-      }
-
-      function canEdit(listId) {
-        const access = accessFor(listId);
-        return !!access && (access.owner === true || access.status === "online");
-      }
-
-      async function load({ quiet = false } = {}) {
+      async function load({quiet = false} = {}) {
         if (state.busy) return;
-        if (!quiet) {
-          $("connection").innerHTML = '<span class="spinner" aria-hidden="true"></span> Checking';
-          $("connection").className = "status";
-        }
+        if (!quiet) setConnection(false, "Checking connection");
         try {
           const [ship, snapshotEnvelope, accessEnvelope, invitationEnvelope] = await Promise.all([
-            json("/~/scry/tend/whoami.json"),
-            json("/~/scry/tend/state.json"),
-            json("/~/scry/tend/accesses.json"),
-            json("/~/scry/tend/invitations.json")
+            json("/~/scry/tend/whoami.json"), json("/~/scry/tend/state.json"), json("/~/scry/tend/accesses.json"), json("/~/scry/tend/invitations.json")
           ]);
           const snapshot = snapshotEnvelope.snapshot || {};
-          if (snapshot["protocol-version"] !== 1) throw new Error("This Tend web client requires protocol version 1.");
+          if (snapshot["protocol-version"] !== 1) throw new Error("This Tend client requires protocol version 1.");
           state.ship = normalizeShip(ship);
           state.lists = Array.isArray(snapshot.lists) ? snapshot.lists : [];
+          state.preferences = snapshot.preferences || {};
           state.accesses = Array.isArray(accessEnvelope.accesses) ? accessEnvelope.accesses : [];
           state.invitations = Array.isArray(invitationEnvelope["invitations-updated"]) ? invitationEnvelope["invitations-updated"] : [];
-          if (!state.lists.some(item => Number(item.id) === Number(state.selectedListId))) {
-            state.selectedListId = state.lists.length ? Number(state.lists[0].id) : null;
-          }
-          $("identity").textContent = state.ship ? `Signed in as ${state.ship}` : "Signed in";
-          $("connection").textContent = "Online";
-          $("connection").className = "status online";
+          if (!state.lists.some(item => Number(item.id) === Number(state.selectedListId))) state.selectedListId = state.lists.length ? Number(state.lists[0].id) : null;
+          if (state.selectedReminderId && !selectedReminder()) closeDetail();
+          state.online = true;
+          $("identity").textContent = state.ship || "Signed in";
+          setConnection(true, "Connected to " + (state.ship || "ship"));
           render();
-          if (!quiet) showNotice("");
         } catch (error) {
-          $("connection").textContent = "Unavailable";
-          $("connection").className = "status offline";
+          state.online = false;
+          setConnection(false, "Connection unavailable");
           showNotice(`Tend could not load: ${error.message}`, "error");
+          render();
         }
       }
-
+      function setConnection(online, label) {
+        const node = $("connection");
+        node.className = "dot" + (online ? " online" : "");
+        node.setAttribute("aria-label", label);
+        node.title = label;
+      }
       async function sendChannelCommand(url, commands) {
-        const response = await fetch(url, {
-          method: "PUT",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(commands)
-        });
+        const response = await fetch(url, {method:"PUT", credentials:"same-origin", headers:{"Content-Type":"application/json"}, body:JSON.stringify(commands)});
         if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
       }
-
-      async function poke(action) {
-        if (state.busy) return;
+      async function poke(action, {quiet = false} = {}) {
+        if (state.busy) return false;
         state.busy = true;
-        render();
         const channelId = `tend-web-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
         const url = `/~/channel/${channelId}`;
-        let source = null;
-        let timeout = null;
+        let source, timeout;
         try {
-          await sendChannelCommand(url, [{
-            id: 1,
-            action: "poke",
-            ship: state.ship.replace(/^~/, ""),
-            app: "tend",
-            mark: "tend-action-1",
-            json: action
-          }]);
-
+          await sendChannelCommand(url, [{id:1, action:"poke", ship:state.ship.replace(/^~/,""), app:"tend", mark:"tend-action-1", json:action}]);
           await new Promise((resolve, reject) => {
             timeout = setTimeout(() => reject(new Error("Tend did not acknowledge the action.")), 15000);
             source = new EventSource(url);
             source.onerror = () => reject(new Error("The Tend event channel closed unexpectedly."));
-            source.onmessage = async event => {
-              let message;
-              try { message = JSON.parse(event.data); } catch (_) { return; }
-              if (event.lastEventId) {
-                sendChannelCommand(url, [{ action: "ack", "event-id": Number(event.lastEventId) }]).catch(() => {});
-              }
+            source.onmessage = event => {
+              let message; try { message = JSON.parse(event.data); } catch (_) { return; }
+              if (event.lastEventId) sendChannelCommand(url, [{action:"ack", "event-id":Number(event.lastEventId)}]).catch(() => {});
               if (message.id !== 1 || message.response !== "poke") return;
-              if (message.err) reject(new Error(String(message.err)));
-              else resolve();
+              message.err ? reject(new Error(String(message.err))) : resolve();
             };
           });
-
-          showNotice("Saved.", "success");
-          await new Promise(resolve => setTimeout(resolve, 350));
-          await load({ quiet: true });
+          await new Promise(resolve => setTimeout(resolve, 220));
+          state.busy = false;
+          await load({quiet:true});
+          if (!quiet) showNotice("Saved");
+          return true;
         } catch (error) {
           showNotice(`Tend action failed: ${error.message}`, "error");
+          return false;
         } finally {
-          if (timeout) clearTimeout(timeout);
+          clearTimeout(timeout);
           if (source) source.close();
-          sendChannelCommand(url, [{ id: 2, action: "delete" }]).catch(() => {});
+          sendChannelCommand(url, [{id:2, action:"delete"}]).catch(() => {});
           state.busy = false;
-          render();
         }
       }
 
-      function renderInvitations() {
-        const section = $("invitations");
-        const list = $("invitation-list");
-        section.className = "invitations" + (state.invitations.length ? " show" : "");
-        list.innerHTML = state.invitations.map((invite, index) => `
-          <article class="invite-card">
-            <div>
-              <strong>${escapeHtml(invite.title || "Shared list")}</strong>
-              <div class="subtle">${escapeHtml(invite.host)} invited you to collaborate.</div>
-            </div>
-            <div class="row">
-              <button class="button primary" data-accept-invite="${index}" ${state.busy ? "disabled" : ""}>Accept</button>
-              <button class="button quiet danger" data-decline-invite="${index}" ${state.busy ? "disabled" : ""}>Decline</button>
-            </div>
-          </article>`).join("");
+      function openDetail(reminderId) {
+        state.selectedReminderId = Number(reminderId);
+        state.detailDraft = null;
+        if (window.innerWidth < 1200) state.rightTray = "";
+        render();
       }
-
-      function renderLists() {
-        $("lists").innerHTML = state.lists.map(list => {
-          const incomplete = (list.reminders || []).filter(item => !item.completed).length;
-          return `<button class="list-button ${Number(list.id) === Number(state.selectedListId) ? "active" : ""}" data-list-id="${Number(list.id)}">
-            <span class="list-name">${escapeHtml(list.title)}</span><span class="count">${incomplete}</span>
-          </button>`;
-        }).join("") || '<div class="subtle">No lists yet.</div>';
+      function closeDetail() { state.selectedReminderId = null; state.detailDraft = null; clearTimeout(state.saveTimer); render(); }
+      function openSettings(mode) {
+        state.rightTray = state.rightTray === mode ? "" : mode;
+        if (state.rightTray && window.innerWidth < 1200) { state.selectedReminderId = null; state.detailDraft = null; }
+        render();
       }
-
+      function render() {
+        renderNavigation(); renderMain(); renderDetail(); renderSettings(); renderInvitations();
+        const workspace = $("workspace");
+        workspace.classList.toggle("detail-open", !!state.selectedReminderId);
+        workspace.classList.toggle("settings-open", !!state.rightTray);
+      }
+      function renderNavigation() {
+        const active = state.view;
+        const list = selectedList();
+        $("navigation").innerHTML = `
+          <section class="nav-section">
+            <div class="nav-head"><span class="eyebrow">Views</span></div>
+            <div class="nav-list">${views.map(([id,label]) => `<button class="nav-button ${active === id ? "active" : ""}" data-view="${id}" type="button"><span class="nav-label">${label}</span></button>`).join("")}</div>
+          </section>
+          <section class="nav-section">
+            <div class="nav-head"><span class="eyebrow">Lists</span><button class="button quiet tiny" type="button" data-toggle-lists>Hide</button></div>
+            <div class="nav-list">${state.lists.map(item => `<button class="nav-button ${state.view === "list" && Number(item.id) === Number(state.selectedListId) ? "active" : ""}" data-list-id="${Number(item.id)}" type="button"><span class="nav-label">${escapeHtml(item.title)}</span><span class="tiny muted">${(item.reminders || []).filter(r => !r.completed).length}</span></button>`).join("") || `<div class="muted tiny">No lists yet</div>`}</div>
+          </section>
+          <form class="stack" id="new-list-form"><span class="eyebrow">New list</span><input class="field" id="new-list-title" placeholder="List name" required><button class="button" type="submit">Add list</button></form>`;
+      }
+      function reminderMatches(reminder) {
+        const query = state.search.toLowerCase();
+        if (query && !`${reminder.title || ""} ${reminder.notes || ""} ${(reminder.tags || []).join(" ")}`.toLowerCase().includes(query)) return false;
+        if (state.tag && !(reminder.tags || []).includes(state.tag)) return false;
+        const pending = state.completionGrace.has(`${reminder.listId}:${reminder.id}`);
+        if (state.view === "completed") return reminder.completed && !pending;
+        if (reminder.completed && !pending) return false;
+        if (state.view === "flagged") return reminder.flagged === true;
+        if (state.view === "assigned") return sameShip(reminder.assignee, state.ship);
+        if (state.view === "today") {
+          const due = reminder.schedule && (reminder.schedule["due-at"] || reminder.schedule.dueAt);
+          if (!due) return false;
+          const text = inputDue(reminder.schedule);
+          return text.slice(0,10) === new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0,10);
+        }
+        return true;
+      }
+      function queriedReminders() {
+        const source = state.view === "list" && selectedList() ? [selectedList()] : state.lists;
+        let reminders = source.flatMap(list => (list.reminders || []).map(reminder => ({...reminder, listId:list.id, listTitle:list.title})));
+        reminders = reminders.filter(reminderMatches);
+        const sorters = {
+          title:(a,b) => String(a.title).localeCompare(String(b.title)),
+          due:(a,b) => inputDue(a.schedule).localeCompare(inputDue(b.schedule)),
+          priority:(a,b) => ["high","medium","low","none"].indexOf(a.priority || "none") - ["high","medium","low","none"].indexOf(b.priority || "none"),
+          manual:(a,b) => Number(a.rank || 0) - Number(b.rank || 0) || Number(a.id) - Number(b.id)
+        };
+        reminders.sort(sorters[state.sort] || sorters.manual);
+        if (state.descending) reminders.reverse();
+        return reminders;
+      }
       function renderMain() {
         const list = selectedList();
-        if (!list) {
-          $("main").innerHTML = '<div class="empty">Create or select a list to begin.</div>';
-          return;
-        }
-        const access = accessFor(list.id);
-        const hostWritable = canEdit(list.id);
-        const editable = hostWritable && !state.busy;
-        const owner = access && access.owner === true;
-        const members = access && Array.isArray(access.members) ? access.members : [];
-        const pending = access && Array.isArray(access.pending) ? access.pending : [];
-        const remoteStatus = owner ? "Hosted on this ship" : `${access ? access.host : "Owner"} is ${access ? access.status : "checking"}`;
-        const statusClass = owner || (access && access.status === "online") ? "online" : "offline";
-        const memberPills = [state.ship, ...members.map(member => member.ship), ...pending.map(ship => `${ship} (invited)`)]
-          .filter((value, index, values) => value && values.indexOf(value) === index)
-          .map(value => `<span class="pill">${escapeHtml(value)}</span>`).join("");
-        const reminders = (list.reminders || []).slice().sort((a, b) => Number(a.rank || 0) - Number(b.rank || 0) || Number(a.id) - Number(b.id));
-
+        const access = list && accessFor(list.id);
+        const owner = !!(access && access.owner);
+        const hostWritable = list ? canEdit(list.id) : false;
+        const title = state.view === "list" ? (list ? list.title : "No list") : (views.find(([id]) => id === state.view)?.[1] || "All");
+        const reminders = queriedReminders();
+        const destination = list || state.lists.find(item => Number(item.id) === Number(state.preferences["default-list"])) || state.lists[0] || null;
+        const editable = !!destination && canEdit(destination.id) && !state.busy;
+        const dueList = destination ? assigneeOptions(destination) : [];
+        const listOptions = state.lists.map(item => ({value:item.id,label:item.title}));
         $("main").innerHTML = `
-          <div class="list-head">
-            <div>
-              <h2>${escapeHtml(list.title)}</h2>
-              <div class="meta"><span class="status ${statusClass}">${escapeHtml(remoteStatus)}</span><span class="pill">revision ${Number(list.revision || 0)}</span></div>
-            </div>
-            <button class="button" id="refresh-list" type="button">Refresh list</button>
-          </div>
+          <div class="view-head"><div class="view-title"><h2>${escapeHtml(title)}</h2>${list ? `<div class="status-line"><span class="dot ${hostWritable ? "online" : ""}"></span><span>${owner ? "Hosted here" : escapeHtml(access && access.host ? access.host : "Remote host")}</span></div>` : ""}</div>${list ? `<button class="button" data-open-list-settings type="button">List settings</button>` : ""}</div>
+          ${!hostWritable && list && !owner ? `<div class="form-section" style="color:var(--danger)">Editing is unavailable while ${escapeHtml(access ? access.host : "the list owner")} is offline.</div>` : ""}
+          <div class="filters"><input class="field" id="search" value="${escapeHtml(state.search)}" placeholder="Search reminders"><select class="select" id="tag-filter"><option value="">All tags</option>${allTags().map(tag => `<option ${tag === state.tag ? "selected" : ""}>${escapeHtml(tag)}</option>`).join("")}</select><select class="select" id="sort"><option value="manual" ${state.sort === "manual" ? "selected" : ""}>Manual</option><option value="due" ${state.sort === "due" ? "selected" : ""}>Due date</option><option value="priority" ${state.sort === "priority" ? "selected" : ""}>Priority</option><option value="title" ${state.sort === "title" ? "selected" : ""}>Title</option></select><label class="check-row"><input class="check" id="descending" type="checkbox" ${state.descending ? "checked" : ""}> Descending</label></div>
+          <section class="composer"><div class="composer-head"><span class="eyebrow">Add new reminder</span><select class="select" id="quick-list" style="width:min(240px,44%)">${optionHtml(listOptions, destination && destination.id)}</select></div><form class="composer-row" id="new-reminder-form"><input class="field" id="new-reminder-title" placeholder="Describe a new reminder" required ${editable ? "" : "disabled"}><select class="select" id="new-reminder-assignee" ${editable ? "" : "disabled"}>${optionHtml(dueList, state.ship)}</select><input class="field" id="new-reminder-due" type="datetime-local" ${editable ? "" : "disabled"}><button class="button primary" type="submit" aria-label="Add reminder" ${editable ? "" : "disabled"}>+</button></form></section>
+          ${state.view === "list" && list ? `<form class="section-adder" id="new-section-form"><input class="field" id="new-section-title" placeholder="Section title" ${hostWritable ? "" : "disabled"}><button class="button tertiary" type="submit" ${hostWritable ? "" : "disabled"}>+ Add section</button></form>` : ""}
+          <section class="task-list">${reminders.map(reminder => renderReminder(reminder)).join("") || `<div class="empty">No reminders here.</div>`}</section>`;
+      }
+      function renderReminder(reminder) {
+        const editable = canEdit(reminder.listId) && !state.busy;
+        const key = `${reminder.listId}:${reminder.id}`;
+        const grace = state.completionGrace.get(key);
+        const completing = grace && Date.now() - grace.started >= 5000;
+        const due = formatDue(reminder.schedule);
+        return `<article class="task ${reminder.completed ? "done" : ""} ${completing ? "completing" : ""} ${Number(state.selectedReminderId) === Number(reminder.id) && Number(state.selectedListId) === Number(reminder.listId) ? "selected" : ""}" data-reminder-id="${Number(reminder.id)}" data-reminder-list="${Number(reminder.listId)}"><input class="check" type="checkbox" data-complete="${Number(reminder.id)}" data-complete-list="${Number(reminder.listId)}" ${reminder.completed || grace ? "checked" : ""} ${editable ? "" : "disabled"} aria-label="Mark ${escapeHtml(reminder.title)} complete"><div class="task-copy"><div class="task-title">${escapeHtml(reminder.title)}</div><div class="task-meta">${state.view !== "list" ? `<span>${escapeHtml(reminder.listTitle)}</span>` : ""}${reminder.assignee ? `<span>${escapeHtml(sameShip(reminder.assignee,state.ship) ? "me" : reminder.assignee)}</span>` : ""}${due ? `<span>${escapeHtml(due)}</span>` : ""}${(reminder.tags || []).map(tag => `<span>#${escapeHtml(tag)}</span>`).join("")}</div></div>${state.view === "list" && state.sort === "manual" ? `<div class="task-actions"><button class="mini" data-move="up" aria-label="Move up" title="Move up">↑</button><button class="mini" data-move="down" aria-label="Move down" title="Move down">↓</button></div>` : `<button class="mini" data-open-detail aria-label="Open details" title="Open details">›</button>`}</article>`;
+      }
+      function draftFor(reminder) {
+        if (state.detailDraft && Number(state.detailDraft.id) === Number(reminder.id)) return state.detailDraft;
+        state.detailDraft = {id:reminder.id, title:String(reminder.title || ""), notes:String(reminder.notes || ""), url:String(reminder.url || ""), priority:String(reminder.priority || "none"), flagged:reminder.flagged === true, completed:reminder.completed === true, assignee:normalizeShip(reminder.assignee), tags:[...(reminder.tags || [])], due:inputDue(reminder.schedule), allDay:!!(reminder.schedule && reminder.schedule["all-day"]), parentId:reminder["parent-id"] ?? reminder.parentId ?? null};
+        return state.detailDraft;
+      }
+      function renderDetail() {
+        const tray = $("detail-tray");
+        const list = selectedList(); const reminder = selectedReminder();
+        tray.classList.toggle("open", !!reminder);
+        if (!list || !reminder) { tray.innerHTML = ""; return; }
+        const draft = draftFor(reminder); const editable = canEdit(list.id) && !state.busy;
+        tray.innerHTML = `<div class="tray-head"><div><div class="eyebrow">Reminder details</div><div class="muted tiny">${escapeHtml(list.title)}</div></div><button class="icon-button" data-close-detail aria-label="Close details">×</button></div>
+          <div class="form-section"><label class="check-row"><input class="check detail-immediate" data-field="completed" type="checkbox" ${draft.completed ? "checked" : ""} ${editable ? "" : "disabled"}> Completed</label><label class="check-row"><input class="check detail-immediate" data-field="flagged" type="checkbox" ${draft.flagged ? "checked" : ""} ${editable ? "" : "disabled"}> Flagged</label></div>
+          <div class="form-section"><label class="label">Title<input class="field detail-text" data-field="title" value="${escapeHtml(draft.title)}" ${editable ? "" : "disabled"}></label><label class="label">Notes<textarea class="textarea detail-text" data-field="notes" ${editable ? "" : "disabled"}>${escapeHtml(draft.notes)}</textarea></label><label class="label">Link<input class="field detail-text" data-field="url" value="${escapeHtml(draft.url)}" placeholder="https://" ${editable ? "" : "disabled"}></label></div>
+          <div class="form-section"><div class="two-col"><label class="label">Priority<select class="select detail-immediate" data-field="priority" ${editable ? "" : "disabled"}>${["none","low","medium","high"].map(value => `<option ${draft.priority === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label class="label">Assignee<select class="select detail-immediate" data-field="assignee" ${editable ? "" : "disabled"}>${optionHtml(assigneeOptions(list), draft.assignee)}</select></label></div></div>
+          <div class="form-section"><label class="label">Tags<div class="tag-box" id="tag-box">${draft.tags.map(tag => `<span class="chip">#${escapeHtml(tag)}<button data-remove-tag="${escapeHtml(tag)}" aria-label="Remove ${escapeHtml(tag)}">×</button></span>`).join("")}<input id="tag-input" list="tag-suggestions" placeholder="Find or add a tag" ${editable ? "" : "disabled"}></div></label><datalist id="tag-suggestions">${allTags().filter(tag => !draft.tags.includes(tag)).map(tag => `<option value="${escapeHtml(tag)}">`).join("")}</datalist></div>
+          <div class="form-section"><span class="eyebrow">Schedule</span><input class="field detail-immediate" data-field="due" type="datetime-local" value="${escapeHtml(draft.due)}" ${editable ? "" : "disabled"}><label class="check-row"><input class="check detail-immediate" data-field="allDay" type="checkbox" ${draft.allDay ? "checked" : ""} ${editable ? "" : "disabled"}> All day</label></div>
+          <div class="form-section"><span class="eyebrow">Organize</span><div class="row" style="gap:7px;flex-wrap:wrap"><button class="button" data-detail-move="up" ${editable ? "" : "disabled"}>Move up</button><button class="button" data-detail-move="down" ${editable ? "" : "disabled"}>Move down</button><button class="button" data-indent ${editable ? "" : "disabled"}>Make sub-item</button><button class="button" data-outdent ${editable ? "" : "disabled"}>Promote</button></div></div>
+          <div class="divider"></div><button class="button danger" data-delete-reminder ${editable ? "" : "disabled"}>Delete reminder</button>`;
+      }
+      function renderSettings() {
+        const tray = $("settings-tray"); const list = selectedList(); const access = list && accessFor(list.id);
+        tray.classList.toggle("open", !!state.rightTray);
+        if (!state.rightTray) { tray.innerHTML = ""; return; }
+        if (state.rightTray === "app") {
+          const badge = state.preferences["badge-mode"] || "today";
+          tray.innerHTML = `<div class="tray-head"><div><div class="eyebrow">Settings</div><div class="status-line"><span class="dot ${state.online ? "online" : ""}"></span><span>${escapeHtml(state.ship)}</span></div></div><button class="icon-button" data-close-settings aria-label="Close settings">×</button></div>
+            <div class="form-section"><span class="eyebrow">Account</span><button class="button" data-switch-ship>Switch ship</button></div><div class="divider"></div>
+            <form class="form-section" id="defaults-form"><span class="eyebrow">Reminder defaults</span><label class="label">Badge count<select class="select" name="badge"><option value="today" ${badge === "today" ? "selected" : ""}>Due today</option><option value="scheduled" ${badge === "scheduled" ? "selected" : ""}>Scheduled</option><option value="all" ${badge === "all" ? "selected" : ""}>All open</option></select></label><label class="label">All-day alert time<input class="field" name="alert" type="time" value="${minutesToTime(Number(state.preferences["all-day-alert-minute"] || 0))}"></label><label class="check-row"><input class="check" name="overdue" type="checkbox" ${state.preferences["all-day-overdue"] !== false ? "checked" : ""}> Keep all-day reminders overdue</label><button class="button primary" type="submit">Save defaults</button></form>`;
+          return;
+        }
+        if (!list || !access) { tray.innerHTML = ""; return; }
+        const owner = access.owner === true; const editable = canEdit(list.id) && !state.busy;
+        const people = [{ship:access.host, role:"admin"}, ...(access.members || []).map(member => ({ship:member.ship, role:member.policy && (member.policy["can-invite"] || member.policy.canInvite) ? "admin" : "editor"})), ...(access.pending || []).map(ship => ({ship,role:"invited"}))];
+        tray.innerHTML = `<div class="tray-head"><div><div class="eyebrow">List settings</div><div class="muted tiny">${escapeHtml(list.title)}</div></div><button class="icon-button" data-close-settings aria-label="Close settings">×</button></div>
+          <form class="form-section" id="list-settings-form"><span class="eyebrow">Appearance</span><label class="label">Name<input class="field" name="title" value="${escapeHtml(list.title)}" ${editable ? "" : "disabled"}></label><div class="two-col"><label class="label">Color<input class="field" name="color" value="${escapeHtml(list.color || "")}" placeholder="#356df3" ${editable ? "" : "disabled"}></label><label class="label">Symbol<input class="field" name="symbol" value="${escapeHtml(list.symbol || "")}" placeholder="✓" ${editable ? "" : "disabled"}></label></div><button class="button primary" type="submit" ${editable ? "" : "disabled"}>Save list</button><button class="button" type="button" data-make-default ${Number(state.preferences["default-list"]) === Number(list.id) ? "disabled" : ""}>${Number(state.preferences["default-list"]) === Number(list.id) ? "Default list" : "Make default"}</button></form>
+          <div class="divider"></div><div class="form-section"><span class="eyebrow">People</span><div class="people">${people.filter((person,index,array) => person.ship && array.findIndex(other => sameShip(other.ship,person.ship)) === index).map(person => `<div class="person"><span>${escapeHtml(sameShip(person.ship,state.ship) ? "me" : person.ship)}</span><span class="muted tiny">${person.role}</span></div>`).join("")}</div>${owner ? `<form class="row" id="invite-form" style="gap:7px"><input class="field" id="invite-ship" placeholder="~sampel-palnet" required ${editable ? "" : "disabled"}><button class="button" type="submit" ${editable ? "" : "disabled"}>Invite</button></form>` : ""}</div>
+          <div class="divider"></div>${owner ? `<button class="button danger" data-delete-list ${editable ? "" : "disabled"}>Delete list</button>` : `<button class="button danger" data-leave-list ${editable ? "" : "disabled"}>Leave list</button>`}`;
+      }
+      function renderInvitations() {
+        $("invitations").innerHTML = state.invitations.map((invite,index) => `<div class="invite"><div class="eyebrow">Shared list invitation</div><p style="margin:7px 0 11px"><strong>${escapeHtml(invite.title || "Shared list")}</strong><br><span class="muted tiny">from ${escapeHtml(invite.host)}</span></p><div class="row" style="gap:7px"><button class="button primary" data-accept-invite="${index}">Accept</button><button class="button" data-decline-invite="${index}">Decline</button></div></div>`).join("");
+      }
+      const minutesToTime = minutes => `${String(Math.floor(minutes / 60)).padStart(2,"0")}:${String(minutes % 60).padStart(2,"0")}`;
+      const timeToMinutes = value => { const [hours,minutes] = String(value || "00:00").split(":").map(Number); return hours * 60 + minutes; };
 
-          ${!hostWritable && !owner ? `<div class="notice show error">${escapeHtml(access ? access.host : "The list owner")} is ${escapeHtml(access ? access.status : "checking")}; editing is blocked until the host ship is online.</div>` : ""}
-
-          <section class="sharing">
-            <h3>People</h3>
-            <div class="members">${memberPills || '<span class="subtle">Only you</span>'}</div>
-            ${owner ? `<form class="row" id="invite-form" style="margin-top:12px">
-              <input class="field" id="invite-ship" placeholder="~sampel-palnet" aria-label="Ship to invite" required ${editable ? "" : "disabled"}>
-              <button class="button" type="submit" ${editable ? "" : "disabled"}>Invite</button>
-            </form>` : ""}
-          </section>
-
-          <form class="composer" id="new-reminder-form">
-            <h3>New reminder</h3>
-            <div class="composer-grid">
-              <input class="field" id="new-reminder-title" maxlength="1024" placeholder="What needs doing?" required ${editable ? "" : "disabled"}>
-              <input class="field" id="new-reminder-assignee" placeholder="Assignee (optional)" ${editable ? "" : "disabled"}>
-              <button class="button primary" type="submit" ${editable ? "" : "disabled"}>Add reminder</button>
-            </div>
-          </form>
-
-          <section>
-            <h3>Reminders</h3>
-            <div class="task-list">
-              ${reminders.map(reminder => {
-                const editing = Number(state.editingReminderId) === Number(reminder.id);
-                return `<article class="task ${reminder.completed ? "done" : ""} ${editing ? "editing" : ""}" data-reminder-id="${Number(reminder.id)}">
-                  <input class="check" type="checkbox" data-complete="${Number(reminder.id)}" ${reminder.completed ? "checked" : ""} ${editable ? "" : "disabled"} aria-label="Mark ${escapeHtml(reminder.title)} complete">
-                  <div>
-                    <div class="task-title">${escapeHtml(reminder.title)}</div>
-                    <div class="task-meta">${reminder.assignee ? `<span>Assigned to ${escapeHtml(reminder.assignee)}</span>` : "<span>Unassigned</span>"}${reminder.notes ? `<span>${escapeHtml(reminder.notes)}</span>` : ""}</div>
-                    <form class="edit-grid" data-edit-form="${Number(reminder.id)}">
-                      <input class="field" name="title" value="${escapeHtml(reminder.title)}" maxlength="1024" required ${editable ? "" : "disabled"}>
-                      <input class="field" name="assignee" value="${escapeHtml(reminder.assignee || "")}" placeholder="Assignee" ${editable ? "" : "disabled"}>
-                      <button class="button primary" type="submit" ${editable ? "" : "disabled"}>Save</button>
-                    </form>
-                  </div>
-                  <button class="button quiet" type="button" data-edit="${Number(reminder.id)}" ${editable ? "" : "disabled"}>${editing ? "Cancel" : "Edit"}</button>
-                </article>`;
-              }).join("") || '<div class="empty">No reminders in this list.</div>'}
-            </div>
-          </section>`;
+      function updateDraftField(target) {
+        const field = target.dataset.field; if (!field || !state.detailDraft) return;
+        state.detailDraft[field] = target.type === "checkbox" ? target.checked : target.value;
+      }
+      function scheduleDetailSave() {
+        clearTimeout(state.saveTimer);
+        state.saveTimer = setTimeout(() => saveDetail(), 300);
+      }
+      async function saveDetail() {
+        const list = selectedList(); const reminder = selectedReminder(); const draft = state.detailDraft;
+        if (!list || !reminder || !draft || !canEdit(list.id)) return;
+        if (draft.completed !== reminder.completed) {
+          await poke({"set-completed":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(reminder.id),completed:draft.completed,"base-revision":Number(list.revision)}},{quiet:true});
+        }
+        const currentList = selectedList(); const currentReminder = selectedReminder();
+        if (!currentList || !currentReminder) return;
+        const updated = await poke({"update-reminder":{"operation-id":opId(),"list-id":Number(currentList.id),"reminder-id":Number(currentReminder.id),title:draft.title.trim(),notes:draft.notes,url:draft.url || null,priority:draft.priority,flagged:draft.flagged,tags:draft.tags,assignee:draft.assignee || null,"base-revision":Number(currentList.revision)}},{quiet:true});
+        if (!updated) return;
+        const refreshedList = selectedList(); const refreshedReminder = selectedReminder();
+        if (!refreshedList || !refreshedReminder) return;
+        const oldDue = inputDue(refreshedReminder.schedule); const oldAllDay = !!(refreshedReminder.schedule && refreshedReminder.schedule["all-day"]);
+        if (draft.due !== oldDue || draft.allDay !== oldAllDay) {
+          await poke({"set-schedule":{"operation-id":opId(),"list-id":Number(refreshedList.id),"reminder-id":Number(refreshedReminder.id),schedule:draft.due ? {"due-at":draft.due,"all-day":draft.allDay,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,"_all-day-alert-minute":Number(state.preferences["all-day-alert-minute"] || 0),"early-seconds":[],recurrence:null} : null,"base-revision":Number(refreshedList.revision)}},{quiet:true});
+        }
+        showNotice("Details saved");
+      }
+      async function moveReminder(reminderId, direction) {
+        const list = selectedList(); if (!list) return;
+        const reminder = (list.reminders || []).find(item => Number(item.id) === Number(reminderId)); if (!reminder) return;
+        const parent = reminder["parent-id"] ?? reminder.parentId ?? null; const section = reminder["section-id"] ?? reminder.sectionId ?? null;
+        const siblings = (list.reminders || []).filter(item => (item["parent-id"] ?? item.parentId ?? null) === parent && (item["section-id"] ?? item.sectionId ?? null) === section).sort((a,b) => Number(a.rank || 0) - Number(b.rank || 0) || Number(a.id)-Number(b.id));
+        const index = siblings.findIndex(item => Number(item.id) === Number(reminder.id)); const target = index + (direction === "up" ? -1 : 1);
+        if (index < 0 || target < 0 || target >= siblings.length) return;
+        await poke({"place-reminder":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(reminder.id),"target-id":Number(siblings[target].id),after:direction !== "up","base-revision":Number(list.revision)}});
+      }
+      async function indentReminder(outdent = false) {
+        const list = selectedList(); const reminder = selectedReminder(); if (!list || !reminder) return;
+        const parentId = reminder["parent-id"] ?? reminder.parentId ?? null;
+        let targetParent = null;
+        if (outdent) {
+          if (parentId === null) return;
+          const parent = (list.reminders || []).find(item => Number(item.id) === Number(parentId));
+          targetParent = parent ? (parent["parent-id"] ?? parent.parentId ?? null) : null;
+        } else {
+          const siblings = (list.reminders || []).filter(item => (item["parent-id"] ?? item.parentId ?? null) === parentId).sort((a,b) => Number(a.rank||0)-Number(b.rank||0));
+          const index = siblings.findIndex(item => Number(item.id) === Number(reminder.id));
+          if (index <= 0) return;
+          targetParent = siblings[index-1].id;
+        }
+        await poke({"move-reminder":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(reminder.id),"parent-id":targetParent,"section-id":reminder["section-id"] ?? reminder.sectionId ?? null,rank:Number(reminder.rank || 1024),"base-revision":Number(list.revision)}});
       }
 
-      function render() {
-        renderInvitations();
-        renderLists();
-        renderMain();
-      }
-
-      document.addEventListener("click", event => {
+      document.addEventListener("click", async event => {
         const listButton = event.target.closest("[data-list-id]");
-        if (listButton) {
-          state.selectedListId = Number(listButton.dataset.listId);
-          state.editingReminderId = null;
-          render();
-          return;
-        }
-        const edit = event.target.closest("[data-edit]");
-        if (edit) {
-          const id = Number(edit.dataset.edit);
-          state.editingReminderId = Number(state.editingReminderId) === id ? null : id;
+        if (listButton) { state.selectedListId = Number(listButton.dataset.listId); state.view = "list"; state.selectedReminderId = null; state.rightTray = ""; render(); return; }
+        const viewButton = event.target.closest("[data-view]");
+        if (viewButton) { state.view = viewButton.dataset.view; state.selectedReminderId = null; render(); return; }
+        const task = event.target.closest(".task");
+        if (task && !event.target.closest("button,input")) { state.selectedListId = Number(task.dataset.reminderList); state.view = state.view; openDetail(task.dataset.reminderId); return; }
+        if (event.target.closest("[data-open-detail]") && task) { state.selectedListId = Number(task.dataset.reminderList); openDetail(task.dataset.reminderId); return; }
+        if (event.target.closest("[data-close-detail]")) { closeDetail(); return; }
+        if (event.target.closest("[data-close-settings]")) { state.rightTray = ""; render(); return; }
+        if (event.target.closest("#open-settings")) { openSettings("app"); return; }
+        if (event.target.closest("[data-open-list-settings]")) { openSettings("list"); return; }
+        const move = event.target.closest("[data-move]"); if (move && task) { await moveReminder(task.dataset.reminderId, move.dataset.move); return; }
+        const detailMove = event.target.closest("[data-detail-move]"); if (detailMove) { await moveReminder(state.selectedReminderId, detailMove.dataset.detailMove); return; }
+        if (event.target.closest("[data-indent]")) { await indentReminder(false); return; }
+        if (event.target.closest("[data-outdent]")) { await indentReminder(true); return; }
+        const removeTag = event.target.closest("[data-remove-tag]"); if (removeTag && state.detailDraft) { state.detailDraft.tags = state.detailDraft.tags.filter(tag => tag !== removeTag.dataset.removeTag); renderDetail(); await saveDetail(); return; }
+        const accept = event.target.closest("[data-accept-invite]"); if (accept) { const invite = state.invitations[Number(accept.dataset.acceptInvite)]; await poke({"accept-invitation":{"operation-id":opId(),host:invite.host,token:invite.token}}); return; }
+        const decline = event.target.closest("[data-decline-invite]"); if (decline) { const invite = state.invitations[Number(decline.dataset.declineInvite)]; await poke({"decline-invitation":{"operation-id":opId(),host:invite.host,token:invite.token}}); return; }
+        if (event.target.closest("[data-make-default]")) { const list = selectedList(); await poke({"set-preferences":{"operation-id":opId(),"default-list":Number(list.id),"pinned-lists":state.preferences["pinned-lists"] || [],"pinned-views":state.preferences["pinned-views"] || [],"snooze-presets":state.preferences["snooze-presets"] || [],"base-revision":Number(state.preferences.revision || 0)}}); return; }
+        if (event.target.closest("[data-switch-ship]")) { location.href = "/~/logout"; return; }
+        if (event.target.closest("[data-delete-reminder]")) { const list = selectedList(); const reminder = selectedReminder(); if (list && reminder && confirm("Delete this reminder?")) { await poke({"delete-reminder":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(reminder.id),"base-revision":Number(list.revision)}}); closeDetail(); } return; }
+        if (event.target.closest("[data-delete-list]")) { const list = selectedList(); if (list && confirm(`Delete ${list.title}?`)) { await poke({"delete-list":{"operation-id":opId(),"list-id":Number(list.id),"base-revision":Number(list.revision)}}); state.rightTray=""; } return; }
+        if (event.target.closest("[data-leave-list]")) { const list = selectedList(); if (list && confirm(`Leave ${list.title}?`)) { await poke({"leave-shared-list":{"operation-id":opId(),"list-id":Number(list.id)}}); state.rightTray=""; } return; }
+        if (state.selectedReminderId && !event.target.closest("#detail-tray") && !event.target.closest(".task")) closeDetail();
+      });
+      document.addEventListener("input", event => {
+        if (event.target.id === "search") { state.search = event.target.value; renderMain(); return; }
+        if (event.target.matches(".detail-text")) { updateDraftField(event.target); scheduleDetailSave(); }
+      });
+      document.addEventListener("change", async event => {
+        if (event.target.id === "tag-filter") { state.tag = event.target.value; renderMain(); return; }
+        if (event.target.id === "sort") { state.sort = event.target.value; renderMain(); return; }
+        if (event.target.id === "descending") { state.descending = event.target.checked; renderMain(); return; }
+        if (event.target.id === "quick-list") { state.selectedListId = Number(event.target.value); if (state.view === "list") render(); else renderMain(); return; }
+        const complete = event.target.closest("[data-complete]");
+        if (complete) {
+          const listId = Number(complete.dataset.completeList); const list = state.lists.find(item => Number(item.id) === listId); const reminderId = Number(complete.dataset.complete); if (!list) return;
+          const key = `${listId}:${reminderId}`;
+          if (complete.checked) {
+            state.completionGrace.set(key, {started:Date.now()});
+            setTimeout(() => { if (state.completionGrace.has(key)) { renderMain(); } }, 5000);
+            setTimeout(() => { state.completionGrace.delete(key); renderMain(); }, 10000);
+          } else state.completionGrace.delete(key);
           renderMain();
+          await poke({"set-completed":{"operation-id":opId(),"list-id":listId,"reminder-id":reminderId,completed:complete.checked,"base-revision":Number(list.revision)}},{quiet:true});
           return;
         }
-        const accept = event.target.closest("[data-accept-invite]");
-        if (accept) {
-          const invite = state.invitations[Number(accept.dataset.acceptInvite)];
-          poke({ "accept-invitation": { "operation-id": opId(), host: invite.host, token: invite.token } });
-          return;
-        }
-        const decline = event.target.closest("[data-decline-invite]");
-        if (decline) {
-          const invite = state.invitations[Number(decline.dataset.declineInvite)];
-          poke({ "decline-invitation": { "operation-id": opId(), host: invite.host, token: invite.token } });
-          return;
-        }
-        if (event.target.closest("#refresh-list")) load();
+        if (event.target.matches(".detail-immediate")) { updateDraftField(event.target); await saveDetail(); }
       });
-
-      document.addEventListener("change", event => {
-        const checkbox = event.target.closest("[data-complete]");
-        if (!checkbox) return;
-        const list = selectedList();
-        if (!list) return;
-        poke({ "set-completed": {
-          "operation-id": opId(), "list-id": Number(list.id), "reminder-id": Number(checkbox.dataset.complete),
-          completed: checkbox.checked, "base-revision": Number(list.revision)
-        }});
+      document.addEventListener("keydown", async event => {
+        if (event.target.id === "tag-input" && event.key === "Enter") {
+          event.preventDefault(); const value = event.target.value.trim().replace(/^#/,"");
+          if (value && state.detailDraft && !state.detailDraft.tags.includes(value)) { state.detailDraft.tags.push(value); renderDetail(); await saveDetail(); }
+        }
       });
-
-      document.addEventListener("submit", event => {
-        event.preventDefault();
-        const form = event.target;
-        if (form.id === "new-list-form") {
-          const title = $("new-list-title").value.trim();
-          if (title) poke({ "create-list": { "operation-id": opId(), title } }).then(() => { $("new-list-title").value = ""; });
-          return;
-        }
-        const list = selectedList();
-        if (!list) return;
-        if (form.id === "invite-form") {
-          const ship = normalizeShip($("invite-ship").value);
-          if (ship) poke({ "invite-member": { "operation-id": opId(), "list-id": Number(list.id), ship, "can-invite": false } });
-          return;
-        }
+      document.addEventListener("submit", async event => {
+        event.preventDefault(); const form = event.target;
+        if (form.id === "new-list-form") { const title = $("new-list-title").value.trim(); if (title) await poke({"create-list":{"operation-id":opId(),title}}); return; }
         if (form.id === "new-reminder-form") {
-          const title = $("new-reminder-title").value.trim();
-          const assignee = normalizeShip($("new-reminder-assignee").value);
-          if (!title) return;
-          const add = { "operation-id": opId(), "list-id": Number(list.id), title, tags: [], "base-revision": Number(list.revision) };
-          poke({ "add-reminder": add }).then(async () => {
-            $("new-reminder-title") && ($("new-reminder-title").value = "");
-            if (!assignee) return;
-            await load({ quiet: true });
-            const current = selectedList();
-            const newest = current && (current.reminders || []).slice().sort((a,b) => Number(b.id) - Number(a.id))[0];
-            if (newest && newest.title === title) updateReminder(current, newest, title, assignee);
-          });
-          return;
+          const listId = Number($("quick-list").value); const list = state.lists.find(item => Number(item.id) === listId); const title = $("new-reminder-title").value.trim(); if (!list || !title) return;
+          const assignee = normalizeShip($("new-reminder-assignee").value); const due = $("new-reminder-due").value;
+          const added = await poke({"add-reminder":{"operation-id":opId(),"list-id":listId,title,tags:[],"base-revision":Number(list.revision)}},{quiet:true});
+          if (!added) return;
+          const refreshed = state.lists.find(item => Number(item.id) === listId); const newest = refreshed && (refreshed.reminders || []).slice().sort((a,b) => Number(b.id)-Number(a.id))[0];
+          if (newest) {
+            await poke({"update-reminder":{"operation-id":opId(),"list-id":listId,"reminder-id":Number(newest.id),title,notes:"",url:null,priority:"none",flagged:false,tags:[],assignee:assignee || state.ship,"base-revision":Number(refreshed.revision)}},{quiet:true});
+            if (due) { const latest = state.lists.find(item => Number(item.id) === listId); await poke({"set-schedule":{"operation-id":opId(),"list-id":listId,"reminder-id":Number(newest.id),schedule:{"due-at":due,"all-day":false,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,"_all-day-alert-minute":Number(state.preferences["all-day-alert-minute"] || 0),"early-seconds":[],recurrence:null},"base-revision":Number(latest.revision)}},{quiet:true}); }
+          }
+          showNotice("Reminder added"); return;
         }
-        if (form.matches("[data-edit-form]")) {
-          const reminder = (list.reminders || []).find(item => Number(item.id) === Number(form.dataset.editForm));
-          if (!reminder) return;
-          updateReminder(list, reminder, form.elements.title.value.trim(), normalizeShip(form.elements.assignee.value));
-        }
+        if (form.id === "new-section-form") { const list = selectedList(); const title = $("new-section-title").value.trim(); if (!list || !title) return; const sections = list.sections || []; const rank = sections.length ? Number(sections[sections.length-1].rank || 0) + 1024 : 1024; await poke({"add-section":{"operation-id":opId(),"list-id":Number(list.id),title,rank,"base-revision":Number(list.revision)}}); return; }
+        if (form.id === "invite-form") { const list = selectedList(); const ship = normalizeShip($("invite-ship").value); if (list && ship) await poke({"invite-member":{"operation-id":opId(),"list-id":Number(list.id),ship,"can-invite":false}}); return; }
+        if (form.id === "list-settings-form") { const list = selectedList(); if (!list) return; await poke({"update-list":{"operation-id":opId(),"list-id":Number(list.id),title:form.elements.title.value.trim(),color:form.elements.color.value.trim(),symbol:form.elements.symbol.value.trim(),"base-revision":Number(list.revision)}}); return; }
+        if (form.id === "defaults-form") { await poke({"set-reminder-policy":{"operation-id":opId(),"badge-mode":form.elements.badge.value,"all-day-alert-minute":timeToMinutes(form.elements.alert.value),"all-day-overdue":form.elements.overdue.checked,"base-revision":Number(state.preferences.revision || 0)}}); return; }
       });
-
-      function updateReminder(list, reminder, title, assignee) {
-        state.editingReminderId = null;
-        return poke({ "update-reminder": {
-          "operation-id": opId(), "list-id": Number(list.id), "reminder-id": Number(reminder.id),
-          title, notes: String(reminder.notes || ""), url: reminder.url || null,
-          priority: String(reminder.priority || "none"), flagged: reminder.flagged === true,
-          tags: Array.isArray(reminder.tags) ? reminder.tags : [], assignee: assignee || null,
-          "base-revision": Number(list.revision)
-        }});
-      }
-
       $("refresh").addEventListener("click", () => load());
-      setInterval(() => {
-        const active = document.activeElement;
-        if (!state.busy && (!active || !["INPUT","TEXTAREA","SELECT"].includes(active.tagName))) load({ quiet: true });
-      }, 3000);
+      window.addEventListener("resize", () => { if (window.innerWidth < 1200 && state.selectedReminderId && state.rightTray) state.rightTray = ""; render(); });
+      setInterval(() => { const active = document.activeElement; if (!state.busy && (!active || !["INPUT","TEXTAREA","SELECT"].includes(active.tagName))) load({quiet:true}); }, 4000);
       load();
     })();
   </script>

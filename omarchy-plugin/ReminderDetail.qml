@@ -14,13 +14,19 @@ BorderSurface {
   property var availableTags: []
   property bool editable: false
   property string timezone: "UTC"
+  property bool loadingFields: false
+  property bool pendingTextSave: false
   signal closeRequested()
+  signal moveUpRequested()
+  signal moveDownRequested()
+  signal indentRequested()
+  signal outdentRequested()
 
   readonly property var assigneeOptions: (assigneeChoices || []).map(function(choice) {
     return {
       value: String(choice.ship || ""),
-      label: String(choice.title || choice.ship || "Unassigned"),
-      description: String(choice.description || "")
+      label: String(choice.label || choice.ship || "Unassigned"),
+      role: String(choice.role || choice.status || "")
     }
   })
   readonly property var tagOptions: {
@@ -45,6 +51,7 @@ BorderSurface {
 
   function loadReminder() {
     if (!reminder) return
+    loadingFields = true
     titleField.text = reminder.title || ""
     notesField.text = reminder.notes || ""
     urlField.text = reminder.url || ""
@@ -52,8 +59,65 @@ BorderSurface {
     flaggedField.checked = reminder.flagged === true
     tagPicker.values = (reminder.tags || []).slice()
     assigneeField.value = normalizedShip(reminder.assignee)
-    dueField.text = TendModel.scheduleInputValue(reminder.schedule)
-    allDayField.checked = reminder.schedule ? reminder.schedule.allDay === true : false
+    duePicker.value = TendModel.scheduleInputValue(reminder.schedule)
+    duePicker.allDay = reminder.schedule ? reminder.schedule.allDay === true : false
+    allDayField.checked = duePicker.allDay
+    loadingFields = false
+  }
+
+  function canSave() {
+    return editable && reminder && list && service && service.connectionState === "online" && titleField.text.trim() !== ""
+  }
+
+  function showSaved() {
+    savedToast.visible = true
+    savedToast.opacity = 1
+    savedToastTimer.restart()
+  }
+
+  function scheduleTextSave() {
+    if (loadingFields) return
+    pendingTextSave = true
+    textSaveTimer.restart()
+  }
+
+  function saveDetailsNow() {
+    if (loadingFields || !canSave()) return false
+    if (service.mutationPending) {
+      pendingTextSave = true
+      retrySaveTimer.restart()
+      return false
+    }
+    pendingTextSave = false
+    var accepted = service.updateReminder(list.id, reminder.id, {
+      title: titleField.text,
+      notes: notesField.text,
+      url: urlField.text.trim() || null,
+      priority: priorityField.currentText,
+      flagged: flaggedField.checked,
+      tags: tagPicker.values || [],
+      assignee: assigneeField.value || null
+    }, list.revision)
+    if (accepted) showSaved()
+    return accepted
+  }
+
+  function saveSchedule() {
+    if (loadingFields || !canSave()) return false
+    if (service.mutationPending) {
+      scheduleRetryTimer.restart()
+      return false
+    }
+    var value = String(duePicker.value || "").trim()
+    var accepted = service.setSchedule(list.id, reminder.id, value ? {
+      due: value,
+      allDay: allDayField.checked,
+      timezone: timezone,
+      earlySeconds: [],
+      recurrence: null
+    } : null, list.revision)
+    if (accepted) showSaved()
+    return accepted
   }
 
   function addTag() {
@@ -63,14 +127,31 @@ BorderSurface {
     if (tags.indexOf(tag) === -1) tags.push(tag)
     tagPicker.values = tags
     newTagField.text = ""
+    saveDetailsNow()
   }
 
   function focusAssignee() { assigneeField.open() }
-  function focusSave() { saveButton.forceActiveFocus() }
+  function focusSave() { titleField.forceActiveFocus() }
 
   onReminderChanged: loadReminder()
   onAssigneeChoicesChanged: loadReminder()
   Component.onCompleted: loadReminder()
+
+  Timer { id: textSaveTimer; interval: 300; repeat: false; onTriggered: root.saveDetailsNow() }
+  Timer {
+    id: retrySaveTimer
+    interval: 250
+    repeat: false
+    onTriggered: if (root.pendingTextSave) root.saveDetailsNow()
+  }
+  Timer { id: scheduleRetryTimer; interval: 250; repeat: false; onTriggered: root.saveSchedule() }
+  Timer {
+    id: savedToastTimer
+    interval: 1350
+    repeat: false
+    onTriggered: { savedToast.opacity = 0; savedToastHideTimer.restart() }
+  }
+  Timer { id: savedToastHideTimer; interval: 160; repeat: false; onTriggered: savedToast.visible = false }
 
   QQC.ScrollView {
     anchors.fill: parent
@@ -88,95 +169,40 @@ BorderSurface {
         Column {
           width: parent.width - closeButton.width
           spacing: Style.space(2)
-
-          Text {
-            width: parent.width
-            text: "REMINDER DETAILS"
-            color: Color.popups.text
-            font.family: Style.font.family
-            font.pixelSize: Style.font.caption
-            font.bold: true
-          }
-
-          Text {
-            width: parent.width
-            text: root.list ? root.list.title : ""
-            color: Qt.darker(Color.popups.text, 1.45)
-            elide: Text.ElideRight
-            font.family: Style.font.family
-            font.pixelSize: Style.font.caption
-          }
+          Text { width: parent.width; text: "REMINDER DETAILS"; color: Color.popups.text; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
+          Text { width: parent.width; text: root.list ? root.list.title : ""; color: Qt.darker(Color.popups.text, 1.45); elide: Text.ElideRight; font.family: Style.font.family; font.pixelSize: Style.font.caption }
         }
 
-        TendButton {
-          id: closeButton
-          text: "󰅖"
-          bordered: false
-          tooltipText: "Close details"
-          onClicked: root.closeRequested()
-        }
-      }
-
-      TendCheckbox {
-        id: completedBox
-        text: "Completed"
-        checked: root.service && root.reminder
-          ? root.service.effectiveCompleted(root.list.id, root.reminder.id, root.reminder.completed)
-          : false
-        enabled: root.editable && root.reminder && root.service && root.service.connectionState === "online" && !root.service.mutationPending
-        onClicked: root.service.toggleCompletedWithGrace(root.list.id, root.reminder.id, root.reminder.completed)
-      }
-
-      TextField {
-        id: titleField
-        width: parent.width
-        placeholderText: "Reminder title"
-        Accessible.name: "Reminder title"
-      }
-
-      TendTextArea {
-        id: notesField
-        width: parent.width
-        height: Style.space(92)
-        placeholderText: "Notes"
-        wrapMode: TextEdit.Wrap
-        Accessible.name: "Reminder notes"
-      }
-
-      TextField {
-        id: urlField
-        width: parent.width
-        placeholderText: "Link"
-        Accessible.name: "Reminder URL"
+        TendButton { id: closeButton; text: "󰅖"; bordered: false; tooltipText: "Close details"; onClicked: root.closeRequested() }
       }
 
       Row {
         width: parent.width
         spacing: Style.space(8)
 
-        TendDropdown {
-          id: priorityField
-          width: parent.width * 0.54
-          label: "Priority"
-          model: ["none", "low", "medium", "high"]
+        TendCheckbox {
+          id: completedBox
+          text: "Completed"
+          checked: root.service && root.reminder ? root.service.effectiveCompleted(root.list.id, root.reminder.id, root.reminder.completed) : false
+          enabled: root.editable && root.reminder && root.service && root.service.connectionState === "online" && !root.service.mutationPending
+          onClicked: root.service.toggleCompletedWithGrace(root.list.id, root.reminder.id, root.reminder.completed)
         }
 
-        TendCheck {
+        TendCheckbox {
           id: flaggedField
-          anchors.verticalCenter: parent.verticalCenter
           text: "Flagged"
+          enabled: root.canSave()
+          onClicked: { flaggedField.checked = !flaggedField.checked; root.saveDetailsNow() }
         }
       }
 
-      SearchableDropdown {
-        id: assigneeField
-        width: parent.width
-        label: "Assigned to"
-        options: root.assigneeOptions
-        placeholderText: "Find a ship"
-        emptyText: "No matching ships"
-        Accessible.name: "Reminder assignee ship"
-      }
+      TextField { id: titleField; width: parent.width; placeholderText: "Reminder title"; Accessible.name: "Reminder title"; onTextEdited: root.scheduleTextSave() }
+      TendTextArea { id: notesField; width: parent.width; height: Style.space(96); placeholderText: "Notes"; wrapMode: TextEdit.Wrap; Accessible.name: "Reminder notes"; onTextChanged: root.scheduleTextSave() }
+      TextField { id: urlField; width: parent.width; placeholderText: "Link"; Accessible.name: "Reminder URL"; onTextEdited: root.scheduleTextSave() }
+
+      TendDropdown { id: priorityField; width: parent.width; label: "Priority"; model: ["none", "low", "medium", "high"]; onActivated: root.saveDetailsNow() }
+
+      TendAssigneePicker { id: assigneeField; width: parent.width; options: root.assigneeOptions; placeholderText: "Assignee"; Accessible.name: "Reminder assignee ship"; onChanged: root.saveDetailsNow() }
 
       MultiSelect {
         id: tagPicker
@@ -187,103 +213,74 @@ BorderSurface {
         emptyText: "No matching tags"
         noSelectionText: "No tags"
         Accessible.name: "Reminder tags"
+        onChanged: root.saveDetailsNow()
       }
 
       Row {
         width: parent.width
         spacing: Style.space(8)
-
-        TextField {
-          id: newTagField
-          width: parent.width - addTagButton.width - parent.spacing
-          placeholderText: "Add a new tag"
-          Accessible.name: "New reminder tag"
-          onAccepted: root.addTag()
-        }
-
-        TendButton {
-          id: addTagButton
-          text: "Add tag"
-          enabled: newTagField.text.trim() !== ""
-          onClicked: root.addTag()
-        }
+        TextField { id: newTagField; width: parent.width - addTagButton.width - parent.spacing; placeholderText: "Add a new tag"; Accessible.name: "New reminder tag"; onAccepted: root.addTag() }
+        TendButton { id: addTagButton; text: "Add tag"; enabled: newTagField.text.trim() !== ""; onClicked: root.addTag() }
       }
 
       PanelSeparator { width: parent.width; foreground: Color.popups.text }
+      Text { text: "SCHEDULE"; color: Color.popups.text; opacity: 0.68; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
 
-      Text {
-        text: "SCHEDULE"
-        color: Color.popups.text
-        opacity: 0.68
-        font.family: Style.font.family
-        font.pixelSize: Style.font.caption
-        font.bold: true
-      }
-
-      TextField {
-        id: dueField
+      TendDateTimePicker {
+        id: duePicker
         width: parent.width
-        placeholderText: "YYYY-MM-DD or YYYY-MM-DDTHH:MM"
-        Accessible.name: "Reminder due date and time"
+        placeholderText: "Add due date"
+        onCommitted: function(value, allDay) { allDayField.checked = allDay; root.saveSchedule() }
       }
 
-      TendCheck {
+      TendCheckbox {
         id: allDayField
         text: "All day"
+        enabled: root.canSave() && duePicker.value !== ""
+        onClicked: { checked = !checked; duePicker.allDay = checked; root.saveSchedule() }
       }
 
-      Row {
+      PanelSeparator { width: parent.width; foreground: Color.popups.text }
+      Text { text: "ORGANIZE"; color: Color.popups.text; opacity: 0.68; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
+
+      Grid {
         width: parent.width
-        spacing: Style.space(8)
-
-        TendButton {
-          text: "Save schedule"
-          enabled: root.editable && root.reminder && dueField.text.trim() && root.service && root.service.connectionState === "online" && !root.service.mutationPending
-          onClicked: root.service.setSchedule(root.list.id, root.reminder.id, {
-            due: dueField.text.trim(),
-            allDay: allDayField.checked,
-            timezone: root.timezone,
-            earlySeconds: [],
-            recurrence: null
-          }, root.list.revision)
-        }
-
-        TendButton {
-          text: "Clear"
-          enabled: root.editable && root.reminder && root.reminder.schedule && root.service && root.service.connectionState === "online" && !root.service.mutationPending
-          onClicked: root.service.setSchedule(root.list.id, root.reminder.id, null, root.list.revision)
-        }
+        columns: 2
+        columnSpacing: Style.space(6)
+        rowSpacing: Style.space(6)
+        TendButton { width: (parent.width - parent.columnSpacing) / 2; text: "Move up"; onClicked: root.moveUpRequested() }
+        TendButton { width: (parent.width - parent.columnSpacing) / 2; text: "Move down"; onClicked: root.moveDownRequested() }
+        TendButton { width: (parent.width - parent.columnSpacing) / 2; text: "Make sub-item"; onClicked: root.indentRequested() }
+        TendButton { width: (parent.width - parent.columnSpacing) / 2; text: "Promote"; enabled: root.reminder && root.reminder.parentId !== null; onClicked: root.outdentRequested() }
       }
 
       PanelSeparator { width: parent.width; foreground: Color.popups.text }
 
-      Row {
+      TendButton {
         width: parent.width
-        spacing: Style.space(8)
-
-        TendButton {
-          id: saveButton
-          width: parent.width - deleteButton.width - parent.spacing
-          text: root.service && root.service.mutationPending ? "Saving…" : "Save changes"
-          enabled: root.editable && root.reminder && titleField.text.trim() && root.service && root.service.connectionState === "online" && !root.service.mutationPending
-          onClicked: root.service.updateReminder(root.list.id, root.reminder.id, {
-            title: titleField.text,
-            notes: notesField.text,
-            url: urlField.text.trim() || null,
-            priority: priorityField.currentText,
-            flagged: flaggedField.checked,
-            tags: tagPicker.values || [],
-            assignee: assigneeField.value || null
-          }, root.list.revision)
-        }
-
-        TendButton {
-          id: deleteButton
-          text: "Delete"
-          enabled: root.editable && root.reminder && root.service && root.service.connectionState === "online" && !root.service.mutationPending
-          onClicked: root.service.deleteReminder(root.list.id, root.reminder.id, root.list.revision)
-        }
+        text: "Delete reminder"
+        foreground: Color.urgent
+        accent: Color.urgent
+        bordered: true
+        enabled: root.editable && root.reminder && root.service && root.service.connectionState === "online" && !root.service.mutationPending
+        onClicked: root.service.deleteReminder(root.list.id, root.reminder.id, root.list.revision)
       }
     }
+  }
+
+  BorderSurface {
+    id: savedToast
+    visible: false
+    opacity: 0
+    anchors.top: parent.top
+    anchors.right: parent.right
+    anchors.margins: Style.space(10)
+    width: savedLabel.implicitWidth + Style.space(22)
+    height: Style.space(32)
+    z: 20
+    color: Style.selectedFillFor(Color.popups.text, Color.accent)
+    borderSpec: Border.controlSpec("selected", Color.popups.text, Color.accent)
+    radius: Style.cornerRadius
+    Text { id: savedLabel; anchors.centerIn: parent; text: "✓ Details saved"; color: Style.selectedStateColor(Color.popups.text, Color.accent); font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
   }
 }
