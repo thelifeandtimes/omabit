@@ -1,0 +1,232 @@
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"flag"
+	"fmt"
+	"io"
+	"os"
+	"os/signal"
+	"path/filepath"
+	"syscall"
+	"time"
+
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+)
+
+const scope = `Initial simulator checkpoint, not a full collector daemon or production runtime manager.
+The socket must be an explicit absolute path, supplied before the subcommand.
+Every command checks Hello compatibility before performing any operations.
+Revisions and request IDs are never inferred; mutations are never automatically retried.
+Results are indented JSON, except watch, which emits one compact snapshot per line (NDJSON).
+`
+
+func main() {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	code := run(ctx, os.Args[1:], os.Stdout, os.Stderr)
+	stop()
+	os.Exit(code)
+}
+
+func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	fail := func(err error, code int) int {
+		problem := protocol.APIError{Code: "client_error", Message: err.Error()}
+		var remote *client.RemoteError
+		if errors.As(err, &remote) {
+			problem = remote.Problem
+		}
+		encoder := json.NewEncoder(stderr)
+		encoder.SetIndent("", "  ")
+		_ = encoder.Encode(protocol.ErrorResponse{Error: problem})
+		return code
+	}
+
+	globals := flag.NewFlagSet("urbit-collector", flag.ContinueOnError)
+	globals.SetOutput(io.Discard)
+	globals.Usage = func() {}
+	socket := globals.String("socket", "", "required absolute path to the runner Unix socket")
+	if err := globals.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			fmt.Fprint(stdout, `Usage: urbit-collector --socket /absolute/path/runner.sock COMMAND
+
+Commands:
+  hello       Verify compatibility and show runner capabilities.
+  snapshot    Show the current simulator snapshot.
+  configure INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT
+              Replace configuration; all flags are required. Demo loom: 31..33,
+              not universal runtime bounds.
+  operate INSTANCE start|stop --revision N --request-id ID
+              Submit one operation; both flags are required.
+  watch [--interval 1s]
+              Poll snapshots until canceled; minimum interval: 100ms.
+
+Use COMMAND --help for command flags and constraints.
+
+`+scope)
+			return 0
+		}
+		return fail(err, 2)
+	}
+	args = globals.Args()
+	if len(args) == 0 {
+		return fail(errors.New("a subcommand is required; use --help for usage"), 2)
+	}
+	command := args[0]
+	args = args[1:]
+	flags := flag.NewFlagSet(command, flag.ContinueOnError)
+	flags.SetOutput(io.Discard)
+	flags.Usage = func() {}
+	var revision uint64
+	var httpPort, amesPort, loom uint
+	var requestID string
+	var interval time.Duration
+	usage := command
+	switch command {
+	case "hello", "snapshot":
+	case "configure":
+		usage += " INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT"
+		flags.Uint64Var(&revision, "revision", 0, "required positive expected configuration revision")
+		flags.UintVar(&httpPort, "http-port", 0, "required HTTP port, 1..65535")
+		flags.UintVar(&amesPort, "ames-port", 0, "required Ames port, 1..65535")
+		flags.UintVar(&loom, "loom", 0, "required demo loom exponent, 31..33 (not universal runtime bounds)")
+	case "operate":
+		usage += " INSTANCE start|stop --revision N --request-id ID"
+		flags.Uint64Var(&revision, "revision", 0, "required positive expected configuration revision")
+		flags.StringVar(&requestID, "request-id", "", "required caller-chosen ID: [A-Za-z0-9_-], 1..64 characters")
+	case "watch":
+		usage += " [--interval 1s]"
+		flags.DurationVar(&interval, "interval", time.Second, "snapshot polling interval, at least 100ms; cancellation exits successfully")
+	default:
+		return fail(errors.New("unknown subcommand; use --help for usage"), 2)
+	}
+
+	var instanceID, kind string
+	if command == "configure" || command == "operate" {
+		if len(args) > 0 && args[0] != "--help" && args[0] != "-h" {
+			instanceID, args = args[0], args[1:]
+		}
+		if command == "operate" && len(args) > 0 && args[0] != "--help" && args[0] != "-h" {
+			kind, args = args[0], args[1:]
+		}
+	}
+	if err := flags.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			fmt.Fprintf(stdout, "Usage: urbit-collector --socket /absolute/path/runner.sock %s\n\n%s\n", usage, scope)
+			flags.SetOutput(stdout)
+			flags.PrintDefaults()
+			return 0
+		}
+		return fail(err, 2)
+	}
+	if flags.NArg() != 0 {
+		return fail(errors.New("unexpected trailing arguments; command flags must follow positional arguments"), 2)
+	}
+	if !filepath.IsAbs(*socket) {
+		return fail(errors.New("--socket is required and must be an absolute path before the subcommand"), 2)
+	}
+	if command == "configure" || command == "operate" {
+		if !validID(instanceID) {
+			return fail(errors.New("instance ID is required: use 1..64 ASCII letters, digits, underscores, or hyphens"), 2)
+		}
+		if revision == 0 {
+			return fail(errors.New("--revision is required and must be positive"), 2)
+		}
+	}
+	switch command {
+	case "configure":
+		if httpPort == 0 || httpPort > 65535 || amesPort == 0 || amesPort > 65535 {
+			return fail(errors.New("--http-port and --ames-port are required and must be in 1..65535"), 2)
+		}
+		if loom < 31 || loom > 33 {
+			return fail(errors.New("--loom is required and must be in 31..33 for this demo, not universal runtime bounds"), 2)
+		}
+	case "operate":
+		if kind != "start" && kind != "stop" {
+			return fail(errors.New("operation must be start or stop"), 2)
+		}
+		if !validID(requestID) {
+			return fail(errors.New("--request-id is required: use 1..64 ASCII letters, digits, underscores, or hyphens"), 2)
+		}
+	case "watch":
+		if interval < 100*time.Millisecond {
+			return fail(errors.New("--interval must be at least 100ms"), 2)
+		}
+	}
+
+	c := client.New(*socket)
+	defer c.Close()
+	hello, err := c.Hello(ctx)
+	if err != nil {
+		if command == "watch" && ctx.Err() != nil && errors.Is(err, ctx.Err()) {
+			return 0
+		}
+		return fail(err, 1)
+	}
+	encoder := json.NewEncoder(stdout)
+	encoder.SetIndent("", "  ")
+	var result any
+	switch command {
+	case "hello":
+		result = hello
+	case "snapshot":
+		result, err = c.Snapshot(ctx)
+	case "configure":
+		result, err = c.Configure(ctx, instanceID, protocol.ConfigureRequest{
+			ExpectedRevision: revision,
+			Config: protocol.Configuration{
+				HTTPPort: uint16(httpPort), AmesPort: uint16(amesPort), Loom: uint8(loom),
+			},
+		})
+	case "operate":
+		result, err = c.Operate(ctx, instanceID, protocol.OperationRequest{
+			RequestID: requestID, Kind: kind, ExpectedRevision: revision,
+		})
+	case "watch":
+		encoder.SetIndent("", "")
+		ticker := time.NewTicker(interval)
+		defer ticker.Stop()
+		for {
+			if ctx.Err() != nil {
+				return 0
+			}
+			snapshot, err := c.Snapshot(ctx)
+			if err != nil {
+				if ctx.Err() != nil && errors.Is(err, ctx.Err()) {
+					return 0
+				}
+				return fail(err, 1)
+			}
+			if err := encoder.Encode(snapshot); err != nil {
+				return fail(err, 1)
+			}
+			select {
+			case <-ctx.Done():
+				return 0
+			case <-ticker.C:
+			}
+		}
+	}
+	if err != nil {
+		return fail(err, 1)
+	}
+	if err := encoder.Encode(result); err != nil {
+		return fail(err, 1)
+	}
+	return 0
+}
+
+func validID(id string) bool {
+	if len(id) < 1 || len(id) > 64 {
+		return false
+	}
+	for i := 0; i < len(id); i++ {
+		b := id[i]
+		if !((b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z') || (b >= '0' && b <= '9') || b == '_' || b == '-') {
+			return false
+		}
+	}
+	return true
+}
