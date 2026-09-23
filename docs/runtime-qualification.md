@@ -1,8 +1,9 @@
 # Runtime qualification record
 
 Status: rootless setup and the isolated disposable Vere lifecycle are accepted by
-the user. The next slice is host-side HTTP publication. This is still a partial
-qualification, not production-runtime support.
+the user. The [host HTTP checkpoint](checkpoints/04-host-http.md) is implemented
+and awaits manual validation. This is still partial qualification, not
+production-runtime support.
 
 ## Accepted engine setup
 
@@ -110,6 +111,14 @@ reviewed baseline, not a bypass or a system downgrade. Preserve the package
 manager's normal security-update workflow.
 
 ## Gates
+
+Checkpoint 2C introduces a separate host-HTTP profile. It uses a dedicated normal
+NAT bridge (with outbound access), not `--internal`, because the pinned Docker
+gateway path is needed for NAT port publication. Only `127.0.0.1` and an ephemeral
+TCP host port may be published. HTTP identity is checked directly from the host,
+without credentials or redirects. Container replacement rediscovers the binding;
+cleanup tracks both container and network intents. No live 2C execution has yet
+been reported.
 
 Checkpoint 2B has fixed image/pill provenance, injected tests, and the accepted
 execution record above. The image is pinned to

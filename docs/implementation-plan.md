@@ -27,9 +27,11 @@ automated test.
 - Checkpoint 2B is accepted: run `35aac1083d71188d9782ec64b49ba771` verified
   image/pill pins, live cgroup limits, fake boot, clean shutdown, replacement
   restart, offline pack, and post-pack restart. All five containers were removed.
-- Checkpoint 2C will qualify host-side loopback HTTP publication on a fresh
-  per-run internal network, including replacement-container reconnect and owned
-  network cleanup. The accepted network-none lifecycle mode remains available.
+- Checkpoint 2C is implemented and fixture-tested; the
+  [host HTTP walkthrough](checkpoints/04-host-http.md) awaits manual acceptance.
+  It uses a fresh per-run NAT bridge with normal outbound access and loopback-only
+  publication, including replacement/reconnect and owned-network cleanup. The
+  accepted network-none lifecycle mode remains available.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator
