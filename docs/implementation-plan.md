@@ -12,8 +12,9 @@ automated test.
 - Checkpoint 1 protocol/simulator: implemented; automated tests and user acceptance
   of the [local walkthrough](checkpoints/01-local-protocol.md) passed.
 - Protocol contract: [experimental version 1](protocol.md).
-- Real Docker/runtime qualification: the isolated lifecycle subset has passed;
-  networking, application health, meld, reboot, and failure gates remain.
+- Real Docker/runtime qualification: isolated lifecycle and local host HTTP have
+  passed; Ames/remote networking, application health, meld, reboot, and failure
+  gates remain.
 - Qualification pill: use the selected Vere runtime's upstream default bootstrap
   pill until the Omabit release is available. Verify the expected base, webterm,
   and groups desks after boot; this does not qualify the future Omabit bundle.
@@ -27,11 +28,14 @@ automated test.
 - Checkpoint 2B is accepted: run `35aac1083d71188d9782ec64b49ba771` verified
   image/pill pins, live cgroup limits, fake boot, clean shutdown, replacement
   restart, offline pack, and post-pack restart. All five containers were removed.
-- Checkpoint 2C is implemented and fixture-tested; the
-  [host HTTP walkthrough](checkpoints/04-host-http.md) awaits manual acceptance.
-  It uses a fresh per-run NAT bridge with normal outbound access and loopback-only
-  publication, including replacement/reconnect and owned-network cleanup. The
-  accepted network-none lifecycle mode remains available.
+- Checkpoint 2C is accepted: run `e9f766ae9854e04f35eb9991d39fb9ba` verified
+  loopback HTTP on ports 32768/32769 across replacement, then removed all three
+  containers and the per-run network with resolved outcomes.
+- Checkpoint 3A begins the persistent development runner/collector workflow,
+  restricted to fresh fake ships and the qualified image/HTTP/stop behavior.
+  SQLite holds registrations, configuration revisions, idempotency, and operation
+  history. Unqualified real-key bootstrap, Ames, meld, and control-socket monitoring
+  remain disabled rather than delaying the bounded control-plane milestone.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator

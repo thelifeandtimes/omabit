@@ -1,9 +1,7 @@
 # Runtime qualification record
 
-Status: rootless setup and the isolated disposable Vere lifecycle are accepted by
-the user. The [host HTTP checkpoint](checkpoints/04-host-http.md) is implemented
-and awaits manual validation. This is still partial qualification, not
-production-runtime support.
+Status: rootless setup, isolated lifecycle, and host-loopback HTTP are accepted by
+the user. This is still partial qualification, not production-runtime support.
 
 ## Accepted engine setup
 
@@ -58,6 +56,26 @@ Run only after the protocol walkthrough is accepted and the user approves any
 host setup. Use disposable development ships. Never boot an existing identity's
 copy while its original is running.
 
+## Accepted host HTTP (checkpoint 2C)
+
+User-supplied report for run `e9f766ae9854e04f35eb9991d39fb9ba`:
+
+- Engine, image, pill, probe, network, host-http-boot, host-http-restart, and
+  cleanup all passed.
+- `checkpoint_passed: true`, `cleanup_complete: true`, `limits_observed: true`,
+  and `pier_metadata_seen: true`; `runtime_qualified: false` as intended.
+- Host endpoints were `http://127.0.0.1:32768/~/host` and then
+  `http://127.0.0.1:32769/~/host`, both verified. Those containers are now removed;
+  the addresses are historical evidence, not active servers.
+- All three containers and network
+  `fda5e86036dc00a5c9ed134ab3c41ac33f162174136bef5d6b84ee49bc8802b0` were removed;
+  every create outcome was resolved.
+- Admission observed 5,396,324,352 bytes available RAM and 452,211,556,352 bytes
+  available disk. Image, Vere, and pill pins matched the accepted 2B candidate.
+
+This confirms local publication/reconnect on the dedicated NAT bridge. It does
+not establish remote/tailnet access, application authentication, or Ames.
+
 ## Record before testing
 
 - Host distribution, architecture, systemd, kernel, Docker version.
@@ -79,7 +97,7 @@ copy while its original is running.
 | Download errors | Missing source, redirect policy, oversize, timeout, and bad hash fail closed | Not run |
 | Bootstrap | Expected identity mode and desks; no unrelated personal state | Fake boot passed; desk/content checks pending |
 | Persistence | Stop/start preserves pier; containers are replaceable | Local replacement restart passed in 2B; application data semantics pending |
-| Networking | Private HTTP access and intended Ames connectivity | In-container HTTP passed; host publication and Ames pending |
+| Networking | Private HTTP access and intended Ames connectivity | In-container HTTP passed in 2B; host-loopback publication/reconnect passed in 2C; Ames/remote access pending |
 | Shutdown | Graceful signal handling and adequate stop timeout | Passed in 2B |
 | Reboot | Engine/runner start without desktop login | Not run |
 | Offline pack | Exclusive pier access and successful restart | Passed in 2B |
@@ -117,8 +135,8 @@ NAT bridge (with outbound access), not `--internal`, because the pinned Docker
 gateway path is needed for NAT port publication. Only `127.0.0.1` and an ephemeral
 TCP host port may be published. HTTP identity is checked directly from the host,
 without credentials or redirects. Container replacement rediscovers the binding;
-cleanup tracks both container and network intents. No live 2C execution has yet
-been reported.
+cleanup tracks both container and network intents. The accepted live execution
+is recorded above.
 
 Checkpoint 2B has fixed image/pill provenance, injected tests, and the accepted
 execution record above. The image is pinned to

@@ -2,8 +2,10 @@
 
 Prerequisite: the rootless setup and isolated lifecycle checkpoints have passed.
 Run `35aac1083d71188d9782ec64b49ba771` supplied the accepted 2B evidence on this
-host. This new checkpoint is implemented and fixture-tested, but its real Docker
-networking path awaits your manual validation.
+host. This checkpoint is accepted: run `e9f766ae9854e04f35eb9991d39fb9ba`
+passed every phase, verified host HTTP on ports 32768 then 32769, and removed all
+three containers and the network with no uncertain outcomes. This is the user's
+reported execution evidence; broader runtime qualification remains incomplete.
 
 ## What changes in this checkpoint
 
