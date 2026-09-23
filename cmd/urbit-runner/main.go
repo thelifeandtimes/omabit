@@ -14,6 +14,7 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/demo"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/localrpc"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
 
 const usage = `Usage: urbit-runner COMMAND
@@ -25,11 +26,15 @@ Commands:
                              Fetch pinned, inert rootless setup review artifacts.
   install-rootless --bundle /absolute/bundle --acknowledge-host-changes
                              OS-authorized DEVELOPMENT first install (requires root).
+  runtime-plan               Describe the pinned disposable-runtime checkpoint.
+  qualify-runtime --acknowledge-disposable-run
+                             Run it as the dedicated account (never as root).
   demo --socket /private/directory/runner.sock [--operation-delay 2s]
                              Run the checkpoint 1 in-memory simulator.
 
 Only install-rootless changes host configuration and starts a private rootless
-engine. No command installs packages or boots ships.
+engine. qualify-runtime creates a fresh fake ship and disposable containers.
+No command installs packages or provisions a real ship.
 Use COMMAND --help for details.
 `
 
@@ -54,6 +59,9 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	}
 	if len(args) > 0 && (args[0] == "preflight" || args[0] == "setup-plan" || args[0] == "prepare-rootless" || args[0] == "install-rootless") {
 		return runSetup(ctx, args, stdout, stderr)
+	}
+	if len(args) > 0 && (args[0] == "runtime-plan" || args[0] == "qualify-runtime") {
+		return runRuntime(ctx, args, stdout, stderr, runtimequalify.Run)
 	}
 	if len(args) == 0 || args[0] != "demo" {
 		fmt.Fprint(stderr, usage)
