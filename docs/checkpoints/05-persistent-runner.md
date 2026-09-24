@@ -2,7 +2,12 @@
 
 Prerequisites: checkpoints 2A, 2B, and 2C have passed. This checkpoint turns the
 qualified fake-ship primitives into a persistent local management workflow.
-Implementation and fixture validation are complete; live acceptance is pending.
+Implementation and fixture validation are complete. User-reported live evidence
+confirms registration, bootstrap, configuration revision 2, stop/resume, and
+retained runner identity/history after management restart. After the probe fix,
+two resumes completed in 6.81 s and 6.80 s, with healthy state and no incidents.
+This records those exercised paths; the remaining walkthrough checks still
+describe their own acceptance criteria.
 
 ## Scope and differences from qualification
 

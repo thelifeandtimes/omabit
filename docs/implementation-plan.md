@@ -41,9 +41,11 @@ automated test.
 - The user's 3A snapshot confirms alpha registration, first start, a revision-2
   HTTP-port change, stop, and successful initialized-pier resume. A reported
   two-minute delay was traced to the preflight sleep probe's PID-1 signal handling;
-  see the [diagnostic record](diagnostics/2026-09-24-resume-delay.md). The fix is
-  pending a controlled live timing check; full 3A acceptance is not inferred from
-  that partial snapshot.
+  see the [diagnostic record](diagnostics/2026-09-24-resume-delay.md). Two live
+  checks after the fix completed resume in 6.81 s and 6.80 s, with stops in 0.70 s
+  and 0.75 s. Stable runner identity and prior history remained after management
+  restart; alpha stayed healthy at revision 2 with no incidents. The timing-fix
+  gate is complete; other 3A scenarios retain their documented acceptance scope.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator

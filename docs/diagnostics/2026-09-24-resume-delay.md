@@ -49,22 +49,37 @@ introduced by this fix.
 Tests reject an unwrapped probe and assert that an initialized-pier resume uses
 the same mount, does not fetch a pill, and does not contain bootstrap flags.
 
-## Terminology and next validation
+## Live confirmation after the fix
+
+The user supplied two successful stop/resume pairs with the updated runner:
+
+| Request ID | Accepted (UTC) | Finished (UTC) | Elapsed |
+| --- | --- | --- | --- |
+| `timing-stop-1790215403` | 02:03:29.520 | 02:03:30.218 | 0.70 s |
+| `timing-resume-1790215403` | 02:06:44.689 | 02:06:51.497 | 6.81 s |
+| `timing-stop-1790216289` | 02:18:18.235 | 02:18:18.982 | 0.75 s |
+| `timing-resume-1790216289` | 02:25:47.520 | 02:25:54.325 | 6.80 s |
+
+The snapshot at 02:28:09 UTC reported `alpha` running and healthy, configuration
+revision 2 applied, and no incidents. Runner identity
+`runner-f496feed1f7b08f31a5d82b94ac2f5fd` and earlier operation history remained
+present after the management restart used to deploy the fix.
+
+This confirms that the approximately 120-second overhead is gone. These are
+operator-reported end-to-end operation timings, not a measurement of checkpoint
+loading alone or a general startup-performance guarantee.
+
+## Lifecycle contract and follow-up
 
 The Urbit is a persistent state machine. A new Vere process loads the existing
 checkpoint and replays any required events; container replacement is host-side
 infrastructure, not a new logical Urbit. The container was replaced here to apply
 the changed host HTTP port while keeping the same registered pier.
 
-Leave the healthy instance running. When no operation is active, the management
-process can be stopped, the updated binary copied, and management restarted
-without stopping the ship. At the next convenient controlled stop/resume, use new
-request IDs and compare accepted/finished timestamps. Do not re-register alpha,
-delete its pier, or re-run bootstrap to diagnose this issue.
-
-The fixed probe path still needs live confirmation. If delays remain, add
-stage-level timing (queue, probe, container start, HTTP readiness) before drawing
-conclusions about Vere checkpoint loading, replay, memory pressure, or I/O.
+The timing gate for this fix is complete; no further stop/resume is required to
+validate it. Keep the registered pier and instance. If another delay arises,
+record stage-level timing (queue, probe, container start, HTTP readiness) before
+attributing it to Vere checkpoint loading, replay, memory pressure, or I/O.
 
 References:
 
