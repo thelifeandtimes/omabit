@@ -183,6 +183,18 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("ScrollView", settings)
         self.assertIn("Color.popups.background", details)
 
+    def test_reminder_detail_exposes_relationships_and_recurrence(self):
+        details = (ROOT / "omarchy-plugin" / "ReminderDetail.qml").read_text(encoding="utf-8")
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+        self.assertIn('text: "ANCESTORS"', details)
+        self.assertIn('text: "DESCENDANTS"', details)
+        self.assertIn("signal reminderRequested", details)
+        self.assertIn("onReminderRequested", panel)
+        self.assertIn('model: ["none", "hourly", "daily", "weekly", "monthly", "yearly"]', details)
+        self.assertIn("recurrence: recurrenceValue()", details)
+        self.assertIn("iconOnly: true", details)
+        self.assertIn("TendFlagButton {\n          id: flaggedField", details)
+
     def test_panel_uses_centered_icon_controls_and_full_width_narrow_surfaces(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         settings = (ROOT / "omarchy-plugin" / "TendSettings.qml").read_text(encoding="utf-8")

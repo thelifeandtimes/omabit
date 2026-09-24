@@ -2735,6 +2735,7 @@ Item {
                                 editable: root.selectedListEditable
                                 timezone: root.localTimezone()
                                 onCloseRequested: root.selectedReminderId = 0
+                                onReminderRequested: function(reminderId) { root.selectedReminderId = reminderId }
                                 onMoveRequested: function(destinationListId) {
                                     if (!root.selectedList || !root.selectedReminder || !service)
                                         return;

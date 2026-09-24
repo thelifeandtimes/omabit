@@ -17,8 +17,10 @@ BorderSurface {
   property string timezone: "UTC"
   property bool loadingFields: false
   property bool pendingTextSave: false
+  property var recurrenceBase: null
   signal closeRequested()
   signal moveRequested(int destinationListId)
+  signal reminderRequested(int reminderId)
 
   readonly property var assigneeOptions: (assigneeChoices || []).map(function(choice) {
     return {
@@ -47,6 +49,86 @@ BorderSurface {
     return name ? "~" + name : ""
   }
 
+  function reminderById(reminderId) {
+    var reminders = list ? (list.reminders || []) : []
+    for (var i = 0; i < reminders.length; i++)
+      if (Number(reminders[i].id) === Number(reminderId)) return reminders[i]
+    return null
+  }
+
+  function parentIdFor(item) {
+    if (!item) return null
+    return item.parentId === undefined ? item["parent-id"] : item.parentId
+  }
+
+  function ancestorRows() {
+    if (!reminder || !list) return []
+    var result = []
+    var seen = ({})
+    var parentId = parentIdFor(reminder)
+    while (parentId !== null && parentId !== undefined && result.length < 24) {
+      var numeric = Number(parentId)
+      if (seen[numeric]) break
+      seen[numeric] = true
+      var parent = reminderById(numeric)
+      if (!parent) break
+      result.unshift({ id: Number(parent.id), title: String(parent.title || "Untitled reminder"), depth: result.length })
+      parentId = parentIdFor(parent)
+    }
+    for (var i = 0; i < result.length; i++) result[i].depth = i
+    return result
+  }
+
+  function descendantRows() {
+    if (!reminder || !list) return []
+    var reminders = list.reminders || []
+    var result = []
+    var seen = ({})
+    function appendChildren(parentId, depth) {
+      if (depth > 24) return
+      var children = reminders.filter(function(item) {
+        var value = root.parentIdFor(item)
+        return value !== null && value !== undefined && Number(value) === Number(parentId)
+      }).sort(function(left, right) {
+        return Number(left.rank || 0) - Number(right.rank || 0) || Number(left.id) - Number(right.id)
+      })
+      for (var i = 0; i < children.length; i++) {
+        var child = children[i]
+        if (seen[Number(child.id)]) continue
+        seen[Number(child.id)] = true
+        result.push({ id: Number(child.id), title: String(child.title || "Untitled reminder"), depth: depth })
+        appendChildren(child.id, depth + 1)
+      }
+    }
+    appendChildren(reminder.id, 0)
+    return result
+  }
+
+  function recurrenceEndInput(recurrence) {
+    if (!recurrence) return ""
+    var value = recurrence.localEnd || recurrence["local-end"] || recurrence.endAt || recurrence["end-at"] || ""
+    return String(value)
+  }
+
+  function recurrenceValue() {
+    if (repeatField.currentText === "none") return null
+    var source = recurrenceBase || ({})
+    return {
+      frequency: repeatField.currentText,
+      interval: Math.max(1, Number(repeatInterval.value || 1)),
+      weekdays: (source.weekdays || []).map(Number),
+      monthDays: (source.monthDays || source["month-days"] || []).map(Number),
+      monthWeek: source.monthWeek || source["month-week"] || null,
+      endAt: repeatEndField.currentText === "on date" && repeatEndPicker.value ? repeatEndPicker.value : null,
+      maxOccurrences: repeatEndField.currentText === "after count" ? Math.max(1, Number(repeatCount.value || 1)) : null
+    }
+  }
+
+  function repeatUnitLabel() {
+    var singular = repeatField.currentText === "hourly" ? "hour" : repeatField.currentText === "daily" ? "day" : repeatField.currentText === "weekly" ? "week" : repeatField.currentText === "monthly" ? "month" : "year"
+    return Number(repeatInterval.value || 1) === 1 ? singular : singular + "s"
+  }
+
   function loadReminder() {
     if (!reminder) return
     loadingFields = true
@@ -61,6 +143,22 @@ BorderSurface {
     duePicker.value = TendModel.scheduleInputValue(reminder.schedule)
     duePicker.allDay = reminder.schedule ? reminder.schedule.allDay === true : false
     allDayField.checked = duePicker.allDay
+    var recurrence = reminder.schedule ? reminder.schedule.recurrence : null
+    recurrenceBase = recurrence ? {
+      weekdays: (recurrence.weekdays || []).slice(),
+      monthDays: (recurrence.monthDays || recurrence["month-days"] || []).slice(),
+      monthWeek: recurrence.monthWeek || recurrence["month-week"] || null
+    } : null
+    repeatField.currentIndex = Math.max(0, repeatField.model.indexOf(recurrence ? String(recurrence.frequency || "daily") : "none"))
+    repeatInterval.value = recurrence ? Math.max(1, Number(recurrence.interval || 1)) : 1
+    repeatEndPicker.value = recurrenceEndInput(recurrence)
+    repeatEndPicker.allDay = false
+    repeatCount.value = recurrence && (recurrence.maxOccurrences !== null && recurrence.maxOccurrences !== undefined)
+      ? Math.max(1, Number(recurrence.maxOccurrences)) : 1
+    repeatEndField.currentIndex = recurrence && recurrenceEndInput(recurrence)
+      ? repeatEndField.model.indexOf("on date")
+      : recurrence && recurrence.maxOccurrences !== null && recurrence.maxOccurrences !== undefined
+        ? repeatEndField.model.indexOf("after count") : 0
     loadingFields = false
   }
 
@@ -119,7 +217,7 @@ BorderSurface {
       allDay: allDayField.checked,
       timezone: timezone,
       earlySeconds: [],
-      recurrence: null
+      recurrence: recurrenceValue()
     } : null, list.revision)
     if (accepted) showSaved()
     return accepted
@@ -171,27 +269,13 @@ BorderSurface {
 
       Row {
         width: parent.width
+        spacing: Style.space(6)
 
         Column {
-          width: parent.width - closeButton.width
+          width: parent.width - flaggedField.width - closeButton.width - parent.spacing * 2
           spacing: Style.space(2)
           Text { width: parent.width; text: "REMINDER DETAILS"; color: Color.popups.text; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
           Text { width: parent.width; text: root.list ? root.list.title : ""; color: Qt.darker(Color.popups.text, 1.45); elide: Text.ElideRight; font.family: Style.font.family; font.pixelSize: Style.font.caption }
-        }
-
-        TendButton { id: closeButton; text: "󰅖"; bordered: false; tooltipText: "Close details"; onClicked: root.closeRequested() }
-      }
-
-      Row {
-        width: parent.width
-        spacing: Style.space(8)
-
-        TendCheckbox {
-          id: completedBox
-          text: "Completed"
-          checked: root.service && root.reminder ? root.service.effectiveCompleted(root.list.id, root.reminder.id, root.reminder.completed) : false
-          enabled: root.editable && root.reminder && root.service && root.service.connectionState === "online" && !root.service.mutationPending
-          onClicked: root.service.toggleCompletedWithGrace(root.list.id, root.reminder.id, root.reminder.completed)
         }
 
         TendFlagButton {
@@ -201,7 +285,15 @@ BorderSurface {
           onToggled: function(flagged) { flaggedField.flagged = flagged; root.saveDetailsNow() }
         }
 
-        Text { anchors.verticalCenter: parent.verticalCenter; text: flaggedField.flagged ? "Flagged" : "Flag reminder"; color: flaggedField.flagged ? Color.urgent : Qt.darker(Color.popups.text, 1.45); font.family: Style.font.family; font.pixelSize: Style.font.body }
+        TendIconButton { id: closeButton; glyph: "󰅖"; bordered: false; tooltipText: "Close details"; accessibleName: "Close reminder details"; onClicked: root.closeRequested() }
+      }
+
+      TendCheckbox {
+        id: completedBox
+        text: "Completed"
+        checked: root.service && root.reminder ? root.service.effectiveCompleted(root.list.id, root.reminder.id, root.reminder.completed) : false
+        enabled: root.editable && root.reminder && root.service && root.service.connectionState === "online" && !root.service.mutationPending
+        onClicked: root.service.toggleCompletedWithGrace(root.list.id, root.reminder.id, root.reminder.completed)
       }
 
       TextField { id: titleField; width: parent.width; placeholderText: "Reminder title"; Accessible.name: "Reminder title"; onTextEdited: root.scheduleTextSave(); QQC.ContextMenu.menu: TendEditMenu { target: titleField } }
@@ -245,14 +337,107 @@ BorderSurface {
         TendButton { id: addTagButton; text: "Add tag"; enabled: newTagField.text.trim() !== ""; onClicked: root.addTag() }
       }
 
+      Column {
+        width: parent.width
+        spacing: Style.space(6)
+        visible: root.ancestorRows().length > 0 || root.descendantRows().length > 0
+
+        PanelSeparator { width: parent.width; foreground: Color.popups.text }
+
+        Text {
+          visible: root.ancestorRows().length > 0
+          text: "ANCESTORS"
+          color: Color.popups.text
+          opacity: 0.68
+          font.family: Style.font.family
+          font.pixelSize: Style.font.caption
+          font.bold: true
+        }
+
+        Repeater {
+          model: root.ancestorRows()
+          delegate: Item {
+            required property var modelData
+            width: parent.width
+            height: Style.space(26)
+            Text {
+              id: ancestorLabel
+              anchors.left: parent.left
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              leftPadding: Number(modelData.depth || 0) * Style.space(14)
+              text: "↳ " + modelData.title
+              color: Color.popups.text
+              opacity: ancestorHover.hovered ? 1 : 0.7
+              elide: Text.ElideRight
+              font.family: Style.font.family
+              font.pixelSize: Style.font.caption
+              font.underline: ancestorHover.hovered
+            }
+            HoverHandler { id: ancestorHover }
+            TapHandler { onTapped: root.reminderRequested(Number(modelData.id)) }
+          }
+        }
+
+        Text {
+          visible: root.descendantRows().length > 0
+          text: "DESCENDANTS"
+          color: Color.popups.text
+          opacity: 0.68
+          font.family: Style.font.family
+          font.pixelSize: Style.font.caption
+          font.bold: true
+        }
+
+        Repeater {
+          model: root.descendantRows()
+          delegate: Item {
+            required property var modelData
+            width: parent.width
+            height: Style.space(26)
+            Text {
+              anchors.left: parent.left
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              leftPadding: (Number(modelData.depth || 0) + 1) * Style.space(14)
+              text: "↳ " + modelData.title
+              color: Color.popups.text
+              opacity: descendantHover.hovered ? 1 : 0.7
+              elide: Text.ElideRight
+              font.family: Style.font.family
+              font.pixelSize: Style.font.caption
+              font.underline: descendantHover.hovered
+            }
+            HoverHandler { id: descendantHover }
+            TapHandler { onTapped: root.reminderRequested(Number(modelData.id)) }
+          }
+        }
+      }
+
       PanelSeparator { width: parent.width; foreground: Color.popups.text }
       Text { text: "SCHEDULE"; color: Color.popups.text; opacity: 0.68; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
 
-      TendDateTimePicker {
-        id: duePicker
+      Row {
         width: parent.width
-        placeholderText: "Add due date"
-        onCommitted: function(value, allDay) { allDayField.checked = allDay; root.saveSchedule() }
+        spacing: Style.space(8)
+
+        Text {
+          width: parent.width - duePicker.width - parent.spacing
+          anchors.verticalCenter: parent.verticalCenter
+          text: duePicker.value ? duePicker.displayValue() : "No due date"
+          color: Color.popups.text
+          opacity: duePicker.value ? 0.86 : 0.56
+          elide: Text.ElideRight
+          font.family: Style.font.family
+          font.pixelSize: Style.font.body
+        }
+
+        TendDateTimePicker {
+          id: duePicker
+          iconOnly: true
+          placeholderText: "Add due date"
+          onCommitted: function(value, allDay) { allDayField.checked = allDay; root.saveSchedule() }
+        }
       }
 
       TendCheckbox {
@@ -260,6 +445,97 @@ BorderSurface {
         text: "All day"
         enabled: root.canSave() && duePicker.value !== ""
         onClicked: { checked = !checked; duePicker.allDay = checked; root.saveSchedule() }
+      }
+
+      Column {
+        width: parent.width
+        spacing: Style.space(8)
+        visible: duePicker.value !== ""
+
+        Text { text: "REPEAT"; color: Color.popups.text; opacity: 0.68; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
+
+        TendDropdown {
+          id: repeatField
+          width: parent.width
+          label: "Repeat"
+          model: ["none", "hourly", "daily", "weekly", "monthly", "yearly"]
+          Accessible.name: "Repeat frequency"
+          onActivated: root.saveSchedule()
+        }
+
+        Row {
+          width: parent.width
+          spacing: Style.space(8)
+          visible: repeatField.currentText !== "none"
+
+          TendNumber {
+            id: repeatInterval
+            width: Math.min(Style.space(120), parent.width * 0.38)
+            label: "Every"
+            from: 1
+            to: 999
+            value: 1
+            editable: true
+            Accessible.name: "Repeat interval"
+            onValueChanged: if (activeFocus && !root.loadingFields) root.saveSchedule()
+          }
+
+          Text {
+            anchors.verticalCenter: parent.verticalCenter
+            text: root.repeatUnitLabel()
+            color: Color.popups.text
+            opacity: 0.72
+            font.family: Style.font.family
+            font.pixelSize: Style.font.body
+          }
+        }
+
+        TendDropdown {
+          id: repeatEndField
+          width: parent.width
+          visible: repeatField.currentText !== "none"
+          label: "Ends"
+          model: ["never", "on date", "after count"]
+          Accessible.name: "Repeat ending"
+          onActivated: if (currentText === "never") root.saveSchedule()
+        }
+
+        Row {
+          width: parent.width
+          spacing: Style.space(8)
+          visible: repeatField.currentText !== "none" && repeatEndField.currentText === "on date"
+
+          Text {
+            width: parent.width - repeatEndPicker.width - parent.spacing
+            anchors.verticalCenter: parent.verticalCenter
+            text: repeatEndPicker.value ? repeatEndPicker.displayValue() : "Choose an end date"
+            color: Color.popups.text
+            opacity: repeatEndPicker.value ? 0.86 : 0.56
+            elide: Text.ElideRight
+            font.family: Style.font.family
+            font.pixelSize: Style.font.body
+          }
+
+          TendDateTimePicker {
+            id: repeatEndPicker
+            iconOnly: true
+            placeholderText: "Repeat end date"
+            onCommitted: root.saveSchedule()
+          }
+        }
+
+        TendNumber {
+          id: repeatCount
+          width: parent.width
+          visible: repeatField.currentText !== "none" && repeatEndField.currentText === "after count"
+          label: "Occurrences"
+          from: 1
+          to: 9999
+          value: 1
+          editable: true
+          Accessible.name: "Maximum repeat occurrences"
+          onValueChanged: if (activeFocus && !root.loadingFields) root.saveSchedule()
+        }
       }
 
       PanelSeparator { width: parent.width; foreground: Color.popups.text }
