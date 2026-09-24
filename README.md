@@ -28,10 +28,13 @@ replacement, offline pack, and cleanup have passed manual validation. Checkpoint
 2C's host HTTP publication and replacement/reconnect have also passed. Checkpoint
 3A's persistent fake-only lifecycle and runner restart have passed the exercised
 live gate. Checkpoint 4A adds persistent collector enrollment, identity-pinned
-selection, and independent multi-runner inventory polling; its manual gate is
-pending. Production ship management is not supported yet.
+selection, and independent multi-runner inventory polling; its workstation and
+process-level fixture gates passed. Checkpoint 4B's OpenSSH transport and key
+grants passed isolated OpenSSH validation; dedicated-account installation is the
+next manual gate. Production ship management is not supported yet.
 
-- [Next: collector enrollment and inventory](docs/checkpoints/06-collector-enrollment.md)
+- [Next: SSH access installation](docs/checkpoints/07-ssh-access.md)
+- [Accepted: collector enrollment and inventory](docs/checkpoints/06-collector-enrollment.md)
 - [Accepted workflow: persistent development runner](docs/checkpoints/05-persistent-runner.md)
 - [Accepted: host-loopback HTTP checkpoint](docs/checkpoints/04-host-http.md)
 - [Accepted: disposable runtime checkpoint](docs/checkpoints/03-disposable-runtime.md)

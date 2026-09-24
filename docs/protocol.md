@@ -268,3 +268,45 @@ at least 100 ms (default 1 s). Ctrl+C exits 0; an output failure exits 1. The
 enrollment set is fixed for the invocation: restart the watcher to pick up changes.
 Watching an empty registry is an error. Mutations retain explicit revisions and
 request IDs, with no automatic retry.
+
+## Checkpoint 4B: restricted SSH access
+
+`enroll NAME --ssh HOST_ALIAS [--ssh-config /absolute/file]` uses OpenSSH's normal
+host/user/key configuration and a fixed remote command `urbit-runner-rpc-v1`.
+The collector forces batch mode and strict host-key verification, disables
+forwarding, PTYs, local commands, and connection multiplexing, and retains runner
+identity pinning on every connection. SSH keys remain in OpenSSH/agent custody;
+the enrollment registry stores only the alias and optional config path. Version-1
+registry records now allow `transport: ssh` and an `ssh` object in place of `socket`.
+Older collectors refuse the unknown fields rather than discard SSH enrollments.
+
+The reviewed authorized_keys format supports Ed25519 public keys with `operator`
+or `observer` roles. Each key has `restrict` and a forced command containing the
+fingerprint derived from that key. A restricted login-shell invocation checks the
+original command and that binding, then bridges bounded HTTP/JSON to the private
+runner socket. The SSH client cannot choose the actor through JSON, headers, or
+command arguments. Arbitrary shell commands, port/agent forwarding, PTYs, and
+application proxying are unavailable on this surface.
+
+The bridge constructs fresh local headers. Before forwarding a request it checks
+delegation support, actor, and role through Hello on the **same local connection**.
+This refuses older runners before they can accept an unattributed mutation.
+The managed runner accepts the delegation header only after its existing Unix
+peer check (service account or root) and independently loads the public-key grant
+on each request. That Unix peer is a trusted host authority, not an untrusted
+remote client. Administrators with direct service-account/root access can already
+change the journal; this does not claim isolation from a host administrator.
+
+Hello adds optional `actor` and `access_role`. The managed runner advertises
+`ssh-key-grants` when configured for delegation. Remote operations/configuration
+use `actor: ssh-key:SHA256:...`, and request identity stays scoped to that actor.
+Observers may only request Hello and snapshots; mutation requests return
+`ssh_access_denied`. Deleting a grant blocks future requests, including on open
+sessions, without cancelling accepted jobs. The bridge and client never retry
+mutations. Transport failure still requires reconciliation of an uncertain result.
+
+`prepare-ssh` writes inert review files for a standalone loopback SSH listener.
+Its installation and account-shell change are explicit administrative steps in
+[checkpoint 4B](checkpoints/07-ssh-access.md). The protocol adds no runner TCP
+listener. SSH stderr is not included in collector JSON or combined inventory;
+diagnose deployment/authentication errors through the server's local log.

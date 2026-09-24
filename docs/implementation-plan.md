@@ -57,7 +57,16 @@ pier or identity for an automated test.
   actual simulator processes, independent collector registries, selected routing,
   stale-revision rejection, unavailable-runner isolation, and replacement refusal
   before mutation. `--format text` now provides readable tables, including watches.
-  SSH access/key attribution and generic Eyre sessions remain next.
+  The process-level validation passed on this host; no further manual 4A fixture
+  work is required.
+- Checkpoint 4B implements OpenSSH fixed-command transport, host verification,
+  SSH enrollment, forced-command key attribution, operator/observer grants,
+  per-request revocation, and a restricted account shell. Actual OpenSSH fixture
+  validation passed with two operators and an observer against real SQLite and an
+  injected runtime. The [dedicated-account installation gate](checkpoints/07-ssh-access.md)
+  requires the user's sudo password and actual PAM/shell validation. Host SSH was
+  inactive; the prepared review configuration uses a separate loopback listener.
+  Generic Eyre sessions are the next phase after this access gate.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator
