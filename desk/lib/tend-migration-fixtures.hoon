@@ -36,13 +36,14 @@
         [8 [%8 108 lists-current *receipts:t [1 `42 ~ [%today ~] [300 ~] %today 540 %.y] 0 ~ *snoozes:t *shares:t *replicas:t *invitations:t *in-flights:t `@da`0 *peer-sessions:t 0 *notifications:t *replica-alerts:t ~]]
         [9 [%9 109 lists-current *receipts:t [1 `42 ~ [%today ~] [300 ~] %today 540 %.y] 0 ~ *snoozes:t *shares:t *replicas:t *invitations:t *in-flights:t `@da`0 *peer-sessions:t 0 *notifications:t *replica-alerts:t ~ *activity-map:t *activity-map:t]]
         [10 [%10 110 lists-current *receipts:t [1 `42 ~ [%today ~] [300 ~] %today 540 %.y] 0 ~ *snoozes:t *shares:t *replicas:t *invitations:t *in-flights:t `@da`0 *peer-sessions:t 0 *notifications:t *replica-alerts:t ~ *activity-map:t *activity-map:t [42 ~] *list-presentations:t *collaboration-policies:t *collaboration-notifications:t]]
+        [11 [%11 111 lists-current *receipts:t [1 `42 ~ [%today ~] [300 ~] %today 540 %.y] 0 ~ *snoozes:t *shares:t *replicas:t *invitations:t *in-flights:t `@da`0 *peer-sessions:t 0 *notifications:t *replica-alerts:t ~ *activity-map:t *activity-map:t [42 ~] *list-presentations:t *collaboration-policies:t *collaboration-notifications:t *transfer-coordinations:t *transfer-reservations:t *transfer-imports:t]]
     ==
   =/  remaining=(list [version=@ud value=saved-state:t])  fixtures
   |-
   ?~  remaining  %.y
   =/  fixture=[version=@ud value=saved-state:t]  i.remaining
-  =/  migrated=state-10:t  (migrate:tend-migrate now value.fixture)
-  ?>  =(%10 -.migrated)
+  =/  migrated=state-11:t  (migrate:tend-migrate now value.fixture)
+  ?>  =(%11 -.migrated)
   ?>  =((add 100 version.fixture) next-id.migrated)
   =/  migrated-list=(unit task-list:t)  (~(get by list-map.migrated) 42)
   ?>  ?=(^ migrated-list)

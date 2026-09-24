@@ -30,7 +30,7 @@ Last reconciled: 2026-09-22
 | Invitations, ACLs, replicas, shared edits | Verified | Repeatable three-ship harness covers convergence, 12-operation Ames pressure, restart catch-up, duplicate/stale edits, in-flight revocation, cleanup, complete selected-list disclosure, and recipient-bound capability URI parsing; a live mixed-client loop also verified pending-invite assignment, browser acceptance, membership, edit, and completion propagation |
 | Activity and collaboration notifications | Verified | Bounded actor-attributed activity and occurrence records converge; participant-local add/complete/assignment policy, suppression, durable replay/ack, and cleanup are live-verified |
 | Packaging/install/rollback | Verified | Deterministic archive/checksum plus required Urbit dependency closure, refusal, full-desk backup, base-mark preservation, mounted-Kelvin preservation, preflight atomicity tests, and a documented publisher/participant install across two machines |
-| State migrations | Verified | The application and table-driven Hoon fixture generator call the same migration library; non-empty `%0`–`%10` fixtures preserve sentinel list/reminder data and pass on Vere 4.6 |
+| State migrations | Verified | The application and table-driven Hoon fixture generator call the same migration library; non-empty `%0`–`%11` fixtures preserve sentinel list/reminder data and pass on Vere 4.6 |
 | Scale | Verified locally | 10,000-reminder normalization/Today/search and transport ceilings |
 | Gall resource retention | Verified | Input and collection ceilings are enforced; the receipt ledger retains the newest 4,096 results |
 

@@ -2,15 +2,16 @@
 |%
 ++  migrate
   |=  [now=@da old=saved-state:t]
-  ^-  state-10:t
-  ?:  ?=(%10 -.old)  old
-  ?:  ?=(%9 -.old)   (upgrade-9 old)
-  ?:  ?=(%8 -.old)   (upgrade-9 (upgrade-8 old))
-  ?:  ?=(%7 -.old)   (upgrade-9 (upgrade-8 (upgrade-7 old)))
-  ?:  ?=(%6 -.old)   (upgrade-9 (upgrade-8 (upgrade-7 (upgrade-6 old))))
-  ?:  ?=(%5 -.old)   (upgrade-9 (upgrade-8 (upgrade-7 (upgrade-5 old))))
-  ?:  ?=(%4 -.old)   (upgrade-9 (upgrade-8 (upgrade-7 (upgrade-5 (upgrade-4 old)))))
-  ?:  ?=(%3 -.old)   (upgrade-9 (upgrade-8 (upgrade-7 (upgrade-5 (upgrade-3 old)))))
+  ^-  state-11:t
+  ?:  ?=(%11 -.old)  old
+  ?:  ?=(%10 -.old)  (upgrade-10 old)
+  ?:  ?=(%9 -.old)   (upgrade-10 (upgrade-9 old))
+  ?:  ?=(%8 -.old)   (upgrade-10 (upgrade-9 (upgrade-8 old)))
+  ?:  ?=(%7 -.old)   (upgrade-10 (upgrade-9 (upgrade-8 (upgrade-7 old))))
+  ?:  ?=(%6 -.old)   (upgrade-10 (upgrade-9 (upgrade-8 (upgrade-7 (upgrade-6 old)))))
+  ?:  ?=(%5 -.old)   (upgrade-10 (upgrade-9 (upgrade-8 (upgrade-7 (upgrade-5 old)))))
+  ?:  ?=(%4 -.old)   (upgrade-10 (upgrade-9 (upgrade-8 (upgrade-7 (upgrade-5 (upgrade-4 old))))))
+  ?:  ?=(%3 -.old)   (upgrade-10 (upgrade-9 (upgrade-8 (upgrade-7 (upgrade-5 (upgrade-3 old))))))
   ?:  ?=(%2 -.old)
     =/  prefs=preferences-5:t
       :*  0
@@ -19,6 +20,7 @@
           [%today %scheduled %all %flagged %completed ~]
           [300 900 3.600 ~]
       ==
+    %-  upgrade-10
     %-  upgrade-9
     %-  upgrade-8
     %-  upgrade-7
@@ -61,6 +63,7 @@
       ==
     =/  prefs=preferences-5:t
       [0 default-list.old ~ [%today %scheduled %all %flagged %completed ~] [300 900 3.600 ~]]
+    %-  upgrade-10
     %-  upgrade-9
     %-  upgrade-8
     %-  upgrade-7
@@ -105,6 +108,7 @@
   =/  default=(unit list-id:t)  ?~(all ~ (some -.i.all))
   =/  prefs=preferences-5:t
     [0 default ~ [%today %scheduled %all %flagged %completed ~] [300 900 3.600 ~]]
+  %-  upgrade-10
   %-  upgrade-9
   %-  upgrade-8
   %-  upgrade-7
@@ -330,6 +334,38 @@
       *list-presentations:t
       *collaboration-policies:t
       *collaboration-notifications:t
+  ==
+::
+++  upgrade-10
+  |=  old=state-10:t
+  ^-  state-11:t
+  :*  %11
+      next-id.old
+      list-map.old
+      receipt-map.old
+      preferences.old
+      timer-generation.old
+      next-wake.old
+      snooze-map.old
+      share-map.old
+      replica-map.old
+      invitation-map.old
+      in-flight-map.old
+      host-session.old
+      peer-session-map.old
+      liveness-generation.old
+      notification-map.old
+      replica-alert-set.old
+      receipt-order.old
+      hosted-activity-map.old
+      replica-activity-map.old
+      list-order.old
+      presentation-map.old
+      collaboration-policy-map.old
+      collaboration-notification-map.old
+      *transfer-coordinations:t
+      *transfer-reservations:t
+      *transfer-imports:t
   ==
 ::
 ++  upgrade-update-7

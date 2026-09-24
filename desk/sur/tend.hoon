@@ -440,6 +440,54 @@
   ==
 +$  in-flights  (map op-id in-flight)
 ::
+::  Cross-host reminder movement is a durable, recoverable transfer.  The
+::  initiating ship coordinates the operation, the source host temporarily
+::  reserves the exported subtree, and the destination retains a bounded
+::  import receipt so retries cannot duplicate reminders.
+::
++$  transfer-phase  $?(%requesting %importing %finalizing %restoring)
++$  transfer-payload
+  $:  source-host=@p
+      source-list-id=list-id
+      root-id=reminder-id
+      source-base-revision=@ud
+      destination-host=@p
+      destination-list-id=list-id
+      destination-base-revision=@ud
+      reminders=(list [reminder-id reminder])
+      snoozes=(list [reminder-id @da])
+      exported-at=@da
+      expires-at=@da
+  ==
++$  transfer-coordination
+  $:  source-alias=list-id
+      destination-alias=list-id
+      source-ref=list-ref
+      destination-ref=list-ref
+      root-id=reminder-id
+      source-base-revision=@ud
+      destination-base-revision=@ud
+      =transfer-phase
+      submitted-at=@da
+      expires-at=@da
+      payload=(unit transfer-payload)
+      failure-reason=(unit @tas)
+      failure-current=(unit @ud)
+  ==
++$  transfer-coordinations  (map op-id transfer-coordination)
++$  transfer-reservation
+  $:  coordinator=@p
+      =transfer-payload
+  ==
++$  transfer-reservations  (map op-id transfer-reservation)
++$  transfer-import
+  $:  coordinator=@p
+      destination-list-id=list-id
+      destination-root-id=reminder-id
+      imported-at=@da
+  ==
++$  transfer-imports  (map op-id transfer-import)
+::
 +$  access
   $:  alias=list-id
       host=@p
@@ -494,6 +542,24 @@
       ==
       [%list-removed host-list-id=list-id]
       [%mutation-rejected =op-id reason=@tas current-revision=(unit @ud)]
+      $:  %transfer-request
+          =op-id
+          source-list-id=list-id
+          root-id=reminder-id
+          source-base-revision=@ud
+          destination-host=@p
+          destination-list-id=list-id
+          destination-base-revision=@ud
+          expires-at=@da
+      ==
+      [%transfer-payload =op-id =transfer-payload]
+      [%transfer-import =op-id =transfer-payload]
+      [%transfer-imported =op-id destination-list-id=list-id destination-root-id=reminder-id]
+      [%transfer-finalize =op-id source-list-id=list-id]
+      [%transfer-finalized =op-id source-list-id=list-id]
+      [%transfer-restore =op-id source-list-id=list-id reason=@tas]
+      [%transfer-restored =op-id source-list-id=list-id]
+      [%transfer-rejected =op-id phase=@tas reason=@tas current-revision=(unit @ud)]
   ==
 ::
 +$  update-7
@@ -720,6 +786,38 @@
       collaboration-notification-map=collaboration-notifications
   ==
 ::
+::  Durable cross-host reminder transfer coordination and recovery.
+::
++$  state-11
+  $:  %11
+      next-id=@ud
+      list-map=lists
+      receipt-map=receipts
+      preferences=preferences
+      timer-generation=@ud
+      next-wake=(unit @da)
+      snooze-map=snoozes
+      share-map=shares
+      replica-map=replicas
+      invitation-map=invitations
+      in-flight-map=in-flights
+      host-session=@da
+      peer-session-map=peer-sessions
+      liveness-generation=@ud
+      notification-map=notifications
+      replica-alert-set=replica-alerts
+      receipt-order=(list op-id)
+      hosted-activity-map=activity-map
+      replica-activity-map=activity-map
+      list-order=(list list-id)
+      presentation-map=list-presentations
+      collaboration-policy-map=collaboration-policies
+      collaboration-notification-map=collaboration-notifications
+      transfer-map=transfer-coordinations
+      transfer-reservation-map=transfer-reservations
+      transfer-import-map=transfer-imports
+  ==
+::
 ::  Every save noun accepted by the current migration boundary.
 ::
 +$  saved-state
@@ -734,5 +832,6 @@
       state-8
       state-9
       state-10
+      state-11
   ==
 --

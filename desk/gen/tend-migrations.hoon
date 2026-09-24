@@ -6,4 +6,4 @@
     ==
 :-  %tang
 ?>  (verify:tend-migration-fixtures now)
-[%leaf "Tend saved-state migrations %0 through %10 passed"]~
+[%leaf "Tend saved-state migrations %0 through %11 passed"]~

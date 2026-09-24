@@ -18,7 +18,7 @@ requirements:
 | Plugin manifest schema | 1 |
 | Urbit runtime | Vere 4.6 |
 | Urbit userspace | `%zuse` 409 |
-| Tend save state | `%10` (loads `%0` through `%10`) |
+| Tend save state | `%11` (loads `%0` through `%11`) |
 | Tend desktop protocol | 1 (exact match required) |
 | Tend JSON marks | `%tend-action-1`, `%tend-update-1` |
 | Tend peer mark | `%tend-peer-1`, same release on every sharing peer |
@@ -61,7 +61,7 @@ complete clean-install sequence is in `TEND_INSTALL.md`.
    scripts/check-tend-migrations.sh /path/to/running/fake-ship-pier
    ```
 
-   The gate must report that `%0` through `%10` passed. It constructs a
+   The gate must report that `%0` through `%11` passed. It constructs a
    non-empty saved noun for every schema inside the running ship and executes
    the same migration library called by Gall `+on-load`.
 

@@ -7,4 +7,4 @@
 ^-  form:m
 |=  tin=strand-input:strand
 ?>  (verify:tend-migration-fixtures now.bowl.tin)
-[~ %done !>([%tend-migrations %10 %.y])]
+[~ %done !>([%tend-migrations %11 %.y])]

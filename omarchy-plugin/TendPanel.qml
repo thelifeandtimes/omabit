@@ -126,10 +126,9 @@ Item {
         var sourceAccess = service.accessForList(list.id);
         if (!sourceAccess)
             return [];
-        var sourceHost = sourceAccess.host || service.ship;
         return service.lists.filter(function(candidate) {
             var access = service.accessForList(candidate.id);
-            return service.canEditList(candidate.id) && access && root.sameShip(access.host || service.ship, sourceHost);
+            return service.canEditList(candidate.id) && access;
         }).map(function(candidate) {
             return { id: candidate.id, title: candidate.title };
         });

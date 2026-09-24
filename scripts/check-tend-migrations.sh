@@ -13,7 +13,7 @@ command -v urbit >/dev/null || { echo "urbit is required" >&2; exit 69; }
 command -v nc >/dev/null || { echo "nc is required" >&2; exit 69; }
 
 request='[0 %fyrd %tend %tend-migrations %noun %noun ~]'
-expected='[0 %avow 0 %noun %tend-migrations 10 0]'
+expected='[0 %avow 0 %noun %tend-migrations 11 0]'
 result=$(printf '%s\n' "$request" \
   | urbit eval -jn 2>/dev/null \
   | nc -U -W 30 "$socket" \
@@ -24,4 +24,4 @@ if [[ "$result" != "$expected" ]]; then
   exit 1
 fi
 
-echo "Tend saved-state migrations %0 through %10 passed"
+echo "Tend saved-state migrations %0 through %11 passed"

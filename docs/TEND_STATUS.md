@@ -1,11 +1,11 @@
 # Tend implementation status
 
-Last verified: 2026-09-22
+Last verified: 2026-09-24
 
 ## Working now
 
 - `%tend` installs and hot-reloads on a live fake ship.
-- Existing `%0` through `%9` state migrates to the current `%10`
+- Existing `%0` through `%10` state migrates to the current `%11`
   schema without losing lists, reminders, schedules, preferences, or snoozes.
 - Authenticated Eyre login, identity scry, SSE subscribe/ack, reconnect, and
   poke acknowledgement work through the dependency-free desktop bridge.
@@ -63,6 +63,12 @@ Last verified: 2026-09-22
 - Moving a parent between sections updates every descendant's section in the
   same host revision. A live parent/child fixture verified the cascade and
   revision bump, then was removed cleanly.
+- Moving a reminder between differently hosted editable lists is a durable Gall
+  primitive. A live `~wex` test moved a parent/child subtree from a `~rus`-
+  hosted shared list into a local `~wex` list and back again, verifying source
+  removal, fresh destination IDs, preserved nesting, replica convergence, and
+  cleanup on both ships. Transfer phases retry every five seconds and use
+  source reservations plus destination import receipts for crash-safe replay.
 - Today (including overdue), Scheduled, All, Flagged, and Completed views work
   across lists. The overlay can search reminder text, notes, URLs, tags, and
   list names, then sort by manual rank, due date, creation date, priority, or
@@ -116,12 +122,14 @@ Last verified: 2026-09-22
   `%8` adds durable notification presentation and a newest-4,096 operation
   receipt order. `%9` adds separate hosted and replica activity stores. `%10`
   adds participant-local list order, per-list presentation, collaboration-alert
-  policy, and durable collaboration notifications. These migrations compile
-  and were exercised on live desks without losing existing lists.
+  policy, and durable collaboration notifications. `%11` adds durable cross-
+  host transfer coordination, source reservations, and destination import
+  receipts. These migrations compile and were exercised on live desks without
+  losing existing lists.
 - Gall load and the `+tend!tend-migrations` release gate now call the same
   migration library. The table-driven gate constructs a non-empty noun for
-  every `%0` through `%10` schema and verifies the sentinel list, reminder, and
-  next-ID survive as `%10`; the complete matrix passes on Vere 4.6.
+  every `%0` through `%11` schema and verifies the sentinel list, reminder, and
+  next-ID survive as `%11`; the complete matrix passes on Vere 4.6.
 - The authenticated `/all` stream now emits one access record per visible list,
   including canonical host, owner flag, Online/Checking/Offline state, members,
   and pending invitations. The Omarchy UI visibly marks owner availability and

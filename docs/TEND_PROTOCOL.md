@@ -198,26 +198,37 @@ owner/token pair. System-wide URI-handler registration remains deferred.
 
 ## Persistence
 
-Gall is authoritative. State schema `%10` contains lists, the next local ID,
+Gall is authoritative. State schema `%11` contains lists, the next local ID,
 bounded operation receipts, revisioned personal preferences, active snoozes,
 Behn timer generation, hosted-share policies, remote replicas, invitations,
 in-flight operations, peer sessions/liveness generations, durable pending
 notifications, replica alert-delivery state, separate hosted/replica activity
 maps, private list/presentation/collaboration policy, and durable collaboration
-notifications. `+on-load` migrates `%0` through `%10`, preserving canonical
+notifications, and durable cross-host move coordination/reservation/import
+records. `+on-load` migrates `%0` through `%11`, preserving canonical
 reminder data while filling newer fields with deterministic defaults. `%7`
 adds host and peer sessions plus liveness generation. `%8` adds durable
 notifications and bounded receipt ordering. `%9` adds actor-attributed activity
 and scheduled-occurrence records without changing canonical list nouns. `%10`
 adds participant-local presentation and collaboration-notification state with
-deterministic defaults. Loading also prunes pending alert records whose list is
-no longer visible.
+deterministic defaults. `%11` adds the recoverable transfer state machine used
+when a reminder subtree moves between lists hosted by different ships. Loading
+also prunes pending alert records whose list is no longer visible.
 
 The migration implementation lives in `lib/tend-migrate.hoon`. Gall `+on-load`
 and the `+tend!tend-migrations` table-driven release generator both call that
 library, preventing a fixture from silently testing a duplicate implementation.
-Every `%0` through `%10` fixture contains a sentinel list and reminder and checks
+Every `%0` through `%11` fixture contains a sentinel list and reminder and checks
 their IDs and content after migration.
+
+A cross-host move is coordinated by the initiating ship. The source host first
+reserves and removes the complete reminder subtree, the destination allocates
+fresh local IDs and durably records the import, and only then does the source
+finalize its reservation. Every phase is idempotent and retried by the five-
+second liveness loop. An explicit destination rejection restores the original
+source IDs and snoozes; a lost acknowledgement is recovered from the durable
+source reservation or destination import receipt rather than duplicating data.
+New transfers require both list hosts to be Online and editable at submission.
 
 The operation receipt ledger retains the newest 4,096 receipts. Peer retries
 are deduplicated while their receipt is retained; clients must not treat an

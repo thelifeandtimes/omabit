@@ -65,12 +65,28 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("(descendant id.item reminder-id.act reminders.u.old)", self.agent)
         self.assertIn("item(section-id section-id.act, revision +(revision.item), modified-at now.bowl)", self.agent)
 
-    def test_cross_list_move_is_a_single_host_owned_gall_primitive(self):
+    def test_cross_list_move_is_a_durable_cross_host_gall_primitive(self):
         self.assertIn("%move-reminder-to-list", self.surface)
         self.assertIn("%move-reminder-to-list", self.json)
         self.assertIn("source-base-revision=@ud", self.surface)
         self.assertIn("destination-base-revision=@ud", self.surface)
-        self.assertIn("(reject op-id.act %cross-host-move", self.agent)
+        for peer_message in (
+            "%transfer-request",
+            "%transfer-payload",
+            "%transfer-import",
+            "%transfer-imported",
+            "%transfer-finalize",
+            "%transfer-finalized",
+            "%transfer-restore",
+            "%transfer-restored",
+            "%transfer-rejected",
+        ):
+            self.assertIn(peer_message, self.surface)
+        self.assertIn("++  start-cross-host-transfer", self.agent)
+        self.assertIn("++  maintain-transfers", self.agent)
+        self.assertIn("transfer-reservation-map", self.agent)
+        self.assertIn("transfer-import-map", self.agent)
+        self.assertIn("(retry-transfer-card-fact operation transfer)", self.agent)
         self.assertIn("(broadcast-list source-list-id.act", self.agent)
         self.assertIn("(broadcast-list destination-list-id.act", self.agent)
         self.assertIn("(peer-list-result sender source-list-id.act", self.agent)
@@ -79,6 +95,7 @@ class TendGallSourceContractTests(unittest.TestCase):
         service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
         self.assertIn('"move-reminder-to-list"', web)
         self.assertIn('"move-reminder-to-list"', service)
+        self.assertNotIn("same host", web)
         self.assertNotIn("copyReminderToList", web)
 
     def test_web_navigation_remains_available_at_narrow_widths(self):
@@ -128,12 +145,12 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("*collaboration-notifications:t", self.migration)
 
     def test_every_saved_schema_has_a_nonempty_executable_fixture(self):
-        for version in range(11):
+        for version in range(12):
             self.assertIn(f"[{version} [%{version} ", self.migration_fixtures)
         self.assertIn("'fixture-list'", self.migration_fixtures)
         self.assertIn("(~(has by reminders.u.migrated-list) 7)", self.migration_fixtures)
-        self.assertIn("Tend saved-state migrations %0 through %10 passed", self.migration_generator)
-        self.assertIn("[%tend-migrations %10 %.y]", self.migration_thread)
+        self.assertIn("Tend saved-state migrations %0 through %11 passed", self.migration_generator)
+        self.assertIn("[%tend-migrations %11 %.y]", self.migration_thread)
 
     def test_private_settings_are_not_routed_as_shared_mutations(self):
         for source_contract in (

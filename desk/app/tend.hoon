@@ -5,7 +5,7 @@
 +$  card         card:agent:gall
 --
 ::
-=|  state=state-10:t
+=|  state=state-11:t
 ^-  agent:gall
 |_  =bowl:gall
 +*  this  .
@@ -15,8 +15,8 @@
   ^-  (quip card _this)
   =/  prefs=preferences:t
     [0 ~ ~ [%today %scheduled %all %flagged %assigned %completed ~] [300 900 3.600 ~] %today 540 %.y]
-  =/  initial=state-10:t
-    [%10 1 *lists:t *receipts:t prefs 0 ~ *snoozes:t *shares:t *replicas:t *invitations:t *in-flights:t now.bowl *peer-sessions:t 1 *notifications:t *replica-alerts:t ~ *activity-map:t *activity-map:t ~ *list-presentations:t *collaboration-policies:t *collaboration-notifications:t]
+  =/  initial=state-11:t
+    [%11 1 *lists:t *receipts:t prefs 0 ~ *snoozes:t *shares:t *replicas:t *invitations:t *in-flights:t now.bowl *peer-sessions:t 1 *notifications:t *replica-alerts:t ~ *activity-map:t *activity-map:t ~ *list-presentations:t *collaboration-policies:t *collaboration-notifications:t *transfer-coordinations:t *transfer-reservations:t *transfer-imports:t]
   =/  timer=card
     [%pass /liveness/1 %arvo %b %wait (add now.bowl ~s5)]
   =/  site=card
@@ -30,7 +30,7 @@
   ^-  (quip card _this)
   |^
   =/  old-state=saved-state:t  !<(saved-state:t old)
-  =/  migrated=state-10:t  (migrate:tend-migrate now.bowl old-state)
+  =/  migrated=state-11:t  (migrate:tend-migrate now.bowl old-state)
   (resume-timer migrated)
   ::
   ++  upgrade-3
@@ -273,13 +273,13 @@
     ==
   ::
   ++  resume-timer
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  (quip card _this)
     =/  visible=(set list-id:t)  (visible-id-set st)
     =/  replicas=replicas:t
       %-  ~(run by replica-map.st)
       |=(rep=replica:t rep(status %checking))
-    =/  ready=state-10:t
+    =/  ready=state-11:t
       %_  st
           replica-map       replicas
           host-session      now.bowl
@@ -303,7 +303,7 @@
     [(weld base [timer ~]) this(state ready(timer-generation generation))]
   ::
   ++  visible-id-set
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  (set list-id:t)
     =/  hosted=(list list-id:t)
       %+  turn  ~(tap by list-map.st)
@@ -365,7 +365,6 @@
     [cards this]
   ::
       %tend-peer-1
-    ?>  !=(our.bowl src.bowl)
     =^  cards  state  (take-peer src.bowl !<(peer-message:t vase))
     [cards this]
   ==
@@ -388,12 +387,26 @@
     ?:  ?=(%accept-invitation -.act)  (accept-local act)
     ?:  ?=(%decline-invitation -.act)  (decline-local act)
     ?:  ?=(%leave-shared-list -.act)  (leave-local act)
+    =/  transfer-refs=(unit [list-ref:t list-ref:t])
+      ?.  ?=(%move-reminder-to-list -.act)  ~
+      =/  source-ref=(unit list-ref:t)
+        (list-ref-for source-list-id.act state)
+      =/  destination-ref=(unit list-ref:t)
+        (list-ref-for destination-list-id.act state)
+      ?.  ?&  ?=(^ source-ref)
+              ?=(^ destination-ref)
+              !=(host.u.source-ref host.u.destination-ref)
+          ==
+        ~
+      `[u.source-ref u.destination-ref]
+    ?^  transfer-refs
+      (start-cross-host-transfer act -.u.transfer-refs +.u.transfer-refs)
     =/  target=(unit list-id:t)  (action-list-id act)
     ?~  target
       (poke-action act)
     =/  remote=(unit replica:t)  (~(get by replica-map.state) u.target)
     ?~  remote
-      =/  before=state-10:t  state
+      =/  before=state-11:t  state
       =/  replayed=?  (~(has by receipt-map.before) op-id.act)
       =^  cards  state  (poke-action act)
       =^  activity-cards  state
@@ -403,6 +416,109 @@
     ?:  ?=(%snooze-reminder -.act)
       (snooze-replica act u.remote)
     (submit-remote act u.remote)
+  ::
+  ++  list-ref-for
+    |=  [alias=list-id:t st=state-11:t]
+    ^-  (unit list-ref:t)
+    =/  remote=(unit replica:t)  (~(get by replica-map.st) alias)
+    ?^  remote  `ref.u.remote
+    ?:  (~(has by list-map.st) alias)  `[our.bowl alias]
+    ~
+  ::
+  ++  visible-list-for
+    |=  [alias=list-id:t st=state-11:t]
+    ^-  (unit task-list:t)
+    =/  remote=(unit replica:t)  (~(get by replica-map.st) alias)
+    ?^  remote  `list.u.remote
+    (~(get by list-map.st) alias)
+  ::
+  ++  editable-transfer-list
+    |=  [alias=list-id:t st=state-11:t]
+    ^-  ?
+    =/  remote=(unit replica:t)  (~(get by replica-map.st) alias)
+    ?~  remote  (~(has by list-map.st) alias)
+    ?&  =(%online status.u.remote)
+        (~(has by members.u.remote) our.bowl)
+    ==
+  ::
+  ++  start-cross-host-transfer
+    |=  [act=action:t source-ref=list-ref:t destination-ref=list-ref:t]
+    ^-  (quip card _state)
+    ?>  ?=(%move-reminder-to-list -.act)
+    =/  prior=(unit update:t)  (~(get by receipt-map.state) op-id.act)
+    ?^  prior  [(give u.prior) state]
+    =/  existing=(unit transfer-coordination:t)
+      (~(get by transfer-map.state) op-id.act)
+    ?^  existing
+      [[(retry-transfer-card op-id.act u.existing) ~] state]
+    ?:  (gte (lent ~(tap by transfer-map.state)) 1.000)
+      (reject op-id.act %operation-limit ~ state)
+    ?.  (editable-transfer-list source-list-id.act state)
+      (reject op-id.act %source-host-offline ~ state)
+    ?.  (editable-transfer-list destination-list-id.act state)
+      (reject op-id.act %destination-host-offline ~ state)
+    =/  source=(unit task-list:t)
+      (visible-list-for source-list-id.act state)
+    ?~  source  (reject op-id.act %unknown-source-list ~ state)
+    =/  destination=(unit task-list:t)
+      (visible-list-for destination-list-id.act state)
+    ?~  destination  (reject op-id.act %unknown-destination-list ~ state)
+    ?.  =(source-base-revision.act revision.u.source)
+      (reject op-id.act %stale-source-list `revision.u.source state)
+    ?.  =(destination-base-revision.act revision.u.destination)
+      (reject op-id.act %stale-destination-list `revision.u.destination state)
+    ?.  (~(has by reminders.u.source) reminder-id.act)
+      (reject op-id.act %unknown-reminder `revision.u.source state)
+    =/  expires=@da  (add now.bowl ~s600)
+    =/  transfer=transfer-coordination:t
+      :*  source-list-id.act
+          destination-list-id.act
+          source-ref
+          destination-ref
+          reminder-id.act
+          source-base-revision.act
+          destination-base-revision.act
+          %requesting
+          now.bowl
+          expires
+          ~
+          ~
+          ~
+      ==
+    =/  nex=state-11:t
+      state(transfer-map (~(put by transfer-map.state) op-id.act transfer))
+    =/  pending=(list card)
+      (give [%operation-pending op-id.act source-list-id.act])
+    [(weld pending [(retry-transfer-card op-id.act transfer) ~]) nex]
+  ::
+  ++  retry-transfer-card
+    |=  [=op-id:t transfer=transfer-coordination:t]
+    ^-  card
+    ?-  transfer-phase.transfer
+        %requesting
+      =/  message=peer-message:t
+        :*  %transfer-request
+            op-id
+            id.source-ref.transfer
+            root-id.transfer
+            source-base-revision.transfer
+            host.destination-ref.transfer
+            id.destination-ref.transfer
+            destination-base-revision.transfer
+            expires-at.transfer
+        ==
+      (peer-poke /peer/transfer/request/(scot %uv (sham op-id)) host.source-ref.transfer message)
+    ::
+        %importing
+      ?>  ?=(^ payload.transfer)
+      (peer-poke /peer/transfer/import/(scot %uv (sham op-id)) host.destination-ref.transfer [%transfer-import op-id u.payload.transfer])
+    ::
+        %finalizing
+      (peer-poke /peer/transfer/finalize/(scot %uv (sham op-id)) host.source-ref.transfer [%transfer-finalize op-id id.source-ref.transfer])
+    ::
+        %restoring
+      (peer-poke /peer/transfer/restore/(scot %uv (sham op-id)) host.source-ref.transfer [%transfer-restore op-id id.source-ref.transfer ?~(failure-reason.transfer %transfer-failed u.failure-reason.transfer)])
+    ==
   ::
   ++  poke-action
     |=  act=action:t
@@ -433,8 +549,8 @@
         ?~  default-list.prefs
           prefs(revision +(revision.prefs), default-list (some id.lis))
         prefs
-      =/  nex=state-10:t
-        :*  %10
+      =/  nex=state-11:t
+        :*  %11
             +(next-id.state)
             (~(put by list-map.state) id.lis lis)
             receipt-map.state
@@ -458,6 +574,9 @@
             presentation-map.state
             collaboration-policy-map.state
             collaboration-notification-map.state
+            transfer-map.state
+            transfer-reservation-map.state
+            transfer-import-map.state
         ==
       =^  cards  nex  (commit op-id.act [%list-upserted op-id.act lis prefs] nex)
       =.  cards  (weld cards (give [%accesses (accesses-for nex)]))
@@ -517,8 +636,8 @@
         %+  skim  ~(tap by snooze-map.state)
         |=  [key=snooze-key:t until=@da]
         !=(-.key list-id.act)
-      =/  nex=state-10:t
-        :*  %10
+      =/  nex=state-11:t
+        :*  %11
             next-id.state
             remaining
             receipt-map.state
@@ -542,6 +661,9 @@
             (~(del by presentation-map.state) list-id.act)
             (~(del by collaboration-policy-map.state) list-id.act)
             (without-collaboration-notifications list-id.act collaboration-notification-map.state)
+            transfer-map.state
+            transfer-reservation-map.state
+            transfer-import-map.state
         ==
       =^  cards  nex  (commit op-id.act [%list-deleted op-id.act list-id.act prefs] nex)
       =.  cards  (weld cards (give [%accesses (accesses-for nex)]))
@@ -831,11 +953,11 @@
             ==
           [[destination-list-id.act (~(got by id-map) +.key)] until]
         [key until]
-      =/  interim=state-10:t
+      =/  interim=state-11:t
         state(next-id next, list-map liss, snooze-map (malt moved-snoozes))
       =/  snoozes=snoozes:t
         (valid-snoozes (visible-lists interim) snooze-map.interim)
-      =/  nex=state-10:t  interim(snooze-map snoozes)
+      =/  nex=state-11:t  interim(snooze-map snoozes)
       (commit op-id.act [%snapshot (visible-lists nex) preferences.nex snoozes] nex)
     ::
         %place-reminder
@@ -1063,7 +1185,7 @@
         ==
       ?:  (invalid-preferences prefs (visible-lists state))
         (reject op-id.act %invalid-preferences `revision.preferences.state state)
-      =/  nex=state-10:t  state(preferences prefs)
+      =/  nex=state-11:t  state(preferences prefs)
       (commit op-id.act [%preferences-updated op-id.act prefs] nex)
     ::
         %set-reminder-policy
@@ -1078,14 +1200,14 @@
             all-day-alert-minute  all-day-alert-minute.act
             all-day-overdue       all-day-overdue.act
         ==
-      =/  nex=state-10:t  state(preferences prefs)
+      =/  nex=state-11:t  state(preferences prefs)
       (commit op-id.act [%preferences-updated op-id.act prefs] nex)
     ::
         %set-list-order
       =/  visible=lists:t  (visible-lists state)
       ?:  (invalid-list-order list-ids.act visible)
         (reject op-id.act %invalid-list-order ~ state)
-      =/  nex=state-10:t  state(list-order list-ids.act)
+      =/  nex=state-11:t  state(list-order list-ids.act)
       (commit op-id.act (local-settings-update nex) nex)
     ::
         %set-list-presentation
@@ -1093,7 +1215,7 @@
         (reject op-id.act %unknown-list ~ state)
       =/  presentations=list-presentations:t
         (~(put by presentation-map.state) list-id.act [sort.act descending.act])
-      =/  nex=state-10:t  state(presentation-map presentations)
+      =/  nex=state-11:t  state(presentation-map presentations)
       (commit op-id.act (local-settings-update nex) nex)
     ::
         %set-collaboration-policy
@@ -1103,7 +1225,7 @@
         [notify-added.act notify-completed.act notify-assigned.act]
       =/  policies=collaboration-policies:t
         (~(put by collaboration-policy-map.state) list-id.act policy)
-      =/  nex=state-10:t  state(collaboration-policy-map policies)
+      =/  nex=state-11:t  state(collaboration-policy-map policies)
       (commit op-id.act (local-settings-update nex) nex)
     ::
         %snooze-reminder
@@ -1114,7 +1236,7 @@
       ?:  |(completed.u.rem ?=(~ schedule.u.rem) (lte until.act now.bowl))
         (reject op-id.act %invalid-snooze `revision.u.lis state)
       =/  key=snooze-key:t  [list-id.act reminder-id.act]
-      =/  nex=state-10:t
+      =/  nex=state-11:t
         state(snooze-map (~(put by snooze-map.state) key until.act))
       (commit op-id.act [%snoozed op-id.act list-id.act reminder-id.act until.act] nex)
     ::
@@ -1133,10 +1255,10 @@
           rem(tags next-tags, revision +(revision.rem), modified-at now.bowl)
         ?:  =(rems reminders.lis)  lis
         lis(reminders rems, revision +(revision.lis), modified-at now.bowl)
-      =/  interim=state-10:t  state(list-map liss)
+      =/  interim=state-11:t  state(list-map liss)
       =/  visible=lists:t  (visible-lists interim)
       =/  snoozes=snoozes:t  (valid-snoozes visible snooze-map.state)
-      =/  nex=state-10:t  interim(snooze-map snoozes)
+      =/  nex=state-11:t  interim(snooze-map snoozes)
       (commit op-id.act [%snapshot visible preferences.state snoozes] nex)
     ::
         %invite-member
@@ -1156,7 +1278,7 @@
       =/  policy=member-policy:t  [can-invite.act %.y %.y]
       =/  next-share=share:t
         sharing(pending (~(put by pending.sharing) ship.act [op-id.act policy]))
-      =/  nex=state-10:t
+      =/  nex=state-11:t
         state(share-map (~(put by share-map.state) list-id.act next-share))
       =/  upd=update:t  [%accesses (accesses-for nex)]
       =^  cards  nex  (commit op-id.act upd nex)
@@ -1192,7 +1314,7 @@
             ==
           (~(del by share-map.state) list-id.act)
         (~(put by share-map.state) list-id.act next-share)
-      =/  nex=state-10:t  state(share-map shares)
+      =/  nex=state-11:t  state(share-map shares)
       =^  cards  nex  (commit op-id.act [%accesses (accesses-for nex)] nex)
       =/  removed=card
         (peer-poke /peer/remove/(scot %ud list-id.act) ship.act [%list-removed list-id.act])
@@ -1216,7 +1338,7 @@
               ?=(~ collaboration)
           ==
         (reject op-id.act %unknown-notification ~ state)
-      =/  nex=state-10:t
+      =/  nex=state-11:t
         %_  state
             notification-map  (~(del by notification-map.state) notification-id.act)
             collaboration-notification-map  (~(del by collaboration-notification-map.state) notification-id.act)
@@ -1230,8 +1352,8 @@
         (reject op-id.act %invalid-backup ~ state)
       =/  snoozes=snoozes:t
         (restored-snoozes lists.act snoozes.act now.bowl)
-      =/  nex=state-10:t
-        :*  %10
+      =/  nex=state-11:t
+        :*  %11
             (next-id-for lists.act)
             lists.act
             *receipts:t
@@ -1255,6 +1377,9 @@
             *list-presentations:t
             *collaboration-policies:t
             *collaboration-notifications:t
+            *transfer-coordinations:t
+            *transfer-reservations:t
+            *transfer-imports:t
         ==
       =^  cards  nex  (commit op-id.act [%snapshot lists.act preferences.act snoozes] nex)
       [(weld cards (give (local-settings-update nex))) nex]
@@ -1349,7 +1474,7 @@
     ?~  found  (reject op-id.act %unknown-invitation ~ state)
     =/  message=peer-message:t
       [%accept token.act host-list-id.u.found]
-    =/  nex=state-10:t  state
+    =/  nex=state-11:t  state
     =^  cards  nex
       (commit op-id.act [%invitations-updated invitation-map.state] state)
     =/  outbound=card
@@ -1366,7 +1491,7 @@
     =/  found=(unit invitation:t)  (~(get by invitation-map.state) key)
     ?~  found  (reject op-id.act %unknown-invitation ~ state)
     =/  invites=invitations:t  (~(del by invitation-map.state) key)
-    =/  nex=state-10:t  state(invitation-map invites)
+    =/  nex=state-11:t  state(invitation-map invites)
     =/  message=peer-message:t
       [%decline token.act host-list-id.u.found]
     =^  cards  nex
@@ -1397,7 +1522,7 @@
     =/  pinned=(list list-id:t)
       %+  skim  pinned-lists.prefs
       |=(id=list-id:t !=(id list-id.act))
-    =/  nex=state-10:t
+    =/  nex=state-11:t
       %_  state
         replica-map  replicas
         replica-activity-map  (~(del by replica-activity-map.state) list-id.act)
@@ -1447,7 +1572,7 @@
     ?:  |(completed.u.rem ?=(~ schedule.u.rem) (lte until.act now.bowl))
       (reject op-id.act %invalid-snooze `revision.list.rep state)
     =/  key=snooze-key:t  [alias.rep reminder-id.act]
-    =/  nex=state-10:t
+    =/  nex=state-11:t
       state(snooze-map (~(put by snooze-map.state) key until.act))
     (commit op-id.act [%snoozed op-id.act alias.rep reminder-id.act until.act] nex)
   ::
@@ -1482,7 +1607,7 @@
     |=  [act=action:t canonical=action:t rep=replica:t session=@da]
     ^-  (quip card _state)
     =/  flight=in-flight:t  [alias.rep now.bowl]
-    =/  nex=state-10:t
+    =/  nex=state-11:t
       state(in-flight-map (~(put by in-flight-map.state) op-id.act flight))
     =/  pending=card
       [%give %fact ~[/all] %tend-update-1 !>([%operation-pending op-id.act alias.rep])]
@@ -1542,7 +1667,7 @@
     [%pass wire %agent [target %tend] %poke %tend-peer-1 !>(message)]
   ::
   ++  record-activity
-    |=  [actor=@p act=action:t before=state-10:t after=state-10:t replayed=?]
+    |=  [actor=@p act=action:t before=state-11:t after=state-11:t replayed=?]
     ^-  (quip card _after)
     ?:  replayed  [~ after]
     =/  result=(unit update:t)  (~(get by receipt-map.after) op-id.act)
@@ -1581,7 +1706,7 @@
     =/  log=activity-log:t  (scag 1.000 unbounded)
     =/  activities=activity-map:t
       (~(put by hosted-activity-map.after) u.target log)
-    =/  nex=state-10:t  after(hosted-activity-map activities)
+    =/  nex=state-11:t  after(hosted-activity-map activities)
     =/  activity-cards=(list card)  (give [%activities-updated u.target log])
     =/  lis=(unit task-list:t)  (~(get by list-map.nex) u.target)
     ?~  lis  [activity-cards nex]
@@ -1590,7 +1715,7 @@
     [(weld activity-cards notification-cards) nex]
   ::
   ++  activity-occurrence-for
-    |=  [=list-id:t =reminder-id:t before=state-10:t]
+    |=  [=list-id:t =reminder-id:t before=state-11:t]
     ^-  (unit @da)
     =/  lis=(unit task-list:t)  (~(get by list-map.before) list-id)
     ?~  lis  ~
@@ -1599,10 +1724,10 @@
     ?~(schedule.u.rem ~ `due-at.u.schedule.u.rem)
   ::
   ++  queue-collaboration-activities
-    |=  [events=activity-log:t lis=task-list:t st=state-10:t]
+    |=  [events=activity-log:t lis=task-list:t st=state-11:t]
     ^-  (quip card _st)
     =/  cards=(list card)  ~
-    =/  nex=state-10:t  st
+    =/  nex=state-11:t  st
     |-
     ?~  events  [cards nex]
     =/  event=activity:t  i.events
@@ -1651,7 +1776,7 @@
     ==
   ::
   ++  collaboration-policy-for
-    |=  [=list-id:t st=state-10:t]
+    |=  [=list-id:t st=state-11:t]
     ^-  collaboration-policy:t
     =/  found=(unit collaboration-policy:t)
       (~(get by collaboration-policy-map.st) list-id)
@@ -1667,7 +1792,7 @@
     ==
   ::
   ++  activity-kind-for
-    |=  [act=action:t before=state-10:t]
+    |=  [act=action:t before=state-11:t]
     ^-  (unit activity-kind:t)
     ?-  -.act
         %create-list              ~
@@ -1714,7 +1839,7 @@
     ==
   ::
   ++  activity-reminder-id
-    |=  [act=action:t before=state-10:t]
+    |=  [act=action:t before=state-11:t]
     ^-  (unit reminder-id:t)
     ?-  -.act
         %add-reminder             `next-id.before
@@ -1753,7 +1878,7 @@
     ==
   ::
   ++  activity-occurrence
-    |=  [act=action:t before=state-10:t]
+    |=  [act=action:t before=state-11:t]
     ^-  (unit @da)
     ?.  ?&  ?=(%set-completed -.act)
             completed.act
@@ -1762,7 +1887,7 @@
     (activity-occurrence-for list-id.act reminder-id.act before)
   ::
   ++  broadcast-action
-    |=  [act=action:t before=state-10:t after=state-10:t]
+    |=  [act=action:t before=state-11:t after=state-11:t]
     ^-  (list card)
     ?:  ?=(%move-reminder-to-list -.act)
       %+  weld
@@ -1773,7 +1898,7 @@
     (broadcast-list u.target op-id.act before after)
   ::
   ++  broadcast-list
-    |=  [target=list-id:t =op-id:t before=state-10:t after=state-10:t]
+    |=  [target=list-id:t =op-id:t before=state-11:t after=state-11:t]
     ^-  (list card)
     =/  old-share=(unit share:t)  (~(get by share-map.before) target)
     =/  new-share=(unit share:t)  (~(get by share-map.after) target)
@@ -1811,6 +1936,15 @@
         %list-state         (take-list-state sender message)
         %list-removed       (take-list-removed sender host-list-id.message)
         %mutation-rejected  (take-mutation-rejected sender message)
+        %transfer-request   (take-transfer-request sender message)
+        %transfer-payload   (take-transfer-payload sender message)
+        %transfer-import    (take-transfer-import sender message)
+        %transfer-imported  (take-transfer-imported sender message)
+        %transfer-finalize  (take-transfer-finalize sender message)
+        %transfer-finalized  (take-transfer-finalized sender message)
+        %transfer-restore   (take-transfer-restore sender message)
+        %transfer-restored  (take-transfer-restored sender message)
+        %transfer-rejected  (take-transfer-rejected sender message)
     ==
   ::
   ++  take-invite
@@ -1829,7 +1963,7 @@
           can-invite.member-policy.message
           now.bowl
       ==
-    =/  nex=state-10:t
+    =/  nex=state-11:t
       state(invitation-map (~(put by invitation-map.state) key invitation))
     [(give [%invitations-updated invitation-map.nex]) nex]
   ::
@@ -1853,7 +1987,7 @@
           members  (~(put by members.u.found) sender policy.u.pending)
           pending  (~(del by pending.u.found) sender)
       ==
-    =/  nex=state-10:t
+    =/  nex=state-11:t
       state(share-map (~(put by share-map.state) host-list-id.message sharing))
     =/  snapshot=peer-message:t
       [%list-state host-list-id.message u.lis members.sharing (hosted-activities host-list-id.message nex) host-session.state ~]
@@ -1882,7 +2016,7 @@
           ==
         (~(del by share-map.state) host-list-id.message)
       (~(put by share-map.state) host-list-id.message sharing)
-    =/  nex=state-10:t  state(share-map shares)
+    =/  nex=state-11:t  state(share-map shares)
     [(give [%accesses (accesses-for nex)]) nex]
   ::
   ++  take-leave
@@ -1900,7 +2034,7 @@
           ==
         (~(del by share-map.state) host-list-id.message)
       (~(put by share-map.state) host-list-id.message sharing)
-    =/  nex=state-10:t  state(share-map shares)
+    =/  nex=state-11:t  state(share-map shares)
     =/  cards=(list card)  (give [%accesses (accesses-for nex)])
     =.  cards
       =/  kicked=(list card)
@@ -1935,7 +2069,7 @@
       (reject-peer sender act %host-offline `revision.u.lis)
     ?:  (gth expires-at.message (add now.bowl ~s30))
       (reject-peer sender act %invalid-expiry `revision.u.lis)
-    =/  before=state-10:t  state
+    =/  before=state-11:t  state
     =/  replayed=?  (~(has by receipt-map.before) op-id.act)
     =^  cards  state  (poke-action act)
     =^  activity-cards  state
@@ -1997,7 +2131,7 @@
     ==
   ::
   ++  peer-move-destination-allowed
-    |=  [sender=@p act=action:t st=state-10:t]
+    |=  [sender=@p act=action:t st=state-11:t]
     ^-  ?
     ?.  ?=(%move-reminder-to-list -.act)  %.y
     =/  destination=(unit task-list:t)
@@ -2009,7 +2143,7 @@
     (~(has by members.u.sharing) sender)
   ::
   ++  peer-result
-    |=  [sender=@p act=action:t st=state-10:t]
+    |=  [sender=@p act=action:t st=state-11:t]
     ^-  (list card)
     =/  result=(unit update:t)  (~(get by receipt-map.st) op-id.act)
     ?~  result  ~
@@ -2026,7 +2160,7 @@
     (peer-list-result sender u.target op-id.act st)
   ::
   ++  peer-list-result
-    |=  [sender=@p target=list-id:t =op-id:t st=state-10:t]
+    |=  [sender=@p target=list-id:t =op-id:t st=state-11:t]
     ^-  (list card)
     =/  lis=(unit task-list:t)  (~(get by list-map.st) target)
     ?~  lis  ~
@@ -2090,7 +2224,7 @@
       ?~  settled
         in-flight-map.state
       (~(del by in-flight-map.state) u.settled)
-    =/  nex=state-10:t
+    =/  nex=state-11:t
       %_  state
           next-id        ?:(fresh +(next-id.state) next-id.state)
           replica-map    replicas
@@ -2130,7 +2264,7 @@
     ^-  (quip card _state)
     =/  invites=invitations:t
       (drop-invitations sender host-list-id invitation-map.state)
-    =/  nex=state-10:t  state(invitation-map invites)
+    =/  nex=state-11:t  state(invitation-map invites)
     =/  invite-cards=(list card)
       ?:  =(invites invitation-map.state)
         ~
@@ -2138,7 +2272,7 @@
     =/  found=(unit [list-id:t replica:t])
       (replica-by-ref sender host-list-id replica-map.nex)
     ?~  found  [invite-cards nex]
-    =/  [replica-cards=(list card) final=state-10:t]
+    =/  [replica-cards=(list card) final=state-11:t]
       (drop-replica -.u.found nex)
     [(weld invite-cards replica-cards) final]
   ::
@@ -2151,15 +2285,412 @@
     =/  rep=(unit replica:t)  (~(get by replica-map.state) alias.u.flight)
     ?~  rep  [~ state]
     ?.  =(sender host.ref.u.rep)  !!
-    =/  nex=state-10:t
+    =/  nex=state-11:t
       state(in-flight-map (~(del by in-flight-map.state) op-id.message))
     =/  cards=(list card)  (give [%operation-settled op-id.message])
     =.  cards
       (weld cards (give [%rejected op-id.message reason.message current-revision.message]))
     [cards nex]
   ::
+  ++  transfer-authorized
+    |=  [sender=@p target=list-id:t st=state-11:t]
+    ^-  ?
+    ?:  =(sender our.bowl)  (~(has by list-map.st) target)
+    =/  sharing=(unit share:t)  (~(get by share-map.st) target)
+    ?~  sharing  %.n
+    (~(has by members.u.sharing) sender)
+  ::
+  ++  transfer-rejection-card
+    |=  [target=@p =op-id:t phase=@tas reason=@tas current=(unit @ud)]
+    ^-  card
+    (peer-poke /peer/transfer/rejected/(scot %uv (sham op-id)) target [%transfer-rejected op-id phase reason current])
+  ::
+  ++  take-transfer-request
+    |=  [sender=@p message=peer-message:t]
+    ^-  (quip card _state)
+    ?>  ?=(%transfer-request -.message)
+    =/  reserved=(unit transfer-reservation:t)
+      (~(get by transfer-reservation-map.state) op-id.message)
+    ?^  reserved
+      ?.  =(sender coordinator.u.reserved)  [~ state]
+      =/  outbound=card
+        (peer-poke /peer/transfer/payload/(scot %uv (sham op-id.message)) sender [%transfer-payload op-id.message transfer-payload.u.reserved])
+      [[outbound ~] state]
+    =/  prior=(unit update:t)  (~(get by receipt-map.state) op-id.message)
+    ?^  prior
+      =/  outbound=card
+        (peer-poke /peer/transfer/finalized/(scot %uv (sham op-id.message)) sender [%transfer-finalized op-id.message source-list-id.message])
+      [[outbound ~] state]
+    ?:  |((lte expires-at.message now.bowl) (gth expires-at.message (add now.bowl ~s660)))
+      [[(transfer-rejection-card sender op-id.message %request %invalid-expiry ~) ~] state]
+    ?:  (gte (lent ~(tap by transfer-reservation-map.state)) 1.000)
+      [[(transfer-rejection-card sender op-id.message %request %operation-limit ~) ~] state]
+    =/  source=(unit task-list:t)
+      (~(get by list-map.state) source-list-id.message)
+    ?~  source
+      [[(transfer-rejection-card sender op-id.message %request %unknown-source-list ~) ~] state]
+    ?.  (transfer-authorized sender source-list-id.message state)
+      [[(transfer-rejection-card sender op-id.message %request %not-authorized `revision.u.source) ~] state]
+    ?.  =(source-base-revision.message revision.u.source)
+      [[(transfer-rejection-card sender op-id.message %request %stale-source-list `revision.u.source) ~] state]
+    =/  root=(unit reminder:t)
+      (~(get by reminders.u.source) root-id.message)
+    ?~  root
+      [[(transfer-rejection-card sender op-id.message %request %unknown-reminder `revision.u.source) ~] state]
+    =/  original=(list [reminder-id:t reminder:t])
+      %+  skim  ~(tap by reminders.u.source)
+      |=  [rid=reminder-id:t rem=reminder:t]
+      (descendant rid root-id.message reminders.u.source)
+    =/  moved-snoozes=(list [reminder-id:t @da])
+      %+  turn
+        %+  skim  ~(tap by snooze-map.state)
+        |=  [key=snooze-key:t until=@da]
+        ?&  =(-.key source-list-id.message)
+            (descendant +.key root-id.message reminders.u.source)
+        ==
+      |=  [key=snooze-key:t until=@da]
+      [+.key until]
+    =/  kept-reminders=(list [reminder-id:t reminder:t])
+      %+  skim  ~(tap by reminders.u.source)
+      |=  [rid=reminder-id:t rem=reminder:t]
+      !(descendant rid root-id.message reminders.u.source)
+    =/  kept-snoozes=(list [snooze-key:t @da])
+      %+  skim  ~(tap by snooze-map.state)
+      |=  [key=snooze-key:t until=@da]
+      ?:  =(-.key source-list-id.message)
+        !(descendant +.key root-id.message reminders.u.source)
+      %.y
+    =/  payload=transfer-payload:t
+      :*  our.bowl
+          source-list-id.message
+          root-id.message
+          source-base-revision.message
+          destination-host.message
+          destination-list-id.message
+          destination-base-revision.message
+          original
+          moved-snoozes
+          now.bowl
+          expires-at.message
+      ==
+    =/  next-source=task-list:t
+      %_  u.source
+          revision    +(revision.u.source)
+          reminders   (malt kept-reminders)
+          modified-at  now.bowl
+      ==
+    =/  reservation=transfer-reservation:t  [sender payload]
+    =/  nex=state-11:t
+      %_  state
+          list-map  (~(put by list-map.state) source-list-id.message next-source)
+          snooze-map  (malt kept-snoozes)
+          transfer-reservation-map  (~(put by transfer-reservation-map.state) op-id.message reservation)
+      ==
+    =/  cards=(list card)
+      (give [%list-upserted op-id.message next-source preferences.nex])
+    =.  cards
+      (weld cards (broadcast-list source-list-id.message op-id.message state nex))
+    =/  outbound=card
+      (peer-poke /peer/transfer/payload/(scot %uv (sham op-id.message)) sender [%transfer-payload op-id.message payload])
+    (arm-timer (weld cards [outbound ~]) nex)
+  ::
+  ++  take-transfer-payload
+    |=  [sender=@p message=peer-message:t]
+    ^-  (quip card _state)
+    ?>  ?=(%transfer-payload -.message)
+    =/  found=(unit transfer-coordination:t)
+      (~(get by transfer-map.state) op-id.message)
+    ?~  found  [~ state]
+    =/  payload=transfer-payload:t  transfer-payload.message
+    ?.  ?&  =(%requesting transfer-phase.u.found)
+            =(sender host.source-ref.u.found)
+            =(source-list-id.payload id.source-ref.u.found)
+            =(destination-host.payload host.destination-ref.u.found)
+            =(destination-list-id.payload id.destination-ref.u.found)
+            =(root-id.payload root-id.u.found)
+            =(source-base-revision.payload source-base-revision.u.found)
+            =(destination-base-revision.payload destination-base-revision.u.found)
+            =(expires-at.payload expires-at.u.found)
+        ==
+      [~ state]
+    ?:  (lte expires-at.payload now.bowl)
+      =/  failed=transfer-coordination:t
+        u.found(transfer-phase %restoring, payload `payload, failure-reason `%transfer-expired)
+      =/  nex=state-11:t
+        state(transfer-map (~(put by transfer-map.state) op-id.message failed))
+      [[(retry-transfer-card op-id.message failed) ~] nex]
+    =/  importing=transfer-coordination:t
+      u.found(transfer-phase %importing, payload `payload)
+    =/  nex=state-11:t
+      state(transfer-map (~(put by transfer-map.state) op-id.message importing))
+    [[(retry-transfer-card op-id.message importing) ~] nex]
+  ::
+  ++  take-transfer-import
+    |=  [sender=@p message=peer-message:t]
+    ^-  (quip card _state)
+    ?>  ?=(%transfer-import -.message)
+    =/  payload=transfer-payload:t  transfer-payload.message
+    =/  imported=(unit transfer-import:t)
+      (~(get by transfer-import-map.state) op-id.message)
+    ?^  imported
+      ?.  =(sender coordinator.u.imported)  [~ state]
+      =/  outbound=card
+        (peer-poke /peer/transfer/imported/(scot %uv (sham op-id.message)) sender [%transfer-imported op-id.message destination-list-id.u.imported destination-root-id.u.imported])
+      [[outbound ~] state]
+    ?:  (lte expires-at.payload now.bowl)
+      [[(transfer-rejection-card sender op-id.message %import %transfer-expired ~) ~] state]
+    ?.  ?&  =(destination-host.payload our.bowl)
+            !=(source-host.payload destination-host.payload)
+        ==
+      [[(transfer-rejection-card sender op-id.message %import %invalid-transfer ~) ~] state]
+    ?:  (gte (lent ~(tap by transfer-import-map.state)) 4.096)
+      [[(transfer-rejection-card sender op-id.message %import %operation-limit ~) ~] state]
+    =/  destination=(unit task-list:t)
+      (~(get by list-map.state) destination-list-id.payload)
+    ?~  destination
+      [[(transfer-rejection-card sender op-id.message %import %unknown-destination-list ~) ~] state]
+    ?.  (transfer-authorized sender destination-list-id.payload state)
+      [[(transfer-rejection-card sender op-id.message %import %not-authorized `revision.u.destination) ~] state]
+    ?.  =(destination-base-revision.payload revision.u.destination)
+      [[(transfer-rejection-card sender op-id.message %import %stale-destination-list `revision.u.destination) ~] state]
+    =/  original=reminders:t  (malt reminders.payload)
+    ?.  ?&  =((lent reminders.payload) (lent ~(tap by original)))
+            (~(has by original) root-id.payload)
+            (levy reminders.payload |=(item=[reminder-id:t reminder:t] (descendant -.item root-id.payload original)))
+        ==
+      [[(transfer-rejection-card sender op-id.message %import %invalid-transfer `revision.u.destination) ~] state]
+    ?:  (gth (add (lent reminders.payload) (lent ~(tap by reminders.u.destination))) 100.000)
+      [[(transfer-rejection-card sender op-id.message %import %reminder-limit `revision.u.destination) ~] state]
+    =/  destination-rank=@ud  (next-root-rank reminders.u.destination)
+    =/  [id-map=(map reminder-id:t reminder-id:t) next=@ud]
+      (allocate-moved-ids reminders.payload next-id.state)
+    =/  moved=(list [reminder-id:t reminder:t])
+      %+  turn  reminders.payload
+      |=  [rid=reminder-id:t rem=reminder:t]
+      =/  new-id=reminder-id:t  (~(got by id-map) rid)
+      =/  valid=(unit @p)
+        ?:  (valid-assignee destination-list-id.payload assignee.rem state)
+          assignee.rem
+        ~
+      =/  new-parent=(unit reminder-id:t)
+        ?:  =(rid root-id.payload)  ~
+        ?~(parent-id.rem ~ `(~(got by id-map) u.parent-id.rem))
+      :-  new-id
+      %_  rem
+          id          new-id
+          parent-id   new-parent
+          section-id  ~
+          rank        ?:(=(rid root-id.payload) destination-rank rank.rem)
+          assignee    valid
+          revision    +(revision.rem)
+          modified-at  now.bowl
+      ==
+    =/  destination-reminders=reminders:t
+      =/  entries=(list [reminder-id:t reminder:t])  moved
+      =/  result=reminders:t  reminders.u.destination
+      |-
+      ?~  entries  result
+      $(entries t.entries, result (~(put by result) -.i.entries +.i.entries))
+    =/  next-destination=task-list:t
+      %_  u.destination
+          revision    +(revision.u.destination)
+          reminders   destination-reminders
+          modified-at  now.bowl
+      ==
+    ?:  (invalid-restore-list next-destination)
+      [[(transfer-rejection-card sender op-id.message %import %invalid-transfer `revision.u.destination) ~] state]
+    =/  imported-snoozes=snoozes:t
+      =/  entries=(list [reminder-id:t @da])  snoozes.payload
+      =/  result=snoozes:t  snooze-map.state
+      |-
+      ?~  entries  result
+      =/  old-id=reminder-id:t  -.i.entries
+      =/  until=@da  +.i.entries
+      =/  mapped=(unit reminder-id:t)  (~(get by id-map) old-id)
+      ?~  mapped  $(entries t.entries)
+      =/  key=snooze-key:t  [destination-list-id.payload u.mapped]
+      $(entries t.entries, result (~(put by result) key until))
+    =/  root=reminder-id:t  (~(got by id-map) root-id.payload)
+    =/  record=transfer-import:t
+      [sender destination-list-id.payload root now.bowl]
+    =/  interim=state-11:t
+      %_  state
+          next-id  next
+          list-map  (~(put by list-map.state) destination-list-id.payload next-destination)
+          snooze-map  imported-snoozes
+          transfer-import-map  (~(put by transfer-import-map.state) op-id.message record)
+      ==
+    =/  nex=state-11:t
+      interim(snooze-map (valid-snoozes (visible-lists interim) snooze-map.interim))
+    =/  cards=(list card)
+      (give [%list-upserted op-id.message next-destination preferences.nex])
+    =.  cards
+      (weld cards (broadcast-list destination-list-id.payload op-id.message state nex))
+    =/  outbound=card
+      (peer-poke /peer/transfer/imported/(scot %uv (sham op-id.message)) sender [%transfer-imported op-id.message destination-list-id.payload root])
+    (arm-timer (weld cards [outbound ~]) nex)
+  ::
+  ++  take-transfer-imported
+    |=  [sender=@p message=peer-message:t]
+    ^-  (quip card _state)
+    ?>  ?=(%transfer-imported -.message)
+    =/  found=(unit transfer-coordination:t)
+      (~(get by transfer-map.state) op-id.message)
+    ?~  found  [~ state]
+    ?.  ?&  =(%importing transfer-phase.u.found)
+            =(sender host.destination-ref.u.found)
+            =(destination-list-id.message id.destination-ref.u.found)
+        ==
+      [~ state]
+    =/  finalizing=transfer-coordination:t
+      u.found(transfer-phase %finalizing)
+    =/  nex=state-11:t
+      state(transfer-map (~(put by transfer-map.state) op-id.message finalizing))
+    [[(retry-transfer-card op-id.message finalizing) ~] nex]
+  ::
+  ++  take-transfer-finalize
+    |=  [sender=@p message=peer-message:t]
+    ^-  (quip card _state)
+    ?>  ?=(%transfer-finalize -.message)
+    =/  found=(unit transfer-reservation:t)
+      (~(get by transfer-reservation-map.state) op-id.message)
+    ?~  found
+      =/  prior=(unit update:t)  (~(get by receipt-map.state) op-id.message)
+      ?~  prior
+        [[(transfer-rejection-card sender op-id.message %finalize %unknown-transfer ~) ~] state]
+      [[(peer-poke /peer/transfer/finalized/(scot %uv (sham op-id.message)) sender [%transfer-finalized op-id.message source-list-id.message]) ~] state]
+    ?.  ?&  =(sender coordinator.u.found)
+            =(source-list-id.message source-list-id.transfer-payload.u.found)
+        ==
+      [~ state]
+    =/  nex=state-11:t
+      state(transfer-reservation-map (~(del by transfer-reservation-map.state) op-id.message))
+    =^  cards  nex
+      (commit op-id.message [%snapshot (visible-lists nex) preferences.nex snooze-map.nex] nex)
+    =/  outbound=card
+      (peer-poke /peer/transfer/finalized/(scot %uv (sham op-id.message)) sender [%transfer-finalized op-id.message source-list-id.message])
+    [(weld cards [outbound ~]) nex]
+  ::
+  ++  take-transfer-finalized
+    |=  [sender=@p message=peer-message:t]
+    ^-  (quip card _state)
+    ?>  ?=(%transfer-finalized -.message)
+    =/  found=(unit transfer-coordination:t)
+      (~(get by transfer-map.state) op-id.message)
+    ?~  found  [~ state]
+    ?.  ?&  =(%finalizing transfer-phase.u.found)
+            =(sender host.source-ref.u.found)
+            =(source-list-id.message id.source-ref.u.found)
+        ==
+      [~ state]
+    =/  nex=state-11:t
+      state(transfer-map (~(del by transfer-map.state) op-id.message))
+    =^  cards  nex
+      (commit op-id.message [%snapshot (visible-lists nex) preferences.nex snooze-map.nex] nex)
+    =.  cards  (weld cards (give [%operation-settled op-id.message]))
+    [cards nex]
+  ::
+  ++  take-transfer-restore
+    |=  [sender=@p message=peer-message:t]
+    ^-  (quip card _state)
+    ?>  ?=(%transfer-restore -.message)
+    =/  found=(unit transfer-reservation:t)
+      (~(get by transfer-reservation-map.state) op-id.message)
+    ?~  found
+      [[(peer-poke /peer/transfer/restored/(scot %uv (sham op-id.message)) sender [%transfer-restored op-id.message source-list-id.message]) ~] state]
+    ?.  ?&  =(sender coordinator.u.found)
+            =(source-list-id.message source-list-id.transfer-payload.u.found)
+        ==
+      [~ state]
+    =/  payload=transfer-payload:t  transfer-payload.u.found
+    =/  source=(unit task-list:t)  (~(get by list-map.state) source-list-id.payload)
+    ?~  source  [~ state]
+    =/  restored-reminders=reminders:t
+      =/  entries=(list [reminder-id:t reminder:t])  reminders.payload
+      =/  result=reminders:t  reminders.u.source
+      |-
+      ?~  entries  result
+      $(entries t.entries, result (~(put by result) -.i.entries +.i.entries))
+    =/  next-source=task-list:t
+      %_  u.source
+          revision    +(revision.u.source)
+          reminders   restored-reminders
+          modified-at  now.bowl
+      ==
+    =/  restored-snoozes=snoozes:t
+      =/  entries=(list [reminder-id:t @da])  snoozes.payload
+      =/  result=snoozes:t  snooze-map.state
+      |-
+      ?~  entries  result
+      =/  key=snooze-key:t  [source-list-id.payload -.i.entries]
+      $(entries t.entries, result (~(put by result) key +.i.entries))
+    =/  interim=state-11:t
+      %_  state
+          list-map  (~(put by list-map.state) source-list-id.payload next-source)
+          snooze-map  restored-snoozes
+          transfer-reservation-map  (~(del by transfer-reservation-map.state) op-id.message)
+      ==
+    =/  nex=state-11:t
+      interim(snooze-map (valid-snoozes (visible-lists interim) snooze-map.interim))
+    =/  cards=(list card)
+      (give [%list-upserted op-id.message next-source preferences.nex])
+    =.  cards
+      (weld cards (broadcast-list source-list-id.payload op-id.message state nex))
+    =/  outbound=card
+      (peer-poke /peer/transfer/restored/(scot %uv (sham op-id.message)) sender [%transfer-restored op-id.message source-list-id.payload])
+    (arm-timer (weld cards [outbound ~]) nex)
+  ::
+  ++  finish-transfer-rejection
+    |=  [=op-id:t transfer=transfer-coordination:t st=state-11:t]
+    ^-  (quip card _st)
+    =/  reason=@tas  ?~(failure-reason.transfer %transfer-failed u.failure-reason.transfer)
+    =/  nex=state-11:t  st(transfer-map (~(del by transfer-map.st) op-id))
+    =^  cards  nex  (commit op-id [%rejected op-id reason failure-current.transfer] nex)
+    =.  cards  (weld cards (give [%operation-settled op-id]))
+    [cards nex]
+  ::
+  ++  take-transfer-restored
+    |=  [sender=@p message=peer-message:t]
+    ^-  (quip card _state)
+    ?>  ?=(%transfer-restored -.message)
+    =/  found=(unit transfer-coordination:t)
+      (~(get by transfer-map.state) op-id.message)
+    ?~  found  [~ state]
+    ?.  ?&  =(%restoring transfer-phase.u.found)
+            =(sender host.source-ref.u.found)
+            =(source-list-id.message id.source-ref.u.found)
+        ==
+      [~ state]
+    (finish-transfer-rejection op-id.message u.found state)
+  ::
+  ++  take-transfer-rejected
+    |=  [sender=@p message=peer-message:t]
+    ^-  (quip card _state)
+    ?>  ?=(%transfer-rejected -.message)
+    =/  found=(unit transfer-coordination:t)
+      (~(get by transfer-map.state) op-id.message)
+    ?~  found  [~ state]
+    =/  expected=@p
+      ?:  =(%import phase.message)
+        host.destination-ref.u.found
+      host.source-ref.u.found
+    ?.  =(sender expected)  [~ state]
+    ?:  =(%import phase.message)
+      =/  restoring=transfer-coordination:t
+        %_  u.found
+            transfer-phase  %restoring
+            failure-reason  `reason.message
+            failure-current  current-revision.message
+        ==
+      =/  nex=state-11:t
+        state(transfer-map (~(put by transfer-map.state) op-id.message restoring))
+      [[(retry-transfer-card op-id.message restoring) ~] nex]
+    =/  failed=transfer-coordination:t
+      u.found(failure-reason `reason.message, failure-current current-revision.message)
+    (finish-transfer-rejection op-id.message failed state)
+  ::
   ++  drop-replica
-    |=  [alias=list-id:t st=state-10:t]
+    |=  [alias=list-id:t st=state-11:t]
     ^-  (quip card _state)
     =/  replicas=replicas:t  (~(del by replica-map.st) alias)
     =/  kept-snoozes=(list [snooze-key:t @da])
@@ -2174,7 +2705,7 @@
     =/  pinned=(list list-id:t)
       %+  skim  pinned-lists.prefs
       |=(id=list-id:t !=(id alias))
-    =/  nex=state-10:t
+    =/  nex=state-11:t
       %_  st
           replica-map    replicas
           replica-activity-map  (~(del by replica-activity-map.st) alias)
@@ -2248,7 +2779,7 @@
     lis(id alias)
   ::
   ++  hosted-activities
-    |=  [=list-id:t st=state-10:t]
+    |=  [=list-id:t st=state-11:t]
     ^-  activity-log:t
     =/  found=(unit activity-log:t)
       (~(get by hosted-activity-map.st) list-id)
@@ -2269,7 +2800,7 @@
     |=(item=activity:t !(~(has in seen) id.item))
   ::
   ++  visible-lists
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  lists:t
     =/  entries=(list [list-id:t replica:t])  ~(tap by replica-map.st)
     =/  result=lists:t  list-map.st
@@ -2292,7 +2823,7 @@
     ==
   ::
   ++  accesses-for
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  accesses:t
     =/  hosted=accesses:t
       %-  ~(rep by list-map.st)
@@ -2370,7 +2901,7 @@
     (gte all-day-alert-minute.prefs 1.440)
   ::
   ++  local-settings-update
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  update:t
     [%local-settings-updated list-order.st presentation-map.st collaboration-policy-map.st]
   ::
@@ -2421,7 +2952,7 @@
     (~(gas in *(set alert-key:t)) kept)
   ::
   ++  restorable-empty
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  ?
     ?&  ?=(~ ~(tap by list-map.st))
         ?=(~ ~(tap by snooze-map.st))
@@ -2431,6 +2962,9 @@
         ?=(~ ~(tap by in-flight-map.st))
         ?=(~ ~(tap by notification-map.st))
         ?=(~ ~(tap by collaboration-notification-map.st))
+        ?=(~ ~(tap by transfer-map.st))
+        ?=(~ ~(tap by transfer-reservation-map.st))
+        ?=(~ ~(tap by transfer-import-map.st))
     ==
   ::
   ++  invalid-restore
@@ -2530,7 +3064,7 @@
     $(entries t.entries)
   ::
   ++  valid-assignee
-    |=  [=list-id:t assignee=(unit @p) st=state-10:t]
+    |=  [=list-id:t assignee=(unit @p) st=state-11:t]
     ^-  ?
     ?~  assignee  %.y
     ?:  =(u.assignee our.bowl)  %.y
@@ -2858,19 +3392,19 @@
     $(ordered t.ordered, rems next-rems, next-rank (add next-rank 1.024))
   ::
   ++  save-list
-    |=  [=op-id:t lis=task-list:t st=state-10:t]
+    |=  [=op-id:t lis=task-list:t st=state-11:t]
     ^-  (quip card _state)
     (save-list-with-id op-id lis next-id.st st)
   ::
   ++  save-list-with-id
-    |=  [=op-id:t lis=task-list:t next=@ud st=state-10:t]
+    |=  [=op-id:t lis=task-list:t next=@ud st=state-11:t]
     ^-  (quip card _state)
     =/  liss=lists:t  (~(put by list-map.st) id.lis lis)
-    =/  interim=state-10:t  st(list-map liss)
+    =/  interim=state-11:t  st(list-map liss)
     =/  snoozes=snoozes:t
       (valid-snoozes (visible-lists interim) snooze-map.st)
-    =/  nex=state-10:t
-      :*  %10
+    =/  nex=state-11:t
+      :*  %11
           next
           liss
           receipt-map.st
@@ -2894,6 +3428,9 @@
           presentation-map.st
           collaboration-policy-map.st
           collaboration-notification-map.st
+          transfer-map.st
+          transfer-reservation-map.st
+          transfer-import-map.st
       ==
     (commit op-id [%list-upserted op-id lis preferences.st] nex)
   ::
@@ -2911,12 +3448,12 @@
     (malt kept)
   ::
   ++  reject
-    |=  [=op-id:t reason=@tas current=(unit @ud) st=state-10:t]
+    |=  [=op-id:t reason=@tas current=(unit @ud) st=state-11:t]
     ^-  (quip card _state)
     (commit op-id [%rejected op-id reason current] st)
   ::
   ++  commit
-    |=  [=op-id:t upd=update:t nex=state-10:t]
+    |=  [=op-id:t upd=update:t nex=state-11:t]
     ^-  (quip card _state)
     =/  stored=receipts:t
       (~(put by receipt-map.nex) op-id upd)
@@ -2929,7 +3466,7 @@
       %+  turn  order
       |=  operation=op-id:t
       [operation (~(got by stored) operation)]
-    =/  saved=state-10:t
+    =/  saved=state-11:t
       nex(receipt-map receipts, receipt-order order)
     (arm-timer (give upd) saved)
   ::
@@ -2939,13 +3476,13 @@
     [%give %fact ~[/all] %tend-update-1 !>(upd)]~
   ::
   ++  arm-timer
-    |=  [cards=(list card) st=state-10:t]
+    |=  [cards=(list card) st=state-11:t]
     ^-  (quip card _state)
     =/  wake=(unit @da)
       (earlier (earliest-wake list-map.st) (earliest-snooze snooze-map.st))
     ?:  =(wake next-wake.st)  [cards st]
     =/  generation=@ud  +(timer-generation.st)
-    =/  armed=state-10:t
+    =/  armed=state-11:t
       st(timer-generation generation, next-wake wake)
     ?~  wake  [cards armed]
     =/  when=@da  ?:((lte u.wake now.bowl) now.bowl u.wake)
@@ -3015,7 +3552,7 @@
   ^-  (quip card _this)
   |^
   ?:  ?=([%http-response *] path)  [~ this]
-  =/  st=state-10:t  state
+  =/  st=state-11:t  state
   =/  snapshot=update:t
     [%snapshot (visible-for st) preferences.st snooze-map.st]
   ?:  =(our.bowl src.bowl)
@@ -3056,7 +3593,7 @@
     [%give %fact ~ %tend-update-1 !>(upd)]
   ::
   ++  activity-cards
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  (list card)
     =/  hosted=(list card)
       %+  turn  ~(tap by hosted-activity-map.st)
@@ -3078,7 +3615,7 @@
     [%give %fact ~ %tend-update-1 !>(upd)]
   ::
   ++  accesses-for
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  accesses:t
     =/  hosted=accesses:t
       %-  ~(rep by list-map.st)
@@ -3100,7 +3637,7 @@
     (weld hosted remote)
   ::
   ++  visible-for
-    |=  value=state-10:t
+    |=  value=state-11:t
     ^-  lists:t
     =/  entries=(list [list-id:t replica:t])  ~(tap by replica-map.value)
     =/  result=lists:t  list-map.value
@@ -3119,7 +3656,7 @@
   |=  =path
   ^-  (unit (unit cage))
   |^
-  =/  st=state-10:t  state
+  =/  st=state-11:t  state
   =/  snapshot=update:t
     =/  entries=(list [list-id:t replica:t])  ~(tap by replica-map.st)
     =/  visible=lists:t  list-map.st
@@ -3159,7 +3696,7 @@
   ==
   ::
   ++  accesses-for
-    |=  value=state-10:t
+    |=  value=state-11:t
     ^-  accesses:t
     =/  hosted=accesses:t
       %-  ~(rep by list-map.value)
@@ -3195,16 +3732,20 @@
       =/  generation=(unit @ud)  (slaw %ud i.t.wire)
       ?~  generation  [~ this]
       ?.  =(u.generation liveness-generation.state)  [~ this]
-      =/  [expired=state-10:t status-cards=(list card)]
+      =/  [expired=state-11:t status-cards=(list card)]
         (expire-replicas state now.bowl)
-      =/  [notified=state-10:t alert-cards=(list card)]
+      =/  [notified=state-11:t alert-cards=(list card)]
         (fire-replica-alerts expired now.bowl)
+      =/  [maintained=state-11:t transfer-cards=(list card)]
+        (maintain-transfers notified now.bowl)
       =/  emitted=(list card)
-        (weld status-cards (weld alert-cards (heartbeat-cards notified now.bowl)))
-      =/  next-generation=@ud  +(liveness-generation.notified)
+        %+  weld  status-cards
+        %+  weld  alert-cards
+        (weld transfer-cards (heartbeat-cards maintained now.bowl))
+      =/  next-generation=@ud  +(liveness-generation.maintained)
       =/  timer=card
         [%pass /liveness/(scot %ud next-generation) %arvo %b %wait (add now.bowl ~s5)]
-      :_  this(state notified(liveness-generation next-generation))
+      :_  this(state maintained(liveness-generation next-generation))
       (weld emitted [timer ~])
     ?.  ?=([%alerts @ ~] wire)  (on-arvo:def wire sign-arvo)
     =/  generation=(unit @ud)  (slaw %ud i.t.wire)
@@ -3219,7 +3760,7 @@
     =/  wake=(unit @da)
       (earlier (earliest-wake liss) (earliest-snooze snoozes))
     =/  next-generation=@ud  +(timer-generation.state)
-    =/  nex=state-10:t
+    =/  nex=state-11:t
       %_  state
           list-map          liss
           timer-generation  next-generation
@@ -3236,15 +3777,15 @@
   ==
   ::
   ++  expire-replicas
-    |=  [st=state-10:t now=@da]
-    ^-  [state-10:t (list card)]
+    |=  [st=state-11:t now=@da]
+    ^-  [state-11:t (list card)]
     =/  entries=(list [list-id:t replica:t])  ~(tap by replica-map.st)
     =/  replicas=replicas:t  replica-map.st
     =/  sessions=peer-sessions:t  peer-session-map.st
     =/  changed=?  %.n
     |-
     ?~  entries
-      =/  nex=state-10:t
+      =/  nex=state-11:t
         st(replica-map replicas, peer-session-map sessions)
       [nex ?:(changed (access-cards nex) ~)]
     =/  alias=list-id:t  -.i.entries
@@ -3257,8 +3798,63 @@
     =.  replicas  (~(put by replicas) alias rep(status %offline))
     $(entries t.entries, changed %.y)
   ::
+  ++  maintain-transfers
+    |=  [st=state-11:t now=@da]
+    ^-  [state-11:t (list card)]
+    =/  retained-imports=(list [op-id:t transfer-import:t])
+      %+  skim  ~(tap by transfer-import-map.st)
+      |=  [operation=op-id:t imported=transfer-import:t]
+      (lth now (add imported-at.imported ~d1))
+    =/  nex=state-11:t
+      st(transfer-import-map (malt retained-imports))
+    =/  entries=(list [op-id:t transfer-coordination:t])
+      ~(tap by transfer-map.nex)
+    =/  cards=(list card)  ~
+    |-
+    ?~  entries  [nex cards]
+    =/  operation=op-id:t  -.i.entries
+    =/  transfer=transfer-coordination:t  +.i.entries
+    =.  cards  [(retry-transfer-card-fact operation transfer) cards]
+    $(entries t.entries, cards cards)
+  ::
+  ++  retry-transfer-card-fact
+    |=  [=op-id:t transfer=transfer-coordination:t]
+    ^-  card
+    =/  target=@p
+      ?-  transfer-phase.transfer
+          %importing   host.destination-ref.transfer
+          %requesting  host.source-ref.transfer
+          %finalizing  host.source-ref.transfer
+          %restoring   host.source-ref.transfer
+      ==
+    =/  message=peer-message:t
+      ?-  transfer-phase.transfer
+          %requesting
+        :*  %transfer-request
+            op-id
+            id.source-ref.transfer
+            root-id.transfer
+            source-base-revision.transfer
+            host.destination-ref.transfer
+            id.destination-ref.transfer
+            destination-base-revision.transfer
+            expires-at.transfer
+        ==
+      ::
+          %importing
+        ?>  ?=(^ payload.transfer)
+        [%transfer-import op-id u.payload.transfer]
+      ::
+          %finalizing
+        [%transfer-finalize op-id id.source-ref.transfer]
+      ::
+          %restoring
+        [%transfer-restore op-id id.source-ref.transfer ?~(failure-reason.transfer %transfer-failed u.failure-reason.transfer)]
+      ==
+    [%pass /peer/transfer/retry/(scot %uv (sham op-id)) %agent [target %tend] %poke %tend-peer-1 !>(message)]
+  ::
   ++  heartbeat-cards
-    |=  [st=state-10:t sent-at=@da]
+    |=  [st=state-11:t sent-at=@da]
     ^-  (list card)
     =/  entries=(list [list-id:t share:t])  ~(tap by share-map.st)
     =/  cards=(list card)  ~
@@ -3275,12 +3871,12 @@
     $(entries t.entries)
   ::
   ++  access-cards
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  (list card)
     [%give %fact ~[/all] %tend-update-1 !>([%accesses (accesses-for st)])]~
   ::
   ++  accesses-for
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  accesses:t
     =/  hosted=accesses:t
       %-  ~(rep by list-map.st)
@@ -3399,8 +3995,8 @@
     [(~(put by notices) id note) card]
   ::
   ++  fire-replica-alerts
-    |=  [st=state-10:t now=@da]
-    ^-  [state-10:t (list card)]
+    |=  [st=state-11:t now=@da]
+    ^-  [state-11:t (list card)]
     =/  entries=(list [list-id:t replica:t])  ~(tap by replica-map.st)
     =/  seen=replica-alerts:t  replica-alert-set.st
     =/  notices=notifications:t  notification-map.st
@@ -3597,7 +4193,7 @@
   ==
   ::
   ++  take-peer-fact
-    |=  [alias=list-id:t message=peer-message:t st=state-10:t]
+    |=  [alias=list-id:t message=peer-message:t st=state-11:t]
     ^-  (quip card _state)
     =/  found=(unit replica:t)  (~(get by replica-map.st) alias)
     ?~  found  [~ st]
@@ -3636,7 +4232,7 @@
         (unseen-activities-fact aliased-activities previous-activities)
       =/  replica-activities=activity-map:t
         (~(put by replica-activity-map.st) alias aliased-activities)
-      =/  nex=state-10:t
+      =/  nex=state-11:t
         %_  st
             replica-map    (~(put by replica-map.st) alias rep)
             replica-activity-map  replica-activities
@@ -3679,7 +4275,7 @@
       ?:  (gth sent-at.message (add now.bowl ~s30))  [~ st]
       =/  rep=replica:t
         u.found(status %online, last-seen now.bowl)
-      =/  nex=state-10:t
+      =/  nex=state-11:t
         %_  st
             replica-map       (~(put by replica-map.st) alias rep)
             peer-session-map  (~(put by peer-session-map.st) alias host-session.message)
@@ -3697,6 +4293,15 @@
         %leave              [~ st]
         %mutation           [~ st]
         %mutation-rejected  [~ st]
+        %transfer-request   [~ st]
+        %transfer-payload   [~ st]
+        %transfer-import    [~ st]
+        %transfer-imported  [~ st]
+        %transfer-finalize  [~ st]
+        %transfer-finalized  [~ st]
+        %transfer-restore   [~ st]
+        %transfer-restored  [~ st]
+        %transfer-rejected  [~ st]
     ==
   ::
   ++  alias-activities-fact
@@ -3714,10 +4319,10 @@
     |=(item=activity:t !(~(has in seen) id.item))
   ::
   ++  queue-collaboration-activities-fact
-    |=  [events=activity-log:t lis=task-list:t st=state-10:t]
+    |=  [events=activity-log:t lis=task-list:t st=state-11:t]
     ^-  (quip card _st)
     =/  cards=(list card)  ~
-    =/  nex=state-10:t  st
+    =/  nex=state-11:t  st
     |-
     ?~  events  [cards nex]
     =/  event=activity:t  i.events
@@ -3768,7 +4373,7 @@
     ==
   ::
   ++  collaboration-policy-for-fact
-    |=  [=list-id:t st=state-10:t]
+    |=  [=list-id:t st=state-11:t]
     ^-  collaboration-policy:t
     =/  found=(unit collaboration-policy:t)
       (~(get by collaboration-policy-map.st) list-id)
@@ -3814,25 +4419,25 @@
     (~(gas in *(set alert-key:t)) kept)
   ::
   ++  local-settings-card-fact
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  card
     =/  upd=update:t
       [%local-settings-updated list-order.st presentation-map.st collaboration-policy-map.st]
     [%give %fact ~[/all] %tend-update-1 !>(upd)]
   ::
   ++  set-replica-status
-    |=  [alias=list-id:t status=host-status:t st=state-10:t]
+    |=  [alias=list-id:t status=host-status:t st=state-11:t]
     ^-  (quip card _state)
     =/  found=(unit replica:t)  (~(get by replica-map.st) alias)
     ?~  found  [~ st]
     ?:  =(status status.u.found)  [~ st]
     =/  rep=replica:t  u.found(status status)
-    =/  nex=state-10:t
+    =/  nex=state-11:t
       st(replica-map (~(put by replica-map.st) alias rep))
     [(access-cards nex) nex]
   ::
   ++  drop-alias
-    |=  [alias=list-id:t st=state-10:t]
+    |=  [alias=list-id:t st=state-11:t]
     ^-  (quip card _state)
     =/  replicas=replicas:t  (~(del by replica-map.st) alias)
     =/  kept-snoozes=(list [snooze-key:t @da])
@@ -3847,7 +4452,7 @@
     =/  pinned=(list list-id:t)
       %+  skim  pinned-lists.prefs
       |=(id=list-id:t !=(id alias))
-    =/  nex=state-10:t
+    =/  nex=state-11:t
       %_  st
           replica-map    replicas
           replica-activity-map  (~(del by replica-activity-map.st) alias)
@@ -3881,12 +4486,12 @@
     [cards nex]
   ::
   ++  access-cards
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  (list card)
     [%give %fact ~[/all] %tend-update-1 !>([%accesses (accesses-for st)])]~
   ::
   ++  accesses-for
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  accesses:t
     =/  hosted=accesses:t
       %-  ~(rep by list-map.st)
@@ -3907,7 +4512,7 @@
     (weld hosted remote)
   ::
   ++  visible-for
-    |=  st=state-10:t
+    |=  st=state-11:t
     ^-  lists:t
     =/  entries=(list [list-id:t replica:t])  ~(tap by replica-map.st)
     =/  result=lists:t  list-map.st

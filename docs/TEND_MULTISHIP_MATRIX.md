@@ -4,14 +4,14 @@ This is the reproducible release evidence for Tend's owner-authoritative peer
 path. It intentionally uses fake ships so transport, authorization, persistence,
 and UI-facing access state can be exercised without production identities.
 
-Automated fault-matrix last run: 2026-09-11
+Automated fault-matrix last run: 2026-09-24
 
 Runtime: Vere 4.6
 
 Userspace: `%zuse` 409 on the owner; locally compatible `%zuse` 408 fake-ship
 bases on the two participants
 
-Tend state: `%10`
+Tend state: `%11`
 
 ## Topology
 
@@ -34,6 +34,7 @@ cover planet-, moon-, and comet-shaped identities.
 | Invite policy | `~bus` receives `can-invite`; `~nec` does not | Pass |
 | Both accept | Each home agent allocates a local alias and stores a non-authoritative replica | Pass |
 | Participant edit | `~bus` adds one reminder while owner is Online | Pass; owner and both replicas converged |
+| Cross-host subtree move | A participant moves a parent and child between lists hosted by different ships | Pass live on `~wex` → `~rus` and `~rus` → `~wex`; fresh destination IDs, nesting, source removal, replicas, and cleanup converged |
 | Activity convergence | Owner and participant mutate the shared list | Pass; authenticated actors, local aliases, and a recurring occurrence timestamp converged through snapshot and live subscription paths |
 | Private presentation | Owner and participant choose different list order/sort settings | Pass; settings persisted locally and did not enter peer snapshots |
 | Collaboration policy | Participant suppresses added alerts but enables completed/assigned alerts | Pass; only enabled categories arrived, durable alerts replayed until ack, and acknowledged alerts did not replay |
@@ -77,7 +78,7 @@ backend.
 The same live environment also verified durable alert replay/acknowledgement and
 owner-only atomic export/restore, including a no-mutation rejection when restore
 was attempted against non-empty state. The table-driven
-`check-tend-migrations.sh` gate separately passed non-empty `%0` through `%10`
+`check-tend-migrations.sh` gate separately passed non-empty `%0` through `%11`
 saved-state fixtures against the same library used by Gall load.
 
 ## Repeat the automated matrix
