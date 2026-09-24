@@ -879,6 +879,11 @@
         if (event.target.closest("[data-delete-reminder]")) { const list = selectedList(); const reminder = selectedReminder(); if (list && reminder && confirm("Delete this reminder?")) { await poke({"delete-reminder":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(reminder.id),"base-revision":Number(list.revision)}}); closeDetail(); } return; }
         if (event.target.closest("[data-delete-list]")) { const list = selectedList(); if (list && confirm(`Delete ${list.title}?`)) { await poke({"delete-list":{"operation-id":opId(),"list-id":Number(list.id),"base-revision":Number(list.revision)}}); state.rightTray=""; } return; }
         if (event.target.closest("[data-leave-list]")) { const list = selectedList(); if (list && confirm(`Leave ${list.title}?`)) { await poke({"leave-shared-list":{"operation-id":opId(),"list-id":Number(list.id)}}); state.rightTray=""; } return; }
+        if (state.rightTray && !event.target.closest("#settings-tray")) {
+          state.rightTray = "";
+          render();
+          return;
+        }
         if (state.selectedReminderId && !event.target.closest("#detail-tray") && !event.target.closest(".task")) closeDetail();
       });
       document.addEventListener("input", event => {
