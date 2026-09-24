@@ -91,6 +91,19 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertNotIn('data-selection-action="open"', selection_markup)
         self.assertNotIn('data-selection-action="delete"', selection_markup)
 
+    def test_web_detail_exposes_relationships_recurrence_and_local_due_time(self):
+        web = (ROOT / "desk" / "app" / "tend.html").read_text(encoding="utf-8")
+        self.assertIn("function reminderAncestors", web)
+        self.assertIn("function reminderDescendants", web)
+        self.assertIn('class="relationship-group"', web)
+        self.assertIn("function recurrencePayload", web)
+        self.assertIn('data-field="repeatFrequency"', web)
+        self.assertIn('data-field="repeatEndMode"', web)
+        self.assertIn("new Date(Date.UTC(+urbit[1]", web)
+        self.assertIn("date.getTime() - date.getTimezoneOffset() * 60000", web)
+        self.assertIn("@media (max-width: 520px)", web)
+        self.assertIn(".tray { width: 100vw; max-width: none; }", web)
+
     def test_batch_completion_records_each_scheduled_occurrence(self):
         self.assertIn("%batch-set-completed -.act", self.agent)
         self.assertIn("(scot %uv (sham [op-id.act id]))", self.agent)

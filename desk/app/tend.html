@@ -171,6 +171,16 @@
     .label { display: grid; gap: 5px; color: var(--muted); font-size: 12px; font-weight: 700; }
     .check-row { display: flex; align-items: center; gap: 8px; min-height: 34px; }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .schedule-line { display: grid; grid-template-columns: minmax(0,1fr) 40px; align-items: center; gap: 8px; }
+    .schedule-summary { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--text); font-weight: 600; }
+    .recurrence-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(100px,.52fr); gap: 9px; }
+    .relationship-group { display: grid; gap: 4px; }
+    .relationship-list { display: grid; gap: 2px; }
+    .relationship-button {
+      width: 100%; min-width: 0; overflow: hidden; padding: 4px 0; border: 0; background: transparent;
+      color: var(--muted); text-align: left; white-space: nowrap; text-overflow: ellipsis; font-size: 12px;
+    }
+    .relationship-button:hover { color: var(--text); text-decoration: underline; }
     .tag-box { display: flex; flex-wrap: wrap; gap: 6px; padding: 7px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); }
     .tag-box input { min-width: 110px; flex: 1; border: 0; outline: 0; background: transparent; }
     .chip { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; padding: 4px 7px; border-radius: 999px; background: var(--accent-soft); font-size: 12px; }
@@ -216,6 +226,10 @@
       .composer-row #new-reminder-assignee { grid-column: 1 / -1; grid-row: 2; }
       .task-actions { display: flex; align-self: center; }
       .topbar { padding-inline: 12px; }
+      .recurrence-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .tray { width: 100vw; max-width: none; }
     }
   </style>
 </head>
@@ -321,11 +335,77 @@
         const raw = schedule && (schedule["due-at"] || schedule.dueAt);
         if (!raw) return "";
         const urbit = String(raw).match(/^~(\d+)\.(\d+)\.(\d+)\.\.(\d+)\.(\d+)/);
-        if (urbit) return `${urbit[1]}-${String(urbit[2]).padStart(2,"0")}-${String(urbit[3]).padStart(2,"0")}T${String(urbit[4]).padStart(2,"0")}:${String(urbit[5]).padStart(2,"0")}`;
+        if (urbit) {
+          const date = new Date(Date.UTC(+urbit[1], +urbit[2] - 1, +urbit[3], +urbit[4], +urbit[5]));
+          const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+          return local.toISOString().slice(0,16);
+        }
         const date = new Date(raw);
         if (Number.isNaN(date.getTime())) return String(raw).slice(0,16);
         const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
         return local.toISOString().slice(0,16);
+      }
+      function formatDraftDue(value, allDay = false) {
+        if (!value) return "No due date";
+        const parsed = new Date(String(value).length === 10 ? String(value) + "T09:00:00" : value);
+        if (Number.isNaN(parsed.getTime())) return String(value).replace("T", " · ");
+        return allDay ? parsed.toLocaleDateString() : parsed.toLocaleString([], {dateStyle:"medium", timeStyle:"short"});
+      }
+      function recurrenceDraft(schedule) {
+        const value = schedule && schedule.recurrence;
+        if (!value) return {frequency:"none", interval:1, weekdays:[], monthDays:[], monthWeek:null, endMode:"never", endAt:"", maxOccurrences:1};
+        const endAt = inputDue({"due-at":value["local-end"] || value.localEnd || value["end-at"] || value.endAt || ""});
+        const maximum = value["max-occurrences"] ?? value.maxOccurrences ?? null;
+        return {
+          frequency:String(value.frequency || "daily"), interval:Math.max(1, Number(value.interval || 1)),
+          weekdays:[...(value.weekdays || [])].map(Number), monthDays:[...(value["month-days"] || value.monthDays || [])].map(Number),
+          monthWeek:value["month-week"] || value.monthWeek || null,
+          endMode:endAt ? "on date" : maximum !== null ? "after count" : "never",
+          endAt, maxOccurrences:maximum === null ? 1 : Math.max(1, Number(maximum))
+        };
+      }
+      function recurrencePayload(draft) {
+        if (!draft || draft.repeatFrequency === "none") return null;
+        const base = draft.recurrenceBase || {};
+        return {
+          frequency:draft.repeatFrequency, interval:Math.max(1, Number(draft.repeatInterval || 1)),
+          weekdays:[...(base.weekdays || [])].map(Number), "month-days":[...(base.monthDays || [])].map(Number),
+          "month-week":base.monthWeek || null,
+          "end-at":draft.repeatEndMode === "on date" && draft.repeatEndAt ? draft.repeatEndAt : null,
+          "max-occurrences":draft.repeatEndMode === "after count" ? Math.max(1, Number(draft.repeatCount || 1)) : null
+        };
+      }
+      function normalizedScheduleRecurrence(schedule) {
+        const value = recurrenceDraft(schedule);
+        if (value.frequency === "none") return null;
+        return {
+          frequency:value.frequency, interval:value.interval, weekdays:value.weekdays, "month-days":value.monthDays,
+          "month-week":value.monthWeek, "end-at":value.endMode === "on date" ? value.endAt : null,
+          "max-occurrences":value.endMode === "after count" ? value.maxOccurrences : null
+        };
+      }
+      function reminderAncestors(list, reminder) {
+        if (!list || !reminder) return [];
+        const reminders = list.reminders || []; const result = []; const seen = new Set([Number(reminder.id)]);
+        let parentId = reminder["parent-id"] ?? reminder.parentId ?? null;
+        while (parentId !== null && parentId !== undefined && result.length < 24) {
+          const numeric = Number(parentId); if (seen.has(numeric)) break; seen.add(numeric);
+          const parent = reminders.find(item => Number(item.id) === numeric); if (!parent) break;
+          result.unshift({id:Number(parent.id), title:String(parent.title || "Untitled reminder")});
+          parentId = parent["parent-id"] ?? parent.parentId ?? null;
+        }
+        return result.map((item, depth) => ({...item, depth}));
+      }
+      function reminderDescendants(list, reminder) {
+        if (!list || !reminder) return [];
+        const reminders = list.reminders || []; const result = []; const seen = new Set([Number(reminder.id)]);
+        const append = (parentId, depth) => {
+          if (depth > 24) return;
+          reminders.filter(item => Number(item["parent-id"] ?? item.parentId) === Number(parentId))
+            .sort((a,b) => Number(a.rank || 0) - Number(b.rank || 0) || Number(a.id) - Number(b.id))
+            .forEach(child => { if (seen.has(Number(child.id))) return; seen.add(Number(child.id)); result.push({id:Number(child.id), title:String(child.title || "Untitled reminder"), depth}); append(child.id, depth + 1); });
+        };
+        append(reminder.id, 0); return result;
       }
       function allTags() {
         return [...new Set(state.lists.flatMap(list => (list.reminders || []).flatMap(reminder => reminder.tags || [])))].sort();
@@ -555,7 +635,16 @@
       }
       function draftFor(reminder) {
         if (state.detailDraft && Number(state.detailDraft.id) === Number(reminder.id)) return state.detailDraft;
-        state.detailDraft = {id:reminder.id, title:String(reminder.title || ""), notes:String(reminder.notes || ""), url:String(reminder.url || ""), priority:String(reminder.priority || "none"), flagged:reminder.flagged === true, completed:reminder.completed === true, assignee:normalizeShip(reminder.assignee), tags:[...(reminder.tags || [])], due:inputDue(reminder.schedule), allDay:!!(reminder.schedule && reminder.schedule["all-day"]), parentId:reminder["parent-id"] ?? reminder.parentId ?? null};
+        const repeat = recurrenceDraft(reminder.schedule);
+        state.detailDraft = {
+          id:reminder.id, title:String(reminder.title || ""), notes:String(reminder.notes || ""), url:String(reminder.url || ""),
+          priority:String(reminder.priority || "none"), flagged:reminder.flagged === true, completed:reminder.completed === true,
+          assignee:normalizeShip(reminder.assignee), tags:[...(reminder.tags || [])], due:inputDue(reminder.schedule),
+          allDay:!!(reminder.schedule && reminder.schedule["all-day"]), parentId:reminder["parent-id"] ?? reminder.parentId ?? null,
+          repeatFrequency:repeat.frequency, repeatInterval:repeat.interval, repeatEndMode:repeat.endMode,
+          repeatEndAt:repeat.endAt, repeatCount:repeat.maxOccurrences,
+          recurrenceBase:{weekdays:repeat.weekdays, monthDays:repeat.monthDays, monthWeek:repeat.monthWeek}
+        };
         return state.detailDraft;
       }
       function renderDetail() {
@@ -570,12 +659,19 @@
         if (!list || !reminder) { tray.innerHTML = ""; return; }
         const draft = draftFor(reminder); const editable = canEdit(list.id) && !state.busy;
         const movableLists = movableListsFrom(list.id).map(item => ({value:item.id,label:item.title}));
+        const ancestors = reminderAncestors(list, reminder); const descendants = reminderDescendants(list, reminder);
+        const relationshipHtml = ancestors.length || descendants.length ? `<div class="form-section"><div class="relationship-group" ${ancestors.length ? "" : "hidden"}><span class="eyebrow">Ancestors</span><div class="relationship-list">${ancestors.map(item => `<button class="relationship-button" style="padding-left:${item.depth * 14}px" type="button" data-related-reminder="${item.id}">↳ ${escapeHtml(item.title)}</button>`).join("")}</div></div><div class="relationship-group" ${descendants.length ? "" : "hidden"}><span class="eyebrow">Descendants</span><div class="relationship-list">${descendants.map(item => `<button class="relationship-button" style="padding-left:${(item.depth + 1) * 14}px" type="button" data-related-reminder="${item.id}">↳ ${escapeHtml(item.title)}</button>`).join("")}</div></div></div>` : "";
+        const frequencyOptions = ["none","hourly","daily","weekly","monthly","yearly"].map(value => `<option value="${value}" ${draft.repeatFrequency === value ? "selected" : ""}>${value}</option>`).join("");
+        const endingOptions = ["never","on date","after count"].map(value => `<option value="${value}" ${draft.repeatEndMode === value ? "selected" : ""}>${value}</option>`).join("");
+        const unit = draft.repeatFrequency === "hourly" ? "hour" : draft.repeatFrequency === "daily" ? "day" : draft.repeatFrequency === "weekly" ? "week" : draft.repeatFrequency === "monthly" ? "month" : "year";
+        const recurrenceHtml = draft.due ? `<span class="eyebrow">Repeat</span><label class="label">Repeat<select class="select detail-immediate" data-field="repeatFrequency" ${editable ? "" : "disabled"}>${frequencyOptions}</select></label>${draft.repeatFrequency !== "none" ? `<div class="recurrence-grid"><label class="label">Every<input class="field detail-immediate" data-field="repeatInterval" type="number" min="1" max="999" value="${Number(draft.repeatInterval || 1)}" ${editable ? "" : "disabled"}></label><div class="label"><span>Unit</span><div class="field" style="display:flex;align-items:center">${escapeHtml(Number(draft.repeatInterval || 1) === 1 ? unit : unit + "s")}</div></div></div><label class="label">Ends<select class="select detail-immediate" data-field="repeatEndMode" ${editable ? "" : "disabled"}>${endingOptions}</select></label>${draft.repeatEndMode === "on date" ? `<div class="schedule-line"><span class="schedule-summary">${escapeHtml(draft.repeatEndAt ? formatDraftDue(draft.repeatEndAt) : "Choose an end date")}</span><label class="compact-date" title="Set repeat end date"><span class="calendar-glyph" aria-hidden="true"></span><input class="detail-immediate" data-field="repeatEndAt" type="datetime-local" value="${escapeHtml(draft.repeatEndAt)}" aria-label="Repeat end date" ${editable ? "" : "disabled"}></label></div>` : ""}${draft.repeatEndMode === "after count" ? `<label class="label">Occurrences<input class="field detail-immediate" data-field="repeatCount" type="number" min="1" max="9999" value="${Number(draft.repeatCount || 1)}" ${editable ? "" : "disabled"}></label>` : ""}` : ""}` : "";
         tray.innerHTML = `<div class="tray-head"><div><div class="eyebrow">Reminder details</div><div class="muted tiny">${escapeHtml(list.title)}</div></div><div class="tray-actions"><button class="flag ${draft.flagged ? "active" : ""}" type="button" data-detail-flag ${editable ? "" : "disabled"} aria-pressed="${draft.flagged}" aria-label="${draft.flagged ? "Remove flag" : "Flag reminder"}" title="${draft.flagged ? "Remove flag" : "Flag reminder"}">⚑</button><button class="icon-button" data-close-detail aria-label="Close details">×</button></div></div>
           <div class="form-section"><label class="check-row"><input class="check detail-immediate" data-field="completed" type="checkbox" ${draft.completed ? "checked" : ""} ${editable ? "" : "disabled"}> Completed</label></div>
           <div class="form-section"><label class="label">Title<input class="field detail-text" data-field="title" value="${escapeHtml(draft.title)}" ${editable ? "" : "disabled"}></label><label class="label">Notes<textarea class="textarea detail-text" data-field="notes" ${editable ? "" : "disabled"}>${escapeHtml(draft.notes)}</textarea></label><label class="label">Link<input class="field detail-text" data-field="url" value="${escapeHtml(draft.url)}" placeholder="https://" ${editable ? "" : "disabled"}></label></div>
           <div class="form-section"><div class="two-col"><label class="label">Priority<select class="select detail-immediate" data-field="priority" ${editable ? "" : "disabled"}>${["none","low","medium","high"].map(value => `<option ${draft.priority === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label class="label">Assignee<select class="select detail-immediate" data-field="assignee" ${editable ? "" : "disabled"}>${optionHtml(assigneeOptions(list), draft.assignee)}</select></label></div><label class="label">List<select class="select" data-move-list ${editable && movableLists.length > 1 ? "" : "disabled"}>${optionHtml(movableLists, list.id)}</select></label></div>
           <div class="form-section"><label class="label">Tags<div class="tag-box" id="tag-box">${draft.tags.map(tag => `<span class="chip">#${escapeHtml(tag)}<button data-remove-tag="${escapeHtml(tag)}" aria-label="Remove ${escapeHtml(tag)}">×</button></span>`).join("")}<input id="tag-input" list="tag-suggestions" placeholder="Find or add a tag" ${editable ? "" : "disabled"}></div></label><datalist id="tag-suggestions">${allTags().filter(tag => !draft.tags.includes(tag)).map(tag => `<option value="${escapeHtml(tag)}">`).join("")}</datalist></div>
-          <div class="form-section"><span class="eyebrow">Schedule</span><input class="field detail-immediate" data-field="due" type="datetime-local" value="${escapeHtml(draft.due)}" ${editable ? "" : "disabled"}><label class="check-row"><input class="check detail-immediate" data-field="allDay" type="checkbox" ${draft.allDay ? "checked" : ""} ${editable ? "" : "disabled"}> All day</label></div>
+          ${relationshipHtml}
+          <div class="form-section"><span class="eyebrow">Schedule</span><div class="schedule-line"><span class="schedule-summary">${escapeHtml(formatDraftDue(draft.due, draft.allDay))}</span><label class="compact-date" title="Set due date"><span class="calendar-glyph" aria-hidden="true"></span><input class="detail-immediate" data-field="due" type="datetime-local" value="${escapeHtml(draft.due)}" aria-label="Due date" ${editable ? "" : "disabled"}></label></div><label class="check-row"><input class="check detail-immediate" data-field="allDay" type="checkbox" ${draft.allDay ? "checked" : ""} ${editable && draft.due ? "" : "disabled"}> All day</label>${recurrenceHtml}</div>
           <div class="divider"></div><button class="button danger" data-delete-reminder ${editable ? "" : "disabled"}>Delete reminder</button>`;
         if (focusField) requestAnimationFrame(() => {
           const field = focusField === "tag-input" ? tray.querySelector("#tag-input") : tray.querySelector(`[data-field="${focusField}"]`);
@@ -616,7 +712,7 @@
 
       function updateDraftField(target) {
         const field = target.dataset.field; if (!field || !state.detailDraft) return;
-        state.detailDraft[field] = target.type === "checkbox" ? target.checked : target.value;
+        state.detailDraft[field] = target.type === "checkbox" ? target.checked : target.type === "number" ? Number(target.value) : target.value;
       }
       function scheduleDetailSave() {
         clearTimeout(state.saveTimer);
@@ -635,8 +731,9 @@
         const refreshedList = selectedList(); const refreshedReminder = selectedReminder();
         if (!refreshedList || !refreshedReminder) return;
         const oldDue = inputDue(refreshedReminder.schedule); const oldAllDay = !!(refreshedReminder.schedule && refreshedReminder.schedule["all-day"]);
-        if (draft.due !== oldDue || draft.allDay !== oldAllDay) {
-          await poke({"set-schedule":{"operation-id":opId(),"list-id":Number(refreshedList.id),"reminder-id":Number(refreshedReminder.id),schedule:draft.due ? {"due-at":draft.due,"all-day":draft.allDay,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,"_all-day-alert-minute":Number(state.preferences["all-day-alert-minute"] || 0),"early-seconds":[],recurrence:null} : null,"base-revision":Number(refreshedList.revision)}},{quiet:true});
+        const nextRecurrence = recurrencePayload(draft); const oldRecurrence = normalizedScheduleRecurrence(refreshedReminder.schedule);
+        if (draft.due !== oldDue || draft.allDay !== oldAllDay || JSON.stringify(nextRecurrence) !== JSON.stringify(oldRecurrence)) {
+          await poke({"set-schedule":{"operation-id":opId(),"list-id":Number(refreshedList.id),"reminder-id":Number(refreshedReminder.id),schedule:draft.due ? {"due-at":draft.due,"all-day":draft.allDay,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,"_all-day-alert-minute":Number(state.preferences["all-day-alert-minute"] || 0),"early-seconds":[],recurrence:nextRecurrence} : null,"base-revision":Number(refreshedList.revision)}},{quiet:true});
         }
         showNotice("Details saved");
       }
@@ -739,6 +836,8 @@
         if (event.target.closest("#sort-direction")) { state.descending = !state.descending; renderMain(); return; }
         if (event.target.closest("[data-toggle-selection]")) { state.selectionMode = !state.selectionMode; state.selectedReminderIds.clear(); closeDetail(); return; }
         if (event.target.closest("[data-close-detail]")) { closeDetail(); return; }
+        const relatedReminder = event.target.closest("[data-related-reminder]");
+        if (relatedReminder) { state.selectedReminderId = Number(relatedReminder.dataset.relatedReminder); state.detailDraft = null; renderDetail(); return; }
         if (event.target.closest("[data-close-settings]")) { state.rightTray = ""; render(); return; }
         if (event.target.closest("#open-settings")) { openSettings("app"); return; }
         if (event.target.closest("[data-open-list-settings]")) { openSettings("list"); return; }
@@ -809,7 +908,11 @@
           await poke({"set-completed":{"operation-id":opId(),"list-id":listId,"reminder-id":reminderId,completed:complete.checked,"base-revision":Number(list.revision)}},{quiet:true});
           return;
         }
-        if (event.target.matches(".detail-immediate")) { updateDraftField(event.target); await saveDetail(); }
+        if (event.target.matches(".detail-immediate")) {
+          updateDraftField(event.target);
+          if (["repeatFrequency","repeatEndMode","repeatInterval","repeatEndAt","repeatCount","due","allDay"].includes(event.target.dataset.field)) renderDetail();
+          await saveDetail();
+        }
       });
       document.addEventListener("keydown", async event => {
         if (event.target.id === "tag-input" && event.key === "Enter") {
