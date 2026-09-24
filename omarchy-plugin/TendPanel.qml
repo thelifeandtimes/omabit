@@ -47,7 +47,9 @@ Item {
         return root.hiddenInvitationKeys.indexOf(root.invitationKey(invitation)) === -1;
     }) : []
     readonly property color opaqueMenuBackground: Qt.rgba(Color.menu.background.r, Color.menu.background.g, Color.menu.background.b, 1)
-    readonly property bool compactMode: window.width < Style.space(820)
+    // Omarchy's panel surface currently bottoms out near 840 logical pixels.
+    // Keep the full-surface mobile layout reachable at that real minimum.
+    readonly property bool compactMode: window.width <= Style.space(860)
     property var selectedList: null
     readonly property var selectedReminder: {
         var reminders = selectedList ? selectedList.reminders : [];
