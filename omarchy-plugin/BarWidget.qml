@@ -32,6 +32,11 @@ Panel {
     : null
   readonly property var assigneeOptions: assigneeOptionsForList(selectedDestination)
   readonly property color dim: Qt.rgba(barForeground.r, barForeground.g, barForeground.b, 0.6)
+  readonly property string selectedViewLabel: {
+    var index = smartViewKeys.indexOf(selectedView)
+    return index >= 0 ? smartViewLabels[index] : "Reminders"
+  }
+  readonly property string headerMeta: "~" + (tendService ? tendService.ship : "") + " · " + selectedViewLabel
 
   function normalizedShip(value) {
     var name = String(value || "").replace(/^~/, "")
@@ -191,29 +196,49 @@ Panel {
 
         RowLayout {
           Layout.fillWidth: true
-          spacing: Style.space(8)
+          spacing: Style.space(12)
 
-          Row {
+          PanelHero {
+            id: tendHero
             Layout.fillWidth: true
-            spacing: Style.space(7)
+            title: "Tend"
+            meta: root.headerMeta
+            detail: String(root.taskCount)
+            foreground: root.barForeground
+            fontFamily: root.bar ? root.bar.fontFamily : Style.font.family
+            iconComponent: Component {
+              Item {
+                implicitWidth: Style.font.display
+                implicitHeight: Style.font.display
 
-            Text {
-              anchors.verticalCenter: parent.verticalCenter
-              text: "TEND · ~" + (root.tendService ? root.tendService.ship : "")
-              color: root.barForeground
-              font.family: root.bar ? root.bar.fontFamily : Style.font.family
-              font.pixelSize: Style.font.caption
-              font.bold: true
-            }
+                Text {
+                  anchors.centerIn: parent
+                  text: "󰄬"
+                  textFormat: Text.PlainText
+                  color: root.barForeground
+                  font.family: root.bar ? root.bar.fontFamily : Style.font.family
+                  font.pixelSize: Style.font.display
+                }
 
-            Rectangle {
-              anchors.verticalCenter: parent.verticalCenter
-              width: Style.space(8)
-              height: width
-              radius: width / 2
-              color: root.state === "online" ? "#22c55e" : "#ef4444"
-              Accessible.role: Accessible.Indicator
-              Accessible.name: root.state === "online" ? "Connected to Tend" : "Tend connection unavailable"
+                Rectangle {
+                  anchors.right: parent.right
+                  anchors.bottom: parent.bottom
+                  width: Style.space(11)
+                  height: width
+                  radius: width / 2
+                  color: Color.popups.background
+
+                  Rectangle {
+                    anchors.centerIn: parent
+                    width: Style.space(7)
+                    height: width
+                    radius: width / 2
+                    color: root.state === "online" ? "#22c55e" : "#ef4444"
+                    Accessible.role: Accessible.Indicator
+                    Accessible.name: root.state === "online" ? "Connected to Tend" : "Tend connection unavailable"
+                  }
+                }
+              }
             }
           }
 
