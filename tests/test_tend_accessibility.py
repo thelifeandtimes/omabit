@@ -281,6 +281,17 @@ class TendAccessibilityTests(unittest.TestCase):
             self.assertIn(f'"Show unpinned {noun}"', block)
             self.assertIn("Accessible.name: tooltipText", block)
 
+    def test_click_away_handlers_do_not_take_pointer_grabs_from_controls(self):
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+        handlers = panel.split("TapHandler {")[1:]
+
+        self.assertGreaterEqual(len(handlers), 2)
+        for block in handlers[:2]:
+            handler = block.split("}", 1)[0]
+            self.assertIn("grabPermissions: PointerHandler.ApprovesTakeOverByAnything", handler)
+        self.assertIn("id: addSectionButton", panel)
+        self.assertIn("id: selectModeButton", panel)
+
     def test_selection_mode_is_for_organization_not_completion_or_deletion(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         selection = panel.split('visible: root.selectionMode && root.viewMode === "list"', 1)[1].split("Rectangle {", 1)[0]

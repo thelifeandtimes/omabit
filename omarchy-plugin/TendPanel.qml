@@ -1434,6 +1434,7 @@ Item {
 
                             TapHandler {
                                 acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                                grabPermissions: PointerHandler.ApprovesTakeOverByAnything
                                 onTapped: {
                                     if (root.selectedReminderId !== 0) root.selectedReminderId = 0;
                                     if (root.rightTrayMode !== "") root.rightTrayMode = "";
@@ -1488,6 +1489,7 @@ Item {
 
                                 TapHandler {
                                     acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+                                    grabPermissions: PointerHandler.ApprovesTakeOverByAnything
                                     onTapped: {
                                         if (root.selectedReminderId !== 0) root.selectedReminderId = 0;
                                         if (root.rightTrayMode !== "") root.rightTrayMode = "";
