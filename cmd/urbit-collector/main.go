@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -35,6 +34,7 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	format := "json"
 	fail := func(err error, code int) int {
 		problem := protocol.APIError{Code: "client_error", Message: err.Error()}
 		var remote *client.RemoteError
@@ -43,8 +43,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		} else if errors.Is(err, client.ErrIdentityMismatch) {
 			problem = protocol.APIError{Code: "runner_identity_mismatch", Message: client.ErrIdentityMismatch.Error()}
 		}
-		encoder := json.NewEncoder(stderr)
-		encoder.SetIndent("", "  ")
+		encoder := newOutput(stderr, format, false)
 		_ = encoder.Encode(protocol.ErrorResponse{Error: problem})
 		return code
 	}
@@ -55,6 +54,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	socket := globals.String("socket", "", "absolute path to the runner Unix socket")
 	runnerName := globals.String("runner", "", "enrolled runner name (exclusive with --socket)")
 	configDir := globals.String("config-dir", "", "private collector enrollment directory (default: XDG config/urbit-collector)")
+	globals.StringVar(&format, "format", "json", "output format: json or text (before subcommand)")
 	if err := globals.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			fmt.Fprint(stdout, `Usage: urbit-collector [--config-dir /private/directory] [--socket /absolute/path/runner.sock | --runner NAME] COMMAND
@@ -79,6 +79,7 @@ Commands:
   watch [--interval 1s]
               Poll snapshots until canceled; minimum interval: 100ms.
 
+Use --format text for readable tables, including watch output.
 Use COMMAND --help for command flags and constraints.
 
 `+scope)
@@ -87,13 +88,16 @@ Use COMMAND --help for command flags and constraints.
 		return fail(err, 2)
 	}
 	args = globals.Args()
+	if format != "json" && format != "text" {
+		return fail(errors.New("--format must be json or text"), 2)
+	}
 	if len(args) == 0 {
 		return fail(errors.New("a subcommand is required; use --help for usage"), 2)
 	}
 	command := args[0]
 	args = args[1:]
 	if command == "enroll" || command == "runners" || command == "forget" || command == "inventory" {
-		return runCollection(ctx, command, args, *configDir, *socket, *runnerName, stdout, fail)
+		return runCollection(ctx, command, args, *configDir, *socket, *runnerName, format, stdout, fail)
 	}
 	flags := flag.NewFlagSet(command, flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
@@ -219,8 +223,7 @@ Use COMMAND --help for command flags and constraints.
 		}
 		return fail(err, 1)
 	}
-	encoder := json.NewEncoder(stdout)
-	encoder.SetIndent("", "  ")
+	encoder := newOutput(stdout, format, command == "watch")
 	var result any
 	switch command {
 	case "hello":
@@ -244,7 +247,6 @@ Use COMMAND --help for command flags and constraints.
 			RequestID: requestID, Kind: kind, ExpectedRevision: revision,
 		})
 	case "watch":
-		encoder.SetIndent("", "")
 		ticker := time.NewTicker(interval)
 		defer ticker.Stop()
 		for {

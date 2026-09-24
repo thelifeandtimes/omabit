@@ -1,10 +1,11 @@
 # Implementation plan
 
-Work in independently reviewable commits. Automated tests do not replace manual
-acceptance gates. When a runnable checkpoint is available, document exact steps,
-expected results, limitations, and cleanup, then pause for the user's validation
-before moving across that gate. Never use a production pier or identity for an
-automated test.
+Work in independently reviewable commits. On September 24 the user authorized
+autonomous progress across checkpoints wherever validation can be performed
+programmatically. Record the evidence and distinguish fixture results from live
+deployment evidence. Pause only for essential manual intervention, with exact
+steps, readable output, expected results, and cleanup. Never use a production
+pier or identity for an automated test.
 
 ## Progress
 
@@ -51,9 +52,12 @@ automated test.
 - Checkpoint 4A implements persistent collector enrollment, named runner selection,
   per-connection identity verification, and independently polled inventory over
   private local sockets. Its [manual gate](checkpoints/06-collector-enrollment.md)
-  checks the existing managed runner plus isolated multi-runner fixtures. Live
-  acceptance is pending. SSH access/key attribution and generic Eyre sessions
-  remain the next phase-4 increments.
+  passed: the user's 04:41 UTC watch observation confirms the enrolled workstation
+  and healthy alpha at revision 2. `scripts/validate-collection.py` verified two
+  actual simulator processes, independent collector registries, selected routing,
+  stale-revision rejection, unavailable-runner isolation, and replacement refusal
+  before mutation. `--format text` now provides readable tables, including watches.
+  SSH access/key attribution and generic Eyre sessions remain next.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator

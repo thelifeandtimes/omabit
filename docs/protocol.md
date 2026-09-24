@@ -201,6 +201,8 @@ urbit-collector [--config-dir DIR] forget NAME --runner-id EXPECTED_ID
 ```
 
 Global options precede the subcommand. `enroll` takes its socket after NAME.
+`--format text` selects readable tables for snapshots, inventory, and watches;
+JSON remains the default, with NDJSON for watch output.
 Existing `--socket PATH` command selection remains available and is mutually
 exclusive with `--runner NAME`. There is no implicit default runner for mutations.
 

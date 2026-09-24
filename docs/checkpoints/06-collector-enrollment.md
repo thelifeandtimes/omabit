@@ -3,7 +3,11 @@
 Prerequisite: the exercised checkpoint 3A lifecycle is accepted, including the
 probe timing fix. This checkpoint adds a persistent collector connection registry
 and verifies routing, identity continuity, and independently polled inventory.
-Implementation and automated checks are complete; live acceptance is pending.
+The workstation enrollment/watch was validated by the user at 04:41 UTC on
+September 24. The remaining simulator scenarios passed programmatically using
+`python3 scripts/validate-collection.py`; repeating them manually is optional.
+Use `--format text` before the subcommand for readable tables, for example
+`collector4 --format text inventory --watch --interval 1s`.
 
 The first part observes the existing healthy managed runner. The second part uses
 two memory-only simulators for connection loss and identity replacement. All

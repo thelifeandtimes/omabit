@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -24,7 +23,7 @@ func openRegistry(dir string) (*collection.Registry, error) {
 	return collection.Open(dir)
 }
 
-func runCollection(ctx context.Context, command string, args []string, dir, socket, runner string, stdout io.Writer, fail func(error, int) int) int {
+func runCollection(ctx context.Context, command string, args []string, dir, socket, runner, format string, stdout io.Writer, fail func(error, int) int) int {
 	flags := flag.NewFlagSet(command, flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
 	flags.Usage = func() {}
@@ -82,8 +81,7 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 	if err != nil {
 		return fail(err, 1)
 	}
-	encoder := json.NewEncoder(stdout)
-	encoder.SetIndent("", "  ")
+	encoder := newOutput(stdout, format, watch)
 	var result any
 	code := 0
 	switch command {
@@ -107,7 +105,6 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 			return fail(listErr, 1)
 		}
 		if watch {
-			encoder.SetIndent("", "")
 			err := collection.Watch(ctx, entries, interval, func(v collection.Observation) error { return encoder.Encode(v) })
 			if ctx.Err() != nil && errors.Is(err, ctx.Err()) {
 				return 0
