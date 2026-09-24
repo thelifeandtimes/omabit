@@ -13,7 +13,6 @@ Item {
   property color foreground: Color.foreground
   property color background: Color.popups.background
   property color accent: Color.accent
-  property bool suppressTriggerRelease: false
   signal committed(string value, bool allDay)
 
   property int shownYear: new Date().getFullYear()
@@ -77,35 +76,27 @@ Item {
     Qt.callLater(root.placePopup)
   }
 
-  function toggle() {
-    if (picker.opened) {
-      picker.close()
-      return
-    }
-    if (suppressTriggerRelease) {
-      suppressTriggerRelease = false
-      triggerReleaseGuard.stop()
-      return
-    }
-    open()
-  }
-
-  Timer {
-    id: triggerReleaseGuard
-    interval: 500
-    repeat: false
-    onTriggered: root.suppressTriggerRelease = false
-  }
-
   TendButton {
     id: trigger
     anchors.fill: parent
     text: ""
     bordered: true
     Accessible.name: root.value ? "Due " + root.displayValue() : root.placeholderText
-    onClicked: root.toggle()
+    onClicked: root.open()
+
+    OpticalGlyph {
+      anchors.centerIn: parent
+      width: Style.font.icon
+      height: Style.font.icon
+      visible: root.iconOnly
+      text: "󰃭"
+      color: root.foreground
+      fontSize: Style.font.icon
+      opacity: 0.72
+    }
 
     Row {
+      visible: !root.iconOnly
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.verticalCenter: parent.verticalCenter
@@ -125,14 +116,14 @@ Item {
         font.pixelSize: Style.font.body
       }
 
-      Text {
+      OpticalGlyph {
         id: calendarGlyph
-        anchors.verticalCenter: parent.verticalCenter
+        width: Style.font.icon
+        height: Style.font.icon
         text: "󰃭"
         color: root.foreground
         opacity: 0.72
-        font.family: Style.font.family
-        font.pixelSize: Style.font.icon
+        fontSize: Style.font.icon
       }
     }
   }
@@ -146,14 +137,10 @@ Item {
     height: Math.min(Style.space(394), parent ? Math.max(0, parent.height - Style.space(16)) : Style.space(394))
     padding: Style.space(12)
     focus: true
+    modal: true
+    dim: false
     closePolicy: QQC.Popup.CloseOnEscape | QQC.Popup.CloseOnPressOutside
     onOpened: Qt.callLater(root.placePopup)
-    onClosed: {
-      // CloseOnPressOutside sees the trigger as outside this window-level popup.
-      // Ignore the matching release click so it cannot immediately reopen us.
-      root.suppressTriggerRelease = true
-      triggerReleaseGuard.restart()
-    }
 
     background: BorderSurface {
       color: root.background
