@@ -133,6 +133,10 @@ are 0 for success, 1 for request/transport failures, and 2 for usage errors.
 connection failure exits 1 rather than presenting stale state as current. There
 is not yet an event stream or automatic reconnect loop.
 
+The collector's multi-runner `inventory --watch` command described below has a
+separate per-connection polling/reconnect contract; single-runner `watch` retains
+the fail-on-connection-error behavior above.
+
 ## Checkpoint 3A: durable development extension
 
 `hello.mode` is `development-managed-fake`; features include `create-fake`,
@@ -181,3 +185,84 @@ registered fake ships, pinned image/pill, loom 31, reserved/unpublished Ames val
 34343, and IPv4 loopback HTTP ports 1024..65535. Keys, pier import, deletion,
 maintenance scheduling, SSH authorization, and multi-operator key attribution
 remain later milestones. Stopping management leaves running ships alive.
+
+## Checkpoint 4A: collector enrollment and inventory
+
+This is a collector extension; runner protocol version 1 and existing runners
+remain compatible. No runner-side endpoint or authorization change is required.
+
+```text
+urbit-collector [--config-dir DIR] enroll NAME --socket /absolute/runner.sock
+urbit-collector [--config-dir DIR] runners
+urbit-collector [--config-dir DIR] --runner NAME hello|snapshot|watch
+urbit-collector [--config-dir DIR] --runner NAME configure|operate|create-fake ...
+urbit-collector [--config-dir DIR] inventory [--watch] [--interval 1s]
+urbit-collector [--config-dir DIR] forget NAME --runner-id EXPECTED_ID
+```
+
+Global options precede the subcommand. `enroll` takes its socket after NAME.
+Existing `--socket PATH` command selection remains available and is mutually
+exclusive with `--runner NAME`. There is no implicit default runner for mutations.
+
+Enrollment contacts `/hello`, checks protocol compatibility, and saves the
+connection name, transport (`unix`), absolute socket path, runner ID, mode, and
+enrollment time. The same enrollment is a no-op. Conflicting names, identities,
+or socket addresses are refused rather than updated silently. At most 32 runners
+are enrolled in one registry. `forget` checks the expected identity and removes
+only collector-local enrollment, even when offline.
+
+Registry format version 1 lives in `runners.json` under
+`$XDG_CONFIG_HOME/urbit-collector`, or `~/.config/urbit-collector` by default.
+`--config-dir` supplies an explicit alternative. The directory is owned/private
+0700 and files are 0600. Updates use an interprocess lock, file sync, atomic rename,
+and directory sync. Invalid/unknown registries are refused rather than reset.
+Credentials, piers, and runner journals are not stored there.
+
+Named connections verify runner ID and mode through `/hello` on **every newly
+dialed connection**, before any command is sent on it. This includes reconnects
+between initial negotiation and a mutation. Snapshot identity must also match.
+`runner_identity_mismatch` blocks use without overwriting the saved pin. This pin
+detects unexpected replacement; it is not cryptographic authentication. Local
+socket permissions remain the authentication boundary, and actor attribution
+still comes from the runner's existing local transport. Two collector directories
+are not two independently authenticated operators.
+
+`inventory` returns:
+
+```json
+{
+  "connections": [
+    {
+      "name": "workstation",
+      "runner_id": "runner-example",
+      "mode": "development-managed-fake",
+      "status": "available",
+      "checked_at": "2026-09-24T02:28:09Z",
+      "snapshot": {"runner_id": "runner-example", "mode": "development-managed-fake", "instances": [], "operations": [], "incidents": []}
+    }
+  ],
+  "complete": true
+}
+```
+
+Instances remain nested under their connection and stable runner ID; identical
+instance IDs or fake ship names across runners do not merge. An unavailable or
+identity-mismatched connection carries an `error` instead of a current `snapshot`.
+It does not create a runner incident or declare any ship crashed. There is no
+persisted observation cache in 4A; `checked_at` records the collector's check,
+while nested `observed_at` retains runner-provided freshness.
+
+One-shot inventory polls concurrently with a five-second budget per connection.
+It prints the complete result structure, including failures, and exits 1 if any
+connection is unavailable/mismatched (`complete: false`); otherwise it exits 0.
+An empty inventory is a complete empty result. Diagnostic messages in combined
+inventory are fixed/redacted rather than arbitrary remote error text.
+
+`inventory --watch` emits one compact connection observation per line as each
+poll completes. Each connection has an independent loop; slow hosts do not hold
+up updates from healthy hosts. It retries observation only, retains identity pins,
+and continues through connection errors. The interval is a delay after each poll,
+at least 100 ms (default 1 s). Ctrl+C exits 0; an output failure exits 1. The
+enrollment set is fixed for the invocation: restart the watcher to pick up changes.
+Watching an empty registry is an error. Mutations retain explicit revisions and
+request IDs, with no automatic retry.

@@ -6,8 +6,9 @@ Implementation and fixture validation are complete. User-reported live evidence
 confirms registration, bootstrap, configuration revision 2, stop/resume, and
 retained runner identity/history after management restart. After the probe fix,
 two resumes completed in 6.81 s and 6.80 s, with healthy state and no incidents.
-This records those exercised paths; the remaining walkthrough checks still
-describe their own acceptance criteria.
+The user accepted the exercised workflow and authorized phase 4 after these timing
+checks. Other walkthrough/failure scenarios retain their own acceptance criteria.
+Continue with [checkpoint 4A: collector enrollment](06-collector-enrollment.md).
 
 ## Scope and differences from qualification
 

@@ -36,8 +36,9 @@ automated test.
   SQLite holds registrations, configuration revisions, idempotency, and operation
   history. Unqualified real-key bootstrap, Ames, meld, and control-socket monitoring
   remain disabled rather than delaying the bounded control-plane milestone. The
-  [persistent-runner walkthrough](checkpoints/05-persistent-runner.md) is the next
-  manual gate; developer tests use real SQLite and an injected fake runtime.
+  [persistent-runner walkthrough](checkpoints/05-persistent-runner.md) has passed
+  the exercised live lifecycle gate; developer tests use real SQLite and an
+  injected fake runtime.
 - The user's 3A snapshot confirms alpha registration, first start, a revision-2
   HTTP-port change, stop, and successful initialized-pier resume. A reported
   two-minute delay was traced to the preflight sleep probe's PID-1 signal handling;
@@ -45,7 +46,14 @@ automated test.
   checks after the fix completed resume in 6.81 s and 6.80 s, with stops in 0.70 s
   and 0.75 s. Stable runner identity and prior history remained after management
   restart; alpha stayed healthy at revision 2 with no incidents. The timing-fix
-  gate is complete; other 3A scenarios retain their documented acceptance scope.
+  gate is complete. The user accepted this bounded workflow and authorized the
+  next phase; the snapshot does not establish every failure/qualification scenario.
+- Checkpoint 4A implements persistent collector enrollment, named runner selection,
+  per-connection identity verification, and independently polled inventory over
+  private local sockets. Its [manual gate](checkpoints/06-collector-enrollment.md)
+  checks the existing managed runner plus isolated multi-runner fixtures. Live
+  acceptance is pending. SSH access/key attribution and generic Eyre sessions
+  remain the next phase-4 increments.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator
@@ -91,6 +99,18 @@ no secret-bearing arguments or logs. Test simultaneous configuration changes.
 Manual gate: manage a disposable ship using the CLI, including a runner restart.
 
 ## 4. Collector, SSH, and generic ship sessions
+
+Incremental gates:
+
+- **4A: collection foundation.** Persist explicitly enrolled local runners with
+  immutable name/address/identity bindings. Route commands through a selected
+  connection, verify identity on every new connection, and poll runners
+  independently. Qualify connection isolation with two local simulator runners
+  before introducing remote transport and credentials.
+- **4B: SSH access.** Add reviewed access grants, fixed-command transport, verified
+  host keys, authentication-derived key attribution, and remote reconnect tests.
+- **4C: ship sessions.** Add unmanaged ship enrollment and origin-bound Eyre
+  authentication, credential adapters, and subscription recovery.
 
 Add persistent per-user enrollment, verified SSH connections, inventory,
 snapshots/events, polling, and isolation between unavailable connections. Add

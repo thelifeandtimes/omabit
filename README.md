@@ -26,10 +26,13 @@ Checkpoint 2A's dedicated rootless engine setup has also passed manual validatio
 Checkpoint 2B's pinned-image fake-ship lifecycle, resource checks, container
 replacement, offline pack, and cleanup have passed manual validation. Checkpoint
 2C's host HTTP publication and replacement/reconnect have also passed. Checkpoint
-3A introduces a persistent fake-only runner and collector workflow with
-SQLite-backed state. Production ship management is not supported yet.
+3A's persistent fake-only lifecycle and runner restart have passed the exercised
+live gate. Checkpoint 4A adds persistent collector enrollment, identity-pinned
+selection, and independent multi-runner inventory polling; its manual gate is
+pending. Production ship management is not supported yet.
 
-- [Next: persistent development runner](docs/checkpoints/05-persistent-runner.md)
+- [Next: collector enrollment and inventory](docs/checkpoints/06-collector-enrollment.md)
+- [Accepted workflow: persistent development runner](docs/checkpoints/05-persistent-runner.md)
 - [Accepted: host-loopback HTTP checkpoint](docs/checkpoints/04-host-http.md)
 - [Accepted: disposable runtime checkpoint](docs/checkpoints/03-disposable-runtime.md)
 - [Accepted: rootless setup checkpoint](docs/checkpoints/02-rootless-setup.md)
