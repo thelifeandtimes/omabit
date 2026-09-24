@@ -76,7 +76,14 @@ pier or identity for an automated test.
   against the running fake with the SSH listener stopped, using both credential
   adapters and separate CLI processes. Actual desks: base/groups/kids/landscape/
   webterm. Only the test's own HTTP sessions/channels were created and cleaned up.
-  Omabit's management interface is the next milestone.
+  The CLI/store tests also retain retry intent for failed credential cleanup.
+- Checkpoint 5A implements the initial Omabit management bar panel: independently
+  polled inventory, stale/unavailable/observer controls, explicit runtime start/stop,
+  identity- and revision-bound configuration edits, fake registration, SSH runner
+  enrollment, and separate application-enrollment display. Manifest/model/QML
+  fixture and installer checks passed. [Visual/interactive acceptance](checkpoints/09-management-panel.md)
+  remains. Existing theme settings/credentials require the explicit 5B migration;
+  they are not adopted by installing this new panel.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator
@@ -148,6 +155,11 @@ Manual gate: laptop CLI manages a remote disposable instance and separately
 connects to an unmanaged ship.
 
 ## 5. Omabit management interface
+
+Incremental gates: **5A** validates the initial management panel and collector
+command binding in the actual bar. **5B** adds the reviewed legacy-theme migration,
+application sign-in UI, notification policy, and richer onboarding. Hosting setup
+and real-key bootstrap remain constrained by their runtime qualification gates.
 
 Build Omaship collection, enrollment, configuration, operations, health, incident
 indicators, bootstrap, and reviewed dependency setup. Add laptop acknowledgement.

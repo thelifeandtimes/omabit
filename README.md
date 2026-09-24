@@ -33,9 +33,11 @@ process-level fixture gates passed. Checkpoint 4B's OpenSSH transport and key
 grants passed isolated OpenSSH validation and live dedicated-account acceptance.
 Checkpoint 4C's independent Eyre enrollment, credential storage, scries, and
 subscriptions passed programmatic acceptance against the development fake with
-both desktop and headless credential adapters. Omabit's management interface is
-next. Production ship management is not supported yet.
+both desktop and headless credential adapters. Checkpoint 5A's Omabit management
+panel is implemented and programmatically checked; visual/interactive acceptance
+is next. Production ship management is not supported yet.
 
+- [Next: Omabit management panel](docs/checkpoints/09-management-panel.md)
 - [Accepted: SSH access installation](docs/checkpoints/07-ssh-access.md)
 - [Accepted: Eyre ship sessions](docs/checkpoints/08-ship-sessions.md)
 - [Ship-session contracts and storage](docs/ship-sessions.md)

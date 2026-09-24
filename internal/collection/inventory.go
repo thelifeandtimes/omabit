@@ -13,13 +13,15 @@ import (
 // Observation keeps instance IDs scoped to a connection and stable runner ID.
 // Unavailable runners have no current snapshot; absence is not a ship crash.
 type Observation struct {
-	Name      string             `json:"name"`
-	RunnerID  string             `json:"runner_id"`
-	Mode      string             `json:"mode"`
-	Status    string             `json:"status"`
-	CheckedAt time.Time          `json:"checked_at"`
-	Snapshot  *protocol.Snapshot `json:"snapshot,omitempty"`
-	Error     *protocol.APIError `json:"error,omitempty"`
+	Name       string             `json:"name"`
+	RunnerID   string             `json:"runner_id"`
+	Mode       string             `json:"mode"`
+	AccessRole string             `json:"access_role,omitempty"`
+	Features   []string           `json:"features,omitempty"`
+	Status     string             `json:"status"`
+	CheckedAt  time.Time          `json:"checked_at"`
+	Snapshot   *protocol.Snapshot `json:"snapshot,omitempty"`
+	Error      *protocol.APIError `json:"error,omitempty"`
 }
 
 type Inventory struct {
@@ -33,8 +35,18 @@ func inspect(ctx context.Context, entry Connection) Observation {
 	c := entry.Client(true)
 	defer c.Close()
 	result := Observation{Name: entry.Name, RunnerID: entry.RunnerID, Mode: entry.Mode, Status: "available"}
-	// The pinned transport negotiates /hello on every connection.
-	snapshot, err := c.Snapshot(ctx)
+	// Retain capabilities/access for UI affordances; the runner remains the
+	// authorization authority and rechecks every mutation.
+	hello, err := c.Hello(ctx)
+	var snapshot protocol.Snapshot
+	if err == nil {
+		err = entry.Identity().Check(hello.RunnerID, hello.Mode)
+	}
+	if err == nil {
+		result.AccessRole = hello.AccessRole
+		result.Features = hello.Features
+		snapshot, err = c.Snapshot(ctx)
+	}
 	if err == nil {
 		err = entry.Identity().Check(snapshot.RunnerID, snapshot.Mode)
 	}

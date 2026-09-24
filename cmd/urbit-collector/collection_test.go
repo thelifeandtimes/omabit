@@ -56,6 +56,11 @@ func TestEnrolledCLIAndReplacementRefusal(t *testing.T) {
 	}
 	invoke(0, "--runner", "workstation", "hello")
 	invoke(0, "--runner", "workstation", "snapshot")
+	_, stale := invoke(1, "--runner", "workstation", "--expected-runner-id", "runner-stale", "operate", "alpha", "start", "--revision=2", "--request-id=stale-ui")
+	errorProblem(t, stale, "runner_identity_mismatch")
+	if mutations.Load() != 0 {
+		t.Fatal("stale UI selection mutated the enrolled runner")
+	}
 	_, problem := invoke(1, "--runner", "workstation", "configure", "alpha", "--revision=1", "--http-port=18081", "--ames-port=34343", "--loom=31")
 	if got := errorProblem(t, problem, "revision_conflict"); got.CurrentRevision == nil || *got.CurrentRevision != 2 {
 		t.Fatalf("conflict lost: %+v", got)

@@ -205,6 +205,9 @@ Global options precede the subcommand. `enroll` takes its socket after NAME.
 JSON remains the default, with NDJSON for watch output.
 Existing `--socket PATH` command selection remains available and is mutually
 exclusive with `--runner NAME`. There is no implicit default runner for mutations.
+UI callers can add `--expected-runner-id ID` beside `--runner NAME`. This binds a
+cached UI selection to its observed runner even if another client forgets and
+re-enrolls that name before the command executes. A mismatch stops before mutation.
 
 Enrollment contacts `/hello`, checks protocol compatibility, and saves the
 connection name, transport (`unix`), absolute socket path, runner ID, mode, and
@@ -253,6 +256,8 @@ identity-mismatched connection carries an `error` instead of a current `snapshot
 It does not create a runner incident or declare any ship crashed. There is no
 persisted observation cache in 4A; `checked_at` records the collector's check,
 while nested `observed_at` retains runner-provided freshness.
+Available observations also carry Hello's optional `access_role` and `features`
+for UI controls. These are presentation hints; the runner authorizes each request.
 
 One-shot inventory polls concurrently with a five-second budget per connection.
 It prints the complete result structure, including failures, and exits 1 if any

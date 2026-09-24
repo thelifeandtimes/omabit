@@ -53,6 +53,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	globals.Usage = func() {}
 	socket := globals.String("socket", "", "absolute path to the runner Unix socket")
 	runnerName := globals.String("runner", "", "enrolled runner name (exclusive with --socket)")
+	expectedRunner := globals.String("expected-runner-id", "", "optional identity from the selected UI snapshot; requires --runner")
 	configDir := globals.String("config-dir", "", "private collector enrollment directory (default: XDG config/urbit-collector)")
 	globals.StringVar(&format, "format", "json", "output format: json or text (before subcommand)")
 	if err := globals.Parse(args); err != nil {
@@ -106,6 +107,9 @@ Use COMMAND --help for command flags and constraints.
 	}
 	command := args[0]
 	args = args[1:]
+	if *expectedRunner != "" && (*runnerName == "" || !validID(*expectedRunner)) {
+		return fail(errors.New("--expected-runner-id requires --runner and a valid runner ID"), 2)
+	}
 	if slices.Contains([]string{"ship-enroll", "ships", "ship-login", "ship-status", "ship-scry", "ship-watch", "ship-logout", "ship-forget"}, command) {
 		return runShips(ctx, command, args, *configDir, *socket, *runnerName, format, os.Stdin, stdout, fail)
 	}
@@ -229,6 +233,9 @@ Use COMMAND --help for command flags and constraints.
 	hello, err := c.Hello(ctx)
 	if err == nil && identity != nil {
 		err = identity.Check(hello.RunnerID, hello.Mode)
+	}
+	if err == nil && *expectedRunner != "" && hello.RunnerID != *expectedRunner {
+		err = client.ErrIdentityMismatch
 	}
 	if err != nil {
 		if command == "watch" && ctx.Err() != nil && errors.Is(err, ctx.Err()) {
