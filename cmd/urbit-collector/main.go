@@ -15,15 +15,16 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
 const scope = `Development management client; inspect hello.mode/features for server capabilities.
 This is not a full collector daemon or production runtime manager.
-The socket must be an explicit absolute path, supplied before the subcommand.
-Every command checks Hello compatibility before performing any operations.
+Select --socket with an absolute path or --runner with an enrolled name before the subcommand.
+Runner requests check Hello compatibility; listing and forgetting enrollment are local.
 Revisions and request IDs are never inferred; mutations are never automatically retried.
-Results are indented JSON, except watch, which emits one compact snapshot per line (NDJSON).
+Results are indented JSON; watch commands emit compact newline-delimited JSON (NDJSON).
 `
 
 func main() {
@@ -39,6 +40,8 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		var remote *client.RemoteError
 		if errors.As(err, &remote) {
 			problem = remote.Problem
+		} else if errors.Is(err, client.ErrIdentityMismatch) {
+			problem = protocol.APIError{Code: "runner_identity_mismatch", Message: client.ErrIdentityMismatch.Error()}
 		}
 		encoder := json.NewEncoder(stderr)
 		encoder.SetIndent("", "  ")
@@ -49,12 +52,21 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	globals := flag.NewFlagSet("urbit-collector", flag.ContinueOnError)
 	globals.SetOutput(io.Discard)
 	globals.Usage = func() {}
-	socket := globals.String("socket", "", "required absolute path to the runner Unix socket")
+	socket := globals.String("socket", "", "absolute path to the runner Unix socket")
+	runnerName := globals.String("runner", "", "enrolled runner name (exclusive with --socket)")
+	configDir := globals.String("config-dir", "", "private collector enrollment directory (default: XDG config/urbit-collector)")
 	if err := globals.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
-			fmt.Fprint(stdout, `Usage: urbit-collector --socket /absolute/path/runner.sock COMMAND
+			fmt.Fprint(stdout, `Usage: urbit-collector [--config-dir /private/directory] [--socket /absolute/path/runner.sock | --runner NAME] COMMAND
 
 Commands:
+  enroll NAME --socket /absolute/path/runner.sock
+              Verify and save a named runner connection with its identity.
+  runners     List saved connections without contacting runners.
+  forget NAME --runner-id ID
+              Remove only local enrollment, requiring its expected runner ID.
+  inventory [--watch] [--interval 1s]
+              Observe all enrolled runners; watch emits independent NDJSON updates.
   hello       Verify compatibility and show runner capabilities.
   snapshot    Show the current runner snapshot.
   create-fake INSTANCE --http-port PORT --request-id ID [--label TEXT]
@@ -80,6 +92,9 @@ Use COMMAND --help for command flags and constraints.
 	}
 	command := args[0]
 	args = args[1:]
+	if command == "enroll" || command == "runners" || command == "forget" || command == "inventory" {
+		return runCollection(ctx, command, args, *configDir, *socket, *runnerName, stdout, fail)
+	}
 	flags := flag.NewFlagSet(command, flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
 	flags.Usage = func() {}
@@ -134,8 +149,11 @@ Use COMMAND --help for command flags and constraints.
 	if flags.NArg() != 0 {
 		return fail(errors.New("unexpected trailing arguments; command flags must follow positional arguments"), 2)
 	}
-	if !filepath.IsAbs(*socket) {
-		return fail(errors.New("--socket is required and must be an absolute path before the subcommand"), 2)
+	if (*socket == "") == (*runnerName == "") || (*socket != "" && !collection.ValidSocket(*socket)) || (*runnerName != "" && !validID(*runnerName)) {
+		return fail(errors.New("select either --socket with an absolute clean path or --runner with an enrolled name before the subcommand"), 2)
+	}
+	if *configDir != "" && (!filepath.IsAbs(*configDir) || filepath.Clean(*configDir) != *configDir) {
+		return fail(errors.New("--config-dir must be absolute and clean"), 2)
 	}
 	if command == "configure" || command == "operate" {
 		if !validID(instanceID) {
@@ -170,9 +188,31 @@ Use COMMAND --help for command flags and constraints.
 		}
 	}
 
-	c := client.New(*socket)
+	var c *client.Client
+	var identity *client.Identity
+	if *runnerName != "" {
+		registry, err := openRegistry(*configDir)
+		if err != nil {
+			return fail(err, 1)
+		}
+		entry, err := registry.Get(ctx, *runnerName)
+		if err != nil {
+			if command == "watch" && ctx.Err() != nil && errors.Is(err, ctx.Err()) {
+				return 0
+			}
+			return fail(err, 1)
+		}
+		pin := entry.Identity()
+		identity = &pin
+		c = client.NewPinned(entry.Socket, pin)
+	} else {
+		c = client.New(*socket)
+	}
 	defer c.Close()
 	hello, err := c.Hello(ctx)
+	if err == nil && identity != nil {
+		err = identity.Check(hello.RunnerID, hello.Mode)
+	}
 	if err != nil {
 		if command == "watch" && ctx.Err() != nil && errors.Is(err, ctx.Err()) {
 			return 0
@@ -186,7 +226,7 @@ Use COMMAND --help for command flags and constraints.
 	case "hello":
 		result = hello
 	case "snapshot":
-		result, err = c.Snapshot(ctx)
+		result, err = checkedSnapshot(ctx, c, identity)
 	case "create-fake":
 		if !slices.Contains(hello.Features, "create-fake") {
 			return fail(errors.New("this runner does not support create-fake"), 1)
@@ -211,7 +251,7 @@ Use COMMAND --help for command flags and constraints.
 			if ctx.Err() != nil {
 				return 0
 			}
-			snapshot, err := c.Snapshot(ctx)
+			snapshot, err := checkedSnapshot(ctx, c, identity)
 			if err != nil {
 				if ctx.Err() != nil && errors.Is(err, ctx.Err()) {
 					return 0
@@ -235,6 +275,14 @@ Use COMMAND --help for command flags and constraints.
 		return fail(err, 1)
 	}
 	return 0
+}
+
+func checkedSnapshot(ctx context.Context, c *client.Client, identity *client.Identity) (protocol.Snapshot, error) {
+	snapshot, err := c.Snapshot(ctx)
+	if err == nil && identity != nil {
+		err = identity.Check(snapshot.RunnerID, snapshot.Mode)
+	}
+	return snapshot, err
 }
 
 func validID(id string) bool {

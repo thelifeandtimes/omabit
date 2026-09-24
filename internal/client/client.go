@@ -19,6 +19,7 @@ const maxResponseBytes = 1 << 20
 
 type Client struct {
 	httpClient *http.Client
+	cancel     context.CancelFunc
 }
 
 // RemoteError is a structured error returned by the runner.
@@ -32,14 +33,29 @@ func (e *RemoteError) Error() string {
 }
 
 func New(socketPath string) *Client {
+	return newClient(socketPath, nil)
+}
+
+func newClient(socketPath string, identity *Identity) *Client {
 	dialer := &net.Dialer{}
+	lifetime, cancel := context.WithCancel(context.Background())
 	transport := &http.Transport{
 		Proxy: nil,
 		DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
-			return dialer.DialContext(ctx, "unix", socketPath)
+			// net/http can detach a dial from its initiating request. Closing this
+			// client must also cancel any unfinished identity handshake.
+			ctx, stop := context.WithCancel(ctx)
+			stopLifetime := context.AfterFunc(lifetime, stop)
+			defer stopLifetime()
+			defer stop()
+			conn, err := dialer.DialContext(ctx, "unix", socketPath)
+			if err != nil || identity == nil {
+				return conn, err
+			}
+			return verifyConnection(ctx, conn, *identity)
 		},
 	}
-	return &Client{httpClient: &http.Client{
+	return &Client{cancel: cancel, httpClient: &http.Client{
 		Transport: transport,
 		Timeout:   5 * time.Second,
 		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
@@ -49,6 +65,7 @@ func New(socketPath string) *Client {
 }
 
 func (c *Client) Close() {
+	c.cancel()
 	c.httpClient.CloseIdleConnections()
 }
 
