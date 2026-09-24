@@ -10,7 +10,7 @@ TendButton {
 
   width: Style.spacing.controlHeight
   height: Style.spacing.controlHeight
-  text: "󰈾"
+  text: ""
   tooltipText: flagged ? "Remove flag" : "Flag reminder"
   Accessible.role: Accessible.CheckBox
   Accessible.name: flagged ? "Remove reminder flag" : "Flag reminder"
@@ -19,4 +19,13 @@ TendButton {
   accent: flagged ? Color.urgent : Color.accent
   bordered: false
   onClicked: root.toggled(!root.flagged)
+
+  OpticalGlyph {
+    anchors.centerIn: parent
+    width: Style.font.icon
+    height: Style.font.icon
+    text: "󰈾"
+    color: root.foreground
+    fontSize: Style.font.icon
+  }
 }

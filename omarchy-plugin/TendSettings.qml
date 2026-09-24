@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls as QQC
 import qs.Commons
 import qs.Ui
+import "TendModel.js" as TendModel
 
 BorderSurface {
   id: root
@@ -74,9 +75,34 @@ BorderSurface {
 
   function activityLabel(event) {
     var actor = String(event.actor || "")
-    var action = String(event.action || "activity").replace(/-/g, " ")
-    var title = String(event.reminderTitle || event.title || "")
-    return actor + " · " + action + (title ? " · " + title : "")
+    var labels = {
+      "list-edited": "edited the list",
+      "section-added": "added a section",
+      "section-edited": "edited a section",
+      "section-moved": "moved a section",
+      "section-deleted": "deleted a section",
+      "reminder-added": "added",
+      "reminder-edited": "edited",
+      "reminder-moved": "moved",
+      "reminder-deleted": "deleted a reminder",
+      "completed": "completed",
+      "uncompleted": "reopened",
+      "assigned": "changed the assignee for",
+      "schedule-changed": "changed the schedule for",
+      "member-invited": "invited a member",
+      "member-removed": "removed a member"
+    }
+    var kind = String(event.kind || "reminder-edited")
+    var action = labels[kind] || kind.replace(/-/g, " ")
+    var title = ""
+    if (root.list && event.reminderId !== null && event.reminderId !== undefined) {
+      var reminders = root.list.reminders || []
+      for (var i = 0; i < reminders.length; i++)
+        if (Number(reminders[i].id) === Number(event.reminderId)) title = String(reminders[i].title || "")
+    }
+    var stamp = TendModel.urbitDateMs(event.occurredAt || event.at)
+    var when = stamp > 0 ? new Date(stamp).toLocaleString(Qt.locale(), Locale.ShortFormat) : ""
+    return actor + " · " + action + (title ? " “" + title + "”" : "") + (when ? " · " + when : "")
   }
 
   function moveSection(sectionId, delta) {
@@ -114,7 +140,7 @@ BorderSurface {
         width: parent.width
 
         Column {
-          width: parent.width - closeButton.width
+          width: parent.width - closeButton.width - pinButton.width
           spacing: Style.space(2)
 
           Text {
@@ -145,7 +171,19 @@ BorderSurface {
           }
         }
 
-        TendButton { id: closeButton; text: "󰅖"; bordered: false; tooltipText: "Close settings"; onClicked: root.closeRequested() }
+        TendIconButton {
+          id: pinButton
+          visible: root.mode === "list" && root.list !== null
+          width: visible ? Style.spacing.controlHeight : 0
+          glyph: root.pinned() ? "󰐃" : "󰐄"
+          bordered: false
+          tooltipText: root.pinned() ? "Unpin list" : "Pin list"
+          accessibleName: tooltipText
+          enabled: root.service && root.service.connectionState === "online" && !root.service.mutationPending
+          onClicked: root.togglePinned()
+        }
+
+        TendIconButton { id: closeButton; glyph: "󰅖"; bordered: false; tooltipText: "Close settings"; accessibleName: tooltipText; onClicked: root.closeRequested() }
       }
 
       PanelSeparator { width: parent.width; foreground: Color.popups.text }
@@ -155,23 +193,32 @@ BorderSurface {
         width: parent.width
         spacing: Style.space(12)
 
-        Text { text: "SHIP"; color: Color.popups.text; opacity: 0.68; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
-
-        TendButton {
+        BorderSurface {
           width: parent.width
-          text: "Switch ship"
-          Accessible.name: "Connect a different Urbit ship"
-          onClicked: root.switchShipRequested()
-        }
+          height: shipCardContent.implicitHeight + Style.space(20)
+          color: Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, 0.08)
+          borderSpec: Border.controlSpec("normal", Color.popups.text, Color.accent)
+          radius: Style.cornerRadius
 
-        TendButton {
-          width: parent.width
-          text: "Remove ship"
-          foreground: Color.urgent
-          accent: Color.urgent
-          bordered: true
-          Accessible.name: "Remove the saved Urbit ship from Tend"
-          onClicked: root.removeShipRequested()
+          Column {
+            id: shipCardContent
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: Style.space(10)
+            spacing: Style.space(8)
+
+            Text { text: "CONNECTED SHIP"; color: Color.popups.text; opacity: 0.68; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
+            Text { width: parent.width; text: root.service && root.service.ship ? "~" + root.service.ship.replace(/^~/, "") : "Not connected"; color: Color.popups.text; elide: Text.ElideRight; font.family: Style.font.family; font.pixelSize: Style.font.body; font.bold: true }
+            Text { width: parent.width; text: "Switching keeps this saved connection available. Remove it only when this device should forget the ship."; wrapMode: Text.Wrap; color: Qt.darker(Color.popups.text, 1.4); font.family: Style.font.family; font.pixelSize: Style.font.caption }
+
+            Row {
+              width: parent.width
+              spacing: Style.space(8)
+              TendButton { width: (parent.width - parent.spacing) / 2; text: "Switch ship"; Accessible.name: "Connect a different Urbit ship"; onClicked: root.switchShipRequested() }
+              TendButton { width: (parent.width - parent.spacing) / 2; text: "Remove ship"; foreground: Color.urgent; accent: Color.urgent; bordered: true; Accessible.name: "Remove the saved Urbit ship from Tend"; onClicked: root.removeShipRequested() }
+            }
+          }
         }
 
         Column {
@@ -299,8 +346,7 @@ BorderSurface {
         Row {
           width: parent.width
           spacing: Style.space(8)
-          TendButton { width: (parent.width - parent.spacing) / 2; text: root.service && root.list && root.service.preferences.defaultList === root.list.id ? "Default list" : "Make default"; enabled: root.service && root.list && root.service.connectionState === "online" && !root.service.mutationPending; onClicked: root.setDefaultList() }
-          TendButton { width: (parent.width - parent.spacing) / 2; text: root.pinned() ? "Unpin list" : "Pin list"; enabled: root.service && root.service.connectionState === "online" && !root.service.mutationPending; onClicked: root.togglePinned() }
+          TendButton { width: parent.width; text: root.service && root.list && root.service.preferences.defaultList === root.list.id ? "Default list" : "Make default"; enabled: root.service && root.list && root.service.connectionState === "online" && !root.service.mutationPending; onClicked: root.setDefaultList() }
         }
 
         Column {

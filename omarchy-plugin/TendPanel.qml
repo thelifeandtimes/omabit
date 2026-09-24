@@ -40,6 +40,7 @@ Item {
     readonly property real settingsTrayWidth: Math.min(Style.space(390), workspace ? workspace.width * 0.9 : Style.space(390))
     readonly property bool singleTrayMode: window.width < Style.space(1200)
     readonly property bool overlayTrayMode: window.width < Style.space(980)
+    readonly property bool fullSurfaceMode: compactMode
     readonly property bool detailTrayOpen: selectedReminder !== null
     readonly property bool settingsTrayOpen: rightTrayMode !== ""
     readonly property var visibleInvitations: service ? service.invitations.filter(function(invitation) {
@@ -524,6 +525,7 @@ Item {
         selectedReminderId = reminder.id;
         policyEditorOpen = false;
         rightTrayMode = "";
+        compactSidebarOpen = false;
     }
 
     function openListEditor() {
@@ -532,16 +534,20 @@ Item {
         listEditorOpen = false;
         policyEditorOpen = false;
         rightTrayMode = rightTrayMode === "list" ? "" : "list";
-        if (rightTrayMode)
+        if (rightTrayMode) {
             selectedReminderId = 0;
+            compactSidebarOpen = false;
+        }
     }
 
     function openAppSettings() {
         listEditorOpen = false;
         policyEditorOpen = false;
         rightTrayMode = rightTrayMode === "app" ? "" : "app";
-        if (rightTrayMode)
+        if (rightTrayMode) {
             selectedReminderId = 0;
+            compactSidebarOpen = false;
+        }
     }
 
     function chooseSection(index) {
@@ -882,21 +888,20 @@ Item {
                             }
                         }
 
-                        TendButton {
+                        TendIconButton {
                             id: settingsButton
                             visible: service && service.ship !== ""
-                            text: "󰒓"
+                            glyph: "󰒓"
                             tooltipText: "Tend settings"
-                            Accessible.name: "Open Tend settings"
+                            accessibleName: "Open Tend settings"
                             onClicked: root.openAppSettings()
                         }
 
-                        TendButton {
+                        TendIconButton {
                             id: closeButton
-
-                            text: "󰅖"
+                            glyph: "󰅖"
                             tooltipText: "Close Tend"
-                            Accessible.name: "Close Tend"
+                            accessibleName: "Close Tend"
                             bordered: false
                             onClicked: root.dismiss()
                         }
@@ -1137,7 +1142,7 @@ Item {
                             id: sidebar
 
                             visible: !root.compactMode || root.compactSidebarOpen
-                            width: visible ? root.sidebarWidth : 0
+                            width: visible ? (root.fullSurfaceMode ? parent.width : root.sidebarWidth) : 0
                             height: parent.height
                             radius: Style.cornerRadius
                             color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.05)
@@ -1160,7 +1165,7 @@ Item {
                                     height: Style.space(28)
 
                                     Text {
-                                        width: parent.width - viewsReveal.width
+                                        width: parent.width - viewsReveal.width - closeSidebarButton.width
                                         anchors.verticalCenter: parent.verticalCenter
                                         text: "VIEWS"
                                         color: Color.menu.text
@@ -1175,6 +1180,18 @@ Item {
                                         text: root.unpinnedViewsVisible ? "Hide" : "Show all"
                                         bordered: false
                                         onClicked: root.unpinnedViewsVisible = !root.unpinnedViewsVisible
+                                    }
+
+                                    TendIconButton {
+                                        id: closeSidebarButton
+                                        visible: root.compactMode
+                                        width: visible ? Style.space(28) : 0
+                                        height: Style.space(28)
+                                        glyph: "󰅖"
+                                        bordered: false
+                                        tooltipText: "Close lists and views"
+                                        accessibleName: tooltipText
+                                        onClicked: root.compactSidebarOpen = false
                                     }
                                 }
 
@@ -1374,7 +1391,10 @@ Item {
 
                             TapHandler {
                                 acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-                                onTapped: if (root.selectedReminderId !== 0) root.selectedReminderId = 0
+                                onTapped: {
+                                    if (root.selectedReminderId !== 0) root.selectedReminderId = 0;
+                                    if (root.rightTrayMode !== "") root.rightTrayMode = "";
+                                }
                             }
 
                             }
@@ -1411,7 +1431,7 @@ Item {
 
                         Item {
                             id: workspace
-                            width: parent.width - sidebar.width - sidebarResizeHandle.width
+                            width: root.fullSurfaceMode && sidebar.visible ? 0 : parent.width - sidebar.width - sidebarResizeHandle.width
                             height: parent.height
 
                             Column {
@@ -1425,7 +1445,10 @@ Item {
 
                                 TapHandler {
                                     acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-                                    onTapped: if (root.selectedReminderId !== 0) root.selectedReminderId = 0
+                                    onTapped: {
+                                        if (root.selectedReminderId !== 0) root.selectedReminderId = 0;
+                                        if (root.rightTrayMode !== "") root.rightTrayMode = "";
+                                    }
                                 }
 
                             Row {
@@ -1436,7 +1459,11 @@ Item {
                                     id: compactSidebarButton
                                     visible: root.compactMode
                                     text: root.compactSidebarOpen ? "Hide lists" : "Lists"
-                                    onClicked: root.compactSidebarOpen = !root.compactSidebarOpen
+                                    onClicked: {
+                                        root.selectedReminderId = 0;
+                                        root.rightTrayMode = "";
+                                        root.compactSidebarOpen = !root.compactSidebarOpen;
+                                    }
                                 }
 
                                 Text {
@@ -1454,13 +1481,13 @@ Item {
                                     visible: false
                                 }
 
-                                TendButton {
+                                TendIconButton {
                                     id: editListButton
 
                                     visible: root.viewMode === "list" && root.selectedList !== null
-                                    text: "✎"
+                                    glyph: "󰏫"
                                     tooltipText: root.rightTrayMode === "list" ? "Close list settings" : "Edit list"
-                                    Accessible.name: tooltipText
+                                    accessibleName: tooltipText
                                     onClicked: {
                                         root.openListEditor();
                                     }
@@ -1889,7 +1916,8 @@ Item {
                                 TendDropdown {
                                     id: quickDestination
 
-                                    Layout.preferredWidth: Math.min(Style.space(240), parent.width * 0.42)
+                                    visible: root.viewMode !== "list"
+                                    Layout.preferredWidth: visible ? Math.min(Style.space(240), parent.width * 0.42) : 0
                                     model: root.orderedLists
                                     textRole: "title"
                                     valueRole: "id"
@@ -1899,14 +1927,18 @@ Item {
                                 }
                             }
 
-                            RowLayout {
+                            GridLayout {
+                                readonly property bool narrowComposer: width < Style.space(520)
                                 width: parent.width
-                                spacing: Style.space(8)
+                                columns: narrowComposer ? 2 : 4
+                                rowSpacing: Style.space(8)
+                                columnSpacing: Style.space(8)
 
                                 TextField {
                                     id: quickAdd
 
                                     Layout.fillWidth: true
+                                    Layout.columnSpan: parent.narrowComposer ? 2 : 1
                                     Layout.minimumWidth: Style.space(180)
                                     placeholderText: root.addDestination ? "Describe a new reminder" : "Create a list first"
                                     Accessible.name: "New reminder description"
@@ -1917,6 +1949,8 @@ Item {
                                 TendAssigneePicker {
                                     id: quickAssignee
 
+                                    Layout.fillWidth: parent.narrowComposer
+                                    Layout.columnSpan: parent.narrowComposer ? 2 : 1
                                     Layout.preferredWidth: Style.space(190)
                                     Layout.minimumWidth: Style.space(150)
                                     options: root.addAssigneeOptions
@@ -1927,15 +1961,17 @@ Item {
                                 TendDateTimePicker {
                                     id: quickDue
 
-                                    Layout.preferredWidth: Style.space(210)
-                                    Layout.minimumWidth: Style.space(170)
+                                    Layout.preferredWidth: Style.spacing.controlHeight
+                                    Layout.minimumWidth: Style.spacing.controlHeight
+                                    iconOnly: true
                                     enabled: quickAdd.enabled
                                     Accessible.name: "New reminder due date"
                                 }
 
                                 TendButton {
                                     id: quickAddButton
-                                    text: "+"
+                                    Layout.preferredWidth: Style.space(62)
+                                    text: "+ add"
                                     enabled: quickAdd.enabled && quickAdd.text.trim() !== ""
                                     Accessible.name: "Add reminder"
                                     onClicked: {
@@ -2118,39 +2154,6 @@ Item {
                                     text: "Outdent"
                                     enabled: root.selectedReminderIds.length === 1 && root.selectedBatchReminder() && root.selectedBatchReminder().parentId !== null && root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
                                     onClicked: root.outdentReminder(root.selectedBatchReminder())
-                                }
-
-                                TendButton {
-                                    text: "Complete"
-                                    enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
-                                    onClicked: {
-                                        if (service.batchSetCompleted(root.selectedList.id, root.selectedReminderIds, true, root.selectedList.revision))
-                                            root.selectedReminderIds = [];
-                                    }
-                                }
-
-                                TendButton {
-                                    text: "Uncomplete"
-                                    enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
-                                    onClicked: {
-                                        if (service.batchSetCompleted(root.selectedList.id, root.selectedReminderIds, false, root.selectedList.revision))
-                                            root.selectedReminderIds = [];
-                                    }
-                                }
-
-                                TendButton {
-                                    text: root.confirmBatchDelete ? "Confirm delete" : "Delete"
-                                    enabled: root.selectedListEditable && service && service.connectionState === "online" && !service.mutationPending
-                                    onClicked: {
-                                        if (!root.confirmBatchDelete) {
-                                            root.confirmBatchDelete = true;
-                                            return ;
-                                        }
-                                        if (service.batchDeleteReminders(root.selectedList.id, root.selectedReminderIds, root.selectedList.revision)) {
-                                            root.selectedReminderIds = [];
-                                            root.confirmBatchDelete = false;
-                                        }
-                                    }
                                 }
 
                             }
@@ -2663,9 +2666,10 @@ Item {
                                             onToggled: function(flagged) { service.setReminderFlagged(reminderRow.reminderData.listId, reminderRow.reminderData.id, flagged) }
                                         }
 
-                                        TendButton {
+                                        TendIconButton {
                                             visible: !reminderRow.sectionRow && root.viewMode === "list" && root.reminderHasChildren(reminderRow.reminderData.id)
-                                            text: reminderRow.sectionRow ? "" : (root.reminderIsCollapsed(reminderRow.reminderData.id) ? "▶" : "▼")
+                                            glyph: reminderRow.sectionRow ? "" : (root.reminderIsCollapsed(reminderRow.reminderData.id) ? "󰅂" : "󰅀")
+                                            tooltipText: reminderRow.sectionRow ? "" : (root.reminderIsCollapsed(reminderRow.reminderData.id) ? "Expand subitems" : "Collapse subitems")
                                             Accessible.name: reminderRow.sectionRow ? "" : (root.reminderIsCollapsed(reminderRow.reminderData.id) ? "Expand " : "Collapse ") + reminderRow.reminderData.title
                                             onClicked: root.toggleReminderCollapsed(reminderRow.reminderData.id)
                                         }
@@ -2683,6 +2687,8 @@ Item {
                                             }
                                             color: Color.menu.text
                                             opacity: !reminderRow.sectionRow && service && service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) ? 0.5 : 1
+                                            elide: Text.ElideRight
+                                            maximumLineCount: 1
                                             font.family: Style.font.menuFamily
                                             font.pixelSize: Style.font.body
                                             font.strikeout: !reminderRow.sectionRow && (service ? service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) : reminderRow.reminderData.completed)
@@ -2717,7 +2723,7 @@ Item {
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
                                 anchors.right: parent.right
-                                width: root.detailTrayOpen ? root.detailTrayWidth : 0
+                                width: root.detailTrayOpen ? (root.fullSurfaceMode ? parent.width : root.detailTrayWidth) : 0
                                 visible: root.detailTrayOpen
                                 z: root.overlayTrayMode ? 20 : 2
                                 service: root.service
@@ -2749,7 +2755,7 @@ Item {
                                 anchors.top: parent.top
                                 anchors.bottom: parent.bottom
                                 anchors.right: parent.right
-                                width: root.settingsTrayOpen ? root.settingsTrayWidth : 0
+                                width: root.settingsTrayOpen ? (root.fullSurfaceMode ? parent.width : root.settingsTrayWidth) : 0
                                 visible: root.settingsTrayOpen
                                 z: root.overlayTrayMode ? 20 : 2
                                 service: root.service

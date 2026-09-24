@@ -183,6 +183,29 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("ScrollView", settings)
         self.assertIn("Color.popups.background", details)
 
+    def test_panel_uses_centered_icon_controls_and_full_width_narrow_surfaces(self):
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+        settings = (ROOT / "omarchy-plugin" / "TendSettings.qml").read_text(encoding="utf-8")
+        icon_button = (ROOT / "omarchy-plugin" / "TendIconButton.qml").read_text(encoding="utf-8")
+        self.assertIn("OpticalGlyph", icon_button)
+        self.assertIn("anchors.centerIn: parent", icon_button)
+        self.assertIn("fullSurfaceMode", panel)
+        self.assertIn("root.fullSurfaceMode ? parent.width", panel)
+        self.assertIn('text: "+ add"', panel)
+        self.assertIn("iconOnly: true", panel)
+        self.assertIn('glyph: root.pinned() ? "󰐃" : "󰐄"', settings)
+        self.assertIn('text: "CONNECTED SHIP"', settings)
+        self.assertNotIn('text: root.pinned() ? "Unpin list" : "Pin list"', settings)
+
+    def test_selection_mode_is_for_organization_not_completion_or_deletion(self):
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+        selection = panel.split('visible: root.selectionMode && root.viewMode === "list"', 1)[1].split("Rectangle {", 1)[0]
+        self.assertIn('text: "Indent"', selection)
+        self.assertIn('text: "Outdent"', selection)
+        self.assertNotIn('text: "Complete"', selection)
+        self.assertNotIn('text: "Uncomplete"', selection)
+        self.assertNotIn('Confirm delete', selection)
+
     def test_panel_tree_indents_the_entire_reminder_card_from_the_left(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         self.assertIn("delegate: Item {\n                                    id: reminderRow", panel)
