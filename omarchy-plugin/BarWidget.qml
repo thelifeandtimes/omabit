@@ -295,8 +295,8 @@ Panel {
           }
 
           Button {
-            text: "+"
-            Layout.preferredWidth: Style.spacing.controlHeight
+            text: "+ add"
+            Layout.preferredWidth: Style.space(62)
             Layout.preferredHeight: Style.spacing.controlHeight
             tooltipText: "Add reminder"
             focusable: true
@@ -365,18 +365,26 @@ Panel {
                 ? Number(modelData.count || 0) + " filtered subitems"
                 : (Number(modelData.depth || 0) > 0 ? "Subtask, " : "") + (reminder.title || "Untitled reminder")
 
-              TendButton {
+              Text {
                 id: filteredSummaryButton
                 visible: summaryRow
                 x: reminderRowDelegate.indentPixels
                 anchors.verticalCenter: parent.verticalCenter
                 text: Number(modelData.count || 0) + " filtered subitem" + (Number(modelData.count || 0) === 1 ? "" : "s")
                 width: Math.min(implicitWidth, Math.max(0, parent.width - x))
-                height: Style.space(28)
-                bordered: false
-                tooltipText: "Open parent reminder"
+                color: root.dim
+                font.family: root.bar ? root.bar.fontFamily : Style.font.family
+                font.pixelSize: Style.font.caption
+                font.underline: filteredSummaryHover.hovered
+                elide: Text.ElideRight
                 Accessible.name: text + ". Open parent reminder."
-                onClicked: root.openFullPanel(modelData.listId, modelData.parentReminderId)
+
+                HoverHandler { id: filteredSummaryHover }
+                MouseArea {
+                  anchors.fill: parent
+                  cursorShape: Qt.PointingHandCursor
+                  onClicked: root.openFullPanel(modelData.listId, modelData.parentReminderId)
+                }
               }
 
               Loader {

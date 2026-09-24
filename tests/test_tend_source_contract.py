@@ -77,6 +77,19 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn('id="open-navigation"', web)
         self.assertIn("workspace.nav-open .nav", web)
         self.assertIn("mobileNavigationOpen", web)
+        self.assertIn('aria-label="Open lists and views"', web)
+        self.assertIn('setAttribute("aria-expanded"', web)
+
+    def test_web_compact_controls_and_selection_mode_match_the_design(self):
+        web = (ROOT / "desk" / "app" / "tend.html").read_text(encoding="utf-8")
+        self.assertIn('class="filter-options"', web)
+        self.assertIn('class="compact-date"', web)
+        self.assertIn('>+ add</button>', web)
+        self.assertIn('class="tray-actions"', web)
+        selection_markup = web.split('state.selectionMode && state.view === "list" && list ?', 1)[1].split('</div>` : ""}', 1)[0]
+        self.assertNotIn('data-selection-action="complete"', selection_markup)
+        self.assertNotIn('data-selection-action="open"', selection_markup)
+        self.assertNotIn('data-selection-action="delete"', selection_markup)
 
     def test_batch_completion_records_each_scheduled_occurrence(self):
         self.assertIn("%batch-set-completed -.act", self.agent)

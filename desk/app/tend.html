@@ -67,7 +67,8 @@
     .brand-mark { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; color: #fff; background: var(--accent); font-weight: 900; }
     .identity { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .top-actions { gap: 8px; }
-    .mobile-only { display: none; }
+    .icon-button.mobile-only { display: none; }
+    .nav-toggle-glyph { font-size: 18px; line-height: 1; transform: translateY(-.5px); }
     .dot { width: 9px; height: 9px; flex: 0 0 auto; border-radius: 50%; background: var(--danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 14%, transparent); }
     .dot.online { background: var(--success); box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 14%, transparent); }
     .icon-button, .button {
@@ -117,12 +118,27 @@
     .view-head { margin-bottom: 18px; }
     .view-title { min-width: 0; }
     .status-line { gap: 8px; margin-top: 6px; color: var(--muted); font-size: 12px; }
-    .filters { display: grid; grid-template-columns: minmax(170px,1fr) 180px 150px auto; gap: 8px; margin-bottom: 18px; }
-    .sort-direction { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; white-space: nowrap; }
+    .filters { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 18px; }
+    .filter-options { display: grid; grid-template-columns: minmax(150px,1fr) minmax(130px,180px) 40px; gap: 8px; }
+    .sort-direction { width: 40px; min-width: 40px; min-height: 38px; padding: 0; display: inline-grid; place-items: center; white-space: nowrap; font-size: 15px; letter-spacing: -.16em; }
     .composer { padding: 15px; margin-bottom: 18px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-soft); }
     .composer-head { margin-bottom: 10px; }
-    .composer-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(135px,190px) minmax(155px,205px) 40px; gap: 8px; }
+    .composer-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(135px,190px) 40px auto; gap: 8px; }
     .composer-row > * { min-width: 0; max-width: 100%; }
+    .compact-date {
+      position: relative; width: 40px; height: 38px; overflow: hidden;
+      display: grid; place-items: center; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft);
+    }
+    .compact-date:hover { border-color: var(--accent); }
+    .compact-date > span { pointer-events: none; font-size: 17px; line-height: 1; transform: translateY(-.5px); }
+    .calendar-glyph { position: relative; width: 15px; height: 14px; border: 2px solid currentColor; border-radius: 2px; }
+    .calendar-glyph::before { content: ""; position: absolute; left: -2px; right: -2px; top: 2px; border-top: 2px solid currentColor; }
+    .calendar-glyph::after { content: ""; position: absolute; left: 2px; top: -4px; width: 2px; height: 4px; border-left: 2px solid currentColor; border-right: 2px solid currentColor; padding-right: 5px; }
+    .compact-date > input {
+      position: absolute; inset: 0; width: 100%; height: 100%; min-width: 0; margin: 0; padding: 0;
+      border: 0; opacity: 0; cursor: pointer;
+    }
+    .compact-date:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 13%, transparent); }
     .section-adder { display: flex; align-items: center; gap: 7px; margin: 0 0 14px; }
     .section-adder .field { width: 210px; min-height: 32px; }
     .task-list { display: grid; gap: 5px; }
@@ -141,9 +157,9 @@
     .task-actions { display: flex; gap: 2px; }
     .flag { color: var(--muted); }
     .flag.active { color: var(--danger); }
-    .flag-control { display: inline-flex; align-items: center; gap: 8px; }
-    .flag-control .flag { width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); font-size: 18px; }
-    .flag-control .flag:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+    .tray-actions { display: flex; align-items: center; gap: 6px; }
+    .tray-actions .flag { width: 36px; height: 36px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); font-size: 18px; }
+    .tray-actions .flag:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
     .selection-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-bottom: 14px; padding: 10px; border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line)); border-radius: 11px; background: var(--accent-soft); }
     .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 34px; margin-top: 10px; padding: 4px 8px; border-bottom: 1px solid var(--line); color: var(--muted); }
     .section-heading:first-child { margin-top: 0; }
@@ -178,28 +194,26 @@
     @media (max-width: 1200px) {
       .workspace.detail-open .center, .workspace.settings-open .center { margin-left: 0; margin-right: 0; }
       .detail-tray, .settings-tray { box-shadow: var(--shadow); }
-      .filters { grid-template-columns: minmax(150px,1fr) 160px 140px auto; }
+      .filter-options { grid-template-columns: minmax(140px,1fr) minmax(120px,160px) 40px; }
     }
     @container (max-width: 760px) {
-      .composer-row { grid-template-columns: minmax(0,1fr) minmax(150px, .65fr); }
-      .composer-row .button.primary { width: 100%; }
-      .filters { grid-template-columns: 1fr 1fr; }
+      .composer-row { grid-template-columns: minmax(0,1fr) minmax(145px,.65fr) 40px auto; }
     }
     @media (max-width: 860px) {
       :root { --nav-width: 220px; }
       .center { padding: 16px; }
-      .composer-row { grid-template-columns: minmax(140px,1fr) 150px 175px 40px; }
-      .filters { grid-template-columns: 1fr 1fr; }
+      .composer-row { grid-template-columns: minmax(140px,1fr) 150px 40px auto; }
     }
     @media (max-width: 650px) {
       :root { --nav-width: 0px; }
       .workspace { grid-template-columns: 1fr; }
       .nav { display: none; position: absolute; inset: 0 auto 0 0; z-index: 35; width: min(330px, 88vw); box-shadow: var(--shadow); }
       .workspace.nav-open .nav { display: block; }
-      .mobile-only { display: grid; }
+      .icon-button.mobile-only { display: grid; }
       .tray { width: min(430px, 94vw); }
-      .composer-row { grid-template-columns: 1fr; }
-      .composer-row .button { width: 100%; }
+      .filter-options { grid-template-columns: minmax(0,1fr) minmax(0,1fr) 40px; }
+      .composer-row { grid-template-columns: minmax(0,1fr) 40px auto; }
+      .composer-row #new-reminder-assignee { grid-column: 1 / -1; grid-row: 2; }
       .task-actions { display: flex; align-self: center; }
       .topbar { padding-inline: 12px; }
     }
@@ -213,7 +227,7 @@
         <div><h1>Tend</h1><div class="identity" id="identity">Connecting to your ship…</div></div>
       </div>
       <div class="top-actions">
-        <button class="icon-button mobile-only" id="open-navigation" type="button" aria-label="Open navigation" title="Lists and views">☰</button>
+        <button class="icon-button mobile-only" id="open-navigation" type="button" aria-label="Open lists and views" aria-expanded="false" title="Lists and views"><span class="nav-toggle-glyph" aria-hidden="true">▤</span></button>
         <span class="dot" id="connection" role="status" aria-label="Connection unavailable" title="Connection unavailable"></span>
         <button class="icon-button" id="refresh" type="button" aria-label="Refresh" title="Refresh">↻</button>
         <button class="icon-button" id="open-settings" type="button" aria-label="Open settings" title="Settings">⚙</button>
@@ -431,6 +445,7 @@
         workspace.classList.toggle("detail-open", !!state.selectedReminderId);
         workspace.classList.toggle("settings-open", !!state.rightTray);
         workspace.classList.toggle("nav-open", state.mobileNavigationOpen === true);
+        $("open-navigation").setAttribute("aria-expanded", state.mobileNavigationOpen === true ? "true" : "false");
       }
       function renderNavigation() {
         const active = state.view;
@@ -503,10 +518,10 @@
         $("main").innerHTML = `
           <div class="view-head"><div class="view-title"><h2>${escapeHtml(title)}</h2>${list ? `<div class="status-line"><span class="dot ${hostWritable ? "online" : ""}"></span><span>${escapeHtml(normalizeShip(access && access.host ? access.host : state.ship))}${owner ? " · owner" : ""}</span></div>` : ""}</div>${list ? `<button class="icon-button" data-open-list-settings type="button" aria-label="Edit list" title="Edit list">✎</button>` : ""}</div>
           ${!hostWritable && list && !owner ? `<div class="form-section" style="color:var(--danger)">Editing is unavailable while ${escapeHtml(access ? access.host : "the list owner")} is offline.</div>` : ""}
-          <div class="filters"><input class="field" id="search" value="${escapeHtml(state.search)}" placeholder="Search reminders"><select class="select" id="tag-filter"><option value="">All tags</option>${allTags().map(tag => `<option ${tag === state.tag ? "selected" : ""}>${escapeHtml(tag)}</option>`).join("")}</select><select class="select" id="sort"><option value="manual" ${state.sort === "manual" ? "selected" : ""}>Manual</option><option value="due" ${state.sort === "due" ? "selected" : ""}>Due date</option><option value="priority" ${state.sort === "priority" ? "selected" : ""}>Priority</option><option value="title" ${state.sort === "title" ? "selected" : ""}>Title</option></select><button class="button sort-direction" id="sort-direction" type="button" aria-label="Sort ${state.descending ? "ascending" : "descending"}"><span aria-hidden="true">${state.descending ? "↓" : "↑"}</span>${state.descending ? "Descending" : "Ascending"}</button></div>
-          <section class="composer"><div class="composer-head"><span class="eyebrow">Add new reminder</span>${state.view === "list" ? "" : `<select class="select" id="quick-list" style="width:min(240px,44%)">${optionHtml(listOptions, destination && destination.id)}</select>`}</div><form class="composer-row" id="new-reminder-form"><input class="field" id="new-reminder-title" placeholder="Describe a new reminder" required ${editable ? "" : "disabled"}><select class="select" id="new-reminder-assignee" ${editable ? "" : "disabled"}>${optionHtml(dueList, state.ship)}</select><input class="field" id="new-reminder-due" type="datetime-local" ${editable ? "" : "disabled"}><button class="button primary" type="submit" aria-label="Add reminder" ${editable ? "" : "disabled"}>+</button></form></section>
+          <div class="filters"><input class="field" id="search" value="${escapeHtml(state.search)}" placeholder="Search reminders"><div class="filter-options"><select class="select" id="tag-filter"><option value="">All tags</option>${allTags().map(tag => `<option ${tag === state.tag ? "selected" : ""}>${escapeHtml(tag)}</option>`).join("")}</select><select class="select" id="sort"><option value="manual" ${state.sort === "manual" ? "selected" : ""}>Manual</option><option value="due" ${state.sort === "due" ? "selected" : ""}>Due date</option><option value="priority" ${state.sort === "priority" ? "selected" : ""}>Priority</option><option value="title" ${state.sort === "title" ? "selected" : ""}>Title</option></select><button class="button sort-direction" id="sort-direction" type="button" aria-label="Sort ${state.descending ? "ascending" : "descending"}" title="${state.descending ? "Descending" : "Ascending"}"><span aria-hidden="true">≡${state.descending ? "↓" : "↑"}</span></button></div></div>
+          <section class="composer"><div class="composer-head"><span class="eyebrow">Add new reminder</span>${state.view === "list" ? "" : `<select class="select" id="quick-list" style="width:min(240px,44%)">${optionHtml(listOptions, destination && destination.id)}</select>`}</div><form class="composer-row" id="new-reminder-form"><input class="field" id="new-reminder-title" placeholder="Describe a new reminder" required ${editable ? "" : "disabled"}><select class="select" id="new-reminder-assignee" ${editable ? "" : "disabled"}>${optionHtml(dueList, state.ship)}</select><label class="compact-date" title="Set due date"><span class="calendar-glyph" aria-hidden="true"></span><input id="new-reminder-due" type="datetime-local" aria-label="Due date" ${editable ? "" : "disabled"}></label><button class="button primary" type="submit" aria-label="Add reminder" ${editable ? "" : "disabled"}>+ add</button></form></section>
           ${state.view === "list" && list ? `<form class="section-adder" id="new-section-form"><input class="field" id="new-section-title" placeholder="Section title" ${hostWritable ? "" : "disabled"}><button class="button tertiary" type="submit" ${hostWritable ? "" : "disabled"}>+ Add section</button><span style="flex:1"></span><button class="button" data-toggle-selection type="button">${state.selectionMode ? "Done selecting" : "Select"}</button></form>` : ""}
-          ${state.selectionMode && state.view === "list" && list ? `<div class="selection-bar"><strong class="tiny">SELECT MODE · ${selectedIds.length} selected</strong><select class="select" id="selection-section" style="width:170px">${optionHtml(sectionOptions, "")}</select><button class="button" data-selection-action="section" ${selectedIds.length ? "" : "disabled"}>Move to section</button><button class="button" data-selection-action="up" ${selectedIds.length === 1 ? "" : "disabled"}>↑</button><button class="button" data-selection-action="down" ${selectedIds.length === 1 ? "" : "disabled"}>↓</button><button class="button" data-selection-action="indent" ${selectedIds.length === 1 ? "" : "disabled"}>Indent</button><button class="button" data-selection-action="outdent" ${selectedIds.length === 1 ? "" : "disabled"}>Outdent</button><button class="button" data-selection-action="complete" ${selectedIds.length ? "" : "disabled"}>Complete</button><button class="button" data-selection-action="open" ${selectedIds.length ? "" : "disabled"}>Reopen</button><button class="button danger" data-selection-action="delete" ${selectedIds.length ? "" : "disabled"}>Delete</button></div>` : ""}
+          ${state.selectionMode && state.view === "list" && list ? `<div class="selection-bar"><strong class="tiny">SELECT MODE · ${selectedIds.length} selected</strong><select class="select" id="selection-section" style="width:170px">${optionHtml(sectionOptions, "")}</select><button class="button" data-selection-action="section" ${selectedIds.length ? "" : "disabled"}>Move to section</button><button class="button" data-selection-action="up" ${selectedIds.length === 1 ? "" : "disabled"}>↑</button><button class="button" data-selection-action="down" ${selectedIds.length === 1 ? "" : "disabled"}>↓</button><button class="button" data-selection-action="indent" ${selectedIds.length === 1 ? "" : "disabled"}>Indent</button><button class="button" data-selection-action="outdent" ${selectedIds.length === 1 ? "" : "disabled"}>Outdent</button></div>` : ""}
           <section class="task-list">${renderReminderRows(reminders, list) || `<div class="empty">No reminders here.</div>`}</section>`;
         if (focusId) requestAnimationFrame(() => {
           const field = $(focusId);
@@ -555,8 +570,8 @@
         if (!list || !reminder) { tray.innerHTML = ""; return; }
         const draft = draftFor(reminder); const editable = canEdit(list.id) && !state.busy;
         const movableLists = movableListsFrom(list.id).map(item => ({value:item.id,label:item.title}));
-        tray.innerHTML = `<div class="tray-head"><div><div class="eyebrow">Reminder details</div><div class="muted tiny">${escapeHtml(list.title)}</div></div><button class="icon-button" data-close-detail aria-label="Close details">×</button></div>
-          <div class="form-section"><label class="check-row"><input class="check detail-immediate" data-field="completed" type="checkbox" ${draft.completed ? "checked" : ""} ${editable ? "" : "disabled"}> Completed</label><div class="flag-control"><button class="flag ${draft.flagged ? "active" : ""}" type="button" data-detail-flag ${editable ? "" : "disabled"} aria-pressed="${draft.flagged}" aria-label="${draft.flagged ? "Remove flag" : "Flag reminder"}">⚑</button><span>${draft.flagged ? "Flagged" : "Not flagged"}</span></div></div>
+        tray.innerHTML = `<div class="tray-head"><div><div class="eyebrow">Reminder details</div><div class="muted tiny">${escapeHtml(list.title)}</div></div><div class="tray-actions"><button class="flag ${draft.flagged ? "active" : ""}" type="button" data-detail-flag ${editable ? "" : "disabled"} aria-pressed="${draft.flagged}" aria-label="${draft.flagged ? "Remove flag" : "Flag reminder"}" title="${draft.flagged ? "Remove flag" : "Flag reminder"}">⚑</button><button class="icon-button" data-close-detail aria-label="Close details">×</button></div></div>
+          <div class="form-section"><label class="check-row"><input class="check detail-immediate" data-field="completed" type="checkbox" ${draft.completed ? "checked" : ""} ${editable ? "" : "disabled"}> Completed</label></div>
           <div class="form-section"><label class="label">Title<input class="field detail-text" data-field="title" value="${escapeHtml(draft.title)}" ${editable ? "" : "disabled"}></label><label class="label">Notes<textarea class="textarea detail-text" data-field="notes" ${editable ? "" : "disabled"}>${escapeHtml(draft.notes)}</textarea></label><label class="label">Link<input class="field detail-text" data-field="url" value="${escapeHtml(draft.url)}" placeholder="https://" ${editable ? "" : "disabled"}></label></div>
           <div class="form-section"><div class="two-col"><label class="label">Priority<select class="select detail-immediate" data-field="priority" ${editable ? "" : "disabled"}>${["none","low","medium","high"].map(value => `<option ${draft.priority === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label class="label">Assignee<select class="select detail-immediate" data-field="assignee" ${editable ? "" : "disabled"}>${optionHtml(assigneeOptions(list), draft.assignee)}</select></label></div><label class="label">List<select class="select" data-move-list ${editable && movableLists.length > 1 ? "" : "disabled"}>${optionHtml(movableLists, list.id)}</select></label></div>
           <div class="form-section"><label class="label">Tags<div class="tag-box" id="tag-box">${draft.tags.map(tag => `<span class="chip">#${escapeHtml(tag)}<button data-remove-tag="${escapeHtml(tag)}" aria-label="Remove ${escapeHtml(tag)}">×</button></span>`).join("")}<input id="tag-input" list="tag-suggestions" placeholder="Find or add a tag" ${editable ? "" : "disabled"}></div></label><datalist id="tag-suggestions">${allTags().filter(tag => !draft.tags.includes(tag)).map(tag => `<option value="${escapeHtml(tag)}">`).join("")}</datalist></div>

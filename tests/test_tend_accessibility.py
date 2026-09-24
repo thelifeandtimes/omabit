@@ -68,6 +68,15 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("anchors.centerIn: parent", picker)
         self.assertNotIn("suppressTriggerRelease", picker)
 
+    def test_dropdowns_own_the_closing_click_and_stay_inside_the_window(self):
+        dropdown = (ROOT / "omarchy-plugin" / "TendDropdown.qml").read_text(encoding="utf-8")
+        self.assertIn("parent: trigger.Window.window ? trigger.Window.window.contentItem : trigger", dropdown)
+        self.assertIn("modal: true", dropdown)
+        self.assertIn("dim: false", dropdown)
+        self.assertIn("function placePopup()", dropdown)
+        self.assertIn("parent.width", dropdown)
+        self.assertIn("parent.height", dropdown)
+
     def test_plugin_adds_no_custom_motion(self):
         plugin_text = "\n".join(path.read_text(encoding="utf-8") for path in (ROOT / "omarchy-plugin").glob("*.qml"))
         for animation in ("NumberAnimation", "PropertyAnimation", "SmoothedAnimation", "SpringAnimation"):
@@ -181,6 +190,13 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("x: reminderRow.indentPixels", panel)
         self.assertIn("width: Math.max(Style.space(120), reminderRow.width - x)", panel)
         self.assertNotIn("\n                                    x: indentPixels", panel)
+
+    def test_menubar_filtered_subitems_are_subtle_and_quick_add_is_labeled(self):
+        widget = (ROOT / "omarchy-plugin" / "BarWidget.qml").read_text(encoding="utf-8")
+        self.assertIn('text: "+ add"', widget)
+        self.assertIn("font.pixelSize: Style.font.caption", widget)
+        self.assertIn("font.underline: filteredSummaryHover.hovered", widget)
+        self.assertNotIn("TendButton {\n                id: filteredSummaryButton", widget)
 
     def test_mutation_processes_use_newline_delimited_json(self):
         service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
