@@ -228,14 +228,11 @@ Panel {
             Accessible.name: "Open Tend"
             onClicked: root.openFullPanel(0, 0)
 
-            OpticalGlyph {
+            TendOpenGlyph {
               anchors.centerIn: parent
               width: Style.font.icon
               height: Style.font.icon
-              text: "↗"
               color: root.barForeground
-              fontFamily: root.bar ? root.bar.fontFamily : Style.font.family
-              fontSize: Style.font.icon
             }
           }
         }

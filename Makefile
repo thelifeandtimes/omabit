@@ -58,6 +58,7 @@ lint-qml:
 		omarchy-plugin/TendDateTimePicker.qml \
 		omarchy-plugin/TendEditMenu.qml \
 		omarchy-plugin/TendFlagButton.qml \
+		omarchy-plugin/TendOpenGlyph.qml \
 		omarchy-plugin/TendMenuItem.qml \
 	omarchy-plugin/TendSettings.qml \
 	omarchy-plugin/TendTextField.qml \
