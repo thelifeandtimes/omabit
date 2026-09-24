@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 )
 
@@ -28,13 +29,16 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 	flags.SetOutput(io.Discard)
 	flags.Usage = func() {}
 	var name, path, expectedID string
+	var sshHost, sshConfig string
 	var watch bool
 	interval := time.Second
 	usage := command
 	switch command {
 	case "enroll":
-		usage += " NAME --socket /absolute/path/runner.sock"
+		usage += " NAME (--socket /absolute/path/runner.sock | --ssh HOST_ALIAS [--ssh-config /absolute/config])"
 		flags.StringVar(&path, "socket", "", "required absolute clean runner socket path")
+		flags.StringVar(&sshHost, "ssh", "", "OpenSSH host alias (exclusive with --socket)")
+		flags.StringVar(&sshConfig, "ssh-config", "", "optional absolute SSH config file (default: normal OpenSSH config)")
 	case "forget":
 		usage += " NAME --runner-id ID"
 		flags.StringVar(&expectedID, "runner-id", "", "required expected enrolled runner identity")
@@ -64,8 +68,15 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 	if (command == "enroll" || command == "forget") && !validID(name) {
 		return fail(errors.New("a valid connection NAME is required"), 2)
 	}
-	if command == "enroll" && !collection.ValidSocket(path) {
-		return fail(errors.New("enroll requires --socket with an absolute clean path after NAME"), 2)
+	if command == "enroll" {
+		if (path == "") == (sshHost == "") || (path != "" && (!collection.ValidSocket(path) || sshConfig != "")) {
+			return fail(errors.New("enroll requires either --socket with an absolute clean path or --ssh with a configured host alias"), 2)
+		}
+		if sshHost != "" {
+			if err := (client.SSHConfig{Host: sshHost, ConfigFile: sshConfig}).Validate(); err != nil {
+				return fail(err, 2)
+			}
+		}
 	}
 	if command == "forget" && !validID(expectedID) {
 		return fail(errors.New("forget requires --runner-id with the expected enrolled identity"), 2)
@@ -86,7 +97,11 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 	code := 0
 	switch command {
 	case "enroll":
-		result, err = registry.Enroll(ctx, name, path)
+		if sshHost != "" {
+			result, err = registry.EnrollSSH(ctx, name, client.SSHConfig{Host: sshHost, ConfigFile: sshConfig})
+		} else {
+			result, err = registry.Enroll(ctx, name, path)
+		}
 	case "runners":
 		result, err = registry.List(ctx)
 	case "forget":

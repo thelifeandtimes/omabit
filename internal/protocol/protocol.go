@@ -13,6 +13,8 @@ type Hello struct {
 	RunnerID        string   `json:"runner_id"`
 	Mode            string   `json:"mode"`
 	Features        []string `json:"features"`
+	Actor           string   `json:"actor,omitempty"`
+	AccessRole      string   `json:"access_role,omitempty"`
 }
 
 type Configuration struct {

@@ -30,7 +30,7 @@ type Inventory struct {
 func inspect(ctx context.Context, entry Connection) Observation {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
-	c := client.NewPinned(entry.Socket, entry.Identity())
+	c := entry.Client(true)
 	defer c.Close()
 	result := Observation{Name: entry.Name, RunnerID: entry.RunnerID, Mode: entry.Mode, Status: "available"}
 	// The pinned transport negotiates /hello on every connection.

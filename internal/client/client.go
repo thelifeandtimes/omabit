@@ -38,6 +38,12 @@ func New(socketPath string) *Client {
 
 func newClient(socketPath string, identity *Identity) *Client {
 	dialer := &net.Dialer{}
+	return newTransport(func(ctx context.Context) (net.Conn, error) {
+		return dialer.DialContext(ctx, "unix", socketPath)
+	}, identity)
+}
+
+func newTransport(dial func(context.Context) (net.Conn, error), identity *Identity) *Client {
 	lifetime, cancel := context.WithCancel(context.Background())
 	transport := &http.Transport{
 		Proxy: nil,
@@ -48,7 +54,7 @@ func newClient(socketPath string, identity *Identity) *Client {
 			stopLifetime := context.AfterFunc(lifetime, stop)
 			defer stopLifetime()
 			defer stop()
-			conn, err := dialer.DialContext(ctx, "unix", socketPath)
+			conn, err := dial(ctx)
 			if err != nil || identity == nil {
 				return conn, err
 			}

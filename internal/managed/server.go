@@ -15,6 +15,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
@@ -46,9 +47,19 @@ type Server struct {
 	startGate chan struct{}
 	failed    atomic.Bool
 	uid       uint32
+	keys      string
 }
 
 func New(dir string) (*Server, error) { return newServer(dir, realBackend{}, 10*time.Second) }
+
+// NewWithAccess enables authentication-derived SSH grants on the private socket.
+func NewWithAccess(dir, keys string) (*Server, error) {
+	r, err := New(dir)
+	if err == nil {
+		r.keys = keys
+	}
+	return r, err
+}
 
 func newServer(dir string, b backend, interval time.Duration) (*Server, error) {
 	s, err := openStore(dir)
@@ -170,8 +181,27 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		r.respondError(w, &fault{403, protocol.APIError{Code: "origin_not_allowed", Message: "runner RPC does not accept browser origins"}})
 		return
 	}
+	actor := fmt.Sprintf("local-uid:%d", uid)
+	role := "operator"
+	if values, present := req.Header[http.CanonicalHeaderKey(access.Header)]; present {
+		if len(values) != 1 || r.keys == "" {
+			r.respondError(w, &fault{403, protocol.APIError{Code: "ssh_access_denied", Message: "SSH grants are not available"}})
+			return
+		}
+		grant, err := access.Load(r.keys, values[0])
+		if err != nil || !grant.Allows(req.Method, req.URL.Path) {
+			r.respondError(w, &fault{403, protocol.APIError{Code: "ssh_access_denied", Message: "SSH grant does not permit this request"}})
+			return
+		}
+		actor = "ssh-key:" + grant.Fingerprint
+		role = grant.Role
+	}
 	if req.Method == http.MethodGet && req.URL.Path == "/hello" {
-		respond(w, 200, protocol.Hello{ProtocolVersion: protocol.Version, RunnerID: r.s.runnerID, Mode: mode, Features: []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials"}})
+		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials"}
+		if r.keys != "" {
+			features = append(features, "ssh-key-grants")
+		}
+		respond(w, 200, protocol.Hello{ProtocolVersion: protocol.Version, RunnerID: r.s.runnerID, Mode: mode, Features: features, Actor: actor, AccessRole: role})
 		return
 	}
 	if req.Header.Get(protocol.Header) != strconv.Itoa(protocol.Version) {
@@ -196,7 +226,6 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		r.respondError(w, &fault{503, protocol.APIError{Code: "runner_unavailable", Message: "runner is stopping or state storage needs review"}})
 		return
 	}
-	actor := fmt.Sprintf("local-uid:%d", uid)
 	if req.Method == http.MethodPost && req.URL.Path == "/v1/instances" {
 		var body protocol.CreateFakeRequest
 		if err := decode(w, req, &body); err != nil {

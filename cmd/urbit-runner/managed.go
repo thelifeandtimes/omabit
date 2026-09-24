@@ -13,6 +13,7 @@ import (
 	"syscall"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/localrpc"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/managed"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
@@ -63,7 +64,7 @@ Interrupted work is recorded for reconciliation, never blindly re-executed.
 	if err := os.Chmod(host.Socket, os.ModeSticky|0600); err != nil {
 		return fail(err, 1)
 	}
-	runner, err := managed.New(host.Directory)
+	runner, err := managed.NewWithAccess(host.Directory, access.DefaultKeys)
 	if err != nil {
 		return fail(err, 1)
 	}

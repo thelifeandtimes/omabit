@@ -61,6 +61,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 
 Commands:
   enroll NAME --socket /absolute/path/runner.sock
+  enroll NAME --ssh HOST_ALIAS [--ssh-config /absolute/config]
               Verify and save a named runner connection with its identity.
   runners     List saved connections without contacting runners.
   forget NAME --runner-id ID
@@ -208,7 +209,7 @@ Use COMMAND --help for command flags and constraints.
 		}
 		pin := entry.Identity()
 		identity = &pin
-		c = client.NewPinned(entry.Socket, pin)
+		c = entry.Client(true)
 	} else {
 		c = client.New(*socket)
 	}

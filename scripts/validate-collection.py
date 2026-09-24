@@ -14,7 +14,7 @@ COLLECTOR = ROOT / "build/urbit-collector"
 
 def main():
     processes = []
-    with tempfile.TemporaryDirectory(prefix="omabit-4a-", dir="/tmp/opencode") as directory:
+    with tempfile.TemporaryDirectory(prefix="omabit-4a-") as directory:
         lab = pathlib.Path(directory)
 
         def invoke(profile, *args, status=0, parse=True):

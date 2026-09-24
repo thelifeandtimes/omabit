@@ -23,16 +23,45 @@ const maxConnections = 32
 const maxRegistryBytes = 256 << 10
 
 type Connection struct {
-	Name       string    `json:"name"`
-	Transport  string    `json:"transport"`
-	Socket     string    `json:"socket"`
-	RunnerID   string    `json:"runner_id"`
-	Mode       string    `json:"mode"`
-	EnrolledAt time.Time `json:"enrolled_at"`
+	Name       string            `json:"name"`
+	Transport  string            `json:"transport"`
+	Socket     string            `json:"socket,omitempty"`
+	SSH        *client.SSHConfig `json:"ssh,omitempty"`
+	RunnerID   string            `json:"runner_id"`
+	Mode       string            `json:"mode"`
+	EnrolledAt time.Time         `json:"enrolled_at"`
 }
 
 func (c Connection) Identity() client.Identity {
 	return client.Identity{RunnerID: c.RunnerID, Mode: c.Mode}
+}
+
+func (c Connection) Client(pinned bool) *client.Client {
+	identity := c.Identity()
+	if c.Transport == "ssh" && c.SSH != nil {
+		if pinned {
+			return client.NewSSH(*c.SSH, &identity)
+		}
+		return client.NewSSH(*c.SSH, nil)
+	}
+	if pinned {
+		return client.NewPinned(c.Socket, identity)
+	}
+	return client.New(c.Socket)
+}
+
+func (c Connection) Address() string {
+	if c.SSH != nil {
+		return c.SSH.Host
+	}
+	return c.Socket
+}
+
+func (c Connection) endpointKey() string {
+	if c.SSH != nil {
+		return "ssh:" + c.SSH.Host + ":" + c.SSH.ConfigFile
+	}
+	return "unix:" + c.Socket
 }
 
 func ValidSocket(path string) bool {
@@ -40,10 +69,16 @@ func ValidSocket(path string) bool {
 }
 
 func (c Connection) validate() error {
-	if !protocol.ValidID(c.Name) || c.Transport != "unix" || !ValidSocket(c.Socket) || !protocol.ValidID(c.RunnerID) || !protocol.ValidID(c.Mode) || c.EnrolledAt.IsZero() {
+	if !protocol.ValidID(c.Name) || !protocol.ValidID(c.RunnerID) || !protocol.ValidID(c.Mode) || c.EnrolledAt.IsZero() {
 		return errors.New("invalid runner enrollment")
 	}
-	return nil
+	if c.Transport == "unix" && ValidSocket(c.Socket) && c.SSH == nil {
+		return nil
+	}
+	if c.Transport == "ssh" && c.Socket == "" && c.SSH != nil {
+		return c.SSH.Validate()
+	}
+	return errors.New("invalid runner transport")
 }
 
 type registryFile struct {
@@ -172,10 +207,10 @@ func (r *Registry) read() (registryFile, error) {
 		if err := c.validate(); err != nil {
 			return state, err
 		}
-		if names[c.Name] || ids[c.RunnerID] || sockets[c.Socket] {
+		if names[c.Name] || ids[c.RunnerID] || sockets[c.endpointKey()] {
 			return state, errors.New("duplicate enrollment in collector registry")
 		}
-		names[c.Name], ids[c.RunnerID], sockets[c.Socket] = true, true, true
+		names[c.Name], ids[c.RunnerID], sockets[c.endpointKey()] = true, true, true
 	}
 	return state, nil
 }
@@ -240,13 +275,27 @@ func (r *Registry) Enroll(ctx context.Context, name, socket string) (Connection,
 	if !protocol.ValidID(name) || !ValidSocket(socket) {
 		return Connection{}, errors.New("enrollment requires a valid name and absolute clean socket path")
 	}
-	c := client.New(socket)
+	return r.enroll(ctx, Connection{Name: name, Transport: "unix", Socket: socket})
+}
+
+func (r *Registry) EnrollSSH(ctx context.Context, name string, config client.SSHConfig) (Connection, error) {
+	if !protocol.ValidID(name) {
+		return Connection{}, errors.New("invalid connection name")
+	}
+	if err := config.Validate(); err != nil {
+		return Connection{}, err
+	}
+	return r.enroll(ctx, Connection{Name: name, Transport: "ssh", SSH: &config})
+}
+
+func (r *Registry) enroll(ctx context.Context, entry Connection) (Connection, error) {
+	c := entry.Client(false)
 	defer c.Close()
 	hello, err := c.Hello(ctx)
 	if err != nil {
 		return Connection{}, err
 	}
-	entry := Connection{Name: name, Transport: "unix", Socket: socket, RunnerID: hello.RunnerID, Mode: hello.Mode, EnrolledAt: time.Now().UTC()}
+	entry.RunnerID, entry.Mode, entry.EnrolledAt = hello.RunnerID, hello.Mode, time.Now().UTC()
 	if err := entry.validate(); err != nil {
 		return Connection{}, err
 	}
@@ -256,11 +305,11 @@ func (r *Registry) Enroll(ctx context.Context, name, socket string) (Connection,
 			return err
 		}
 		for _, old := range state.Connections {
-			if old.Name == entry.Name && old.Socket == entry.Socket && old.Identity() == entry.Identity() {
+			if old.Name == entry.Name && old.endpointKey() == entry.endpointKey() && old.Identity() == entry.Identity() {
 				entry = old
 				return nil
 			}
-			if old.Name == entry.Name || old.RunnerID == entry.RunnerID || old.Socket == entry.Socket {
+			if old.Name == entry.Name || old.RunnerID == entry.RunnerID || old.endpointKey() == entry.endpointKey() {
 				return errors.New("enrollment conflict; existing names, runner identities, and sockets are never overwritten")
 			}
 		}

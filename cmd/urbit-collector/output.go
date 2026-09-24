@@ -80,6 +80,9 @@ func (o *output) Encode(value any) error {
 		}
 	case protocol.Hello:
 		fmt.Fprintf(w, "Runner: %s\nMode: %s\nProtocol: %d\nFeatures: %s\n", cell(v.RunnerID), cell(v.Mode), v.ProtocolVersion, cell(strings.Join(v.Features, ", ")))
+		if v.Actor != "" {
+			fmt.Fprintf(w, "Actor: %s\nAccess: %s\n", cell(v.Actor), cell(v.AccessRole))
+		}
 	case protocol.Snapshot:
 		fmt.Fprintf(w, "Runner: %s (%s)\n", cell(v.RunnerID), cell(v.Mode))
 		instances(w, v.Instances)
@@ -95,11 +98,11 @@ func (o *output) Encode(value any) error {
 	case protocol.Operation:
 		fmt.Fprintf(w, "Operation: %s\nInstance: %s\nKind: %s\nStatus: %s\nActor: %s\nRequest: %s\n", cell(v.ID), cell(v.InstanceID), cell(v.Kind), cell(v.Status), cell(v.Actor), cell(v.RequestID))
 	case collection.Connection:
-		fmt.Fprintf(w, "Connection: %s\nRunner: %s\nMode: %s\nSocket: %s\nEnrolled: %s\n", cell(v.Name), cell(v.RunnerID), cell(v.Mode), cell(v.Socket), v.EnrolledAt.UTC().Format(time.RFC3339))
+		fmt.Fprintf(w, "Connection: %s\nRunner: %s\nMode: %s\nAddress: %s\nEnrolled: %s\n", cell(v.Name), cell(v.RunnerID), cell(v.Mode), cell(v.Address()), v.EnrolledAt.UTC().Format(time.RFC3339))
 	case []collection.Connection:
-		fmt.Fprintln(w, "NAME\tTRANSPORT\tRUNNER\tMODE\tSOCKET")
+		fmt.Fprintln(w, "NAME\tTRANSPORT\tRUNNER\tMODE\tADDRESS")
 		for _, c := range v {
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", cell(c.Name), cell(c.Transport), cell(c.RunnerID), cell(c.Mode), cell(c.Socket))
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", cell(c.Name), cell(c.Transport), cell(c.RunnerID), cell(c.Mode), cell(c.Address()))
 		}
 	case collection.Observation:
 		observation(w, v)

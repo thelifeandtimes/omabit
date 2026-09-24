@@ -20,6 +20,12 @@ import (
 const usage = `Usage: urbit-runner COMMAND
 
 Commands:
+  prepare-ssh --output DIR --public-key FILE --role operator|observer
+                             Write inert loopback SSH review configuration.
+  ssh-authorized-key --public-key FILE --role operator|observer
+                             Print a restricted SSH grant for review.
+  ssh-bridge --socket PATH --authorized-keys FILE --fingerprint ID
+                             Fixed-command SSH RPC bridge (development fixtures).
   preflight                  Read local prerequisites without contacting Docker.
   setup-plan                 Show the rootless installation review plan as JSON.
   prepare-rootless --output /absolute/new/directory
@@ -58,6 +64,12 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	if len(args) > 0 && args[0] == "-c" {
+		return runSSHShell(ctx, args, stdout, stderr)
+	}
+	if len(args) > 0 && (args[0] == "ssh-authorized-key" || args[0] == "ssh-bridge" || args[0] == "prepare-ssh") {
+		return runSSH(ctx, args[0], args[1:], stdout, stderr)
+	}
 	if len(args) == 1 && (args[0] == "--help" || args[0] == "-h") {
 		fmt.Fprint(stdout, usage)
 		return 0
