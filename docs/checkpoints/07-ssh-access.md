@@ -69,13 +69,22 @@ only public-key authentication and uses the existing PAM account/session checks.
 First ensure the live runner has no active operation:
 
 ```bash
-collector4 snapshot | jq '.instances[] | {id, active_operation_id, observed_state}'
+collector4() {
+  sudo runuser -u urbit-runner -- /usr/bin/env -i \
+    HOME=/var/lib/urbit-runner PATH=/usr/bin:/bin \
+    /usr/local/lib/urbit-runner/checkpoints/4a/urbit-collector "$@"
+}
+
+collector4 --runner workstation snapshot |
+  jq '.instances[] | {id, active_operation_id, observed_state}'
 ```
 
 Press Ctrl+C in the **serve-fake management terminal** once no operation is active.
-The ship continues independently. In the desktop terminal:
+The ship continues independently. In the desktop terminal, from the checkout:
 
 ```bash
+REVIEW="$PWD/build/ssh-4b-review"
+
 sudo install -D -o root -g root -m 0755 ./build/urbit-runner \
   /usr/local/lib/urbit-runner/checkpoints/4b/urbit-runner
 sudo install -D -o root -g root -m 0755 ./build/urbit-collector \
@@ -123,14 +132,17 @@ PAM policy to force access.
 
 ## 3. Pin the host key and enroll as your desktop user
 
-Back in the desktop terminal, create the dedicated client config inside the review
-directory. Its host key comes directly from the administratively installed public
-key, rather than trusting an unauthenticated network scan:
+Back in the desktop terminal, from the checkout, set `REVIEW` again: shell
+variables and helper functions are local to each terminal. Create the dedicated
+client config inside the review directory. Its host key comes directly from the
+administratively installed public key, rather than trusting an unauthenticated
+network scan:
 
 ```bash
-printf '[127.0.0.1]:22222 %s\n' \
-  "$(sudo cat /etc/urbit-runner/ssh_host_ed25519_key.pub)" \
-  > "$REVIEW/known_hosts"
+REVIEW="$PWD/build/ssh-4b-review"
+
+HOST_KEY="$(sudo cat /etc/urbit-runner/ssh_host_ed25519_key.pub)" &&
+  printf '[127.0.0.1]:22222 %s\n' "$HOST_KEY" > "$REVIEW/known_hosts"
 
 cat > "$REVIEW/ssh_config" <<EOF
 Host omabit-local-4b
