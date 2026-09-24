@@ -31,10 +31,14 @@ live gate. Checkpoint 4A adds persistent collector enrollment, identity-pinned
 selection, and independent multi-runner inventory polling; its workstation and
 process-level fixture gates passed. Checkpoint 4B's OpenSSH transport and key
 grants passed isolated OpenSSH validation and live dedicated-account acceptance.
-Generic Eyre ship sessions are next. Production ship management is not supported
-yet.
+Checkpoint 4C's independent Eyre enrollment, credential storage, scries, and
+subscriptions passed programmatic acceptance against the development fake with
+both desktop and headless credential adapters. Omabit's management interface is
+next. Production ship management is not supported yet.
 
 - [Accepted: SSH access installation](docs/checkpoints/07-ssh-access.md)
+- [Accepted: Eyre ship sessions](docs/checkpoints/08-ship-sessions.md)
+- [Ship-session contracts and storage](docs/ship-sessions.md)
 - [Accepted: collector enrollment and inventory](docs/checkpoints/06-collector-enrollment.md)
 - [Accepted workflow: persistent development runner](docs/checkpoints/05-persistent-runner.md)
 - [Accepted: host-loopback HTTP checkpoint](docs/checkpoints/04-host-http.md)

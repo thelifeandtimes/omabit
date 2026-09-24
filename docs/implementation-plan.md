@@ -68,7 +68,15 @@ pier or identity for an automated test.
   inventory retained healthy alpha at revision 2, and `register-ssh-check` replayed
   operation `op-77c182d25396669c51322c117e114b5a` with SSH-key attribution. The user
   stopped the foreground SSH server afterward. Remote/tailnet reachability remains
-  a separate qualification gate. Generic origin-bound Eyre sessions are next.
+  a separate qualification gate.
+- Checkpoint 4C implements independent ship enrollment, exact-origin Eyre sessions,
+  Secret Service and explicit headless-file credential adapters, authenticated
+  scries, SSE acknowledgement/replay, and reconciliation-required channel loss.
+  The [ship-session gate](checkpoints/08-ship-sessions.md) passed programmatically
+  against the running fake with the SSH listener stopped, using both credential
+  adapters and separate CLI processes. Actual desks: base/groups/kids/landscape/
+  webterm. Only the test's own HTTP sessions/channels were created and cleaned up.
+  Omabit's management interface is the next milestone.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator

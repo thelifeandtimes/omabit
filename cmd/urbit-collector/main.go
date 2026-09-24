@@ -78,7 +78,16 @@ Commands:
   operate INSTANCE start|stop --revision N --request-id ID
               Submit one operation; both flags are required.
   watch [--interval 1s]
-              Poll snapshots until canceled; minimum interval: 100ms.
+               Poll snapshots until canceled; minimum interval: 100ms.
+  ship-enroll NAME --url ORIGIN --ship ~SHIP [--credentials secret-service|file]
+  ships
+  ship-login NAME --code-stdin
+  ship-status NAME
+  ship-scry NAME --app APP --path /PATH
+  ship-watch NAME --app APP --path /PATH [--events N] [--duration 30s]
+  ship-logout NAME
+  ship-forget NAME --url EXPECTED_ORIGIN
+               Manage independent, origin-bound Eyre application sessions.
 
 Use --format text for readable tables, including watch output.
 Use COMMAND --help for command flags and constraints.
@@ -97,6 +106,9 @@ Use COMMAND --help for command flags and constraints.
 	}
 	command := args[0]
 	args = args[1:]
+	if slices.Contains([]string{"ship-enroll", "ships", "ship-login", "ship-status", "ship-scry", "ship-watch", "ship-logout", "ship-forget"}, command) {
+		return runShips(ctx, command, args, *configDir, *socket, *runnerName, format, os.Stdin, stdout, fail)
+	}
 	if command == "enroll" || command == "runners" || command == "forget" || command == "inventory" {
 		return runCollection(ctx, command, args, *configDir, *socket, *runnerName, format, stdout, fail)
 	}

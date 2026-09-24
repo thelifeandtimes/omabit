@@ -111,6 +111,36 @@ func (o *output) Encode(value any) error {
 		for _, c := range v.Connections {
 			observation(w, c)
 		}
+	case shipInfo:
+		fmt.Fprintf(w, "Ship connection: %s\nShip: %s\nOrigin: %s\nCredentials: %s\nStatus: %s\n", cell(v.Name), cell(v.Ship), cell(v.Origin), cell(v.Credentials), cell(v.Status))
+		if v.Message != "" {
+			fmt.Fprintln(w, cell(v.Message))
+		}
+	case []shipInfo:
+		fmt.Fprintln(w, "NAME\tSHIP\tSTATUS\tCREDENTIALS\tORIGIN")
+		for _, s := range v {
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", cell(s.Name), cell(s.Ship), cell(s.Status), cell(s.Credentials), cell(s.Origin))
+		}
+	case shipData:
+		fmt.Fprintf(w, "%s: %s %s\n", cell(v.Name), cell(v.App), cell(v.Path))
+		data, err := json.MarshalIndent(v.Data, "", "  ")
+		if err != nil {
+			return err
+		}
+		fmt.Fprintln(w, safeJSONText(string(data)))
+	case shipEvent:
+		fmt.Fprintf(w, "%s: %s", cell(v.Name), cell(v.Kind))
+		if v.Response != "" {
+			fmt.Fprintf(w, " — %s, event %d", cell(v.Response), v.EventID)
+		}
+		fmt.Fprintln(w)
+		if len(v.Data) > 0 {
+			data, err := json.MarshalIndent(v.Data, "", "  ")
+			if err != nil {
+				return err
+			}
+			fmt.Fprintln(w, safeJSONText(string(data)))
+		}
 	default:
 		// Small confirmation objects retain readable, indented JSON.
 		return o.json.Encode(value)
@@ -120,4 +150,13 @@ func (o *output) Encode(value any) error {
 	}
 	_, err := io.WriteString(o.w, text.String())
 	return err
+}
+
+func safeJSONText(s string) string {
+	return strings.Map(func(r rune) rune {
+		if unicode.Is(unicode.Cf, r) || (unicode.IsControl(r) && r != '\n' && r != '\t') {
+			return ' '
+		}
+		return r
+	}, s)
 }

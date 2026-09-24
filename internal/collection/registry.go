@@ -217,6 +217,10 @@ func (r *Registry) read() (registryFile, error) {
 
 func (r *Registry) write(state registryFile) error {
 	slices.SortFunc(state.Connections, func(a, b Connection) int { return strings.Compare(a.Name, b.Name) })
+	return r.writeFile("runners.json", state)
+}
+
+func (r *Registry) writeFile(name string, state any) error {
 	data, err := json.MarshalIndent(state, "", "  ")
 	if err != nil {
 		return err
@@ -236,7 +240,7 @@ func (r *Registry) write(state registryFile) error {
 	if err := f.Close(); err != nil {
 		return err
 	}
-	if err := os.Rename(f.Name(), filepath.Join(r.dir, "runners.json")); err != nil {
+	if err := os.Rename(f.Name(), filepath.Join(r.dir, name)); err != nil {
 		return err
 	}
 	dir, err := os.Open(r.dir)
