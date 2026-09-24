@@ -13,6 +13,7 @@ Item {
   property color foreground: Color.foreground
   property color background: Color.popups.background
   property color accent: Color.accent
+  property bool suppressTriggerRelease: false
   signal committed(string value, bool allDay)
 
   property int shownYear: new Date().getFullYear()
@@ -76,13 +77,33 @@ Item {
     Qt.callLater(root.placePopup)
   }
 
+  function toggle() {
+    if (picker.opened) {
+      picker.close()
+      return
+    }
+    if (suppressTriggerRelease) {
+      suppressTriggerRelease = false
+      triggerReleaseGuard.stop()
+      return
+    }
+    open()
+  }
+
+  Timer {
+    id: triggerReleaseGuard
+    interval: 500
+    repeat: false
+    onTriggered: root.suppressTriggerRelease = false
+  }
+
   TendButton {
     id: trigger
     anchors.fill: parent
     text: ""
     bordered: true
     Accessible.name: root.value ? "Due " + root.displayValue() : root.placeholderText
-    onClicked: root.open()
+    onClicked: root.toggle()
 
     Row {
       anchors.left: parent.left
@@ -127,6 +148,12 @@ Item {
     focus: true
     closePolicy: QQC.Popup.CloseOnEscape | QQC.Popup.CloseOnPressOutside
     onOpened: Qt.callLater(root.placePopup)
+    onClosed: {
+      // CloseOnPressOutside sees the trigger as outside this window-level popup.
+      // Ignore the matching release click so it cannot immediately reopen us.
+      root.suppressTriggerRelease = true
+      triggerReleaseGuard.restart()
+    }
 
     background: BorderSurface {
       color: root.background

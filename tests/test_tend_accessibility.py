@@ -56,6 +56,14 @@ class TendAccessibilityTests(unittest.TestCase):
             self.assertIn("parent.width", picker)
             self.assertIn("parent.height", picker)
 
+    def test_date_picker_trigger_does_not_reopen_after_outside_press_close(self):
+        picker = (ROOT / "omarchy-plugin" / "TendDateTimePicker.qml").read_text(encoding="utf-8")
+        self.assertIn("property bool suppressTriggerRelease: false", picker)
+        self.assertIn("function toggle()", picker)
+        self.assertIn("onClicked: root.toggle()", picker)
+        self.assertIn("onClosed:", picker)
+        self.assertIn("triggerReleaseGuard.restart()", picker)
+
     def test_plugin_adds_no_custom_motion(self):
         plugin_text = "\n".join(path.read_text(encoding="utf-8") for path in (ROOT / "omarchy-plugin").glob("*.qml"))
         for animation in ("NumberAnimation", "PropertyAnimation", "SmoothedAnimation", "SpringAnimation"):
