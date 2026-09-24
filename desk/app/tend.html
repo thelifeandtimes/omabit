@@ -23,6 +23,7 @@
       --shadow: 0 18px 48px rgba(29,34,45,.13);
       --nav-width: 278px;
       --tray-width: 370px;
+      --control-height: 38px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
@@ -75,7 +76,7 @@
       border: 1px solid var(--line); border-radius: 9px; background: var(--surface-solid); font-weight: 700;
     }
     .icon-button { width: 36px; height: 36px; display: grid; place-items: center; padding: 0; }
-    .button { min-height: 36px; padding: 7px 12px; }
+    .button { height: var(--control-height); min-height: var(--control-height); padding: 7px 12px; }
     .button:hover:not(:disabled), .icon-button:hover:not(:disabled) { border-color: var(--accent); }
     .button.primary { color: #fff; background: var(--accent); border-color: transparent; }
     .button.quiet { background: transparent; border-color: transparent; color: var(--muted); }
@@ -110,7 +111,7 @@
     .field, .select, .textarea {
       width: 100%; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft); outline: none;
     }
-    .field, .select { min-height: 38px; padding: 8px 10px; }
+    .field, .select { height: var(--control-height); min-height: var(--control-height); padding: 8px 10px; }
     .textarea { min-height: 108px; padding: 10px; resize: vertical; }
     .field:focus, .select:focus, .textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 13%, transparent); }
     .stack { display: grid; gap: 10px; }
@@ -120,13 +121,13 @@
     .status-line { gap: 8px; margin-top: 6px; color: var(--muted); font-size: 12px; }
     .filters { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 18px; }
     .filter-options { display: grid; grid-template-columns: minmax(150px,1fr) minmax(130px,180px) 40px; gap: 8px; }
-    .sort-direction { width: 40px; min-width: 40px; min-height: 38px; padding: 0; display: inline-grid; place-items: center; white-space: nowrap; font-size: 15px; letter-spacing: -.16em; }
+    .sort-direction { width: 40px; min-width: 40px; height: var(--control-height); min-height: var(--control-height); padding: 0; display: inline-grid; place-items: center; white-space: nowrap; font-size: 15px; letter-spacing: -.16em; }
     .composer { padding: 15px; margin-bottom: 18px; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-soft); }
     .composer-head { margin-bottom: 10px; }
     .composer-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(135px,190px) 40px auto; gap: 8px; }
     .composer-row > * { min-width: 0; max-width: 100%; }
     .compact-date {
-      position: relative; width: 40px; height: 38px; overflow: hidden;
+      position: relative; width: 40px; height: var(--control-height); overflow: hidden;
       display: grid; place-items: center; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-soft);
     }
     .compact-date:hover { border-color: var(--accent); }
@@ -140,7 +141,8 @@
     }
     .compact-date:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 13%, transparent); }
     .section-adder { display: flex; align-items: center; gap: 7px; margin: 0 0 14px; }
-    .section-adder .field { width: 210px; min-height: 32px; }
+    .section-adder .field { width: 210px; height: var(--control-height); min-height: var(--control-height); }
+    .section-adder .button { height: var(--control-height); min-height: var(--control-height); }
     .task-list { display: grid; gap: 5px; }
     .task {
       display: grid; grid-template-columns: 27px minmax(0,1fr) auto; gap: 10px; align-items: center;
@@ -192,6 +194,7 @@
     .invitation-card { padding: 12px; border: 1px solid color-mix(in srgb, var(--accent) 48%, var(--line)); border-radius: 11px; background: var(--accent-soft); }
     .section-settings { display: grid; gap: 7px; }
     .section-setting { display: grid; grid-template-columns: minmax(0,1fr) auto auto auto; gap: 6px; align-items: center; }
+    .section-setting .button { width: var(--control-height); padding-inline: 0; }
     input[type="datetime-local"] { min-width: 0; max-width: 100%; }
     .invites { position: fixed; right: 18px; bottom: 18px; z-index: 50; display: grid; gap: 8px; width: min(390px, calc(100vw - 36px)); }
     .invite { padding: 13px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-solid); box-shadow: var(--shadow); }
@@ -230,6 +233,9 @@
     }
     @media (max-width: 520px) {
       .tray { width: 100vw; max-width: none; }
+      .section-adder { display: grid; grid-template-columns: minmax(0,1fr) auto; }
+      .section-adder .field { width: 100%; }
+      .section-adder [data-select-toggle] { grid-column: 2; grid-row: 1; }
     }
   </style>
 </head>

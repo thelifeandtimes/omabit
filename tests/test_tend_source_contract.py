@@ -108,6 +108,9 @@ class TendGallSourceContractTests(unittest.TestCase):
 
     def test_web_compact_controls_and_selection_mode_match_the_design(self):
         web = (ROOT / "desk" / "app" / "tend.html").read_text(encoding="utf-8")
+        self.assertIn("--control-height: 38px", web)
+        self.assertIn("height: var(--control-height); min-height: var(--control-height)", web)
+        self.assertNotIn(".section-adder .field { width: 210px; min-height: 32px; }", web)
         self.assertIn('class="filter-options"', web)
         self.assertIn('class="compact-date"', web)
         self.assertIn('>+ add</button>', web)
