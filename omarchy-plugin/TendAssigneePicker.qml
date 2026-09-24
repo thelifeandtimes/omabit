@@ -133,7 +133,7 @@ Item {
       id: contentColumn
       spacing: Style.space(2)
 
-      TextField {
+      TendTextField {
         id: search
         width: parent.width
         placeholderText: "Find a person"

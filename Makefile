@@ -59,8 +59,9 @@ lint-qml:
 		omarchy-plugin/TendEditMenu.qml \
 		omarchy-plugin/TendFlagButton.qml \
 		omarchy-plugin/TendMenuItem.qml \
-		omarchy-plugin/TendSettings.qml \
-		omarchy-plugin/ReminderDefaults.qml \
+	omarchy-plugin/TendSettings.qml \
+	omarchy-plugin/TendTextField.qml \
+	omarchy-plugin/ReminderDefaults.qml \
 		omarchy-plugin/TendButton.qml \
 		omarchy-plugin/TendCheckbox.qml \
 		omarchy-plugin/TendCheck.qml \

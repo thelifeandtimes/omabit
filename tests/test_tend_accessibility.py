@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 import unittest
 
 
@@ -221,6 +222,21 @@ class TendAccessibilityTests(unittest.TestCase):
         for control_id in ("quickAdd", "quickAssignee", "quickDue", "quickAddButton"):
             block = panel.split(f"id: {control_id}", 1)[1].split("}", 1)[0]
             self.assertIn("root.formControlHeight", block)
+
+    def test_native_single_line_fields_share_the_tend_control_height(self):
+        plugin = ROOT / "omarchy-plugin"
+        field = (plugin / "TendTextField.qml").read_text(encoding="utf-8")
+        button = (plugin / "TendButton.qml").read_text(encoding="utf-8")
+        self.assertIn("implicitHeight: Style.spacing.controlHeight", field)
+        self.assertIn("verticalPadding: Style.spacing.controlPaddingY", field)
+        self.assertIn("implicitHeight: Style.spacing.controlHeight", button)
+        for path in plugin.glob("*.qml"):
+            if path.name == "TendTextField.qml":
+                continue
+            self.assertIsNone(
+                re.search(r"(?m)^\s*TextField\s*\{", path.read_text(encoding="utf-8")),
+                path.name,
+            )
 
     def test_selection_mode_is_for_organization_not_completion_or_deletion(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")

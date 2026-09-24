@@ -296,9 +296,9 @@ BorderSurface {
         onClicked: root.service.toggleCompletedWithGrace(root.list.id, root.reminder.id, root.reminder.completed)
       }
 
-      TextField { id: titleField; width: parent.width; placeholderText: "Reminder title"; Accessible.name: "Reminder title"; onTextEdited: root.scheduleTextSave(); QQC.ContextMenu.menu: TendEditMenu { target: titleField } }
+      TendTextField { id: titleField; width: parent.width; placeholderText: "Reminder title"; Accessible.name: "Reminder title"; onTextEdited: root.scheduleTextSave(); QQC.ContextMenu.menu: TendEditMenu { target: titleField } }
       TendTextArea { id: notesField; width: parent.width; height: Style.space(96); placeholderText: "Notes"; wrapMode: TextEdit.Wrap; Accessible.name: "Reminder notes"; onTextChanged: root.scheduleTextSave() }
-      TextField { id: urlField; width: parent.width; placeholderText: "Link"; Accessible.name: "Reminder URL"; onTextEdited: root.scheduleTextSave(); QQC.ContextMenu.menu: TendEditMenu { target: urlField } }
+      TendTextField { id: urlField; width: parent.width; placeholderText: "Link"; Accessible.name: "Reminder URL"; onTextEdited: root.scheduleTextSave(); QQC.ContextMenu.menu: TendEditMenu { target: urlField } }
 
       TendDropdown { id: priorityField; width: parent.width; label: "Priority"; model: ["none", "low", "medium", "high"]; onActivated: root.saveDetailsNow() }
 
@@ -333,7 +333,7 @@ BorderSurface {
       Row {
         width: parent.width
         spacing: Style.space(8)
-        TextField { id: newTagField; width: parent.width - addTagButton.width - parent.spacing; placeholderText: "Add a new tag"; Accessible.name: "New reminder tag"; onAccepted: root.addTag(); QQC.ContextMenu.menu: TendEditMenu { target: newTagField } }
+        TendTextField { id: newTagField; width: parent.width - addTagButton.width - parent.spacing; placeholderText: "Add a new tag"; Accessible.name: "New reminder tag"; onAccepted: root.addTag(); QQC.ContextMenu.menu: TendEditMenu { target: newTagField } }
         TendButton { id: addTagButton; text: "Add tag"; enabled: newTagField.text.trim() !== ""; onClicked: root.addTag() }
       }
 

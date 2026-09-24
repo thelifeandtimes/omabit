@@ -307,7 +307,7 @@ BorderSurface {
             Text { width: parent.width; text: root.access && root.access.host ? root.access.host : "Hosted on this ship"; color: Qt.darker(Color.popups.text, 1.4); elide: Text.ElideRight; font.family: Style.font.family; font.pixelSize: Style.font.caption }
           }
         }
-        TextField { id: listTitle; width: parent.width; placeholderText: "List title"; Accessible.name: "List title" }
+        TendTextField { id: listTitle; width: parent.width; placeholderText: "List title"; Accessible.name: "List title" }
 
         Row {
           width: parent.width
@@ -316,13 +316,13 @@ BorderSurface {
             width: (parent.width - parent.spacing) * 0.62
             spacing: Style.space(4)
             Text { text: "COLOR"; color: Color.popups.text; opacity: 0.62; font.family: Style.font.family; font.pixelSize: Style.font.caption }
-            TextField { id: listColor; width: parent.width; placeholderText: "#3b82f6"; Accessible.name: "List color" }
+            TendTextField { id: listColor; width: parent.width; placeholderText: "#3b82f6"; Accessible.name: "List color" }
           }
           Column {
             width: (parent.width - parent.spacing) * 0.38
             spacing: Style.space(4)
             Text { text: "ICON"; color: Color.popups.text; opacity: 0.62; font.family: Style.font.family; font.pixelSize: Style.font.caption }
-            TextField { id: listSymbol; width: parent.width; placeholderText: "Icon or emoji"; Accessible.name: "List icon or emoji" }
+            TendTextField { id: listSymbol; width: parent.width; placeholderText: "Icon or emoji"; Accessible.name: "List icon or emoji" }
           }
         }
 
@@ -362,7 +362,7 @@ BorderSurface {
               required property int index
               width: parent.width
               spacing: Style.space(6)
-              TextField {
+              TendTextField {
                 id: sectionName
                 width: parent.width - sectionUp.width - sectionDown.width - sectionDelete.width - parent.spacing * 3
                 text: modelData.title
@@ -383,7 +383,7 @@ BorderSurface {
           visible: root.mayInvite
           width: parent.width
           spacing: Style.space(8)
-          TextField { id: inviteShip; width: parent.width - inviteButton.width - parent.spacing; placeholderText: "~sampel-palnet, moon, or comet"; Accessible.name: "Urbit ship to invite"; onAccepted: inviteButton.clicked() }
+          TendTextField { id: inviteShip; width: parent.width - inviteButton.width - parent.spacing; placeholderText: "~sampel-palnet, moon, or comet"; Accessible.name: "Urbit ship to invite"; onAccepted: inviteButton.clicked() }
           TendButton { id: inviteButton; text: "Invite"; enabled: root.editable && inviteShip.text.trim() !== "" && root.service && root.service.connectionState === "online" && !root.service.mutationPending; onClicked: { if (root.service.inviteMember(root.list.id, inviteShip.text.trim(), false)) inviteShip.text = "" } }
         }
 

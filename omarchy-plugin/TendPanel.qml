@@ -1036,7 +1036,7 @@ Item {
                             onClicked: root.switchingShip = false
                         }
 
-                        TextField {
+                        TendTextField {
                             id: shipUrl
 
                             width: parent.width
@@ -1045,7 +1045,7 @@ Item {
                             Accessible.name: "Urbit Eyre URL"
                         }
 
-                        TextField {
+                        TendTextField {
                             id: loginCode
 
                             width: parent.width
@@ -1089,7 +1089,7 @@ Item {
                             columnSpacing: Style.space(8)
                             rowSpacing: Style.space(8)
 
-                            TextField {
+                            TendTextField {
                                 id: captureEntry
 
                                 width: captureControls.columns === 1 ? parent.width : parent.width * 0.64
@@ -1371,7 +1371,7 @@ Item {
                                             font.bold: true
                                         }
 
-                                        TextField {
+                                        TendTextField {
                                             id: newList
                                             width: parent.width
                                             placeholderText: "List name"
@@ -1534,7 +1534,7 @@ Item {
                                 width: parent.width
                                 spacing: Style.space(6)
 
-                                TextField {
+                                TendTextField {
                                     id: listTitle
 
                                     width: parent.width * 0.34
@@ -1542,7 +1542,7 @@ Item {
                                     Accessible.name: "List title"
                                 }
 
-                                TextField {
+                                TendTextField {
                                     id: listColor
 
                                     width: parent.width * 0.2
@@ -1550,7 +1550,7 @@ Item {
                                     Accessible.name: "List color"
                                 }
 
-                                TextField {
+                                TendTextField {
                                     id: listSymbol
 
                                     width: parent.width * 0.16
@@ -1668,7 +1668,7 @@ Item {
                                     width: parent.width
                                     spacing: Style.space(6)
 
-                                    TextField {
+                                    TendTextField {
                                         id: inviteShip
 
                                         width: parent.width * 0.38
@@ -1712,7 +1712,7 @@ Item {
                                         font.pixelSize: Style.font.caption
                                     }
 
-                                    TextField {
+                                    TendTextField {
                                         width: parent.width
                                         text: service ? service.lastInvitationUri : ""
                                         readOnly: true
@@ -1865,7 +1865,7 @@ Item {
                                 height: root.formControlHeight
                                 spacing: Style.space(8)
 
-                                TextField {
+                                TendTextField {
                                     id: reminderSearch
 
                                     width: root.compactMode ? parent.width : parent.width * 0.34
@@ -1954,7 +1954,7 @@ Item {
                                 rowSpacing: Style.space(8)
                                 columnSpacing: Style.space(8)
 
-                                TextField {
+                                TendTextField {
                                     id: quickAdd
 
                                     Layout.fillWidth: true
@@ -2028,7 +2028,7 @@ Item {
                                 width: parent.width
                                 spacing: Style.space(6)
 
-                                TextField {
+                                TendTextField {
                                     id: newSection
 
                                     Layout.preferredWidth: Style.space(220)
@@ -2086,7 +2086,7 @@ Item {
                                     }
                                 }
 
-                                TextField {
+                                TendTextField {
                                     id: sectionTitleEditor
 
                                     width: parent.width * 0.32
@@ -2203,7 +2203,7 @@ Item {
                                     anchors.margins: Style.space(8)
                                     spacing: Style.space(6)
 
-                                    TextField {
+                                    TendTextField {
                                         id: reminderTitle
 
                                         width: parent.width
@@ -2225,7 +2225,7 @@ Item {
                                         width: parent.width
                                         spacing: Style.space(6)
 
-                                        TextField {
+                                        TendTextField {
                                             id: reminderUrl
 
                                             width: parent.width * 0.42
@@ -2256,7 +2256,7 @@ Item {
 
                                     }
 
-                                    TextField {
+                                    TendTextField {
                                         id: reminderTags
 
                                         width: parent.width
@@ -2278,7 +2278,7 @@ Item {
                                         width: parent.width
                                         spacing: Style.space(6)
 
-                                        TextField {
+                                        TendTextField {
                                             id: reminderDue
 
                                             width: parent.width * 0.34
@@ -2286,7 +2286,7 @@ Item {
                                             Accessible.name: "Reminder due date and time"
                                         }
 
-                                        TextField {
+                                        TendTextField {
                                             id: reminderTimezone
 
                                             width: parent.width * 0.28
@@ -2300,7 +2300,7 @@ Item {
                                             text: "All day"
                                         }
 
-                                        TextField {
+                                        TendTextField {
                                             id: reminderEarly
 
                                             width: parent.width - x
@@ -2390,7 +2390,7 @@ Item {
                                         width: parent.width
                                         spacing: Style.space(5)
 
-                                        TextField {
+                                        TendTextField {
                                             id: reminderWeekdays
 
                                             width: parent.width * 0.15
@@ -2398,7 +2398,7 @@ Item {
                                             Accessible.name: "Repeat weekdays from zero through six"
                                         }
 
-                                        TextField {
+                                        TendTextField {
                                             id: reminderMonthDays
 
                                             width: parent.width * 0.15
@@ -2432,7 +2432,7 @@ Item {
                                             Accessible.name: "Ordinal weekday"
                                         }
 
-                                        TextField {
+                                        TendTextField {
                                             id: reminderRepeatEnd
 
                                             width: parent.width * 0.2
@@ -2574,7 +2574,7 @@ Item {
                                     Row {
                                         spacing: Style.space(8)
 
-                                        TextField {
+                                        TendTextField {
                                             id: customSnooze
 
                                             width: Style.space(180)

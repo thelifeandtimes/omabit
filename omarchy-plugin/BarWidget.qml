@@ -266,7 +266,7 @@ Panel {
           Layout.fillWidth: true
           spacing: Style.space(7)
 
-          TextField {
+          TendTextField {
             id: quickAdd
             Layout.fillWidth: true
             Layout.preferredHeight: Style.spacing.controlHeight
