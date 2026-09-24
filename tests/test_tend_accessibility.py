@@ -227,11 +227,25 @@ class TendAccessibilityTests(unittest.TestCase):
         for control_id in ("settingsButton", "closeButton", "editListButton"):
             block = panel.split(f"id: {control_id}", 1)[1].split("onClicked:", 1)[0]
             self.assertIn("bordered: false", block)
-        title_row = panel.split("id: compactSidebarButton", 1)[1].split("Rectangle {", 1)[0]
+        title_row = panel.split("id: viewTitleText", 1)[1].split("id: selectedHostDot", 1)[0]
         self.assertLess(title_row.index("text: root.viewTitle"), title_row.index("id: editListButton"))
         for control_id in ("quickAdd", "quickAssignee", "quickDue", "quickAddButton"):
             block = panel.split(f"id: {control_id}", 1)[1].split("}", 1)[0]
             self.assertIn("root.formControlHeight", block)
+
+    def test_panel_uses_hero_headers_and_subtle_list_host_status(self):
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+        app_header = panel.split("id: appHeader", 1)[1].split("PanelSeparator", 1)[0]
+        list_header = panel.split("id: viewHeader", 1)[1].split("PanelSeparator", 1)[0]
+
+        self.assertIn("PanelHero", app_header)
+        self.assertIn('title: "Tend"', app_header)
+        self.assertIn("meta: service && service.ship ? root.normalizedShip(service.ship)", app_header)
+        self.assertIn("id: selectedListAvatar", list_header)
+        self.assertIn("text: root.selectedList ? root.listHost(root.selectedList.id)", list_header)
+        self.assertIn("id: selectedHostDot", list_header)
+        self.assertIn("width: Style.space(5)", list_header)
+        self.assertIn('Accessible.name: root.selectedConnectionAvailable ? "List host online"', list_header)
 
     def test_native_single_line_fields_share_the_tend_control_height(self):
         plugin = ROOT / "omarchy-plugin"

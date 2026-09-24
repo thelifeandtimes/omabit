@@ -863,32 +863,54 @@ Item {
                     spacing: Style.space(12)
 
                     Row {
+                        id: appHeader
                         width: parent.width
-                        height: root.formControlHeight
+                        height: Math.max(root.formControlHeight, appHero.implicitHeight)
                         spacing: Style.space(8)
 
-                        Row {
-                            width: parent.width - closeButton.width - settingsButton.width - parent.spacing * 2
+                        PanelHero {
+                            id: appHero
+                            width: parent.width - closeButton.width
+                              - (settingsButton.visible ? settingsButton.width + parent.spacing : 0)
+                              - parent.spacing
                             height: parent.height
-                            spacing: Style.space(8)
+                            title: "Tend"
+                            meta: service && service.ship ? root.normalizedShip(service.ship) : "Not connected"
+                            foreground: Color.menu.text
+                            fontFamily: Style.font.menuFamily
+                            iconComponent: Component {
+                                Item {
+                                    implicitWidth: Style.font.display
+                                    implicitHeight: Style.font.display
 
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: service && service.ship ? "Tend · ~" + service.ship : "Tend"
-                                color: Color.menu.text
-                                font.family: Style.font.menuFamily
-                                font.pixelSize: Style.font.heading
-                                font.bold: true
-                            }
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: "󰄬"
+                                        textFormat: Text.PlainText
+                                        color: Color.menu.text
+                                        font.family: Style.font.menuFamily
+                                        font.pixelSize: Style.font.display
+                                    }
 
-                            Rectangle {
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: Style.space(9)
-                                height: width
-                                radius: width / 2
-                                color: service && service.connectionState === "online" ? "#22c55e" : "#ef4444"
-                                Accessible.role: Accessible.Indicator
-                                Accessible.name: service && service.connectionState === "online" ? "Connected to Tend" : "Tend connection unavailable"
+                                    Rectangle {
+                                        anchors.right: parent.right
+                                        anchors.bottom: parent.bottom
+                                        width: Style.space(10)
+                                        height: width
+                                        radius: width / 2
+                                        color: root.opaqueMenuBackground
+
+                                        Rectangle {
+                                            anchors.centerIn: parent
+                                            width: Style.space(6)
+                                            height: width
+                                            radius: width / 2
+                                            color: service && service.connectionState === "online" ? "#22c55e" : "#ef4444"
+                                            Accessible.role: Accessible.Indicator
+                                            Accessible.name: service && service.connectionState === "online" ? "Connected to Tend" : "Tend connection unavailable"
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -914,6 +936,8 @@ Item {
                         }
 
                     }
+
+                    PanelSeparator { width: parent.width }
 
                     TextEdit {
                         width: parent.width
@@ -1471,13 +1495,16 @@ Item {
                                 }
 
                             Row {
+                                id: viewHeader
                                 width: parent.width
-                                height: root.formControlHeight
+                                height: root.viewMode === "list" && root.selectedList !== null ? Style.space(54) : root.formControlHeight
                                 spacing: Style.space(8)
 
                                 TendButton {
                                     id: compactSidebarButton
                                     visible: root.compactMode
+                                    height: root.formControlHeight
+                                    anchors.verticalCenter: parent.verticalCenter
                                     text: root.compactSidebarOpen ? "Hide lists" : "Lists"
                                     onClicked: {
                                         root.selectedReminderId = 0;
@@ -1486,50 +1513,107 @@ Item {
                                     }
                                 }
 
-                                Text {
-                                    readonly property real availableWidth: parent.width
-                                      - (compactSidebarButton.visible ? compactSidebarButton.width + parent.spacing : 0)
-                                      - (editListButton.visible ? editListButton.width + parent.spacing : 0)
-                                    width: Math.min(implicitWidth, Math.max(0, availableWidth))
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    text: root.viewTitle
-                                    elide: Text.ElideRight
-                                    color: Color.menu.text
-                                    font.family: Style.font.menuFamily
-                                    font.pixelSize: Style.font.title
-                                    font.bold: true
-                                }
+                                Item {
+                                    id: viewIdentity
+                                    width: Math.max(0, parent.width
+                                      - (compactSidebarButton.visible ? compactSidebarButton.width + parent.spacing : 0))
+                                    height: parent.height
 
-                                TendButton {
-                                    id: alertSettingsButton
-                                    visible: false
-                                }
+                                    Row {
+                                        anchors.fill: parent
+                                        spacing: Style.space(10)
 
-                                TendIconButton {
-                                    id: editListButton
+                                        Rectangle {
+                                            id: selectedListAvatar
+                                            visible: root.viewMode === "list" && root.selectedList !== null
+                                            width: visible ? Style.space(32) : 0
+                                            height: width
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            radius: width / 2
+                                            color: root.selectedList ? (root.selectedList.color || "#3b82f6") : "transparent"
 
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    visible: root.viewMode === "list" && root.selectedList !== null
-                                    glyph: "󰏫"
-                                    tooltipText: root.rightTrayMode === "list" ? "Close list settings" : "Edit list"
-                                    accessibleName: tooltipText
-                                    bordered: false
-                                    onClicked: {
-                                        root.openListEditor();
+                                            Text {
+                                                anchors.centerIn: parent
+                                                text: root.selectedList && root.selectedList.symbol && root.selectedList.symbol !== "list" ? root.selectedList.symbol : "≡"
+                                                textFormat: Text.PlainText
+                                                color: "white"
+                                                font.family: Style.font.menuFamily
+                                                font.pixelSize: Style.font.caption
+                                                font.bold: true
+                                            }
+                                        }
+
+                                        Column {
+                                            width: Math.max(0, parent.width - selectedListAvatar.width
+                                              - (selectedListAvatar.visible ? parent.spacing : 0))
+                                            anchors.verticalCenter: parent.verticalCenter
+                                            spacing: Style.space(2)
+
+                                            Row {
+                                                width: parent.width
+                                                height: Math.max(viewTitleText.implicitHeight, editListButton.height)
+                                                spacing: Style.space(4)
+
+                                                Text {
+                                                    id: viewTitleText
+                                                    width: Math.min(implicitWidth, Math.max(0, parent.width
+                                                      - (editListButton.visible ? editListButton.width + parent.spacing : 0)))
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    text: root.viewTitle
+                                                    textFormat: Text.PlainText
+                                                    elide: Text.ElideRight
+                                                    color: Color.menu.text
+                                                    font.family: Style.font.menuFamily
+                                                    font.pixelSize: Style.font.title
+                                                    font.bold: true
+                                                }
+
+                                                TendIconButton {
+                                                    id: editListButton
+                                                    visible: root.viewMode === "list" && root.selectedList !== null
+                                                    width: visible ? Style.space(28) : 0
+                                                    height: Style.space(28)
+                                                    glyphSize: Style.font.body
+                                                    glyph: "󰏫"
+                                                    tooltipText: root.rightTrayMode === "list" ? "Close list settings" : "Edit list"
+                                                    accessibleName: tooltipText
+                                                    bordered: false
+                                                    onClicked: root.openListEditor()
+                                                }
+                                            }
+
+                                            Row {
+                                                visible: root.viewMode === "list" && root.selectedList !== null
+                                                height: visible ? Math.max(listHostText.implicitHeight, selectedHostDot.height) : 0
+                                                spacing: Style.space(6)
+
+                                                Text {
+                                                    id: listHostText
+                                                    text: root.selectedList ? root.listHost(root.selectedList.id) : ""
+                                                    textFormat: Text.PlainText
+                                                    color: Color.menu.text
+                                                    opacity: 0.58
+                                                    font.family: Style.font.menuFamily
+                                                    font.pixelSize: Style.font.caption
+                                                }
+
+                                                Rectangle {
+                                                    id: selectedHostDot
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    width: Style.space(5)
+                                                    height: width
+                                                    radius: width / 2
+                                                    color: root.selectedConnectionAvailable ? "#22c55e" : "#ef4444"
+                                                    Accessible.role: Accessible.Indicator
+                                                    Accessible.name: root.selectedConnectionAvailable ? "List host online" : "List host offline; editing is read-only"
+                                                }
+                                            }
+                                        }
                                     }
                                 }
-
                             }
 
-                            Rectangle {
-                                visible: root.viewMode === "list" && root.selectedList !== null
-                                width: Style.space(9)
-                                height: width
-                                radius: width / 2
-                                color: root.selectedConnectionAvailable ? "#22c55e" : "#ef4444"
-                                Accessible.role: Accessible.Indicator
-                                Accessible.name: root.selectedConnectionAvailable ? "List host connection available" : "List host connection unavailable; editing is read-only"
-                            }
+                            PanelSeparator { width: parent.width }
 
                             Text {
                                 visible: root.selectedListHasPendingOperation
