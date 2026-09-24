@@ -53,6 +53,9 @@ bash -n "$release_dir/install.sh"
 bash -n "$release_dir/scripts/check-tend-migrations.sh"
 [[ "$(cat "$release_dir/VERSION")" == "$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' "$release_dir/omarchy-plugin/manifest.json")" ]]
 "$release_dir/bin/omabit" --version | grep -q "$(cat "$release_dir/VERSION")"
+[[ -f "$release_dir/skills/tend/SKILL.md" ]]
+grep -q '^name: tend$' "$release_dir/skills/tend/SKILL.md"
+grep -q 'Tend protocol and interface coverage' "$release_dir/docs/TEND_INTERFACE_COVERAGE.md"
 
 for desk_dependency in \
   desk.docket-0 \

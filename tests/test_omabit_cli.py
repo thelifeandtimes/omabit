@@ -89,6 +89,117 @@ class CliDomainTests(unittest.TestCase):
         self.assertEqual(action["base-revision"], 4)
         self.assertEqual(action["tags"], ["shop"])
 
+    def test_lists_reports_host_role_members_and_pending_invites(self):
+        args = SimpleNamespace(tend_command="lists", json=True)
+        accesses = [{
+            "alias": 1,
+            "host": "~zod",
+            "owner": True,
+            "status": "online",
+            "members": [{"ship": "~bus", "policy": {"can-invite": True}}],
+            "pending": ["~nec"],
+        }]
+        with (
+            mock.patch.object(omabit, "snapshot", return_value=SAMPLE),
+            mock.patch.object(omabit.transport, "scry_accesses", return_value=accesses),
+            redirect_stdout(io.StringIO()) as output,
+        ):
+            self.assertEqual(omabit.run_tend(args), 0)
+        row = json.loads(output.getvalue())[0]
+        self.assertEqual((row["host"], row["owner"], row["status"]), ("~zod", True, "online"))
+        self.assertEqual(row["members"][0]["ship"], "~bus")
+        self.assertEqual(row["pending"], ["~nec"])
+
+    def test_show_includes_ordered_ancestors_and_recursive_descendants(self):
+        state = json.loads(json.dumps(SAMPLE))
+        state["lists"][0]["reminders"] = [
+            {"id": 1, "title": "Root", "parent-id": None, "rank": 10},
+            {"id": 2, "title": "Child", "parent-id": 1, "rank": 20},
+            {"id": 3, "title": "Grandchild", "parent-id": 2, "rank": 30},
+        ]
+        args = SimpleNamespace(tend_command="show", json=True, list_selector="Inbox", reminder_id=2)
+        with mock.patch.object(omabit, "snapshot", return_value=state), redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(omabit.run_tend(args), 0)
+        reminder = json.loads(output.getvalue())["reminder"]
+        self.assertEqual(reminder["ancestors"], [{"id": 1, "title": "Root"}])
+        self.assertEqual(reminder["descendants"], [{"depth": 1, "id": 3, "title": "Grandchild"}])
+
+    def test_list_lifecycle_actions_preserve_unspecified_appearance(self):
+        create = omabit.parser().parse_args(["--json", "tend", "list-create", "Planning"])
+        with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            self.assertEqual(omabit.run_tend(create), 0)
+        self.assertEqual(poke.call_args.args[2]["create-list"]["title"], "Planning")
+
+        state = json.loads(json.dumps(SAMPLE))
+        state["lists"][0].update({"color": "moss", "symbol": "leaf"})
+        update = omabit.parser().parse_args(["--json", "tend", "list-update", "Inbox", "--title", "Home"])
+        with mock.patch.object(omabit, "snapshot", return_value=state), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            self.assertEqual(omabit.run_tend(update), 0)
+        body = poke.call_args.args[2]["update-list"]
+        self.assertEqual((body["title"], body["color"], body["symbol"]), ("Home", "moss", "leaf"))
+
+    def test_edit_preserves_unspecified_metadata_and_updates_assignment(self):
+        state = json.loads(json.dumps(SAMPLE))
+        state["lists"][0]["reminders"][0].update({
+            "notes": "old notes", "url": "https://example.com", "flagged": True,
+            "tags": ["one"], "assignee": "~zod",
+        })
+        args = omabit.parser().parse_args([
+            "--json", "tend", "edit", "Inbox", "7", "--notes", "new notes", "--assignee", "~bus",
+        ])
+        with mock.patch.object(omabit, "snapshot", return_value=state), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            self.assertEqual(omabit.run_tend(args), 0)
+        body = poke.call_args.args[2]["update-reminder"]
+        self.assertEqual(body["title"], "Pay rent")
+        self.assertEqual(body["notes"], "new notes")
+        self.assertEqual(body["url"], "https://example.com")
+        self.assertTrue(body["flagged"])
+        self.assertEqual(body["tags"], ["one"])
+        self.assertEqual(body["assignee"], "~bus")
+
+    def test_move_list_uses_both_revisions_and_checks_both_hosts(self):
+        state = json.loads(json.dumps(SAMPLE))
+        state["lists"].append({"id": 2, "title": "Shared", "revision": 9, "reminders": []})
+        args = omabit.parser().parse_args(["--json", "tend", "move-list", "Inbox", "7", "Shared"])
+        accesses = [
+            {"alias": 1, "host": "~zod", "owner": True, "status": "online"},
+            {"alias": 2, "host": "~bus", "owner": False, "status": "online"},
+        ]
+        with (
+            mock.patch.object(omabit, "snapshot", return_value=state),
+            mock.patch.object(omabit.transport, "scry_accesses", return_value=accesses),
+            mock.patch.object(omabit, "poke") as poke,
+            redirect_stdout(io.StringIO()),
+        ):
+            self.assertEqual(omabit.run_tend(args), 0)
+        body = poke.call_args.args[2]["move-reminder-to-list"]
+        self.assertEqual((body["source-list-id"], body["source-base-revision"]), (1, 4))
+        self.assertEqual((body["destination-list-id"], body["destination-base-revision"]), (2, 9))
+
+    def test_schedule_builds_recurrence_and_early_alert_payload(self):
+        args = omabit.parser().parse_args([
+            "--json", "tend", "schedule", "Inbox", "7",
+            "--due", "2026-10-01T09:00", "--timezone", "America/Los_Angeles",
+            "--early", "15", "--repeat", "weekly", "--interval", "2",
+            "--weekday", "1", "--weekday", "4", "--count", "8",
+        ])
+        with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            self.assertEqual(omabit.run_tend(args), 0)
+        schedule = poke.call_args.args[2]["set-schedule"]["schedule"]
+        self.assertEqual(schedule["early-seconds"], [900])
+        self.assertEqual(schedule["timezone"], "America/Los_Angeles")
+        self.assertEqual(schedule["recurrence"]["frequency"], "weekly")
+        self.assertEqual(schedule["recurrence"]["interval"], 2)
+        self.assertEqual(schedule["recurrence"]["weekdays"], [1, 4])
+        self.assertEqual(schedule["recurrence"]["max-occurrences"], 8)
+
+    def test_section_lifecycle_uses_current_list_revision(self):
+        add = omabit.parser().parse_args(["--json", "tend", "section-add", "Inbox", "Next", "--rank", "2048"])
+        with mock.patch.object(omabit, "snapshot", return_value=SAMPLE), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            self.assertEqual(omabit.run_tend(add), 0)
+        body = poke.call_args.args[2]["add-section"]
+        self.assertEqual((body["title"], body["rank"], body["base-revision"]), ("Next", 2048, 4))
+
     def test_shared_mutation_is_blocked_before_poke_when_owner_is_offline(self):
         args = SimpleNamespace(tend_command="add", json=True, title="Blocked", list_selector=None, tag=[])
         with (

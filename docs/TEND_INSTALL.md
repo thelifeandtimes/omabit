@@ -257,7 +257,12 @@ the file automatically. Inside the overlay, `Ctrl+N` focuses quick add and
 
 ```sh
 omabit tend today
+omabit --json tend lists
+omabit --json tend show Inbox 42
 omabit tend add "Buy milk" --list Inbox --tag groceries
+omabit tend edit Inbox 42 --notes "Use oat milk" --priority high --flagged
+omabit tend schedule Inbox 42 --due 2026-09-25T09:00 --timezone America/Los_Angeles --repeat weekly --weekday 5
+omabit tend move-list Inbox 42 "Shared chores"
 omabit tend complete 1 42
 omabit tend complete 1 42 43 44
 omabit tend move 1 42 43 --section 7 --rank 2048
@@ -266,7 +271,7 @@ omabit tend snooze 1 42 --minutes 20
 omabit tend snooze 1 42 --until 2026-09-11T09:30:00-07:00
 omabit tend share 1 ~sampel-palnet --can-invite
 omabit tend invitations
-omabit tend accept 7
+omabit tend accept 'omabit://tend/invite/sampel-palnet/TOKEN'
 omabit tend unshare 1 ~sampel-palnet
 omabit tend leave 1
 omabit tend open 1 42
@@ -288,6 +293,13 @@ state. It does not recreate list sharing; the full contract is documented in
 `docs/TEND_BACKUP.md`.
 
 Run `omabit tend --help` for the complete command list.
+
+The release also contains `skills/tend/SKILL.md`, an initial Codex-compatible
+agent skill that uses the CLI's JSON mode. To make it discoverable to a local
+Codex installation, copy the complete `skills/tend` directory into
+`${CODEX_HOME:-$HOME/.codex}/skills/tend`. Review it before installation like
+any other local skill. The protocol role model and action coverage are audited
+in `docs/TEND_INTERFACE_COVERAGE.md`.
 
 See `docs/TEND_ACCESSIBILITY.md` in the release archive for the full keyboard
 reference and assistive-technology release checklist. See

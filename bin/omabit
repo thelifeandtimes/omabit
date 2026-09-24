@@ -99,6 +99,101 @@ def find_reminder(task_list: dict[str, object], reminder_id: int) -> dict[str, o
     raise CliError(f"Reminder {reminder_id} does not exist in list {task_list.get('id')}")
 
 
+def find_section(task_list: dict[str, object], section_id: int) -> dict[str, object]:
+    for section in task_list.get("sections") or []:
+        if int(section.get("id", -1)) == section_id:
+            return section
+    raise CliError(f"Section {section_id} does not exist in list {task_list.get('id')}")
+
+
+def reminder_relationships(task_list: dict[str, object], reminder_id: int) -> dict[str, list[dict[str, object]]]:
+    reminders = {
+        int(item.get("id", -1)): item
+        for item in task_list.get("reminders") or []
+        if isinstance(item, dict)
+    }
+    reminder = find_reminder(task_list, reminder_id)
+    ancestors: list[dict[str, object]] = []
+    seen = {reminder_id}
+    parent_id = reminder.get("parent-id")
+    while parent_id is not None:
+        parent_key = int(parent_id)
+        if parent_key in seen or parent_key not in reminders:
+            break
+        seen.add(parent_key)
+        parent = reminders[parent_key]
+        ancestors.insert(0, {"id": parent_key, "title": str(parent.get("title", ""))})
+        parent_id = parent.get("parent-id")
+
+    descendants: list[dict[str, object]] = []
+
+    def visit(parent_key: int, depth: int) -> None:
+        children = sorted(
+            (item for item in reminders.values() if item.get("parent-id") == parent_key),
+            key=lambda item: (int(item.get("rank", 0)), int(item.get("id", 0))),
+        )
+        for child in children:
+            child_id = int(child.get("id", 0))
+            descendants.append({"id": child_id, "title": str(child.get("title", "")), "depth": depth})
+            visit(child_id, depth + 1)
+
+    visit(reminder_id, 1)
+    return {"ancestors": ancestors, "descendants": descendants}
+
+
+def require_positive(value: int, option: str) -> int:
+    if value <= 0:
+        raise CliError(f"{option} must be positive")
+    return value
+
+
+def schedule_payload(args: argparse.Namespace) -> dict[str, object]:
+    if not str(args.due or "").strip():
+        raise CliError("--due must be a local ISO-8601 or Urbit date/time")
+    early_seconds = []
+    for minutes in args.early or []:
+        if minutes < 0:
+            raise CliError("--early values cannot be negative")
+        early_seconds.append(minutes * 60)
+
+    recurrence = None
+    if args.repeat:
+        interval = require_positive(args.interval, "--interval")
+        weekdays = sorted(set(args.weekday or []))
+        if any(value < 0 or value > 6 for value in weekdays):
+            raise CliError("--weekday values must be between 0 (Sunday) and 6 (Saturday)")
+        month_days = sorted(set(args.month_day or []))
+        if any(value < 1 or value > 31 for value in month_days):
+            raise CliError("--month-day values must be between 1 and 31")
+        month_week = None
+        if args.month_week:
+            index, weekday = args.month_week
+            if index < 1 or index > 5 or weekday < 0 or weekday > 6:
+                raise CliError("--month-week requires INDEX 1..5 and WEEKDAY 0..6")
+            month_week = {"index": index, "weekday": weekday}
+        if args.count is not None:
+            require_positive(args.count, "--count")
+        recurrence = {
+            "frequency": args.repeat,
+            "interval": interval,
+            "weekdays": weekdays,
+            "month-days": month_days,
+            "month-week": month_week,
+            "end-at": args.until,
+            "max-occurrences": args.count,
+        }
+    elif args.until or args.count is not None or args.weekday or args.month_day or args.month_week:
+        raise CliError("Recurrence options require --repeat")
+
+    return {
+        "due-at": str(args.due).strip(),
+        "all-day": args.all_day,
+        "timezone": str(args.timezone or "UTC"),
+        "early-seconds": early_seconds,
+        "recurrence": recurrence,
+    }
+
+
 def urbit_date(value: datetime) -> str:
     utc = value.astimezone(timezone.utc).replace(microsecond=0)
     return f"~{utc.year}.{utc.month}.{utc.day}..{utc.hour:02d}.{utc.minute:02d}.{utc.second:02d}"
@@ -729,6 +824,25 @@ def run_tend(args: argparse.Namespace) -> int:
         return 0
 
     state = snapshot(cookie_path, config_path)
+    if args.tend_command == "lists":
+        accesses = transport.scry_accesses(config_path, cookie_path)
+        rows = []
+        for task_list in state.get("lists") or []:
+            access = list_access(int(task_list.get("id", 0)), accesses)
+            rows.append({
+                "id": int(task_list.get("id", 0)),
+                "title": str(task_list.get("title", "")),
+                "color": str(task_list.get("color", "")),
+                "symbol": str(task_list.get("symbol", "")),
+                "revision": int(task_list.get("revision", 0)),
+                "host": access.get("host"),
+                "owner": access.get("owner") is True,
+                "status": access.get("status"),
+                "members": access.get("members") or [],
+                "pending": access.get("pending") or [],
+            })
+        emit(rows, as_json)
+        return 0
     if args.tend_command == "list":
         print_rows(reminder_rows(state), as_json)
         return 0
@@ -748,6 +862,17 @@ def run_tend(args: argparse.Namespace) -> int:
                 reminder = f" · reminder {event['reminder-id']}" if event.get("reminder-id") is not None else ""
                 print(f"{event.get('actor', 'unknown')}  {str(event.get('kind', 'changed')).replace('-', ' ')}{reminder}{occurrence}  [{event.get('at', '')}]")
         return 0
+    if args.tend_command == "access":
+        task_list = select_list(state, args.list_selector)
+        access = list_access(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
+        emit({"listId": task_list["id"], "title": task_list.get("title"), **access}, as_json)
+        return 0
+    if args.tend_command == "show":
+        task_list = select_list(state, args.list_selector)
+        reminder = copy.deepcopy(find_reminder(task_list, args.reminder_id))
+        reminder.update(reminder_relationships(task_list, args.reminder_id))
+        emit({"listId": task_list["id"], "list": task_list.get("title"), "reminder": reminder}, as_json)
+        return 0
     if args.tend_command == "export":
         status = transport.connection_status(config_path, cookie_path)
         exported = owned_snapshot(state, transport.scry_accesses(config_path, cookie_path))
@@ -758,6 +883,46 @@ def run_tend(args: argparse.Namespace) -> int:
             destination = Path(args.path)
             write_private_json(destination, value, args.force)
             emit({"status": "exported", "path": str(destination.expanduser()), "format": value["format"]}, as_json)
+        return 0
+    if args.tend_command == "list-create":
+        title = args.title.strip()
+        if not title:
+            raise CliError("List title cannot be empty")
+        action = {"create-list": {"operation-id": operation_id(), "title": title}}
+        poke(cookie_path, config_path, action)
+        emit({"status": "accepted", "title": title}, as_json)
+        return 0
+    if args.tend_command == "list-update":
+        task_list = select_list(state, args.list_selector)
+        require_list_writable(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
+        title = args.title if args.title is not None else task_list.get("title", "")
+        color = args.color if args.color is not None else task_list.get("color", "blue")
+        symbol = args.symbol if args.symbol is not None else task_list.get("symbol", "list")
+        if not any(value is not None for value in (args.title, args.color, args.symbol)):
+            raise CliError("Provide --title, --color, or --symbol")
+        action = {"update-list": {
+            "operation-id": operation_id(),
+            "list-id": int(task_list["id"]),
+            "title": str(title).strip(),
+            "color": str(color).strip(),
+            "symbol": str(symbol).strip(),
+            "base-revision": int(task_list.get("revision", 0)),
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "accepted", "listId": task_list["id"]}, as_json)
+        return 0
+    if args.tend_command == "list-delete":
+        if not args.yes:
+            raise CliError("Refusing list deletion without --yes")
+        task_list = select_list(state, args.list_selector)
+        require_list_owner(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
+        action = {"delete-list": {
+            "operation-id": operation_id(),
+            "list-id": int(task_list["id"]),
+            "base-revision": int(task_list.get("revision", 0)),
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "accepted", "listId": task_list["id"]}, as_json)
         return 0
     if args.tend_command == "add":
         task_list = select_list(state, args.list_selector)
@@ -771,6 +936,141 @@ def run_tend(args: argparse.Namespace) -> int:
         }}
         poke(cookie_path, config_path, action)
         emit({"status": "accepted", "listId": task_list["id"]}, as_json)
+        return 0
+    if args.tend_command == "edit":
+        task_list = select_list(state, args.list_selector)
+        require_list_writable(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
+        reminder = find_reminder(task_list, args.reminder_id)
+        if not any((
+            args.title is not None,
+            args.notes is not None,
+            args.url is not None,
+            args.clear_url,
+            args.priority is not None,
+            args.flagged is not None,
+            args.tag is not None,
+            args.clear_tags,
+            args.assignee is not None,
+            args.unassign,
+        )):
+            raise CliError("No reminder changes were supplied")
+        url = None if args.clear_url else (args.url if args.url is not None else reminder.get("url"))
+        tags = [] if args.clear_tags else (args.tag if args.tag is not None else reminder.get("tags") or [])
+        assignee = None if args.unassign else (normalize_ship(args.assignee) if args.assignee is not None else reminder.get("assignee"))
+        action = {"update-reminder": {
+            "operation-id": operation_id(),
+            "list-id": int(task_list["id"]),
+            "reminder-id": args.reminder_id,
+            "title": str(args.title if args.title is not None else reminder.get("title", "")).strip(),
+            "notes": str(args.notes if args.notes is not None else reminder.get("notes", "")),
+            "url": url,
+            "priority": str(args.priority if args.priority is not None else reminder.get("priority", "none")),
+            "flagged": args.flagged if args.flagged is not None else reminder.get("flagged") is True,
+            "tags": tags,
+            "assignee": assignee,
+            "base-revision": int(task_list.get("revision", 0)),
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "accepted", "listId": task_list["id"], "reminderId": args.reminder_id}, as_json)
+        return 0
+    if args.tend_command in {"flag", "unflag"}:
+        task_list = select_list(state, args.list_selector)
+        require_list_writable(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
+        reminder = find_reminder(task_list, args.reminder_id)
+        action = {"update-reminder": {
+            "operation-id": operation_id(),
+            "list-id": int(task_list["id"]),
+            "reminder-id": args.reminder_id,
+            "title": str(reminder.get("title", "")),
+            "notes": str(reminder.get("notes", "")),
+            "url": reminder.get("url"),
+            "priority": str(reminder.get("priority", "none")),
+            "flagged": args.tend_command == "flag",
+            "tags": reminder.get("tags") or [],
+            "assignee": reminder.get("assignee"),
+            "base-revision": int(task_list.get("revision", 0)),
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "accepted", "listId": task_list["id"], "reminderId": args.reminder_id}, as_json)
+        return 0
+    if args.tend_command == "move-list":
+        source = select_list(state, args.source_list)
+        destination = select_list(state, args.destination_list)
+        if int(source["id"]) == int(destination["id"]):
+            raise CliError("Source and destination lists must be different")
+        accesses = transport.scry_accesses(config_path, cookie_path)
+        require_list_writable(int(source["id"]), accesses)
+        require_list_writable(int(destination["id"]), accesses)
+        find_reminder(source, args.reminder_id)
+        action = {"move-reminder-to-list": {
+            "operation-id": operation_id(),
+            "source-list-id": int(source["id"]),
+            "destination-list-id": int(destination["id"]),
+            "reminder-id": args.reminder_id,
+            "source-base-revision": int(source.get("revision", 0)),
+            "destination-base-revision": int(destination.get("revision", 0)),
+        }}
+        poke(cookie_path, config_path, action)
+        emit({
+            "status": "accepted",
+            "sourceListId": source["id"],
+            "destinationListId": destination["id"],
+            "reminderId": args.reminder_id,
+        }, as_json)
+        return 0
+    if args.tend_command == "sections":
+        task_list = select_list(state, args.list_selector)
+        emit(task_list.get("sections") or [], as_json)
+        return 0
+    if args.tend_command in {"section-add", "section-update", "section-delete"}:
+        task_list = select_list(state, args.list_selector)
+        require_list_writable(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
+        if args.tend_command == "section-add":
+            title = args.title.strip()
+            if not title:
+                raise CliError("Section title cannot be empty")
+            body = {
+                "operation-id": operation_id(), "list-id": int(task_list["id"]),
+                "title": title, "rank": args.rank, "base-revision": int(task_list.get("revision", 0)),
+            }
+            action_name = "add-section"
+        elif args.tend_command == "section-update":
+            section = find_section(task_list, args.section_id)
+            if args.title is None and args.rank is None:
+                raise CliError("Provide --title or --rank")
+            body = {
+                "operation-id": operation_id(), "list-id": int(task_list["id"]), "section-id": args.section_id,
+                "title": str(args.title if args.title is not None else section.get("title", "")).strip(),
+                "rank": args.rank if args.rank is not None else int(section.get("rank", 0)),
+                "base-revision": int(task_list.get("revision", 0)),
+            }
+            action_name = "update-section"
+        else:
+            if not args.yes:
+                raise CliError("Refusing section deletion without --yes")
+            find_section(task_list, args.section_id)
+            body = {
+                "operation-id": operation_id(), "list-id": int(task_list["id"]), "section-id": args.section_id,
+                "base-revision": int(task_list.get("revision", 0)),
+            }
+            action_name = "delete-section"
+        poke(cookie_path, config_path, {action_name: body})
+        emit({"status": "accepted", "listId": task_list["id"]}, as_json)
+        return 0
+    if args.tend_command in {"schedule", "unschedule"}:
+        task_list = select_list(state, args.list_selector)
+        require_list_writable(int(task_list["id"]), transport.scry_accesses(config_path, cookie_path))
+        find_reminder(task_list, args.reminder_id)
+        schedule = schedule_payload(args) if args.tend_command == "schedule" else None
+        action = {"set-schedule": {
+            "operation-id": operation_id(),
+            "list-id": int(task_list["id"]),
+            "reminder-id": args.reminder_id,
+            "schedule": schedule,
+            "base-revision": int(task_list.get("revision", 0)),
+        }}
+        poke(cookie_path, config_path, action)
+        emit({"status": "accepted", "listId": task_list["id"], "reminderId": args.reminder_id, "schedule": schedule}, as_json)
         return 0
     if args.tend_command == "share":
         task_list = select_list(state, args.list_selector)
@@ -900,8 +1200,16 @@ def parser() -> argparse.ArgumentParser:
     connect.add_argument("url")
     commands.add_parser("disconnect", help="remove the local Eyre session and connection")
     commands.add_parser("status", help="show connection status")
+    commands.add_parser("lists", help="list visible lists, hosts, members, and status")
     commands.add_parser("list", aliases=["ls"], help="list incomplete reminders")
     commands.add_parser("today", help="list due and overdue reminders")
+
+    access = commands.add_parser("access", help="show ownership, members, and pending invitations for a list")
+    access.add_argument("list_selector", help="list ID or title")
+
+    show = commands.add_parser("show", help="show one reminder with ancestors and descendants")
+    show.add_argument("list_selector", help="list ID or title")
+    show.add_argument("reminder_id", type=int)
 
     activity = commands.add_parser("activity", help="show actor-attributed activity for a list")
     activity.add_argument("list_selector", help="list ID or title")
@@ -917,10 +1225,90 @@ def parser() -> argparse.ArgumentParser:
     restore.add_argument("path")
     restore.add_argument("--yes", action="store_true", help="confirm the empty-state restore")
 
+    list_create = commands.add_parser("list-create", help="create a list with a randomized appearance")
+    list_create.add_argument("title")
+
+    list_update = commands.add_parser("list-update", help="edit a list's title or appearance")
+    list_update.add_argument("list_selector", help="list ID or title")
+    list_update.add_argument("--title")
+    list_update.add_argument("--color")
+    list_update.add_argument("--symbol")
+
+    list_delete = commands.add_parser("list-delete", help="permanently delete an owned list")
+    list_delete.add_argument("list_selector", help="list ID or title")
+    list_delete.add_argument("--yes", action="store_true", help="confirm permanent deletion")
+
     add = commands.add_parser("add", help="add a reminder")
     add.add_argument("title")
     add.add_argument("--list", dest="list_selector")
     add.add_argument("--tag", action="append", default=[])
+
+    edit = commands.add_parser("edit", help="replace editable metadata on one reminder")
+    edit.add_argument("list_selector", help="list ID or title")
+    edit.add_argument("reminder_id", type=int)
+    edit.add_argument("--title")
+    edit.add_argument("--notes")
+    url = edit.add_mutually_exclusive_group()
+    url.add_argument("--url")
+    url.add_argument("--clear-url", action="store_true")
+    edit.add_argument("--priority", choices=("none", "low", "medium", "high"))
+    flag = edit.add_mutually_exclusive_group()
+    flag.add_argument("--flagged", dest="flagged", action="store_true")
+    flag.add_argument("--unflagged", dest="flagged", action="store_false")
+    edit.set_defaults(flagged=None)
+    edit.add_argument("--tag", action="append", default=None, help="replace the tag set; repeat for more tags")
+    edit.add_argument("--clear-tags", action="store_true")
+    assignee = edit.add_mutually_exclusive_group()
+    assignee.add_argument("--assignee", help="assign to a list owner, member, or pending invitee")
+    assignee.add_argument("--unassign", action="store_true")
+
+    for name in ("flag", "unflag"):
+        flag_command = commands.add_parser(name, help=f"{name} a reminder")
+        flag_command.add_argument("list_selector", help="list ID or title")
+        flag_command.add_argument("reminder_id", type=int)
+
+    move_list = commands.add_parser("move-list", help="move a reminder subtree to another editable list")
+    move_list.add_argument("source_list", help="source list ID or title")
+    move_list.add_argument("reminder_id", type=int)
+    move_list.add_argument("destination_list", help="destination list ID or title")
+
+    sections = commands.add_parser("sections", help="list sections in a list")
+    sections.add_argument("list_selector", help="list ID or title")
+
+    section_add = commands.add_parser("section-add", help="add a section")
+    section_add.add_argument("list_selector", help="list ID or title")
+    section_add.add_argument("title")
+    section_add.add_argument("--rank", type=int, default=1024)
+
+    section_update = commands.add_parser("section-update", help="edit a section")
+    section_update.add_argument("list_selector", help="list ID or title")
+    section_update.add_argument("section_id", type=int)
+    section_update.add_argument("--title")
+    section_update.add_argument("--rank", type=int)
+
+    section_delete = commands.add_parser("section-delete", help="delete a section without deleting its reminders")
+    section_delete.add_argument("list_selector", help="list ID or title")
+    section_delete.add_argument("section_id", type=int)
+    section_delete.add_argument("--yes", action="store_true", help="confirm section deletion")
+
+    schedule = commands.add_parser("schedule", help="set due date, alerts, and optional recurrence")
+    schedule.add_argument("list_selector", help="list ID or title")
+    schedule.add_argument("reminder_id", type=int)
+    schedule.add_argument("--due", required=True, help="local ISO-8601 wall time or Urbit date/time")
+    schedule.add_argument("--timezone", default="UTC", help="IANA time zone for local due and recurrence times")
+    schedule.add_argument("--all-day", action="store_true")
+    schedule.add_argument("--early", action="append", type=int, default=[], metavar="MINUTES")
+    schedule.add_argument("--repeat", choices=("hourly", "daily", "weekly", "monthly", "yearly"))
+    schedule.add_argument("--interval", type=int, default=1)
+    schedule.add_argument("--weekday", action="append", type=int, default=[], metavar="0..6")
+    schedule.add_argument("--month-day", action="append", type=int, default=[], metavar="1..31")
+    schedule.add_argument("--month-week", type=int, nargs=2, metavar=("INDEX", "WEEKDAY"))
+    schedule.add_argument("--until", help="local ISO-8601 recurrence end")
+    schedule.add_argument("--count", type=int, help="maximum occurrences")
+
+    unschedule = commands.add_parser("unschedule", help="clear a reminder's schedule and recurrence")
+    unschedule.add_argument("list_selector", help="list ID or title")
+    unschedule.add_argument("reminder_id", type=int)
 
     share = commands.add_parser("share", help="invite an Urbit ship to a list")
     share.add_argument("list_selector", help="list ID or title")

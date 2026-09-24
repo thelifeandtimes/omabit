@@ -79,6 +79,10 @@ Tend also exposes a dependency-free umbrella CLI:
 bin/omabit tend status
 bin/omabit tend today
 bin/omabit tend add "Buy milk" --list Inbox --tag groceries
+bin/omabit tend show Inbox 42
+bin/omabit tend edit Inbox 42 --priority high --flagged
+bin/omabit tend schedule Inbox 42 --due 2026-09-25T09:00 --timezone America/Los_Angeles --repeat weekly
+bin/omabit tend move-list Inbox 42 "Shared chores"
 bin/omabit tend complete 1 42 43
 bin/omabit tend share 1 ~sampel-palnet --can-invite
 bin/omabit tend invitations
@@ -86,6 +90,10 @@ bin/omabit tend export ~/Documents/tend-backup.json
 bin/omabit tend restore ~/Documents/tend-backup.json --yes
 bin/omabit --json tend list
 ```
+
+The initial agent skill is [`skills/tend/SKILL.md`](skills/tend/SKILL.md), and
+the protocol/UI/CLI coverage audit is
+[`docs/TEND_INTERFACE_COVERAGE.md`](docs/TEND_INTERFACE_COVERAGE.md).
 
 See [`docs/TEND_INSTALL.md`](docs/TEND_INSTALL.md) for desk, plugin, CLI, and
 release installation instructions.
