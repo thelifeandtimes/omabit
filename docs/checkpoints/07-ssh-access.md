@@ -1,5 +1,13 @@
 # Checkpoint 4B: verified SSH transport and key-attributed access
 
+Accepted on the dedicated account, September 24 at 19:00 UTC. The user's Hello
+reported operator `ssh-key:SHA256:eVDrU/23cFq0QD1D5uuM10niBgNueT+kVji4wXdJNYc`.
+Alpha stayed running/healthy at revision 2. Two `register-ssh-check` requests
+returned the same succeeded operation `op-77c182d25396669c51322c117e114b5a` with
+that actor; the new instance remained uninitialized at revision/applied 1/0.
+Readable inventory polling also passed. The foreground SSH listener was then
+stopped by the user. The steps below remain the reproducible installation guide.
+
 ## Evidence and remaining gate
 
 Automated validation ran the installed OpenSSH 10.5p1 client/server with ephemeral

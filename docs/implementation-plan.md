@@ -64,9 +64,11 @@ pier or identity for an automated test.
   per-request revocation, and a restricted account shell. Actual OpenSSH fixture
   validation passed with two operators and an observer against real SQLite and an
   injected runtime. The [dedicated-account installation gate](checkpoints/07-ssh-access.md)
-  requires the user's sudo password and actual PAM/shell validation. Host SSH was
-  inactive; the prepared review configuration uses a separate loopback listener.
-  Generic Eyre sessions are the next phase after this access gate.
+  passed on September 24 at 19:00 UTC: live Hello identified the operator key,
+  inventory retained healthy alpha at revision 2, and `register-ssh-check` replayed
+  operation `op-77c182d25396669c51322c117e114b5a` with SSH-key attribution. The user
+  stopped the foreground SSH server afterward. Remote/tailnet reachability remains
+  a separate qualification gate. Generic origin-bound Eyre sessions are next.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator

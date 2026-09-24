@@ -30,10 +30,11 @@ replacement, offline pack, and cleanup have passed manual validation. Checkpoint
 live gate. Checkpoint 4A adds persistent collector enrollment, identity-pinned
 selection, and independent multi-runner inventory polling; its workstation and
 process-level fixture gates passed. Checkpoint 4B's OpenSSH transport and key
-grants passed isolated OpenSSH validation; dedicated-account installation is the
-next manual gate. Production ship management is not supported yet.
+grants passed isolated OpenSSH validation and live dedicated-account acceptance.
+Generic Eyre ship sessions are next. Production ship management is not supported
+yet.
 
-- [Next: SSH access installation](docs/checkpoints/07-ssh-access.md)
+- [Accepted: SSH access installation](docs/checkpoints/07-ssh-access.md)
 - [Accepted: collector enrollment and inventory](docs/checkpoints/06-collector-enrollment.md)
 - [Accepted workflow: persistent development runner](docs/checkpoints/05-persistent-runner.md)
 - [Accepted: host-loopback HTTP checkpoint](docs/checkpoints/04-host-http.md)
