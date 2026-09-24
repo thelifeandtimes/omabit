@@ -49,8 +49,9 @@ class TendAccessibilityTests(unittest.TestCase):
     def test_picker_popups_are_clamped_to_the_window_overlay(self):
         date_picker = (ROOT / "omarchy-plugin" / "TendDateTimePicker.qml").read_text(encoding="utf-8")
         assignee_picker = (ROOT / "omarchy-plugin" / "TendAssigneePicker.qml").read_text(encoding="utf-8")
+        self.assertIn("parent: trigger.Window.window ? trigger.Window.window.contentItem : trigger", date_picker)
+        self.assertIn("parent: QQC.Overlay.overlay", assignee_picker)
         for picker in (date_picker, assignee_picker):
-            self.assertIn("parent: QQC.Overlay.overlay", picker)
             self.assertIn("function placePopup()", picker)
             self.assertIn("parent.width", picker)
             self.assertIn("parent.height", picker)

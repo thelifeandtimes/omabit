@@ -118,7 +118,7 @@ Item {
 
   QQC.Popup {
     id: picker
-    parent: QQC.Overlay.overlay
+    parent: trigger.Window.window ? trigger.Window.window.contentItem : trigger
     x: 0
     y: root.height + Style.space(4)
     width: Math.min(Style.space(326), parent ? Math.max(Style.space(260), parent.width - Style.space(16)) : Style.space(326))
