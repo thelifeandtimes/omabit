@@ -36,7 +36,7 @@ Panel {
     var index = smartViewKeys.indexOf(selectedView)
     return index >= 0 ? smartViewLabels[index] : "Reminders"
   }
-  readonly property string headerMeta: "~" + (tendService ? tendService.ship : "") + " · " + selectedViewLabel
+  readonly property string headerMeta: "~" + (tendService ? tendService.ship : "") + " · " + taskCount + " · " + selectedViewLabel
 
   function normalizedShip(value) {
     var name = String(value || "").replace(/^~/, "")
@@ -203,7 +203,6 @@ Panel {
             Layout.fillWidth: true
             title: "Tend"
             meta: root.headerMeta
-            detail: String(root.taskCount)
             foreground: root.barForeground
             fontFamily: root.bar ? root.bar.fontFamily : Style.font.family
             iconComponent: Component {
