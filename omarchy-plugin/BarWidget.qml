@@ -217,13 +217,13 @@ Panel {
             }
           }
 
-          Button {
+          TendButton {
             id: openTendButton
-            width: Style.spacing.controlHeight
-            height: Style.spacing.controlHeight
+            Layout.preferredWidth: Style.spacing.controlHeight
+            Layout.preferredHeight: Style.spacing.controlHeight
+            Layout.alignment: Qt.AlignVCenter
             text: ""
             tooltipText: "Open Tend"
-            focusable: true
             bordered: true
             Accessible.name: "Open Tend"
             onClicked: root.openFullPanel(0, 0)

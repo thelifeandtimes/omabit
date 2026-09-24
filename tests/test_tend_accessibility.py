@@ -39,6 +39,10 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn('Accessible.name: "Open Tend"', widget)
         self.assertIn("TendOpenGlyph", widget)
         self.assertNotIn('text: "↗"', widget)
+        open_button = widget.split("id: openTendButton", 1)[1].split("onClicked:", 1)[0]
+        self.assertIn("Layout.preferredWidth: Style.spacing.controlHeight", open_button)
+        self.assertIn("Layout.preferredHeight: Style.spacing.controlHeight", open_button)
+        self.assertIn("Layout.alignment: Qt.AlignVCenter", open_button)
         self.assertIn("addReminderWithDetails", widget)
         self.assertIn("smartViewKeys", widget)
         self.assertIn("quickDue", widget)
