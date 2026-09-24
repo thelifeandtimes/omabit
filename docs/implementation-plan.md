@@ -38,6 +38,12 @@ automated test.
   remain disabled rather than delaying the bounded control-plane milestone. The
   [persistent-runner walkthrough](checkpoints/05-persistent-runner.md) is the next
   manual gate; developer tests use real SQLite and an injected fake runtime.
+- The user's 3A snapshot confirms alpha registration, first start, a revision-2
+  HTTP-port change, stop, and successful initialized-pier resume. A reported
+  two-minute delay was traced to the preflight sleep probe's PID-1 signal handling;
+  see the [diagnostic record](diagnostics/2026-09-24-resume-delay.md). The fix is
+  pending a controlled live timing check; full 3A acceptance is not inferred from
+  that partial snapshot.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator

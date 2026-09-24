@@ -8,9 +8,9 @@ Implementation and fixture validation are complete; live acceptance is pending.
 
 - `urbit-runner serve-fake` serves the management protocol on a private Unix socket.
 - `urbit-collector create-fake` registers an instance. It does not boot it.
-- `operate ... start` bootstraps a new fake ship on first use, or restarts its
-  existing registered pier afterward. `operate ... stop` stops/removes its owned
-  containers while preserving the pier, registration, and dedicated network.
+- `operate ... start` bootstraps a new fake ship on first use, or resumes Vere
+  against its existing registered pier afterward. `operate ... stop` stops/removes
+  its owned containers while preserving the pier, registration, and network.
 - SQLite records the stable runner identity, configuration revisions, operator
   attribution, resource intents, operation history, and idempotency keys.
 - The management process and ships have separate lifetimes: **stopping the runner
@@ -32,6 +32,13 @@ require 5 GiB available RAM and 8 GiB disk. This is a capacity check, not a host
 resource reservation. At most eight instances may be registered in this prototype.
 
 ## Persistence and interruption policy
+
+An initialized Urbit continues its persisted state when Vere resumes. This is not
+a conventional guest-OS reboot and does not reapply the bootstrap pill. The CLI
+keeps the host-oriented `start`/`stop` names; see the architecture's lifecycle
+definitions. The September 24 [resume-delay investigation](../diagnostics/2026-09-24-resume-delay.md)
+identified a 120-second preflight-probe delay before Vere was launched, not a
+second initialization of the ship.
 
 State lives under:
 

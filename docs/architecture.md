@@ -104,6 +104,23 @@ single ship-lifecycle authority. Avoid competing automatic restart policies.
 
 ## Runtime and bootstrap releases
 
+Lifecycle words refer to the host runtime unless stated otherwise. Urbit's
+persisted state is the continuing computer; it is not reinitialized when Vere
+exits and is started again. Use these distinctions in interfaces and diagnostics:
+
+- **Bootstrap/initialize:** create a new pier using a pill and identity inputs
+  (or fake-ship flags in development). This is a one-time creation operation.
+- **Resume/start runtime:** run Vere against the existing pier, load its
+  checkpoint, replay any required logged events, and reconnect host I/O. Do not
+  pass creation flags or apply a bootstrap pill to an initialized pier.
+- **Stop runtime:** gracefully stop the host process and preserve the pier.
+- **Restart management:** restart the runner service; healthy Vere processes
+  need not stop. Runtime status and service availability are host observations,
+  not a reset or conventional guest-OS reboot of Arvo.
+
+Urbit can observe elapsed time and resumed I/O through events. State continuity
+does not imply zero host startup work or instant network availability.
+
 Start with a qualified, digest-pinned `tloncorp/vere` image. Invoke the image's
 Vere binary with explicit arguments rather than rely on its convenience wrapper,
 which does not pass through all bootstrap options. The image binary is the

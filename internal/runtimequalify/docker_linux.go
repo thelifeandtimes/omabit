@@ -134,6 +134,7 @@ type container struct {
 		Tty, OpenStdin          bool
 	}
 	HostConfig struct {
+		Init                                                             *bool
 		NetworkMode, PidMode, IpcMode, UTSMode, UsernsMode, CgroupnsMode string
 		Privileged, PublishAllPorts, AutoRemove                          bool
 		CapAdd, CapDrop, SecurityOpt, Binds, VolumesFrom, Links          []string
@@ -211,6 +212,14 @@ func (q *qualifier) containment(c container, kind string) error {
 		len(h.CapAdd) == 0 && reflect.DeepEqual(h.CapDrop, []string{"ALL"}) && reflect.DeepEqual(h.SecurityOpt, []string{"no-new-privileges=true"}) && len(h.Binds) == 0 && len(h.VolumesFrom) == 0 && len(h.Links) == 0 && len(h.Devices) == 0 && len(h.DeviceRequests) == 0 &&
 		h.Memory == memoryLimit && h.MemorySwap == memoryLimit && h.PidsLimit != nil && *h.PidsLimit == 256 && h.NanoCpus == 2_000_000_000 && h.CpuQuota == 0 && h.CpuPeriod == 0 &&
 		h.RestartPolicy.Name == "no" && h.RestartPolicy.MaximumRetryCount == 0 && h.LogConfig.Type == "local" && reflect.DeepEqual(h.LogConfig.Config, map[string]string{"max-size": "10m", "max-file": "2"})
+	if kind == "probe" {
+		// sleep does not install a SIGTERM handler. An init must forward the
+		// signal to a non-PID-1 child, or stopping waits for the sleep deadline.
+		ok = ok && h.Init != nil && *h.Init
+	} else {
+		// Vere keeps its already-qualified direct signal-handling topology.
+		ok = ok && (h.Init == nil || !*h.Init)
+	}
 	if err := q.networkContainment(c, kind); err != nil {
 		return err
 	}
@@ -270,6 +279,9 @@ func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 		"--memory", "4294967296", "--memory-swap", "4294967296", "--pids-limit", "256", "--cpus", "2",
 		"--log-driver", "local", "--log-opt", "max-size=10m", "--log-opt", "max-file=2",
 		"--mount", "type=bind,src=" + filepath.Join(q.r.Directory, "data") + ",dst=/urbit,bind-propagation=rprivate"}
+	if kind == "probe" {
+		args = append(args, "--init")
+	}
 	if isHTTPKind(kind) {
 		port := ""
 		if q.d.hostPort != 0 {

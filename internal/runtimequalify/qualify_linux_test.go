@@ -284,6 +284,11 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 		}
 	case "stop":
 		f.events = append(f.events, "stop-"+c.kind)
+		if c.kind == "probe" && state["Running"] == true && mapAt(c.doc, "HostConfig")["Init"] != true {
+			// A PID-1 sleep ignores default-action SIGTERM. Do not model the
+			// legacy probe as terminating promptly when it actually waits 120s.
+			return "", context.DeadlineExceeded
+		}
 		state["Running"], state["ExitCode"] = false, 0
 		if c.kind == "probe" {
 			state["ExitCode"] = 143
@@ -317,6 +322,11 @@ func (f *fakeEngine) create(args []string, config string) (string, error) {
 	opts := map[string][]string{}
 	i := 2
 	for i < len(args) && strings.HasPrefix(args[i], "--") {
+		if args[i] == "--init" {
+			opts["--init"] = append(opts["--init"], "true")
+			i++
+			continue
+		}
 		if i+1 >= len(args) {
 			t.Fatal("missing create option value")
 		}
@@ -398,6 +408,12 @@ func (f *fakeEngine) create(args []string, config string) (string, error) {
 		"HostConfig": map[string]any{"NetworkMode": value("--network"), "IpcMode": value("--ipc"), "CgroupnsMode": value("--cgroupns"), "CapDrop": opts["--cap-drop"], "SecurityOpt": opts["--security-opt"], "Memory": number("--memory"), "MemorySwap": number("--memory-swap"), "PidsLimit": number("--pids-limit"), "NanoCpus": number("--cpus") * 1_000_000_000, "RestartPolicy": map[string]any{"Name": value("--restart")}, "LogConfig": map[string]any{"Type": value("--log-driver"), "Config": logOpts}},
 		"Mounts":     mounts, "NetworkSettings": map[string]any{"Networks": map[string]any{"none": map[string]any{}}},
 		"State": map[string]any{"Running": false, "ExitCode": 0, "OOMKilled": false},
+	}
+	if len(opts["--init"]) != 0 {
+		if len(opts["--init"]) != 1 || opts["--init"][0] != "true" || kind != "probe" {
+			t.Fatal("init is only allowed on the probe")
+		}
+		mapAt(doc, "HostConfig")["Init"] = true
 	}
 	if isHTTPKind(kind) {
 		port := ""
