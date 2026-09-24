@@ -218,11 +218,25 @@ Panel {
           }
 
           Button {
-            text: "↗"
+            id: openTendButton
+            width: Style.spacing.controlHeight
+            height: Style.spacing.controlHeight
+            text: ""
             tooltipText: "Open Tend"
             focusable: true
             bordered: true
+            Accessible.name: "Open Tend"
             onClicked: root.openFullPanel(0, 0)
+
+            OpticalGlyph {
+              anchors.centerIn: parent
+              width: Style.font.icon
+              height: Style.font.icon
+              text: "↗"
+              color: root.barForeground
+              fontFamily: root.bar ? root.bar.fontFamily : Style.font.family
+              fontSize: Style.font.icon
+            }
           }
         }
 
