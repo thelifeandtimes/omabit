@@ -36,6 +36,7 @@ Item {
     property var collapsedReminderIds: []
     property bool confirmBatchDelete: false
     property real sidebarWidth: Style.space(230)
+    readonly property real formControlHeight: Style.spacing.controlHeight
     readonly property real detailTrayWidth: Math.min(Style.space(360), workspace ? workspace.width * 0.88 : Style.space(360))
     readonly property real settingsTrayWidth: Math.min(Style.space(390), workspace ? workspace.width * 0.9 : Style.space(390))
     readonly property bool singleTrayMode: window.width < Style.space(1200)
@@ -863,10 +864,12 @@ Item {
 
                     Row {
                         width: parent.width
-                        height: Style.space(38)
+                        height: root.formControlHeight
+                        spacing: Style.space(8)
 
                         Row {
-                            width: parent.width - closeButton.width - settingsButton.width - Style.space(8)
+                            width: parent.width - closeButton.width - settingsButton.width - parent.spacing * 2
+                            height: parent.height
                             spacing: Style.space(8)
 
                             Text {
@@ -891,15 +894,18 @@ Item {
 
                         TendIconButton {
                             id: settingsButton
+                            anchors.verticalCenter: parent.verticalCenter
                             visible: service && service.ship !== ""
                             glyph: "󰒓"
                             tooltipText: "Tend settings"
                             accessibleName: "Open Tend settings"
+                            bordered: false
                             onClicked: root.openAppSettings()
                         }
 
                         TendIconButton {
                             id: closeButton
+                            anchors.verticalCenter: parent.verticalCenter
                             glyph: "󰅖"
                             tooltipText: "Close Tend"
                             accessibleName: "Close Tend"
@@ -1454,6 +1460,7 @@ Item {
 
                             Row {
                                 width: parent.width
+                                height: root.formControlHeight
                                 spacing: Style.space(8)
 
                                 TendButton {
@@ -1468,7 +1475,11 @@ Item {
                                 }
 
                                 Text {
-                                    width: parent.width - compactSidebarButton.width - editListButton.width - parent.spacing * 2
+                                    readonly property real availableWidth: parent.width
+                                      - (compactSidebarButton.visible ? compactSidebarButton.width + parent.spacing : 0)
+                                      - (editListButton.visible ? editListButton.width + parent.spacing : 0)
+                                    width: Math.min(implicitWidth, Math.max(0, availableWidth))
+                                    anchors.verticalCenter: parent.verticalCenter
                                     text: root.viewTitle
                                     elide: Text.ElideRight
                                     color: Color.menu.text
@@ -1485,10 +1496,12 @@ Item {
                                 TendIconButton {
                                     id: editListButton
 
+                                    anchors.verticalCenter: parent.verticalCenter
                                     visible: root.viewMode === "list" && root.selectedList !== null
                                     glyph: "󰏫"
                                     tooltipText: root.rightTrayMode === "list" ? "Close list settings" : "Edit list"
                                     accessibleName: tooltipText
+                                    bordered: false
                                     onClicked: {
                                         root.openListEditor();
                                     }
@@ -1849,12 +1862,15 @@ Item {
 
                             Row {
                                 width: parent.width
+                                height: root.formControlHeight
                                 spacing: Style.space(8)
 
                                 TextField {
                                     id: reminderSearch
 
                                     width: root.compactMode ? parent.width : parent.width * 0.34
+                                    height: root.formControlHeight
+                                    verticalPadding: Style.spacing.controlPaddingY
                                     placeholderText: "Search reminders"
                                     Accessible.name: "Search reminders"
                                 }
@@ -1864,6 +1880,7 @@ Item {
 
                                     visible: !root.compactMode
                                     width: parent.width * 0.2
+                                    height: root.formControlHeight
                                     model: ["All tags"].concat(root.availableTags)
                                     Accessible.name: "Filter reminders by tag"
                                     onCurrentIndexChanged: root.tagFilter = currentIndex > 0 ? currentText : ""
@@ -1874,6 +1891,7 @@ Item {
 
                                     visible: !root.compactMode
                                     width: parent.width * 0.2
+                                    height: root.formControlHeight
                                     model: ["manual", "due", "created", "priority", "title"]
                                     currentIndex: Math.max(0, model.indexOf(root.sortMode))
                                     Accessible.name: "Reminder sort order"
@@ -1886,6 +1904,7 @@ Item {
 
                                 TendCheck {
                                     visible: !root.compactMode
+                                    height: root.formControlHeight
                                     text: root.sortDescending ? "Descending" : "Ascending"
                                     checked: root.sortDescending
                                     onClicked: {
@@ -1941,6 +1960,10 @@ Item {
                                     Layout.fillWidth: true
                                     Layout.columnSpan: parent.narrowComposer ? 2 : 1
                                     Layout.minimumWidth: Style.space(180)
+                                    Layout.preferredHeight: root.formControlHeight
+                                    Layout.minimumHeight: root.formControlHeight
+                                    Layout.maximumHeight: root.formControlHeight
+                                    verticalPadding: Style.spacing.controlPaddingY
                                     placeholderText: root.addDestination ? "Describe a new reminder" : "Create a list first"
                                     Accessible.name: "New reminder description"
                                     enabled: root.addDestination && service && service.canEditList(root.addDestination.id) && service.connectionState === "online" && !service.mutationPending
@@ -1954,6 +1977,9 @@ Item {
                                     Layout.columnSpan: parent.narrowComposer ? 2 : 1
                                     Layout.preferredWidth: Style.space(190)
                                     Layout.minimumWidth: Style.space(150)
+                                    Layout.preferredHeight: root.formControlHeight
+                                    Layout.minimumHeight: root.formControlHeight
+                                    Layout.maximumHeight: root.formControlHeight
                                     options: root.addAssigneeOptions
                                     placeholderText: "Assignee"
                                     Accessible.name: "New reminder assignee"
@@ -1964,6 +1990,9 @@ Item {
 
                                     Layout.preferredWidth: Style.spacing.controlHeight
                                     Layout.minimumWidth: Style.spacing.controlHeight
+                                    Layout.preferredHeight: root.formControlHeight
+                                    Layout.minimumHeight: root.formControlHeight
+                                    Layout.maximumHeight: root.formControlHeight
                                     iconOnly: true
                                     enabled: quickAdd.enabled
                                     Accessible.name: "New reminder due date"
@@ -1972,6 +2001,9 @@ Item {
                                 TendButton {
                                     id: quickAddButton
                                     Layout.preferredWidth: Style.space(62)
+                                    Layout.preferredHeight: root.formControlHeight
+                                    Layout.minimumHeight: root.formControlHeight
+                                    Layout.maximumHeight: root.formControlHeight
                                     text: "+ add"
                                     enabled: quickAdd.enabled && quickAdd.text.trim() !== ""
                                     Accessible.name: "Add reminder"

@@ -209,6 +209,19 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn('text: "CONNECTED SHIP"', settings)
         self.assertNotIn('text: root.pinned() ? "Unpin list" : "Pin list"', settings)
 
+    def test_panel_header_actions_are_unboxed_and_form_rows_share_one_height(self):
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+        self.assertIn("readonly property real formControlHeight: Style.spacing.controlHeight", panel)
+        self.assertIn("height: root.formControlHeight", panel)
+        for control_id in ("settingsButton", "closeButton", "editListButton"):
+            block = panel.split(f"id: {control_id}", 1)[1].split("onClicked:", 1)[0]
+            self.assertIn("bordered: false", block)
+        title_row = panel.split("id: compactSidebarButton", 1)[1].split("Rectangle {", 1)[0]
+        self.assertLess(title_row.index("text: root.viewTitle"), title_row.index("id: editListButton"))
+        for control_id in ("quickAdd", "quickAssignee", "quickDue", "quickAddButton"):
+            block = panel.split(f"id: {control_id}", 1)[1].split("}", 1)[0]
+            self.assertIn("root.formControlHeight", block)
+
     def test_selection_mode_is_for_organization_not_completion_or_deletion(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         selection = panel.split('visible: root.selectionMode && root.viewMode === "list"', 1)[1].split("Rectangle {", 1)[0]
