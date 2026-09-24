@@ -415,11 +415,13 @@
         (reject op-id.act %list-limit ~ state)
       ?:  (invalid-title title.act)
         (reject op-id.act %invalid-title ~ state)
+      =/  appearance=[color=@t symbol=@t]
+        (initial-appearance op-id.act now.bowl next-id.state)
       =/  lis=task-list:t
         :*  next-id.state
             title.act
-            '#3b82f6'
-            'list'
+            color.appearance
+            symbol.appearance
             1
             *sections:t
             *reminders:t
@@ -2313,6 +2315,26 @@
   ++  invalid-title
     |=  title=@t
     |(=(0 title) (gth (met 3 title) 1.024))
+  ::
+  ++  initial-appearance
+    |=  [operation=op-id:t now=@da list-id=list-id:t]
+    ^-  [color=@t symbol=@t]
+    =/  choices=(list [@t @t])
+      :~  ['#3b82f6' '●']
+          ['#8b5cf6' '✦']
+          ['#ec4899' '♥']
+          ['#ef4444' '◆']
+          ['#f97316' '☀']
+          ['#eab308' '★']
+          ['#22c55e' '♣']
+          ['#14b8a6' '◈']
+          ['#06b6d4' '☁']
+          ['#6366f1' '☾']
+          ['#a855f7' '✎']
+          ['#64748b' '⌂']
+      ==
+    =/  choice=@ud  (mod (mug [operation now list-id]) 12)
+    (snag choice choices)
   ::
   ++  invalid-appearance
     |=  [color=@t symbol=@t]

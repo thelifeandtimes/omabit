@@ -41,6 +41,15 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn(update, create_branch)
         self.assertIn(update, delete_branch)
 
+    def test_new_lists_receive_a_varied_server_generated_appearance(self):
+        create_branch = self.agent.split("%create-list", 1)[1].split("%rename-list", 1)[0]
+        self.assertIn("(initial-appearance op-id.act now.bowl next-id.state)", create_branch)
+        self.assertIn("++  initial-appearance", self.agent)
+        self.assertIn("(mod (mug [operation now list-id]) 12)", self.agent)
+        self.assertNotIn("'#3b82f6'\n            'list'", create_branch)
+        for color in ("#3b82f6", "#ec4899", "#f97316", "#22c55e", "#06b6d4", "#a855f7"):
+            self.assertIn(color, self.agent)
+
     def test_manual_placement_is_atomic_and_normalizes_sibling_ranks(self):
         self.assertIn("%place-reminder", self.agent)
         self.assertIn("(ordered-siblings reminders.u.old parent-id.u.source section-id.u.source)", self.agent)
