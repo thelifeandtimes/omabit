@@ -1184,8 +1184,13 @@ Item {
 
                                     TendButton {
                                         id: viewsReveal
+                                        width: Math.max(Style.space(70), implicitWidth)
+                                        height: parent.height
                                         text: root.unpinnedViewsVisible ? "Hide" : "Show all"
+                                        horizontalPadding: Style.space(6)
                                         bordered: false
+                                        tooltipText: root.unpinnedViewsVisible ? "Hide unpinned views" : "Show unpinned views"
+                                        Accessible.name: tooltipText
                                         onClicked: root.unpinnedViewsVisible = !root.unpinnedViewsVisible
                                     }
 
@@ -1260,8 +1265,13 @@ Item {
 
                                     TendButton {
                                         id: listsReveal
+                                        width: Math.max(Style.space(70), implicitWidth)
+                                        height: parent.height
                                         text: root.unpinnedListsVisible ? "Hide" : "Show all"
+                                        horizontalPadding: Style.space(6)
                                         bordered: false
+                                        tooltipText: root.unpinnedListsVisible ? "Hide unpinned lists" : "Show unpinned lists"
+                                        Accessible.name: tooltipText
                                         onClicked: root.unpinnedListsVisible = !root.unpinnedListsVisible
                                     }
                                 }

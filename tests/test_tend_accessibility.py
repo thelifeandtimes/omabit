@@ -256,6 +256,17 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("height: root.formControlHeight", new_list_block)
         self.assertIn("height: root.formControlHeight", add_list_block)
 
+    def test_sidebar_reveal_controls_reserve_visible_space(self):
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+
+        for control_id, noun in (("viewsReveal", "views"), ("listsReveal", "lists")):
+            block = panel.split(f"id: {control_id}", 1)[1].split("onClicked:", 1)[0]
+            self.assertIn("width: Math.max(Style.space(70), implicitWidth)", block)
+            self.assertIn("height: parent.height", block)
+            self.assertIn('text: root.unpinned', block)
+            self.assertIn(f'"Show unpinned {noun}"', block)
+            self.assertIn("Accessible.name: tooltipText", block)
+
     def test_selection_mode_is_for_organization_not_completion_or_deletion(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         selection = panel.split('visible: root.selectionMode && root.viewMode === "list"', 1)[1].split("Rectangle {", 1)[0]
