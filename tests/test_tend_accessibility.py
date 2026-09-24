@@ -238,6 +238,14 @@ class TendAccessibilityTests(unittest.TestCase):
                 path.name,
             )
 
+    def test_sidebar_new_list_controls_have_explicit_shared_heights(self):
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+        new_list_block = panel.split("id: newList", 1)[1].split("onAccepted: addListButton.clicked()", 1)[0]
+        add_list_block = panel.split("id: addListButton", 1)[1].split("onClicked:", 1)[0]
+
+        self.assertIn("height: root.formControlHeight", new_list_block)
+        self.assertIn("height: root.formControlHeight", add_list_block)
+
     def test_selection_mode_is_for_organization_not_completion_or_deletion(self):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         selection = panel.split('visible: root.selectionMode && root.viewMode === "list"', 1)[1].split("Rectangle {", 1)[0]

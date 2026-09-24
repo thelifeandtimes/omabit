@@ -1374,6 +1374,7 @@ Item {
                                         TendTextField {
                                             id: newList
                                             width: parent.width
+                                            height: root.formControlHeight
                                             placeholderText: "List name"
                                             Accessible.name: "New list title"
                                             enabled: service && service.connectionState === "online" && !service.mutationPending
@@ -1383,6 +1384,7 @@ Item {
                                         TendButton {
                                             id: addListButton
                                             width: parent.width
+                                            height: root.formControlHeight
                                             text: "Add list"
                                             enabled: newList.enabled && newList.text.trim() !== ""
                                             onClicked: {
