@@ -20,6 +20,9 @@ Eyre transport; `urbit-runner` has no desktop behavior.
   entries, received Gall acknowledgements, verified readback, and deleted owned
   channels. The test's HTTP session was logged out afterward. The fake retains the
   published Omarchy appearance; this was not a test against a production ship.
+- `scripts/validate-theme.py --acknowledge-development-fake --port 18085` also
+  passed the actual CLI enable/sync, unchanged read-only check, explicit resend,
+  pause, and logout/credential cleanup using temporary collector/preferences state.
 - Fixtures verified preservation of unrelated themes/fields, large numeric fields,
   rejection of duplicate/malformed settings, and refusal to treat matching old
   state as proof of an unacknowledged resend.
