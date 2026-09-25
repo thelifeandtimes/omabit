@@ -554,27 +554,36 @@ function badgeCount(lists, preferences, ship, nowMs) {
 }
 
 function hierarchyOrder(items) {
-  const byId = new Map()
-  ;(items || []).forEach(function(item) { byId.set(Number(item.id), item) })
+  const keyFor = function(item, reminderId) {
+    const listId = item.listId === null || item.listId === undefined ? 0 : Number(item.listId)
+    return listId + ":" + Number(reminderId)
+  }
+  const byKey = new Map()
+  ;(items || []).forEach(function(item) { byKey.set(keyFor(item, item.id), item) })
   const children = new Map()
+  const roots = []
   ;(items || []).forEach(function(item) {
-    const parentId = item.parentId === null || item.parentId === undefined || !byId.has(Number(item.parentId))
+    const parentKey = item.parentId === null || item.parentId === undefined
       ? null
-      : Number(item.parentId)
-    if (!children.has(parentId)) children.set(parentId, [])
-    children.get(parentId).push(item)
+      : keyFor(item, item.parentId)
+    if (parentKey === null || !byKey.has(parentKey)) {
+      roots.push(item)
+      return
+    }
+    if (!children.has(parentKey)) children.set(parentKey, [])
+    children.get(parentKey).push(item)
   })
   const ordered = []
   const visited = new Set()
   function visit(item, depth) {
-    const id = Number(item.id)
-    if (visited.has(id)) return
-    visited.add(id)
+    const key = keyFor(item, item.id)
+    if (visited.has(key)) return
+    visited.add(key)
     item.depth = depth
     ordered.push(item)
-    ;(children.get(id) || []).forEach(function(child) { visit(child, depth + 1) })
+    ;(children.get(key) || []).forEach(function(child) { visit(child, depth + 1) })
   }
-  ;(children.get(null) || []).forEach(function(item) { visit(item, 0) })
+  roots.forEach(function(item) { visit(item, 0) })
   ;(items || []).forEach(function(item) { visit(item, 0) })
   return ordered
 }

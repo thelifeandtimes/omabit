@@ -35,3 +35,18 @@ test("web hierarchy handles missing parents and cycles without dropping reminder
   const ordered = hierarchyOrderedReminders(reminders, (a, b) => a.rank - b.rank || a.id - b.id)
   assert.deepEqual(ordered.map(item => item.id), [10, 8, 9])
 })
+
+test("web hierarchy isolates duplicate reminder ids from different lists", () => {
+  const reminders = [
+    { listId: 1, id: 2, title: "Home child", parentId: 1, rank: 1 },
+    { listId: 2, id: 1, title: "Work parent", parentId: null, rank: 2 },
+    { listId: 1, id: 1, title: "Home parent", parentId: null, rank: 3 },
+    { listId: 2, id: 2, title: "Work child", parentId: 1, rank: 4 },
+  ]
+  const ordered = hierarchyOrderedReminders(reminders, (a, b) => a.rank - b.rank || a.id - b.id)
+  assert.deepEqual(ordered.map(item => `${item.listId}:${item.id}`), ["2:1", "2:2", "1:1", "1:2"])
+})
+
+test("web All view uses parent-first hierarchy ordering", () => {
+  assert.match(html, /state\.view === "list" \|\| state\.view === "all"/)
+})

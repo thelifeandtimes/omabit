@@ -312,23 +312,30 @@
       }
       function hierarchyOrderedReminders(items, compare) {
         const reminders = items || [];
-        const byId = new Map(reminders.map(reminder => [Number(reminder.id), reminder]));
+        const keyFor = (reminder, reminderId) => Number(reminder.listId || 0) + ":" + Number(reminderId);
+        const byKey = new Map(reminders.map(reminder => [keyFor(reminder, reminder.id), reminder]));
         const children = new Map();
+        const roots = [];
         reminders.forEach(reminder => {
           const rawParentId = reminder["parent-id"] ?? reminder.parentId ?? null;
-          const parentId = rawParentId !== null && rawParentId !== undefined && byId.has(Number(rawParentId)) ? Number(rawParentId) : null;
-          if (!children.has(parentId)) children.set(parentId, []);
-          children.get(parentId).push(reminder);
+          const parentKey = rawParentId === null || rawParentId === undefined ? null : keyFor(reminder, rawParentId);
+          if (parentKey === null || !byKey.has(parentKey)) {
+            roots.push(reminder);
+            return;
+          }
+          if (!children.has(parentKey)) children.set(parentKey, []);
+          children.get(parentKey).push(reminder);
         });
         children.forEach(group => group.sort(compare));
+        roots.sort(compare);
         const ordered = []; const visited = new Set();
         const visit = reminder => {
-          const id = Number(reminder.id);
-          if (visited.has(id)) return;
-          visited.add(id); ordered.push(reminder);
-          (children.get(id) || []).forEach(visit);
+          const key = keyFor(reminder, reminder.id);
+          if (visited.has(key)) return;
+          visited.add(key); ordered.push(reminder);
+          (children.get(key) || []).forEach(visit);
         };
-        (children.get(null) || []).forEach(visit);
+        roots.forEach(visit);
         reminders.slice().sort(compare).forEach(visit);
         return ordered;
       }
@@ -702,7 +709,7 @@
         const sorter = sorters[state.sort] || sorters.manual;
         const direction = state.descending ? -1 : 1;
         const compare = (a,b) => sorter(a,b) * direction || Number(a.listId) - Number(b.listId) || Number(a.id) - Number(b.id);
-        if (state.view === "list") return hierarchyOrderedReminders(reminders, compare);
+        if (state.view === "list" || state.view === "all") return hierarchyOrderedReminders(reminders, compare);
         reminders.sort(compare);
         return reminders;
       }

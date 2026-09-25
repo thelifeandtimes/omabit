@@ -167,7 +167,9 @@ Item {
         : queriedReminders.filter(function(reminder) {
             return !service.completionShouldCollapse(viewMode, reminder.listId, reminder.id);
         })
-    readonly property var displayedReminders: viewMode === "list" ? TendModel.visibleReminders(transitioningReminders, collapsedReminderIds) : transitioningReminders
+    readonly property var displayedReminders: viewMode === "list"
+        ? TendModel.visibleReminders(transitioningReminders, collapsedReminderIds)
+        : (viewMode === "all" ? TendModel.hierarchyOrder(transitioningReminders) : transitioningReminders)
     readonly property var displayedRows: viewMode === "list" && selectedList
         ? TendModel.sectionedRows(displayedReminders, selectedList, true)
         : displayedReminders

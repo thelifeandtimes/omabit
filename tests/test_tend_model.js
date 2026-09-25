@@ -355,6 +355,18 @@ test("subtasks render as a guarded hierarchy and collapse with their descendants
   assert.deepEqual(model.visibleReminders(malformedCycle, []).map((item) => item.id), [8, 9])
 })
 
+test("cross-list hierarchy keeps duplicate reminder ids isolated", () => {
+  const items = [
+    { listId: 1, id: 2, title: "Home child", parentId: 1, rank: 1 },
+    { listId: 2, id: 1, title: "Work parent", parentId: null, rank: 2 },
+    { listId: 1, id: 1, title: "Home parent", parentId: null, rank: 3 },
+    { listId: 2, id: 2, title: "Work child", parentId: 1, rank: 4 }
+  ]
+  const ordered = model.hierarchyOrder(items)
+  assert.deepEqual(ordered.map((item) => `${item.listId}:${item.id}`), ["2:1", "2:2", "1:1", "1:2"])
+  assert.deepEqual(ordered.map((item) => item.depth), [0, 1, 0, 1])
+})
+
 test("list rows expose empty sections and preserve reminders beneath their section headers", () => {
   const list = {
     sections: [
