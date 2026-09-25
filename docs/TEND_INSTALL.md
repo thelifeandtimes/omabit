@@ -92,7 +92,11 @@ The default desktop targets are:
 
 The installer refuses existing desktop files and symbolic-link targets.
 `--force` moves existing desktop installations to timestamped backups before
-replacing them. For a desktop-only install, omit `--desk-path`.
+replacing them. Updating the default live plugin path refreshes the installed
+QML timestamps and restarts an already-running Omarchy shell so Qt cannot reuse
+compiled files from an older deterministic release, even when the plugin was
+already enabled and `--enable` is omitted. For a desktop-only install, omit
+`--desk-path`.
 
 After the combined install, commit the desk and install it from the publisher
 ship's own Clay source:

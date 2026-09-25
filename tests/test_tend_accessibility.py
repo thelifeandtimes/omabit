@@ -257,6 +257,7 @@ class TendAccessibilityTests(unittest.TestCase):
         button = (plugin / "TendButton.qml").read_text(encoding="utf-8")
         self.assertIn("implicitHeight: Style.spacing.controlHeight", field)
         self.assertIn("verticalPadding: Style.spacing.controlPaddingY", field)
+        self.assertIn("import qs.Commons", button)
         self.assertIn("implicitHeight: Style.spacing.controlHeight", button)
         for path in plugin.glob("*.qml"):
             if path.name == "TendTextField.qml":

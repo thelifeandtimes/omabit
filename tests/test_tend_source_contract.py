@@ -215,6 +215,18 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("const selectedReminder = () => {\n        const list = selectedList();", web_ui)
         self.assertNotIn(".task-actions { display: none; }", web_ui)
 
+    def test_live_plugin_updates_invalidate_qml_cache_and_restart_the_shell(self):
+        installer = (ROOT / "packaging" / "tend" / "install.sh").read_text(encoding="utf-8")
+        enable_guard = 'if [[ "$enable_plugin" == true ]]'
+
+        self.assertIn('default_plugin_dir="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugins/io.omabit.tend"', installer)
+        self.assertIn('if [[ "$plugin_dir" == "$default_plugin_dir" ]]', installer)
+        self.assertIn('find "$plugin_dir" -type f -exec touch -- {} +', installer)
+        self.assertIn('omarchy-shell -q shell listPlugins', installer)
+        self.assertIn('omarchy restart shell', installer)
+        self.assertIn('omarchy-shell -q shell rescanPlugins', installer)
+        self.assertGreater(installer.index('omarchy restart shell'), installer.index(enable_guard))
+
 
 if __name__ == "__main__":
     unittest.main()

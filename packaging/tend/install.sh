@@ -16,7 +16,8 @@ EOF
 enable_plugin=false
 force=false
 desk_path=""
-plugin_dir="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugins/io.omabit.tend"
+default_plugin_dir="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugins/io.omabit.tend"
+plugin_dir="$default_plugin_dir"
 plugin_backup_dir="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugin-backups"
 bin_dir="$HOME/.local/bin"
 
@@ -48,6 +49,7 @@ done
 release_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 timestamp=$(date -u +%Y%m%dT%H%M%SZ)
 active_staging_dir=""
+reload_live_plugin=false
 
 cleanup() {
   if [[ -n "$active_staging_dir" && -d "$active_staging_dir" ]]; then
@@ -218,6 +220,16 @@ fi
 
 install_tree "$release_dir/omarchy-plugin" "$plugin_dir" "Omarchy plugin" "$plugin_backup_dir"
 
+# Release archives use deterministic 1970 mtimes. Refresh the installed source
+# mtimes so Qt does not reuse compiled QML from an older release. Replacing the
+# directory atomically also invalidates the directory inode Quickshell's watcher
+# followed, so remember to reload the running shell after installation even for
+# an already-enabled plugin where --enable is omitted.
+if [[ "$plugin_dir" == "$default_plugin_dir" ]]; then
+  find "$plugin_dir" -type f -exec touch -- {} +
+  reload_live_plugin=true
+fi
+
 mkdir -p "$bin_dir"
 if [[ -e "$cli_target" ]]; then
   cli_backup=$(next_backup_path "$cli_target")
@@ -228,9 +240,6 @@ install -m 0755 "$release_dir/bin/omabit" "$cli_target"
 echo "Installed CLI at $cli_target"
 
 if [[ "$enable_plugin" == true ]]; then
-  if command -v omarchy-shell >/dev/null 2>&1; then
-    omarchy-shell -q shell rescanPlugins
-  fi
   if command -v omarchy >/dev/null 2>&1; then
     omarchy plugin enable io.omabit.tend
   else
@@ -238,6 +247,21 @@ if [[ "$enable_plugin" == true ]]; then
   fi
 else
   echo "Review the unsandboxed plugin, then enable it with: omarchy plugin enable io.omabit.tend"
+fi
+
+if [[ "$reload_live_plugin" == true ]] \
+  && command -v omarchy-shell >/dev/null 2>&1 \
+  && omarchy-shell -q shell listPlugins >/dev/null 2>&1
+then
+  # A plugin rescan clears the in-memory component cache, but Qt can still
+  # retain a compiled component from the replaced source tree. Restarting the
+  # already-running shell is the reliable update boundary. Keep rescan as the
+  # fallback for systems that expose omarchy-shell without the wrapper CLI.
+  if command -v omarchy >/dev/null 2>&1; then
+    omarchy restart shell
+  else
+    omarchy-shell -q shell rescanPlugins
+  fi
 fi
 
 if [[ -z "$desk_path" ]]; then
