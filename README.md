@@ -170,7 +170,7 @@ omabit tend lists
 omabit tend add "Buy milk" --list Inbox --tag groceries
 omabit tend schedule Inbox 42 --due 2026-09-26T09:00 --timezone America/Los_Angeles --repeat weekly
 omabit tend move-list Inbox 42 "Shared chores"
-omabit tend complete Inbox 42
+omabit tend complete 1 42
 omabit tend invitations
 ```
 
