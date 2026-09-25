@@ -13,6 +13,8 @@ Ui.Panel {
   property var editTarget: null
   property bool addingRunner: false
   property bool addingFake: false
+  property bool addingShip: false
+  property var loginTarget: null
   readonly property var connections: service ? service.connections : []
   readonly property var readyConnections: connections.filter(function(c) {
     return root.service && root.service.observing && Model.writable(c, root.service.now)
@@ -20,7 +22,10 @@ Ui.Panel {
   })
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
-  onOpenedChanged: if (opened && service) service.refresh()
+  onOpenedChanged: { clearLogin(); if (opened && service) service.refresh() }
+  function clearLogin() { loginCode.text = ""; loginTarget = null }
+  Component.onDestruction: loginCode.text = ""
+  Connections { target: root.service; function onCanLoginChanged() { if (!root.service.canLogin) loginCode.text = "" } }
   function syncSettings() {
     // Omarchy injects inline settings into the bar entry, not its service.
     if (service && service.settings !== settings) { service.settings = settings; service.refresh() }
@@ -158,12 +163,55 @@ Ui.Panel {
             }
           }
           Ui.PanelSectionHeader { text: "APPLICATION CONNECTIONS" }
-          Body { text: "Saved enrollment only. Use ship-status for authenticated health and ship-login to renew a session." }
+          Body { text: "Application login uses Eyre directly. Sessions are stored in your desktop keyring; codes are never saved." }
+          Body { text: root.service && root.service.palette ? "Current palette: " + root.service.palette.name : "Omarchy palette preview unavailable." }
+          RowLayout {
+            width: parent.width
+            Repeater {
+              model: ["primary", "secondary", "tertiary", "background", "surface"]
+              Rectangle { required property string modelData; Layout.fillWidth: true; height: Style.space(22); color: root.service && root.service.palette ? root.service.palette[modelData] : "transparent"; border.color: Color.foreground; radius: Style.cornerRadius }
+            }
+          }
+          Body { text: "Enabling theme sync selects this palette on all Talon clients for that ship and disables Talon's separate accent override." }
+          Action { text: "Add ship"; enabled: root.service && !root.service.busy; onClicked: root.addingShip = !root.addingShip }
+          Column {
+            width: parent.width; spacing: Style.space(6); visible: root.addingShip
+            Input { id: appName; placeholderText: "Connection name" }
+            Input { id: appOrigin; placeholderText: "HTTPS origin or loopback development URL" }
+            Input { id: appShip; placeholderText: "Expected ~ship" }
+            Action { text: "Enroll application connection"; enabled: root.service && !root.service.busy; onClicked: if (root.service.enrollShip(appName.text.trim(), appOrigin.text.trim(), appShip.text.trim())) root.addingShip = false }
+          }
           Repeater {
             model: root.service ? root.service.ships : []
-            Body { required property var modelData; text: modelData.name + " / " + modelData.ship + " — " + modelData.status + "\n" + modelData.origin }
+            Column {
+              id: appRow
+              required property var modelData
+              readonly property var theme: root.service.themeState.ships[modelData.id] || ({automatic: false})
+              width: content.width; spacing: Style.space(5)
+              Body { text: appRow.modelData.name + " / " + appRow.modelData.ship + " — " + (root.service.shipStatus[appRow.modelData.id] ? root.service.shipStatus[appRow.modelData.id].status : appRow.modelData.status) + "\n" + appRow.modelData.origin }
+              RowLayout {
+                Action { text: "Sign in"; enabled: root.service.canLogin; onClicked: { root.clearLogin(); root.loginTarget = Object.assign({}, appRow.modelData); loginCode.forceActiveFocus() } }
+                Action { text: "Check"; enabled: !root.service.busy; onClicked: root.service.shipAction(appRow.modelData, "ship-status", "") }
+                Action { text: "Log out"; enabled: !root.service.busy; onClicked: root.service.shipAction(appRow.modelData, "ship-logout", "") }
+                Action { text: "Forget"; enabled: !root.service.busy && appRow.modelData.status === "login_required"; onClicked: root.service.shipAction(appRow.modelData, "ship-forget", "") }
+              }
+              RowLayout {
+                Action { text: appRow.theme.automatic ? "Pause theme" : "Sync theme"; enabled: !root.service.busy && appRow.modelData.status !== "login_required"; onClicked: root.service.themeAuto(appRow.modelData, !appRow.theme.automatic) }
+                Action { text: "Publish now"; enabled: !root.service.busy && appRow.modelData.status !== "login_required"; onClicked: root.service.publishTheme(appRow.modelData) }
+              }
+              Body { visible: !!appRow.theme.last_error; text: appRow.theme.last_error || ""; color: Color.urgent }
+            }
           }
           Body { visible: root.service && root.service.ships.length === 0; text: "No application connections enrolled." }
+          Column {
+            width: parent.width; spacing: Style.space(6); visible: !!root.loginTarget
+            Body { text: root.loginTarget ? "Sign in to " + root.loginTarget.name + " at " + root.loginTarget.origin : "" }
+            Input { id: loginCode; objectName: "shipLoginCode"; placeholderText: "Web login code"; echoMode: TextInput.Password; maximumLength: 128; enabled: root.service && root.service.canLogin }
+            RowLayout {
+              Action { text: "Sign in"; enabled: root.service && root.service.canLogin && loginCode.text.length > 0; onClicked: { try { root.service.shipAction(root.loginTarget, "ship-login", loginCode.text) } finally { root.clearLogin() } } }
+              Action { text: "Cancel"; onClicked: root.clearLogin() }
+            }
+          }
         }
       }
     }

@@ -78,3 +78,24 @@ function errorMessage(text) {
   catch (_) {}
   return "Collector request failed; inspect a fresh snapshot before retrying."
 }
+
+function notices(previous, next) {
+  if (!previous || previous.runner_id !== next.runner_id) return []
+  var out = []
+  if (previous.status === "available" && next.status !== "available")
+    out.push({title: "Runner unavailable", body: next.name + ": connection unavailable; ship state is unknown."})
+  if (previous.status !== "available" && next.status === "available")
+    out.push({title: "Runner reachable", body: next.name + ": connection restored."})
+  if (!previous.snapshot || !next.snapshot) return out
+  var known = previous.snapshot.operations.map(function(op) { return op.id + ":" + op.status })
+  next.snapshot.operations.forEach(function(op) {
+    if (["failed", "interrupted"].indexOf(op.status) >= 0 && known.indexOf(op.id + ":" + op.status) < 0)
+      out.push({title: "Runner operation " + op.status, body: next.name + "/" + op.instance_id + ": " + op.kind + ". Inspect the operation history."})
+  })
+  var incidents = previous.snapshot.incidents.filter(function(i) { return i.active }).map(function(i) { return i.id })
+  next.snapshot.incidents.forEach(function(i) {
+    if (i.active && incidents.indexOf(i.id) < 0)
+      out.push({title: "Runner incident", body: next.name + ": " + i.code + ". Inspect the panel."})
+  })
+  return out.slice(0, 8)
+}

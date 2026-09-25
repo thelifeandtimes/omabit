@@ -86,6 +86,12 @@ pier or identity for an automated test.
   The September 25 live inventory shows alpha stopped, panel-check running/healthy
   on port 18085 at revision 1, and ssh-check uninitialized. Existing theme settings/
   credentials require the explicit 5B migration.
+- Checkpoint 5B adds application sign-in/status/logout UI, immutable ship selection,
+  generic acknowledged Eyre pokes, an Omabit-specific theme publisher, bounded
+  per-ship retries, change-based desktop notifications, and digest-bound legacy
+  migration. [Development validation](checkpoints/10-applications-and-themes.md)
+  passed on panel-check at port 18085; migration recovery was tested with fixtures.
+  The real legacy ~sarlev handoff remains an explicit user decision, not a test.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator

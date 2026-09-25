@@ -16,7 +16,18 @@ if "inventory" in sys.argv:
         print(json.dumps({"name":"fixture","runner_id":"runner-fixture","mode":"development-managed-fake","access_role":"operator","features":["create-fake"],"status":"available","checked_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),"snapshot":snapshot}),flush=True)
         time.sleep(.2)
 elif "ships" in sys.argv:
-    print("[]")
+    print(json.dumps([{"id":"a"*32,"name":"app-fixture","ship":"~zod","origin":"http://127.0.0.1:18085","status":"login_required"}]))
+elif "ship-login" in sys.argv:
+    assert "--expected-ship-id" in sys.argv
+    assert "fixture-only-secret" not in sys.argv
+    assert sys.stdin.read() == "fixture-only-secret"
+    print(json.dumps({"id":"a"*32,"name":"app-fixture","status":"authenticated"}))
+elif "theme-status" in sys.argv:
+    print(json.dumps({"version":1,"ships":{}}))
+elif "theme-preview" in sys.argv:
+    print(json.dumps({"id":"omarchy-urbit-theme","name":"Fixture","dark":True,"primary":"#112233","secondary":"#112233","tertiary":"#112233","background":"#112233","surface":"#112233"}))
+elif "theme-sync" in sys.argv:
+    print(json.dumps({"complete":True,"failed":[]}))
 else:
     assert "--expected-runner-id" in sys.argv
     print(json.dumps({"id":"op-fixture","status":"succeeded"}))
@@ -38,7 +49,7 @@ def main():
 import Quickshell
 import "Plugin" as Plugin
 ShellRoot {
-  property var testSettings: ({collectorPath: %s})
+  property var testSettings: ({collectorPath: %s, omabitPath: %s, notifications: false})
   Plugin.Service { id: service; settings: testSettings }
   Plugin.Panel { id: panel; service: service; settings: testSettings; manageIpc: false; bar: null }
   property int phase: 0
@@ -50,12 +61,17 @@ ShellRoot {
         service.operate(service.connections[0], service.connections[0].snapshot.instances[0], "stop")
         phase = 1
       } else if (phase === 1 && service.lastResult.indexOf("op-fixture") >= 0) {
-        console.log("PASS: real QML panel/service load, inventory process, and selected mutation dispatch")
+        if (!service.ships.length) return
+        service.shipAction(service.ships[0], "ship-login", "fixture-only-secret")
+        phase = 2
+      } else if (phase === 2 && service.shipStatus["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"] && service.shipStatus["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"].status === "authenticated") {
+        if (service.pendingInput !== "") throw new Error("secret retained after handoff")
+        console.log("PASS: real QML panel/service load, inventory, selected mutation, and secret stdin handoff")
         Qt.quit()
       }
     }
   }
-}''' % json.dumps(str(helper)))
+}''' % (json.dumps(str(helper)),json.dumps(str(helper))))
         # Quickshell PanelWindow has no offscreen backend. Connect to the current
         # compositor but keep the panel closed; use a separate IPC/log runtime.
         display = os.environ.get("WAYLAND_DISPLAY", "")

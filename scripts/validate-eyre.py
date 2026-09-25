@@ -8,7 +8,6 @@ import tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 COLLECTOR = ROOT / "build/urbit-collector"
-ORIGIN = "http://127.0.0.1:18081"
 # This is the public fake ~zod tutorial code, never a real ship credential.
 FAKE_CODE = "lidlut-tabwed-pillex-ridrup"
 
@@ -16,7 +15,10 @@ FAKE_CODE = "lidlut-tabwed-pillex-ridrup"
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--acknowledge-development-fake", action="store_true", required=True)
-    parser.parse_args()
+    parser.add_argument("--port", type=int, default=18081)
+    args = parser.parse_args()
+    assert 1024 <= args.port <= 65535
+    origin = f"http://127.0.0.1:{args.port}"
     for adapter in ("file", "secret-service"):
         with tempfile.TemporaryDirectory(prefix="omabit-eyre-") as directory:
             profile = str(pathlib.Path(directory) / "collector")
@@ -30,7 +32,7 @@ def main():
 
             logged_in = False
             try:
-                invoke("ship-enroll", "test", "--url", ORIGIN, "--ship", "~zod", "--credentials", adapter)
+                invoke("ship-enroll", "test", "--url", origin, "--ship", "~zod", "--credentials", adapter)
                 invoke("ship-login", "test", "--code-stdin", stdin=FAKE_CODE)
                 logged_in = True
                 assert json.loads(invoke("ship-status", "test"))["status"] == "authenticated"
@@ -49,7 +51,7 @@ def main():
                 assert result["status"] == "logged_out" and not result.get("message"), "remote logout was not confirmed"
                 logged_in = False
                 assert json.loads(invoke("ship-status", "test", code=1))["status"] == "login_required"
-                invoke("ship-forget", "test", "--url", ORIGIN)
+                invoke("ship-forget", "test", "--url", origin)
                 print(f"PASS [{adapter}]: server logout and local credential/enrollment cleanup")
             finally:
                 if logged_in:

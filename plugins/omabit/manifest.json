@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "thelifeandtimes.omabit",
   "name": "Omabit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Omabit contributors",
   "description": "Development Urbit runner inventory, configuration, and explicit runtime control through urbit-collector.",
   "kinds": ["service", "bar-widget"],
@@ -12,10 +12,11 @@
     "category": "System",
     "allowMultiple": false,
     "defaultSection": "right",
-    "defaults": {"collectorPath": "", "configDir": ""},
+    "defaults": {"collectorPath": "", "configDir": "", "notifications": true},
     "schema": [
       {"key": "collectorPath", "type": "string", "label": "Collector executable (empty uses bundled binary)"},
-      {"key": "configDir", "type": "string", "label": "Collector config directory (empty uses XDG default)"}
+      {"key": "configDir", "type": "string", "label": "Collector config directory (empty uses XDG default)"},
+      {"key": "notifications", "type": "boolean", "label": "Notify about connection changes, incidents, and failed operations"}
     ]
   }
 }

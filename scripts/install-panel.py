@@ -40,14 +40,17 @@ def install(destination, replace=False):
             if path.is_symlink() or path.resolve().parent not in [destination, destination / "bin"] or digest(path) != expected:
                 raise RuntimeError("installed snapshot has local changes; refusing replacement")
     binary = ROOT / "build/urbit-collector"
-    if not binary.is_file():
-        raise RuntimeError("build urbit-collector before installing the panel")
+    desktop = ROOT / "build/omabit"
+    if not binary.is_file() or not desktop.is_file():
+        raise RuntimeError("build urbit-collector and omabit before installing the panel")
     with tempfile.TemporaryDirectory(prefix=".omabit-stage-", dir=destination.parent) as temporary:
         staging = pathlib.Path(temporary) / PLUGIN
         shutil.copytree(ROOT / "plugins/omabit", staging)
         (staging / "bin").mkdir()
         shutil.copy2(binary, staging / "bin/urbit-collector")
+        shutil.copy2(desktop, staging / "bin/omabit")
         os.chmod(staging / "bin/urbit-collector", 0o755)
+        os.chmod(staging / "bin/omabit", 0o755)
         state = {"version": 1, "files": {str(p.relative_to(staging)): digest(p) for p in staging.rglob("*") if p.is_file()}}
         (staging / MARKER).write_text(json.dumps(state, indent=2) + "\n")
         if destination.exists():

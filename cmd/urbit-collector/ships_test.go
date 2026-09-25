@@ -68,6 +68,11 @@ func TestShipCLIIndependentSessionsAndLogout(t *testing.T) {
 	}
 	invoke("ship-enroll", []string{"test", "--url", srv.URL, "--ship", "~zod", "--credentials", "file"}, nil, 0)
 	invoke("ship-status", []string{"test"}, nil, 1)
+	input := &neverRead{}
+	invoke("ship-login", []string{"test", "--code-stdin", "--expected-ship-id", "stale-selection"}, input, 1)
+	if input.read {
+		t.Fatal("stale UI selection consumed a login code")
+	}
 	invoke("ship-login", []string{"test", "--code-stdin"}, strings.NewReader(code), 0)
 	if text := invoke("ship-status", []string{"test"}, nil, 0); !strings.Contains(text, "authenticated") {
 		t.Fatal(text)
@@ -107,3 +112,7 @@ func TestShipCLIIndependentSessionsAndLogout(t *testing.T) {
 		t.Fatalf("session material retained: %d %v", len(files), err)
 	}
 }
+
+type neverRead struct{ read bool }
+
+func (r *neverRead) Read(p []byte) (int, error) { r.read = true; return 0, io.EOF }

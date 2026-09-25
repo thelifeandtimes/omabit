@@ -191,6 +191,10 @@ func (r *Registry) SetShipSession(ctx context.Context, expected Ship, ref string
 }
 
 func (r *Registry) ForgetShip(ctx context.Context, name, expectedOrigin string) error {
+	return r.ForgetShipExpected(ctx, name, expectedOrigin, "")
+}
+
+func (r *Registry) ForgetShipExpected(ctx context.Context, name, expectedOrigin, expectedID string) error {
 	return r.locked(ctx, func() error {
 		state, err := r.readShips()
 		if err != nil {
@@ -200,7 +204,7 @@ func (r *Registry) ForgetShip(ctx context.Context, name, expectedOrigin string) 
 			if s.Name != name {
 				continue
 			}
-			if s.Origin != expectedOrigin {
+			if s.Origin != expectedOrigin || (expectedID != "" && s.ID != expectedID) {
 				return ErrShipConflict
 			}
 			if s.SessionRef != "" || len(s.Retired) > 0 {

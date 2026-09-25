@@ -12,9 +12,11 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/credentials"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/eyre"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/shipaccess"
 )
 
 type shipInfo struct {
+	ID          string `json:"id,omitempty"`
 	Name        string `json:"name"`
 	Origin      string `json:"origin"`
 	Ship        string `json:"ship"`
@@ -34,38 +36,15 @@ type shipEvent struct {
 }
 
 func info(s collection.Ship, status string) shipInfo {
-	return shipInfo{Name: s.Name, Origin: s.Origin, Ship: s.Ship, Credentials: s.Credentials, Status: status}
+	return shipInfo{ID: s.ID, Name: s.Name, Origin: s.Origin, Ship: s.Ship, Credentials: s.Credentials, Status: status}
 }
 func storeFor(r *collection.Registry, s collection.Ship) (credentials.Store, error) {
-	if s.Credentials == "secret-service" {
-		return credentials.NewSecretService(), nil
-	}
-	return credentials.NewFile(r.CredentialsDir())
+	return shipaccess.Store(r, s)
 }
-func secretKey(s collection.Ship) string { return credentials.Scope(s.ID, s.Origin, s.SessionRef) }
+func secretKey(s collection.Ship) string { return shipaccess.Key(s) }
 
 func sessionClient(ctx context.Context, r *collection.Registry, s collection.Ship) (*eyre.Client, error) {
-	if s.SessionRef == "" {
-		return nil, credentials.ErrMissing
-	}
-	store, err := storeFor(r, s)
-	if err != nil {
-		return nil, err
-	}
-	data, err := store.Load(ctx, secretKey(s))
-	if err != nil {
-		return nil, err
-	}
-	c, err := eyre.New(s.Origin, s.Ship)
-	if err != nil {
-		clear(data)
-		return nil, err
-	}
-	if err := c.RestoreSession(data); err != nil {
-		c.Close()
-		return nil, err
-	}
-	return c, nil
+	return shipaccess.Open(ctx, r, s)
 }
 
 func loginShip(ctx context.Context, r *collection.Registry, s collection.Ship, code []byte) (shipInfo, error) {
@@ -171,6 +150,10 @@ func runShips(ctx context.Context, command string, args []string, dir, socket, r
 	flags.SetOutput(io.Discard)
 	flags.Usage = func() {}
 	var name, origin, ship, adapter, app, p string
+	var expectedID string
+	if command != "ships" && command != "ship-enroll" {
+		flags.StringVar(&expectedID, "expected-ship-id", "", "optional immutable enrollment ID from UI selection")
+	}
 	var codeStdin bool
 	var events uint
 	var duration time.Duration
@@ -264,12 +247,15 @@ func runShips(ctx context.Context, command string, args []string, dir, socket, r
 		}
 		result = info(s, state)
 	} else if command == "ship-forget" {
-		err = r.ForgetShip(ctx, name, origin)
+		err = r.ForgetShipExpected(ctx, name, origin, expectedID)
 		result = shipInfo{Name: name, Origin: origin, Status: "forgotten"}
 	} else {
 		s, e := r.Ship(ctx, name)
 		if e != nil {
 			return fail(e, 1)
+		}
+		if expectedID != "" && s.ID != expectedID {
+			return fail(collection.ErrShipConflict, 1)
 		}
 		switch command {
 		case "ship-login":

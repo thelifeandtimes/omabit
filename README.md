@@ -35,9 +35,12 @@ Checkpoint 4C's independent Eyre enrollment, credential storage, scries, and
 subscriptions passed programmatic acceptance against the development fake with
 both desktop and headless credential adapters. Checkpoint 5A's Omabit management
 panel is implemented and programmatically checked; visual/interactive acceptance
-is next. Production ship management is not supported yet.
+passed. Checkpoint 5B adds application sign-in, themes, notifications, and explicit
+legacy migration, with live development-ship validation. Production ship management
+is not supported yet.
 
-- [Next: Omabit management panel](docs/checkpoints/09-management-panel.md)
+- [Applications, themes, and migration](docs/checkpoints/10-applications-and-themes.md)
+- [Accepted: Omabit management panel](docs/checkpoints/09-management-panel.md)
 - [Accepted: SSH access installation](docs/checkpoints/07-ssh-access.md)
 - [Accepted: Eyre ship sessions](docs/checkpoints/08-ship-sessions.md)
 - [Ship-session contracts and storage](docs/ship-sessions.md)
