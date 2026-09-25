@@ -179,8 +179,13 @@ class TendAccessibilityTests(unittest.TestCase):
         panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
         widget = (ROOT / "omarchy-plugin" / "BarWidget.qml").read_text(encoding="utf-8")
         self.assertIn("function toggleCompletedWithGrace", service)
+        self.assertIn("function completionShouldCollapse", service)
         self.assertIn("elapsed <= 5000", service)
         self.assertIn("< 10000", service)
+        self.assertIn("transitioningReminders", panel)
+        self.assertIn("completionShouldCollapse(viewMode", panel)
+        self.assertIn("transitioningReminders", widget)
+        self.assertIn("completionShouldCollapse(selectedView", widget)
         self.assertIn("TendCheckbox", panel)
         self.assertIn("TendCheckbox", widget)
 

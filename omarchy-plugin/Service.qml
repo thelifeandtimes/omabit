@@ -439,6 +439,17 @@ Item {
         return Math.max(0, 1 - (elapsed - 5000) / 5000);
     }
 
+    function completionShouldCollapse(view, listId, reminderId) {
+        var index = pendingCompletionIndex(listId, reminderId);
+        if (index < 0)
+            return false;
+        var elapsed = Math.max(0, completionClock - pendingCompletionChanges[index].requestedAt);
+        if (elapsed < 10000 || String(view || "list") === "list")
+            return false;
+        var completed = pendingCompletionChanges[index].completed === true;
+        return String(view) === "completed" ? !completed : completed;
+    }
+
     function scheduleCompleted(listId, reminderId, completed, confirmed) {
         var changes = pendingCompletionChanges.slice();
         var index = pendingCompletionIndex(listId, reminderId);

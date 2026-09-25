@@ -22,8 +22,13 @@ Panel {
     sort: "priority",
     allDayOverdue: tendService ? tendService.preferences.allDayOverdue : true
   })
-  readonly property var reminderRows: TendModel.menubarRows(tendService ? tendService.lists : [], visibleReminders)
-  readonly property int taskCount: visibleReminders.length
+  readonly property var transitioningReminders: !tendService
+    ? visibleReminders
+    : visibleReminders.filter(function(reminder) {
+        return !tendService.completionShouldCollapse(selectedView, reminder.listId, reminder.id);
+      })
+  readonly property var reminderRows: TendModel.menubarRows(tendService ? tendService.lists : [], transitioningReminders)
+  readonly property int taskCount: transitioningReminders.length
   readonly property var destinationLists: tendService
     ? TendModel.orderedLists(tendService.lists, tendService.preferences.pinnedLists, tendService.localSettings.listOrder)
     : []
