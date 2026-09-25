@@ -76,7 +76,7 @@ Commands:
   configure INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT
               Replace configuration; all flags are required. Demo loom: 31..33,
               not universal runtime bounds.
-  operate INSTANCE start|stop --revision N --request-id ID
+  operate INSTANCE start|stop|pack --revision N --request-id ID
               Submit one operation; both flags are required.
   watch [--interval 1s]
                Poll snapshots until canceled; minimum interval: 100ms.
@@ -139,7 +139,7 @@ Use COMMAND --help for command flags and constraints.
 		flags.UintVar(&amesPort, "ames-port", 0, "required Ames port, 1..65535")
 		flags.UintVar(&loom, "loom", 0, "required demo loom exponent, 31..33 (not universal runtime bounds)")
 	case "operate":
-		usage += " INSTANCE start|stop --revision N --request-id ID"
+		usage += " INSTANCE start|stop|pack --revision N --request-id ID"
 		flags.Uint64Var(&revision, "revision", 0, "required positive expected configuration revision")
 		flags.StringVar(&requestID, "request-id", "", "required caller-chosen ID: [A-Za-z0-9_-], 1..64 characters")
 	case "watch":
@@ -197,8 +197,8 @@ Use COMMAND --help for command flags and constraints.
 			return fail(errors.New("--loom is required and must be in 31..33 for this demo, not universal runtime bounds"), 2)
 		}
 	case "operate":
-		if kind != "start" && kind != "stop" {
-			return fail(errors.New("operation must be start or stop"), 2)
+		if kind != "start" && kind != "stop" && kind != "pack" {
+			return fail(errors.New("operation must be start, stop, or pack"), 2)
 		}
 		if !validID(requestID) {
 			return fail(errors.New("--request-id is required: use 1..64 ASCII letters, digits, underscores, or hyphens"), 2)
@@ -263,6 +263,9 @@ Use COMMAND --help for command flags and constraints.
 			},
 		})
 	case "operate":
+		if kind == "pack" && !slices.Contains(hello.Features, "offline-pack") {
+			return fail(errors.New("this runner does not support offline pack"), 1)
+		}
 		result, err = c.Operate(ctx, instanceID, protocol.OperationRequest{
 			RequestID: requestID, Kind: kind, ExpectedRevision: revision,
 		})

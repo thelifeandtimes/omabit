@@ -47,6 +47,9 @@ func instances(w io.Writer, values []protocol.Instance) {
 		if v.ActiveOperationID != "" {
 			fmt.Fprintln(w, "  Active operation:", cell(v.ActiveOperationID))
 		}
+		if m := v.Maintenance; m != nil {
+			fmt.Fprintf(w, "  Maintenance: %s; logical pier bytes before=%d after=%d; completed=%t\n", cell(m.Kind), m.BeforePierBytes, m.AfterPierBytes, m.FinishedAt != nil)
+		}
 	}
 }
 

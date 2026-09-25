@@ -136,7 +136,7 @@ func (r *Server) launch(op protocol.Operation) {
 	r.wg.Add(1)
 	go func() {
 		defer r.wg.Done()
-		if op.Kind == "start" {
+		if op.Kind == "start" || op.Kind == "pack" {
 			select {
 			case r.startGate <- struct{}{}:
 				defer func() { <-r.startGate }()
@@ -197,7 +197,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		role = grant.Role
 	}
 	if req.Method == http.MethodGet && req.URL.Path == "/hello" {
-		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials"}
+		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials", "offline-pack"}
 		if r.keys != "" {
 			features = append(features, "ssh-key-grants")
 		}

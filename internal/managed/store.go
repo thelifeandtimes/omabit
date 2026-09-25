@@ -416,8 +416,8 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 }
 
 func (s *store) accept(actor, id string, req protocol.OperationRequest) (protocol.Operation, bool, error) {
-	if !protocol.ValidID(id) || !protocol.ValidID(req.RequestID) || req.ExpectedRevision == 0 || req.ExpectedRevision > math.MaxInt64 || (req.Kind != "start" && req.Kind != "stop") {
-		return protocol.Operation{}, false, bad("require start/stop, valid request ID, and positive revision")
+	if !protocol.ValidID(id) || !protocol.ValidID(req.RequestID) || req.ExpectedRevision == 0 || req.ExpectedRevision > math.MaxInt64 || (req.Kind != "start" && req.Kind != "stop" && req.Kind != "pack") {
+		return protocol.Operation{}, false, bad("require start/stop/pack, valid request ID, and positive revision")
 	}
 	fingerprint, _ := json.Marshal(struct {
 		ID      string
@@ -440,6 +440,19 @@ func (s *store) accept(actor, id string, req protocol.OperationRequest) (protoco
 	}
 	if v.Public.ActiveOperationID != "" {
 		return protocol.Operation{}, false, conflict("instance_busy", "an operation is already active")
+	}
+	if req.Kind != "stop" && v.Runtime.MaintenanceUncertain {
+		return protocol.Operation{}, false, conflict("recovery_required", "interrupted maintenance requires manual review")
+	}
+	if req.Kind == "pack" {
+		if !v.Runtime.Initialized || v.Public.DesiredState != "stopped" || v.Public.ObservedState != "stopped" || v.Public.RecoveryRequired {
+			return protocol.Operation{}, false, conflict("invalid_state", "offline pack requires a cleanly stopped initialized pier")
+		}
+		for _, c := range v.Runtime.Runtime.Containers {
+			if !c.Removed || c.CreateUncertain {
+				return protocol.Operation{}, false, conflict("invalid_state", "stop and reconcile all retained runtime resources before pack")
+			}
+		}
 	}
 	if req.Kind == "start" && (v.Public.RecoveryRequired || v.Public.ObservedState == "running") {
 		return protocol.Operation{}, false, conflict("invalid_state", "inspect/reconcile or stop the existing runtime before starting")
@@ -560,6 +573,8 @@ func (s *store) beginOperation(opID string) (protocol.Operation, storedInstance,
 		v.Public.ObservedState = "starting"
 		v.Runtime.Port = v.Public.Config.HTTPPort
 		v.RuntimeConfigRevision = op.ConfigRevision
+	} else if op.Kind == "pack" {
+		v.Public.ObservedState = "maintenance"
 	} else {
 		v.Public.ObservedState = "stopping"
 	}
@@ -615,6 +630,9 @@ func (s *store) finish(op protocol.Operation, state runtimequalify.ManagedState,
 func applyObservation(v *storedInstance, observation runtimequalify.ManagedObservation, now time.Time) {
 	v.Public.ObservedState, v.Public.Health, v.Public.Endpoint = observation.State, observation.Health, observation.Endpoint
 	v.Public.RecoveryRequired, v.Public.ObservedAt = observation.RecoveryRequired, &now
+	if m := v.Runtime.Maintenance; m != nil {
+		v.Public.Maintenance = &protocol.MaintenanceReport{Kind: m.Kind, BeforePierBytes: m.BeforePierBytes, AfterPierBytes: m.AfterPierBytes, StartedAt: m.StartedAt, FinishedAt: m.FinishedAt}
+	}
 	if v.Runtime.Initialized && observation.State == "running" && observation.Health == "healthy" {
 		v.Public.AppliedRevision = v.RuntimeConfigRevision
 	}

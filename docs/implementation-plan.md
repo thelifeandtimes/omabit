@@ -92,6 +92,12 @@ pier or identity for an automated test.
   migration. [Development validation](checkpoints/10-applications-and-themes.md)
   passed on panel-check at port 18085; migration recovery was tested with fixtures.
   The real legacy ~sarlev handoff remains an explicit user decision, not a test.
+- Checkpoint 6A implements explicit durable offline pack for stopped initialized
+  development piers, with host admission, before/after logical file-size evidence,
+  and persistent interruption quarantine. Driver, journal, and race tests passed.
+  [The live gate](checkpoints/11-offline-pack.md) requires copying the new root-owned
+  runner binary and restarting management; `sudo -n` still requires a password.
+  Scheduling, meld, epoch pruning, and loom advice remain separately gated.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator

@@ -75,6 +75,11 @@ func (b *fakeBackend) Observe(_ context.Context, state runtimequalify.ManagedSta
 }
 
 func testEndpoint(t *testing.T, dir string, b backend) (*Server, *client.Client, func()) {
+	r, c, _, shutdown := testEndpointSocket(t, dir, b)
+	return r, c, shutdown
+}
+
+func testEndpointSocket(t *testing.T, dir string, b backend) (*Server, *client.Client, string, func()) {
 	t.Helper()
 	r, err := newServer(dir, b, 5*time.Millisecond)
 	if err != nil {
@@ -101,7 +106,7 @@ func testEndpoint(t *testing.T, dir string, b backend) (*Server, *client.Client,
 		})
 	}
 	t.Cleanup(shutdown)
-	return r, c, shutdown
+	return r, c, socket, shutdown
 }
 
 func waitOperation(t *testing.T, c *client.Client, id, status string) protocol.Snapshot {
@@ -173,7 +178,7 @@ func TestRealUnixClientsAndRunnerRestart(t *testing.T) {
 
 func TestClientDisconnectDoesNotCancelJob(t *testing.T) {
 	b := &fakeBackend{entered: make(chan struct{}, 1), release: make(chan struct{})}
-	_, c, shutdown := testEndpoint(t, privateDir(t), b)
+	_, c, socket, shutdown := testEndpointSocket(t, privateDir(t), b)
 	defer shutdown()
 	if _, err := c.CreateFake(context.Background(), registration("alpha", "reg", 18080)); err != nil {
 		t.Fatal(err)
@@ -186,6 +191,8 @@ func TestClientDisconnectDoesNotCancelJob(t *testing.T) {
 	}
 	cancel()
 	c.Close()
+	c = client.New(socket)
+	defer c.Close()
 	select {
 	case <-b.entered:
 	case <-time.After(time.Second):

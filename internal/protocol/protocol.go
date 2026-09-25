@@ -24,20 +24,29 @@ type Configuration struct {
 }
 
 type Instance struct {
-	ID                string        `json:"id"`
-	Label             string        `json:"label"`
-	Config            Configuration `json:"config"`
-	ConfigRevision    uint64        `json:"config_revision"`
-	AppliedRevision   uint64        `json:"applied_revision"`
-	DesiredState      string        `json:"desired_state"`
-	ObservedState     string        `json:"observed_state"`
-	ActiveOperationID string        `json:"active_operation_id,omitempty"`
-	Mode              string        `json:"mode,omitempty"`
-	Ship              string        `json:"ship,omitempty"`
-	Endpoint          string        `json:"endpoint,omitempty"`
-	Health            string        `json:"health,omitempty"`
-	RecoveryRequired  bool          `json:"recovery_required,omitempty"`
-	ObservedAt        *time.Time    `json:"observed_at,omitempty"`
+	ID                string             `json:"id"`
+	Label             string             `json:"label"`
+	Config            Configuration      `json:"config"`
+	ConfigRevision    uint64             `json:"config_revision"`
+	AppliedRevision   uint64             `json:"applied_revision"`
+	DesiredState      string             `json:"desired_state"`
+	ObservedState     string             `json:"observed_state"`
+	ActiveOperationID string             `json:"active_operation_id,omitempty"`
+	Mode              string             `json:"mode,omitempty"`
+	Ship              string             `json:"ship,omitempty"`
+	Endpoint          string             `json:"endpoint,omitempty"`
+	Health            string             `json:"health,omitempty"`
+	RecoveryRequired  bool               `json:"recovery_required,omitempty"`
+	ObservedAt        *time.Time         `json:"observed_at,omitempty"`
+	Maintenance       *MaintenanceReport `json:"maintenance,omitempty"`
+}
+
+type MaintenanceReport struct {
+	Kind            string     `json:"kind"`
+	BeforePierBytes int64      `json:"before_pier_bytes"`
+	AfterPierBytes  int64      `json:"after_pier_bytes"`
+	StartedAt       time.Time  `json:"started_at"`
+	FinishedAt      *time.Time `json:"finished_at,omitempty"`
 }
 
 type Operation struct {

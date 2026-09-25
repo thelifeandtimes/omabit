@@ -70,6 +70,8 @@ func newTransport(dial func(context.Context) (net.Conn, error), identity *Identi
 	}}
 }
 
+// Close releases idle connections and pending dials. Construct a new client to
+// reconnect after closing; the closed client's lifetime must not be reused.
 func (c *Client) Close() {
 	c.cancel()
 	c.httpClient.CloseIdleConnections()

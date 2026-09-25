@@ -5,9 +5,11 @@ package runtimequalify
 import (
 	"context"
 	"errors"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
@@ -61,7 +63,7 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 			return nil, errors.New("unexpected managed container inventory")
 		}
 		for _, c := range q.r.Containers {
-			if (c.Kind != "probe" && !isHTTPKind(c.Kind)) || c.Name != q.resourceName(c.Kind) || (c.ID != "" && !containerIDPattern.MatchString(c.ID)) {
+			if (c.Kind != "probe" && c.Kind != "pack" && !isHTTPKind(c.Kind)) || c.Name != q.resourceName(c.Kind) || (c.ID != "" && !containerIDPattern.MatchString(c.ID)) {
 				return nil, errors.New("invalid managed container reference")
 			}
 		}
@@ -80,8 +82,14 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 
 func applyManaged(ctx context.Context, action string, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
-	if persist == nil || (action != "start" && action != "stop") {
+	if persist == nil || (action != "start" && action != "stop" && action != "pack") {
 		return state, unknown, errors.New("invalid managed action or persistence callback")
+	}
+	if action != "stop" && state.MaintenanceUncertain {
+		return state, unknown, errors.New("an interrupted maintenance outcome requires manual review")
+	}
+	if action == "pack" && (!state.Prepared || !state.Initialized) {
+		return state, unknown, errors.New("offline pack requires an initialized registered pier")
 	}
 	q, err := managedSession(&state, persist, d)
 	if err != nil {
@@ -99,10 +107,10 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 			return finish(unknown, err)
 		}
 	}
-	if action == "start" {
+	if action == "start" || action == "pack" {
 		mem, disk, err := d.admission(q.base)
 		if err != nil || mem < 5<<30 || disk < 8<<30 {
-			return finish(unknown, errors.New("start requires at least 5 GiB available RAM and 8 GiB free disk"))
+			return finish(unknown, errors.New("runtime work requires at least 5 GiB available RAM and 8 GiB free disk"))
 		}
 	}
 	if action == "stop" && !state.Prepared {
@@ -159,7 +167,60 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 				return finish(unknown, err)
 			}
 		}
-		return finish(ManagedObservation{State: "stopped", Health: "unknown", RecoveryRequired: !state.Initialized}, nil)
+		return finish(ManagedObservation{State: "stopped", Health: "unknown", RecoveryRequired: !state.Initialized || state.MaintenanceUncertain}, nil)
+	}
+	if action == "pack" {
+		for _, c := range q.r.Containers {
+			if !c.Removed || c.CreateUncertain {
+				return finish(unknown, errors.New("offline pack requires explicit stop and removal of all owned containers"))
+			}
+		}
+		if err := q.pier(); err != nil {
+			return finish(unknown, err)
+		}
+		measure, cancel := context.WithTimeout(ctx, 10*time.Second)
+		before, err := pierBytes(measure, filepath.Join(q.r.Directory, "data/fake-zod"))
+		cancel()
+		if err != nil {
+			return finish(unknown, err)
+		}
+		q.r.Containers = []ContainerRecord{}
+		if err := q.managedImage(ctx); err != nil {
+			return finish(unknown, err)
+		}
+		if err := q.save(); err != nil {
+			return finish(unknown, err)
+		}
+		if err := q.probe(ctx); err != nil {
+			return finish(unknown, err)
+		}
+		state.Maintenance = &ManagedMaintenance{Kind: "pack", BeforePierBytes: before, StartedAt: time.Now().UTC()}
+		state.MaintenanceUncertain = true
+		if err := q.save(); err != nil {
+			return finish(unknown, err)
+		}
+		if err := q.pack(ctx); err != nil {
+			return finish(unknown, err)
+		}
+		if err := q.pier(); err != nil {
+			return finish(unknown, err)
+		}
+		measure, cancel = context.WithTimeout(ctx, 10*time.Second)
+		after, err := pierBytes(measure, filepath.Join(q.r.Directory, "data/fake-zod"))
+		cancel()
+		if err != nil {
+			return finish(unknown, err)
+		}
+		now := time.Now().UTC()
+		state.Maintenance.AfterPierBytes = after
+		state.Maintenance.FinishedAt = &now
+		state.MaintenanceUncertain = false
+		if err := q.save(); err != nil {
+			state.MaintenanceUncertain = true
+			state.Maintenance.FinishedAt = nil
+			return finish(unknown, err)
+		}
+		return finish(ManagedObservation{State: "stopped", Health: "unknown"}, nil)
 	}
 	for _, c := range q.r.Containers {
 		if !c.Removed || c.CreateUncertain {
@@ -250,6 +311,9 @@ func observeManaged(ctx context.Context, state ManagedState, d dependencies) (Ma
 	ctx, cancel := context.WithTimeout(ctx, d.times.command)
 	defer cancel()
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
+	if state.MaintenanceUncertain {
+		return state, unknown, nil
+	}
 	if !state.Prepared {
 		return state, ManagedObservation{State: "uninitialized", Health: "unknown"}, nil
 	}
@@ -315,4 +379,33 @@ func observeManaged(ctx context.Context, state ManagedState, d dependencies) (Ma
 	}
 	state.Runtime = q.r
 	return state, obs, nil
+}
+
+// Logical regular-file bytes, not allocated disk blocks or loom utilization.
+// WalkDir never follows symlinks and never reads pier contents.
+func pierBytes(ctx context.Context, root string) (int64, error) {
+	var size int64
+	err := filepath.WalkDir(root, func(_ string, entry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		if entry.Type().IsRegular() {
+			info, err := entry.Info()
+			if err != nil {
+				return err
+			}
+			if info.Size() < 0 || size > int64(^uint64(0)>>1)-info.Size() {
+				return errors.New("pier measurement overflow")
+			}
+			size += info.Size()
+		}
+		return nil
+	})
+	if err != nil {
+		return 0, errors.New("could not measure the stopped pier")
+	}
+	return size, nil
 }

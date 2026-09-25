@@ -39,7 +39,11 @@ passed. Checkpoint 5B adds application sign-in, themes, notifications, and expli
 legacy migration, with live development-ship validation. Production ship management
 is not supported yet.
 
+Explicit offline pack is implemented for stopped development piers; its managed
+live validation requires a sudo-authorized runner binary upgrade.
+
 - [Applications, themes, and migration](docs/checkpoints/10-applications-and-themes.md)
+- [Next sudo/live gate: offline pack](docs/checkpoints/11-offline-pack.md)
 - [Accepted: Omabit management panel](docs/checkpoints/09-management-panel.md)
 - [Accepted: SSH access installation](docs/checkpoints/07-ssh-access.md)
 - [Accepted: Eyre ship sessions](docs/checkpoints/08-ship-sessions.md)

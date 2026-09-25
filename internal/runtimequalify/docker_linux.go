@@ -250,6 +250,7 @@ func (q *qualifier) containment(c container, kind string) error {
 func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 	index := len(q.r.Containers)
 	allowed := kind == "probe" ||
+		(q.d.managed && kind == "pack") ||
 		(q.d.profile == ProfileLifecycle && (kind == "boot" || kind == "restart" || kind == "pack" || kind == "post-pack")) ||
 		(q.d.profile == ProfileHTTP && isHTTPKind(kind))
 	if !allowed {

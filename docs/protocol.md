@@ -315,3 +315,23 @@ Its installation and account-shell change are explicit administrative steps in
 [checkpoint 4B](checkpoints/07-ssh-access.md). The protocol adds no runner TCP
 listener. SSH stderr is not included in collector JSON or combined inventory;
 diagnose deployment/authentication errors through the server's local log.
+
+## Checkpoint 6A: offline pack
+
+Managed runners advertise `offline-pack` and accept operation kind `pack` through
+the existing revision-checked, actor-scoped durable operation endpoint. Collectors
+check that capability before submission. Pack requires an initialized, explicitly
+stopped pier with no retained container or unresolved recovery state. Starts and
+packs share host-wide expensive-work admission; incompatible work is serialized
+per instance. Configuration changes remain prohibited during the operation.
+
+The operation stays host-side: same registered pier and pinned image, no pill or
+identity reapplication, no automatic stop or resume. A successful pack leaves the
+instance stopped and preserves applied configuration revision. The instance may
+include `maintenance` with kind, timestamps, and logical regular-file bytes before
+and after the utility. These are not loom utilization or allocated-space metrics.
+
+An unresolved `maintenance_uncertain` marker in private state prevents resume or
+repeat pack after interruption, even if explicit stop removed the container.
+Successful idempotency replay returns the same operation without running pack
+again. Recovery requires review rather than inferring safety from absent processes.
