@@ -120,6 +120,18 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertNotIn('data-selection-action="open"', selection_markup)
         self.assertNotIn('data-selection-action="delete"', selection_markup)
 
+    def test_web_owns_select_and_datetime_popovers_inside_the_viewport(self):
+        web = (ROOT / "desk" / "app" / "tend.html").read_text(encoding="utf-8")
+        self.assertIn('class="control-popover-layer"', web)
+        self.assertIn("function openSelectPopover", web)
+        self.assertIn("function openDatePopover", web)
+        self.assertIn("function placeControlPopover", web)
+        self.assertIn("window.innerWidth - margin * 2", web)
+        self.assertIn("window.innerHeight - margin * 2", web)
+        self.assertIn('panel.className = "control-popover date-picker"', web)
+        self.assertIn('event.target.closest("#control-popover-layer")', web)
+        self.assertIn("!state.controlPopover", web)
+
     def test_web_detail_exposes_relationships_recurrence_and_local_due_time(self):
         web = (ROOT / "desk" / "app" / "tend.html").read_text(encoding="utf-8")
         self.assertIn("function reminderAncestors", web)

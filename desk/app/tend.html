@@ -119,19 +119,26 @@
     .nav-label { min-width: 0; flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
     .muted { color: var(--muted); }
     .tiny { font-family: var(--font-mono); font-size: 10px; }
-    .field, .select, .textarea {
+    .field, .select, .textarea, .select-trigger {
       width: 100%; border: 0; border-radius: var(--radius-sm); background: var(--surface-soft); box-shadow: var(--shadow-border); outline: none;
       transition: box-shadow .15s ease, background .15s ease;
     }
-    .field, .select { height: var(--control-height); min-height: var(--control-height); padding: 0 12px; font-size: 14px; }
+    .field, .select, .select-trigger { height: var(--control-height); min-height: var(--control-height); padding: 0 12px; font-size: 14px; }
     .select {
       appearance: none; padding-right: 36px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238e8e87' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
       background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;
     }
+    .select-shell { position: relative; width: 100%; min-width: 0; }
+    .select-native { position: absolute !important; width: 1px !important; height: 1px !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; opacity: 0 !important; pointer-events: none !important; }
+    .select-trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--text); text-align: left; cursor: pointer; }
+    .select-trigger > span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .select-trigger .icon { width: 16px; height: 16px; flex: 0 0 auto; color: var(--muted); transition: transform .15s ease; }
+    .select-trigger[aria-expanded="true"] { box-shadow: var(--shadow-border-hover), 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent); }
+    .select-trigger[aria-expanded="true"] .icon { transform: rotate(180deg); }
     .textarea { min-height: 112px; padding: 10px 12px; resize: vertical; font-size: 14px; line-height: 1.55; }
     .field::placeholder, .textarea::placeholder { color: var(--muted); opacity: 1; }
-    .field:hover:not(:disabled), .select:hover:not(:disabled), .textarea:hover:not(:disabled) { box-shadow: var(--shadow-border-hover); }
-    .field:focus, .select:focus, .textarea:focus { box-shadow: var(--shadow-border-hover), 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent); }
+    .field:hover:not(:disabled), .select:hover:not(:disabled), .select-trigger:hover:not(:disabled), .textarea:hover:not(:disabled) { box-shadow: var(--shadow-border-hover); }
+    .field:focus, .select:focus, .select-trigger:focus-visible, .textarea:focus { box-shadow: var(--shadow-border-hover), 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent); }
     .stack { display: grid; gap: 10px; }
     #new-list-form { padding-top: 24px; border-top: 1px solid var(--line); }
     #new-list-form .button { width: 100%; }
@@ -151,15 +158,51 @@
     .compact-date {
       position: relative; width: 44px; height: var(--control-height); overflow: hidden;
       display: grid; place-items: center; border: 0; border-radius: var(--radius-sm); background: var(--surface-soft); box-shadow: var(--shadow-border); color: var(--muted);
-      transition: color .15s ease, background .15s ease, box-shadow .15s ease;
+      cursor: pointer; transition: color .15s ease, background .15s ease, box-shadow .15s ease;
     }
-    .compact-date:hover { color: var(--text); box-shadow: var(--shadow-border-hover); }
+    .compact-date:hover:not([data-disabled="true"]) { color: var(--text); box-shadow: var(--shadow-border-hover); }
+    .compact-date[data-disabled="true"] { cursor: not-allowed; opacity: .5; }
     .compact-date > span { pointer-events: none; font-size: 17px; line-height: 1; }
     .compact-date > input {
-      position: absolute; inset: 0; width: 100%; height: 100%; min-width: 0; margin: 0; padding: 0;
-      border: 0; opacity: 0; cursor: pointer;
+      position: absolute; width: 1px; height: 1px; min-width: 0; margin: 0; padding: 0;
+      border: 0; opacity: 0; pointer-events: none;
     }
-    .compact-date:focus-within { box-shadow: var(--shadow-border-hover), 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent); }
+    .compact-date:focus-visible, .compact-date[aria-expanded="true"] { outline: 0; box-shadow: var(--shadow-border-hover), 0 0 0 3px color-mix(in srgb, var(--accent) 10%, transparent); }
+    .control-popover-layer { position: fixed; inset: 0; z-index: 100; pointer-events: none; }
+    .control-popover {
+      position: fixed; pointer-events: auto; overflow: auto; overscroll-behavior: contain;
+      border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-solid); box-shadow: var(--shadow);
+      scrollbar-color: var(--line) transparent;
+    }
+    .select-menu { display: grid; gap: 2px; padding: 6px; }
+    .select-option {
+      width: 100%; min-height: 38px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      border: 0; border-radius: 6px; padding: 8px 10px; background: transparent; color: var(--muted); text-align: left;
+    }
+    .select-option:hover, .select-option:focus-visible { color: var(--text); background: var(--surface-soft); outline: 0; }
+    .select-option.selected { color: var(--text); background: var(--accent-soft); }
+    .select-option .icon { width: 15px; height: 15px; color: var(--accent); }
+    .date-picker { width: min(350px, calc(100vw - 16px)); padding: 14px; }
+    .date-picker-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .date-picker-title { min-width: 0; font-family: var(--font-display); font-size: 19px; font-weight: 500; }
+    .date-picker-nav { display: flex; gap: 4px; }
+    .date-picker-nav .icon-button { width: 36px; height: 36px; }
+    .calendar-grid { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 3px; }
+    .calendar-weekday { padding: 4px 0 6px; color: var(--subtle); font-family: var(--font-mono); font-size: 9px; font-weight: 600; text-align: center; text-transform: uppercase; }
+    .calendar-day { aspect-ratio: 1; min-width: 0; display: grid; place-items: center; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font-size: 13px; }
+    .calendar-day:hover, .calendar-day:focus-visible { color: var(--text); background: var(--surface-soft); outline: 0; }
+    .calendar-day.outside { color: var(--subtle); opacity: .62; }
+    .calendar-day.today { box-shadow: inset 0 0 0 1px var(--subtle); }
+    .calendar-day.selected { color: var(--accent-text); background: var(--accent); box-shadow: none; }
+    .date-time-row { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr) auto; align-items: end; gap: 7px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .date-time-row .label { gap: 5px; }
+    .date-time-row .field { padding-inline: 9px; text-align: center; }
+    .time-separator { align-self: center; margin-top: 16px; color: var(--subtle); }
+    .meridiem-toggle { display: grid; grid-template-columns: repeat(2,1fr); align-self: end; padding: 3px; border-radius: var(--radius-sm); background: var(--surface-soft); box-shadow: var(--shadow-border); }
+    .meridiem-toggle button { height: 38px; border: 0; border-radius: 6px; padding: 0 9px; background: transparent; color: var(--muted); font-size: 12px; }
+    .meridiem-toggle button.active { color: var(--accent-text); background: var(--accent); }
+    .date-picker-actions { display: flex; justify-content: space-between; gap: 7px; margin-top: 14px; }
+    .date-picker-actions > div { display: flex; gap: 7px; }
     .section-adder { display: flex; align-items: center; gap: 10px; margin: 0 auto 18px; }
     .section-adder .field { width: 240px; height: var(--control-height); min-height: var(--control-height); }
     .section-adder .button { height: var(--control-height); min-height: var(--control-height); }
@@ -300,6 +343,7 @@
   </div>
   <div class="invites" id="invitations"></div>
   <div class="notice" id="notice" role="status" aria-live="polite"></div>
+  <div class="control-popover-layer" id="control-popover-layer" aria-live="polite"></div>
 
   <script>
     (() => {
@@ -309,7 +353,8 @@
         ship: "", lists: [], accesses: [], invitations: [], preferences: {},
         selectedListId: null, selectedReminderId: null, view: "all", search: "", tag: "", sort: "manual", descending: false,
         rightTray: "", busy: false, online: false, detailDraft: null, completionGrace: new Map(), saveTimer: null,
-        selectionMode: false, selectedReminderIds: new Set(), hiddenInvitationKeys: new Set(), mobileNavigationOpen: false
+        selectionMode: false, selectedReminderIds: new Set(), hiddenInvitationKeys: new Set(), mobileNavigationOpen: false,
+        controlPopover: null
       };
       const views = [
         ["today", "Today", "calendarDays"], ["all", "All", "inbox"], ["flagged", "Flagged", "flag"], ["assigned", "Assigned", "user"], ["completed", "Completed", "circleCheck"]
@@ -331,7 +376,10 @@
         close: '<path d="M18 6 6 18M6 6l12 12"/>',
         arrowUp: '<path d="m18 15-6-6-6 6"/>',
         arrowDown: '<path d="m6 9 6 6 6-6"/>',
-        cornerDownRight: '<path d="m15 10 5 5-5 5"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/>'
+        cornerDownRight: '<path d="m15 10 5 5-5 5"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/>',
+        chevronDown: '<path d="m6 9 6 6 6-6"/>',
+        chevronLeft: '<path d="m15 18-6-6 6-6"/>',
+        check: '<path d="m5 12 4 4L19 6"/>'
       };
       const icon = name => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${iconPaths[name] || ""}</svg>`;
       const opId = () => Date.now().toString(36) + "-" + Math.floor(Math.random() * 2147483647).toString(36);
@@ -613,6 +661,158 @@
       }
       const optionHtml = (options, selected) => options.map(option => `<option value="${escapeHtml(option.value)}" ${String(option.value) === String(selected || "") ? "selected" : ""}>${escapeHtml(option.label)}${option.role ? ` (${escapeHtml(option.role)})` : ""}</option>`).join("");
 
+      function closeControlPopover({restoreFocus = false} = {}) {
+        const current = state.controlPopover;
+        if (!current) return;
+        current.anchor?.setAttribute("aria-expanded", "false");
+        $("control-popover-layer").innerHTML = "";
+        state.controlPopover = null;
+        if (restoreFocus && current.anchor?.isConnected) current.anchor.focus({preventScroll:true});
+      }
+      function placeControlPopover(anchor, panel, preferredWidth) {
+        const margin = 8; const gap = 6; const rect = anchor.getBoundingClientRect();
+        const width = Math.min(preferredWidth || rect.width, window.innerWidth - margin * 2);
+        panel.style.width = `${width}px`;
+        panel.style.maxHeight = `${window.innerHeight - margin * 2}px`;
+        panel.style.left = `${Math.min(Math.max(margin, rect.left), Math.max(margin, window.innerWidth - width - margin))}px`;
+        panel.style.top = `${margin}px`;
+        const naturalHeight = Math.min(panel.scrollHeight, window.innerHeight - margin * 2);
+        const below = window.innerHeight - rect.bottom - gap - margin;
+        const above = rect.top - gap - margin;
+        const opensBelow = below >= naturalHeight || (above < naturalHeight && below >= above);
+        const available = Math.max(0, opensBelow ? below : above);
+        panel.style.maxHeight = `${Math.min(naturalHeight, available)}px`;
+        panel.style.top = `${opensBelow ? rect.bottom + gap : Math.max(margin, rect.top - Math.min(naturalHeight, available) - gap)}px`;
+      }
+      function updateSelectTrigger(select) {
+        const trigger = select.closest(".select-shell")?.querySelector(".select-trigger");
+        if (!trigger) return;
+        trigger.querySelector("span").textContent = select.selectedOptions[0]?.textContent || "Choose an option";
+        trigger.disabled = select.disabled;
+      }
+      function chooseSelectOption(select, index) {
+        const option = select.options[index]; if (!option || option.disabled) return;
+        select.selectedIndex = index;
+        updateSelectTrigger(select);
+        closeControlPopover({restoreFocus:true});
+        select.dispatchEvent(new Event("change", {bubbles:true}));
+      }
+      function openSelectPopover(trigger, select) {
+        if (select.disabled) return;
+        if (state.controlPopover?.source === select) { closeControlPopover({restoreFocus:true}); return; }
+        closeControlPopover();
+        const panel = document.createElement("div");
+        const menuId = `select-menu-${Math.random().toString(36).slice(2)}`;
+        panel.className = "control-popover select-menu"; panel.id = menuId; panel.setAttribute("role", "listbox");
+        [...select.options].forEach((option,index) => {
+          const button = document.createElement("button");
+          button.type = "button"; button.className = `select-option${index === select.selectedIndex ? " selected" : ""}`;
+          button.setAttribute("role", "option"); button.setAttribute("aria-selected", index === select.selectedIndex ? "true" : "false"); button.disabled = option.disabled;
+          const label = document.createElement("span"); label.textContent = option.textContent; button.append(label);
+          if (index === select.selectedIndex) button.insertAdjacentHTML("beforeend", icon("check"));
+          button.addEventListener("click", event => { event.stopPropagation(); chooseSelectOption(select, index); });
+          panel.append(button);
+        });
+        $("control-popover-layer").append(panel);
+        trigger.setAttribute("aria-expanded", "true"); trigger.setAttribute("aria-controls", menuId);
+        state.controlPopover = {kind:"select", anchor:trigger, source:select, panel};
+        placeControlPopover(trigger, panel, Math.max(trigger.getBoundingClientRect().width, 190));
+        requestAnimationFrame(() => (panel.querySelector(".selected") || panel.querySelector(".select-option"))?.focus({preventScroll:true}));
+      }
+      function enhanceSelects(root) {
+        root.querySelectorAll("select.select:not([data-enhanced])").forEach(select => {
+          const shell = document.createElement("div"); shell.className = "select-shell";
+          if (select.hasAttribute("style")) { shell.setAttribute("style", select.getAttribute("style")); select.removeAttribute("style"); }
+          select.parentNode.insertBefore(shell, select); shell.append(select);
+          select.dataset.enhanced = "true"; select.classList.add("select-native"); select.tabIndex = -1; select.setAttribute("aria-hidden", "true");
+          const trigger = document.createElement("button"); trigger.type = "button"; trigger.className = "select-trigger";
+          trigger.setAttribute("aria-haspopup", "listbox"); trigger.setAttribute("aria-expanded", "false");
+          trigger.setAttribute("aria-label", select.getAttribute("aria-label") || "Choose an option");
+          trigger.innerHTML = `<span></span>${icon("chevronDown")}`;
+          trigger.addEventListener("click", event => { event.preventDefault(); event.stopPropagation(); openSelectPopover(trigger, select); });
+          trigger.addEventListener("keydown", event => {
+            if (["Enter"," ","ArrowDown","ArrowUp"].includes(event.key)) { event.preventDefault(); openSelectPopover(trigger, select); }
+          });
+          shell.insertBefore(trigger, select); updateSelectTrigger(select);
+        });
+      }
+      const padDatePart = value => String(value).padStart(2,"0");
+      function parseDateTimeValue(value) {
+        const match = String(value || "").match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+        const now = new Date(); const hour24 = match ? Number(match[4]) : now.getHours();
+        return {
+          year:match ? Number(match[1]) : now.getFullYear(), month:(match ? Number(match[2]) : now.getMonth() + 1) - 1,
+          day:match ? Number(match[3]) : now.getDate(), hour:hour24 % 12 || 12,
+          minute:match ? Number(match[5]) : now.getMinutes(), meridiem:hour24 >= 12 ? "PM" : "AM"
+        };
+      }
+      function pickerValue(draft) {
+        let hour = Math.min(12, Math.max(1, Number(draft.hour) || 12)) % 12;
+        if (draft.meridiem === "PM") hour += 12;
+        return `${draft.year}-${padDatePart(draft.month + 1)}-${padDatePart(draft.day)}T${padDatePart(hour)}:${padDatePart(Math.min(59, Math.max(0, Number(draft.minute) || 0)))}`;
+      }
+      function renderDatePicker(panel) {
+        const draft = state.controlPopover?.draft; if (!draft) return;
+        const monthTitle = new Intl.DateTimeFormat([], {month:"long", year:"numeric"}).format(new Date(draft.year,draft.month,1));
+        const firstWeekday = new Date(draft.year,draft.month,1).getDay();
+        const today = new Date(); const todayKey = `${today.getFullYear()}-${padDatePart(today.getMonth()+1)}-${padDatePart(today.getDate())}`;
+        const selectedKey = `${draft.year}-${padDatePart(draft.month+1)}-${padDatePart(draft.day)}`;
+        const days = Array.from({length:42}, (_,index) => {
+          const date = new Date(draft.year,draft.month,index - firstWeekday + 1);
+          const key = `${date.getFullYear()}-${padDatePart(date.getMonth()+1)}-${padDatePart(date.getDate())}`;
+          return `<button class="calendar-day ${date.getMonth() !== draft.month ? "outside" : ""} ${key === todayKey ? "today" : ""} ${key === selectedKey ? "selected" : ""}" type="button" data-picker-day="${key}" aria-label="${escapeHtml(date.toLocaleDateString([], {dateStyle:"full"}))}" aria-pressed="${key === selectedKey}">${date.getDate()}</button>`;
+        }).join("");
+        panel.innerHTML = `<div class="date-picker-head"><div class="date-picker-title">${escapeHtml(monthTitle)}</div><div class="date-picker-nav"><button class="icon-button" type="button" data-picker-month="-1" aria-label="Previous month">${icon("chevronLeft")}</button><button class="icon-button" type="button" data-picker-month="1" aria-label="Next month" style="transform:rotate(180deg)">${icon("chevronLeft")}</button></div></div>
+          <div class="calendar-grid">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(day => `<div class="calendar-weekday">${day}</div>`).join("")}${days}</div>
+          <div class="date-time-row"><label class="label">Hour<input class="field" data-picker-hour type="number" inputmode="numeric" min="1" max="12" value="${draft.hour}"></label><span class="time-separator">:</span><label class="label">Minute<input class="field" data-picker-minute type="number" inputmode="numeric" min="0" max="59" step="1" value="${padDatePart(draft.minute)}"></label><div class="meridiem-toggle" aria-label="Time period"><button type="button" data-picker-meridiem="AM" class="${draft.meridiem === "AM" ? "active" : ""}">AM</button><button type="button" data-picker-meridiem="PM" class="${draft.meridiem === "PM" ? "active" : ""}">PM</button></div></div>
+          <div class="date-picker-actions"><button class="button quiet" type="button" data-picker-clear>Clear</button><div><button class="button" type="button" data-picker-cancel>Cancel</button><button class="button primary" type="button" data-picker-apply>Apply</button></div></div>`;
+      }
+      function commitDateValue(input, value) {
+        input.value = value;
+        closeControlPopover({restoreFocus:true});
+        input.dispatchEvent(new Event("input", {bubbles:true}));
+        input.dispatchEvent(new Event("change", {bubbles:true}));
+      }
+      function openDatePopover(anchor, input) {
+        if (input.disabled) return;
+        if (state.controlPopover?.source === input) { closeControlPopover({restoreFocus:true}); return; }
+        closeControlPopover();
+        const panel = document.createElement("div"); const popoverId = `date-picker-${Math.random().toString(36).slice(2)}`;
+        panel.className = "control-popover date-picker"; panel.id = popoverId; panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", input.getAttribute("aria-label") || "Choose date and time");
+        $("control-popover-layer").append(panel);
+        anchor.setAttribute("aria-expanded", "true"); anchor.setAttribute("aria-controls", popoverId);
+        state.controlPopover = {kind:"date", anchor, source:input, panel, draft:parseDateTimeValue(input.value)};
+        renderDatePicker(panel); placeControlPopover(anchor, panel, 350);
+        panel.addEventListener("input", event => {
+          if (event.target.matches("[data-picker-hour]")) state.controlPopover.draft.hour = event.target.value;
+          if (event.target.matches("[data-picker-minute]")) state.controlPopover.draft.minute = event.target.value;
+        });
+        panel.addEventListener("click", event => {
+          event.stopPropagation();
+          const current = state.controlPopover; if (!current || current.panel !== panel) return;
+          const month = event.target.closest("[data-picker-month]");
+          if (month) { const date = new Date(current.draft.year,current.draft.month + Number(month.dataset.pickerMonth),1); current.draft.year = date.getFullYear(); current.draft.month = date.getMonth(); current.draft.day = Math.min(current.draft.day, new Date(current.draft.year,current.draft.month+1,0).getDate()); renderDatePicker(panel); return; }
+          const day = event.target.closest("[data-picker-day]");
+          if (day) { const [year,monthIndex,date] = day.dataset.pickerDay.split("-").map(Number); current.draft.year = year; current.draft.month = monthIndex - 1; current.draft.day = date; renderDatePicker(panel); return; }
+          const meridiem = event.target.closest("[data-picker-meridiem]");
+          if (meridiem) { current.draft.meridiem = meridiem.dataset.pickerMeridiem; renderDatePicker(panel); return; }
+          if (event.target.closest("[data-picker-clear]")) { commitDateValue(input, ""); return; }
+          if (event.target.closest("[data-picker-cancel]")) { closeControlPopover({restoreFocus:true}); return; }
+          if (event.target.closest("[data-picker-apply]")) commitDateValue(input, pickerValue(current.draft));
+        });
+        requestAnimationFrame(() => panel.querySelector(".calendar-day.selected")?.focus({preventScroll:true}));
+      }
+      function enhanceDateControls(root) {
+        root.querySelectorAll(".compact-date:not([data-enhanced])").forEach(control => {
+          const input = control.querySelector('input[type="datetime-local"]'); if (!input) return;
+          control.dataset.enhanced = "true"; control.dataset.dateTrigger = "true"; control.dataset.disabled = input.disabled ? "true" : "false";
+          control.tabIndex = input.disabled ? -1 : 0; control.setAttribute("role", "button"); control.setAttribute("aria-expanded", "false");
+          control.setAttribute("aria-label", input.getAttribute("aria-label") || control.title || "Choose date and time");
+          input.tabIndex = -1; input.setAttribute("aria-hidden", "true");
+        });
+      }
+      function enhanceControls(root) { enhanceSelects(root); enhanceDateControls(root); }
+
       async function json(url) {
         const response = await fetch(url, {credentials:"same-origin", headers:{Accept:"application/json"}});
         if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
@@ -789,6 +989,7 @@
           ${state.view === "list" && list ? `<form class="section-adder" id="new-section-form"><input class="field" id="new-section-title" placeholder="Section title" ${hostWritable ? "" : "disabled"}><button class="button tertiary" type="submit" ${hostWritable ? "" : "disabled"}>+ Add section</button><span style="flex:1"></span><button class="button" data-toggle-selection type="button">${state.selectionMode ? "Done selecting" : "Select"}</button></form>` : ""}
           ${state.selectionMode && state.view === "list" && list ? `<div class="selection-bar"><strong class="tiny">SELECT MODE · ${selectedIds.length} selected</strong><select class="select" id="selection-section" style="width:170px">${optionHtml(sectionOptions, "")}</select><button class="button" data-selection-action="section" ${selectedIds.length ? "" : "disabled"}>Move to section</button><button class="icon-button" data-selection-action="up" ${selectedIds.length === 1 ? "" : "disabled"} aria-label="Move reminder up">${icon("arrowUp")}</button><button class="icon-button" data-selection-action="down" ${selectedIds.length === 1 ? "" : "disabled"} aria-label="Move reminder down">${icon("arrowDown")}</button><button class="button" data-selection-action="indent" ${selectedIds.length === 1 ? "" : "disabled"}>Indent</button><button class="button" data-selection-action="outdent" ${selectedIds.length === 1 ? "" : "disabled"}>Outdent</button></div>` : ""}
           <section class="task-list">${renderReminderRows(reminders, list) || `<div class="empty">No reminders here.</div>`}</section>`;
+        enhanceControls($("main"));
         if (focusId) requestAnimationFrame(() => {
           const field = $(focusId);
           if (!field) return;
@@ -864,6 +1065,7 @@
           ${relationshipHtml}
           <div class="form-section"><span class="eyebrow">Schedule</span><div class="schedule-line"><span class="schedule-summary">${escapeHtml(formatDraftDue(draft.due, draft.allDay))}</span><label class="compact-date" title="Set due date">${icon("calendar")}<input class="detail-immediate" data-field="due" type="datetime-local" value="${escapeHtml(draft.due)}" aria-label="Due date" ${editable ? "" : "disabled"}></label></div><label class="check-row"><input class="check detail-immediate" data-field="allDay" type="checkbox" ${draft.allDay ? "checked" : ""} ${editable && draft.due ? "" : "disabled"}> All day</label>${recurrenceHtml}</div>
           <div class="divider"></div><button class="button danger" data-delete-reminder ${editable ? "" : "disabled"}>Delete reminder</button>`;
+        enhanceControls(tray);
         if (focusField) requestAnimationFrame(() => {
           const field = focusField === "tag-input" ? tray.querySelector("#tag-input") : tray.querySelector(`[data-field="${focusField}"]`);
           if (!field || field.disabled) return;
@@ -882,6 +1084,7 @@
             <div class="form-section"><span class="eyebrow">Account</span><button class="button" data-switch-ship>Sign in as another ship</button><p class="muted tiny">The web app uses this browser's Urbit session.</p></div>
             ${invitations ? `<div class="divider"></div><div class="form-section"><span class="eyebrow">Open invitations</span>${invitations}</div>` : ""}<div class="divider"></div>
             <form class="form-section" id="defaults-form"><span class="eyebrow">Reminder defaults</span><label class="label">Badge count<select class="select" name="badge"><option value="today" ${badge === "today" ? "selected" : ""}>Due today</option><option value="scheduled" ${badge === "scheduled" ? "selected" : ""}>Scheduled</option><option value="all" ${badge === "all" ? "selected" : ""}>All open</option></select></label><label class="label">All-day alert time<input class="field" name="alert" type="time" value="${minutesToTime(Number(state.preferences["all-day-alert-minute"] || 0))}"></label><label class="check-row"><input class="check" name="overdue" type="checkbox" ${state.preferences["all-day-overdue"] !== false ? "checked" : ""}> Keep all-day reminders overdue</label><button class="button primary" type="submit">Save defaults</button></form>`;
+          enhanceControls(tray);
           return;
         }
         if (!list || !access) { tray.innerHTML = ""; return; }
@@ -894,6 +1097,7 @@
           ${sections.length ? `<div class="divider"></div><div class="form-section"><span class="eyebrow">Sections</span><div class="section-settings">${sections.map((section,index) => `<div class="section-setting"><input class="field" value="${escapeHtml(section.title)}" data-section-title="${Number(section.id)}" ${editable ? "" : "disabled"}><button class="icon-button" data-section-action="up" data-section-id="${Number(section.id)}" ${editable && index > 0 ? "" : "disabled"} aria-label="Move section up">${icon("arrowUp")}</button><button class="icon-button" data-section-action="down" data-section-id="${Number(section.id)}" ${editable && index < sections.length - 1 ? "" : "disabled"} aria-label="Move section down">${icon("arrowDown")}</button><button class="icon-button" data-section-action="delete" data-section-id="${Number(section.id)}" ${editable ? "" : "disabled"} aria-label="Delete section">${icon("close")}</button></div>`).join("")}</div></div>` : ""}
           <div class="divider"></div><div class="form-section"><span class="eyebrow">People</span><div class="people">${people.filter((person,index,array) => person.ship && array.findIndex(other => sameShip(other.ship,person.ship)) === index).map(person => `<div class="person"><span>${escapeHtml(sameShip(person.ship,state.ship) ? "me" : person.ship)}</span><span class="muted tiny">${person.role}</span></div>`).join("")}</div>${owner ? `<form class="row" id="invite-form" style="gap:7px"><input class="field" id="invite-ship" placeholder="~sampel-palnet" required ${editable ? "" : "disabled"}><button class="button" type="submit" ${editable ? "" : "disabled"}>Invite</button></form>` : ""}</div>
           <div class="divider"></div>${owner ? `<button class="button danger" data-delete-list ${editable ? "" : "disabled"}>Delete list</button>` : `<button class="button danger" data-leave-list ${editable ? "" : "disabled"}>Leave list</button>`}`;
+        enhanceControls(tray);
       }
       function renderInvitations() {
         $("invitations").innerHTML = state.invitations.map((invite,index) => ({invite,index})).filter(({invite}) => !state.hiddenInvitationKeys.has(invitationKey(invite))).map(({invite,index}) => `<div class="invite invitation-card"><div class="eyebrow">Shared list invitation</div><p style="margin:7px 0 11px"><strong>${escapeHtml(invite.title || "Shared list")}</strong><br><span class="muted tiny">from ${escapeHtml(invite.host)}</span></p><div class="row" style="gap:7px"><button class="button primary" data-accept-invite="${index}">Accept</button><button class="button" data-decline-invite="${index}">Decline</button><button class="button quiet" data-hide-invite="${index}">Hide</button></div></div>`).join("");
@@ -1010,6 +1214,10 @@
       }
 
       document.addEventListener("click", async event => {
+        const dateTrigger = event.target.closest("[data-date-trigger]");
+        if (dateTrigger) { event.preventDefault(); const input = dateTrigger.querySelector('input[type="datetime-local"]'); if (input) openDatePopover(dateTrigger, input); return; }
+        if (event.target.closest("#control-popover-layer")) return;
+        if (state.controlPopover) closeControlPopover();
         const listButton = event.target.closest("[data-list-id]");
         if (listButton) { state.selectedListId = Number(listButton.dataset.listId); state.view = "list"; state.selectedReminderId = null; state.rightTray = ""; state.selectionMode = false; state.selectedReminderIds.clear(); state.mobileNavigationOpen = false; render(); return; }
         const viewButton = event.target.closest("[data-view]");
@@ -1118,6 +1326,17 @@
         }
       });
       document.addEventListener("keydown", async event => {
+        if (event.key === "Escape" && state.controlPopover) { event.preventDefault(); closeControlPopover({restoreFocus:true}); return; }
+        const dateTrigger = event.target.closest?.("[data-date-trigger]");
+        if (dateTrigger && ["Enter"," ","ArrowDown"].includes(event.key)) { event.preventDefault(); const input = dateTrigger.querySelector('input[type="datetime-local"]'); if (input) openDatePopover(dateTrigger, input); return; }
+        if (state.controlPopover?.kind === "select" && event.target.closest?.(".select-menu")) {
+          const options = [...state.controlPopover.panel.querySelectorAll(".select-option:not(:disabled)")]; const index = options.indexOf(document.activeElement);
+          if (["ArrowDown","ArrowUp","Home","End"].includes(event.key)) {
+            event.preventDefault();
+            const next = event.key === "Home" ? 0 : event.key === "End" ? options.length - 1 : event.key === "ArrowDown" ? (index + 1 + options.length) % options.length : (index - 1 + options.length) % options.length;
+            options[next]?.focus({preventScroll:true}); return;
+          }
+        }
         if (event.target.id === "tag-input" && event.key === "Enter") {
           event.preventDefault(); const value = event.target.value.trim().replace(/^#/,"");
           if (value && state.detailDraft && !state.detailDraft.tags.includes(value)) { state.detailDraft.tags.push(value); renderDetail(); await saveDetail(); }
@@ -1145,8 +1364,8 @@
       });
       $("refresh").addEventListener("click", () => load());
       $("open-navigation").addEventListener("click", () => { state.mobileNavigationOpen = !state.mobileNavigationOpen; render(); });
-      window.addEventListener("resize", () => { if (window.innerWidth < 1200 && state.selectedReminderId && state.rightTray) state.rightTray = ""; render(); });
-      setInterval(() => { const active = document.activeElement; if (!state.busy && (!active || !["INPUT","TEXTAREA","SELECT"].includes(active.tagName))) load({quiet:true}); }, 4000);
+      window.addEventListener("resize", () => { closeControlPopover(); if (window.innerWidth < 1200 && state.selectedReminderId && state.rightTray) state.rightTray = ""; render(); });
+      setInterval(() => { const active = document.activeElement; if (!state.busy && !state.controlPopover && (!active || !["INPUT","TEXTAREA","SELECT"].includes(active.tagName))) load({quiet:true}); }, 4000);
       load();
     })();
   </script>
