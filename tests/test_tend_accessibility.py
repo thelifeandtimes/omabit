@@ -201,11 +201,15 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn('text: "DESCENDANTS"', details)
         self.assertIn("signal reminderRequested", details)
         self.assertIn("onReminderRequested", panel)
-        self.assertIn('model: ["none", "hourly", "daily", "weekly", "monthly", "yearly"]', details)
+        self.assertIn('property var recurrenceFrequencyOptions', details)
+        self.assertIn('{ value: "none", label: "Does not repeat" }', details)
+        self.assertIn('text: "Choose hourly, daily, weekly, monthly, or yearly to make this reminder recur."', details)
         self.assertIn("recurrence: recurrenceValue()", details)
         self.assertIn("repeatWeekdays", details)
-        self.assertIn('model: repeatField.currentText === "monthly" ? ["dates", "ordinal weekday"] : ["dates"]', details)
-        self.assertIn('placeholderText: repeatField.currentText === "yearly" ? "Day of month, for example 15"', details)
+        self.assertIn('model: root.repeatFrequency() === "monthly" ? ["dates", "ordinal weekday"] : ["dates"]', details)
+        self.assertIn('placeholderText: root.repeatFrequency() === "yearly" ? "Day of month, for example 15"', details)
+        self.assertIn("root.prepareRecurrence(root.repeatFrequency())", details)
+        self.assertIn('text: "Unit"', details)
         self.assertIn("scheduleTimezone", details)
         self.assertIn("iconOnly: true", details)
         self.assertIn("TendFlagButton {\n          id: flaggedField", details)
@@ -313,6 +317,12 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("x: reminderRow.indentPixels", panel)
         self.assertIn("width: Math.max(Style.space(120), reminderRow.width - x)", panel)
         self.assertNotIn("\n                                    x: indentPixels", panel)
+
+    def test_panel_reminder_rows_do_not_repeat_their_section_title_inline(self):
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+        reminder_text = panel.split("id: reminderRow", 1)[1].split("MouseArea {", 1)[0]
+        self.assertNotIn("sectionTitleFor", reminder_text)
+        self.assertIn("reminderRow.reminderData.title + list + due", reminder_text)
 
     def test_menubar_filtered_subitems_are_subtle_and_quick_add_is_labeled(self):
         widget = (ROOT / "omarchy-plugin" / "BarWidget.qml").read_text(encoding="utf-8")

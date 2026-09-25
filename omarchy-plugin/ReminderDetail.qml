@@ -31,6 +31,14 @@ BorderSurface {
       role: String(choice.role || choice.status || "")
     }
   })
+  readonly property var recurrenceFrequencyOptions: [
+    { value: "none", label: "Does not repeat" },
+    { value: "hourly", label: "Hourly" },
+    { value: "daily", label: "Daily" },
+    { value: "weekly", label: "Weekly" },
+    { value: "monthly", label: "Monthly" },
+    { value: "yearly", label: "Yearly" }
+  ]
   readonly property var tagOptions: {
     var values = (availableTags || []).concat(tagPicker.values || [])
     var seen = ({})
@@ -112,17 +120,47 @@ BorderSurface {
     return String(value)
   }
 
+  function repeatFrequency() {
+    return String(repeatField.currentValue || "none")
+  }
+
+  function repeatFrequencyIndex(frequency) {
+    var value = String(frequency || "none")
+    for (var i = 0; i < recurrenceFrequencyOptions.length; i++)
+      if (recurrenceFrequencyOptions[i].value === value) return i
+    return 0
+  }
+
+  function scheduledDate() {
+    var value = String(duePicker.value || "")
+    if (!value) return null
+    var date = new Date(value.length === 10 ? value + "T09:00:00" : value)
+    return isNaN(date.getTime()) ? null : date
+  }
+
+  function prepareRecurrence(frequency) {
+    var date = scheduledDate()
+    if (!date) return
+    if (frequency === "weekly" && repeatWeekdays.length === 0)
+      repeatWeekdays = [date.getDay()]
+    if ((frequency === "monthly" || frequency === "yearly") && repeatMonthDays.text.trim() === "") {
+      repeatMonthMode.currentIndex = 0
+      repeatMonthDays.text = String(date.getDate())
+    }
+  }
+
   function recurrenceValue() {
-    if (repeatField.currentText === "none") return null
+    var frequency = repeatFrequency()
+    if (frequency === "none") return null
     var monthDays = repeatMonthDays.text.split(",").map(function(day) {
       return Number(day.trim())
     }).filter(function(day) { return isFinite(day) && day >= 1 && day <= 31 })
     return {
-      frequency: repeatField.currentText,
+      frequency: frequency,
       interval: Math.max(1, Number(repeatInterval.value || 1)),
-      weekdays: repeatField.currentText === "weekly" ? repeatWeekdays.map(Number) : [],
-      monthDays: (repeatField.currentText === "monthly" || repeatField.currentText === "yearly") && repeatMonthMode.currentText === "dates" ? monthDays : [],
-      monthWeek: repeatField.currentText === "monthly" && repeatMonthMode.currentText === "ordinal weekday" ? {
+      weekdays: frequency === "weekly" ? repeatWeekdays.map(Number) : [],
+      monthDays: (frequency === "monthly" || frequency === "yearly") && repeatMonthMode.currentText === "dates" ? monthDays : [],
+      monthWeek: frequency === "monthly" && repeatMonthMode.currentText === "ordinal weekday" ? {
         index: Number(repeatOrdinalIndex.value || 1),
         weekday: Number(repeatOrdinalWeekday.currentIndex)
       } : null,
@@ -132,7 +170,8 @@ BorderSurface {
   }
 
   function repeatUnitLabel() {
-    var singular = repeatField.currentText === "hourly" ? "hour" : repeatField.currentText === "daily" ? "day" : repeatField.currentText === "weekly" ? "week" : repeatField.currentText === "monthly" ? "month" : "year"
+    var frequency = repeatFrequency()
+    var singular = frequency === "hourly" ? "hour" : frequency === "daily" ? "day" : frequency === "weekly" ? "week" : frequency === "monthly" ? "month" : "year"
     return Number(repeatInterval.value || 1) === 1 ? singular : singular + "s"
   }
 
@@ -162,7 +201,7 @@ BorderSurface {
     repeatMonthMode.currentIndex = recurrenceBase && recurrenceBase.monthWeek ? 1 : 0
     repeatOrdinalIndex.value = recurrenceBase && recurrenceBase.monthWeek ? Math.max(1, Math.min(5, Number(recurrenceBase.monthWeek.index || 1))) : 1
     repeatOrdinalWeekday.currentIndex = recurrenceBase && recurrenceBase.monthWeek ? Math.max(0, Math.min(6, Number(recurrenceBase.monthWeek.weekday || 0))) : 0
-    repeatField.currentIndex = Math.max(0, repeatField.model.indexOf(recurrence ? String(recurrence.frequency || "daily") : "none"))
+    repeatField.currentIndex = repeatFrequencyIndex(recurrence ? String(recurrence.frequency || "daily") : "none")
     repeatInterval.value = recurrence ? Math.max(1, Number(recurrence.interval || 1)) : 1
     repeatEndPicker.value = recurrenceEndInput(recurrence)
     repeatEndPicker.allDay = false
@@ -471,19 +510,36 @@ BorderSurface {
           id: repeatField
           width: parent.width
           label: "Repeat"
-          model: ["none", "hourly", "daily", "weekly", "monthly", "yearly"]
+          model: root.recurrenceFrequencyOptions
+          textRole: "label"
+          valueRole: "value"
           Accessible.name: "Repeat frequency"
-          onActivated: root.saveSchedule()
+          onActivated: {
+            root.prepareRecurrence(root.repeatFrequency())
+            root.saveSchedule()
+          }
+        }
+
+        Text {
+          width: parent.width
+          visible: root.repeatFrequency() === "none"
+          text: "Choose hourly, daily, weekly, monthly, or yearly to make this reminder recur."
+          textFormat: Text.PlainText
+          color: Color.popups.text
+          opacity: 0.58
+          wrapMode: Text.Wrap
+          font.family: Style.font.family
+          font.pixelSize: Style.font.caption
         }
 
         Row {
           width: parent.width
           spacing: Style.space(8)
-          visible: repeatField.currentText !== "none"
+          visible: root.repeatFrequency() !== "none"
 
           TendNumber {
             id: repeatInterval
-            width: Math.min(Style.space(120), parent.width * 0.38)
+            width: (parent.width - parent.spacing) / 2
             label: "Every"
             from: 1
             to: 999
@@ -493,20 +549,48 @@ BorderSurface {
             onValueChanged: if (activeFocus && !root.loadingFields) root.saveSchedule()
           }
 
-          Text {
-            anchors.verticalCenter: parent.verticalCenter
-            text: root.repeatUnitLabel()
-            color: Color.popups.text
-            opacity: 0.72
-            font.family: Style.font.family
-            font.pixelSize: Style.font.body
+          Column {
+            width: (parent.width - parent.spacing) / 2
+            spacing: Style.spacing.labelGap
+
+            Text {
+              text: "Unit"
+              textFormat: Text.PlainText
+              color: Qt.darker(Color.popups.text, 1.4)
+              font.family: Style.font.family
+              font.pixelSize: Style.font.caption
+              font.bold: true
+            }
+
+            BorderSurface {
+              width: parent.width
+              height: Style.spacing.controlHeight
+              radius: Style.cornerRadius
+              color: Style.controlFill(false, false, Color.popups.text, Color.accent)
+              borderSpec: Border.controlSpec("normal", Color.popups.text, Color.accent)
+
+              Text {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.leftMargin: Style.spacing.controlPaddingX
+                anchors.rightMargin: Style.spacing.controlPaddingX
+                text: root.repeatUnitLabel()
+                textFormat: Text.PlainText
+                color: Color.popups.text
+                opacity: 0.78
+                elide: Text.ElideRight
+                font.family: Style.font.family
+                font.pixelSize: Style.font.body
+              }
+            }
           }
         }
 
         Column {
           width: parent.width
           spacing: Style.space(6)
-          visible: repeatField.currentText === "weekly"
+          visible: root.repeatFrequency() === "weekly"
 
           Text { text: "ON"; color: Color.popups.text; opacity: 0.68; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
 
@@ -544,13 +628,13 @@ BorderSurface {
         Column {
           width: parent.width
           spacing: Style.space(8)
-          visible: repeatField.currentText === "monthly" || repeatField.currentText === "yearly"
+          visible: root.repeatFrequency() === "monthly" || root.repeatFrequency() === "yearly"
 
           TendDropdown {
             id: repeatMonthMode
             width: parent.width
             label: "Monthly pattern"
-            model: repeatField.currentText === "monthly" ? ["dates", "ordinal weekday"] : ["dates"]
+            model: root.repeatFrequency() === "monthly" ? ["dates", "ordinal weekday"] : ["dates"]
             Accessible.name: "Repeat month pattern"
             onActivated: root.saveSchedule()
           }
@@ -559,8 +643,8 @@ BorderSurface {
             id: repeatMonthDays
             width: parent.width
             visible: repeatMonthMode.currentText === "dates"
-            placeholderText: repeatField.currentText === "yearly" ? "Day of month, for example 15" : "Month dates, for example 1, 15, 31"
-            Accessible.name: repeatField.currentText === "yearly" ? "Yearly month date" : "Monthly dates"
+            placeholderText: root.repeatFrequency() === "yearly" ? "Day of month, for example 15" : "Month dates, for example 1, 15, 31"
+            Accessible.name: root.repeatFrequency() === "yearly" ? "Yearly month date" : "Monthly dates"
             onAccepted: root.saveSchedule()
             onEditingFinished: if (!root.loadingFields) root.saveSchedule()
           }
@@ -568,7 +652,7 @@ BorderSurface {
           Row {
             width: parent.width
             spacing: Style.space(8)
-            visible: repeatField.currentText === "monthly" && repeatMonthMode.currentText === "ordinal weekday"
+            visible: root.repeatFrequency() === "monthly" && repeatMonthMode.currentText === "ordinal weekday"
 
             TendNumber {
               id: repeatOrdinalIndex
@@ -596,7 +680,7 @@ BorderSurface {
         TendDropdown {
           id: repeatEndField
           width: parent.width
-          visible: repeatField.currentText !== "none"
+          visible: root.repeatFrequency() !== "none"
           label: "Ends"
           model: ["never", "on date", "after count"]
           Accessible.name: "Repeat ending"
@@ -606,7 +690,7 @@ BorderSurface {
         Row {
           width: parent.width
           spacing: Style.space(8)
-          visible: repeatField.currentText !== "none" && repeatEndField.currentText === "on date"
+          visible: root.repeatFrequency() !== "none" && repeatEndField.currentText === "on date"
 
           Text {
             width: parent.width - repeatEndPicker.width - parent.spacing
@@ -630,7 +714,7 @@ BorderSurface {
         TendNumber {
           id: repeatCount
           width: parent.width
-          visible: repeatField.currentText !== "none" && repeatEndField.currentText === "after count"
+          visible: root.repeatFrequency() !== "none" && repeatEndField.currentText === "after count"
           label: "Occurrences"
           from: 1
           to: 9999

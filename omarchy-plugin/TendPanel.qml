@@ -2803,9 +2803,8 @@ Item {
                                                 if (reminderRow.sectionRow)
                                                     return "";
                                                 var list = root.viewMode === "list" ? "" : "  ·  " + reminderRow.reminderData.listTitle;
-                                                var section = root.sectionTitleFor(reminderRow.reminderData.listId, reminderRow.reminderData.sectionId);
                                                 var due = reminderRow.reminderData.schedule ? "  ·  " + TendModel.scheduleInputValue(reminderRow.reminderData.schedule).replace("T", " ") : "";
-                                                return reminderRow.reminderData.title + list + (section ? "  ·  " + section : "") + due;
+                                                return reminderRow.reminderData.title + list + due;
                                             }
                                             color: Color.menu.text
                                             opacity: !reminderRow.sectionRow && service && service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) ? 0.5 : 1
