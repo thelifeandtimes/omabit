@@ -92,11 +92,16 @@ pier or identity for an automated test.
   migration. [Development validation](checkpoints/10-applications-and-themes.md)
   passed on panel-check at port 18085; migration recovery was tested with fixtures.
   The real legacy ~sarlev handoff remains an explicit user decision, not a test.
+  Theme testing/refinement is paused at the user's request while runner work proceeds.
 - Checkpoint 6A implements explicit durable offline pack for stopped initialized
   development piers, with host admission, before/after logical file-size evidence,
   and persistent interruption quarantine. Driver, journal, and race tests passed.
-  [The live gate](checkpoints/11-offline-pack.md) requires copying the new root-owned
-  runner binary and restarting management; `sudo -n` still requires a password.
+  [The live gate](checkpoints/11-offline-pack.md) passed on September 25: the active
+  runner advertises offline-pack, alpha packed in 2.36 s and resumed in 5.91 s,
+  and exact replay returned the original completed operation while alpha remained
+  healthy at revision 2/2. Logical pier bytes changed from 1,046,691,852 to
+  637,779,980. No incidents or recovery requirement were reported; see the
+  [evidence record](diagnostics/2026-09-25-managed-pack.md).
   Scheduling, meld, epoch pruning, and loom advice remain separately gated.
 - No production deployment is supported yet.
 

@@ -1,5 +1,25 @@
 # Checkpoint 6A: explicit offline pack
 
+**Live gate passed September 25, 2026.** The upgraded runner advertises
+`offline-pack`. Alpha's pack and subsequent initialized-pier resume succeeded at
+revision 2. Replaying `checkpoint-6a-pack-alpha` returned the original succeeded
+operation after alpha was already running; it did not run another pack.
+
+| Operation | Accepted (UTC) | Finished (UTC) | Elapsed |
+| --- | --- | --- | --- |
+| `checkpoint-6a-pack-alpha` | 16:31:59.368 | 16:32:01.728 | 2.36 s |
+| `checkpoint-6a-resume-alpha` | 16:32:49.892 | 16:32:55.805 | 5.91 s |
+
+Logical regular-file pier bytes changed from **1,046,691,852** to **637,779,980**
+(408,911,872 bytes / 389.97 MiB / 39.1% smaller). This is not a measurement of
+allocated disk space or loom utilization. The final observation was healthy at
+`http://127.0.0.1:18081`, with configuration/applied revision 2/2, no active
+operation, no recovery requirement, and no incidents. A direct `/~/host` request
+returned `~zod`.
+
+See the [evidence record](../diagnostics/2026-09-25-managed-pack.md). The following
+steps remain a reproduction guide; this acceptance run needs no additional pack.
+
 This adds the previously qualified offline `pack` primitive to the durable managed
 runner API. It requires an initialized pier, an explicit clean stop, no retained
 containers, and no unresolved maintenance outcome. Pack and runtime starts share
@@ -9,12 +29,11 @@ RAM and 8 GiB free disk, with the same pinned Vere image and container limits.
 Automated driver/control-plane tests passed for stop/pack/resume, request replay,
 running/uninitialized-pier refusal, persisted intent before utility execution, and
 interruption that remains recovery-required after observation or explicit stop.
-The standalone pack primitive previously passed live checkpoint 2B; this new
-managed operation still needs its live gate.
+The standalone pack primitive previously passed live checkpoint 2B; the managed
+operation has now passed the live gate above.
 
-The running 4B binary does not advertise `offline-pack`. The collector refuses to
-submit pack to that binary. Installing the new root-owned executable is the next
-essential sudo intervention.
+Older 4B binaries do not advertise `offline-pack`; the collector refuses to submit
+pack to them. The 6A executable is now installed on this development host.
 
 ## 1. Check current state with readable output
 
@@ -29,7 +48,7 @@ collect inventory
 collect --runner workstation snapshot
 ```
 
-At the last observation, **alpha was stopped at revision 2**, **panel-check was
+At the pre-pack observation, **alpha was stopped at revision 2**, **panel-check was
 running/healthy at port 18085**, and **ssh-check was uninitialized**. Use the actual
 snapshot as authority. The planned pack target is alpha, which already has an
 initialized pier. Wait for any active operation to finish.
