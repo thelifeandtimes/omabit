@@ -42,6 +42,14 @@ your user plugin directory, then enables its **`~+`** bar widget. No root is nee
 for this step. The installer refuses existing unmanaged/modified files. An update
 of an unmodified installer-owned snapshot uses `--replace --enable`.
 
+Discovery is asynchronous. The installer now waits for the shell to discover the
+plugin and confirm its enabled status. If an earlier installer printed "Installed"
+and then "plugin is not known", the files are already installed; retry only:
+
+```bash
+python3 -B scripts/install-panel.py --enable-only
+```
+
 The existing Urbit Theme plugin has its own state, consent, and credentials. This
 initial management panel has a separate plugin ID; theme migration is the next
 bounded interface increment.

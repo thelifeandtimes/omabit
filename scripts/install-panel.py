@@ -7,7 +7,9 @@ import os
 import pathlib
 import shutil
 import subprocess
+import sys
 import tempfile
+import time
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PLUGIN = "thelifeandtimes.omabit"
@@ -61,21 +63,78 @@ def install(destination, replace=False):
     print(f"Installed Omabit panel snapshot: {destination}")
 
 
+def enable_installed(timeout=10):
+    """Wait for the live registry, not just the asynchronous rescan IPC reply."""
+    deadline = time.monotonic() + timeout
+
+    def command(args):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            raise RuntimeError("timed out waiting for the shell plugin registry")
+        result = subprocess.run(["omarchy", *args], capture_output=True, text=True,
+                                timeout=min(3, remaining))
+        if result.returncode != 0:
+            raise RuntimeError(result.stderr.strip() or "Omarchy shell command failed")
+        return result.stdout
+
+    try:
+        command(["shell", "shell", "rescanPlugins"])
+        next_scan = time.monotonic() + 1
+        requested_enable = False
+        while time.monotonic() < deadline:
+            plugins = json.loads(command(["shell", "shell", "listPlugins"]))
+            if not isinstance(plugins, list) or any(not isinstance(p, dict) for p in plugins):
+                raise RuntimeError("invalid shell plugin registry response")
+            entry = next((p for p in plugins if p.get("id") == PLUGIN), None)
+            if entry is not None:
+                if entry.get("enabled") is True:
+                    return
+                if not requested_enable:
+                    command(["plugin", "enable", PLUGIN])
+                    requested_enable = True
+            elif not requested_enable and time.monotonic() >= next_scan:
+                # Omarchy ignores rescan requests while another scan is active.
+                # That scan may have started before the snapshot was installed.
+                command(["shell", "shell", "rescanPlugins"])
+                next_scan = time.monotonic() + 1
+            remaining = deadline - time.monotonic()
+            if remaining > 0:
+                time.sleep(min(0.1, remaining))
+        raise RuntimeError("timed out waiting for plugin discovery or enabled status")
+    except (OSError, ValueError, subprocess.SubprocessError, RuntimeError) as error:
+        raise RuntimeError(
+            f"The panel is installed, but enabling was not confirmed: {error}\n"
+            "Retry without reinstalling (from the checkout):\n"
+            "  python3 -B scripts/install-panel.py --enable-only"
+        ) from None
+
+
 def main():
     parser = argparse.ArgumentParser()
     config = pathlib.Path(os.environ.get("XDG_CONFIG_HOME", pathlib.Path.home() / ".config"))
     parser.add_argument("--destination", type=pathlib.Path, default=config / "omarchy/plugins" / PLUGIN)
     parser.add_argument("--replace", action="store_true")
     parser.add_argument("--enable", action="store_true")
+    parser.add_argument("--enable-only", action="store_true", help="enable an existing installation without copying files")
     args = parser.parse_args()
-    if args.enable and args.destination.absolute() != config / "omarchy/plugins" / PLUGIN:
+    if args.enable_only and (args.enable or args.replace):
+        parser.error("--enable-only cannot be combined with --enable or --replace")
+    if (args.enable or args.enable_only) and args.destination.absolute() != config / "omarchy/plugins" / PLUGIN:
         raise RuntimeError("--enable requires the normal user plugin directory")
-    install(args.destination, args.replace)
-    if args.enable:
-        subprocess.run(["omarchy", "shell", "shell", "rescanPlugins"], check=True)
-        subprocess.run(["omarchy", "plugin", "enable", PLUGIN], check=True)
+    if args.enable_only:
+        manifest = args.destination / "manifest.json"
+        if not manifest.is_file() or json.loads(manifest.read_text()).get("id") != PLUGIN:
+            raise RuntimeError("Omabit is not installed at the requested destination")
+    else:
+        install(args.destination, args.replace)
+    if args.enable or args.enable_only:
+        enable_installed()
         print("Enabled Omabit. Click the ~+ bar widget to open it.")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except (OSError, ValueError, subprocess.SubprocessError, RuntimeError) as error:
+        print(f"Omabit panel installation: {error}", file=sys.stderr)
+        sys.exit(1)
