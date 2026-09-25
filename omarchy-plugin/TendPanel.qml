@@ -1432,15 +1432,6 @@ Item {
                                 }
                             }
 
-                            TapHandler {
-                                acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-                                grabPermissions: PointerHandler.ApprovesTakeOverByAnything
-                                onTapped: {
-                                    if (root.selectedReminderId !== 0) root.selectedReminderId = 0;
-                                    if (root.rightTrayMode !== "") root.rightTrayMode = "";
-                                }
-                            }
-
                             }
 
                         Item {
@@ -1478,23 +1469,23 @@ Item {
                             width: root.fullSurfaceMode && sidebar.visible ? 0 : parent.width - sidebar.width - sidebarResizeHandle.width
                             height: parent.height
 
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    if (root.selectedReminderId !== 0) root.selectedReminderId = 0;
+                                    if (root.rightTrayMode !== "") root.rightTrayMode = "";
+                                }
+                            }
+
                             Column {
                                 id: mainContent
+                                z: 1
                                 x: 0
                                 width: parent.width - (!root.overlayTrayMode && (root.detailTrayOpen || root.settingsTrayOpen)
                                   ? (root.detailTrayOpen ? detailSidebar.width : settingsSidebar.width) + Style.space(10)
                                   : 0)
                                 height: parent.height
                                 spacing: Style.space(8)
-
-                                TapHandler {
-                                    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
-                                    grabPermissions: PointerHandler.ApprovesTakeOverByAnything
-                                    onTapped: {
-                                        if (root.selectedReminderId !== 0) root.selectedReminderId = 0;
-                                        if (root.rightTrayMode !== "") root.rightTrayMode = "";
-                                    }
-                                }
 
                             Row {
                                 id: viewHeader
