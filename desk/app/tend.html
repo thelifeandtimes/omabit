@@ -75,7 +75,6 @@
     .identity { margin-top: 4px; color: var(--subtle); font-family: var(--font-mono); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .top-actions { gap: 8px; }
     .icon-button.mobile-only { display: none; }
-    .nav-toggle-glyph { font-size: 17px; line-height: 1; }
     .dot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: var(--danger); }
     .dot.online { background: var(--success); }
     .icon-button, .button {
@@ -156,9 +155,6 @@
     }
     .compact-date:hover { color: var(--text); box-shadow: var(--shadow-border-hover); }
     .compact-date > span { pointer-events: none; font-size: 17px; line-height: 1; }
-    .calendar-glyph { position: relative; width: 15px; height: 14px; border: 2px solid currentColor; border-radius: 2px; }
-    .calendar-glyph::before { content: ""; position: absolute; left: -2px; right: -2px; top: 2px; border-top: 2px solid currentColor; }
-    .calendar-glyph::after { content: ""; position: absolute; left: 2px; top: -4px; width: 2px; height: 4px; border-left: 2px solid currentColor; border-right: 2px solid currentColor; padding-right: 5px; }
     .compact-date > input {
       position: absolute; inset: 0; width: 100%; height: 100%; min-width: 0; margin: 0; padding: 0;
       border: 0; opacity: 0; cursor: pointer;
@@ -253,6 +249,7 @@
       .workspace { grid-template-columns: 1fr; }
       .nav { display: none; position: absolute; inset: 0 auto 0 0; z-index: 35; width: min(320px, 88vw); padding: 20px 16px; background: color-mix(in srgb, var(--bg) 96%, transparent); box-shadow: var(--shadow); backdrop-filter: blur(16px); }
       .workspace.nav-open .nav { display: block; }
+      .workspace.nav-open::after { content: ""; position: absolute; inset: 0; z-index: 30; background: rgba(0,0,0,.48); backdrop-filter: blur(2px); }
       .icon-button.mobile-only { display: grid; }
       .tray { width: min(430px, 94vw); }
       .filter-options { grid-template-columns: minmax(0,1fr) minmax(0,1fr) 44px; }
@@ -865,7 +862,7 @@
           <div class="form-section"><div class="two-col"><label class="label">Priority<select class="select detail-immediate" data-field="priority" ${editable ? "" : "disabled"}>${["none","low","medium","high"].map(value => `<option ${draft.priority === value ? "selected" : ""}>${value}</option>`).join("")}</select></label><label class="label">Assignee<select class="select detail-immediate" data-field="assignee" ${editable ? "" : "disabled"}>${optionHtml(assigneeOptions(list), draft.assignee)}</select></label></div><label class="label">List<select class="select" data-move-list ${editable && movableLists.length > 1 ? "" : "disabled"}>${optionHtml(movableLists, list.id)}</select></label></div>
           <div class="form-section"><label class="label">Tags<div class="tag-box" id="tag-box">${draft.tags.map(tag => `<span class="chip">#${escapeHtml(tag)}<button data-remove-tag="${escapeHtml(tag)}" aria-label="Remove ${escapeHtml(tag)}">${icon("close")}</button></span>`).join("")}<input id="tag-input" list="tag-suggestions" placeholder="Find or add a tag" ${editable ? "" : "disabled"}></div></label><datalist id="tag-suggestions">${allTags().filter(tag => !draft.tags.includes(tag)).map(tag => `<option value="${escapeHtml(tag)}">`).join("")}</datalist></div>
           ${relationshipHtml}
-          <div class="form-section"><span class="eyebrow">Schedule</span><div class="schedule-line"><span class="schedule-summary">${escapeHtml(formatDraftDue(draft.due, draft.allDay))}</span><label class="compact-date" title="Set due date"><span class="calendar-glyph" aria-hidden="true"></span><input class="detail-immediate" data-field="due" type="datetime-local" value="${escapeHtml(draft.due)}" aria-label="Due date" ${editable ? "" : "disabled"}></label></div><label class="check-row"><input class="check detail-immediate" data-field="allDay" type="checkbox" ${draft.allDay ? "checked" : ""} ${editable && draft.due ? "" : "disabled"}> All day</label>${recurrenceHtml}</div>
+          <div class="form-section"><span class="eyebrow">Schedule</span><div class="schedule-line"><span class="schedule-summary">${escapeHtml(formatDraftDue(draft.due, draft.allDay))}</span><label class="compact-date" title="Set due date">${icon("calendar")}<input class="detail-immediate" data-field="due" type="datetime-local" value="${escapeHtml(draft.due)}" aria-label="Due date" ${editable ? "" : "disabled"}></label></div><label class="check-row"><input class="check detail-immediate" data-field="allDay" type="checkbox" ${draft.allDay ? "checked" : ""} ${editable && draft.due ? "" : "disabled"}> All day</label>${recurrenceHtml}</div>
           <div class="divider"></div><button class="button danger" data-delete-reminder ${editable ? "" : "disabled"}>Delete reminder</button>`;
         if (focusField) requestAnimationFrame(() => {
           const field = focusField === "tag-input" ? tray.querySelector("#tag-input") : tray.querySelector(`[data-field="${focusField}"]`);
@@ -1016,7 +1013,7 @@
         const listButton = event.target.closest("[data-list-id]");
         if (listButton) { state.selectedListId = Number(listButton.dataset.listId); state.view = "list"; state.selectedReminderId = null; state.rightTray = ""; state.selectionMode = false; state.selectedReminderIds.clear(); state.mobileNavigationOpen = false; render(); return; }
         const viewButton = event.target.closest("[data-view]");
-        if (viewButton) { state.view = viewButton.dataset.view; state.selectedReminderId = null; state.selectionMode = false; state.selectedReminderIds.clear(); render(); return; }
+        if (viewButton) { state.view = viewButton.dataset.view; state.selectedReminderId = null; state.selectionMode = false; state.selectedReminderIds.clear(); state.mobileNavigationOpen = false; render(); return; }
         const task = event.target.closest(".task");
         if (task && !event.target.closest("button,input")) {
           if (state.selectionMode && state.view === "list") {
@@ -1086,6 +1083,7 @@
           return;
         }
         if (state.selectedReminderId && !event.target.closest("#detail-tray") && !event.target.closest(".task")) closeDetail();
+        if (state.mobileNavigationOpen && !event.target.closest("#navigation") && !event.target.closest("#open-navigation")) { state.mobileNavigationOpen = false; render(); }
       });
       document.addEventListener("input", event => {
         if (event.target.id === "search") { state.search = event.target.value; renderMain(); return; }
