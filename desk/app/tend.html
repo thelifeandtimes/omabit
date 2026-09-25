@@ -310,6 +310,28 @@
         }
         return depth;
       }
+      function hierarchyOrderedReminders(items, compare) {
+        const reminders = items || [];
+        const byId = new Map(reminders.map(reminder => [Number(reminder.id), reminder]));
+        const children = new Map();
+        reminders.forEach(reminder => {
+          const rawParentId = reminder["parent-id"] ?? reminder.parentId ?? null;
+          const parentId = rawParentId !== null && rawParentId !== undefined && byId.has(Number(rawParentId)) ? Number(rawParentId) : null;
+          if (!children.has(parentId)) children.set(parentId, []);
+          children.get(parentId).push(reminder);
+        });
+        children.forEach(group => group.sort(compare));
+        const ordered = []; const visited = new Set();
+        const visit = reminder => {
+          const id = Number(reminder.id);
+          if (visited.has(id)) return;
+          visited.add(id); ordered.push(reminder);
+          (children.get(id) || []).forEach(visit);
+        };
+        (children.get(null) || []).forEach(visit);
+        reminders.slice().sort(compare).forEach(visit);
+        return ordered;
+      }
       function canEdit(listId) {
         const access = accessFor(listId);
         return state.online && !!access && (access.owner === true || access.status === "online");
@@ -677,8 +699,11 @@
           priority:(a,b) => ["high","medium","low","none"].indexOf(a.priority || "none") - ["high","medium","low","none"].indexOf(b.priority || "none"),
           manual:(a,b) => Number(a.rank || 0) - Number(b.rank || 0) || Number(a.id) - Number(b.id)
         };
-        reminders.sort(sorters[state.sort] || sorters.manual);
-        if (state.descending) reminders.reverse();
+        const sorter = sorters[state.sort] || sorters.manual;
+        const direction = state.descending ? -1 : 1;
+        const compare = (a,b) => sorter(a,b) * direction || Number(a.listId) - Number(b.listId) || Number(a.id) - Number(b.id);
+        if (state.view === "list") return hierarchyOrderedReminders(reminders, compare);
+        reminders.sort(compare);
         return reminders;
       }
       function renderMain() {
