@@ -269,7 +269,7 @@ class CliDomainTests(unittest.TestCase):
 
         for command, action_name in (("accept", "accept-invitation"), ("decline", "decline-invitation")):
             args = SimpleNamespace(tend_command=command, json=True, host="~sampel-palnet", token="invite-1")
-            with mock.patch.object(omabit, "snapshot", return_value={"protocol-version": 1}) as snapshot, mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+            with mock.patch.object(omabit, "snapshot", return_value={"protocol-version": 2}) as snapshot, mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
                 self.assertEqual(omabit.run_tend(args), 0)
             snapshot.assert_called_once()
             body = poke.call_args.args[2][action_name]
@@ -282,7 +282,7 @@ class CliDomainTests(unittest.TestCase):
         self.assertEqual(omabit.invitation_reference(uri), ("~sampel-palnet", "invite token/1"))
 
         args = SimpleNamespace(tend_command="accept", json=True, host=uri, token=None)
-        with mock.patch.object(omabit, "snapshot", return_value={"protocol-version": 1}), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
+        with mock.patch.object(omabit, "snapshot", return_value={"protocol-version": 2}), mock.patch.object(omabit, "poke") as poke, redirect_stdout(io.StringIO()):
             self.assertEqual(omabit.run_tend(args), 0)
         body = poke.call_args.args[2]["accept-invitation"]
         self.assertEqual((body["host"], body["token"]), ("~sampel-palnet", "invite token/1"))
@@ -296,11 +296,11 @@ class CliDomainTests(unittest.TestCase):
         configured = {"ship": "zod", "baseUrl": "http://127.0.0.1:8080"}
         with (
             mock.patch.object(omabit.transport, "connection_status", return_value=configured),
-            mock.patch.object(omabit, "snapshot", return_value={"protocol-version": 1}),
+            mock.patch.object(omabit, "snapshot", return_value={"protocol-version": 2}),
             redirect_stdout(io.StringIO()) as output,
         ):
             self.assertEqual(omabit.run_tend(args), 0)
-        self.assertEqual(json.loads(output.getvalue())["protocolVersion"], 1)
+        self.assertEqual(json.loads(output.getvalue())["protocolVersion"], 2)
 
     def test_complete_checks_entity_before_poking(self):
         args = SimpleNamespace(tend_command="complete", json=True, list_id=1, reminder_ids=[7])
@@ -309,6 +309,22 @@ class CliDomainTests(unittest.TestCase):
         action = poke.call_args.args[2]["set-completed"]
         self.assertEqual(action["base-revision"], 4)
         self.assertTrue(action["completed"])
+        self.assertIsNone(action["advance"])
+
+    def test_complete_includes_the_timezone_aware_recurrence_hint(self):
+        sample = json.loads(json.dumps(SAMPLE))
+        sample["lists"][0]["reminders"][0]["schedule"]["recurrence"] = {"frequency": "daily", "interval": 1}
+        args = SimpleNamespace(tend_command="complete", json=True, list_id=1, reminder_ids=[7])
+        expected = {"due-at": "~2026.9.11..18.00.00", "occurrence": 1}
+        with (
+            mock.patch.object(omabit, "snapshot", return_value=sample),
+            mock.patch.object(omabit.transport, "recurrence_advance", return_value=expected) as advance,
+            mock.patch.object(omabit, "poke") as poke,
+            redirect_stdout(io.StringIO()),
+        ):
+            self.assertEqual(omabit.run_tend(args), 0)
+        advance.assert_called_once_with(sample["lists"][0]["reminders"][0]["schedule"])
+        self.assertEqual(poke.call_args.args[2]["set-completed"]["advance"], expected)
 
     def test_multiple_completions_use_one_atomic_batch_action(self):
         sample = json.loads(json.dumps(SAMPLE))
@@ -319,6 +335,7 @@ class CliDomainTests(unittest.TestCase):
         action = poke.call_args.args[2]["batch-set-completed"]
         self.assertEqual(action["reminder-ids"], [7, 9])
         self.assertEqual(action["base-revision"], 4)
+        self.assertEqual(action["advances"], [])
 
     def test_snooze_accepts_an_absolute_iso_time(self):
         args = SimpleNamespace(

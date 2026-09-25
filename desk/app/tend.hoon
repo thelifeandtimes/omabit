@@ -1119,12 +1119,14 @@
         (reject op-id.act %unknown-reminder `revision.u.old state)
       =/  target=reminder:t
         (~(got by reminders.u.old) reminder-id.act)
+      ?:  (invalid-completion-advance target completed.act advance.act now.bowl)
+        (reject op-id.act %invalid-schedule `revision.u.old state)
       =/  repeated=(unit reminder:t)
         ?.  completed.act  ~
         ?~  schedule.target  ~
         =/  sch=schedule:t  u.schedule.target
         ?~  recurrence.sch  ~
-        =/  advanced=(unit schedule:t)  (advance-schedule sch)
+        =/  advanced=(unit schedule:t)  (advance-schedule sch now.bowl advance.act)
         ?~  advanced  ~
         `target(schedule advanced, completed %.n, last-completed-at `now.bowl, revision +(revision.target), modified-at now.bowl)
       ?^  repeated
@@ -1160,10 +1162,12 @@
         (reject op-id.act %stale-list `revision.u.old state)
       ?:  (invalid-selection reminder-ids.act reminders.u.old)
         (reject op-id.act %invalid-selection `revision.u.old state)
+      ?:  (invalid-batch-advances advances.act reminder-ids.act reminders.u.old now.bowl)
+        (reject op-id.act %invalid-schedule `revision.u.old state)
       =/  rems=reminders:t
         %-  ~(run by reminders.u.old)
         |=  rem=reminder:t
-        (batch-complete-reminder rem reminder-ids.act completed.act reminders.u.old now.bowl)
+        (batch-complete-reminder rem reminder-ids.act completed.act reminders.u.old now.bowl advances.act)
       =/  lis=task-list:t
         %_  u.old
             revision    +(revision.u.old)
@@ -3090,7 +3094,7 @@
     (lien ~(tap in ids) |=(ancestor=reminder-id:t (descendant candidate ancestor rems)))
   ::
   ++  batch-complete-reminder
-    |=  [rem=reminder:t ids=(set reminder-id:t) completed=? rems=reminders:t now=@da]
+    |=  [rem=reminder:t ids=(set reminder-id:t) completed=? rems=reminders:t now=@da advances=(list reminder-advance:t)]
     ^-  reminder:t
     =/  advanced=(unit schedule:t)
       ?.  completed  ~
@@ -3098,13 +3102,27 @@
       ?~  schedule.rem  ~
       =/  sch=schedule:t  u.schedule.rem
       ?~  recurrence.sch  ~
-      (advance-schedule sch)
+      (advance-schedule sch now (advance-for id.rem advances))
     ?^  advanced
       rem(schedule advanced, completed %.n, last-completed-at `now, revision +(revision.rem), modified-at now)
     ?.  (selected-tree id.rem ids rems)  rem
     rem(completed completed, last-completed-at ?:(completed `now ~), revision +(revision.rem), modified-at now)
   ::
   ++  advance-schedule
+    |=  [sch=schedule:t now=@da hint=(unit recurrence-advance:t)]
+    ^-  (unit schedule:t)
+    ?^  hint
+      ?~  due-at.u.hint  ~
+      `sch(due-at u.due-at.u.hint, occurrence occurrence.u.hint, alerted-offsets *(set @ud))
+    =/  remaining=@ud  100.000
+    |-
+    =/  advanced=(unit schedule:t)  (advance-schedule-once sch)
+    ?~  advanced  ~
+    ?:  (gth due-at.u.advanced now)  advanced
+    ?:  =(0 remaining)  ~
+    $(sch u.advanced, remaining (dec remaining))
+  ::
+  ++  advance-schedule-once
     |=  sch=schedule:t
     ^-  (unit schedule:t)
     ?~  recurrence.sch  ~
@@ -3122,6 +3140,44 @@
       ==
     ?:  ?~(end-at.rec %.n (gth next-due u.end-at.rec))  ~
     `sch(due-at next-due, occurrence next-occurrence, alerted-offsets *(set @ud))
+  ::
+  ++  advance-for
+    |=  [id=reminder-id:t advances=(list reminder-advance:t)]
+    ^-  (unit recurrence-advance:t)
+    ?~  advances  ~
+    ?:  =(id reminder-id.i.advances)  `advance.i.advances
+    $(advances t.advances)
+  ::
+  ++  invalid-completion-advance
+    |=  [rem=reminder:t completed=? hint=(unit recurrence-advance:t) now=@da]
+    ^-  ?
+    ?.  completed  ?^(hint %.y %.n)
+    ?~  hint  %.n
+    ?~  schedule.rem  %.y
+    =/  sch=schedule:t  u.schedule.rem
+    ?~  recurrence.sch  %.y
+    ?:  (lte occurrence.u.hint occurrence.sch)  %.y
+    ?:  (gth (sub occurrence.u.hint occurrence.sch) 100.000)  %.y
+    ?~  due-at.u.hint
+      =/  rec=recurrence:t  u.recurrence.sch
+      ?:  ?^(max-occurrences.rec (gte occurrence.u.hint u.max-occurrences.rec) %.n)  %.n
+      ?~(end-at.rec %.y %.n)
+    ?:  (lte u.due-at.u.hint now)  %.y
+    ?:  (lte u.due-at.u.hint due-at.sch)  %.y
+    =/  rec=recurrence:t  u.recurrence.sch
+    ?:  ?~(max-occurrences.rec %.n (gte occurrence.u.hint u.max-occurrences.rec))  %.y
+    ?~(end-at.rec %.n (gth u.due-at.u.hint u.end-at.rec))
+  ::
+  ++  invalid-batch-advances
+    |=  [advances=(list reminder-advance:t) ids=(set reminder-id:t) rems=reminders:t now=@da]
+    ^-  ?
+    ?:  (gth (lent advances) (lent ~(tap in ids)))  %.y
+    %+  levy  advances
+    |=  item=reminder-advance:t
+    ?.  (~(has in ids) reminder-id.item)  %.n
+    =/  rem=(unit reminder:t)  (~(get by rems) reminder-id.item)
+    ?~  rem  %.n
+    !(invalid-completion-advance u.rem %.y `advance.item now)
   ::
   ++  next-weekly
     |=  [due=@da interval=@ud weekdays=(set @ud)]

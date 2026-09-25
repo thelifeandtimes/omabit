@@ -203,6 +203,10 @@ class TendAccessibilityTests(unittest.TestCase):
         self.assertIn("onReminderRequested", panel)
         self.assertIn('model: ["none", "hourly", "daily", "weekly", "monthly", "yearly"]', details)
         self.assertIn("recurrence: recurrenceValue()", details)
+        self.assertIn("repeatWeekdays", details)
+        self.assertIn('model: repeatField.currentText === "monthly" ? ["dates", "ordinal weekday"] : ["dates"]', details)
+        self.assertIn('placeholderText: repeatField.currentText === "yearly" ? "Day of month, for example 15"', details)
+        self.assertIn("scheduleTimezone", details)
         self.assertIn("iconOnly: true", details)
         self.assertIn("TendFlagButton {\n          id: flaggedField", details)
 

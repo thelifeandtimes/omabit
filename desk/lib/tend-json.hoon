@@ -297,7 +297,7 @@
         %snapshot
       %+  frond  %snapshot
       %-  pairs
-      :~  [%protocol-version (numb 1)]
+      :~  [%protocol-version (numb 2)]
           [%lists (lists-json lists.upd)]
           [%preferences (preferences-json preferences.upd)]
           [%snoozes (snoozes-json snoozes.upd)]
@@ -495,6 +495,20 @@
       ((ot [[%frequency frequency] [%interval ni] [%weekdays (as ni)] [%month-days (as ni)] [%month-week (mu month-week)] [%end-at (mu date)] [%max-occurrences (mu ni)] ~]) jon)
     [freq interval weekdays month-days month-week end-at max-occurrences]
   ::
+  ++  recurrence-advance
+    |=  jon=json
+    ^-  recurrence-advance:sur
+    =/  [due-at=(unit @da) occurrence=@ud]
+      ((ot [[%due-at (mu date)] [%occurrence ni] ~]) jon)
+    [due-at occurrence]
+  ::
+  ++  reminder-advance
+    |=  jon=json
+    ^-  reminder-advance:sur
+    =/  [reminder-id=@ud advance=recurrence-advance:sur]
+      ((ot [[%reminder-id ni] [%due-at (mu date)] [%occurrence ni] ~]) jon)
+    [reminder-id advance]
+  ::
   ++  schedule-input
     |=  jon=json
     ^-  schedule-input:sur
@@ -691,14 +705,14 @@
       [%set-schedule op-id list-id reminder-id schedule base-revision]
     ::
         %set-completed
-      =/  [=op-id =list-id =reminder-id completed=? base-revision=@ud]
-        ((ot [[%operation-id so] [%list-id ni] [%reminder-id ni] [%completed bo] [%base-revision ni] ~]) body)
-      [%set-completed op-id list-id reminder-id completed base-revision]
+      =/  [=op-id =list-id =reminder-id completed=? advance=(unit recurrence-advance:sur) base-revision=@ud]
+        ((ou [[%operation-id (un so)] [%list-id (un ni)] [%reminder-id (un ni)] [%completed (un bo)] [%advance (uf ~ (mu recurrence-advance))] [%base-revision (un ni)] ~]) body)
+      [%set-completed op-id list-id reminder-id completed advance base-revision]
     ::
         %batch-set-completed
-      =/  [=op-id =list-id reminder-ids=(set @ud) completed=? base-revision=@ud]
-        ((ot [[%operation-id so] [%list-id ni] [%reminder-ids (as ni)] [%completed bo] [%base-revision ni] ~]) body)
-      [%batch-set-completed op-id list-id reminder-ids completed base-revision]
+      =/  [=op-id =list-id reminder-ids=(set @ud) completed=? advances=(list reminder-advance:sur) base-revision=@ud]
+        ((ou [[%operation-id (un so)] [%list-id (un ni)] [%reminder-ids (un (as ni))] [%completed (un bo)] [%advances (uf ~ (ar reminder-advance))] [%base-revision (un ni)] ~]) body)
+      [%batch-set-completed op-id list-id reminder-ids completed advances base-revision]
     ::
         %set-preferences
       =/  [=op-id default-list=(unit @ud) pinned-lists=(list @ud) pinned-views=(list smart-view:sur) snooze-presets=(list @ud) base-revision=@ud]

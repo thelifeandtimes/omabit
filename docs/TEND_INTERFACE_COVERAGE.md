@@ -16,7 +16,7 @@ Each member policy also has `can-invite`. This lets that editor invite another
 ship, but does not make them an administrator and does not grant removal or
 list-deletion authority. Pending invitees can be selected as assignees; they do
 not receive list contents or mutation authority until accepting. There is no
-read-only/viewer role in protocol version 1.
+read-only/viewer role in desktop protocol version 2.
 
 The host's ship is the decentralized authority for a shared list. A client
 replica remains readable when that ship is offline, but editing is intentionally
@@ -38,7 +38,7 @@ workflow. The remaining gaps are explicit rather than accidental.
 | Parent/child hierarchy and stable placement | Yes | Partial | CLI reads relationships and moves sections/lists; direct parent and sibling placement remain UI-only. |
 | Move reminder subtree between lists/hosts | Yes | Yes | `move-list` uses the Gall primitive and checks both hosts. |
 | Sections | Yes | Yes | CLI supports list/add/update/delete; drag placement remains UI-only. |
-| Due dates, early alerts and recurrence | Yes | Yes | CLI supports hourly through yearly recurrence, interval, weekdays, month days/week, end and count. |
+| Due dates, early alerts and recurrence | Yes | Yes | Native, web, and CLI support hourly through yearly recurrence, interval, selected weekdays, month dates or ordinal weekday, end date, and occurrence count. Calendar repeats preserve wall time across DST; hourly repeats use elapsed time. |
 | Assignment to owner/member/pending invitee | Yes | Yes | `edit --assignee`; Gall validates list access. |
 | Invitations, member removal and leaving | Yes | Yes | Delegated invites use `--can-invite`. |
 | Activity and invitations | Yes | Yes | Activity is actor-attributed. |

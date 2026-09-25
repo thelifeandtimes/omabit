@@ -126,6 +126,10 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("function reminderDescendants", web)
         self.assertIn('class="relationship-group"', web)
         self.assertIn("function recurrencePayload", web)
+        self.assertIn("function recurrenceAdvance", web)
+        self.assertIn('data-repeat-weekday="${index}"', web)
+        self.assertIn('data-field="repeatMonthMode"', web)
+        self.assertIn("timezone:draft.timezone", web)
         self.assertIn('data-field="repeatFrequency"', web)
         self.assertIn('data-field="repeatEndMode"', web)
         self.assertIn("new Date(Date.UTC(+urbit[1]", web)
@@ -137,6 +141,18 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("%batch-set-completed -.act", self.agent)
         self.assertIn("(scot %uv (sham [op-id.act id]))", self.agent)
         self.assertIn("?:(completed.act (activity-occurrence-for u.target id before) ~)", self.agent)
+
+    def test_recurrence_completion_uses_bounded_timezone_aware_client_hints(self):
+        self.assertIn("+$  recurrence-advance", self.surface)
+        self.assertIn("advance=(unit recurrence-advance)", self.surface)
+        self.assertIn("advances=(list reminder-advance)", self.surface)
+        self.assertIn("(advance-schedule sch now.bowl advance.act)", self.agent)
+        self.assertIn("(sub occurrence.u.hint occurrence.sch) 100.000", self.agent)
+        self.assertIn("(gth due-at.u.advanced now)", self.agent)
+        self.assertIn("%invalid-schedule", self.agent)
+        service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
+        self.assertIn('"_schedule": reminder ? reminder.schedule : null', service)
+        self.assertIn('"_schedules": schedules', service)
 
     def test_state_ten_migrates_private_presentation_and_notification_defaults(self):
         self.assertIn("(migrate:tend-migrate now.bowl old-state)", self.agent)
@@ -176,7 +192,7 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("(prune-replica-alerts-load replica-alert-set.st visible)", self.agent)
 
     def test_snapshot_publishes_the_desktop_protocol_version(self):
-        self.assertIn("[%protocol-version (numb 1)]", self.json)
+        self.assertIn("[%protocol-version (numb 2)]", self.json)
 
     def test_agent_serves_the_authenticated_landscape_application(self):
         docket = (ROOT / "desk" / "desk.docket-0").read_text(encoding="utf-8")

@@ -82,6 +82,15 @@ Last verified: 2026-09-24
   completion advances hourly/daily/weekly/monthly/yearly rules with end/count
   enforcement. All-day rows and editors show the calendar date without the
   policy alert time, and Today compares that date rather than the UTC instant.
+- Protocol 2 completion actions carry bounded recurrence advancement hints.
+  Hourly rules use elapsed time; daily, weekly, monthly, and yearly rules keep
+  their IANA-zone wall-clock time across daylight-saving changes. Generated gap
+  times shift forward, folds choose the earlier instant, and an overdue
+  completion skips directly to the first future occurrence while counting the
+  skipped scheduled slots. A disposable live `~rus` run advanced a September
+  20 daily reminder completed on September 24 to September 25 at the same local
+  time with occurrence 5, while activity retained September 20 as the completed
+  due instant.
 - The agent persists delivered alert offsets, keeps one generation-tagged
   earliest Behn timer, and emits alert events that the desktop maps to native
   notifications. Live tests verified an immediate overdue wake and recurrence

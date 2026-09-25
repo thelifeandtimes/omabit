@@ -521,24 +521,35 @@ Item {
     }
 
     function setCompleted(listId, reminderId, completed, baseRevision) {
+        var taskList = listById(listId);
+        var reminder = reminderById(taskList, reminderId);
         return submit({
             "set-completed": {
                 "operation-id": operationId(),
                 "list-id": Number(listId),
                 "reminder-id": Number(reminderId),
                 "completed": completed === true,
+                "_schedule": reminder ? reminder.schedule : null,
                 "base-revision": Number(baseRevision)
             }
         }, listId);
     }
 
     function batchSetCompleted(listId, reminderIds, completed, baseRevision) {
+        var taskList = listById(listId);
+        var schedules = [];
+        for (var i = 0; i < (reminderIds || []).length; i++) {
+            var reminder = reminderById(taskList, reminderIds[i]);
+            if (reminder && reminder.schedule && reminder.schedule.recurrence)
+                schedules.push({ "reminder-id": Number(reminder.id), "schedule": reminder.schedule });
+        }
         return submit({
             "batch-set-completed": {
                 "operation-id": operationId(),
                 "list-id": Number(listId),
                 "reminder-ids": (reminderIds || []).map(Number),
                 "completed": completed === true,
+                "_schedules": schedules,
                 "base-revision": Number(baseRevision)
             }
         }, listId);

@@ -11,7 +11,7 @@ Last reconciled: 2026-09-22
 | Lists, sections, reminder CRUD, rich metadata | Verified | Gall actions, Eyre round trips, atomic section ordering, reducer and CLI tests |
 | Completion, batch actions, subtasks, stable ranks | Verified | Cascades, hierarchy controls, pointer drag/drop, keyboard placement, atomic rank normalization, and stale rejection are tested/live-verified |
 | Dates, all-day policy, time zones, early alerts | Verified | `%tend` validation, Behn wake test, `zoneinfo` gap/fold tests, and live local-wall-time-to-`@da` round trip |
-| Recurrence and next occurrence | Verified | Hourly through yearly advancement and boundary rules compile/live-test; individual and atomic batch completions retain one completed due instant per recurring reminder in bounded history |
+| Recurrence and next occurrence | Verified | Hourly through yearly advancement, DST gap/fold policy, missed-occurrence catch-up, count/end boundaries, and native/web/CLI controls are tested; a live overdue completion advanced directly to its first future wall-time slot while retaining the completed due instant in activity history |
 | Snooze | Verified | Durable presets, explicit future date/time, and notification action are exposed in both desktop and CLI paths |
 | Tags, flag, priority, safe URL, search | Verified | Gall validation and reducer/query tests |
 | Built-in views | Verified | Today, Scheduled, All, Flagged, Assigned, and Completed query behavior is reducer-tested; grocery categorization remains in the deferred Parity tier |

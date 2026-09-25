@@ -9,10 +9,10 @@ policy, not a claim that mixed builds are compatible.
 
 | Desktop | Home desk snapshot | Peer desks | Result |
 | --- | --- | --- | --- |
-| Protocol 1 | `protocol-version` 1 | Same Tend release | Supported |
-| Protocol 1 | Missing or any other version | Any | Refused before the client becomes Online |
-| Older or unknown desktop | Protocol 1 | Any | Unsupported; update the desktop |
-| Protocol 1 | Protocol 1 | Mixed pre-release Tend builds | Unsupported; update all participating ships together |
+| Protocol 2 | `protocol-version` 2 | Same Tend release | Supported |
+| Protocol 2 | Missing or any other version | Any | Refused before the client becomes Online |
+| Older or unknown desktop | Protocol 2 | Any | Unsupported; update the desktop |
+| Protocol 2 | Protocol 2 | Mixed pre-release Tend builds | Unsupported; update all participating ships together |
 
 The desktop requires an exact `protocol-version` value in every initial and
 streamed snapshot. A new login validates that snapshot before it saves either
@@ -32,6 +32,9 @@ whole sharing group on the prior release.
 
 Any incompatible change to an Eyre snapshot, action, or update increments the
 integer desktop protocol version and must ship with explicit client handling.
+Protocol 2 adds client-calculated, server-validated recurrence advancement
+hints to completion actions so calendar repeats preserve their IANA-zone wall
+time across daylight-saving changes.
 Any incompatible peer noun change gets a new mark rather than silently reusing
 `%tend-peer-1`. Backward read support and rolling peer negotiation are future
 stable-protocol work; they are not release promises for `0.1.0`.

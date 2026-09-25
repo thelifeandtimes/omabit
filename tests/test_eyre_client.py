@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import importlib.util
 import io
 import json
@@ -67,7 +68,7 @@ class EyreHandler(BaseHTTPRequestHandler):
             if f"{self.server.cookie_name}=session" not in self.headers.get("Cookie", ""):
                 self.send_bytes(403, b"forbidden", "text/plain")
                 return
-            body = self.server.state_body or json.dumps({"snapshot": {"protocol-version": 1, "lists": []}}).encode("utf-8")
+            body = self.server.state_body or json.dumps({"snapshot": {"protocol-version": 2, "lists": []}}).encode("utf-8")
             self.send_bytes(200, body)
             return
 
@@ -121,7 +122,7 @@ class EyreHandler(BaseHTTPRequestHandler):
         if first["action"] == "subscribe":
             events = [
                 (1, {"id": 1, "response": "subscribe", "ok": None}),
-                (2, {"id": 1, "response": "diff", "json": {"snapshot": {"protocol-version": 1, "lists": []}}}),
+                (2, {"id": 1, "response": "diff", "json": {"snapshot": {"protocol-version": 2, "lists": []}}}),
             ]
         else:
             events = [(1, {"id": 1, "response": "poke", "ok": None})]
@@ -273,6 +274,175 @@ class TimeZoneConversionTests(unittest.TestCase):
         self.assertEqual(schedule["local-due"], "2026-09-10T17:30")
         self.assertEqual(schedule["recurrence"]["local-end"], "2026-10-01T17:30")
 
+    def test_daily_recurrence_preserves_wall_time_across_dst(self):
+        schedule = {
+            "due-at": "~2026.3.7..17.00.00",
+            "timezone": "America/Los_Angeles",
+            "occurrence": 0,
+            "recurrence": {"frequency": "daily", "interval": 1},
+        }
+        advance = eyre_client.recurrence_advance(
+            schedule,
+            now=datetime(2026, 3, 7, 18, tzinfo=timezone.utc),
+        )
+        self.assertEqual(advance, {"due-at": "~2026.3.8..16.00.00", "occurrence": 1})
+
+    def test_hourly_recurrence_remains_elapsed_time_across_dst(self):
+        schedule = {
+            "due-at": "~2026.3.8..09.30.00",
+            "timezone": "America/Los_Angeles",
+            "occurrence": 0,
+            "recurrence": {"frequency": "hourly", "interval": 1},
+        }
+        advance = eyre_client.recurrence_advance(
+            schedule,
+            now=datetime(2026, 3, 8, 9, 45, tzinfo=timezone.utc),
+        )
+        self.assertEqual(advance, {"due-at": "~2026.3.8..10.30.00", "occurrence": 1})
+
+    def test_generated_dst_gap_shifts_forward_by_the_gap(self):
+        schedule = {
+            "due-at": "~2026.3.7..10.30.00",
+            "timezone": "America/Los_Angeles",
+            "occurrence": 0,
+            "recurrence": {"frequency": "daily", "interval": 1},
+        }
+        advance = eyre_client.recurrence_advance(
+            schedule,
+            now=datetime(2026, 3, 7, 11, tzinfo=timezone.utc),
+        )
+        self.assertEqual(advance, {"due-at": "~2026.3.8..10.30.00", "occurrence": 1})
+
+    def test_overdue_recurrence_skips_to_first_future_occurrence(self):
+        schedule = {
+            "due-at": "~2026.9.20..16.00.00",
+            "timezone": "America/Los_Angeles",
+            "occurrence": 0,
+            "recurrence": {"frequency": "daily", "interval": 1},
+        }
+        advance = eyre_client.recurrence_advance(
+            schedule,
+            now=datetime(2026, 9, 24, 19, tzinfo=timezone.utc),
+        )
+        self.assertEqual(advance, {"due-at": "~2026.9.25..16.00.00", "occurrence": 5})
+
+    def test_month_end_leap_year_and_occurrence_limits(self):
+        monthly = {
+            "due-at": "~2027.1.31..17.00.00",
+            "timezone": "America/Los_Angeles",
+            "occurrence": 0,
+            "recurrence": {"frequency": "monthly", "interval": 1, "month-days": [31]},
+        }
+        self.assertEqual(
+            eyre_client.recurrence_advance(monthly, now=datetime(2027, 1, 31, 18, tzinfo=timezone.utc)),
+            {"due-at": "~2027.2.28..17.00.00", "occurrence": 1},
+        )
+        yearly = {
+            "due-at": "~2028.2.29..17.00.00",
+            "timezone": "America/Los_Angeles",
+            "occurrence": 0,
+            "recurrence": {"frequency": "yearly", "interval": 1, "max-occurrences": 2},
+        }
+        self.assertEqual(
+            eyre_client.recurrence_advance(yearly, now=datetime(2028, 2, 29, 18, tzinfo=timezone.utc)),
+            {"due-at": "~2029.2.28..17.00.00", "occurrence": 1},
+        )
+        yearly["occurrence"] = 1
+        self.assertEqual(
+            eyre_client.recurrence_advance(yearly, now=datetime(2029, 2, 28, 18, tzinfo=timezone.utc)),
+            {"due-at": None, "occurrence": 2},
+        )
+
+    def test_weekdays_ordinal_months_folds_and_end_dates(self):
+        weekly = {
+            "due-at": "~2026.9.21..16.00.00",
+            "timezone": "America/Los_Angeles",
+            "occurrence": 0,
+            "recurrence": {"frequency": "weekly", "interval": 2, "weekdays": [1, 4]},
+        }
+        self.assertEqual(
+            eyre_client.recurrence_advance(weekly, now=datetime(2026, 9, 21, 17, tzinfo=timezone.utc)),
+            {"due-at": "~2026.9.24..16.00.00", "occurrence": 1},
+        )
+        weekly["due-at"] = "~2026.9.24..16.00.00"
+        self.assertEqual(
+            eyre_client.recurrence_advance(weekly, now=datetime(2026, 9, 24, 17, tzinfo=timezone.utc)),
+            {"due-at": "~2026.10.5..16.00.00", "occurrence": 1},
+        )
+
+        ordinal = {
+            "due-at": "~2026.1.30..09.00.00",
+            "timezone": "UTC",
+            "occurrence": 0,
+            "recurrence": {"frequency": "monthly", "interval": 1, "month-week": {"index": 5, "weekday": 1}},
+        }
+        self.assertEqual(
+            eyre_client.recurrence_advance(ordinal, now=datetime(2026, 1, 30, 10, tzinfo=timezone.utc)),
+            {"due-at": "~2026.2.23..09.00.00", "occurrence": 1},
+        )
+
+        fold = {
+            "due-at": "~2026.10.31..08.30.00",
+            "timezone": "America/Los_Angeles",
+            "occurrence": 0,
+            "recurrence": {"frequency": "daily", "interval": 1},
+        }
+        self.assertEqual(
+            eyre_client.recurrence_advance(fold, now=datetime(2026, 10, 31, 9, tzinfo=timezone.utc)),
+            {"due-at": "~2026.11.1..08.30.00", "occurrence": 1},
+        )
+
+        ending = {
+            "due-at": "~2026.9.24..16.00.00",
+            "timezone": "America/Los_Angeles",
+            "occurrence": 0,
+            "recurrence": {"frequency": "daily", "interval": 1, "end-at": "~2026.9.25..16.00.00"},
+        }
+        self.assertEqual(
+            eyre_client.recurrence_advance(ending, now=datetime(2026, 9, 24, 17, tzinfo=timezone.utc)),
+            {"due-at": "~2026.9.25..16.00.00", "occurrence": 1},
+        )
+        ending["due-at"] = "~2026.9.25..16.00.00"
+        ending["occurrence"] = 1
+        self.assertEqual(
+            eyre_client.recurrence_advance(ending, now=datetime(2026, 9, 25, 17, tzinfo=timezone.utc)),
+            {"due-at": None, "occurrence": 2},
+        )
+
+    def test_completion_normalization_adds_recurrence_hints(self):
+        action = {
+            "set-completed": {
+                "completed": True,
+                "_schedule": {
+                    "due-at": "~2026.9.24..16.00.00",
+                    "timezone": "America/Los_Angeles",
+                    "recurrence": {"frequency": "daily", "interval": 1},
+                },
+            }
+        }
+        with mock.patch.object(eyre_client, "recurrence_advance", return_value={"due-at": "~2026.9.25..16.00.00", "occurrence": 1}):
+            normalized = eyre_client.normalize_tend_action(action)
+        self.assertNotIn("_schedule", normalized["set-completed"])
+        self.assertEqual(normalized["set-completed"]["advance"]["occurrence"], 1)
+
+    def test_batch_completion_normalization_adds_one_hint_per_recurring_reminder(self):
+        action = {
+            "batch-set-completed": {
+                "completed": True,
+                "_schedules": [
+                    {"reminder-id": 7, "schedule": {"recurrence": {"frequency": "daily"}}},
+                    {"reminder-id": 8, "schedule": None},
+                ],
+            }
+        }
+        with mock.patch.object(eyre_client, "recurrence_advance", side_effect=[{"due-at": "~2026.9.25..16.00.00", "occurrence": 1}, None]):
+            normalized = eyre_client.normalize_tend_action(action)
+        self.assertNotIn("_schedules", normalized["batch-set-completed"])
+        self.assertEqual(
+            normalized["batch-set-completed"]["advances"],
+            [{"reminder-id": 7, "due-at": "~2026.9.25..16.00.00", "occurrence": 1}],
+        )
+
 
 class EyreFlowTests(unittest.TestCase):
     def setUp(self):
@@ -288,7 +458,7 @@ class EyreFlowTests(unittest.TestCase):
         result = eyre_client.login(fake.base_url, self.cookie, self.config, "lidlut-test")
         self.assertEqual(result["ship"], fake.ship)
         self.assertEqual(result["baseUrl"], fake.base_url)
-        self.assertEqual(result["protocolVersion"], 1)
+        self.assertEqual(result["protocolVersion"], 2)
 
     def test_login_saves_only_cookie_and_connection_metadata(self):
         with FakeEyre() as fake:
@@ -353,7 +523,7 @@ class EyreFlowTests(unittest.TestCase):
             self.assertEqual(envelopes[0]["message"]["response"], "subscribe")
             self.assertEqual(
                 envelopes[1]["message"]["json"],
-                {"snapshot": {"protocol-version": 1, "lists": []}},
+                {"snapshot": {"protocol-version": 2, "lists": []}},
             )
             self.assertEqual(
                 [command["event-id"] for command in fake.all_commands if command.get("action") == "ack"],
@@ -401,7 +571,7 @@ class EyreFlowTests(unittest.TestCase):
             self.login(fake)
             self.assertEqual(
                 eyre_client.scry_state(self.config, self.cookie),
-                {"snapshot": {"protocol-version": 1, "lists": []}},
+                {"snapshot": {"protocol-version": 2, "lists": []}},
             )
             fake.server.accesses_body = json.dumps({"accesses": [{"alias": 1, "owner": True}]}).encode("utf-8")
             self.assertEqual(
@@ -452,7 +622,7 @@ class EyreFlowTests(unittest.TestCase):
 
         with FakeEyre() as fake:
             self.login(fake)
-            fake.server.state_body = json.dumps({"snapshot": {"protocol-version": 2, "lists": []}}).encode("utf-8")
+            fake.server.state_body = json.dumps({"snapshot": {"protocol-version": 1, "lists": []}}).encode("utf-8")
             with self.assertRaisesRegex(eyre_client.TendTransportError, "incompatible") as raised:
                 eyre_client.scry_state(self.config, self.cookie)
             self.assertEqual(raised.exception.code, "incompatible-protocol")

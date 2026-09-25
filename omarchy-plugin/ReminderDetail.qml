@@ -18,6 +18,8 @@ BorderSurface {
   property bool loadingFields: false
   property bool pendingTextSave: false
   property var recurrenceBase: null
+  property var repeatWeekdays: []
+  property string scheduleTimezone: timezone
   signal closeRequested()
   signal moveRequested(int destinationListId)
   signal reminderRequested(int reminderId)
@@ -112,13 +114,18 @@ BorderSurface {
 
   function recurrenceValue() {
     if (repeatField.currentText === "none") return null
-    var source = recurrenceBase || ({})
+    var monthDays = repeatMonthDays.text.split(",").map(function(day) {
+      return Number(day.trim())
+    }).filter(function(day) { return isFinite(day) && day >= 1 && day <= 31 })
     return {
       frequency: repeatField.currentText,
       interval: Math.max(1, Number(repeatInterval.value || 1)),
-      weekdays: (source.weekdays || []).map(Number),
-      monthDays: (source.monthDays || source["month-days"] || []).map(Number),
-      monthWeek: source.monthWeek || source["month-week"] || null,
+      weekdays: repeatField.currentText === "weekly" ? repeatWeekdays.map(Number) : [],
+      monthDays: (repeatField.currentText === "monthly" || repeatField.currentText === "yearly") && repeatMonthMode.currentText === "dates" ? monthDays : [],
+      monthWeek: repeatField.currentText === "monthly" && repeatMonthMode.currentText === "ordinal weekday" ? {
+        index: Number(repeatOrdinalIndex.value || 1),
+        weekday: Number(repeatOrdinalWeekday.currentIndex)
+      } : null,
       endAt: repeatEndField.currentText === "on date" && repeatEndPicker.value ? repeatEndPicker.value : null,
       maxOccurrences: repeatEndField.currentText === "after count" ? Math.max(1, Number(repeatCount.value || 1)) : null
     }
@@ -140,6 +147,7 @@ BorderSurface {
     tagPicker.values = (reminder.tags || []).slice()
     assigneeField.value = normalizedShip(reminder.assignee)
     listField.currentIndex = indexForList(list ? list.id : 0)
+    scheduleTimezone = reminder.schedule && reminder.schedule.timezone ? String(reminder.schedule.timezone) : timezone
     duePicker.value = TendModel.scheduleInputValue(reminder.schedule)
     duePicker.allDay = reminder.schedule ? reminder.schedule.allDay === true : false
     allDayField.checked = duePicker.allDay
@@ -149,6 +157,11 @@ BorderSurface {
       monthDays: (recurrence.monthDays || recurrence["month-days"] || []).slice(),
       monthWeek: recurrence.monthWeek || recurrence["month-week"] || null
     } : null
+    repeatWeekdays = recurrenceBase ? recurrenceBase.weekdays.slice() : []
+    repeatMonthDays.text = recurrenceBase ? recurrenceBase.monthDays.join(", ") : ""
+    repeatMonthMode.currentIndex = recurrenceBase && recurrenceBase.monthWeek ? 1 : 0
+    repeatOrdinalIndex.value = recurrenceBase && recurrenceBase.monthWeek ? Math.max(1, Math.min(5, Number(recurrenceBase.monthWeek.index || 1))) : 1
+    repeatOrdinalWeekday.currentIndex = recurrenceBase && recurrenceBase.monthWeek ? Math.max(0, Math.min(6, Number(recurrenceBase.monthWeek.weekday || 0))) : 0
     repeatField.currentIndex = Math.max(0, repeatField.model.indexOf(recurrence ? String(recurrence.frequency || "daily") : "none"))
     repeatInterval.value = recurrence ? Math.max(1, Number(recurrence.interval || 1)) : 1
     repeatEndPicker.value = recurrenceEndInput(recurrence)
@@ -215,7 +228,7 @@ BorderSurface {
     var accepted = service.setSchedule(list.id, reminder.id, value ? {
       due: value,
       allDay: allDayField.checked,
-      timezone: timezone,
+      timezone: scheduleTimezone,
       earlySeconds: [],
       recurrence: recurrenceValue()
     } : null, list.revision)
@@ -487,6 +500,96 @@ BorderSurface {
             opacity: 0.72
             font.family: Style.font.family
             font.pixelSize: Style.font.body
+          }
+        }
+
+        Column {
+          width: parent.width
+          spacing: Style.space(6)
+          visible: repeatField.currentText === "weekly"
+
+          Text { text: "ON"; color: Color.popups.text; opacity: 0.68; font.family: Style.font.family; font.pixelSize: Style.font.caption; font.bold: true }
+
+          Flow {
+            width: parent.width
+            spacing: Style.space(5)
+
+            Repeater {
+              model: [
+                { label: "S", value: 0 }, { label: "M", value: 1 }, { label: "T", value: 2 },
+                { label: "W", value: 3 }, { label: "T", value: 4 }, { label: "F", value: 5 },
+                { label: "S", value: 6 }
+              ]
+
+              TendButton {
+                width: Style.space(34)
+                text: modelData.label
+                checkable: true
+                checked: root.repeatWeekdays.indexOf(modelData.value) !== -1
+                Accessible.name: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][modelData.value]
+                onClicked: {
+                  var values = root.repeatWeekdays.slice()
+                  var index = values.indexOf(modelData.value)
+                  if (index === -1) values.push(modelData.value)
+                  else values.splice(index, 1)
+                  values.sort(function(left, right) { return left - right })
+                  root.repeatWeekdays = values
+                  root.saveSchedule()
+                }
+              }
+            }
+          }
+        }
+
+        Column {
+          width: parent.width
+          spacing: Style.space(8)
+          visible: repeatField.currentText === "monthly" || repeatField.currentText === "yearly"
+
+          TendDropdown {
+            id: repeatMonthMode
+            width: parent.width
+            label: "Monthly pattern"
+            model: repeatField.currentText === "monthly" ? ["dates", "ordinal weekday"] : ["dates"]
+            Accessible.name: "Repeat month pattern"
+            onActivated: root.saveSchedule()
+          }
+
+          TendTextField {
+            id: repeatMonthDays
+            width: parent.width
+            visible: repeatMonthMode.currentText === "dates"
+            placeholderText: repeatField.currentText === "yearly" ? "Day of month, for example 15" : "Month dates, for example 1, 15, 31"
+            Accessible.name: repeatField.currentText === "yearly" ? "Yearly month date" : "Monthly dates"
+            onAccepted: root.saveSchedule()
+            onEditingFinished: if (!root.loadingFields) root.saveSchedule()
+          }
+
+          Row {
+            width: parent.width
+            spacing: Style.space(8)
+            visible: repeatField.currentText === "monthly" && repeatMonthMode.currentText === "ordinal weekday"
+
+            TendNumber {
+              id: repeatOrdinalIndex
+              width: Math.min(Style.space(120), parent.width * 0.36)
+              label: "Week"
+              from: 1
+              to: 5
+              value: 1
+              editable: true
+              Accessible.name: "Ordinal week, where five means last"
+              onValueChanged: if (activeFocus && !root.loadingFields) root.saveSchedule()
+            }
+
+            TendDropdown {
+              id: repeatOrdinalWeekday
+              width: parent.width - repeatOrdinalIndex.width - parent.spacing
+              label: "Weekday"
+              model: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+              Accessible.name: "Ordinal weekday"
+              onActivated: root.saveSchedule()
+            }
           }
         }
 

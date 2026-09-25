@@ -1118,19 +1118,29 @@ def run_tend(args: argparse.Namespace) -> int:
         for reminder_id in args.reminder_ids:
             find_reminder(task_list, reminder_id)
         if len(args.reminder_ids) == 1:
+            reminder = find_reminder(task_list, args.reminder_ids[0])
             action = {"set-completed": {
                 "operation-id": operation_id(),
                 "list-id": args.list_id,
                 "reminder-id": args.reminder_ids[0],
                 "completed": args.tend_command == "complete",
+                "advance": transport.recurrence_advance(reminder.get("schedule")) if args.tend_command == "complete" else None,
                 "base-revision": int(task_list.get("revision", 0)),
             }}
         else:
+            advances = []
+            if args.tend_command == "complete":
+                for reminder_id in args.reminder_ids:
+                    reminder = find_reminder(task_list, reminder_id)
+                    advance = transport.recurrence_advance(reminder.get("schedule"))
+                    if advance is not None:
+                        advances.append({"reminder-id": reminder_id, **advance})
             action = {"batch-set-completed": {
                 "operation-id": operation_id(),
                 "list-id": args.list_id,
                 "reminder-ids": args.reminder_ids,
                 "completed": args.tend_command == "complete",
+                "advances": advances,
                 "base-revision": int(task_list.get("revision", 0)),
             }}
         poke(cookie_path, config_path, action)

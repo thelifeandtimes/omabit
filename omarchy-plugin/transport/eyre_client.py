@@ -5,7 +5,8 @@ from __future__ import annotations
 
 import argparse
 import copy
-from datetime import datetime, timezone
+from calendar import monthrange
+from datetime import datetime, timedelta, timezone
 import http.cookiejar
 import ipaddress
 import json
@@ -23,7 +24,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 APP = "tend"
 ACTION_MARK = "tend-action-1"
-PROTOCOL_VERSION = 1
+PROTOCOL_VERSION = 2
 MAX_JSON_BYTES = 32 * 1024 * 1024
 MAX_SSE_LINE_BYTES = 32 * 1024 * 1024
 MAX_SSE_EVENT_BYTES = 32 * 1024 * 1024
@@ -76,6 +77,144 @@ def zone(value: str) -> ZoneInfo:
         return ZoneInfo(value)
     except (ZoneInfoNotFoundError, ValueError) as error:
         raise TendTransportError(f"Unknown IANA time zone: {value}", "invalid-schedule-time") from error
+
+
+def _schedule_field(value: dict[str, object], kebab: str, camel: str, default: object = None) -> object:
+    return value[kebab] if kebab in value else value.get(camel, default)
+
+
+def _valid_local_instants(wall: datetime, timezone_value: ZoneInfo) -> list[datetime]:
+    candidates: list[datetime] = []
+    for fold in (0, 1):
+        candidate = wall.replace(tzinfo=timezone_value, fold=fold).astimezone(timezone.utc)
+        round_trip = candidate.astimezone(timezone_value).replace(tzinfo=None)
+        if round_trip == wall and candidate not in candidates:
+            candidates.append(candidate)
+    return sorted(candidates)
+
+
+def _resolve_recurrence_wall_time(wall: datetime, timezone_value: ZoneInfo) -> datetime:
+    """Resolve a generated local recurrence, shifting DST gaps forward."""
+    candidates = _valid_local_instants(wall, timezone_value)
+    if candidates:
+        return candidates[0]
+    shifted: list[tuple[datetime, datetime]] = []
+    for fold in (0, 1):
+        candidate = wall.replace(tzinfo=timezone_value, fold=fold).astimezone(timezone.utc)
+        round_trip = candidate.astimezone(timezone_value).replace(tzinfo=None)
+        if round_trip > wall:
+            shifted.append((round_trip, candidate))
+    if shifted:
+        return min(shifted, key=lambda value: (value[0], value[1]))[1]
+    raise TendTransportError(
+        f"Could not resolve recurring wall time {wall.isoformat()} in {timezone_value.key}",
+        "invalid-schedule-time",
+    )
+
+
+def _weekday_sunday_zero(value: datetime) -> int:
+    return (value.weekday() + 1) % 7
+
+
+def _shift_month(value: datetime, months: int) -> datetime:
+    total = value.year * 12 + value.month - 1 + months
+    year, month_index = divmod(total, 12)
+    return value.replace(year=year, month=month_index + 1, day=1)
+
+
+def _ordinal_month_day(year: int, month: int, index: int, weekday: int) -> int:
+    maximum = monthrange(year, month)[1]
+    if index == 5:
+        last = datetime(year, month, maximum)
+        return maximum - ((_weekday_sunday_zero(last) - weekday) % 7)
+    first = datetime(year, month, 1)
+    day = 1 + ((weekday - _weekday_sunday_zero(first)) % 7) + (index - 1) * 7
+    if day > maximum:
+        day -= 7
+    return day
+
+
+def _next_recurrence_wall(current: datetime, recurrence: dict[str, object]) -> datetime:
+    frequency = str(recurrence.get("frequency") or "daily")
+    interval = max(1, int(recurrence.get("interval") or 1))
+    if frequency == "daily":
+        return current + timedelta(days=interval)
+    if frequency == "weekly":
+        weekdays = sorted({int(day) for day in recurrence.get("weekdays") or [] if 0 <= int(day) <= 6})
+        if not weekdays:
+            return current + timedelta(days=interval * 7)
+        current_weekday = _weekday_sunday_zero(current)
+        later = [day for day in weekdays if day > current_weekday]
+        days = min(later) - current_weekday if later else interval * 7 + min(weekdays) - current_weekday
+        return current + timedelta(days=days)
+    if frequency == "monthly":
+        month_days = sorted({int(day) for day in _schedule_field(recurrence, "month-days", "monthDays", []) or [] if 1 <= int(day) <= 31})
+        month_week = _schedule_field(recurrence, "month-week", "monthWeek")
+        maximum = monthrange(current.year, current.month)[1]
+        later = [day for day in month_days if current.day < day <= maximum]
+        if later:
+            return current.replace(day=min(later))
+        if isinstance(month_week, dict):
+            index = max(1, min(5, int(month_week.get("index") or 1)))
+            weekday = max(0, min(6, int(month_week.get("weekday") or 0)))
+            candidate = _ordinal_month_day(current.year, current.month, index, weekday)
+            if candidate > current.day:
+                return current.replace(day=candidate)
+            target = _shift_month(current, interval)
+            return target.replace(day=_ordinal_month_day(target.year, target.month, index, weekday))
+        target = _shift_month(current, interval)
+        desired = min(month_days) if month_days else current.day
+        return target.replace(day=min(desired, monthrange(target.year, target.month)[1]))
+    if frequency == "yearly":
+        month_days = sorted({int(day) for day in _schedule_field(recurrence, "month-days", "monthDays", []) or [] if 1 <= int(day) <= 31})
+        target_year = current.year + interval
+        desired = min(month_days) if month_days else current.day
+        return current.replace(year=target_year, day=min(desired, monthrange(target_year, current.month)[1]))
+    raise TendTransportError(f"Unknown recurrence frequency: {frequency}", "invalid-schedule-time")
+
+
+def recurrence_advance(schedule: object, *, now: datetime | None = None) -> dict[str, object] | None:
+    """Return the first future occurrence hint for one recurring schedule."""
+    if not isinstance(schedule, dict) or not isinstance(schedule.get("recurrence"), dict):
+        return None
+    recurrence = schedule["recurrence"]
+    assert isinstance(recurrence, dict)
+    raw_due = _schedule_field(schedule, "due-at", "dueAt")
+    if not raw_due:
+        return None
+    due = urbit_datetime(str(raw_due)) if str(raw_due).startswith("~") else datetime.fromisoformat(str(raw_due).replace("Z", "+00:00")).astimezone(timezone.utc)
+    timezone_value = zone(str(schedule.get("timezone") or "UTC"))
+    occurrence = max(0, int(schedule.get("occurrence") or 0))
+    maximum_value = _schedule_field(recurrence, "max-occurrences", "maxOccurrences")
+    maximum = None if maximum_value is None else max(1, int(maximum_value))
+    end_value = _schedule_field(recurrence, "end-at", "endAt")
+    end_at = None if not end_value else (urbit_datetime(str(end_value)) if str(end_value).startswith("~") else normalize_wall_time(end_value, str(schedule.get("timezone") or "UTC")))
+    if isinstance(end_at, str):
+        end_at = urbit_datetime(end_at)
+    current = due
+    current_now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    frequency = str(recurrence.get("frequency") or "daily")
+    if frequency == "hourly":
+        interval = max(1, int(recurrence.get("interval") or 1))
+        duration = timedelta(hours=interval)
+        steps = max(1, int((current_now - current) // duration) + 1) if current <= current_now else 1
+        occurrence += steps
+        next_due = current + duration * steps
+        if (maximum is not None and occurrence >= maximum) or (end_at is not None and next_due > end_at):
+            return {"due-at": None, "occurrence": occurrence}
+        return {"due-at": urbit_date(next_due), "occurrence": occurrence}
+    for _ in range(100_000):
+        occurrence += 1
+        if maximum is not None and occurrence >= maximum:
+            return {"due-at": None, "occurrence": occurrence}
+        local = current.astimezone(timezone_value).replace(tzinfo=None)
+        next_wall = _next_recurrence_wall(local, recurrence)
+        current = _resolve_recurrence_wall_time(next_wall, timezone_value)
+        if end_at is not None and current > end_at:
+            return {"due-at": None, "occurrence": occurrence}
+        if current > current_now:
+            return {"due-at": urbit_date(current), "occurrence": occurrence}
+    raise TendTransportError("Recurrence is too far overdue to advance safely", "invalid-schedule-time")
 
 
 def local_timezone_name() -> str:
@@ -147,7 +286,28 @@ def normalize_wall_time(value: object, timezone_name: str, *, all_day: bool = Fa
 
 def normalize_tend_action(action: object) -> object:
     normalized = copy.deepcopy(action)
-    if not isinstance(normalized, dict) or len(normalized) != 1 or "set-schedule" not in normalized:
+    if not isinstance(normalized, dict) or len(normalized) != 1:
+        return normalized
+    if "set-completed" in normalized:
+        body = normalized["set-completed"]
+        if isinstance(body, dict):
+            schedule = body.pop("_schedule", None)
+            body["advance"] = recurrence_advance(schedule) if body.get("completed") is True else None
+        return normalized
+    if "batch-set-completed" in normalized:
+        body = normalized["batch-set-completed"]
+        if isinstance(body, dict):
+            schedules = body.pop("_schedules", [])
+            body["advances"] = []
+            if body.get("completed") is True and isinstance(schedules, list):
+                for entry in schedules:
+                    if not isinstance(entry, dict):
+                        continue
+                    advance = recurrence_advance(entry.get("schedule"))
+                    if advance is not None:
+                        body["advances"].append({"reminder-id": int(entry.get("reminder-id", 0)), **advance})
+        return normalized
+    if "set-schedule" not in normalized:
         return normalized
     body = normalized["set-schedule"]
     if not isinstance(body, dict) or body.get("schedule") is None:

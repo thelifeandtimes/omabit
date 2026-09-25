@@ -11,7 +11,7 @@ the normalized endpoint/ship identity. Non-loopback HTTP is rejected.
 The client opens one Eyre channel, subscribes to `%tend` at `/all`, acknowledges
 every SSE event, and remains in `Checking` until it receives a complete
 snapshot. Mutations use `%tend-action-1`; updates use `%tend-update-1`.
-Every complete snapshot carries integer `protocol-version` 1. The desktop
+Every complete snapshot carries integer `protocol-version` 2. The desktop
 requires an exact match during login, direct state reads, and streamed snapshot
 replacement; a missing or different value fails closed before editing is
 enabled. See `TEND_COMPATIBILITY.md` for the pre-release lockstep policy.
@@ -52,6 +52,23 @@ returns its recorded result without applying it twice.
 | `accept-invite`, `decline-invite` | Accept or discard an authenticated inter-ship invitation |
 | `leave-list` | Remove the local replica and ask the owner to remove this participant |
 | `restore-empty` | Atomically restore one validated owner-only `tend-backup-1` envelope into empty state |
+
+Completing a repeating reminder may include a recurrence-advance hint with the
+next canonical due instant and occurrence counter. Batch completion carries at
+most one hint per selected reminder. The owner checks that the reminder is
+actually recurring, that the counter moves forward by no more than 100,000
+scheduled slots, that a non-terminal due instant is later than both the old due
+instant and completion time, and that count/end limits are respected. Missing
+hints retain the bounded Gall fallback for additive compatibility, but protocol
+2 clients always calculate them from the schedule's IANA time zone.
+
+Hourly recurrence advances by exact elapsed hours. Daily, weekly, monthly, and
+yearly recurrence preserves the scheduled local wall-clock time. A generated
+time in a daylight-saving gap moves forward by the size of the gap; an
+ambiguous fold chooses the earlier instant. Completing an overdue repeat skips
+directly to the first future scheduled slot, counts every skipped slot toward
+the occurrence limit, and records only the occurrence the user completed in
+activity history.
 
 List appearance strings are non-empty and bounded; list deletion requires a
 second confirmation in the desktop UI. Editable reminder metadata currently

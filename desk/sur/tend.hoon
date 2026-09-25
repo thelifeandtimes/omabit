@@ -113,6 +113,14 @@
       end-at=(unit @da)
       max-occurrences=(unit @ud)
   ==
++$  recurrence-advance
+  $:  due-at=(unit @da)
+      occurrence=@ud
+  ==
++$  reminder-advance
+  $:  =reminder-id
+      advance=recurrence-advance
+  ==
 +$  schedule
   $:  due-at=@da
       all-day=?
@@ -311,8 +319,8 @@
           schedule=(unit schedule-input)
           base-revision=@ud
       ==
-      [%set-completed =op-id =list-id =reminder-id completed=? base-revision=@ud]
-      [%batch-set-completed =op-id =list-id reminder-ids=(set reminder-id) completed=? base-revision=@ud]
+      [%set-completed =op-id =list-id =reminder-id completed=? advance=(unit recurrence-advance) base-revision=@ud]
+      [%batch-set-completed =op-id =list-id reminder-ids=(set reminder-id) completed=? advances=(list reminder-advance) base-revision=@ud]
       $:  %set-preferences
           =op-id
           default-list=(unit list-id)

@@ -189,7 +189,12 @@ collecting a reproducible error, but never attach a cookie jar, pier key, or
 Tend resolves local wall-clock values with the system IANA time-zone database.
 Install or update the distribution's `tzdata` package if a valid IANA zone is
 reported as unavailable. A wall time skipped by a daylight-saving transition
-is intentionally rejected; choose the first valid time after the gap.
+is intentionally rejected when entered directly; choose the first valid time
+after the gap. If a calendar recurrence itself generates a skipped wall time,
+Tend shifts that occurrence forward by the transition gap. Ambiguous generated
+fold times use the earlier instant. Hourly repeats are elapsed-time schedules
+and therefore do not preserve the displayed wall-clock hour across a clock
+change.
 
 ### Notifications do not appear
 

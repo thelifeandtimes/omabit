@@ -176,6 +176,10 @@
     .schedule-line { display: grid; grid-template-columns: minmax(0,1fr) 40px; align-items: center; gap: 8px; }
     .schedule-summary { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--text); font-weight: 600; }
     .recurrence-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(100px,.52fr); gap: 9px; }
+    .weekday-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:5px; }
+    .weekday-button { min-width:0; height:36px; padding:0; border:1px solid var(--border); border-radius:9px; background:transparent; color:var(--muted); cursor:pointer; }
+    .weekday-button:hover { border-color:var(--accent); color:var(--text); }
+    .weekday-button.active { background:var(--accent-soft); border-color:var(--accent); color:var(--accent-text); }
     .relationship-group { display: grid; gap: 4px; }
     .relationship-list { display: grid; gap: 2px; }
     .relationship-button {
@@ -328,27 +332,55 @@
       function formatDue(schedule) {
         const raw = schedule && (schedule["due-at"] || schedule.dueAt);
         if (!raw) return "";
-        const urbit = String(raw).match(/^~(\d+)\.(\d+)\.(\d+)\.\.(\d+)\.(\d+)\.(\d+)/);
-        if (urbit) {
-          const date = new Date(Date.UTC(+urbit[1], +urbit[2] - 1, +urbit[3], +urbit[4], +urbit[5], +urbit[6]));
-          return schedule["all-day"] ? date.toLocaleDateString() : date.toLocaleString([], {dateStyle:"medium", timeStyle:"short"});
+        const parsed = instantFromValue(raw);
+        if (Number.isNaN(parsed.getTime())) return String(raw);
+        const timeZone = String(schedule.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone);
+        try { return schedule["all-day"] ? parsed.toLocaleDateString([], {timeZone}) : parsed.toLocaleString([], {dateStyle:"medium", timeStyle:"short", timeZone}); }
+        catch (_) { return schedule["all-day"] ? parsed.toLocaleDateString() : parsed.toLocaleString([], {dateStyle:"medium", timeStyle:"short"}); }
+      }
+      function instantFromValue(raw) {
+        const urbit = String(raw || "").match(/^~(\d+)\.(\d+)\.(\d+)\.\.(\d+)\.(\d+)\.(\d+)/);
+        if (urbit) return new Date(Date.UTC(+urbit[1], +urbit[2] - 1, +urbit[3], +urbit[4], +urbit[5], +urbit[6]));
+        return new Date(raw);
+      }
+      function urbitDate(date) {
+        return `~${date.getUTCFullYear()}.${date.getUTCMonth()+1}.${date.getUTCDate()}..${String(date.getUTCHours()).padStart(2,"0")}.${String(date.getUTCMinutes()).padStart(2,"0")}.${String(date.getUTCSeconds()).padStart(2,"0")}`;
+      }
+      function zonedParts(date, timeZone) {
+        const parts = new Intl.DateTimeFormat("en-CA", {timeZone, hourCycle:"h23", year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit"}).formatToParts(date);
+        const values = Object.fromEntries(parts.filter(part => part.type !== "literal").map(part => [part.type, Number(part.value)]));
+        if (values.hour === 24) values.hour = 0;
+        return values;
+      }
+      function wallScalar(parts) { return Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour || 0, parts.minute || 0, parts.second || 0); }
+      function sameWall(left, right) { return ["year","month","day","hour","minute","second"].every(key => Number(left[key] || 0) === Number(right[key] || 0)); }
+      function resolveZonedWall(parts, timeZone) {
+        const desired = wallScalar(parts); const offsets = new Set();
+        for (let hours = -48; hours <= 48; hours += 6) {
+          const sample = new Date(desired + hours * 3600000); const local = zonedParts(sample, timeZone);
+          offsets.add(wallScalar(local) - sample.getTime());
         }
-        const parsed = new Date(raw);
-        return Number.isNaN(parsed.getTime()) ? String(raw) : (schedule["all-day"] ? parsed.toLocaleDateString() : parsed.toLocaleString([], {dateStyle:"medium", timeStyle:"short"}));
+        const exact = []; const shifted = [];
+        for (const offset of offsets) {
+          const candidate = new Date(desired - offset); const roundTrip = zonedParts(candidate, timeZone); const scalar = wallScalar(roundTrip);
+          if (sameWall(roundTrip, parts)) exact.push(candidate);
+          else if (scalar > desired) shifted.push({scalar, candidate});
+        }
+        if (exact.length) return exact.sort((a,b) => a - b)[0];
+        if (shifted.length) return shifted.sort((a,b) => a.scalar - b.scalar || a.candidate - b.candidate)[0].candidate;
+        throw new Error(`Could not resolve recurring time in ${timeZone}`);
+      }
+      function inputForZone(date, timeZone) {
+        const value = zonedParts(date, timeZone);
+        return `${value.year}-${String(value.month).padStart(2,"0")}-${String(value.day).padStart(2,"0")}T${String(value.hour).padStart(2,"0")}:${String(value.minute).padStart(2,"0")}`;
       }
       function inputDue(schedule) {
         const raw = schedule && (schedule["due-at"] || schedule.dueAt);
         if (!raw) return "";
-        const urbit = String(raw).match(/^~(\d+)\.(\d+)\.(\d+)\.\.(\d+)\.(\d+)/);
-        if (urbit) {
-          const date = new Date(Date.UTC(+urbit[1], +urbit[2] - 1, +urbit[3], +urbit[4], +urbit[5]));
-          const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-          return local.toISOString().slice(0,16);
-        }
-        const date = new Date(raw);
+        const date = instantFromValue(raw);
         if (Number.isNaN(date.getTime())) return String(raw).slice(0,16);
-        const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-        return local.toISOString().slice(0,16);
+        try { return inputForZone(date, String(schedule.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone)); }
+        catch (_) { const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000); return local.toISOString().slice(0,16); }
       }
       function formatDraftDue(value, allDay = false) {
         if (!value) return "No due date";
@@ -359,7 +391,8 @@
       function recurrenceDraft(schedule) {
         const value = schedule && schedule.recurrence;
         if (!value) return {frequency:"none", interval:1, weekdays:[], monthDays:[], monthWeek:null, endMode:"never", endAt:"", maxOccurrences:1};
-        const endAt = inputDue({"due-at":value["local-end"] || value.localEnd || value["end-at"] || value.endAt || ""});
+        const localEnd = value["local-end"] || value.localEnd || "";
+        const endAt = localEnd ? String(localEnd).slice(0,16) : inputDue({"due-at":value["end-at"] || value.endAt || "", timezone:schedule && schedule.timezone});
         const maximum = value["max-occurrences"] ?? value.maxOccurrences ?? null;
         return {
           frequency:String(value.frequency || "daily"), interval:Math.max(1, Number(value.interval || 1)),
@@ -371,11 +404,12 @@
       }
       function recurrencePayload(draft) {
         if (!draft || draft.repeatFrequency === "none") return null;
-        const base = draft.recurrenceBase || {};
+        const monthDays = String(draft.repeatMonthDays || "").split(",").map(value => Number(value.trim())).filter(value => Number.isInteger(value) && value >= 1 && value <= 31);
         return {
           frequency:draft.repeatFrequency, interval:Math.max(1, Number(draft.repeatInterval || 1)),
-          weekdays:[...(base.weekdays || [])].map(Number), "month-days":[...(base.monthDays || [])].map(Number),
-          "month-week":base.monthWeek || null,
+          weekdays:draft.repeatFrequency === "weekly" ? [...(draft.repeatWeekdays || [])].map(Number) : [],
+          "month-days":(["monthly","yearly"].includes(draft.repeatFrequency) && draft.repeatMonthMode === "dates") ? monthDays : [],
+          "month-week":draft.repeatFrequency === "monthly" && draft.repeatMonthMode === "ordinal weekday" ? {index:Math.max(1,Math.min(5,Number(draft.repeatOrdinalIndex || 1))),weekday:Math.max(0,Math.min(6,Number(draft.repeatOrdinalWeekday || 0)))} : null,
           "end-at":draft.repeatEndMode === "on date" && draft.repeatEndAt ? draft.repeatEndAt : null,
           "max-occurrences":draft.repeatEndMode === "after count" ? Math.max(1, Number(draft.repeatCount || 1)) : null
         };
@@ -388,6 +422,70 @@
           "month-week":value.monthWeek, "end-at":value.endMode === "on date" ? value.endAt : null,
           "max-occurrences":value.endMode === "after count" ? value.maxOccurrences : null
         };
+      }
+      function daysInMonth(year, month) { return new Date(Date.UTC(year, month, 0)).getUTCDate(); }
+      function shiftedMonth(parts, interval) {
+        const total = parts.year * 12 + parts.month - 1 + interval;
+        return {...parts, year:Math.floor(total / 12), month:(total % 12) + 1, day:1};
+      }
+      function ordinalMonthDay(year, month, index, weekday) {
+        const maximum = daysInMonth(year, month);
+        if (index === 5) return maximum - ((new Date(Date.UTC(year, month - 1, maximum)).getUTCDay() - weekday + 7) % 7);
+        let day = 1 + ((weekday - new Date(Date.UTC(year, month - 1, 1)).getUTCDay() + 7) % 7) + (index - 1) * 7;
+        return day > maximum ? day - 7 : day;
+      }
+      function plusWallDays(parts, days) {
+        const value = new Date(wallScalar(parts)); value.setUTCDate(value.getUTCDate() + days);
+        return {year:value.getUTCFullYear(),month:value.getUTCMonth()+1,day:value.getUTCDate(),hour:parts.hour,minute:parts.minute,second:parts.second};
+      }
+      function nextRecurrenceWall(parts, recurrence) {
+        const interval = Math.max(1, Number(recurrence.interval || 1)); const frequency = String(recurrence.frequency || "daily");
+        if (frequency === "daily") return plusWallDays(parts, interval);
+        if (frequency === "weekly") {
+          const weekdays = [...new Set((recurrence.weekdays || []).map(Number).filter(day => day >= 0 && day <= 6))].sort((a,b)=>a-b);
+          if (!weekdays.length) return plusWallDays(parts, interval * 7);
+          const current = new Date(wallScalar(parts)).getUTCDay(); const later = weekdays.filter(day => day > current);
+          return plusWallDays(parts, later.length ? later[0] - current : interval * 7 + weekdays[0] - current);
+        }
+        const monthDays = [...new Set((recurrence["month-days"] || recurrence.monthDays || []).map(Number).filter(day => day >= 1 && day <= 31))].sort((a,b)=>a-b);
+        if (frequency === "monthly") {
+          const maximum = daysInMonth(parts.year, parts.month); const later = monthDays.filter(day => day > parts.day && day <= maximum);
+          if (later.length) return {...parts, day:later[0]};
+          const ordinal = recurrence["month-week"] || recurrence.monthWeek;
+          if (ordinal) {
+            const index = Math.max(1, Math.min(5, Number(ordinal.index || 1))); const weekday = Math.max(0, Math.min(6, Number(ordinal.weekday || 0)));
+            const sameMonth = ordinalMonthDay(parts.year, parts.month, index, weekday);
+            if (sameMonth > parts.day) return {...parts, day:sameMonth};
+            const target = shiftedMonth(parts, interval); return {...target, day:ordinalMonthDay(target.year, target.month, index, weekday)};
+          }
+          const target = shiftedMonth(parts, interval); const desired = monthDays.length ? monthDays[0] : parts.day;
+          return {...target, day:Math.min(desired, daysInMonth(target.year, target.month))};
+        }
+        if (frequency === "yearly") {
+          const year = parts.year + interval; const desired = monthDays.length ? monthDays[0] : parts.day;
+          return {...parts, year, day:Math.min(desired, daysInMonth(year, parts.month))};
+        }
+        throw new Error(`Unknown recurrence frequency: ${frequency}`);
+      }
+      function recurrenceAdvance(schedule, now = new Date()) {
+        if (!schedule || !schedule.recurrence) return null;
+        let current = instantFromValue(schedule["due-at"] || schedule.dueAt); if (Number.isNaN(current.getTime())) return null;
+        const recurrence = schedule.recurrence; const timeZone = String(schedule.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone);
+        let occurrence = Math.max(0, Number(schedule.occurrence || 0)); const maximum = recurrence["max-occurrences"] ?? recurrence.maxOccurrences ?? null;
+        const endValue = recurrence["end-at"] || recurrence.endAt; const endAt = endValue ? instantFromValue(endValue) : null;
+        if (String(recurrence.frequency || "daily") === "hourly") {
+          const duration = Math.max(1, Number(recurrence.interval || 1)) * 3600000;
+          const steps = current <= now ? Math.max(1, Math.floor((now - current) / duration) + 1) : 1;
+          occurrence += steps; current = new Date(current.getTime() + steps * duration);
+          return (maximum !== null && occurrence >= Number(maximum)) || (endAt && current > endAt) ? {"due-at":null,occurrence} : {"due-at":urbitDate(current),occurrence};
+        }
+        for (let index = 0; index < 100000; index += 1) {
+          occurrence += 1; if (maximum !== null && occurrence >= Number(maximum)) return {"due-at":null,occurrence};
+          current = resolveZonedWall(nextRecurrenceWall(zonedParts(current, timeZone), recurrence), timeZone);
+          if (endAt && current > endAt) return {"due-at":null,occurrence};
+          if (current > now) return {"due-at":urbitDate(current),occurrence};
+        }
+        throw new Error("Recurrence is too far overdue to advance safely");
       }
       function reminderAncestors(list, reminder) {
         if (!list || !reminder) return [];
@@ -448,7 +546,7 @@
             json("/~/scry/tend/whoami.json"), json("/~/scry/tend/state.json"), json("/~/scry/tend/accesses.json"), json("/~/scry/tend/invitations.json")
           ]);
           const snapshot = snapshotEnvelope.snapshot || {};
-          if (snapshot["protocol-version"] !== 1) throw new Error("This Tend client requires protocol version 1.");
+          if (snapshot["protocol-version"] !== 2) throw new Error("This Tend client requires protocol version 2.");
           state.ship = normalizeShip(ship);
           state.lists = Array.isArray(snapshot.lists) ? snapshot.lists : [];
           state.preferences = snapshot.preferences || {};
@@ -645,10 +743,12 @@
           id:reminder.id, title:String(reminder.title || ""), notes:String(reminder.notes || ""), url:String(reminder.url || ""),
           priority:String(reminder.priority || "none"), flagged:reminder.flagged === true, completed:reminder.completed === true,
           assignee:normalizeShip(reminder.assignee), tags:[...(reminder.tags || [])], due:inputDue(reminder.schedule),
-          allDay:!!(reminder.schedule && reminder.schedule["all-day"]), parentId:reminder["parent-id"] ?? reminder.parentId ?? null,
+          allDay:!!(reminder.schedule && reminder.schedule["all-day"]), timezone:String(reminder.schedule && reminder.schedule.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone), parentId:reminder["parent-id"] ?? reminder.parentId ?? null,
           repeatFrequency:repeat.frequency, repeatInterval:repeat.interval, repeatEndMode:repeat.endMode,
           repeatEndAt:repeat.endAt, repeatCount:repeat.maxOccurrences,
-          recurrenceBase:{weekdays:repeat.weekdays, monthDays:repeat.monthDays, monthWeek:repeat.monthWeek}
+          repeatWeekdays:[...repeat.weekdays], repeatMonthMode:repeat.monthWeek ? "ordinal weekday" : "dates",
+          repeatMonthDays:repeat.monthDays.join(", "), repeatOrdinalIndex:repeat.monthWeek ? Number(repeat.monthWeek.index || 1) : 1,
+          repeatOrdinalWeekday:repeat.monthWeek ? Number(repeat.monthWeek.weekday || 0) : 0
         };
         return state.detailDraft;
       }
@@ -669,7 +769,10 @@
         const frequencyOptions = ["none","hourly","daily","weekly","monthly","yearly"].map(value => `<option value="${value}" ${draft.repeatFrequency === value ? "selected" : ""}>${value}</option>`).join("");
         const endingOptions = ["never","on date","after count"].map(value => `<option value="${value}" ${draft.repeatEndMode === value ? "selected" : ""}>${value}</option>`).join("");
         const unit = draft.repeatFrequency === "hourly" ? "hour" : draft.repeatFrequency === "daily" ? "day" : draft.repeatFrequency === "weekly" ? "week" : draft.repeatFrequency === "monthly" ? "month" : "year";
-        const recurrenceHtml = draft.due ? `<span class="eyebrow">Repeat</span><label class="label">Repeat<select class="select detail-immediate" data-field="repeatFrequency" ${editable ? "" : "disabled"}>${frequencyOptions}</select></label>${draft.repeatFrequency !== "none" ? `<div class="recurrence-grid"><label class="label">Every<input class="field detail-immediate" data-field="repeatInterval" type="number" min="1" max="999" value="${Number(draft.repeatInterval || 1)}" ${editable ? "" : "disabled"}></label><div class="label"><span>Unit</span><div class="field" style="display:flex;align-items:center">${escapeHtml(Number(draft.repeatInterval || 1) === 1 ? unit : unit + "s")}</div></div></div><label class="label">Ends<select class="select detail-immediate" data-field="repeatEndMode" ${editable ? "" : "disabled"}>${endingOptions}</select></label>${draft.repeatEndMode === "on date" ? `<div class="schedule-line"><span class="schedule-summary">${escapeHtml(draft.repeatEndAt ? formatDraftDue(draft.repeatEndAt) : "Choose an end date")}</span><label class="compact-date" title="Set repeat end date"><span class="calendar-glyph" aria-hidden="true"></span><input class="detail-immediate" data-field="repeatEndAt" type="datetime-local" value="${escapeHtml(draft.repeatEndAt)}" aria-label="Repeat end date" ${editable ? "" : "disabled"}></label></div>` : ""}${draft.repeatEndMode === "after count" ? `<label class="label">Occurrences<input class="field detail-immediate" data-field="repeatCount" type="number" min="1" max="9999" value="${Number(draft.repeatCount || 1)}" ${editable ? "" : "disabled"}></label>` : ""}` : ""}` : "";
+        const weekdayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+        const weekdayButtons = `<div class="label"><span>On</span><div class="weekday-grid">${weekdayNames.map((name,index) => `<button class="weekday-button ${(draft.repeatWeekdays || []).includes(index) ? "active" : ""}" type="button" data-repeat-weekday="${index}" aria-pressed="${(draft.repeatWeekdays || []).includes(index)}" aria-label="${name}" ${editable ? "" : "disabled"}>${name[0]}</button>`).join("")}</div></div>`;
+        const monthPattern = `<label class="label">Pattern<select class="select detail-immediate" data-field="repeatMonthMode" ${editable ? "" : "disabled"}><option ${draft.repeatMonthMode === "dates" ? "selected" : ""}>dates</option>${draft.repeatFrequency === "monthly" ? `<option ${draft.repeatMonthMode === "ordinal weekday" ? "selected" : ""}>ordinal weekday</option>` : ""}</select></label>${draft.repeatMonthMode === "dates" ? `<label class="label">${draft.repeatFrequency === "yearly" ? "Day of month" : "Month dates"}<input class="field detail-text" data-field="repeatMonthDays" value="${escapeHtml(draft.repeatMonthDays || "")}" placeholder="${draft.repeatFrequency === "yearly" ? "15" : "1, 15, 31"}" ${editable ? "" : "disabled"}></label>` : `<div class="recurrence-grid"><label class="label">Week<input class="field detail-immediate" data-field="repeatOrdinalIndex" type="number" min="1" max="5" value="${Number(draft.repeatOrdinalIndex || 1)}" ${editable ? "" : "disabled"}></label><label class="label">Weekday<select class="select detail-immediate" data-field="repeatOrdinalWeekday" ${editable ? "" : "disabled"}>${weekdayNames.map((name,index) => `<option value="${index}" ${Number(draft.repeatOrdinalWeekday) === index ? "selected" : ""}>${name}</option>`).join("")}</select></label></div>`}`;
+        const recurrenceHtml = draft.due ? `<span class="eyebrow">Repeat</span><label class="label">Repeat<select class="select detail-immediate" data-field="repeatFrequency" ${editable ? "" : "disabled"}>${frequencyOptions}</select></label>${draft.repeatFrequency !== "none" ? `<div class="recurrence-grid"><label class="label">Every<input class="field detail-immediate" data-field="repeatInterval" type="number" min="1" max="999" value="${Number(draft.repeatInterval || 1)}" ${editable ? "" : "disabled"}></label><div class="label"><span>Unit</span><div class="field" style="display:flex;align-items:center">${escapeHtml(Number(draft.repeatInterval || 1) === 1 ? unit : unit + "s")}</div></div></div>${draft.repeatFrequency === "weekly" ? weekdayButtons : ""}${["monthly","yearly"].includes(draft.repeatFrequency) ? monthPattern : ""}<label class="label">Ends<select class="select detail-immediate" data-field="repeatEndMode" ${editable ? "" : "disabled"}>${endingOptions}</select></label>${draft.repeatEndMode === "on date" ? `<div class="schedule-line"><span class="schedule-summary">${escapeHtml(draft.repeatEndAt ? formatDraftDue(draft.repeatEndAt) : "Choose an end date")}</span><label class="compact-date" title="Set repeat end date"><span class="calendar-glyph" aria-hidden="true"></span><input class="detail-immediate" data-field="repeatEndAt" type="datetime-local" value="${escapeHtml(draft.repeatEndAt)}" aria-label="Repeat end date" ${editable ? "" : "disabled"}></label></div>` : ""}${draft.repeatEndMode === "after count" ? `<label class="label">Occurrences<input class="field detail-immediate" data-field="repeatCount" type="number" min="1" max="9999" value="${Number(draft.repeatCount || 1)}" ${editable ? "" : "disabled"}></label>` : ""}` : ""}` : "";
         tray.innerHTML = `<div class="tray-head"><div><div class="eyebrow">Reminder details</div><div class="muted tiny">${escapeHtml(list.title)}</div></div><div class="tray-actions"><button class="flag ${draft.flagged ? "active" : ""}" type="button" data-detail-flag ${editable ? "" : "disabled"} aria-pressed="${draft.flagged}" aria-label="${draft.flagged ? "Remove flag" : "Flag reminder"}" title="${draft.flagged ? "Remove flag" : "Flag reminder"}">⚑</button><button class="icon-button" data-close-detail aria-label="Close details">×</button></div></div>
           <div class="form-section"><label class="check-row"><input class="check detail-immediate" data-field="completed" type="checkbox" ${draft.completed ? "checked" : ""} ${editable ? "" : "disabled"}> Completed</label></div>
           <div class="form-section"><label class="label">Title<input class="field detail-text" data-field="title" value="${escapeHtml(draft.title)}" ${editable ? "" : "disabled"}></label><label class="label">Notes<textarea class="textarea detail-text" data-field="notes" ${editable ? "" : "disabled"}>${escapeHtml(draft.notes)}</textarea></label><label class="label">Link<input class="field detail-text" data-field="url" value="${escapeHtml(draft.url)}" placeholder="https://" ${editable ? "" : "disabled"}></label></div>
@@ -727,7 +830,7 @@
         const list = selectedList(); const reminder = selectedReminder(); const draft = state.detailDraft;
         if (!list || !reminder || !draft || !canEdit(list.id)) return;
         if (draft.completed !== reminder.completed) {
-          await poke({"set-completed":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(reminder.id),completed:draft.completed,"base-revision":Number(list.revision)}},{quiet:true});
+          await poke({"set-completed":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(reminder.id),completed:draft.completed,advance:draft.completed ? recurrenceAdvance(reminder.schedule) : null,"base-revision":Number(list.revision)}},{quiet:true});
         }
         const currentList = selectedList(); const currentReminder = selectedReminder();
         if (!currentList || !currentReminder) return;
@@ -738,7 +841,7 @@
         const oldDue = inputDue(refreshedReminder.schedule); const oldAllDay = !!(refreshedReminder.schedule && refreshedReminder.schedule["all-day"]);
         const nextRecurrence = recurrencePayload(draft); const oldRecurrence = normalizedScheduleRecurrence(refreshedReminder.schedule);
         if (draft.due !== oldDue || draft.allDay !== oldAllDay || JSON.stringify(nextRecurrence) !== JSON.stringify(oldRecurrence)) {
-          await poke({"set-schedule":{"operation-id":opId(),"list-id":Number(refreshedList.id),"reminder-id":Number(refreshedReminder.id),schedule:draft.due ? {"due-at":draft.due,"all-day":draft.allDay,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,"_all-day-alert-minute":Number(state.preferences["all-day-alert-minute"] || 0),"early-seconds":[],recurrence:nextRecurrence} : null,"base-revision":Number(refreshedList.revision)}},{quiet:true});
+          await poke({"set-schedule":{"operation-id":opId(),"list-id":Number(refreshedList.id),"reminder-id":Number(refreshedReminder.id),schedule:draft.due ? {"due-at":draft.due,"all-day":draft.allDay,timezone:draft.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,"_all-day-alert-minute":Number(state.preferences["all-day-alert-minute"] || 0),"early-seconds":[],recurrence:nextRecurrence} : null,"base-revision":Number(refreshedList.revision)}},{quiet:true});
         }
         showNotice("Details saved");
       }
@@ -809,7 +912,7 @@
           const list = selectedList();
           const reminder = list && (list.reminders || []).find(item => Number(item.id) === Number(id));
           if (!list || !reminder || reminder.completed === completed) continue;
-          await poke({"set-completed":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(id),completed,"base-revision":Number(list.revision)}},{quiet:true});
+          await poke({"set-completed":{"operation-id":opId(),"list-id":Number(list.id),"reminder-id":Number(id),completed,advance:completed ? recurrenceAdvance(reminder.schedule) : null,"base-revision":Number(list.revision)}},{quiet:true});
         }
       }
       async function deleteSelected() {
@@ -854,6 +957,12 @@
           return;
         }
         if (event.target.closest("[data-detail-flag]")) { const reminder = selectedReminder(); if (reminder) await setReminderFlagged(selectedList().id, reminder.id, !reminder.flagged); return; }
+        const repeatWeekday = event.target.closest("[data-repeat-weekday]");
+        if (repeatWeekday && state.detailDraft) {
+          const weekday = Number(repeatWeekday.dataset.repeatWeekday); const values = [...(state.detailDraft.repeatWeekdays || [])]; const index = values.indexOf(weekday);
+          index === -1 ? values.push(weekday) : values.splice(index, 1); values.sort((left,right) => left - right); state.detailDraft.repeatWeekdays = values;
+          renderDetail(); await saveDetail(); return;
+        }
         const selectionAction = event.target.closest("[data-selection-action]");
         if (selectionAction) {
           const action = selectionAction.dataset.selectionAction; const ids = [...state.selectedReminderIds];
@@ -907,7 +1016,7 @@
         if (sectionTitle) { const list = selectedList(); const section = list && (list.sections || []).find(item => Number(item.id) === Number(sectionTitle.dataset.sectionTitle)); const title = sectionTitle.value.trim(); if (list && section && title && title !== section.title) await poke({"update-section":{"operation-id":opId(),"list-id":Number(list.id),"section-id":Number(section.id),title,rank:Number(section.rank || 1024),"base-revision":Number(list.revision)}}); return; }
         const complete = event.target.closest("[data-complete]");
         if (complete) {
-          const listId = Number(complete.dataset.completeList); const list = state.lists.find(item => Number(item.id) === listId); const reminderId = Number(complete.dataset.complete); if (!list) return;
+          const listId = Number(complete.dataset.completeList); const list = state.lists.find(item => Number(item.id) === listId); const reminderId = Number(complete.dataset.complete); const reminder = list && (list.reminders || []).find(item => Number(item.id) === reminderId); if (!list || !reminder) return;
           const key = `${listId}:${reminderId}`;
           if (complete.checked) {
             state.completionGrace.set(key, {started:Date.now()});
@@ -915,12 +1024,12 @@
             setTimeout(() => { state.completionGrace.delete(key); renderMain(); }, 10000);
           } else state.completionGrace.delete(key);
           renderMain();
-          await poke({"set-completed":{"operation-id":opId(),"list-id":listId,"reminder-id":reminderId,completed:complete.checked,"base-revision":Number(list.revision)}},{quiet:true});
+          await poke({"set-completed":{"operation-id":opId(),"list-id":listId,"reminder-id":reminderId,completed:complete.checked,advance:complete.checked ? recurrenceAdvance(reminder.schedule) : null,"base-revision":Number(list.revision)}},{quiet:true});
           return;
         }
         if (event.target.matches(".detail-immediate")) {
           updateDraftField(event.target);
-          if (["repeatFrequency","repeatEndMode","repeatInterval","repeatEndAt","repeatCount","due","allDay"].includes(event.target.dataset.field)) renderDetail();
+          if (["repeatFrequency","repeatEndMode","repeatInterval","repeatEndAt","repeatCount","repeatMonthMode","repeatOrdinalIndex","repeatOrdinalWeekday","due","allDay"].includes(event.target.dataset.field)) renderDetail();
           await saveDetail();
         }
       });
