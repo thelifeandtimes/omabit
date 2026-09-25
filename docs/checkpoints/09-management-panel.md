@@ -1,5 +1,9 @@
 # Checkpoint 5A: initial Omabit management panel
 
+Accepted by the user after completing the full walkthrough. The September 25
+inventory retained the same runner ID, with alpha stopped, panel-check healthy at
+`http://127.0.0.1:18085` (revision/applied 1/1), and ssh-check uninitialized.
+
 The panel, service, and installer are implemented. Automated checks cover the
 manifest, model state/identity/revision rules, the actual QML components with an
 isolated collector fixture, process dispatch, and non-destructive snapshot updates.

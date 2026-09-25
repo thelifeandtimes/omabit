@@ -81,9 +81,11 @@ pier or identity for an automated test.
   polled inventory, stale/unavailable/observer controls, explicit runtime start/stop,
   identity- and revision-bound configuration edits, fake registration, SSH runner
   enrollment, and separate application-enrollment display. Manifest/model/QML
-  fixture and installer checks passed. [Visual/interactive acceptance](checkpoints/09-management-panel.md)
-  remains. Existing theme settings/credentials require the explicit 5B migration;
-  they are not adopted by installing this new panel.
+  fixture and installer checks passed. The user completed all
+  [visual/interactive acceptance steps](checkpoints/09-management-panel.md).
+  The September 25 live inventory shows alpha stopped, panel-check running/healthy
+  on port 18085 at revision 1, and ssh-check uninitialized. Existing theme settings/
+  credentials require the explicit 5B migration.
 - No production deployment is supported yet.
 
 ## 1. Contracts and safe simulator
