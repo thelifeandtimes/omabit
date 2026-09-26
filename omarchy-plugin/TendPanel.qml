@@ -152,7 +152,8 @@ Item {
         }
         return service.lists[0];
     }
-    readonly property var queriedReminders: TendModel.queryReminders(service ? service.lists : [], {
+    readonly property var transitionLists: TendModel.withRecurrenceTransitionGhosts(service ? service.lists : [], service ? service.recurrenceTransitionGhosts() : [])
+    readonly property var queriedReminders: TendModel.queryReminders(transitionLists, {
         view: viewMode,
         listId: selectedList ? selectedList.id : 0,
         search: reminderSearch.text,
@@ -2710,10 +2711,11 @@ Item {
                                     readonly property var reminderData: sectionRow ? null : (modelData.reminder || modelData)
                                     readonly property real indentPixels: sectionRow ? 0 : Math.max(0, Number(reminderData.depth || 0)) * Style.space(22)
                                     readonly property bool currentRow: ListView.isCurrentItem
+                                    readonly property real recurrenceEmphasis: !sectionRow && service && !reminderData.transitionRole ? service.recurrenceEmphasis(reminderData.listId, reminderData.id) : 0
 
                                     width: ListView.view.width
                                     height: sectionRow ? Style.space(38) : Style.space(44)
-                                    opacity: !sectionRow && service ? service.completionOpacity(reminderData.listId, reminderData.id) : 1
+                                    opacity: !sectionRow && service ? service.completionOpacity(reminderData.listId, reminderData.sourceReminderId === null || reminderData.sourceReminderId === undefined ? reminderData.id : reminderData.sourceReminderId, reminderData.transitionRole) : 1
                                     Accessible.role: sectionRow ? Accessible.Heading : Accessible.ListItem
                                     Accessible.name: sectionRow
                                         ? modelData.section.title + ", " + modelData.count + " reminders"
@@ -2726,11 +2728,13 @@ Item {
                                         width: Math.max(Style.space(120), reminderRow.width - x)
                                         height: parent.height
                                         radius: Style.cornerRadius
-                                        color: reminderRow.sectionRow ? "transparent" : (root.selectionMode && root.reminderIsSelected(reminderRow.reminderData.id)
+                                        color: reminderRow.sectionRow ? "transparent" : (reminderRow.recurrenceEmphasis > 0
+                                            ? Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, 0.08 + reminderRow.recurrenceEmphasis * 0.12)
+                                            : (root.selectionMode && root.reminderIsSelected(reminderRow.reminderData.id)
                                             ? Style.selectedFillFor(Color.menu.text, Color.accent)
                                             : (rowHover.hovered || reminderRow.currentRow
                                                 ? Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.14)
-                                                : Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.04)))
+                                                : Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.04))))
                                         border.width: !reminderRow.sectionRow && reminderDropArea.containsDrag ? Math.max(1, Style.space(1)) : 0
                                         border.color: reminderDropArea.containsDrag ? Color.menu.text : "transparent"
 
@@ -2783,15 +2787,15 @@ Item {
                                             spacing: Style.space(10)
 
                                         TendCheckbox {
-                                            checked: !reminderRow.sectionRow && (service ? service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) : reminderRow.reminderData.completed)
-                                            enabled: !reminderRow.sectionRow && service && service.canEditList(reminderRow.reminderData.listId) && service.connectionState === "online" && !service.mutationPending
+                                            checked: !reminderRow.sectionRow && (reminderRow.reminderData.transitionRole === "outgoing" || (service ? service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) : reminderRow.reminderData.completed))
+                                            enabled: !reminderRow.sectionRow && !reminderRow.reminderData.transitionRole && service && !service.completionLocked(reminderRow.reminderData.listId, reminderRow.reminderData.id) && service.canEditList(reminderRow.reminderData.listId) && service.connectionState === "online" && !service.mutationPending
                                             Accessible.name: reminderRow.sectionRow ? "" : (checked ? "Mark open " : "Complete ") + reminderRow.reminderData.title
                                             onClicked: service.toggleCompletedWithGrace(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed)
                                         }
 
                                         TendFlagButton {
                                             flagged: !reminderRow.sectionRow && reminderRow.reminderData.flagged === true
-                                            enabled: !reminderRow.sectionRow && service && service.canEditList(reminderRow.reminderData.listId) && service.connectionState === "online" && !service.mutationPending
+                                            enabled: !reminderRow.sectionRow && !reminderRow.reminderData.transitionRole && service && !service.completionLocked(reminderRow.reminderData.listId, reminderRow.reminderData.id) && service.canEditList(reminderRow.reminderData.listId) && service.connectionState === "online" && !service.mutationPending
                                             onToggled: function(flagged) { service.setReminderFlagged(reminderRow.reminderData.listId, reminderRow.reminderData.id, flagged) }
                                         }
 
@@ -2814,15 +2818,16 @@ Item {
                                                 return reminderRow.reminderData.title + list + due;
                                             }
                                             color: Color.menu.text
-                                            opacity: !reminderRow.sectionRow && service && service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) ? 0.5 : 1
+                                            opacity: !reminderRow.sectionRow && (reminderRow.reminderData.transitionRole === "outgoing" || (service && service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed))) ? 0.5 : 1
                                             elide: Text.ElideRight
                                             maximumLineCount: 1
                                             font.family: Style.font.menuFamily
                                             font.pixelSize: Style.font.body
-                                            font.strikeout: !reminderRow.sectionRow && (service ? service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) : reminderRow.reminderData.completed)
+                                            font.strikeout: !reminderRow.sectionRow && (reminderRow.reminderData.transitionRole === "outgoing" || (service ? service.effectiveCompleted(reminderRow.reminderData.listId, reminderRow.reminderData.id, reminderRow.reminderData.completed) : reminderRow.reminderData.completed))
 
                                             MouseArea {
                                                 anchors.fill: parent
+                                                enabled: !reminderRow.reminderData.transitionRole && (!service || !service.completionLocked(reminderRow.reminderData.listId, reminderRow.reminderData.id))
                                                 cursorShape: Qt.PointingHandCursor
                                                 onClicked: {
                                                     reminderList.currentIndex = index;

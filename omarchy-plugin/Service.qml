@@ -25,6 +25,7 @@ Item {
     property var pendingPostAddUpdates: []
     property var pendingCompletionChanges: []
     property double completionClock: Date.now()
+    readonly property int recurrenceTransitionDuration: 1400
     property var lastAlert: null
     property var notificationQueue: []
     property var notificationAckQueue: []
@@ -424,24 +425,80 @@ Item {
         return -1;
     }
 
-    function effectiveCompleted(listId, reminderId, confirmed) {
-        var index = pendingCompletionIndex(listId, reminderId);
-        return index < 0 ? confirmed === true : pendingCompletionChanges[index].completed;
+    function recurrenceOccurrence(reminder) {
+        return reminder && reminder.schedule ? Number(reminder.schedule.occurrence || 0) : 0;
     }
 
-    function completionOpacity(listId, reminderId) {
+    function recurrenceTransitionProgress(listId, reminderId) {
+        var index = pendingCompletionIndex(listId, reminderId);
+        if (index < 0)
+            return 0;
+        var change = pendingCompletionChanges[index];
+        if (!change.recurring || !change.transitionStartedAt)
+            return 0;
+        return Math.max(0, Math.min(1, (completionClock - change.transitionStartedAt) / recurrenceTransitionDuration));
+    }
+
+    function recurrenceTransitionGhosts() {
+        var ghosts = [];
+        for (var i = 0; i < pendingCompletionChanges.length; i++) {
+            var change = pendingCompletionChanges[i];
+            if (!change.recurring || !change.transitionStartedAt || !change.originalReminder)
+                continue;
+            var reminder = JSON.parse(JSON.stringify(change.originalReminder));
+            reminder.id = -Math.abs(Number(change.reminderId)) - 1;
+            reminder.listId = Number(change.listId);
+            reminder.sourceReminderId = Number(change.reminderId);
+            reminder.transitionRole = "outgoing";
+            reminder.completed = false;
+            ghosts.push(reminder);
+        }
+        return ghosts;
+    }
+
+    function effectiveCompleted(listId, reminderId, confirmed) {
+        var index = pendingCompletionIndex(listId, reminderId);
+        if (index < 0)
+            return confirmed === true;
+        var change = pendingCompletionChanges[index];
+        return change.recurring && change.transitionStartedAt ? false : change.completed;
+    }
+
+    function completionLocked(listId, reminderId) {
+        var index = pendingCompletionIndex(listId, reminderId);
+        return index >= 0 && pendingCompletionChanges[index].recurring === true;
+    }
+
+    function completionOpacity(listId, reminderId, transitionRole) {
         var index = pendingCompletionIndex(listId, reminderId);
         if (index < 0)
             return 1;
-        var elapsed = Math.max(0, completionClock - pendingCompletionChanges[index].requestedAt);
+        var change = pendingCompletionChanges[index];
+        if (change.recurring && change.transitionStartedAt) {
+            var progress = recurrenceTransitionProgress(listId, reminderId);
+            return String(transitionRole || "") === "outgoing" ? 1 - progress : progress;
+        }
+        var elapsed = Math.max(0, completionClock - change.requestedAt);
         if (elapsed <= 5000)
             return 1;
         return Math.max(0, 1 - (elapsed - 5000) / 5000);
     }
 
+    function recurrenceEmphasis(listId, reminderId) {
+        var index = pendingCompletionIndex(listId, reminderId);
+        if (index < 0)
+            return 0;
+        var change = pendingCompletionChanges[index];
+        if (!change.recurring || !change.transitionStartedAt || change.terminalRecurrence)
+            return 0;
+        return Math.sin(Math.PI * recurrenceTransitionProgress(listId, reminderId));
+    }
+
     function completionShouldCollapse(view, listId, reminderId) {
         var index = pendingCompletionIndex(listId, reminderId);
         if (index < 0)
+            return false;
+        if (pendingCompletionChanges[index].recurring)
             return false;
         var elapsed = Math.max(0, completionClock - pendingCompletionChanges[index].requestedAt);
         if (elapsed < 10000 || String(view || "list") === "list")
@@ -460,12 +517,20 @@ Item {
             }
             return true;
         }
+        var taskList = listById(listId);
+        var reminder = reminderById(taskList, reminderId);
+        var recurring = !!(completed === true && reminder && reminder.schedule && reminder.schedule.recurrence);
         var change = {
             listId: Number(listId),
             reminderId: Number(reminderId),
             completed: completed === true,
             requestedAt: Date.now(),
-            submitted: false
+            submitted: false,
+            recurring: recurring === true,
+            originalOccurrence: recurring ? recurrenceOccurrence(reminder) : 0,
+            originalReminder: recurring ? JSON.parse(JSON.stringify(reminder)) : null,
+            transitionStartedAt: 0,
+            terminalRecurrence: false
         };
         if (index >= 0)
             changes[index] = change;
@@ -482,11 +547,21 @@ Item {
 
     function pumpCompletionChanges() {
         completionClock = Date.now();
-        if (connectionState !== "online" || mutationPending || pendingCompletionChanges.length === 0)
+        if (pendingCompletionChanges.length === 0)
             return;
         for (var i = 0; i < pendingCompletionChanges.length; i++) {
             var change = pendingCompletionChanges[i];
-            if (completionClock - change.requestedAt < 10000)
+            if (change.recurring && change.transitionStartedAt) {
+                if (completionClock - change.transitionStartedAt >= recurrenceTransitionDuration) {
+                    var finished = pendingCompletionChanges.slice();
+                    finished.splice(i, 1);
+                    pendingCompletionChanges = finished;
+                }
+                return;
+            }
+            if (connectionState !== "online" || mutationPending)
+                return;
+            if (!change.recurring && completionClock - change.requestedAt < 10000)
                 continue;
             var list = listById(change.listId);
             var reminder = reminderById(list, change.reminderId);
@@ -498,6 +573,50 @@ Item {
             }
             if (listMutationPending(list.id))
                 return;
+            if (change.recurring) {
+                if (change.submitted) {
+                    var advanced = reminder.completed !== true && recurrenceOccurrence(reminder) > Number(change.originalOccurrence || 0);
+                    var terminal = reminder.completed === true;
+                    if (advanced || terminal) {
+                        var transitioning = pendingCompletionChanges.slice();
+                        transitioning[i] = {
+                            listId: change.listId,
+                            reminderId: change.reminderId,
+                            completed: change.completed,
+                            requestedAt: change.requestedAt,
+                            submitted: true,
+                            recurring: true,
+                            originalOccurrence: change.originalOccurrence,
+                            originalReminder: change.originalReminder,
+                            transitionStartedAt: completionClock,
+                            terminalRecurrence: terminal
+                        };
+                        pendingCompletionChanges = transitioning;
+                    } else if (completionClock - change.requestedAt > 15000) {
+                        var expired = pendingCompletionChanges.slice();
+                        expired.splice(i, 1);
+                        pendingCompletionChanges = expired;
+                    }
+                    return;
+                }
+                if (setCompleted(list.id, reminder.id, true, list.revision)) {
+                    var recurringSubmitted = pendingCompletionChanges.slice();
+                    recurringSubmitted[i] = {
+                        listId: change.listId,
+                        reminderId: change.reminderId,
+                        completed: true,
+                        requestedAt: change.requestedAt,
+                        submitted: true,
+                        recurring: true,
+                        originalOccurrence: change.originalOccurrence,
+                        originalReminder: change.originalReminder,
+                        transitionStartedAt: 0,
+                        terminalRecurrence: false
+                    };
+                    pendingCompletionChanges = recurringSubmitted;
+                }
+                return;
+            }
             if (reminder.completed === change.completed) {
                 var remaining = pendingCompletionChanges.slice();
                 remaining.splice(i, 1);

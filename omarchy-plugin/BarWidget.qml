@@ -16,7 +16,8 @@ Panel {
   property string selectedView: "assigned"
   readonly property var smartViewKeys: ["today", "scheduled", "all", "flagged", "assigned", "completed"]
   readonly property var smartViewLabels: ["Today", "Scheduled", "All", "Flagged", "Assigned to me", "Completed"]
-  readonly property var visibleReminders: TendModel.queryReminders(tendService ? tendService.lists : [], {
+  readonly property var transitionLists: TendModel.withRecurrenceTransitionGhosts(tendService ? tendService.lists : [], tendService ? tendService.recurrenceTransitionGhosts() : [])
+  readonly property var visibleReminders: TendModel.queryReminders(transitionLists, {
     view: selectedView,
     ship: tendService ? tendService.ship : "",
     sort: "priority",
@@ -28,7 +29,7 @@ Panel {
         return !tendService.completionShouldCollapse(selectedView, reminder.listId, reminder.id);
       })
   readonly property var reminderRows: TendModel.menubarRows(tendService ? tendService.lists : [], transitioningReminders)
-  readonly property int taskCount: transitioningReminders.length
+  readonly property int taskCount: transitioningReminders.filter(function(reminder) { return String(reminder.transitionRole || "") !== "outgoing"; }).length
   readonly property var destinationLists: tendService
     ? TendModel.orderedLists(tendService.lists, tendService.preferences.pinnedLists, tendService.localSettings.listOrder)
     : []
@@ -385,7 +386,7 @@ Panel {
               )
               width: ListView.view.width
               height: summaryRow ? Style.space(30) : Style.space(54)
-              opacity: summaryRow || !root.tendService ? 1 : root.tendService.completionOpacity(reminder.listId, reminder.id)
+              opacity: summaryRow || !root.tendService ? 1 : root.tendService.completionOpacity(reminder.listId, reminder.sourceReminderId === null || reminder.sourceReminderId === undefined ? reminder.id : reminder.sourceReminderId, reminder.transitionRole)
               Accessible.role: Accessible.ListItem
               Accessible.name: summaryRow
                 ? Number(modelData.count || 0) + " filtered subitems"
@@ -421,8 +422,11 @@ Panel {
                 width: Math.max(0, parent.width - x)
                 height: parent.height
                 sourceComponent: Rectangle {
+                  readonly property real recurrenceEmphasis: root.tendService && !reminder.transitionRole ? root.tendService.recurrenceEmphasis(reminder.listId, reminder.id) : 0
                   radius: Style.cornerRadius
-                  color: rowMouse.hovered
+                  color: recurrenceEmphasis > 0
+                    ? Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, 0.08 + recurrenceEmphasis * 0.12)
+                    : rowMouse.hovered
                     ? Style.hoverFillFor(root.barForeground, Color.accent)
                     : Qt.rgba(root.barForeground.r, root.barForeground.g, root.barForeground.b, 0.045)
 
@@ -445,16 +449,16 @@ Panel {
 
                   TendCheckbox {
                     anchors.verticalCenter: parent.verticalCenter
-                    checked: !summaryRow && (root.tendService ? root.tendService.effectiveCompleted(reminder.listId, reminder.id, reminder.completed) : reminder.completed)
+                    checked: !summaryRow && (reminder.transitionRole === "outgoing" || (root.tendService ? root.tendService.effectiveCompleted(reminder.listId, reminder.id, reminder.completed) : reminder.completed))
                     Accessible.name: summaryRow ? "" : (checked ? "Mark open " : "Complete ") + reminder.title
-                    enabled: !summaryRow && root.tendService && root.tendService.canEditList(reminder.listId) && root.state === "online" && !root.tendService.mutationPending
+                    enabled: !summaryRow && !reminder.transitionRole && root.tendService && !root.tendService.completionLocked(reminder.listId, reminder.id) && root.tendService.canEditList(reminder.listId) && root.state === "online" && !root.tendService.mutationPending
                     onClicked: root.tendService.toggleCompletedWithGrace(reminder.listId, reminder.id, reminder.completed)
                   }
 
                   TendFlagButton {
                     anchors.verticalCenter: parent.verticalCenter
                     flagged: !summaryRow && reminder.flagged === true
-                    enabled: !summaryRow && root.tendService && root.tendService.canEditList(reminder.listId) && root.state === "online" && !root.tendService.mutationPending
+                    enabled: !summaryRow && !reminder.transitionRole && root.tendService && !root.tendService.completionLocked(reminder.listId, reminder.id) && root.tendService.canEditList(reminder.listId) && root.state === "online" && !root.tendService.mutationPending
                     onToggled: function(flagged) { root.tendService.setReminderFlagged(reminder.listId, reminder.id, flagged) }
                   }
 
@@ -485,7 +489,7 @@ Panel {
                         font.family: root.bar ? root.bar.fontFamily : Style.font.family
                         font.pixelSize: Style.font.body
                         elide: Text.ElideRight
-                        font.strikeout: !summaryRow && (root.tendService ? root.tendService.effectiveCompleted(reminder.listId, reminder.id, reminder.completed) : reminder.completed)
+                        font.strikeout: !summaryRow && (reminder.transitionRole === "outgoing" || (root.tendService ? root.tendService.effectiveCompleted(reminder.listId, reminder.id, reminder.completed) : reminder.completed))
                       }
 
                       Text {
@@ -500,6 +504,7 @@ Panel {
 
                     MouseArea {
                       anchors.fill: parent
+                      enabled: !reminder.transitionRole && (!root.tendService || !root.tendService.completionLocked(reminder.listId, reminder.id))
                       hoverEnabled: true
                       cursorShape: Qt.PointingHandCursor
                       onClicked: root.openFullPanel(reminder.listId, reminder.id)

@@ -216,6 +216,8 @@
     .task.selectable { grid-template-columns: minmax(0,1fr) auto; cursor: pointer; padding-left: 16px; }
     .task.batch-selected { background: var(--accent-soft); box-shadow: inset 3px 0 var(--accent), var(--shadow-border-hover); }
     .task.completing { opacity: .28; }
+    .task.recurrence-outgoing { pointer-events: none; animation: recurrence-out 1.4s linear both; }
+    .task.recurrence-incoming { pointer-events: none; animation: recurrence-in 1.4s linear both; }
     .task-title { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 15px; font-weight: 500; line-height: 1.25; }
     .task.done .task-title { color: var(--muted); text-decoration: line-through; }
     .task-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 5px; color: var(--subtle); font-family: var(--font-mono); font-size: 10px; line-height: 1.3; }
@@ -272,6 +274,12 @@
     .notice.success { color: var(--success); }
     .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes recurrence-out { from { opacity: 1; } to { opacity: 0; } }
+    @keyframes recurrence-in {
+      0% { opacity: 0; background: var(--accent-soft); box-shadow: inset 3px 0 color-mix(in srgb, var(--accent) 72%, transparent), var(--shadow-border-hover); }
+      55% { background: color-mix(in srgb, var(--accent-soft) 72%, var(--surface)); box-shadow: inset 3px 0 color-mix(in srgb, var(--accent) 44%, transparent), var(--shadow-border); }
+      100% { opacity: 1; background: var(--surface); box-shadow: var(--shadow-border); }
+    }
     @media (max-width: 1200px) {
       .workspace.detail-open .center, .workspace.settings-open .center { margin-left: 0; margin-right: 0; }
       .detail-tray, .settings-tray { box-shadow: var(--shadow); }
@@ -354,8 +362,9 @@
         selectedListId: null, selectedReminderId: null, view: "all", search: "", tag: "", sort: "manual", descending: false,
         rightTray: "", busy: false, online: false, detailDraft: null, completionGrace: new Map(), saveTimer: null,
         selectionMode: false, selectedReminderIds: new Set(), hiddenInvitationKeys: new Set(), mobileNavigationOpen: false,
-        controlPopover: null
+        controlPopover: null, composerDraft: {title:"", assignee:null, due:"", listId:null}, recurrenceTransitions: new Map()
       };
+      const recurrenceTransitionMs = 1400;
       const views = [
         ["today", "Today", "calendarDays"], ["all", "All", "inbox"], ["flagged", "Flagged", "flag"], ["assigned", "Assigned", "user"], ["completed", "Completed", "circleCheck"]
       ];
@@ -614,6 +623,36 @@
           if (current > now) return {"due-at":urbitDate(current),occurrence};
         }
         throw new Error("Recurrence is too far overdue to advance safely");
+      }
+      function recurrenceTransitionKey(listId, reminderId) { return `${Number(listId)}:${Number(reminderId)}`; }
+      function beginRecurrenceTransition(reminder, advance) {
+        if (!reminder || !advance || !advance["due-at"]) return false;
+        const key = recurrenceTransitionKey(reminder.listId, reminder.id);
+        const started = Date.now();
+        const outgoing = {
+          ...reminder,
+          id:-Math.abs(Number(reminder.id)) - 1,
+          sourceReminderId:Number(reminder.id),
+          transitionRole:"outgoing",
+          transitionStartedAt:started,
+          completed:false
+        };
+        const incoming = {
+          ...reminder,
+          sourceReminderId:Number(reminder.id),
+          transitionRole:"incoming",
+          transitionStartedAt:started,
+          completed:false,
+          schedule:{...(reminder.schedule || {}), "due-at":advance["due-at"], dueAt:advance["due-at"], occurrence:Number(advance.occurrence || 0)}
+        };
+        state.recurrenceTransitions.set(key, {key, started, listId:Number(reminder.listId), reminderId:Number(reminder.id), outgoing, incoming});
+        setTimeout(() => {
+          const current = state.recurrenceTransitions.get(key);
+          if (!current || current.started !== started) return;
+          state.recurrenceTransitions.delete(key);
+          renderMain();
+        }, recurrenceTransitionMs);
+        return true;
       }
       function reminderAncestors(list, reminder) {
         if (!list || !reminder) return [];
@@ -951,6 +990,13 @@
       function queriedReminders() {
         const source = state.view === "list" && selectedList() ? [selectedList()] : state.lists;
         let reminders = source.flatMap(list => (list.reminders || []).map(reminder => ({...reminder, listId:list.id, listTitle:list.title})));
+        for (const transition of state.recurrenceTransitions.values()) {
+          if (!source.some(list => Number(list.id) === transition.listId)) continue;
+          const canonical = reminders.find(reminder => Number(reminder.listId) === transition.listId && Number(reminder.id) === transition.reminderId);
+          if (!canonical) continue;
+          reminders = reminders.filter(reminder => Number(reminder.listId) !== transition.listId || Number(reminder.id) !== transition.reminderId);
+          reminders.push({...transition.outgoing, listTitle:canonical.listTitle}, {...transition.incoming, listTitle:canonical.listTitle});
+        }
         reminders = reminders.filter(reminderMatches);
         const sorters = {
           title:(a,b) => String(a.title).localeCompare(String(b.title)),
@@ -976,9 +1022,16 @@
         const hostWritable = list ? canEdit(list.id) : false;
         const title = state.view === "list" ? (list ? list.title : "No list") : (views.find(([id]) => id === state.view)?.[1] || "All");
         const reminders = queriedReminders();
-        const destination = list || state.lists.find(item => Number(item.id) === Number(state.preferences["default-list"])) || state.lists[0] || null;
+        const draftedDestination = state.lists.find(item => Number(item.id) === Number(state.composerDraft.listId));
+        const destination = list || draftedDestination || state.lists.find(item => Number(item.id) === Number(state.preferences["default-list"])) || state.lists[0] || null;
         const editable = !!destination && canEdit(destination.id) && !state.busy;
         const dueList = destination ? assigneeOptions(destination) : [];
+        if (destination && Number(state.composerDraft.listId) !== Number(destination.id)) {
+          state.composerDraft.listId = Number(destination.id);
+          state.composerDraft.assignee = null;
+        }
+        if (state.composerDraft.assignee === null || !dueList.some(option => String(option.value || "") === String(state.composerDraft.assignee || "")))
+          state.composerDraft.assignee = state.ship;
         const listOptions = state.lists.map(item => ({value:item.id,label:item.title}));
         const selectedIds = [...state.selectedReminderIds].filter(id => list && (list.reminders || []).some(reminder => Number(reminder.id) === Number(id)));
         const sectionOptions = [{value:"",label:"No section"}, ...((list && list.sections) || []).map(section => ({value:section.id,label:section.title}))];
@@ -986,7 +1039,7 @@
           <div class="view-head"><div class="view-title"><span class="eyebrow">${list ? "List" : "View"}</span><h2>${escapeHtml(title)}</h2>${list ? `<div class="status-line"><span class="dot ${hostWritable ? "online" : ""}"></span><span>${escapeHtml(normalizeShip(access && access.host ? access.host : state.ship))}${owner ? " · owner" : ""}</span></div>` : ""}</div>${list ? `<button class="icon-button" data-open-list-settings type="button" aria-label="Edit list" title="Edit list">${icon("edit")}</button>` : ""}</div>
           ${!hostWritable && list && !owner ? `<div class="form-section" style="color:var(--danger)">Editing is unavailable while ${escapeHtml(access ? access.host : "the list owner")} is offline.</div>` : ""}
           <div class="filters"><input class="field" id="search" value="${escapeHtml(state.search)}" placeholder="Search reminders"><div class="filter-options"><select class="select" id="tag-filter"><option value="">All tags</option>${allTags().map(tag => `<option ${tag === state.tag ? "selected" : ""}>${escapeHtml(tag)}</option>`).join("")}</select><select class="select" id="sort"><option value="manual" ${state.sort === "manual" ? "selected" : ""}>Manual</option><option value="due" ${state.sort === "due" ? "selected" : ""}>Due date</option><option value="priority" ${state.sort === "priority" ? "selected" : ""}>Priority</option><option value="title" ${state.sort === "title" ? "selected" : ""}>Title</option></select><button class="button sort-direction" id="sort-direction" type="button" aria-label="Sort ${state.descending ? "ascending" : "descending"}" title="${state.descending ? "Descending" : "Ascending"}">${icon(state.descending ? "sortDown" : "sortUp")}</button></div></div>
-          <section class="composer"><div class="composer-head"><span class="eyebrow">Add new reminder</span>${state.view === "list" ? "" : `<select class="select" id="quick-list" style="width:min(240px,44%)">${optionHtml(listOptions, destination && destination.id)}</select>`}</div><form class="composer-row" id="new-reminder-form"><input class="field" id="new-reminder-title" placeholder="Describe a new reminder" required ${editable ? "" : "disabled"}><select class="select" id="new-reminder-assignee" ${editable ? "" : "disabled"}>${optionHtml(dueList, state.ship)}</select><label class="compact-date" title="Set due date">${icon("calendar")}<input id="new-reminder-due" type="datetime-local" aria-label="Due date" ${editable ? "" : "disabled"}></label><button class="button primary" type="submit" aria-label="Add reminder" ${editable ? "" : "disabled"}>+ add</button></form></section>
+          <section class="composer"><div class="composer-head"><span class="eyebrow">Add new reminder</span>${state.view === "list" ? "" : `<select class="select" id="quick-list" style="width:min(240px,44%)">${optionHtml(listOptions, destination && destination.id)}</select>`}</div><form class="composer-row" id="new-reminder-form"><input class="field" id="new-reminder-title" value="${escapeHtml(state.composerDraft.title)}" placeholder="Describe a new reminder" required ${editable ? "" : "disabled"}><select class="select" id="new-reminder-assignee" ${editable ? "" : "disabled"}>${optionHtml(dueList, state.composerDraft.assignee)}</select><label class="compact-date" title="Set due date">${icon("calendar")}<input id="new-reminder-due" type="datetime-local" value="${escapeHtml(state.composerDraft.due)}" aria-label="Due date" ${editable ? "" : "disabled"}></label><button class="button primary" type="submit" aria-label="Add reminder" ${editable ? "" : "disabled"}>+ add</button></form></section>
           ${state.view === "list" && list ? `<form class="section-adder" id="new-section-form"><input class="field" id="new-section-title" placeholder="Section title" ${hostWritable ? "" : "disabled"}><button class="button tertiary" type="submit" ${hostWritable ? "" : "disabled"}>+ Add section</button><span style="flex:1"></span><button class="button" data-toggle-selection type="button">${state.selectionMode ? "Done selecting" : "Select"}</button></form>` : ""}
           ${state.selectionMode && state.view === "list" && list ? `<div class="selection-bar"><strong class="tiny">SELECT MODE · ${selectedIds.length} selected</strong><select class="select" id="selection-section" style="width:170px">${optionHtml(sectionOptions, "")}</select><button class="button" data-selection-action="section" ${selectedIds.length ? "" : "disabled"}>Move to section</button><button class="icon-button" data-selection-action="up" ${selectedIds.length === 1 ? "" : "disabled"} aria-label="Move reminder up">${icon("arrowUp")}</button><button class="icon-button" data-selection-action="down" ${selectedIds.length === 1 ? "" : "disabled"} aria-label="Move reminder down">${icon("arrowDown")}</button><button class="button" data-selection-action="indent" ${selectedIds.length === 1 ? "" : "disabled"}>Indent</button><button class="button" data-selection-action="outdent" ${selectedIds.length === 1 ? "" : "disabled"}>Outdent</button></div>` : ""}
           <section class="task-list">${renderReminderRows(reminders, list) || `<div class="empty">No reminders here.</div>`}</section>`;
@@ -1010,16 +1063,22 @@
         return html;
       }
       function renderReminder(reminder) {
-        const editable = canEdit(reminder.listId) && !state.busy;
-        const key = `${reminder.listId}:${reminder.id}`;
+        const transitionRole = String(reminder.transitionRole || "");
+        const sourceReminderId = Number(reminder.sourceReminderId ?? reminder.id);
+        const editable = !transitionRole && canEdit(reminder.listId) && !state.busy;
+        const key = `${reminder.listId}:${sourceReminderId}`;
         const grace = state.completionGrace.get(key);
         const completing = grace && Date.now() - grace.started >= 5000;
         const due = formatDue(reminder.schedule);
-        const selected = state.selectedReminderIds.has(Number(reminder.id));
+        const selected = !transitionRole && state.selectedReminderIds.has(Number(reminder.id));
         const list = state.lists.find(item => Number(item.id) === Number(reminder.listId));
         const depth = reminderDepth(list, reminder);
         const selecting = state.selectionMode && state.view === "list";
-        return `<article class="task ${selecting ? "selectable" : ""} ${selected ? "batch-selected" : ""} ${reminder.completed ? "done" : ""} ${completing ? "completing" : ""} ${Number(state.selectedReminderId) === Number(reminder.id) && Number(state.selectedListId) === Number(reminder.listId) ? "selected" : ""}" style="margin-left:${depth * 24}px;width:calc(100% - ${depth * 24}px)" data-reminder-id="${Number(reminder.id)}" data-reminder-list="${Number(reminder.listId)}" aria-selected="${selecting ? selected : "false"}">${selecting ? "" : `<input class="check" type="checkbox" data-complete="${Number(reminder.id)}" data-complete-list="${Number(reminder.listId)}" ${reminder.completed || grace ? "checked" : ""} ${editable ? "" : "disabled"} aria-label="Mark ${escapeHtml(reminder.title)} complete">`}<div class="task-copy"><div class="task-title">${escapeHtml(reminder.title)}</div><div class="task-meta">${state.view !== "list" ? `<span>${escapeHtml(reminder.listTitle)}</span>` : ""}${reminder.assignee ? `<span>${escapeHtml(sameShip(reminder.assignee,state.ship) ? "me" : reminder.assignee)}</span>` : ""}${due ? `<span>${escapeHtml(due)}</span>` : ""}${(reminder.tags || []).map(tag => `<span>#${escapeHtml(tag)}</span>`).join("")}</div></div>${selecting ? "" : `<div class="task-actions"><button class="mini flag ${reminder.flagged ? "active" : ""}" data-toggle-flag="${Number(reminder.id)}" data-flag-list="${Number(reminder.listId)}" aria-label="${reminder.flagged ? "Remove flag" : "Flag reminder"}" title="${reminder.flagged ? "Remove flag" : "Flag reminder"}">${icon("flag")}</button><button class="mini" data-open-detail aria-label="Open details" title="Open details">${icon("chevronRight")}</button></div>`}</article>`;
+        const transitionClass = transitionRole ? `recurrence-${transitionRole}` : "";
+        const transitionElapsed = transitionRole ? Math.max(0, Math.min(recurrenceTransitionMs, Date.now() - Number(reminder.transitionStartedAt || Date.now()))) : 0;
+        const transitionStyle = transitionRole ? `;animation-delay:-${transitionElapsed}ms` : "";
+        const displayedCompleted = transitionRole === "outgoing" || reminder.completed || grace;
+        return `<article class="task ${selecting ? "selectable" : ""} ${selected ? "batch-selected" : ""} ${reminder.completed || transitionRole === "outgoing" ? "done" : ""} ${completing ? "completing" : ""} ${transitionClass} ${!transitionRole && Number(state.selectedReminderId) === Number(reminder.id) && Number(state.selectedListId) === Number(reminder.listId) ? "selected" : ""}" style="margin-left:${depth * 24}px;width:calc(100% - ${depth * 24}px)${transitionStyle}" data-reminder-id="${Number(reminder.id)}" data-reminder-list="${Number(reminder.listId)}" aria-selected="${selecting ? selected : "false"}">${selecting ? "" : `<input class="check" type="checkbox" data-complete="${sourceReminderId}" data-complete-list="${Number(reminder.listId)}" ${displayedCompleted ? "checked" : ""} ${editable ? "" : "disabled"} aria-label="Mark ${escapeHtml(reminder.title)} complete">`}<div class="task-copy"><div class="task-title">${escapeHtml(reminder.title)}</div><div class="task-meta">${state.view !== "list" ? `<span>${escapeHtml(reminder.listTitle)}</span>` : ""}${reminder.assignee ? `<span>${escapeHtml(sameShip(reminder.assignee,state.ship) ? "me" : reminder.assignee)}</span>` : ""}${due ? `<span>${escapeHtml(due)}</span>` : ""}${(reminder.tags || []).map(tag => `<span>#${escapeHtml(tag)}</span>`).join("")}</div></div>${selecting ? "" : `<div class="task-actions"><button class="mini flag ${reminder.flagged ? "active" : ""}" data-toggle-flag="${sourceReminderId}" data-flag-list="${Number(reminder.listId)}" ${transitionRole ? "disabled" : ""} aria-label="${reminder.flagged ? "Remove flag" : "Flag reminder"}" title="${reminder.flagged ? "Remove flag" : "Flag reminder"}">${icon("flag")}</button><button class="mini" data-open-detail ${transitionRole ? "disabled" : ""} aria-label="Open details" title="Open details">${icon("chevronRight")}</button></div>`}</article>`;
       }
       function draftFor(reminder) {
         if (state.detailDraft && Number(state.detailDraft.id) === Number(reminder.id)) return state.detailDraft;
@@ -1296,12 +1355,15 @@
       });
       document.addEventListener("input", event => {
         if (event.target.id === "search") { state.search = event.target.value; renderMain(); return; }
+        if (event.target.id === "new-reminder-title") { state.composerDraft.title = event.target.value; return; }
         if (event.target.matches(".detail-text")) { updateDraftField(event.target); scheduleDetailSave(); }
       });
       document.addEventListener("change", async event => {
         if (event.target.id === "tag-filter") { state.tag = event.target.value; renderMain(); return; }
         if (event.target.id === "sort") { state.sort = event.target.value; renderMain(); return; }
-        if (event.target.id === "quick-list") { state.selectedListId = Number(event.target.value); if (state.view === "list") render(); else renderMain(); return; }
+        if (event.target.id === "quick-list") { state.composerDraft.listId = Number(event.target.value); state.composerDraft.assignee = null; renderMain(); return; }
+        if (event.target.id === "new-reminder-assignee") { state.composerDraft.assignee = normalizeShip(event.target.value); return; }
+        if (event.target.id === "new-reminder-due") { state.composerDraft.due = event.target.value; return; }
         if (event.target.matches("[data-move-list]")) { const destinationId = Number(event.target.value); await moveReminderToList(destinationId); return; }
         const selected = event.target.closest("[data-select-reminder]");
         if (selected) { const id = Number(selected.dataset.selectReminder); selected.checked ? state.selectedReminderIds.add(id) : state.selectedReminderIds.delete(id); renderMain(); return; }
@@ -1311,13 +1373,16 @@
         if (complete) {
           const listId = Number(complete.dataset.completeList); const list = state.lists.find(item => Number(item.id) === listId); const reminderId = Number(complete.dataset.complete); const reminder = list && (list.reminders || []).find(item => Number(item.id) === reminderId); if (!list || !reminder) return;
           const key = `${listId}:${reminderId}`;
+          const advance = complete.checked ? recurrenceAdvance(reminder.schedule) : null;
           if (complete.checked) {
-            state.completionGrace.set(key, {started:Date.now()});
-            setTimeout(() => { if (state.completionGrace.has(key)) { renderMain(); } }, 5000);
-            setTimeout(() => { state.completionGrace.delete(key); renderMain(); }, 10000);
+            if (!beginRecurrenceTransition({...reminder, listId, listTitle:list.title}, advance)) {
+              state.completionGrace.set(key, {started:Date.now()});
+              setTimeout(() => { if (state.completionGrace.has(key)) { renderMain(); } }, 5000);
+              setTimeout(() => { state.completionGrace.delete(key); renderMain(); }, 10000);
+            }
           } else state.completionGrace.delete(key);
           renderMain();
-          await poke({"set-completed":{"operation-id":opId(),"list-id":listId,"reminder-id":reminderId,completed:complete.checked,advance:complete.checked ? recurrenceAdvance(reminder.schedule) : null,"base-revision":Number(list.revision)}},{quiet:true});
+          await poke({"set-completed":{"operation-id":opId(),"list-id":listId,"reminder-id":reminderId,completed:complete.checked,advance,"base-revision":Number(list.revision)}},{quiet:true});
           return;
         }
         if (event.target.matches(".detail-immediate")) {
@@ -1347,8 +1412,8 @@
         event.preventDefault(); const form = event.target;
         if (form.id === "new-list-form") { const title = $("new-list-title").value.trim(); if (title) await poke({"create-list":{"operation-id":opId(),title}}); return; }
         if (form.id === "new-reminder-form") {
-          const quickList = $("quick-list"); const listId = state.view === "list" ? Number(state.selectedListId) : Number(quickList && quickList.value); const list = state.lists.find(item => Number(item.id) === listId); const title = $("new-reminder-title").value.trim(); if (!list || !title) return;
-          const assignee = normalizeShip($("new-reminder-assignee").value); const due = $("new-reminder-due").value;
+          const quickList = $("quick-list"); const listId = state.view === "list" ? Number(state.selectedListId) : Number(quickList && quickList.value); const list = state.lists.find(item => Number(item.id) === listId); const title = state.composerDraft.title.trim(); if (!list || !title) return;
+          const assignee = normalizeShip(state.composerDraft.assignee); const due = state.composerDraft.due;
           const added = await poke({"add-reminder":{"operation-id":opId(),"list-id":listId,title,tags:[],"base-revision":Number(list.revision)}},{quiet:true});
           if (!added) return;
           const refreshed = state.lists.find(item => Number(item.id) === listId); const newest = refreshed && (refreshed.reminders || []).slice().sort((a,b) => Number(b.id)-Number(a.id))[0];
@@ -1356,7 +1421,8 @@
             await poke({"update-reminder":{"operation-id":opId(),"list-id":listId,"reminder-id":Number(newest.id),title,notes:"",url:null,priority:"none",flagged:false,tags:[],assignee:assignee || state.ship,"base-revision":Number(refreshed.revision)}},{quiet:true});
             if (due) { const latest = state.lists.find(item => Number(item.id) === listId); await poke({"set-schedule":{"operation-id":opId(),"list-id":listId,"reminder-id":Number(newest.id),schedule:{"due-at":due,"all-day":false,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,"_all-day-alert-minute":Number(state.preferences["all-day-alert-minute"] || 0),"early-seconds":[],recurrence:null},"base-revision":Number(latest.revision)}},{quiet:true}); }
           }
-          showNotice("Reminder added"); return;
+          state.composerDraft = {title:"", assignee:state.ship, due:"", listId};
+          renderMain(); showNotice("Reminder added"); return;
         }
         if (form.id === "new-section-form") { const list = selectedList(); const title = $("new-section-title").value.trim(); if (!list || !title) return; const sections = list.sections || []; const rank = sections.length ? Number(sections[sections.length-1].rank || 0) + 1024 : 1024; await poke({"add-section":{"operation-id":opId(),"list-id":Number(list.id),title,rank,"base-revision":Number(list.revision)}}); return; }
         if (form.id === "invite-form") { const list = selectedList(); const ship = normalizeShip($("invite-ship").value); if (list && ship) await poke({"invite-member":{"operation-id":opId(),"list-id":Number(list.id),ship,"can-invite":false}}); return; }

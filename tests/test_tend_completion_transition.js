@@ -17,6 +17,15 @@ function collapseAt(view, change, clock) {
   )([change], clock)
 }
 
+function opacityAt(change, clock, role) {
+  return new Function(
+    "pendingCompletionChanges",
+    "completionClock",
+    "recurrenceTransitionDuration",
+    `${helpers}\nreturn completionOpacity(${change.listId}, ${change.reminderId}, ${JSON.stringify(role || "")});`,
+  )([change], clock, 1400)
+}
+
 test("completed reminders collapse only after the fade finishes", () => {
   const change = { listId: 3, reminderId: 7, completed: true, requestedAt: 1000 }
   assert.equal(collapseAt("all", change, 10999), false)
@@ -33,4 +42,13 @@ test("reopened reminders collapse out of the completed view", () => {
   const change = { listId: 3, reminderId: 7, completed: false, requestedAt: 1000 }
   assert.equal(collapseAt("completed", change, 11000), true)
   assert.equal(collapseAt("all", change, 11000), false)
+})
+
+test("recurring successor opacity is the exact inverse of its outgoing occurrence", () => {
+  const change = { listId: 3, reminderId: 7, completed: true, requestedAt: 1000, recurring: true, transitionStartedAt: 2000 }
+  for (const elapsed of [0, 350, 700, 1050, 1400]) {
+    const outgoing = opacityAt(change, 2000 + elapsed, "outgoing")
+    const incoming = opacityAt(change, 2000 + elapsed, "")
+    assert.ok(Math.abs(outgoing + incoming - 1) < 1e-9)
+  }
 })

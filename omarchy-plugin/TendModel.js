@@ -62,7 +62,9 @@ function cloneList(list) {
         lastCompletedAt: String(reminder["last-completed-at"] || reminder.lastCompletedAt || ""),
         revision: Number(reminder.revision || 0),
         createdAt: String(reminder["created-at"] || reminder.createdAt || ""),
-        modifiedAt: String(reminder["modified-at"] || reminder.modifiedAt || "")
+        modifiedAt: String(reminder["modified-at"] || reminder.modifiedAt || ""),
+        transitionRole: String(reminder.transitionRole || ""),
+        sourceReminderId: reminder.sourceReminderId === undefined || reminder.sourceReminderId === null ? null : Number(reminder.sourceReminderId)
       }
     }).sort(function(a, b) {
       return a.rank - b.rank || Number(a.id) - Number(b.id)
@@ -72,6 +74,30 @@ function cloneList(list) {
 
 function sortedLists(lists) {
   return (lists || []).map(cloneList).sort(function(a, b) { return Number(a.id) - Number(b.id) })
+}
+
+function withRecurrenceTransitionGhosts(lists, ghosts) {
+  const byList = new Map()
+  ;(ghosts || []).forEach(function(ghost) {
+    const listId = Number(ghost.listId)
+    if (!byList.has(listId)) byList.set(listId, [])
+    byList.get(listId).push(ghost)
+  })
+  return (lists || []).map(function(list) {
+    const additions = byList.get(Number(list.id)) || []
+    if (!additions.length) return list
+    return {
+      id: list.id,
+      title: list.title,
+      color: list.color,
+      symbol: list.symbol,
+      revision: list.revision,
+      createdAt: list.createdAt,
+      modifiedAt: list.modifiedAt,
+      sections: list.sections || [],
+      reminders: (list.reminders || []).concat(additions)
+    }
+  })
 }
 
 function orderedLists(lists, pinnedIds, listOrder) {
@@ -748,5 +774,5 @@ function safeExternalUrl(value) {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, cloneActivity: cloneActivity, cloneActivities: cloneActivities, reduceActivities: reduceActivities, activitiesForList: activitiesForList, cloneLocalSettings: cloneLocalSettings, reduceLocalSettings: reduceLocalSettings, presentationForList: presentationForList, collaborationPolicyForList: collaborationPolicyForList, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, scheduleInputValue: scheduleInputValue, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren, sectionedRows: sectionedRows, menubarRows: menubarRows, manualDropPlacement: manualDropPlacement, safeExternalUrl: safeExternalUrl }
+  module.exports = { cloneRecurrence: cloneRecurrence, cloneSchedule: cloneSchedule, cloneList: cloneList, sortedLists: sortedLists, withRecurrenceTransitionGhosts: withRecurrenceTransitionGhosts, orderedLists: orderedLists, orderedValues: orderedValues, clonePreferences: clonePreferences, newestPreferences: newestPreferences, cloneSnoozes: cloneSnoozes, cloneMemberPolicy: cloneMemberPolicy, cloneAccesses: cloneAccesses, cloneInvitations: cloneInvitations, clonePendingOperations: clonePendingOperations, cloneActivity: cloneActivity, cloneActivities: cloneActivities, reduceActivities: reduceActivities, activitiesForList: activitiesForList, cloneLocalSettings: cloneLocalSettings, reduceLocalSettings: reduceLocalSettings, presentationForList: presentationForList, collaborationPolicyForList: collaborationPolicyForList, reduce: reduce, accessForList: accessForList, canEditList: canEditList, incompleteCount: incompleteCount, badgeCount: badgeCount, allTags: allTags, urbitDateMs: urbitDateMs, scheduleInputValue: scheduleInputValue, queryReminders: queryReminders, nextReminder: nextReminder, hierarchyOrder: hierarchyOrder, visibleReminders: visibleReminders, reminderHasChildren: reminderHasChildren, sectionedRows: sectionedRows, menubarRows: menubarRows, manualDropPlacement: manualDropPlacement, safeExternalUrl: safeExternalUrl }
 }

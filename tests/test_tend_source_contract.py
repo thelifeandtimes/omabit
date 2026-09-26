@@ -135,6 +135,28 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn('event.target.closest("#control-popover-layer")', web)
         self.assertIn("!state.controlPopover", web)
 
+    def test_web_preserves_the_quick_add_draft_across_snapshot_refreshes(self):
+        web = (ROOT / "desk" / "app" / "tend.html").read_text(encoding="utf-8")
+        self.assertIn('composerDraft: {title:"", assignee:null, due:"", listId:null}', web)
+        self.assertIn('if (event.target.id === "new-reminder-title") { state.composerDraft.title = event.target.value;', web)
+        self.assertIn('if (event.target.id === "new-reminder-assignee") { state.composerDraft.assignee = normalizeShip(event.target.value);', web)
+        self.assertIn('value="${escapeHtml(state.composerDraft.title)}"', web)
+        self.assertIn('optionHtml(dueList, state.composerDraft.assignee)', web)
+
+    def test_recurring_completion_crossfades_the_occurrence_and_successor(self):
+        web = (ROOT / "desk" / "app" / "tend.html").read_text(encoding="utf-8")
+        service = (ROOT / "omarchy-plugin" / "Service.qml").read_text(encoding="utf-8")
+        panel = (ROOT / "omarchy-plugin" / "TendPanel.qml").read_text(encoding="utf-8")
+        widget = (ROOT / "omarchy-plugin" / "BarWidget.qml").read_text(encoding="utf-8")
+        self.assertIn("@keyframes recurrence-out", web)
+        self.assertIn("@keyframes recurrence-in", web)
+        self.assertIn("function beginRecurrenceTransition", web)
+        self.assertIn("recurrenceTransitionDuration: 1400", service)
+        self.assertIn("function recurrenceTransitionGhosts()", service)
+        self.assertIn('String(transitionRole || "") === "outgoing" ? 1 - progress : progress', service)
+        self.assertIn("TendModel.withRecurrenceTransitionGhosts", panel)
+        self.assertIn("TendModel.withRecurrenceTransitionGhosts", widget)
+
     def test_web_detail_exposes_relationships_recurrence_and_local_due_time(self):
         web = (ROOT / "desk" / "app" / "tend.html").read_text(encoding="utf-8")
         self.assertIn("function reminderAncestors", web)

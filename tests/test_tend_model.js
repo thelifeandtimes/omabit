@@ -63,6 +63,37 @@ test("snapshot is normalized and incomplete reminders are counted", () => {
   assert.equal(result.preferences.allDayOverdue, true)
 })
 
+test("recurrence transition ghosts coexist with the advanced reminder", () => {
+  const lists = [{
+    id: 4,
+    title: "Recurring",
+    revision: 3,
+    reminders: [{
+      id: 9,
+      title: "Water plants",
+      rank: 10,
+      completed: false,
+      schedule: { "due-at": "~2026.9.28..16.00.00", recurrence: { frequency: "daily", interval: 1 }, occurrence: 2 }
+    }]
+  }]
+  const ghosts = [{
+    id: -10,
+    sourceReminderId: 9,
+    transitionRole: "outgoing",
+    listId: 4,
+    title: "Water plants",
+    rank: 10,
+    completed: false,
+    schedule: { "due-at": "~2026.9.27..16.00.00", recurrence: { frequency: "daily", interval: 1 }, occurrence: 1 }
+  }]
+  const augmented = model.withRecurrenceTransitionGhosts(lists, ghosts)
+  const reminders = model.queryReminders(augmented, { view: "scheduled", sort: "due" }, Date.UTC(2026, 8, 26))
+  assert.deepEqual(reminders.map(function(reminder) { return reminder.id }), [-10, 9])
+  assert.equal(reminders[0].transitionRole, "outgoing")
+  assert.equal(reminders[0].sourceReminderId, 9)
+  assert.equal(reminders[1].transitionRole, "")
+})
+
 test("alerts preserve list state and expose normalized notification data", () => {
   const initial = [{ id: 1, title: "Inbox", revision: 1, reminders: [] }]
   const result = model.reduce(initial, {
