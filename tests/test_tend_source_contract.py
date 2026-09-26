@@ -112,7 +112,7 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("height: var(--control-height); min-height: var(--control-height)", web)
         self.assertNotIn(".section-adder .field { width: 210px; min-height: 32px; }", web)
         self.assertIn('class="filter-options"', web)
-        self.assertIn('class="compact-date"', web)
+        self.assertIn('class="compact-date${', web)
         self.assertIn('>+ add</button>', web)
         self.assertIn('shell.classList.add(`${select.id}-shell`)', web)
         self.assertIn('.composer-row .new-reminder-assignee-shell { grid-column: 1 / -1; grid-row: 2; }', web)
@@ -133,6 +133,18 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn("window.innerHeight - margin * 2", web)
         self.assertIn('panel.className = "control-popover date-picker"', web)
         self.assertIn('event.target.closest("#control-popover-layer")', web)
+
+    def test_web_quick_add_commits_schedule_and_marks_selected_dates(self):
+        web = (ROOT / "desk" / "app" / "tend.html").read_text(encoding="utf-8")
+        self.assertIn(".compact-date.has-value", web)
+        self.assertIn('class="compact-date${state.composerDraft.due ? " has-value" : ""}"', web)
+        self.assertIn('state.composerDraft.due = event.target.value; renderMain()', web)
+        self.assertIn('const existingIds = new Set((list.reminders || []).map(reminder => Number(reminder.id)))', web)
+        self.assertIn('"due-at":wireDate(due)', web)
+        self.assertIn('"due-at":wireDate(draft.due)', web)
+        self.assertIn('recurrence:wireRecurrence(nextRecurrence)', web)
+        self.assertIn('if (!scheduled) return', web)
+        self.assertNotIn('"_all-day-alert-minute"', web)
         self.assertIn("!state.controlPopover", web)
 
     def test_web_preserves_the_quick_add_draft_across_snapshot_refreshes(self):
