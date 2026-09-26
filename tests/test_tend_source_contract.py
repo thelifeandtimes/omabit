@@ -114,6 +114,9 @@ class TendGallSourceContractTests(unittest.TestCase):
         self.assertIn('class="filter-options"', web)
         self.assertIn('class="compact-date"', web)
         self.assertIn('>+ add</button>', web)
+        self.assertIn('shell.classList.add(`${select.id}-shell`)', web)
+        self.assertIn('.composer-row .new-reminder-assignee-shell { grid-column: 1 / -1; grid-row: 2; }', web)
+        self.assertNotIn('.composer-row #new-reminder-assignee { grid-column: 1 / -1; grid-row: 2; }', web)
         self.assertIn('class="tray-actions"', web)
         selection_markup = web.split('state.selectionMode && state.view === "list" && list ?', 1)[1].split('</div>` : ""}', 1)[0]
         self.assertNotIn('data-selection-action="complete"', selection_markup)

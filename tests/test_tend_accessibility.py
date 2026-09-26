@@ -64,11 +64,18 @@ class TendAccessibilityTests(unittest.TestCase):
         date_picker = (ROOT / "omarchy-plugin" / "TendDateTimePicker.qml").read_text(encoding="utf-8")
         assignee_picker = (ROOT / "omarchy-plugin" / "TendAssigneePicker.qml").read_text(encoding="utf-8")
         self.assertIn("parent: trigger.Window.window ? trigger.Window.window.contentItem : trigger", date_picker)
-        self.assertIn("parent: QQC.Overlay.overlay", assignee_picker)
+        self.assertIn("parent: trigger.Window.window ? trigger.Window.window.contentItem : trigger", assignee_picker)
         for picker in (date_picker, assignee_picker):
             self.assertIn("function placePopup()", picker)
             self.assertIn("parent.width", picker)
             self.assertIn("parent.height", picker)
+
+    def test_assignee_picker_owns_its_click_and_uses_the_window_overlay(self):
+        picker = (ROOT / "omarchy-plugin" / "TendAssigneePicker.qml").read_text(encoding="utf-8")
+        self.assertIn("function toggle()", picker)
+        self.assertIn("onClicked: { trigger.forceActiveFocus(); root.toggle() }", picker)
+        self.assertIn("modal: true", picker)
+        self.assertIn("dim: false", picker)
 
     def test_date_picker_owns_the_closing_click_and_centers_its_icon(self):
         picker = (ROOT / "omarchy-plugin" / "TendDateTimePicker.qml").read_text(encoding="utf-8")

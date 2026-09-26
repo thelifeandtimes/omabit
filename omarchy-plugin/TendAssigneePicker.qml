@@ -13,6 +13,7 @@ Item {
   property color background: Color.popups.background
   property color accent: Color.accent
   property var filteredOptions: []
+  readonly property bool popupOpen: popup.opened
   signal changed(string value)
 
   implicitWidth: Style.space(180)
@@ -53,6 +54,8 @@ Item {
     popup.open()
     Qt.callLater(root.placePopup)
   }
+  function close() { popup.close() }
+  function toggle() { popup.opened ? popup.close() : root.open() }
 
   onOptionsChanged: filterOptions()
   Component.onCompleted: filterOptions()
@@ -105,22 +108,30 @@ Item {
     MouseArea {
       anchors.fill: parent
       cursorShape: Qt.PointingHandCursor
-      onClicked: root.open()
+      onClicked: { trigger.forceActiveFocus(); root.toggle() }
     }
-    Keys.onReturnPressed: root.open()
-    Keys.onEnterPressed: root.open()
-    Keys.onSpacePressed: root.open()
+    Keys.onPressed: function(event) {
+      if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space || event.key === Qt.Key_Down) {
+        root.toggle()
+        event.accepted = true
+      } else if (event.key === Qt.Key_Escape && popup.opened) {
+        popup.close()
+        event.accepted = true
+      }
+    }
   }
 
   QQC.Popup {
     id: popup
-    parent: QQC.Overlay.overlay
+    parent: trigger.Window.window ? trigger.Window.window.contentItem : trigger
     x: 0
     y: root.height + Style.space(4)
-    width: root.width
-    height: contentColumn.implicitHeight + topPadding + bottomPadding
+    width: Math.min(root.width, parent ? Math.max(Style.space(120), parent.width - Style.space(16)) : root.width)
+    height: Math.min(contentColumn.implicitHeight + topPadding + bottomPadding, parent ? Math.max(Style.space(80), parent.height - Style.space(16)) : contentColumn.implicitHeight + topPadding + bottomPadding)
     padding: Style.space(1)
     focus: true
+    modal: true
+    dim: false
     closePolicy: QQC.Popup.CloseOnEscape | QQC.Popup.CloseOnPressOutside
 
     background: BorderSurface {

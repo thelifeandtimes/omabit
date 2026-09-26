@@ -297,7 +297,7 @@
       .tray { width: min(430px, 94vw); }
       .filter-options { grid-template-columns: minmax(0,1fr) minmax(0,1fr) 44px; }
       .composer-row { grid-template-columns: minmax(0,1fr) 44px auto; }
-      .composer-row #new-reminder-assignee { grid-column: 1 / -1; grid-row: 2; }
+      .composer-row .new-reminder-assignee-shell { grid-column: 1 / -1; grid-row: 2; }
       .task-actions { display: flex; align-self: center; }
       .topbar { padding-inline: 16px; }
       .center { padding: 24px 16px 48px; }
@@ -722,6 +722,7 @@
       function enhanceSelects(root) {
         root.querySelectorAll("select.select:not([data-enhanced])").forEach(select => {
           const shell = document.createElement("div"); shell.className = "select-shell";
+          if (select.id) shell.classList.add(`${select.id}-shell`);
           if (select.hasAttribute("style")) { shell.setAttribute("style", select.getAttribute("style")); select.removeAttribute("style"); }
           select.parentNode.insertBefore(shell, select); shell.append(select);
           select.dataset.enhanced = "true"; select.classList.add("select-native"); select.tabIndex = -1; select.setAttribute("aria-hidden", "true");
