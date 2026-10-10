@@ -1,81 +1,102 @@
 # Omabit
 
-An opinionated Urbit experience for agent-enabled Omarchy users, built on reusable
-host-management and ship-connection components.
+A local Urbit fleet for Omarchy: run ships with the official Vere runtime, monitor
+them from the desktop, and manage maintenance without keeping terminal sessions open.
 
-This repository is the source monorepo. Independently installable component
-repositories and release artifacts will be generated from it, not maintained as
-separate codebases.
+This repository is the ship-running and orchestration project at
+[thelifeandtimes/omabit](https://github.com/thelifeandtimes/omabit).
+[Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
+has its own repository, CLI, and release lifecycle.
+
+**Status:** development source at checkpoint 0.23. The official 0.1.0 release is
+being prepared; development checkpoint numbers are not public release versions.
+
+## Get started
+
+From a source checkout on a supported Omarchy machine:
+
+```bash
+bash scripts/install.sh
+```
+
+Then open **~+ → Setup → Set up this computer**. The guided flow checks prerequisites,
+prepares private desktop access, asks for OS authorization, installs the background
+services and connects your desktop automatically. Choose **Add a ship → New comet**
+when it reports ready.
+
+Prefer a terminal?
+
+```bash
+go build -o ./build/ ./cmd/...
+./build/omabit --format text setup
+```
+
+See the [fresh installation guide](docs/install.md) for prerequisites, reruns and
+troubleshooting. Source builds need Go 1.25+; prebuilt release packages are not yet
+published. The current host implementation targets Linux x86-64, systemd/cgroup v2
+and Docker 29.7.2.
+
+## What works
+
+- Dedicated-account rootless Docker and the pinned official Vere release.
+- New comets and development fakes, with durable start/stop/resume operations.
+- Owned-key bootstrap, including a live-tested moon, and stopped in-tree pier enrollment.
+- Permanent per-ship mount directories: first boot creates `pier/` in place and keeps running.
+- Management and restricted SSH services, including verified clean-reboot resume.
+- A compact fleet menu and monitoring window with container RAM, tasks and health.
+- Per-ship lifecycle/error/exit diagnostics and bounded read-only runtime logs.
+- Pack, meld, roll, epoch inspection, confirmed prefix pruning and UTC schedules.
+- Identity-pinned collector connections, operator/observer grants and Eyre sessions.
+- Local first-run setup with visible progress and automatic collector enrollment.
+- Stopped cross-host handoff with verified contents and permanent source fencing.
+- New-ship selection between bare bootstrap and a supplied Recommended Apps pill.
+
+Owned-pier import is implemented as explicit enrollment of a fully transferred,
+stopped pier in the [storage convention](docs/pier-storage.md); broader live import
+and network qualification remain. Loom-internal telemetry and custom runtime builds
+are out of scope; the UI reports container resources as container resources.
 
 ## Components
 
 | Component | Responsibility |
 | --- | --- |
-| `urbit-runner` | Per-host lifecycle, metrics, maintenance, storage, and operation attribution |
-| `urbit-collector` | Per-user runner connections, collection, credentials, and generic Eyre transport |
-| `urbit-operator-gateway` | Optional personal management-only web interface served by the collector |
-| Omabit plugin | Omaship UI, Omarchy integration, notifications, theme publishing, and social utilities |
-| `%omarchy-gossip` | Separate, tag-restricted anonymous rumor application |
-| Tend | Optional plugin and ship application; application details are outside the initial scope |
-| Omabit pill | Versioned, opinionated bootstrap release, normally provisioned by URL |
+| `urbit-runner` | Host lifecycle, resource observations, maintenance, storage and durable operations |
+| `urbit-collector` | Per-user runner connections, credentials and generic Eyre transport |
+| `omabit` and the Omarchy plugin | Local onboarding, fleet/setup/monitoring UI and desktop/application policy |
 
-## Status
+This source monorepo is authoritative. Optional peer, gateway, social and agent
+features follow a reliable core ship-running experience.
 
-Checkpoint 1's memory-only runner/collector protocol has passed manual validation.
-Checkpoint 2A's dedicated rootless engine setup has also passed manual validation.
-Checkpoint 2B's pinned-image fake-ship lifecycle, resource checks, container
-replacement, offline pack, and cleanup have passed manual validation. Checkpoint
-2C's host HTTP publication and replacement/reconnect have also passed. Checkpoint
-3A's persistent fake-only lifecycle and runner restart have passed the exercised
-live gate. Checkpoint 4A adds persistent collector enrollment, identity-pinned
-selection, and independent multi-runner inventory polling; its workstation and
-process-level fixture gates passed. Checkpoint 4B's OpenSSH transport and key
-grants passed isolated OpenSSH validation and live dedicated-account acceptance.
-Checkpoint 4C's independent Eyre enrollment, credential storage, scries, and
-subscriptions passed programmatic acceptance against the development fake with
-both desktop and headless credential adapters. Checkpoint 5A's Omabit management
-panel is implemented and programmatically checked; visual/interactive acceptance
-passed. Checkpoint 5B adds application sign-in, themes, notifications, and explicit
-legacy migration, with live development-ship validation. Production ship management
-is not supported yet.
+See [repository ownership and publishing](docs/repository.md) for the Tend split,
+Git remotes, and the current Go module identity.
 
-Explicit offline pack for stopped development piers has passed managed live
-pack/replay/resume validation with the upgraded runner.
-
-- [Applications, themes, and migration](docs/checkpoints/10-applications-and-themes.md)
-- [Accepted: managed offline pack](docs/checkpoints/11-offline-pack.md)
-- [Accepted: Omabit management panel](docs/checkpoints/09-management-panel.md)
-- [Accepted: SSH access installation](docs/checkpoints/07-ssh-access.md)
-- [Accepted: Eyre ship sessions](docs/checkpoints/08-ship-sessions.md)
-- [Ship-session contracts and storage](docs/ship-sessions.md)
-- [Accepted: collector enrollment and inventory](docs/checkpoints/06-collector-enrollment.md)
-- [Accepted workflow: persistent development runner](docs/checkpoints/05-persistent-runner.md)
-- [Accepted: host-loopback HTTP checkpoint](docs/checkpoints/04-host-http.md)
-- [Accepted: disposable runtime checkpoint](docs/checkpoints/03-disposable-runtime.md)
-- [Accepted: rootless setup checkpoint](docs/checkpoints/02-rootless-setup.md)
-- [Accepted: checkpoint 1 walkthrough](docs/checkpoints/01-local-protocol.md)
-- [Architecture](docs/architecture.md)
-- [Implementation plan and validation gates](docs/implementation-plan.md)
-- [Implemented experimental protocol](docs/protocol.md)
-- [Runtime qualification checklist](docs/runtime-qualification.md)
-
-Development requires Go 1.25 or later. The pure-Go SQLite driver is compiled into
-the binaries; no additional database service or host SQLite package is required.
+## Development
 
 ```bash
 go test ./...
+go vet ./...
 go build -o ./build/ ./cmd/...
-./build/urbit-runner preflight
-./build/urbit-runner setup-plan
-./build/urbit-runner runtime-plan
-./build/urbit-runner http-plan
+node scripts/test-panel-model.js
+python3 -B scripts/test-panel.py --windows
 ```
 
-The default is dedicated-account rootless Docker, preserving existing system
-Docker and desktop access restrictions. Read the checkpoint before running the
-development install helper; it is not an updater or production installer.
+Existing ships and unrelated Docker installations are preserved during setup.
+Host changes use explicit OS authorization; desktop clients do not receive Docker
+group access. Development data/report formats are not a backwards-compatible
+release contract.
 
-The first supported platform will be x86-64 Linux with systemd and Docker.
-Laptops are supported with an acknowledgement that sleeping hosts make their
-ships unavailable. ARM64 and non-systemd NAS appliances are not initially
-qualified.
+## Documentation
+
+- [Fresh installation and first ship](docs/install.md)
+- [Services, shutdown and reboot behavior](docs/services.md)
+- [Official-runtime policy](docs/runtime-policy.md)
+- [Release pill composition and provisioning](docs/pill-release.md)
+- [Current status and remaining release work](docs/project-status.md)
+- [Architecture](docs/architecture.md)
+- [Implementation plan](docs/implementation-plan.md)
+- [Runner protocol](docs/protocol.md)
+- [Ship sessions and credential storage](docs/ship-sessions.md)
+- [Runtime qualification evidence](docs/runtime-qualification.md)
+
+Historical development walkthroughs are under `docs/checkpoints/`; new installations
+should use the installation guide above.

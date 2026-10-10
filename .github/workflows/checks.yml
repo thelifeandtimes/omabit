@@ -1,0 +1,41 @@
+name: Checks
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Go tests and vet
+        run: |
+          go test ./...
+          go vet ./...
+      - name: Stateful transport and runtime race checks
+        run: go test -race ./internal/managed ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy
+      - name: Desktop model and installer fixtures
+        run: |
+          node scripts/test-panel-model.js
+          python3 -B scripts/test-panel-install.py
+      - name: Build Linux binaries
+        run: |
+          mkdir -p build
+          CGO_ENABLED=0 go build -trimpath -o build/ ./cmd/...
+
+# Mapped Quickshell tests and live runtime qualification require their separately
+# controlled Omarchy/Docker environments; they are not claimed by this CI job.

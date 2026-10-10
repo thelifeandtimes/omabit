@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "omabit-pill-composition-plan",
+  "target_release": "0.1.0",
+  "status": "artifact-received-awaiting-boot-qualification",
+  "construction": {"provider": "user", "automated_builder_release": "0.2.0"},
+  "artifact": {
+    "filename": "omabit-recommended-apps-0.1.0.pill",
+    "supplied_filename": "omabit-brass.pill",
+    "bytes": 57011409,
+    "sha256": "51f0be723918ab7feaaf28b3c599f36f0f0fca6e68453f84517ba1659f07d57e",
+    "url": null,
+    "contents_evidence": "reported-by-provider; not independently boot-verified",
+    "reported_desks": ["base", "webterm", "groups", "trunk", "grubbery", "omart", "pals", "hawk", "obelisk", "jars", "silo", "landscape"],
+    "composition_note": "The supplied artifact includes landscape and does not list mcp. Resolve the difference from the intended composition before final release."
+  },
+  "desks": [
+    {"desk": "webterm", "source": "upstream-default", "required": true},
+    {"desk": "groups", "source": "upstream-default", "required": true},
+    {"desk": "base", "source": "upstream-default", "required": true},
+    {"desk": "grubbery", "publisher": "~ricsul-bilwyt", "required": true},
+    {"desk": "jars", "publisher": "~nattyv", "required": true},
+    {"desk": "hawk", "publisher": "~dister-migrev-dolseg", "required": true},
+    {"desk": "omart", "publisher": "~dister-dozzod-sarlev", "required": true},
+    {
+      "desk": "pals",
+      "publisher": "~tocwex",
+      "required": true,
+      "future_publisher": "~paldev",
+      "publisher_change": "Deferred while ~paldev has issues; change through an explicit future release-plan update."
+    },
+    {"desk": "obelisk", "publisher": "~dister-nomryg-nilref", "required": true},
+    {"desk": "mcp", "publisher": "~daplyd", "required": true},
+    {"desk": "trunk", "publisher": "~ricsul-bilwyt", "required": true},
+    {"desk": "silo", "publisher": "~dister-nocsyx-lassul", "required": true}
+  ],
+  "deferred_desks": [
+    {
+      "desk": "omachan",
+      "publisher": "~dister-dozzod-sarlev",
+      "required": false,
+      "status": "not-yet-implemented",
+      "inclusion": "Deferred from the initial 0.1.0 pill; may be added after implementation and publication without blocking 0.1.0."
+    }
+  ]
+}

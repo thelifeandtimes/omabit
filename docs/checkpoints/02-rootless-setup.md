@@ -3,8 +3,9 @@
 Status: accepted by the user. Installation completed with account `urbit-runner`,
 UID/GID 959, service `urbit-docker.service`, socket
 `/run/user/959/urbit-docker.sock`, `rootless_verified: true`, and `partial: false`.
-The user reported the remaining checks passed. This is operator-reported evidence;
-Vere qualification and a separately recorded reboot test remain outstanding.
+The user reported the remaining checks passed. This setup result is operator-reported
+evidence; subsequent runtime and clean-reboot results are recorded in
+[runtime qualification](../runtime-qualification.md) and [services](../services.md).
 
 Checkpoint 1 was accepted. This checkpoint prepares and optionally installs the
 rootless engine that the real runner will use. It does **not** boot a ship, pull

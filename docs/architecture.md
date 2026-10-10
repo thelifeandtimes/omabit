@@ -126,11 +126,19 @@ Vere binary with explicit arguments rather than rely on its convenience wrapper,
 which does not pass through all bootstrap options. The image binary is the
 runtime authority; do not independently auto-update a docked pier binary.
 
-The Omabit pill is a separately versioned release artifact. Include the agreed
-opinionated desk bundle: base, webterm, groups, pals, hawk, trunk, omabit,
-omarchy-gossip, jars, and mcp, with auspex, orrery, and lattice resolved as part of
-pill composition. Tend remains optional as a user experience. Validate the actual
-desks/agents and their compatibility in release tests.
+For 0.1.0, the user supplies a versioned Recommended Apps pill. New-ship forms offer
+**bare bootstrap** (Vere's own default) and **Recommended Apps** (the configured
+release asset). Automated pill building/composition is deferred to 0.2.0.
+The Omabit pill is a separately versioned release artifact. The confirmed intended
+bundle is `%webterm`, `%groups`, `%base`, `%grubbery`, `%jars`, `%hawk`, `%omart`,
+`%pals`, `%obelisk`, `%mcp`, `%trunk`, and `%silo`. The exact publishers
+and release gates are recorded in [pill-release.md](pill-release.md) and
+[pill-plan.json](pill-plan.json), superseding the earlier draft composition.
+`%pals` currently comes from `~tocwex`; the future `~paldev` switch is deferred.
+`%omachan`, intended for `~dister-dozzod-sarlev`, is deferred from the initial pill
+and does not block 0.1.0. Validate the actual desks/agents and their compatibility
+in release tests. Record the bundled revisions for provenance; preserve the normal
+publisher-driven OTA paths for ships after they boot and connect.
 
 Release metadata identifies image digest, Vere version, pill version, pill URL,
 pill SHA-256, included desks/publishers, and compatibility. A hash proves content
@@ -139,9 +147,11 @@ source. Test that pills do not contain publisher secrets or personal state.
 
 Pill provisioning supports both:
 
-- URL (the default): the runner downloads the selected release to a bounded,
-  private staging area, verifies its expected digest, and caches immutable
-  content. Enforce HTTPS and controlled redirects; treat configurable sources
+- URL (the default): the collector downloads the selected release to a bounded,
+  private staging area, verifies its expected release digest, and uploads immutable
+  content to the runner's private cache. The release-metadata verification layer
+  remains to be implemented; current custom URLs are hashed after download.
+  Enforce HTTPS for release provisioning and controlled redirects; treat configurable sources
   as privileged input and prevent unintended access to local services. Never
   forward ship/SSH credentials to the source.
 - Local file: explicitly import a pill into runner-controlled storage and verify
@@ -187,18 +197,18 @@ Use a dedicated user service and explicit account-private Docker socket. Do not
 expose the engine socket to desktop clients; only the runner API will be exposed.
 Prove rootless mode and cgroup limits before using the engine for ship operations.
 
-Example dedicated-account locations:
+Current dedicated-account locations:
 
 ```text
-$XDG_CONFIG_HOME/urbit-runner/config.toml
-$XDG_DATA_HOME/urbit/piers/<instance-id>/
-$XDG_DATA_HOME/urbit-runner/artifacts/
-$XDG_STATE_HOME/urbit-runner/runner.sqlite
-$XDG_RUNTIME_DIR/urbit-runner/runner.sock
+/var/lib/urbit-runner/piers/{fakeships,livenet/<tier>}/[group/]<ship-directory>/pier/
+/var/lib/urbit-runner/.local/share/urbit-runner/managed/runner.sqlite
+/var/lib/urbit-runner/.local/share/urbit-runner/managed/<private-id>/
+/run/user/959/urbit-runner/runner.sock
 ```
 
-Use equivalent service directories for system installations. The production
-journal will be transactional; a simulator may be memory-only if clearly marked.
+The exclusive ship parent mounts at `/urbit`; Vere always uses `/urbit/pier`.
+First boot creates that child in place and keeps the same container running.
+The SQLite journal is transactional; a simulator may be memory-only if clearly marked.
 Keep collector configuration/state separate. Plugin checkout directories never
 contain piers, credentials, or authoritative runner state. Uninstall does not
 delete piers.
@@ -209,16 +219,16 @@ Optional sleep inhibition for an explicitly requested maintenance job is visible
 
 ## Maintenance and retention
 
-Begin with offline pack/meld/roll/pruning jobs. Measure loom capacity, contiguous
-open space, allocator free-list space, process/container RAM, and disk separately.
-Each metric carries freshness and source; unknown values are not zeroes. Deep
-mass profiling is expensive and is not a frequent heartbeat.
+Use official released runtimes for offline pack/meld/roll/pruning jobs and explicit
+UTC maintenance schedules. Measure container RAM and logical/allocated disk sizes
+with source and freshness; unknown values are not zeroes. Vere 4.6 meld already
+includes compaction.
 
-Use sustained pressure and hysteresis for scheduling. After pack/meld, restart,
-take a fresh validated measurement, and suggest a larger loom if the defined
-utilization remains above 60%. Explain the metric and required resources. Do not
-promise compaction fixes large live state, automatically resize, or repeatedly
-compact without improvement. Vere 4.6 meld already includes compaction.
+Live loom-internal telemetry, utilization percentages and pressure-based advice are
+deferred. Keep the control socket disabled and avoid custom runtime builds. A larger
+runtime feature set is not a prerequisite for reliable ship operation. Future
+multi-runtime support, if needed, should be a simple `live` (upstream release) /
+`edge` (upstream develop) choice; see [runtime-policy.md](runtime-policy.md).
 
 Roll is off by default. There is no automatic chop timer. The "Free up space"
 action previews epoch inventory, protected entries, estimated allocated space,
