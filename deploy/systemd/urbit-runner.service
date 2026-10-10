@@ -1,0 +1,21 @@
+[Unit]
+Description=Omabit ship management
+ConditionUser=urbit-runner
+Wants=urbit-docker.service
+After=urbit-docker.service
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=exec
+WorkingDirectory=/var/lib/urbit-runner
+ExecStart=/usr/bin/env -i HOME=/var/lib/urbit-runner PATH=/usr/bin:/bin LANG=C XDG_RUNTIME_DIR=%t /usr/local/lib/urbit-runner/current/urbit-runner serve-development --acknowledge-development --resume-running
+UMask=0077
+NoNewPrivileges=yes
+Restart=on-failure
+RestartSec=5
+KillMode=mixed
+TimeoutStopSec=60
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,54 @@
+//go:build linux && amd64
+
+package runtimequalify
+
+import (
+	"context"
+	"errors"
+)
+
+// Startup resume never starts an old boot container: its command may still have
+// creation flags. Remove only the authenticated, cleanly stopped runtime and use
+// the normal initialized-pier replacement path under the caller's durable job.
+func applyStartupResume(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
+	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
+	if persist == nil || !StartupResumeCandidate(state) {
+		return state, unknown, errors.New("startup resume requires a resolved initialized runtime")
+	}
+	state, observed, err := observeManaged(ctx, state, d)
+	if err != nil {
+		return state, unknown, err
+	}
+	if !StartupResumeReady(state, observed) {
+		return state, unknown, errors.New("startup resume requires a verified clean stopped container")
+	}
+	q, err := managedSession(&state, persist, d)
+	if err != nil {
+		return state, unknown, err
+	}
+	mem, disk, err := d.admission(q.r.Directory)
+	if err != nil || mem < 5<<30 || disk < 8<<30 {
+		return state, unknown, errors.New("startup resume requires 5 GiB available RAM and 8 GiB disk")
+	}
+	for i, c := range q.r.Containers {
+		if c.Removed {
+			continue
+		}
+		actual, err := q.inspect(ctx, i)
+		if err != nil {
+			return state, unknown, err
+		}
+		if err := q.containment(actual, c.Kind); err != nil {
+			return state, unknown, err
+		}
+		if active(actual) || actual.State.Dead || *actual.State.OOMKilled || *actual.State.ExitCode != 0 {
+			return state, unknown, errors.New("startup container state changed before removal")
+		}
+		if err := q.remove(ctx, i); err != nil {
+			state.Runtime = q.r
+			return state, unknown, err
+		}
+	}
+	state.Runtime = q.r
+	return applyManaged(ctx, "start", state, persist, d)
+}

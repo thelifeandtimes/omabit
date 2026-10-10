@@ -38,6 +38,7 @@ type fakeEngine struct {
 	editImage              func(map[string]any)
 	editInspect            func(string, map[string]any)
 	cgroups, version, http string
+	resources              string
 	stopExit               int
 	oom, earlyExit         bool
 	downloads              int
@@ -52,6 +53,9 @@ type fakeContainer struct {
 
 func (f *fakeEngine) labelName() string {
 	if f.d.managed {
+		if f.d.profile == ProfileComet {
+			return "org.urbit-runner.managed-comet"
+		}
 		return "org.urbit-runner.managed-fake"
 	}
 	return label
@@ -64,6 +68,7 @@ func fixture(t *testing.T) *fakeEngine {
 	f := &fakeEngine{t: t, containers: map[string]*fakeContainer{}, networks: map[string]*fakeNetwork{}, cgroups: "4294967296\n0\n256\n200000 100000\n", version: "urbit " + candidate.VereVersion + "\n", http: "302"}
 	f.imageID = candidate.ManifestDigest
 	f.d = defaults()
+	f.d.portAvailable = func(string, uint16) bool { return true }
 	f.d.home, f.d.runtimeDir = filepath.Join(root, "home"), filepath.Join(root, "runtime")
 	for _, p := range []string{f.d.home, f.d.runtimeDir} {
 		if err := os.Mkdir(p, 0700); err != nil {
@@ -95,7 +100,14 @@ func fixture(t *testing.T) *fakeEngine {
 	}
 	f.d.admission = func(string) (uint64, uint64, error) { return 5 << 30, 8 << 30, nil }
 	f.d.randomID = func() (string, error) { return strings.Repeat("a", 32), nil }
-	f.d.times = timings{time.Second, time.Second, time.Second, 40 * time.Millisecond, time.Millisecond, 50 * time.Millisecond, 250 * time.Millisecond, time.Second, 25 * time.Millisecond}
+	// Successful paths include authenticated inspections and durable report writes.
+	// Give these room under the race detector; deadline-specific tests override
+	// their own budgets instead of making unrelated setup depend on 40–50 ms.
+	f.d.times = timings{
+		command: time.Second, pull: time.Second, download: time.Second,
+		ready: time.Second, poll: time.Millisecond, stop: time.Second,
+		cleanup: 3 * time.Second, pack: time.Second, cleanupCommand: time.Second,
+	}
 	pill := []byte("tiny disposable test pill\n")
 	hash := sha256.Sum256(pill)
 	f.d.pillSHA, f.d.pillBytes = hex.EncodeToString(hash[:]), int64(len(pill))
@@ -109,6 +121,25 @@ func fixture(t *testing.T) *fakeEngine {
 		return candidate.Artifact{Path: path, SHA256: f.d.pillSHA, Bytes: f.d.pillBytes, URL: candidate.PillURL}, err
 	}
 	f.d.execute = f.execute
+	f.d.stats = func(ctx context.Context, socket, id string) (string, error) {
+		if _, ok := ctx.Deadline(); !ok || socket != filepath.Join(f.d.runtimeDir, rootless.SocketName) {
+			t.Fatal("unbounded or misrouted stats read")
+		}
+		owned := false
+		for _, c := range f.containers {
+			if c.id == id && f.d.managed && isNetworkedKind(c.kind) && mapAt(c.doc, "State")["Running"] == true {
+				owned = true
+			}
+		}
+		if !owned {
+			t.Fatal("stats read targeted an unknown or stopped container")
+		}
+		f.events = append(f.events, "resources")
+		if f.resources != "" {
+			return f.resources, nil
+		}
+		return encode(t, map[string]any{"id": id, "read": time.Now().UTC(), "memory_stats": map[string]any{"usage": 64 << 20, "limit": 4 << 30}, "pids_stats": map[string]any{"current": 12}}), nil
+	}
 	return f
 }
 
@@ -150,7 +181,7 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 	args := append([]string(nil), full[4:]...)
 	f.calls = append(f.calls, args)
 	for _, arg := range args {
-		if arg == "logs" || arg == "--force" || arg == "-f" || arg == "-v" || (arg == "--publish" && f.d.profile != ProfileHTTP) || arg == "--privileged" || arg == "--net=host" || arg == "--keys" || arg == "-u" || strings.Contains(arg, "conn.sock") || strings.HasPrefix(arg, "tcp://") {
+		if arg == "logs" || arg == "--force" || arg == "-f" || arg == "-v" || (arg == "--publish" && !networkProfile(f.d.profile)) || arg == "--privileged" || arg == "--net=host" || arg == "--keys" || arg == "-u" || strings.Contains(arg, "conn.sock") || strings.HasPrefix(arg, "tcp://") {
 			t.Fatalf("forbidden operation: %q", args)
 		}
 	}
@@ -246,14 +277,25 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 		f.events = append(f.events, "start-"+c.kind)
 		state["Running"] = true
 		if c.kind == "boot" || c.kind == "http-boot" {
-			if err := os.MkdirAll(filepath.Join(filepath.Dir(full[3]), "data/fake-zod/.urb"), 0700); err != nil {
+			cmd := mapAt(c.doc, "Config")["Cmd"].([]string)
+			pier := strings.TrimPrefix(cmd[len(cmd)-1], "/urbit/")
+			if filepath.Base(pier) != pier {
+				t.Fatal("fixture pier escaped its mount")
+			}
+			if err := os.MkdirAll(filepath.Join(fakeMountRoot(c), pier, ".urb"), 0700); err != nil {
 				t.Fatal(err)
 			}
 			if f.earlyExit {
 				state["Running"], state["ExitCode"] = false, 1
 			}
 		}
-		if isHTTPKind(c.kind) {
+		if c.kind == "comet-boot" {
+			cmd := mapAt(c.doc, "Config")["Cmd"].([]string)
+			if err := os.MkdirAll(filepath.Join(fakeMountRoot(c), strings.TrimPrefix(cmd[len(cmd)-1], "/urbit/"), ".urb"), 0700); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if isNetworkedKind(c.kind) {
 			f.publishHTTP(c)
 		}
 	case "exec":
@@ -296,10 +338,10 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 			state["ExitCode"], state["OOMKilled"] = f.stopExit, f.oom
 		}
 	case "wait":
-		if c.kind != "pack" {
+		if c.kind != "pack" && c.kind != "meld" && c.kind != "roll" && !isRollKind(c.kind) && !isCometRoll(c.kind) && !isManagedCometUtility(c.kind) && c.kind != "epoch-recovery" && !isPrefixRecovery(c.kind) && !isCometPrefixRecovery(c.kind) {
 			t.Fatal("unexpected wait")
 		}
-		f.events = append(f.events, "wait-pack")
+		f.events = append(f.events, "wait-"+c.kind)
 		state["Running"], state["ExitCode"] = false, 0
 		return "0\n", nil
 	case "rm":
@@ -315,6 +357,16 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 		t.Fatalf("unexpected control: %q", args)
 	}
 	return id + "\n", nil
+}
+
+func fakeMountRoot(c *fakeContainer) string {
+	for _, raw := range c.doc["Mounts"].([]any) {
+		m := raw.(map[string]any)
+		if m["Destination"] == "/urbit" {
+			return m["Source"].(string)
+		}
+	}
+	panic("fixture has no /urbit mount")
 }
 
 func (f *fakeEngine) create(args []string, config string) (string, error) {
@@ -391,6 +443,17 @@ func (f *fakeEngine) create(args []string, config string) (string, error) {
 		}
 		mounts = append(mounts, m)
 	}
+	// Match the official image's VOLUME /urbit behavior. A child bind alone
+	// leaves an extra anonymous volume, which strict containment must reject.
+	rootBound := false
+	for _, m := range mounts {
+		if m.(map[string]any)["Destination"] == "/urbit" {
+			rootBound = true
+		}
+	}
+	if !rootBound {
+		mounts = append(mounts, map[string]any{"Type": "volume", "Source": "/fixture/anonymous-volume", "Destination": "/urbit", "RW": true, "Propagation": ""})
+	}
 	number := func(key string) int64 {
 		n, err := strconv.ParseInt(value(key), 10, 64)
 		if err != nil {
@@ -415,12 +478,13 @@ func (f *fakeEngine) create(args []string, config string) (string, error) {
 		}
 		mapAt(doc, "HostConfig")["Init"] = true
 	}
-	if isHTTPKind(kind) {
+	if isNetworkedKind(kind) {
 		port := ""
 		if f.d.hostPort != 0 {
 			port = fmt.Sprint(f.d.hostPort)
 		}
-		if f.d.profile != ProfileHTTP || value("--publish") != "127.0.0.1:"+port+":8080/tcp" {
+		published := opts["--publish"]
+		if !networkProfile(f.d.profile) || len(published) < 1 || len(published) > 2 || published[0] != "127.0.0.1:"+port+":8080/tcp" {
 			t.Fatal("unsafe HTTP publication")
 		}
 		n := f.networkByID(value("--network"))
@@ -428,6 +492,13 @@ func (f *fakeEngine) create(args []string, config string) (string, error) {
 			t.Fatal("HTTP container did not use the owned network ID")
 		}
 		mapAt(doc, "HostConfig")["PortBindings"] = map[string]any{"8080/tcp": []any{map[string]any{"HostIp": "127.0.0.1", "HostPort": port}}}
+		if len(published) == 2 {
+			parts := strings.Split(published[1], ":")
+			if len(parts) != 3 || parts[0] != "0.0.0.0" || parts[2] != parts[1]+"/udp" {
+				t.Fatal("invalid Ames publication", published)
+			}
+			mapAt(mapAt(doc, "HostConfig"), "PortBindings")[parts[2]] = []any{map[string]any{"HostIp": "0.0.0.0", "HostPort": parts[1]}}
+		}
 		doc["NetworkSettings"] = map[string]any{
 			"Networks": map[string]any{n.name: map[string]any{"NetworkID": ""}},
 			"Ports":    map[string]any{"80/tcp": nil, "34343/udp": nil, "8080/tcp": nil},
@@ -514,7 +585,7 @@ func TestSuccessCheckpointOrderAndIsolation(t *testing.T) {
 				t.Fatalf("pack mixed boot flags: %q", args)
 			}
 		default:
-			want := []string{"-t", "-L", "--no-conn", "--no-dock", "--loom", "31", "-b", "127.0.0.1", "--http-port", "8080"}
+			want := []string{"-t", "--snap-time", "60", "-L", "--no-conn", "--no-dock", "--loom", "31", "-b", "127.0.0.1", "--http-port", "8080"}
 			if strings.HasSuffix(call[3], "-boot") {
 				want = append(want, "-F", "zod", "-B", "/artifacts/boot.pill", "-c")
 			}

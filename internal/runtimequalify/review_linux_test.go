@@ -315,7 +315,7 @@ func TestCompletedHistoryIgnoresPierContentsAndHoldsLock(t *testing.T) {
 }
 
 func TestPriorMetadataIsBoundedAndFailsClosed(t *testing.T) {
-	for _, fault := range []string{"malformed", "oversize", "missing report", "report symlink", "report writable", "run symlink", "missing outcome", "missing containers", "uncertain even if removed", "unremoved", "foreign name", "wrong run ID", "legacy uncertain", "legacy complete"} {
+	for _, fault := range []string{"malformed", "oversize", "missing report", "report symlink", "report writable", "run symlink", "missing outcome", "missing containers", "missing profile", "uncertain even if removed", "unremoved", "foreign name", "wrong run ID", "missing dispatch markers"} {
 		t.Run(fault, func(t *testing.T) {
 			f := fixture(t)
 			old, err := run(context.Background(), nil, f.d)
@@ -340,6 +340,8 @@ func TestPriorMetadataIsBoundedAndFailsClosed(t *testing.T) {
 				delete(doc, "cleanup_complete")
 			case "missing containers":
 				delete(doc, "containers")
+			case "missing profile":
+				delete(doc, "profile")
 			case "uncertain even if removed":
 				first["create_uncertain"] = true
 			case "unremoved":
@@ -348,13 +350,10 @@ func TestPriorMetadataIsBoundedAndFailsClosed(t *testing.T) {
 				first["name"] = "unrelated-container"
 			case "wrong run ID":
 				doc["run_id"] = strings.Repeat("c", 32)
-			case "legacy uncertain", "legacy complete":
+			case "missing dispatch markers":
 				for _, c := range doc["containers"].([]any) {
 					delete(c.(map[string]any), "create_dispatched")
 					delete(c.(map[string]any), "create_uncertain")
-				}
-				if fault == "legacy uncertain" {
-					first["id"] = ""
 				}
 			}
 			if fault != "malformed" && fault != "oversize" {
@@ -389,12 +388,6 @@ func TestPriorMetadataIsBoundedAndFailsClosed(t *testing.T) {
 			f.d.randomID = func() (string, error) { return strings.Repeat("b", 32), nil }
 			calls := len(f.calls)
 			r, err := run(context.Background(), nil, f.d)
-			if fault == "legacy complete" {
-				if err != nil || !r.CheckpointPassed {
-					t.Fatalf("completed legacy evidence rejected: %v", err)
-				}
-				return
-			}
 			if err == nil || !reflect.DeepEqual(r, Result{}) || len(f.calls) != calls || !strings.Contains(err.Error(), "manual resolution") {
 				t.Fatalf("unsafe history accepted: %+v %v", r, err)
 			}

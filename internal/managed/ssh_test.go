@@ -85,6 +85,17 @@ func TestSSHActorsRolesAndRevocation(t *testing.T) {
 	if next := request(idRead, "POST", "/v1/instances", body); next.Code != 403 {
 		t.Fatal("observer mutated state")
 	}
+	for _, path := range []string{"/v1/handoffs", "/v1/instances/alpha/handoff", "/v1/handoffs/" + strings.Repeat("a", 32), "/v1/handoffs/" + strings.Repeat("a", 32) + "/data", "/v1/handoffs/" + strings.Repeat("a", 32) + "/activate"} {
+		for _, method := range []string{"GET", "PUT", "POST"} {
+			if next := request(idRead, method, path, "{}"); next.Code != 403 {
+				t.Fatal("observer accessed handoff", method, path)
+			}
+		}
+	}
+	pruneBody := `{"request_id":"prune","kind":"prune-epochs","expected_revision":1,"epoch_cutoff":"0i0","inventory_digest":"` + strings.Repeat("d", 64) + `","confirm_history_loss":true}`
+	if next := request(idRead, "POST", "/v1/instances/alpha/operations", pruneBody); next.Code != 403 {
+		t.Fatal("observer submitted confirmed pruning")
+	}
 	if err := os.WriteFile(r.keys, []byte(b+"\n"+readOnly+"\n"), 0600); err != nil {
 		t.Fatal(err)
 	}

@@ -28,12 +28,20 @@ func privateDir(t *testing.T) string {
 
 func testStore(t *testing.T) *store {
 	t.Helper()
-	s, err := openStore(privateDir(t))
+	s, err := testOpenStore(privateDir(t))
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { s.close() })
 	return s
+}
+
+func testOpenStore(dir string) (*store, error) {
+	s, err := openStore(dir)
+	if err == nil {
+		s.portAvailable = func(string, uint16) bool { return true }
+	}
+	return s, err
 }
 
 func registration(id, key string, port uint16) protocol.CreateFakeRequest {
@@ -50,7 +58,7 @@ func requireFault(t *testing.T, err error, code string) {
 
 func TestDurableIdentityRevisionAndReplay(t *testing.T) {
 	dir := privateDir(t)
-	s, err := openStore(dir)
+	s, err := testOpenStore(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -72,7 +80,7 @@ func TestDurableIdentityRevisionAndReplay(t *testing.T) {
 	if err := s.close(); err != nil {
 		t.Fatal(err)
 	}
-	s, err = openStore(dir)
+	s, err = testOpenStore(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -265,7 +273,7 @@ func TestStoreSurvivesProcessDeath(t *testing.T) {
 		t.Fatal(err)
 	}
 	_ = cmd.Wait()
-	s, err := openStore(dir)
+	s, err := testOpenStore(dir)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -288,7 +296,7 @@ func TestStoreCrashHelper(t *testing.T) {
 	if dir == "" {
 		return
 	}
-	s, err := openStore(dir)
+	s, err := testOpenStore(dir)
 	if err != nil {
 		t.Fatal(err)
 	}

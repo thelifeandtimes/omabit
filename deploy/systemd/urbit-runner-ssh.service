@@ -1,0 +1,17 @@
+[Unit]
+Description=Omabit dedicated SSH transport
+After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=exec
+ExecStartPre=/usr/bin/sshd -t -f /etc/urbit-runner/sshd_config
+ExecStart=/usr/bin/sshd -D -e -f /etc/urbit-runner/sshd_config
+Restart=on-failure
+RestartSec=5
+KillMode=control-group
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

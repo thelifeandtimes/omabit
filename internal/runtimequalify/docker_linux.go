@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"reflect"
 	"regexp"
 	"strings"
@@ -29,12 +28,14 @@ const (
 
 var (
 	runIDPattern          = regexp.MustCompile(`^[0-9a-f]{32}$`)
-	containerIDPattern    = regexp.MustCompile(`^[0-9a-f]{64}$`)
 	errUntrustedContainer = errors.New("container ownership, identity or inspection mismatch")
 )
 
 func (q *qualifier) resourceLabel() string {
 	if q.d.managed {
+		if q.d.profile == ProfileComet {
+			return "org.urbit-runner.managed-comet"
+		}
 		return "org.urbit-runner.managed-fake"
 	}
 	return label
@@ -48,6 +49,9 @@ func (q *qualifier) resourceName(kind string) string {
 	prefix := "urbit-qualification-"
 	if q.d.managed {
 		prefix = "urbit-managed-fake-"
+		if q.d.profile == ProfileComet {
+			prefix = "urbit-managed-comet-"
+		}
 	}
 	return prefix + q.r.RunID + "-" + kind
 }
@@ -157,6 +161,7 @@ type container struct {
 		Ports    map[string]json.RawMessage
 	}
 	State *struct {
+		Error                    string
 		Running, OOMKilled       *bool
 		ExitCode                 *int
 		Paused, Restarting, Dead bool
@@ -182,15 +187,35 @@ func (q *qualifier) inspect(ctx context.Context, index int) (container, error) {
 	}
 	r.ID = c.ID
 	r.CreateUncertain = false
+	r.LastState = &ContainerState{ObservedAt: time.Now().UTC(), Running: *c.State.Running, Paused: c.State.Paused, Restarting: c.State.Restarting, Dead: c.State.Dead, OOMKilled: *c.State.OOMKilled, ExitCode: *c.State.ExitCode, LaunchError: launchReason(c.State.Error)}
 	return c, nil
 }
 
-func command(kind string) (string, []string) {
+func baseCommand(kind string) (string, []string) {
 	switch kind {
 	case "probe":
 		return "/bin/sleep", []string{"120"}
-	case "pack":
-		return "/bin/urbit", []string{"pack", "--loom", "31", "/urbit/fake-zod"}
+	case "pack", "meld", "roll":
+		return "/bin/urbit", []string{kind, "--loom", "31", "/urbit/fake-zod"}
+	case "roll-1", "roll-2", "roll-3", "roll-4":
+		return "/bin/urbit", []string{"roll", "--loom", "31", "/urbit/fake-zod"}
+	case "epoch-recovery", "prefix-recovery-1", "prefix-recovery-2":
+		return "/bin/urbit", []string{"play", "--full", "--loom", "31", "/urbit/fake-zod"}
+	case "comet-pack", "comet-meld":
+		return "/bin/urbit", []string{strings.TrimPrefix(kind, "comet-"), "--loom", "31", "/urbit/comet"}
+	case "comet-roll", "comet-roll-1", "comet-roll-2", "comet-roll-3", "comet-roll-4":
+		return "/bin/urbit", []string{"roll", "--loom", "31", "/urbit/comet"}
+	case "comet-prefix-recovery-1", "comet-prefix-recovery-2":
+		return "/bin/urbit", []string{"play", "--full", "--loom", "31", "/urbit/comet"}
+	case "comet-boot", "comet-resume", "comet-verify", "comet-post-pack", "comet-post-meld", "comet-epoch-restart-1", "comet-epoch-restart-2", "comet-epoch-restart-3", "comet-epoch-restart-4", "comet-prefix-restart-1", "comet-prefix-restart-2", "comet-prefix-recovered-1", "comet-prefix-recovered-2":
+		args := []string{"-t", "--no-conn", "--no-dock", "--loom", "31", "-b", "0.0.0.0", "--http-port", "8080", "--ames-port", "34343"}
+		if kind == "comet-verify" {
+			args = append(args, "-L")
+		}
+		if kind == "comet-boot" {
+			args = append(args, "-B", "/artifacts/boot.pill", "-c")
+		}
+		return "/bin/urbit", append(args, "/urbit/comet")
 	default:
 		bind := "127.0.0.1"
 		if isHTTPKind(kind) {
@@ -204,9 +229,63 @@ func command(kind string) (string, []string) {
 	}
 }
 
+func command(kind string) (string, []string) {
+	return commandAtInterval(kind, DefaultSnapshotMinutes)
+}
+
+func commandAtInterval(kind string, minutes uint32) (string, []string) {
+	entry, args := baseCommand(kind)
+	// Offline utilities have their own parsers and do not run a periodic timer.
+	if entry == "/bin/urbit" && len(args) > 0 && args[0] == "-t" && minutes != 0 {
+		args = append([]string{"-t", "--snap-time", fmt.Sprint(minutes)}, args[1:]...)
+	}
+	return entry, args
+}
+
+func (q *qualifier) command(kind string) (string, []string) {
+	minutes := DefaultSnapshotMinutes
+	for _, c := range q.r.Containers {
+		if c.Kind == kind {
+			minutes = c.SnapshotMinutes
+			break
+		}
+	}
+	entry, args := commandAtInterval(kind, minutes)
+	if q.d.boot != nil || q.d.bootstrap != nil {
+		filtered := make([]string, 0, len(args))
+		for i := 0; i < len(args); i++ {
+			if args[i] == "-B" && q.canonicalPill() {
+				i++
+				continue
+			}
+			if q.d.boot != nil && i > 0 && args[i-1] == "--ames-port" {
+				filtered = append(filtered, fmt.Sprint(q.d.amesPort))
+			} else {
+				filtered = append(filtered, args[i])
+			}
+		}
+		args = filtered
+	}
+	if kind == "comet-boot" && q.d.nativeShip != "" {
+		last := args[len(args)-1]
+		args = append(args[:len(args)-2], "-w", q.d.nativeShip, "-k", "/artifacts/boot.key", "-c", last)
+	}
+	if q.d.managed && q.d.fake != nil {
+		for i := range args {
+			if i > 0 && args[i-1] == "-F" {
+				args[i] = strings.TrimPrefix(q.d.fake.Ship, "~")
+			}
+		}
+	}
+	if q.d.managed && entry == "/bin/urbit" {
+		args[len(args)-1] = "/urbit/pier"
+	}
+	return entry, args
+}
+
 func (q *qualifier) containment(c container, kind string) error {
 	h := c.HostConfig
-	entry, args := command(kind)
+	entry, args := q.command(kind)
 	ok := c.Config.User == "0:0" && c.Config.StopSignal == "SIGTERM" && c.Config.StopTimeout == 300 && !c.Config.Tty && !c.Config.OpenStdin && reflect.DeepEqual(c.Config.Entrypoint, []string{entry}) && reflect.DeepEqual(c.Config.Cmd, args) &&
 		h.PidMode == "" && h.IpcMode == "private" && h.UTSMode == "" && h.UsernsMode == "" && h.CgroupnsMode == "private" && !h.Privileged && !h.PublishAllPorts && !h.AutoRemove &&
 		len(h.CapAdd) == 0 && reflect.DeepEqual(h.CapDrop, []string{"ALL"}) && reflect.DeepEqual(h.SecurityOpt, []string{"no-new-privileges=true"}) && len(h.Binds) == 0 && len(h.VolumesFrom) == 0 && len(h.Links) == 0 && len(h.Devices) == 0 && len(h.DeviceRequests) == 0 &&
@@ -223,8 +302,11 @@ func (q *qualifier) containment(c container, kind string) error {
 	if err := q.networkContainment(c, kind); err != nil {
 		return err
 	}
-	want := []mount{{"bind", filepath.Join(q.r.Directory, "data"), "/urbit", true, "rprivate"}}
-	if kind == "boot" || kind == "http-boot" {
+	want := []mount{q.dataMount()}
+	if kind == "comet-boot" && q.d.nativeShip != "" {
+		want = append(want, mount{"bind", q.keyPath(), "/artifacts/boot.key", false, "rprivate"})
+	}
+	if q.usesPillFile(kind) {
 		want = append(want, mount{"bind", q.r.PillPath, "/artifacts/boot.pill", false, "rprivate"})
 	}
 	if len(c.Mounts) != len(want) {
@@ -250,14 +332,24 @@ func (q *qualifier) containment(c container, kind string) error {
 func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 	index := len(q.r.Containers)
 	allowed := kind == "probe" ||
-		(q.d.managed && kind == "pack") ||
+		(q.d.managed && q.d.profile == ProfileHTTP && (kind == "pack" || kind == "meld" || kind == "roll")) ||
+		(q.d.managed && q.d.profile == ProfileComet && isManagedCometUtility(kind)) ||
 		(q.d.profile == ProfileLifecycle && (kind == "boot" || kind == "restart" || kind == "pack" || kind == "post-pack")) ||
+		(!q.d.managed && q.d.profile == ProfileMeld && (kind == "boot" || kind == "meld" || kind == "post-meld")) ||
+		(!q.d.managed && q.d.profile == ProfileImport && (kind == "boot" || kind == "import-resume" || kind == "import-replacement")) ||
+		(q.d.profile == ProfileComet && isCometKind(kind)) ||
+		(!q.d.managed && q.d.profile == ProfileCometMaintenance && (isCometKind(kind) || isCometRestart(kind) || kind == "comet-pack" || kind == "comet-meld")) ||
+		(!q.d.managed && cometEpochProfile(q.d.profile) && (isCometKind(kind) || cometEpochContainer(q.d.profile, kind))) ||
+		(!q.d.managed && q.d.profile == ProfileCometPrefix && (isCometPrefixRuntime(kind) || isCometPrefixRecovery(kind))) ||
+		(!q.d.managed && isEpochProfile(q.d.profile) && !cometProfile(q.d.profile) && (kind == "boot" || ((isRollKind(kind) || isEpochRestartKind(kind)) && int(kind[len(kind)-1]-'0') <= epochRollCount(q.d.profile)))) ||
+		(!q.d.managed && q.d.profile == ProfilePrune && (kind == "post-prune" || kind == "epoch-recovery" || kind == "post-recovery")) ||
+		(!q.d.managed && q.d.profile == ProfilePrefix && isPrefixContainer(kind)) ||
 		(q.d.profile == ProfileHTTP && isHTTPKind(kind))
 	if !allowed {
 		return index, errors.New("container kind is not allowed for this qualification profile")
 	}
 	network := "none"
-	if isHTTPKind(kind) {
+	if isNetworkedKind(kind) {
 		n, err := q.inspectNetwork(ctx)
 		if err != nil {
 			return index, err
@@ -268,29 +360,45 @@ func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 		return index, errors.New("verified backend image identity required before create")
 	}
 	name := q.resourceName(kind)
-	q.r.Containers = append(q.r.Containers, ContainerRecord{Name: name, Kind: kind})
+	record := ContainerRecord{Name: name, Kind: kind}
+	baseEntry, baseArgs := baseCommand(kind)
+	if baseEntry == "/bin/urbit" && len(baseArgs) > 0 && baseArgs[0] == "-t" {
+		record.SnapshotMinutes = DefaultSnapshotMinutes
+	}
+	q.r.Containers = append(q.r.Containers, record)
 	if err := q.save(); err != nil {
 		return index, err
 	}
-	entry, cmd := command(kind)
+	entry, cmd := q.command(kind)
+	dataMount := q.dataMount()
 	args := []string{"container", "create", "--name", name, "--label", q.resourceLabel() + "=true", "--label", q.resourceRunLabel() + "=" + q.r.RunID,
 		"--platform", candidate.Platform, "--pull", "never", "--entrypoint", entry,
 		"--network", network, "--user", "0:0", "--cap-drop", "ALL", "--security-opt", "no-new-privileges=true",
 		"--cgroupns", "private", "--ipc", "private", "--restart", "no", "--stop-signal", "SIGTERM", "--stop-timeout", "300",
 		"--memory", "4294967296", "--memory-swap", "4294967296", "--pids-limit", "256", "--cpus", "2",
 		"--log-driver", "local", "--log-opt", "max-size=10m", "--log-opt", "max-file=2",
-		"--mount", "type=bind,src=" + filepath.Join(q.r.Directory, "data") + ",dst=/urbit,bind-propagation=rprivate"}
+		"--mount", "type=bind,src=" + dataMount.Source + ",dst=" + dataMount.Destination + ",bind-propagation=rprivate"}
 	if kind == "probe" {
 		args = append(args, "--init")
 	}
-	if isHTTPKind(kind) {
+	if kind == "comet-boot" && q.d.nativeShip != "" {
+		if err := q.verifyBootKey(); err != nil {
+			return index, err
+		}
+		args = append(args, "--mount", "type=bind,src="+q.keyPath()+",dst=/artifacts/boot.key,readonly,bind-propagation=rprivate")
+	}
+	if isNetworkedKind(kind) {
 		port := ""
 		if q.d.hostPort != 0 {
 			port = fmt.Sprint(q.d.hostPort)
 		}
 		args = append(args, "--publish", "127.0.0.1:"+port+":8080/tcp")
 	}
-	if kind == "boot" || kind == "http-boot" {
+	if q.publishAmes(kind) {
+		port := fmt.Sprint(q.d.amesPort)
+		args = append(args, "--publish", "0.0.0.0:"+port+":"+port+"/udp")
+	}
+	if q.usesPillFile(kind) {
 		args = append(args, "--mount", "type=bind,src="+q.r.PillPath+",dst=/artifacts/boot.pill,readonly,bind-propagation=rprivate")
 	}
 	args = append(append(args, q.r.ImageID), cmd...)
@@ -337,7 +445,7 @@ func (q *qualifier) control(ctx context.Context, index int, timeout time.Duratio
 		return "", err
 	}
 	if verb == "start" || verb == "exec" || verb == "wait" {
-		if isHTTPKind(q.r.Containers[index].Kind) {
+		if isNetworkedKind(q.r.Containers[index].Kind) {
 			if _, err := q.inspectNetwork(ctx); err != nil {
 				return "", err
 			}
@@ -349,12 +457,28 @@ func (q *qualifier) control(ctx context.Context, index int, timeout time.Duratio
 	if verb == "exec" && !active(c) {
 		return "", errors.New("container exited before execution")
 	}
+	if verb == "start" {
+		if err := q.admitPorts(q.r.Containers[index].Kind); err != nil {
+			return "", err
+		}
+	}
 	command := []string{"container", verb}
 	if verb == "stop" {
 		command = append(command, "--timeout", "300")
 	}
 	command = append(command, c.ID)
-	return q.docker(ctx, timeout, append(command, args...)...)
+	out, err := q.docker(ctx, timeout, append(command, args...)...)
+	if err != nil && verb == "start" {
+		if actual, inspectErr := q.inspect(ctx, index); inspectErr == nil {
+			if saveErr := q.save(); saveErr != nil {
+				return "", errors.Join(err, saveErr)
+			}
+			if reason := launchReason(actual.State.Error); reason != "" {
+				return "", fmt.Errorf("container start failed: %s", reason)
+			}
+		}
+	}
+	return out, err
 }
 
 func (q *qualifier) remove(ctx context.Context, index int) error {
@@ -364,6 +488,15 @@ func (q *qualifier) remove(ctx context.Context, index int) error {
 	}
 	if active(c) || c.State.Dead {
 		return errors.New("cannot confirm container stopped")
+	}
+	// Preserve the terminal state before removing the only daemon-side evidence.
+	if q.d.managed && q.r.Containers[index].Kind != "probe" {
+		if logs, err := q.containerLogs(ctx, index); err == nil {
+			q.r.RetainedLogs = &logs
+		}
+	}
+	if err := q.save(); err != nil {
+		return err
 	}
 	if _, err := q.docker(ctx, q.d.times.command, "container", "rm", c.ID); err != nil {
 		return err
@@ -381,7 +514,7 @@ func (q *qualifier) stop(ctx context.Context, index int, requireZero bool) error
 		return err
 	}
 	if active(c) || c.State.Dead || *c.State.OOMKilled || (requireZero && *c.State.ExitCode != 0) {
-		return errors.New("graceful shutdown failed: running, nonzero exit or OOM")
+		return fmt.Errorf("graceful shutdown failed: running=%t, exit_code=%d, oom_killed=%t (stop grace 300s)", active(c), *c.State.ExitCode, *c.State.OOMKilled)
 	}
 	return q.remove(ctx, index)
 }

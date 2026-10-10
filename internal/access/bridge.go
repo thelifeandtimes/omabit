@@ -34,18 +34,44 @@ func Bridge(ctx context.Context, input io.Reader, output io.Writer, socket, keys
 		if err != nil {
 			return errors.New("invalid SSH RPC request")
 		}
-		body, err := io.ReadAll(io.LimitReader(req.Body, 4097))
-		if err != nil || len(body) > 4096 || req.URL.IsAbs() || req.URL.RawQuery != "" || req.Header.Get("Origin") != "" {
+		upload := req.Method == http.MethodPost && req.URL.Path == protocol.PillUploadPath
+		if req.URL.IsAbs() || req.URL.RawQuery != "" || req.Header.Get("Origin") != "" {
 			return errors.New("invalid SSH RPC request")
 		}
-		req.Body.Close()
 		grant, err := Load(keys, id)
 		if err != nil || !grant.Allows(req.Method, req.URL.Path) {
 			data, _ := json.Marshal(protocol.ErrorResponse{Error: protocol.APIError{Code: "ssh_access_denied", Message: "SSH grant does not permit this request"}})
 			resp := &http.Response{StatusCode: 403, ProtoMajor: 1, ProtoMinor: 1, Header: http.Header{protocol.Header: []string{"1"}, "Content-Type": []string{"application/json"}}, Body: io.NopCloser(bytes.NewReader(data)), ContentLength: int64(len(data)), Close: true}
 			return resp.Write(output)
 		}
-		local, err := http.NewRequestWithContext(ctx, req.Method, "http://runner"+req.URL.EscapedPath(), bytes.NewReader(body))
+		if protocol.HandoffDataPath(req.URL.Path) {
+			if req.Method == "PUT" {
+				if req.ContentLength <= 0 || req.ContentLength > protocol.MaxHandoffBytes || req.Header.Get("Content-Type") != "application/octet-stream" {
+					return errors.New("invalid handoff framing")
+				}
+				limited.N = req.ContentLength
+			} else if req.Method != "GET" || req.ContentLength != 0 {
+				return errors.New("invalid handoff method/body")
+			}
+			return forwardHandoff(ctx, req, input, output, socket, grant)
+		}
+		var body io.Reader
+		if upload {
+			meta := protocol.BootPill{SHA256: req.Header.Get(protocol.PillHashHeader), Bytes: req.ContentLength}
+			if !protocol.ValidBootPill(&meta) || req.Header.Get("Content-Type") != "application/octet-stream" {
+				return errors.New("invalid pill upload framing")
+			}
+			limited.N = req.ContentLength
+			body = io.LimitReader(req.Body, req.ContentLength)
+		} else {
+			data, err := io.ReadAll(io.LimitReader(req.Body, 4097))
+			if err != nil || len(data) > 4096 {
+				return errors.New("invalid SSH RPC body")
+			}
+			req.Body.Close()
+			body = bytes.NewReader(data)
+		}
+		local, err := http.NewRequestWithContext(ctx, req.Method, "http://runner"+req.URL.EscapedPath(), body)
 		if err != nil {
 			return errors.New("invalid SSH RPC path")
 		}
@@ -53,10 +79,32 @@ func Bridge(ctx context.Context, input io.Reader, output io.Writer, socket, keys
 		local.Header.Set(protocol.Header, req.Header.Get(protocol.Header))
 		local.Header.Set("Accept", "application/json")
 		local.Header.Set(Header, id)
+		if upload {
+			local.ContentLength = req.ContentLength
+			local.Header.Set(protocol.PillHashHeader, req.Header.Get(protocol.PillHashHeader))
+		}
 		local.GetBody = nil // a bridge never retries a mutation either
-		resp, data, err := forward(ctx, local, socket, grant)
+		requestCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		var stop func() bool
+		if upload {
+			cancel()
+			requestCtx, cancel = context.WithTimeout(ctx, 10*time.Minute)
+			stop = context.AfterFunc(requestCtx, func() {
+				if c, ok := input.(io.Closer); ok {
+					c.Close()
+				}
+			})
+		}
+		resp, data, err := forward(requestCtx, local, socket, grant)
+		if stop != nil {
+			stop()
+		}
+		cancel()
 		if err != nil {
 			return err
+		}
+		if upload {
+			req.Body.Close()
 		}
 		resp.Body = io.NopCloser(bytes.NewReader(data))
 		resp.ContentLength = int64(len(data))
@@ -79,7 +127,11 @@ func Bridge(ctx context.Context, input io.Reader, output io.Writer, socket, keys
 // request. An older runner ignores the grant header; checking its response after
 // a mutation would already be too late. There are no transport retries.
 func forward(ctx context.Context, req *http.Request, socket string, grant Grant) (*http.Response, []byte, error) {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	duration := 5 * time.Second
+	if req.URL.Path == protocol.PillUploadPath {
+		duration = 10 * time.Minute
+	}
+	ctx, cancel := context.WithTimeout(ctx, duration)
 	defer cancel()
 	conn, err := (&net.Dialer{}).DialContext(ctx, "unix", socket)
 	if err != nil {

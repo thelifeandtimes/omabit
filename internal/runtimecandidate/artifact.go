@@ -13,11 +13,13 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
 const (
-	maxPillBytes  = int64(256 << 20)
-	pillUserAgent = "curl/omabit-runtimecandidate (+https://git.thechristophgroup.org/thelifeandtimes/omabit)"
+	maxPillBytes  = protocol.MaxBootPillBytes
+	pillUserAgent = "curl/omabit-runtimecandidate (+https://github.com/thelifeandtimes/omabit)"
 )
 
 // Artifact describes the verified, inert pill file published by DownloadPill.

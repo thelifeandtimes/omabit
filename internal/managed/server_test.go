@@ -15,23 +15,58 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/epochs"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/localrpc"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
 
 type fakeBackend struct {
-	mu      sync.Mutex
-	running map[string]bool
-	apply   int
-	entered chan struct{}
-	release chan struct{}
+	mu                sync.Mutex
+	running           map[string]bool
+	apply             int
+	entered           chan struct{}
+	release           chan struct{}
+	epochInventory    *epochs.Inventory
+	prunedInventories map[string]*epochs.Inventory
 }
+
+func (*fakeBackend) PortAvailable(string, uint16) bool { return true }
 
 func (b *fakeBackend) Apply(ctx context.Context, action string, state runtimequalify.ManagedState, persist func(runtimequalify.ManagedState) error) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error) {
 	b.mu.Lock()
 	b.apply++
 	b.mu.Unlock()
+	state.Epochs = nil
+	pruning := action == "prune-epochs"
+	if pruning {
+		b.mu.Lock()
+		template := b.epochInventory
+		if b.prunedInventories[state.ID] != nil {
+			template = b.prunedInventories[state.ID]
+		}
+		inv := *template
+		b.mu.Unlock()
+		inv.PierID = state.ID
+		plan, err := epochs.PrunePlan(&inv, state.PruneIntent.Cutoff, state.PruneIntent.InventoryDigest, time.Now().UTC())
+		if err != nil {
+			return state, runtimequalify.ManagedObservation{}, err
+		}
+		p := &runtimequalify.PrefixPruneRecord{Cutoff: state.PruneIntent.Cutoff, StartedAt: time.Now().UTC(), Before: &inv, Uncertain: true}
+		for _, e := range plan.Selected {
+			p.Targets = append(p.Targets, runtimequalify.EpochDeletion{Name: e.Name, Files: make([]runtimequalify.PruneFile, e.FileCount)})
+		}
+		state.PrefixPrune = p
+		state.MaintenanceUncertain = true
+	}
+	maintenance := action == "pack" || action == "meld" || action == "roll"
+	if maintenance {
+		state.MaintenanceUncertain = true
+		state.Maintenance = &runtimequalify.ManagedMaintenance{Kind: action, BeforePierBytes: 1000, StartedAt: time.Now().UTC(), MemAvailableBytes: 6 << 30, DiskAvailableBytes: 10 << 30}
+		if action == "roll" {
+			state.Maintenance.EpochsBefore = []string{"0i0"}
+		}
+	}
 	if err := persist(state); err != nil {
 		return state, runtimequalify.ManagedObservation{}, err
 	}
@@ -53,6 +88,66 @@ func (b *fakeBackend) Apply(ctx context.Context, action string, state runtimequa
 	b.mu.Unlock()
 	if action == "start" {
 		state.Prepared, state.Initialized = true, true
+		state.RollNeedsRuntime = false
+	}
+	if action == "stop" {
+		for i := range state.Runtime.Containers {
+			state.Runtime.Containers[i].Removed = true
+			state.Runtime.Containers[i].CreateUncertain = false
+		}
+	}
+	if maintenance {
+		now := time.Now().UTC()
+		state.Maintenance.AfterPierBytes, state.Maintenance.FinishedAt = 500, &now
+		state.MaintenanceUncertain = false
+		if action == "roll" {
+			state.RollNeedsRuntime = true
+			state.Maintenance.EpochsAfter = []string{"0i0", "0i100"}
+			state.Maintenance.CreatedEpoch = "0i100"
+			state.Epochs = &epochs.Inventory{Source: epochs.Source, PierID: state.ID, ObservedAt: now, Digest: strings.Repeat("d", 64), Entries: []epochs.Entry{
+				{Name: "0i0", FileCount: 4, Protected: true},
+				{Name: "0i100", FileCount: 5, SnapshotBytes: 100, Protected: true},
+			}}
+		}
+	}
+	if action == "inspect-epochs" {
+		state.Epochs = &epochs.Inventory{Source: epochs.Source, PierID: state.ID, ObservedAt: time.Now().UTC(), Digest: strings.Repeat("d", 64), Entries: []epochs.Entry{
+			{Name: "0i0", FileCount: 3, LogicalBytes: 100, AllocatedBytes: 4096},
+			{Name: "0i10", FileCount: 4, LogicalBytes: 200, AllocatedBytes: 8192, Protected: true},
+			{Name: "0i20", FileCount: 4, LogicalBytes: 300, AllocatedBytes: 12288, Protected: true},
+		}}
+		if b.epochInventory != nil {
+			b.mu.Lock()
+			template := b.epochInventory
+			if b.prunedInventories[state.ID] != nil {
+				template = b.prunedInventories[state.ID]
+			}
+			inv := *template
+			b.mu.Unlock()
+			inv.PierID = state.ID
+			inv.ObservedAt = time.Now().UTC()
+			state.Epochs = &inv
+		}
+	}
+	if pruning {
+		now := time.Now().UTC()
+		p := state.PrefixPrune
+		inv := *p.Before
+		inv.Entries = append([]epochs.Entry(nil), p.Before.Entries[len(p.Targets):]...)
+		inv.Digest = fmt.Sprintf("%064x", len(inv.Entries))
+		inv.ObservedAt = now
+		p.After, p.FinishedAt, p.Uncertain = &inv, &now, false
+		for i := range p.Targets {
+			p.Targets[i].Removed = true
+			p.Targets[i].RemovedFiles = make([]string, len(p.Targets[i].Files))
+		}
+		b.mu.Lock()
+		if b.prunedInventories == nil {
+			b.prunedInventories = map[string]*epochs.Inventory{}
+		}
+		b.prunedInventories[state.ID] = &inv
+		b.mu.Unlock()
+		state.Epochs, state.MaintenanceUncertain, state.PruneIntent = &inv, false, nil
 	}
 	if err := persist(state); err != nil {
 		return state, runtimequalify.ManagedObservation{}, err
@@ -62,6 +157,9 @@ func (b *fakeBackend) Apply(ctx context.Context, action string, state runtimequa
 }
 
 func (b *fakeBackend) Observe(_ context.Context, state runtimequalify.ManagedState) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error) {
+	if state.UncertainMaintenance() {
+		return state, runtimequalify.ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}, nil
+	}
 	b.mu.Lock()
 	running := b.running[state.ID]
 	b.mu.Unlock()

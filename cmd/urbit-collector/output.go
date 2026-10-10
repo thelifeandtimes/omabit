@@ -10,6 +10,8 @@ import (
 	"unicode"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/epochs"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
@@ -44,11 +46,67 @@ func instances(w io.Writer, values []protocol.Instance) {
 		if v.RecoveryRequired {
 			fmt.Fprintln(w, "  Recovery required")
 		}
+		if v.RollNeedsRuntime {
+			fmt.Fprintln(w, "  A new roll requires a runtime start and clean stop first")
+		}
 		if v.ActiveOperationID != "" {
 			fmt.Fprintln(w, "  Active operation:", cell(v.ActiveOperationID))
 		}
+		if e := v.Epochs; e != nil {
+			fmt.Fprintf(w, "  Epoch inventory: %d entries; sampled %s; source=%s\n", len(e.Entries), e.ObservedAt.UTC().Format(time.RFC3339Nano), cell(e.Source))
+			fmt.Fprintf(w, "  Inventory digest: %s\n", cell(e.Digest))
+			for _, entry := range e.Entries {
+				fmt.Fprintf(w, "    %s: logical=%d bytes; allocated=%d bytes; files=%d; protected=%t; shared-files=%t\n", cell(entry.Name), entry.LogicalBytes, entry.AllocatedBytes, entry.FileCount, entry.Protected, entry.SharedFiles)
+			}
+		}
+		if r := v.Resources; r != nil {
+			fmt.Fprintf(w, "  Container resources: %s; source=%s\n", cell(r.Status), cell(r.Source))
+			if r.ObservedAt != nil {
+				fmt.Fprintf(w, "  Sample: %s; container=%s\n", r.ObservedAt.UTC().Format(time.RFC3339Nano), cell(r.ContainerID))
+			}
+			if (r.Status == "fresh" || r.Status == "stale") && r.MemoryCurrentBytes != nil && r.MemoryLimitBytes != nil && r.PIDsCurrent != nil {
+				fmt.Fprintf(w, "  Cgroup RAM (includes cache): %.2f / %.2f MiB; tasks: %d\n",
+					float64(*r.MemoryCurrentBytes)/(1<<20), float64(*r.MemoryLimitBytes)/(1<<20), *r.PIDsCurrent)
+				if r.CPUUsagePercent != nil && r.CPULimitCores != nil {
+					fmt.Fprintf(w, "  Container CPU: %.2f%% (100%% = one CPU; limit %.0f%%)\n", *r.CPUUsagePercent, *r.CPULimitCores*100)
+				}
+			}
+		}
 		if m := v.Maintenance; m != nil {
-			fmt.Fprintf(w, "  Maintenance: %s; logical pier bytes before=%d after=%d; completed=%t\n", cell(m.Kind), m.BeforePierBytes, m.AfterPierBytes, m.FinishedAt != nil)
+			if len(m.EpochsBefore) > 0 {
+				fmt.Fprintf(w, "  Roll epochs before: %s\n", cell(strings.Join(m.EpochsBefore, ", ")))
+				if len(m.EpochsAfter) > 0 {
+					fmt.Fprintf(w, "  Observed epochs after: %s\n", cell(strings.Join(m.EpochsAfter, ", ")))
+				}
+				if m.FinishedAt != nil && m.CreatedEpoch != "" {
+					fmt.Fprintf(w, "  Created epoch: %s\n", cell(m.CreatedEpoch))
+				}
+			}
+			after := "unknown"
+			if m.FinishedAt != nil {
+				after = fmt.Sprint(m.AfterPierBytes)
+			}
+			fmt.Fprintf(w, "  Maintenance: %s; logical pier bytes before=%d after=%s; completed=%t\n", cell(m.Kind), m.BeforePierBytes, after, m.FinishedAt != nil)
+			fmt.Fprintf(w, "  Started: %s\n", m.StartedAt.UTC().Format(time.RFC3339Nano))
+			if m.FinishedAt != nil {
+				fmt.Fprintf(w, "  Finished: %s (%.2f seconds)\n", m.FinishedAt.UTC().Format(time.RFC3339Nano), m.FinishedAt.Sub(m.StartedAt).Seconds())
+			}
+			if m.MemAvailableBytes != 0 && m.DiskAvailableBytes != 0 {
+				fmt.Fprintf(w, "  Admission: %.2f GiB available RAM; %.2f GiB free disk\n", float64(m.MemAvailableBytes)/(1<<30), float64(m.DiskAvailableBytes)/(1<<30))
+			}
+		}
+		if p := v.Pruning; p != nil {
+			fmt.Fprintf(w, "  Epoch pruning: cutoff=%s; removed-files=%d/%d; selected-epochs-removed=%t; uncertain=%t; completed=%t\n", cell(p.Cutoff), p.RemovedFiles, p.ExpectedFiles, p.EpochRemoved, p.Uncertain, p.FinishedAt != nil)
+			fmt.Fprintf(w, "  Pruning inventory digest: %s\n", cell(p.InventoryDigest))
+			if len(p.SelectedEpochs) > 0 {
+				fmt.Fprintf(w, "  Selected epochs: %s\n", cell(strings.Join(p.SelectedEpochs, ", ")))
+			}
+			if len(p.RemovedEpochs) > 0 {
+				fmt.Fprintf(w, "  Removed epochs: %s\n", cell(strings.Join(p.RemovedEpochs, ", ")))
+			}
+			if len(p.RetainedEpochs) > 0 {
+				fmt.Fprintf(w, "  Observed retained epochs: %s\n", cell(strings.Join(p.RetainedEpochs, ", ")))
+			}
 		}
 	}
 }
@@ -96,12 +154,44 @@ func (o *output) Encode(value any) error {
 		for _, incident := range v.Incidents {
 			fmt.Fprintf(w, "Incident %s (active=%t): %s\n", cell(incident.Code), incident.Active, cell(incident.Message))
 		}
+	case *pierstore.Catalogue:
+		fmt.Fprintf(w, "Pier root: %s\n", cell(v.Root))
+		for _, p := range v.Candidates {
+			fmt.Fprintf(w, "%s\t%s\tregistered=%s\tmoved=%t\tbusy=%t\t%s\n", cell(p.Path), cell(p.Kind), cell(p.EnrolledBy), p.Moved, p.Busy, cell(p.Problem))
+		}
+		if v.Error != "" {
+			fmt.Fprintln(w, cell(v.Error))
+		}
 	case protocol.Instance:
 		instances(w, []protocol.Instance{v})
+	case epochs.Preview:
+		fmt.Fprintf(w, "Epoch prefix preview: %s on %s, revision %d\nInventory digest: %s\nCutoff: %s (inclusive)\n", cell(v.InstanceID), cell(v.RunnerID), v.ConfigRevision, cell(v.InventoryDigest), cell(v.Cutoff))
+		for _, e := range v.Selected {
+			fmt.Fprintf(w, "  Selected: %s\n", cell(e.Name))
+		}
+		for _, e := range v.Retained {
+			fmt.Fprintf(w, "  Retained: %s (protected=%t)\n", cell(e.Name), e.Protected)
+		}
+		fmt.Fprintf(w, "Selected logical bytes: %d\nSelected allocated file bytes: %d\nShared files: %t\nDeletion supported: %t\nRequires fresh stopped-pier revalidation before deletion.\nAllocated file bytes are not a guarantee of disk space reclaimed.\n", v.SelectedLogicalBytes, v.SelectedAllocatedBytes, v.SharedFiles, v.DeletionSupported)
+		if v.DeletionSupported {
+			fmt.Fprintln(w, "The displayed oldest-prefix selection is supported. Explicit history-loss confirmation is required.")
+		}
 	case protocol.Operation:
 		fmt.Fprintf(w, "Operation: %s\nInstance: %s\nKind: %s\nStatus: %s\nActor: %s\nRequest: %s\n", cell(v.ID), cell(v.InstanceID), cell(v.Kind), cell(v.Status), cell(v.Actor), cell(v.RequestID))
+		fmt.Fprintf(w, "Revision: %d\nCreated: %s\n", v.ConfigRevision, v.CreatedAt.UTC().Format(time.RFC3339Nano))
+		if v.FinishedAt != nil {
+			fmt.Fprintf(w, "Finished: %s\n", v.FinishedAt.UTC().Format(time.RFC3339Nano))
+		}
+		if v.Message != "" {
+			fmt.Fprintf(w, "Message: %s\n", cell(v.Message))
+		}
 	case collection.Connection:
-		fmt.Fprintf(w, "Connection: %s\nRunner: %s\nMode: %s\nAddress: %s\nEnrolled: %s\n", cell(v.Name), cell(v.RunnerID), cell(v.Mode), cell(v.Address()), v.EnrolledAt.UTC().Format(time.RFC3339))
+		fmt.Fprintf(w, "Connection: %s\nRunner: %s\nMode: %s\nAddress: %s\nConnection revision: %d\nEnrolled: %s\n", cell(v.Name), cell(v.RunnerID), cell(v.Mode), cell(v.Address()), v.Revision, v.EnrolledAt.UTC().Format(time.RFC3339))
+	case protocol.ImportCatalogue:
+		fmt.Fprintf(w, "Runner: %s\nQualified fake import sources: %d\n", cell(v.RunnerID), len(v.Sources))
+		for _, s := range v.Sources {
+			fmt.Fprintf(w, "  Source: %s\n    Ship: %s; files: %d; logical bytes: %d\n    Digest: %s\n    Claimed by: %s\n", cell(s.RunID), cell(s.Ship), s.Files, s.Bytes, cell(s.ContentDigest), cell(s.ClaimedBy))
+		}
 	case []collection.Connection:
 		fmt.Fprintln(w, "NAME\tTRANSPORT\tRUNNER\tMODE\tADDRESS")
 		for _, c := range v {

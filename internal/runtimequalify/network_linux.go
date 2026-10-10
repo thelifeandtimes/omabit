@@ -30,6 +30,19 @@ type bridge struct {
 }
 
 func isHTTPKind(kind string) bool { return kind == "http-boot" || kind == "http-restart" }
+func isCometKind(kind string) bool {
+	return kind == "comet-boot" || kind == "comet-resume" || kind == "comet-verify"
+}
+func isCometRestart(kind string) bool { return kind == "comet-post-pack" || kind == "comet-post-meld" }
+func cometProfile(profile string) bool {
+	return profile == ProfileComet || profile == ProfileCometMaintenance || cometEpochProfile(profile)
+}
+func isNetworkedKind(kind string) bool {
+	return isHTTPKind(kind) || isCometKind(kind) || isCometRestart(kind) || isCometEpochRestart(kind) || isCometPrefixRuntime(kind)
+}
+func networkProfile(profile string) bool {
+	return profile == ProfileHTTP || cometProfile(profile)
+}
 
 func bridgeOptions() map[string]string {
 	return map[string]string{
@@ -40,7 +53,7 @@ func bridgeOptions() map[string]string {
 
 func (q *qualifier) inspectNetwork(ctx context.Context) (bridge, error) {
 	r := q.r.Network
-	if q.d.profile != ProfileHTTP || r == nil || r.Removed {
+	if !networkProfile(q.d.profile) || r == nil || r.Removed {
 		return bridge{}, errUntrustedNetwork
 	}
 	out, err := q.docker(ctx, q.d.times.command, "network", "inspect", r.Name)
@@ -63,7 +76,7 @@ func (q *qualifier) inspectNetwork(ctx context.Context) (bridge, error) {
 	for id := range n.Containers {
 		owned := false
 		for _, c := range q.r.Containers {
-			owned = owned || (c.ID == id && isHTTPKind(c.Kind))
+			owned = owned || (c.ID == id && isNetworkedKind(c.Kind))
 		}
 		if !owned {
 			return bridge{}, errors.Join(errUntrustedNetwork, errors.New("unrecognized network attachment"))
@@ -74,7 +87,7 @@ func (q *qualifier) inspectNetwork(ctx context.Context) (bridge, error) {
 }
 
 func (q *qualifier) createNetwork(ctx context.Context) error {
-	if q.d.profile != ProfileHTTP || q.r.Network != nil {
+	if !networkProfile(q.d.profile) || q.r.Network != nil {
 		return errors.New("network creation is only available once in the HTTP profile")
 	}
 	q.r.Network = &NetworkRecord{Name: q.resourceName("http")}
@@ -174,7 +187,7 @@ func decodeLoopbackBinding(raw json.RawMessage, dynamic bool) (portBinding, erro
 }
 
 func (q *qualifier) networkContainment(c container, kind string) error {
-	if !isHTTPKind(kind) {
+	if !isNetworkedKind(kind) {
 		if c.HostConfig.NetworkMode != "none" || len(c.HostConfig.PortBindings) != 0 {
 			return errors.New("isolated container cannot have network access or published ports")
 		}
@@ -191,12 +204,24 @@ func (q *qualifier) networkContainment(c container, kind string) error {
 		return nil
 	}
 	n := q.r.Network
-	if q.d.profile != ProfileHTTP || n == nil || n.Removed || n.CreateUncertain || !containerIDPattern.MatchString(n.ID) ||
+	allowed := isHTTPKind(kind) && q.d.profile == ProfileHTTP || isCometKind(kind) && q.d.profile == ProfileComet ||
+		(isCometKind(kind) || isCometRestart(kind)) && q.d.profile == ProfileCometMaintenance && !q.d.managed ||
+		(isCometKind(kind) || isCometEpochRestart(kind) && cometEpochContainer(q.d.profile, kind)) && cometEpochProfile(q.d.profile) && !q.d.managed ||
+		isCometPrefixRuntime(kind) && q.d.profile == ProfileCometPrefix && !q.d.managed
+	if !allowed || n == nil || n.Removed || n.CreateUncertain || !containerIDPattern.MatchString(n.ID) ||
 		(c.HostConfig.NetworkMode != n.ID && c.HostConfig.NetworkMode != n.Name) {
 		return errUntrustedNetwork
 	}
-	if len(c.HostConfig.PortBindings) != 1 {
-		return errors.New("HTTP container must request exactly one published TCP port")
+	wantPorts := 1
+	amesKey := strconv.Itoa(int(q.d.amesPort)) + "/udp"
+	if q.publishAmes(kind) {
+		wantPorts++
+		if err := q.amesBinding(c.HostConfig.PortBindings[amesKey]); err != nil {
+			return err
+		}
+	}
+	if len(c.HostConfig.PortBindings) != wantPorts {
+		return errors.New("container port bindings differ from the registered HTTP/Ames configuration")
 	}
 	binding, err := decodeLoopbackBinding(c.HostConfig.PortBindings["8080/tcp"], true)
 	if err != nil {
@@ -223,17 +248,36 @@ func (q *qualifier) networkContainment(c container, kind string) error {
 			continue // image EXPOSE metadata is not a host publication
 		}
 		if port != "8080/tcp" {
+			if q.publishAmes(kind) && port == amesKey {
+				if err := q.amesBinding(raw); err != nil {
+					return err
+				}
+				continue
+			}
 			return errors.New("HTTP container published an unexpected port")
 		}
 		if _, err := decodeLoopbackBinding(raw, false); err != nil {
 			return err
 		}
 	}
+	if q.publishAmes(kind) && *c.State.Running {
+		if err := q.amesBinding(c.NetworkSettings.Ports[amesKey]); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (q *qualifier) amesBinding(raw json.RawMessage) error {
+	var bindings []portBinding
+	if json.Unmarshal(raw, &bindings) != nil || len(bindings) != 1 || bindings[0].HostIP != "0.0.0.0" || bindings[0].HostPort != strconv.Itoa(int(q.d.amesPort)) {
+		return errors.New("Ames UDP binding differs from the registered host port")
+	}
 	return nil
 }
 
 func (q *qualifier) publishedEndpoint(c container, kind string) (string, error) {
-	if !isHTTPKind(kind) {
+	if !isNetworkedKind(kind) {
 		return "", errors.New("host endpoint is only available for the HTTP checkpoint")
 	}
 	if err := q.containment(c, kind); err != nil {

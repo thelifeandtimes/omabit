@@ -23,9 +23,10 @@ const (
 )
 
 var helpers = strings.Fields("dockerd docker rootlesskit slirp4netns newuidmap newgidmap useradd getsubids systemctl loginctl runuser id getent env nologin test")
+var hostHelpers = strings.Fields("sshd ssh-keygen usermod")
 
 func (i *installer) helper(ctx context.Context, path string) error {
-	if filepath.Dir(path) != "/usr/bin" || !slices.Contains(helpers, filepath.Base(path)) {
+	if filepath.Dir(path) != "/usr/bin" || (!slices.Contains(helpers, filepath.Base(path)) && !slices.Contains(hostHelpers, filepath.Base(path))) {
 		return fmt.Errorf("command is not an approved /usr/bin helper: %s", path)
 	}
 	if err := i.parents(ctx, path, false); err != nil {

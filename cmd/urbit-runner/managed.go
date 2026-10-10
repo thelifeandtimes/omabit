@@ -21,22 +21,51 @@ import (
 )
 
 func runManaged(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	return runManagedMode(ctx, args, stdout, stderr, false)
+}
+
+func runManagedMode(ctx context.Context, args []string, stdout, stderr io.Writer, comets bool) int {
 	fail := func(err error, code int) int {
 		_ = json.NewEncoder(stderr).Encode(protocol.ErrorResponse{Error: protocol.APIError{Code: "managed_runner_error", Message: err.Error()}})
 		return code
 	}
-	flags := flag.NewFlagSet("serve-fake", flag.ContinueOnError)
+	command := "serve-fake"
+	runtimeMode := "development-managed-fake"
+	if comets {
+		command = "serve-development"
+		runtimeMode = managed.DevelopmentMode
+	}
+	flags := flag.NewFlagSet(command, flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
 	flags.Usage = func() {}
-	ack := flags.Bool("acknowledge-development", false, "authorize development fake-ship management; ships outlive this process")
+	ack := flags.Bool("acknowledge-development", false, "authorize the selected development management mode; ships outlive this process")
+	var resume bool
+	if comets {
+		flags.BoolVar(&resume, "resume-running", false, "resume eligible initialized ships after a clean host shutdown, once per host boot")
+	}
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
+			if comets {
+				fmt.Fprint(stdout, `Usage: urbit-runner serve-development --acknowledge-development [--resume-running]
+
+Serve the dedicated-account development runner with fake/comet creation, owned-key
+bootstrap, stopped-pier enrollment, maintenance and host handoff. Comets generate
+their identity internally. HTTP is loopback-only; owned ships publish configured Ames UDP.
+Collector enrollment must explicitly accept mode development-managed while
+retaining the same runner ID. Private state has explicit schema/downgrade guards.
+Start/stop are explicit; incomplete bootstrap is quarantined, never retried.
+With --resume-running, startup may replace cleanly stopped runtime containers for
+initialized ships whose persisted desired state is running. Each ship gets at most
+one journaled attempt per host boot; stopped, interrupted and uncertain ships are skipped.
+`)
+				return 0
+			}
 			fmt.Fprint(stdout, `Usage: urbit-runner serve-fake --acknowledge-development
 
 Runs as the dedicated urbit-runner account. Serves a private Unix management API
 with SQLite-backed registrations, revisions, operations, and request replay.
-Only fresh fake ships, loopback HTTP, the pinned image/pill and loom 31 are
-supported. No real keys, pier imports, Ames publication, meld or control socket.
+Supports fake ships and qualified-fake imports, explicit maintenance, loopback
+HTTP, the pinned image/pill and loom 31. Comets require serve-development.
 Stopping this management process does NOT stop its independently running ships.
 Use urbit-collector operate INSTANCE stop before ending a development session.
 Interrupted work is recorded for reconciliation, never blindly re-executed.
@@ -64,7 +93,12 @@ Interrupted work is recorded for reconciliation, never blindly re-executed.
 	if err := os.Chmod(host.Socket, os.ModeSticky|0600); err != nil {
 		return fail(err, 1)
 	}
-	runner, err := managed.NewWithAccess(host.Directory, access.DefaultKeys)
+	var runner *managed.Server
+	if comets {
+		runner, err = managed.NewDevelopmentService(host.Directory, access.DefaultKeys, resume)
+	} else {
+		runner, err = managed.NewWithAccess(host.Directory, access.DefaultKeys)
+	}
 	if err != nil {
 		return fail(err, 1)
 	}
@@ -72,7 +106,7 @@ Interrupted work is recorded for reconciliation, never blindly re-executed.
 	defer server.Close()
 	result := make(chan error, 1)
 	go func() { result <- server.Serve(listener) }()
-	_ = json.NewEncoder(stderr).Encode(map[string]string{"mode": "development-managed-fake", "socket": host.Socket, "state_directory": host.Directory})
+	_ = json.NewEncoder(stderr).Encode(map[string]string{"mode": runtimeMode, "socket": host.Socket, "state_directory": host.Directory})
 	select {
 	case err = <-result:
 		if errors.Is(err, http.ErrServerClosed) {

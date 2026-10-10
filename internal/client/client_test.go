@@ -75,6 +75,7 @@ func TestClientRoutesAndJSON(t *testing.T) {
 	instance := protocol.Instance{
 		ID: "demo-1_A", Label: "Demo", Config: config, ConfigRevision: 2, AppliedRevision: 1,
 		DesiredState: "running", ObservedState: "starting", ActiveOperationID: "op-1",
+		EpochHistory: []protocol.EpochCreation{{Name: "0i100", RolledAt: now}},
 	}
 	operation := protocol.Operation{
 		ID: "op-1", RequestID: "request-1", InstanceID: instance.ID, Kind: "start", Actor: "local",
@@ -152,7 +153,7 @@ func TestClientRoutesAndJSON(t *testing.T) {
 	if got, err := c.Snapshot(ctx); err != nil || !reflect.DeepEqual(got, snapshot) {
 		t.Fatalf("Snapshot = %+v, %v; want %+v", got, err, snapshot)
 	}
-	if got, err := c.Configure(ctx, instance.ID, configureReq); err != nil || got != instance {
+	if got, err := c.Configure(ctx, instance.ID, configureReq); err != nil || !reflect.DeepEqual(got, instance) {
 		t.Fatalf("Configure = %+v, %v; want %+v", got, err, instance)
 	}
 	for i := 0; i < 2; i++ {

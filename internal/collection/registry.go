@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"path/filepath"
 	"slices"
@@ -30,6 +31,7 @@ type Connection struct {
 	RunnerID   string            `json:"runner_id"`
 	Mode       string            `json:"mode"`
 	EnrolledAt time.Time         `json:"enrolled_at"`
+	Revision   uint64            `json:"revision,omitempty"`
 }
 
 func (c Connection) Identity() client.Identity {
@@ -203,7 +205,12 @@ func (r *Registry) read() (registryFile, error) {
 		return state, errors.New("unsupported or invalid collector registry")
 	}
 	names, ids, sockets := map[string]bool{}, map[string]bool{}, map[string]bool{}
-	for _, c := range state.Connections {
+	for i, c := range state.Connections {
+		// Existing version-1 registries predate connection editing.
+		if c.Revision == 0 {
+			c.Revision = 1
+			state.Connections[i] = c
+		}
 		if err := c.validate(); err != nil {
 			return state, err
 		}
@@ -292,14 +299,34 @@ func (r *Registry) EnrollSSH(ctx context.Context, name string, config client.SSH
 	return r.enroll(ctx, Connection{Name: name, Transport: "ssh", SSH: &config})
 }
 
+// EnrollSSHExpected binds first enrollment to identity returned by authorized
+// local host setup, rather than writing an unpinned enrollment and checking later.
+func (r *Registry) EnrollSSHExpected(ctx context.Context, name string, config client.SSHConfig, expected client.Identity) (Connection, error) {
+	if !protocol.ValidID(name) || !protocol.ValidID(expected.RunnerID) || !protocol.ValidID(expected.Mode) {
+		return Connection{}, errors.New("invalid expected runner enrollment")
+	}
+	if err := config.Validate(); err != nil {
+		return Connection{}, err
+	}
+	return r.enrollExpected(ctx, Connection{Name: name, Transport: "ssh", SSH: &config}, &expected)
+}
+
 func (r *Registry) enroll(ctx context.Context, entry Connection) (Connection, error) {
-	c := entry.Client(false)
+	return r.enrollExpected(ctx, entry, nil)
+}
+
+func (r *Registry) enrollExpected(ctx context.Context, entry Connection, expected *client.Identity) (Connection, error) {
+	if expected != nil {
+		entry.RunnerID, entry.Mode = expected.RunnerID, expected.Mode
+	}
+	c := entry.Client(expected != nil)
 	defer c.Close()
 	hello, err := c.Hello(ctx)
 	if err != nil {
 		return Connection{}, err
 	}
 	entry.RunnerID, entry.Mode, entry.EnrolledAt = hello.RunnerID, hello.Mode, time.Now().UTC()
+	entry.Revision = 1
 	if err := entry.validate(); err != nil {
 		return Connection{}, err
 	}
@@ -324,6 +351,91 @@ func (r *Registry) enroll(ctx context.Context, entry Connection) (Connection, er
 		return r.write(state)
 	})
 	return entry, err
+}
+
+// Update verifies the proposed endpoint against the original identity before an
+// atomic, revision-checked replacement. Network IO never holds the registry lock.
+// A rename/rebind cannot transfer enrollment to a different runner or mode.
+func (r *Registry) Update(ctx context.Context, name, expectedID string, revision uint64, proposed Connection) (Connection, error) {
+	return r.update(ctx, name, expectedID, revision, proposed, "")
+}
+
+// AcceptDevelopmentMode explicitly changes only the mode at the same pinned
+// endpoint; ordinary edits continue to refuse mode changes.
+func (r *Registry) AcceptDevelopmentMode(ctx context.Context, name, expectedID string, revision uint64) (Connection, error) {
+	old, err := r.Get(ctx, name)
+	if err != nil {
+		return Connection{}, err
+	}
+	if old.Mode != "development-managed-fake" && old.Mode != "development-managed" {
+		return Connection{}, errors.New("only the fake-to-development mode transition is supported")
+	}
+	return r.update(ctx, name, expectedID, revision, old, "development-managed")
+}
+
+func (r *Registry) update(ctx context.Context, name, expectedID string, revision uint64, proposed Connection, acceptedMode string) (Connection, error) {
+	if !protocol.ValidID(name) || !protocol.ValidID(expectedID) || revision == 0 || revision == math.MaxUint64 {
+		return Connection{}, errors.New("connection update requires the selected name, identity and positive revision")
+	}
+	old, err := r.Get(ctx, name)
+	if err != nil {
+		return Connection{}, err
+	}
+	if old.RunnerID != expectedID {
+		return Connection{}, client.ErrIdentityMismatch
+	}
+	if old.Revision != revision {
+		return Connection{}, errors.New("connection revision conflict; reload enrollment before editing")
+	}
+	if acceptedMode != "" && (proposed.Name != old.Name || proposed.endpointKey() != old.endpointKey() || proposed.Mode != old.Mode || proposed.Revision != old.Revision || !proposed.EnrolledAt.Equal(old.EnrolledAt)) {
+		return Connection{}, errors.New("connection changed before mode verification")
+	}
+	proposed.RunnerID, proposed.Mode, proposed.EnrolledAt, proposed.Revision = old.RunnerID, old.Mode, old.EnrolledAt, old.Revision
+	if acceptedMode != "" {
+		proposed.Mode = acceptedMode
+	}
+	if err := proposed.validate(); err != nil {
+		return Connection{}, err
+	}
+	c := proposed.Client(true)
+	defer c.Close()
+	hello, err := c.Hello(ctx)
+	if err == nil {
+		err = proposed.Identity().Check(hello.RunnerID, hello.Mode)
+	}
+	if err != nil {
+		return Connection{}, err
+	}
+	err = r.locked(ctx, func() error {
+		state, err := r.read()
+		if err != nil {
+			return err
+		}
+		index := -1
+		for i, current := range state.Connections {
+			if current.Name == name {
+				if current.RunnerID != expectedID || current.Revision != revision || !current.EnrolledAt.Equal(old.EnrolledAt) || current.endpointKey() != old.endpointKey() || current.Mode != old.Mode {
+					return errors.New("connection changed during verification; reload enrollment before editing")
+				}
+				index = i
+			} else if current.Name == proposed.Name || current.RunnerID == proposed.RunnerID || current.endpointKey() == proposed.endpointKey() {
+				return errors.New("connection update conflicts with another enrollment")
+			}
+		}
+		if index < 0 {
+			return errors.New("connection was removed during verification")
+		}
+		if old.Name == proposed.Name && old.endpointKey() == proposed.endpointKey() && old.Mode == proposed.Mode {
+			return nil // successful no-op does not churn revisions
+		}
+		proposed.Revision++
+		state.Connections[index] = proposed
+		return r.write(state)
+	})
+	if err != nil {
+		return Connection{}, err
+	}
+	return proposed, nil
 }
 
 // Forget removes only local enrollment and works while the runner is offline.

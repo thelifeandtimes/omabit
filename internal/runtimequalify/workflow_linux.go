@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -15,6 +16,7 @@ import (
 	"strings"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
@@ -123,6 +125,9 @@ func (q *qualifier) pill(ctx context.Context) error {
 	if _, err := os.Lstat(q.r.PillPath); !errors.Is(err, os.ErrNotExist) {
 		return errors.New("pill destination must be fresh")
 	}
+	if q.selectedPill() != nil {
+		return q.copySelectedPill(ctx)
+	}
 	a, err := q.d.download(ctx, q.r.PillPath)
 	if err != nil || ctx.Err() != nil {
 		return errors.New("verified candidate pill download failed")
@@ -191,12 +196,33 @@ func (q *qualifier) probe(ctx context.Context) error {
 }
 
 func (q *qualifier) pier() error {
-	data := filepath.Join(q.r.Directory, "data")
-	entries, err := os.ReadDir(data)
-	if err != nil || len(entries) != 1 || entries[0].Name() != "fake-zod" {
-		return errors.New("data mount must contain only the new fake-zod")
+	if q.d.managed {
+		if _, err := pierstore.CheckMount(q.d.home, *q.d.storage); err != nil {
+			return err
+		}
+		if q.d.storage.Identity.Inode == 0 {
+			identity, err := pierstore.Identify(q.pierPath())
+			if err != nil {
+				return err
+			}
+			q.d.storage.Identity = identity
+		}
+		if _, err := pierstore.Check(q.d.home, *q.d.storage); err != nil {
+			return err
+		}
+		q.r.PierMetadataSeen = true
+		return nil
 	}
-	for _, path := range []string{data, filepath.Join(data, "fake-zod"), filepath.Join(data, "fake-zod/.urb")} {
+	if cometProfile(q.d.profile) {
+		return q.cometPier()
+	}
+	data := filepath.Join(q.r.Directory, "data")
+	pierName := q.epochPierName()
+	entries, err := os.ReadDir(data)
+	if err != nil || len(entries) != 1 || entries[0].Name() != pierName {
+		return errors.New("data mount must contain only the registered fake pier directory")
+	}
+	for _, path := range []string{data, filepath.Join(data, pierName), filepath.Join(data, pierName, ".urb")} {
 		if err := q.owned(path, os.ModeDir, false); err != nil {
 			return errors.New("missing or unsafe persisted pier metadata")
 		}
@@ -225,6 +251,9 @@ func (q *qualifier) boot(ctx context.Context, kind string) error {
 		return err
 	}
 	ready := q.ready
+	if q.d.profile == ProfileImport {
+		ready = q.readyImport
+	}
 	if isHTTPKind(kind) {
 		ready = q.readyHostHTTP
 	}
@@ -277,15 +306,24 @@ func (q *qualifier) ready(ctx context.Context, index int) error {
 }
 
 func (q *qualifier) pack(ctx context.Context) error {
+	return q.offlineUtility(ctx, "pack")
+}
+
+func (q *qualifier) offlineUtility(ctx context.Context, kind string) error {
+	cometUtility := isCometUtility(kind) && !q.d.managed && q.d.profile == ProfileCometMaintenance || isManagedCometUtility(kind) && q.d.managed && q.d.profile == ProfileComet
+	cometUtility = cometUtility || !q.d.managed && cometEpochContainer(q.d.profile, kind) && isCometRoll(kind) || !q.d.managed && q.d.profile == ProfileCometPrefix && isCometPrefixRecovery(kind)
+	if kind != "pack" && kind != "meld" && !(kind == "roll" && q.d.managed) && !(isRollKind(kind) && !q.d.managed && isEpochProfile(q.d.profile)) && !(kind == "epoch-recovery" && !q.d.managed && q.d.profile == ProfilePrune) && !(isPrefixRecovery(kind) && !q.d.managed && q.d.profile == ProfilePrefix) && !cometUtility {
+		return errors.New("unsupported offline utility")
+	}
 	for _, c := range q.r.Containers {
-		if !c.Removed {
-			return errors.New("offline pack requires all preceding containers removed")
+		if !c.Removed || c.CreateUncertain {
+			return fmt.Errorf("offline %s requires all preceding containers removed with resolved outcomes", kind)
 		}
 	}
 	if err := q.pier(); err != nil {
 		return err
 	}
-	i, err := q.create(ctx, "pack")
+	i, err := q.create(ctx, kind)
 	if err != nil {
 		return err
 	}
@@ -294,14 +332,14 @@ func (q *qualifier) pack(ctx context.Context) error {
 	}
 	out, err := q.control(ctx, i, q.d.times.pack, "wait")
 	if err != nil {
-		return errors.New("offline pack interrupted or failed; retain for review without retry")
+		return fmt.Errorf("offline %s interrupted or failed; retain for review without retry", kind)
 	}
 	c, err := q.inspect(ctx, i)
 	if err != nil {
 		return err
 	}
 	if strings.TrimSpace(out) != "0" || active(c) || c.State.Dead || *c.State.ExitCode != 0 || *c.State.OOMKilled {
-		return errors.New("offline pack did not exit cleanly")
+		return fmt.Errorf("offline %s did not exit cleanly", kind)
 	}
 	return q.remove(ctx, i)
 }

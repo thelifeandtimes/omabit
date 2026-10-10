@@ -38,7 +38,7 @@ func run(ctx context.Context, args []string) int {
 	stateDir := flags.String("state-dir", "", "Omabit preference directory")
 	flags.StringVar(&format, "format", "json", "json or text")
 	flags.Usage = func() {
-		fmt.Fprintln(os.Stdout, "Usage: omabit [--format text] [--config-dir DIR] [--state-dir DIR] COMMAND\nCommands: theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR]")
+		fmt.Fprintln(os.Stdout, "Usage: omabit [--format text] [--config-dir DIR] [--state-dir DIR] COMMAND\nCommands: setup, setup-status, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID")
 	}
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -53,6 +53,9 @@ func run(ctx context.Context, args []string) int {
 	}
 	command := args[0]
 	args = args[1:]
+	if command == "setup" || command == "setup-status" {
+		return localSetup(ctx, command, args, *config, format)
+	}
 	output := func(value any) int {
 		if format == "text" && readable(os.Stdout, value) {
 			return 0
@@ -84,6 +87,9 @@ func run(ctx context.Context, args []string) int {
 	r, err := collection.Open(*config)
 	if err != nil {
 		return fail(err)
+	}
+	if command == "copy-code" {
+		return copyCode(ctx, r, args, output, fail)
 	}
 	if *stateDir == "" {
 		dir, err := omabittheme.DefaultDir()

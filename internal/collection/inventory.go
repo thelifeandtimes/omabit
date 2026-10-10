@@ -30,10 +30,14 @@ type Inventory struct {
 }
 
 func inspect(ctx context.Context, entry Connection) Observation {
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
 	c := entry.Client(true)
 	defer c.Close()
+	return inspectClient(ctx, entry, c)
+}
+
+func inspectClient(ctx context.Context, entry Connection, c *client.Client) Observation {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
 	result := Observation{Name: entry.Name, RunnerID: entry.RunnerID, Mode: entry.Mode, Status: "available"}
 	// Retain capabilities/access for UI affordances; the runner remains the
 	// authorization authority and rechecks every mutation.
@@ -107,14 +111,35 @@ func Watch(ctx context.Context, entries []Connection, interval time.Duration, em
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
+			// One private, identity-pinned transport per watched runner. Recreating
+			// it every poll caused an SSH/PAM/logind login every two seconds.
+			var c *client.Client
+			defer func() {
+				if c != nil {
+					c.Close()
+				}
+			}()
+			delay := interval
 			for ctx.Err() == nil {
-				observation := inspect(ctx, entry)
+				if c == nil {
+					c = entry.Client(true)
+				}
+				observation := inspectClient(ctx, entry, c)
+				if observation.Status == "available" {
+					delay = interval
+				} else {
+					c.Close()
+					c = nil
+					if delay < 30*time.Second {
+						delay = min(30*time.Second, delay*2)
+					}
+				}
 				select {
 				case updates <- observation:
 				case <-ctx.Done():
 					return
 				}
-				timer := time.NewTimer(interval)
+				timer := time.NewTimer(delay)
 				select {
 				case <-ctx.Done():
 					timer.Stop()

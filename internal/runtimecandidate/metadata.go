@@ -1,5 +1,5 @@
-// Package runtimecandidate identifies one reviewed qualification candidate, not
-// a supported production runtime or the future Omabit distribution.
+// Package runtimecandidate pins the published Vere release image and bootstrap
+// pill used by the development runner. Omabit does not build or overlay Vere.
 package runtimecandidate
 
 const (

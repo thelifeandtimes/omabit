@@ -399,6 +399,39 @@ func TestCreateFakeCapabilityAndPayload(t *testing.T) {
 	}
 }
 
+func TestCreateFakeIdentityAndPierCapability(t *testing.T) {
+	for _, supported := range []bool{false, true} {
+		var posts atomic.Int32
+		socket := fakeRunner(t, func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/hello" {
+				features := []string{"create-fake"}
+				if supported {
+					features = append(features, "fake-ship-options")
+				}
+				reply(t, w, protocol.Hello{ProtocolVersion: protocol.Version, Features: features})
+				return
+			}
+			posts.Add(1)
+			var req protocol.CreateFakeRequest
+			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+				t.Error(err)
+			}
+			if req.ID != "local-bus" || req.FakeShip != "~bus" || req.PierName != "bus-data" {
+				t.Errorf("fake fields conflated: %+v", req)
+			}
+			reply(t, w, protocol.Operation{ID: "op-fake", Status: "succeeded"})
+		})
+		var out, errs bytes.Buffer
+		code := run(context.Background(), []string{"--socket", socket, "create-fake", "local-bus", "--ship", "bus", "--pier-name", "bus-data", "--http-port", "18088", "--request-id", "fake"}, &out, &errs)
+		if supported && (code != 0 || posts.Load() != 1) {
+			t.Fatal(code, &errs)
+		}
+		if !supported && (code != 1 || posts.Load() != 0) {
+			t.Fatal("unsupported fake options dispatched", code, &errs)
+		}
+	}
+}
+
 type writerFunc func([]byte) (int, error)
 
 func (f writerFunc) Write(p []byte) (int, error) { return f(p) }

@@ -20,6 +20,8 @@ import (
 const usage = `Usage: urbit-runner COMMAND
 
 Commands:
+  install-host --bundle DIR --public-key FILE --acknowledge-host-changes
+                             Install dedicated engine, access and management services.
   prepare-ssh --output DIR --public-key FILE --role operator|observer
                              Write inert loopback SSH review configuration.
   ssh-authorized-key --public-key FILE --role operator|observer
@@ -38,14 +40,53 @@ Commands:
   http-plan                  Describe the host-loopback HTTP checkpoint.
   qualify-http --acknowledge-disposable-run
                              Test private HTTP publication and replacement.
+  meld-plan [--format text]  Describe disposable offline-meld qualification.
+  qualify-meld --acknowledge-disposable-run [--format text]
+                             Test offline meld and same-pier restart.
+  epochs-plan [--format text]
+                             Describe disposable offline-roll qualification.
+  qualify-epochs --acknowledge-disposable-run [--format text]
+                             Test three rolls, restarts, and a prefix preview.
+  prune-plan [--format text]
+                             Describe destructive disposable-prefix qualification.
+  qualify-prune --acknowledge-disposable-run [--format text]
+                             Test exact prefix deletion and latest-epoch recovery.
+  prefix-plan [--format text]
+                             Describe snapshot-bearing and repeated-prefix tests.
+  qualify-prefix --acknowledge-disposable-run [--format text]
+                             Test two successive deletions/recoveries on a new fake.
+  import-plan [--format text]
+                             Describe bounded stopped-pier copy qualification.
+  qualify-import --acknowledge-disposable-run [--format text]
+                             Copy a new stopped fake pier and resume the copy twice.
+  comet-plan [--format text]
+                             Describe fresh disposable-comet qualification.
+  qualify-comet --acknowledge-disposable-run [--format text]
+                             Create a new comet and verify initialized-pier resume.
+  comet-maintenance-plan [--format text]
+                             Describe fresh-comet pack/meld qualification.
+  qualify-comet-maintenance --acknowledge-disposable-run [--format text]
+                             Test offline pack/meld and identity-preserving restarts.
+  comet-epochs-plan [--format text]
+                             Describe fresh-comet epoch-roll qualification.
+  qualify-comet-epochs --acknowledge-disposable-run [--format text]
+                             Test three rolls, exact-identity restarts and preview.
+  comet-prefix-plan [--format text]
+                             Describe destructive disposable-comet prefix tests.
+  qualify-comet-prefix --acknowledge-disposable-run [--format text]
+                             Test repeated prefix deletion and latest-epoch recovery.
   serve-fake --acknowledge-development
                              Serve the persistent fake-ship management API.
+  serve-development --acknowledge-development [--resume-running]
+                             Serve development management; optional resolved startup resume.
   demo --socket /private/directory/runner.sock [--operation-delay 2s]
                              Run the checkpoint 1 in-memory simulator.
 
-Only install-rootless changes host configuration and starts a private rootless
-engine. Qualification commands create fresh fake ships and disposable resources.
-No command installs packages or provisions a real ship.
+install-rootless and install-host perform explicitly authorized host setup.
+Qualification commands create new disposable ships and runtime resources.
+The development management API supports operator-authorized owned-key bootstrap;
+qualification commands do not accept existing production identities or piers.
+No command installs system packages. qualify-comet creates a new disposable comet.
 Use COMMAND --help for details.
 `
 
@@ -64,6 +105,9 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	if len(args) > 0 && args[0] == "install-host" {
+		return runInstallHost(ctx, args[1:], stdout, stderr)
+	}
 	if len(args) > 0 && args[0] == "-c" {
 		return runSSHShell(ctx, args, stdout, stderr)
 	}
@@ -83,8 +127,38 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	if len(args) > 0 && (args[0] == "http-plan" || args[0] == "qualify-http") {
 		return runRuntime(ctx, args, stdout, stderr, runtimequalify.RunHTTP)
 	}
+	if len(args) > 0 && (args[0] == "meld-plan" || args[0] == "qualify-meld") {
+		return runRuntime(ctx, args, stdout, stderr, runtimequalify.RunMeld)
+	}
+	if len(args) > 0 && (args[0] == "epochs-plan" || args[0] == "qualify-epochs") {
+		return runRuntime(ctx, args, stdout, stderr, runtimequalify.RunEpochs)
+	}
+	if len(args) > 0 && (args[0] == "comet-epochs-plan" || args[0] == "qualify-comet-epochs") {
+		return runRuntime(ctx, args, stdout, stderr, runtimequalify.RunCometEpochs)
+	}
+	if len(args) > 0 && (args[0] == "comet-prefix-plan" || args[0] == "qualify-comet-prefix") {
+		return runRuntime(ctx, args, stdout, stderr, runtimequalify.RunCometPrefix)
+	}
+	if len(args) > 0 && (args[0] == "prune-plan" || args[0] == "qualify-prune") {
+		return runRuntime(ctx, args, stdout, stderr, runtimequalify.RunPrune)
+	}
+	if len(args) > 0 && (args[0] == "prefix-plan" || args[0] == "qualify-prefix") {
+		return runRuntime(ctx, args, stdout, stderr, runtimequalify.RunPrefix)
+	}
+	if len(args) > 0 && (args[0] == "import-plan" || args[0] == "qualify-import") {
+		return runRuntime(ctx, args, stdout, stderr, runtimequalify.RunImport)
+	}
+	if len(args) > 0 && (args[0] == "comet-plan" || args[0] == "qualify-comet") {
+		return runRuntime(ctx, args, stdout, stderr, runtimequalify.RunComet)
+	}
+	if len(args) > 0 && (args[0] == "comet-maintenance-plan" || args[0] == "qualify-comet-maintenance") {
+		return runRuntime(ctx, args, stdout, stderr, runtimequalify.RunCometMaintenance)
+	}
 	if len(args) > 0 && args[0] == "serve-fake" {
 		return runManaged(ctx, args[1:], stdout, stderr)
+	}
+	if len(args) > 0 && args[0] == "serve-development" {
+		return runManagedMode(ctx, args[1:], stdout, stderr, true)
 	}
 	if len(args) == 0 || args[0] != "demo" {
 		fmt.Fprint(stderr, usage)

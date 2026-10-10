@@ -41,7 +41,7 @@ func (f *fakeEngine) networkCommand(args []string, config string) (string, error
 		}
 		return strings.Join(names, "\n"), nil
 	}
-	if f.d.profile != ProfileHTTP {
+	if !networkProfile(f.d.profile) {
 		t.Fatal("network mutation in lifecycle profile")
 	}
 	switch args[1] {
@@ -99,8 +99,14 @@ func (f *fakeEngine) publishHTTP(c *fakeContainer) {
 		f.t.Fatal("missing owned HTTP network")
 	}
 	port := "38101"
-	if c.kind == "http-restart" {
+	if c.kind == "http-restart" || c.kind == "comet-resume" || c.kind == "loom-comet-resume" {
 		port = "38102"
+	}
+	if c.kind == "comet-post-pack" {
+		port = "38103"
+	}
+	if c.kind == "comet-post-meld" {
+		port = "38104"
 	}
 	if f.d.hostPort != 0 {
 		port = fmt.Sprint(f.d.hostPort)
@@ -109,6 +115,11 @@ func (f *fakeEngine) publishHTTP(c *fakeContainer) {
 	c.doc["NetworkSettings"] = map[string]any{
 		"Networks": map[string]any{n.name: map[string]any{"NetworkID": n.id}},
 		"Ports":    map[string]any{"80/tcp": nil, "34343/udp": nil, "8080/tcp": []any{map[string]any{"HostIp": "127.0.0.1", "HostPort": port}}},
+	}
+	for key, value := range mapAt(mapAt(c.doc, "HostConfig"), "PortBindings") {
+		if strings.HasSuffix(key, "/udp") {
+			mapAt(mapAt(c.doc, "NetworkSettings"), "Ports")[key] = value
+		}
 	}
 }
 
@@ -295,7 +306,7 @@ func TestNetworkCreateUncertaintyAndPriorGate(t *testing.T) {
 	}
 }
 
-func TestHTTPReadsAccepted2BHistoryWithoutReusingPier(t *testing.T) {
+func TestHTTPReadsCompletedHistoryWithoutReusingPier(t *testing.T) {
 	f := httpFixture(t)
 	f.d.profile = ProfileLifecycle
 	old, err := run(context.Background(), nil, f.d)
@@ -306,19 +317,6 @@ func TestHTTPReadsAccepted2BHistoryWithoutReusingPier(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var legacy map[string]any
-	if err := json.Unmarshal(data, &legacy); err != nil {
-		t.Fatal(err)
-	}
-	delete(legacy, "profile") // the user's accepted 2B report has no profile field
-	delete(legacy, "network")
-	data, err = json.Marshal(legacy)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(old.ReportPath, data, 0600); err != nil {
-		t.Fatal(err)
-	}
 	// Retained pier contents must not be traversed or adopted by the new run.
 	if err := os.Symlink("/not-a-real-target", filepath.Join(old.Directory, "data/fake-zod/untouched")); err != nil {
 		t.Fatal(err)
@@ -327,7 +325,7 @@ func TestHTTPReadsAccepted2BHistoryWithoutReusingPier(t *testing.T) {
 	f.d.randomID = func() (string, error) { return strings.Repeat("b", 32), nil }
 	next, err := run(context.Background(), nil, f.d)
 	if err != nil || !next.CheckpointPassed || next.Directory == old.Directory {
-		t.Fatalf("new HTTP run failed over accepted 2B history: %+v %v", next, err)
+		t.Fatalf("new HTTP run failed over completed history: %+v %v", next, err)
 	}
 	after, err := os.ReadFile(old.ReportPath)
 	if err != nil || string(after) != string(data) {

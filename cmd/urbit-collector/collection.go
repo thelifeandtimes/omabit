@@ -30,24 +30,37 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 	flags.Usage = func() {}
 	var name, path, expectedID string
 	var sshHost, sshConfig string
+	var newName string
+	var revision uint64
 	var watch bool
 	interval := time.Second
 	usage := command
 	switch command {
-	case "enroll":
+	case "enroll", "runner-edit":
 		usage += " NAME (--socket /absolute/path/runner.sock | --ssh HOST_ALIAS [--ssh-config /absolute/config])"
 		flags.StringVar(&path, "socket", "", "required absolute clean runner socket path")
 		flags.StringVar(&sshHost, "ssh", "", "OpenSSH host alias (exclusive with --socket)")
 		flags.StringVar(&sshConfig, "ssh-config", "", "optional absolute SSH config file (default: normal OpenSSH config)")
+		if command == "runner-edit" {
+			usage += " --runner-id ID --revision N --name NEW_NAME"
+			flags.StringVar(&expectedID, "runner-id", "", "required original pinned runner identity")
+			flags.Uint64Var(&revision, "revision", 0, "required original connection revision")
+			flags.StringVar(&newName, "name", "", "required new connection name (may be unchanged)")
+		}
 	case "forget":
 		usage += " NAME --runner-id ID"
 		flags.StringVar(&expectedID, "runner-id", "", "required expected enrolled runner identity")
+	case "runner-accept-mode":
+		usage += " NAME --runner-id ID --revision N --mode development-managed"
+		flags.StringVar(&expectedID, "runner-id", "", "original pinned runner ID")
+		flags.Uint64Var(&revision, "revision", 0, "original connection revision")
+		flags.StringVar(&newName, "mode", "", "explicit new mode: development-managed")
 	case "inventory":
 		usage += " [--watch] [--interval 1s]"
 		flags.BoolVar(&watch, "watch", false, "emit per-runner NDJSON observations; Ctrl+C exits successfully")
 		flags.DurationVar(&interval, "interval", time.Second, "per-runner delay after each poll, at least 100ms")
 	}
-	if (command == "enroll" || command == "forget") && len(args) > 0 && args[0] != "--help" && args[0] != "-h" {
+	if (command == "enroll" || command == "runner-edit" || command == "forget" || command == "runner-accept-mode") && len(args) > 0 && args[0] != "--help" && args[0] != "-h" {
 		name, args = args[0], args[1:]
 	}
 	if err := flags.Parse(args); err != nil {
@@ -65,10 +78,10 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 	if dir != "" && (!filepath.IsAbs(dir) || filepath.Clean(dir) != dir) {
 		return fail(errors.New("--config-dir must be absolute and clean"), 2)
 	}
-	if (command == "enroll" || command == "forget") && !validID(name) {
+	if (command == "enroll" || command == "runner-edit" || command == "forget" || command == "runner-accept-mode") && !validID(name) {
 		return fail(errors.New("a valid connection NAME is required"), 2)
 	}
-	if command == "enroll" {
+	if command == "enroll" || command == "runner-edit" {
 		if (path == "") == (sshHost == "") || (path != "" && (!collection.ValidSocket(path) || sshConfig != "")) {
 			return fail(errors.New("enroll requires either --socket with an absolute clean path or --ssh with a configured host alias"), 2)
 		}
@@ -77,6 +90,12 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 				return fail(err, 2)
 			}
 		}
+	}
+	if command == "runner-edit" && (!validID(expectedID) || !validID(newName) || revision == 0) {
+		return fail(errors.New("runner-edit requires --runner-id, --revision and --name from the selected enrollment"), 2)
+	}
+	if command == "runner-accept-mode" && (!validID(expectedID) || revision == 0 || newName != "development-managed") {
+		return fail(errors.New("require the selected runner ID/revision and explicit --mode development-managed"), 2)
 	}
 	if command == "forget" && !validID(expectedID) {
 		return fail(errors.New("forget requires --runner-id with the expected enrolled identity"), 2)
@@ -104,6 +123,14 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 		}
 	case "runners":
 		result, err = registry.List(ctx)
+	case "runner-accept-mode":
+		result, err = registry.AcceptDevelopmentMode(ctx, name, expectedID, revision)
+	case "runner-edit":
+		proposed := collection.Connection{Name: newName, Transport: "unix", Socket: path}
+		if sshHost != "" {
+			proposed.Transport, proposed.Socket, proposed.SSH = "ssh", "", &client.SSHConfig{Host: sshHost, ConfigFile: sshConfig}
+		}
+		result, err = registry.Update(ctx, name, expectedID, revision, proposed)
 	case "forget":
 		err = registry.Forget(ctx, name, expectedID)
 		result = struct {

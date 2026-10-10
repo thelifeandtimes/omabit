@@ -105,7 +105,7 @@ func assertPillFailure(t *testing.T, artifact Artifact, err error, contains stri
 func TestPillSourcePinsAndHTTPPolicy(t *testing.T) {
 	if PillURL != "https://bootstrap.urbit.org/urbit-v4.6.pill?generation=1790171686269740" ||
 		PillSHA256 != "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b" ||
-		PillBytes != 217421172 || PillName != "urbit-v4.6.pill" || maxPillBytes != 256<<20 {
+		PillBytes != 217421172 || PillName != "urbit-v4.6.pill" || maxPillBytes != 4_000_000_000 {
 		t.Fatal("candidate pill pins or cap changed")
 	}
 	for _, name := range []string{"HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY"} {
@@ -383,6 +383,21 @@ func TestDownloadPillTinyCapBoundaries(t *testing.T) {
 		assertPillFailure(t, artifact, err, "byte limit")
 		assertPillEntries(t, parent)
 	}
+}
+
+func TestPinnedPillDownloadAdmits4GBExpectation(t *testing.T) {
+	parent := pillTestParent(t)
+	reached := false
+	interrupted := errors.New("fixture ends before transferring a large body")
+	client := pillTestClient(t, func(*http.Request, *http.Response) (*http.Response, error) {
+		reached = true
+		return nil, interrupted
+	})
+	_, err := downloadPill(context.Background(), filepath.Join(parent, PillName), client, pillHash(testPill), 4_000_000_000, maxPillBytes)
+	if !reached || !errors.Is(err, interrupted) {
+		t.Fatal("4 GB expectation refused before transport", err)
+	}
+	assertPillEntries(t, parent)
 }
 
 func TestWriteVerifiedPillBoundsWritesAndHandlesDiskErrors(t *testing.T) {

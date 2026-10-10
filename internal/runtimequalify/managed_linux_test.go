@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,7 +21,7 @@ func managedFixture(t *testing.T) (*fakeEngine, ManagedState, func(ManagedState)
 	if err := os.MkdirAll(base, 0700); err != nil {
 		t.Fatal(err)
 	}
-	state := ManagedState{ID: strings.Repeat("a", 32), Port: 18080}
+	state := ManagedState{ID: strings.Repeat("a", 32), Port: 18080, Storage: &pierstore.Location{Path: "fakeships/fixture/pier"}}
 	persist := func(s ManagedState) error {
 		// Fake Docker checks persisted intent using report.json. The real driver
 		// callback writes SQLite, including before the runtime directory exists.
@@ -34,6 +35,10 @@ func managedFixture(t *testing.T) (*fakeEngine, ManagedState, func(ManagedState)
 		return os.WriteFile(filepath.Join(s.Runtime.Directory, "report.json"), data, 0600)
 	}
 	return f, state, persist
+}
+
+func managedPier(f *fakeEngine, state ManagedState) string {
+	return filepath.Join(pierstore.Root(f.d.home), state.Storage.Path)
 }
 
 func TestManagedFakePersistsAcrossDriverSessions(t *testing.T) {
@@ -65,7 +70,7 @@ func TestManagedFakePersistsAcrossDriverSessions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := os.Stat(filepath.Join(state.Runtime.Directory, "data/fake-zod/.urb")); err != nil {
+	if _, err := os.Stat(filepath.Join(managedPier(f, state), ".urb")); err != nil {
 		t.Fatal("stop removed the pier")
 	}
 }
@@ -91,7 +96,7 @@ func TestManagedInitialBootIsNeverRepeatedOverPartialPier(t *testing.T) {
 	}
 	before := len(f.events)
 	_, _, err = applyManaged(context.Background(), "start", state, persist, f.d)
-	if err == nil || !strings.Contains(err.Error(), "partial fake pier") {
+	if err == nil || !strings.Contains(err.Error(), "partial pier") {
 		t.Fatalf("partial bootstrap replayed: %v", err)
 	}
 	for _, event := range f.events[before:] {
@@ -119,5 +124,27 @@ func TestManagedForeignRuntimeAndPathRejected(t *testing.T) {
 	}
 	if len(f.containers) != 1 {
 		t.Fatal("foreign container removed")
+	}
+}
+
+func TestManagedRejectsUnsupportedVereVersionBeforeControl(t *testing.T) {
+	for _, comet := range []bool{false, true} {
+		makeFixture := managedFixture
+		if comet {
+			makeFixture = managedCometFixture
+		}
+		f, state, persist := makeFixture(t)
+		state, _, err := applyManaged(context.Background(), "start", state, persist, f.d)
+		if err != nil {
+			t.Fatal(err)
+		}
+		calls := len(f.calls)
+		state.Runtime.VereVersion = "unreviewed-runtime"
+		if _, _, err := applyManaged(context.Background(), "stop", state, persist, f.d); err == nil || len(f.calls) != calls {
+			t.Fatal("unsupported candidate reached runtime control")
+		}
+		if _, _, err := observeManaged(context.Background(), state, f.d); err == nil || len(f.calls) != calls {
+			t.Fatal("unsupported candidate was observed as managed")
+		}
 	}
 }

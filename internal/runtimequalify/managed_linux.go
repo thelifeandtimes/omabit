@@ -11,6 +11,9 @@ import (
 	"strings"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/epochs"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
@@ -22,6 +25,9 @@ func OpenManagedHost() (*ManagedHost, error) {
 	if err := q.accountBoundary(false); err != nil {
 		return nil, err
 	}
+	// Keep inventory and Stop available even if an externally edited pier tree
+	// needs repair. Discovery reports that problem; runtime path checks stay strict.
+	_ = pierstore.Init(q.d.home)
 	q.base = filepath.Join(q.d.home, ".local/share/urbit-runner/managed")
 	unlock, err := q.lockStorage()
 	if err != nil {
@@ -39,7 +45,7 @@ func OpenManagedHost() (*ManagedHost, error) {
 	return &ManagedHost{Directory: q.base, Socket: filepath.Join(runtime, "runner.sock"), close: unlock}, nil
 }
 
-// ApplyManaged controls only a registered fake instance. It does not run the
+// ApplyManaged controls only a registered instance. It does not run the
 // qualifier's automatic cleanup: a running managed ship outlives its client and
 // runner process. All resource intents go through persist BEFORE Docker calls.
 func ApplyManaged(ctx context.Context, action string, state ManagedState, persist func(ManagedState) error) (ManagedState, ManagedObservation, error) {
@@ -51,19 +57,88 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 		return nil, errors.New("invalid managed instance identity or HTTP port")
 	}
 	d.profile, d.managed, d.hostPort = ProfileHTTP, true, state.Port
+	d.fake = state.Fake
+	d.storage = state.Storage
+	d.nativeShip = state.NativeShip
+	d.keyDigest = state.NativeKeyDigest
+	d.boot = state.Boot
+	d.bootstrap = state.Bootstrap
+	d.amesPort = state.AmesPort
+	if state.Boot != nil {
+		if state.NativeShip == "" || state.AmesPort < 1024 {
+			return nil, errors.New("invalid owned boot/port configuration")
+		}
+		if state.Boot.Pill != nil {
+			if !protocol.ValidBootPill(state.Boot.Pill) {
+				return nil, errors.New("invalid selected boot pill")
+			}
+			d.pillSHA = state.Boot.Pill.SHA256
+			d.pillBytes = state.Boot.Pill.Bytes
+		} else {
+			d.pillSHA = ""
+			d.pillBytes = 0
+		}
+	}
+	if state.Bootstrap != nil {
+		if !protocol.ValidBootstrap(state.Bootstrap) || state.Boot != nil {
+			return nil, errors.New("invalid or conflicting bootstrap selection")
+		}
+		d.pillSHA, d.pillBytes = "", 0
+		if state.Bootstrap.Pill != nil {
+			d.pillSHA, d.pillBytes = state.Bootstrap.Pill.SHA256, state.Bootstrap.Pill.Bytes
+		}
+	}
+	storageKind := "fake"
+	if state.Comet != nil {
+		storageKind = "comet"
+	}
+	if state.NativeShip != "" {
+		storageKind = protocol.ShipClass(state.NativeShip)
+		if storageKind == "" || state.Comet == nil {
+			return nil, errors.New("invalid owned ship identity")
+		}
+	}
+	if state.Storage == nil || !pierstore.ValidPath(state.Storage.Path) || pierstore.Kind(state.Storage.Path) != storageKind || state.Initialized && (state.Storage.Identity.Inode == 0 || state.Storage.MountIdentity.Inode == 0) {
+		return nil, errors.New("registered pier location does not match its identity mode")
+	}
+	if state.Fake != nil {
+		if state.Comet != nil || state.Import != nil || !protocol.ValidFakeShip(state.Fake.Ship) {
+			return nil, errors.New("invalid registered fake identity or pier directory")
+		}
+	}
+	if state.Comet != nil {
+		if state.Import != nil || state.Comet.Ship != "" && !state.networkIdentityValid() || state.Initialized && !state.networkIdentityValid() {
+			return nil, errors.New("invalid managed comet identity or provenance")
+		}
+		d.profile = ProfileComet
+		// Production defaults allow mining/boot readiness up to twenty minutes;
+		// fixture timings remain bounded at their injected shorter duration.
+		if d.times.ready == 10*time.Minute {
+			d.times.ready = 20 * time.Minute
+		}
+	}
 	q := &qualifier{d: d, r: state.Runtime, phase: "managed"}
 	q.base = filepath.Join(d.home, ".local/share/urbit-runner/managed")
 	dir := filepath.Join(q.base, state.ID)
 	if state.Prepared {
-		if q.r.RunID != state.ID || q.r.Directory != dir || q.r.PillPath != filepath.Join(dir, candidate.PillName) || q.r.Profile != ProfileHTTP ||
-			q.r.Image != candidate.Image || q.r.PillSHA256 != d.pillSHA || q.r.PillBytes != d.pillBytes || q.r.PillURL != candidate.PillURL {
+		if q.r.RunID != state.ID || q.r.Directory != dir || q.r.PillPath != filepath.Join(dir, candidate.PillName) || q.r.Profile != d.profile ||
+			q.r.Image != candidate.Image || q.r.VereVersion != candidate.VereVersion || q.r.PillSHA256 != d.pillSHA || q.r.PillBytes != d.pillBytes || q.r.PillURL != q.pillSource() {
 			return nil, errors.New("managed runtime state does not match its registered identity and candidate")
 		}
 		if len(q.r.Containers) > 3 {
 			return nil, errors.New("unexpected managed container inventory")
 		}
 		for _, c := range q.r.Containers {
-			if (c.Kind != "probe" && c.Kind != "pack" && !isHTTPKind(c.Kind)) || c.Name != q.resourceName(c.Kind) || (c.ID != "" && !containerIDPattern.MatchString(c.ID)) {
+			if c.SnapshotMinutes != 0 && c.SnapshotMinutes != DefaultSnapshotMinutes {
+				return nil, errors.New("invalid recorded snapshot interval")
+			}
+			if state.Comet != nil && c.Kind != "probe" && !isCometKind(c.Kind) && !isManagedCometUtility(c.Kind) {
+				return nil, errors.New("comet state contains an incompatible runtime intent")
+			}
+			if state.Comet == nil && strings.HasPrefix(c.Kind, "comet-") {
+				return nil, errors.New("fake state contains a comet runtime intent")
+			}
+			if (c.Kind != "probe" && c.Kind != "pack" && c.Kind != "meld" && c.Kind != "roll" && !isManagedCometUtility(c.Kind) && !isNetworkedKind(c.Kind)) || c.Name != q.resourceName(c.Kind) || (c.ID != "" && !containerIDPattern.MatchString(c.ID)) {
 				return nil, errors.New("invalid managed container reference")
 			}
 		}
@@ -82,15 +157,60 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 
 func applyManaged(ctx context.Context, action string, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
-	if persist == nil || (action != "start" && action != "stop" && action != "pack") {
+	if action == "prepare-handoff" || action == "receive-handoff" || action == "commit-handoff" {
+		return applyHandoff(ctx, action, state, persist, d)
+	}
+	if state.Handoff.Fenced() {
+		return state, unknown, errors.New("ship is fenced for a cross-host handoff")
+	}
+	if action == "enroll-pier" {
+		return applyPierEnrollment(ctx, state, persist, d)
+	}
+	if action == "move-pier" {
+		return applyPierMove(ctx, state, persist, d)
+	}
+	if action == "startup-resume" {
+		return applyStartupResume(ctx, state, persist, d)
+	}
+	if action == "routine-pack" || action == "routine-meld" {
+		return applyRoutine(ctx, action, state, persist, d)
+	}
+	if action == "import-fake" {
+		if state.Comet != nil {
+			return state, unknown, errors.New("fake import cannot target a comet registration")
+		}
+		return applyImportedFake(ctx, state, persist, d)
+	}
+	if action != "stop" && state.UncertainProvisioning() {
+		return state, unknown, errors.New("incomplete provisioning requires manual review")
+	}
+	maintenance := action == "pack" || action == "meld" || action == "roll"
+	inspection := action == "inspect-epochs"
+	pruning := action == "prune-epochs"
+	if persist == nil || (action != "start" && action != "stop" && !maintenance && !inspection && !pruning) {
 		return state, unknown, errors.New("invalid managed action or persistence callback")
 	}
-	if action != "stop" && state.MaintenanceUncertain {
+	if action != "stop" && state.UncertainMaintenance() {
 		return state, unknown, errors.New("an interrupted maintenance outcome requires manual review")
 	}
-	if action == "pack" && (!state.Prepared || !state.Initialized) {
-		return state, unknown, errors.New("offline pack requires an initialized registered pier")
+	if action == "roll" && state.RollNeedsRuntime {
+		return state, unknown, errors.New("resume and cleanly stop the pier before requesting another new roll")
 	}
+	if (maintenance || inspection || pruning) && (!state.Prepared || !state.Initialized) {
+		return state, unknown, errors.New("offline maintenance requires an initialized registered pier")
+	}
+	if (maintenance || pruning) && !state.MaintenanceQualified() {
+		return state, unknown, errors.New("comet maintenance requires completed identity-pinned provisioning")
+	}
+	if pruning && (state.PruneIntent == nil || !state.PruneIntent.Confirmed || !epochs.ValidDigest(state.PruneIntent.InventoryDigest)) {
+		return state, unknown, errors.New("prefix pruning requires its explicit confirmed inventory-bound intent")
+	}
+	if pruning {
+		if _, err := epochs.Number(state.PruneIntent.Cutoff); err != nil {
+			return state, unknown, err
+		}
+	}
+	state.Epochs = nil
 	q, err := managedSession(&state, persist, d)
 	if err != nil {
 		return state, unknown, err
@@ -102,19 +222,33 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 	if err := q.boundary(); err != nil {
 		return finish(unknown, err)
 	}
+	if action != "stop" && state.Initialized {
+		if err := q.pier(); err != nil {
+			return finish(unknown, err)
+		}
+	}
 	for _, path := range q.storagePaths() {
 		if err := q.owned(path, os.ModeDir, false); err != nil {
 			return finish(unknown, err)
 		}
 	}
-	if action == "start" || action == "pack" {
+	if action == "start" || maintenance {
 		mem, disk, err := d.admission(q.base)
 		if err != nil || mem < 5<<30 || disk < 8<<30 {
 			return finish(unknown, errors.New("runtime work requires at least 5 GiB available RAM and 8 GiB free disk"))
 		}
 	}
+	if action == "start" {
+		kind := "http-boot"
+		if state.Comet != nil {
+			kind = "comet-boot"
+		}
+		if err := q.admitPorts(kind); err != nil {
+			return finish(unknown, err)
+		}
+	}
 	if action == "stop" && !state.Prepared {
-		return state, ManagedObservation{State: "uninitialized", Health: "unknown"}, nil
+		return state, ManagedObservation{State: "uninitialized", Health: "unknown", RecoveryRequired: state.UncertainProvisioning()}, nil
 	}
 	if !state.Prepared {
 		dir := filepath.Join(q.base, state.ID)
@@ -123,9 +257,9 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		}
 		// Record ownership before creating storage, without adopting any existing
 		// path. An interruption here leaves a conservative recovery requirement.
-		q.r = Result{Profile: ProfileHTTP, RunID: state.ID, Directory: dir, Image: candidate.Image,
+		q.r = Result{Profile: q.d.profile, RunID: state.ID, Directory: dir, Image: candidate.Image,
 			Platform: candidate.Platform, EngineVersion: rootless.EngineVersion, VereVersion: candidate.VereVersion,
-			PillURL: candidate.PillURL, PillSHA256: d.pillSHA, PillBytes: d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
+			PillURL: q.pillSource(), PillSHA256: q.d.pillSHA, PillBytes: q.d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
 		state.Prepared = true
 		if err := q.save(); err != nil {
 			return finish(unknown, err)
@@ -133,13 +267,13 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		if err := os.Mkdir(dir, 0700); err != nil {
 			return finish(unknown, err)
 		}
-		for _, path := range []string{q.config, filepath.Join(dir, "data")} {
+		for _, path := range []string{q.config} {
 			if err := os.Mkdir(path, 0700); err != nil {
 				return finish(unknown, err)
 			}
 		}
 	}
-	for _, path := range append(q.storagePaths(), q.r.Directory, q.config, filepath.Join(q.r.Directory, "data")) {
+	for _, path := range append(q.storagePaths(), q.r.Directory, q.config) {
 		if err := q.owned(path, os.ModeDir, path == q.r.Directory || path == q.config); err != nil {
 			return finish(unknown, err)
 		}
@@ -147,7 +281,51 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 	if err := q.verifyEngine(ctx); err != nil {
 		return finish(unknown, err)
 	}
+	if pruning {
+		originalPersist := q.d.persist
+		q.d.persist = func(r Result) error {
+			if p := state.PrefixPrune; p != nil {
+				state.MaintenanceUncertain = p.Uncertain
+				if !p.Uncertain && p.FinishedAt != nil {
+					state.Epochs = p.After
+					state.PruneIntent = nil
+				}
+			}
+			return originalPersist(r)
+		}
+		intent := *state.PruneIntent
+		err := q.deletePrefix(ctx, intent.Cutoff, intent.InventoryDigest, func(p *PrefixPruneRecord) { state.PrefixPrune = p })
+		if err != nil {
+			state.Epochs = nil
+			if state.PrefixPrune != nil && state.PrefixPrune.Uncertain {
+				state.MaintenanceUncertain = true
+			}
+			return finish(unknown, err)
+		}
+		return finish(ManagedObservation{State: "stopped", Health: "unknown"}, nil)
+	}
+	if inspection {
+		for _, c := range q.r.Containers {
+			if !c.Removed || c.CreateUncertain {
+				return finish(unknown, errors.New("epoch inspection requires a clean stopped pier with all containers removed"))
+			}
+		}
+		inventory, err := q.inspectEpochs(ctx)
+		if err != nil {
+			return finish(unknown, err)
+		}
+		state.Epochs = inventory
+		if err := q.save(); err != nil {
+			state.Epochs = nil
+			return finish(unknown, err)
+		}
+		return finish(ManagedObservation{State: "stopped", Health: "unknown"}, nil)
+	}
 	if action == "stop" {
+		q.r.Stage = "stopping"
+		if err := q.save(); err != nil {
+			return finish(unknown, err)
+		}
 		for i, c := range q.r.Containers {
 			if c.Removed {
 				continue
@@ -167,19 +345,24 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 				return finish(unknown, err)
 			}
 		}
-		return finish(ManagedObservation{State: "stopped", Health: "unknown", RecoveryRequired: !state.Initialized || state.MaintenanceUncertain}, nil)
+		q.r.Stage = "stopped"
+		return finish(ManagedObservation{State: "stopped", Health: "unknown", RecoveryRequired: !state.Initialized || state.UncertainMaintenance() || state.UncertainProvisioning()}, nil)
 	}
-	if action == "pack" {
+	if maintenance {
 		for _, c := range q.r.Containers {
 			if !c.Removed || c.CreateUncertain {
-				return finish(unknown, errors.New("offline pack requires explicit stop and removal of all owned containers"))
+				return finish(unknown, errors.New("offline maintenance requires explicit stop and removal of all owned containers"))
 			}
 		}
 		if err := q.pier(); err != nil {
 			return finish(unknown, err)
 		}
+		utility := action
+		if state.Comet != nil {
+			utility = "comet-" + action
+		}
 		measure, cancel := context.WithTimeout(ctx, 10*time.Second)
-		before, err := pierBytes(measure, filepath.Join(q.r.Directory, "data/fake-zod"))
+		before, err := pierBytes(measure, q.pierPath())
 		cancel()
 		if err != nil {
 			return finish(unknown, err)
@@ -194,19 +377,51 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		if err := q.probe(ctx); err != nil {
 			return finish(unknown, err)
 		}
-		state.Maintenance = &ManagedMaintenance{Kind: "pack", BeforePierBytes: before, StartedAt: time.Now().UTC()}
+		var beforeEpochs *epochs.Inventory
+		if action == "roll" {
+			beforeEpochs, err = q.inspectEpochs(ctx)
+			if err != nil {
+				return finish(unknown, err)
+			}
+			if len(beforeEpochs.Entries) >= epochs.MaxEpochs {
+				return finish(unknown, errors.New("epoch inventory limit reached; roll not dispatched"))
+			}
+		}
+		// Image preparation and the live probe can outlast the initial capacity
+		// observation. Re-admit at the utility boundary while holding the host
+		// expensive-work gate; never treat swap as available physical memory.
+		mem, disk, err := d.admission(q.r.Directory)
+		if err != nil || mem < 5<<30 || disk < 8<<30 {
+			return finish(unknown, errors.New("maintenance requires at least 5 GiB available RAM and 8 GiB free disk immediately before dispatch"))
+		}
+		state.Maintenance = &ManagedMaintenance{Kind: action, BeforePierBytes: before, StartedAt: time.Now().UTC(), MemAvailableBytes: mem, DiskAvailableBytes: disk}
+		if beforeEpochs != nil {
+			state.Maintenance.EpochsBefore = epochNames(beforeEpochs)
+		}
 		state.MaintenanceUncertain = true
 		if err := q.save(); err != nil {
 			return finish(unknown, err)
 		}
-		if err := q.pack(ctx); err != nil {
+		if err := q.offlineUtility(ctx, utility); err != nil {
 			return finish(unknown, err)
 		}
 		if err := q.pier(); err != nil {
 			return finish(unknown, err)
 		}
+		if action == "roll" {
+			afterEpochs, err := q.inspectEpochs(ctx)
+			if err != nil {
+				return finish(unknown, err)
+			}
+			state.Maintenance.EpochsAfter = epochNames(afterEpochs)
+			if !managedRollGrowth(beforeEpochs, afterEpochs) {
+				return finish(unknown, errors.New("roll did not produce exactly one complete newer epoch; manual review required"))
+			}
+			state.Maintenance.CreatedEpoch = afterEpochs.Entries[len(afterEpochs.Entries)-1].Name
+			state.Epochs = afterEpochs
+		}
 		measure, cancel = context.WithTimeout(ctx, 10*time.Second)
-		after, err := pierBytes(measure, filepath.Join(q.r.Directory, "data/fake-zod"))
+		after, err := pierBytes(measure, q.pierPath())
 		cancel()
 		if err != nil {
 			return finish(unknown, err)
@@ -215,9 +430,13 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		state.Maintenance.AfterPierBytes = after
 		state.Maintenance.FinishedAt = &now
 		state.MaintenanceUncertain = false
+		if action == "roll" {
+			state.RollNeedsRuntime = true
+		}
 		if err := q.save(); err != nil {
 			state.MaintenanceUncertain = true
 			state.Maintenance.FinishedAt = nil
+			state.Epochs = nil
 			return finish(unknown, err)
 		}
 		return finish(ManagedObservation{State: "stopped", Health: "unknown"}, nil)
@@ -235,12 +454,25 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		return finish(unknown, errors.New("start requires at least 5 GiB available RAM and 8 GiB free disk"))
 	}
 	if !state.Initialized {
-		entries, err := os.ReadDir(filepath.Join(q.r.Directory, "data"))
+		if state.NativeShip != "" {
+			if err := q.verifyBootKey(); err != nil {
+				return finish(unknown, err)
+			}
+		}
+		root, err := pierstore.PrepareMount(d.home, state.Storage)
+		if err != nil {
+			return finish(unknown, err)
+		}
+		if err = q.save(); err != nil {
+			return finish(unknown, err)
+		}
+		entries, err := os.ReadDir(root)
 		if err != nil || len(entries) != 0 {
-			return finish(unknown, errors.New("partial fake pier requires manual recovery; bootstrap will not be replayed"))
+			return finish(unknown, errors.New("partial pier requires manual recovery; bootstrap will not be replayed"))
 		}
 	}
 	q.r.Containers = []ContainerRecord{}
+	q.r.Stage = "preparing-runtime"
 	if err := q.save(); err != nil {
 		return finish(unknown, err)
 	}
@@ -250,7 +482,11 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 	if err := q.save(); err != nil {
 		return finish(unknown, err)
 	}
-	if !state.Initialized {
+	if !state.Initialized && !q.canonicalPill() {
+		q.r.Stage = "preparing-pill"
+		if err := q.save(); err != nil {
+			return finish(unknown, err)
+		}
 		// Pure preparation may be resumed while data is empty and every prior
 		// container outcome is resolved. Existing pill bytes must match the pin.
 		var err error
@@ -281,41 +517,122 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 	} else if err := q.pier(); err != nil {
 		return finish(unknown, err)
 	}
+	if state.Comet != nil {
+		kind = "comet-resume"
+		if state.Adoption != nil && !state.Adoption.Verified {
+			kind = "comet-verify"
+		}
+		if !state.Initialized {
+			kind = "comet-boot"
+			now := time.Now().UTC()
+			state.Comet.StartedAt = &now
+			state.Comet.Uncertain = true
+			if err := q.save(); err != nil {
+				return finish(unknown, err)
+			}
+		}
+	}
 	i, err := q.create(ctx, kind)
 	if err != nil {
+		return finish(unknown, err)
+	}
+	q.r.Stage = "starting-runtime"
+	if err := q.save(); err != nil {
 		return finish(unknown, err)
 	}
 	if _, err := q.control(ctx, i, q.d.times.command, "start"); err != nil {
 		return finish(unknown, err)
 	}
-	if err := q.readyHostHTTP(ctx, i); err != nil {
+	q.r.Stage = "waiting-for-identity"
+	if err := q.save(); err != nil {
 		return finish(unknown, err)
+	}
+	if state.Comet != nil {
+		ship, err := q.readyCometIdentity(ctx, i, state.Comet.Ship)
+		if err != nil {
+			if errors.Is(err, errCometIdentityChanged) {
+				state.Comet.Uncertain = true
+				err = errors.Join(err, q.save())
+			}
+			return finish(unknown, err)
+		}
+		state.Comet.Ship = ship
+	} else {
+		if err := q.readyHostHTTP(ctx, i); err != nil {
+			if state.Fake != nil && errors.Is(err, errFakeIdentityChanged) {
+				state.Fake.Uncertain = true
+				err = errors.Join(err, q.save())
+			}
+			return finish(unknown, err)
+		}
 	}
 	if err := q.pier(); err != nil {
 		return finish(unknown, err)
 	}
 	state.Initialized = true
+	if state.Adoption != nil {
+		state.Adoption.Verified = true
+	}
+	state.RollNeedsRuntime = false
+	if state.Comet != nil && state.Comet.Uncertain {
+		now := time.Now().UTC()
+		state.Comet.FinishedAt = &now
+		state.Comet.Uncertain = false
+	}
 	if err := q.save(); err != nil {
+		if state.Comet != nil {
+			state.Comet.Uncertain = true
+		}
 		return finish(unknown, err)
 	}
+	if kind == "comet-verify" {
+		state.Runtime = q.r
+		state, obs, err := applyManaged(ctx, "stop", state, persist, d)
+		if err != nil {
+			return state, obs, err
+		}
+		return applyManaged(ctx, "start", state, persist, d)
+	}
+	if state.NativeKeyDigest != "" {
+		if err := os.Remove(q.keyPath()); err != nil && !errors.Is(err, os.ErrNotExist) {
+			return finish(unknown, errors.New("ship started but private bootstrap key cleanup needs review"))
+		}
+		state.NativeKeyDigest = ""
+		if err := q.save(); err != nil {
+			return finish(unknown, err)
+		}
+	}
+	q.r.Stage = "ready"
 	return finish(ManagedObservation{State: "running", Health: "healthy", Endpoint: strings.TrimSuffix(q.r.Containers[i].HostEndpoint, "/~/host")}, nil)
 }
 
-// ObserveManaged makes no Docker mutations. It may resolve a known create from
-// inspected identity, but never infers successful deletion from an empty listing.
+// ObserveManaged inspects runtime state and reads bounded one-shot Docker stats.
+// It does not start/stop/remove containers or infer deletion from absence.
 func ObserveManaged(ctx context.Context, state ManagedState) (ManagedState, ManagedObservation, error) {
 	return observeManaged(ctx, state, defaults())
 }
 
 func observeManaged(ctx context.Context, state ManagedState, d dependencies) (ManagedState, ManagedObservation, error) {
+	if state.Handoff.Fenced() {
+		status := "moving"
+		if state.Handoff.State == "moved" {
+			status = "moved"
+		}
+		return state, ManagedObservation{State: status, Health: "unknown"}, nil
+	}
 	ctx, cancel := context.WithTimeout(ctx, d.times.command)
 	defer cancel()
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
-	if state.MaintenanceUncertain {
+	if state.UncertainMaintenance() || state.UncertainProvisioning() {
 		return state, unknown, nil
 	}
 	if !state.Prepared {
 		return state, ManagedObservation{State: "uninitialized", Health: "unknown"}, nil
+	}
+	if state.Initialized {
+		if _, err := pierstore.Check(d.home, *state.Storage); err != nil {
+			return state, ManagedObservation{State: "missing", Health: "unknown", RecoveryRequired: true}, nil
+		}
 	}
 	q, err := managedSession(&state, nil, d)
 	if err != nil {
@@ -325,9 +642,10 @@ func observeManaged(ctx context.Context, state ManagedState, d dependencies) (Ma
 		return state, unknown, err
 	}
 	obs := ManagedObservation{State: "stopped", Health: "unknown", RecoveryRequired: !state.Initialized}
+	resourceIndex := -1
 	if !state.Initialized {
-		entries, err := os.ReadDir(filepath.Join(q.r.Directory, "data"))
-		if err == nil && len(entries) == 0 {
+		entries, err := os.ReadDir(filepath.Dir(q.pierPath()))
+		if err == nil && len(entries) == 0 || errors.Is(err, os.ErrNotExist) && state.Storage.MountIdentity.Inode == 0 {
 			obs.State, obs.RecoveryRequired = "uninitialized", false
 		}
 	}
@@ -355,13 +673,30 @@ func observeManaged(ctx context.Context, state ManagedState, d dependencies) (Ma
 			endpoint, err := q.publishedEndpoint(actual, c.Kind)
 			if err == nil {
 				obs.Endpoint = strings.TrimSuffix(endpoint, "/~/host")
-				if err := d.hostProbe(ctx, endpoint); err == nil {
+				healthErr := error(nil)
+				if state.Comet != nil {
+					ship, err := d.hostIdentity(ctx, endpoint)
+					healthErr = err
+					if err == nil && ship != state.Comet.Ship {
+						state.Comet.Uncertain = true
+						return state, unknown, errors.New("managed comet identity changed")
+					}
+				} else {
+					healthErr = q.probeFakeHTTP(ctx, endpoint)
+					if state.Fake != nil && errors.Is(healthErr, errFakeIdentityChanged) {
+						state.Fake.Uncertain = true
+						return state, unknown, nil
+					}
+				}
+				if healthErr == nil {
 					if err := q.pier(); err != nil {
 						return state, unknown, err
 					}
 					state.Initialized, obs.RecoveryRequired, obs.Health = true, false, "healthy"
+					state.RollNeedsRuntime = false
 				}
 			}
+			resourceIndex = i
 		} else if *actual.State.ExitCode != 0 || *actual.State.OOMKilled || actual.State.Dead {
 			obs.State, obs.Health = "failed", "unhealthy"
 			obs.RecoveryRequired = true
@@ -376,6 +711,12 @@ func observeManaged(ctx context.Context, state ManagedState, d dependencies) (Ma
 			state.Runtime = q.r
 			return state, unknown, err
 		}
+	}
+	// Finish health/ownership checks before optional telemetry. A timed-out
+	// resource read cannot consume a later health check's deadline and turn a
+	// healthy HTTP observation into a claimed runtime failure.
+	if resourceIndex >= 0 {
+		obs.Resources, _ = q.resources(ctx, resourceIndex)
 	}
 	state.Runtime = q.r
 	return state, obs, nil

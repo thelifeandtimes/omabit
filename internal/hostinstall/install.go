@@ -41,14 +41,18 @@ type Result struct {
 // No bundle code is executed as root. Failures preserve all created resources;
 // this helper never takes over an existing installation or deletes data.
 func Install(ctx context.Context, bundle string) (Result, error) {
-	i := installer{
+	i := newInstaller()
+	return i.install(ctx, bundle)
+}
+
+func newInstaller() installer {
+	return installer{
 		root: "/", euid: os.Geteuid(), goos: runtime.GOOS, goarch: runtime.GOARCH,
 		verified: rootless.VerifiedFiles, inspect: hostsetup.Inspect,
 		lookupUser: user.Lookup, lookupGroup: user.LookupGroup, groupIDs: (*user.User).GroupIds,
 		lstat: os.Lstat, chown: func(f *os.File) error { return f.Chown(0, 0) },
 		run: runCommand,
 	}
-	return i.install(ctx, bundle)
 }
 
 // All injection is private and per invocation. Tests use a temporary filesystem,
@@ -288,6 +292,10 @@ func requirePass(report hostsetup.Report, ids ...string) error {
 }
 
 func (i *installer) checkAccount(ctx context.Context, account *user.User, uid, gid uint32) error {
+	return i.checkAccountMode(ctx, account, uid, gid, true)
+}
+
+func (i *installer) checkAccountMode(ctx context.Context, account *user.User, uid, gid uint32, fresh bool) error {
 	group, err := i.lookupGroup(rootless.AccountName)
 	if err != nil || group.Name != rootless.AccountName || group.Gid != account.Gid {
 		return fmt.Errorf("new account does not have the expected private NSS group")
@@ -317,9 +325,11 @@ func (i *installer) checkAccount(ctx context.Context, account *user.User, uid, g
 		return fmt.Errorf("new home must be a non-symlink, account-owned private 0700 directory")
 	}
 	// A customized /etc/skel must not supply SSH access or user-unit overrides.
-	for _, path := range []string{".ssh", ".config/systemd", ".local/share/systemd"} {
-		if err := i.absent(filepath.Join(rootless.HomeDir, path)); err != nil {
-			return err
+	if fresh {
+		for _, path := range []string{".ssh", ".config/systemd", ".local/share/systemd"} {
+			if err := i.absent(filepath.Join(rootless.HomeDir, path)); err != nil {
+				return err
+			}
 		}
 	}
 	for _, database := range []string{"passwd", "shadow"} {
@@ -335,7 +345,8 @@ func (i *installer) checkAccount(ctx context.Context, account *user.User, uid, g
 			}
 			matches++
 			if database == "passwd" {
-				if len(fields) != 7 || fields[2] != account.Uid || fields[3] != account.Gid || fields[5] != rootless.HomeDir || fields[6] != "/usr/bin/nologin" {
+				shellOK := len(fields) == 7 && (fields[6] == "/usr/bin/nologin" || !fresh && (fields[6] == "/usr/local/lib/urbit-runner/current/urbit-runner" || fields[6] == "/usr/local/lib/urbit-runner/checkpoints/4b/urbit-runner"))
+				if len(fields) != 7 || fields[2] != account.Uid || fields[3] != account.Gid || fields[5] != rootless.HomeDir || !shellOK {
 					return fmt.Errorf("new local account does not match NSS identity or nologin shell")
 				}
 			} else if len(fields) != 9 || !(strings.HasPrefix(fields[1], "!") || strings.HasPrefix(fields[1], "*")) {

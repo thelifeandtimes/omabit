@@ -15,17 +15,43 @@ import (
 )
 
 var errHostNotReady = errors.New("host-loopback HTTP endpoint is not ready")
+var errFakeIdentityChanged = errors.New("public host identity differs from the registered fake ship")
+
+func (q *qualifier) probeFakeHTTP(ctx context.Context, endpoint string) error {
+	if q.d.fake == nil {
+		return q.d.hostProbe(ctx, endpoint)
+	}
+	ship, err := q.d.hostIdentity(ctx, endpoint)
+	if err != nil {
+		return err
+	}
+	if ship != q.d.fake.Ship {
+		return errFakeIdentityChanged
+	}
+	return nil
+}
 
 // A credential-free GET to the exact loopback endpoint derived from inspected
 // Docker bindings. Never honor proxies, redirects, cookies, or arbitrary URLs.
 func probeHostHTTP(ctx context.Context, endpoint string) error {
+	ship, err := readHostIdentity(ctx, endpoint)
+	if err != nil {
+		return err
+	}
+	if ship != "~zod" {
+		return errors.New("public host identity did not match the disposable fake zod")
+	}
+	return nil
+}
+
+func readHostIdentity(ctx context.Context, endpoint string) (string, error) {
 	u, err := url.Parse(endpoint)
 	if err != nil {
-		return errors.New("invalid host-loopback endpoint")
+		return "", errors.New("invalid host-loopback endpoint")
 	}
 	port, err := strconv.Atoi(u.Port())
 	if err != nil || port < 1024 || port > 65535 || endpoint != "http://"+net.JoinHostPort("127.0.0.1", strconv.Itoa(port))+"/~/host" {
-		return errors.New("host HTTP probe requires the exact unprivileged loopback endpoint")
+		return "", errors.New("host HTTP probe requires the exact unprivileged loopback endpoint")
 	}
 	transport := &http.Transport{
 		Proxy: nil, DialContext: (&net.Dialer{Timeout: 3 * time.Second}).DialContext,
@@ -39,31 +65,31 @@ func probeHostHTTP(ctx context.Context, endpoint string) error {
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
 	if err != nil {
-		return errors.New("cannot create host HTTP probe")
+		return "", errors.New("cannot create host HTTP probe")
 	}
 	req.Header.Set("Accept", "text/plain")
 	resp, err := client.Do(req)
 	if err != nil {
-		return errHostNotReady
+		return "", errHostNotReady
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusNotFound || resp.StatusCode >= 500 {
-		return errHostNotReady
+		return "", errHostNotReady
 	}
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("public host endpoint did not return HTTP 200; redirects and authentication are not attempted")
+		return "", errors.New("public host endpoint did not return HTTP 200; redirects and authentication are not attempted")
 	}
 	if resp.Header.Get("Content-Encoding") != "" && resp.Header.Get("Content-Encoding") != "identity" {
-		return errors.New("unexpected encoding on public host response")
+		return "", errors.New("unexpected encoding on public host response")
 	}
 	body, err := io.ReadAll(io.LimitReader(resp.Body, 129))
 	if err != nil {
-		return errHostNotReady
+		return "", errHostNotReady
 	}
-	if len(body) > 128 || strings.TrimSpace(string(body)) != "~zod" {
-		return errors.New("public host identity did not match the disposable fake zod")
+	if len(body) > 128 || len(strings.TrimSpace(string(body))) == 0 {
+		return "", errors.New("public host identity response is empty or oversized")
 	}
-	return nil
+	return strings.TrimSpace(string(body)), nil
 }
 
 func (q *qualifier) readyHostHTTP(ctx context.Context, index int) error {
@@ -90,7 +116,7 @@ func (q *qualifier) readyHostHTTP(ctx context.Context, index int) error {
 			if err := q.save(); err != nil {
 				return err
 			}
-			err = q.d.hostProbe(ctx, endpoint)
+			err = q.probeFakeHTTP(ctx, endpoint)
 			if err == nil {
 				// The process and its inspected binding must still be the same
 				// after the request. Endpoint evidence does not grant owner login.
@@ -112,6 +138,9 @@ func (q *qualifier) readyHostHTTP(ctx context.Context, index int) error {
 				return q.save()
 			}
 			if !errors.Is(err, errHostNotReady) {
+				if errors.Is(err, errFakeIdentityChanged) {
+					return errFakeIdentityChanged
+				}
 				// Probe errors must not expose an untrusted HTTP body or headers.
 				return errors.New("host HTTP identity or response policy check failed")
 			}

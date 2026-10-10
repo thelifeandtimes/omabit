@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -13,6 +14,7 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/routines"
 )
 
 const maxResponseBytes = 1 << 20
@@ -129,6 +131,86 @@ func (c *Client) CreateFake(ctx context.Context, req protocol.CreateFakeRequest)
 	return result, nil
 }
 
+func (c *Client) EnrollPier(ctx context.Context, req protocol.EnrollPierRequest) (protocol.Operation, error) {
+	var result protocol.Operation
+	if err := c.do(ctx, http.MethodPost, "/v1/piers", req, &result, true); err != nil {
+		return result, err
+	}
+	want := "enroll-pier"
+	if req.Relink {
+		want = "relink-pier"
+	}
+	if result.InstanceID != req.ID || result.RequestID != req.RequestID || result.Kind != want {
+		return protocol.Operation{}, errors.New("pier enrollment response did not match selection")
+	}
+	return result, nil
+}
+
+func (c *Client) CreateShip(ctx context.Context, req protocol.CreateShipRequest) (protocol.Operation, error) {
+	var op protocol.Operation
+	if err := c.do(ctx, http.MethodPost, "/v1/ships", req, &op, true); err != nil {
+		return op, err
+	}
+	if op.InstanceID != req.ID || op.RequestID != req.RequestID || op.Kind != "register-ship" {
+		return protocol.Operation{}, errors.New("key registration response did not match selection")
+	}
+	return op, nil
+}
+
+func (c *Client) CreateComet(ctx context.Context, req protocol.CreateCometRequest) (protocol.Operation, error) {
+	if err := validateID(req.ID); err != nil {
+		return protocol.Operation{}, err
+	}
+	var result protocol.Operation
+	if err := c.do(ctx, http.MethodPost, "/v1/comets", req, &result, true); err != nil {
+		return protocol.Operation{}, err
+	}
+	if result.InstanceID != req.ID || result.RequestID != req.RequestID || result.Kind != "register-comet" {
+		return protocol.Operation{}, errors.New("comet registration response did not match selection")
+	}
+	return result, nil
+}
+
+func (c *Client) ImportSources(ctx context.Context, runner string) (protocol.ImportCatalogue, error) {
+	var result protocol.ImportCatalogue
+	if err := c.do(ctx, http.MethodGet, "/v1/imports", nil, &result, true); err != nil {
+		return result, err
+	}
+	if result.RunnerID != runner || result.Sources == nil || len(result.Sources) > 256 {
+		return protocol.ImportCatalogue{}, errors.New("invalid import catalogue identity or size")
+	}
+	return result, nil
+}
+
+func (c *Client) ImportFake(ctx context.Context, req protocol.ImportFakeRequest) (protocol.Operation, error) {
+	var result protocol.Operation
+	if err := validateID(req.ID); err != nil {
+		return result, err
+	}
+	if err := c.do(ctx, http.MethodPost, "/v1/imports", req, &result, true); err != nil {
+		return result, err
+	}
+	if result.InstanceID != req.ID || result.RequestID != req.RequestID || result.Kind != "import-fake" {
+		return protocol.Operation{}, errors.New("import response does not match the submitted request")
+	}
+	return result, nil
+}
+
+func (c *Client) LoginCode(ctx context.Context, runner, id string, req protocol.LoginCodeRequest) (protocol.LoginCode, error) {
+	var result protocol.LoginCode
+	if validateID(id) != nil || req.ExpectedRevision == 0 {
+		return result, errors.New("login-code selection is invalid")
+	}
+	if err := c.do(ctx, http.MethodPost, "/v1/instances/"+id+"/login-code", req, &result, true); err != nil {
+		// Even malformed or hostile secret responses must not enter diagnostics.
+		return protocol.LoginCode{}, errors.New("login-code request failed; verify operator access and the selected live runtime")
+	}
+	if result.RunnerID != runner || result.InstanceID != id || result.ConfigRevision != req.ExpectedRevision || result.ContainerID != req.ContainerID || !protocol.ValidLoginCode(result.Code) {
+		return protocol.LoginCode{}, errors.New("login-code response did not match the selected runtime")
+	}
+	return result, nil
+}
+
 func validateID(id string) error {
 	if len(id) < 1 || len(id) > 64 {
 		return fmt.Errorf("invalid instance ID: must contain 1 to 64 ASCII letters, digits, underscores, or hyphens")
@@ -140,6 +222,34 @@ func validateID(id string) error {
 		}
 	}
 	return nil
+}
+
+func (c *Client) Routine(ctx context.Context, runner, id string) (protocol.RoutineResponse, error) {
+	var result protocol.RoutineResponse
+	if err := validateID(id); err != nil {
+		return result, err
+	}
+	if err := c.do(ctx, http.MethodGet, "/v1/instances/"+id+"/routine", nil, &result, true); err != nil {
+		return result, err
+	}
+	if result.RunnerID != runner || result.InstanceID != id {
+		return protocol.RoutineResponse{}, errors.New("routine response selection mismatch")
+	}
+	return result, nil
+}
+
+func (c *Client) PutRoutine(ctx context.Context, id string, req routines.Update) (routines.Policy, error) {
+	var result routines.Policy
+	if err := validateID(id); err != nil {
+		return result, err
+	}
+	if err := c.do(ctx, http.MethodPut, "/v1/instances/"+id+"/routine", req, &result, true); err != nil {
+		return result, err
+	}
+	if result.InstanceID != id || result.InstanceRevision != req.ExpectedInstanceRevision || result.Revision != req.ExpectedRevision+1 {
+		return routines.Policy{}, errors.New("routine update response selection mismatch")
+	}
+	return result, nil
 }
 
 func (c *Client) do(ctx context.Context, method, path string, payload, result any, versioned bool) (err error) {

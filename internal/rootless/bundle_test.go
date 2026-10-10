@@ -137,10 +137,11 @@ func TestVerifiedFilesDoNotTrustManifest(t *testing.T) {
 		}
 	}
 	// Installer gets a snapshot, not a path to reopen after authorization.
+	originalConfig := bytes.Clone(files["daemon.json"])
 	if err := os.WriteFile(filepath.Join(dir, "daemon.json"), []byte("changed after verification"), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if string(files["daemon.json"]) != "{}\n" {
+	if !bytes.Equal(files["daemon.json"], originalConfig) {
 		t.Fatalf("verified bytes changed: %q", files["daemon.json"])
 	}
 }
@@ -556,7 +557,7 @@ func TestRenderedAssetsAndShellSyntax(t *testing.T) {
 		"Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_PORT_DRIVER=builtin", "Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_STATE_DIR=%t/urbit-rootlesskit",
 		"ExecStartPre=" + InstallDir + "/check-engine.sh",
 		"ExecStart=" + InstallDir + "/dockerd-rootless.sh --group=0 --host=unix://%t/" + SocketName + " --data-root=%h/.local/share/urbit-runner/docker --exec-root=%t/urbit-docker --pidfile=%t/urbit-docker.pid --exec-opt native.cgroupdriver=systemd --config-file " + InstallDir + "/daemon.json",
-		"Delegate=yes", "KillMode=mixed", "Restart=on-failure", "RestartSec=2", "TimeoutStartSec=120", "TimeoutStopSec=120",
+		"Delegate=yes", "KillMode=mixed", "Restart=on-failure", "RestartSec=2", "TimeoutStartSec=120", "TimeoutStopSec=360",
 		"TasksMax=infinity", "LimitNOFILE=infinity", "LimitNPROC=infinity", "LimitCORE=0",
 	} {
 		if !strings.Contains("\n"+unit, "\n"+line+"\n") {
@@ -578,7 +579,8 @@ func TestRenderedAssetsAndShellSyntax(t *testing.T) {
 		}
 	}
 	data, err = os.ReadFile(filepath.Join(output, "daemon.json"))
-	if err != nil || string(data) != "{}\n" {
+	var config map[string]int
+	if err != nil || json.Unmarshal(data, &config) != nil || len(config) != 1 || config["shutdown-timeout"] != 310 {
 		t.Fatalf("daemon config: %q, %v", data, err)
 	}
 }

@@ -37,17 +37,18 @@ func (realBackend) Observe(ctx context.Context, state runtimequalify.ManagedStat
 // Server serves only the private local management API. Its host/state lock must
 // outlive it. Close stops management workers, not the independently running ships.
 type Server struct {
-	s         *store
-	b         backend
-	ctx       context.Context
-	cancel    context.CancelFunc
-	wg        sync.WaitGroup
-	mu        sync.Mutex
-	closing   bool
-	startGate chan struct{}
-	failed    atomic.Bool
-	uid       uint32
-	keys      string
+	s        *store
+	b        backend
+	ctx      context.Context
+	cancel   context.CancelFunc
+	wg       sync.WaitGroup
+	mu       sync.Mutex
+	closing  bool
+	workGate chan struct{}
+	failed   atomic.Bool
+	uid      uint32
+	keys     string
+	bootID   string
 }
 
 func New(dir string) (*Server, error) { return newServer(dir, realBackend{}, 10*time.Second) }
@@ -62,18 +63,70 @@ func NewWithAccess(dir, keys string) (*Server, error) {
 }
 
 func newServer(dir string, b backend, interval time.Duration) (*Server, error) {
+	return newServerMode(dir, b, interval, false)
+}
+
+func NewDevelopmentWithAccess(dir, keys string) (*Server, error) {
+	r, err := newServerMode(dir, realBackend{}, 10*time.Second, true)
+	if err == nil {
+		r.keys = keys
+	}
+	return r, err
+}
+
+func newServerMode(dir string, b backend, interval time.Duration, comets bool) (*Server, error) {
+	return newServerWithStartup(dir, b, interval, comets, "")
+}
+
+func newServerWithStartup(dir string, b backend, interval time.Duration, comets bool, bootID string) (*Server, error) {
 	s, err := openStore(dir)
 	if err != nil {
 		return nil, err
+	}
+	if ports, ok := b.(interface{ PortAvailable(string, uint16) bool }); ok {
+		s.portAvailable = ports.PortAvailable
+	}
+	if comets {
+		s.mode = DevelopmentMode
+	} else {
+		all, err := instances(s.db)
+		if err != nil {
+			s.close()
+			return nil, err
+		}
+		for _, v := range all {
+			if v.Runtime.Comet != nil {
+				s.close()
+				return nil, errors.New("registered comets require serve-development; fake-only mode refuses this state")
+			}
+		}
 	}
 	if err := s.reconcileInterrupted(); err != nil {
 		s.close()
 		return nil, err
 	}
+	var resume []storedInstance
+	if bootID != "" {
+		if !bootIDPattern.MatchString(bootID) {
+			s.close()
+			return nil, errors.New("invalid host boot identity")
+		}
+		resume, err = s.startupCandidates()
+		if err != nil {
+			s.close()
+			return nil, err
+		}
+	}
 	ctx, cancel := context.WithCancel(context.Background())
-	r := &Server{s: s, b: b, ctx: ctx, cancel: cancel, startGate: make(chan struct{}, 1), uid: uint32(os.Geteuid())}
+	r := &Server{s: s, b: b, ctx: ctx, cancel: cancel, workGate: make(chan struct{}, 1), uid: uint32(os.Geteuid()), bootID: bootID}
+	if len(resume) > 0 {
+		r.wg.Add(1)
+		go r.resumeStartup(resume, interval)
+	}
 	r.wg.Add(1)
 	go r.poll(interval)
+	r.wg.Add(1)
+	go r.scheduleLoop()
 	return r, nil
 }
 
@@ -136,17 +189,33 @@ func (r *Server) launch(op protocol.Operation) {
 	r.wg.Add(1)
 	go func() {
 		defer r.wg.Done()
-		if op.Kind == "start" || op.Kind == "pack" {
+		if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
 			select {
-			case r.startGate <- struct{}{}:
-				defer func() { <-r.startGate }()
+			case r.workGate <- struct{}{}:
+				defer func() { <-r.workGate }()
 			case <-r.ctx.Done():
 				return // restart marks the durably queued job interrupted
 			}
 		}
 		actual, instance, err := r.s.beginOperation(op.ID)
 		if err != nil {
+			var admission *fault
+			if errors.As(err, &admission) && admission.problem.Code == "host_recovery_required" {
+				// This is a failed runtime admission, not a broken state store.
+				// Finish the queued request without dispatching it; cleanup jobs
+				// must remain usable and replay must retain this outcome.
+				if err := r.s.finish(actual, instance.Runtime, runtimequalify.ManagedObservation{}, err, false); err != nil {
+					r.failed.Store(true)
+				}
+				return
+			}
 			r.failed.Store(true)
+			return
+		}
+		if routineKind(actual.Kind) && !r.routineAuthorized(actual.Actor) {
+			if err := r.s.finish(actual, instance.Runtime, runtimequalify.ManagedObservation{}, errors.New("routine owner no longer has operator access"), false); err != nil {
+				r.failed.Store(true)
+			}
 			return
 		}
 		state, observation, err := r.b.Apply(r.ctx, actual.Kind, instance.Runtime, func(state runtimequalify.ManagedState) error {
@@ -197,15 +266,48 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		role = grant.Role
 	}
 	if req.Method == http.MethodGet && req.URL.Path == "/hello" {
-		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials", "offline-pack"}
+		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials", "offline-pack", "offline-meld", "offline-roll", "container-resources", "container-cpu", "epoch-inventory", "epoch-prune-genesis", "epoch-prune-prefix"}
+		features = append(features, "maintenance-schedules")
+		features = append(features, "fake-ship-options")
+		if _, ok := r.b.(storageBackend); ok {
+			features = append(features, "bootstrap-selection")
+			features = append(features, "pier-storage")
+			features = append(features, "host-handoff")
+			if r.s.mode == DevelopmentMode {
+				features = append(features, "key-boot", "key-boot-options", "livenet-import")
+			}
+		}
+		if r.bootID != "" {
+			features = append(features, "startup-resume")
+		}
+		if r.s.mode == DevelopmentMode {
+			features = append(features, "create-comet", "comet-compaction", "comet-epochs", "comet-prune-prefix")
+		}
+		if _, ok := r.b.(codeBackend); ok {
+			features = append(features, "login-code")
+		}
+		if _, ok := r.b.(logsBackend); ok {
+			features = append(features, "runtime-logs")
+		}
+		if _, ok := r.b.(importBackend); ok {
+			features = append(features, "import-qualified-fake")
+		}
 		if r.keys != "" {
 			features = append(features, "ssh-key-grants")
 		}
-		respond(w, 200, protocol.Hello{ProtocolVersion: protocol.Version, RunnerID: r.s.runnerID, Mode: mode, Features: features, Actor: actor, AccessRole: role})
+		respond(w, 200, protocol.Hello{ProtocolVersion: protocol.Version, RunnerID: r.s.runnerID, Mode: r.s.mode, Features: features, Actor: actor, AccessRole: role})
 		return
 	}
 	if req.Header.Get(protocol.Header) != strconv.Itoa(protocol.Version) {
 		r.respondError(w, &fault{426, protocol.APIError{Code: "protocol_mismatch", Message: "send Urbit-Runner-Protocol: 1"}})
+		return
+	}
+	if req.URL.Path == protocol.PillUploadPath {
+		if r.ctx.Err() != nil || r.failed.Load() {
+			r.respondError(w, conflict("runner_unavailable", "runner is unavailable"))
+			return
+		}
+		r.stagePill(w, req, role)
 		return
 	}
 	if req.Method == http.MethodGet && req.URL.Path == "/v1/snapshot" {
@@ -217,13 +319,73 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if r.failed.Load() {
 			snapshot.Incidents = append(snapshot.Incidents, protocol.Incident{ID: "state-store", Code: "state_store_error", Message: "state journal failed; mutations are disabled until the store is reviewed", Active: true, ObservedAt: time.Now().UTC()})
 		}
+		snapshot.Piers = r.pierCatalogue(req.Context())
 		respond(w, 200, snapshot)
+		return
+	}
+	if strings.HasPrefix(req.URL.Path, "/v1/handoffs") || strings.HasSuffix(req.URL.Path, "/handoff") {
+		if _, ok := r.b.(storageBackend); !ok {
+			r.respondError(w, bad("host handoff is unavailable on this runner"))
+			return
+		}
+	}
+	if protocol.HandoffDataPath(req.URL.Path) {
+		r.handoffData(w, req, actor, role, strings.Split(req.URL.Path, "/")[3])
 		return
 	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if r.closing || r.failed.Load() {
 		r.respondError(w, &fault{503, protocol.APIError{Code: "runner_unavailable", Message: "runner is stopping or state storage needs review"}})
+		return
+	}
+	if req.Method == "POST" && req.URL.Path == "/v1/handoffs" {
+		r.receiveHandoff(w, req, actor, role)
+		return
+	}
+	if strings.HasPrefix(req.URL.Path, "/v1/handoffs/") {
+		parts := strings.Split(req.URL.Path, "/")
+		if (len(parts) == 4 || len(parts) == 5) && fullHandoffID(parts[3]) {
+			verb := ""
+			if len(parts) == 5 {
+				verb = parts[4]
+			}
+			r.handoffControl(w, req, actor, role, parts[3], verb)
+			return
+		}
+	}
+	if req.URL.Path == "/v1/imports" {
+		r.serveImports(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == "/v1/piers" {
+		r.servePiers(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == "/v1/ships" {
+		r.serveCreateShip(w, req, actor, role)
+		return
+	}
+	if req.Method == http.MethodPost && req.URL.Path == "/v1/comets" {
+		var body protocol.CreateCometRequest
+		if err := decode(w, req, &body); err != nil {
+			r.respondError(w, err)
+			return
+		}
+		if !body.ConfirmNetwork {
+			r.respondError(w, bad("comet registration requires explicit networked-identity acknowledgement"))
+			return
+		}
+		op, replayed, err := r.s.registerKind(actor, body.CreateFakeRequest, nil, true)
+		if err != nil {
+			r.respondError(w, err)
+			return
+		}
+		status := 201
+		if replayed {
+			status = 200
+		}
+		respond(w, status, op)
 		return
 	}
 	if req.Method == http.MethodPost && req.URL.Path == "/v1/instances" {
@@ -250,6 +412,14 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	switch {
+	case req.Method == "POST" && parts[4] == "handoff":
+		r.prepareHandoff(w, req, actor, role, parts[3])
+	case req.Method == http.MethodPost && parts[4] == "logs":
+		r.serveLogs(w, req, role, parts[3])
+	case parts[4] == "routine":
+		r.serveRoutine(w, req, actor, role, parts[3])
+	case req.Method == http.MethodPost && parts[4] == "login-code":
+		r.loginCode(w, req, actor, role, parts[3])
 	case req.Method == http.MethodPut && parts[4] == "configuration":
 		var body protocol.ConfigureRequest
 		if err := decode(w, req, &body); err != nil {

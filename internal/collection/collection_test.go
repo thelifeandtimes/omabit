@@ -106,6 +106,25 @@ func TestEnrollmentPersistenceAndConflicts(t *testing.T) {
 	}
 }
 
+func TestExpectedEnrollmentRejectsIdentityBeforeWriting(t *testing.T) {
+	r := registry(t)
+	socket := fixture(t, "runner-real", nil)
+	entry := Connection{Name: "local", Transport: "unix", Socket: socket}
+	for _, expected := range []client.Identity{{RunnerID: "runner-other", Mode: "simulation"}, {RunnerID: "runner-real", Mode: "development-managed"}} {
+		if _, err := r.enrollExpected(context.Background(), entry, &expected); err == nil {
+			t.Fatal("unexpected identity enrolled")
+		}
+		all, err := r.List(context.Background())
+		if err != nil || len(all) != 0 {
+			t.Fatal("failed handshake wrote enrollment", all, err)
+		}
+	}
+	expected := client.Identity{RunnerID: "runner-real", Mode: "simulation"}
+	if c, err := r.enrollExpected(context.Background(), entry, &expected); err != nil || c.Identity() != expected {
+		t.Fatal("expected identity refused", c, err)
+	}
+}
+
 func TestConcurrentEnrollmentNoLostUpdates(t *testing.T) {
 	r := registry(t)
 	var wg sync.WaitGroup

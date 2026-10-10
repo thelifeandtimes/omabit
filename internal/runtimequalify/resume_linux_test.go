@@ -52,7 +52,7 @@ func TestManagedResumeUsesSamePierWithoutBootstrap(t *testing.T) {
 		t.Fatal(err)
 	}
 	directory := state.Runtime.Directory
-	canary := filepath.Join(directory, "data/fake-zod/.urb/persistence-test")
+	canary := filepath.Join(managedPier(f, state), ".urb/persistence-test")
 	if err := os.WriteFile(canary, []byte("existing persistent state"), 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -95,13 +95,13 @@ func TestManagedResumeUsesSamePierWithoutBootstrap(t *testing.T) {
 			continue
 		}
 		resumes++
-		want := []string{"-t", "-L", "--no-conn", "--no-dock", "--loom", "31", "-b", "0.0.0.0", "--http-port", "8080", "/urbit/fake-zod"}
+		want := []string{"-t", "--snap-time", "60", "-L", "--no-conn", "--no-dock", "--loom", "31", "-b", "0.0.0.0", "--http-port", "8080", "/urbit/pier"}
 		if entry != "/bin/urbit" || !reflect.DeepEqual(args[imageAt+1:], want) {
 			t.Fatalf("resume must open the existing pier, not initialize: %q", args)
 		}
 		mountFound := false
 		for _, arg := range args[:imageAt] {
-			if arg == "type=bind,src="+filepath.Join(directory, "data")+",dst=/urbit,bind-propagation=rprivate" {
+			if arg == "type=bind,src="+filepath.Dir(managedPier(f, state))+",dst=/urbit,bind-propagation=rprivate" {
 				mountFound = true
 			}
 			if strings.Contains(arg, "boot.pill") || arg == "--init" {
