@@ -159,30 +159,31 @@ milestone is complete for this development fleet; see [services.md](services.md)
 
 ## What remains before a supported release
 
-**0.1.0-rc.1 preparation:** versioned Linux/AMD64 binary packaging and a configured
-Recommended Apps release URL now consolidate the development checkpoints through
-0.23. The supplied draft pill is frozen by hash for fresh-ship boot/resume
-qualification before prerelease publication. `%mcp` and draft `%omachan` await the
-provider's next artifact. The release's attached qualification record will describe
-the exact tested binaries and observed result; full app/OTA acceptance is separate.
+**0.1.0-rc.1:** versioned Linux/AMD64 binary packaging and a configured Recommended
+Apps release URL consolidate the development checkpoints through 0.23. The frozen
+draft pill passed fresh-comet first boot, 60-second health observation, clean stop,
+same-identity initialized resume and final stop using the exact packaged binaries.
+The sourcebox runner is now rc.1; the local desktop/runner remain 0.22.3. Grubbery
+compile failures and Azimuth snapshot/HTTP failures were observed; full app/OTA
+acceptance is incomplete. `%mcp` and draft `%omachan` await the next supplied pill.
+See the [qualification record](diagnostics/2026-10-10-rc1-pill.md) and
+[prerelease notes](release-rc1.md).
 
 The Tend repository migration is complete, and the new public runner repository is
 <https://github.com/thelifeandtimes/omabit>. Reviewed source history is published
 through the `github` remote; the original self-hosted `origin` is retained. See
 [repository.md](repository.md) for command ownership and the cutover boundaries.
-The supplied pill's bytes and hash are recorded, but its release upload and live
-boot/application qualification are still pending; no official 0.1.0 tag is implied
-by publishing this development source.
+The supplied pill's bytes, hash and scoped lifecycle qualification are recorded.
+This supports an explicitly limited prerelease, not final 0.1.0 app/OTA acceptance.
 
 **0.23 source** implements the two-option first-boot selector: **bare bootstrap**
 uses Vere's canonical default, while **Recommended Apps** uses a supplied release
 pill URL. This covers comets, owned-key ships and development fakes, with immutable
 content-bound registration and initialized-pier resume. Schema 13 preserves older
-runtime records and prevents downgrade ignoring the new selection. Builds require
-deployment. The user supplied `omabit-brass.pill` (57,011,409 bytes); its measured
-digest and reported desk inventory are recorded in `pill-plan.json`. Publication
-and boot qualification are pending, including review of `%mcp` being absent from
-the supplied list and `%landscape` being present. The automated pill builder is explicitly
+runtime records and prevents downgrade ignoring the new selection. The user
+supplied `omabit-brass.pill` (57,011,409 bytes); its measured digest, reported desk
+inventory and rc.1 qualification are recorded in `pill-plan.json`. `%mcp` and draft
+`%omachan` await a separate replacement artifact. The automated pill builder is explicitly
 deferred to 0.2.0. See [pill-release.md](pill-release.md).
 
 **0.22.3 is deployed.** Inventory watches now reuse a pinned transport per runner

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "kind": "omabit-pill-composition-plan",
   "target_release": "0.1.0",
-  "status": "rc1-frozen-awaiting-boot-qualification",
+  "status": "rc1-lifecycle-qualified-with-application-issues",
   "construction": {"provider": "user", "automated_builder_release": "0.2.0"},
   "artifact": {
     "release": "0.1.0-rc.1",
@@ -13,7 +13,8 @@
     "sha256": "51f0be723918ab7feaaf28b3c599f36f0f0fca6e68453f84517ba1659f07d57e",
     "url": "https://github.com/thelifeandtimes/omabit/releases/download/v0.1.0-rc.1/omabit-recommended-apps-0.1.0-rc.1.pill",
     "publication": "pending",
-    "contents_evidence": "reported-by-provider; not independently boot-verified",
+    "contents_evidence": "provider-reported list; fresh comet boot/resume passed; partial agent-install log evidence; full app/OTA qualification incomplete",
+    "qualification": "diagnostics/2026-10-10-rc1-pill.json",
     "reported_desks": ["base", "webterm", "groups", "trunk", "grubbery", "omart", "pals", "hawk", "obelisk", "jars", "silo", "landscape"],
     "pending_desks": ["mcp", "omachan"],
     "composition_note": "Frozen draft for rc.1. The provider is preparing a replacement with mcp and draft omachan; it will be a separate artifact."

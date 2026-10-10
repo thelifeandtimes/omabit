@@ -1,0 +1,67 @@
+{
+  "version": "0.1.0-rc.1",
+  "source_commit": "d67ea3ad6d1a3d768bf22bea73e594d8c799742e",
+  "pill_sha256": "51f0be723918ab7feaaf28b3c599f36f0f0fca6e68453f84517ba1659f07d57e",
+  "pill_bytes": 57011409,
+  "outcome": "draft-lifecycle-passed-with-application-issues",
+  "started_at": "2026-10-10T08:26:38.019974+00:00",
+  "finished_at": "2026-10-10T08:31:37.269397+00:00",
+  "runtime": "4.6-5a7614f",
+  "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+  "engine": "29.7.2",
+  "runner_sha256": "1467ef2c0edf73ccce81d6db798237e992006bebb9b58243768d0c5a43fe7e70",
+  "collector_sha256": "b66ce1f742e7a82a59658be1487f472ff81a2976c39cc2dc129f76be2bdc1011",
+  "bundle_sha256": "e1894f2adc61043dbc26e2c9ec0d19fcd334417a66e7f0352cbad5ea53be6db7",
+  "instance": {
+    "host": "sourcebox",
+    "id": "rc1-pill-check",
+    "mode": "comet",
+    "ship": "~moddeb-nilsep-posfyn-roctev--siddem-pidmed-simdet-samzod",
+    "bootstrap": "recommended",
+    "config_revision": 1,
+    "applied_revision": 1,
+    "final_state": "stopped",
+    "final_exit_code": 0,
+    "recovery_required": false,
+    "snapshot_minutes": 60
+  },
+  "operations": [
+    {"kind": "register-comet", "id": "op-c9c75ba253e5e6ae90b3cf57188221fa", "status": "succeeded"},
+    {"kind": "first-boot", "id": "op-85e24f47f0f5c88234db7a107dc60208", "status": "succeeded", "finished_at": "2026-10-10T08:30:22.50152857Z"},
+    {"kind": "stop", "id": "op-dbb286468712cd9ca8bb2dbf2e175b2e", "status": "succeeded"},
+    {"kind": "initialized-resume", "id": "op-5041783227a333d6146afa65967e6159", "status": "succeeded", "finished_at": "2026-10-10T08:31:34.953067285Z"},
+    {"kind": "final-stop", "id": "op-cd5ca2296fd1f43a92847c9b99be6b4f", "status": "succeeded"}
+  ],
+  "accepted_checks": [
+    "Frozen local pill uploaded and registration bound to its SHA-256 and byte size",
+    "Exact packaged runner deployed; runner identity, access grant and SSH host key preserved",
+    "Fresh comet reached initialized HTTP/identity health and stayed healthy during 60-second observation",
+    "Clean stop followed by comet-resume in a replacement container with identical ship and pier path",
+    "Final intentional stop completed with exit code zero",
+    "All pre-existing local/remote managed states, container IDs, revisions, policies, recovery flags and move fences preserved",
+    "Go 1.25 tests and vet, desktop model/installer fixtures and mapped QML checks passed",
+    "GitHub CI including targeted stateful race checks passed",
+    "Release asset/archive checksums, binary provenance, executable smoke checks and installer dependencies verified",
+    "Extracted binary bundle fresh installation, owned replacement and refusal to overwrite customization passed"
+  ],
+  "ci_url": "https://github.com/thelifeandtimes/omabit/actions/runs/38037793787",
+  "application_qualification": false,
+  "ota_qualification": false,
+  "pending_desks": ["mcp", "omachan"],
+  "application_observations": [
+    "Boot log showed agents installing, including obelisk, pals, omart, grubbery, trunk, Hawk agents and groups",
+    "Grubbery logged: 23 files under /code did not compile; the explorer shows each trace",
+    "Boot and resume logged HTTP 504 content-length errors and loading azimuth snapshot failed! still trying",
+    "Docket fetched HTTP globs for silo, webterm, landscape and groups; successful availability of all app assets was not established",
+    "Kiln logged webterm/landscape publisher update activity; this is not a completed OTA acceptance test"
+  ],
+  "baseline_note": "Before candidate deployment, two existing sourcebox ships were already recovery-required with exit code 255 after a later host reboot. Their state was preserved; the cause and recovery remain separate follow-up work.",
+  "scope_limits": [
+    "Lifecycle health checks process/identity/HTTP readiness, not application correctness",
+    "The provider-reported complete desk list and all publisher relationships were not independently verified",
+    "No app UI, sustained Ames connectivity, inbound Ames or complete publisher OTA gate was performed",
+    "This pill was live-tested on one fresh comet, not on a fresh fake or owned-key ship",
+    "No forced utility interruption, full network partition or clean-machine host installation gate is claimed",
+    "The local installed desktop and local runner remain at development 0.22.3; the sourcebox runner uses the candidate"
+  ]
+}

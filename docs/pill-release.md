@@ -39,7 +39,11 @@ outside Git. The frozen rc.1 copy is independent of subsequent provider changes.
 
 Reported contents: `%base`, `%webterm`, `%groups`, `%trunk`, `%grubbery`, `%omart`,
 `%pals`, `%hawk`, `%obelisk`, `%jars`, `%silo`, `%landscape`, from the intended
-distributors. These contents are provider-reported, not independently boot-verified.
+distributors. The full list is provider-reported. The
+[draft comet lifecycle gate](diagnostics/2026-10-10-rc1-pill.md) passed first boot,
+clean stop and same-identity initialized resume, with partial agent-install log
+evidence. Grubbery compile failures and Azimuth HTTP 504/snapshot failures were
+observed; full application and OTA qualification is incomplete.
 The supplied list includes `%landscape` and lacks `%mcp` and `%omachan`. The provider
 is preparing a replacement with `%mcp` and a draft `%omachan`; that will be a
 separate artifact. This draft does not block the explicitly scoped rc.1 prerelease.
@@ -140,8 +144,9 @@ pier without applying the pill again.
 Source version 0.23 implements this selection for all new ship types. Capability
 `bootstrap-selection` identifies supporting runners. The additive schema-13 update
 preserves old registrations' recorded behavior and stops older runners from
-ignoring a new selection. The supplied Recommended Apps artifact still awaits
-publication and live qualification; fixtures verify selection, byte binding and resume.
+ignoring a new selection. Rc.1 includes this work and passed the scoped live draft
+comet lifecycle gate. Fixtures cover selection, byte binding and initialized resume;
+the attached release qualification record distinguishes lifecycle from app readiness.
 
 ## Deferred automated builder (0.2.0)
 
