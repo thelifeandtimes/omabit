@@ -92,3 +92,53 @@ test_enable()
 test_enable(invalid=True)
 test_enable(discovered_after=0, confirm=False)
 print("PASS: asynchronous discovery, ignored rescan, bounded timeout, invalid reply, and enable confirmation")
+
+
+def test_cold_replace(locked=False, fail_install=False):
+    with tempfile.TemporaryDirectory(prefix="omabit-cold-install-") as directory:
+        path = pathlib.Path(directory)
+        (path / "shell").mkdir()
+        (path / "shell/shell.qml").write_text("fixture")
+        events = []
+
+        def run(args, **kwargs):
+            if args == ["omarchy", "shell", "lock", "status"]:
+                events.append("check-lock")
+                return subprocess.CompletedProcess(args, 0, json.dumps({"locked": locked}), "")
+            if args == ["systemctl", "--user", "show-environment"]:
+                return subprocess.CompletedProcess(args, 0, "OMARCHY_PATH=" + str(path), "")
+            if args[:2] == ["quickshell", "kill"]:
+                assert args[2:] == ["-p", str(path / "shell"), "--any-display"]
+                events.append("stop")
+            elif args == ["omarchy", "restart", "shell"]:
+                events.append("restart")
+            else:
+                raise AssertionError(args)
+            return subprocess.CompletedProcess(args, 0, "", "")
+
+        def install(destination, replace, before_replace):
+            assert replace
+            events.append("validated-and-staged")
+            before_replace()
+            events.append("replace")
+            if fail_install:
+                raise RuntimeError("fixture rename failure")
+
+        with patch.object(installer.subprocess, "run", side_effect=run), \
+                patch.object(installer, "install", side_effect=install):
+            if locked or fail_install:
+                try:
+                    installer.replace_enabled(path / "plugin")
+                    raise AssertionError("expected refusal/failure")
+                except RuntimeError:
+                    pass
+            else:
+                installer.replace_enabled(path / "plugin")
+        assert events == (["validated-and-staged", "check-lock"] if locked else
+                          ["validated-and-staged", "check-lock", "stop", "replace", "restart"])
+
+
+test_cold_replace()
+test_cold_replace(locked=True)
+test_cold_replace(fail_install=True)
+print("PASS: enabled updates validate/stage first, refuse locked sessions, cold-replace, and restart even on failure")

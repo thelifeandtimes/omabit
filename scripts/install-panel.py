@@ -20,7 +20,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def install(destination, replace=False):
+def install(destination, replace=False, before_replace=None):
     destination = destination.absolute()
     destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     if destination.parent.resolve() != destination.parent or destination.is_symlink():
@@ -41,18 +41,23 @@ def install(destination, replace=False):
                 raise RuntimeError("installed snapshot has local changes; refusing replacement")
     binary = ROOT / "build/urbit-collector"
     desktop = ROOT / "build/omabit"
-    if not binary.is_file() or not desktop.is_file():
-        raise RuntimeError("build urbit-collector and omabit before installing the panel")
+    runner = ROOT / "build/urbit-runner"
+    if not all(path.is_file() for path in (binary, desktop, runner)):
+        raise RuntimeError("build urbit-runner, urbit-collector and omabit before installing the panel")
     with tempfile.TemporaryDirectory(prefix=".omabit-stage-", dir=destination.parent) as temporary:
         staging = pathlib.Path(temporary) / PLUGIN
         shutil.copytree(ROOT / "plugins/omabit", staging)
         (staging / "bin").mkdir()
         shutil.copy2(binary, staging / "bin/urbit-collector")
         shutil.copy2(desktop, staging / "bin/omabit")
+        shutil.copy2(runner, staging / "bin/urbit-runner")
         os.chmod(staging / "bin/urbit-collector", 0o755)
         os.chmod(staging / "bin/omabit", 0o755)
+        os.chmod(staging / "bin/urbit-runner", 0o755)
         state = {"version": 1, "files": {str(p.relative_to(staging)): digest(p) for p in staging.rglob("*") if p.is_file()}}
         (staging / MARKER).write_text(json.dumps(state, indent=2) + "\n")
+        if before_replace is not None:
+            before_replace()
         if destination.exists():
             backup = pathlib.Path(temporary) / "previous"
             destination.rename(backup)
@@ -64,6 +69,39 @@ def install(destination, replace=False):
         else:
             staging.rename(destination)
     print(f"Installed Omabit panel snapshot: {destination}")
+
+
+def replace_enabled(destination):
+    """Cold replacement avoids incubating new QML while old services are dying."""
+    restart = False
+
+    def stop_shell():
+        nonlocal restart
+        result = subprocess.run(["omarchy", "shell", "lock", "status"],
+                                capture_output=True, text=True, check=True, timeout=5)
+        state = json.loads(result.stdout)
+        if not isinstance(state, dict) or "locked" not in state or any(
+                state.get(key) for key in ("locked", "secure", "requested", "pending", "sessionLocked")):
+            raise RuntimeError("Unlock the desktop before replacing the enabled panel")
+        # Match the environment used by Omarchy's own restart command.
+        result = subprocess.run(["systemctl", "--user", "show-environment"],
+                                capture_output=True, text=True, check=True, timeout=5)
+        path = next((line.split("=", 1)[1] for line in result.stdout.splitlines()
+                     if line.startswith("OMARCHY_PATH=")), os.environ.get("OMARCHY_PATH", ""))
+        config = pathlib.Path(path) / "shell"
+        if not path or not (config / "shell.qml").is_file():
+            raise RuntimeError("Cannot identify the running Omarchy shell configuration")
+        # The launch supervisor treats this clean exit as a deliberate stop.
+        restart = True
+        subprocess.run(["quickshell", "kill", "-p", str(config), "--any-display"],
+                       capture_output=True, text=True, check=True, timeout=10)
+
+    try:
+        # Validate ownership and prepare the replacement before stopping anything.
+        install(destination, replace=True, before_replace=stop_shell)
+    finally:
+        if restart:
+            subprocess.run(["omarchy", "restart", "shell"], check=True, timeout=30)
 
 
 def enable_installed(timeout=10):
@@ -128,6 +166,8 @@ def main():
         manifest = args.destination / "manifest.json"
         if not manifest.is_file() or json.loads(manifest.read_text()).get("id") != PLUGIN:
             raise RuntimeError("Omabit is not installed at the requested destination")
+    elif args.replace and args.enable:
+        replace_enabled(args.destination)
     else:
         install(args.destination, args.replace)
     if args.enable or args.enable_only:
