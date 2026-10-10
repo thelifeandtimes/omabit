@@ -17,32 +17,32 @@ piers and subsequent runtime starts use initialized resume, not pill provisionin
 
 ### Artifact handoff
 
-Upload **`omabit-recommended-apps-0.1.0.pill`** to a versioned release, for example
-`v0.1.0-rc.1`, and provide the **direct asset download URL**, not the release's HTML
-page. A GitHub URL would have this shape:
+The frozen rc.1 artifact is **`omabit-recommended-apps-0.1.0-rc.1.pill`**, attached
+to `v0.1.0-rc.1`. The candidate configures this **direct asset download URL**:
 
 ```text
-https://github.com/OWNER/REPO/releases/download/v0.1.0-rc.1/omabit-recommended-apps-0.1.0.pill
+https://github.com/thelifeandtimes/omabit/releases/download/v0.1.0-rc.1/omabit-recommended-apps-0.1.0-rc.1.pill
 ```
 
 Set that URL in Omabit's **Recommended Apps pill URL** plugin setting
 (`recommendedPillUrl`). The old `defaultBootPill` value is accepted as a fallback
 source for this explicit choice only; it cannot override bare bootstrap.
-No URL is bundled yet because the supplied artifact has not been published or
-boot-qualified.
+The URL becomes available when the prerelease assets are published. A missing
+asset is an explicit download failure, never a fallback to another pill.
 
 ### Supplied artifact
 
 The user supplied `omabit-brass.pill`, **57,011,409 bytes** (about 54.4 MiB), with
 SHA-256 `51f0be723918ab7feaaf28b3c599f36f0f0fca6e68453f84517ba1659f07d57e`.
 This fits both Omabit's bound and GitHub's release-asset size bound. Keep the binary
-outside Git; its proposed release asset name remains the one above.
+outside Git. The frozen rc.1 copy is independent of subsequent provider changes.
 
 Reported contents: `%base`, `%webterm`, `%groups`, `%trunk`, `%grubbery`, `%omart`,
 `%pals`, `%hawk`, `%obelisk`, `%jars`, `%silo`, `%landscape`, from the intended
 distributors. These contents are provider-reported, not independently boot-verified.
-The supplied list includes `%landscape` and does not list `%mcp`; the intended
-composition below retains that distinction for release review.
+The supplied list includes `%landscape` and lacks `%mcp` and `%omachan`. The provider
+is preparing a replacement with `%mcp` and a draft `%omachan`; that will be a
+separate artifact. This draft does not block the explicitly scoped rc.1 prerelease.
 
 CLI equivalents (all require a selected runner; comets/owned ships also require
 their usual network acknowledgment):
@@ -81,17 +81,16 @@ supplied pill; automated composition and build provenance tooling belongs to 0.2
 | `%trunk` | `~ricsul-bilwyt` |
 | `%silo` | `~dister-nocsyx-lassul` |
 
-These 12 desks are required for the first release. This list supersedes the earlier
-draft pill bundle in the architecture plan. `%omachan` is explicitly deferred from
-the initial 0.1.0 pill at the user's direction.
+These 12 desks describe the intended first-release baseline. The draft rc.1 is
+incomplete, as recorded above. This list supersedes the earlier architecture draft.
 
 `%pals` stays on `~tocwex` for now. Moving its publisher to `~paldev` is a future
 explicit release change after that ship's issues are resolved, not an automatic
 fallback or a reason to block the current `%pals` source.
 
-**`%omachan` does not exist yet and does not block 0.1.0.** Its intended publisher
-remains `~dister-dozzod-sarlev`; implementation/publication and later inclusion are
-separate work. It is recorded under `deferred_desks`, not in the initial build set.
+**`%omachan` is being prepared as a draft for the next supplied pill.** Its intended
+publisher remains `~dister-dozzod-sarlev`. It is absent from rc.1 and recorded under
+`deferred_desks` until the replacement is supplied and verified.
 
 The pill supplies a working bundled baseline. New ships should follow the declared
 publishers and receive normal Urbit OTA updates after connecting. Recording the
@@ -105,7 +104,7 @@ with a checksum alongside it. A richer build manifest can follow with the 0.2.0
 builder. Example artifact names:
 
 ```text
-omabit-recommended-apps-0.1.0.pill
+omabit-recommended-apps-0.1.0-rc.1.pill
 SHA256SUMS
 ```
 
@@ -122,8 +121,7 @@ identity or the verification contract.
 
 For comparison, [GitHub release assets](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases#storage-and-bandwidth-quotas)
 must each be under 2 GiB. That is a hosting constraint, independent of Omabit's
-4 GB provisioning allowance. The project's release host/location is not yet fixed
-by this composition plan.
+4 GB provisioning allowance. Rc.1 uses GitHub release assets.
 
 ## Provisioning state
 

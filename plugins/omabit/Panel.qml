@@ -48,7 +48,7 @@ Ui.Panel {
         }
       }
     }
-    tooltipText: "Omabit 0.23 · " + Model.fleet(root.connections).length + " instances"
+    tooltipText: "Omabit 0.1.0-rc.1 · " + Model.fleet(root.connections).length + " instances"
     onPressed: function(code) { if (code === Qt.RightButton) { if (root.service) root.service.refresh() } else root.toggle() }
   }
   Ui.KeyboardPanel {

@@ -1,10 +1,10 @@
-# Omabit unified desktop plugin — version 0.23
+# Omabit unified desktop plugin — 0.1.0-rc.1
 
-Version 0.23 adds a **Boot pill** selector to new comet, owned-key and development
+This release candidate includes a **Boot pill** selector for new comet, owned-key and development
 fake forms: **bare bootstrap** uses Vere's canonical bootstrap.urbit.org pill;
 **Recommended Apps** uploads the release asset configured in `recommendedPillUrl`.
-Until that URL is supplied, Recommended Apps explains the missing configuration
-and cannot register a ship. Bare is independent of the recommendation setting.
+The default URL names the frozen rc.1 draft. An empty setting blocks recommended
+registration; download failures are explicit. Bare is independent of this setting.
 Selection is fixed at registration; initialized piers resume without a pill.
 The automated pill builder is deferred to 0.2.0; 0.1.0 uses a user-provided artifact.
 

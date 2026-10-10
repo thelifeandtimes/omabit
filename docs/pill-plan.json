@@ -2,17 +2,21 @@
   "schema_version": 1,
   "kind": "omabit-pill-composition-plan",
   "target_release": "0.1.0",
-  "status": "artifact-received-awaiting-boot-qualification",
+  "status": "rc1-frozen-awaiting-boot-qualification",
   "construction": {"provider": "user", "automated_builder_release": "0.2.0"},
   "artifact": {
-    "filename": "omabit-recommended-apps-0.1.0.pill",
+    "release": "0.1.0-rc.1",
+    "draft": true,
+    "filename": "omabit-recommended-apps-0.1.0-rc.1.pill",
     "supplied_filename": "omabit-brass.pill",
     "bytes": 57011409,
     "sha256": "51f0be723918ab7feaaf28b3c599f36f0f0fca6e68453f84517ba1659f07d57e",
-    "url": null,
+    "url": "https://github.com/thelifeandtimes/omabit/releases/download/v0.1.0-rc.1/omabit-recommended-apps-0.1.0-rc.1.pill",
+    "publication": "pending",
     "contents_evidence": "reported-by-provider; not independently boot-verified",
     "reported_desks": ["base", "webterm", "groups", "trunk", "grubbery", "omart", "pals", "hawk", "obelisk", "jars", "silo", "landscape"],
-    "composition_note": "The supplied artifact includes landscape and does not list mcp. Resolve the difference from the intended composition before final release."
+    "pending_desks": ["mcp", "omachan"],
+    "composition_note": "Frozen draft for rc.1. The provider is preparing a replacement with mcp and draft omachan; it will be a separate artifact."
   },
   "desks": [
     {"desk": "webterm", "source": "upstream-default", "required": true},
@@ -39,8 +43,8 @@
       "desk": "omachan",
       "publisher": "~dister-dozzod-sarlev",
       "required": false,
-      "status": "not-yet-implemented",
-      "inclusion": "Deferred from the initial 0.1.0 pill; may be added after implementation and publication without blocking 0.1.0."
+      "status": "provider-preparing-draft",
+      "inclusion": "Absent from rc.1; the provider intends to include a draft in the next supplied pill."
     }
   ]
 }

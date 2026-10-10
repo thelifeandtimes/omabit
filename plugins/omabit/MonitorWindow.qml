@@ -61,7 +61,7 @@ FloatingWindow {
           anchors.fill: parent; anchors.leftMargin: Style.space(24); anchors.rightMargin: Style.space(24); spacing: Style.space(18)
           Column { spacing: Style.space(2)
             Label { text: "omabit"; font.pixelSize: Style.space(27); font.bold: true; font.letterSpacing: -1 }
-            Label { objectName: "monitor-version"; text: "0.23 / DEVELOPMENT"; caption: true; secondary: true }
+            Label { objectName: "monitor-version"; text: "0.1.0-rc.1 / PRERELEASE"; caption: true; secondary: true }
           }
           Rectangle { width: 1; height: Style.space(28); color: Design.line }
           Column { Layout.fillWidth: true; spacing: Style.space(3)

@@ -159,6 +159,13 @@ milestone is complete for this development fleet; see [services.md](services.md)
 
 ## What remains before a supported release
 
+**0.1.0-rc.1 preparation:** versioned Linux/AMD64 binary packaging and a configured
+Recommended Apps release URL now consolidate the development checkpoints through
+0.23. The supplied draft pill is frozen by hash for fresh-ship boot/resume
+qualification before prerelease publication. `%mcp` and draft `%omachan` await the
+provider's next artifact. The release's attached qualification record will describe
+the exact tested binaries and observed result; full app/OTA acceptance is separate.
+
 The Tend repository migration is complete, and the new public runner repository is
 <https://github.com/thelifeandtimes/omabit>. Reviewed source history is published
 through the `github` remote; the original self-hosted `origin` is retained. See

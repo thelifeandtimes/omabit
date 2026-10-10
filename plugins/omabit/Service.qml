@@ -669,7 +669,7 @@ Item {
     function maintenance(): void { root.openMonitor(null, null, "maintenance") }
     function setup(): void { root.openMonitor(null, null, "setup") }
     function refresh(): void { root.refresh() }
-    function status(): string { return JSON.stringify({version:"0.23.0",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen}) }
+    function status(): string { return JSON.stringify({version:"0.1.0-rc.1",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen}) }
     function close(): void { monitor.visible = false }
   }
   Process {
