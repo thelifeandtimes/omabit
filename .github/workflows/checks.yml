@@ -28,14 +28,14 @@ jobs:
           go vet ./...
       - name: Stateful transport and runtime race checks
         run: go test -race ./internal/managed ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy
-      - name: Desktop model and installer fixtures
-        run: |
-          node scripts/test-panel-model.js
-          python3 -B scripts/test-panel-install.py
       - name: Build Linux binaries
         run: |
           mkdir -p build
           CGO_ENABLED=0 go build -trimpath -o build/ ./cmd/...
+      - name: Desktop model and installer fixtures
+        run: |
+          node scripts/test-panel-model.js
+          python3 -B scripts/test-panel-install.py
 
 # Mapped Quickshell tests and live runtime qualification require their separately
 # controlled Omarchy/Docker environments; they are not claimed by this CI job.
