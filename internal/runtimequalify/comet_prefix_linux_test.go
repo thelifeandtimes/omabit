@@ -55,9 +55,15 @@ func TestCometPrefixExactDeletionRecoveryAndIdentity(t *testing.T) {
 	var removed []string
 	f.d.remove = func(root *os.Root, name string) error {
 		base := filepath.Join(f.d.home, ".local/share/urbit-runner/qualification", strings.Repeat("a", 32))
-		if !strings.HasPrefix(root.Name(), filepath.Join(base, "data/comet/.urb")+"/") {
-			t.Fatal("unlink outside comet pier", root.Name())
+		leaf := filepath.Base(root.Name())
+		expected := filepath.Join(base, "data/comet/.urb", leaf)
+		if leaf != "log" && leaf != "chk" {
+			if leaf != "0i0" && leaf != "0i100" && leaf != "0i200" {
+				t.Fatal("unexpected deletion root", leaf)
+			}
+			expected = filepath.Join(base, "data/comet/.urb/log", leaf)
 		}
+		requireFixtureRoot(t, root, expected)
 		var stored Result
 		data, err := os.ReadFile(filepath.Join(base, "report.json"))
 		if err != nil || json.Unmarshal(data, &stored) != nil || stored.Comet == nil || !stored.Comet.Uncertain || len(stored.PrefixPrunes) == 0 {

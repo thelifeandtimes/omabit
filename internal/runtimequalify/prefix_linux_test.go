@@ -88,7 +88,9 @@ func TestPrefixPartialFailuresAreQuarantined(t *testing.T) {
 				}
 				err := root.Remove(name)
 				if fault == "changed retained" && calls == 1 {
-					if err := os.WriteFile(filepath.Join(filepath.Dir(root.Name()), "0i300/data.mdb"), []byte("changed during prune"), 0600); err != nil {
+					log := filepath.Join(f.d.home, ".local/share/urbit-runner/qualification", strings.Repeat("a", 32), "data/fake-zod/.urb/log")
+					requireFixtureRoot(t, root, filepath.Join(log, "0i0"))
+					if err := os.WriteFile(filepath.Join(log, "0i300/data.mdb"), []byte("changed during prune"), 0600); err != nil {
 						t.Fatal(err)
 					}
 				}

@@ -39,9 +39,15 @@ func TestManagedCometRepeatedPrefixesAndPinnedResumes(t *testing.T) {
 		if json.Unmarshal(durable, &stored) != nil || stored.PrefixPrune == nil || !stored.PrefixPrune.Uncertain || !stored.MaintenanceUncertain || stored.PruneIntent == nil || !stored.PruneIntent.Confirmed {
 			t.Fatal("unlink preceded durable confirmed intent")
 		}
-		if !strings.HasPrefix(root.Name(), filepath.Join(managedPier(f, state), ".urb/log")) {
-			t.Fatal("unlink escaped comet log", root.Name())
+		leaf := filepath.Base(root.Name())
+		expected := filepath.Join(managedPier(f, state), ".urb/log")
+		if leaf != "log" {
+			if leaf != "0i0" && leaf != "0i100" && leaf != "0i200" {
+				t.Fatal("unexpected deletion root", leaf)
+			}
+			expected = filepath.Join(expected, leaf)
 		}
+		requireFixtureRoot(t, root, expected)
 		removed = append(removed, filepath.Join(filepath.Base(root.Name()), name))
 		return root.Remove(name)
 	}

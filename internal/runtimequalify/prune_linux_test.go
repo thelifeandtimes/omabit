@@ -13,6 +13,23 @@ import (
 	"testing"
 )
 
+// Root.Name is a display name, not a portable absolute path: nested roots in
+// Go 1.25 retain the relative OpenRoot argument. Assert filesystem identity.
+func requireFixtureRoot(t *testing.T, root *os.Root, expected string) {
+	t.Helper()
+	actual, err := root.Stat(".")
+	if err != nil {
+		t.Fatal(err)
+	}
+	want, err := os.Stat(expected)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !os.SameFile(actual, want) {
+		t.Fatalf("operation root %q is not fixture directory %q", root.Name(), expected)
+	}
+}
+
 func fixtureCheckpoint(t *testing.T, dir string) {
 	t.Helper()
 	path := filepath.Join(dir, "data/fake-zod/.urb/chk")
@@ -137,9 +154,11 @@ func TestPruneFailuresPreserveUncertaintyAndStopProgress(t *testing.T) {
 				}
 				err := root.Remove(name)
 				if calls == 1 && (fault == "unexpected file" || fault == "changed retained file") {
-					path := filepath.Join(root.Name(), "unexpected")
+					log := filepath.Join(f.d.home, ".local/share/urbit-runner/qualification", strings.Repeat("a", 32), "data/fake-zod/.urb/log")
+					requireFixtureRoot(t, root, filepath.Join(log, "0i0"))
+					path := filepath.Join(log, "0i0/unexpected")
 					if fault == "changed retained file" {
-						path = filepath.Join(filepath.Dir(root.Name()), "0i100/data.mdb")
+						path = filepath.Join(log, "0i100/data.mdb")
 					}
 					if err := os.WriteFile(path, []byte("injected filesystem change"), 0600); err != nil {
 						t.Fatal(err)
