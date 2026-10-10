@@ -27,8 +27,8 @@ https://github.com/thelifeandtimes/omabit/releases/download/v0.1.0-rc.1/omabit-r
 Set that URL in Omabit's **Recommended Apps pill URL** plugin setting
 (`recommendedPillUrl`). The old `defaultBootPill` value is accepted as a fallback
 source for this explicit choice only; it cannot override bare bootstrap.
-The URL becomes available when the prerelease assets are published. A missing
-asset is an explicit download failure, never a fallback to another pill.
+The URL is published; an unauthenticated download was verified against the frozen
+hash. A missing asset is an explicit download failure, never a fallback to another pill.
 
 ### Supplied artifact
 

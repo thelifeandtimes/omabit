@@ -12,7 +12,7 @@
     "bytes": 57011409,
     "sha256": "51f0be723918ab7feaaf28b3c599f36f0f0fca6e68453f84517ba1659f07d57e",
     "url": "https://github.com/thelifeandtimes/omabit/releases/download/v0.1.0-rc.1/omabit-recommended-apps-0.1.0-rc.1.pill",
-    "publication": "pending",
+    "publication": "published-and-download-verified",
     "contents_evidence": "provider-reported list; fresh comet boot/resume passed; partial agent-install log evidence; full app/OTA qualification incomplete",
     "qualification": "diagnostics/2026-10-10-rc1-pill.json",
     "reported_desks": ["base", "webterm", "groups", "trunk", "grubbery", "omart", "pals", "hawk", "obelisk", "jars", "silo", "landscape"],

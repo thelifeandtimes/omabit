@@ -8,9 +8,11 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Status:** preparing **0.1.0-rc.1**, consolidating development checkpoints through
-0.23 into the first public prerelease. See [binary bundle installation](docs/release-install.md)
-and the [draft pill plan](docs/pill-release.md). The final 0.1.0 release is still pending.
+**Status:** [**0.1.0-rc.1 is published**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.1),
+consolidating development checkpoints through 0.23 into the first public prerelease.
+See [binary bundle installation](docs/release-install.md),
+[qualification and known issues](docs/diagnostics/2026-10-10-rc1-pill.md),
+and the [draft pill plan](docs/pill-release.md). Final 0.1.0 is still pending.
 
 ## Get started
 
