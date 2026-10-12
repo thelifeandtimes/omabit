@@ -103,3 +103,47 @@ func TestPermanentMountIsExclusiveAndDoesNotAdoptDirectories(t *testing.T) {
 		t.Fatal("mounted sibling data")
 	}
 }
+
+// Simulates a reboot that renumbered the backing filesystem's st_dev: the
+// registered pier must still pass Check, while a recreated directory must not.
+func TestCheckSurvivesDeviceRenumberingButNotReplacement(t *testing.T) {
+	home := t.TempDir()
+	if err := Init(home); err != nil {
+		t.Fatal(err)
+	}
+	rel := "livenet/moons/sampel-palnet-moons/dister-dozzod-sampel-palnet/pier"
+	if err := os.MkdirAll(filepath.Join(Root(home), rel, ".urb"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	p, err := Path(home, rel)
+	if err != nil {
+		t.Fatal(err)
+	}
+	identity, err := Identify(p)
+	if err != nil {
+		t.Skip("filesystem lacks birth timestamps:", err)
+	}
+	mount, err := IdentifyMount(filepath.Dir(p))
+	if err != nil {
+		t.Fatal(err)
+	}
+	stored := Location{Path: rel, Identity: identity, MountIdentity: mount}
+	stored.Identity.Device += 7
+	stored.Identity.UrbDevice += 7
+	stored.MountIdentity.Device += 7
+	if _, err := Check(home, stored); err != nil {
+		t.Fatal("device renumbering reported as replacement:", err)
+	}
+	if err := os.Rename(p, p+"-old"); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(p, ".urb"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Rename(p+"-old", filepath.Join(home, "elsewhere")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Check(home, stored); err == nil {
+		t.Fatal("replacement pier directory accepted")
+	}
+}

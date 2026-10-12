@@ -54,6 +54,27 @@ type Identity struct {
 	UrbBirth  string `json:"urb_birth"`
 }
 
+// SameObject reports whether two observations name the same directory object.
+// st_dev is deliberately excluded: btrfs subvolumes report a per-boot anonymous
+// device number, and dm/loop-backed filesystems can also be renumbered, so a
+// device number recorded in one boot is not a durable identity. Inode plus the
+// nanosecond birth timestamp still distinguishes a replaced or inode-reused
+// directory. Records without a birth timestamp keep the strict comparison.
+func (d DirectoryIdentity) SameObject(o DirectoryIdentity) bool {
+	if d.Birth == "" || o.Birth == "" {
+		return d == o
+	}
+	return d.Inode == o.Inode && d.Birth == o.Birth
+}
+
+// SameObject compares the pier and its .urb child; see DirectoryIdentity.SameObject.
+func (i Identity) SameObject(o Identity) bool {
+	if i.Birth == "" || o.Birth == "" || i.UrbBirth == "" || o.UrbBirth == "" {
+		return i == o
+	}
+	return i.Inode == o.Inode && i.Birth == o.Birth && i.UrbInode == o.UrbInode && i.UrbBirth == o.UrbBirth
+}
+
 type Location struct {
 	Path          string            `json:"path"`
 	Identity      Identity          `json:"identity"`

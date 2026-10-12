@@ -1,6 +1,7 @@
 package managed
 
 import (
+	"context"
 	"encoding/json"
 	"strings"
 	"testing"
@@ -73,5 +74,44 @@ func TestDiscoveredEnrollmentAndMovedRelinkBindFilesystemIdentity(t *testing.T) 
 	source.Fingerprint = strings.Repeat("f", 64)
 	if _, err := s.enrollPier("actor", req, source, "replacement"); err == nil {
 		t.Fatal("replacement inode silently adopted")
+	}
+}
+
+type catalogueBackend struct {
+	fakeBackend
+	sources []pierstore.Candidate
+}
+
+func (b *catalogueBackend) PierSources(context.Context) ([]pierstore.Candidate, error) {
+	return append([]pierstore.Candidate(nil), b.sources...), nil
+}
+
+// After a reboot renumbers st_dev, discovery must keep recognising the
+// registered pier instead of reporting a replaced directory.
+func TestCatalogueToleratesDeviceRenumberingAfterReboot(t *testing.T) {
+	s := testStore(t)
+	stored := pierstore.Identity{Device: 30, Inode: 2, UrbDevice: 30, UrbInode: 3, Birth: "10:1", UrbBirth: "10:2"}
+	mount := pierstore.DirectoryIdentity{Device: 30, Inode: 4, Birth: "10:0"}
+	source := pierstore.Candidate{Path: "fakeships/project/zod/pier", Kind: "fake", Fingerprint: pierstore.Fingerprint(stored), Identity: stored, MountIdentity: mount}
+	req := protocol.EnrollPierRequest{ID: "rebooted", Path: source.Path, Ship: "~zod", Fingerprint: source.Fingerprint, HTTPPort: 18080, RequestID: "enroll", ConfirmStopped: true}
+	if _, err := s.enrollPier("actor", req, source, "enroll"); err != nil {
+		t.Fatal(err)
+	}
+	after := source
+	after.Identity.Device, after.Identity.UrbDevice, after.MountIdentity.Device = 31, 31, 31
+	after.Fingerprint = pierstore.Fingerprint(after.Identity)
+	r := &Server{s: s, b: &catalogueBackend{sources: []pierstore.Candidate{after}}}
+	c := r.pierCatalogue(context.Background())
+	if c == nil || c.Error != "" || len(c.Candidates) != 1 {
+		t.Fatal(c)
+	}
+	if got := c.Candidates[0]; got.Problem != "" || got.EnrolledBy != "rebooted" || got.Moved {
+		t.Fatalf("renumbered device misreported: %+v", got)
+	}
+	replaced := after
+	replaced.Identity.Birth = "11:0"
+	r.b = &catalogueBackend{sources: []pierstore.Candidate{replaced}}
+	if got := r.pierCatalogue(context.Background()).Candidates[0]; got.Problem == "" {
+		t.Fatal("replaced directory was not flagged")
 	}
 }

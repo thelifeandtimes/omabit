@@ -69,14 +69,14 @@ func (r *Server) pierCatalogue(ctx context.Context) *pierstore.Catalogue {
 	for i := range sources {
 		for _, v := range all {
 			if s := v.Runtime.Storage; s != nil {
-				if s.Identity.Inode != 0 && s.Identity == sources[i].Identity && sources[i].Fingerprint != "" {
+				if s.Identity.Inode != 0 && s.Identity.SameObject(sources[i].Identity) && sources[i].Fingerprint != "" {
 					sources[i].EnrolledBy = v.Public.ID
-					sources[i].Moved = s.Path != sources[i].Path || s.Uncertain || s.MountIdentity != sources[i].MountIdentity
+					sources[i].Moved = s.Path != sources[i].Path || s.Uncertain || !s.MountIdentity.SameObject(sources[i].MountIdentity)
 					break
 				}
 				if s.Path == sources[i].Path {
 					sources[i].EnrolledBy = v.Public.ID
-					if s.Identity.Inode != 0 && s.Identity != sources[i].Identity {
+					if s.Identity.Inode != 0 && !s.Identity.SameObject(sources[i].Identity) {
 						sources[i].Problem = "A different directory replaced this registered pier. Review it before management can resume."
 					}
 				}
@@ -166,7 +166,7 @@ func (s *store) enrollPier(actor string, req protocol.EnrollPierRequest, source 
 		if err != nil {
 			return protocol.Operation{}, err
 		}
-		if v.Public.ConfigRevision != req.ExpectedRevision || v.Public.ActiveOperationID != "" || v.Public.DesiredState != "stopped" || v.Runtime.Storage == nil || v.Runtime.Storage.Identity != source.Identity || v.Public.Ship != req.Ship {
+		if v.Public.ConfigRevision != req.ExpectedRevision || v.Public.ActiveOperationID != "" || v.Public.DesiredState != "stopped" || v.Runtime.Storage == nil || !v.Runtime.Storage.Identity.SameObject(source.Identity) || v.Public.Ship != req.Ship {
 			return protocol.Operation{}, conflict("relink_conflict", "stop the same registered pier before reconnecting its moved directory")
 		}
 		if v.Public.Mode != source.Kind {
@@ -227,7 +227,7 @@ func (s *store) enrollPier(actor string, req protocol.EnrollPierRequest, source 
 		return protocol.Operation{}, err
 	}
 	for _, other := range all {
-		if other.Public.ID != req.ID && other.Runtime.Storage != nil && other.Runtime.Storage.Identity == source.Identity && source.Identity.Inode != 0 {
+		if other.Public.ID != req.ID && other.Runtime.Storage != nil && other.Runtime.Storage.Identity.SameObject(source.Identity) && source.Identity.Inode != 0 {
 			return protocol.Operation{}, conflict("pier_already_enrolled", "this filesystem pier already belongs to another registration")
 		}
 	}
