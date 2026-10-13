@@ -132,7 +132,7 @@ func CheckMount(home string, location Location) (string, error) {
 		}
 	}
 	i, err := IdentifyMount(p)
-	if err != nil || location.MountIdentity.Inode == 0 || i != location.MountIdentity {
+	if err != nil || location.MountIdentity.Inode == 0 || !i.SameObject(location.MountIdentity) {
 		return "", errors.New("registered mount root is missing or replaced")
 	}
 	entries, err := os.ReadDir(p)
@@ -214,7 +214,7 @@ func Check(home string, location Location) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if location.Identity.Inode == 0 || location.Uncertain || i != location.Identity {
+	if location.Identity.Inode == 0 || location.Uncertain || !i.SameObject(location.Identity) {
 		return "", errors.New("registered pier directory was replaced or needs location review")
 	}
 	return p, nil

@@ -237,7 +237,7 @@ func applyHandoff(ctx context.Context, action string, state ManagedState, persis
 		if _, statErr := os.Lstat(q.pierPath()); errors.Is(statErr, os.ErrNotExist) {
 			identity, e := pierstore.Identify(archive)
 			mount, e2 := pierstore.IdentifyMount(filepath.Dir(archive))
-			if e != nil || e2 != nil || identity != state.Storage.Identity || mount != state.Storage.MountIdentity {
+			if e != nil || e2 != nil || !identity.SameObject(state.Storage.Identity) || !mount.SameObject(state.Storage.MountIdentity) {
 				return finish(errors.New("source archive outcome needs review"))
 			}
 		} else {
