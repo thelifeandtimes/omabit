@@ -13,6 +13,7 @@ Column {
   readonly property var status: service ? service.localSetupStatus : null
   readonly property bool ready: !!status && status.ready
   readonly property bool running: !!service && service.settingUp
+  readonly property bool needsFirstCheck: !status || (!status.can_setup && !!service && !service.setupCheckRequested)
   readonly property int step: ready ? 5 : Model.setupStepIndex(service ? service.localSetupStep : "")
   Card {
     width: parent.width; implicitHeight: intro.implicitHeight + Style.space(32)
@@ -58,7 +59,7 @@ Column {
   }
   RowLayout {
     width: parent.width
-    ActionButton { objectName: "local-setup-primary"; text: root.ready ? "Add a ship →" : root.running ? "Setting up…" : !root.status ? "Check prerequisites" : root.status.host_present ? "Connect this computer" : "Set up this computer"; primary: true; enabled: !!root.service && !root.service.busy && !root.service.checkingSetup && (root.ready || !!root.service.machineUse && (!root.status || root.status.can_setup)); onClicked: root.ready ? root.addShip() : !root.status ? root.service.checkLocalSetup(true) : root.service.setUpLocal() }
+    ActionButton { objectName: "local-setup-primary"; text: root.ready ? "Add a ship →" : root.running ? "Setting up…" : root.needsFirstCheck ? "Check prerequisites" : root.status.host_present ? "Connect this computer" : "Set up this computer"; primary: true; enabled: !!root.service && !root.service.busy && !root.service.checkingSetup && (root.ready || !!root.service.machineUse && (root.needsFirstCheck || root.status.can_setup)); onClicked: root.ready ? root.addShip() : root.needsFirstCheck ? root.service.checkLocalSetup(true) : root.service.setUpLocal() }
     ActionButton { objectName: "local-check-again"; text: "Check again"; visible: !!root.service && root.service.setupCheckRequested && !root.ready; quiet: true; enabled: !!root.service && !root.running && !root.service.checkingSetup; onClicked: root.service.checkLocalSetup(true) }
   }
   Label { width: parent.width; caption: true; secondary: true; text: "First ship startup needs at least 5 GiB available RAM and 8 GiB free disk. Mounted desks are ordinary files owned by you: use |mount, copy/edit files, then |commit. Additional storage locations use your existing filesystem permissions." }

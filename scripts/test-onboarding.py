@@ -66,7 +66,9 @@ ShellRoot {
       if(control(setup,"local-check-again").visible || control(setup,"local-setup-primary").enabled)throw new Error("Unchecked first setup offered recheck or skipped machine choice")
       control(setup,"machine-laptop").clicked()
       if(service.machineUse!=="laptop")throw new Error("Laptop choice not retained")
-      service.checkLocalSetup(true);phase=2
+      service.localSetupStatus=Object.assign({},service.localSetupStatus,{can_setup:false})
+      if(!control(setup,"local-setup-primary").enabled || control(setup,"local-setup-primary").text!=="Check prerequisites")throw new Error("Automatic prerequisite failure left no first-check action")
+      control(setup,"local-setup-primary").clicked();phase=2
     } else if(phase===2 && !service.checkingSetup) {
       if(!control(service.monitorWindow.setupPane,"local-check-again").visible)throw new Error("Completed explicit check cannot be repeated")
       console.log("PASS: fresh welcome, Start Setup, first-check gating and persisted laptop choice")
