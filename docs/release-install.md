@@ -4,6 +4,11 @@ This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
 Go is not required to use this bundle.
 
+For native GitHub installation through Omarchy instead of extracting this archive,
+use `omarchy plugin add https://github.com/thelifeandtimes/omarchy-omabit.git --enable`.
+See [native plugin distribution](native-plugin.md). Published RC.2 archive bytes
+are unchanged; the generated native distribution uses their UI and binary pins.
+
 RC.2 adds storage locations, reviewed pier import, confirmed deletion, stable btrfs
 directory identities, workspace-aware monitor activation and automatic resume after
 an unclean host reboot. This remains a development prerelease.

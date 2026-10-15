@@ -25,20 +25,25 @@ The development installations were subsequently
 
 ## Get started
 
-From a source checkout on a supported Omarchy machine:
+In a terminal inside your Omarchy desktop:
 
 ```bash
-bash scripts/install.sh
+omarchy plugin add https://github.com/thelifeandtimes/omarchy-omabit.git --enable
 ```
+
+This uses Omarchy's native GitHub plugin installer. The generated plugin downloads
+and verifies the pinned prebuilt tools on first use; no Go compiler or local bundle
+directory is required. See [native plugin distribution](docs/native-plugin.md).
 
 Then open **~+ → Setup → Set up this computer**. The guided flow checks prerequisites,
 prepares private desktop access, asks for OS authorization, installs the background
 services and connects your desktop automatically. Choose **Add a ship → New comet**
 when it reports ready.
 
-Prefer a terminal?
+For development from a source checkout:
 
 ```bash
+bash scripts/install.sh
 go build -o ./build/ ./cmd/...
 ./build/omabit --format text setup
 ```

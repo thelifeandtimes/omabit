@@ -1,7 +1,7 @@
 # Fresh RC.2 installation on sourcebox
 
-This walkthrough uses the **downloaded GitHub binary bundle**, with no repository
-checkout, Go compiler or development-path override. Shared OS prerequisites remain
+This walkthrough uses **Omarchy's native GitHub plugin installer**, with no manual
+repository checkout, Go compiler or development-path override. Shared OS prerequisites remain
 installed. The previous app-owned host/desktop state must already be retired; this
 document does not perform a teardown or restore old piers.
 
@@ -10,17 +10,21 @@ document does not perform a teardown or restore old piers.
 In an ordinary terminal **on sourcebox, inside its logged-in Omarchy desktop**:
 
 ```bash
-cd "$HOME/omabit-releases/0.1.0-rc.2/omabit-0.1.0-rc.2-linux-amd64"
-sha256sum --check SHA256SUMS
-./install.sh --enable
+omarchy plugin add https://github.com/thelifeandtimes/omarchy-omabit.git --enable
 ```
 
-Do not use sudo for the plugin installation. This installs the Omabit plugin and
-its bundled `omabit`, `urbit-collector` and `urbit-runner` executables; it does not
-create a runner host or start a ship. **Pause here to inspect the new-user UI.**
+`omarchy plugin install` is an alias for `add`. Do not use sudo. Omarchy performs
+its normal trust confirmation, clone, manifest validation, bar-placement selection
+and enable flow. On first use, the plugin downloads the pinned RC.2 `omabit`,
+`urbit-collector` and `urbit-runner` executables, checks their hashes and caches them
+under `~/.cache/omabit/native-binaries/` (or the XDG cache equivalent).
+Allow a few seconds for the initial download. This does not create a runner host
+or start a ship. **Pause here to inspect the new-user UI.**
 
-If installation succeeded but enabling was not confirmed, use the reported
-`python3 -B scripts/install-panel.py --enable-only` command rather than reinstalling.
+If cloning succeeded but enabling failed, use
+`omarchy plugin enable thelifeandtimes.omabit` after inspecting the error. For a
+binary-download diagnostic, run
+`~/.config/omarchy/plugins/thelifeandtimes.omabit/bin/urbit-collector --help`.
 
 ## Second step: use the normal first-time host setup
 
@@ -32,7 +36,8 @@ Open the Omabit bar icon → **Setup → Set up this computer**. Step through:
 4. OS authorization for the dedicated runner account, engine and services.
 5. Pinned local SSH enrollment and the Ready view.
 
-The terminal equivalent, when explicitly chosen, is `./build/omabit --format text setup`.
+The terminal equivalent, when explicitly chosen, is
+`~/.config/omarchy/plugins/thelifeandtimes.omabit/bin/omabit --format text setup`.
 Do not run both setup entry points concurrently. Record the first error rather
 than removing additional files to retry.
 
@@ -60,5 +65,6 @@ role restrictions/revocation and reboot convergence as described in
 [the next-phase plan](rc2-next-phase.md). Grants are currently administered on the
 host; a second collector does not require a second runner process.
 
-The release's `release.json`, `qualification.json` and outer `SHA256SUMS` accompany
-the extracted bundle in `$HOME/omabit-releases/0.1.0-rc.2/`.
+The previously staged binary bundle can remain unused. This native-install test
+does not depend on it. `DISTRIBUTION.json` in the cloned plugin records its frozen
+release and generator provenance; see [native distribution](native-plugin.md).

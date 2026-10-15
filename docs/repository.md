@@ -46,6 +46,13 @@ separate work; it is not implemented by this repository cutover.
 
 ## Source publication versus release assets
 
+The native Omarchy installation repository is
+<https://github.com/thelifeandtimes/omarchy-omabit>. It is generated from a frozen
+release by `scripts/package-plugin.py`, with a root manifest and prebuilt-tool
+bootstrap. Omabit remains the authoritative source; shared QML is extracted from
+the verified archive rather than hand-maintained in both repositories. See
+[native distribution](native-plugin.md) for generation and install behavior.
+
 Repository commits contain source, tests, deployment templates and reviewed
 qualification records. Pill bytes and generated packages are release assets,
 excluded from source commits. The provided pill's metadata and reported contents

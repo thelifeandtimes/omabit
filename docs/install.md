@@ -14,6 +14,16 @@ See also the [remote trial plan](remote-runner-acceptance.md).
 
 ## 1. Install the desktop component
 
+For the normal GitHub installation in an Omarchy desktop:
+
+```bash
+omarchy plugin add https://github.com/thelifeandtimes/omarchy-omabit.git --enable
+```
+
+The generated plugin prepares checksum-pinned release binaries in the user's cache
+on first use. It requires no Go build and performs no privileged host setup until
+the user selects it. See [native plugin distribution](native-plugin.md).
+
 From the repository checkout, as your ordinary desktop user:
 
 ```bash

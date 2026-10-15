@@ -36,6 +36,7 @@ jobs:
         run: |
           node scripts/test-panel-model.js
           python3 -B scripts/test-panel-install.py
+          python3 -B scripts/test-native-plugin.py
 
 # Mapped Quickshell tests and live runtime qualification require their separately
 # controlled Omarchy/Docker environments; they are not claimed by this CI job.
