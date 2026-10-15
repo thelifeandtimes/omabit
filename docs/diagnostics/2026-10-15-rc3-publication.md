@@ -1,7 +1,7 @@
 # RC.3 publication and fresh-install handoff
 
 Published [v0.1.0-rc.3](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.3)
-on October15 at16:29UTC as a Linux/AMD64 prerelease, not latest. Build/tag source:
+on October 15 at 16:29 UTC as a Linux/AMD64 prerelease, not latest. Build/tag source:
 `1b6b79193c6ac58f378ed5c6c689fe9d89045257`, Go1.25.0, schema16, owner-user execution,
 default `/srv/urbit/piers/`. RC.1 and RC.2 published bytes are unchanged.
 
@@ -25,6 +25,19 @@ isolated desktop install/replacement and modified-file refusal.
 
 Native pins advance separately to these published executables, avoiding a
 self-referential build commit.
+
+## Canonical native installation verification
+
+At 16:32 UTC the real `omarchy plugin install` command cloned GitHub commit
+`39379661db930aab8feea043981c153050f91141` into an isolated HOME. The install/enable
+IPC used a test double, leaving the real desktop untouched. Concurrent first-use
+launchers downloaded and verified all three published RC.3 binaries. The helper
+reported `execution_model: owner-user` and `/srv/urbit/piers`; the isolated collector
+remained unenrolled. Verified cache reuse worked with a deliberately unavailable
+HTTPS proxy. The checkout stayed clean and native Git update reported up to date.
+No host setup was invoked. Receipt: `/tmp/opencode/rc3-native-install/result.json`.
+The [native-pin commit's CI](https://github.com/thelifeandtimes/omabit/actions/runs/38769662373)
+also passed.
 
 ## Exact-binary live acceptance
 
@@ -62,3 +75,9 @@ Sourceport retains its owner qualification installation with both test piers sto
 Temporary SSH grants were restored to the exact original file. Prior retirement
 copies remain preserved; the real user's login/home/groups and preexisting linger
 setting must not be removed as application cleanup.
+
+Final local verification found exactly the two stopped qualification piers, no
+active operations or running owner-engine containers. Temporary test SSH keys were
+removed after checking grant restoration. Login identity/groups, preexisting
+`Linger=yes`, and unrelated system-Docker PID matched the initial baseline. Private
+receipt: `build/rc3-qualification/final-state.json`.
