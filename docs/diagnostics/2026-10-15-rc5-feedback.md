@@ -95,3 +95,13 @@ backend, while native UI/tool pins advance to RC.6. RC.5 assets were preserved;
 the corrected RC.6 archive and tools were published separately and downloaded for
 verification. Source CI:
 <https://github.com/thelifeandtimes/omabit/actions/runs/38796672732>.
+
+Final native pin synchronization used checkout
+`0b64258de69b547b33de1237d583a43acb9dbefa`, followed by another unlocked cold shell
+reload. The running UI reported RC.6 and an effective supplied pill default; all
+three cached RC.6 executables matched their published hashes/sizes. Both comets
+remained running/healthy with the same container IDs and service processes.
+Final receipt: `/tmp/omabit-rc5-deployment/ui-final.json`, copied with the host and
+default-fix receipts into local `build/rc5-qualification/`. Native-pin CI passed:
+<https://github.com/thelifeandtimes/omabit/actions/runs/38797746451>.
+The temporary administrator SSH agent was closed after verification.
