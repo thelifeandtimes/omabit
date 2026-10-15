@@ -2,7 +2,9 @@
 
 ## Where we are
 
-**[RC.5 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.5), with matching native binary pins.**
+**[RC.6 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.6), with matching native binary pins.**
+RC.6 fixes the effective Recommended Apps default found during RC.5 live deployment.
+The running sourcebox UI confirms that the supplied S3 default is active.
 The latest feedback adds software/source explanations, stable inline port/log
 progress, public comet identities, HTTP fleet labels and a Coming Soon application
 connections stub. Recommended Apps now uses the supplied S3 pill; its frozen copy
@@ -70,12 +72,12 @@ order, not percentage of total effort.
 | Runtime foundation | Owner-user rootless Docker, default/custom-root fake/comet desk editing and lifecycle accepted locally; broader production qualification remains |
 | Persistent runner | Durable SQLite registrations, operations, attribution, reconciliation, resource admission, and development lifecycle accepted |
 | Collector and access | Named identity-pinned connections, SSH grants/revocation, inventory isolation, origin-bound Eyre sessions and subscriptions accepted in exercised development gates |
-| Omabit UI | Published RC.5 native plugin: refined setup, stable runtime/port feedback, public comet names and HTTP fleet actions; sourcebox user feedback continues |
+| Omabit UI | Published RC.6 native plugin: refined setup, stable runtime/port feedback, public comet names, HTTP fleet actions and verified effective pill default; sourcebox user feedback continues |
 | Maintenance and retention | Official-runtime fake/comet pack/meld/roll, inventory/previews, prefix pruning and UTC schedules accepted in exercised live gates; interruption/recovery hardening remains; loom-internal telemetry deferred |
 | Peer monitoring | Planned; current single-runner health/incident basics do not yet provide the phase-7 multi-host peer system |
 | Personal operator gateway | Planned |
 | Social utilities / Omarchy gossip | Planned; architecture and delivery/tag policy recorded |
-| Agents and release distribution | RC.5 assets and supplied pill published; production upgrades, full application/OTA qualification and agent/MCP distribution remain |
+| Agents and release distribution | RC.6 assets and supplied pill published; production upgrades, full application/OTA qualification and agent/MCP distribution remain |
 
 ## Current milestone
 

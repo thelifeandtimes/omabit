@@ -66,3 +66,32 @@ Private evidence: `build/rc5-input/input.json`,
 Sourcebox's two user-created comets were running healthy at the pre-rollout
 inspection, with no active operations. Deployment verification is recorded after
 installing the frozen runner and cold-reloading the native plugin.
+
+## Live deployment and RC.6 follow-up
+
+The published RC.5 runner was installed on sourcebox with the owner installer.
+Both running ship containers, identities/configurations and both engine processes
+were preserved. All 32 observed Urbit processes retained their PIDs/start ticks/
+command hashes; account, subordinate IDs, lingering and management access were
+preserved. Installed runner SHA-256:
+`a0e3ea2fe5c0e5b67b1659429a43c5981e6fc400eb0d8c6ff64a34aad07f449e`.
+Private receipt: `/tmp/omabit-rc5-deployment/host-update.json` on sourcebox.
+
+The cold-reloaded RC.5 UI exposed a real integration issue: its raw inline settings
+did not contain the manifest's default pill URL. The deployment gate correctly
+refused `recommended_pill_default:false`. Omarchy's `BarModel.entrySettings()`
+copies explicit entry keys, excluding `id`; the service must resolve defaults.
+
+[RC.6](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.6), source
+`2786969d308da9a5b4c948bfc93e3892449657d8`, fixes the service/selector default resolution.
+Omitted, custom, legacy and explicitly empty values plus independent bare bootstrap
+passed model/mapped tests. A real sourcebox cold reload reported **RC.6** and
+**`recommended_pill_default:true`**, with both comets healthy and containers/services
+preserved. Receipt: `/tmp/omabit-rc5-deployment/ui-default-fix.json`.
+
+The Go/backend/runtime source tree is identical between the RC.5 and RC.6 build
+commits. Sourcebox retains the verified RC.5 host executable implementing the same
+backend, while native UI/tool pins advance to RC.6. RC.5 assets were preserved;
+the corrected RC.6 archive and tools were published separately and downloaded for
+verification. Source CI:
+<https://github.com/thelifeandtimes/omabit/actions/runs/38796672732>.
