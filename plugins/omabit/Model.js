@@ -473,6 +473,16 @@ function runtimeNarration(lines) {
   })
   return out.slice(-4).join("\n")
 }
+// Early display only: the runner still verifies its authoritative identity via
+// the pinned runtime's identity endpoint before declaring boot healthy.
+function reportedCometName(lines) {
+  var name=""
+  ;(lines || []).forEach(function(line) {
+    var match=line.match(/\bfound comet:?\s+(~[a-z]{6}(?:-[a-z]{6}){3}--[a-z]{6}(?:-[a-z]{6}){3})(?=$|[^a-z-])/)
+    if(match)name=match[1]
+  })
+  return name
+}
 function validateRuntimeLogs(v,runner,instance,revision) {
   if (!v || v.runner_id!==runner || v.instance_id!==instance || v.config_revision!==revision || !Array.isArray(v.lines) || v.lines.length>200 || !isFinite(Date.parse(v.observed_at)) || ["docker","retained","none"].indexOf(v.source)<0 || typeof v.truncated!=="boolean") throw new Error("Log response does not match the selected ship.")
   var size=0

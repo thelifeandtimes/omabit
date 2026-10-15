@@ -47,6 +47,10 @@ assert.equal(model.runtimeStage("waiting-for-identity"),"Booting · checking ide
 assert.match(model.runtimeDetail({runtime_status:{snapshot_minutes:2,default_snapshot_minutes:60}}),/2 minutes.*New starts use 60 minutes/);
 assert.match(model.runtimeDetail({runtime_status:{snapshot_minutes:60,default_snapshot_minutes:60}}),/snapshot interval: 60 minutes/);
 assert.equal(model.runtimeNarration(["2026-10-02T15:00:00Z kiln: downloading","2026-10-02T15:00:01Z kiln: done"," /sys/trace","http: fail 504"]),"kiln: done\nhttp: fail 504");
+const reportedComet="~doznec-salbud-salwex-sogref--tasweb-navfun-batwet-sigfet";
+assert.equal(model.reportedCometName(["2026-10-15T18:00:00Z found comet: "+reportedComet]),reportedComet);
+assert.equal(model.reportedCometName(["found comet: ~lidlut-tabwed-pillex-ridrup"]),"");
+assert.equal(model.reportedCometName(["found comet: "+reportedComet+"-extra"]),"");
 const logReply={runner_id:"runner-log",instance_id:"moon",config_revision:1,source:"docker",observed_at:new Date().toISOString(),lines:["boot: fixture"],truncated:false};
 assert.equal(model.validateRuntimeLogs(logReply,"runner-log","moon",1),logReply);
 assert.throws(()=>model.validateRuntimeLogs(logReply,"replacement","moon",1));

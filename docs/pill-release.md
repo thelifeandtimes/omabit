@@ -7,7 +7,7 @@ the Recommended Apps pill. New-ship forms expose exactly two choices:
 
 - **bare bootstrap**: no `-B`/`-u` override; Vere selects its normal
   bootstrap.urbit.org pill.
-- **Recommended Apps**: use the configured direct HTTPS release-asset URL. Omabit
+- **Recommended Apps**: use the configured direct HTTPS URL. Omabit
   downloads, stages and verifies the artifact, then supplies `-B` on first boot.
 
 Bare is the initial selection. Choosing Recommended Apps without a configured URL
@@ -15,22 +15,46 @@ blocks registration with a clear message; it never falls back to another pill.
 These choices apply to new comets, owned-key ships and development fakes. Existing
 piers and subsequent runtime starts use initialized resume, not pill provisioning.
 
-### Artifact handoff
+### Current supplied pill — RC.5
 
-The frozen rc.1 artifact is **`omabit-recommended-apps-0.1.0-rc.1.pill`**, attached
-to `v0.1.0-rc.1`. The candidate configures this **direct asset download URL**:
+The default Recommended Apps URL is:
+
+```text
+https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill
+```
+
+The October 15 download was **59,351,751 bytes**, SHA-256
+`85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62`, with S3
+ETag `"f6be01d6c61667d844b65ae00d7fe92e-4"` and Last-Modified 18:04:58 UTC.
+Conditional download pinned that object revision during release preparation.
+RC.5 attaches the frozen copy as `omabit-recommended-apps-0.1.0-rc.5.pill` while
+using the requested provider URL as the UI default. Later changes at that URL do
+not change the frozen release artifact; registration hashes and verifies the
+actual selected bytes each time.
+
+This pill passed a disposable fake boot, healthy identity/HTTP check and clean
+stop. Its detailed application inventory and OTA behavior have not been asserted.
+The prior draft's missing-desk claims below apply to that historical artifact.
+The new smoke log includes `%mcp-server` installation, Grubbery's report that
+23 files under `/code` did not compile, and HTTP504 retries. These are log
+observations, rather than a complete application acceptance result.
+
+### Historical artifact handoff — RC.1 through RC.4
+
+The frozen rc.1 artifact was **`omabit-recommended-apps-0.1.0-rc.1.pill`**, attached
+to `v0.1.0-rc.1`. That candidate configured this **direct asset download URL**:
 
 ```text
 https://github.com/thelifeandtimes/omabit/releases/download/v0.1.0-rc.1/omabit-recommended-apps-0.1.0-rc.1.pill
 ```
 
-Set that URL in Omabit's **Recommended Apps pill URL** plugin setting
+Override the source through Omabit's **Recommended Apps pill URL** plugin setting
 (`recommendedPillUrl`). The old `defaultBootPill` value is accepted as a fallback
 source for this explicit choice only; it cannot override bare bootstrap.
 The URL is published; an unauthenticated download was verified against the frozen
 hash. A missing asset is an explicit download failure, never a fallback to another pill.
 
-### Supplied artifact
+### Historical draft artifact
 
 The user supplied `omabit-brass.pill`, **57,011,409 bytes** (about 54.4 MiB), with
 SHA-256 `51f0be723918ab7feaaf28b3c599f36f0f0fca6e68453f84517ba1659f07d57e`.

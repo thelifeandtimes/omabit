@@ -22,6 +22,9 @@ Item {
   property bool setupCheckRequested: false
   property var portSuggestion: null
   property var portTarget: null
+  property string portError: ""
+  readonly property bool checkingPort: currentAction === "suggest-port"
+  readonly property bool actionProgressVisible: settingUp || currentAction !== "" && !checkingPort
   property var pendingFirstBoot: null
   property var bootTarget: null
   property string registrationOutput: ""
@@ -136,9 +139,7 @@ Item {
     refreshing = true
     if (feed.running) feed.running = false
     else Qt.callLater(startFeed)
-    loadShips()
     loadRegistrations()
-    loadTheme()
   }
 
   function loadRegistrations() {
@@ -400,9 +401,10 @@ Item {
     return submit(args,kind === "comet" ? "register-comet" : "register")
   }
   function suggestPort(connection, token) {
+    if (busy) return false
+    portSuggestion=null;portError="";portTarget={runner:connection ? connection.runner_id : "",connection:connection ? connection.name : "",token:token}
     var c=storageConnection(connection,"host-port-suggestion")
-    if (!c) {lastError="Update and connect the runner to check its host ports.";return false}
-    portSuggestion=null;portTarget={runner:c.runner_id,connection:c.name,token:token}
+    if (!c) {portError="Update and connect the runner to check its host ports.";return false}
     return submit(Model.selection(c).concat(["suggest-port"]),"suggest-port")
   }
   function dispatchFirstBoot() {
@@ -535,7 +537,7 @@ Item {
       try {
         var result = JSON.parse(output)
         if (kind==="suggest-port") {
-          var pt=portTarget;portTarget=null
+          var pt=portTarget
           if (!pt || result.runner_id!==pt.runner || !Number.isInteger(result.http_port) || result.http_port<1024 || result.http_port>65535 || result.container_port!==8080) throw new Error("Invalid port suggestion")
           portSuggestion=Object.assign({},pt,{port:result.http_port})
         }
@@ -624,6 +626,7 @@ Item {
       reconcileInspection()
     }
     output = ""; errors = ""
+    if (kind==="suggest-port") {portError=lastError;lastError="";lastResult=""}
     if (kind === "epoch-preview" && lastError) clearEpochPreview()
     if (kind === "import-sources" && lastError) { importCatalogue = null; pendingImportConnection = null }
     if (kind.indexOf("ship-") === 0) Qt.callLater(loadShips)
@@ -634,8 +637,6 @@ Item {
   Component.onCompleted: { Qt.callLater(refresh); Qt.callLater(checkLocalSetup) }
   Component.onDestruction: pendingInput = ""
   Timer { interval: 1000; repeat: true; running: true; onTriggered: root.now = Date.now() }
-  Timer { interval: 30000; repeat: true; running: true; onTriggered: root.syncThemes() }
-  Timer { interval: 1000; running: true; onTriggered: root.syncThemes() }
   Timer {
     id: timeout
     interval: 25000
@@ -780,7 +781,7 @@ Item {
     function maintenance(): void { root.openMonitor(null, null, "maintenance") }
     function setup(): void { root.openMonitor(null, null, "setup") }
     function refresh(): void { root.refresh() }
-    function status(): string { return JSON.stringify({version:"0.1.0-rc.4",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen}) }
+    function status(): string { return JSON.stringify({version:"0.1.0-rc.5",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.settings.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
     function close(): void { monitor.visible = false }
   }
   Process {

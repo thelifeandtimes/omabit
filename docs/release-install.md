@@ -1,4 +1,4 @@
-# Omabit 0.1.0-rc.4 binary bundle
+# Omabit 0.1.0-rc.5 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
@@ -9,16 +9,15 @@ use `omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enab
 Native installation uses the shared QML and pinned released tools. Published
 RC.1/RC.2 archives remain unchanged.
 
-RC.4 retains management and the separate rootless Docker engine as the existing pier
+RC.5 retains management and the separate rootless Docker engine as the existing pier
 owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
 user-owned files. Storage/import/deletion and bounded reboot resume continue.
 This remains a development prerelease.
 
-RC.4 improves first-run onboarding, asks whether the computer is always on, checks
-available HTTP ports on the selected host, and boots new ships immediately after
-confirmed registration. Default destinations are generated; only the Custom path
-choice exposes a pier-path editor. Monitor opening/focusing is corrected, and ship
-browser/+code actions wait for a healthy verified runtime.
+RC.5 explains installed binaries and source builds, keeps log/port progress inline
+without moving controls, preserves public comet names in runtime output, displays
+HTTP ports in the fleet and marks Application Connections as Coming Soon. Confirmed
+first boot and healthy-only browser/+code access continue from RC.4.
 
 ## Verify and install the desktop
 
@@ -76,23 +75,23 @@ The install receipt supplies the stable runner ID and management SSH host key;
 verify/pin these when enrolling the host in the collector. Management SSH is a
 restricted RPC endpoint, not a general shell or SFTP service.
 
-## Draft Recommended Apps pill
+## Recommended Apps pill
 
 New-ship forms offer **bare bootstrap** and **Recommended Apps**. Bare leaves
-bootstrap selection to Vere. Recommended Apps downloads the versioned pill asset
-configured by this candidate; an operator may override that URL in plugin settings.
+bootstrap selection to Vere. Recommended Apps now defaults to the supplied URL:
+
+`https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill`
+
+An operator may override that URL in plugin settings.
 The selected bytes are hashed/uploaded before registration and used on first Start.
 Initialized piers resume without reapplying a pill.
 
-The RC.3 pill deliberately reuses the frozen rc.1 draft bytes, supplied originally
-as `omabit-brass.pill`, 57,011,409 bytes,
-SHA-256 `51f0be723918ab7feaaf28b3c599f36f0f0fca6e68453f84517ba1659f07d57e`.
-Its provider-reported desks are base, webterm, groups, trunk, grubbery, omart, pals,
-hawk, obelisk, jars, silo and landscape. **MCP and Omachan await the replacement
-pill.** The release notes and attached qualification report state what was actually
-boot-tested; this candidate does not claim complete application/OTA qualification.
-The earlier pill qualification found Grubbery compilation errors and Azimuth HTTP
-504 snapshot failures. Start clean-install lifecycle checks with bare bootstrap.
+The RC.5 release also attaches a frozen copy of the supplied bytes: **59,351,751 bytes**,
+SHA-256 `85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62`.
+It passed a disposable fake first boot, healthy HTTP/identity checks and clean stop.
+Application inventory and OTA behavior are separate from this runtime smoke gate.
+The configured provider URL can change later; each actual registration still binds
+the downloaded content hash/size. Release assets preserve the version tested here.
 
 Pill uploads permit 4 GB; stopped-pier moves permit 100 GB of logical contents.
 There is no fixed registration-count cap. Resource admission, content verification

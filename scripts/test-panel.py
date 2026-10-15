@@ -62,6 +62,7 @@ elif "inventory" in sys.argv:
         print(json.dumps({"name":"fixture","runner_id":"runner-fixture","mode":"development-managed","access_role":"operator","features":available_features,"status":"available","checked_at":now,"snapshot":snapshot}),flush=True)
         time.sleep(.2)
 elif "suggest-port" in sys.argv:
+    time.sleep(.6)
     print(json.dumps({"runner_id":"runner-fixture","http_port":18123,"container_port":8080,"observed_at":stamp}))
 elif "storage-root-add" in sys.argv:
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
@@ -88,10 +89,13 @@ elif "delete-pier" in sys.argv:
     (directory/"deleted-alpha").touch()
     print(json.dumps({"id":"op-delete-pier","kind":"delete-pier","instance_id":"alpha","request_id":sys.argv[sys.argv.index("--request-id")+1],"status":"queued"}))
 elif "logs" in sys.argv:
+    time.sleep(.6)
     name=sys.argv[sys.argv.index("logs")+1]
     revision=int(sys.argv[sys.argv.index("--revision")+1])
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
-    print(json.dumps({"runner_id":"runner-fixture","instance_id":name,"config_revision":revision,"source":"docker","observed_at":stamp,"container_id":"c"*64,"kind":"comet-boot","lines":["2026-10-02T15:00:00Z boot: "+name,"2026-10-02T15:00:01Z http: fail 504","<plain-text-fixture>"],"truncated":False}))
+    lines=["2026-10-02T15:00:00Z boot: "+name,"2026-10-02T15:00:01Z http: fail 504","<plain-text-fixture>"]
+    if name=="comet-fixture": lines.insert(0,"found comet: ~doznec-salbud-salwex-sogref--tasweb-navfun-batwet-sigfet")
+    print(json.dumps({"runner_id":"runner-fixture","instance_id":name,"config_revision":revision,"source":"docker","observed_at":stamp,"container_id":"c"*64,"kind":"comet-boot","lines":lines,"truncated":False}))
 elif "move-host" in sys.argv:
     assert sys.argv[sys.argv.index("move-host")+1]=="alpha"
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
@@ -390,12 +394,11 @@ ShellRoot {
         if (service.epochPreview || maintenance.retentionTarget) throw new Error("submitted review retained")
         phase = 8
       } else if (phase === 8 && !service.busy && service.lastResult.indexOf("epoch-prune:") === 0) {
-        if (!service.ships.length) return
-        service.shipAction(service.ships[0], "ship-login", "fixture-only-secret")
+        service.monitorWindow.page="setup";service.monitorWindow.setupPane.mode="apps"
         phase = 9
-      } else if (phase === 9 && service.shipStatus["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"] && service.shipStatus["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"].status === "authenticated") {
-        if (service.pendingInput !== "") throw new Error("secret retained after handoff")
-        console.log("PASS: real QML maintenance confirmation, immutable pruning review, error/request retention, and secret stdin handoff")
+      } else if (phase === 9) {
+        if (!control(service.monitorWindow.setupPane,"applications-coming-soon").visible || control(service.monitorWindow.setupPane,"shipLoginCode")) throw new Error("Application Connections is not a Coming Soon stub")
+        console.log("PASS: real QML maintenance confirmation, immutable pruning review, error/request retention, and Coming Soon application stub")
         if (!service.loadImportSources(service.connections[0])) throw new Error("import catalogue request failed")
         phase = 20
       } else if (phase === 20 && service.importCatalogue && !service.busy) {
@@ -525,7 +528,8 @@ ShellRoot {
         } else if (phase === 14) {
           var runtime=control(service.monitorWindow,"runtime-pane")
           if (!runtime.logs) return
-          if (runtime.logs.instance_id!=="comet-fixture" || control(runtime,"runtime-log-text").text.indexOf("boot: alpha")>=0) throw new Error("log tail crossed a ship selection")
+           if (runtime.logs.instance_id!=="comet-fixture" || control(runtime,"runtime-log-text").text.indexOf("boot: alpha")>=0) throw new Error("log tail crossed a ship selection")
+           if (runtime.reportedComet!=="~doznec-salbud-salwex-sogref--tasweb-navfun-batwet-sigfet") throw new Error("Public comet identity was not extracted from Vere output")
          var title=control(service.monitorWindow,"monitor-ship-name")
          if (title.paintedWidth>title.width+1 || title.text !== service.connections[0].snapshot.instances[1].ship) throw new Error("comet title overflow")
          if (capture("comet-overview")) return
@@ -815,6 +819,7 @@ ShellRoot {
         assert len({c[c.index("--request-id") + 1] for c in mutations}) == expected_mutations
         assert len([c for c in calls if "routine-set" in c]) == 3
         assert all("fixture-only-secret" not in c for c in calls)
+        assert not any(any(a in c for a in ("ships","ship-login","theme-sync")) for c in calls), "Coming Soon UI started application-session work"
         print("PASS: fixture CLI audit confirms bound maintenance and registration, local duplicate refusal, no automatic retry, and no secret in argv")
 
 

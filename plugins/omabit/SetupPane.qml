@@ -44,7 +44,7 @@ Column {
   RowLayout {
     width: parent.width; visible: root.mode !== "home"
     ActionButton { compact: true; quiet: true; text: ["runner","edit","connection"].indexOf(root.mode)>=0 ? "← Runners" : "← Setup"; onClicked: root.mode = ["runner","edit","connection"].indexOf(root.mode)>=0 ? "manage" : "home" }
-    Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; secondary: true; caption: true; text: "OMABIT 0.1.0-rc.4 · SETUP" }
+    Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; secondary: true; caption: true; text: "OMABIT 0.1.0-rc.5 · SETUP" }
   }
   Column {
     width: parent.width; spacing: Style.space(8); visible: root.mode === "home"
@@ -66,7 +66,7 @@ Column {
       model: [
         {key:"storage",title:"▣  Import a pier & storage locations",detail:"Move an existing pier into management; choose storage or delete stopped piers"},
         {key:"manage", title:"↔  Manage runners", detail:"Add and edit the runner connections enrolled in this collector"},
-        {key:"apps", title:"◇  Application connections", detail:"Sign-in, sessions and desktop theme sync"}]
+        {key:"apps", title:"◇  Application Connections", detail:"Coming Soon"}]
       Card {
         required property var modelData
         objectName: "setup-card-"+modelData.key

@@ -40,6 +40,8 @@ ShellRoot {
   id: test
   property int phase: 0
   property int settle: 0
+  property var logGeometry: null
+  property real portFormHeight: 0
   Plugin.Service { id: service; settings: ({collectorPath:HELPER,omabitPath:HELPER,notifications:false}) }
   Plugin.Panel { id: panel; service: service; settings: service.settings; manageIpc:false; bar:null }
   function control(object,name,visited) {
@@ -55,7 +57,7 @@ ShellRoot {
     return null
   }
   Process { id: enroll; command:[HELPER,"fixture-enroll"]; onExited:service.refresh() }
-  Timer { interval:250;repeat:true;running:true;onTriggered: {
+  Timer { interval:100;repeat:true;running:true;onTriggered: {
     if (phase===0 && service.firstRun && service.localSetupStatus) {
       if(service.feedError || service.observing || service.machineUse!=="" || service.setupCheckRequested)throw new Error("Fresh collector is not an empty welcome state")
       if(control(panel,"open-monitor").text!=="Start Setup →" || control(panel,"fleet-welcome").text.indexOf('An "urbit ship"')!==0)throw new Error("Missing requested welcome/CTA")
@@ -63,6 +65,7 @@ ShellRoot {
       service.openSetup("local");phase=1
     } else if(phase===1) {
       var setup=service.monitorWindow.setupPane
+      if(control(setup,"setup-binaries").text.indexOf("urbit-collector")<0 || !control(setup,"setup-source") || !control(setup,"setup-build-guide"))throw new Error("Software/source details missing")
       if(control(setup,"local-check-again").visible || control(setup,"local-setup-primary").enabled)throw new Error("Unchecked first setup offered recheck or skipped machine choice")
       control(setup,"machine-laptop").clicked()
       if(service.machineUse!=="laptop")throw new Error("Laptop choice not retained")
@@ -81,15 +84,38 @@ ShellRoot {
       control(panel,"fleet-monitor-alpha").clicked();phase=5
     } else if(phase===5) {
       if(service.monitorWindow.selectedKey!=="runner-fixture/alpha" || service.monitorWindow.page!=="overview")throw new Error("Ship chevron lost selection")
+      if(control(panel,"fleet-http-port-alpha").text!=="HTTP\\n18081" || control(panel,"fleet-open-ship-alpha").text!=="Open →")throw new Error("Fleet HTTP presentation incorrect")
       var rows=JSON.parse(JSON.stringify(service.connections));rows[0].snapshot.instances[0].health="starting";service.connections=rows
       if(control(panel,"fleet-open-ship-alpha").enabled || control(panel,"fleet-copy-code-alpha").enabled || control(service.monitorWindow,"monitor-open-ship").enabled)throw new Error("Starting ship exposed browser/code actions")
       console.log("PASS: laptop remote setup, ship-specific monitor navigation, and health-gated access")
+      phase=50
+    } else if(phase===50) {
+      var runtime=control(service.monitorWindow,"runtime-pane"),button=control(runtime,"runtime-logs-refresh")
+      runtime.following=false
+      if(runtime.reading || !runtime.logs)return
+      logGeometry={width:button.width,height:button.height,row:button.parent.height}
+      button.clicked();button.clicked();phase=51
+    } else if(phase===51) {
+      var runtime=control(service.monitorWindow,"runtime-pane"),button=control(runtime,"runtime-logs-refresh")
+      if(button.text!=="Refresh logs" || !button.enabled || button.width!==logGeometry.width || button.height!==logGeometry.height || button.parent.height!==logGeometry.row)throw new Error("Log polling changed refresh control geometry/state")
+      if(runtime.reading)return
+      console.log("PASS: log refresh retains its label, enabled state and row geometry during a slow request")
       service.openSetup("ship");service.monitorWindow.setupPane.shipKind="comet";phase=6
     } else if(phase===6 && !service.busy) {
       var form=control(service.monitorWindow.setupPane,"registration-form")
       if(control(form,"registration-name").text!=="" || control(form,"registration-name").placeholderText!=="comet-1" || control(form,"registration-pier").visible)throw new Error("Comet name/path defaults incorrect")
       control(form,"registration-name").text="my-required-name"
-      control(form,"suggest-host-port").clicked();phase=7
+      phase=61
+    } else if(phase===61 && !service.busy) {
+      var form=control(service.monitorWindow.setupPane,"registration-form")
+      portFormHeight=form.implicitHeight
+      control(form,"suggest-host-port").clicked();phase=62
+    } else if(phase===62) {
+      var form=control(service.monitorWindow.setupPane,"registration-form")
+      if(control(service.monitorWindow,"monitor-action-progress").visible || control(panel,"fleet-action-progress").visible || form.implicitHeight!==portFormHeight)throw new Error("Port lookup moved the pane or showed global progress")
+      if(service.checkingPort && control(form,"port-check-progress").text!=="Checking host ports…")throw new Error("Missing inline port progress")
+      if(service.busy)return
+      phase=7
     } else if(phase===7 && !service.busy) {
       var form=control(service.monitorWindow.setupPane,"registration-form")
       if(control(form,"registration-port").text!=="18123" || control(form,"registration-name").text!=="my-required-name")throw new Error("Host suggestion altered name or ignored host reply")
@@ -125,7 +151,7 @@ ShellRoot {
     env = dict(os.environ, WAYLAND_DISPLAY=display, XDG_RUNTIME_DIR=str(runtime), HYPRLAND_INSTANCE_SIGNATURE="f", XDG_STATE_HOME=str(directory / "state"), OMABIT_FIXTURE_TIME=datetime.datetime.now(datetime.timezone.utc).isoformat())
     result = subprocess.run(["qs", "--no-color", "-p", str(directory)], env=env, capture_output=True, text=True, timeout=35)
     text = result.stdout + result.stderr
-    assert result.returncode == 0 and text.count("PASS:") == 4 and not any(e in text for e in ("Error:", "Unable to assign", "Binding loop")), text
+    assert result.returncode == 0 and text.count("PASS:") == 5 and not any(e in text for e in ("Error:", "Unable to assign", "Binding loop")), text
     for line in text.splitlines():
         if "PASS:" in line:
             print(line)

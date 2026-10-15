@@ -44,6 +44,29 @@ func TestRuntimeLogFramesAndSecretRedaction(t *testing.T) {
 	}
 }
 
+func TestPublicCometNamesRemainVisibleWithoutExposingNearbySecrets(t *testing.T) {
+	name := "~doznec-salbud-salwex-sogref--tasweb-navfun-batwet-sigfet"
+	code := "~lidlut-tabwed-pillex-ridrup"
+	text := "found comet: " + name + "\nship " + name + " code " + code + "\n0wabc.def~" + name + "\nAuthorization: " + name + "\nfound comet: " + code
+	lines, _ := sanitizeLogs(text)
+	if lines[0] != "found comet: "+name || !strings.Contains(lines[1], name) {
+		t.Fatal(lines)
+	}
+	joined := strings.Join(lines, "\n")
+	if strings.Contains(joined, "lidlut") || strings.Contains(joined, "0wabc") || strings.Contains(joined, "Authorization:") {
+		t.Fatal("secret filtering bypassed", lines)
+	}
+	if lines[2] != "[redacted key]" || lines[3] != "[sensitive log line omitted]" {
+		t.Fatal(lines)
+	}
+	for _, invalid := range []string{strings.Replace(name, "doznec", "xxxxxx", 1), name + "-extra"} {
+		got, _ := sanitizeLogs("found comet: " + invalid)
+		if strings.Contains(got[0], invalid) {
+			t.Fatal("unvalidated token preserved", got)
+		}
+	}
+}
+
 func TestManagedLogsAuthenticateRetainAndReadStoppedContainers(t *testing.T) {
 	f, state, persist := managedFixture(t)
 	f.d.logs = func(context.Context, string, string) (string, error) {

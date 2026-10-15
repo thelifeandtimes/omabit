@@ -41,6 +41,35 @@ to load the new snapshot.
 
 ## 2. Set up the local host
 
+### Build and install from source
+
+Source for the three installed Omabit executables is at
+<https://github.com/thelifeandtimes/omabit>: `cmd/omabit/` is the desktop/setup
+helper, and `backend/cmd/urbit-collector/` and `backend/cmd/urbit-runner/` contain
+the generic client and host service. Build with Go 1.25+:
+
+```bash
+git clone https://github.com/thelifeandtimes/omabit.git
+cd omabit
+CGO_ENABLED=0 go build -trimpath -o build/ ./cmd/... ./backend/cmd/...
+python3 -B scripts/install-panel.py --enable
+./build/omabit --format text setup
+```
+
+This installs your locally built tools. Headless installation is documented in
+[owner-user runtime](owner-user-runtime.md). Native prebuilt downloads normally
+live in `~/.cache/omabit/native-binaries/`; authorized host setup installs the
+runner at `/usr/local/lib/urbit-runner/current/urbit-runner` and the pinned rootless
+launcher under `/usr/local/lib/urbit-runner/rootless/29.7.2/`.
+
+Docker/RootlessKit/slirp4netns/OpenSSH come from the host's OS packages. Upstream
+Docker source is <https://github.com/moby/moby>, including the verified rootless
+launcher. Ships run the pinned official Vere image; its source is
+<https://github.com/urbit/vere>. See [runtime policy](runtime-policy.md) for the
+qualified runtime artifact and version constraints.
+
+### Guided local setup
+
 Open **~+ → Setup → Set up this computer**.
 
 The guided flow shows:

@@ -73,7 +73,7 @@ Window {
           anchors.fill: parent; anchors.leftMargin: Style.space(24); anchors.rightMargin: Style.space(24); spacing: Style.space(18)
           Column { spacing: Style.space(2)
             Label { text: "omabit"; font.pixelSize: Style.space(27); font.bold: true; font.letterSpacing: -1 }
-            Label { objectName: "monitor-version"; text: "0.1.0-rc.4 / DEVELOPMENT"; caption: true; secondary: true }
+            Label { objectName: "monitor-version"; text: "0.1.0-rc.5 / DEVELOPMENT"; caption: true; secondary: true }
           }
           Rectangle { width: 1; height: Style.space(28); color: Design.line }
           Column { Layout.fillWidth: true; spacing: Style.space(3)
@@ -160,7 +160,7 @@ Window {
             id: body
             x: (bodyScroll.width - width) / 2; y: Style.space(24); width: Math.min(bodyScroll.width - Style.space(48), Style.space(1150)); spacing: Style.space(20)
             Label { width: parent.width; visible: text !== ""; text: root.service.feedError || (root.page!=="setup" ? root.service.lastError : ""); color: Design.danger }
-            Label { width: parent.width; visible: root.service.busy; text: root.service.settingUp ? "Setting up this computer…" : "Submitting " + root.service.currentAction + "…"; color: Design.accent }
+            Label { objectName: "monitor-action-progress"; width: parent.width; visible: root.service.actionProgressVisible; text: root.service.settingUp ? "Setting up this computer…" : "Submitting " + root.service.currentAction + "…"; color: Design.accent }
             ActionButton { width: parent.width; visible: Model.discoveredPiers(root.service.connections).length>0 && root.page!=="setup"; text: Model.discoveredPiers(root.service.connections).length+" discovered piers need enrollment or location review →"; onClicked: {root.page="setup";windowSetup.mode="storage"} }
             Column {
               width: parent.width; spacing: Style.space(20); visible: root.page !== "activity" && root.page !== "setup" && !!root.instance

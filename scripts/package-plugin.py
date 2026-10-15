@@ -124,8 +124,8 @@ upgrade a runner host or restart ships. Keep host updates explicit.
 ## Candidate scope
 
 This is the {version} development plugin; its runner contract is recorded in the release metadata. Its Recommended
-Apps pill is the documented frozen draft; use bare bootstrap for initial lifecycle
-checks. Release notes: {provenance['release_url']}.
+Apps source and frozen artifact provenance are documented by that release.
+Release notes: {provenance['release_url']}.
 ''')
         output.rename(destination)
     return provenance

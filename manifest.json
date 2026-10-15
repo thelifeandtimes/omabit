@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "thelifeandtimes.omabit",
   "name": "Omabit",
-  "version": "0.1.0-rc.4",
+  "version": "0.1.0-rc.5",
   "author": "Omabit contributors",
   "description": "A compact Urbit fleet menu, setup pane, and monitoring/maintenance workspace through urbit-collector.",
   "kinds": ["service", "bar-widget"],
@@ -12,7 +12,7 @@
     "category": "System",
     "allowMultiple": false,
     "defaultSection": "right",
-    "defaults": {"collectorPath": "", "configDir": "", "notifications": true, "recommendedPillUrl": "https://github.com/thelifeandtimes/omabit/releases/download/v0.1.0-rc.4/omabit-recommended-apps-0.1.0-rc.4.pill"},
+    "defaults": {"collectorPath": "", "configDir": "", "notifications": true, "recommendedPillUrl": "https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"},
     "schema": [
       {"key": "collectorPath", "type": "string", "label": "Collector executable (empty uses bundled binary)"},
       {"key": "configDir", "type": "string", "label": "Collector config directory (empty uses XDG default)"},

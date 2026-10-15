@@ -57,8 +57,12 @@ def main():
         assert build["pill"]["sha256"] == metadata["pill"]["sha256"]
         manifest = json.loads((package / "plugins/omabit/manifest.json").read_text())
         assert manifest["version"] == version
-        assert manifest["barWidget"]["defaults"]["recommendedPillUrl"].endswith(
-            "/v" + version + "/" + metadata["pill"]["name"])
+        if "default_url" in metadata["pill"]:
+            assert manifest["barWidget"]["defaults"]["recommendedPillUrl"] == build["pill"]["default_url"] == metadata["pill"]["default_url"]
+            assert metadata["pill"]["default_url"].startswith("https://")
+        else:
+            assert manifest["barWidget"]["defaults"]["recommendedPillUrl"].endswith(
+                "/v" + version + "/" + metadata["pill"]["name"])
         for command in ("omabit", "urbit-collector", "urbit-runner"):
             binary = package / "build" / command
             assert digest(binary) == digest(assets / (command + "-linux-amd64"))

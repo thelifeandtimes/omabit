@@ -14,6 +14,8 @@ Column {
   signal showFleet()
   spacing: Style.space(9)
   readonly property string selection: connection ? connection.runner_id + "/" + connection.name : ""
+  readonly property bool portSelection: !!service && !!service.portTarget && service.portTarget.token===portToken && service.portTarget.runner===(connection ? connection.runner_id : "")
+  readonly property bool checkingPort: portSelection && service.checkingPort
   readonly property string pier: Model.storagePath(storageLocation.rootID,Model.pierPath(kind,instanceName.text.trim(),fakeShip.text,storageLocation.customPath ? pierName.text : ""))
   readonly property var outcome: {
     var o=service ? service.registrationOutcome : null
@@ -60,7 +62,11 @@ Column {
   Label { text: "Host HTTP port"; caption: true; secondary: true }
   Field { id: httpPort; objectName: "registration-port"; width: parent.width; placeholderText: "Unused port, 1024–65535"; validator: IntValidator { bottom:1024; top:65535 } enabled: !!root.service && !root.service.busy; onTextEdited: {root.portToken="";consent.checked=false;root.service.editRegistration()} }
   Label { width: parent.width; secondary: true; caption: true; text: "Your Urbit ship will run in Docker at port 8080 and be exposed on this host at the selected port." }
-  ActionButton { objectName: "suggest-host-port"; text: "Find an available port"; quiet: true; compact: true; enabled: !!root.connection && !!root.service && !root.service.busy; onClicked: root.suggestPort() }
+  RowLayout {
+    width: parent.width; spacing: Style.space(10)
+    ActionButton { objectName: "suggest-host-port"; text: "Find an available port"; quiet: true; compact: true; enabled: !!root.connection && !!root.service && !root.service.busy; hint: root.portSelection ? root.service.portError : "Check the selected host's listeners and reservations"; onClicked: root.suggestPort() }
+    Label { objectName: "port-check-progress"; Layout.fillWidth: true; text: root.checkingPort ? "Checking host ports…" : root.portSelection ? root.service.portError : ""; wrapMode: Text.NoWrap; elide: Text.ElideRight; caption: true; color: root.checkingPort ? Design.accent : Design.danger }
+  }
   Label { width: parent.width; visible: root.problem !== ""; text: root.problem; color: Design.warning }
   CheckField {
     id: consent; objectName: "comet-consent"; width: parent.width

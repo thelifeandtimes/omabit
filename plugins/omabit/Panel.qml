@@ -45,7 +45,7 @@ Ui.Panel {
         MultiEffect { anchors.fill: parent; source: mark; colorization: 1; colorizationColor: button.active ? button.activeColor : button.foreground }
       }
     }
-    tooltipText: "Omabit 0.1.0-rc.4 · " + Model.fleet(root.connections).length + " instances"
+    tooltipText: "Omabit 0.1.0-rc.5 · " + Model.fleet(root.connections).length + " instances"
     onPressed: function(code) { if (code === Qt.RightButton) { if (root.service) root.service.refresh() } else root.toggle() }
   }
   Ui.KeyboardPanel {
@@ -76,7 +76,7 @@ Ui.Panel {
             ActionButton { compact: true; text: root.pane === "fleet" ? "Setup" : "← Fleet"; onClicked: { root.pane = root.pane === "fleet" ? "setup" : "fleet"; scroll.contentY = 0 } }
           }
           Label { width: parent.width; visible: text !== "" && !(root.service && root.service.firstRun); color: Design.danger; text: root.service ? root.service.feedError || (root.pane!=="setup" ? root.service.lastError : "") : "Collector service unavailable" }
-          Label { width: parent.width; visible: root.service && root.service.busy; secondary: true; caption: true; text: root.service ? root.service.settingUp ? "Setting up this computer…" : "Submitting " + root.service.currentAction + "…" : "" }
+          Label { objectName: "fleet-action-progress"; width: parent.width; visible: !!root.service && root.service.actionProgressVisible; secondary: true; caption: true; text: root.service ? root.service.settingUp ? "Setting up this computer…" : "Submitting " + root.service.currentAction + "…" : "" }
           ActionButton { width: parent.width; visible: Model.discoveredPiers(root.connections).length>0; text: Model.discoveredPiers(root.connections).length+" discovered piers need enrollment or location review →"; onClicked: {root.pane="setup";setup.mode="storage";scroll.contentY=0} }
           Column {
             width: parent.width; spacing: Style.space(12); visible: root.pane === "fleet"
@@ -118,9 +118,9 @@ Ui.Panel {
                         ShipName { width: parent.width; instance: ship.modelData; font.bold: true; compact: true }
                         Label { width: parent.width; text: ship.modelData.id + " · " + ship.status.label; secondary: true; caption: true; elide: Text.ElideRight; wrapMode: Text.NoWrap }
                       }
-                      Label { text: ship.modelData.mode === "fake" ? "AMES\nLoopback" : (ship.modelData.ames_published ? "AMES UDP\n" : "GUEST AMES\n") + ship.modelData.config.ames_port; caption: true; secondary: true; horizontalAlignment: Text.AlignRight }
+                      Label { objectName: "fleet-http-port-"+ship.modelData.id; text: "HTTP\n" + ship.modelData.config.http_port; caption: true; secondary: true; horizontalAlignment: Text.AlignRight }
                       CopyCodeButton { objectName: "fleet-copy-code-"+ship.modelData.id; compact: true; service: root.service; runnerID: runner.modelData.runner_id; connectionName: runner.modelData.name; instanceID: ship.modelData.id }
-                      ActionButton { objectName: "fleet-open-ship-"+ship.modelData.id; compact: true; text: ":" + ship.modelData.config.http_port + " ↗"; hint: "Open this ship when startup and health checks complete"; enabled: runner.online && Model.shipLive(runner.modelData,ship.modelData,root.service.now) && !!Model.shipURL(runner.modelData, ship.modelData, root.service.registrations, root.service.runnerPreferences); onClicked: root.service.openShip(runner.modelData, ship.modelData) }
+                      ActionButton { objectName: "fleet-open-ship-"+ship.modelData.id; compact: true; text: "Open →"; hint: "Open this ship when startup and health checks complete"; enabled: runner.online && Model.shipLive(runner.modelData,ship.modelData,root.service.now) && !!Model.shipURL(runner.modelData, ship.modelData, root.service.registrations, root.service.runnerPreferences); onClicked: root.service.openShip(runner.modelData, ship.modelData) }
                       ActionButton { objectName: "start-" + ship.modelData.id; compact: true; quiet: true; text: "▶"; hint: "Start " + ship.modelData.id; enabled: runner.online && !root.service.busy && Model.canOperate(runner.modelData, ship.modelData, "start", root.service.now); onClicked: root.service.operate(runner.modelData, ship.modelData, "start") }
                       ActionButton { objectName: "stop-" + ship.modelData.id; compact: true; quiet: true; text: "■"; hint: "Stop " + ship.modelData.id; enabled: runner.online && !root.service.busy && Model.canOperate(runner.modelData, ship.modelData, "stop", root.service.now); onClicked: root.service.operate(runner.modelData, ship.modelData, "stop") }
                       ActionButton { objectName: "fleet-monitor-"+ship.modelData.id; compact: true; quiet: true; text: "›"; hint: "Monitor & maintain " + ship.modelData.id; onClicked: root.monitor(runner.modelData, ship.modelData) }

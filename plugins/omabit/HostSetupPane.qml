@@ -28,6 +28,15 @@ Column {
       }
       Label { width: parent.width; secondary: true; text: root.ready ? "The background services and private desktop connection are ready. Your ships can keep running when this panel is closed." : "A private Urbit host for this computer, using the official Vere release. Omabit handles the services and connects your desktop automatically." }
       Label { width: parent.width; caption: true; secondary: true; visible: !root.ready; text: "The runner and its separate rootless Docker engine run as your Unix user. Setup creates /srv/urbit/piers for your ordinary file access, plus restricted management SSH and reboot services. Your login shell and personal SSH settings are preserved. Host changes ask for OS authorization; setup does not boot a ship." }
+      Label { objectName: "setup-binaries"; width: parent.width; caption: true; secondary: true; text: "Software: omabit (desktop/setup helper), urbit-collector (runner client), and urbit-runner (host service). The plugin downloads checksum-verified release binaries into ~/.cache/omabit/native-binaries/. Authorized setup installs urbit-runner at /usr/local/lib/urbit-runner/current/urbit-runner and Docker's verified rootless launcher under /usr/local/lib/urbit-runner/rootless/29.7.2/." }
+      Label { width: parent.width; caption: true; secondary: true; text: "Docker, RootlessKit, slirp4netns and OpenSSH come from your OS packages. Ships use the pinned official Vere 4.6 container image. You can build Omabit's three tools from source with Go 1.25+ and install them yourself." }
+      Flow {
+        width: parent.width; spacing: Style.space(8)
+        ActionButton { objectName: "setup-source"; compact: true; text: "Source code ↗"; onClicked: Qt.openUrlExternally("https://github.com/thelifeandtimes/omabit") }
+        ActionButton { objectName: "setup-build-guide"; compact: true; text: "Build & install yourself ↗"; onClicked: Qt.openUrlExternally("https://github.com/thelifeandtimes/omabit/blob/master/docs/install.md#build-and-install-from-source") }
+        ActionButton { compact: true; quiet: true; text: "Docker source ↗"; onClicked: Qt.openUrlExternally("https://github.com/moby/moby") }
+        ActionButton { compact: true; quiet: true; text: "Vere source ↗"; onClicked: Qt.openUrlExternally("https://github.com/urbit/vere") }
+      }
     }
   }
   MachineUsePane { width: parent.width; service: root.service; visible: !root.ready }
@@ -62,5 +71,4 @@ Column {
     ActionButton { objectName: "local-setup-primary"; text: root.ready ? "Add a ship →" : root.running ? "Setting up…" : root.needsFirstCheck ? "Check prerequisites" : root.status.host_present ? "Connect this computer" : "Set up this computer"; primary: true; enabled: !!root.service && !root.service.busy && !root.service.checkingSetup && (root.ready || !!root.service.machineUse && (root.needsFirstCheck || root.status.can_setup)); onClicked: root.ready ? root.addShip() : root.needsFirstCheck ? root.service.checkLocalSetup(true) : root.service.setUpLocal() }
     ActionButton { objectName: "local-check-again"; text: "Check again"; visible: !!root.service && root.service.setupCheckRequested && !root.ready; quiet: true; enabled: !!root.service && !root.running && !root.service.checkingSetup; onClicked: root.service.checkLocalSetup(true) }
   }
-  Label { width: parent.width; caption: true; secondary: true; text: "First ship startup needs at least 5 GiB available RAM and 8 GiB free disk. Mounted desks are ordinary files owned by you: use |mount, copy/edit files, then |commit. Additional storage locations use your existing filesystem permissions." }
 }

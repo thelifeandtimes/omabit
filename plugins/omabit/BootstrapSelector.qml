@@ -22,7 +22,7 @@ Column {
   }
   Label {
     width: parent.width; caption: true; secondary: true
-    text: root.kind === "bare" ? "Use Vere's default bootstrap.urbit.org pill." : root.problem || "Download the configured Recommended Apps release pill for this ship's first boot."
+    text: root.kind === "bare" ? "Use Vere's default bootstrap.urbit.org pill." : root.problem || "Download the configured Recommended Apps pill for this ship's first boot."
     color: root.problem ? Design.warning : Design.muted
   }
 }
