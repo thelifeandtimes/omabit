@@ -1,5 +1,11 @@
 # RC.4 onboarding feedback and sourcebox reset
 
+Published [v0.1.0-rc.4](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.4)
+from `919ba0ce445e3e952d95ab4bff167e938dd9fdda`, with
+[green source CI](https://github.com/thelifeandtimes/omabit/actions/runs/38783158192).
+Native pins advance to the published tools independently of their build commit.
+Archive SHA-256: `e126b9ff68d707222252dc13254058fad3eb2f29db6d14927101ddb9267c2f41`.
+
 The first real native-install pass on sourcebox exposed ten onboarding issues.
 RC.4 implements the requested welcome, first-check wording, automatic destinations,
 HTTP explanation, host-checked port suggestion, explicit confirmed first boot,

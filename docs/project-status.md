@@ -2,7 +2,14 @@
 
 ## Where we are
 
-**[RC.3 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.3), with owner-user native binary pins.**
+**[RC.4 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.4), with matching native binary pins.**
+It incorporates the user's first sourcebox onboarding feedback: welcome/setup,
+machine-use preference, automatic paths and first boot, real host-port suggestions,
+healthy-only access and fixed full-window activation. The sourcebox test installation
+was retired for another fresh pass, preserving all ten unrelated Urbit processes.
+See the [feedback/reset record](diagnostics/2026-10-15-onboarding-feedback.md).
+
+RC.3 established the owner-user runtime described below.
 It runs the runner/rootless engine as the existing user, with `/srv/urbit/piers/`
 and ordinary custom workspace paths. Default fake and custom-root comet desk
 copy/edit/commit/remount gates passed locally, plus pack/resume content readback.
@@ -56,12 +63,12 @@ order, not percentage of total effort.
 | Runtime foundation | Owner-user rootless Docker, default/custom-root fake/comet desk editing and lifecycle accepted locally; broader production qualification remains |
 | Persistent runner | Durable SQLite registrations, operations, attribution, reconciliation, resource admission, and development lifecycle accepted |
 | Collector and access | Named identity-pinned connections, SSH grants/revocation, inventory isolation, origin-bound Eyre sessions and subscriptions accepted in exercised development gates |
-| Omabit UI | Published RC.3 native plugin: owner-user setup, storage/import/deletion, monitoring and maintenance; mapped fixtures passed; sourcebox fresh-user review pending |
+| Omabit UI | Published RC.4 native plugin: refined first run, confirmed first boot, host ports, healthy access and monitor focus; mapped fixtures passed; another sourcebox fresh-user pass pending |
 | Maintenance and retention | Official-runtime fake/comet pack/meld/roll, inventory/previews, prefix pruning and UTC schedules accepted in exercised live gates; interruption/recovery hardening remains; loom-internal telemetry deferred |
 | Peer monitoring | Planned; current single-runner health/incident basics do not yet provide the phase-7 multi-host peer system |
 | Personal operator gateway | Planned |
 | Social utilities / Omarchy gossip | Planned; architecture and delivery/tag policy recorded |
-| Agents and release distribution | RC.3 binary assets published and pinned in canonical native installation; fresh-user acceptance, production upgrades, replacement pill and agent/MCP distribution remain |
+| Agents and release distribution | RC.4 binary assets published and pinned in canonical native installation; fresh-user acceptance, production upgrades, replacement pill and agent/MCP distribution remain |
 
 ## Current milestone
 

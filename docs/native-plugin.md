@@ -25,7 +25,8 @@ module under `internal/`. No Go compiler, local extracted bundle, Git LFS or
 committed binary blobs are needed for plugin installation. Published RC.2 assets
 are not rebuilt or replaced by this repository organization.
 
-Current pins select published **RC.3**, schema16 and owner-user host setup.
+Current pins select published **RC.4**, schema16 and owner-user host setup,
+including host-checked port suggestions and the confirmed GUI boot workflow.
 The new UI rejects helpers without the owner-user setup contract.
 
 ## Binary preparation
