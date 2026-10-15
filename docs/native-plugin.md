@@ -53,11 +53,13 @@ using the normal OS authorization flow.
 
 ## Updates
 
-Finish desktop submissions and unload the plugin before replacing its QML:
+Finish desktop setup/submissions and unlock the desktop before updating. Use a
+cold shell restart between replacing QML and enabling the new version:
 
 ```bash
 omarchy plugin disable thelifeandtimes.omabit
 omarchy plugin update thelifeandtimes.omabit
+omarchy restart shell
 omarchy plugin enable thelifeandtimes.omabit
 ```
 
@@ -65,6 +67,27 @@ This uses Omarchy's Git fast-forward workflow. Runner host upgrades remain separ
 The snapshot/binary-bundle installer is a different ownership model: it does not
 replace a git-managed checkout, and native `plugin add` refuses an existing plugin
 with the same ID. Choose the native path for a fresh standard Omarchy install.
+
+### Reinstalling in an existing desktop session
+
+Removing and reinstalling the plugin at the same path can leave the long-running
+shell executing its previously loaded QML. This was confirmed on sourcebox: the
+checkout and tool pins were RC.4 while the live service still reported RC.3 and
+displayed the old welcome text. Disable/remove/rescan alone did not clear it.
+
+After reinstalling into a session that already loaded an older Omabit version,
+finish any setup/submission and run on the unlocked desktop:
+
+```bash
+omarchy restart shell
+omarchy shell thelifeandtimes.omabit.monitor status
+```
+
+The reported `version` must match the installed root `manifest.json`. Verify the
+actual menubar after this restart; a clean checkout, manifest validation and binary
+hashes alone do not establish which UI the running shell is executing. The shell
+restart preserves the independent runner/engine services and accepted ship jobs.
+See the [live diagnosis](diagnostics/2026-10-15-stale-native-ui.md).
 
 ## Legacy flattened exports
 

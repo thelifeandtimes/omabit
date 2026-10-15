@@ -21,6 +21,13 @@ under `~/.cache/omabit/native-binaries/` (or the XDG cache equivalent).
 Allow a few seconds for the initial download. This does not create a runner host
 or start a ship. **Pause here to inspect the new-user UI.**
 
+This sourcebox session has already loaded earlier Omabit versions. After reinstall,
+finish any setup/submission, unlock the desktop, and run `omarchy restart shell`.
+Then check `omarchy shell thelifeandtimes.omabit.monitor status`: its `version` must
+match the installed manifest. The real menubar should show **Start Setup →** and
+the Urbit introduction when no runner is enrolled. A completed enrollment instead
+shows the fleet. See [the stale-UI diagnosis](diagnostics/2026-10-15-stale-native-ui.md).
+
 If cloning succeeded but enabling failed, use
 `omarchy plugin enable thelifeandtimes.omabit` after inspecting the error. For a
 binary-download diagnostic, run
