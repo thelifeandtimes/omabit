@@ -23,11 +23,30 @@ def module(name, path):
     return value
 
 
-runtime = module("native_runtime", ROOT / "scripts/native-plugin/runtime.py")
+runtime = module("native_runtime", ROOT / "native/bootstrap/runtime.py")
 packager = module("native_packager", ROOT / "scripts/package-plugin.py")
 
 
 class NativePluginTests(unittest.TestCase):
+    def test_canonical_manifest_launchers_and_release_pins_match(self):
+        root = json.loads((ROOT / "manifest.json").read_text())
+        component = json.loads((ROOT / "plugins/omabit/manifest.json").read_text())
+        entries = root.pop("entryPoints")
+        component.pop("entryPoints")
+        self.assertEqual(root, component)
+        self.assertEqual(entries, {"service": "native/Service.qml", "barWidget": "native/Panel.qml"})
+        for name in entries.values():
+            self.assertTrue((ROOT / name).is_file())
+        pins = json.loads((ROOT / "native/bootstrap/release.json").read_text())
+        runtime.validate_manifest(pins)
+        # Tool pins refer to an already published build. They are advanced after
+        # release, independently of the next UI version being prepared in Git.
+        template = (ROOT / "native/bootstrap/launch.py").read_bytes()
+        for name in runtime.COMMANDS:
+            path = ROOT / "native/bin" / name
+            self.assertEqual(path.read_bytes(), template)
+            self.assertEqual(path.stat().st_mode & 0o777, 0o755)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="omabit-native-test-")
         self.addCleanup(self.temporary.cleanup)

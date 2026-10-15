@@ -1,5 +1,9 @@
 # Storage locations, import and deletion
 
+For ordinary `|mount`/file-manager/`|commit` access, see the
+[user-accessible pier design options](desk-file-access-options.md). RC.2's current
+runner-owned roots do not yet implement shared desktop-user workspace permissions.
+
 Included in **0.1.0-rc.2**, after the published rc.1. Update the runner
 and desktop together to expose the new capabilities: `storage-locations`,
 `import-pier` and `delete-pier`. Storage support was introduced in schema 14; current

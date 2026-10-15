@@ -1,5 +1,11 @@
 # Native Omarchy plugin publication — 2026-10-15 UTC
 
+**Superseded installation URL:** the user selected a single directly installable
+`/omabit` monorepo. New installations use `omarchy plugin install
+https://github.com/thelifeandtimes/omabit.git --enable`; see
+[the current layout](../native-plugin.md). This record preserves the earlier
+generated-repository publication and its verification scope.
+
 **Ready:** <https://github.com/thelifeandtimes/omarchy-omabit> is the generated,
 Git-managed native plugin repository. The user's first sourcebox install should use:
 

@@ -71,9 +71,10 @@ Item {
   property string themeOutput: ""
   property string paletteOutput: ""
   property string themeSyncOutput: ""
-  readonly property string omabit: settings.omabitPath || Model.localPath(Qt.resolvedUrl("bin/omabit"))
+  property url toolsDirectory: Qt.resolvedUrl("bin")
+  readonly property string omabit: settings.omabitPath || Model.localPath(toolsDirectory) + "/omabit"
   readonly property bool canLogin: !busy && currentAction === ""
-  readonly property string collector: settings.collectorPath || Model.localPath(Qt.resolvedUrl("bin/urbit-collector"))
+  readonly property string collector: settings.collectorPath || Model.localPath(toolsDirectory) + "/urbit-collector"
 
   function command(args) {
     var prefix = [collector, "--format", "json"]

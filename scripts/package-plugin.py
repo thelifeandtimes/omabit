@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate a native Omarchy plugin repository from a frozen binary release."""
+"""Reproduce a legacy flattened plugin export from a frozen binary release."""
 import argparse
 import hashlib
 import json
@@ -38,7 +38,7 @@ def generate(assets, destination, distribution_commit):
             "binaries": {name: entries[name + "-linux-amd64"] for name in COMMANDS}}
     # Validate the generated pins with the same code used on the desktop.
     import importlib.util
-    spec = importlib.util.spec_from_file_location("native_runtime", ROOT / "scripts/native-plugin/runtime.py")
+    spec = importlib.util.spec_from_file_location("native_runtime", ROOT / "native/bootstrap/runtime.py")
     runtime = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(runtime)
     runtime.validate_manifest(pins)
@@ -64,11 +64,11 @@ def generate(assets, destination, distribution_commit):
         if manifest["version"] != version or manifest["id"] != "thelifeandtimes.omabit":
             raise RuntimeError("Plugin identity/version mismatch")
         (output / "bootstrap").mkdir()
-        shutil.copy2(ROOT / "scripts/native-plugin/runtime.py", output / "bootstrap/runtime.py")
+        shutil.copy2(ROOT / "native/bootstrap/runtime.py", output / "bootstrap/runtime.py")
         (output / "bootstrap/release.json").write_text(json.dumps(pins, indent=2) + "\n")
         (output / "bin").mkdir()
         for name in COMMANDS:
-            shutil.copy2(ROOT / "scripts/native-plugin/launch.py", output / "bin" / name)
+            shutil.copy2(ROOT / "native/bootstrap/launch.py", output / "bin" / name)
             (output / "bin" / name).chmod(0o755)
         provenance = {"generated": True, "version": version, "release_source_commit": release["source_commit"],
                       "distribution_source_commit": distribution_commit, "archive_sha256": names[archive_name],
@@ -86,7 +86,7 @@ Make source changes there; do not hand-maintain this generated copy.
 Run in your logged-in Omarchy desktop as your ordinary user:
 
 ```bash
-omarchy plugin add https://github.com/thelifeandtimes/omarchy-omabit.git --enable
+omarchy plugin add https://github.com/thelifeandtimes/omabit.git --enable
 ```
 
 `omarchy plugin install` is an alias for `add`. Omarchy handles cloning, validation,

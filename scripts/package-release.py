@@ -108,7 +108,7 @@ def main():
         binaries = package / "build"
         binaries.mkdir(parents=True)
         env = dict(os.environ, CGO_ENABLED="0", GOOS="linux", GOARCH="amd64")
-        subprocess.run(["go", "build", "-trimpath", "-o", str(binaries) + "/", "./cmd/omabit", "./cmd/urbit-collector", "./cmd/urbit-runner"], cwd=ROOT, env=env, check=True)
+        subprocess.run(["go", "build", "-trimpath", "-o", str(binaries) + "/", "./cmd/omabit", "./backend/cmd/urbit-collector", "./backend/cmd/urbit-runner"], cwd=ROOT, env=env, check=True)
         (package / "plugins").mkdir()
         shutil.copytree(ROOT / "plugins/omabit", package / "plugins/omabit")
         (package / "scripts").mkdir()

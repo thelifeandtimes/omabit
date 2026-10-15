@@ -14,7 +14,7 @@ for tool in go python3 omarchy; do
 done
 printf '%s\n' 'Building Omabit, the collector and the official-runtime runner…'
 mkdir -p "$ROOT/build"
-go -C "$ROOT" build -o "$ROOT/build/" ./cmd/...
+go -C "$ROOT" build -o "$ROOT/build/" ./cmd/... ./backend/cmd/...
 python3 -B "$ROOT/scripts/install-panel.py" --replace --enable
 printf '\n%s\n' 'Open the ~+ menu → Setup → Set up this computer.'
 printf 'Terminal setup is also available: %q --format text setup\n' "$ROOT/build/omabit"

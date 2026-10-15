@@ -280,9 +280,13 @@ arbitrary CSS. Use one designated automatic theme publisher per ship.
 
 ## Distribution and exclusions
 
-The monorepo is authoritative. Generate installable microrepos/artifacts with
-source revision and compatible API versions. Omarchy plugin repos need their own
-root manifest. Do not hand-maintain copies of shared code.
+The `/omabit` monorepo is authoritative and directly installable as the Omarchy
+plugin, with a root manifest and native wrappers over shared QML. Generic runner
+and collector entry points live under `backend/cmd/`; the desktop Go helper lives
+under `cmd/omabit/`. Shared private Go packages stay in one module. Release assets
+carry source revision and compatibility metadata; native launchers pin their exact
+binary contents. Do not hand-maintain copies of shared UI or fork the generic tools
+merely to distribute them to non-Omarchy users.
 
 Ship prebuilt binaries, service packages, pill metadata, explicit setup steps,
 and a reviewed CLI skill installation. Agent configuration does not contain raw

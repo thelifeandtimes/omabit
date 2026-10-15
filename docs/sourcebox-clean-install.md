@@ -10,7 +10,7 @@ document does not perform a teardown or restore old piers.
 In an ordinary terminal **on sourcebox, inside its logged-in Omarchy desktop**:
 
 ```bash
-omarchy plugin add https://github.com/thelifeandtimes/omarchy-omabit.git --enable
+omarchy plugin add https://github.com/thelifeandtimes/omabit.git --enable
 ```
 
 `omarchy plugin install` is an alias for `add`. Do not use sudo. Omarchy performs
@@ -24,7 +24,7 @@ or start a ship. **Pause here to inspect the new-user UI.**
 If cloning succeeded but enabling failed, use
 `omarchy plugin enable thelifeandtimes.omabit` after inspecting the error. For a
 binary-download diagnostic, run
-`~/.config/omarchy/plugins/thelifeandtimes.omabit/bin/urbit-collector --help`.
+`~/.config/omarchy/plugins/thelifeandtimes.omabit/native/bin/urbit-collector --help`.
 
 ## Second step: use the normal first-time host setup
 
@@ -37,7 +37,7 @@ Open the Omabit bar icon → **Setup → Set up this computer**. Step through:
 5. Pinned local SSH enrollment and the Ready view.
 
 The terminal equivalent, when explicitly chosen, is
-`~/.config/omarchy/plugins/thelifeandtimes.omabit/bin/omabit --format text setup`.
+`~/.config/omarchy/plugins/thelifeandtimes.omabit/native/bin/omabit --format text setup`.
 Do not run both setup entry points concurrently. Record the first error rather
 than removing additional files to retry.
 
@@ -66,5 +66,5 @@ role restrictions/revocation and reboot convergence as described in
 host; a second collector does not require a second runner process.
 
 The previously staged binary bundle can remain unused. This native-install test
-does not depend on it. `DISTRIBUTION.json` in the cloned plugin records its frozen
-release and generator provenance; see [native distribution](native-plugin.md).
+does not depend on it. `native/bootstrap/release.json` records the frozen tool pins;
+the checkout's Git revision records its UI source. See [native distribution](native-plugin.md).

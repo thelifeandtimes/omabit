@@ -1,0 +1,22 @@
+{
+  "version": "0.1.0-rc.2",
+  "source_commit": "691eea7f808237458c1bf0c8865a62cd5cee11dc",
+  "platform": "linux/amd64",
+  "binaries": {
+    "omabit": {
+      "name": "omabit-linux-amd64",
+      "bytes": 10010592,
+      "sha256": "e2f42e1c67d308e3a74de3f18d5d2a2c2f93dfb6b4d5f710599c5a95f99f5409"
+    },
+    "urbit-collector": {
+      "name": "urbit-collector-linux-amd64",
+      "bytes": 10134861,
+      "sha256": "924b80ce7d8a66d3e2dcab2d81160beb5121c330eb24b20473461d65984b9f0a"
+    },
+    "urbit-runner": {
+      "name": "urbit-runner-linux-amd64",
+      "bytes": 18591605,
+      "sha256": "1c59aaa97f17242d55b283703bea3626a7c5fdfd831841afba319b60fb30660e"
+    }
+  }
+}

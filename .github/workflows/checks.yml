@@ -31,7 +31,7 @@ jobs:
       - name: Build Linux binaries
         run: |
           mkdir -p build
-          CGO_ENABLED=0 go build -trimpath -o build/ ./cmd/...
+          CGO_ENABLED=0 go build -trimpath -o build/ ./cmd/... ./backend/cmd/...
       - name: Desktop model and installer fixtures
         run: |
           node scripts/test-panel-model.js

@@ -3,32 +3,36 @@
 Run as your ordinary user inside the Omarchy desktop:
 
 ```bash
-omarchy plugin add https://github.com/thelifeandtimes/omarchy-omabit.git --enable
+omarchy plugin add https://github.com/thelifeandtimes/omabit.git --enable
 ```
 
 `omarchy plugin install` is an alias for `add`. This uses the standard clone,
 validation, trust confirmation, placement and enable workflow. The plugin ID is
 `thelifeandtimes.omabit`. Host setup remains the next explicit GUI action.
-See the [publication and verification record](diagnostics/2026-10-15-native-plugin-publication.md).
+The earlier [generated-repository record](diagnostics/2026-10-15-native-plugin-publication.md)
+is historical; the canonical monorepo layout below supersedes that install URL.
 
-## Why a generated plugin repository
+## One authoritative, directly installable repository
 
-Omarchy requires `manifest.json` at the root of the cloned repository and checks
-its entry points. Its native installer does not invoke arbitrary build/install
-hooks. The main Omabit repository is an authoritative Go/QML monorepo; the plugin
-is under `plugins/omabit`, and compiled tools are published as release assets.
+Omarchy requires `manifest.json` at the repository root and checks its entry points.
+The root manifest now loads `native/Service.qml` and `native/Panel.qml`, which wrap
+the shared QML under `plugins/omabit/`. The service wrapper selects `native/bin/`
+for its tools. Flat binary-bundle installations retain their existing `bin/` layout.
 
-`omarchy-omabit` contains the root-layout plugin generated from the verified frozen
-release archive, plus small Python launchers. No Go compiler, local extracted
-bundle, Git LFS or committed binary blobs are needed. The published RC.2 assets
-are not rebuilt or replaced to add this installation path.
+Generic runner/collector entry points are in `backend/cmd/`; the Omarchy-specific
+Go helper remains `cmd/omabit/`. Shared libraries remain private to the one Go
+module under `internal/`. No Go compiler, local extracted bundle, Git LFS or
+committed binary blobs are needed for plugin installation. Published RC.2 assets
+are not rebuilt or replaced by this repository organization.
 
 ## Binary preparation
 
 On first use the launchers retrieve the three Linux/AMD64 assets from the pinned
 versioned GitHub release. Names, byte sizes, source commit and SHA-256 hashes are
-recorded in `bootstrap/release.json`. HTTPS redirects remain HTTPS; truncated,
+recorded in `native/bootstrap/release.json`. HTTPS redirects remain HTTPS; truncated,
 oversized or hash-mismatched downloads are refused.
+Tool pins name an already published build and advance after release publication;
+they are not a self-referential hash of the Git commit that stores those pins.
 
 All three tools are prepared together, under a lock, and the complete verified
 directory is promoted atomically into
@@ -58,9 +62,11 @@ The snapshot/binary-bundle installer is a different ownership model: it does not
 replace a git-managed checkout, and native `plugin add` refuses an existing plugin
 with the same ID. Choose the native path for a fresh standard Omarchy install.
 
-## Generate a distribution
+## Legacy flattened exports
 
-After committing the distribution code, download/verify a frozen release and run:
+The previous `omarchy-omabit` microrepository is a historical distribution. New
+installs use the canonical `/omabit` command above. To reproduce a flattened export
+from a frozen archive after committing the distribution code:
 
 ```bash
 python3 -B scripts/package-plugin.py /path/to/verified-release-assets \
@@ -68,10 +74,9 @@ python3 -B scripts/package-plugin.py /path/to/verified-release-assets \
 omarchy plugin validate /path/to/new-generated-plugin
 ```
 
-The output must be new. `DISTRIBUTION.json` binds the release-source commit, archive
-hash, version and distribution-generator commit. Publish the generated files to
-the plugin repository; make future source changes in the monorepo and regenerate.
-Binary assets remain in the main repository's GitHub releases.
+The output must be new. Its `DISTRIBUTION.json` binds the release-source commit,
+archive hash, version and export-generator commit. This export is not required for
+the canonical installation. Binary assets remain in this repository's releases.
 
 `scripts/test-native-plugin.py` covers concurrent cold start, verified offline
 reuse, modified-cache refusal, failed download/retry, size/hash/HTTPS validation,

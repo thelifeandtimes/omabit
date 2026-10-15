@@ -216,6 +216,7 @@ def main():
     compile(FAKE, "fixture-collector", "exec")
     parser = argparse.ArgumentParser()
     parser.add_argument("--windows", action="store_true", help="also briefly map the fixture monitoring window and check all views")
+    parser.add_argument("--native", action="store_true", help="exercise the canonical repository entry-point wrappers")
     parser.add_argument("--capture-dir", help="save app-only fixture images while checking mapped windows")
     args = parser.parse_args()
     if args.capture_dir:
@@ -758,6 +759,12 @@ ShellRoot {
     }
   }
 }''' % ("true" if args.windows else "false",json.dumps(str(pathlib.Path(args.capture_dir).absolute()) if args.capture_dir else ""),json.dumps(key_file.as_uri()),json.dumps(pill_file.as_uri()),json.dumps(str(helper)),json.dumps(str(helper))))
+        if args.native:
+            qml = (directory / "shell.qml").read_text()
+            qml = qml.replace('import "Plugin" as Plugin', 'import "Plugin" as Plugin\nimport ' + json.dumps((ROOT / "native").as_uri()) + ' as Native')
+            qml = qml.replace("Plugin.Service {", "Native.Service {").replace("Plugin.Panel {", "Native.Panel {")
+            qml = qml.replace("if (capturesPending) return", "if (capturesPending) return\n        if (String(service.toolsDirectory)!==" + json.dumps((ROOT / "native/bin").as_uri()) + ") throw new Error(\"native tool directory mismatch\")")
+            (directory / "shell.qml").write_text(qml)
         # Quickshell PanelWindow has no offscreen backend. Connect to the current
         # compositor but keep the panel closed; use a separate IPC/log runtime.
         display = os.environ.get("WAYLAND_DISPLAY", "")

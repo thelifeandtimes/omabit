@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "thelifeandtimes.omabit",
+  "name": "Omabit",
+  "version": "0.1.0-rc.2",
+  "author": "Omabit contributors",
+  "description": "A compact Urbit fleet menu, setup pane, and monitoring/maintenance workspace through urbit-collector.",
+  "kinds": ["service", "bar-widget"],
+  "entryPoints": {"service": "native/Service.qml", "barWidget": "native/Panel.qml"},
+  "barWidget": {
+    "displayName": "Omabit",
+    "category": "System",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {"collectorPath": "", "configDir": "", "notifications": true, "recommendedPillUrl": "https://github.com/thelifeandtimes/omabit/releases/download/v0.1.0-rc.2/omabit-recommended-apps-0.1.0-rc.2.pill"},
+    "schema": [
+      {"key": "collectorPath", "type": "string", "label": "Collector executable (empty uses bundled binary)"},
+      {"key": "configDir", "type": "string", "label": "Collector config directory (empty uses XDG default)"},
+      {"key": "notifications", "type": "boolean", "label": "Notify about connection changes, incidents, and failed operations"},
+      {"key": "recommendedPillUrl", "type": "string", "label": "Recommended Apps pill URL (direct HTTPS release asset)"}
+    ]
+  }
+}

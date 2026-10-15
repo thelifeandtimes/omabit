@@ -17,10 +17,10 @@ See also the [remote trial plan](remote-runner-acceptance.md).
 For the normal GitHub installation in an Omarchy desktop:
 
 ```bash
-omarchy plugin add https://github.com/thelifeandtimes/omarchy-omabit.git --enable
+omarchy plugin add https://github.com/thelifeandtimes/omabit.git --enable
 ```
 
-The generated plugin prepares checksum-pinned release binaries in the user's cache
+The canonical repository's native entry points prepare checksum-pinned release binaries in the user's cache
 on first use. It requires no Go build and performs no privileged host setup until
 the user selects it. See [native plugin distribution](native-plugin.md).
 

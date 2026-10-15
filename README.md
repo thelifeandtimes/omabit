@@ -28,10 +28,10 @@ The development installations were subsequently
 In a terminal inside your Omarchy desktop:
 
 ```bash
-omarchy plugin add https://github.com/thelifeandtimes/omarchy-omabit.git --enable
+omarchy plugin add https://github.com/thelifeandtimes/omabit.git --enable
 ```
 
-This uses Omarchy's native GitHub plugin installer. The generated plugin downloads
+This repository is directly installable through Omarchy's native GitHub plugin installer. The plugin downloads
 and verifies the pinned prebuilt tools on first use; no Go compiler or local bundle
 directory is required. See [native plugin distribution](docs/native-plugin.md).
 
@@ -44,7 +44,7 @@ For development from a source checkout:
 
 ```bash
 bash scripts/install.sh
-go build -o ./build/ ./cmd/...
+go build -o ./build/ ./cmd/... ./backend/cmd/...
 ./build/omabit --format text setup
 ```
 
@@ -54,6 +54,10 @@ published release assets. Source builds need Go 1.25+. The current host implemen
 targets Linux x86-64, systemd/cgroup v2 and Docker 29.7.2.
 
 ## What works
+
+The generic, non-Omarchy runner and collector entry points are in
+[`backend/`](backend/README.md). The desktop-specific Go helper is `cmd/omabit`;
+shared implementation remains under `internal/` in one Go module.
 
 - Dedicated-account rootless Docker and the pinned official Vere release.
 - New comets and development fakes, with durable start/stop/resume operations.
@@ -92,7 +96,7 @@ Git remotes, and the current Go module identity.
 ```bash
 go test ./...
 go vet ./...
-go build -o ./build/ ./cmd/...
+go build -o ./build/ ./cmd/... ./backend/cmd/...
 node scripts/test-panel-model.js
 python3 -B scripts/test-panel.py --windows
 ```
