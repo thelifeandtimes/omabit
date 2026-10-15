@@ -2,6 +2,16 @@ function validId(value) {
   return typeof value === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(value)
 }
 
+function recommendedPillSource(settings, manifest) {
+  settings=settings || {}
+  // Omarchy can pass only the explicit inline settings. An explicitly empty
+  // source stays empty; an omitted source uses the packaged default.
+  if (settings.recommendedPillUrl !== undefined) return String(settings.recommendedPillUrl || "").trim()
+  if (settings.defaultBootPill !== undefined) return String(settings.defaultBootPill || "").trim()
+  var defaults=manifest && manifest.barWidget && manifest.barWidget.defaults
+  return defaults && typeof defaults.recommendedPillUrl === "string" ? defaults.recommendedPillUrl.trim() : "https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"
+}
+
 function validateSetupStatus(v) {
   if (!v || v.execution_model !== "owner-user") throw new Error("The local helper needs the owner-user release. Update the pinned tools before setting up this computer.")
   if (!v || typeof v.ready !== "boolean" || typeof v.can_setup !== "boolean" || !Array.isArray(v.checks) || v.checks.length > 64)

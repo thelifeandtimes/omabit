@@ -15,6 +15,7 @@ Item {
   property bool registrationsLoaded: false
   readonly property bool firstRun: registrationsLoaded && registrations.length===0 && connections.length===0
   readonly property string machineUse: preferences.machineUse
+  readonly property string recommendedPillUrl: Model.recommendedPillSource(settings,manifest)
   function setMachineUse(value) {
     if (["always-on","laptop"].indexOf(value)<0) return
     preferences.machineUse=value;preferences.sync()
@@ -781,7 +782,7 @@ Item {
     function maintenance(): void { root.openMonitor(null, null, "maintenance") }
     function setup(): void { root.openMonitor(null, null, "setup") }
     function refresh(): void { root.refresh() }
-    function status(): string { return JSON.stringify({version:"0.1.0-rc.5",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.settings.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
+    function status(): string { return JSON.stringify({version:"0.1.0-rc.6",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
     function close(): void { monitor.visible = false }
   }
   Process {

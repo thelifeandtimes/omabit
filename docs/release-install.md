@@ -1,4 +1,4 @@
-# Omabit 0.1.0-rc.5 binary bundle
+# Omabit 0.1.0-rc.6 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
@@ -9,10 +9,14 @@ use `omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enab
 Native installation uses the shared QML and pinned released tools. Published
 RC.1/RC.2 archives remain unchanged.
 
-RC.5 retains management and the separate rootless Docker engine as the existing pier
+RC.6 retains management and the separate rootless Docker engine as the existing pier
 owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
 user-owned files. Storage/import/deletion and bounded reboot resume continue.
 This remains a development prerelease.
+
+RC.6 corrects Recommended Apps default resolution when Omarchy supplies only
+explicit widget settings. It includes the RC.5 refinements below and the same
+backend/runtime implementation and supplied pill bytes.
 
 RC.5 explains installed binaries and source builds, keeps log/port progress inline
 without moving controls, preserves public comet names in runtime output, displays

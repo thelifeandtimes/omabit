@@ -7,7 +7,7 @@ Column {
   objectName: "bootstrap-selector"
   property var service
   readonly property string kind: choice.currentIndex === 1 ? "recommended" : "bare"
-  readonly property string source: kind === "recommended" && service ? String(service.settings.recommendedPillUrl || service.settings.defaultBootPill || "").trim() : ""
+  readonly property string source: kind === "recommended" && service ? service.recommendedPillUrl : ""
   readonly property string problem: Model.bootstrapProblem(kind, source)
   signal edited()
   spacing: Style.space(8)

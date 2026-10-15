@@ -103,6 +103,11 @@ ShellRoot {
       service.openSetup("ship");service.monitorWindow.setupPane.shipKind="comet";phase=6
     } else if(phase===6 && !service.busy) {
       var form=control(service.monitorWindow.setupPane,"registration-form")
+      var choice=control(form,"bootstrap-choice")
+      choice.currentIndex=1;choice.activated(1)
+      if(control(form,"bootstrap-selector").source!=="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill")throw new Error("Omitted inline setting lost the packaged Recommended Apps default")
+      choice.currentIndex=0;choice.activated(0)
+      if(control(form,"bootstrap-selector").source!=="")throw new Error("Bare bootstrap inherited Recommended Apps")
       if(control(form,"registration-name").text!=="" || control(form,"registration-name").placeholderText!=="comet-1" || control(form,"registration-pier").visible)throw new Error("Comet name/path defaults incorrect")
       control(form,"registration-name").text="my-required-name"
       phase=61
