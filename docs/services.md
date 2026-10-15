@@ -1,5 +1,36 @@
 # Management startup and reboot behavior
 
+## RC.3 owner-user services
+
+Fresh setup installs `urbit-docker.service` and `urbit-runner.service` in the selected
+existing user's manager, with lingering. Container UID0 maps to that same host user.
+`urbit-runner-ssh.service` remains a separate loopback system endpoint with restricted
+owner-account forced commands. See [owner-user setup](owner-user-runtime.md).
+
+As the installed owner:
+
+```bash
+loginctl show-user "$USER" -p Linger -p RuntimePath
+systemctl --user status urbit-runner.service urbit-docker.service --no-pager
+systemctl --user is-enabled urbit-runner.service urbit-docker.service
+systemctl status urbit-runner-ssh.service --no-pager
+journalctl --user -u urbit-runner.service -n 80 --no-pager
+```
+
+For management updates, use the current `install-host --owner "$USER"` with the
+reviewed bundle/public key after active operations finish. The legacy
+`install-services.sh` refuses owner profiles. Management-only restart is
+`systemctl --user restart urbit-runner.service`; running containers continue.
+The shutdown override is scoped to the selected owner's `user@UID.service`.
+Never retire an owner installation by deleting that human account or stopping its
+whole user manager; preserve the login, home, groups and preexisting linger setting.
+
+The bounded startup policy below continues in schema16. The dated reboot results
+are historical dedicated-account evidence; an owner-user host reboot is a separate
+acceptance check and is not implied by those records.
+
+## Historical dedicated-account acceptance and reference
+
 **Accepted live: service handoff, management-only restart, controlled engine restart
 and clean host reboot with automatic ship resume.**
 

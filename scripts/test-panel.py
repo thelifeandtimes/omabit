@@ -173,11 +173,11 @@ elif "ship-login" in sys.argv:
     assert sys.stdin.read() == "fixture-only-secret"
     print(json.dumps({"id":"a"*32,"name":"app-fixture","status":"authenticated"}))
 elif "setup-status" in sys.argv:
-    print(json.dumps({"ready":False,"can_setup":True,"host_present":False,"checks":[]}))
+    print(json.dumps({"execution_model":"owner-user","ready":False,"can_setup":True,"host_present":False,"checks":[]}))
 elif "setup" in sys.argv:
     for step in ("check","key","download","authorize","engine","access","services","verify","connect"):
         print(json.dumps({"step":step,"status":"running"}),flush=True)
-    print(json.dumps({"step":"ready","status":"complete","result":{"ready":True,"can_setup":True,"checks":[],"connection":{"name":"fixture","runner_id":"runner-fixture","mode":"development-managed"},"browser_base":"http://127.0.0.1"}}),flush=True)
+    print(json.dumps({"step":"ready","status":"complete","result":{"execution_model":"owner-user","ready":True,"can_setup":True,"checks":[],"connection":{"name":"fixture","runner_id":"runner-fixture","mode":"development-managed"},"browser_base":"http://127.0.0.1"}}),flush=True)
 elif "theme-status" in sys.argv:
     print(json.dumps({"version":1,"ships":{}}))
 elif "theme-preview" in sys.argv:

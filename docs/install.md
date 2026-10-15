@@ -1,6 +1,6 @@
 # Install Omabit on this computer
 
-Omabit now has a single local setup flow for the dedicated engine, background
+Omabit has a single local setup flow for the owner's separate rootless engine, background
 services, private desktop access and runner enrollment. The panel guides you through
 it, and the same flow is available from a terminal.
 
@@ -17,7 +17,7 @@ See also the [remote trial plan](remote-runner-acceptance.md).
 For the normal GitHub installation in an Omarchy desktop:
 
 ```bash
-omarchy plugin add https://github.com/thelifeandtimes/omabit.git --enable
+omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enable
 ```
 
 The canonical repository's native entry points prepare checksum-pinned release binaries in the user's cache
@@ -53,9 +53,9 @@ The guided flow shows:
    storage. Existing setup keys are reused. Personal SSH configuration is untouched.
 3. **Verified host helper** — downloads the pinned rootless launcher and verifies
    its content before requesting host authorization.
-4. **Host services** — asks for OS authorization, then creates or verifies the
-   dedicated account/engine, installs the current runner, configures restricted SSH
-   access, enables lingering and installs the reboot services.
+4. **Host services** — asks for OS authorization, selects the existing desktop user,
+   creates `/srv/urbit/piers/` for that owner, installs the separate rootless engine
+   and runner, configures restricted SSH access and enables lingering/reboot services.
 5. **Desktop connection** — uses the locally authorized SSH host public key for
    strict host checking, verifies the runner/operator identities, and enrolls the
    connection automatically. An existing enrollment of that same runner is reused
@@ -112,15 +112,16 @@ For example:
   --http-port 18088 --request-id register-bus-lab
 ```
 
-The current host path is below `/var/lib/urbit-runner/piers`. Use `--pier-path
+The current host path is below `/srv/urbit/piers`. Use `--pier-path
 fakeships/project/bus/pier` to select a project path; a basename-only `--pier-name
 bus-data` defaults to `fakeships/bus-data/pier`. Existing-pier enrollment and stopped
 moves are explicit actions in **Setup → Pier storage & livenet import**; see the
 [storage convention](pier-storage.md).
 
-The runner advertises `fake-ship-options`, `pier-storage` and `host-handoff`. RC.2
-uses schema 15 and the permanent mount-root/pier layout; schema 11–14 upgrades
-preserve records and add durable reboot tracking without moving piers. Update both runners before using
+The owner runner advertises `owner-user-runtime`, `human-pier-storage` plus
+`fake-ship-options`, `pier-storage` and `host-handoff`. RC.3 uses schema 16 and the
+permanent mount-root/pier layout. Legacy account installations require explicit
+retirement/migration; schema upgrade does not move piers. Update both runners before using
 [stopped host moves](host-handoff.md).
 
 The form suggests unused instance names and unreserved HTTP ports, validates them
@@ -197,25 +198,23 @@ the selected ship's **Connectivity & runtime** section.
 
 ## Where data lives
 
-Host data belongs to the dedicated `urbit-runner` account, whose home is
-`/var/lib/urbit-runner`. Managed piers are ordinary host directories mounted into
-their replaceable runtime containers:
+Host data belongs to the selected existing Unix user. Container UID0 maps to that
+same owner, so `|mount`, ordinary `cp`/editor saves and `|commit` work directly.
+See [owner-user runtime](owner-user-runtime.md). Default and private paths:
 
 ```text
-/var/lib/urbit-runner/
-├── piers/
-│   ├── fakeships/[project/]<ship-directory>/pier/
-│   ├── livenet/{galaxies,stars,planets,moons,comets}/[group/]<ship-directory>/pier/
-│   └── archive/                  # Inactive backups, excluded from discovery
-└── .local/share/urbit-runner/managed/
-    ├── runner.sqlite             # Omabit management database (+ WAL/SHM sidecars)
-    ├── keys/                     # Private pending boot-key files
-    └── <private-instance-id>/     # Runtime metadata and pinned artifacts; no pier data
+/srv/urbit/piers/
+├── fakeships/[project/]<ship-directory>/pier/
+├── livenet/{galaxies,stars,planets,moons,comets}/[group/]<ship-directory>/pier/
+└── archive/                      # Inactive backups, excluded from discovery
+~/.local/share/urbit-runner/managed/
+├── runner.sqlite                 # Omabit management database (+ WAL/SHM sidecars)
+├── keys/                         # Private pending boot-key files
+└── <private-instance-id>/         # Runtime metadata and pinned artifacts; no pier data
 ```
 
-`bus-lab` (`~bus`) now uses `/var/lib/urbit-runner/piers/fakeships/bus/pier/`; alpha uses
-`fakeships/zod/pier/` and comet-check uses `livenet/comets/comet-check/pier/`. The private ID
-remains independent of the visible path, instance name and Urbit identity. Equal
+For example `bus-lab` (`~bus`) may use `/srv/urbit/piers/fakeships/bus/pier/`. The
+private ID remains independent of the visible path, instance name and Urbit identity. Equal
 fake identities have separate directories. Each pier contains its own `.urb/`.
 
 **`runner.sqlite` is the management state**, including the stable runner ID,
@@ -230,6 +229,9 @@ Desktop connection records are separate:
 `~/.local/state/omabit/panel.ini` (with the corresponding XDG overrides respected).
 
 ## Verification status
+
+The following versioned records describe historical dedicated-account deployments.
+Current owner-user qualification is recorded separately in the RC.3 release report.
 
 The historical **0.20** acceptance established the permanent layout. Fresh boot uses the permanent
 mount-root/pier layout with no automatic shutdown or storage relocation. The local

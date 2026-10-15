@@ -1,18 +1,18 @@
 # Storage locations, import and deletion
 
 For ordinary `|mount`/file-manager/`|commit` access, see the
-[user-accessible pier design options](desk-file-access-options.md). RC.2's current
-runner-owned roots do not yet implement shared desktop-user workspace permissions.
+[owner-user runtime](owner-user-runtime.md). RC.3 runs the runner and rootless
+engine as the existing pier-owning user, so desk files have the same host UID.
 
 Included in **0.1.0-rc.2**, after the published rc.1. Update the runner
 and desktop together to expose the new capabilities: `storage-locations`,
 `import-pier` and `delete-pier`. Storage support was introduced in schema 14; current
-source uses **management schema 15** with durable reboot-resume tracking. The
-additive upgrade preserves schema 11–14 records, and older runners refuse the new
+source uses **management schema 16**. The
+additive upgrade preserves schema 11–15 records, and older runners refuse the new
 database. Release publication and live fleet deployment are separate steps.
 
-**Deployed on October 14:** sourceport's desktop and both sourceport/sourcebox
-runners now have these controls. See the
+**Historical October 14 deployment:** both dedicated-account runners received these
+controls before retirement. See the
 [deployment record](diagnostics/2026-10-14-development-update.md).
 
 ## Choose where piers live
@@ -21,9 +21,10 @@ Open **Setup → Import a pier & storage locations** and select the runner.
 Under **Storage locations**, add a short name and an absolute directory **on that
 runner's host**, for example `ssd` → `/mnt/ssd/urbit-piers`.
 
-- The default remains `/var/lib/urbit-runner/piers`.
-- Additional directories must already exist, belong to `urbit-runner`, be accessible
-  through their parents, and not be group/world writable or symlinked.
+- The owner-user default is `/srv/urbit/piers/`.
+- Additional directories use the owner's normal permissions. Missing directories
+  are created as that user, including under their home. Shortcut selections are
+  canonicalized before pinning; owner-controlled group-writable paths are supported.
 - Each location is scanned using the standard `fakeships/` and classified
   `livenet/` layout. Its `archive/` is excluded.
 - Root identities retain inode and nanosecond birth timestamps across reboot-time
@@ -32,14 +33,14 @@ runner's host**, for example `ssd` → `/mnt/ssd/urbit-piers`.
 - Locations cannot overlap each other or private runner-home state, and an existing
   name cannot silently change its path. Adding a location does not move existing ships.
 
-For a **new dedicated storage directory**, a host administrator can prepare it:
+For example, select a new directory under your existing workspace:
 
 ```bash
-sudo install -d -o urbit-runner -g urbit-runner -m 0700 /mnt/ssd/urbit-piers
+mkdir -p "$HOME/projects/urbit-piers"
 ```
 
-Use an appropriate already-mounted parent for that host. Do not apply this ownership
-change to a shared directory containing unrelated data.
+For another disk, use a normally user-writable mounted directory. No service-account
+ownership transfer or ACL repair is part of this workflow.
 
 The new-ship and import forms offer a **Storage location on runner host** selector.
 Paths inside additional locations are represented as, for example,
@@ -87,33 +88,13 @@ while a target is being prepared.
 
 ### Host permissions
 
-The management RPC remains unprivileged. Approval in Omabit does not grant the
-service account root access to arbitrary user directories. The source tree must
-belong to `urbit-runner`; its parent needs read/write/search permission for the
-move and directory sync.
-Permission errors are shown in the form before import submission.
-
-For a stopped, reviewed pier in a user's **dedicated Urbit directory**, a host
-administrator can authorize that particular tree and grant access to its ancestors.
-For example, after substituting the actual paths and checking that the source is
-a real directory rather than a symlink:
-
-```bash
-sudo chown -R --no-dereference urbit-runner:urbit-runner /home/alice/urbit/my-pier
-sudo chmod -R go-rwx /home/alice/urbit/my-pier
-sudo setfacl -m u:urbit-runner:--x /home/alice
-sudo setfacl -m u:urbit-runner:rwx /home/alice/urbit
-```
-
-This transfers ownership of the selected pier, not Alice's home. Parent write
-access permits renames within that parent, so use a dedicated Urbit directory.
-Other ancestors may need search access too. Narrow POSIX ACL grants to the runner
-are accepted; broad group/other write grants are refused. `setfacl` must be available
-on the host if using ACLs. The same authorization works for a remote host through
-its administrator connection; the restricted management SSH key remains RPC-only.
-After a **completed** import, remove temporary ancestor ACL grants that no other
-configured path needs. No filesystem ownership changes are made automatically by
-the desktop or storage-registration RPC.
+The management RPC remains unprivileged and operates with the pier owner's normal
+access. Source data must belong to that user; its parent needs read/write/search
+permission for the move and sync. Ordinary group-writable desk files are accepted;
+private `.urb` state, symlink, hardlink, mount and world-write checks still apply.
+Permission errors are shown before import submission. The RPC does not elevate to
+take over another user's files. Remote management remains RPC-only, while ordinary
+editing takes place as the owner on the runner host.
 
 ### Interrupted imports
 

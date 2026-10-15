@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"os/user"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -29,7 +30,8 @@ func TestSetupCommands(t *testing.T) {
 				}
 			} else {
 				var plan hostsetup.SetupPlan
-				if err := json.Unmarshal(stdout.Bytes(), &plan); err != nil || plan.RuntimeQualified || !plan.RequiresAuthorization || plan.Account != "urbit-runner" {
+				owner, _ := user.Current()
+				if err := json.Unmarshal(stdout.Bytes(), &plan); err != nil || plan.RuntimeQualified || !plan.RequiresAuthorization || plan.Account != owner.Username || plan.Deployment != "owner-user-rootless" {
 					t.Fatalf("unexpected plan: %s, %v", &stdout, err)
 				}
 			}

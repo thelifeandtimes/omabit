@@ -29,6 +29,8 @@ const sshUnit = "/etc/systemd/system/urbit-runner-ssh.service"
 // HostResult contains only public connection data. The host key comes from the
 // authorized local installer, so desktop setup never needs blind SSH key scanning.
 type HostResult struct {
+	Owner               string `json:"owner,omitempty"`
+	PierRoot            string `json:"pier_root,omitempty"`
 	Ready               bool   `json:"ready"`
 	Partial             bool   `json:"partial"`
 	UID                 uint32 `json:"uid"`

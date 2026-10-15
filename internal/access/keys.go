@@ -23,7 +23,12 @@ const DefaultKeys = "/etc/urbit-runner/authorized_keys"
 type Grant struct{ Fingerprint, Role string }
 
 var ErrDenied = errors.New("SSH grant is absent, revoked, or invalid")
-var linePattern = regexp.MustCompile(`^restrict,command="urbit-runner-rpc-v1 (SHA256:[A-Za-z0-9+/]{43}) (operator|observer)" ssh-ed25519 ([A-Za-z0-9+/]+=*)$`)
+var linePattern = regexp.MustCompile(`^restrict,command="(?:urbit-runner-rpc-v1|/usr/local/lib/urbit-runner/current/urbit-runner owner-ssh) (SHA256:[A-Za-z0-9+/]{43}) (operator|observer)" ssh-ed25519 ([A-Za-z0-9+/]+=*)$`)
+
+func OwnerAuthorizedKey(public []byte, role string) (string, error) {
+	line, err := AuthorizedKey(public, role)
+	return strings.Replace(line, `command="`+client.SSHCommand+` `, `command="`+ShellPath+` owner-ssh `, 1), err
+}
 
 func fingerprint(encoded string) (string, error) {
 	key, err := base64.StdEncoding.DecodeString(encoded)

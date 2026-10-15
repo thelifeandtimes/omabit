@@ -10,6 +10,10 @@ import (
 )
 
 func subids(text, uid string, hostIDs []uint64) (string, string) {
+	return ValidateSubIDs(rootless.AccountName, text, uid, hostIDs)
+}
+
+func ValidateSubIDs(name, text, uid string, hostIDs []uint64) (string, string) {
 	type interval struct {
 		start, end uint64
 		target     bool
@@ -36,7 +40,7 @@ func subids(text, uid string, hostIDs []uint64) (string, string) {
 		if !sok || !cok || count == 0 || start+count > 1<<32-1 {
 			return "unknown", "Subordinate-ID range is malformed or overflows usable IDs."
 		}
-		ranges = append(ranges, interval{start, start + count, owner == rootless.AccountName || (uid != "" && owner == uid)})
+		ranges = append(ranges, interval{start, start + count, owner == name || (uid != "" && owner == uid)})
 	}
 	if hostIDs == nil {
 		return "unknown", "Complete local host ID inventory is unavailable or malformed; subordinate-ID safety is unknown."

@@ -1,7 +1,7 @@
 # Architecture
 
-Status: agreed design, September 22, 2026. This describes the target, not features
-already implemented. See the implementation plan for progress and gates.
+Design established September 22, 2026; host identity/storage updated October 15 for
+RC.3. Some sections describe targets; see project status for implemented gates.
 
 ## Roles and boundaries
 
@@ -174,8 +174,8 @@ preparation and consistent backups.
 
 ## Host deployment and storage
 
-Initial support: x86-64 Linux, systemd, Docker. The default installation is a
-dedicated-account rootless deployment. Qualification must validate this path;
+Initial support: x86-64 Linux, systemd, Docker. The default installation is an
+existing-owner-user rootless deployment. Qualification must validate this path;
 there is no silent fallback to a privileged engine. Do not enable Sudoless Docker,
 grant the desktop account access to the rootful socket, disable existing system
 Docker services, or change the desktop's Docker context.
@@ -186,24 +186,25 @@ Rootless complexity belongs in our setup tooling rather than manual user
 configuration. Initial development checkpoints may require terminal steps before
 the plugin installer exists.
 
-Use an isolated `urbit-runner` account with a private home, non-overlapping
-subordinate UID/GID ranges, no Docker/admin group membership, and lingering for
-unattended systemd user services. Keep the package-managed Docker engine and
+Use the selected existing pier-owning Unix account, preserving its login shell,
+groups and personal SSH settings. Use non-overlapping subordinate UID/GID ranges
+and lingering for unattended systemd user services. Keep the package-managed Docker engine and
 helpers. Supply the missing upstream rootless launcher at a reviewed version and
 digest; do not pipe a remote script into a shell or install a second static
 Docker engine. Keep launcher code root-owned outside the plugin checkout.
 
-Use a dedicated user service and explicit account-private Docker socket. Do not
-expose the engine socket to desktop clients; only the runner API will be exposed.
+Use a separate user service and explicit owner-private Docker socket. Remote clients
+receive only the runner API. Same-owner local processes share Unix authority;
+this model does not isolate the desktop user from their own engine/piers.
 Prove rootless mode and cgroup limits before using the engine for ship operations.
 
-Current dedicated-account locations:
+Current owner-user locations:
 
 ```text
-/var/lib/urbit-runner/piers/{fakeships,livenet/<tier>}/[group/]<ship-directory>/pier/
-/var/lib/urbit-runner/.local/share/urbit-runner/managed/runner.sqlite
-/var/lib/urbit-runner/.local/share/urbit-runner/managed/<private-id>/
-/run/user/959/urbit-runner/runner.sock
+/srv/urbit/piers/{fakeships,livenet/<tier>}/[group/]<ship-directory>/pier/
+~/.local/share/urbit-runner/managed/runner.sqlite
+~/.local/share/urbit-runner/managed/<private-id>/
+/run/user/UID/urbit-runner/runner.sock
 ```
 
 The exclusive ship parent mounts at `/urbit`; Vere always uses `/urbit/pier`.

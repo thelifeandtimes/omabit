@@ -49,7 +49,9 @@ func newInstaller() installer {
 	return installer{
 		root: "/", euid: os.Geteuid(), goos: runtime.GOOS, goarch: runtime.GOARCH,
 		verified: rootless.VerifiedFiles, inspect: hostsetup.Inspect,
-		lookupUser: user.Lookup, lookupGroup: user.LookupGroup, groupIDs: (*user.User).GroupIds,
+		inspectOwner: hostsetup.InspectOwner,
+		chownOwner:   func(path string, uid, gid uint32) error { return os.Chown(path, int(uid), int(gid)) },
+		lookupUser:   user.Lookup, lookupGroup: user.LookupGroup, groupIDs: (*user.User).GroupIds,
 		lstat: os.Lstat, chown: func(f *os.File) error { return f.Chown(0, 0) },
 		run: runCommand,
 	}
@@ -63,6 +65,8 @@ type installer struct {
 	goos, goarch string
 	verified     func(string) (map[string][]byte, error)
 	inspect      func() hostsetup.Report
+	inspectOwner func(string) hostsetup.Report
+	chownOwner   func(string, uint32, uint32) error
 	lookupUser   func(string) (*user.User, error)
 	lookupGroup  func(string) (*user.Group, error)
 	groupIDs     func(*user.User) ([]string, error)

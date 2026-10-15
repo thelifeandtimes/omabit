@@ -3,6 +3,7 @@ function validId(value) {
 }
 
 function validateSetupStatus(v) {
+  if (!v || v.execution_model !== "owner-user") throw new Error("The local helper needs the owner-user release. Update the pinned tools before setting up this computer.")
   if (!v || typeof v.ready !== "boolean" || typeof v.can_setup !== "boolean" || !Array.isArray(v.checks) || v.checks.length > 64)
     throw new Error("Invalid local setup status")
   if (!v.checks.every(function(c) { return c && typeof c.id === "string" && typeof c.detail === "string" && c.detail.length <= 8192 && ["pass","missing","blocked","unknown","info"].indexOf(c.status) >= 0 }))

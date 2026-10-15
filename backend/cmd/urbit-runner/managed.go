@@ -41,22 +41,23 @@ func runManagedMode(ctx context.Context, args []string, stdout, stderr io.Writer
 	ack := flags.Bool("acknowledge-development", false, "authorize the selected development management mode; ships outlive this process")
 	var resume bool
 	if comets {
-		flags.BoolVar(&resume, "resume-running", false, "resume eligible initialized ships after a clean host shutdown, once per host boot")
+		flags.BoolVar(&resume, "resume-running", false, "resume eligible initialized ships after host reboot, once per host boot")
 	}
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			if comets {
 				fmt.Fprint(stdout, `Usage: urbit-runner serve-development --acknowledge-development [--resume-running]
 
-Serve the dedicated-account development runner with fake/comet creation, owned-key
+Serve the installed pier-owner development runner with fake/comet creation, owned-key
 bootstrap, stopped-pier enrollment, maintenance and host handoff. Comets generate
 their identity internally. HTTP is loopback-only; owned ships publish configured Ames UDP.
 Collector enrollment must explicitly accept mode development-managed while
 retaining the same runner ID. Private state has explicit schema/downgrade guards.
 Start/stop are explicit; incomplete bootstrap is quarantined, never retried.
-With --resume-running, startup may replace cleanly stopped runtime containers for
+With --resume-running, startup may replace terminal runtime containers for
 initialized ships whose persisted desired state is running. Each ship gets at most
-one journaled attempt per host boot; stopped, interrupted and uncertain ships are skipped.
+one journaled attempt per host boot. Nonzero exits require a recorded healthy prior
+boot; intentionally stopped, interrupted and independently uncertain ships are skipped.
 `)
 				return 0
 			}

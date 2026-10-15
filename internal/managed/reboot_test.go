@@ -259,7 +259,7 @@ func TestSchema14UpgradePreservesRecordsWithoutInventingBootEvidence(t *testing.
 	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		t.Fatal(err)
 	}
-	if before != after || version != 15 {
+	if before != after || version != currentSchema {
 		t.Fatal("migration changed runtime evidence", version)
 	}
 }

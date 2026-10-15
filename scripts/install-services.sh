@@ -8,6 +8,10 @@ if [[ $EUID != 0 || $# != 0 ]]; then
   exit 2
 fi
 ROOT="$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")"
+if [[ -f /etc/urbit-runner/owner.json ]]; then
+  printf '%s\n' 'Owner-user hosts are updated with urbit-runner install-host --owner USER --bundle DIR --public-key FILE --acknowledge-host-changes. This historical service-only installer is for legacy dedicated-account hosts.' >&2
+  exit 2
+fi
 UID_RUNNER="$(/usr/bin/id -u urbit-runner)"
 [[ $UID_RUNNER != 0 && -x "$ROOT/build/urbit-runner" ]]
 [[ -f /etc/systemd/user/urbit-docker.service && -f /etc/urbit-runner/sshd_config ]]

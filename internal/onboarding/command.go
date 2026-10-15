@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
 	"strings"
 	"time"
@@ -72,7 +73,11 @@ func installHost(ctx context.Context, runner, bundle, public string, emit func(E
 	if isatty.IsTerminal(os.Stdin.Fd()) {
 		program = "/usr/bin/sudo"
 	}
-	cmd := exec.CommandContext(ctx, program, runner, "install-host", "--bundle", bundle, "--public-key", public, "--acknowledge-host-changes")
+	owner, err := user.Current()
+	if err != nil {
+		return hostinstall.HostResult{}, err
+	}
+	cmd := exec.CommandContext(ctx, program, runner, "install-host", "--owner", owner.Username, "--bundle", bundle, "--public-key", public, "--acknowledge-host-changes")
 	cmd.WaitDelay = 2 * time.Second
 	if program == "/usr/bin/sudo" {
 		cmd.Stdin = os.Stdin

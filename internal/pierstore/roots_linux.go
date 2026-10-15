@@ -13,6 +13,7 @@ import (
 	"strings"
 	"syscall"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"golang.org/x/sys/unix"
 )
 
@@ -21,6 +22,10 @@ const rootsFile = ".omabit-storage.json"
 // HostPath rejects symlink ancestors. Roots may live on mounted disks, but their
 // parent chain must not be writable by other unprivileged users.
 func HostPath(p string) error {
+	return hostPathMode(p, ownerWorkspace(p))
+}
+
+func hostPathMode(p string, ownerMode bool) error {
 	if !filepath.IsAbs(p) || filepath.Clean(p) != p || p == "/" || strings.ContainsAny(p, "\x00\r\n,\"") || len(p) > 2048 {
 		return errors.New("use a clean absolute host directory path")
 	}
@@ -29,7 +34,11 @@ func HostPath(p string) error {
 		if err != nil {
 			return err
 		}
-		if !i.IsDir() || i.Mode()&os.ModeSymlink != 0 || i.Mode().Perm()&0022 != 0 && i.Mode()&os.ModeSticky == 0 && !runnerOnlyACLWrite(parent) {
+		ownerWritable := false
+		if s, ok := i.Sys().(*syscall.Stat_t); ok && s.Uid == uint32(os.Geteuid()) && ownerMode && i.Mode().Perm()&0002 == 0 {
+			ownerWritable = true
+		}
+		if !i.IsDir() || i.Mode()&os.ModeSymlink != 0 || i.Mode().Perm()&0022 != 0 && i.Mode()&os.ModeSticky == 0 && !runnerOnlyACLWrite(parent) && !ownerWritable {
 			return errors.New("host path ancestors must be real directories without group/world write access")
 		}
 		if parent == "/" {
@@ -80,7 +89,11 @@ func runnerOnlyACLWrite(path string) bool {
 }
 
 func Roots(home string) ([]StorageRoot, error) {
-	out := []StorageRoot{{ID: "default", Path: Root(home)}}
+	defaultRoot, err := ownerhost.DefaultRoot(home)
+	if err != nil {
+		return nil, err
+	}
+	out := []StorageRoot{{ID: "default", Path: defaultRoot}}
 	if _, err := directory(home); err != nil {
 		return nil, err
 	}
@@ -124,13 +137,33 @@ func Roots(home string) ([]StorageRoot, error) {
 // RegisterRoot adds a location, never retargets an existing location or chmods
 // unrelated paths. The operator must first have OS permission at that location.
 func RegisterRoot(home, id, path string) (StorageRoot, error) {
+	return registerRoot(home, id, path, ownerhost.OwnsHome(home))
+}
+
+func registerRoot(home, id, path string, ownerMode bool) (StorageRoot, error) {
 	if !component.MatchString(id) || id == "default" {
 		return StorageRoot{}, errors.New("choose a storage name other than default")
 	}
-	if err := HostPath(path); err != nil {
-		return StorageRoot{}, fmt.Errorf("storage access: %w; ask the host administrator to prepare a directory for urbit-runner", err)
+	if ownerMode {
+		if !filepath.IsAbs(path) || filepath.Clean(path) != path || path == "/" {
+			return StorageRoot{}, errors.New("use an absolute storage directory")
+		}
+		var err error
+		path, err = canonicalNewPath(path)
+		if err != nil {
+			return StorageRoot{}, err
+		}
+		if ownerPrivateOverlap(home, path) {
+			return StorageRoot{}, errors.New("storage cannot overlap private management state or the home root")
+		}
+		if err := os.MkdirAll(path, 0755); err != nil {
+			return StorageRoot{}, err
+		}
 	}
-	identity, err := IdentifyMount(path)
+	if err := hostPathMode(path, ownerMode); err != nil {
+		return StorageRoot{}, fmt.Errorf("storage access: %w; select a directory writable by the runner's Unix owner", err)
+	}
+	identity, err := identifyMountMode(path, ownerMode)
 	if err != nil {
 		return StorageRoot{}, err
 	}
@@ -149,11 +182,15 @@ func RegisterRoot(home, id, path string) (StorageRoot, error) {
 			return StorageRoot{}, errors.New("storage name or overlapping path is already configured")
 		}
 	}
-	if Overlap(home, path) || len(roots) > 32 {
-		return StorageRoot{}, errors.New("additional storage must be outside the runner home; at most 32 additional locations")
+	privateOverlap := Overlap(home, path)
+	if ownerMode {
+		privateOverlap = ownerPrivateOverlap(home, path)
+	}
+	if privateOverlap || len(roots) > 32 {
+		return StorageRoot{}, errors.New("storage overlaps private management state or exceeds the 32-location limit")
 	}
 	root := StorageRoot{ID: id, Path: path, Identity: identity}
-	if err := initRoot(path); err != nil {
+	if err := initRootMode(path, ownerMode); err != nil {
 		return StorageRoot{}, err
 	}
 	data, err := json.Marshal(append(roots[1:], root))
@@ -183,10 +220,41 @@ func RegisterRoot(home, id, path string) (StorageRoot, error) {
 	return root, errors.Join(d.Sync(), d.Close())
 }
 
+func ownerPrivateOverlap(home, path string) bool {
+	return path == home || strings.HasPrefix(home, path+"/") || Overlap(filepath.Join(home, ".local/share/urbit-runner"), path) || Overlap(filepath.Join(home, ".config/omabit/setup"), path)
+}
+
+// Resolve the existing prefix before creating a user's new storage directory.
+// The registry pins the real directory, not a mutable shortcut/symlink.
+func canonicalNewPath(path string) (string, error) {
+	parent := path
+	var suffix []string
+	for {
+		_, err := os.Lstat(parent)
+		if err == nil {
+			break
+		}
+		if !errors.Is(err, os.ErrNotExist) {
+			return "", err
+		}
+		suffix = append(suffix, filepath.Base(parent))
+		parent = filepath.Dir(parent)
+	}
+	resolved, err := filepath.EvalSymlinks(parent)
+	if err != nil {
+		return "", err
+	}
+	for n := len(suffix) - 1; n >= 0; n-- {
+		resolved = filepath.Join(resolved, suffix[n])
+	}
+	return resolved, nil
+}
+
 func Resolve(home, relative string) (string, string, error) {
 	id, rel := Split(relative)
 	if id == "" {
-		return Root(home), rel, nil
+		root, err := ownerhost.DefaultRoot(home)
+		return root, rel, err
 	}
 	roots, err := Roots(home)
 	if err != nil {

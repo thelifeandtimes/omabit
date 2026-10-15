@@ -17,17 +17,20 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostinstall"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostsetup"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 )
 
 type Status struct {
-	Ready       bool                   `json:"ready"`
-	CanSetup    bool                   `json:"can_setup"`
-	HostPresent bool                   `json:"host_present"`
-	Checks      []hostsetup.Check      `json:"checks"`
-	Connection  *collection.Connection `json:"connection,omitempty"`
-	BrowserBase string                 `json:"browser_base,omitempty"`
-	Hint        string                 `json:"hint,omitempty"`
+	ExecutionModel string                 `json:"execution_model"`
+	PierRoot       string                 `json:"pier_root"`
+	Ready          bool                   `json:"ready"`
+	CanSetup       bool                   `json:"can_setup"`
+	HostPresent    bool                   `json:"host_present"`
+	Checks         []hostsetup.Check      `json:"checks"`
+	Connection     *collection.Connection `json:"connection,omitempty"`
+	BrowserBase    string                 `json:"browser_base,omitempty"`
+	Hint           string                 `json:"hint,omitempty"`
 }
 
 type Event struct {
@@ -54,7 +57,7 @@ type dependencies struct {
 }
 
 func defaults() dependencies {
-	return dependencies{inspect: hostsetup.Inspect, tool: executable, prepare: rootless.Prepare, key: desktopKey, elevate: installHost, probe: probeConnection, connect: connectLocal}
+	return dependencies{inspect: hostsetup.InspectCurrentOwner, tool: executable, prepare: rootless.Prepare, key: desktopKey, elevate: installHost, probe: probeConnection, connect: connectLocal}
 }
 
 func Directory() (string, error) {
@@ -74,12 +77,15 @@ func Inspect(ctx context.Context, config string) (Status, error) {
 }
 
 func inspect(ctx context.Context, config, dir string, d dependencies) (Status, error) {
-	s := Status{CanSetup: true, Checks: []hostsetup.Check{}}
+	s := Status{CanSetup: true, Checks: []hostsetup.Check{}, ExecutionModel: "owner-user", PierRoot: ownerhost.DefaultPiers}
 	for _, c := range d.inspect().Checks {
 		if c.ID == "account" {
 			s.HostPresent = c.Status == "pass"
 		}
-		required := c.ID == "platform" || c.ID == "systemd" || c.ID == "cgroup-v2" || c.ID == "userns-limit" || c.ID == "docker-version" || strings.HasPrefix(c.ID, "binary-")
+		required := c.ID == "owner-account" || c.ID == "platform" || c.ID == "systemd" || c.ID == "cgroup-v2" || c.ID == "userns-limit" || c.ID == "docker-version" || strings.HasPrefix(c.ID, "binary-")
+		if (c.ID == "subuid" || c.ID == "subgid") && c.Status != "missing" {
+			required = true
+		}
 		if c.ID == "userns-clone" && c.Status == "blocked" {
 			required = true
 		}
@@ -101,6 +107,9 @@ func inspect(ctx context.Context, config, dir string, d dependencies) (Status, e
 			s.CanSetup = false
 		}
 		s.Checks = append(s.Checks, c)
+	}
+	if !s.CanSetup {
+		return s, nil
 	}
 	data, err := readPrivate(filepath.Join(dir, "ready.json"), 16384)
 	if errors.Is(err, os.ErrNotExist) {
@@ -230,7 +239,10 @@ func setup(ctx context.Context, config, dir, runner string, d dependencies, emit
 		return s, err
 	}
 	step("connect", "Verifying your operator connection")
-	ssh, err := writeSSH(dir, host.HostPublicKey)
+	if host.Owner != "" && host.UID != uint32(os.Geteuid()) {
+		return s, errors.New("host setup selected a different pier owner")
+	}
+	ssh, err := writeSSH(dir, host.HostPublicKey, host.Owner)
 	if err != nil {
 		return s, err
 	}

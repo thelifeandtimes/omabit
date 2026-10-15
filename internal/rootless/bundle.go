@@ -158,7 +158,7 @@ func prepare(ctx context.Context, output string, client *http.Client) (Manifest,
 		LauncherURL: launcherURL, LauncherSHA256: LauncherSHA256,
 		Account: AccountName, Home: HomeDir, InstallDir: InstallDir, Unit: UnitName,
 		UnitPath:  "/etc/systemd/user/" + UnitName,
-		TrustNote: "User-owned preparation output, not independently trusted installer input. The OS-authorized install-rootless helper snapshots and checks content against its compiled-in pins/templates, not this manifest, before installing root-owned files. Preparing this bundle performed no installation, runtime validation, or image qualification.",
+		TrustNote: "User-owned preparation output, not independently trusted installer input. Account/home describe legacy template placeholders; install-host binds the verified templates to the explicitly selected existing owner. The OS-authorized installer checks content against compiled-in pins/templates, not this manifest. Preparation performs no installation, runtime validation, or image qualification.",
 	}
 	type artifact struct {
 		name, url, hash string

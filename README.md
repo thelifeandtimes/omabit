@@ -8,19 +8,17 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Status:** [**0.1.0-rc.2 is published**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.2),
-a Linux/AMD64 development release candidate.
+**Current source:** **0.1.0-rc.3**, a Linux/AMD64 development release candidate
+using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and known issues](docs/release-rc2.md),
+[release notes and known issues](docs/release-rc3.md),
 and the [draft pill plan](docs/pill-release.md). Final 0.1.0 is still pending.
 
-RC.2 adds
-[storage locations, GUI pier import and deletion](docs/storage-management.md), plus
-a font-independent SVG logo. These changes are not in the published rc.1 assets.
-They were [deployed on the two-host development fleet](docs/diagnostics/2026-10-14-development-update.md).
-Both runners also received [schema-15 unclean-reboot resume](docs/diagnostics/2026-10-15-reboot-resume-deployment.md),
-with durable boot-bound eligibility and one automatic attempt per host boot.
-The development installations were subsequently
+RC.3 makes `|mount` → ordinary copy/editor saves → `|commit` work directly on
+user-owned files. Default piers live at **`/srv/urbit/piers/`**; custom locations
+use ordinary user permissions. See the [owner-user runtime](docs/owner-user-runtime.md).
+RC.2 storage/import/deletion and bounded reboot-resume behavior continue.
+Prior dedicated-account installations were
 [retired for the user-driven fresh-install exercise](docs/diagnostics/2026-10-15-rc2-release-retirement.md).
 
 ## Get started
@@ -28,7 +26,7 @@ The development installations were subsequently
 In a terminal inside your Omarchy desktop:
 
 ```bash
-omarchy plugin add https://github.com/thelifeandtimes/omabit.git --enable
+omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enable
 ```
 
 This repository is directly installable through Omarchy's native GitHub plugin installer. The plugin downloads
@@ -59,7 +57,7 @@ The generic, non-Omarchy runner and collector entry points are in
 [`backend/`](backend/README.md). The desktop-specific Go helper is `cmd/omabit`;
 shared implementation remains under `internal/` in one Go module.
 
-- Dedicated-account rootless Docker and the pinned official Vere release.
+- A separate owner-user rootless Docker engine and the pinned official Vere release.
 - New comets and development fakes, with durable start/stop/resume operations.
 - Owned-key bootstrap, including a live-tested moon, and stopped in-tree pier enrollment.
 - Permanent per-ship mount directories: first boot creates `pier/` in place and keeps running.
@@ -109,7 +107,8 @@ release contract.
 ## Documentation
 
 - [Fresh installation and first ship](docs/install.md)
-- [Sourcebox clean reinstall from rc.1](docs/sourcebox-clean-install.md)
+- [Sourcebox fresh native installation](docs/sourcebox-clean-install.md)
+- [Owner-user runtime and desk editing](docs/owner-user-runtime.md)
 - [Storage locations, import and deletion](docs/storage-management.md)
 - [Services, shutdown and reboot behavior](docs/services.md)
 - [Official-runtime policy](docs/runtime-policy.md)

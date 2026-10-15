@@ -112,13 +112,16 @@ func sshPath(path string) string {
 	return `"` + strings.NewReplacer(`\`, `\\`, `"`, `\"`, `%`, `%%`).Replace(path) + `"`
 }
 
-func writeSSH(dir, hostPublic string) (client.SSHConfig, error) {
+func writeSSH(dir, hostPublic string, owner ...string) (client.SSHConfig, error) {
 	known := filepath.Join(dir, "known_hosts")
 	if err := writePrivate(known, []byte("[127.0.0.1]:22222 "+hostPublic+"\n")); err != nil {
 		return client.SSHConfig{}, err
 	}
 	config := filepath.Join(dir, "ssh_config")
 	text := fmt.Sprintf("Host omabit-local\n  HostName 127.0.0.1\n  Port 22222\n  User urbit-runner\n  IdentityFile %s\n  IdentityAgent none\n  IdentitiesOnly yes\n  UserKnownHostsFile %s\n  GlobalKnownHostsFile /dev/null\n  StrictHostKeyChecking yes\n  BatchMode yes\n", sshPath(filepath.Join(dir, "id_ed25519")), sshPath(known))
+	if len(owner) > 0 && owner[0] != "" {
+		text = strings.Replace(text, "User urbit-runner\n", "User "+owner[0]+"\n", 1)
+	}
 	if err := writePrivate(config, []byte(text)); err != nil {
 		return client.SSHConfig{}, err
 	}

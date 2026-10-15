@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostports"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
@@ -140,9 +141,13 @@ func RunCometPrefix(ctx context.Context, progress func(string)) (Result, error) 
 }
 
 func defaults() dependencies {
+	home := rootless.HomeDir
+	if p, err := ownerhost.Load(); err == nil && p != nil {
+		home = p.Home
+	}
 	return dependencies{
 		profile: ProfileLifecycle, hostProbe: probeHostHTTP, hostIdentity: readHostIdentity,
-		home: rootless.HomeDir, identity: currentIdentity, stat: statNode,
+		home: home, identity: currentIdentity, stat: statNode,
 		admission: available, execute: executeDocker, download: candidate.DownloadPill,
 		stats:         readDockerStats,
 		logs:          readDockerLogs,

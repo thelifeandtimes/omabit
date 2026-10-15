@@ -2,7 +2,9 @@ package hostsetup
 
 import (
 	"fmt"
+	"os/user"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 )
 
@@ -27,6 +29,15 @@ type SetupPlan struct {
 // Plan is descriptive, never executable or an authorization decision. All steps
 // remain necessary: a report is partial, untrusted evidence, not install state.
 func Plan(report Report) SetupPlan {
+	if report.Deployment == "owner-user-rootless" {
+		name, home := "selected user", "selected home"
+		if u, e := user.Current(); e == nil {
+			name, home = u.Username, u.HomeDir
+		}
+		return SetupPlan{SchemaVersion: 1, Deployment: report.Deployment, Account: name, Home: home, DockerVersion: rootless.EngineVersion, RequiresAuthorization: true,
+			Preserves: []string{"login account and shell", "personal SSH configuration", "unrelated Docker services and contexts", "existing piers"},
+			Steps:     []Step{{"prerequisites", "none", "Review platform, owner and rootless engine prerequisites."}, {"authorize", "root", "Authorize owner-user setup; allocate missing subordinate IDs without replacing existing ranges."}, {"storage", "root", "Create " + ownerhost.DefaultPiers + " owned by " + name + "; do not recursively change an unrelated existing directory."}, {"services", "root", "Install owner-bound rootless Docker, runner and restricted management SSH services; preserve personal SSH and login shell."}, {"verify", name, "Verify the explicit rootless socket, same-UID filesystem access and pinned management identity."}}}
+	}
 	unresolved := 0
 	for _, check := range report.Checks {
 		if check.Status != "pass" && check.Status != "info" {

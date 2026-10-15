@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
@@ -289,6 +290,9 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials", "offline-pack", "offline-meld", "offline-roll", "container-resources", "container-cpu", "epoch-inventory", "epoch-prune-genesis", "epoch-prune-prefix"}
 		features = append(features, "maintenance-schedules")
 		features = append(features, "fake-ship-options")
+		if p, err := ownerhost.Current(); err == nil && p != nil {
+			features = append(features, "owner-user-runtime", "human-pier-storage")
+		}
 		if _, ok := r.b.(storageActionsBackend); ok {
 			features = append(features, "storage-locations", "import-pier", "delete-pier")
 		}

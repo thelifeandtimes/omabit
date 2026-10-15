@@ -44,7 +44,7 @@ Ui.Panel {
         MultiEffect { anchors.fill: parent; source: mark; colorization: 1; colorizationColor: button.active ? button.activeColor : button.foreground }
       }
     }
-    tooltipText: "Omabit 0.1.0-rc.2 · " + Model.fleet(root.connections).length + " instances"
+    tooltipText: "Omabit 0.1.0-rc.3 · " + Model.fleet(root.connections).length + " instances"
     onPressed: function(code) { if (code === Qt.RightButton) { if (root.service) root.service.refresh() } else root.toggle() }
   }
   Ui.KeyboardPanel {

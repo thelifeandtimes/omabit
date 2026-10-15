@@ -1,7 +1,9 @@
 # User-accessible piers and mounted desk files
 
-**Design review, not an implemented permission change.** RC.2 still uses the
-dedicated account's private default layout. The required user experience is:
+**Historical design review.** The user selected option D, implemented for RC.3
+with `/srv/urbit/piers/` as default. See [owner-user runtime](owner-user-runtime.md).
+The RC.2 limitations and alternative discussion below are retained for rationale.
+The required user experience is:
 
 1. Run `|mount %some-desk` in the ship.
 2. Open its exported `<pier>/some-desk/` directory in the host file manager/editor.
@@ -44,7 +46,7 @@ by itself. An ownership-mapped filesystem view such as bindfs could provide that
 workflow while retaining backing-file ownership, at the cost of a FUSE dependency,
 mount lifecycle and a new access boundary to qualify.
 
-### B. Shared host pier root, separate from private service state — recommended
+### B. Shared host pier root, separate from private service state — earlier proposal
 
 Use a host data root such as `/srv/urbit/piers` (or a separate
 `/var/lib/urbit-piers`) for fresh installations. Keep the runner database, engine,

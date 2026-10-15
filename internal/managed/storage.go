@@ -61,6 +61,9 @@ func (r *Server) pierCatalogue(ctx context.Context) *pierstore.Catalogue {
 			c.Error = "Storage location registry needs review."
 			return c
 		}
+		if len(c.Roots) > 0 {
+			c.Root = c.Roots[0].Path
+		}
 	}
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()

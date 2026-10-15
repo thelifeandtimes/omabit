@@ -17,8 +17,16 @@ retains operation history and the final revision; a reused instance name receive
 a new runtime ID and a strictly greater initial configuration revision.
 
 See [storage management](storage-management.md) for the filesystem contract and GUI
-workflow. Current schema 15 upgrades schema 11–14 databases additively; older
+workflow. Current schema 16 upgrades schema 11–15 databases additively; older
 binaries refuse the upgraded database.
+
+### Owner-user extension (schema 16)
+
+Installed owner hosts advertise `owner-user-runtime` and `human-pier-storage`.
+The root-owned installation profile binds the existing Unix owner and default
+`/srv/urbit/piers/` root. Custom roots use normal owner permissions and pin a
+canonical directory. OS account migration remains explicit and separate from
+database migration. See [owner-user runtime](owner-user-runtime.md).
 
 ### Reboot resume extension (schema 15)
 

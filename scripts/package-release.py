@@ -122,7 +122,7 @@ def main():
         installer = package / "install.sh"
         installer.write_text('#!/usr/bin/env bash\nset -euo pipefail\nROOT="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"\nexec python3 -B "$ROOT/scripts/install-panel.py" "$@"\n')
         installer.chmod(0o755)
-        metadata = {"version": args.version, "prerelease": "-rc." in args.version, "source_commit": commit, "platform": "linux/amd64", "go_version": subprocess.check_output(["go", "version"], env=env, text=True).strip(), "schema": 15, "runtime": "4.6-5a7614f", "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd", "engine": "29.7.2", "pill": {"draft": True, "sha256": args.pill_sha256, "pending_desks": ["mcp", "omachan"]}}
+        metadata = {"version": args.version, "prerelease": "-rc." in args.version, "source_commit": commit, "platform": "linux/amd64", "go_version": subprocess.check_output(["go", "version"], env=env, text=True).strip(), "schema": 16, "execution_model": "owner-user", "default_pier_root": "/srv/urbit/piers", "runtime": "4.6-5a7614f", "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd", "engine": "29.7.2", "pill": {"draft": True, "sha256": args.pill_sha256, "pending_desks": ["mcp", "omachan"]}}
         (package / "BUILD.json").write_text(json.dumps(metadata, indent=2) + "\n")
         checksums(package)
         assets = stage / "assets"

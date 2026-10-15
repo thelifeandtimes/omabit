@@ -14,6 +14,7 @@ import (
 	"strings"
 	"syscall"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 )
 
@@ -21,6 +22,7 @@ type identity struct {
 	uid, gid, accountUID, accountGID int
 	groups                           []int
 	account, home, group, platform   string
+	ownerUser                        bool
 }
 type node struct {
 	mode     fs.FileMode
@@ -30,7 +32,16 @@ type node struct {
 
 func currentIdentity() (identity, error) {
 	i := identity{uid: os.Geteuid(), gid: os.Getegid(), platform: runtime.GOOS + "/" + runtime.GOARCH}
-	u, err := user.Lookup(rootless.AccountName)
+	name := rootless.AccountName
+	p, err := ownerhost.Current()
+	if err != nil {
+		return i, err
+	}
+	if p != nil {
+		name = p.Name
+		i.ownerUser = true
+	}
+	u, err := user.Lookup(name)
 	if err != nil {
 		return i, err
 	}
@@ -71,7 +82,7 @@ func (q *qualifier) owned(path string, kind fs.FileMode, private bool) error {
 		return errors.New("account path has wrong type or is a symlink")
 	}
 	if n.uid != uint32(q.uid) || n.gid != uint32(q.gid) {
-		return errors.New("account path UID/GID does not match the dedicated account")
+		return errors.New("account path UID/GID does not match the installed runner owner")
 	}
 	if n.mode.Perm()&0022 != 0 || n.mode&(os.ModeSetuid|os.ModeSetgid) != 0 {
 		return errors.New("account file/directory is group/world writable or has special permissions")
@@ -86,10 +97,11 @@ func (q *qualifier) owned(path string, kind fs.FileMode, private bool) error {
 }
 
 // Ancestors outside the private home/runtime must be trusted root-owned paths.
-func (q *qualifier) ancestors(path string) error {
+func (q *qualifier) ancestors(path string, ownerMode ...bool) error {
 	for p := filepath.Dir(path); ; p = filepath.Dir(p) {
 		n, err := q.d.stat(p)
-		if err != nil || !n.mode.IsDir() || n.uid != 0 || n.mode.Perm()&0022 != 0 {
+		owned := len(ownerMode) > 0 && ownerMode[0] && n.uid == uint32(q.uid)
+		if err != nil || !n.mode.IsDir() || (n.uid != 0 && !owned) || n.mode.Perm()&0022 != 0 {
 			return errors.New("unsafe host path ancestor")
 		}
 		if p == "/" {
@@ -105,11 +117,11 @@ func (q *qualifier) boundary() error {
 
 func (q *qualifier) accountBoundary(requireEngine bool) error {
 	i, err := q.d.identity()
-	if err != nil || i.platform != "linux/amd64" || i.uid <= 0 || i.gid <= 0 || i.uid != i.accountUID || i.gid != i.accountGID || i.account != rootless.AccountName || i.group != rootless.AccountName || i.home != q.d.home {
-		return errors.New("qualification requires the dedicated private linux/amd64 account")
+	if err != nil || i.platform != "linux/amd64" || i.uid <= 0 || i.gid <= 0 || i.uid != i.accountUID || i.gid != i.accountGID || (!i.ownerUser && (i.account != rootless.AccountName || i.group != rootless.AccountName)) || i.home != q.d.home {
+		return errors.New("qualification requires the installed non-root linux/amd64 runner identity")
 	}
 	for _, gid := range i.groups {
-		if gid != i.gid {
+		if !i.ownerUser && gid != i.gid {
 			return errors.New("supplementary groups are forbidden")
 		}
 	}
@@ -123,10 +135,10 @@ func (q *qualifier) accountBoundary(requireEngine bool) error {
 	}
 	q.socket = filepath.Join(run, rootless.SocketName)
 	for _, p := range []string{q.d.home, run} {
-		if err := q.ancestors(p); err != nil {
+		if err := q.ancestors(p, i.ownerUser); err != nil {
 			return fmt.Errorf("private directory %s: %w", p, err)
 		}
-		if err := q.owned(p, os.ModeDir, true); err != nil {
+		if err := q.owned(p, os.ModeDir, p == run || !i.ownerUser); err != nil {
 			return fmt.Errorf("private directory %s: %w", p, err)
 		}
 	}
@@ -141,7 +153,7 @@ func (q *qualifier) accountBoundary(requireEngine bool) error {
 		return errors.New("private Docker socket missing, wrong type or symlink")
 	}
 	if socket.uid != uint32(q.uid) || socket.gid != uint32(q.gid) {
-		return errors.New("private Docker socket UID/GID does not match the dedicated account")
+		return errors.New("private Docker socket UID/GID does not match the installed runner owner")
 	}
 	accessMode := socket.mode &^ os.ModeSticky
 	if accessMode != os.ModeSocket|0600 && accessMode != os.ModeSocket|0660 {

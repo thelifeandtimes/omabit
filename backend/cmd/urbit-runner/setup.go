@@ -17,6 +17,10 @@ import (
 )
 
 func runSetup(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	if len(args) > 0 && args[0] == "install-rootless" {
+		fmt.Fprintln(stderr, "Use install-host --owner USER --bundle DIR --public-key FILE --acknowledge-host-changes for owner-user installation.")
+		return 2
+	}
 	return runSetupWithInstaller(ctx, args, stdout, stderr, hostinstall.Install)
 }
 
@@ -100,7 +104,7 @@ Failures may leave partial setup; inspect the result and do not force a retry.
 		}
 		result, err = rootless.Prepare(ctx, output)
 	} else {
-		report := hostsetup.Inspect()
+		report := hostsetup.InspectCurrentOwner()
 		result = report
 		if command == "setup-plan" {
 			result = hostsetup.Plan(report)

@@ -16,7 +16,7 @@ func TestInstallHostRequiresAcknowledgementAndBoundedPublicInput(t *testing.T) {
 		t.Fatal(err)
 	}
 	called := false
-	install := func(context.Context, string, []byte, func(string)) (hostinstall.HostResult, error) {
+	install := func(context.Context, string, []byte, string, func(string)) (hostinstall.HostResult, error) {
 		called = true
 		return hostinstall.HostResult{Ready: true}, nil
 	}

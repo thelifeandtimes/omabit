@@ -8,24 +8,37 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/user"
 	"path/filepath"
+	"strconv"
 	"syscall"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostinstall"
 )
 
 func runInstallHost(ctx context.Context, args []string, stdout, stderr io.Writer) int {
-	return runInstallHostWith(ctx, args, stdout, stderr, hostinstall.InstallHost)
+	return runInstallHostWith(ctx, args, stdout, stderr, hostinstall.InstallOwnerHost)
 }
 
-func runInstallHostWith(ctx context.Context, args []string, stdout, stderr io.Writer, install func(context.Context, string, []byte, func(string)) (hostinstall.HostResult, error)) int {
+func runInstallHostWith(ctx context.Context, args []string, stdout, stderr io.Writer, install func(context.Context, string, []byte, string, func(string)) (hostinstall.HostResult, error)) int {
 	flags := flag.NewFlagSet("install-host", flag.ContinueOnError)
 	flags.SetOutput(stderr)
 	bundle := flags.String("bundle", "", "verified rootless preparation directory")
 	public := flags.String("public-key", "", "desktop Ed25519 public key file")
-	ack := flags.Bool("acknowledge-host-changes", false, "authorize dedicated account, access and service setup")
+	name := os.Getenv("SUDO_USER")
+	if name == "" {
+		if id := os.Getenv("PKEXEC_UID"); id != "" {
+			if _, e := strconv.ParseUint(id, 10, 32); e == nil {
+				if u, e := user.LookupId(id); e == nil {
+					name = u.Username
+				}
+			}
+		}
+	}
+	owner := flags.String("owner", name, "existing Unix user who will own the runner and pier files")
+	ack := flags.Bool("acknowledge-host-changes", false, "authorize owner storage, access and service setup")
 	flags.Usage = func() {
-		fmt.Fprintln(stdout, "Usage: urbit-runner install-host --bundle DIR --public-key FILE --acknowledge-host-changes\n\nOS-authorized host step used by omabit setup. Installs or verifies the dedicated\nrootless engine, current runner, restricted SSH access and boot services. Preserves\nship data, runner identity, existing grants and SSH host identity. Outputs bounded\nnon-secret JSON progress; package prerequisites must already be installed.")
+		fmt.Fprintln(stdout, "Usage: urbit-runner install-host --owner USER --bundle DIR --public-key FILE --acknowledge-host-changes\n\nRuns the runner and separate rootless Docker engine as the selected existing Unix\nuser. Creates /srv/urbit/piers for that owner and installs restricted management SSH\nand boot services. Preserves the login shell, personal SSH and unrelated Docker.\nLegacy dedicated-account installations require explicit retirement/migration.")
 	}
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -56,7 +69,7 @@ func runInstallHostWith(ctx context.Context, args []string, stdout, stderr io.Wr
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	var outputErr error
-	result, err := install(ctx, *bundle, data, func(step string) {
+	result, err := install(ctx, *bundle, data, *owner, func(step string) {
 		if outputErr == nil {
 			outputErr = encoder.Encode(map[string]string{"step": step, "status": "running"})
 			if outputErr != nil {

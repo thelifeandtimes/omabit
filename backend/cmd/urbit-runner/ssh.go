@@ -14,6 +14,7 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 )
 
 // OpenSSH invokes the account's restricted login shell with -c and the forced
@@ -34,6 +35,24 @@ func runSSHShell(ctx context.Context, args []string, stdout, stderr io.Writer) i
 	}
 	socket := "/run/user/" + strconv.Itoa(os.Geteuid()) + "/urbit-runner/runner.sock"
 	if err := access.Bridge(ctx, os.Stdin, stdout, socket, access.DefaultKeys, grant.Fingerprint); err != nil {
+		fmt.Fprintln(stderr, err)
+		return 1
+	}
+	return 0
+}
+
+func runOwnerSSH(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	p, err := ownerhost.Current()
+	if err != nil || p == nil || len(args) != 2 || os.Getenv("SSH_ORIGINAL_COMMAND") != client.SSHCommand {
+		fmt.Fprintln(stderr, "restricted owner RPC access only")
+		return 1
+	}
+	g, err := access.Load(access.DefaultKeys, args[0])
+	if err != nil || g.Role != args[1] {
+		return 1
+	}
+	socket := "/run/user/" + strconv.Itoa(os.Geteuid()) + "/urbit-runner/runner.sock"
+	if err = access.Bridge(ctx, os.Stdin, stdout, socket, access.DefaultKeys, g.Fingerprint); err != nil {
 		fmt.Fprintln(stderr, err)
 		return 1
 	}
@@ -79,14 +98,18 @@ func runSSH(ctx context.Context, command string, args []string, stdout, stderr i
 			return 1
 		}
 		if command == "prepare-ssh" {
-			if err := access.Prepare(output, data, role, port); err != nil {
+			u, err := user.Current()
+			if err == nil {
+				err = access.PrepareOwner(output, data, role, port, u.Username)
+			}
+			if err != nil {
 				fmt.Fprintln(stderr, err)
 				return 1
 			}
-			fmt.Fprintf(stdout, "Prepared inert SSH review files in %s\nListen address: 127.0.0.1:%d\nRestricted account shell: %s\nHost installation requires administrative authorization.\n", output, port, access.ShellPath)
+			fmt.Fprintf(stdout, "Prepared inert owner SSH review files in %s\nListen address: 127.0.0.1:%d\nForced RPC executable: %s\nHost installation requires administrative authorization; the login shell is preserved.\n", output, port, access.ShellPath)
 			return 0
 		}
-		line, err := access.AuthorizedKey(data, role)
+		line, err := access.OwnerAuthorizedKey(data, role)
 		if err != nil {
 			fmt.Fprintln(stderr, err)
 			return 1

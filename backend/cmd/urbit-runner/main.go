@@ -20,8 +20,8 @@ import (
 const usage = `Usage: urbit-runner COMMAND
 
 Commands:
-  install-host --bundle DIR --public-key FILE --acknowledge-host-changes
-                             Install dedicated engine, access and management services.
+  install-host --owner USER --bundle DIR --public-key FILE --acknowledge-host-changes
+                             Install the owner's rootless engine, access and services.
   prepare-ssh --output DIR --public-key FILE --role operator|observer
                              Write inert loopback SSH review configuration.
   ssh-authorized-key --public-key FILE --role operator|observer
@@ -32,11 +32,9 @@ Commands:
   setup-plan                 Show the rootless installation review plan as JSON.
   prepare-rootless --output /absolute/new/directory
                              Fetch pinned, inert rootless setup review artifacts.
-  install-rootless --bundle /absolute/bundle --acknowledge-host-changes
-                             OS-authorized DEVELOPMENT first install (requires root).
   runtime-plan               Describe the pinned disposable-runtime checkpoint.
   qualify-runtime --acknowledge-disposable-run
-                             Run it as the dedicated account (never as root).
+                             Run it as the installed pier owner (never as root).
   http-plan                  Describe the host-loopback HTTP checkpoint.
   qualify-http --acknowledge-disposable-run
                              Test private HTTP publication and replacement.
@@ -82,7 +80,7 @@ Commands:
   demo --socket /private/directory/runner.sock [--operation-delay 2s]
                              Run the checkpoint 1 in-memory simulator.
 
-install-rootless and install-host perform explicitly authorized host setup.
+install-host performs explicitly authorized host setup for an existing Unix user.
 Qualification commands create new disposable ships and runtime resources.
 The development management API supports operator-authorized owned-key bootstrap;
 qualification commands do not accept existing production identities or piers.
@@ -105,6 +103,9 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	if len(args) > 0 && args[0] == "owner-ssh" {
+		return runOwnerSSH(ctx, args[1:], stdout, stderr)
+	}
 	if len(args) > 0 && args[0] == "install-host" {
 		return runInstallHost(ctx, args[1:], stdout, stderr)
 	}

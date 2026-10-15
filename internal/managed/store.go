@@ -27,7 +27,7 @@ import (
 
 const mode = "development-managed-fake"
 const DevelopmentMode = "development-managed"
-const currentSchema = 15
+const currentSchema = 16
 
 type storedInstance struct {
 	Public                protocol.Instance           `json:"public"`
@@ -160,19 +160,19 @@ CREATE TABLE instances (id TEXT PRIMARY KEY, body BLOB NOT NULL);
 CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TEXT NOT NULL,
  fingerprint TEXT NOT NULL, body BLOB NOT NULL, runtime BLOB,
  UNIQUE(actor, request_id));
-PRAGMA user_version=15;`); err != nil {
+PRAGMA user_version=16;`); err != nil {
 			return err
 		}
 		if _, err := tx.Exec("INSERT INTO meta VALUES ('runner_id', ?)", "runner-"+id); err != nil {
 			return err
 		}
-	} else if version >= 11 && version <= 14 {
+	} else if version >= 11 && version <= 15 {
 		// Older runners must not discard durable reboot-resume authorization.
-		if _, err := tx.Exec("PRAGMA user_version=15"); err != nil {
+		if _, err := tx.Exec("PRAGMA user_version=16"); err != nil {
 			return err
 		}
 	} else if version != currentSchema {
-		return errors.New("state database requires durable reboot-resume tracking (schema 15)")
+		return errors.New("state database requires owner-user runtime and storage support (schema 16)")
 	}
 	if _, err := tx.Exec("CREATE TABLE IF NOT EXISTS maintenance_policies (instance_id TEXT PRIMARY KEY REFERENCES instances(id), body BLOB NOT NULL)"); err != nil {
 		return err

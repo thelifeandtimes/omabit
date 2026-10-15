@@ -2,14 +2,21 @@
 
 ## Where we are
 
-**RC.2 is published; the old sourceport/sourcebox installations are retired.**
+**RC.3 owner-user source is implemented and under release qualification.**
+It runs the runner/rootless engine as the existing user, with `/srv/urbit/piers/`
+and ordinary custom workspace paths. Default fake and custom-root comet desk
+copy/edit/commit/remount gates passed locally, plus pack/resume content readback.
+See [owner-user runtime](owner-user-runtime.md) and [RC.3 notes](release-rc3.md).
+
+RC.2 is published; the old sourceport/sourcebox dedicated installations are retired.
 The verified binary bundle is staged on sourcebox. The selected repository model is
 [one directly installable `/omabit` monorepo](native-plugin.md), with generic Go
 tools under `backend/cmd/` and shared implementation under `internal/`.
 The user will use the normal Omarchy plugin install command and host setup manually. See the
 [publication/retirement handoff](diagnostics/2026-10-15-rc2-release-retirement.md).
-The running-fleet results below are historical acceptance evidence, not the current
-post-retirement host state.
+Sourceport currently has disposable owner-user qualification resources. Sourcebox
+remains reserved for the user's manual native installation. The running-fleet
+results below are historical acceptance evidence.
 
 Release candidate source **0.1.0-rc.2 / schema 15** adds alpha-requested storage roots,
 GUI host-path move/import and confirmed pier deletion, with a dedicated SVG bar

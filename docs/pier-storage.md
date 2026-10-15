@@ -6,10 +6,11 @@ Fakes use container-local Ames; their containers still permit outbound HTTP.
 
 **New development workflows:** [Storage locations, import and deletion](storage-management.md)
 documents configurable roots, GUI host-path move/import and permanent pier deletion
-in schema-14 / 0.1.0-rc.2-dev source. The historical layout description below explains
+introduced in schema 14 and retained in RC.3/schema 16. The layout below explains
 the default convention retained by each configured location.
 
-Panel/runner 0.20 uses one permanent layout below `/var/lib/urbit-runner/piers`.
+RC.3 uses the permanent layout below `/srv/urbit/piers/`, owned by the selected
+existing Unix user. Additional locations use the same layout.
 Each ship has an exclusive mount directory containing its actual `pier/` child:
 
 ```text
@@ -56,10 +57,10 @@ and does not descend into a candidate's `.urb` contents or read its keys.
 
 1. Fully stop the source ship and transfer it as `.../<ship-directory>/pier`.
    The `.urb` directory must be inside that `pier` child.
-2. Give the copied files to `urbit-runner:urbit-runner`; group/world-writable paths,
-   symlinked storage and shared/special state files are refused. The tree remains
-   protected by the service account. Host administrators can use ordinary remote
-   SSH/SFTP plus their normal administrative tools; the dedicated management-only
+2. Copy as the selected pier-owning user. Ordinary user-owned workspace modes are
+   supported, while `.urb` retains private state checks and symlinked storage and
+   shared/special state files are refused. Owners can use ordinary remote
+   SSH/SFTP; the separate management-only
    SSH endpoint does not become a shell or file-transfer endpoint.
 3. Review the discovered path, choose an instance name and HTTP port, and enter
    the expected `~ship`. Confirm that the source is stopped.

@@ -18,6 +18,9 @@ Prebuilt standalone binaries are attached to
 [Omabit releases](https://github.com/thelifeandtimes/omabit/releases). Downloading
 them does not require installing the Omarchy plugin. Hosting currently targets
 Linux x86-64, systemd/cgroup v2 and the documented rootless Docker dependencies.
+RC.3 hosting uses an explicitly selected existing Unix owner and defaults to
+`/srv/urbit/piers/`. See [owner-user runtime](../docs/owner-user-runtime.md) for
+headless installation and ordinary desk editing.
 
 Shared Go implementation stays in the root `internal/` tree under one `go.mod`,
 allowing atomic cross-component changes without prematurely creating a public Go

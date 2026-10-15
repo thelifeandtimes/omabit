@@ -14,21 +14,63 @@ import (
 	"strings"
 	"syscall"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"golang.org/x/sys/unix"
 )
 
-func Root(home string) string { return filepath.Join(home, "piers") }
+func Root(home string) string { p, _ := ownerhost.DefaultRoot(home); return p }
 
 func directory(p string) (os.FileInfo, error) {
+	return directoryMode(p, ownerWorkspace(p))
+}
+
+func directoryMode(p string, ownerMode bool) (os.FileInfo, error) {
 	i, err := os.Lstat(p)
 	if err != nil {
 		return nil, err
 	}
 	s, ok := i.Sys().(*syscall.Stat_t)
-	if !ok || !i.IsDir() || i.Mode()&os.ModeSymlink != 0 || s.Uid != uint32(os.Geteuid()) || i.Mode().Perm()&0022 != 0 {
+	badWrite := i.Mode().Perm()&0022 != 0
+	if ownerMode && !statePath(p) {
+		badWrite = i.Mode().Perm()&0002 != 0
+	}
+	if !ok || !i.IsDir() || i.Mode()&os.ModeSymlink != 0 || s.Uid != uint32(os.Geteuid()) || badWrite {
 		return nil, errors.New("pier directory must be owned by the runner, not linked or group/world writable")
 	}
 	return i, nil
+}
+
+func statePath(path string) bool {
+	for _, part := range strings.Split(filepath.Clean(path), string(filepath.Separator)) {
+		if part == ".urb" {
+			return true
+		}
+	}
+	return false
+}
+
+func ownerWorkspace(path string) bool {
+	p, err := ownerhost.Current()
+	if err != nil || p == nil || statePath(path) {
+		return false
+	}
+	if path == p.Home || Overlap(filepath.Join(p.Home, ".local/share/urbit-runner"), path) || Overlap(filepath.Join(p.Home, ".config/omabit/setup"), path) {
+		return false
+	}
+	within := func(root string) bool { return path == root || strings.HasPrefix(path, root+"/") }
+	if within(p.Piers) || strings.HasPrefix(path, p.Home+"/") {
+		return true
+	}
+	roots, err := Roots(p.Home)
+	if err != nil {
+		return false
+	}
+	for _, root := range roots {
+		if within(root.Path) {
+			return true
+		}
+	}
+	return false
 }
 
 // Init never changes permissions/ownership of existing user-managed entries.
@@ -36,16 +78,24 @@ func Init(home string) error {
 	if _, err := directory(home); err != nil {
 		return err
 	}
-	return initRoot(Root(home))
+	root, err := ownerhost.DefaultRoot(home)
+	if err != nil {
+		return err
+	}
+	return initRoot(root)
 }
 
 func initRoot(root string) error {
+	return initRootMode(root, ownerWorkspace(root))
+}
+
+func initRootMode(root string, ownerMode bool) error {
 	for _, relative := range append([]string{"", "livenet"}, Categories...) {
 		p := filepath.Join(root, relative)
 		if err := os.Mkdir(p, 0755); err != nil && !errors.Is(err, os.ErrExist) {
 			return err
 		}
-		if _, err := directory(p); err != nil {
+		if _, err := directoryMode(p, ownerMode); err != nil {
 			return err
 		}
 	}
@@ -116,7 +166,11 @@ func Parents(home, relative string) (string, error) {
 }
 
 func IdentifyMount(p string) (DirectoryIdentity, error) {
-	i, err := directory(p)
+	return identifyMountMode(p, ownerWorkspace(p))
+}
+
+func identifyMountMode(p string, ownerMode bool) (DirectoryIdentity, error) {
+	i, err := directoryMode(p, ownerMode)
 	if err != nil {
 		return DirectoryIdentity{}, err
 	}
@@ -185,7 +239,11 @@ func PrepareMount(home string, location *Location) (string, error) {
 }
 
 func Identify(p string) (Identity, error) {
-	i, err := directory(p)
+	return identifyMode(p, ownerWorkspace(p))
+}
+
+func identifyMode(p string, ownerMode bool) (Identity, error) {
+	i, err := directoryMode(p, ownerMode)
 	if err != nil {
 		return Identity{}, err
 	}
@@ -323,7 +381,7 @@ func scanRoot(ctx context.Context, home string, storage StorageRoot) ([]Candidat
 		p := filepath.Join(root, relative)
 		if _, err := directory(p); err != nil {
 			if info, statErr := os.Lstat(p); statErr == nil && info.IsDir() && ValidPath(relative) {
-				out = append(out, Candidate{Path: Qualify(storage.ID, relative), Kind: Kind(relative), Problem: "Directory ownership or permissions need review; files must belong to urbit-runner."})
+				out = append(out, Candidate{Path: Qualify(storage.ID, relative), Kind: Kind(relative), Problem: "Directory ownership or permissions need review; files must belong to the runner's Unix owner."})
 			}
 			return nil
 		}

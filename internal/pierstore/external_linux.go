@@ -13,13 +13,18 @@ import (
 	"strings"
 	"syscall"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"golang.org/x/sys/unix"
 )
 
 // TreeReview binds a bounded, same-device tree's metadata without following links.
 // File contents are separately verified by the cross-device copier before removal.
-func TreeReview(ctx context.Context, path string) (string, int, int64, error) {
-	base, err := directory(path)
+func TreeReview(ctx context.Context, path string, ownerMode ...bool) (string, int, int64, error) {
+	workspace := ownerWorkspace(path)
+	if len(ownerMode) > 0 {
+		workspace = ownerMode[0]
+	}
+	base, err := directoryMode(path, workspace)
 	if err != nil {
 		return "", 0, 0, err
 	}
@@ -58,8 +63,12 @@ func TreeReview(ctx context.Context, path string) (string, int, int64, error) {
 		if err := unix.Statx(unix.AT_FDCWD, p, unix.AT_SYMLINK_NOFOLLOW, unix.STATX_MNT_ID, &mounted); err != nil || mounted.Mask&unix.STATX_MNT_ID == 0 || mounted.Mnt_id != baseMount.Mnt_id {
 			return errors.New("nested mount in pier tree")
 		}
-		if !ok || st.Uid != uint32(os.Geteuid()) || st.Dev != device || i.Mode().Perm()&0022 != 0 || !i.IsDir() && (!i.Mode().IsRegular() || st.Nlink != 1) {
-			return errors.New("pier contains foreign, linked, mounted, special or group/world-writable files; host administrator must prepare it for urbit-runner")
+		badWrite := i.Mode().Perm()&0022 != 0
+		if workspace && !statePath(p) {
+			badWrite = i.Mode().Perm()&0002 != 0
+		}
+		if !ok || st.Uid != uint32(os.Geteuid()) || st.Dev != device || badWrite || !i.IsDir() && (!i.Mode().IsRegular() || st.Nlink != 1) {
+			return errors.New("pier contains foreign, linked, mounted, special or unsupported writable files; review its ownership and permissions")
 		}
 		if !i.IsDir() {
 			files++
@@ -77,10 +86,14 @@ func TreeReview(ctx context.Context, path string) (string, int, int64, error) {
 
 func InspectExternal(ctx context.Context, home, path string) (ExternalSource, error) {
 	var out ExternalSource
-	if err := HostPath(path); err != nil {
+	if err := hostPathMode(path, ownerhost.OwnsHome(home)); err != nil {
 		return out, err
 	}
-	if Overlap(home, path) && !strings.HasPrefix(path, Root(home)+"/") {
+	private := Overlap(home, path) && !strings.HasPrefix(path, Root(home)+"/")
+	if ownerhost.OwnsHome(home) {
+		private = ownerPrivateOverlap(home, path)
+	}
+	if private {
 		return out, errors.New("source cannot overlap private runner configuration or runtime metadata")
 	}
 	roots, err := Roots(home)
@@ -92,7 +105,7 @@ func InspectExternal(ctx context.Context, home, path string) (ExternalSource, er
 			return out, errors.New("source cannot be a storage root, its ancestor, or an archived pier")
 		}
 	}
-	identity, err := Identify(path)
+	identity, err := identifyMode(path, ownerhost.OwnsHome(home))
 	if err != nil {
 		return out, fmt.Errorf("source must be an accessible, runner-owned pier containing .urb: %w", err)
 	}
@@ -103,9 +116,9 @@ func InspectExternal(ctx context.Context, home, path string) (ExternalSource, er
 		return out, err
 	}
 	if err := unix.Faccessat(unix.AT_FDCWD, filepath.Dir(path), unix.R_OK|unix.W_OK|unix.X_OK, unix.AT_EACCESS); err != nil {
-		return out, errors.New("urbit-runner needs read/write/search permission on the source parent to move and sync the pier")
+		return out, errors.New("the runner's Unix owner needs read/write/search permission on the source parent to move and sync the pier")
 	}
-	fingerprint, files, bytes, err := TreeReview(ctx, path)
+	fingerprint, files, bytes, err := TreeReview(ctx, path, ownerhost.OwnsHome(home))
 	if err != nil {
 		return out, err
 	}

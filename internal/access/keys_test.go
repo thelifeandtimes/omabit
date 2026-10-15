@@ -66,3 +66,22 @@ func TestGrantIdentityRevocationAndPermissions(t *testing.T) {
 		t.Fatal("writable grants accepted")
 	}
 }
+
+func TestOwnerForcedCommandPreservesGrantBinding(t *testing.T) {
+	public := []byte(publicKey(t))
+	for _, role := range []string{"operator", "observer"} {
+		line, err := OwnerAuthorizedKey(public, role)
+		if err != nil {
+			t.Fatal(err)
+		}
+		grant, err := ParseLine(line)
+		if err != nil || grant.Role != role || !strings.HasPrefix(line, `restrict,command="`+ShellPath+` owner-ssh `) {
+			t.Fatal(line, grant, err)
+		}
+		for _, bad := range []string{strings.Replace(line, " owner-ssh ", " serve-development ", 1), strings.Replace(line, ShellPath, "/tmp/urbit-runner", 1), strings.Replace(line, "restrict,", "", 1)} {
+			if _, err := ParseLine(bad); err == nil {
+				t.Fatal("accepted altered owner command", bad)
+			}
+		}
+	}
+}

@@ -1,17 +1,18 @@
-# Omabit 0.1.0-rc.2 binary bundle
+# Omabit 0.1.0-rc.3 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
 Go is not required to use this bundle.
 
 For native GitHub installation through Omarchy instead of extracting this archive,
-use `omarchy plugin add https://github.com/thelifeandtimes/omabit.git --enable`.
-See [native plugin distribution](native-plugin.md). Published RC.2 archive bytes
-are unchanged; native installation uses the shared QML and pinned released tools.
+use `omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enable`.
+Native installation uses the shared QML and pinned released tools. Published
+RC.1/RC.2 archives remain unchanged.
 
-RC.2 adds storage locations, reviewed pier import, confirmed deletion, stable btrfs
-directory identities, workspace-aware monitor activation and automatic resume after
-an unclean host reboot. This remains a development prerelease.
+RC.3 runs management and the separate rootless Docker engine as the existing pier
+owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
+user-owned files. Storage/import/deletion and bounded reboot resume continue.
+This remains a development prerelease.
 
 ## Verify and install the desktop
 
@@ -38,20 +39,19 @@ for first-time host setup. Terminal equivalent:
 
 Prerequisites: Omarchy/Quickshell and Python 3 for the desktop; Linux x86-64,
 systemd/cgroup v2, Docker 29.7.2, RootlessKit, slirp4netns and OpenSSH for hosting.
-The setup flow verifies prerequisites and uses a dedicated rootless account.
+The setup flow verifies prerequisites and uses the selected existing Unix user.
 It does not install OS packages or replace unrelated Docker installations.
 
 ## Update an already configured local runner
 
-Wait for accepted operations to finish, then run from the extracted bundle:
+Wait for accepted operations to finish, then reuse the reviewed rootless bundle
+and operator public key with the owner installer described below.
 
-```bash
-sudo /usr/bin/bash ./scripts/install-services.sh
-```
-
-This updates management/SSH services. Running ship containers continue independently.
-The runner uses schema 15; upgrades from permanent-layout schema 11–14 retain their
-recorded state. Earlier runner binaries will refuse the upgraded database.
+This updates management services while preserving the owner, runner ID, SSH keys,
+grants and running containers. The historical `install-services.sh` refuses owner
+installations. Schema **16** retains permanent-layout records; older runners refuse
+it. Legacy dedicated-account hosts need explicit retirement/migration first; schema
+upgrade alone does not migrate OS accounts or pier locations.
 
 ## Install or update a headless runner
 
@@ -60,7 +60,7 @@ Use the prebuilt `build/urbit-runner` (or the standalone runner release asset):
 ```bash
 ./build/urbit-runner preflight
 ./build/urbit-runner prepare-rootless --output "$HOME/omabit-rootless"
-sudo ./build/urbit-runner install-host \
+sudo ./build/urbit-runner install-host --owner "$USER" \
   --bundle "$HOME/omabit-rootless" --public-key /path/to/operator.pub \
   --acknowledge-host-changes
 ```
@@ -78,7 +78,7 @@ configured by this candidate; an operator may override that URL in plugin settin
 The selected bytes are hashed/uploaded before registration and used on first Start.
 Initialized piers resume without reapplying a pill.
 
-The RC.2 pill deliberately reuses the frozen rc.1 draft bytes, supplied originally
+The RC.3 pill deliberately reuses the frozen rc.1 draft bytes, supplied originally
 as `omabit-brass.pill`, 57,011,409 bytes,
 SHA-256 `51f0be723918ab7feaaf28b3c599f36f0f0fca6e68453f84517ba1659f07d57e`.
 Its provider-reported desks are base, webterm, groups, trunk, grubbery, omart, pals,
