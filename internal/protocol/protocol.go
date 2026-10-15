@@ -30,37 +30,39 @@ type Configuration struct {
 }
 
 type Instance struct {
-	Bootstrap         *Bootstrap         `json:"bootstrap,omitempty"`
-	Handoff           *Handoff           `json:"handoff,omitempty"`
-	ID                string             `json:"id"`
-	Label             string             `json:"label"`
-	Config            Configuration      `json:"config"`
-	ConfigRevision    uint64             `json:"config_revision"`
-	AppliedRevision   uint64             `json:"applied_revision"`
-	DesiredState      string             `json:"desired_state"`
-	ObservedState     string             `json:"observed_state"`
-	ActiveOperationID string             `json:"active_operation_id,omitempty"`
-	Mode              string             `json:"mode,omitempty"`
-	Ship              string             `json:"ship,omitempty"`
-	PierName          string             `json:"pier_name,omitempty"`
-	PierPath          string             `json:"pier_path,omitempty"`
-	AmesPublished     bool               `json:"ames_published,omitempty"`
-	IdentityPending   bool               `json:"identity_pending,omitempty"`
-	Endpoint          string             `json:"endpoint,omitempty"`
-	Health            string             `json:"health,omitempty"`
-	RecoveryRequired  bool               `json:"recovery_required,omitempty"`
-	ObservedAt        *time.Time         `json:"observed_at,omitempty"`
-	Maintenance       *MaintenanceReport `json:"maintenance,omitempty"`
-	Resources         *ResourceMetrics   `json:"resources,omitempty"`
-	Epochs            *epochs.Inventory  `json:"epochs,omitempty"`
-	RollNeedsRuntime  bool               `json:"roll_requires_run,omitempty"`
-	Pruning           *PruningReport     `json:"pruning,omitempty"`
-	Import            *ImportReport      `json:"import,omitempty"`
-	Schedule          *routines.Policy   `json:"schedule,omitempty"`
-	Routine           *routines.Run      `json:"routine,omitempty"`
-	EpochHistory      []EpochCreation    `json:"epoch_history,omitempty"`
-	LastRoll          *MaintenanceReport `json:"last_roll,omitempty"`
-	RuntimeStatus     *RuntimeStatus     `json:"runtime_status,omitempty"`
+	ExternalImport    *ExternalImportStatus `json:"external_import,omitempty"`
+	DeletePending     bool                  `json:"delete_pending,omitempty"`
+	Bootstrap         *Bootstrap            `json:"bootstrap,omitempty"`
+	Handoff           *Handoff              `json:"handoff,omitempty"`
+	ID                string                `json:"id"`
+	Label             string                `json:"label"`
+	Config            Configuration         `json:"config"`
+	ConfigRevision    uint64                `json:"config_revision"`
+	AppliedRevision   uint64                `json:"applied_revision"`
+	DesiredState      string                `json:"desired_state"`
+	ObservedState     string                `json:"observed_state"`
+	ActiveOperationID string                `json:"active_operation_id,omitempty"`
+	Mode              string                `json:"mode,omitempty"`
+	Ship              string                `json:"ship,omitempty"`
+	PierName          string                `json:"pier_name,omitempty"`
+	PierPath          string                `json:"pier_path,omitempty"`
+	AmesPublished     bool                  `json:"ames_published,omitempty"`
+	IdentityPending   bool                  `json:"identity_pending,omitempty"`
+	Endpoint          string                `json:"endpoint,omitempty"`
+	Health            string                `json:"health,omitempty"`
+	RecoveryRequired  bool                  `json:"recovery_required,omitempty"`
+	ObservedAt        *time.Time            `json:"observed_at,omitempty"`
+	Maintenance       *MaintenanceReport    `json:"maintenance,omitempty"`
+	Resources         *ResourceMetrics      `json:"resources,omitempty"`
+	Epochs            *epochs.Inventory     `json:"epochs,omitempty"`
+	RollNeedsRuntime  bool                  `json:"roll_requires_run,omitempty"`
+	Pruning           *PruningReport        `json:"pruning,omitempty"`
+	Import            *ImportReport         `json:"import,omitempty"`
+	Schedule          *routines.Policy      `json:"schedule,omitempty"`
+	Routine           *routines.Run         `json:"routine,omitempty"`
+	EpochHistory      []EpochCreation       `json:"epoch_history,omitempty"`
+	LastRoll          *MaintenanceReport    `json:"last_roll,omitempty"`
+	RuntimeStatus     *RuntimeStatus        `json:"runtime_status,omitempty"`
 }
 
 // EpochCreation is journal evidence of a completed roll, not filesystem birth
@@ -219,6 +221,7 @@ type ConfigureRequest struct {
 }
 
 type OperationRequest struct {
+	ConfirmDelete      bool   `json:"confirm_delete,omitempty"`
 	RequestID          string `json:"request_id"`
 	Kind               string `json:"kind"`
 	ExpectedRevision   uint64 `json:"expected_revision"`

@@ -32,10 +32,11 @@ func StartupResumeCandidate(s ManagedState) bool {
 	return live == 1
 }
 
-// A retained stopped container normally needs operator cleanup. Startup may do
-// that cleanup only with fresh evidence of a clean exit, never absence or OOM.
+// A retained terminal container needs fresh, complete evidence. Only a durable
+// reboot-resume intent can authorize a nonzero/OOM exit; missing or active
+// containers are never inferred to be stopped.
 func StartupResumeReady(s ManagedState, observation ManagedObservation) bool {
-	if !StartupResumeCandidate(s) || observation.State != "stopped" {
+	if !StartupResumeCandidate(s) || (observation.State != "stopped" && observation.State != "failed") {
 		return false
 	}
 	now := time.Now()
@@ -44,7 +45,12 @@ func StartupResumeReady(s ManagedState, observation ManagedObservation) bool {
 			continue
 		}
 		last := c.LastState
-		if last == nil || last.ObservedAt.IsZero() || now.Sub(last.ObservedAt) > 30*time.Second || last.ObservedAt.After(now.Add(5*time.Second)) || last.Running || last.Paused || last.Restarting || last.Dead || last.OOMKilled || last.ExitCode != 0 {
+		intent := s.StartupResume
+		if intent != nil && intent.ContainerID != c.ID {
+			return false
+		}
+		unclean := intent != nil && intent.AllowUnclean
+		if last == nil || last.ObservedAt.IsZero() || now.Sub(last.ObservedAt) > 30*time.Second || last.ObservedAt.After(now.Add(5*time.Second)) || last.Running || last.Paused || last.Restarting || last.Dead || (!unclean && (last.OOMKilled || last.ExitCode != 0)) {
 			return false
 		}
 	}

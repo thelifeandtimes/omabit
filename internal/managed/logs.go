@@ -80,6 +80,16 @@ func sameLogContainer(s runtimequalify.ManagedState, id string) bool {
 func attachRuntimeStatus(tx *sql.Tx, v *storedInstance) error {
 	s := v.Runtime
 	d := &protocol.RuntimeStatus{Stage: s.Runtime.Stage, Initialized: s.Initialized, DefaultSnapshotMinutes: runtimequalify.DefaultSnapshotMinutes}
+	if s.ExternalImport != nil {
+		v.Public.ExternalImport = &protocol.ExternalImportStatus{Source: s.ExternalImport.Source.Path, HoldingPath: s.ExternalImport.HeldPath, Stage: s.ExternalImport.Stage, CopiedFiles: s.ExternalImport.CopiedFiles, CopiedBytes: s.ExternalImport.CopiedBytes}
+		if s.ExternalImport.Stage != "complete" {
+			d.Stage = "import-" + s.ExternalImport.Stage
+		}
+	}
+	if s.Deletion != nil {
+		d.Stage = "delete-" + s.Deletion.Stage
+		v.Public.DeletePending = true
+	}
 	for i := len(s.Runtime.Containers) - 1; i >= 0; i-- {
 		c := s.Runtime.Containers[i]
 		if c.Kind == "probe" {
@@ -105,7 +115,7 @@ func attachRuntimeStatus(tx *sql.Tx, v *storedInstance) error {
 		break
 	}
 	var body []byte
-	err := tx.QueryRow(`SELECT body FROM operations WHERE json_extract(body,'$.instance_id')=? AND json_extract(body,'$.kind') IN ('start','stop','startup-resume','pack','meld','roll','routine-pack','routine-meld','move-pier','enroll-pier','prune-epochs') ORDER BY rowid DESC LIMIT 1`, v.Public.ID).Scan(&body)
+	err := tx.QueryRow(`SELECT body FROM operations WHERE json_extract(body,'$.instance_id')=? AND json_extract(body,'$.config_revision') > COALESCE((SELECT revision FROM deleted_instances WHERE id=?),0) AND json_extract(body,'$.kind') IN ('start','stop','startup-resume','pack','meld','roll','routine-pack','routine-meld','move-pier','enroll-pier','import-pier','delete-pier','prune-epochs') ORDER BY rowid DESC LIMIT 1`, v.Public.ID, v.Public.ID).Scan(&body)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}

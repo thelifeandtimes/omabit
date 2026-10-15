@@ -1,4 +1,19 @@
-# Omabit unified desktop plugin — 0.1.0-rc.1
+# Omabit unified desktop plugin — 0.1.0-rc.2
+
+Opening **Monitor & maintenance** activates the existing monitor on its workspace
+instead of merely marking it visible. Activation matches this process's exact
+window and also handles special workspaces. See the
+[focus fix and live check](../../docs/diagnostics/2026-10-13-monitor-focus.md).
+
+The development storage update adds **Delete pier…** to ship Overview and registered
+locations; **Import an existing pier…** reviews an absolute host source and performs
+the move/enrollment; **Storage locations** configures additional runner-owned roots.
+New ships and imports choose a location while keeping the exclusive parent mount
+and `/urbit/pier` layout. A dedicated, theme-tinted SVG replaces the font-based logo.
+These controls require schema 14 or newer and the matching capability
+flags. See [storage management](../../docs/storage-management.md) for host permissions,
+interruption behavior and CLI equivalents. RC.2 uses schema 15 and includes durable
+automatic resume after an unclean host reboot.
 
 This release candidate includes a **Boot pill** selector for new comet, owned-key and development
 fake forms: **bare bootstrap** uses Vere's canonical bootstrap.urbit.org pill;

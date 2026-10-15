@@ -30,7 +30,7 @@ func applyRoutine(ctx context.Context, action string, state ManagedState, persis
 	if err != nil {
 		return state, unknown, err
 	}
-	mem, disk, err := d.admission(q.base)
+	mem, disk, err := q.d.admission(q.base)
 	if err != nil || mem < 5<<30 || disk < 8<<30 {
 		return state, observed, errors.New("routine requires 5 GiB available RAM and 8 GiB disk before any stop")
 	}

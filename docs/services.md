@@ -3,10 +3,22 @@
 **Accepted live: service handoff, management-only restart, controlled engine restart
 and clean host reboot with automatic ship resume.**
 
+The schema-15 unclean-reboot policy is
+[deployed on both runners](diagnostics/2026-10-15-reboot-resume-deployment.md), with
+post-hard-reset pier replay and durable eligibility verified. Automatic unclean
+resume now also [passed a real sourcebox hard reset](diagnostics/2026-10-15-hard-reboot-acceptance.md):
+three automatic resumes, preserved identities, and the intentional stop retained.
+
 The sourcebox permanent-layout fleet also passed a user-managed reboot on October
 10 UTC: two previously running ships resumed through journaled startup operations,
 and the transferred stopped ship stayed stopped. See the
 [remote reboot acceptance](diagnostics/2026-10-10-sourcebox-reboot.md).
+
+After a later unclean host restart, sourcebox's retained fake/comet containers
+required explicit review and Stop/Start reconciliation. Both were recovered on
+October 13, and the btrfs stable-identity hotfix from PR #1 was deployed with their
+running containers preserved. See the
+[recovery and hotfix record](diagnostics/2026-10-13-remote-recovery.md).
 
 Omabit uses two small service units on the configured development host:
 
@@ -28,26 +40,51 @@ The user selected automatic resume of previously running ships. The service opts
 into that policy with `serve-development --acknowledge-development --resume-running`.
 Foreground management without that flag retains manual-only startup behavior.
 
+**Schema 15 adds unclean-reboot resume.** The runner records the Linux boot ID,
+container and configuration revision when an initialized ship is healthy. On a
+later host boot it may resume that same pier even after a nonzero/OOM exit. Vere's
+normal startup performs event-log replay; a clean exit is not required. See the
+[incident and policy analysis](diagnostics/2026-10-14-hard-reset-policy.md).
+
 At management startup:
 
 1. Reconcile interrupted operations without replaying them.
 2. Select initialized, resolved instances whose desired state is running and whose
    applied/configuration revisions match. Skip intentional stops, incomplete
-   provisioning, unapplied changes and recovery-required work.
+   provisioning, unapplied changes and previously known failures. Persist the
+   container/revision-bound pending boot before polling, so an exited-container
+   observation or a management restart before dispatch cannot lose eligibility.
 3. Wait through temporary engine unavailability using bounded read-only observation.
-   Already-running ships need no operation. A stopped candidate must have exactly
-   one authenticated retained runtime with fresh exit-0, non-OOM terminal evidence.
+   Already-running ships need no operation. A candidate must have exactly one
+   authenticated retained runtime with fresh terminal evidence. A healthy record
+   from a different host boot authorizes nonzero/OOM exits; legacy records and
+   management-only restarts retain the clean-exit-only rule. Missing, active, paused,
+   restarting or dead containers do not qualify.
 4. Journal a `startup-resume` operation attributed to `system:startup`. Each pier
    gets at most one attempt per Linux host boot ID, including failed attempts.
 5. Under the existing host work lock, recheck ownership, containment, terminal state
-   and RAM/disk admission. Remove the clean stopped container and create a normal
+   and RAM/disk admission. Preserve terminal evidence, remove the exited container and create a normal
    initialized-pier replacement. Never restart a creation command with `-c`/`-F`.
 6. Verify the same ship identity and persist the outcome. A failure remains visible
    for explicit stop/review/start; service restarts do not create a retry loop.
+   A failed/interrupted attempt discards automatic eligibility until a successful
+   healthy runtime observation establishes a new record.
 
 Startup resume is internal, not a new user RPC action. It uses the official runtime,
 existing port/revision/identity rules and current SQLite operation journal. It never
 bootstraps an uninitialized registration or continues a maintenance job.
+
+The existing UI displays the startup operation and its reboot/replay message.
+Readiness allows up to 10 minutes for fake ships and 20 minutes for networked ships;
+HTTP unavailability during this interval does not restart a replaying process.
+Insufficient RAM/disk or a readiness failure produces one failed operation with
+diagnostics, not a retry loop. Continuous same-boot crash restart is not enabled.
+
+The additive schema-15 migration preserves schema 11–14 records but does not invent
+historical boot evidence. Existing healthy runtimes become eligible after the new
+runner observes them. Ships already in recovery at upgrade need one reviewed
+Stop/Start; future host reboots use their newly recorded healthy boot. Older runners
+refuse the upgraded database.
 
 ## Shutdown ordering and budgets
 
@@ -63,7 +100,8 @@ the ships cleanly. The installed budgets are:
 
 The last override applies only to the `urbit-runner` account. This host's original
 user-manager budget was only five seconds, which could cut short the inner graceful
-shutdown. Abrupt power loss and nonzero/OOM exits still require explicit review.
+shutdown. Abrupt power loss can use the reboot-resume policy above. Interrupted
+management operations and failed resume attempts retain explicit review.
 
 ## Install on this configured host
 

@@ -8,11 +8,17 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Status:** [**0.1.0-rc.1 is published**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.1),
-consolidating development checkpoints through 0.23 into the first public prerelease.
+**Status:** **0.1.0-rc.2**, a Linux/AMD64 development release candidate.
 See [binary bundle installation](docs/release-install.md),
-[qualification and known issues](docs/diagnostics/2026-10-10-rc1-pill.md),
+[release notes and known issues](docs/release-rc2.md),
 and the [draft pill plan](docs/pill-release.md). Final 0.1.0 is still pending.
+
+RC.2 adds
+[storage locations, GUI pier import and deletion](docs/storage-management.md), plus
+a font-independent SVG logo. These changes are not in the published rc.1 assets.
+They are [deployed on the current two-host development fleet](docs/diagnostics/2026-10-14-development-update.md).
+Both runners now also have [schema-15 unclean-reboot resume](docs/diagnostics/2026-10-15-reboot-resume-deployment.md),
+with durable boot-bound eligibility and one automatic attempt per host boot.
 
 ## Get started
 
@@ -35,9 +41,9 @@ go build -o ./build/ ./cmd/...
 ```
 
 See the [fresh installation guide](docs/install.md) for prerequisites, reruns and
-troubleshooting. Source builds need Go 1.25+; prebuilt release packages are not yet
-published. The current host implementation targets Linux x86-64, systemd/cgroup v2
-and Docker 29.7.2.
+troubleshooting, or [binary bundle installation](docs/release-install.md) for the
+published release assets. Source builds need Go 1.25+. The current host implementation
+targets Linux x86-64, systemd/cgroup v2 and Docker 29.7.2.
 
 ## What works
 
@@ -45,7 +51,7 @@ and Docker 29.7.2.
 - New comets and development fakes, with durable start/stop/resume operations.
 - Owned-key bootstrap, including a live-tested moon, and stopped in-tree pier enrollment.
 - Permanent per-ship mount directories: first boot creates `pier/` in place and keeps running.
-- Management and restricted SSH services, including verified clean-reboot resume.
+- Management and restricted SSH services, including verified clean and unclean host-reboot resume.
 - A compact fleet menu and monitoring window with container RAM, tasks and health.
 - Per-ship lifecycle/error/exit diagnostics and bounded read-only runtime logs.
 - Pack, meld, roll, epoch inspection, confirmed prefix pruning and UTC schedules.
@@ -91,6 +97,8 @@ release contract.
 ## Documentation
 
 - [Fresh installation and first ship](docs/install.md)
+- [Sourcebox clean reinstall from rc.1](docs/sourcebox-clean-install.md)
+- [Storage locations, import and deletion](docs/storage-management.md)
 - [Services, shutdown and reboot behavior](docs/services.md)
 - [Official-runtime policy](docs/runtime-policy.md)
 - [Release pill composition and provisioning](docs/pill-release.md)

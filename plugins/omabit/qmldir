@@ -5,6 +5,7 @@ SetupPane 1.0 SetupPane.qml
 HostSetupPane 1.0 HostSetupPane.qml
 ApplicationsPane 1.0 ApplicationsPane.qml
 MonitorWindow 1.0 MonitorWindow.qml
+WindowActivation 1.0 WindowActivation.qml
 MaintenancePane 1.0 MaintenancePane.qml
 ActivityPane 1.0 ActivityPane.qml
 ResourceChart 1.0 ResourceChart.qml
@@ -30,3 +31,7 @@ ShipPortsPane 1.0 ShipPortsPane.qml
 RuntimePane 1.0 RuntimePane.qml
 HostMovePane 1.0 HostMovePane.qml
 BootstrapSelector 1.0 BootstrapSelector.qml
+StorageLocationSelector 1.0 StorageLocationSelector.qml
+StorageRootsPane 1.0 StorageRootsPane.qml
+PierImportPane 1.0 PierImportPane.qml
+DeletePierPane 1.0 DeletePierPane.qml

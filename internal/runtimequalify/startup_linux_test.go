@@ -12,6 +12,18 @@ import (
 )
 
 func TestStartupResumeReplacesCleanStoppedContainersWithoutBootstrap(t *testing.T) {
+	testStartupReplacement(t, 0, false)
+}
+
+func TestStartupResumeReplaysInitializedPiersAfterUncleanExit(t *testing.T) {
+	for _, exit := range []int{255, 137} {
+		testStartupReplacement(t, exit, false)
+	}
+	testStartupReplacement(t, 137, true)
+}
+
+func testStartupReplacement(t *testing.T, exit int, oom bool) {
+	t.Helper()
 	for _, comet := range []bool{false, true} {
 		makeFixture := managedFixture
 		if comet {
@@ -28,10 +40,15 @@ func TestStartupResumeReplacesCleanStoppedContainersWithoutBootstrap(t *testing.
 		}
 		for _, c := range f.containers {
 			mapAt(c.doc, "State")["Running"] = false
+			mapAt(c.doc, "State")["ExitCode"] = exit
+			mapAt(c.doc, "State")["OOMKilled"] = oom
+		}
+		if exit != 0 {
+			state.StartupResume = &StartupResumeIntent{ContainerID: state.Runtime.Containers[len(state.Runtime.Containers)-1].ID, AllowUnclean: true}
 		}
 		before := len(f.calls)
 		state, obs, err := applyManaged(context.Background(), "startup-resume", state, persist, f.d)
-		if err != nil || obs.Health != "healthy" || !state.Initialized || f.downloads != 1 || len(f.containers) != 1 {
+		if err != nil || obs.Health != "healthy" || !state.Initialized || f.downloads != 1 || len(f.containers) != 1 || state.StartupResume != nil {
 			t.Fatal("startup resume", obs, err)
 		}
 		if comet && state.Comet.Ship != ship {
@@ -72,13 +89,16 @@ func TestStartupResumeRequiresFreshCompleteEvidence(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, fault := range []string{"missing-state", "stale", "future", "paused", "restarting", "dead", "network", "identity", "multiple"} {
+	for _, fault := range []string{"missing-state", "stale", "future", "paused", "restarting", "dead", "network", "identity", "multiple", "wrong-container"} {
 		var changed ManagedState
 		if err := json.Unmarshal(data, &changed); err != nil {
 			t.Fatal(err)
 		}
 		c := &changed.Runtime.Containers[len(changed.Runtime.Containers)-1]
+		changed.StartupResume = &StartupResumeIntent{ContainerID: c.ID, AllowUnclean: true}
 		switch fault {
+		case "wrong-container":
+			changed.StartupResume.ContainerID = strings.Repeat("f", 64)
 		case "missing-state":
 			c.LastState = nil
 		case "stale":
@@ -111,6 +131,9 @@ func TestStartupResumeRefusesUncertainOrUncleanState(t *testing.T) {
 			state, _, err := applyManaged(context.Background(), "start", state, persist, f.d)
 			if err != nil {
 				t.Fatal(err)
+			}
+			if fault != "exit" && fault != "oom" {
+				state.StartupResume = &StartupResumeIntent{ContainerID: state.Runtime.Containers[len(state.Runtime.Containers)-1].ID, AllowUnclean: true}
 			}
 			for _, c := range f.containers {
 				mapAt(c.doc, "State")["Running"] = fault == "running"
@@ -149,5 +172,36 @@ func TestStartupResumeRefusesUncertainOrUncleanState(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestRebootResumeRechecksContainerBeforeRemoval(t *testing.T) {
+	f, state, persist := managedFixture(t)
+	state, _, err := applyManaged(context.Background(), "start", state, persist, f.d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range f.containers {
+		mapAt(c.doc, "State")["Running"] = false
+		mapAt(c.doc, "State")["ExitCode"] = 255
+	}
+	state.StartupResume = &StartupResumeIntent{ContainerID: state.Runtime.Containers[len(state.Runtime.Containers)-1].ID, AllowUnclean: true}
+	inspections := 0
+	f.editInspect = func(_ string, doc map[string]any) {
+		inspections++
+		if inspections > 1 {
+			mapAt(doc, "State")["Running"] = true
+		}
+	}
+	before := len(f.events)
+	if _, _, err := applyManaged(context.Background(), "startup-resume", state, persist, f.d); err == nil {
+		t.Fatal("running container accepted for reboot removal")
+	}
+	for _, event := range f.events[before:] {
+		for _, prefix := range []string{"create-", "start-", "stop-", "rm-"} {
+			if strings.HasPrefix(event, prefix) {
+				t.Fatal("mutated changed container", event)
+			}
+		}
 	}
 }

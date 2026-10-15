@@ -7,8 +7,10 @@ it, and the same flow is available from a terminal.
 **Implemented today:** Linux x86-64 with systemd/cgroup v2, Docker 29.7.2, the official
 Vere 4.6 runtime, new comets/fakes, owned-key boot and stopped in-tree pier enrollment.
 The local moon has passed key boot/recovery; broader owned import/network and clean
-remote-host acceptance remain. This is a source installation; prebuilt release
-packaging is not published yet. See the [remote trial plan](remote-runner-acceptance.md).
+remote-host acceptance remain. This page describes source installation; published
+release binaries have a separate [bundle guide](release-install.md). For the disposable
+sourcebox reset, use the [clean-reinstall walkthrough](sourcebox-clean-install.md).
+See also the [remote trial plan](remote-runner-acceptance.md).
 
 ## 1. Install the desktop component
 
@@ -106,18 +108,18 @@ bus-data` defaults to `fakeships/bus-data/pier`. Existing-pier enrollment and st
 moves are explicit actions in **Setup → Pier storage & livenet import**; see the
 [storage convention](pier-storage.md).
 
-The runner advertises `fake-ship-options`, `pier-storage` and `host-handoff`. The
-current source requires schema 13 and the permanent mount-root/pier layout; 11/12→13
-preserves handoff fences and adds bootstrap selection without moving piers. Update both runners before using
+The runner advertises `fake-ship-options`, `pier-storage` and `host-handoff`. RC.2
+uses schema 15 and the permanent mount-root/pier layout; schema 11–14 upgrades
+preserve records and add durable reboot tracking without moving piers. Update both runners before using
 [stopped host moves](host-handoff.md).
 
 The form suggests unused instance names and unreserved HTTP ports, validates them
 again before submission, and keeps input visible on a rejected or uncertain result.
 The backend remains authoritative for races and actual host-port binding.
 
-HTTP ports shown in the fleet are host bindings. Ames values are guest settings,
-not additional host listeners: fake ships have Ames off, and comet UDP is currently
-outbound-only with no host publication.
+HTTP ports shown in the fleet are host bindings. Fake Ames is confined to container
+loopback; outbound HTTP remains available. Guest Ames labels are internal settings;
+explicitly published Ames labels describe host UDP bindings.
 
 ## Existing installations and reruns
 
@@ -147,7 +149,7 @@ checkpoint-specific binaries or copying a shell command out of an old walkthroug
 ## Daily operation
 
 The management and dedicated SSH services start without a desktop login. Eligible
-previously running ships resume after a clean host reboot; intentionally stopped,
+previously healthy running ships resume after a clean or unclean host reboot; intentionally stopped,
 uninitialized or uncertain instances remain stopped. See [services.md](services.md)
 for the tested startup policy, diagnostics and service commands.
 
@@ -219,7 +221,7 @@ Desktop connection records are separate:
 
 ## Verification status
 
-Panel/runner **0.20** is the current installed version. Fresh boot uses the permanent
+The historical **0.20** acceptance established the permanent layout. Fresh boot uses the permanent
 mount-root/pier layout with no automatic shutdown or storage relocation. The local
 fleet is migrated to schema 11; old store layouts are refused. A fresh fake passed
 real direct-boot/stop/resume checks, and all eight registrations retained their prior

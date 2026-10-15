@@ -59,6 +59,15 @@ func ListImportSources(context.Context) ([]protocol.ImportSource, error) {
 func ListPierSources(context.Context) ([]pierstore.Candidate, error) {
 	return nil, errors.New("pier discovery requires linux/amd64")
 }
+func StorageRoots() ([]pierstore.StorageRoot, error) {
+	return nil, errors.New("storage requires linux/amd64")
+}
+func RegisterStorageRoot(string, string) (pierstore.StorageRoot, error) {
+	return pierstore.StorageRoot{}, errors.New("storage requires linux/amd64")
+}
+func InspectExternalPier(context.Context, string) (pierstore.ExternalSource, error) {
+	return pierstore.ExternalSource{}, errors.New("storage requires linux/amd64")
+}
 
 func OpenManagedHost() (*ManagedHost, error) {
 	return nil, errors.New("managed runner requires linux/amd64")

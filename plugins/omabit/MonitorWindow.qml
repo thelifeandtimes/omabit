@@ -32,6 +32,12 @@ FloatingWindow {
   implicitHeight: Style.space(770)
   minimumSize: Qt.size(Style.space(780),Style.space(540))
   visible: false
+  function present() { activation.activate() }
+  WindowActivation {
+    id: activation
+    targetWindow: root
+    onFailed: if (root.service) root.service.lastError = "Could not focus the monitor window. Try opening it again."
+  }
   onVisibleChanged: if (!visible) maintenance.clearReview()
   onSelectedKeyChanged: { technical = false; bodyScroll.contentY = 0; revealTimer.stop(); revealTarget=null }
   onPageChanged: { bodyScroll.contentY = 0; revealTimer.stop(); revealTarget=null }
@@ -61,7 +67,7 @@ FloatingWindow {
           anchors.fill: parent; anchors.leftMargin: Style.space(24); anchors.rightMargin: Style.space(24); spacing: Style.space(18)
           Column { spacing: Style.space(2)
             Label { text: "omabit"; font.pixelSize: Style.space(27); font.bold: true; font.letterSpacing: -1 }
-            Label { objectName: "monitor-version"; text: "0.1.0-rc.1 / PRERELEASE"; caption: true; secondary: true }
+            Label { objectName: "monitor-version"; text: "0.1.0-rc.2 / DEVELOPMENT"; caption: true; secondary: true }
           }
           Rectangle { width: 1; height: Style.space(28); color: Design.line }
           Column { Layout.fillWidth: true; spacing: Style.space(3)
@@ -266,12 +272,13 @@ FloatingWindow {
                     id: network
                     anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(16); spacing: Style.space(10)
                     Label { text: "Connectivity & runtime"; font.bold: true }
-                    Label { width: parent.width; text: root.instance ? "Host HTTP  " + root.instance.config.http_port + (root.instance.ames_published ? "     Ames UDP  " : "     Guest Ames  ") + root.instance.config.ames_port + "     Loom  " + root.instance.config.loom : "" }
-                    Label { width: parent.width; visible: !!root.instance; text: root.instance && root.instance.pier_path ? "Pier: "+(root.connection.snapshot.piers ? root.connection.snapshot.piers.root : "piers")+"/"+root.instance.pier_path : "Pier location unavailable"; secondary: true; caption: true }
+                    Label { width: parent.width; text: root.instance ? "Host HTTP  " + root.instance.config.http_port + (root.instance.mode === "fake" ? "     Ames: container loopback" : (root.instance.ames_published ? "     Ames UDP  " : "     Guest Ames  ") + root.instance.config.ames_port) + "     Loom  " + root.instance.config.loom : "" }
+                    Label { width: parent.width; visible: !!root.instance; text: root.instance && root.connection && root.instance.pier_path ? "Pier: "+Model.absolutePierPath(root.connection,root.instance.pier_path) : "Pier location unavailable"; secondary: true; caption: true }
                     Label { width: parent.width; text: root.instance ? "Desired / observed: " + root.instance.desired_state + " / " + root.instance.observed_state + "\nConfiguration / applied: " + root.instance.config_revision + " / " + root.instance.applied_revision : ""; secondary: true; caption: true }
-                    Label { width: parent.width; text: root.instance && root.instance.ames_published ? "Ames UDP is published on host port "+root.instance.config.ames_port+". HTTP is loopback-only." : root.instance && root.instance.mode !== "fake" ? "Outbound Ames is enabled; the guest UDP port is not published on the host." : "Development fake: Ames is disabled. The configured guest value is not a host port binding."; secondary: true; caption: true }
+                    Label { width: parent.width; text: root.instance && root.instance.ames_published ? "Ames UDP is published on host port "+root.instance.config.ames_port+". HTTP is loopback-only." : root.instance && root.instance.mode !== "fake" ? "Outbound Ames is enabled; the guest UDP port is not published on the host." : "Development fake: Ames is restricted to this container's loopback, with no host UDP publication. Outbound HTTP remains available. A second isolated fake with the same name is allowed; sharing the same pier is not."; secondary: true; caption: true }
                     ShipPortsPane { width: parent.width; service: root.service; connection: root.connection; instance: root.instance }
                     HostMovePane { width: parent.width; service: root.service; connection: root.connection; instance: root.instance }
+                    DeletePierPane { objectName: "overview-delete-pier"; width: parent.width; service: root.service; connection: root.connection; instance: root.instance }
                   }
                 }
                 ActionButton { text: root.technical ? "Technical details −" : "Technical details +"; quiet: true; onClicked: root.technical = !root.technical }

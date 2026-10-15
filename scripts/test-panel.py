@@ -20,11 +20,11 @@ inventory={"source":"vere-4.6-epoch-v2","pier_id":"a"*32,"digest":"d"*64,"observ
 comet_inventory=dict(inventory,pier_id="c"*32,digest="e"*64)
 if (directory/"inspection.json").exists():
     inventory["observed_at"]=json.loads((directory/"inspection.json").read_text())["finished_at"]
-features=["bootstrap-selection","host-handoff","runtime-logs","create-fake","fake-ship-options","pier-storage","key-boot","key-boot-options","livenet-import","create-comet","container-cpu","offline-pack","offline-meld","offline-roll","epoch-inventory","epoch-prune-prefix","login-code","import-qualified-fake","maintenance-schedules","comet-compaction","comet-epochs"]
+features=["storage-locations","import-pier","delete-pier","bootstrap-selection","host-handoff","runtime-logs","create-fake","fake-ship-options","pier-storage","key-boot","key-boot-options","livenet-import","create-comet","container-cpu","offline-pack","offline-meld","offline-roll","epoch-inventory","epoch-prune-prefix","login-code","import-qualified-fake","maintenance-schedules","comet-compaction","comet-epochs"]
 with (directory/"calls.jsonl").open("a") as log:
     log.write(json.dumps(sys.argv[1:])+"\\n")
 if "capture" in sys.argv:
-    env=dict(os.environ,XDG_RUNTIME_DIR=os.environ["OMABIT_FIXTURE_DESKTOP_RUNTIME"])
+    env=dict(os.environ,XDG_RUNTIME_DIR=os.environ["OMABIT_FIXTURE_DESKTOP_RUNTIME"],HYPRLAND_INSTANCE_SIGNATURE=os.environ.get("OMABIT_FIXTURE_HYPRLAND_INSTANCE",os.environ.get("HYPRLAND_INSTANCE_SIGNATURE","")))
     clients=json.loads(subprocess.check_output(["hyprctl","-j","clients"],env=env))
     window=next(c for c in clients if c["pid"]==os.getppid() and c["title"]=="Omabit · Monitor & maintenance")
     active=json.loads(subprocess.check_output(["hyprctl","-j","activeworkspace"],env=env))
@@ -39,6 +39,7 @@ elif "inventory" in sys.argv:
         inspection=json.loads((directory/"inspection.json").read_text()) if (directory/"inspection.json").exists() else None
         if inspection: inventory["observed_at"]=inspection["finished_at"]
         snapshot={"runner_id":"runner-fixture","mode":"development-managed","instances":[{"id":"alpha","mode":"fake","ship":"~zod","config_revision":2,"applied_revision":2,"desired_state":state,"observed_state":"running" if state=="running" else "stopped","observed_at":now,"health":"healthy","config":{"http_port":18081,"ames_port":34343,"loom":31},"endpoint":"http://127.0.0.1:18081","epochs":inventory,"resources":{"status":"fresh","source":"docker-stats-v1.47","container_id":"c"*64,"observed_at":now,"memory_current_bytes":67108864,"memory_limit_bytes":4294967296,"pids_current":6}}],"operations":[inspection] if inspection else [],"incidents":[]}
+        snapshot["instances"][0]["pier_path"]="fakeships/alpha/pier"
         if (directory/"policy.json").exists(): snapshot["instances"][0]["schedule"]=json.loads((directory/"policy.json").read_text())
         snapshot["instances"][0]["resources"].update({"cpu_usage_percent":12.5,"cpu_limit_cores":2})
         snapshot["instances"][0]["runtime_status"]={"initialized":True}
@@ -49,9 +50,36 @@ elif "inventory" in sys.argv:
             started=(directory/"owned-started").exists()
             owned.update({"observed_at":now,"observed_state":"running" if started else "uninitialized","desired_state":"running" if started else "stopped","health":"healthy" if started else "unknown"})
             snapshot["instances"].append(owned)
+        snapshot["piers"]["roots"]=[{"id":"default","path":"/var/lib/urbit-runner/piers"}]
+        if (directory/"storage-added").exists(): snapshot["piers"]["roots"].append({"id":"ssd","path":"/fixture/storage"})
+        if (directory/"deleted-alpha").exists(): snapshot["instances"]=[i for i in snapshot["instances"] if i["id"]!="alpha"]
         available_features=features+(["comet-prune-prefix"] if (directory/"comet-pruning-qualified").exists() else [])
         print(json.dumps({"name":"fixture","runner_id":"runner-fixture","mode":"development-managed","access_role":"operator","features":available_features,"status":"available","checked_at":now,"snapshot":snapshot}),flush=True)
         time.sleep(.2)
+elif "storage-root-add" in sys.argv:
+    assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
+    assert sys.argv[sys.argv.index("storage-root-add")+1]=="ssd"
+    assert sys.argv[sys.argv.index("--path")+1]=="/fixture/storage"
+    (directory/"storage-added").touch()
+    print(json.dumps({"id":"op-storage-root","kind":"storage-root","instance_id":"","request_id":sys.argv[sys.argv.index("--request-id")+1],"status":"succeeded"}))
+elif "preview-pier" in sys.argv:
+    assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
+    assert sys.argv[sys.argv.index("--source")+1]=="/fixture/incoming/zod"
+    print(json.dumps({"path":"/fixture/incoming/zod","fingerprint":"b"*64,"bytes":42,"files":3}))
+elif "import-pier" in sys.argv:
+    assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
+    assert sys.argv[sys.argv.index("import-pier")+1]=="import-ui"
+    assert sys.argv[sys.argv.index("--source")+1]=="/fixture/incoming/zod"
+    assert sys.argv[sys.argv.index("--fingerprint")+1]=="b"*64
+    assert sys.argv[sys.argv.index("--path")+1]=="@ssd/fakeships/import-ui/pier"
+    assert sys.argv[sys.argv.index("--ship")+1]=="~zod" and "--confirm-stopped" in sys.argv
+    print(json.dumps({"id":"op-import-pier","kind":"import-pier","instance_id":"import-ui","request_id":sys.argv[sys.argv.index("--request-id")+1],"status":"queued"}))
+elif "delete-pier" in sys.argv:
+    assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
+    assert sys.argv[sys.argv.index("delete-pier")+1]=="alpha"
+    assert sys.argv[sys.argv.index("--revision")+1]=="2" and "--confirm-delete" in sys.argv
+    (directory/"deleted-alpha").touch()
+    print(json.dumps({"id":"op-delete-pier","kind":"delete-pier","instance_id":"alpha","request_id":sys.argv[sys.argv.index("--request-id")+1],"status":"queued"}))
 elif "logs" in sys.argv:
     name=sys.argv[sys.argv.index("logs")+1]
     revision=int(sys.argv[sys.argv.index("--revision")+1])
@@ -185,6 +213,7 @@ else:
 
 
 def main():
+    compile(FAKE, "fixture-collector", "exec")
     parser = argparse.ArgumentParser()
     parser.add_argument("--windows", action="store_true", help="also briefly map the fixture monitoring window and check all views")
     parser.add_argument("--capture-dir", help="save app-only fixture images while checking mapped windows")
@@ -206,6 +235,9 @@ def main():
         helper.chmod(0o700)
         runtime = directory / "runtime"
         runtime.mkdir(mode=0o700)
+        # Native Hyprland IPC needs a short socket path within the isolated runtime.
+        (runtime / "hypr").mkdir()
+        (runtime / "hypr/f").symlink_to(pathlib.Path(os.environ["XDG_RUNTIME_DIR"]) / "hypr" / os.environ["HYPRLAND_INSTANCE_SIGNATURE"])
         picker_files = directory / "picker-fixtures"
         picker_files.mkdir(mode=0o700)
         key_file = picker_files / "owned key λ #1.key"
@@ -684,8 +716,44 @@ ShellRoot {
           submit.clicked();submit.clicked();phase=308
         } else if (phase === 308 && !service.busy) {
           if (!service.hostMoveOutcome || service.hostMoveOutcome.status!=="complete" || service.lastError) throw new Error("host move receipt failed")
-          console.log("PASS: host move review pins both runners and source revision, dispatches once, and reports the stopped destination")
-          service.monitorWindow.visible=false;Qt.quit()
+           console.log("PASS: host move review pins both runners and source revision, dispatches once, and reports the stopped destination")
+           service.monitorWindow.page="setup";service.monitorWindow.setupPane.mode="storage";phase=309
+        } else if (phase === 309) {
+           var storage=control(service.monitorWindow,"pier-storage")
+           control(storage,"storage-root-name").text="ssd";control(storage,"storage-root-path").text="/fixture/storage"
+           control(storage,"storage-root-add").clicked();phase=310
+        } else if (phase === 310 && !service.busy) {
+           var storage=control(service.monitorWindow,"pier-storage")
+           if (!storage.catalogue.roots || storage.catalogue.roots.length!==2) return
+           control(storage,"open-pier-import").clicked()
+           var form=control(storage,"external-pier-import")
+           control(form,"import-pier-source").text="/fixture/incoming/zod"
+           control(form,"import-pier-review").clicked();phase=311
+        } else if (phase === 311 && !service.busy) {
+           var form=control(service.monitorWindow,"external-pier-import")
+           if (!form.current) throw new Error("external source review was not bound to this runner/path")
+           control(form,"import-pier-name").text="import-ui";control(form,"import-pier-ship").text="~zod"
+           control(form,"import-pier-destination").text="fakeships/import-ui/pier";control(form,"import-pier-port").text="18094"
+           var roots=control(form,"storage-location-selector");roots.currentIndex=1;roots.activated(1)
+           control(form,"import-pier-consent").checked=true
+           if (!control(form,"import-pier-submit").enabled) throw new Error("reviewed external import cannot be submitted")
+           control(form,"import-pier-submit").clicked();control(form,"import-pier-submit").clicked();phase=312
+        } else if (phase === 312 && !service.busy) {
+           if (service.lastError || service.storageOutcome.kind!=="import-pier" || service.storageOutcome.status!=="accepted") throw new Error("external import acknowledgement failed: "+service.lastError+" "+JSON.stringify(service.storageOutcome))
+           console.log("PASS: storage location selection and reviewed host-path import dispatch once with content/runner/destination binding")
+           service.monitorWindow.page="overview";service.monitorWindow.selectedKey="runner-fixture/alpha";phase=313
+        } else if (phase === 313) {
+           var pane=control(service.monitorWindow,"overview-delete-pier")
+           control(pane,"delete-pier-review").clicked()
+           control(pane,"delete-pier-name").text="wrong-name"
+           if (control(pane,"delete-pier-submit").enabled) throw new Error("deletion did not require exact instance name")
+           control(pane,"delete-pier-name").text="alpha"
+           if (!control(pane,"delete-pier-submit").enabled) throw new Error("stopped reviewed deletion is disabled")
+           control(pane,"delete-pier-submit").clicked();control(pane,"delete-pier-submit").clicked();phase=314
+        } else if (phase === 314 && !service.busy) {
+           if (service.lastError || service.storageOutcome.kind!=="delete-pier" || service.storageOutcome.status!=="accepted") throw new Error("deletion acknowledgement failed")
+           console.log("PASS: destructive deletion requires stopped instance and typed identity, and submits once with runner/revision binding")
+           service.monitorWindow.visible=false;Qt.quit()
       }
     }
   }
@@ -697,10 +765,10 @@ ShellRoot {
             raise RuntimeError("a Wayland session is required for the closed-panel load test")
         if not display.startswith("/"):
             display = str(pathlib.Path(os.environ["XDG_RUNTIME_DIR"]) / display)
-        env = dict(os.environ, QT_QPA_PLATFORM="wayland", WAYLAND_DISPLAY=display, XDG_RUNTIME_DIR=str(runtime), NO_COLOR="1",
+        env = dict(os.environ, QT_QPA_PLATFORM="wayland", WAYLAND_DISPLAY=display, XDG_RUNTIME_DIR=str(runtime), HYPRLAND_INSTANCE_SIGNATURE="f", OMABIT_FIXTURE_HYPRLAND_INSTANCE=os.environ["HYPRLAND_INSTANCE_SIGNATURE"], NO_COLOR="1",
                    XDG_STATE_HOME=str(directory / "state"), OMABIT_FIXTURE_DESKTOP_RUNTIME=os.environ["XDG_RUNTIME_DIR"], OMABIT_FIXTURE_TIME=datetime.datetime.now(datetime.timezone.utc).isoformat())
         try:
-            result = subprocess.run(["qs", "--no-color", "-p", str(directory)], env=env, capture_output=True, text=True, timeout=35)
+            result = subprocess.run(["qs", "--no-color", "-p", str(directory)], env=env, capture_output=True, text=True, timeout=60)
         except subprocess.TimeoutExpired as error:
             raise RuntimeError((error.stdout or b"").decode(errors="replace") + (error.stderr or b"").decode(errors="replace")) from None
         text = result.stdout + result.stderr
@@ -712,8 +780,8 @@ ShellRoot {
         if any(message in text for message in ("Error:", "Unable to assign", "is not a type", "Cannot assign to", "Binding loop detected")):
             raise RuntimeError(text)
         calls = [json.loads(line) for line in (directory / "calls.jsonl").read_text().splitlines()]
-        mutations = [c for c in calls if "operate" in c or "epoch-prune" in c or "import-fake" in c or "create-comet" in c or "create-fake" in c or "enroll-pier" in c or "create-ship" in c or "move-host" in c]
-        expected_mutations=16 if args.windows else 12
+        mutations = [c for c in calls if "operate" in c or "epoch-prune" in c or "import-fake" in c or "create-comet" in c or "create-fake" in c or "enroll-pier" in c or "create-ship" in c or "move-host" in c or "storage-root-add" in c or "import-pier" in c or "delete-pier" in c]
+        expected_mutations=19 if args.windows else 12
         assert len(mutations) == expected_mutations, mutations
         assert [c[c.index("operate") + 2] for c in mutations if "operate" in c] == ["stop", "inspect-epochs", "pack", "meld", "roll"] + (["start"] if args.windows else [])
         assert len({c[c.index("--request-id") + 1] for c in mutations}) == expected_mutations

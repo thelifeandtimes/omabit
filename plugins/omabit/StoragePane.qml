@@ -16,6 +16,7 @@ Column {
   property string draftPort: ""
   property bool confirmed: false
   property string reviewError: ""
+  property bool showImport: false
   readonly property var runners: service ? service.connections.filter(function(c){return Model.hasFeature(c,"pier-storage")}) : []
   readonly property var connection: preferredConnection || runners[runner.currentIndex] || null
   readonly property var catalogue: connection && connection.snapshot ? connection.snapshot.piers : null
@@ -43,9 +44,13 @@ Column {
     else reviewError=service.lastError || "This review is no longer current. Refresh discovery and review the pier again."
   }
   Label { text: "Pier storage"; font.pixelSize: Style.space(22); font.bold: true }
-  Label { width: parent.width; text: "Ordinary pier directories, grouped for people. Add a stopped pier through your host's filesystem, then explicitly enroll it here. Moving or removing files never creates a replacement ship."; secondary: true }
+  Label { width: parent.width; text: "Import an existing stopped pier by its host path, choose storage locations, or manage discovered and registered piers."; secondary: true }
   SelectField { id: runner; width: parent.width; visible: !root.preferredConnection; model: root.runners.map(function(c){return Model.runnerTitle(c,root.service.runnerPreferences)}); onActivated: { root.selected=null;root.moving=null } }
   Label { width: parent.width; text: root.catalogue ? "Root: "+root.catalogue.root : "Select an updated runner."; caption: true; secondary: true }
+  Label { width: parent.width; visible: !!root.connection && !Model.hasFeature(root.connection,"storage-locations"); text: "Update this runner to enable configurable locations, host-path import and pier deletion."; color: Design.warning }
+  ActionButton { objectName: "open-pier-import"; text: root.showImport ? "Close import form" : "+ Import an existing pier…"; primary: !root.showImport; onClicked: root.showImport=!root.showImport }
+  PierImportPane { width: parent.width; service: root.service; connection: root.connection; visible: root.showImport }
+  StorageRootsPane { width: parent.width; service: root.service; connection: root.connection }
   Label { width: parent.width; text: "fakeships/[project/]<ship-directory>/pier\nlivenet/{galaxies,stars,planets,moons,comets}/[group/]<ship-directory>/pier\nEach ship directory is an exclusive permanent mount. archive/ is excluded from discovery and Start. Cross-host moves are on each ship's Overview page."; caption: true; secondary: true }
   Label { width: parent.width; visible: root.catalogue && !!root.catalogue.error; text: root.catalogue ? root.catalogue.error || "" : ""; color: Design.warning }
   ActionButton { text: "Refresh discovery"; enabled: root.service && !root.service.busy; onClicked: root.service.refresh() }
@@ -87,17 +92,21 @@ Column {
   Label { text: "Registered locations"; font.bold: true }
   Repeater {
     model: Model.instances(root.connection)
-    RowLayout {
+    Column {
+      id: registered
       required property var modelData
-      width: root.width
-      Label { Layout.fillWidth: true; text: Model.instanceTitle(parent.modelData)+" · "+parent.modelData.id+"\n"+(parent.modelData.pier_path || "Pier location unavailable"); caption: true }
-      ActionButton { property var ship: parent.modelData; text: "Move…"; compact: true; enabled: root.connection && root.connection.access_role==="operator" && !root.service.busy && ship.desired_state==="stopped" && !ship.recovery_required && !ship.active_operation_id; onClicked: {root.moving=JSON.parse(JSON.stringify(ship));root.selected=null;root.submitted=false;destination.text=ship.pier_path || ""} }
+      width: root.width; spacing: Style.space(6)
+      Label { width: parent.width; text: Model.instanceTitle(registered.modelData)+" · "+registered.modelData.id+"\n"+Model.absolutePierPath(root.connection,registered.modelData.pier_path || ""); caption: true }
+      Label { width: parent.width; visible: !!registered.modelData.external_import && registered.modelData.external_import.stage!=="complete"; text: visible ? "Import phase: "+registered.modelData.external_import.stage+" · "+(registered.modelData.external_import.copied_bytes || 0)+" bytes copied\nSource: "+registered.modelData.external_import.source+"\nHeld source: "+(registered.modelData.external_import.holding_path || "not moved")+"\nInspect the activity receipt before continuing an interrupted import." : ""; secondary: true; caption: true }
+      ActionButton { property var ship: registered.modelData; text: "Move…"; compact: true; enabled: root.connection && root.connection.access_role==="operator" && !root.service.busy && !Model.handoffFenced(ship) && !ship.delete_pending && ship.desired_state==="stopped" && !ship.recovery_required && !ship.active_operation_id; onClicked: {root.moving=JSON.parse(JSON.stringify(ship));root.selected=null;root.submitted=false;destination.text=ship.pier_path || ""} }
+      DeletePierPane { width: parent.width; service: root.service; connection: root.connection; instance: registered.modelData }
     }
   }
   Column {
     width: parent.width;spacing: Style.space(8);visible: !!root.moving
-    Field { id: destination; width: parent.width; placeholderText: "Destination path below piers/"; enabled: !root.submitted }
-    ActionButton { text: root.submitted ? "Move submitted" : "Move stopped pier"; enabled: root.moving && destination.text!==root.moving.pier_path && !root.submitted && !root.service.busy && Model.validPierPath(destination.text); onClicked: if(root.service.movePier(root.connection,root.moving,destination.text))root.submitted=true }
+    StorageLocationSelector { id: moveLocation; width: parent.width; connection: root.connection; enabled: !root.submitted }
+    Field { id: destination; width: parent.width; placeholderText: "Destination path below the selected location"; enabled: !root.submitted }
+    ActionButton { text: root.submitted ? "Move submitted" : "Move stopped pier"; enabled: root.moving && Model.storagePath(moveLocation.rootID,destination.text)!==root.moving.pier_path && !root.submitted && !root.service.busy && Model.validPierPath(destination.text); onClicked: if(root.service.movePier(root.connection,root.moving,Model.storagePath(moveLocation.rootID,destination.text)))root.submitted=true }
     Label { width: parent.width; text: "Moves are same-filesystem, no-overwrite renames. Keep external moves stopped, then use discovery to reconnect the same pier."; secondary: true;caption:true }
   }
   Label { width: parent.width; visible: root.service && !!root.service.lastError; text: root.service ? root.service.lastError : ""; color: Design.danger }

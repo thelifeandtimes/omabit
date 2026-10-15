@@ -8,7 +8,7 @@ import (
 )
 
 // Startup resume never starts an old boot container: its command may still have
-// creation flags. Remove only the authenticated, cleanly stopped runtime and use
+// creation flags. Remove only the authenticated, terminal runtime and use
 // the normal initialized-pier replacement path under the caller's durable job.
 func applyStartupResume(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
@@ -20,13 +20,13 @@ func applyStartupResume(ctx context.Context, state ManagedState, persist func(Ma
 		return state, unknown, err
 	}
 	if !StartupResumeReady(state, observed) {
-		return state, unknown, errors.New("startup resume requires a verified clean stopped container")
+		return state, unknown, errors.New("startup resume requires an authorized, verified terminal container")
 	}
 	q, err := managedSession(&state, persist, d)
 	if err != nil {
 		return state, unknown, err
 	}
-	mem, disk, err := d.admission(q.r.Directory)
+	mem, disk, err := q.d.admission(q.r.Directory)
 	if err != nil || mem < 5<<30 || disk < 8<<30 {
 		return state, unknown, errors.New("startup resume requires 5 GiB available RAM and 8 GiB disk")
 	}
@@ -41,7 +41,8 @@ func applyStartupResume(ctx context.Context, state ManagedState, persist func(Ma
 		if err := q.containment(actual, c.Kind); err != nil {
 			return state, unknown, err
 		}
-		if active(actual) || actual.State.Dead || *actual.State.OOMKilled || *actual.State.ExitCode != 0 {
+		unclean := state.StartupResume != nil && state.StartupResume.AllowUnclean && state.StartupResume.ContainerID == c.ID
+		if active(actual) || actual.State.Dead || (!unclean && (*actual.State.OOMKilled || *actual.State.ExitCode != 0)) {
 			return state, unknown, errors.New("startup container state changed before removal")
 		}
 		if err := q.remove(ctx, i); err != nil {
@@ -50,5 +51,6 @@ func applyStartupResume(ctx context.Context, state ManagedState, persist func(Ma
 		}
 	}
 	state.Runtime = q.r
+	state.StartupResume = nil // the authorization applies only to the old container
 	return applyManaged(ctx, "start", state, persist, d)
 }

@@ -89,6 +89,15 @@ Commands:
   logs INSTANCE --revision N
               Read a bounded operator-only runtime log tail from the pinned runner.
   piers       Discover enrolled, moved and unenrolled piers (archive is excluded).
+  storage-root-add NAME --path /absolute/host/directory --request-id ID
+              Add an identity-pinned, runner-owned storage location.
+  preview-pier --source /absolute/host/pier
+              Review a stopped source directory before importing it.
+  import-pier INSTANCE --source /absolute/host/pier --path DESTINATION
+              --ship ~SHIP --fingerprint HASH --http-port PORT --request-id ID --confirm-stopped
+              Move a reviewed source into configured storage and enroll it stopped.
+  delete-pier INSTANCE --revision N --request-id ID --confirm-delete
+              Permanently delete a stopped pier and its registration; retain audit history.
   create-ship --ship ~SHIP --key-file FILE --request-id ID --confirm-network
                [--http-port PORT --ames-port PORT --bootstrap bare|recommended --pill URL_OR_FILE]
               Derive instance/path, allocate omitted ports, and stage boot material.
@@ -154,6 +163,9 @@ Use COMMAND --help for command flags and constraints.
 	}
 	command := args[0]
 	args = args[1:]
+	if slices.Contains([]string{"storage-root-add", "preview-pier", "import-pier", "delete-pier"}, command) {
+		return runStorage(ctx, command, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
 	if *expectedRunner != "" && (*runnerName == "" || !validID(*expectedRunner)) {
 		return fail(errors.New("--expected-runner-id requires --runner and a valid runner ID"), 2)
 	}

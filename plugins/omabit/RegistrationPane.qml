@@ -14,7 +14,7 @@ Column {
   signal showFleet()
   spacing: Style.space(9)
   readonly property string selection: connection ? connection.runner_id + "/" + connection.name : ""
-  readonly property string pier: Model.pierPath(kind,instanceName.text.trim(),fakeShip.text,pierName.text)
+  readonly property string pier: Model.storagePath(storageLocation.rootID,Model.pierPath(kind,instanceName.text.trim(),fakeShip.text,pierName.text))
   readonly property var outcome: {
     var o=service ? service.registrationOutcome : null
     return o && connection && o.runner === connection.runner_id && o.instance === instanceName.text.trim()
@@ -39,7 +39,7 @@ Column {
   onKindChanged: { consent.checked=false; suggestion.restart() }
   Timer { id:suggestion;interval:0;running:true;onTriggered:root.suggest(false) }
 
-  Label { width: parent.width; secondary: true; text: root.kind === "fake" ? "A fake ship is an isolated development identity with Ames disabled. Choose its Urbit name separately from its local instance and pier folder." : "A comet's Urbit identity is generated on first Start. The instance name below is your local label; registration leaves it stopped." }
+  Label { width: parent.width; secondary: true; text: root.kind === "fake" ? "A fake is a development identity with container-local Ames and outbound HTTP access. Independent fakes can share an Urbit name, but need separate piers and host HTTP ports." : "A comet's Urbit identity is generated on first Start. The instance name below is your local label; registration leaves it stopped." }
   BootstrapSelector { id: bootstrap; width: parent.width; service: root.service; enabled: !!root.service && !root.service.busy && !root.registered; onEdited: {root.service.editRegistration();root.submitError=""} }
   Label { text: "Instance name · unique on this runner"; caption: true; secondary: true }
   Field { id: instanceName; objectName: "registration-name"; width: parent.width; enabled: !!root.service && !root.service.busy; placeholderText: "e.g. my-comet"; onTextEdited: root.service.editRegistration() }
@@ -48,9 +48,10 @@ Column {
     Label { text: "Fake Urbit identity"; caption: true; secondary: true }
     Field { id: fakeShip; objectName: "registration-fake-ship"; width: parent.width; text: "~zod"; placeholderText: "e.g. ~bus"; enabled: !!root.service && !root.service.busy; onTextEdited: root.service.editRegistration() }
   }
-  Label { text: "Pier path · below piers/"; caption: true; secondary: true }
+  StorageLocationSelector { id: storageLocation; width: parent.width; connection: root.connection; enabled: !!root.service && !root.service.busy && !root.registered; onEdited: root.service.editRegistration() }
+  Label { text: "Pier path · below selected storage location"; caption: true; secondary: true }
   Field { id: pierName; objectName: "registration-pier"; width: parent.width; placeholderText: root.kind === "fake" ? "e.g. fakeships/project-one/zod/pier" : "e.g. livenet/comets/testing-comet-1/pier"; enabled: !!root.service && !root.service.busy; onTextEdited: root.service.editRegistration() }
-  Label { width: parent.width; secondary: true; caption: true; text: "Destination: piers/" + root.pier + "/. Project/group folders are optional; archive/ is excluded from management discovery." }
+  Label { width: parent.width; secondary: true; caption: true; text: "Destination: " + Model.absolutePierPath(root.connection,root.pier) + ". Its parent is the exclusive /urbit mount; archive/ is excluded from discovery." }
   Label { text: "Host HTTP port"; caption: true; secondary: true }
   Field { id: httpPort; objectName: "registration-port"; width: parent.width; placeholderText: "Unused port, 1024–65535"; validator: IntValidator { bottom:1024; top:65535 } enabled: !!root.service && !root.service.busy; onTextEdited: root.service.editRegistration() }
   ActionButton { text: "Suggest an available name and port"; quiet: true; compact: true; enabled: !!root.connection && !!root.service && !root.service.busy; onClicked: root.suggest(true) }

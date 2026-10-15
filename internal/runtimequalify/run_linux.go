@@ -42,6 +42,7 @@ type dependencies struct {
 	logs             func(context.Context, string, string) (string, error)
 	portAvailable    func(string, uint16) bool
 	remove           func(*os.Root, string) error
+	renamePier       func(string, string) error
 	download         func(context.Context, string) (candidate.Artifact, error)
 	hostProbe        func(context.Context, string) error
 	hostIdentity     func(context.Context, string) (string, error)

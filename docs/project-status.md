@@ -2,6 +2,30 @@
 
 ## Where we are
 
+Release candidate source **0.1.0-rc.2 / schema 15** adds alpha-requested storage roots,
+GUI host-path move/import and confirmed pier deletion, with a dedicated SVG bar
+mark. Default storage and the parent-mount contract remain intact. Name reuse after
+deletion advances configuration revisions to fence stale requests. See
+[storage management](storage-management.md) for permission requirements and the
+scope of fixture/QML verification. These changes were
+[deployed to the desktop and both runners on October 14](diagnostics/2026-10-14-development-update.md),
+preserving all 12 registrations and seven running containers at that deployment.
+RC.2 release packaging now includes these changes; see [release notes](release-rc2.md)
+and the [user-driven sourcebox installation](sourcebox-clean-install.md).
+
+Schema 15 additionally implements durable **resume after an unclean host reboot**:
+last-healthy boot/container/revision evidence, pending authorization surviving
+management restart, and one journaled attempt per runtime generation and host boot.
+Same-boot failures and interrupted host operations retain their separate handling.
+This is [deployed on both hosts and bundled in the desktop](diagnostics/2026-10-15-reboot-resume-deployment.md).
+The three remote hard-reset failures were resumed and verified healthy; all seven
+running ships now have boot-bound eligibility records. See [services](services.md)
+for the exact policy and migration behavior.
+
+A subsequent [real sourcebox hard reset passed automatic resume](diagnostics/2026-10-15-hard-reboot-acceptance.md)
+for all three running remote ships without operator intervention. The proposed next
+phase is [RC.2 publication, fresh installation and multi-collector qualification](rc2-next-phase.md).
+
 The project has a working, live-tested **development management stack**. Current
 work is in **phase 6 of the ten-phase implementation sequence: maintenance and
 epoch retention**. The immediate priority is reliable ship operation with official
@@ -14,7 +38,7 @@ order, not percentage of total effort.
 | Runtime foundation | Dedicated rootless Docker and pinned fake-ship boot/stop/restart/local HTTP accepted; broader production qualification remains |
 | Persistent runner | Durable SQLite registrations, operations, attribution, reconciliation, resource admission, and development lifecycle accepted |
 | Collector and access | Named identity-pinned connections, SSH grants/revocation, inventory isolation, origin-bound Eyre sessions and subscriptions accepted in exercised development gates |
-| Omabit UI | Installed/loaded 0.22.3 fixes SSH polling/session churn; unlimited registration count, 100 GB pier transfers and 4 GB pill provisioning; real legacy theme migration deferred |
+| Omabit UI | Installed/loaded 0.1.0-rc.2-dev: storage locations, host-path import, confirmed deletion, SVG icon, muted active state and workspace activation; schema-15 runners and unclean-reboot resume deployed on both hosts |
 | Maintenance and retention | Official-runtime fake/comet pack/meld/roll, inventory/previews, prefix pruning and UTC schedules accepted in exercised live gates; interruption/recovery hardening remains; loom-internal telemetry deferred |
 | Peer monitoring | Planned; current single-runner health/incident basics do not yet provide the phase-7 multi-host peer system |
 | Personal operator gateway | Planned |

@@ -33,6 +33,8 @@ Item {
   property string requestIdentity: ""
   property var registrationOutcome: null
   property var storageOutcome: null
+  property var externalImportPreview: null
+  property var pendingExternalPreview: null
   property var hostMoveOutcome: null
   property var routineOutcome: null
   property var epochInspection: null
@@ -141,7 +143,7 @@ Item {
   function openMonitor(connection, instance, tab) {
     if (connection && instance) monitor.selectedKey = connection.runner_id + "/" + instance.id
     monitor.page = tab || "overview"
-    monitor.visible = true
+    monitor.present()
   }
   function openShip(connection, instance) {
     if (!observing || !Model.available(connection, now)) return false
@@ -202,7 +204,7 @@ Item {
     pendingInput = input || ""
     action.stdinEnabled = pendingInput !== ""
     action.command = useThemeHelper ? themeCommand(args) : command(args)
-    timeout.interval = name === "move-host" ? 120*60*1000 : ["register-ship","register-comet","register"].indexOf(name)>=0 ? 20*60*1000 : useThemeHelper ? 60000 : 25000
+    timeout.interval = name === "move-host" ? 120*60*1000 : ["register-ship","register-comet","register"].indexOf(name)>=0 ? 20*60*1000 : ["preview-pier","import-pier"].indexOf(name)>=0 ? 60000 : useThemeHelper ? 60000 : 25000
     timeout.restart()
     action.running = true
     var current = generation
@@ -403,6 +405,44 @@ Item {
     storageOutcome={runner:connection.runner_id,instance:instance.id,path:path,request:requestIdentity,kind:"move-pier",status:"submitting",message:"Submitting stopped-pier move…"}
     return submit(Model.selection(connection).concat(["move-pier",instance.id,"--path",path,"--revision",String(instance.config_revision),"--request-id",requestIdentity]),"move-pier")
   }
+  function storageConnection(connection,feature) {
+    if (busy || !observing || !connection) return null
+    var c=connections.filter(function(c){return c.name===connection.name && c.runner_id===connection.runner_id})[0]
+    return c && Model.writable(c,now) && c.access_role==="operator" && Model.hasFeature(c,feature) ? c : null
+  }
+  function addStorageRoot(connection,name,path) {
+    if (busy) return false
+    var c=storageConnection(connection,"storage-locations")
+    if (!c || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(name) || name==="default" || !Model.hostPath(path)) {lastError="Choose an available operator runner, a storage name and an absolute host directory.";return false}
+    requestIdentity=Model.requestId()
+    storageOutcome={runner:c.runner_id,instance:"",path:path,request:requestIdentity,kind:"storage-root",status:"submitting",message:"Adding storage location…"}
+    return submit(Model.selection(c).concat(["storage-root-add",name,"--path",path,"--request-id",requestIdentity]),"storage-root-add")
+  }
+  function previewExternalPier(connection,path) {
+    if (busy) return false
+    var c=storageConnection(connection,"import-pier")
+    if (!c || !Model.hostPath(path)) {lastError="Enter the absolute existing pier directory on the selected runner host.";return false}
+    externalImportPreview=null
+    pendingExternalPreview={runner:c.runner_id,connection:c.name,path:path}
+    return submit(Model.selection(c).concat(["preview-pier","--source",path]),"preview-pier")
+  }
+  function importExternalPier(connection,review,name,ship,path,port,confirmed) {
+    if (busy) return false
+    var c=storageConnection(connection,"import-pier")
+    if (!c || !confirmed || !Model.externalReviewCurrent(c,review,review && review.source.path,now) || !Model.validId(name) || !Model.validPierPath(path) || !Model.optionalPort(port) || !String(port).trim()) {lastError="Review the current source and confirm its stopped move before importing.";return false}
+    requestIdentity=Model.requestId()
+    storageOutcome={runner:c.runner_id,instance:name,path:path,request:requestIdentity,kind:"import-pier",status:"submitting",message:"Submitting reviewed pier import…"}
+    return submit(Model.selection(c).concat(["import-pier",name,"--source",review.source.path,"--fingerprint",review.source.fingerprint,"--ship",Model.fakeIdentity(ship),"--path",path,"--http-port",String(port),"--request-id",requestIdentity,"--confirm-stopped"]),"import-pier")
+  }
+  function deletePier(connection,target,typed) {
+    if (busy) return false
+    var c=storageConnection(connection,"delete-pier")
+    var i=Model.instances(c).filter(function(i){return target && i.id===target.id})[0]
+    if (!Model.canDeletePier(c,i,now) || typed!==target.id || i.config_revision!==target.config_revision || i.pier_path!==target.pier_path || i.ship!==target.ship) {lastError="The deletion review changed. Review the current stopped instance and type its exact name.";return false}
+    requestIdentity=Model.requestId()
+    storageOutcome={runner:c.runner_id,instance:i.id,path:i.pier_path,request:requestIdentity,kind:"delete-pier",status:"submitting",message:"Submitting permanent pier deletion…"}
+    return submit(Model.selection(c).concat(["delete-pier",i.id,"--revision",String(i.config_revision),"--request-id",requestIdentity,"--confirm-delete"]),"delete-pier")
+  }
   function moveHost(target,destination,name,httpPort,amesPort) {
     if (busy || !observing) return false
     var problem=Model.hostMoveProblem(connections,target,destination,name,httpPort,amesPort,now)
@@ -411,12 +451,13 @@ Item {
     hostMoveOutcome={runner:target.runner,instance:target.instance,destination:destination.runner,name:name,status:"moving",message:"Moving the stopped pier. Both hosts retain durable phase receipts."}
     return submit(Model.hostMoveArgs(target,destination,name,httpPort,amesPort,requestIdentity),"move-host")
   }
-  function createFromKey(connection,ship,keyFile,httpPort,amesPort,pill,bootstrap) {
+  function createFromKey(connection,ship,keyFile,httpPort,amesPort,pill,bootstrap,storageRoot) {
     bootstrap=bootstrap || (pill ? "recommended" : "bare")
     var bootProblem=Model.bootstrapProblem(bootstrap,pill || "")
     if (bootProblem) {lastError=bootProblem;return false}
     ship=Model.fakeIdentity(ship)
     var name=ship.slice(1),path=Model.ownedPierPath(ship)
+    if (path) path=Model.storagePath(storageRoot,path)
     if (busy || !observing || !Model.available(connection,now) || connection.access_role!=="operator" || !Model.hasFeature(connection,"key-boot-options") || !Model.validId(name) || !path || !keyFile || !Model.optionalPort(httpPort) || !Model.optionalPort(amesPort)) {lastError="Choose an owned Urbit ID, private key file and valid optional ports on an updated operator runner.";return false}
     if (Model.instances(connection).some(function(i){return i.id===name || i.mode!=="fake"&&i.ship===ship})) {lastError="This Urbit identity or instance is already registered.";return false}
     requestIdentity=Model.requestId()
@@ -424,6 +465,7 @@ Item {
     var args=Model.selection(connection).concat(["create-ship","--ship",ship,"--key-file",keyFile,"--request-id",requestIdentity,"--confirm-network"])
     if (String(httpPort).trim()) args=args.concat(["--http-port",String(httpPort)])
     if (String(amesPort).trim()) args=args.concat(["--ames-port",String(amesPort)])
+    if (storageRoot && storageRoot!=="default") args=args.concat(["--pier-path",path])
     args=args.concat(Model.bootstrapArgs(bootstrap,pill || ""))
     return submit(args,"register-ship")
   }
@@ -440,7 +482,7 @@ Item {
     var hostMove=kind==="move-host" ? hostMoveOutcome : null, hostMoved=false
     var registration=(kind === "register" || kind === "register-comet" || kind === "register-ship") ? registrationOutcome : null
     var registered=false
-    var storage=(kind==="enroll-pier"||kind==="move-pier") ? storageOutcome : null, storageAccepted=false
+    var storage=(["enroll-pier","move-pier","delete-pier","import-pier","storage-root-add"].indexOf(kind)>=0) ? storageOutcome : null, storageAccepted=false
     var routine=kind === "routine-set" ? routineOutcome : null, routineSaved=false
     var inspecting=kind === "inspect-epochs" ? epochInspection : null, inspectionAccepted=false, inspectionOperation=""
     currentAction = ""
@@ -453,6 +495,12 @@ Item {
     else {
       try {
         var result = JSON.parse(output)
+        if (kind==="preview-pier") {
+          var preview=pendingExternalPreview
+          pendingExternalPreview=null
+          if (!preview || result.path!==preview.path || !Model.validDigest(result.fingerprint) || !Number.isSafeInteger(result.bytes) || !Number.isSafeInteger(result.files)) throw new Error("Invalid import preview")
+          externalImportPreview={runner:preview.runner,connection:preview.connection,source:result,loadedAt:now}
+        }
         if (hostMove) {
           if (result.source_runner!==hostMove.runner || result.source_instance!==hostMove.instance || result.destination_runner!==hostMove.destination || result.destination_instance!==hostMove.name || result.state!=="complete" || result.direction!=="in") throw new Error("Unverified host move receipt")
           hostMoved=true
@@ -669,7 +717,7 @@ Item {
     function maintenance(): void { root.openMonitor(null, null, "maintenance") }
     function setup(): void { root.openMonitor(null, null, "setup") }
     function refresh(): void { root.refresh() }
-    function status(): string { return JSON.stringify({version:"0.1.0-rc.1",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen}) }
+    function status(): string { return JSON.stringify({version:"0.1.0-rc.2",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen}) }
     function close(): void { monitor.visible = false }
   }
   Process {

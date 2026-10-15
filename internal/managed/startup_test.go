@@ -58,6 +58,7 @@ type startupBackend struct {
 	calls             int
 	active, maxActive int
 	fail              bool
+	exitCode          int
 	unavailable       bool
 	entered           chan struct{}
 	release           chan struct{}
@@ -65,17 +66,20 @@ type startupBackend struct {
 
 func (b *startupBackend) Observe(ctx context.Context, state runtimequalify.ManagedState) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error) {
 	b.mu.Lock()
-	running, unavailable := b.running[state.ID], b.unavailable
+	running, unavailable, exitCode := b.running[state.ID], b.unavailable, b.exitCode
 	b.mu.Unlock()
 	if unavailable {
 		return state, runtimequalify.ManagedObservation{}, errors.New("engine unavailable")
 	}
 	state.Runtime.Containers = append([]runtimequalify.ContainerRecord(nil), state.Runtime.Containers...)
 	for i := range state.Runtime.Containers {
-		state.Runtime.Containers[i].LastState = &runtimequalify.ContainerState{ObservedAt: time.Now().UTC(), Running: running}
+		state.Runtime.Containers[i].LastState = &runtimequalify.ContainerState{ObservedAt: time.Now().UTC(), Running: running, ExitCode: exitCode}
 	}
 	if running {
 		return state, runtimequalify.ManagedObservation{State: "running", Health: "healthy"}, nil
+	}
+	if exitCode != 0 {
+		return state, runtimequalify.ManagedObservation{State: "failed", Health: "unhealthy", RecoveryRequired: true}, nil
 	}
 	return state, runtimequalify.ManagedObservation{State: "stopped", Health: "unknown", RecoveryRequired: true}, nil
 }
@@ -83,6 +87,9 @@ func (b *startupBackend) Observe(ctx context.Context, state runtimequalify.Manag
 func (b *startupBackend) Apply(ctx context.Context, action string, state runtimequalify.ManagedState, persist func(runtimequalify.ManagedState) error) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error) {
 	if action != "startup-resume" {
 		return state, runtimequalify.ManagedObservation{}, errors.New("unexpected action")
+	}
+	if state.StartupResume == nil || b.exitCode != 0 && !state.StartupResume.AllowUnclean {
+		return state, runtimequalify.ManagedObservation{}, errors.New("missing reboot authorization")
 	}
 	b.mu.Lock()
 	b.calls++
@@ -106,6 +113,7 @@ func (b *startupBackend) Apply(ctx context.Context, action string, state runtime
 	if fail {
 		return state, runtimequalify.ManagedObservation{}, errors.New("resume failed")
 	}
+	state.StartupResume = nil
 	if err := persist(state); err != nil {
 		return state, runtimequalify.ManagedObservation{}, err
 	}
@@ -202,6 +210,7 @@ func TestStartupResumeOncePerBootAndExplicitStops(t *testing.T) {
 
 func TestStartupSkipsInterruptedUncertainAndUnappliedInstances(t *testing.T) {
 	s := testStore(t)
+	s.bootID = testBootID
 	for i, fault := range []string{"recovery", "maintenance", "uninitialized", "unapplied", "interrupted"} {
 		v := seedStartup(t, s, fault, uint16(18080+i))
 		var operations []protocol.Operation
@@ -231,7 +240,13 @@ func TestStartupSkipsInterruptedUncertainAndUnappliedInstances(t *testing.T) {
 
 func TestStartupClaimRejectsStaleObservationAndDoesNotRetryFailure(t *testing.T) {
 	s := testStore(t)
-	v := seedStartup(t, s, "alpha", 18080)
+	seedStartup(t, s, "alpha", 18080)
+	s.bootID = testBootID
+	candidates, err := s.startupCandidates()
+	if err != nil || len(candidates) != 1 {
+		t.Fatal(candidates, err)
+	}
+	v := candidates[0]
 	b := &startupBackend{}
 	state, observation, err := b.Observe(context.Background(), v.Runtime)
 	if err != nil {
@@ -340,7 +355,13 @@ func TestStartupPolicyRequiresOptInAndIsNotAnRPCOperation(t *testing.T) {
 
 func TestStartupClaimHonorsConcurrentOperatorStop(t *testing.T) {
 	s := testStore(t)
-	v := seedStartup(t, s, "alpha", 18080)
+	seedStartup(t, s, "alpha", 18080)
+	s.bootID = testBootID
+	candidates, err := s.startupCandidates()
+	if err != nil || len(candidates) != 1 {
+		t.Fatal(candidates, err)
+	}
+	v := candidates[0]
 	b := &startupBackend{}
 	state, observation, err := b.Observe(context.Background(), v.Runtime)
 	if err != nil {

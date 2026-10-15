@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
+import QtQuick.Effects
 import Quickshell.Io
 import qs.Commons
 import qs.Ui as Ui
@@ -31,24 +32,19 @@ Ui.Panel {
   Ui.BarIconButton {
     id: button
     anchors.fill: parent; bar: root.bar; text: ""; active: root.opened
+    activeColor: Qt.tint(foreground, Design.fade(Color.background, 0.25))
     iconComponent: Component {
-      Rectangle {
+      Item {
         anchors.centerIn: parent; width: Math.min(parent.width,parent.height); height: width
-        radius: width/2; color: "transparent"; border.width: 1.5
-        border.color: button.active ? button.activeColor : button.foreground
-        TextMetrics { id: tildeMetrics; font: tilde.font; text: tilde.text }
-        Text {
-          id: tilde
-          // Fractional optical offsets avoid rounding a subpixel adjustment up.
-          x: (parent.width-tildeMetrics.tightBoundingRect.width)/2-tildeMetrics.tightBoundingRect.x+Style.spaceReal(0.25)
-          y: (parent.height-tildeMetrics.tightBoundingRect.height)/2-tildeMetrics.tightBoundingRect.y-baselineOffset+Style.spaceReal(1)
-          text: "~"; textFormat: Text.PlainText
-          font.family: button.fontFamily; font.pixelSize: Math.max(1,Math.round(button.fontSize))
-          color: parent.border.color; renderType: Text.NativeRendering
+        Image {
+          id: mark
+          anchors.fill: parent; source: "omabit.svg"; visible: false
+          sourceSize: Qt.size(width*2,height*2); fillMode: Image.PreserveAspectFit
         }
+        MultiEffect { anchors.fill: parent; source: mark; colorization: 1; colorizationColor: button.active ? button.activeColor : button.foreground }
       }
     }
-    tooltipText: "Omabit 0.1.0-rc.1 · " + Model.fleet(root.connections).length + " instances"
+    tooltipText: "Omabit 0.1.0-rc.2 · " + Model.fleet(root.connections).length + " instances"
     onPressed: function(code) { if (code === Qt.RightButton) { if (root.service) root.service.refresh() } else root.toggle() }
   }
   Ui.KeyboardPanel {
@@ -121,7 +117,7 @@ Ui.Panel {
                         ShipName { width: parent.width; instance: ship.modelData; font.bold: true; compact: true }
                         Label { width: parent.width; text: ship.modelData.id + " · " + ship.status.label; secondary: true; caption: true; elide: Text.ElideRight; wrapMode: Text.NoWrap }
                       }
-                      Label { text: ship.modelData.mode === "fake" ? "AMES\nOff" : (ship.modelData.ames_published ? "AMES UDP\n" : "GUEST AMES\n") + ship.modelData.config.ames_port; caption: true; secondary: true; horizontalAlignment: Text.AlignRight }
+                      Label { text: ship.modelData.mode === "fake" ? "AMES\nLoopback" : (ship.modelData.ames_published ? "AMES UDP\n" : "GUEST AMES\n") + ship.modelData.config.ames_port; caption: true; secondary: true; horizontalAlignment: Text.AlignRight }
                       CopyCodeButton { objectName: "fleet-copy-code-"+ship.modelData.id; compact: true; service: root.service; runnerID: runner.modelData.runner_id; connectionName: runner.modelData.name; instanceID: ship.modelData.id }
                       ActionButton { compact: true; text: ":" + ship.modelData.config.http_port + " ↗"; hint: Model.shipURL(runner.modelData, ship.modelData, root.service.registrations, root.service.runnerPreferences) || "Set the browser host in Setup → Manage runner"; enabled: runner.online && !!Model.shipURL(runner.modelData, ship.modelData, root.service.registrations, root.service.runnerPreferences); onClicked: root.service.openShip(runner.modelData, ship.modelData) }
                       ActionButton { objectName: "start-" + ship.modelData.id; compact: true; quiet: true; text: "▶"; hint: "Start " + ship.modelData.id; enabled: runner.online && !root.service.busy && Model.canOperate(runner.modelData, ship.modelData, "start", root.service.now); onClicked: root.service.operate(runner.modelData, ship.modelData, "start") }
@@ -132,7 +128,7 @@ Ui.Panel {
                     }
                   }
                   Label { visible: Model.instances(runner.modelData).length === 0; text: runner.online ? "No ships yet. Add your first ship in Setup." : "No cached ship inventory."; secondary: true; caption: true }
-                  Label { width: parent.width; visible: runner.modelData.mode.indexOf("development") === 0 && Model.instances(runner.modelData).length > 0; text: "HTTP is host loopback. AMES UDP labels are published host ports; GUEST AMES labels are internal. Fake ships have Ames disabled."; secondary: true; caption: true }
+                  Label { width: parent.width; visible: runner.modelData.mode.indexOf("development") === 0 && Model.instances(runner.modelData).length > 0; text: "HTTP binds host loopback; remote access is separately routed. Fake Ames is confined to each container's loopback; outbound HTTP is allowed. Independent fakes may share an Urbit name."; secondary: true; caption: true }
                 }
               }
             }
@@ -140,7 +136,7 @@ Ui.Panel {
             RowLayout {
               width: parent.width
               Label { Layout.fillWidth: true; text: root.connections.length + " runners · " + Model.fleet(root.connections).length + " instances"; secondary: true; caption: true }
-              ActionButton { primary: true; text: "Monitor & maintenance  ↗"; enabled: !!root.service; onClicked: root.monitor(null, null) }
+              ActionButton { objectName: "open-monitor"; primary: true; text: "Monitor & maintenance  ↗"; enabled: !!root.service; onClicked: root.monitor(null, null) }
             }
           }
           SetupPane { id: setup; width: parent.width; visible: root.pane === "setup"; service: root.service; active: root.opened && visible; onShowFleet: { root.pane="fleet";scroll.contentY=0 } }

@@ -1,11 +1,12 @@
-# Omabit 0.1.0-rc.1 binary bundle
+# Omabit 0.1.0-rc.2 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
 Go is not required to use this bundle.
 
-The development checkpoints through 0.23 are consolidated into this first public
-release candidate. They are not newer public releases.
+RC.2 adds storage locations, reviewed pier import, confirmed deletion, stable btrfs
+directory identities, workspace-aware monitor activation and automatic resume after
+an unclean host reboot. This remains a development prerelease.
 
 ## Verify and install the desktop
 
@@ -44,7 +45,7 @@ sudo /usr/bin/bash ./scripts/install-services.sh
 ```
 
 This updates management/SSH services. Running ship containers continue independently.
-The runner uses schema 13; upgrades from permanent-layout schema 11/12 retain their
+The runner uses schema 15; upgrades from permanent-layout schema 11–14 retain their
 recorded state. Earlier runner binaries will refuse the upgraded database.
 
 ## Install or update a headless runner
@@ -72,12 +73,15 @@ configured by this candidate; an operator may override that URL in plugin settin
 The selected bytes are hashed/uploaded before registration and used on first Start.
 Initialized piers resume without reapplying a pill.
 
-The rc.1 pill is a frozen draft supplied as `omabit-brass.pill`, 57,011,409 bytes,
+The RC.2 pill deliberately reuses the frozen rc.1 draft bytes, supplied originally
+as `omabit-brass.pill`, 57,011,409 bytes,
 SHA-256 `51f0be723918ab7feaaf28b3c599f36f0f0fca6e68453f84517ba1659f07d57e`.
 Its provider-reported desks are base, webterm, groups, trunk, grubbery, omart, pals,
 hawk, obelisk, jars, silo and landscape. **MCP and Omachan await the replacement
 pill.** The release notes and attached qualification report state what was actually
 boot-tested; this candidate does not claim complete application/OTA qualification.
+The earlier pill qualification found Grubbery compilation errors and Azimuth HTTP
+504 snapshot failures. Start clean-install lifecycle checks with bare bootstrap.
 
 Pill uploads permit 4 GB; stopped-pier moves permit 100 GB of logical contents.
 There is no fixed registration-count cap. Resource admission, content verification
@@ -89,6 +93,12 @@ This candidate keeps the pinned official Vere 4.6 runtime; it has no automatic
 runtime-channel updater. Interrupted/uncertain operations require recorded-state
 review. A stopped host move permanently fences its source and leaves its destination
 stopped for explicit Start. Historical pier restoration is not an interface action.
+
+Healthy initialized ships record their host boot, container and revision. After a
+later hard reboot the runner may resume their existing piers once, including after
+nonzero exits; Vere performs its normal event replay. Intentional stops, unresolved
+host operations and failed resume attempts retain their guards. Legacy failures
+already present during an upgrade require reviewed recovery before this policy applies.
 
 See <https://github.com/thelifeandtimes/omabit> for source, current qualification
 records and known gaps. Tend is maintained separately at

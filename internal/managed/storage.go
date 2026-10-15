@@ -54,6 +54,14 @@ func (r *Server) pierCatalogue(ctx context.Context) *pierstore.Catalogue {
 		return nil
 	}
 	c := &pierstore.Catalogue{RunnerID: r.s.runnerID, Root: rootless.HomeDir + "/piers", ObservedAt: time.Now().UTC(), Candidates: []pierstore.Candidate{}}
+	if b, ok := r.b.(storageActionsBackend); ok {
+		var err error
+		c.Roots, err = b.StorageRoots()
+		if err != nil {
+			c.Error = "Storage location registry needs review."
+			return c
+		}
+	}
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 	sources, err := b.PierSources(ctx)
@@ -155,6 +163,13 @@ func (r *Server) servePiers(w http.ResponseWriter, req *http.Request, actor, rol
 }
 
 func (s *store) enrollPier(actor string, req protocol.EnrollPierRequest, source pierstore.Candidate, fingerprint string) (protocol.Operation, error) {
+	return s.enrollPierSource(actor, req, source, fingerprint, nil)
+}
+
+func (s *store) enrollPierSource(actor string, req protocol.EnrollPierRequest, source pierstore.Candidate, fingerprint string, external *pierstore.ExternalSource) (protocol.Operation, error) {
+	if err := s.checkStorage(req.Path); err != nil {
+		return protocol.Operation{}, err
+	}
 	tx, err := s.db.Begin()
 	if err != nil {
 		return protocol.Operation{}, err
@@ -185,6 +200,10 @@ func (s *store) enrollPier(actor string, req protocol.EnrollPierRequest, source 
 			}
 		}
 	} else {
+		revision, err := initialRevision(tx, req.ID)
+		if err != nil {
+			return protocol.Operation{}, err
+		}
 		if source.Kind != "fake" && s.mode != DevelopmentMode {
 			return protocol.Operation{}, conflict("comet_mode_required", "livenet imports require development-managed mode")
 		}
@@ -209,7 +228,7 @@ func (s *store) enrollPier(actor string, req protocol.EnrollPierRequest, source 
 		if err != nil {
 			return protocol.Operation{}, err
 		}
-		v = storedInstance{Public: protocol.Instance{ID: req.ID, Label: base.Label, Ship: req.Ship, Mode: source.Kind, Config: base.Config, ConfigRevision: 1, DesiredState: "stopped", ObservedState: "enrolling", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: id, Port: req.HTTPPort, Adoption: &runtimequalify.ManagedAdoption{Fingerprint: req.Fingerprint, Uncertain: true}}}
+		v = storedInstance{Public: protocol.Instance{ID: req.ID, Label: base.Label, Ship: req.Ship, Mode: source.Kind, Config: base.Config, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "enrolling", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: id, Port: req.HTTPPort, Adoption: &runtimequalify.ManagedAdoption{Fingerprint: req.Fingerprint, Uncertain: true}}}
 		if source.Kind != "fake" {
 			v.Runtime.Comet = &runtimequalify.ManagedComet{Ship: req.Ship}
 			if source.Kind != "comet" {
@@ -227,6 +246,12 @@ func (s *store) enrollPier(actor string, req protocol.EnrollPierRequest, source 
 		return protocol.Operation{}, err
 	}
 	for _, other := range all {
+		if other.Runtime.ExternalImport != nil && other.Runtime.ExternalImport.Stage != "complete" && other.Runtime.ExternalImport.Source.Identity.SameObject(source.Identity) && source.Identity.Inode != 0 {
+			return protocol.Operation{}, conflict("source_reserved", "this source is reserved by an import")
+		}
+		if external != nil && other.Runtime.ExternalImport != nil && other.Runtime.ExternalImport.Stage != "complete" && pierstore.Overlap(other.Runtime.ExternalImport.Source.Path, external.Path) {
+			return protocol.Operation{}, conflict("source_reserved", "source is reserved by another import")
+		}
 		if other.Public.ID != req.ID && other.Runtime.Storage != nil && other.Runtime.Storage.Identity.SameObject(source.Identity) && source.Identity.Inode != 0 {
 			return protocol.Operation{}, conflict("pier_already_enrolled", "this filesystem pier already belongs to another registration")
 		}
@@ -251,6 +276,13 @@ func (s *store) enrollPier(actor string, req protocol.EnrollPierRequest, source 
 	}
 	now := time.Now().UTC()
 	op := protocol.Operation{ID: "op-" + id, RequestID: req.RequestID, InstanceID: req.ID, Kind: "enroll-pier", Actor: actor, Status: "queued", ConfigRevision: v.Public.ConfigRevision, CreatedAt: now}
+	if external != nil {
+		op.Kind = "import-pier"
+		v.Public.ObservedState = "importing"
+		v.Runtime.ExternalImport = &runtimequalify.ManagedExternalImport{Source: *external, Stage: "reviewed"}
+		v.Runtime.Storage.Identity = pierstore.Identity{}
+		v.Runtime.Storage.MountIdentity = pierstore.DirectoryIdentity{}
+	}
 	v.Public.PierPath = req.Path
 	v.Public.IdentityPending = v.Runtime.Adoption != nil && !v.Runtime.Adoption.Verified
 	v.Public.ActiveOperationID = op.ID

@@ -14,6 +14,14 @@ var component = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$`)
 var Categories = []string{"fakeships", "livenet/galaxies", "livenet/stars", "livenet/planets", "livenet/moons", "livenet/comets", "archive"}
 
 func Kind(relative string) string {
+	id, relative := Split(relative)
+	if id != "" && (!component.MatchString(id) || id == "default") {
+		return ""
+	}
+	return kindRelative(relative)
+}
+
+func kindRelative(relative string) string {
 	p := strings.Split(relative, "/")
 	if len(p) < 2 || len(p) > 8 || path.Clean(relative) != relative {
 		return ""
@@ -34,7 +42,46 @@ func Kind(relative string) string {
 
 // Every managed pier is the fixed child of an exclusive permanent mount root.
 func ValidPath(relative string) bool {
-	return len(relative) <= 384 && path.Clean(relative) == relative && strings.HasSuffix(relative, "/pier") && Kind(MountPath(relative)) != "" && len(strings.Split(relative, "/")) <= 8
+	root, relative := Split(relative)
+	return (root == "" || component.MatchString(root) && root != "default") && len(relative) <= 384 && path.Clean(relative) == relative && strings.HasSuffix(relative, "/pier") && kindRelative(MountPath(relative)) != "" && len(strings.Split(relative, "/")) <= 8
+}
+
+// An unqualified path always retains the original home/piers meaning. Explicit
+// @volume paths select an immutable, identity-pinned additional storage root.
+func Split(p string) (string, string) {
+	if strings.HasPrefix(p, "@") {
+		id, relative, ok := strings.Cut(p[1:], "/")
+		if !ok || id == "" {
+			return "!", ""
+		}
+		return id, relative
+	}
+	return "", p
+}
+func Relative(p string) string { _, relative := Split(p); return relative }
+func Qualify(id, relative string) string {
+	if id == "" || id == "default" {
+		return relative
+	}
+	return "@" + id + "/" + relative
+}
+
+type StorageRoot struct {
+	ID       string            `json:"id"`
+	Path     string            `json:"path"`
+	Identity DirectoryIdentity `json:"identity"`
+}
+
+type ExternalSource struct {
+	Path        string   `json:"path"`
+	Fingerprint string   `json:"fingerprint"`
+	Identity    Identity `json:"identity"`
+	Bytes       int64    `json:"bytes"`
+	Files       int      `json:"files"`
+}
+
+func Overlap(a, b string) bool {
+	return a == b || strings.HasPrefix(a, b+"/") || strings.HasPrefix(b, a+"/")
 }
 
 func MountPath(relative string) string { return path.Dir(relative) }
@@ -95,9 +142,10 @@ type Candidate struct {
 }
 
 type Catalogue struct {
-	RunnerID   string      `json:"runner_id"`
-	Root       string      `json:"root"`
-	ObservedAt time.Time   `json:"observed_at"`
-	Candidates []Candidate `json:"candidates"`
-	Error      string      `json:"error,omitempty"`
+	RunnerID   string        `json:"runner_id"`
+	Root       string        `json:"root"`
+	Roots      []StorageRoot `json:"roots,omitempty"`
+	ObservedAt time.Time     `json:"observed_at"`
+	Candidates []Candidate   `json:"candidates"`
+	Error      string        `json:"error,omitempty"`
 }

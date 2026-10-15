@@ -14,31 +14,67 @@ import (
 // Only validated qualified-fake provenance can seed an imported initialized pier;
 // it is not an API for arbitrary filesystem paths or Docker resources.
 type ManagedState struct {
-	Bootstrap            *protocol.Bootstrap `json:"bootstrap,omitempty"`
-	Handoff              *protocol.Handoff   `json:"handoff,omitempty"`
-	HandoffSigningKey    []byte              `json:"handoff_signing_key,omitempty"`
-	ID                   string              `json:"id"`
-	Port                 uint16              `json:"port"`
-	Prepared             bool                `json:"prepared"`
-	Initialized          bool                `json:"initialized"`
-	Runtime              Result              `json:"runtime"`
-	MaintenanceUncertain bool                `json:"maintenance_uncertain,omitempty"`
-	Maintenance          *ManagedMaintenance `json:"maintenance,omitempty"`
-	Epochs               *epochs.Inventory   `json:"epochs,omitempty"`
-	RollNeedsRuntime     bool                `json:"roll_requires_run,omitempty"`
-	PruneIntent          *ManagedPruneIntent `json:"prune_intent,omitempty"`
-	PrefixPrune          *PrefixPruneRecord  `json:"prefix_prune,omitempty"`
-	Import               *ManagedImport      `json:"import,omitempty"`
-	Comet                *ManagedComet       `json:"comet,omitempty"`
-	Routine              *routines.Run       `json:"routine,omitempty"`
-	Fake                 *ManagedFake        `json:"fake,omitempty"`
-	Storage              *pierstore.Location `json:"storage,omitempty"`
-	MoveTarget           string              `json:"move_target,omitempty"`
-	Adoption             *ManagedAdoption    `json:"adoption,omitempty"`
-	NativeShip           string              `json:"native_ship,omitempty"`
-	NativeKeyDigest      string              `json:"native_key_digest,omitempty"`
-	Boot                 *ManagedBoot        `json:"boot,omitempty"`
-	AmesPort             uint16              `json:"ames_port,omitempty"`
+	StartupResume        *StartupResumeIntent   `json:"startup_resume,omitempty"`
+	Deletion             *ManagedDeletion       `json:"deletion,omitempty"`
+	ExternalImport       *ManagedExternalImport `json:"external_import,omitempty"`
+	Bootstrap            *protocol.Bootstrap    `json:"bootstrap,omitempty"`
+	Handoff              *protocol.Handoff      `json:"handoff,omitempty"`
+	HandoffSigningKey    []byte                 `json:"handoff_signing_key,omitempty"`
+	ID                   string                 `json:"id"`
+	Port                 uint16                 `json:"port"`
+	Prepared             bool                   `json:"prepared"`
+	Initialized          bool                   `json:"initialized"`
+	Runtime              Result                 `json:"runtime"`
+	MaintenanceUncertain bool                   `json:"maintenance_uncertain,omitempty"`
+	Maintenance          *ManagedMaintenance    `json:"maintenance,omitempty"`
+	Epochs               *epochs.Inventory      `json:"epochs,omitempty"`
+	RollNeedsRuntime     bool                   `json:"roll_requires_run,omitempty"`
+	PruneIntent          *ManagedPruneIntent    `json:"prune_intent,omitempty"`
+	PrefixPrune          *PrefixPruneRecord     `json:"prefix_prune,omitempty"`
+	Import               *ManagedImport         `json:"import,omitempty"`
+	Comet                *ManagedComet          `json:"comet,omitempty"`
+	Routine              *routines.Run          `json:"routine,omitempty"`
+	Fake                 *ManagedFake           `json:"fake,omitempty"`
+	Storage              *pierstore.Location    `json:"storage,omitempty"`
+	MoveTarget           string                 `json:"move_target,omitempty"`
+	Adoption             *ManagedAdoption       `json:"adoption,omitempty"`
+	NativeShip           string                 `json:"native_ship,omitempty"`
+	NativeKeyDigest      string                 `json:"native_key_digest,omitempty"`
+	Boot                 *ManagedBoot           `json:"boot,omitempty"`
+	AmesPort             uint16                 `json:"ames_port,omitempty"`
+}
+
+// StartupResumeIntent is internal authorization from the durable startup job,
+// bound to the old container. It is never accepted from a user RPC.
+type StartupResumeIntent struct {
+	ContainerID  string `json:"container_id"`
+	AllowUnclean bool   `json:"allow_unclean"`
+}
+
+type ManagedDeletion struct {
+	Stage string                      `json:"stage"`
+	Mount pierstore.DirectoryIdentity `json:"mount"`
+}
+
+type ManagedExternalImport struct {
+	CopiedFiles int                      `json:"copied_files"`
+	CopiedBytes int64                    `json:"copied_bytes"`
+	Source      pierstore.ExternalSource `json:"source"`
+	Stage       string                   `json:"stage"`
+	HeldPath    string                   `json:"held_path,omitempty"`
+}
+
+func (s ManagedState) ExternalImportInFlight() bool {
+	if s.ExternalImport == nil || s.ExternalImport.Stage == "complete" {
+		return false
+	}
+	if s.ExternalImport.Stage == "reviewed" && s.ExternalImport.HeldPath == "" {
+		return false
+	}
+	if s.ExternalImport.Stage == "enrolling" && s.Storage != nil && s.Storage.Identity.Inode != 0 {
+		return false
+	}
+	return true
 }
 
 // Presence opts into canonical/custom pill selection and host Ames publication.
@@ -98,7 +134,7 @@ type ManagedImport struct {
 }
 
 func (s ManagedState) UncertainProvisioning() bool {
-	return s.Handoff.Fenced() || s.Adoption != nil && (s.Adoption.Uncertain || s.Adoption.FinishedAt == nil) || s.Storage != nil && s.Storage.Uncertain || s.Fake != nil && s.Fake.Uncertain || s.Import != nil && (s.Import.Uncertain || s.Import.FinishedAt == nil || !s.Initialized) ||
+	return s.Deletion != nil || s.ExternalImport != nil && s.ExternalImport.Stage != "complete" || s.Handoff.Fenced() || s.Adoption != nil && (s.Adoption.Uncertain || s.Adoption.FinishedAt == nil) || s.Storage != nil && s.Storage.Uncertain || s.Fake != nil && s.Fake.Uncertain || s.Import != nil && (s.Import.Uncertain || s.Import.FinishedAt == nil || !s.Initialized) ||
 		s.Comet != nil && (s.Comet.Uncertain || s.Comet.StartedAt != nil && (s.Comet.FinishedAt == nil || !s.Initialized || !s.networkIdentityValid()))
 }
 

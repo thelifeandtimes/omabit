@@ -164,6 +164,11 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 		r.respondError(w, err)
 		return
 	}
+	revision, err := initialRevision(tx, h.DestinationInstance)
+	if err != nil {
+		r.respondError(w, err)
+		return
+	}
 	for _, v := range all {
 		if old := v.Runtime.Handoff; old != nil && old.ID == h.ID {
 			if !old.SameTransfer(h) || body.HTTPPort != 0 && body.HTTPPort != v.Public.Config.HTTPPort || h.AmesPublished && body.AmesPort != 0 && body.AmesPort != v.Public.Config.AmesPort {
@@ -212,7 +217,7 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 	h.Direction = "in"
 	h.State = "reserved"
 	h.Message = "Destination reserved; waiting for stopped pier data."
-	v := storedInstance{Public: protocol.Instance{ID: h.DestinationInstance, Label: h.DestinationInstance, Ship: h.Ship, Mode: h.Mode, AmesPublished: h.AmesPublished, PierPath: path, PierName: "pier", Config: protocol.Configuration{HTTPPort: httpPort, AmesPort: ames, Loom: 31}, ConfigRevision: 1, DesiredState: "stopped", ObservedState: "moving", Health: "unknown", Handoff: &h}, Runtime: runtimequalify.ManagedState{ID: key, Port: httpPort, AmesPort: ames, Storage: &pierstore.Location{Path: path}, Handoff: &h}}
+	v := storedInstance{Public: protocol.Instance{ID: h.DestinationInstance, Label: h.DestinationInstance, Ship: h.Ship, Mode: h.Mode, AmesPublished: h.AmesPublished, PierPath: path, PierName: "pier", Config: protocol.Configuration{HTTPPort: httpPort, AmesPort: ames, Loom: 31}, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "moving", Health: "unknown", Handoff: &h}, Runtime: runtimequalify.ManagedState{ID: key, Port: httpPort, AmesPort: ames, Storage: &pierstore.Location{Path: path}, Handoff: &h}}
 	if h.Mode == "fake" {
 		v.Runtime.Fake = &runtimequalify.ManagedFake{Ship: h.Ship}
 	} else {

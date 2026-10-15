@@ -16,7 +16,8 @@ import (
 
 func (q *qualifier) pierPath() string {
 	if q.d.managed {
-		return filepath.Join(pierstore.Root(q.d.home), q.d.storage.Path)
+		p, _ := pierstore.Absolute(q.d.home, q.d.storage.Path) // managedSession/Check validate the root before use
+		return p
 	}
 	return filepath.Join(q.r.Directory, "data", q.epochPierName())
 }

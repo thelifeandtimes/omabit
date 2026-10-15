@@ -101,6 +101,24 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 	if state.Storage == nil || !pierstore.ValidPath(state.Storage.Path) || pierstore.Kind(state.Storage.Path) != storageKind || state.Initialized && (state.Storage.Identity.Inode == 0 || state.Storage.MountIdentity.Inode == 0) {
 		return nil, errors.New("registered pier location does not match its identity mode")
 	}
+	if _, err := pierstore.Absolute(d.home, state.Storage.Path); err != nil {
+		return nil, err
+	}
+	if id, _ := pierstore.Split(state.Storage.Path); id != "" {
+		storageRoot, _, err := pierstore.Resolve(d.home, state.Storage.Path)
+		if err != nil {
+			return nil, err
+		}
+		admission := d.admission
+		d.admission = func(path string) (uint64, uint64, error) {
+			mem, disk, err := admission(path)
+			if err != nil {
+				return mem, disk, err
+			}
+			m, available, err := admission(storageRoot)
+			return min(mem, m), min(disk, available), err
+		}
+	}
 	if state.Fake != nil {
 		if state.Comet != nil || state.Import != nil || !protocol.ValidFakeShip(state.Fake.Ship) {
 			return nil, errors.New("invalid registered fake identity or pier directory")
@@ -157,6 +175,12 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 
 func applyManaged(ctx context.Context, action string, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
+	if action == "delete-pier" {
+		return applyPierDeletion(ctx, state, persist, d)
+	}
+	if action == "import-pier" {
+		return applyExternalImport(ctx, state, persist, d)
+	}
 	if action == "prepare-handoff" || action == "receive-handoff" || action == "commit-handoff" {
 		return applyHandoff(ctx, action, state, persist, d)
 	}
@@ -233,7 +257,7 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		}
 	}
 	if action == "start" || maintenance {
-		mem, disk, err := d.admission(q.base)
+		mem, disk, err := q.d.admission(q.base)
 		if err != nil || mem < 5<<30 || disk < 8<<30 {
 			return finish(unknown, errors.New("runtime work requires at least 5 GiB available RAM and 8 GiB free disk"))
 		}
@@ -390,7 +414,7 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		// Image preparation and the live probe can outlast the initial capacity
 		// observation. Re-admit at the utility boundary while holding the host
 		// expensive-work gate; never treat swap as available physical memory.
-		mem, disk, err := d.admission(q.r.Directory)
+		mem, disk, err := q.d.admission(q.r.Directory)
 		if err != nil || mem < 5<<30 || disk < 8<<30 {
 			return finish(unknown, errors.New("maintenance requires at least 5 GiB available RAM and 8 GiB free disk immediately before dispatch"))
 		}
@@ -449,7 +473,7 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 	if n := q.r.Network; n != nil && n.CreateUncertain {
 		return finish(unknown, errors.New("uncertain managed network requires manual recovery"))
 	}
-	mem, disk, err := d.admission(q.r.Directory)
+	mem, disk, err := q.d.admission(q.r.Directory)
 	if err != nil || mem < 5<<30 || disk < 8<<30 {
 		return finish(unknown, errors.New("start requires at least 5 GiB available RAM and 8 GiB free disk"))
 	}

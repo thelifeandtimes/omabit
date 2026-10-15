@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
@@ -86,6 +87,24 @@ func newServerWithStartup(dir string, b backend, interval time.Duration, comets 
 	if ports, ok := b.(interface{ PortAvailable(string, uint16) bool }); ok {
 		s.portAvailable = ports.PortAvailable
 	}
+	if storage, ok := b.(storageActionsBackend); ok {
+		s.validateStorage = func(path string) error {
+			id, _ := pierstore.Split(path)
+			if id == "" {
+				return nil
+			}
+			roots, err := storage.StorageRoots()
+			if err != nil {
+				return conflict("storage_unavailable", err.Error())
+			}
+			for _, root := range roots {
+				if root.ID == id {
+					return nil
+				}
+			}
+			return bad("unknown storage location; add it in Storage locations before selecting it")
+		}
+	}
 	if comets {
 		s.mode = DevelopmentMode
 	} else {
@@ -111,6 +130,7 @@ func newServerWithStartup(dir string, b backend, interval time.Duration, comets 
 			s.close()
 			return nil, errors.New("invalid host boot identity")
 		}
+		s.bootID = bootID
 		resume, err = s.startupCandidates()
 		if err != nil {
 			s.close()
@@ -189,7 +209,7 @@ func (r *Server) launch(op protocol.Operation) {
 	r.wg.Add(1)
 	go func() {
 		defer r.wg.Done()
-		if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
+		if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "delete-pier" || op.Kind == "import-pier" || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
 			select {
 			case r.workGate <- struct{}{}:
 				defer func() { <-r.workGate }()
@@ -269,6 +289,9 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials", "offline-pack", "offline-meld", "offline-roll", "container-resources", "container-cpu", "epoch-inventory", "epoch-prune-genesis", "epoch-prune-prefix"}
 		features = append(features, "maintenance-schedules")
 		features = append(features, "fake-ship-options")
+		if _, ok := r.b.(storageActionsBackend); ok {
+			features = append(features, "storage-locations", "import-pier", "delete-pier")
+		}
 		if _, ok := r.b.(storageBackend); ok {
 			features = append(features, "bootstrap-selection")
 			features = append(features, "pier-storage")
@@ -278,7 +301,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			}
 		}
 		if r.bootID != "" {
-			features = append(features, "startup-resume")
+			features = append(features, "startup-resume", "unclean-reboot-resume")
 		}
 		if r.s.mode == DevelopmentMode {
 			features = append(features, "create-comet", "comet-compaction", "comet-epochs", "comet-prune-prefix")
@@ -360,6 +383,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if req.URL.Path == "/v1/piers" {
 		r.servePiers(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == "/v1/storage-roots" || req.URL.Path == "/v1/pier-import-preview" || req.URL.Path == "/v1/pier-import" {
+		r.serveStorageActions(w, req, actor, role)
 		return
 	}
 	if req.URL.Path == "/v1/ships" {

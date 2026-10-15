@@ -82,9 +82,32 @@ function fakeOptionsProblem(connection, ship, pier) {
   return ""
 }
 function validPierPath(value) {
-  var p=String(value || "").split("/")
+  value=String(value || "")
+  if (value[0]==="@") {
+    var root=value.slice(1).split("/")[0]
+    if (!/^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(root) || root==="default") return false
+    value=value.slice(root.length+2)
+  }
+  var p=value.split("/")
   return String(value).length<=384 && p.length<=8 && p.every(function(s){return /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(s)})
     && p[p.length-1]==="pier" && (p[0]==="fakeships" && p.length>=3 || p[0]==="livenet" && p.length>=4 && ["galaxies","stars","planets","moons","comets"].indexOf(p[1])>=0)
+}
+function storageRoots(connection) {
+  var c=connection && connection.snapshot && connection.snapshot.piers
+  return c && c.roots && c.roots.length ? c.roots : [{id:"default",path:c && c.root || "/var/lib/urbit-runner/piers"}]
+}
+function storagePath(root,path) { return path[0]==="@" || !root || root==="default" ? path : "@"+root+"/"+path }
+function absolutePierPath(connection,path) {
+  var parts=String(path || "").split("/"), id=parts[0][0]==="@" ? parts.shift().slice(1) : "default"
+  var root=storageRoots(connection).filter(function(r){return r.id===id})[0]
+  return root ? root.path+"/"+parts.join("/") : path
+}
+function hostPath(value) { return typeof value==="string" && value.length>1 && value.length<=2048 && value[0]==="/" && !/[\u0000\r\n,\"]/.test(value) && value.split("/").slice(1).every(function(s){return s && s!=="." && s!==".."}) }
+function canDeletePier(connection,instance,now) {
+  return writable(connection,now) && connection.access_role==="operator" && hasFeature(connection,"delete-pier") && !!instance && validPierPath(instance.pier_path) && !handoffFenced(instance) && (!instance.external_import || ["complete","enrolling"].indexOf(instance.external_import.stage)>=0 || instance.external_import.stage==="reviewed" && !instance.external_import.holding_path) && !instance.active_operation_id && instance.desired_state==="stopped" && (instance.delete_pending || ["stopped","uninitialized"].indexOf(instance.observed_state)>=0)
+}
+function externalReviewCurrent(connection,review,path,now) {
+  return writable(connection,now) && connection.access_role==="operator" && hasFeature(connection,"import-pier") && !!review && review.runner===connection.runner_id && review.connection===connection.name && review.source.path===path && validDigest(review.source.fingerprint) && now-review.loadedAt>=0 && now-review.loadedAt<300000
 }
 function pierPath(kind,name,ship,input) {
   input=String(input || "").trim()
@@ -209,8 +232,9 @@ function codeUnavailable(connection,instance,now,observing) {
   if (!observing || !available(connection,now)) return "Connect to the runner for +code access."
   if (connection.access_role !== "operator") return "Operator access is required to copy +code."
   if (!hasFeature(connection,"login-code")) return "Update this runner to enable +code access."
+  if (instance && instance.active_operation_id) return "Wait for the ship's current operation to finish."
+  if (instance && instance.recovery_required) return "Review the recovery details and runtime logs before restarting or retrieving +code."
   if (!instance || instance.observed_state !== "running") return "Start the ship to retrieve its +code."
-  if (instance.active_operation_id || instance.recovery_required) return "Wait for the ship's current work or recovery to finish."
   return canCopyCode(connection,instance,now) ? "" : "Waiting for a fresh runtime identity."
 }
 
@@ -414,15 +438,20 @@ function runtimeDetail(instance) {
   if (!instance) return "Select a ship."
   var d=instance.runtime_status || {}, op=d.last_operation, parts=[]
   if (instance.active_operation_id) parts.push(runtimeStage(d.stage) || "Runner operation in progress")
+  var exited=d.running===false && d.exit_code!==undefined
+  if (exited) parts.push("Current runtime: container exited with code "+d.exit_code+" · OOM killed: "+(d.oom_killed===true ? "yes" : d.oom_killed===false ? "no" : "unknown"))
   if (op) {
-    parts.push(operationTitle(op.kind)+" · "+op.status)
+    parts.push("Last operation: "+operationTitle(op.kind)+" · "+op.status)
     if (op.message) parts.push(op.message)
   }
-  if (d.running===false && d.exit_code!==undefined) parts.push("Container exited with code "+d.exit_code+" · OOM killed: "+(d.oom_killed===true ? "yes" : d.oom_killed===false ? "no" : "unknown"))
+  var laterExit=exited && d.exit_code!==0 && op && op.status==="succeeded" && ["start","startup-resume"].indexOf(op.kind)>=0
+  if (laterExit) parts.push("That start completed earlier; the container exited afterward.")
   if (d.launch_error) parts.push(d.launch_error)
   if (d.snapshot_minutes) parts.push("Container snapshot interval: "+d.snapshot_minutes+" minutes."+(d.default_snapshot_minutes && d.snapshot_minutes!==d.default_snapshot_minutes ? " New starts use "+d.default_snapshot_minutes+" minutes." : ""))
   else if (d.default_snapshot_minutes) parts.push("New runtime snapshot interval: "+d.default_snapshot_minutes+" minutes.")
-  if (instance.recovery_required) parts.push("Recovery needs review. Check the failed operation and runtime logs before another lifecycle action.")
+  if (instance.recovery_required) parts.push(laterExit && d.initialized && instance.observed_state==="failed"
+    ? "Recovery needs review. After reviewing the logs, use Stop to reconcile the exited container without deleting its pier, then Start when recovery clears."
+    : "Recovery needs review. Check the operation and runtime logs. Stop reconciles retained containers; interrupted provisioning or maintenance may need further review.")
   return parts.join("\n") || "No lifecycle operation recorded yet."
 }
 function runtimeNarration(lines) {
@@ -454,7 +483,7 @@ function writable(connection, now) {
 }
 
 function canOperate(connection, instance, kind, now) {
-  if (!writable(connection, now) || !instance || instance.active_operation_id || handoffFenced(instance)) return false
+  if (!writable(connection, now) || !instance || instance.active_operation_id || instance.delete_pending || handoffFenced(instance)) return false
   if (kind === "stop") return instance.observed_state === "running" || instance.recovery_required === true
   if (instance.recovery_required) return false
   if (kind === "start") return ["stopped", "uninitialized"].indexOf(instance.observed_state) >= 0

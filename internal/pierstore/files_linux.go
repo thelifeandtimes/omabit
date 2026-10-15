@@ -36,8 +36,12 @@ func Init(home string) error {
 	if _, err := directory(home); err != nil {
 		return err
 	}
+	return initRoot(Root(home))
+}
+
+func initRoot(root string) error {
 	for _, relative := range append([]string{"", "livenet"}, Categories...) {
-		p := filepath.Join(Root(home), relative)
+		p := filepath.Join(root, relative)
 		if err := os.Mkdir(p, 0755); err != nil && !errors.Is(err, os.ErrExist) {
 			return err
 		}
@@ -54,7 +58,10 @@ func Path(home, relative string) (string, error) {
 	if !ValidPath(relative) {
 		return "", errors.New("pier path must be inside the fakeships or classified livenet tree")
 	}
-	p := Root(home)
+	p, relative, err := Resolve(home, relative)
+	if err != nil {
+		return "", err
+	}
 	if _, err := directory(p); err != nil {
 		return "", err
 	}
@@ -74,7 +81,13 @@ func Parents(home, relative string) (string, error) {
 	if err := Init(home); err != nil {
 		return "", err
 	}
-	p := Root(home)
+	p, relative, err := Resolve(home, relative)
+	if err != nil {
+		return "", err
+	}
+	if err := initRoot(p); err != nil {
+		return "", err
+	}
 	parts := strings.Split(relative, "/")
 	// Create grouping directories, but leave the exclusive mount root absent.
 	for _, part := range parts[:len(parts)-2] {
@@ -119,13 +132,17 @@ func CheckMount(home string, location Location) (string, error) {
 	if !ValidPath(location.Path) {
 		return "", errors.New("pier path must end in an exclusive ship directory /pier")
 	}
-	p := filepath.Join(Root(home), MountPath(location.Path))
+	root, relative, err := Resolve(home, location.Path)
+	if err != nil {
+		return "", err
+	}
+	p := filepath.Join(root, MountPath(relative))
 	// Validate every ancestor, including grouping directories.
-	parent := Root(home)
+	parent := root
 	if _, err := directory(parent); err != nil {
 		return "", err
 	}
-	for _, part := range strings.Split(MountPath(location.Path), "/") {
+	for _, part := range strings.Split(MountPath(relative), "/") {
 		parent = filepath.Join(parent, part)
 		if _, err := directory(parent); err != nil {
 			return "", err
@@ -267,8 +284,29 @@ func CheckStateFiles(ctx context.Context, p string) error {
 }
 
 func Scan(ctx context.Context, home string) ([]Candidate, error) {
+	roots, err := Roots(home)
+	if err != nil {
+		return nil, err
+	}
 	out := []Candidate{}
-	root := Root(home)
+	for _, root := range roots {
+		if root.ID != "default" {
+			if _, _, err := Resolve(home, Qualify(root.ID, "fakeships/check/pier")); err != nil {
+				return nil, err
+			}
+		}
+		found, err := scanRoot(ctx, home, root)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, found...)
+	}
+	return out, nil
+}
+
+func scanRoot(ctx context.Context, home string, storage StorageRoot) ([]Candidate, error) {
+	out := []Candidate{}
+	root := storage.Path
 	if _, err := directory(root); err != nil {
 		return out, err
 	}
@@ -285,7 +323,7 @@ func Scan(ctx context.Context, home string) ([]Candidate, error) {
 		p := filepath.Join(root, relative)
 		if _, err := directory(p); err != nil {
 			if info, statErr := os.Lstat(p); statErr == nil && info.IsDir() && ValidPath(relative) {
-				out = append(out, Candidate{Path: relative, Kind: Kind(relative), Problem: "Directory ownership or permissions need review; files must belong to urbit-runner."})
+				out = append(out, Candidate{Path: Qualify(storage.ID, relative), Kind: Kind(relative), Problem: "Directory ownership or permissions need review; files must belong to urbit-runner."})
 			}
 			return nil
 		}
@@ -293,11 +331,11 @@ func Scan(ctx context.Context, home string) ([]Candidate, error) {
 			if !ValidPath(relative) {
 				return nil
 			}
-			c := Candidate{Path: relative, Kind: Kind(relative), Busy: Busy(p)}
+			c := Candidate{Path: Qualify(storage.ID, relative), Kind: Kind(relative), Busy: Busy(p)}
 			i, err := Identify(p)
 			mount, rootErr := IdentifyMount(filepath.Dir(p))
 			if rootErr == nil {
-				_, rootErr = CheckMount(home, Location{Path: relative, MountIdentity: mount})
+				_, rootErr = CheckMount(home, Location{Path: c.Path, MountIdentity: mount})
 			}
 			if err != nil || rootErr != nil {
 				c.Problem = "Pier metadata is missing, linked, unsupported by this filesystem, or has incompatible ownership/permissions."

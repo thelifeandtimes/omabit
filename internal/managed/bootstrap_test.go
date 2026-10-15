@@ -49,7 +49,7 @@ func TestBootstrapSchemaUpgradePreservesLegacySelection(t *testing.T) {
 		t.Fatal("legacy bootstrap/runtime record changed", err)
 	}
 	var version int
-	if err = s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 13 {
+	if err = s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != currentSchema {
 		t.Fatal(version, err)
 	}
 }

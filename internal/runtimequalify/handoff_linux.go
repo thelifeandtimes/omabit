@@ -64,7 +64,7 @@ func applyHandoff(ctx context.Context, action string, state ManagedState, persis
 		if err != nil {
 			return finish(err)
 		}
-		_, disk, err := d.admission(q.base)
+		_, disk, err := q.d.admission(q.base)
 		if err != nil || disk < uint64(summary.Bytes)+(8<<30) {
 			return finish(errors.New("handoff needs transfer bytes plus 8 GiB free disk"))
 		}
@@ -137,7 +137,7 @@ func applyHandoff(ctx context.Context, action string, state ManagedState, persis
 			return finish(err)
 		}
 		dir := filepath.Join(q.base, state.ID)
-		_, disk, admissionErr := d.admission(q.base)
+		_, disk, admissionErr := q.d.admission(q.base)
 		if admissionErr != nil || disk < uint64(h.Bytes)+(8<<30) {
 			return finish(errors.New("handoff extraction needs transfer bytes plus 8 GiB free disk"))
 		}
@@ -227,7 +227,11 @@ func applyHandoff(ctx context.Context, action string, state ManagedState, persis
 		if h.Direction != "out" || h.State != "ready" || !state.Initialized || len(state.HandoffSigningKey) != ed25519.PrivateKeySize {
 			return finish(errors.New("source handoff is not ready to commit"))
 		}
-		archive := filepath.Join(pierstore.Root(d.home), "archive", "moved-"+h.ID, "pier")
+		storageRoot, _, rootErr := pierstore.Resolve(d.home, state.Storage.Path)
+		if rootErr != nil {
+			return finish(rootErr)
+		}
+		archive := filepath.Join(storageRoot, "archive", "moved-"+h.ID, "pier")
 		if err = os.Mkdir(filepath.Dir(filepath.Dir(archive)), 0700); err != nil && !errors.Is(err, os.ErrExist) {
 			return finish(err)
 		}

@@ -1,5 +1,14 @@
 # Pier storage, discovery and real-ship setup
 
+For the distinction between independent fake identities and double-booting a real
+ship, see the [live fake-zod networking inspection](diagnostics/2026-10-14-fake-zod-networking.md).
+Fakes use container-local Ames; their containers still permit outbound HTTP.
+
+**New development workflows:** [Storage locations, import and deletion](storage-management.md)
+documents configurable roots, GUI host-path move/import and permanent pier deletion
+in schema-14 / 0.1.0-rc.2-dev source. The historical layout description below explains
+the default convention retained by each configured location.
+
 Panel/runner 0.20 uses one permanent layout below `/var/lib/urbit-runner/piers`.
 Each ship has an exclusive mount directory containing its actual `pier/` child:
 

@@ -58,11 +58,14 @@ func (s *store) registerShip(actor string, req protocol.CreateShipRequest) (prot
 	if req.Config.Loom == 0 {
 		req.Config.Loom = 31
 	}
-	if req.ID != name || req.PierPath != "livenet/"+map[string]string{"galaxy": "galaxies", "star": "stars", "planet": "planets", "moon": "moons"}[class]+"/"+name+"/pier" {
+	if req.ID != name || !pierstore.ValidPath(req.PierPath) || pierstore.Relative(req.PierPath) != "livenet/"+map[string]string{"galaxy": "galaxies", "star": "stars", "planet": "planets", "moon": "moons"}[class]+"/"+name+"/pier" {
 		return protocol.Operation{}, false, bad("instance name and pier path are derived from the Urbit identity")
 	}
 	if req.Pill != nil && !protocol.ValidBootPill(req.Pill) {
 		return protocol.Operation{}, false, bad("invalid selected pill descriptor")
+	}
+	if err := s.checkStorage(req.PierPath); err != nil {
+		return protocol.Operation{}, false, err
 	}
 	if class == "" || class == "comet" || !req.ConfirmNetwork || !protocol.ValidBootKey(req.Key) || pierstore.Kind(req.PierPath) != class {
 		return protocol.Operation{}, false, bad("require a valid owned ~ship, private 0w key, matching livenet directory and network acknowledgement")
@@ -87,6 +90,10 @@ func (s *store) registerShip(actor string, req protocol.CreateShipRequest) (prot
 	defer tx.Rollback()
 	if op, hit, err := replay(tx, actor, req.RequestID, string(fingerprint)); hit || err != nil {
 		return op, true, err
+	}
+	revision, err := initialRevision(tx, req.ID)
+	if err != nil {
+		return protocol.Operation{}, false, err
 	}
 	req.Config.HTTPPort, err = s.choosePort(tx, req.ID, "tcp", req.Config.HTTPPort)
 	if err != nil {
@@ -121,7 +128,7 @@ func (s *store) registerShip(actor string, req protocol.CreateShipRequest) (prot
 	if err != nil {
 		return protocol.Operation{}, false, err
 	}
-	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: 1, Ship: req.Ship, Mode: class, PierPath: req.PierPath, DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: id, Port: req.Config.HTTPPort, AmesPort: req.Config.AmesPort, Boot: &runtimequalify.ManagedBoot{Pill: req.Pill}, NativeShip: req.Ship, NativeKeyDigest: digest, Comet: &runtimequalify.ManagedComet{Ship: req.Ship}, Storage: &pierstore.Location{Path: req.PierPath}}}
+	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: revision, Ship: req.Ship, Mode: class, PierPath: req.PierPath, DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: id, Port: req.Config.HTTPPort, AmesPort: req.Config.AmesPort, Boot: &runtimequalify.ManagedBoot{Pill: req.Pill}, NativeShip: req.Ship, NativeKeyDigest: digest, Comet: &runtimequalify.ManagedComet{Ship: req.Ship}, Storage: &pierstore.Location{Path: req.PierPath}}}
 	v.Public.AmesPublished = true
 	v.Public.Bootstrap = &protocol.Bootstrap{Kind: "bare", Pill: req.Pill}
 	if req.Pill != nil {
@@ -139,7 +146,7 @@ func (s *store) registerShip(actor string, req protocol.CreateShipRequest) (prot
 		return protocol.Operation{}, false, err
 	}
 	now := time.Now().UTC()
-	op := protocol.Operation{ID: "op-" + opID, RequestID: req.RequestID, InstanceID: req.ID, Kind: "register-ship", Actor: actor, Status: "succeeded", ConfigRevision: 1, CreatedAt: now, FinishedAt: &now}
+	op := protocol.Operation{ID: "op-" + opID, RequestID: req.RequestID, InstanceID: req.ID, Kind: "register-ship", Actor: actor, Status: "succeeded", ConfigRevision: revision, CreatedAt: now, FinishedAt: &now}
 	if err := insertOperation(tx, op, string(fingerprint)); err != nil {
 		return op, false, err
 	}

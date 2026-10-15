@@ -16,6 +16,17 @@ import (
 
 const startupActor = "system:startup"
 
+// The pending boot is saved before polling can replace the previous healthy
+// observation with an exited-container warning. It survives a management restart
+// before dispatch; once dispatched, the operation journal owns the attempt.
+type startupState struct {
+	HealthyBootID  string `json:"healthy_boot_id,omitempty"`
+	ContainerID    string `json:"container_id"`
+	ConfigRevision uint64 `json:"config_revision"`
+	PendingBootID  string `json:"pending_boot_id,omitempty"`
+	AllowUnclean   bool   `json:"allow_unclean,omitempty"`
+}
+
 var bootIDPattern = regexp.MustCompile(`^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$`)
 
 // NewDevelopmentService enables the explicitly requested startup policy. Boot ID
@@ -45,25 +56,109 @@ func startupEligible(v storedInstance) bool {
 		runtimequalify.StartupResumeCandidate(v.Runtime)
 }
 
-// Capture eligibility after reconciling interrupted jobs, before polling changes
-// observations. A normal retained stopped container will then report recovery
-// required until this specifically authorized cleanup/resume has completed.
+func startupContainer(v storedInstance) string {
+	for _, c := range v.Runtime.Runtime.Containers {
+		if !c.Removed {
+			return c.ID
+		}
+	}
+	return ""
+}
+
+func startupMatches(v storedInstance) bool {
+	return v.Startup != nil && v.Startup.ContainerID == startupContainer(v) && v.Startup.ConfigRevision == v.Public.ConfigRevision
+}
+
+func (s *store) recordHealthyBoot(v *storedInstance) {
+	if s.bootID == "" || v.Public.ObservedState != "running" || v.Public.Health != "healthy" || v.Public.RecoveryRequired || !startupEligible(*v) {
+		return
+	}
+	v.Startup = &startupState{HealthyBootID: s.bootID, ContainerID: startupContainer(*v), ConfigRevision: v.Public.ConfigRevision}
+}
+
+// Capture and persist eligibility after reconciling interrupted jobs, before
+// polling. Legacy records retain clean-only startup until observed healthy by
+// this version. A known failure without a pending boot is never re-authorized.
 func (s *store) startupCandidates() ([]storedInstance, error) {
-	all, err := instances(s.db)
+	if !bootIDPattern.MatchString(s.bootID) {
+		return nil, nil
+	}
+	tx, err := s.db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	all, err := instances(tx)
 	if err != nil {
 		return nil, err
 	}
 	var candidates []storedInstance
 	for _, v := range all {
-		if !v.Public.RecoveryRequired && startupEligible(v) {
-			candidates = append(candidates, v)
+		if !startupEligible(v) {
+			continue
+		}
+		pending := startupMatches(v) && bootIDPattern.MatchString(v.Startup.PendingBootID)
+		if !pending && v.Public.RecoveryRequired {
+			continue
+		}
+		if !startupMatches(v) {
+			v.Startup = &startupState{ContainerID: startupContainer(v), ConfigRevision: v.Public.ConfigRevision}
+		}
+		if !pending || v.Startup.PendingBootID != s.bootID {
+			v.Startup.AllowUnclean = bootIDPattern.MatchString(v.Startup.HealthyBootID) && v.Startup.HealthyBootID != s.bootID
+		}
+		v.Startup.PendingBootID = s.bootID
+		v.RuntimeRevision++ // invalidate observations captured before authorization
+		if err := saveInstance(tx, v); err != nil {
+			return nil, err
+		}
+		candidates = append(candidates, v)
+	}
+	return candidates, tx.Commit()
+}
+
+func startupAuthorized(v storedInstance, boot string) bool {
+	return startupEligible(v) && startupMatches(v) && v.Startup.PendingBootID == boot &&
+		(!v.Startup.AllowUnclean || bootIDPattern.MatchString(v.Startup.HealthyBootID) && v.Startup.HealthyBootID != boot)
+}
+
+// A definitive non-candidate (including a same-boot failure) must not retain a
+// pending authorization that could be carried into a later boot.
+func (s *store) dismissStartup(before storedInstance) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	v, err := loadInstance(tx, before.Public.ID)
+	if err != nil {
+		var f *fault
+		if errors.As(err, &f) && f.problem.Code == "instance_not_found" {
+			return nil
+		}
+		return err
+	}
+	if v.Runtime.ID == before.Runtime.ID && startupAuthorized(v, s.bootID) && *v.Startup == *before.Startup {
+		v.Startup = nil
+		v.RuntimeRevision++
+		if err := saveInstance(tx, v); err != nil {
+			return err
 		}
 	}
-	return candidates, nil
+	return tx.Commit()
+}
+
+func authorizeStartupState(v storedInstance, state runtimequalify.ManagedState) runtimequalify.ManagedState {
+	state.StartupResume = &runtimequalify.StartupResumeIntent{ContainerID: v.Startup.ContainerID, AllowUnclean: v.Startup.AllowUnclean}
+	return state
 }
 
 func (s *store) claimStartup(before storedInstance, state runtimequalify.ManagedState, observation runtimequalify.ManagedObservation, boot string) (protocol.Operation, bool, error) {
-	if !bootIDPattern.MatchString(boot) || !runtimequalify.StartupResumeReady(state, observation) || state.ID != before.Runtime.ID {
+	if !bootIDPattern.MatchString(boot) || !startupAuthorized(before, boot) || state.ID != before.Runtime.ID {
+		return protocol.Operation{}, false, errors.New("invalid startup resume authorization")
+	}
+	state = authorizeStartupState(before, state)
+	if !runtimequalify.StartupResumeReady(state, observation) {
 		return protocol.Operation{}, false, errors.New("invalid startup resume evidence")
 	}
 	tx, err := s.db.Begin()
@@ -79,9 +174,13 @@ func (s *store) claimStartup(before storedInstance, state runtimequalify.Managed
 	}
 	v, err := loadInstance(tx, before.Public.ID)
 	if err != nil {
+		var f *fault
+		if errors.As(err, &f) && f.problem.Code == "instance_not_found" {
+			return protocol.Operation{}, false, nil
+		}
 		return protocol.Operation{}, false, err
 	}
-	if v.RuntimeRevision != before.RuntimeRevision || v.Public.ConfigRevision != before.Public.ConfigRevision || !startupEligible(v) {
+	if v.Runtime.ID != before.Runtime.ID || v.RuntimeRevision != before.RuntimeRevision || v.Public.ConfigRevision != before.Public.ConfigRevision || !startupAuthorized(v, boot) || *v.Startup != *before.Startup {
 		return protocol.Operation{}, false, nil
 	}
 	id, err := randomID()
@@ -89,9 +188,13 @@ func (s *store) claimStartup(before storedInstance, state runtimequalify.Managed
 		return protocol.Operation{}, false, err
 	}
 	op := protocol.Operation{ID: "op-" + id, RequestID: request, InstanceID: v.Public.ID, Kind: "startup-resume", Actor: startupActor, Status: "queued", ConfigRevision: v.Public.ConfigRevision, CreatedAt: time.Now().UTC()}
+	if state.StartupResume.AllowUnclean {
+		op.Message = "Resuming the existing pier after host reboot; Vere replays persisted events as needed."
+	}
 	v.Runtime, v.RuntimeRevision = state, v.RuntimeRevision+1
 	v.Public.ActiveOperationID = op.ID
-	// Fresh clean-exit evidence resolves the retained-container cleanup warning;
+	v.Startup.PendingBootID = ""
+	// The journaled attempt resolves only the retained-container warning;
 	// independent provisioning/maintenance uncertainty was rejected above.
 	v.Public.RecoveryRequired = false
 	v.Public.Health = "unknown"
@@ -116,10 +219,14 @@ func (r *Server) resumeStartup(candidates []storedInstance, interval time.Durati
 			}
 			v, err := loadInstance(r.s.db, initial.Public.ID)
 			if err != nil {
+				var f *fault
+				if errors.As(err, &f) && f.problem.Code == "instance_not_found" {
+					continue // deletion won the race
+				}
 				r.failed.Store(true)
 				return
 			}
-			if v.Runtime.ID != initial.Runtime.ID || v.Public.ConfigRevision != initial.Public.ConfigRevision || !startupEligible(v) {
+			if v.Runtime.ID != initial.Runtime.ID || v.Public.ConfigRevision != initial.Public.ConfigRevision || !startupAuthorized(v, r.bootID) {
 				continue
 			}
 			ctx, cancel := context.WithTimeout(r.ctx, 20*time.Second)
@@ -132,7 +239,11 @@ func (r *Server) resumeStartup(candidates []storedInstance, interval time.Durati
 				next = append(next, initial) // retry observations, never a mutation
 				continue
 			}
-			if !runtimequalify.StartupResumeReady(state, observation) {
+			if !runtimequalify.StartupResumeReady(authorizeStartupState(v, state), observation) {
+				if err := r.s.dismissStartup(v); err != nil {
+					r.failed.Store(true)
+					return
+				}
 				continue
 			}
 			r.mu.Lock()

@@ -33,6 +33,41 @@ func TestFakeRegistrationKeepsIdentityInstanceAndPierIndependent(t *testing.T) {
 	}
 }
 
+func TestIndependentFakeNamesAreAllowedButPierPortAndConcurrentStartConflictsAreNot(t *testing.T) {
+	s := testStore(t)
+	for n, name := range []string{"one", "two"} {
+		req := registration(name, "register-"+name, uint16(18080+n))
+		req.FakeShip = "~zod"
+		if _, _, err := s.register("operator", req); err != nil {
+			t.Fatal(err)
+		}
+	}
+	a, err := loadInstance(s.db, "one")
+	if err != nil {
+		t.Fatal(err)
+	}
+	b, err := loadInstance(s.db, "two")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if a.Public.Ship != "~zod" || b.Public.Ship != "~zod" || a.Runtime.ID == b.Runtime.ID || a.Runtime.Storage.Path == b.Runtime.Storage.Path {
+		t.Fatal("independent fake registrations were conflated")
+	}
+	conflicting := registration("three", "same-pier", 18082)
+	conflicting.PierPath = a.Runtime.Storage.Path
+	_, _, err = s.register("operator", conflicting)
+	requireFault(t, err, "pier_path_conflict")
+	conflicting = registration("three", "same-port", 18080)
+	_, _, err = s.register("operator", conflicting)
+	requireFault(t, err, "port_conflict")
+	_, _, err = s.accept("operator", "one", protocol.OperationRequest{Kind: "start", RequestID: "first-start", ExpectedRevision: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, _, err = s.accept("operator", "one", protocol.OperationRequest{Kind: "start", RequestID: "second-start", ExpectedRevision: 1})
+	requireFault(t, err, "instance_busy")
+}
+
 func TestFakeRegistrationRejectsUnsafeNamesAndCometOptions(t *testing.T) {
 	s := testStore(t)
 	for _, value := range []string{"~foo", "~bus; exit", "~sampel--palnet"} {

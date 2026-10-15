@@ -13,7 +13,7 @@ Column {
   property string submitError: ""
   readonly property string ship: Model.fakeIdentity(identity.text)
   readonly property string instanceName: ship.slice(1)
-  readonly property string destination: Model.ownedPierPath(ship)
+  readonly property string destination: Model.ownedPierPath(ship) ? Model.storagePath(storageLocation.rootID,Model.ownedPierPath(ship)) : ""
   readonly property string selectedPill: bootstrap.source
   readonly property var currentConnection: service && connection ? service.connections.filter(function(c){return c.name===root.connection.name && c.runner_id===root.connection.runner_id})[0] || null : null
   readonly property var registeredInstance: Model.instances(currentConnection).filter(function(i){return i.id===root.instanceName && i.ship===root.ship && i.mode!=="fake"})[0] || null
@@ -43,7 +43,8 @@ Column {
     options: FileDialog.DontUseNativeDialog
     onAccepted: root.keyFile=Model.localPath(selectedFile)
   }
-  Label { width: parent.width; visible: root.destination!==""; text: "Instance: "+root.instanceName+"\nPier: piers/"+root.destination; secondary: true; caption: true }
+  StorageLocationSelector { id: storageLocation; width: parent.width; connection: root.connection; visible: !root.registered; enabled: !root.submitted && !root.service.busy }
+  Label { width: parent.width; visible: root.destination!==""; text: "Instance: "+root.instanceName+"\nPier: "+Model.absolutePierPath(root.connection,root.destination); secondary: true; caption: true }
   ActionButton { objectName: "key-advanced-toggle"; text: root.advanced ? "Advanced configuration −" : "Advanced configuration +"; quiet: true; onClicked: root.advanced=!root.advanced }
   Column {
     objectName: "key-advanced"; width: parent.width; spacing: Style.space(10); visible: root.advanced
@@ -56,7 +57,7 @@ Column {
   Label { width: parent.width; visible: root.problem!=="" && identity.text!==""; text: root.problem; secondary: true; caption: true }
   Flow {
     width: parent.width; spacing: Style.space(8)
-    ActionButton { objectName: "key-register"; text: root.registered ? "Registered" : root.submitted ? "Registration submitted" : root.service.busy ? "Preparing boot files…" : "Register ship"; primary: !root.registered; enabled: root.connection && root.connection.access_role==="operator" && Model.hasFeature(root.connection,"key-boot-options") && !root.submitted && !root.service.busy && root.problem===""; onClicked: {root.submitError="";if(!root.service.createFromKey(root.connection,root.ship,root.keyFile,httpPort.text,amesPort.text,root.selectedPill,bootstrap.kind))root.submitError=root.service.lastError} }
+    ActionButton { objectName: "key-register"; text: root.registered ? "Registered" : root.submitted ? "Registration submitted" : root.service.busy ? "Preparing boot files…" : "Register ship"; primary: !root.registered; enabled: root.connection && root.connection.access_role==="operator" && Model.hasFeature(root.connection,"key-boot-options") && !root.submitted && !root.service.busy && root.problem===""; onClicked: {root.submitError="";if(!root.service.createFromKey(root.connection,root.ship,root.keyFile,httpPort.text,amesPort.text,root.selectedPill,bootstrap.kind,storageLocation.rootID))root.submitError=root.service.lastError} }
     ActionButton {
       objectName: "key-start"
       text: "▶ Start"

@@ -27,7 +27,7 @@ import (
 
 const mode = "development-managed-fake"
 const DevelopmentMode = "development-managed"
-const currentSchema = 13
+const currentSchema = 15
 
 type storedInstance struct {
 	Public                protocol.Instance           `json:"public"`
@@ -35,14 +35,17 @@ type storedInstance struct {
 	RuntimeRevision       uint64                      `json:"runtime_revision"`
 	RuntimeConfigRevision uint64                      `json:"runtime_config_revision"`
 	CPU                   *cpuBaseline                `json:"cpu_baseline,omitempty"`
+	Startup               *startupState               `json:"startup,omitempty"`
 }
 
 type store struct {
-	portAvailable func(string, uint16) bool
-	directory     string
-	db            *sql.DB
-	runnerID      string
-	mode          string
+	bootID          string
+	validateStorage func(string) error
+	portAvailable   func(string, uint16) bool
+	directory       string
+	db              *sql.DB
+	runnerID        string
+	mode            string
 }
 
 type fault struct {
@@ -157,21 +160,24 @@ CREATE TABLE instances (id TEXT PRIMARY KEY, body BLOB NOT NULL);
 CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TEXT NOT NULL,
  fingerprint TEXT NOT NULL, body BLOB NOT NULL, runtime BLOB,
  UNIQUE(actor, request_id));
-PRAGMA user_version=13;`); err != nil {
+PRAGMA user_version=15;`); err != nil {
 			return err
 		}
 		if _, err := tx.Exec("INSERT INTO meta VALUES ('runner_id', ?)", "runner-"+id); err != nil {
 			return err
 		}
-	} else if version == 11 || version == 12 {
-		// Older runners must not ignore handoff fences or bootstrap selection.
-		if _, err := tx.Exec("PRAGMA user_version=13"); err != nil {
+	} else if version >= 11 && version <= 14 {
+		// Older runners must not discard durable reboot-resume authorization.
+		if _, err := tx.Exec("PRAGMA user_version=15"); err != nil {
 			return err
 		}
 	} else if version != currentSchema {
-		return errors.New("state database requires permanent storage, handoff fencing and bootstrap selection (schema 13)")
+		return errors.New("state database requires durable reboot-resume tracking (schema 15)")
 	}
 	if _, err := tx.Exec("CREATE TABLE IF NOT EXISTS maintenance_policies (instance_id TEXT PRIMARY KEY REFERENCES instances(id), body BLOB NOT NULL)"); err != nil {
+		return err
+	}
+	if _, err := tx.Exec("CREATE TABLE IF NOT EXISTS deleted_instances (id TEXT PRIMARY KEY, operation_id TEXT NOT NULL, revision INTEGER NOT NULL)"); err != nil {
 		return err
 	}
 	if err := tx.QueryRow("SELECT value FROM meta WHERE key='runner_id'").Scan(&s.runnerID); err != nil {
@@ -372,6 +378,9 @@ func (s *store) registerKind(actor string, req protocol.CreateFakeRequest, sourc
 	if !pierstore.ValidPath(location) || (comet && pierstore.Kind(location) != "comet") || (!comet && pierstore.Kind(location) != "fake") {
 		return protocol.Operation{}, false, bad("choose a relative pier path in the appropriate fakeships or livenet/comets tree")
 	}
+	if err := s.checkStorage(location); err != nil {
+		return protocol.Operation{}, false, err
+	}
 	var fake *runtimequalify.ManagedFake
 	if req.FakeShip != "" || req.PierName != "" {
 		if comet || source != nil {
@@ -419,6 +428,10 @@ func (s *store) registerKind(actor string, req protocol.CreateFakeRequest, sourc
 		}
 	}
 	var count int
+	revision, err := initialRevision(tx, req.ID)
+	if err != nil {
+		return protocol.Operation{}, false, err
+	}
 	if err := tx.QueryRow("SELECT count(*) FROM instances WHERE id=?", req.ID).Scan(&count); err != nil {
 		return protocol.Operation{}, false, err
 	}
@@ -449,7 +462,7 @@ func (s *store) registerKind(actor string, req protocol.CreateFakeRequest, sourc
 	if err != nil {
 		return protocol.Operation{}, false, err
 	}
-	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: 1, Mode: "fake", Ship: "~zod", DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: uuid, Port: req.Config.HTTPPort}}
+	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: revision, Mode: "fake", Ship: "~zod", DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: uuid, Port: req.Config.HTTPPort}}
 	v.Runtime.Fake = fake
 	if source == nil {
 		v.Runtime.Bootstrap = req.Bootstrap
@@ -484,7 +497,7 @@ func (s *store) registerKind(actor string, req protocol.CreateFakeRequest, sourc
 		return protocol.Operation{}, false, err
 	}
 	now := time.Now().UTC()
-	op := protocol.Operation{ID: "op-" + opID, RequestID: req.RequestID, InstanceID: req.ID, Kind: "register-fake", Actor: actor, Status: "succeeded", ConfigRevision: 1, CreatedAt: now, FinishedAt: &now}
+	op := protocol.Operation{ID: "op-" + opID, RequestID: req.RequestID, InstanceID: req.ID, Kind: "register-fake", Actor: actor, Status: "succeeded", ConfigRevision: revision, CreatedAt: now, FinishedAt: &now}
 	if comet {
 		op.Kind = "register-comet"
 	}
@@ -517,6 +530,9 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 		return v.Public, err
 	}
 	validate := validateConfig
+	if v.Runtime.Deletion != nil {
+		return v.Public, conflict("deletion_pending", "pier deletion is pending")
+	}
 	if v.Runtime.Handoff.Fenced() {
 		return v.Public, conflict("handoff_fenced", "ship is fenced for a cross-host move")
 	}
@@ -555,6 +571,7 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 			return v.Public, conflict("revision_limit", "configuration revision exhausted")
 		}
 		v.Public.Config, v.Public.ConfigRevision = req.Config, v.Public.ConfigRevision+1
+		v.Startup = nil
 		v.Public.Epochs, v.Runtime.Epochs = nil, nil
 		v.RuntimeRevision++ // prevent an in-flight poll resurrecting the old inventory
 		if err := saveInstance(tx, v); err != nil {
@@ -578,8 +595,11 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 }
 
 func (s *store) accept(actor, id string, req protocol.OperationRequest) (protocol.Operation, bool, error) {
-	if !protocol.ValidID(id) || !protocol.ValidID(req.RequestID) || req.ExpectedRevision == 0 || req.ExpectedRevision > math.MaxInt64 || (req.Kind != "start" && req.Kind != "stop" && req.Kind != "pack" && req.Kind != "meld" && req.Kind != "roll" && req.Kind != "inspect-epochs" && req.Kind != "prune-epochs" && req.Kind != "move-pier") {
+	if !protocol.ValidID(id) || !protocol.ValidID(req.RequestID) || req.ExpectedRevision == 0 || req.ExpectedRevision > math.MaxInt64 || (req.Kind != "start" && req.Kind != "stop" && req.Kind != "pack" && req.Kind != "meld" && req.Kind != "roll" && req.Kind != "inspect-epochs" && req.Kind != "prune-epochs" && req.Kind != "move-pier" && req.Kind != "delete-pier") {
 		return protocol.Operation{}, false, bad("require a supported operation, valid request ID, and positive revision")
+	}
+	if (req.Kind == "delete-pier") != req.ConfirmDelete {
+		return protocol.Operation{}, false, bad("delete-pier requires explicit irreversible deletion confirmation")
 	}
 	if req.Kind == "prune-epochs" {
 		_, cutoffErr := epochs.Number(req.EpochCutoff)
@@ -617,7 +637,26 @@ func (s *store) accept(actor, id string, req protocol.OperationRequest) (protoco
 	if v.Runtime.Handoff.Fenced() {
 		return protocol.Operation{}, false, conflict("handoff_fenced", "ship is fenced for a cross-host move")
 	}
+	if v.Runtime.Deletion != nil && req.Kind != "delete-pier" {
+		return protocol.Operation{}, false, conflict("deletion_pending", "pier deletion is pending; only explicit deletion continuation is available")
+	}
+	if req.Kind == "delete-pier" {
+		if v.Public.DesiredState != "stopped" || v.Runtime.Deletion == nil && v.Public.ObservedState != "stopped" && v.Public.ObservedState != "uninitialized" {
+			return protocol.Operation{}, false, conflict("invalid_state", "stop the runtime before deleting its pier")
+		}
+		for _, c := range v.Runtime.Runtime.Containers {
+			if !c.Removed || c.CreateUncertain {
+				return protocol.Operation{}, false, conflict("invalid_state", "stop and reconcile retained containers before deletion")
+			}
+		}
+		if v.Runtime.ExternalImportInFlight() {
+			return protocol.Operation{}, false, conflict("recovery_required", "review the interrupted external import before deletion")
+		}
+	}
 	if req.Kind == "move-pier" {
+		if err := s.checkStorage(req.PierPath); err != nil {
+			return protocol.Operation{}, false, err
+		}
 		if v.Public.DesiredState != "stopped" || v.Public.RecoveryRequired || (v.Public.ObservedState != "stopped" && v.Public.ObservedState != "uninitialized") {
 			return protocol.Operation{}, false, conflict("invalid_state", "stop the ship cleanly before moving its pier")
 		}
@@ -629,10 +668,10 @@ func (s *store) accept(actor, id string, req protocol.OperationRequest) (protoco
 		}
 		v.Runtime.MoveTarget = req.PierPath
 	}
-	if req.Kind != "stop" && v.Runtime.UncertainMaintenance() {
+	if req.Kind != "stop" && req.Kind != "delete-pier" && v.Runtime.UncertainMaintenance() {
 		return protocol.Operation{}, false, conflict("recovery_required", "interrupted maintenance requires manual review")
 	}
-	if req.Kind != "stop" && v.Runtime.UncertainProvisioning() {
+	if req.Kind != "stop" && req.Kind != "delete-pier" && v.Runtime.UncertainProvisioning() {
 		return protocol.Operation{}, false, conflict("recovery_required", "incomplete provisioning or identity verification requires manual review")
 	}
 	if req.Kind == "roll" && v.Runtime.RollNeedsRuntime {
@@ -684,6 +723,7 @@ func (s *store) accept(actor, id string, req protocol.OperationRequest) (protoco
 	}
 	op := protocol.Operation{ID: "op-" + opID, RequestID: req.RequestID, InstanceID: id, Kind: req.Kind, Actor: actor, Status: "queued", ConfigRevision: req.ExpectedRevision, CreatedAt: time.Now().UTC()}
 	v.Public.ActiveOperationID = op.ID
+	v.Startup, v.Runtime.StartupResume = nil, nil
 	v.Public.Epochs, v.Runtime.Epochs = nil, nil
 	v.Runtime.PruneIntent = nil
 	if req.Kind == "prune-epochs" {
@@ -804,7 +844,7 @@ func (s *store) beginOperation(opID string) (protocol.Operation, storedInstance,
 	if op.Status != "queued" || v.Public.ActiveOperationID != op.ID {
 		return op, v, errors.New("operation is not queued for this instance")
 	}
-	if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
+	if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "delete-pier" || op.Kind == "import-pier" || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
 		// A worker timeout does not stop a daemon-side utility. Recheck after
 		// acquiring the host gate, including jobs queued before that timeout and
 		// retained intents loaded after management restart. Explicit stop remains
@@ -833,12 +873,14 @@ func (s *store) beginOperation(opID string) (protocol.Operation, storedInstance,
 		v.Public.ObservedState = "maintenance"
 	} else if op.Kind == "inspect-epochs" {
 		v.Public.ObservedState = "inspecting"
-	} else if op.Kind == "import-fake" {
+	} else if op.Kind == "import-fake" || op.Kind == "import-pier" {
 		v.Public.ObservedState = "importing"
 	} else if op.Kind == "enroll-pier" {
 		v.Public.ObservedState = "enrolling"
 	} else if op.Kind == "move-pier" || strings.HasSuffix(op.Kind, "-handoff") {
 		v.Public.ObservedState = "moving"
+	} else if op.Kind == "delete-pier" {
+		v.Public.ObservedState = "deleting"
 	} else {
 		v.Public.ObservedState = "stopping"
 	}
@@ -900,7 +942,25 @@ func (s *store) finish(op protocol.Operation, state runtimequalify.ManagedState,
 	} else if op.Kind == "start" || op.Kind == "startup-resume" {
 		v.Public.AppliedRevision = op.ConfigRevision
 	}
-	if err := saveInstance(tx, v); err != nil {
+	if cause != nil {
+		v.Startup = nil
+	} else {
+		s.recordHealthyBoot(&v)
+	}
+	if op.Kind == "delete-pier" && cause == nil {
+		if state.Deletion == nil || state.Deletion.Stage != "complete" {
+			return errors.New("deletion has no completed filesystem receipt")
+		}
+		if _, err := tx.Exec("DELETE FROM maintenance_policies WHERE instance_id=?", op.InstanceID); err != nil {
+			return err
+		}
+		if _, err := tx.Exec("INSERT INTO deleted_instances VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET operation_id=excluded.operation_id,revision=excluded.revision", op.InstanceID, op.ID, op.ConfigRevision); err != nil {
+			return err
+		}
+		if _, err := tx.Exec("DELETE FROM instances WHERE id=?", op.InstanceID); err != nil {
+			return err
+		}
+	} else if err := saveInstance(tx, v); err != nil {
 		return err
 	}
 	if err := saveOperation(tx, op); err != nil {
@@ -910,6 +970,7 @@ func (s *store) finish(op protocol.Operation, state runtimequalify.ManagedState,
 }
 
 func applyObservation(v *storedInstance, observation runtimequalify.ManagedObservation, now time.Time) {
+	v.Public.DeletePending = v.Runtime.Deletion != nil
 	v.Public.Handoff = v.Runtime.Handoff
 	v.Public.AmesPublished = v.Runtime.Boot != nil
 	v.Public.IdentityPending = v.Runtime.Adoption != nil && !v.Runtime.Adoption.Verified
@@ -1059,6 +1120,7 @@ func (s *store) reconcileInterrupted() error {
 			updateImportReport(&v)
 		}
 		v.Public.ActiveOperationID, v.Public.ObservedState, v.Public.Health, v.Public.RecoveryRequired = "", "unknown", "unknown", true
+		v.Startup = nil
 		v.Public.Resources = nil
 		if err := saveOperation(tx, op); err != nil {
 			return err
@@ -1078,9 +1140,13 @@ func (s *store) observe(v storedInstance, state runtimequalify.ManagedState, obs
 	defer tx.Rollback()
 	current, err := loadInstance(tx, v.Public.ID)
 	if err != nil {
+		var f *fault
+		if errors.As(err, &f) && f.problem.Code == "instance_not_found" {
+			return nil
+		} // a completed deletion won the race
 		return err
 	}
-	if current.Public.ActiveOperationID != "" || current.RuntimeRevision != v.RuntimeRevision {
+	if current.Public.ActiveOperationID != "" || current.RuntimeRevision != v.RuntimeRevision || current.Runtime.ID != v.Runtime.ID {
 		return nil
 	}
 	if state.ID != current.Runtime.ID {
@@ -1088,6 +1154,7 @@ func (s *store) observe(v storedInstance, state runtimequalify.ManagedState, obs
 	}
 	current.Runtime, current.RuntimeRevision = state, current.RuntimeRevision+1
 	applyObservation(&current, observation, time.Now().UTC())
+	s.recordHealthyBoot(&current)
 	if err := saveInstance(tx, current); err != nil {
 		return err
 	}

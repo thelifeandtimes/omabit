@@ -1,5 +1,34 @@
 # Runner protocol: checkpoint 1
 
+## Development storage extension (schema 14)
+
+Capabilities `storage-locations`, `import-pier`, and `delete-pier` add operator-only
+storage actions. `POST /v1/storage-roots` binds a location name to an absolute owned
+directory; `POST /v1/pier-import-preview` reviews a stopped host source, and
+`POST /v1/pier-import` journals the approved move/enrollment. Deletion is a
+`delete-pier` instance operation with `confirm_delete: true` and the selected
+configuration revision. All mutations carry actor-scoped request IDs.
+
+The pier catalogue includes `roots`. Qualified paths such as
+`@ssd/fakeships/test/pier` select a pinned additional root; unqualified paths always
+select the original default. Snapshots expose pending deletion and external-import
+phase/holding-path/progress so interruptions remain visible. Completed deletion
+retains operation history and the final revision; a reused instance name receives
+a new runtime ID and a strictly greater initial configuration revision.
+
+See [storage management](storage-management.md) for the filesystem contract and GUI
+workflow. Current schema 15 upgrades schema 11–14 databases additively; older
+binaries refuse the upgraded database.
+
+### Reboot resume extension (schema 15)
+
+Automatic-resume services additionally advertise `unclean-reboot-resume`. Private
+state records the last healthy host boot, container and configuration revision and
+durable pending authorization. A later host boot can authorize one initialized-pier
+resume despite a nonzero exit. Operations retain kind `startup-resume` and actor
+`system:startup`; no caller-accessible startup RPC is added. See [services](services.md)
+for migration, once-per-boot accounting and independent recovery guards.
+
 Status: experimental version 1. The original `simulation` server implements this
 checkpoint contract. The `development-managed-fake` server adds the durable
 extension below. Neither mode is a supported production runtime manager.
