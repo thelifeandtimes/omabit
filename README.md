@@ -8,11 +8,11 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Published:** [**0.1.0-rc.4**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.4), a Linux/AMD64 development release candidate
+**Published:** [**0.1.0-rc.5**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.5), a Linux/AMD64 development release candidate
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and known issues](docs/release-rc4.md),
-and the [draft pill plan](docs/pill-release.md). Final 0.1.0 is still pending.
+[release notes and qualification scope](docs/release-rc5.md),
+and [Recommended Apps pill provenance](docs/pill-release.md). Final 0.1.0 is still pending.
 
 RC.3 makes `|mount` → ordinary copy/editor saves → `|commit` work directly on
 user-owned files. Default piers live at **`/srv/urbit/piers/`**; custom locations
@@ -21,6 +21,9 @@ RC.2 storage/import/deletion and bounded reboot-resume behavior continue.
 RC.4 adds a first-run welcome and laptop/always-on choice, host-checked port
 suggestions, confirmed automatic first boot, healthy-only access buttons and
 corrected monitor-window activation.
+RC.5 adds explicit software/source information, stable inline progress, public comet
+names in runtime output and the user-supplied Recommended Apps pill. Application
+Connections is marked Coming Soon.
 Prior dedicated-account installations were
 [retired for the user-driven fresh-install exercise](docs/diagnostics/2026-10-15-rc2-release-retirement.md).
 

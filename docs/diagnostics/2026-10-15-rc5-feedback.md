@@ -1,5 +1,12 @@
 # RC.5 feedback and supplied pill qualification
 
+Published [v0.1.0-rc.5](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.5)
+from `b973b5a9cc07197531cfbd1a5e8f60444772e5d2` with
+[green source CI](https://github.com/thelifeandtimes/omabit/actions/runs/38793312637).
+All eight downloaded GitHub assets passed checksum/provenance/executable/installer
+verification. Archive SHA-256:
+`445ebde250e128029f6fbc15555a4170baf452285fc92af44c2d399c35dab104`.
+
 The requested changes cover explicit local setup software/source information,
 the new Recommended Apps URL, stable log refresh controls, inline port lookup
 progress/errors, visible public comet identities, HTTP fleet presentation and a

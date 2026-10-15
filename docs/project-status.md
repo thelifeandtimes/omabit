@@ -2,7 +2,14 @@
 
 ## Where we are
 
-**[RC.4 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.4), with matching native binary pins.**
+**[RC.5 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.5), with matching native binary pins.**
+The latest feedback adds software/source explanations, stable inline port/log
+progress, public comet identities, HTTP fleet labels and a Coming Soon application
+connections stub. Recommended Apps now uses the supplied S3 pill; its frozen copy
+passed production download and a disposable fake boot/healthy/stop check. See
+[RC.5 qualification](diagnostics/2026-10-15-rc5-feedback.md).
+
+RC.4 established the first onboarding improvements below.
 It incorporates the user's first sourcebox onboarding feedback: welcome/setup,
 machine-use preference, automatic paths and first boot, real host-port suggestions,
 healthy-only access and fixed full-window activation. The sourcebox test installation
@@ -24,7 +31,7 @@ tools under `backend/cmd/` and shared implementation under `internal/`.
 The user will use the normal Omarchy plugin install command and host setup manually. See the
 [publication/retirement handoff](diagnostics/2026-10-15-rc2-release-retirement.md).
 Sourceport currently has disposable owner-user qualification resources. Sourcebox
-remains reserved for the user's manual native installation. The running-fleet
+has completed the user's native installation and is running two user-created comets. The older running-fleet
 results below are historical acceptance evidence.
 
 Release candidate source **0.1.0-rc.2 / schema 15** adds alpha-requested storage roots,
@@ -63,12 +70,12 @@ order, not percentage of total effort.
 | Runtime foundation | Owner-user rootless Docker, default/custom-root fake/comet desk editing and lifecycle accepted locally; broader production qualification remains |
 | Persistent runner | Durable SQLite registrations, operations, attribution, reconciliation, resource admission, and development lifecycle accepted |
 | Collector and access | Named identity-pinned connections, SSH grants/revocation, inventory isolation, origin-bound Eyre sessions and subscriptions accepted in exercised development gates |
-| Omabit UI | Published RC.4 native plugin: refined first run, confirmed first boot, host ports, healthy access and monitor focus; mapped fixtures passed; another sourcebox fresh-user pass pending |
+| Omabit UI | Published RC.5 native plugin: refined setup, stable runtime/port feedback, public comet names and HTTP fleet actions; sourcebox user feedback continues |
 | Maintenance and retention | Official-runtime fake/comet pack/meld/roll, inventory/previews, prefix pruning and UTC schedules accepted in exercised live gates; interruption/recovery hardening remains; loom-internal telemetry deferred |
 | Peer monitoring | Planned; current single-runner health/incident basics do not yet provide the phase-7 multi-host peer system |
 | Personal operator gateway | Planned |
 | Social utilities / Omarchy gossip | Planned; architecture and delivery/tag policy recorded |
-| Agents and release distribution | RC.4 binary assets published and pinned in canonical native installation; fresh-user acceptance, production upgrades, replacement pill and agent/MCP distribution remain |
+| Agents and release distribution | RC.5 assets and supplied pill published; production upgrades, full application/OTA qualification and agent/MCP distribution remain |
 
 ## Current milestone
 
