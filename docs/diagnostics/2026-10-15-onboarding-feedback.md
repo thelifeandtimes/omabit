@@ -6,6 +6,19 @@ from `919ba0ce445e3e952d95ab4bff167e938dd9fdda`, with
 Native pins advance to the published tools independently of their build commit.
 Archive SHA-256: `e126b9ff68d707222252dc13254058fad3eb2f29db6d14927101ddb9267c2f41`.
 
+The published GitHub assets were downloaded again and passed checksum, archive,
+provenance, executable and isolated-installer verification. At **18:14:56 UTC**, an
+isolated HOME on sourcebox used the real canonical `omarchy plugin install` command
+to clone `6367ba6260666d5cd290b3679108b92a8dc65ec5`. Shell enable IPC was a test double.
+Concurrent cold-start launchers verified all three published RC.4 tools, the helper
+reported an unconfigured owner-user host ready for setup, offline cache reuse passed,
+and Git update left a clean checkout. Real desktop installation and host setup were
+not invoked. The sourcebox app paths remained absent. Receipt:
+`/tmp/omabit-rc4-native-check/result.json` on sourcebox, copied locally to
+`/tmp/opencode/rc4-sourcebox-native-result.json`.
+The [native-pin CI run](https://github.com/thelifeandtimes/omabit/actions/runs/38783915244)
+also passed. The temporary administrator SSH agent was closed after verification.
+
 The first real native-install pass on sourcebox exposed ten onboarding issues.
 RC.4 implements the requested welcome, first-check wording, automatic destinations,
 HTTP explanation, host-checked port suggestion, explicit confirmed first boot,
