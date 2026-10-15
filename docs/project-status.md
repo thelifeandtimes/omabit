@@ -2,10 +2,12 @@
 
 ## Where we are
 
-**RC.3 owner-user source is implemented and under release qualification.**
+**[RC.3 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.3), with owner-user native binary pins.**
 It runs the runner/rootless engine as the existing user, with `/srv/urbit/piers/`
 and ordinary custom workspace paths. Default fake and custom-root comet desk
 copy/edit/commit/remount gates passed locally, plus pack/resume content readback.
+Frozen binaries also passed management-update preservation, controlled owner-engine
+restart/resume and ordinary-file import/start/delete/revision-safe name reuse.
 See [owner-user runtime](owner-user-runtime.md) and [RC.3 notes](release-rc3.md).
 
 RC.2 is published; the old sourceport/sourcebox dedicated installations are retired.
@@ -51,15 +53,15 @@ order, not percentage of total effort.
 | Area | Current state |
 | --- | --- |
 | Contracts and simulator | Accepted protocol, revision/conflict handling, idempotency, and multi-client fixtures |
-| Runtime foundation | Dedicated rootless Docker and pinned fake-ship boot/stop/restart/local HTTP accepted; broader production qualification remains |
+| Runtime foundation | Owner-user rootless Docker, default/custom-root fake/comet desk editing and lifecycle accepted locally; broader production qualification remains |
 | Persistent runner | Durable SQLite registrations, operations, attribution, reconciliation, resource admission, and development lifecycle accepted |
 | Collector and access | Named identity-pinned connections, SSH grants/revocation, inventory isolation, origin-bound Eyre sessions and subscriptions accepted in exercised development gates |
-| Omabit UI | Installed/loaded 0.1.0-rc.2-dev: storage locations, host-path import, confirmed deletion, SVG icon, muted active state and workspace activation; schema-15 runners and unclean-reboot resume deployed on both hosts |
+| Omabit UI | Published RC.3 native plugin: owner-user setup, storage/import/deletion, monitoring and maintenance; mapped fixtures passed; sourcebox fresh-user review pending |
 | Maintenance and retention | Official-runtime fake/comet pack/meld/roll, inventory/previews, prefix pruning and UTC schedules accepted in exercised live gates; interruption/recovery hardening remains; loom-internal telemetry deferred |
 | Peer monitoring | Planned; current single-runner health/incident basics do not yet provide the phase-7 multi-host peer system |
 | Personal operator gateway | Planned |
 | Social utilities / Omarchy gossip | Planned; architecture and delivery/tag policy recorded |
-| Agents and release distribution | RC.2 binary assets published; canonical monorepo native installation and organized generic tools implemented; fresh-user UX, user-accessible desk storage, production upgrades, replacement pill and agent/MCP distribution remain |
+| Agents and release distribution | RC.3 binary assets published and pinned in canonical native installation; fresh-user acceptance, production upgrades, replacement pill and agent/MCP distribution remain |
 
 ## Current milestone
 

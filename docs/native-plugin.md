@@ -3,7 +3,7 @@
 Run as your ordinary user inside the Omarchy desktop:
 
 ```bash
-omarchy plugin add https://github.com/thelifeandtimes/omabit.git --enable
+omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enable
 ```
 
 `omarchy plugin install` is an alias for `add`. This uses the standard clone,
@@ -24,6 +24,9 @@ Go helper remains `cmd/omabit/`. Shared libraries remain private to the one Go
 module under `internal/`. No Go compiler, local extracted bundle, Git LFS or
 committed binary blobs are needed for plugin installation. Published RC.2 assets
 are not rebuilt or replaced by this repository organization.
+
+Current pins select published **RC.3**, schema16 and owner-user host setup.
+The new UI rejects helpers without the owner-user setup contract.
 
 ## Binary preparation
 
