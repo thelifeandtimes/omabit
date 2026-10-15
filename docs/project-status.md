@@ -2,6 +2,13 @@
 
 ## Where we are
 
+**RC.2 is published; the old sourceport/sourcebox installations are retired.**
+The verified binary bundle is staged on sourcebox for the user to run the plugin
+installer and host setup manually. See the
+[publication/retirement handoff](diagnostics/2026-10-15-rc2-release-retirement.md).
+The running-fleet results below are historical acceptance evidence, not the current
+post-retirement host state.
+
 Release candidate source **0.1.0-rc.2 / schema 15** adds alpha-requested storage roots,
 GUI host-path move/import and confirmed pier deletion, with a dedicated SVG bar
 mark. Default storage and the parent-mount contract remain intact. Name reuse after

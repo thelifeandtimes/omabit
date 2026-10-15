@@ -8,7 +8,8 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Status:** **0.1.0-rc.2**, a Linux/AMD64 development release candidate.
+**Status:** [**0.1.0-rc.2 is published**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.2),
+a Linux/AMD64 development release candidate.
 See [binary bundle installation](docs/release-install.md),
 [release notes and known issues](docs/release-rc2.md),
 and the [draft pill plan](docs/pill-release.md). Final 0.1.0 is still pending.
@@ -16,9 +17,11 @@ and the [draft pill plan](docs/pill-release.md). Final 0.1.0 is still pending.
 RC.2 adds
 [storage locations, GUI pier import and deletion](docs/storage-management.md), plus
 a font-independent SVG logo. These changes are not in the published rc.1 assets.
-They are [deployed on the current two-host development fleet](docs/diagnostics/2026-10-14-development-update.md).
-Both runners now also have [schema-15 unclean-reboot resume](docs/diagnostics/2026-10-15-reboot-resume-deployment.md),
+They were [deployed on the two-host development fleet](docs/diagnostics/2026-10-14-development-update.md).
+Both runners also received [schema-15 unclean-reboot resume](docs/diagnostics/2026-10-15-reboot-resume-deployment.md),
 with durable boot-bound eligibility and one automatic attempt per host boot.
+The development installations were subsequently
+[retired for the user-driven fresh-install exercise](docs/diagnostics/2026-10-15-rc2-release-retirement.md).
 
 ## Get started
 

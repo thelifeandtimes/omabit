@@ -1,5 +1,9 @@
 # RC.2, clean installation and multiple-collector plan
 
+**Execution update:** RC.2 publication/download verification and both host
+retirements are complete. The user-driven sourcebox plugin installation is next;
+see the [handoff record](diagnostics/2026-10-15-rc2-release-retirement.md).
+
 Review date: **2026-10-15 UTC**. Publication and retirement have not been executed
 by this review. The recommended next phase follows the user's proposed sequence,
 with release preparation first and an explicit fresh remote installation before
