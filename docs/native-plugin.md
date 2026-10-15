@@ -9,6 +9,7 @@ omarchy plugin add https://github.com/thelifeandtimes/omarchy-omabit.git --enabl
 `omarchy plugin install` is an alias for `add`. This uses the standard clone,
 validation, trust confirmation, placement and enable workflow. The plugin ID is
 `thelifeandtimes.omabit`. Host setup remains the next explicit GUI action.
+See the [publication and verification record](diagnostics/2026-10-15-native-plugin-publication.md).
 
 ## Why a generated plugin repository
 

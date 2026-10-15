@@ -1,5 +1,10 @@
 # RC.2 publication and fresh-install handoff — 2026-10-15 UTC
 
+**Later user clarification:** the fresh-install exercise will use the normal
+Omarchy GitHub plugin command. That path is now
+[published and verified](2026-10-15-native-plugin-publication.md); the staged archive
+and original bundle command below are historical handoff evidence.
+
 **Complete:** [v0.1.0-rc.2 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.2)
 as a prerelease, not latest. Both old dedicated runner installations are retired.
 The verified release is extracted on sourcebox, ready for the user to run its plugin

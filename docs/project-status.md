@@ -3,8 +3,9 @@
 ## Where we are
 
 **RC.2 is published; the old sourceport/sourcebox installations are retired.**
-The verified binary bundle is staged on sourcebox for the user to run the plugin
-installer and host setup manually. See the
+The verified binary bundle is staged on sourcebox, and a
+[native GitHub plugin distribution is now published](diagnostics/2026-10-15-native-plugin-publication.md).
+The user will use the normal Omarchy plugin install command and host setup manually. See the
 [publication/retirement handoff](diagnostics/2026-10-15-rc2-release-retirement.md).
 The running-fleet results below are historical acceptance evidence, not the current
 post-retirement host state.
@@ -50,7 +51,7 @@ order, not percentage of total effort.
 | Peer monitoring | Planned; current single-runner health/incident basics do not yet provide the phase-7 multi-host peer system |
 | Personal operator gateway | Planned |
 | Social utilities / Omarchy gossip | Planned; architecture and delivery/tag policy recorded |
-| Agents and release distribution | Planned; production installer/upgrades, packaged binaries, generated component repositories, pill release, and agent/MCP distribution remain |
+| Agents and release distribution | RC.2 binary assets and generated native Omarchy plugin repository published; fresh-user UX, production upgrades, replacement pill and agent/MCP distribution remain |
 
 ## Current milestone
 
