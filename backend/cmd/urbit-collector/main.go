@@ -68,6 +68,8 @@ Commands:
   enroll NAME --ssh HOST_ALIAS [--ssh-config /absolute/config]
               Verify and save a named runner connection with its identity.
   runners     List saved connections without contacting runners.
+  suggest-port
+              Check an available HTTP port on the selected, identity-pinned runner host.
   import-sources
               List completed, runner-owned qualified fake-pier sources.
   import-fake INSTANCE --source-run RUN_ID --expected-digest HASH --http-port PORT
@@ -213,7 +215,7 @@ Use COMMAND --help for command flags and constraints.
 	var interval time.Duration
 	usage := command
 	switch command {
-	case "hello", "snapshot":
+	case "hello", "snapshot", "suggest-port":
 	case "create-fake", "create-comet":
 		usage += " INSTANCE --http-port PORT --request-id ID [--label TEXT]"
 		flags.UintVar(&httpPort, "http-port", 0, "required loopback host HTTP port, 1024..65535")
@@ -421,6 +423,16 @@ Use COMMAND --help for command flags and constraints.
 		result = hello
 	case "snapshot":
 		result, err = checkedSnapshot(ctx, c, identity)
+	case "suggest-port":
+		if *expectedRunner == "" || !slices.Contains(hello.Features, "host-port-suggestion") {
+			return fail(errors.New("suggest-port requires a pinned runner with host-port-suggestion support"), 2)
+		}
+		var suggestion protocol.PortSuggestion
+		suggestion, err = c.SuggestHTTPPort(ctx)
+		if err == nil && (suggestion.RunnerID != hello.RunnerID || suggestion.HTTPPort < 1024 || suggestion.ContainerPort != 8080) {
+			err = errors.New("invalid host port suggestion")
+		}
+		result = suggestion
 	case "create-fake":
 		if !slices.Contains(hello.Features, "create-fake") {
 			return fail(errors.New("this runner does not support create-fake"), 1)

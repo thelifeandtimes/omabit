@@ -22,7 +22,8 @@ Ui.Panel {
   }
   onServiceChanged: Qt.callLater(syncSettings)
   onSettingsChanged: Qt.callLater(syncSettings)
-  function monitor(connection, instance) { root.close(); service.openMonitor(connection, instance, "overview") }
+  function monitor(connection, instance) { var s=service; root.close(); if(s) Qt.callLater(function(){s.openMonitor(connection, instance, "overview")}) }
+  function remoteSetup() { var s=service;root.close();if(s)Qt.callLater(function(){s.openSetup("remote")}) }
   IpcHandler {
     enabled: root.manageIpc
     target: "thelifeandtimes.omabit.setup"
@@ -44,7 +45,7 @@ Ui.Panel {
         MultiEffect { anchors.fill: parent; source: mark; colorization: 1; colorizationColor: button.active ? button.activeColor : button.foreground }
       }
     }
-    tooltipText: "Omabit 0.1.0-rc.3 · " + Model.fleet(root.connections).length + " instances"
+    tooltipText: "Omabit 0.1.0-rc.4 · " + Model.fleet(root.connections).length + " instances"
     onPressed: function(code) { if (code === Qt.RightButton) { if (root.service) root.service.refresh() } else root.toggle() }
   }
   Ui.KeyboardPanel {
@@ -74,7 +75,7 @@ Ui.Panel {
             ActionButton { compact: true; quiet: true; text: "↻"; hint: "Refresh runner observations"; enabled: root.service && !root.service.busy; onClicked: root.service.refresh() }
             ActionButton { compact: true; text: root.pane === "fleet" ? "Setup" : "← Fleet"; onClicked: { root.pane = root.pane === "fleet" ? "setup" : "fleet"; scroll.contentY = 0 } }
           }
-          Label { width: parent.width; visible: text !== ""; color: Design.danger; text: root.service ? root.service.feedError || (root.pane!=="setup" ? root.service.lastError : "") : "Collector service unavailable" }
+          Label { width: parent.width; visible: text !== "" && !(root.service && root.service.firstRun); color: Design.danger; text: root.service ? root.service.feedError || (root.pane!=="setup" ? root.service.lastError : "") : "Collector service unavailable" }
           Label { width: parent.width; visible: root.service && root.service.busy; secondary: true; caption: true; text: root.service ? root.service.settingUp ? "Setting up this computer…" : "Submitting " + root.service.currentAction + "…" : "" }
           ActionButton { width: parent.width; visible: Model.discoveredPiers(root.connections).length>0; text: Model.discoveredPiers(root.connections).length+" discovered piers need enrollment or location review →"; onClicked: {root.pane="setup";setup.mode="storage";scroll.contentY=0} }
           Column {
@@ -119,24 +120,25 @@ Ui.Panel {
                       }
                       Label { text: ship.modelData.mode === "fake" ? "AMES\nLoopback" : (ship.modelData.ames_published ? "AMES UDP\n" : "GUEST AMES\n") + ship.modelData.config.ames_port; caption: true; secondary: true; horizontalAlignment: Text.AlignRight }
                       CopyCodeButton { objectName: "fleet-copy-code-"+ship.modelData.id; compact: true; service: root.service; runnerID: runner.modelData.runner_id; connectionName: runner.modelData.name; instanceID: ship.modelData.id }
-                      ActionButton { compact: true; text: ":" + ship.modelData.config.http_port + " ↗"; hint: Model.shipURL(runner.modelData, ship.modelData, root.service.registrations, root.service.runnerPreferences) || "Set the browser host in Setup → Manage runner"; enabled: runner.online && !!Model.shipURL(runner.modelData, ship.modelData, root.service.registrations, root.service.runnerPreferences); onClicked: root.service.openShip(runner.modelData, ship.modelData) }
+                      ActionButton { objectName: "fleet-open-ship-"+ship.modelData.id; compact: true; text: ":" + ship.modelData.config.http_port + " ↗"; hint: "Open this ship when startup and health checks complete"; enabled: runner.online && Model.shipLive(runner.modelData,ship.modelData,root.service.now) && !!Model.shipURL(runner.modelData, ship.modelData, root.service.registrations, root.service.runnerPreferences); onClicked: root.service.openShip(runner.modelData, ship.modelData) }
                       ActionButton { objectName: "start-" + ship.modelData.id; compact: true; quiet: true; text: "▶"; hint: "Start " + ship.modelData.id; enabled: runner.online && !root.service.busy && Model.canOperate(runner.modelData, ship.modelData, "start", root.service.now); onClicked: root.service.operate(runner.modelData, ship.modelData, "start") }
                       ActionButton { objectName: "stop-" + ship.modelData.id; compact: true; quiet: true; text: "■"; hint: "Stop " + ship.modelData.id; enabled: runner.online && !root.service.busy && Model.canOperate(runner.modelData, ship.modelData, "stop", root.service.now); onClicked: root.service.operate(runner.modelData, ship.modelData, "stop") }
-                      ActionButton { compact: true; quiet: true; text: "›"; hint: "Monitor & maintain " + ship.modelData.id; onClicked: root.monitor(runner.modelData, ship.modelData) }
+                      ActionButton { objectName: "fleet-monitor-"+ship.modelData.id; compact: true; quiet: true; text: "›"; hint: "Monitor & maintain " + ship.modelData.id; onClicked: root.monitor(runner.modelData, ship.modelData) }
                     }
                       }
                     }
                   }
                   Label { visible: Model.instances(runner.modelData).length === 0; text: runner.online ? "No ships yet. Add your first ship in Setup." : "No cached ship inventory."; secondary: true; caption: true }
-                  Label { width: parent.width; visible: runner.modelData.mode.indexOf("development") === 0 && Model.instances(runner.modelData).length > 0; text: "HTTP binds host loopback; remote access is separately routed. Fake Ames is confined to each container's loopback; outbound HTTP is allowed. Independent fakes may share an Urbit name."; secondary: true; caption: true }
                 }
               }
             }
-            Label { width: parent.width; visible: root.connections.length === 0; text: "Your fleet starts here. Add a prepared runner in Setup to see its ships."; secondary: true }
+            Label { objectName: "fleet-welcome"; width: parent.width; visible: !!root.service && root.service.firstRun; text: 'An "urbit ship" is a peer-to-peer node for running distributed applications across an end-to-end encrypted network. Omabit helps you run these nodes either on your local machine, or remote servers to which you have SSH access. Click "Start Setup" to get started.'; secondary: true }
+            Label { width: parent.width; visible: !!root.service && root.service.machineUse==="laptop"; text: "Manage remote Urbit runners on a VPS, workstation, or other always-on machine from your laptop."; secondary: true; caption: true }
             RowLayout {
               width: parent.width
-              Label { Layout.fillWidth: true; text: root.connections.length + " runners · " + Model.fleet(root.connections).length + " instances"; secondary: true; caption: true }
-              ActionButton { objectName: "open-monitor"; primary: true; text: "Monitor & maintenance  ↗"; enabled: !!root.service; onClicked: root.monitor(null, null) }
+              Label { Layout.fillWidth: true; text: root.service && root.service.firstRun ? "" : root.connections.length + " runners · " + Model.fleet(root.connections).length + " instances"; secondary: true; caption: true }
+              ActionButton { objectName: "setup-remote"; visible: !!root.service && root.service.machineUse==="laptop"; text: "Set up remote server"; onClicked: root.remoteSetup() }
+              ActionButton { objectName: "open-monitor"; primary: true; text: root.service && root.service.firstRun ? "Start Setup →" : "Monitor & maintenance  ↗"; enabled: !!root.service; onClicked: { if(root.service.firstRun){root.pane="setup";setup.mode="home";scroll.contentY=0}else root.monitor(null,null) } }
             }
           }
           SetupPane { id: setup; width: parent.width; visible: root.pane === "setup"; service: root.service; active: root.opened && visible; onShowFleet: { root.pane="fleet";scroll.contentY=0 } }

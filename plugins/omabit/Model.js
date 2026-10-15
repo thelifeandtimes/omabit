@@ -140,8 +140,8 @@ function registrationProblem(connection, name, port, kind, now) {
   return owner ? "HTTP port "+port+" is already reserved by “"+owner.id+"”." : ""
 }
 function suggestInstance(connection, kind) {
-  var base=kind === "comet" ? "comet" : "development", name=base, n=2
-  while(instances(connection).some(function(i){return i.id === name})) name=base+"-"+(n++)
+  var base=kind === "comet" ? "comet" : "development", n=1, name=base+"-"+n
+  while(instances(connection).some(function(i){return i.id === name})) name=base+"-"+(++n)
   return name
 }
 function suggestHTTPPort(connection) {
@@ -226,8 +226,13 @@ function connectionEditArgs(target, name, transport, address, config) {
 
 function canCopyCode(connection, instance, now) {
   return available(connection,now) && connection.access_role === "operator" && hasFeature(connection,"login-code")
-    && !!instance && instance.observed_state === "running" && !instance.active_operation_id && !instance.recovery_required
+    && shipLive(connection,instance,now)
     && fresh(instance.observed_at,now,30000) && !!instance.resources && /^[0-9a-f]{64}$/.test(instance.resources.container_id || "")
+}
+function shipLive(connection,instance,now) {
+  return available(connection,now) && !!instance && instance.observed_state==="running" && instance.health==="healthy"
+    && !instance.identity_pending && !instance.recovery_required && !instance.active_operation_id && !handoffFenced(instance)
+    && instance.applied_revision===instance.config_revision && fresh(instance.observed_at,now,30000)
 }
 function codeUnavailable(connection,instance,now,observing) {
   if (!observing || !available(connection,now)) return "Connect to the runner for +code access."
@@ -236,6 +241,7 @@ function codeUnavailable(connection,instance,now,observing) {
   if (instance && instance.active_operation_id) return "Wait for the ship's current operation to finish."
   if (instance && instance.recovery_required) return "Review the recovery details and runtime logs before restarting or retrieving +code."
   if (!instance || instance.observed_state !== "running") return "Start the ship to retrieve its +code."
+  if (!shipLive(connection,instance,now)) return "Waiting for the ship to be healthy and its identity verified."
   return canCopyCode(connection,instance,now) ? "" : "Waiting for a fresh runtime identity."
 }
 

@@ -3,6 +3,7 @@ Service 1.0 Service.qml
 Panel 1.0 Panel.qml
 SetupPane 1.0 SetupPane.qml
 HostSetupPane 1.0 HostSetupPane.qml
+MachineUsePane 1.0 MachineUsePane.qml
 ApplicationsPane 1.0 ApplicationsPane.qml
 MonitorWindow 1.0 MonitorWindow.qml
 WindowActivation 1.0 WindowActivation.qml

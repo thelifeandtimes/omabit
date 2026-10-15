@@ -1,8 +1,11 @@
 package managed
 
 import (
-	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"context"
+	"net"
 	"testing"
+
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
 func TestPortAdmissionPreservesReplayAndChecksChangesAndStart(t *testing.T) {
@@ -41,5 +44,51 @@ func TestPortAdmissionPreservesReplayAndChecksChangesAndStart(t *testing.T) {
 	free = true
 	if _, _, err = s.accept("actor", "alpha", protocol.OperationRequest{Kind: "start", RequestID: "start", ExpectedRevision: 1}); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestSuggestionChecksActualHostListenerAndDoesNotReserve(t *testing.T) {
+	s := testStore(t)
+	listener, err := net.Listen("tcp4", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer listener.Close()
+	occupied := uint16(listener.Addr().(*net.TCPAddr).Port)
+	s.portAvailable = func(kind string, port uint16) bool { return port >= occupied && portAvailable(kind, port) }
+	port, err := s.suggestHTTPPort(context.Background())
+	if err != nil || port <= occupied {
+		t.Fatal(port, err)
+	}
+	listener.Close()
+	port, err = s.suggestHTTPPort(context.Background())
+	if err != nil || port != occupied {
+		t.Fatal(port, err)
+	}
+	if _, _, err = s.register("actor", registration("reserved", "reserve", port)); err != nil {
+		t.Fatal(err)
+	}
+	if next, err := s.suggestHTTPPort(context.Background()); err != nil || next == port {
+		t.Fatal(next, err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := s.suggestHTTPPort(ctx); err == nil {
+		t.Fatal("ignored cancelled probe")
+	}
+}
+
+func TestPortSuggestionRPCIsBoundAndReadOnly(t *testing.T) {
+	r, c, _ := testEndpoint(t, privateDir(t), &fakeBackend{})
+	if _, err := c.CreateFake(context.Background(), registration("reserved", "reserve", 18080)); err != nil {
+		t.Fatal(err)
+	}
+	p, err := c.SuggestHTTPPort(context.Background())
+	if err != nil || p.RunnerID != r.s.runnerID || p.HTTPPort != 18081 || p.ContainerPort != 8080 || p.ObservedAt.IsZero() {
+		t.Fatal(p, err)
+	}
+	s, err := c.Snapshot(context.Background())
+	if err != nil || len(s.Instances) != 1 || len(s.Operations) != 1 {
+		t.Fatal(s, err)
 	}
 }

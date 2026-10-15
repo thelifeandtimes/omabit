@@ -1,12 +1,40 @@
 package managed
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostports"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
+
+func (s *store) suggestHTTPPort(ctx context.Context) (uint16, error) {
+	all, err := instances(s.db)
+	if err != nil {
+		return 0, err
+	}
+	reserved := map[uint16]bool{}
+	for _, v := range all {
+		reserved[v.Public.Config.HTTPPort] = true
+		if v.Runtime.Prepared {
+			reserved[v.Runtime.Port] = true
+		}
+	}
+	free := s.portAvailable
+	if free == nil {
+		free = portAvailable
+	}
+	for p := 18080; p <= 65535; p++ {
+		if err := ctx.Err(); err != nil {
+			return 0, err
+		}
+		if !reserved[uint16(p)] && free("tcp", uint16(p)) {
+			return uint16(p), nil
+		}
+	}
+	return 0, conflict("port_unavailable", "no available host HTTP port")
+}
 
 func portAvailable(kind string, port uint16) bool {
 	return hostports.Available(kind, port)

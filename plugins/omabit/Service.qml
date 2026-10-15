@@ -12,6 +12,18 @@ Item {
   property var connections: []
   property var ships: []
   property var registrations: []
+  property bool registrationsLoaded: false
+  readonly property bool firstRun: registrationsLoaded && registrations.length===0 && connections.length===0
+  readonly property string machineUse: preferences.machineUse
+  function setMachineUse(value) {
+    if (["always-on","laptop"].indexOf(value)<0) return
+    preferences.machineUse=value;preferences.sync()
+  }
+  property bool setupCheckRequested: false
+  property var portSuggestion: null
+  property var portTarget: null
+  property var pendingFirstBoot: null
+  property var bootTarget: null
   property string registrationOutput: ""
   property var memoryHistory: ({})
   property var cpuHistory: ({})
@@ -82,8 +94,9 @@ Item {
     return prefix.concat(args)
   }
 
-  function checkLocalSetup() {
+  function checkLocalSetup(manual) {
     if (checkingSetup || settingUp) return
+    if (manual===true) setupCheckRequested=true
     localStatusOutput = ""; localSetupError = ""
     localStatus.command = themeCommand(["setup-status"]); localStatus.running = true
   }
@@ -97,7 +110,8 @@ Item {
     }
   }
   function setUpLocal() {
-    if (busy || !localSetupStatus || !localSetupStatus.can_setup || localSetupStatus.ready) return false
+    if (busy || !machineUse || !localSetupStatus || !localSetupStatus.can_setup || localSetupStatus.ready) return false
+    setupCheckRequested=true
     localSetupError = ""; localSetupMessage = "Preparing local setup"; localSetupStep = "check"
     localSetupFinished = false; localSetupPending = true
     localSetup.command = themeCommand(["setup"]); localSetup.running = true
@@ -146,8 +160,9 @@ Item {
     monitor.page = tab || "overview"
     monitor.present()
   }
+  function openSetup(mode) { monitor.page="setup";monitor.setupPane.mode=mode || "home";monitor.present() }
   function openShip(connection, instance) {
-    if (!observing || !Model.available(connection, now)) return false
+    if (!observing || !Model.shipLive(connection, instance, now)) return false
     var url = Model.shipURL(connection, instance, registrations, runnerPreferences)
     if (!url) { lastError = "Set this runner's browser host in Setup before opening a loopback endpoint over SSH."; return false }
     return Qt.openUrlExternally(url)
@@ -173,9 +188,11 @@ Item {
 
   function startFeed() {
     if (feed.running) return
+    if (!registrationsLoaded) return
     connections = []
     feedError = ""
     refreshing = false
+    if (registrations.length===0) return
     feed.command = command(["inventory", "--watch", "--interval", "2s"])
     feed.running = true
   }
@@ -382,6 +399,25 @@ Item {
     registrationOutcome={runner:current.runner_id,connection:current.name,instance:name,port:Number(port),kind:kind,bootstrap:bootstrap,pillSource:pillSource,ship:options ? Model.fakeIdentity(fakeShip) : "",pier:options ? pierName : "",request:requestIdentity,status:"submitting",message:"Registering “"+name+"”…"}
     return submit(args,kind === "comet" ? "register-comet" : "register")
   }
+  function suggestPort(connection, token) {
+    var c=storageConnection(connection,"host-port-suggestion")
+    if (!c) {lastError="Update and connect the runner to check its host ports.";return false}
+    portSuggestion=null;portTarget={runner:c.runner_id,connection:c.name,token:token}
+    return submit(Model.selection(c).concat(["suggest-port"]),"suggest-port")
+  }
+  function dispatchFirstBoot() {
+    var target=pendingFirstBoot
+    if (!target) return
+    if (action.running || busy) { firstBootDispatch.restart();return }
+    pendingFirstBoot=null // consume once; never retry a lost Start acknowledgement
+    bootTarget=target
+    var args=["--runner",target.connection,"--expected-runner-id",target.runner,"operate",target.instance,"start","--revision",String(target.revision),"--request-id",target.request]
+    registrationOutcome=Object.assign({},registrationOutcome,{message:"Booting “"+target.instance+"”…"})
+    if (!submit(args,"first-boot")) {bootTarget=null;lastError="Registration completed, but boot was not submitted. Inspect the ship before starting it."}
+    var c=connections.filter(function(c){return c.name===target.connection && c.runner_id===target.runner})[0]
+    if (c) openMonitor(c,{id:target.instance},"overview")
+  }
+  Timer { id: firstBootDispatch; interval: 20; onTriggered: root.dispatchFirstBoot() }
   function editRegistration() {
     if (!busy && registrationOutcome) { registrationOutcome=null;lastError="";lastResult="" }
   }
@@ -452,13 +488,14 @@ Item {
     hostMoveOutcome={runner:target.runner,instance:target.instance,destination:destination.runner,name:name,status:"moving",message:"Moving the stopped pier. Both hosts retain durable phase receipts."}
     return submit(Model.hostMoveArgs(target,destination,name,httpPort,amesPort,requestIdentity),"move-host")
   }
-  function createFromKey(connection,ship,keyFile,httpPort,amesPort,pill,bootstrap,storageRoot) {
+  function createFromKey(connection,ship,keyFile,httpPort,amesPort,pill,bootstrap,storageRoot,customPath) {
     bootstrap=bootstrap || (pill ? "recommended" : "bare")
     var bootProblem=Model.bootstrapProblem(bootstrap,pill || "")
     if (bootProblem) {lastError=bootProblem;return false}
     ship=Model.fakeIdentity(ship)
     var name=ship.slice(1),path=Model.ownedPierPath(ship)
     if (path) path=Model.storagePath(storageRoot,path)
+    if (customPath) path=customPath
     if (busy || !observing || !Model.available(connection,now) || connection.access_role!=="operator" || !Model.hasFeature(connection,"key-boot-options") || !Model.validId(name) || !path || !keyFile || !Model.optionalPort(httpPort) || !Model.optionalPort(amesPort)) {lastError="Choose an owned Urbit ID, private key file and valid optional ports on an updated operator runner.";return false}
     if (Model.instances(connection).some(function(i){return i.id===name || i.mode!=="fake"&&i.ship===ship})) {lastError="This Urbit identity or instance is already registered.";return false}
     requestIdentity=Model.requestId()
@@ -466,7 +503,7 @@ Item {
     var args=Model.selection(connection).concat(["create-ship","--ship",ship,"--key-file",keyFile,"--request-id",requestIdentity,"--confirm-network"])
     if (String(httpPort).trim()) args=args.concat(["--http-port",String(httpPort)])
     if (String(amesPort).trim()) args=args.concat(["--ames-port",String(amesPort)])
-    if (storageRoot && storageRoot!=="default") args=args.concat(["--pier-path",path])
+    if (customPath || storageRoot && storageRoot!=="default") args=args.concat(["--pier-path",path])
     args=args.concat(Model.bootstrapArgs(bootstrap,pill || ""))
     return submit(args,"register-ship")
   }
@@ -483,6 +520,7 @@ Item {
     var hostMove=kind==="move-host" ? hostMoveOutcome : null, hostMoved=false
     var registration=(kind === "register" || kind === "register-comet" || kind === "register-ship") ? registrationOutcome : null
     var registered=false
+    var boot=kind==="first-boot" ? bootTarget : null, bootAccepted=false
     var storage=(["enroll-pier","move-pier","delete-pier","import-pier","storage-root-add"].indexOf(kind)>=0) ? storageOutcome : null, storageAccepted=false
     var routine=kind === "routine-set" ? routineOutcome : null, routineSaved=false
     var inspecting=kind === "inspect-epochs" ? epochInspection : null, inspectionAccepted=false, inspectionOperation=""
@@ -496,6 +534,15 @@ Item {
     else {
       try {
         var result = JSON.parse(output)
+        if (kind==="suggest-port") {
+          var pt=portTarget;portTarget=null
+          if (!pt || result.runner_id!==pt.runner || !Number.isInteger(result.http_port) || result.http_port<1024 || result.http_port>65535 || result.container_port!==8080) throw new Error("Invalid port suggestion")
+          portSuggestion=Object.assign({},pt,{port:result.http_port})
+        }
+        if (boot) {
+          if (!result.id || result.instance_id!==boot.instance || result.request_id!==boot.request || result.kind!=="start" || result.config_revision!==boot.revision) throw new Error("Invalid first boot acknowledgement")
+          bootAccepted=true
+        }
         if (kind==="preview-pier") {
           var preview=pendingExternalPreview
           pendingExternalPreview=null
@@ -512,7 +559,9 @@ Item {
         }
         if (registration) {
           if (!result.id || result.instance_id !== registration.instance || result.request_id !== registration.request || result.kind !== (registration.kind === "comet" ? "register-comet" : registration.kind === "owned" ? "register-ship" : "register-fake") || result.status !== "succeeded") throw new Error("Unverified registration result")
+          if (!Number.isSafeInteger(result.config_revision) || result.config_revision<1) throw new Error("Missing registration revision")
           registered=true
+          pendingFirstBoot={runner:registration.runner,connection:registration.connection,instance:registration.instance,revision:result.config_revision,request:Model.requestId()}
         }
         if (routine) {
           if (!result.id || result.instance_id !== routine.target.instance || result.instance_revision !== routine.target.instanceRevision || !Number.isSafeInteger(result.revision) || result.revision < Math.max(1,routine.target.revision) || result.revision > routine.target.revision+1 || !Model.sameRoutineConfig(result.config,routine.config)) throw new Error("Unverified policy result")
@@ -549,8 +598,13 @@ Item {
       // Collector exit 2 is argument validation before any mutation. Other
       // failures need an explicit no-effect API rejection to permit a retry.
       outcome.status=registered ? "succeeded" : !outputFailed && (code === 2 || code !== 0 && !Model.registrationFailure(errors).uncertain) ? "failed" : "uncertain"
-      outcome.message=registered ? "Registered “"+registration.instance+"”. "+(registration.kind==="owned" ? "Choose Start when ready." : "It is stopped; use Start in the fleet when ready.") : lastError
+      outcome.message=registered ? "Registered “"+registration.instance+"”. Starting its first boot…" : lastError
       registrationOutcome=outcome
+      if (registered && pendingFirstBoot) firstBootDispatch.restart()
+    }
+    if (boot) {
+      bootTarget=null
+      registrationOutcome=Object.assign({},registrationOutcome,{message:bootAccepted ? "Boot requested. Follow startup in the ship's management view." : "Registered, but the boot result needs review: "+lastError})
     }
     if (storage) {
       var stored=Object.assign({},storage)
@@ -607,13 +661,13 @@ Item {
         catch (e) { root.feedError = e.message; feed.running = false }
       }
     }
-    stderr: SplitParser { onRead: function(line) { if (line.length < 8192) root.feedError = "Collector inventory is unavailable. Check enrollment and SSH access." } }
+    stderr: SplitParser { onRead: function(line) { if (!root.firstRun && line.length < 8192) root.feedError = "Collector inventory is unavailable. Check enrollment and SSH access." } }
     onExited: function(code, status) {
       if (root.refreshing) Qt.callLater(root.startFeed)
-      else if (!root.feedError) root.feedError = "Inventory polling stopped. Refresh to reconnect."
+      else if (!root.firstRun && !root.feedError) root.feedError = "Inventory polling stopped. Refresh to reconnect."
     }
     onRunningChanged: if (!running) Qt.callLater(function() {
-      if (!feed.running && !root.refreshing && !root.feedError) root.feedError = "Inventory process is unavailable. Check the collector executable and refresh."
+      if (!feed.running && !root.firstRun && !root.refreshing && !root.feedError) root.feedError = "Inventory process is unavailable. Check the collector executable and refresh."
     })
   }
   Process {
@@ -700,7 +754,14 @@ Item {
     stderr: SplitParser { onRead: function(line) {} }
     onExited: function(code, status) {
       if (code === 0 && status === 0) {
-        try { var rows = JSON.parse(root.registrationOutput); if (Array.isArray(rows)) root.registrations = rows } catch (_) {}
+        try {
+          var rows = JSON.parse(root.registrationOutput)
+          if (!Array.isArray(rows)) throw new Error("Invalid enrollments")
+          root.registrations=rows;root.registrationsLoaded=true
+          if (!feed.running) Qt.callLater(root.startFeed)
+        } catch (_) { root.feedError="Collector enrollment could not be read. Check the collector configuration." }
+      } else {
+        root.feedError="Collector enrollment could not be read. Check the collector executable and configuration."
       }
       root.registrationOutput = ""
     }
@@ -709,6 +770,7 @@ Item {
     id: preferences
     location: "file://" + (Quickshell.env("XDG_STATE_HOME") || Quickshell.env("HOME") + "/.local/state") + "/omabit/panel.ini"
     property string runners: "{}"
+    property string machineUse: ""
   }
   MonitorWindow { id: monitor; service: root }
   IpcHandler {
@@ -718,7 +780,7 @@ Item {
     function maintenance(): void { root.openMonitor(null, null, "maintenance") }
     function setup(): void { root.openMonitor(null, null, "setup") }
     function refresh(): void { root.refresh() }
-    function status(): string { return JSON.stringify({version:"0.1.0-rc.3",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen}) }
+    function status(): string { return JSON.stringify({version:"0.1.0-rc.4",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen}) }
     function close(): void { monitor.visible = false }
   }
   Process {

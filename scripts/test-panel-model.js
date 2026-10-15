@@ -17,7 +17,8 @@ const registerConnection={name:"local",runner_id:"runner-local",mode:"developmen
 assert.match(model.registrationProblem(registerConnection,"comet",18083,"comet",Date.now()),/already exists/);
 assert.match(model.registrationProblem(registerConnection,"new",18081,"comet",Date.now()),/reserved/);
 assert.equal(model.registrationProblem(registerConnection,"new",18083,"comet",Date.now()),"");
-assert.equal(model.suggestInstance(registerConnection,"comet"),"comet-2");
+assert.equal(model.suggestInstance(registerConnection,"comet"),"comet-1");
+assert.equal(model.suggestInstance({...registerConnection,snapshot:{instances:[{id:"comet-1"}]}},"comet"),"comet-2");
 assert.equal(model.suggestHTTPPort(registerConnection),"18083");
 assert.equal(model.fakeOptionsProblem(registerConnection,"bus","my-pier"),"");
 assert.notEqual(model.fakeOptionsProblem(registerConnection,"~bus","../outside"),"");
@@ -249,12 +250,16 @@ assert.equal(updateArgs[updateArgs.indexOf("--revision")+1],"4");
 assert.equal(updateArgs[updateArgs.indexOf("--runner-id")+1],"runner-pinned");
 assert.throws(()=>model.connectionEditArgs({...editConnection,revision:undefined},"renamed","ssh","host",""));
 const codeConnection={...connection,features:["login-code"]};
-const codeInstance={...instance,observed_state:"running",resources:resource};
+const codeInstance={...instance,observed_state:"running",health:"healthy",applied_revision:instance.config_revision,observed_at:new Date(now).toISOString(),resources:resource};
 assert.equal(model.canCopyCode(codeConnection,codeInstance,now),true);
 assert.equal(model.canCopyCode({...codeConnection,access_role:"observer"},codeInstance,now),false);
 assert.equal(model.canCopyCode(codeConnection,{...codeInstance,recovery_required:true},now),false);
 assert.equal(model.canCopyCode(codeConnection,{...codeInstance,active_operation_id:"busy"},now),false);
 assert.equal(model.canCopyCode(codeConnection,codeInstance,now+31000),false);
+for(const change of [{health:"starting"},{health:"unknown"},{identity_pending:true},{applied_revision:0},{observed_state:"uninitialized"}]) {
+  assert.equal(model.canCopyCode(codeConnection,{...codeInstance,...change},now),false);
+  assert.equal(model.shipLive(codeConnection,{...codeInstance,...change},now),false);
+}
 console.log("PASS: connection edits bind original enrollment revision and code access requires a fresh operator selection");
 
 const importSource={run_id:"a".repeat(32),content_digest:"b".repeat(64),files:7,bytes:1024,ship:"~zod",qualified_at:stamp};

@@ -1,4 +1,4 @@
-# Omabit 0.1.0-rc.3 binary bundle
+# Omabit 0.1.0-rc.4 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
@@ -9,10 +9,16 @@ use `omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enab
 Native installation uses the shared QML and pinned released tools. Published
 RC.1/RC.2 archives remain unchanged.
 
-RC.3 runs management and the separate rootless Docker engine as the existing pier
+RC.4 retains management and the separate rootless Docker engine as the existing pier
 owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
 user-owned files. Storage/import/deletion and bounded reboot resume continue.
 This remains a development prerelease.
+
+RC.4 improves first-run onboarding, asks whether the computer is always on, checks
+available HTTP ports on the selected host, and boots new ships immediately after
+confirmed registration. Default destinations are generated; only the Custom path
+choice exposes a pier-path editor. Monitor opening/focusing is corrected, and ship
+browser/+code actions wait for a healthy verified runtime.
 
 ## Verify and install the desktop
 

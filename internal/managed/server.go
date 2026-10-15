@@ -289,7 +289,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodGet && req.URL.Path == "/hello" {
 		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials", "offline-pack", "offline-meld", "offline-roll", "container-resources", "container-cpu", "epoch-inventory", "epoch-prune-genesis", "epoch-prune-prefix"}
 		features = append(features, "maintenance-schedules")
-		features = append(features, "fake-ship-options")
+		features = append(features, "fake-ship-options", "host-port-suggestion")
 		if p, err := ownerhost.Current(); err == nil && p != nil {
 			features = append(features, "owner-user-runtime", "human-pier-storage")
 		}
@@ -364,6 +364,19 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	defer r.mu.Unlock()
 	if r.closing || r.failed.Load() {
 		r.respondError(w, &fault{503, protocol.APIError{Code: "runner_unavailable", Message: "runner is stopping or state storage needs review"}})
+		return
+	}
+	if req.Method == http.MethodGet && req.URL.Path == "/v1/port-suggestion" {
+		if role != "operator" {
+			r.respondError(w, &fault{403, protocol.APIError{Code: "operator_required", Message: "port checks require operator access"}})
+			return
+		}
+		port, err := r.s.suggestHTTPPort(req.Context())
+		if err != nil {
+			r.respondError(w, err)
+			return
+		}
+		respond(w, 200, protocol.PortSuggestion{RunnerID: r.s.runnerID, HTTPPort: port, ContainerPort: 8080, ObservedAt: time.Now().UTC()})
 		return
 	}
 	if req.Method == "POST" && req.URL.Path == "/v1/handoffs" {

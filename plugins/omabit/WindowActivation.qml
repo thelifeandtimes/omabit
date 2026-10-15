@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Window
 import Quickshell
 import Quickshell.Hyprland
 
@@ -12,7 +13,7 @@ Item {
 
   function activate() {
     targetWindow.visible = true
-    targetWindow.minimized = false
+    if (targetWindow.visibility === Window.Minimized) targetWindow.showNormal()
     attempts = 0
     Hyprland.refreshToplevels()
     focusTimer.restart()
@@ -29,7 +30,7 @@ Item {
         return info.pid === Quickshell.processId && window.title === root.targetWindow.title
           && info.mapped !== false && /^[0-9a-f]+$/.test(window.address) && window.address !== "0"
       })
-      if (root.targetWindow.backingWindowVisible && matches.length === 1) {
+      if (matches.length === 1) {
         // Defer until the menubar popup has released keyboard focus. Never toggle
         // visibility to raise a window: doing that loses its workspace/reviews.
         var address = "address:0x" + matches[0].address

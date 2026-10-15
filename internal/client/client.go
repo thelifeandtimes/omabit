@@ -98,6 +98,12 @@ func (c *Client) Snapshot(ctx context.Context) (protocol.Snapshot, error) {
 	return result, nil
 }
 
+func (c *Client) SuggestHTTPPort(ctx context.Context) (protocol.PortSuggestion, error) {
+	var result protocol.PortSuggestion
+	err := c.do(ctx, http.MethodGet, "/v1/port-suggestion", nil, &result, true)
+	return result, err
+}
+
 func (c *Client) Configure(ctx context.Context, id string, req protocol.ConfigureRequest) (protocol.Instance, error) {
 	if err := validateID(id); err != nil {
 		return protocol.Instance{}, err

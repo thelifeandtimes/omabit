@@ -1,5 +1,13 @@
 # Runner protocol: checkpoint 1
 
+## Host port suggestion (RC.4)
+
+`host-port-suggestion` adds operator-only `GET /v1/port-suggestion`, returning
+`runner_id`, `http_port`, `container_port` (8080) and `observed_at`. It checks
+registered/prepared port reservations plus actual host TCP binding. It does not
+reserve a port or change state: registration and Start still check conflicts.
+The collector exposes `--runner NAME --expected-runner-id ID suggest-port`.
+
 ## Development storage extension (schema 14)
 
 Capabilities `storage-locations`, `import-pier`, and `delete-pier` add operator-only

@@ -21,6 +21,7 @@ comet_inventory=dict(inventory,pier_id="c"*32,digest="e"*64)
 if (directory/"inspection.json").exists():
     inventory["observed_at"]=json.loads((directory/"inspection.json").read_text())["finished_at"]
 features=["storage-locations","import-pier","delete-pier","bootstrap-selection","host-handoff","runtime-logs","create-fake","fake-ship-options","pier-storage","key-boot","key-boot-options","livenet-import","create-comet","container-cpu","offline-pack","offline-meld","offline-roll","epoch-inventory","epoch-prune-prefix","login-code","import-qualified-fake","maintenance-schedules","comet-compaction","comet-epochs"]
+features += ["host-port-suggestion"]
 with (directory/"calls.jsonl").open("a") as log:
     log.write(json.dumps(sys.argv[1:])+"\\n")
 if "capture" in sys.argv:
@@ -50,12 +51,18 @@ elif "inventory" in sys.argv:
             started=(directory/"owned-started").exists()
             owned.update({"observed_at":now,"observed_state":"running" if started else "uninitialized","desired_state":"running" if started else "stopped","health":"healthy" if started else "unknown"})
             snapshot["instances"].append(owned)
+        for file in directory.glob("created-*.json"):
+            created=json.loads(file.read_text());started=(directory/("started-"+created["id"])).exists()
+            created.update(observed_at=now,desired_state="running" if started else "stopped",observed_state="running" if started else "uninitialized",health="healthy" if started else "unknown",applied_revision=1 if started else 0)
+            snapshot["instances"].append(created)
         snapshot["piers"]["roots"]=[{"id":"default","path":"/var/lib/urbit-runner/piers"}]
         if (directory/"storage-added").exists(): snapshot["piers"]["roots"].append({"id":"ssd","path":"/fixture/storage"})
         if (directory/"deleted-alpha").exists(): snapshot["instances"]=[i for i in snapshot["instances"] if i["id"]!="alpha"]
         available_features=features+(["comet-prune-prefix"] if (directory/"comet-pruning-qualified").exists() else [])
         print(json.dumps({"name":"fixture","runner_id":"runner-fixture","mode":"development-managed","access_role":"operator","features":available_features,"status":"available","checked_at":now,"snapshot":snapshot}),flush=True)
         time.sleep(.2)
+elif "suggest-port" in sys.argv:
+    print(json.dumps({"runner_id":"runner-fixture","http_port":18123,"container_port":8080,"observed_at":stamp}))
 elif "storage-root-add" in sys.argv:
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
     assert sys.argv[sys.argv.index("storage-root-add")+1]=="ssd"
@@ -101,7 +108,8 @@ elif "create-comet" in sys.argv:
         assert sys.argv[sys.argv.index("--pill")+1]=="https://example.invalid/apps.pill"
         print(json.dumps({"error":{"code":"instance_exists","message":"instance ID is already registered"}}),file=sys.stderr)
         sys.exit(1)
-    print(json.dumps({"id":"op-comet-fixture","status":"succeeded","instance_id":instance,"request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-comet"}))
+    (directory/("created-"+instance+".json")).write_text(json.dumps({"id":instance,"mode":"comet","ship":"~doznec-salbud-salwex-sogref--tasweb-navfun-batwet-sigfet","config_revision":1,"config":{"http_port":int(sys.argv[sys.argv.index("--http-port")+1]),"ames_port":34343,"loom":31}}))
+    print(json.dumps({"id":"op-comet-fixture","status":"succeeded","instance_id":instance,"request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-comet","config_revision":1}))
 elif "create-fake" in sys.argv:
     assert sys.argv[sys.argv.index("--bootstrap")+1]=="recommended"
     assert sys.argv[sys.argv.index("--pill")+1]=="https://example.invalid/apps.pill"
@@ -111,7 +119,9 @@ elif "create-fake" in sys.argv:
     assert sys.argv[sys.argv.index("--ship")+1]=="~bus"
     assert sys.argv[sys.argv.index("--pier-name")+1]=="bus-data"
     assert sys.argv[sys.argv.index("--pier-path")+1]=="fakeships/bus-data/pier"
-    print(json.dumps({"id":"op-named-fake","status":"succeeded","instance_id":sys.argv[sys.argv.index("create-fake")+1],"request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-fake"}))
+    instance=sys.argv[sys.argv.index("create-fake")+1]
+    (directory/("created-"+instance+".json")).write_text(json.dumps({"id":instance,"mode":"fake","ship":"~bus","config_revision":1,"config":{"http_port":18090,"ames_port":34343,"loom":31}}))
+    print(json.dumps({"id":"op-named-fake","status":"succeeded","instance_id":instance,"request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-fake","config_revision":1}))
 elif "enroll-pier" in sys.argv:
     assert "--confirm-stopped" in sys.argv and sys.argv[sys.argv.index("--fingerprint")+1]=="f"*64
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
@@ -120,18 +130,19 @@ elif "enroll-pier" in sys.argv:
 elif "create-ship" in sys.argv:
     assert "--confirm-network" in sys.argv and sys.argv[sys.argv.index("--key-file")+1]=="/fixture/owned.key"
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
-    assert "--http-port" not in sys.argv and "--ames-port" not in sys.argv and "--pier-path" not in sys.argv
+    assert "--http-port" not in sys.argv and "--ames-port" not in sys.argv and sys.argv[sys.argv.index("--pier-path")+1]=="livenet/planets/sampel-palnet/pier"
     assert sys.argv[sys.argv.index("--bootstrap")+1]=="bare" and "--pill" not in sys.argv
     (directory/"owned-registered.json").write_text(json.dumps({"id":"sampel-palnet","ship":"~sampel-palnet","mode":"planet","config_revision":1,"applied_revision":0,"config":{"http_port":18091,"ames_port":34344,"loom":31}}))
-    print(json.dumps({"id":"op-key-ship","instance_id":"sampel-palnet","request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-ship","status":"succeeded"}))
+    print(json.dumps({"id":"op-key-ship","instance_id":"sampel-palnet","request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-ship","status":"succeeded","config_revision":1}))
 elif "operate" in sys.argv and sys.argv[sys.argv.index("operate")+2]=="start":
-    assert (directory/"owned-registered.json").exists()
-    assert sys.argv[sys.argv.index("operate")+1]=="sampel-palnet"
+    instance=sys.argv[sys.argv.index("operate")+1]
+    assert instance in ("new-comet","bus-lab","sampel-palnet")
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
     assert sys.argv[sys.argv.index("--runner")+1]=="fixture"
     assert sys.argv[sys.argv.index("--revision")+1]=="1" and "--request-id" in sys.argv
-    (directory/"owned-started").touch()
-    print(json.dumps({"id":"op-owned-start","status":"queued"}))
+    if instance=="sampel-palnet": (directory/"owned-started").touch()
+    else: (directory/("started-"+instance)).touch()
+    print(json.dumps({"id":"op-owned-start","status":"queued","kind":"start","instance_id":instance,"request_id":sys.argv[sys.argv.index("--request-id")+1],"config_revision":1}))
 elif "routine-set" in sys.argv:
     assert sys.argv[sys.argv.index("--expected-runner-id")+1] == "runner-fixture"
     old=json.loads((directory/"policy.json").read_text()) if (directory/"policy.json").exists() else None
@@ -302,6 +313,8 @@ ShellRoot {
      onTriggered: {
        if (capturesPending) return
       if (phase === -2 && service.localSetupStatus && service.connections.length === 1) {
+        if (service.setupCheckRequested || service.machineUse!=="") throw new Error("fresh onboarding already chose machine/check state")
+        service.setMachineUse("laptop")
         if (!service.setUpLocal() || service.setUpLocal()) throw new Error("local setup dispatch/busy guard failed")
         phase = -1
       } else if (phase === -1 && !service.settingUp) {
@@ -399,8 +412,9 @@ ShellRoot {
         if (service.registerComet(service.connections[0],"new-comet",18087,true)) throw new Error("duplicate port dispatched")
         if (!service.registerComet(service.connections[0],"new-comet",18088,true)) throw new Error("comet registration failed")
         phase = 22
-      } else if (phase === 22 && !service.busy && service.lastResult.indexOf("register-comet:") === 0) {
-        console.log("PASS: explicit comet acknowledgement and selected registration")
+      } else if (phase === 22 && !service.busy && !service.pendingFirstBoot && !service.bootTarget && service.lastResult.indexOf("first-boot:") === 0) {
+        console.log("PASS: explicit comet boot acknowledgement registers then starts exactly once")
+        service.monitorWindow.selectedKey="runner-fixture/alpha"
         service.monitorWindow.page = "maintenance"
         maintenance.section = "routine"
          maintenance.routinePane.edit()
@@ -473,9 +487,12 @@ ShellRoot {
         control(setupFixture,"registration-name").text = "bus-lab"
         control(setupFixture,"registration-port").text = "18090"
          control(setupFixture,"registration-fake-ship").text = "~foo"
-        control(setupFixture,"registration-pier").text = "bus-data"
+         var location=control(control(setupFixture,"registration-form"),"storage-location-selector")
+         location.currentIndex=location.count-1;location.activated(location.currentIndex)
+         control(setupFixture,"registration-pier").text = "bus-data"
         phase = 31
-      } else if (phase === 31) {
+       } else if (phase === 31) {
+         control(setupFixture,"comet-consent").checked=true
         var submit = control(setupFixture,"register-instance")
         if (!submit.enabled) throw new Error("named fake form unavailable")
         submit.clicked(); phase = 32
@@ -488,12 +505,12 @@ ShellRoot {
          var submit = control(setupFixture,"register-instance")
          if (!submit.enabled) throw new Error("corrected named fake form unavailable")
          submit.clicked(); phase = 34
-       } else if (phase === 34 && !service.busy) {
+       } else if (phase === 34 && !service.busy && !service.pendingFirstBoot && !service.bootTarget) {
          if (setupFixture.mode !== "ship" || service.registrationOutcome.status !== "succeeded" || service.registrationOutcome.ship !== "~bus" || service.registrationOutcome.pier !== "fakeships/bus-data/pier") throw new Error("named fake result lost identity or path")
         console.log("PASS: fake identity, instance name and pier directory are submitted independently")
-        if (testWindows) { service.openMonitor(null,null,"overview"); phase = 10 } else Qt.quit()
+         if (testWindows) { service.monitorWindow.selectedKey="runner-fixture/alpha";service.openMonitor(null,null,"overview"); phase = 10 } else Qt.quit()
         } else if (phase === 10) {
-          if (!service.monitorWindow.visible || !service.monitorWindow.backingWindowVisible) throw new Error("monitor failed to map")
+          if (!service.monitorWindow.visible) throw new Error("monitor failed to map")
           var runtime=control(service.monitorWindow,"runtime-pane")
           if (!runtime.logs) return
           if (runtime.logs.instance_id!=="alpha" || control(runtime,"runtime-log-text").text.indexOf("boot: alpha")<0 || control(runtime,"runtime-log-text").textFormat!==TextEdit.PlainText) throw new Error("runtime logs missing or not plain text")
@@ -512,7 +529,7 @@ ShellRoot {
          var title=control(service.monitorWindow,"monitor-ship-name")
          if (title.paintedWidth>title.width+1 || title.text !== service.connections[0].snapshot.instances[1].ship) throw new Error("comet title overflow")
          if (capture("comet-overview")) return
-         service.monitorWindow.implicitWidth=Style.space(780); phase=15
+          service.monitorWindow.width=Style.space(780); phase=15
        } else if (phase === 15) {
          var title=control(service.monitorWindow,"monitor-ship-name")
          if (title.paintedWidth>title.width+1) throw new Error("narrow comet title overflow")
@@ -598,16 +615,20 @@ ShellRoot {
           console.log("PASS: discovered pier enrollment requires fresh fingerprint/runner binding and explicit stopped-source confirmation")
           service.monitorWindow.setupPane.mode="ship";service.monitorWindow.setupPane.shipKind="key"
           var form=control(service.monitorWindow.setupPane,"owned-key-form")
-          control(form,"key-identity").text="~sampel-palnet";form.keyFile="/fixture/owned.key"
+           control(form,"key-identity").text="~sampel-palnet";form.keyFile="/fixture/owned.key"
+           if(control(form,"key-register").enabled)throw new Error("key boot skipped consent")
+           control(form,"key-boot-consent").checked=true
           if (control(form,"key-start").enabled || !control(form,"key-register").enabled) throw new Error("Start enabled before registration or registration unavailable")
           control(form,"key-register").clicked()
           if (control(form,"key-start").enabled) throw new Error("Start enabled while registration was submitting")
           phase=302
-        } else if (phase === 302 && !service.busy) {
+        } else if (phase === 302 && !service.busy && !service.pendingFirstBoot && !service.bootTarget) {
           if (service.registrationOutcome.kind!=="owned" || service.registrationOutcome.status!=="succeeded") throw new Error("key registration acknowledgement not bound")
           var form=control(service.monitorWindow.setupPane,"owned-key-form")
           if (!form.registeredInstance) return
-          if (!control(form,"key-start").enabled || control(form,"key-register").enabled) throw new Error("registration did not enable Start and disable duplicate registration")
+          if (form.registeredInstance.observed_state!=="running") return
+          if (control(form,"key-start").enabled || control(form,"key-register").enabled || service.monitorWindow.page!=="overview") throw new Error("owned registration did not automatically boot/open management")
+          service.monitorWindow.page="setup"
           control(form,"key-register-another").clicked()
           if (control(form,"key-start").enabled) throw new Error("Start remained enabled on a blank registration form")
           service.lastError="old key-flow error"
@@ -674,7 +695,7 @@ ShellRoot {
            console.log("PASS: non-native key Browse preserves paths; bootstrap selector requires a configured recommendation and keeps bare independent")
           var form=control(service.monitorWindow.setupPane,"owned-key-form")
           form.keyFile="";control(form,"key-identity").text="~sampel-palnet"
-          if (service.registrationOutcome || !control(form,"key-start").enabled) throw new Error("registered identity could not restore Start without the key or transient receipt")
+          if (service.registrationOutcome || !form.registered || control(form,"key-start").enabled) throw new Error("restored running identity offered a duplicate Start")
           var selected=form.connection
           form.connection={name:"offline-runner",runner_id:"runner-offline"}
           if (control(form,"key-start").enabled) throw new Error("Start crossed the selected runner identity")
@@ -684,15 +705,15 @@ ShellRoot {
         } else if (phase === 3045) {
           if (capture("key-registered")) return
           var start=control(service.monitorWindow.setupPane,"key-start")
-          if (!start.enabled) throw new Error("registered stopped ship is not startable")
+          if (start.enabled) throw new Error("running ship offered another Start")
           start.clicked()
           if (start.enabled) throw new Error("Start stayed enabled during dispatch")
           start.clicked();phase=3046
         } else if (phase === 3046 && !service.busy) {
           var form=control(service.monitorWindow.setupPane,"owned-key-form")
           if (form.registeredInstance.observed_state!=="running") return
-          if (control(form,"key-start").enabled || service.monitorWindow.page!=="overview" || service.monitorWindow.selectedKey!=="runner-fixture/sampel-palnet" || service.lastResult.indexOf("start: op-owned-start")!==0) throw new Error("Start did not follow the selected registered ship or disabled-state transition")
-          console.log("PASS: registration enables identity-bound Start; restored forms need no key; explicit Start dispatches once and opens boot progress")
+          if (control(form,"key-start").enabled) throw new Error("running ship offered a duplicate Start")
+          console.log("PASS: confirmed owned creation boots once, opens progress, and restored forms cannot duplicate Start")
           service.monitorWindow.page="setup";service.monitorWindow.setupPane.mode="manage";phase=305
        } else if (phase === 305) {
          var setup=service.monitorWindow.setupPane
@@ -788,9 +809,9 @@ ShellRoot {
             raise RuntimeError(text)
         calls = [json.loads(line) for line in (directory / "calls.jsonl").read_text().splitlines()]
         mutations = [c for c in calls if "operate" in c or "epoch-prune" in c or "import-fake" in c or "create-comet" in c or "create-fake" in c or "enroll-pier" in c or "create-ship" in c or "move-host" in c or "storage-root-add" in c or "import-pier" in c or "delete-pier" in c]
-        expected_mutations=19 if args.windows else 12
+        expected_mutations=21 if args.windows else 14
         assert len(mutations) == expected_mutations, mutations
-        assert [c[c.index("operate") + 2] for c in mutations if "operate" in c] == ["stop", "inspect-epochs", "pack", "meld", "roll"] + (["start"] if args.windows else [])
+        assert [c[c.index("operate") + 2] for c in mutations if "operate" in c] == ["stop", "inspect-epochs", "pack", "meld", "start", "roll", "start"] + (["start"] if args.windows else [])
         assert len({c[c.index("--request-id") + 1] for c in mutations}) == expected_mutations
         assert len([c for c in calls if "routine-set" in c]) == 3
         assert all("fixture-only-secret" not in c for c in calls)

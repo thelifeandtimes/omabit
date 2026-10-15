@@ -66,6 +66,8 @@ def main():
         for name in ("Commons", "Ui", "services"):
             (directory / name).symlink_to(Path("/usr/share/omarchy/shell") / name)
         (directory / "Plugin").symlink_to(args.plugin_dir.resolve())
+        if args.plugin_dir.resolve().name == "native":
+            (directory / "plugins").symlink_to(args.plugin_dir.resolve().parent / "plugins")
         helper = directory / "collector-fixture"
         helper.write_text(fixtures.FAKE)
         helper.chmod(0o700)
@@ -87,8 +89,18 @@ import Quickshell
 import Quickshell.Io
 import "Plugin" as Plugin
 ShellRoot {
-  Plugin.Service { id: service; settings: ({collectorPath:%s,omabitPath:%s,notifications:false}) }
-  Plugin.Panel { id: panel; service: service; settings: service.settings; manageIpc:false; bar:null }
+  id: fixtureRoot
+  // Match Omarchy's third-party loader: post-start createObject with no visual parent.
+  property var service: null
+  Timer { interval: 500; running: true; onTriggered: {
+    var component=Qt.createComponent("Plugin/Service.qml")
+    if (component.status!==Component.Ready) throw new Error(component.errorString())
+    service=component.createObject(null,{settings:{collectorPath:%s,omabitPath:%s,notifications:false}})
+  } }
+  Component.onDestruction: if (service) service.destroy()
+  Loader { id: panelLoader; active: fixtureRoot.service!==null
+    sourceComponent: Component { Plugin.Panel { service: fixtureRoot.service; settings: fixtureRoot.service.settings; manageIpc:false; bar:null } }
+  }
   function control(object,name,visited) {
     visited=visited || []
     if (!object || visited.indexOf(object)>=0) return null
@@ -105,12 +117,12 @@ ShellRoot {
   IpcHandler {
     target: "focus-test"
     function menu(): void {
-      var button=control(panel,"open-monitor")
+      var button=control(panelLoader.item,"open-monitor")
       if (!button) throw new Error("Monitor menu button not found")
       button.clicked()
     }
     function close(): void { service.monitorWindow.visible=false }
-    function state(): string {return JSON.stringify({visible:service.monitorWindow.visible,error:service.lastError,page:service.monitorWindow.page})}
+    function state(): string {return JSON.stringify(service ? {visible:service.monitorWindow.visible,error:service.lastError,page:service.monitorWindow.page} : null)}
   }
 }''' % (json.dumps(str(helper)), json.dumps(str(helper)))
         (directory / "shell.qml").write_text(qml)

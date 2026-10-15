@@ -1,12 +1,16 @@
 import QtQuick
+import QtQuick.Window
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import Quickshell
 import qs.Commons
 import "Model.js" as Model
 
-FloatingWindow {
+Window {
   id: root
+  // The service is a parentless Item, not a visual window. Do not wait for an
+  // inferred parent window to become visible when loaded as an Omarchy plugin.
+  transientParent: null
   required property var service
   property string selectedKey: ""
   property string page: "overview"
@@ -28,9 +32,11 @@ FloatingWindow {
   readonly property bool shipPage: page === "overview" || page === "maintenance"
   title: "Omabit · Monitor & maintenance"
   color: Design.background
-  implicitWidth: Style.space(1100)
-  implicitHeight: Style.space(770)
-  minimumSize: Qt.size(Style.space(780),Style.space(540))
+  width: Style.space(1100)
+  height: Style.space(770)
+  minimumWidth: Style.space(780)
+  minimumHeight: Style.space(540)
+  readonly property bool fullscreen: visibility === Window.FullScreen
   visible: false
   function present() { activation.activate() }
   WindowActivation {
@@ -67,7 +73,7 @@ FloatingWindow {
           anchors.fill: parent; anchors.leftMargin: Style.space(24); anchors.rightMargin: Style.space(24); spacing: Style.space(18)
           Column { spacing: Style.space(2)
             Label { text: "omabit"; font.pixelSize: Style.space(27); font.bold: true; font.letterSpacing: -1 }
-            Label { objectName: "monitor-version"; text: "0.1.0-rc.3 / DEVELOPMENT"; caption: true; secondary: true }
+            Label { objectName: "monitor-version"; text: "0.1.0-rc.4 / DEVELOPMENT"; caption: true; secondary: true }
           }
           Rectangle { width: 1; height: Style.space(28); color: Design.line }
           Column { Layout.fillWidth: true; spacing: Style.space(3)
@@ -168,7 +174,7 @@ FloatingWindow {
                 ActionButton { text: "▶ Start"; enabled: root.service.observing && !root.service.busy && Model.canOperate(root.connection,root.instance,"start",root.service.now); onClicked: root.service.operate(root.connection,root.instance,"start") }
                 ActionButton { text: "■ Stop"; enabled: root.service.observing && !root.service.busy && Model.canOperate(root.connection,root.instance,"stop",root.service.now); onClicked: root.service.operate(root.connection,root.instance,"stop") }
                 CopyCodeButton { objectName: "monitor-copy-code"; service: root.service; runnerID: root.connection ? root.connection.runner_id : ""; connectionName: root.connection ? root.connection.name : ""; instanceID: root.instance ? root.instance.id : "" }
-                ActionButton { objectName: "monitor-open-ship"; text: "Open ship ↗"; hint: Model.shipURL(root.connection,root.instance,root.service.registrations,root.service.runnerPreferences) || "Set the browser host in Setup → Manage runners"; enabled: !!root.connection && root.service.observing && Model.available(root.connection,root.service.now) && !!Model.shipURL(root.connection,root.instance,root.service.registrations,root.service.runnerPreferences); onClicked: root.service.openShip(root.connection,root.instance) }
+                ActionButton { objectName: "monitor-open-ship"; text: "Open ship ↗"; hint: "Open this ship when startup and health checks complete"; enabled: root.service.observing && Model.shipLive(root.connection,root.instance,root.service.now) && !!Model.shipURL(root.connection,root.instance,root.service.registrations,root.service.runnerPreferences); onClicked: root.service.openShip(root.connection,root.instance) }
                 }
                 Label { width: parent.width; caption: true; secondary: true; text: Model.codeUnavailable(root.connection,root.instance,root.service.now,root.service.observing); visible: text !== "" }
               }

@@ -44,10 +44,12 @@ Column {
   RowLayout {
     width: parent.width; visible: root.mode !== "home"
     ActionButton { compact: true; quiet: true; text: ["runner","edit","connection"].indexOf(root.mode)>=0 ? "← Runners" : "← Setup"; onClicked: root.mode = ["runner","edit","connection"].indexOf(root.mode)>=0 ? "manage" : "home" }
-    Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; secondary: true; caption: true; text: "OMABIT 0.1.0-rc.3 · SETUP" }
+    Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; secondary: true; caption: true; text: "OMABIT 0.1.0-rc.4 · SETUP" }
   }
   Column {
     width: parent.width; spacing: Style.space(8); visible: root.mode === "home"
+    MachineUsePane { width: parent.width; service: root.service }
+    ActionButton { text: "Set up remote server →"; visible: !!root.service && root.service.machineUse==="laptop"; onClicked: root.mode="remote" }
     Card {
       width: root.width; implicitHeight: localIntro.implicitHeight + Style.space(28)
       Column { id: localIntro; anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(14); spacing: Style.space(9)
@@ -79,6 +81,14 @@ Column {
     }
   }
   HostSetupPane { width: parent.width; visible: root.mode === "local"; service: root.service; onAddShip: { root.addShip(); root.shipKind = "comet" } }
+  Column {
+    width: parent.width; spacing: Style.space(12); visible: root.mode==="remote"
+    Label { text: "Set up a remote server"; font.pixelSize: Style.space(22); font.bold: true }
+    Label { width: parent.width; text: "Omabit on this laptop can manage Urbit runners on a VPS, workstation, or other always-on machine through SSH."; secondary: true }
+    Label { width: parent.width; text: "1. Install the standalone urbit-runner on the remote Linux host and complete its owner-user setup.\n2. Configure a restricted management SSH connection and verify its host key.\n3. Connect that runner here, then boot and manage ships from your fleet."; secondary: true }
+    ActionButton { text: "Remote installation guide ↗"; onClicked: Qt.openUrlExternally("https://github.com/thelifeandtimes/omabit/blob/master/docs/owner-user-runtime.md") }
+    ActionButton { text: "Connect installed runner →"; primary: true; onClicked: {root.transport="ssh";root.mode="runner"} }
+  }
   StoragePane { width: parent.width; visible: root.mode === "storage"; service: root.service }
   Column {
     width: parent.width; spacing: Style.space(10); visible: root.mode === "runner"

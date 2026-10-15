@@ -78,10 +78,20 @@ as root. To inspect readiness without installing:
 
 ## 3. Create and start a ship
 
-Choose **New comet**, select a name and unused local HTTP port, and acknowledge its
-outbound networking. Registration leaves the ship stopped; choose **Start** in the
-fleet view when ready. First boot can take several minutes while the runtime creates
+Choose **New comet**, enter a required local name and find an available host HTTP
+port. Confirm **Boot a new comet identity now with these settings**, then choose
+**Boot comet**. Omabit verifies registration and submits one revision-bound Start,
+opening the ship's management view. First boot can take several minutes while the runtime creates
 the identity and boots the verified upstream pill.
+
+First-run setup asks whether this is an always-on machine or a laptop. The choice
+is saved locally. Laptop users also get **Set up remote server** in the fleet menu.
+The empty collector displays a welcome and **Start Setup**, rather than an SSH error.
+
+**Find an available port** asks the selected runner to check both registered port
+reservations and real host listeners. Docker still rechecks binding races at Start.
+The guest HTTP port is 8080; the chosen host port is its loopback publication.
+Browser and +code buttons enable only after fresh, healthy runtime observations.
 
 Startup requires **5 GiB available physical RAM and 8 GiB free disk**. The current
 container limits remain 4 GiB RAM, two CPUs, 256 PIDs and loom 31. Once healthy, open
@@ -183,10 +193,10 @@ time and numeric unit axes. CPU uses Docker's per-core convention (100% = one CP
 The first CPU reading needs a second fresh sample before a rate can be shown.
 
 Use **Add a ship →** for new comets, owned key boot and existing-pier enrollment.
-The owned-key form shows **Start** disabled until the selected runner reports the
-registered ship ready to start. Click it to begin boot and open the ship overview.
-After a panel reload, entering an already-registered Urbit ID restores this action
-without requiring the key again.
+The owned-key form derives the instance name from its @p. Confirming **Boot ship**
+registers it and submits its first Start once. An uncertain registration result does
+not trigger a blind Start, and a failed/uncertain boot needs explicit review.
+After reload, the existing ship can be managed without supplying its key again.
 Each ship overview includes **Runtime status** and **Runtime / dojo output**.
 Logs are read-only, operator-only and bounded, refreshing every three seconds while
 the overview is visible. Use Pause or Refresh to inspect output. Status includes

@@ -1,4 +1,4 @@
-# Fresh RC.3 installation on sourcebox
+# Fresh RC.4 installation on sourcebox
 
 This walkthrough uses **Omarchy's native GitHub plugin installer**, with no manual
 repository checkout, Go compiler or development-path override. Shared OS prerequisites remain
@@ -15,7 +15,7 @@ omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enable
 
 `omarchy plugin install` is an alias for `add`. Do not use sudo. Omarchy performs
 its normal trust confirmation, clone, manifest validation, bar-placement selection
-and enable flow. On first use, the plugin downloads the pinned RC.3 `omabit`,
+and enable flow. On first use, the plugin downloads the pinned RC.4 `omabit`,
 `urbit-collector` and `urbit-runner` executables, checks their hashes and caches them
 under `~/.cache/omabit/native-binaries/` (or the XDG cache equivalent).
 Allow a few seconds for the initial download. This does not create a runner host
@@ -28,7 +28,8 @@ binary-download diagnostic, run
 
 ## Second step: use the normal first-time host setup
 
-Open the Omabit bar icon → **Setup → Set up this computer**. Step through:
+Open the Omabit bar icon → **Start Setup**. Choose **Always-on machine** or
+**Laptop / sometimes off**, then **Set up this computer**. Step through:
 
 1. Prerequisite checks.
 2. Creation of a fresh desktop management key.
@@ -49,8 +50,9 @@ collector should enroll this new identity; the old runner pin must not be reused
 
 ## Third step: first ship
 
-Use **bare bootstrap** for a disposable fake, then a comet. Registration is stopped;
-Start should produce a healthy initialized pier. Test Stop → Start, same identity,
+Use **bare bootstrap** for a disposable fake, then a comet. Enter the comet's required
+local name, find an available host port, confirm its settings and choose **Boot comet**.
+The form registers and starts once, opening its management view. Test Stop → Start, same identity,
 resource display, logs and browser access. The packaged Recommended Apps pill is
 still a draft with the documented rc.1 application gaps; test it separately.
 
