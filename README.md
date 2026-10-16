@@ -8,10 +8,10 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Published:** [**0.1.0-rc.6**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.6), a Linux/AMD64 development release candidate
+**Published:** [**0.1.0-rc.7**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.7), a Linux/AMD64 development release candidate
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and qualification scope](docs/release-rc6.md),
+[release notes and qualification scope](docs/release-rc7.md),
 and [Recommended Apps pill provenance](docs/pill-release.md). Final 0.1.0 is still pending.
 
 RC.3 makes `|mount` → ordinary copy/editor saves → `|commit` work directly on
@@ -26,6 +26,8 @@ names in runtime output and the user-supplied Recommended Apps pill. Application
 Connections is marked Coming Soon.
 RC.6 corrects the effective pill default when the shell supplies only explicit
 widget settings; this is verified in the running sourcebox shell.
+RC.7 adds persistent log following, bounded reconnect backoff and reader lifecycle
+cleanup to remove per-refresh SSH/PAM/logind sessions.
 Prior dedicated-account installations were
 [retired for the user-driven fresh-install exercise](docs/diagnostics/2026-10-15-rc2-release-retirement.md).
 

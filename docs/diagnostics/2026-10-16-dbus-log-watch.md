@@ -91,10 +91,33 @@ python3 -B scripts/test-native-plugin.py
 
 ## Deployment and Vere recovery
 
-This change is prepared for RC.7. Its rollout needs the updated collector and QML
-together, with native pins advanced after artifact publication. It needs no
-runner database migration or new runner endpoint. Live sourcebox SSH/logind counts
-and a ten-minute follow test remain deployment acceptance checks.
+[RC.7 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.7)
+from `07e407a4d4c5b4142425547c55094e218bee0697`, with matching native collector/QML
+pins. Source [CI passed](https://github.com/thelifeandtimes/omabit/actions/runs/38925970558).
+All eight downloaded release assets passed checksum/provenance/executable/installer
+verification. Archive SHA-256:
+`b179f2a32b41ec6732c6f62414c18dff526abf4c65fa2e44303bfa3aeebeeaaf`.
+The release needs no runner database migration or new runner endpoint.
+The actual native bootstrap downloaded all three RC.7 binaries into an isolated
+empty cache and verified their hashes, sizes and clean source build revisions;
+verified-cache reuse and a clean Git-export plugin validation passed.
+
+Before the requested sourcebox retirement, the frozen RC.7 collector
+(`f22bd2f6bfe1d0958cd0c6cf72225080992ad9f0b68945a97b4e25e30069f95e`)
+watched the current comet over actual OpenSSH: **23 bounded updates in 66.53s,
+one unchanged SSH PID/start identity, cancellation exit 0 and the child reaped**.
+This qualifies the shipped collector against the existing RC.6 server; it is not
+a live RC.7 QML deployment or a ten-minute logind/journal soak. Those remain fresh
+installation acceptance checks. Private receipt: `log-watch-smoke.json` in the
+sourcebox retirement staging directory.
+
+One mapped onboarding run failed its final Start-count audit during release
+preparation. After enriching the assertion's diagnostic output, four consecutive
+reruns passed. No mutation retry behavior was changed; the initial failure was not
+reproduced. This is also recorded in the release qualification attachment.
+
+Sourcebox was subsequently [reset for the user's next fresh install](2026-10-16-rc7-sourcebox-reset.md),
+including an unlocked cold shell reload. The user installs RC.7 themselves.
 
 Reducing this churn does **not** drain already-stuck Vere queues. Host-native ships
 need a separately planned rollout of a verified fixed Vere executable and graceful

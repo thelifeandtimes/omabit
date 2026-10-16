@@ -2,9 +2,13 @@
 
 ## Where we are
 
-**[RC.6 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.6), with matching native binary pins.**
-RC.6 fixes the effective Recommended Apps default found during RC.5 live deployment.
-The running sourcebox UI confirms that the supplied S3 default is active.
+**[RC.7 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.7), with matching native binary pins.**
+RC.7 removes per-refresh log-viewer SSH/PAM/logind sessions with a persistent
+identity-pinned watcher, cancellation and bounded reconnect backoff. Its frozen
+collector delivered 23 updates over 66 seconds through one actual sourcebox SSH
+process and reaped it on cancellation. See the [D-Bus follow-up](diagnostics/2026-10-16-dbus-log-watch.md).
+RC.6 fixed the effective Recommended Apps default found during RC.5 live deployment;
+the sourcebox fresh-install UI confirmed the supplied S3 default was active.
 The latest feedback adds software/source explanations, stable inline port/log
 progress, public comet identities, HTTP fleet labels and a Coming Soon application
 connections stub. Recommended Apps now uses the supplied S3 pill; its frozen copy
@@ -33,8 +37,11 @@ tools under `backend/cmd/` and shared implementation under `internal/`.
 The user will use the normal Omarchy plugin install command and host setup manually. See the
 [publication/retirement handoff](diagnostics/2026-10-15-rc2-release-retirement.md).
 Sourceport currently has disposable owner-user qualification resources. Sourcebox
-has completed the user's native installation and is running two user-created comets. The older running-fleet
-results below are historical acceptance evidence.
+completed the user's RC.6 fresh installation. Its `guac-demo` comet was gracefully
+stopped and its Omabit installation retired on October 16 for a user-driven RC.7
+pass. Data and all ten unrelated Urbit processes were preserved; a cold shell
+reload verified fresh-install readiness. See the [RC.7 reset receipt](diagnostics/2026-10-16-rc7-sourcebox-reset.md).
+The older running-fleet results below are historical acceptance evidence.
 
 Release candidate source **0.1.0-rc.2 / schema 15** adds alpha-requested storage roots,
 GUI host-path move/import and confirmed pier deletion, with a dedicated SVG bar
@@ -72,12 +79,12 @@ order, not percentage of total effort.
 | Runtime foundation | Owner-user rootless Docker, default/custom-root fake/comet desk editing and lifecycle accepted locally; broader production qualification remains |
 | Persistent runner | Durable SQLite registrations, operations, attribution, reconciliation, resource admission, and development lifecycle accepted |
 | Collector and access | Named identity-pinned connections, SSH grants/revocation, inventory isolation, origin-bound Eyre sessions and subscriptions accepted in exercised development gates |
-| Omabit UI | Published RC.6 native plugin: refined setup, stable runtime/port feedback, public comet names, HTTP fleet actions and verified effective pill default; sourcebox user feedback continues |
+| Omabit UI | Published RC.7 native plugin: persistent log following, refined setup, stable runtime/port feedback, public comet names, HTTP fleet actions and verified effective pill default; sourcebox user feedback continues |
 | Maintenance and retention | Official-runtime fake/comet pack/meld/roll, inventory/previews, prefix pruning and UTC schedules accepted in exercised live gates; interruption/recovery hardening remains; loom-internal telemetry deferred |
 | Peer monitoring | Planned; current single-runner health/incident basics do not yet provide the phase-7 multi-host peer system |
 | Personal operator gateway | Planned |
 | Social utilities / Omarchy gossip | Planned; architecture and delivery/tag policy recorded |
-| Agents and release distribution | RC.6 assets and supplied pill published; production upgrades, full application/OTA qualification and agent/MCP distribution remain |
+| Agents and release distribution | RC.7 assets and supplied pill published; production upgrades, full application/OTA qualification and agent/MCP distribution remain |
 
 ## Current milestone
 
