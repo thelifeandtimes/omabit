@@ -181,6 +181,88 @@ func TestExternalImportMovesAndEnrollsWithSameAndCrossDevicePaths(t *testing.T) 
 	}
 }
 
+func TestRecoverImport(t *testing.T) {
+	for _, stopped := range []bool{false, true} {
+		t.Run(fmt.Sprint(stopped), func(t *testing.T) {
+			f, s, persist, source := externalFixture(t)
+			// Reproduce the retained RC6 state: moved via EXDEV, prepared,
+			// but epoch validation failed before adoption could finish.
+			f.d.renamePier = func(string, string) error { return unix.EXDEV }
+			interrupt := func(v ManagedState) error {
+				if v.Prepared {
+					return errors.New("legacy enrollment interrupted")
+				}
+				return persist(v)
+			}
+			var err error
+			s, _, err = applyManaged(context.Background(), "import-pier", s, interrupt, f.d)
+			if err == nil || !s.Prepared || s.ExternalImport.Stage != "enrolling" {
+				t.Fatal("fixture did not reach enrolling", err)
+			}
+			if err = os.Mkdir(s.Runtime.Directory, 0700); err != nil {
+				t.Fatal(err)
+			}
+			if err = os.Mkdir(filepath.Join(s.Runtime.Directory, "docker-config"), 0700); err != nil {
+				t.Fatal(err)
+			}
+			if stopped {
+				s, _, err = applyManaged(context.Background(), "stop", s, persist, f.d)
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			before := len(f.calls)
+			digest, _, _, err := pierstore.TreeReview(context.Background(), managedPier(f, s))
+			if err != nil {
+				t.Fatal(err)
+			}
+			s, obs, err := applyManaged(context.Background(), "recover-import", s, persist, f.d)
+			if err != nil || obs.State != "stopped" || obs.RecoveryRequired || !s.Initialized || s.UncertainProvisioning() || s.ExternalImport.Stage != "complete" || s.Adoption.Verified {
+				t.Fatal("recovery failed", obs, err)
+			}
+			after, _, _, err := pierstore.TreeReview(context.Background(), managedPier(f, s))
+			if err != nil || digest != after || len(f.calls) != before {
+				t.Fatal("recovery touched data or runtime", err)
+			}
+			for _, path := range []string{source, s.ExternalImport.HeldPath} {
+				if _, err := os.Lstat(path); !os.IsNotExist(err) {
+					t.Fatal("recovery recreated source", err)
+				}
+			}
+			if _, _, err := applyManaged(context.Background(), "recover-import", s, persist, f.d); err == nil {
+				t.Fatal("completed import recovered twice")
+			}
+		})
+	}
+}
+
+func TestImportEpochPreflight(t *testing.T) {
+	f, s, persist, source := externalFixture(t)
+	path := filepath.Join(source, ".urb/log/0i0/vere.txt")
+	if err := os.WriteFile(path, []byte("4.6-unknown\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	review, err := pierstore.InspectExternal(context.Background(), f.d.home, source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	s.ExternalImport.Source = review
+	s.Adoption.Fingerprint = review.Fingerprint
+	_, _, err = applyManaged(context.Background(), "import-pier", s, persist, f.d)
+	if err == nil {
+		t.Fatal("unsupported epochs accepted")
+	}
+	if _, err := os.Stat(source); err != nil {
+		t.Fatal("source moved before epoch validation", err)
+	}
+	if s.ExternalImport.Stage != "reviewed" || s.Prepared || s.Storage.MountIdentity.Inode != 0 {
+		t.Fatal("invalid source changed import state")
+	}
+	if len(f.calls) != 0 {
+		t.Fatal("preflight invoked runtime")
+	}
+}
+
 func TestImportChangedSourceDoesNotMoveAndInterruptedCopyStaysFenced(t *testing.T) {
 	f, s, persist, source := externalFixture(t)
 	if err := os.WriteFile(filepath.Join(source, "changed"), []byte("changed"), 0600); err != nil {

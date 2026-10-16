@@ -210,7 +210,7 @@ func (r *Server) launch(op protocol.Operation) {
 	r.wg.Add(1)
 	go func() {
 		defer r.wg.Done()
-		if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "delete-pier" || op.Kind == "import-pier" || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
+		if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "delete-pier" || op.Kind == "recover-import" || op.Kind == "import-pier" || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
 			select {
 			case r.workGate <- struct{}{}:
 				defer func() { <-r.workGate }()
@@ -294,7 +294,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			features = append(features, "owner-user-runtime", "human-pier-storage")
 		}
 		if _, ok := r.b.(storageActionsBackend); ok {
-			features = append(features, "storage-locations", "import-pier", "delete-pier")
+			features = append(features, "storage-locations", "import-pier", "delete-pier", "recover-import")
 		}
 		if _, ok := r.b.(storageBackend); ok {
 			features = append(features, "bootstrap-selection")

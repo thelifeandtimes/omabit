@@ -178,6 +178,9 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 	if action == "delete-pier" {
 		return applyPierDeletion(ctx, state, persist, d)
 	}
+	if action == "recover-import" {
+		return applyImportRecovery(ctx, state, persist, d)
+	}
 	if action == "import-pier" {
 		return applyExternalImport(ctx, state, persist, d)
 	}
