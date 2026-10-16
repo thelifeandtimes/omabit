@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "thelifeandtimes.omabit",
   "name": "Omabit",
-  "version": "0.1.0-rc.7",
+  "version": "0.1.0-rc.8",
   "author": "Omabit contributors",
   "description": "A compact Urbit fleet menu, setup pane, and monitoring/maintenance workspace through urbit-collector.",
   "kinds": ["service", "bar-widget"],

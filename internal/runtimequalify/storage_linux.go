@@ -76,7 +76,7 @@ func applyPierEnrollment(ctx context.Context, state ManagedState, persist func(M
 		}
 	}
 	// Validate the pinned epoch layout without opening LMDB or starting Vere.
-	inv, err := q.inspectEpochs(ctx)
+	inv, err := q.inspectImportEpochs(ctx)
 	if err != nil {
 		return state, unknown, err
 	}

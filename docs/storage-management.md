@@ -11,6 +11,10 @@ source uses **management schema 16**. The
 additive upgrade preserves schema 11–15 records, and older runners refuse the new
 database. Release publication and live fleet deployment are separate steps.
 
+The updated guided flow additionally advertises `guided-pier-import` and
+`named-pier-directories`. Update collector, runner and desktop together for these
+capabilities. Operational work on the user's hosts follows [protected ships](protected-ships.md).
+
 **Historical October 14 deployment:** both dedicated-account runners received these
 controls before retirement. See the
 [deployment record](diagnostics/2026-10-14-development-update.md).
@@ -18,7 +22,7 @@ controls before retirement. See the
 ## Choose where piers live
 
 Open **Setup → Import a pier & storage locations** and select the runner.
-Under **Storage locations**, add a short name and an absolute directory **on that
+Expand **Manage storage locations** to add a short name and an absolute directory **on that
 runner's host**, for example `ssd` → `/mnt/ssd/urbit-piers`.
 
 - The owner-user default is `/srv/urbit/piers/`.
@@ -44,12 +48,12 @@ ownership transfer or ACL repair is part of this workflow.
 
 The new-ship and import forms offer a **Storage location on runner host** selector.
 Paths inside additional locations are represented as, for example,
-`@ssd/fakeships/test/pier`. Unqualified paths always keep their original default-root
+`@ssd/fakeships/test/zod`. Unqualified paths always keep their original default-root
 meaning; choosing another location never relocates an existing registration.
 
 The actual host directory `/mnt/ssd/urbit-piers/fakeships/test` is the exclusive
-container mount at `/urbit`. It may contain only `pier/`, which Vere sees as
-`/urbit/pier`. Sibling piers, project directories and whole disks are never mounted
+container mount at `/urbit`. It may contain only its selected pier child (here
+`zod/`, which Vere sees as `/urbit/zod`). Sibling piers, project directories and whole disks are never mounted
 as a substitute. Runtime disk admission checks the selected storage filesystem as
 well as the management/image filesystem.
 
@@ -61,30 +65,50 @@ pier is not the same workflow as importing an external pier.
 
 Open **Setup → Import a pier & storage locations → Import an existing pier…**:
 
-1. Select the host and enter the directory containing `.urb`, such as
-   `/srv/urbit-imports/my-old-pier`. This is a host path, not a desktop upload path.
-2. Stop the source Vere process and any supervisor that might restart it.
-3. Choose **Inspect source directory**. Omabit checks access, directory identity,
-   Vere lock markers and bounded tree metadata, returning a review fingerprint.
-4. Enter the new instance name, expected `~ship`, storage location, destination
-   convention path and unused HTTP port. For example, `fakeships/test/pier` for a
-   fake, or `livenet/planets/sampel-palnet/pier` for that planet.
-5. Confirm the source is stopped and approve **Move and import pier**.
-6. Wait for the journaled import operation to succeed. The imported pier remains
+1. Stop the source Vere process and any supervisor that might restart it.
+2. Choose the directory containing `.urb`, such as `/srv/urbit-imports/my-old-pier`.
+   Local hosts offer Browse; remote paths are entered on the selected runner host.
+3. Choose an already configured storage location (default `/srv/urbit/piers`).
+4. Choose **Inspect pier**. Omabit reads public identity and fake/live metadata,
+   checks the stopped tree and compatible epoch history, derives an unused instance
+   name and `<instance>/<ship-name>` destination, and suggests an available HTTP port.
+   Review these read-only details; no identity/path/port transcription is required.
+5. Confirm the source is stopped everywhere and choose **Move and import pier**
+   (or **Enroll stopped pier** if it is already in place).
+6. Follow the loading bar, copied-byte totals and durable step log. The imported pier remains
    stopped. Choose Start explicitly; existing identity verification applies.
 
 There is no need to manually relocate the pier and then separately enroll it.
 The review is bound to the selected runner, source and destination. Source changes,
-duplicate claims, links, nested mounts, foreign/shared files and occupied targets
+duplicate claims, changed identities/networks, links, nested mounts, foreign/shared files and occupied targets
 are rejected. The current content bound is 100 GB / 8192 entries / depth 32.
 
+Identity is read without booting Vere or opening a writable LMDB environment: a
+bounded reader follows only public `META` keys in the supported 64-bit little-endian
+LMDB v1 / Vere disk-v3 format. Folder names are not identity evidence. Complete
+historical epoch-v1 (`north.bin`/`south.bin`) and epoch-v2 (`image.bin`) history can
+be retained when the newest epoch already uses Vere 4.6/v2. Mixed history receives
+an unqualified inventory source and does not inherit the qualified pruning/roll
+contract. Missing or unsupported current snapshots are reported before moving.
+
+**Testnet is a stub:** it means an alternate Ethereum/Azimuth RPC endpoint, not a
+fakeship. Fake/live metadata cannot identify that endpoint. The UI explains this;
+testnet configuration and detection are not currently supported.
+
 Same-filesystem imports rename the actual pier into its new exclusive parent.
+An existing exclusive parent may be reused to rename a legacy `pier` leaf to its
+detected ship name; a pier already at the derived destination is enrolled in place.
 Across filesystems, the runner copies with bounded buffers, verifies both source
-and destination content, then removes the held source. Space admission requires the
-source's logical size plus 8 GiB on the destination. The old launch path is removed
+and destination content, then removes the held source. Same-filesystem moves require
+8 GiB headroom; copies additionally require the source's logical size. The old launch path is removed
 first by renaming the source into a private `.omabit-import-<id>/pier` holding
 directory alongside it. This avoids leaving the ordinary source path runnable
 while a target is being prepared.
+
+Progress is carried by the existing inventory connection. Phase receipts survive
+fast renames, and large-file copy updates are throttled rather than spawning new
+collectors or writing a journal record for every buffer. Errors retain the source/
+holding/partial target for explicit review; automatic retries are not performed.
 
 ### Host permissions
 
@@ -92,6 +116,10 @@ The management RPC remains unprivileged and operates with the pier owner's norma
 access. Source data must belong to that user; its parent needs read/write/search
 permission for the move and sync. Ordinary group-writable desk files are accepted;
 private `.urb` state, symlink, hardlink, mount and world-write checks still apply.
+Vere's inert `.run` / `.bin/...` regular-file hardlinks are accepted only when all
+links are proven to be inside the reviewed pier. Cross-filesystem copies preserve
+their bytes as independent private files; the docked executables are never used.
+Shared `.urb` state and links to anything outside the pier remain refused.
 Permission errors are shown before import submission. The RPC does not elevate to
 take over another user's files. Remote management remains RPC-only, while ordinary
 editing takes place as the owner on the runner host.
@@ -146,12 +174,12 @@ urbit-collector --runner HOST --expected-runner-id RUNNER_ID \
   storage-root-add ssd --path /mnt/ssd/urbit-piers --request-id add-ssd
 
 urbit-collector --runner HOST --expected-runner-id RUNNER_ID \
-  preview-pier --source /srv/urbit-imports/old-pier
+  preview-pier --source /srv/urbit-imports/old-pier --storage-root ssd
 
 urbit-collector --runner HOST --expected-runner-id RUNNER_ID \
   import-pier imported --source /srv/urbit-imports/old-pier \
-  --path @ssd/fakeships/imported/pier --ship ~zod --fingerprint REVIEW_FINGERPRINT \
-  --http-port 18090 --request-id import-reviewed-pier --confirm-stopped
+  --path @ssd/fakeships/imported/zod --ship ~zod --fingerprint REVIEW_FINGERPRINT \
+  --http-port 18090 --request-id import-reviewed-pier --confirm-stopped --identify
 
 urbit-collector --runner HOST --expected-runner-id RUNNER_ID \
   delete-pier imported --revision CURRENT_REVISION \

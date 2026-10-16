@@ -5,6 +5,7 @@ package runtimequalify
 import (
 	"errors"
 	"fmt"
+	"path/filepath"
 )
 
 func isCometRoll(kind string) bool {
@@ -55,7 +56,7 @@ func (q *qualifier) cometEpochResumeReady(kind string) error {
 
 func (q *qualifier) epochPierName() string {
 	if q.d.managed {
-		return "pier"
+		return filepath.Base(q.d.storage.Path)
 	}
 	if cometProfile(q.d.profile) {
 		return "comet"

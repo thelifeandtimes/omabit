@@ -5,12 +5,7 @@ Column {
   id: root
   property var service
   spacing: Style.space(8)
-  Label { text: "Is this an always-on machine?"; font.bold: true }
-  Label { width: parent.width; secondary: true; text: "Choose how you use this computer. A local ship is available while its host is awake and connected." }
-  Flow {
-    width: parent.width; spacing: Style.space(8)
-    ActionButton { objectName: "machine-always-on"; text: "Always-on machine"; primary: !!root.service && root.service.machineUse==="always-on"; onClicked: root.service.setMachineUse("always-on") }
-    ActionButton { objectName: "machine-laptop"; text: "Laptop / sometimes off"; primary: !!root.service && root.service.machineUse==="laptop"; onClicked: root.service.setMachineUse("laptop") }
-  }
+  SwitchField { objectName: "machine-use-toggle"; width: parent.width; text: "Always-on machine"; checked: !!root.service && root.service.machineUse!=="laptop"; enabled: !!root.service && !root.service.settingUp; onToggled: root.service.setMachineUse(checked ? "always-on" : "laptop") }
+  Label { width: parent.width; secondary: true; text: root.service && root.service.machineUse==="laptop" ? "Laptop / sometimes off. Local ships are available while this computer is awake and connected." : "This computer normally stays awake and connected." }
   Label { width: parent.width; visible: !!root.service && root.service.machineUse==="laptop"; secondary: true; text: "Omabit on your laptop can manage remote Urbit runners on a VPS, workstation, or other always-on machine. You can also run a local ship here." }
 }

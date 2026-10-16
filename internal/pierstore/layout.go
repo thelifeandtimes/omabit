@@ -40,10 +40,11 @@ func kindRelative(relative string) string {
 	return map[string]string{"galaxies": "galaxy", "stars": "star", "planets": "planet", "moons": "moon", "comets": "comet"}[p[1]]
 }
 
-// Every managed pier is the fixed child of an exclusive permanent mount root.
+// Every managed pier is one named child of an exclusive permanent mount root.
+// Legacy /pier leaves and ordinary ship-named directories are both valid.
 func ValidPath(relative string) bool {
 	root, relative := Split(relative)
-	return (root == "" || component.MatchString(root) && root != "default") && len(relative) <= 384 && path.Clean(relative) == relative && strings.HasSuffix(relative, "/pier") && kindRelative(MountPath(relative)) != "" && len(strings.Split(relative, "/")) <= 8
+	return (root == "" || component.MatchString(root) && root != "default") && len(relative) <= 384 && path.Clean(relative) == relative && kindRelative(relative) != "" && kindRelative(MountPath(relative)) != "" && len(strings.Split(relative, "/")) <= 8
 }
 
 // An unqualified path always retains the original home/piers meaning. Explicit
@@ -85,6 +86,13 @@ func Overlap(a, b string) bool {
 }
 
 func MountPath(relative string) string { return path.Dir(relative) }
+
+// Vere docks its executable as .run and .bin/... hardlinks. They are inert under
+// the pinned container runtime. Callers must prove every link stays in the tree;
+// this never permits shared .urb state, symlinks, or executing a docked binary.
+func InertDockedFile(relative string) bool {
+	return relative == ".run" || strings.HasPrefix(relative, ".bin/") && path.Clean(relative) == relative
+}
 
 type DirectoryIdentity struct {
 	Device uint64 `json:"device"`

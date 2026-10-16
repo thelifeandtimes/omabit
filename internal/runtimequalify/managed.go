@@ -57,6 +57,8 @@ type ManagedDeletion struct {
 }
 
 type ManagedExternalImport struct {
+	Identify    bool                     `json:"identify,omitempty"`
+	Events      []protocol.ImportEvent   `json:"events,omitempty"`
 	CopiedFiles int                      `json:"copied_files"`
 	CopiedBytes int64                    `json:"copied_bytes"`
 	Source      pierstore.ExternalSource `json:"source"`

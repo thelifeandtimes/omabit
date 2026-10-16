@@ -53,12 +53,13 @@ func (s *store) registerShip(actor string, req protocol.CreateShipRequest) (prot
 		req.ID = name
 	}
 	if req.PierPath == "" {
-		req.PierPath = "livenet/" + map[string]string{"galaxy": "galaxies", "star": "stars", "planet": "planets", "moon": "moons"}[class] + "/" + name + "/pier"
+		req.PierPath = "livenet/" + map[string]string{"galaxy": "galaxies", "star": "stars", "planet": "planets", "moon": "moons"}[class] + "/" + name + "/" + name
 	}
 	if req.Config.Loom == 0 {
 		req.Config.Loom = 31
 	}
-	if req.ID != name || !pierstore.ValidPath(req.PierPath) || pierstore.Relative(req.PierPath) != "livenet/"+map[string]string{"galaxy": "galaxies", "star": "stars", "planet": "planets", "moon": "moons"}[class]+"/"+name+"/pier" {
+	base := "livenet/" + map[string]string{"galaxy": "galaxies", "star": "stars", "planet": "planets", "moon": "moons"}[class] + "/" + name + "/"
+	if req.ID != name || !pierstore.ValidPath(req.PierPath) || (pierstore.Relative(req.PierPath) != base+name && pierstore.Relative(req.PierPath) != base+"pier") {
 		return protocol.Operation{}, false, bad("instance name and pier path are derived from the Urbit identity")
 	}
 	if req.Pill != nil && !protocol.ValidBootPill(req.Pill) {
@@ -70,11 +71,11 @@ func (s *store) registerShip(actor string, req protocol.CreateShipRequest) (prot
 	if class == "" || class == "comet" || !req.ConfirmNetwork || !protocol.ValidBootKey(req.Key) || pierstore.Kind(req.PierPath) != class {
 		return protocol.Operation{}, false, bad("require a valid owned ~ship, private 0w key, matching livenet directory and network acknowledgement")
 	}
-	base := protocol.CreateFakeRequest{ID: req.ID, Label: req.Label, Config: protocol.Configuration{HTTPPort: 18080, AmesPort: 34343, Loom: req.Config.Loom}, RequestID: req.RequestID}
-	if _, err := registrationFingerprint(&base, nil); err != nil {
+	registration := protocol.CreateFakeRequest{ID: req.ID, Label: req.Label, Config: protocol.Configuration{HTTPPort: 18080, AmesPort: 34343, Loom: req.Config.Loom}, RequestID: req.RequestID}
+	if _, err := registrationFingerprint(&registration, nil); err != nil {
 		return protocol.Operation{}, false, err
 	}
-	req.Label = base.Label
+	req.Label = registration.Label
 	key := req.Key
 	req.Key = ""
 	digest := fmt.Sprintf("%x", sha256.Sum256([]byte(key)))

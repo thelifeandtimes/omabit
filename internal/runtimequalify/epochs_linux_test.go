@@ -11,6 +11,7 @@ import (
 	"strings"
 	"syscall"
 	"testing"
+	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/epochs"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
@@ -131,6 +132,53 @@ func TestEpochInspectionRejectsUnsafeAndUnsupportedLayouts(t *testing.T) {
 				t.Fatalf("invalid inspection published or quarantined pier: %+v %v", state, err)
 			}
 		})
+	}
+}
+
+func TestImportAcceptsIntactMixedHistoryWithoutQualifyingPruning(t *testing.T) {
+	f, state, persist := stoppedManagedFixture(t)
+	base := epochFixture(t, f, state, "0i0", "0i100", "0i200")
+	write := func(epoch, name, value string) {
+		t.Helper()
+		if err := os.WriteFile(filepath.Join(base, epoch, name), []byte(value), 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	write("0i0", "epoc.txt", "1\n")
+	write("0i0", "vere.txt", "3.0\n")
+	write("0i100", "epoc.txt", "1\n")
+	write("0i100", "vere.txt", "3.4\n")
+	write("0i100", "north.bin", "retained north snapshot")
+	write("0i100", "south.bin", "retained south snapshot")
+	write("0i200", "image.bin", "current image snapshot")
+	write("0i200", "vere.txt", "4.6\n")
+	q, err := managedSession(&state, persist, f.d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := q.accountBoundary(false); err != nil {
+		t.Fatal(err)
+	}
+	inv, err := q.inspectImportEpochs(context.Background())
+	if err != nil || inv.Source != epochs.ImportSource || inv.Entries[1].LayoutVersion != 1 || inv.Entries[1].SnapshotBytes <= 0 {
+		t.Fatal(inv, err)
+	}
+	if _, err := epochs.PrunePlan(inv, "0i0", inv.Digest, time.Now()); err == nil {
+		t.Fatal("mixed history inherited qualified pruning")
+	}
+	if _, err := q.inspectEpochs(context.Background()); err == nil {
+		t.Fatal("maintenance silently accepted unqualified history")
+	}
+	write("0i200", "vere.txt", "4.5\n")
+	if _, err := q.inspectImportEpochs(context.Background()); err == nil {
+		t.Fatal("old latest epoch accepted without upgrade")
+	}
+	write("0i200", "vere.txt", "4.6\n")
+	if err := os.Remove(filepath.Join(base, "0i100/south.bin")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := q.inspectImportEpochs(context.Background()); err == nil {
+		t.Fatal("incomplete retained snapshot accepted")
 	}
 }
 

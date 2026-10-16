@@ -27,7 +27,7 @@ func TestOwnedDefaultsAllocatePortsAtomicallyAndReplay(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if v.Public.Config.HTTPPort != 18081 || v.Public.Config.AmesPort != 34344 || v.Public.PierPath != "livenet/planets/sampel-palnet/pier" || v.Runtime.Boot == nil || v.Runtime.Boot.Pill != nil {
+	if v.Public.Config.HTTPPort != 18081 || v.Public.Config.AmesPort != 34344 || v.Public.PierPath != "livenet/planets/sampel-palnet/sampel-palnet" || v.Runtime.Boot == nil || v.Runtime.Boot.Pill != nil {
 		t.Fatal(v.Public)
 	}
 	s.portAvailable = func(string, uint16) bool { return false }

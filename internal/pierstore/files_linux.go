@@ -142,11 +142,8 @@ func Parents(home, relative string) (string, error) {
 	// Create grouping directories, but leave the exclusive mount root absent.
 	for _, part := range parts[:len(parts)-2] {
 		// Grouping directories may not themselves be piers.
-		if _, err := os.Lstat(filepath.Join(p, ".urb")); !errors.Is(err, os.ErrNotExist) {
-			return "", errors.New("cannot nest a pier inside another pier")
-		}
-		if _, err := os.Lstat(filepath.Join(p, "pier/.urb")); !errors.Is(err, os.ErrNotExist) {
-			return "", errors.New("cannot nest a ship inside another mount root")
+		if err := groupingDirectory(p); err != nil {
+			return "", err
 		}
 		p = filepath.Join(p, part)
 		if err := os.Mkdir(p, 0755); err != nil && !errors.Is(err, os.ErrExist) {
@@ -156,13 +153,37 @@ func Parents(home, relative string) (string, error) {
 			return "", err
 		}
 	}
-	if _, err := os.Lstat(filepath.Join(p, ".urb")); !errors.Is(err, os.ErrNotExist) {
-		return "", errors.New("pier parent is already a pier")
-	}
-	if _, err := os.Lstat(filepath.Join(p, "pier/.urb")); !errors.Is(err, os.ErrNotExist) {
-		return "", errors.New("cannot nest a ship inside another mount root")
+	if err := groupingDirectory(p); err != nil {
+		return "", err
 	}
 	return filepath.Join(p, parts[len(parts)-2], parts[len(parts)-1]), nil
+}
+
+func groupingDirectory(p string) error {
+	if _, err := os.Lstat(filepath.Join(p, ".urb")); !errors.Is(err, os.ErrNotExist) {
+		return errors.New("cannot nest a pier inside another pier")
+	}
+	f, err := os.Open(p)
+	if err != nil {
+		return err
+	}
+	entries, err := f.ReadDir(4097)
+	f.Close()
+	if err != nil && !errors.Is(err, io.EOF) {
+		return err
+	}
+	if len(entries) > 4096 {
+		return errors.New("storage grouping directory exceeds entry limit")
+	}
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			continue
+		}
+		if _, err := os.Lstat(filepath.Join(p, entry.Name(), ".urb")); !errors.Is(err, os.ErrNotExist) {
+			return errors.New("cannot nest a ship inside another mount root")
+		}
+	}
+	return nil
 }
 
 func IdentifyMount(p string) (DirectoryIdentity, error) {
@@ -184,7 +205,7 @@ func identifyMountMode(p string, ownerMode bool) (DirectoryIdentity, error) {
 
 func CheckMount(home string, location Location) (string, error) {
 	if !ValidPath(location.Path) {
-		return "", errors.New("pier path must end in an exclusive ship directory /pier")
+		return "", errors.New("pier path must identify a named pier inside an exclusive instance directory")
 	}
 	root, relative, err := Resolve(home, location.Path)
 	if err != nil {
@@ -211,7 +232,7 @@ func CheckMount(home string, location Location) (string, error) {
 		return "", err
 	}
 	for _, e := range entries {
-		if e.Name() != "pier" || !e.IsDir() {
+		if e.Name() != filepath.Base(relative) || !e.IsDir() {
 			return "", errors.New("a ship mount root may contain only its pier directory")
 		}
 	}
@@ -439,14 +460,20 @@ func scanRoot(ctx context.Context, home string, storage StorageRoot) ([]Candidat
 // Move is an atomic same-filesystem, no-replacement rename. It never deletes a
 // destination, follows a symlink or falls back to an unverified cross-device copy.
 func Move(source, destination string) error {
-	if filepath.Base(source) != "pier" || filepath.Base(destination) != "pier" {
-		return errors.New("move requires permanent mount-root/pier paths")
+	if !component.MatchString(filepath.Base(source)) || !component.MatchString(filepath.Base(destination)) {
+		return errors.New("move requires named pier directories")
 	}
 	if _, err := Identify(source); err != nil {
 		return err
 	}
 	if Busy(source) {
 		return errors.New("stop the pier and resolve its Vere lock before moving it")
+	}
+	if filepath.Dir(source) == filepath.Dir(destination) {
+		return RenameDirectory(source, destination)
+	}
+	if filepath.Base(source) != filepath.Base(destination) {
+		return errors.New("keep the pier directory name when moving its exclusive parent")
 	}
 	// Move the whole exclusive mount root, retaining its identity and contents.
 	source, destination = filepath.Dir(source), filepath.Dir(destination)

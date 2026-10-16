@@ -16,7 +16,8 @@ Column {
   property string draftPort: ""
   property bool confirmed: false
   property string reviewError: ""
-  property bool showImport: false
+  property bool showImport: !!preferredConnection
+  property bool showStorageLocations: false
   readonly property var runners: service ? service.connections.filter(function(c){return Model.hasFeature(c,"pier-storage")}) : []
   readonly property var connection: preferredConnection || runners[runner.currentIndex] || null
   readonly property var catalogue: connection && connection.snapshot ? connection.snapshot.piers : null
@@ -31,6 +32,11 @@ Column {
   }
   function choose(source) {
     if (source.enrolled_by && source.moved !== true) { reviewError="This pier is already enrolled as "+source.enrolled_by+"."; return }
+    if (!source.enrolled_by) {
+      selected=null;showImport=true;importer.submitted=false
+      importer.sourcePath=Model.absolutePierPath(connection,source.path)
+      importer.inspect();return
+    }
     selected={runner:connection.runner_id,source:JSON.parse(JSON.stringify(source))};moving=null;submitted=false;confirmed=false;reviewError=""
     var i=Model.instances(connection).filter(function(i){return i.id===source.enrolled_by})[0]
     draftName=i ? i.id : source.path.split("/").slice(-2,-1)[0]
@@ -49,9 +55,10 @@ Column {
   Label { width: parent.width; text: root.catalogue ? "Root: "+root.catalogue.root : "Select an updated runner."; caption: true; secondary: true }
   Label { width: parent.width; visible: !!root.connection && !Model.hasFeature(root.connection,"storage-locations"); text: "Update this runner to enable configurable locations, host-path import and pier deletion."; color: Design.warning }
   ActionButton { objectName: "open-pier-import"; text: root.showImport ? "Close import form" : "+ Import an existing pier…"; primary: !root.showImport; onClicked: root.showImport=!root.showImport }
-  PierImportPane { width: parent.width; service: root.service; connection: root.connection; visible: root.showImport }
-  StorageRootsPane { width: parent.width; service: root.service; connection: root.connection }
-  Label { width: parent.width; text: "fakeships/[project/]<ship-directory>/pier\nlivenet/{galaxies,stars,planets,moons,comets}/[group/]<ship-directory>/pier\nEach ship directory is an exclusive permanent mount. archive/ is excluded from discovery and Start. Cross-host moves are on each ship's Overview page."; caption: true; secondary: true }
+  PierImportPane { id:importer;width: parent.width; service: root.service; connection: root.connection; visible: root.showImport }
+  ActionButton { objectName:"manage-storage-locations";text:root.showStorageLocations ? "Hide storage locations ▾" : "Manage storage locations ›";quiet:true;onClicked:root.showStorageLocations=!root.showStorageLocations }
+  StorageRootsPane { width: parent.width; service: root.service; connection: root.connection;visible:root.showStorageLocations }
+  Label { width: parent.width; text: "New imports use <instance-name>/<ship-name>. Discovery recognizes .urb under ship-named and legacy pier directories. Each instance has an exclusive mount; archive/ is excluded."; caption: true; secondary: true }
   Label { width: parent.width; visible: root.catalogue && !!root.catalogue.error; text: root.catalogue ? root.catalogue.error || "" : ""; color: Design.warning }
   ActionButton { text: "Refresh discovery"; enabled: root.service && !root.service.busy; onClicked: root.service.refresh() }
   Label { text: "Discovered piers"; font.bold: true }

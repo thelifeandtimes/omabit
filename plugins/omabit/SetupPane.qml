@@ -44,11 +44,10 @@ Column {
   RowLayout {
     width: parent.width; visible: root.mode !== "home"
     ActionButton { compact: true; quiet: true; text: ["runner","edit","connection"].indexOf(root.mode)>=0 ? "← Runners" : "← Setup"; onClicked: root.mode = ["runner","edit","connection"].indexOf(root.mode)>=0 ? "manage" : "home" }
-    Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; secondary: true; caption: true; text: "OMABIT 0.1.0-rc.7 · SETUP" }
+    Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; secondary: true; caption: true; text: "OMABIT 0.1.0-rc.8 · SETUP" }
   }
   Column {
     width: parent.width; spacing: Style.space(8); visible: root.mode === "home"
-    MachineUsePane { width: parent.width; service: root.service }
     ActionButton { text: "Set up remote server →"; visible: !!root.service && root.service.machineUse==="laptop"; onClicked: root.mode="remote" }
     Card {
       width: root.width; implicitHeight: localIntro.implicitHeight + Style.space(28)

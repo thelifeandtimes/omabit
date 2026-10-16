@@ -39,6 +39,9 @@ func TreeReview(ctx context.Context, path string, ownerMode ...bool) (string, in
 	h := sha256.New()
 	count, files := 0, 0
 	var bytes int64
+	type linkKey struct{ device, inode uint64 }
+	type links struct{ expected, seen uint64 }
+	docked := map[linkKey]links{}
 	err = filepath.WalkDir(path, func(p string, e os.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -67,20 +70,36 @@ func TreeReview(ctx context.Context, path string, ownerMode ...bool) (string, in
 		if workspace && !statePath(p) {
 			badWrite = i.Mode().Perm()&0002 != 0
 		}
-		if !ok || st.Uid != uint32(os.Geteuid()) || st.Dev != device || badWrite || !i.IsDir() && (!i.Mode().IsRegular() || st.Nlink != 1) {
+		if !ok || st.Uid != uint32(os.Geteuid()) || st.Dev != device || badWrite || !i.IsDir() && (!i.Mode().IsRegular() || st.Nlink != 1 && !InertDockedFile(rel)) {
 			return errors.New("pier contains foreign, linked, mounted, special or unsupported writable files; review its ownership and permissions")
 		}
 		if !i.IsDir() {
+			if st.Nlink > 1 {
+				key := linkKey{st.Dev, st.Ino}
+				old := docked[key]
+				if old.expected != 0 && old.expected != st.Nlink {
+					return errors.New("docked executable links changed during review")
+				}
+				docked[key] = links{st.Nlink, old.seen + 1}
+			}
 			files++
 			if i.Size() < 0 || i.Size() > 100_000_000_000-bytes {
 				return errors.New("pier exceeds 100 GB")
 			}
 			bytes += i.Size()
 		}
-		data, _ := json.Marshal([]any{rel, st.Dev, st.Ino, st.Size, st.Mtim, st.Ctim, i.Mode()})
+		data, _ := json.Marshal([]any{rel, st.Dev, st.Ino, st.Nlink, st.Size, st.Mtim, st.Ctim, i.Mode()})
 		h.Write(data)
 		return nil
 	})
+	if err == nil {
+		for _, links := range docked {
+			if links.seen != links.expected {
+				err = errors.New("docked executable shares links outside the reviewed pier")
+				break
+			}
+		}
+	}
 	return fmt.Sprintf("%x", h.Sum(nil)), files, bytes, err
 }
 
@@ -110,7 +129,7 @@ func InspectExternal(ctx context.Context, home, path string) (ExternalSource, er
 		return out, fmt.Errorf("source must be an accessible, runner-owned pier containing .urb: %w", err)
 	}
 	if Busy(path) {
-		return out, errors.New("stop the source Vere process and resolve its lock before importing")
+		return out, errors.New("a Vere lock file is present; stop the source and, if the file is stale, resolve it explicitly before inspecting again")
 	}
 	if err := CheckStateFiles(ctx, path); err != nil {
 		return out, err

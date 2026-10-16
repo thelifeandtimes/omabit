@@ -316,6 +316,9 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if _, ok := r.b.(logsBackend); ok {
 			features = append(features, "runtime-logs")
 		}
+		if _, ok := r.b.(guidedImportBackend); ok {
+			features = append(features, "guided-pier-import", "named-pier-directories")
+		}
 		if _, ok := r.b.(importBackend); ok {
 			features = append(features, "import-qualified-fake")
 		}

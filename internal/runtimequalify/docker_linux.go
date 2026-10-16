@@ -278,7 +278,7 @@ func (q *qualifier) command(kind string) (string, []string) {
 		}
 	}
 	if q.d.managed && entry == "/bin/urbit" {
-		args[len(args)-1] = "/urbit/pier"
+		args[len(args)-1] = "/urbit/" + q.epochPierName()
 	}
 	return entry, args
 }

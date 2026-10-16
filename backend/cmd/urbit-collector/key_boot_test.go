@@ -61,7 +61,7 @@ func TestGeneratedMoonCLIWithAutomaticDefaultsAndSpecificTypoError(t *testing.T)
 			t.Error("unexpected request", r.URL.Path)
 		}
 		var req protocol.CreateShipRequest
-		if json.NewDecoder(r.Body).Decode(&req) != nil || req.Ship != "~dibpen-fogweg-dozzod-sarlev" || req.ID != "dibpen-fogweg-dozzod-sarlev" || req.PierPath != "livenet/moons/dibpen-fogweg-dozzod-sarlev/pier" || req.Config.HTTPPort != 0 || req.Config.AmesPort != 0 || req.Key != key || !req.ConfirmNetwork {
+		if json.NewDecoder(r.Body).Decode(&req) != nil || req.Ship != "~dibpen-fogweg-dozzod-sarlev" || req.ID != "dibpen-fogweg-dozzod-sarlev" || req.PierPath != "livenet/moons/dibpen-fogweg-dozzod-sarlev/dibpen-fogweg-dozzod-sarlev" || req.Config.HTTPPort != 0 || req.Config.AmesPort != 0 || req.Key != key || !req.ConfirmNetwork {
 			t.Error("moon defaults or secret transport changed")
 		}
 		posts.Add(1)

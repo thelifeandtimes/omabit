@@ -65,9 +65,17 @@ ShellRoot {
       service.openSetup("local");phase=1
     } else if(phase===1) {
       var setup=service.monitorWindow.setupPane
-      if(control(setup,"setup-binaries").text.indexOf("urbit-collector")<0 || !control(setup,"setup-source") || !control(setup,"setup-build-guide"))throw new Error("Software/source details missing")
-      if(control(setup,"local-check-again").visible || control(setup,"local-setup-primary").enabled)throw new Error("Unchecked first setup offered recheck or skipped machine choice")
-      control(setup,"machine-laptop").clicked()
+      var details=control(setup,"setup-install-details")
+      if(details.visible || control(setup,"setup-install-approval").checked || service.setUpLocal(false))throw new Error("Install details expanded or setup approved by default")
+      if(control(setup,"local-setup-primary").enabled)throw new Error("Installation bypassed its approval checkbox")
+      control(setup,"setup-install-approval").checked=true
+      if(!control(setup,"local-setup-primary").enabled)throw new Error("Approved setup is unavailable")
+      control(setup,"setup-install-approval").checked=false
+      control(setup,"setup-view-details").clicked()
+      if(!details.visible || control(setup,"setup-binaries").text.indexOf("urbit-collector")<0 || !control(setup,"setup-source") || !control(setup,"setup-build-guide"))throw new Error("Expandable software/source details missing")
+      control(setup,"setup-view-details").clicked()
+      if(control(setup,"local-check-again").visible)throw new Error("Unchecked first setup offered recheck")
+      var machine=control(setup,"machine-use-toggle");machine.checked=false;machine.toggled()
       if(service.machineUse!=="laptop")throw new Error("Laptop choice not retained")
       service.localSetupStatus=Object.assign({},service.localSetupStatus,{can_setup:false})
       if(!control(setup,"local-setup-primary").enabled || control(setup,"local-setup-primary").text!=="Check prerequisites")throw new Error("Automatic prerequisite failure left no first-check action")

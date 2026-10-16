@@ -7,10 +7,12 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/piercopy"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"golang.org/x/sys/unix"
 )
 
@@ -208,23 +210,80 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 	if err != nil || source != intent.Source {
 		return state, unknown, errors.New("source changed or became inaccessible since import review; nothing was moved")
 	}
-	if _, err = pierstore.PrepareMount(d.home, state.Storage); err != nil {
-		return state, unknown, err
+	if intent.Identify {
+		identity, e := InspectPierIdentity(ctx, source.Path)
+		ship, kind := "~zod", "fake"
+		if state.Fake != nil {
+			ship = state.Fake.Ship
+		}
+		if state.Comet != nil {
+			ship = state.Comet.Ship
+			kind = protocol.ShipClass(ship)
+		}
+		if e != nil || identity.Ship != ship || identity.Kind != kind {
+			return state, unknown, errors.New("source identity or network changed before moving")
+		}
 	}
 	target, err := pierstore.Absolute(d.home, state.Storage.Path)
 	if err != nil {
 		return state, unknown, err
 	}
+	stage := func(name string) error {
+		intent.Stage = name
+		if len(intent.Events) == 0 || intent.Events[len(intent.Events)-1].Stage != name {
+			intent.Events = append(intent.Events, protocol.ImportEvent{Stage: name, At: time.Now().UTC()})
+			if len(intent.Events) > 16 {
+				intent.Events = intent.Events[len(intent.Events)-16:]
+			}
+		}
+		return persist(state)
+	}
+	if filepath.Dir(source.Path) == filepath.Dir(target) {
+		// A reviewed pier already under its chosen exclusive parent can be
+		// enrolled in place, or atomically renamed from "pier" to its @p.
+		mount, e := pierstore.IdentifyMount(filepath.Dir(source.Path))
+		if e != nil {
+			return state, unknown, e
+		}
+		id, relative := pierstore.Split(state.Storage.Path)
+		old := pierstore.Location{Path: pierstore.Qualify(id, filepath.Join(filepath.Dir(relative), filepath.Base(source.Path))), Identity: source.Identity, MountIdentity: mount}
+		if _, e = pierstore.Check(d.home, old); e != nil {
+			return state, unknown, e
+		}
+		state.Storage.MountIdentity = mount
+	} else if _, err = pierstore.PrepareMount(d.home, state.Storage); err != nil {
+		return state, unknown, err
+	}
+	if source.Path == target {
+		state.Storage.Identity = source.Identity
+		state.Adoption.Fingerprint = pierstore.Fingerprint(source.Identity)
+		if err = stage("enrolling"); err != nil {
+			return state, unknown, err
+		}
+		state, obs, err := applyPierEnrollment(ctx, state, persist, d)
+		if err != nil {
+			return state, unknown, err
+		}
+		state.ExternalImport.Stage = "complete"
+		state.ExternalImport.Events = append(state.ExternalImport.Events, protocol.ImportEvent{Stage: "complete", At: time.Now().UTC()})
+		return state, obs, persist(state)
+	}
 	_, disk, err := d.admission(filepath.Dir(target))
-	if err != nil || disk < uint64(source.Bytes)+(8<<30) {
-		return state, unknown, errors.New("import needs source size plus 8 GiB free on the destination filesystem")
+	if err != nil || disk < 8<<30 {
+		return state, unknown, errors.New("import needs 8 GiB free on the destination filesystem")
+	}
+	parent, err := os.Stat(filepath.Dir(target))
+	if err != nil {
+		return state, unknown, err
+	}
+	if device, ok := parent.Sys().(*syscall.Stat_t); !ok || device.Dev != source.Identity.Device && disk < uint64(source.Bytes)+(8<<30) {
+		return state, unknown, errors.New("cross-filesystem import needs source size plus 8 GiB free on the destination")
 	}
 	// Remove the original launch path before any copy. The retained source lives
 	// in a private holding directory until the target has been content-verified.
 	heldDir := filepath.Join(filepath.Dir(source.Path), ".omabit-import-"+state.ID)
 	intent.HeldPath = filepath.Join(heldDir, "pier")
-	intent.Stage = "holding-source"
-	if err = persist(state); err != nil {
+	if err = stage("holding-source"); err != nil {
 		return state, unknown, err
 	}
 	if err = os.Mkdir(heldDir, 0700); err != nil {
@@ -237,8 +296,7 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 	if err != nil || identity != source.Identity || pierstore.Busy(intent.HeldPath) {
 		return state, unknown, errors.New("held source identity changed")
 	}
-	intent.Stage = "moving"
-	if err = persist(state); err != nil {
+	if err = stage("moving"); err != nil {
 		return state, unknown, err
 	}
 	rename := d.renamePier
@@ -247,8 +305,10 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 	}
 	err = rename(intent.HeldPath, target)
 	if errors.Is(err, unix.EXDEV) {
-		intent.Stage = "copying"
-		if err = persist(state); err != nil {
+		if disk < uint64(source.Bytes)+(8<<30) {
+			return state, unknown, errors.New("cross-filesystem import needs source size plus 8 GiB free; source remains in its holding directory")
+		}
+		if err = stage("copying"); err != nil {
 			return state, unknown, err
 		}
 		if err = os.Mkdir(target, 0700); err != nil {
@@ -264,17 +324,21 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 			return state, unknown, e
 		}
 		defer b.Close()
+		lastReport := time.Time{}
 		if _, err = piercopy.Copy(ctx, a, b, func(files int, bytes int64) error {
 			if err := ctx.Err(); err != nil {
 				return err
 			}
 			intent.CopiedFiles, intent.CopiedBytes = files, bytes
+			if files != source.Files && time.Since(lastReport) < 250*time.Millisecond {
+				return nil
+			}
+			lastReport = time.Now()
 			return persist(state)
-		}); err != nil {
+		}, func() error { return stage("verifying") }); err != nil {
 			return state, unknown, err
 		}
-		intent.Stage = "removing-source"
-		if err = persist(state); err != nil {
+		if err = stage("removing-source"); err != nil {
 			return state, unknown, err
 		}
 		held, e := os.OpenRoot(heldDir)
@@ -300,16 +364,15 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 		return state, unknown, err
 	}
 	state.Adoption.Fingerprint = pierstore.Fingerprint(state.Storage.Identity)
-	intent.Stage = "enrolling"
-	if err = persist(state); err != nil {
+	if err = stage("enrolling"); err != nil {
 		return state, unknown, err
 	}
 	state, obs, err := applyPierEnrollment(ctx, state, persist, d)
 	if err != nil {
 		return state, unknown, err
 	}
-	state.ExternalImport.Stage = "complete"
-	if err = persist(state); err != nil {
+	intent = state.ExternalImport
+	if err = stage("complete"); err != nil {
 		return state, unknown, err
 	}
 	return state, obs, nil

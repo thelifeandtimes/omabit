@@ -120,6 +120,15 @@ func (r *Server) serveStorageActions(w http.ResponseWriter, req *http.Request, a
 			r.respondError(w, conflict("source_unavailable", err.Error()))
 			return
 		}
+		if body.StorageRoot != "" {
+			preview, err := r.previewImport(ctx, b, source, body.StorageRoot)
+			if err != nil {
+				r.respondError(w, err)
+			} else {
+				respond(w, 200, preview)
+			}
+			return
+		}
 		respond(w, 200, source)
 		return
 	}
@@ -207,7 +216,19 @@ func (r *Server) serveStorageActions(w http.ResponseWriter, req *http.Request, a
 		r.respondError(w, conflict("source_changed", "source changed since review"))
 		return
 	}
-	op, err := r.s.enrollPierSource(actor, body.EnrollPierRequest, pierstore.Candidate{Path: body.Path, Kind: kind, Identity: source.Identity}, fp, &source)
+	if body.Identify {
+		g, ok := r.b.(guidedImportBackend)
+		if !ok {
+			r.respondError(w, bad("automatic identification is unavailable"))
+			return
+		}
+		identity, err := g.InspectPierIdentity(req.Context(), body.Source)
+		if err != nil || identity.Ship != body.Ship || identity.Kind != kind {
+			r.respondError(w, conflict("identity_changed", "pier identity or network differs from the import review"))
+			return
+		}
+	}
+	op, err := r.s.enrollPierSource(actor, body.EnrollPierRequest, pierstore.Candidate{Path: body.Path, Kind: kind, Identity: source.Identity}, fp, &source, body.Identify)
 	if err != nil {
 		r.respondError(w, err)
 		return

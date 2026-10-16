@@ -113,8 +113,9 @@ Item {
       preferences.runners = JSON.stringify(next); preferences.sync()
     }
   }
-  function setUpLocal() {
-    if (busy || !machineUse || !localSetupStatus || !localSetupStatus.can_setup || localSetupStatus.ready) return false
+  function setUpLocal(approved) {
+    if (approved!==true || busy || !localSetupStatus || !localSetupStatus.can_setup || localSetupStatus.ready) return false
+    if (!machineUse) setMachineUse("always-on")
     setupCheckRequested=true
     localSetupError = ""; localSetupMessage = "Preparing local setup"; localSetupStep = "check"
     localSetupFinished = false; localSetupPending = true
@@ -458,21 +459,23 @@ Item {
     storageOutcome={runner:c.runner_id,instance:"",path:path,request:requestIdentity,kind:"storage-root",status:"submitting",message:"Adding storage location…"}
     return submit(Model.selection(c).concat(["storage-root-add",name,"--path",path,"--request-id",requestIdentity]),"storage-root-add")
   }
-  function previewExternalPier(connection,path) {
+  function previewExternalPier(connection,path,storageRoot) {
     if (busy) return false
-    var c=storageConnection(connection,"import-pier")
+    var c=storageConnection(connection,"guided-pier-import")
     if (!c || !Model.hostPath(path)) {lastError="Enter the absolute existing pier directory on the selected runner host.";return false}
     externalImportPreview=null
-    pendingExternalPreview={runner:c.runner_id,connection:c.name,path:path}
-    return submit(Model.selection(c).concat(["preview-pier","--source",path]),"preview-pier")
+    pendingExternalPreview={runner:c.runner_id,connection:c.name,path:path,storageRoot:storageRoot || "default"}
+    return submit(Model.selection(c).concat(["preview-pier","--source",path,"--storage-root",pendingExternalPreview.storageRoot]),"preview-pier")
   }
-  function importExternalPier(connection,review,name,ship,path,port,confirmed) {
+  function importExternalPier(connection,review,confirmed) {
     if (busy) return false
-    var c=storageConnection(connection,"import-pier")
-    if (!c || !confirmed || !Model.externalReviewCurrent(c,review,review && review.source.path,now) || !Model.validId(name) || !Model.validPierPath(path) || !Model.optionalPort(port) || !String(port).trim()) {lastError="Review the current source and confirm its stopped move before importing.";return false}
+    var c=storageConnection(connection,"guided-pier-import")
+    if (!c || !confirmed || !Model.externalReviewCurrent(c,review,review && review.source.path,now) || !review.plan) {lastError="Inspect the source and confirm the reviewed import.";return false}
+    var plan=review.plan
+    try { Model.validatePierImportPreview(plan,c.runner_id,review.source.path,plan.storage_root) } catch(e) {lastError=e.message;return false}
     requestIdentity=Model.requestId()
-    storageOutcome={runner:c.runner_id,instance:name,path:path,request:requestIdentity,kind:"import-pier",status:"submitting",message:"Submitting reviewed pier import…"}
-    return submit(Model.selection(c).concat(["import-pier",name,"--source",review.source.path,"--fingerprint",review.source.fingerprint,"--ship",Model.fakeIdentity(ship),"--path",path,"--http-port",String(port),"--request-id",requestIdentity,"--confirm-stopped"]),"import-pier")
+    storageOutcome={runner:c.runner_id,connection:c.name,instance:plan.instance_id,source:review.source.path,path:plan.destination,ship:plan.ship,request:requestIdentity,kind:"import-pier",status:"submitting",message:"Submitting reviewed pier import…"}
+    return submit(Model.selection(c).concat(["import-pier",plan.instance_id,"--source",review.source.path,"--path",plan.destination,"--ship",plan.ship,"--fingerprint",review.source.fingerprint,"--http-port",String(plan.http_port),"--request-id",requestIdentity,"--confirm-stopped","--identify"]),"import-pier")
   }
   function deletePier(connection,target,typed) {
     if (busy) return false
@@ -549,8 +552,9 @@ Item {
         if (kind==="preview-pier") {
           var preview=pendingExternalPreview
           pendingExternalPreview=null
-          if (!preview || result.path!==preview.path || !Model.validDigest(result.fingerprint) || !Number.isSafeInteger(result.bytes) || !Number.isSafeInteger(result.files)) throw new Error("Invalid import preview")
-          externalImportPreview={runner:preview.runner,connection:preview.connection,source:result,loadedAt:now}
+          if (!preview) throw new Error("Missing import selection")
+          Model.validatePierImportPreview(result,preview.runner,preview.path,preview.storageRoot)
+          externalImportPreview={runner:preview.runner,connection:preview.connection,source:result.source,plan:result,loadedAt:now}
         }
         if (hostMove) {
           if (result.source_runner!==hostMove.runner || result.source_instance!==hostMove.instance || result.destination_runner!==hostMove.destination || result.destination_instance!==hostMove.name || result.state!=="complete" || result.direction!=="in") throw new Error("Unverified host move receipt")
@@ -611,6 +615,7 @@ Item {
     }
     if (storage) {
       var stored=Object.assign({},storage)
+      if (storageAccepted) {stored.operation=result.id;stored.revision=result.config_revision}
       stored.status=storageAccepted ? "accepted" : !outputFailed && (code===2 || code!==0 && !Model.registrationFailure(errors).uncertain) ? "failed" : "uncertain"
       stored.message=storageAccepted ? "Request accepted. The fleet and activity show completion; no automatic Start was requested." : lastError
       storageOutcome=stored
@@ -782,7 +787,7 @@ Item {
     function maintenance(): void { root.openMonitor(null, null, "maintenance") }
     function setup(): void { root.openMonitor(null, null, "setup") }
     function refresh(): void { root.refresh() }
-    function status(): string { return JSON.stringify({version:"0.1.0-rc.7",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
+    function status(): string { return JSON.stringify({version:"0.1.0-rc.8",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
     function close(): void { monitor.visible = false }
   }
   Process {

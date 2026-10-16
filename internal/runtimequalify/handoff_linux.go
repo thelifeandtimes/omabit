@@ -231,7 +231,7 @@ func applyHandoff(ctx context.Context, action string, state ManagedState, persis
 		if rootErr != nil {
 			return finish(rootErr)
 		}
-		archive := filepath.Join(storageRoot, "archive", "moved-"+h.ID, "pier")
+		archive := filepath.Join(storageRoot, "archive", "moved-"+h.ID, filepath.Base(q.pierPath()))
 		if err = os.Mkdir(filepath.Dir(filepath.Dir(archive)), 0700); err != nil && !errors.Is(err, os.ErrExist) {
 			return finish(err)
 		}

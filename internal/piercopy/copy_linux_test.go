@@ -47,8 +47,16 @@ func TestCopyVerifiesContentAndPrivatePermissions(t *testing.T) {
 		t.Fatal(err)
 	}
 	calls := 0
-	copied, err := Copy(ctx, source, target, func(files int, bytes int64) error { calls++; return nil })
-	if err != nil || copied != before || copied.Files != 2 || copied.Bytes != 600000 || calls != 2 {
+	lastFiles, lastBytes := 0, int64(0)
+	copied, err := Copy(ctx, source, target, func(files int, bytes int64) error {
+		calls++
+		if files < lastFiles || bytes < lastBytes {
+			t.Error("copy progress went backwards")
+		}
+		lastFiles, lastBytes = files, bytes
+		return nil
+	})
+	if err != nil || copied != before || copied.Files != 2 || copied.Bytes != 600000 || calls < 2 || lastFiles != 2 || lastBytes != 600000 {
 		t.Fatalf("copy summary: %+v %v", copied, err)
 	}
 	for _, name := range []string{".urb", ".urb/chk", ".urb/chk/image.bin", ".urb/lock"} {
@@ -99,6 +107,47 @@ func TestCopyRejectsUnsafeTreesWithoutFollowingLinks(t *testing.T) {
 				t.Fatal("unsafe source accepted")
 			}
 		})
+	}
+}
+
+func TestCopyPreservesInertDockedBinaryBytesAndRejectsExternalLinks(t *testing.T) {
+	s, d, source, target := tree(t)
+	bin := filepath.Join(s, ".bin/live/vere-v4.6")
+	if err := os.MkdirAll(filepath.Dir(bin), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(bin, []byte("inert docked executable"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Link(bin, filepath.Join(s, ".run")); err != nil {
+		t.Fatal(err)
+	}
+	outside := filepath.Join(t.TempDir(), "shared-binary")
+	if err := os.Link(bin, outside); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Copy(context.Background(), source, target, func(int, int64) error { return nil }); err == nil {
+		t.Fatal("external dock link accepted")
+	}
+	if err := os.Remove(outside); err != nil {
+		t.Fatal(err)
+	}
+	verified := false
+	if _, err := Copy(context.Background(), source, target, func(int, int64) error { return nil }, func() error { verified = true; return nil }); err != nil {
+		t.Fatal(err)
+	}
+	if !verified {
+		t.Fatal("verification phase was not reported")
+	}
+	for _, name := range []string{".run", ".bin/live/vere-v4.6"} {
+		data, err := os.ReadFile(filepath.Join(d, name))
+		if err != nil || string(data) != "inert docked executable" {
+			t.Fatal(name, err)
+		}
+		info, err := os.Stat(filepath.Join(d, name))
+		if err != nil || info.Sys().(*syscall.Stat_t).Nlink != 1 {
+			t.Fatal("destination still shares docked files", err)
+		}
 	}
 }
 

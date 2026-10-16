@@ -10,6 +10,30 @@ The collector exposes `--runner NAME --expected-runner-id ID suggest-port`.
 
 ## Development storage extension (schema 14)
 
+The guided import extension advertises `guided-pier-import` and
+`named-pier-directories`. `POST /v1/pier-import-preview` with `source` and
+`storage_root` returns a runner-bound plan containing the reviewed `source`,
+detected `ship`, `network` (`livenet`/`fakenet`), `kind`, configured `storage_root`,
+derived `instance_id`, `destination`, `http_port` and `in_place`. Omitting
+`storage_root` retains the older filesystem-only preview response.
+
+Confirmation uses the explicit reviewed fields on `POST /v1/pier-import` with
+`identify:true` to recheck stored identity/network both at acceptance and in the
+worker. The request fingerprint includes that flag. Sources/ports/destinations
+are revalidated; occupied targets are never overwritten. `external_import` in
+snapshots includes `total_files`, `total_bytes` and bounded timestamped `events`
+alongside live copied counts/stage, using the existing inventory transport.
+
+Named pier paths use an exclusive instance parent and a real child containing
+`.urb`; `/pier` is a compatible legacy basename. Imports and known-identity
+creation default to the ship name without `~`. Unknown new comet identities use
+their provisional `pier` child. Native Vere 4.6's retained epoch-v1/v2 history is
+accepted for import when its latest epoch is 4.6/v2; mixed history is labeled
+`vere-import-epochs-v1-v2` and is not a qualified pruning/roll inventory.
+
+Testnet means an alternate Ethereum/Azimuth RPC endpoint. It is a UI/documentation
+stub; the public offline fake/live bit cannot determine a live ship's RPC endpoint.
+
 Capabilities `storage-locations`, `import-pier`, and `delete-pier` add operator-only
 storage actions. `POST /v1/storage-roots` binds a location name to an absolute owned
 directory; `POST /v1/pier-import-preview` reviews a stopped host source, and

@@ -9,25 +9,26 @@ documents configurable roots, GUI host-path move/import and permanent pier delet
 introduced in schema 14 and retained in RC.3/schema 16. The layout below explains
 the default convention retained by each configured location.
 
-RC.3 uses the permanent layout below `/srv/urbit/piers/`, owned by the selected
-existing Unix user. Additional locations use the same layout.
-Each ship has an exclusive mount directory containing its actual `pier/` child:
+The owner-user layout lives below `/srv/urbit/piers/`. Additional locations use
+the same layout. Each instance has an exclusive mount directory containing one
+actual pier child. New imports and known-identity creations use the ship name
+without `~` as that child; legacy `pier/` children are also recognized:
 
 ```text
 piers/
 ├── fakeships/
 │   ├── project-name/
-│   │   ├── zod/pier/.urb/
-│   │   └── nec/pier/.urb/
+│   │   ├── zod/zod/.urb/
+│   │   └── nec/nec/.urb/
 │   ├── project-name2/
-│   ├── zod/pier/.urb/
-│   ├── bus/pier/.urb/
-│   └── marzod/pier/.urb/
+│   ├── zod/zod/.urb/
+│   ├── bus/bus/.urb/
+│   └── marzod/marzod/.urb/
 ├── livenet/
-│   ├── galaxies/zod/pier/.urb/
-│   ├── stars/tocwex/pier/.urb/
-│   ├── planets/sampel-palnet/pier/.urb/
-│   ├── moons/sampel-palnet-moons/<moon-name>/pier/.urb/
+│   ├── galaxies/zod/zod/.urb/
+│   ├── stars/tocwex/tocwex/.urb/
+│   ├── planets/lismyl-lismyl/lismyl-lismyl/.urb/
+│   ├── moons/sampel-palnet-moons/<instance>/<moon-name>/.urb/
 │   └── comets/
 │       ├── testing-comet-1/pier/.urb/
 │       └── random-comet-2/pier/.urb/
@@ -43,10 +44,16 @@ alphanumeric-leading components (up to eight components / 384 characters).
 Archive filenames are not constrained by the active-path parser because archive
 contents are never scanned, enrolled or started automatically.
 
-The API's `pier_path` always ends in `/pier`. The parent is reserved exclusively
-for that registration and may contain only the `pier` directory. Docker binds
-that parent at `/urbit`; Vere always uses `/urbit/pier`. No sibling ship or project
+The API's `pier_path` names the actual child containing `.urb`, independently of
+its basename. The parent is reserved exclusively for that registration and may
+contain only that pier directory. Docker binds the parent at `/urbit`; Vere uses
+`/urbit/<pier-name>` for boot, resume and maintenance. No sibling ship or project
 directory is mounted. Both mount-root and pier directory identities are recorded.
+
+A newly mined comet has no known `@p` before first boot, so that flow still uses
+its provisional `pier` child. Importing an existing comet uses its detected name.
+Changing a registered path requires a stopped, reviewed move/relink; installation
+does not rename existing live piers.
 
 ## Discover and enroll
 
@@ -55,16 +62,18 @@ registered locations and moved-directory reviews. The fleet also shows a prompt
 when discovery finds an unenrolled or moved pier. Discovery is read-only, bounded
 and does not descend into a candidate's `.urb` contents or read its keys.
 
-1. Fully stop the source ship and transfer it as `.../<ship-directory>/pier`.
-   The `.urb` directory must be inside that `pier` child.
+1. Fully stop the source ship. A directory such as
+   `.../livenet/planets/lismyl-lismyl/lismyl-lismyl` is discovered by its `.urb`
+   child; renaming it to `pier` is unnecessary.
 2. Copy as the selected pier-owning user. Ordinary user-owned workspace modes are
    supported, while `.urb` retains private state checks and symlinked storage and
    shared/special state files are refused. Owners can use ordinary remote
    SSH/SFTP; the separate management-only
    SSH endpoint does not become a shell or file-transfer endpoint.
-3. Review the discovered path, choose an instance name and HTTP port, and enter
-   the expected `~ship`. Confirm that the source is stopped.
-4. Enrollment validates the pinned Vere 4.6 epoch layout and leaves the pier stopped.
+3. Review the discovered path in the guided import flow and choose its configured
+   storage location. The runner detects identity/fake-live mode and derives the
+   destination, instance name and available HTTP port. Confirm the stopped source.
+4. Enrollment validates compatible Vere epoch history and leaves the pier stopped.
    Start verifies its identity. Imported livenet ships first resume with Ames
    disabled, then stop and resume normally only after the expected identity matches.
    Mutating maintenance is unavailable until identity verification completes.
@@ -80,7 +89,7 @@ CLI examples (global runner selection precedes the command):
 ```bash
 ./build/urbit-collector --runner HOST --expected-runner-id RUNNER_ID piers
 ./build/urbit-collector --runner HOST --expected-runner-id RUNNER_ID \
-  enroll-pier my-planet --path livenet/planets/sampel-palnet/pier \
+  enroll-pier my-planet --path livenet/planets/my-planet/sampel-palnet \
   --ship '~sampel-palnet' --fingerprint DISCOVERY_FINGERPRINT \
   --http-port 18090 --request-id enroll-my-planet --confirm-stopped
 ```
@@ -93,8 +102,9 @@ verified transfer. Docked executables are not used; execution stays on the pinne
 ## Moves, missing directories and archive
 
 Stop a managed ship before moving it. **Move…** in Pier storage performs a durable,
-same-filesystem no-overwrite rename of the entire mount directory and its `pier`
-child. The supplied destination still ends in `/pier`. It leaves the ship stopped;
+same-filesystem no-overwrite rename of the entire mount directory and its named
+child. Keep the child name when relocating its parent. Renaming a leaf inside the
+same parent is also supported. It leaves the ship stopped;
 Start is separate.
 New project parents can be created, but a pier cannot be nested inside another pier.
 
@@ -117,9 +127,9 @@ reports missing storage. Archive contents are not selectable restore points.
 
 ## New ships and key boot
 
-New fake/comet registration accepts a convention-relative **Pier path** ending in
-`/pier`. Omabit creates only the dedicated parent mount directory. The official
-Vere binary creates the absent `/urbit/pier` child directly in its permanent host
+New fake/comet registration accepts a convention-relative **Pier path**. Omabit
+creates only the dedicated parent mount directory. The official
+Vere binary creates the absent named child directly in its permanent host
 location. Identity/HTTP verification marks the ship initialized and leaves that
 same container running. There is no staging pier, promotion, automatic Stop or
 replacement container during first boot.
@@ -139,7 +149,7 @@ Explicit Start invokes the official runtime with `-w` and a read-only `-k` file
 and checks the resulting identity. After success the private host key file is
 removed; its read-only bind mount lasts until that first container is stopped.
 Subsequent explicit starts create initialized runtimes without key/creation flags
-at the same `/urbit/pier` path. Interrupted provisioning remains a review state,
+at the recorded `/urbit/<pier-name>` path. Interrupted provisioning remains a review state,
 never an automatic second bootstrap over existing data.
 
 ```bash
@@ -168,11 +178,11 @@ been migrated. Owned livenet import and broader network qualification remain.
 
 ## Management data and format
 
-The SQLite management database remains at
-`/var/lib/urbit-runner/.local/share/urbit-runner/managed/runner.sqlite`.
+The owner-user SQLite management database is at
+`~/.local/share/urbit-runner/managed/runner.sqlite`.
 Opaque IDs remain internal identifiers for ownership, work directories and history.
 They do not determine the operator-facing pier path. The runner accepts only
-**schema 13** and the permanent mount-root/pier layout. The original layout migration
+**schema 16** and the exclusive mount-root/named-pier layout. The original layout migration
 was an offline one-shot; old-layout execution remains unsupported. The additive
 11/12→13 format upgrade preserves existing layout/runtime records, including
 handoff fences, and records explicit first-boot selection so older runners cannot

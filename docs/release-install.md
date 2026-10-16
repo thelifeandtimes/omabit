@@ -1,4 +1,4 @@
-# Omabit 0.1.0-rc.7 binary bundle
+# Omabit 0.1.0-rc.8 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
@@ -13,6 +13,13 @@ RC.7 retains management and the separate rootless Docker engine as the existing 
 owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
 user-owned files. Storage/import/deletion and bounded reboot resume continue.
 This remains a development prerelease.
+
+RC.8 simplifies initial setup to one machine-use toggle and an installation
+approval checkbox with expandable details. Guided import needs only source and
+configured storage location, derives identity/path/port, and reports copy/verification
+progress. Named pier directories and compatible retained historical epochs are
+recognized. Update all three tools and the plugin together for the new capabilities.
+See [RC.8 notes](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-rc8.md).
 
 RC.7 adds persistent, identity-pinned runtime-log following to remove per-refresh
 SSH/PAM/logind sessions. It cancels on pause/hide/minimize/navigation, uses bounded

@@ -243,3 +243,52 @@ func TestCustomStorageMountAndDiskAdmission(t *testing.T) {
 		}
 	}
 }
+
+func TestGuidedDestinationAndNamedImportInPlaceOrRename(t *testing.T) {
+	for _, leaf := range []string{"zod", "pier"} {
+		t.Run(leaf, func(t *testing.T) {
+			f, s, persist, source := externalFixture(t)
+			s.Storage = &pierstore.Location{Path: "fakeships/imported/zod"}
+			target, _ := pierstore.Absolute(f.d.home, s.Storage.Path)
+			if err := os.MkdirAll(filepath.Dir(target), 0700); err != nil {
+				t.Fatal(err)
+			}
+			current := filepath.Join(filepath.Dir(target), leaf)
+			if err := os.Rename(source, current); err != nil {
+				t.Fatal(err)
+			}
+			review, err := pierstore.InspectExternal(context.Background(), f.d.home, current)
+			if err != nil {
+				t.Fatal(err)
+			}
+			s.ExternalImport.Source = review
+			s.Adoption.Fingerprint = review.Fingerprint
+			if available, err := importDestinationAvailable(f.d.home, s.Storage.Path, current); err != nil || !available {
+				t.Fatal(available, err)
+			}
+			s, obs, err := applyManaged(context.Background(), "import-pier", s, persist, f.d)
+			if err != nil || obs.State != "stopped" || s.ExternalImport.Stage != "complete" {
+				t.Fatal(obs, err)
+			}
+			if _, err := pierstore.Check(f.d.home, *s.Storage); err != nil {
+				t.Fatal(err)
+			}
+			if len(f.calls) != 0 {
+				t.Fatal("identification/enrollment started a runtime")
+			}
+			if len(s.ExternalImport.Events) < 2 || s.ExternalImport.Events[len(s.ExternalImport.Events)-1].Stage != "complete" {
+				t.Fatal("missing phase receipts")
+			}
+			s, obs, err = applyManaged(context.Background(), "start", s, persist, f.d)
+			if err != nil || obs.Health != "healthy" {
+				t.Fatal(obs, err)
+			}
+			for _, container := range f.containers {
+				args := mapAt(container.doc, "Config")["Cmd"].([]string)
+				if args[len(args)-1] != "/urbit/zod" {
+					t.Fatal("named pier runtime command lost", args)
+				}
+			}
+		})
+	}
+}

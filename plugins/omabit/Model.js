@@ -70,7 +70,7 @@ function ownedPierPath(ship) {
   ship=fakeIdentity(ship)
   if (!/^~(?:[a-z]{3}|[a-z]{6}(?:-[a-z]{6}){0,3})$/.test(ship)) return ""
   var folder={Galaxies:"galaxies",Stars:"stars",Planets:"planets",Moons:"moons"}[shipType({ship:ship})]
-  return folder ? "livenet/"+folder+"/"+ship.slice(1)+"/pier" : ""
+  return folder ? "livenet/"+folder+"/"+ship.slice(1)+"/"+ship.slice(1) : ""
 }
 function optionalPort(value) {return String(value).trim()==="" || /^\d+$/.test(String(value)) && Number(value)>=1024 && Number(value)<=65535}
 function bootstrapProblem(kind, source) {
@@ -101,7 +101,7 @@ function validPierPath(value) {
   }
   var p=value.split("/")
   return String(value).length<=384 && p.length<=8 && p.every(function(s){return /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/.test(s)})
-    && p[p.length-1]==="pier" && (p[0]==="fakeships" && p.length>=3 || p[0]==="livenet" && p.length>=4 && ["galaxies","stars","planets","moons","comets"].indexOf(p[1])>=0)
+    && (p[0]==="fakeships" && p.length>=3 || p[0]==="livenet" && p.length>=4 && ["galaxies","stars","planets","moons","comets"].indexOf(p[1])>=0)
 }
 function storageRoots(connection) {
   var c=connection && connection.snapshot && connection.snapshot.piers
@@ -120,10 +120,35 @@ function canDeletePier(connection,instance,now) {
 function externalReviewCurrent(connection,review,path,now) {
   return writable(connection,now) && connection.access_role==="operator" && hasFeature(connection,"import-pier") && !!review && review.runner===connection.runner_id && review.connection===connection.name && review.source.path===path && validDigest(review.source.fingerprint) && now-review.loadedAt>=0 && now-review.loadedAt<300000
 }
+function validatePierImportPreview(v,runner,path,root) {
+  if (!v || v.runner_id!==runner || !v.source || v.source.path!==path || !validDigest(v.source.fingerprint) || !Number.isSafeInteger(v.source.bytes) || v.source.bytes<0 || !Number.isInteger(v.source.files) || v.source.files<0 || v.source.files>8192 || v.storage_root!==root || !validId(v.instance_id) || !validPierPath(v.destination) || typeof v.ship!=="string" || !/^~[a-z-]+$/.test(v.ship) || ["livenet","fakenet"].indexOf(v.network)<0 || !Number.isInteger(v.http_port) || v.http_port<1024 || v.http_port>65535 || typeof v.in_place!=="boolean") throw new Error("Import review does not match the selected source, host and storage location.")
+  var parts=v.destination.split("/"),location=parts[0][0]==="@" ? parts.shift().slice(1) : "default"
+  if (location!==root || parts[parts.length-1]!==v.ship.slice(1) || parts[parts.length-2]!==v.instance_id || (v.network==="fakenet" ? v.kind!=="fake" || parts[0]!=="fakeships" : parts[0]!=="livenet" || parts[1]!==({galaxy:"galaxies",star:"stars",planet:"planets",moon:"moons",comet:"comets"})[v.kind])) throw new Error("Import identity and destination classification disagree.")
+  return v
+}
+function importStage(stage) {
+  return ({reviewed:"Reviewing the stopped source", "holding-source":"Securing the source in its private holding directory",moving:"Moving the pier into the selected location",copying:"Copying the pier across filesystems",verifying:"Verifying source and destination contents","removing-source":"Removing the verified old copy",enrolling:"Enrolling the stopped ship",complete:"Import complete — ship remains stopped"})[stage] || "Waiting for the runner"
+}
+function importProgress(connections,target,now) {
+  var empty={active:true,indeterminate:true,value:0,detail:target ? target.message : "",log:""}
+  if (!target || target.kind!=="import-pier") return empty
+  if (target.status==="failed") {empty.active=false;empty.indeterminate=false;return empty}
+  var c=connections.filter(function(c){return c.runner_id===target.runner && c.name===target.connection})[0]
+  if (!available(c,now)) {empty.detail="Connection unavailable. The runner may still be importing; wait for its receipt before retrying.";return empty}
+  var op=(c.snapshot.operations || []).filter(function(o){return o.instance_id===target.instance && o.request_id===target.request && o.kind==="import-pier" && (!target.operation || o.id===target.operation) && (!target.revision || o.config_revision===target.revision)})[0]
+  var i=instances(c).filter(function(i){return i.id===target.instance && (!op || i.config_revision===op.config_revision)})[0]
+  if (!op || !i || !i.external_import || i.external_import.source!==target.source) return empty
+  var s=i.external_import,done=op.status==="succeeded" && s.stage==="complete",failed=op.status==="failed"
+  var ratio=s.total_bytes>0 ? Math.max(0,Math.min(1,(s.copied_bytes || 0)/s.total_bytes)) : 0
+  var events=Array.isArray(s.events) ? s.events.slice(-16) : []
+  var log=events.map(function(e){return (e.at ? humanTime(e.at,now)+" · " : "")+importStage(e.stage)}).join("\n")
+  if(failed)log+="\nImport stopped: "+String(op.message || "Inspect the recorded source and destination before retrying.").slice(0,512)
+  return {active:!done&&!failed,indeterminate:!done&&!failed&&s.stage!=="copying",value:done ? 1 : ratio,detail:failed ? "Import needs review. Its recorded data has been retained." : importStage(s.stage)+(s.stage==="copying" ? " · "+bytesText(s.copied_bytes || 0)+" / "+bytesText(s.total_bytes || 0) : ""),log:log}
+}
 function pierPath(kind,name,ship,input) {
   input=String(input || "").trim()
   if (input.indexOf("/")>=0) return input
-  return (kind==="fake" ? "fakeships/" : "livenet/comets/")+(input || (kind==="fake" ? fakeIdentity(ship).slice(1) : name))+"/pier"
+  return (kind==="fake" ? "fakeships/" : "livenet/comets/")+(input || name || fakeIdentity(ship).slice(1))+"/"+(kind==="fake" ? fakeIdentity(ship).slice(1) : "pier")
 }
 function discoveredPiers(connections) {
   var out=[]
@@ -181,7 +206,7 @@ function shipGroups(connection) {
 }
 function registrationFailure(text) {
   var code=errorCode(text)
-  return {message:errorMessage(text),uncertain:["instance_exists","port_conflict","pier_path_conflict","pier_changed_or_busy","pier_not_found","pier_already_enrolled","relink_conflict","invalid_state","revision_conflict","recovery_required","ship_already_enrolled","key_staging_failed","development_capacity","invalid_request","comet_mode_required","unauthorized_peer","operator_required","ssh_access_denied"].indexOf(code)<0}
+  return {message:errorMessage(text),uncertain:["instance_exists","port_conflict","pier_path_conflict","pier_changed_or_busy","pier_not_found","pier_already_enrolled","relink_conflict","invalid_state","revision_conflict","recovery_required","ship_already_enrolled","source_changed","source_reserved","source_unavailable","identity_changed","key_staging_failed","development_capacity","invalid_request","comet_mode_required","unauthorized_peer","operator_required","ssh_access_denied"].indexOf(code)<0}
 }
 function errorCode(text) { try { return JSON.parse(text).error.code || "" } catch (_) { return "" } }
 function runnerPreference(preferences, connection) { return connection ? (preferences || {})[connection.runner_id] || {} : {} }

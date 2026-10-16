@@ -16,7 +16,7 @@ func TestFakeRegistrationKeepsIdentityInstanceAndPierIndependent(t *testing.T) {
 		t.Fatal(op, err)
 	}
 	v, err := loadInstance(s.db, req.ID)
-	if err != nil || v.Public.ID != "local-bus" || v.Public.Ship != "~bus" || v.Public.PierName != "pier" || v.Runtime.Fake == nil || v.Runtime.Fake.Ship != "~bus" || v.Runtime.Storage.Path != "fakeships/bus-data/pier" {
+	if err != nil || v.Public.ID != "local-bus" || v.Public.Ship != "~bus" || v.Public.PierName != "bus" || v.Runtime.Fake == nil || v.Runtime.Fake.Ship != "~bus" || v.Runtime.Storage.Path != "fakeships/bus-data/bus" {
 		t.Fatal(v, err)
 	}
 	var version int

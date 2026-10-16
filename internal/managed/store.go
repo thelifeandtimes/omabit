@@ -372,7 +372,11 @@ func (s *store) registerKind(actor string, req protocol.CreateFakeRequest, sourc
 			if req.PierName != "" {
 				leaf = req.PierName
 			}
-			location = "fakeships/" + leaf + "/pier"
+			ship := strings.TrimPrefix(req.FakeShip, "~")
+			if ship == "" {
+				ship = "zod"
+			}
+			location = "fakeships/" + leaf + "/" + ship
 		}
 	}
 	if !pierstore.ValidPath(location) || (comet && pierstore.Kind(location) != "comet") || (!comet && pierstore.Kind(location) != "fake") {
@@ -484,7 +488,7 @@ func (s *store) registerKind(actor string, req protocol.CreateFakeRequest, sourc
 	if source != nil {
 		v.Runtime.Import = &runtimequalify.ManagedImport{Source: *source, Uncertain: true}
 	}
-	v.Public.PierName = "pier"
+	v.Public.PierName = filepath.Base(location)
 	data, err := json.Marshal(v)
 	if err != nil {
 		return protocol.Operation{}, false, err
@@ -983,7 +987,7 @@ func applyObservation(v *storedInstance, observation runtimequalify.ManagedObser
 		previousCPU = nil
 	}
 	v.CPU = nil
-	v.Public.PierName = "pier"
+	v.Public.PierName = filepath.Base(v.Public.PierPath)
 	if v.Runtime.Fake != nil {
 		v.Public.Ship = v.Runtime.Fake.Ship
 	}

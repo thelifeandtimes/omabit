@@ -27,7 +27,7 @@ jobs:
           go test ./...
           go vet ./...
       - name: Stateful transport and runtime race checks
-        run: go test -race ./internal/managed ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy
+        run: go test -race ./internal/managed ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy ./internal/pierstore ./internal/piermeta
       - name: Build Linux binaries
         run: |
           mkdir -p build

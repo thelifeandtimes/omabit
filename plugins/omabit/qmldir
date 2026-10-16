@@ -12,6 +12,7 @@ ActivityPane 1.0 ActivityPane.qml
 ResourceChart 1.0 ResourceChart.qml
 ActionButton 1.0 ActionButton.qml
 CheckField 1.0 CheckField.qml
+SwitchField 1.0 SwitchField.qml
 RegistrationPane 1.0 RegistrationPane.qml
 StatusBadge 1.0 StatusBadge.qml
 Card 1.0 Card.qml

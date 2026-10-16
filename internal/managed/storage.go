@@ -169,7 +169,7 @@ func (s *store) enrollPier(actor string, req protocol.EnrollPierRequest, source 
 	return s.enrollPierSource(actor, req, source, fingerprint, nil)
 }
 
-func (s *store) enrollPierSource(actor string, req protocol.EnrollPierRequest, source pierstore.Candidate, fingerprint string, external *pierstore.ExternalSource) (protocol.Operation, error) {
+func (s *store) enrollPierSource(actor string, req protocol.EnrollPierRequest, source pierstore.Candidate, fingerprint string, external *pierstore.ExternalSource, identify ...bool) (protocol.Operation, error) {
 	if err := s.checkStorage(req.Path); err != nil {
 		return protocol.Operation{}, err
 	}
@@ -283,6 +283,8 @@ func (s *store) enrollPierSource(actor string, req protocol.EnrollPierRequest, s
 		op.Kind = "import-pier"
 		v.Public.ObservedState = "importing"
 		v.Runtime.ExternalImport = &runtimequalify.ManagedExternalImport{Source: *external, Stage: "reviewed"}
+		v.Runtime.ExternalImport.Identify = len(identify) > 0 && identify[0]
+		v.Runtime.ExternalImport.Events = []protocol.ImportEvent{{Stage: "reviewed", At: now}}
 		v.Runtime.Storage.Identity = pierstore.Identity{}
 		v.Runtime.Storage.MountIdentity = pierstore.DirectoryIdentity{}
 	}

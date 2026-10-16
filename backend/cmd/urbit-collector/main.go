@@ -94,11 +94,11 @@ Commands:
   piers       Discover enrolled, moved and unenrolled piers (archive is excluded).
   storage-root-add NAME --path /absolute/host/directory --request-id ID
               Add an identity-pinned, runner-owned storage location.
-  preview-pier --source /absolute/host/pier
-              Review a stopped source directory before importing it.
+  preview-pier --source /absolute/host/pier [--storage-root default]
+              Review a stopped source; --storage-root derives identity, destination and port.
   import-pier INSTANCE --source /absolute/host/pier --path DESTINATION
-              --ship ~SHIP --fingerprint HASH --http-port PORT --request-id ID --confirm-stopped
-              Move a reviewed source into configured storage and enroll it stopped.
+              --ship ~SHIP --fingerprint HASH --http-port PORT --request-id ID --confirm-stopped [--identify]
+              Move a reviewed source into storage; --identify rechecks its detected identity/network.
   delete-pier INSTANCE --revision N --request-id ID --confirm-delete
               Permanently delete a stopped pier and its registration; retain audit history.
   create-ship --ship ~SHIP --key-file FILE --request-id ID --confirm-network

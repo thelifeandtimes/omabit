@@ -81,7 +81,7 @@ func attachRuntimeStatus(tx *sql.Tx, v *storedInstance) error {
 	s := v.Runtime
 	d := &protocol.RuntimeStatus{Stage: s.Runtime.Stage, Initialized: s.Initialized, DefaultSnapshotMinutes: runtimequalify.DefaultSnapshotMinutes}
 	if s.ExternalImport != nil {
-		v.Public.ExternalImport = &protocol.ExternalImportStatus{Source: s.ExternalImport.Source.Path, HoldingPath: s.ExternalImport.HeldPath, Stage: s.ExternalImport.Stage, CopiedFiles: s.ExternalImport.CopiedFiles, CopiedBytes: s.ExternalImport.CopiedBytes}
+		v.Public.ExternalImport = &protocol.ExternalImportStatus{Source: s.ExternalImport.Source.Path, HoldingPath: s.ExternalImport.HeldPath, Stage: s.ExternalImport.Stage, CopiedFiles: s.ExternalImport.CopiedFiles, CopiedBytes: s.ExternalImport.CopiedBytes, TotalFiles: s.ExternalImport.Source.Files, TotalBytes: s.ExternalImport.Source.Bytes, Events: s.ExternalImport.Events}
 		if s.ExternalImport.Stage != "complete" {
 			d.Stage = "import-" + s.ExternalImport.Stage
 		}

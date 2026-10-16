@@ -77,7 +77,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 		req.ID = derived
 	}
 	if req.PierPath == "" {
-		req.PierPath = "livenet/" + map[string]string{"galaxy": "galaxies", "star": "stars", "planet": "planets", "moon": "moons"}[class] + "/" + derived + "/pier"
+		req.PierPath = "livenet/" + map[string]string{"galaxy": "galaxies", "star": "stars", "planet": "planets", "moon": "moons"}[class] + "/" + derived + "/" + derived
 	}
 	if f.NArg() != 0 {
 		return fail(errors.New("unexpected trailing key-boot arguments"), 2)

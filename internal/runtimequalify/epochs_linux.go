@@ -12,6 +12,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"syscall"
@@ -32,6 +33,16 @@ type epochFingerprint struct {
 }
 
 func (q *qualifier) inspectEpochs(ctx context.Context) (*epochs.Inventory, error) {
+	return q.inspectEpochInventory(ctx, false)
+}
+
+// Import may retain old epoch snapshots without authorizing pruning/roll over
+// them. The newest epoch must already use the supported 4.6 image.bin format.
+func (q *qualifier) inspectImportEpochs(ctx context.Context) (*epochs.Inventory, error) {
+	return q.inspectEpochInventory(ctx, true)
+}
+
+func (q *qualifier) inspectEpochInventory(ctx context.Context, history bool) (*epochs.Inventory, error) {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	root, err := q.openPierDirectory("log")
@@ -39,11 +50,11 @@ func (q *qualifier) inspectEpochs(ctx context.Context) (*epochs.Inventory, error
 		return nil, err
 	}
 	defer root.Close()
-	first, err := q.scanEpochs(ctx, root)
+	first, err := q.scanEpochs(ctx, root, history)
 	if err != nil {
 		return nil, err
 	}
-	second, err := q.scanEpochs(ctx, root)
+	second, err := q.scanEpochs(ctx, root, history)
 	if err != nil {
 		return nil, err
 	}
@@ -116,10 +127,14 @@ func boundedEntries(root *os.Root, limit int) ([]os.DirEntry, error) {
 	return entries, nil
 }
 
-func (q *qualifier) scanEpochs(ctx context.Context, root *os.Root) (*epochs.Inventory, error) {
-	inv := &epochs.Inventory{Source: epochs.Source, PierID: q.r.RunID, Entries: []epochs.Entry{}}
+func (q *qualifier) scanEpochs(ctx context.Context, root *os.Root, history ...bool) (*epochs.Inventory, error) {
+	return scanPierEpochs(ctx, root, q.pierPath(), q.r.RunID, q.owned, history...)
+}
+
+func scanPierEpochs(ctx context.Context, root *os.Root, pier, id string, owned func(string, os.FileMode, bool) error, history ...bool) (*epochs.Inventory, error) {
+	inv := &epochs.Inventory{Source: epochs.Source, PierID: id, Entries: []epochs.Entry{}}
 	var manifest []epochFingerprint
-	base := filepath.Join(q.pierPath(), ".urb/log")
+	base := filepath.Join(pier, ".urb/log")
 	rootInfo, err := root.Stat(".")
 	if err != nil {
 		return nil, errors.New("epoch root metadata unavailable")
@@ -136,7 +151,7 @@ func (q *qualifier) scanEpochs(ctx context.Context, root *os.Root) (*epochs.Inve
 		if directory {
 			kind = os.ModeDir
 		}
-		if err := q.owned(filepath.Join(base, relative), kind, false); err != nil {
+		if err := owned(filepath.Join(base, relative), kind, false); err != nil {
 			return epochFingerprint{}, err
 		}
 		info, err := r.Lstat(name)
@@ -183,7 +198,7 @@ func (q *qualifier) scanEpochs(ctx context.Context, root *os.Root) (*epochs.Inve
 		if err != nil {
 			return nil, errors.New("epoch directory unavailable")
 		}
-		e, files, scanErr := scanEpochDirectory(ctx, dir, name, fp, fingerprint)
+		e, files, scanErr := scanEpochDirectory(ctx, dir, name, fp, fingerprint, history...)
 		dir.Close()
 		if scanErr != nil {
 			return nil, scanErr
@@ -201,6 +216,15 @@ func (q *qualifier) scanEpochs(ctx context.Context, root *os.Root) (*epochs.Inve
 	})
 	for i := range inv.Entries {
 		inv.Entries[i].Protected = i >= len(inv.Entries)-epochs.ProtectedSuffix
+		if inv.Entries[i].LayoutVersion != 2 || inv.Entries[i].VereVersion != candidate.VereVersion {
+			inv.Source = epochs.ImportSource
+		}
+	}
+	if len(history) > 0 && history[0] {
+		latest := inv.Entries[len(inv.Entries)-1]
+		if latest.LayoutVersion != 2 || (latest.VereVersion != candidate.VereVersion && latest.VereVersion != "4.6") {
+			return nil, errors.New("the latest epoch must be upgraded to Vere 4.6 before importing; historical epochs are preserved")
+		}
 	}
 	data, err := json.Marshal(struct {
 		Source, PierID string
@@ -215,7 +239,7 @@ func (q *qualifier) scanEpochs(ctx context.Context, root *os.Root) (*epochs.Inve
 	return inv, nil
 }
 
-func scanEpochDirectory(ctx context.Context, root *os.Root, name string, expected epochFingerprint, fingerprint func(*os.Root, string, string, bool) (epochFingerprint, error)) (epochs.Entry, []epochFingerprint, error) {
+func scanEpochDirectory(ctx context.Context, root *os.Root, name string, expected epochFingerprint, fingerprint func(*os.Root, string, string, bool) (epochFingerprint, error), history ...bool) (epochs.Entry, []epochFingerprint, error) {
 	e := epochs.Entry{Name: name}
 	fail := func() (epochs.Entry, []epochFingerprint, error) {
 		return e, nil, errors.New("incomplete, changed or unsupported epoch layout")
@@ -234,11 +258,14 @@ func scanEpochDirectory(ctx context.Context, root *os.Root, name string, expecte
 	}
 	var manifest []epochFingerprint
 	version, vere, database := false, false, false
+	allowHistory := len(history) > 0 && history[0]
+	filesPresent := map[string]bool{}
 	for _, entry := range entries {
 		if err := ctx.Err(); err != nil {
 			return e, nil, err
 		}
 		file := entry.Name()
+		filesPresent[file] = true
 		fp, err := fingerprint(root, file, filepath.Join(name, file), false)
 		if err != nil {
 			return e, nil, err
@@ -270,13 +297,28 @@ func scanEpochDirectory(ctx context.Context, root *os.Root, name string, expecte
 			value := strings.TrimRight(string(data), " \t\r\n")
 			if file == "epoc.txt" {
 				version = value == "2"
+				if value == "2" {
+					e.LayoutVersion = 2
+				} else if value == "1" {
+					e.LayoutVersion = 1
+				}
+				if allowHistory {
+					version = e.LayoutVersion == 1 || e.LayoutVersion == 2
+				}
 			} else {
 				vere = value == candidate.VereVersion
+				e.VereVersion = value
+				if allowHistory {
+					vere = historicalVereVersion.MatchString(value)
+				}
 			}
 		}
 		database = database || file == "data.mdb"
-		if file == "image.bin" {
-			e.SnapshotBytes = fp.Bytes
+		if file == "image.bin" || allowHistory && (file == "north.bin" || file == "south.bin") {
+			if fp.Bytes > math.MaxInt64-e.SnapshotBytes {
+				return fail()
+			}
+			e.SnapshotBytes += fp.Bytes
 		}
 		if fp.Bytes > math.MaxInt64-e.LogicalBytes || fp.Blocks*512 > math.MaxInt64-e.AllocatedBytes {
 			return fail()
@@ -290,6 +332,14 @@ func scanEpochDirectory(ctx context.Context, root *os.Root, name string, expecte
 	if !version || !vere || !database {
 		return fail()
 	}
+	if allowHistory {
+		if name != "0i0" && (e.SnapshotBytes <= 0 || (e.LayoutVersion == 1 && (!filesPresent["north.bin"] || !filesPresent["south.bin"])) || (e.LayoutVersion == 2 && !filesPresent["image.bin"])) {
+			return fail()
+		}
+		if e.LayoutVersion == 1 && filesPresent["image.bin"] || e.LayoutVersion == 2 && (filesPresent["north.bin"] || filesPresent["south.bin"]) {
+			return fail()
+		}
+	}
 	data, err := json.Marshal(struct {
 		Directory epochFingerprint
 		Files     []epochFingerprint
@@ -301,3 +351,5 @@ func scanEpochDirectory(ctx context.Context, root *os.Root, name string, expecte
 	e.Digest = hex.EncodeToString(hash[:])
 	return e, manifest, nil
 }
+
+var historicalVereVersion = regexp.MustCompile(`^(3\.[0-9]+|4\.[0-6])(?:-[0-9a-f]{7,40})?$`)

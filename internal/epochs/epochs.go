@@ -13,6 +13,7 @@ import (
 
 const (
 	Source           = "vere-4.6-epoch-v2"
+	ImportSource     = "vere-import-epochs-v1-v2"
 	MaxEpochs        = 128
 	MaxFilesPerEpoch = 32
 	ProtectedSuffix  = 2
@@ -23,6 +24,8 @@ var digestPattern = regexp.MustCompile(`^[0-9a-f]{64}$`)
 var pierPattern = regexp.MustCompile(`^[0-9a-f]{32}$`)
 
 type Entry struct {
+	LayoutVersion  uint8  `json:"layout_version,omitempty"`
+	VereVersion    string `json:"vere_version,omitempty"`
 	Name           string `json:"name"`
 	Digest         string `json:"digest,omitempty"`
 	LogicalBytes   int64  `json:"logical_bytes"`

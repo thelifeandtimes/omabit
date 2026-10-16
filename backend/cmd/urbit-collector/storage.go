@@ -22,6 +22,10 @@ func runStorage(ctx context.Context, command string, args []string, dir, socket,
 	var req protocol.ImportPierRequest
 	var confirm bool
 	var port uint
+	var storageRoot string
+	if command == "preview-pier" {
+		f.StringVar(&storageRoot, "storage-root", "", "configured destination location; enables automatic identity and layout review")
+	}
 	if command != "preview-pier" && len(args) > 0 && args[0] != "--help" {
 		req.ID, args = args[0], args[1:]
 	}
@@ -39,6 +43,7 @@ func runStorage(ctx context.Context, command string, args []string, dir, socket,
 		f.BoolVar(&confirm, "confirm-delete", false, "permanently delete pier data and remove its registration")
 	}
 	if command == "import-pier" {
+		f.BoolVar(&req.Identify, "identify", false, "recheck the automatically identified ship and fake/live network")
 		f.StringVar(&req.Ship, "ship", "", "expected Urbit identity")
 		f.StringVar(&req.Fingerprint, "fingerprint", "", "fingerprint returned by preview-pier")
 		f.UintVar(&port, "http-port", 0, "host HTTP port")
@@ -97,6 +102,9 @@ func runStorage(ctx context.Context, command string, args []string, dir, socket,
 		return fail(err, 1)
 	}
 	feature := "import-pier"
+	if storageRoot != "" || req.Identify {
+		feature = "guided-pier-import"
+	}
 	if command == "storage-root-add" {
 		feature = "storage-locations"
 	}
@@ -111,7 +119,11 @@ func runStorage(ctx context.Context, command string, args []string, dir, socket,
 	case "storage-root-add":
 		result, err = c.AddStorageRoot(ctx, protocol.StorageRootRequest{ID: req.ID, Path: req.Path, RequestID: req.RequestID})
 	case "preview-pier":
-		result, err = c.PreviewPierImport(ctx, req.Source)
+		if storageRoot != "" {
+			result, err = c.PreviewGuidedPierImport(ctx, expected, req.Source, storageRoot)
+		} else {
+			result, err = c.PreviewPierImport(ctx, req.Source)
+		}
 	case "import-pier":
 		result, err = c.ImportPier(ctx, req)
 	case "delete-pier":

@@ -21,7 +21,7 @@ comet_inventory=dict(inventory,pier_id="c"*32,digest="e"*64)
 if (directory/"inspection.json").exists():
     inventory["observed_at"]=json.loads((directory/"inspection.json").read_text())["finished_at"]
 features=["storage-locations","import-pier","delete-pier","bootstrap-selection","host-handoff","runtime-logs","create-fake","fake-ship-options","pier-storage","key-boot","key-boot-options","livenet-import","create-comet","container-cpu","offline-pack","offline-meld","offline-roll","epoch-inventory","epoch-prune-prefix","login-code","import-qualified-fake","maintenance-schedules","comet-compaction","comet-epochs"]
-features += ["host-port-suggestion"]
+features += ["host-port-suggestion","guided-pier-import","named-pier-directories"]
 with (directory/"calls.jsonl").open("a") as log:
     log.write(json.dumps(sys.argv[1:])+"\\n")
 if "capture" in sys.argv:
@@ -55,6 +55,13 @@ elif "inventory" in sys.argv:
             created=json.loads(file.read_text());started=(directory/("started-"+created["id"])).exists()
             created.update(observed_at=now,desired_state="running" if started else "stopped",observed_state="running" if started else "uninitialized",health="healthy" if started else "unknown",applied_revision=1 if started else 0)
             snapshot["instances"].append(created)
+        for file in directory.glob("imported-*.json"):
+            imported=json.loads(file.read_text());elapsed=time.time()-imported["started"]
+            stages=["reviewed","holding-source","copying","verifying","enrolling","complete"]
+            stage=stages[min(5,int(elapsed/.3))];done=stage=="complete"
+            operation=dict(imported["operation"],status="succeeded" if done else "running")
+            snapshot["operations"].append(operation)
+            snapshot["instances"].append(dict(id=operation["instance_id"],mode="fake",ship=imported["ship"],config_revision=1,applied_revision=0,desired_state="stopped",observed_state="stopped" if done else "importing",observed_at=now,health="unknown",config=dict(http_port=18094,ames_port=34343,loom=31),pier_path=imported["path"],external_import=dict(source=imported["source"],stage=stage,copied_bytes=2048,total_bytes=4096,copied_files=2,total_files=4,events=[dict(stage=s,at=now) for s in stages[:stages.index(stage)+1]])))
         snapshot["piers"]["roots"]=[{"id":"default","path":"/var/lib/urbit-runner/piers"}]
         if (directory/"storage-added").exists(): snapshot["piers"]["roots"].append({"id":"ssd","path":"/fixture/storage"})
         if (directory/"deleted-alpha").exists(): snapshot["instances"]=[i for i in snapshot["instances"] if i["id"]!="alpha"]
@@ -72,16 +79,19 @@ elif "storage-root-add" in sys.argv:
     print(json.dumps({"id":"op-storage-root","kind":"storage-root","instance_id":"","request_id":sys.argv[sys.argv.index("--request-id")+1],"status":"succeeded"}))
 elif "preview-pier" in sys.argv:
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
-    assert sys.argv[sys.argv.index("--source")+1]=="/fixture/incoming/zod"
-    print(json.dumps({"path":"/fixture/incoming/zod","fingerprint":"b"*64,"bytes":42,"files":3}))
+    source=sys.argv[sys.argv.index("--source")+1];root=sys.argv[sys.argv.index("--storage-root")+1]
+    assert source in ("/fixture/incoming/zod","/var/lib/urbit-runner/piers/fakeships/project/nec/pier")
+    name="nec" if source.endswith("/nec/pier") else "zod"
+    path=("@"+root+"/" if root!="default" else "")+("fakeships/project/nec/nec" if name=="nec" else "fakeships/zod/zod")
+    print(json.dumps(dict(runner_id="runner-fixture",source=dict(path=source,fingerprint="b"*64,bytes=4096,files=4),ship="~"+name,network="fakenet",kind="fake",storage_root=root,instance_id=name,destination=path,http_port=18094,in_place=False)))
 elif "import-pier" in sys.argv:
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
-    assert sys.argv[sys.argv.index("import-pier")+1]=="import-ui"
-    assert sys.argv[sys.argv.index("--source")+1]=="/fixture/incoming/zod"
-    assert sys.argv[sys.argv.index("--fingerprint")+1]=="b"*64
-    assert sys.argv[sys.argv.index("--path")+1]=="@ssd/fakeships/import-ui/pier"
-    assert sys.argv[sys.argv.index("--ship")+1]=="~zod" and "--confirm-stopped" in sys.argv
-    print(json.dumps({"id":"op-import-pier","kind":"import-pier","instance_id":"import-ui","request_id":sys.argv[sys.argv.index("--request-id")+1],"status":"queued"}))
+    name=sys.argv[sys.argv.index("import-pier")+1];source=sys.argv[sys.argv.index("--source")+1];path=sys.argv[sys.argv.index("--path")+1]
+    assert name in ("nec","zod") and "--identify" in sys.argv and "--confirm-stopped" in sys.argv
+    assert path==("fakeships/project/nec/nec" if name=="nec" else "@ssd/fakeships/zod/zod")
+    op=dict(id="op-import-"+name,kind="import-pier",instance_id=name,request_id=sys.argv[sys.argv.index("--request-id")+1],status="queued",config_revision=1)
+    (directory/("imported-"+name+".json")).write_text(json.dumps(dict(started=time.time(),operation=op,source=source,path=path,ship="~"+name)))
+    print(json.dumps(op))
 elif "delete-pier" in sys.argv:
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
     assert sys.argv[sys.argv.index("delete-pier")+1]=="alpha"
@@ -128,7 +138,7 @@ elif "create-fake" in sys.argv:
         sys.exit(2)
     assert sys.argv[sys.argv.index("--ship")+1]=="~bus"
     assert sys.argv[sys.argv.index("--pier-name")+1]=="bus-data"
-    assert sys.argv[sys.argv.index("--pier-path")+1]=="fakeships/bus-data/pier"
+    assert sys.argv[sys.argv.index("--pier-path")+1]=="fakeships/bus-data/bus"
     instance=sys.argv[sys.argv.index("create-fake")+1]
     (directory/("created-"+instance+".json")).write_text(json.dumps({"id":instance,"mode":"fake","ship":"~bus","config_revision":1,"config":{"http_port":18090,"ames_port":34343,"loom":31}}))
     print(json.dumps({"id":"op-named-fake","status":"succeeded","instance_id":instance,"request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-fake","config_revision":1}))
@@ -140,7 +150,7 @@ elif "enroll-pier" in sys.argv:
 elif "create-ship" in sys.argv:
     assert "--confirm-network" in sys.argv and sys.argv[sys.argv.index("--key-file")+1]=="/fixture/owned.key"
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
-    assert "--http-port" not in sys.argv and "--ames-port" not in sys.argv and sys.argv[sys.argv.index("--pier-path")+1]=="livenet/planets/sampel-palnet/pier"
+    assert "--http-port" not in sys.argv and "--ames-port" not in sys.argv and sys.argv[sys.argv.index("--pier-path")+1]=="livenet/planets/sampel-palnet/sampel-palnet"
     assert sys.argv[sys.argv.index("--bootstrap")+1]=="bare" and "--pill" not in sys.argv
     (directory/"owned-registered.json").write_text(json.dumps({"id":"sampel-palnet","ship":"~sampel-palnet","mode":"planet","config_revision":1,"applied_revision":0,"config":{"http_port":18091,"ames_port":34344,"loom":31}}))
     print(json.dumps({"id":"op-key-ship","instance_id":"sampel-palnet","request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-ship","status":"succeeded","config_revision":1}))
@@ -325,7 +335,7 @@ ShellRoot {
       if (phase === -2 && service.localSetupStatus && service.connections.length === 1) {
         if (service.setupCheckRequested || service.machineUse!=="") throw new Error("fresh onboarding already chose machine/check state")
         service.setMachineUse("laptop")
-        if (!service.setUpLocal() || service.setUpLocal()) throw new Error("local setup dispatch/busy guard failed")
+         if (service.setUpLocal(false) || !service.setUpLocal(true) || service.setUpLocal(true)) throw new Error("local setup approval/dispatch/busy guard failed")
         phase = -1
       } else if (phase === -1 && !service.settingUp) {
         if (service.localSetupError || !service.localSetupStatus.ready || service.localSetupStep !== "ready") throw new Error("local setup did not finish with verified readiness")
@@ -515,7 +525,7 @@ ShellRoot {
          if (!submit.enabled) throw new Error("corrected named fake form unavailable")
          submit.clicked(); phase = 34
        } else if (phase === 34 && !service.busy && !service.pendingFirstBoot && !service.bootTarget) {
-         if (setupFixture.mode !== "ship" || service.registrationOutcome.status !== "succeeded" || service.registrationOutcome.ship !== "~bus" || service.registrationOutcome.pier !== "fakeships/bus-data/pier") throw new Error("named fake result lost identity or path")
+          if (setupFixture.mode !== "ship" || service.registrationOutcome.status !== "succeeded" || service.registrationOutcome.ship !== "~bus" || service.registrationOutcome.pier !== "fakeships/bus-data/bus") throw new Error("named fake result lost identity or path")
         console.log("PASS: fake identity, instance name and pier directory are submitted independently")
          if (testWindows) { service.monitorWindow.selectedKey="runner-fixture/alpha";service.openMonitor(null,null,"overview"); phase = 10 } else Qt.quit()
         } else if (phase === 10) {
@@ -609,18 +619,22 @@ ShellRoot {
           var already=control(storage,"review-pier-fakeships/project/zod/pier")
          if (already.visible || already.enabled) throw new Error("already-enrolled pier offered enrollment when moved flag was absent")
           control(storage,"review-pier-fakeships/project/nec/pier").clicked()
-          var review=control(storage,"pier-enrollment-fakeships/project/nec/pier")
-         if (!review.visible || control(review,"enroll-pier-submit").enabled) throw new Error("inline review missing or auto-authorized")
+           var review=control(storage,"external-pier-import")
+          if (!review.visible || control(review,"import-pier-submit").enabled) throw new Error("guided review missing or auto-authorized")
          service.monitorWindow.revealItem(review);phase=3001
        } else if (phase === 3001) {
          if (capture("inline-enrollment")) return
-          var storage=control(service.monitorWindow.setupPane,"pier-storage"),review=control(storage,"pier-enrollment-fakeships/project/nec/pier")
-         var consent=control(review,"enroll-pier-consent");consent.checked=true;consent.toggled()
-         if (!control(review,"enroll-pier-submit").enabled) throw new Error("confirmed enrollment remained disabled")
-         control(review,"enroll-pier-submit").clicked();phase=301
+           var storage=control(service.monitorWindow.setupPane,"pier-storage"),review=control(storage,"external-pier-import")
+          if(service.busy || !review.current)return
+          var consent=control(review,"import-pier-consent");consent.checked=true
+          if (!control(review,"import-pier-submit").enabled) throw new Error("confirmed enrollment remained disabled")
+          control(review,"import-pier-submit").clicked();phase=301
        } else if (phase === 301 && !service.busy) {
          var storage=control(service.monitorWindow.setupPane,"pier-storage")
-          if (!storage.submitted || service.lastResult.indexOf("enroll-pier:")!==0 || control(control(storage,"pier-enrollment-fakeships/project/nec/pier"),"enroll-pier-submit").enabled) throw new Error("enrollment selection or non-retry guard lost")
+           var form=control(storage,"external-pier-import")
+           if (!form.submitted || service.lastResult.indexOf("import-pier:")!==0 || control(form,"import-pier-submit").enabled) throw new Error("enrollment selection or non-retry guard lost")
+           if(form.progress.active)return
+           if(form.progress.value!==1 || control(form,"import-pier-steps").text.indexOf("Import complete")<0)throw new Error("completed import missing progress/log receipt")
           if (capture("pier-storage")) return
           console.log("PASS: discovered pier enrollment requires fresh fingerprint/runner binding and explicit stopped-source confirmation")
           service.monitorWindow.setupPane.mode="ship";service.monitorWindow.setupPane.shipKind="key"
@@ -657,7 +671,7 @@ ShellRoot {
          if (capture("key-boot")) return
           control(service.monitorWindow.setupPane,"key-identity").text="~dibpen-fogweg-dozzod-sarlev"
            var keyForm=control(service.monitorWindow.setupPane,"owned-key-form")
-           if (keyForm.instanceName!=="dibpen-fogweg-dozzod-sarlev" || keyForm.destination!=="livenet/moons/dibpen-fogweg-dozzod-sarlev/pier") throw new Error("generated moon defaults incorrect")
+            if (keyForm.instanceName!=="dibpen-fogweg-dozzod-sarlev" || keyForm.destination!=="livenet/moons/dibpen-fogweg-dozzod-sarlev/dibpen-fogweg-dozzod-sarlev") throw new Error("generated moon defaults incorrect")
            if (control(keyForm,"key-start").enabled) throw new Error("another registered identity enabled Start for an unregistered moon")
           keyForm.keyFile="/previous/key.key"
           var picker=control(keyForm,"key-file-picker")
@@ -752,26 +766,31 @@ ShellRoot {
            service.monitorWindow.page="setup";service.monitorWindow.setupPane.mode="storage";phase=309
         } else if (phase === 309) {
            var storage=control(service.monitorWindow,"pier-storage")
+           control(storage,"manage-storage-locations").clicked()
            control(storage,"storage-root-name").text="ssd";control(storage,"storage-root-path").text="/fixture/storage"
            control(storage,"storage-root-add").clicked();phase=310
         } else if (phase === 310 && !service.busy) {
            var storage=control(service.monitorWindow,"pier-storage")
            if (!storage.catalogue.roots || storage.catalogue.roots.length!==2) return
-           control(storage,"open-pier-import").clicked()
-           var form=control(storage,"external-pier-import")
-           control(form,"import-pier-source").text="/fixture/incoming/zod"
+            storage.showImport=true
+            var form=control(storage,"external-pier-import")
+            form.submitted=false
+            control(form,"import-pier-source").text="/fixture/incoming/zod"
+            var roots=control(form,"storage-location-selector");roots.currentIndex=1;roots.activated(1)
            control(form,"import-pier-review").clicked();phase=311
         } else if (phase === 311 && !service.busy) {
            var form=control(service.monitorWindow,"external-pier-import")
            if (!form.current) throw new Error("external source review was not bound to this runner/path")
-           control(form,"import-pier-name").text="import-ui";control(form,"import-pier-ship").text="~zod"
-           control(form,"import-pier-destination").text="fakeships/import-ui/pier";control(form,"import-pier-port").text="18094"
-           var roots=control(form,"storage-location-selector");roots.currentIndex=1;roots.activated(1)
+            if(control(form,"import-pier-name") || control(form,"import-pier-ship") || control(form,"import-pier-destination") || control(form,"import-pier-port"))throw new Error("guided import still requires manual metadata")
+            if(form.plan.ship!=="~zod" || form.plan.destination!=="@ssd/fakeships/zod/zod")throw new Error("auto import plan lost identity/location")
            control(form,"import-pier-consent").checked=true
            if (!control(form,"import-pier-submit").enabled) throw new Error("reviewed external import cannot be submitted")
            control(form,"import-pier-submit").clicked();control(form,"import-pier-submit").clicked();phase=312
         } else if (phase === 312 && !service.busy) {
-           if (service.lastError || service.storageOutcome.kind!=="import-pier" || service.storageOutcome.status!=="accepted") throw new Error("external import acknowledgement failed: "+service.lastError+" "+JSON.stringify(service.storageOutcome))
+            if (service.lastError || service.storageOutcome.kind!=="import-pier" || service.storageOutcome.status!=="accepted") throw new Error("external import acknowledgement failed: "+service.lastError+" "+JSON.stringify(service.storageOutcome))
+            var form=control(service.monitorWindow,"external-pier-import")
+            if(form.progress.active)return
+            if(form.progress.value!==1 || control(form,"import-pier-steps").text.indexOf("Verifying source")<0)throw new Error("verified copy steps missing")
            console.log("PASS: storage location selection and reviewed host-path import dispatch once with content/runner/destination binding")
            service.monitorWindow.page="overview";service.monitorWindow.selectedKey="runner-fixture/alpha";phase=313
         } else if (phase === 313) {

@@ -62,6 +62,68 @@ func TestConventionDiscoveryMoveAndArchiveIsolation(t *testing.T) {
 	}
 }
 
+func TestDiscoveryFindsShipNamedLeavesAndKeepsMountExclusive(t *testing.T) {
+	home := t.TempDir()
+	if err := Init(home); err != nil {
+		t.Fatal(err)
+	}
+	path := "livenet/planets/lismyl-lismyl/lismyl-lismyl"
+	full := filepath.Join(Root(home), path)
+	if err := os.MkdirAll(filepath.Join(full, ".urb"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	rows, err := Scan(context.Background(), home)
+	if err != nil || len(rows) != 1 || rows[0].Path != path || rows[0].Problem != "" || rows[0].Fingerprint == "" {
+		t.Fatal(rows, err)
+	}
+	if _, err := Parents(home, "livenet/planets/lismyl-lismyl/nested/zod"); err == nil {
+		t.Fatal("nested named pier accepted")
+	}
+	if err := os.Mkdir(filepath.Join(filepath.Dir(full), "other"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	rows, err = Scan(context.Background(), home)
+	if err != nil || len(rows) != 1 || rows[0].Problem == "" {
+		t.Fatal("sibling data would be mounted", rows, err)
+	}
+}
+
+func TestTreeReviewAllowsOnlySelfContainedDockedLinks(t *testing.T) {
+	p := t.TempDir()
+	bin := filepath.Join(p, ".bin/live/vere")
+	if err := os.MkdirAll(filepath.Dir(bin), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(bin, []byte("inert runtime"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Link(bin, filepath.Join(p, ".run")); err != nil {
+		t.Fatal(err)
+	}
+	if _, files, _, err := TreeReview(context.Background(), p); err != nil || files != 2 {
+		t.Fatal(files, err)
+	}
+	outside := filepath.Join(t.TempDir(), "other")
+	if err := os.Link(bin, outside); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, _, err := TreeReview(context.Background(), p); err == nil {
+		t.Fatal("external link accepted")
+	}
+	if err := os.Remove(outside); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(p, ".urb/log"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Link(bin, filepath.Join(p, ".urb/log/data.mdb")); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, _, err := TreeReview(context.Background(), p); err == nil {
+		t.Fatal("shared private database accepted")
+	}
+}
+
 func TestPathsStayInConventionAndCannotNestPiers(t *testing.T) {
 	for _, p := range []string{"fakeships/zod", "fakeships/pier", "/fakeships/zod/pier", "../zod/pier", "fakeships/../zod/pier", "archive/zod/pier", "livenet/zod/pier", "livenet/planets/pier", "fakeships/.hidden/zod/pier", "fakeships/a,b/pier", "fakeships/a//b/pier"} {
 		if ValidPath(p) {

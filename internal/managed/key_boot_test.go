@@ -74,7 +74,7 @@ func TestGeneratedMoonRegistersWithDerivedPathAndAutomaticPorts(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if v.Public.Mode != "moon" || v.Public.PierPath != "livenet/moons/dibpen-fogweg-dozzod-sarlev/pier" || v.Public.Config.HTTPPort < 1024 || v.Public.Config.AmesPort < 1024 || v.Public.ObservedState != "uninitialized" {
+	if v.Public.Mode != "moon" || v.Public.PierPath != "livenet/moons/dibpen-fogweg-dozzod-sarlev/dibpen-fogweg-dozzod-sarlev" || v.Public.Config.HTTPPort < 1024 || v.Public.Config.AmesPort < 1024 || v.Public.ObservedState != "uninitialized" {
 		t.Fatal(v.Public)
 	}
 }

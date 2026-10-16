@@ -9,7 +9,7 @@ Column {
   spacing: Style.space(8)
   Label { text: "Storage locations"; font.bold: true }
   Repeater { model: Model.storageRoots(root.connection); Label { required property var modelData; width: root.width; text: modelData.id+" · "+modelData.path; secondary: true } }
-  Label { width: parent.width; text: "Each location uses the same ship-directory/pier layout. Choose a location when creating or importing a ship. Adding one also includes it in discovery; existing ships stay at their recorded locations."; secondary: true; caption: true }
+  Label { width: parent.width; text: "Each location uses instance/ship-name directories. Choose a configured location when creating or importing a ship. Adding one also includes it in discovery."; secondary: true; caption: true }
   Field { id: name; objectName: "storage-root-name"; width: parent.width; placeholderText: "Location name, e.g. ssd"; enabled: !root.service.busy }
   Field { id: path; objectName: "storage-root-path"; width: parent.width; placeholderText: "Absolute host directory, e.g. /mnt/ssd/urbit-piers"; enabled: !root.service.busy }
   Label { width: parent.width; text: Model.hasFeature(root.connection,"owner-user-runtime") ? "Choose a directory owned by the runner's Unix user on that host. Missing directories are created with that user's normal permissions; shortcuts are resolved to their real location. Locations are identity-pinned." : "This legacy runner needs a pre-existing directory owned by its service account. Update or explicitly migrate the host for owner-user storage."; secondary: true; caption: true }

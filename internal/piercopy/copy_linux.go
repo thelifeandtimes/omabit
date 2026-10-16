@@ -17,8 +17,10 @@ import (
 	"sort"
 	"strings"
 	"syscall"
+	"time"
 	"unicode/utf8"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
@@ -49,6 +51,9 @@ func stable(a, b os.FileInfo) bool {
 func inventory(ctx context.Context, root *os.Root) ([]entry, error) {
 	var out []entry
 	var total int64
+	type linkKey struct{ device, inode uint64 }
+	type links struct{ expected, seen uint64 }
+	docked := map[linkKey]links{}
 	base, err := root.Lstat(".")
 	if err != nil {
 		return nil, err
@@ -75,8 +80,16 @@ func inventory(ctx context.Context, root *os.Root) ([]entry, error) {
 		}
 		e := entry{Name: name, Directory: info.IsDir(), info: info}
 		if !info.IsDir() {
-			if !info.Mode().IsRegular() || st.Nlink != 1 || info.Size() < 0 || info.Size() > MaxBytes-total {
+			if !info.Mode().IsRegular() || st.Nlink != 1 && !pierstore.InertDockedFile(name) || info.Size() < 0 || info.Size() > MaxBytes-total {
 				return errors.New("pier tree has shared/special files or exceeds byte limit")
+			}
+			if st.Nlink > 1 {
+				key := linkKey{st.Dev, st.Ino}
+				old := docked[key]
+				if old.expected != 0 && old.expected != st.Nlink {
+					return errors.New("docked executable links changed")
+				}
+				docked[key] = links{st.Nlink, old.seen + 1}
 			}
 			e.Size = info.Size()
 			total += e.Size
@@ -108,6 +121,11 @@ func inventory(ctx context.Context, root *os.Root) ([]entry, error) {
 	}
 	if err := walk(".", 0); err != nil {
 		return nil, err
+	}
+	for _, links := range docked {
+		if links.seen != links.expected {
+			return nil, errors.New("docked executable shares links outside the pier")
+		}
 	}
 	return out, nil
 }
@@ -212,7 +230,7 @@ func Measure(ctx context.Context, root *os.Root) (Summary, error) {
 // Copy does not overwrite or remove anything. Failure retains the partial target
 // for the caller's quarantine/recovery workflow. Permissions are normalized to
 // owner-only. The caller journals intent before creating the destination root.
-func Copy(ctx context.Context, source, destination *os.Root, progress func(int, int64) error) (Summary, error) {
+func Copy(ctx context.Context, source, destination *os.Root, progress func(int, int64) error, verifying ...func() error) (Summary, error) {
 	if progress == nil {
 		return Summary{}, errors.New("copy requires durable progress callback")
 	}
@@ -249,7 +267,15 @@ func Copy(ctx context.Context, source, destination *os.Root, progress func(int, 
 		if err != nil {
 			return Summary{}, errors.New("target file must be fresh")
 		}
-		entries[i].Hash, err = transfer(ctx, source, e, f)
+		lastReport := time.Now()
+		writer := &progressWriter{Writer: f, notify: func(written int64) error {
+			if time.Since(lastReport) < 250*time.Millisecond {
+				return nil
+			}
+			lastReport = time.Now()
+			return progress(files, copied+written)
+		}}
+		entries[i].Hash, err = transfer(ctx, source, e, writer)
 		if err == nil {
 			err = f.Sync()
 		}
@@ -282,6 +308,11 @@ func Copy(ctx context.Context, source, destination *os.Root, progress func(int, 
 	if err := unchanged(source, entries); err != nil {
 		return Summary{}, err
 	}
+	if len(verifying) > 0 && verifying[0] != nil {
+		if err := verifying[0](); err != nil {
+			return Summary{}, err
+		}
+	}
 	expected := digest(entries)
 	actual, err := Measure(ctx, destination)
 	if err != nil || !reflect.DeepEqual(actual, expected) {
@@ -293,4 +324,19 @@ func Copy(ctx context.Context, source, destination *os.Root, progress func(int, 
 		return Summary{}, errors.New("source content changed during copy")
 	}
 	return expected, nil
+}
+
+type progressWriter struct {
+	io.Writer
+	written int64
+	notify  func(int64) error
+}
+
+func (w *progressWriter) Write(p []byte) (int, error) {
+	n, err := w.Writer.Write(p)
+	w.written += int64(n)
+	if err == nil {
+		err = w.notify(w.written)
+	}
+	return n, err
 }

@@ -201,9 +201,10 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 		}
 	}
 	tier := map[string]string{"galaxy": "galaxies", "star": "stars", "planet": "planets", "moon": "moons", "comet": "comets"}[h.Mode]
-	path := "fakeships/" + h.DestinationInstance + "/pier"
+	leaf := strings.TrimPrefix(h.Ship, "~")
+	path := "fakeships/" + h.DestinationInstance + "/" + leaf
 	if h.Mode != "fake" {
-		path = "livenet/" + tier + "/" + h.DestinationInstance + "/pier"
+		path = "livenet/" + tier + "/" + h.DestinationInstance + "/" + leaf
 	}
 	if err = reservePierPath(tx, h.DestinationInstance, path); err != nil {
 		r.respondError(w, err)
@@ -217,7 +218,7 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 	h.Direction = "in"
 	h.State = "reserved"
 	h.Message = "Destination reserved; waiting for stopped pier data."
-	v := storedInstance{Public: protocol.Instance{ID: h.DestinationInstance, Label: h.DestinationInstance, Ship: h.Ship, Mode: h.Mode, AmesPublished: h.AmesPublished, PierPath: path, PierName: "pier", Config: protocol.Configuration{HTTPPort: httpPort, AmesPort: ames, Loom: 31}, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "moving", Health: "unknown", Handoff: &h}, Runtime: runtimequalify.ManagedState{ID: key, Port: httpPort, AmesPort: ames, Storage: &pierstore.Location{Path: path}, Handoff: &h}}
+	v := storedInstance{Public: protocol.Instance{ID: h.DestinationInstance, Label: h.DestinationInstance, Ship: h.Ship, Mode: h.Mode, AmesPublished: h.AmesPublished, PierPath: path, PierName: leaf, Config: protocol.Configuration{HTTPPort: httpPort, AmesPort: ames, Loom: 31}, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "moving", Health: "unknown", Handoff: &h}, Runtime: runtimequalify.ManagedState{ID: key, Port: httpPort, AmesPort: ames, Storage: &pierstore.Location{Path: path}, Handoff: &h}}
 	if h.Mode == "fake" {
 		v.Runtime.Fake = &runtimequalify.ManagedFake{Ship: h.Ship}
 	} else {
