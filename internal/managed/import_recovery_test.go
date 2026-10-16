@@ -52,12 +52,22 @@ func saveRecoveryFixture(t *testing.T, s *store, v storedInstance) {
 
 func TestRecoveryRPC(t *testing.T) {
 	b := &storageActionBackend{home: privateDir(t)}
-	r, err := newServer(privateDir(t), b, time.Hour)
+	dir := privateDir(t)
+	// Seed before the server starts polling. A poll of the initial registration
+	// can otherwise overwrite direct fixture writes with the same revision.
+	s, err := testOpenStore(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	seedRecovery(t, s)
+	if err := s.close(); err != nil {
+		t.Fatal(err)
+	}
+	r, err := newServer(dir, b, time.Hour)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer r.Close()
-	seedRecovery(t, r.s)
 	line, observer := grantLine(t, "observer")
 	r.keys = filepath.Join(privateDir(t), "keys")
 	if err := os.WriteFile(r.keys, []byte(line+"\n"), 0600); err != nil {
