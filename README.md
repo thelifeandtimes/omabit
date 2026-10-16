@@ -8,10 +8,10 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Published:** [**0.1.0-rc.7**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.7), a Linux/AMD64 development release candidate
+**Published:** [**0.1.0-rc.8**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.8), a Linux/AMD64 development release candidate
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and qualification scope](docs/release-rc7.md),
+[release notes and qualification scope](docs/release-rc8.md),
 and [Recommended Apps pill provenance](docs/pill-release.md). Final 0.1.0 is still pending.
 
 RC.3 makes `|mount` → ordinary copy/editor saves → `|commit` work directly on
@@ -28,6 +28,8 @@ RC.6 corrects the effective pill default when the shell supplies only explicit
 widget settings; this is verified in the running sourcebox shell.
 RC.7 adds persistent log following, bounded reconnect backoff and reader lifecycle
 cleanup to remove per-refresh SSH/PAM/logind sessions.
+RC.8 simplifies initial setup and derives import identity, destination and port
+from the source/location selection, with progress receipts and ship-named piers.
 Prior dedicated-account installations were
 [retired for the user-driven fresh-install exercise](docs/diagnostics/2026-10-15-rc2-release-retirement.md).
 
@@ -70,7 +72,7 @@ shared implementation remains under `internal/` in one Go module.
 - A separate owner-user rootless Docker engine and the pinned official Vere release.
 - New comets and development fakes, with durable start/stop/resume operations.
 - Owned-key bootstrap, including a live-tested moon, and stopped in-tree pier enrollment.
-- Permanent per-ship mount directories: first boot creates `pier/` in place and keeps running.
+- Permanent per-instance mount directories with named pier children; first boot creates the child in place and keeps running.
 - Management and restricted SSH services, including verified clean and unclean host-reboot resume.
 - A compact fleet menu and monitoring window with container RAM, tasks and health.
 - Per-ship lifecycle/error/exit diagnostics and bounded read-only runtime logs.
@@ -116,6 +118,7 @@ together. See the [RC.7 release notes](docs/release-rc7.md) and
 [D-Bus incident follow-up](docs/diagnostics/2026-10-16-dbus-log-watch.md).
 
 Existing ships and unrelated Docker installations are preserved during setup.
+Live operations on the user's hosts follow the [protected-ship policy](docs/protected-ships.md).
 Host changes use explicit OS authorization; desktop clients do not receive Docker
 group access. Development data/report formats are not a backwards-compatible
 release contract.

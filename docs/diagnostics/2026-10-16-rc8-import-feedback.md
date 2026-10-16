@@ -52,4 +52,19 @@ onboarding, full panel/import progress, and persistent log lifecycle checks;
 installer and native-bootstrap fixtures. A real stopped qualification comet also
 matched its known identity through the read-only metadata reader.
 
-Publication and protected reset receipts are recorded after their final gates.
+## Publication and protected reset
+
+[RC.8](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.8) is published
+from `f972dee22d20070de35b6f26a6ce3d4e1d2497de` with
+[passing source CI](https://github.com/thelifeandtimes/omabit/actions/runs/38966269442).
+All eight downloaded release assets passed archive checksums, provenance,
+executable and isolated installer checks. Archive SHA-256:
+`4db11410a2e0fc8ae9fe3413327991f9f19601c36eb2d330bd8dd59a4abc2c86`.
+The real native bootstrap downloaded all three tools into an isolated empty cache;
+hashes, sizes, clean source build revisions, guided-import/watch CLI support and
+verified-cache reuse passed. A clean Git export passed Omarchy plugin validation.
+
+The [protected sourcebox reset](2026-10-16-rc8-sourcebox-reset.md) completed with
+same-filesystem retirement renames and an unlocked cold shell reload. The
+relocated protected pier matched its complete tree fingerprint before and after.
+The user performs the next fresh installation.

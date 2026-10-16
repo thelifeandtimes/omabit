@@ -2,7 +2,13 @@
 
 ## Where we are
 
-**[RC.7 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.7), with matching native binary pins.**
+**[RC.8 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.8), with matching native binary pins.**
+RC.8 simplifies setup approval and machine selection, adds source/location-only
+guided imports with progress, recognizes ship-named pier leaves, and accepts intact
+historical native-pier epochs and self-contained docked binaries for import.
+Sourcebox is reset for the next user-driven installation. The relocated protected
+`~lismyl-lismyl` pier's tree fingerprint is unchanged; twenty unrelated pier
+directories and ten Urbit processes were preserved. See the [RC.8 handoff](diagnostics/2026-10-16-rc8-sourcebox-reset.md).
 RC.7 removes per-refresh log-viewer SSH/PAM/logind sessions with a persistent
 identity-pinned watcher, cancellation and bounded reconnect backoff. Its frozen
 collector delivered 23 updates over 66 seconds through one actual sourcebox SSH
@@ -36,8 +42,8 @@ The verified binary bundle is staged on sourcebox. The selected repository model
 tools under `backend/cmd/` and shared implementation under `internal/`.
 The user will use the normal Omarchy plugin install command and host setup manually. See the
 [publication/retirement handoff](diagnostics/2026-10-15-rc2-release-retirement.md).
-Sourceport currently has disposable owner-user qualification resources. Sourcebox
-completed the user's RC.6 fresh installation. Its `guac-demo` comet was gracefully
+Sourceport currently has disposable owner-user qualification resources. Earlier
+on October 16, sourcebox completed the user's RC.6 fresh installation. Its `guac-demo` comet was gracefully
 stopped and its Omabit installation retired on October 16 for a user-driven RC.7
 pass. Data and all ten unrelated Urbit processes were preserved; a cold shell
 reload verified fresh-install readiness. See the [RC.7 reset receipt](diagnostics/2026-10-16-rc7-sourcebox-reset.md).
@@ -79,12 +85,12 @@ order, not percentage of total effort.
 | Runtime foundation | Owner-user rootless Docker, default/custom-root fake/comet desk editing and lifecycle accepted locally; broader production qualification remains |
 | Persistent runner | Durable SQLite registrations, operations, attribution, reconciliation, resource admission, and development lifecycle accepted |
 | Collector and access | Named identity-pinned connections, SSH grants/revocation, inventory isolation, origin-bound Eyre sessions and subscriptions accepted in exercised development gates |
-| Omabit UI | Published RC.7 native plugin: persistent log following, refined setup, stable runtime/port feedback, public comet names, HTTP fleet actions and verified effective pill default; sourcebox user feedback continues |
+| Omabit UI | Published RC.8 native plugin: compact approved setup, guided imports/progress and named piers, persistent log following and verified pill default; sourcebox user feedback continues |
 | Maintenance and retention | Official-runtime fake/comet pack/meld/roll, inventory/previews, prefix pruning and UTC schedules accepted in exercised live gates; interruption/recovery hardening remains; loom-internal telemetry deferred |
 | Peer monitoring | Planned; current single-runner health/incident basics do not yet provide the phase-7 multi-host peer system |
 | Personal operator gateway | Planned |
 | Social utilities / Omarchy gossip | Planned; architecture and delivery/tag policy recorded |
-| Agents and release distribution | RC.7 assets and supplied pill published; production upgrades, full application/OTA qualification and agent/MCP distribution remain |
+| Agents and release distribution | RC.8 assets and supplied pill published; production upgrades, full application/OTA qualification and agent/MCP distribution remain |
 
 ## Current milestone
 
