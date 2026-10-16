@@ -18,24 +18,94 @@ Column {
   property string output: ""
   property string errors: ""
   property string requested: ""
-  property bool oversized: false
+  property bool watching: false
+  property bool received: false
+  property bool stopping: false
+  property bool pending: false
+  property bool blocked: false
   property bool showReading: false
   property string reportedComet: ""
   property string reportedContainer: ""
-  readonly property bool reading: reader.running
-  readonly property string selection: connection && instance ? connection.name+"/"+connection.runner_id+"/"+instance.id+"/"+instance.config_revision : ""
-  readonly property bool readable: active && !!service && service.observing && Model.available(connection,service.now) && connection.access_role==="operator" && Model.hasFeature(connection,"runtime-logs")
+  readonly property bool reading: reader.running && !received
+  readonly property bool running: reader.running
+  // Enrollment changes matter; replacing an inventory object every two seconds
+  // does not. A transient inventory failure must not reset the watcher's backoff.
+  readonly property string selection: connection && instance && service ? JSON.stringify([connection.name,connection.runner_id,connection.mode,instance.id,instance.config_revision,service.collector,service.settings.configDir || "",(service.registrations || []).filter(function(r){return r.name===root.connection.name})]) : ""
+  readonly property bool eligible: active && !!service && service.observing && !!instance && !!connection && (connection.status==="unavailable" || connection.access_role==="operator" && connection.status!=="identity_mismatch" && Model.hasFeature(connection,"runtime-logs"))
+  readonly property bool readable: eligible && Model.available(connection,service.now)
   readonly property var diagnostic: instance && instance.runtime_status || ({})
   readonly property var operation: diagnostic.last_operation || null
   spacing: Style.space(12)
-  onSelectionChanged: { logs=null;error="";reportedComet="";reportedContainer="";if (reader.running) reader.signal(15);refreshSoon.restart() }
-  onReadableChanged: { if (!readable) {logs=null;if(reader.running)reader.signal(15)} else refreshSoon.restart() }
-  Timer { id:refreshSoon;interval:0;onTriggered:root.refresh() }
+  onSelectionChanged: { clearLogs();error="";blocked=false;pending=following;stopReader();refreshSoon.restart() }
+  onEligibleChanged: {
+    if (!eligible) { pending=false;clearLogs();stopReader() }
+    else if (following && !blocked) { pending=true;refreshSoon.restart() }
+  }
+  onReadableChanged: if (readable) refreshSoon.restart()
+  onFollowingChanged: {
+    pending=following
+    if (following) blocked=false
+    stopReader();refreshSoon.restart()
+  }
+  Timer { id:refreshSoon;interval:0;onTriggered:root.startReader() }
+  function clearLogs() { logs=null;reportedComet="";reportedContainer="" }
+  function stopReader() {
+    if (!reader.running || stopping) return
+    stopping=true;reader.signal(15);stopDeadline.restart()
+  }
   function refresh() {
     if (!readable || reader.running) return
-    requested=selection;output="";errors="";oversized=false
-    reader.command=service.command(Model.selection(connection).concat(["logs",instance.id,"--revision",String(instance.config_revision)]))
+    blocked=false;pending=true;startReader()
+  }
+  function startReader() {
+    if (!pending || blocked || !readable || reader.running) return
+    pending=false;stopping=false;received=false
+    requested=selection;output="";errors="";error="";watching=following
+    var args=Model.selection(connection).concat(["logs",instance.id,"--revision",String(instance.config_revision)])
+    if (watching) args=args.concat(["--watch","--interval","3s"])
+    reader.command=service.command(args)
     reader.running=true
+    Qt.callLater(function() {
+      if (!reader.running && !stopping && root.requested===root.selection && !root.received) {
+        root.blocked=true;root.error="Log reader could not start. Check the collector and Refresh logs to retry."
+      }
+    })
+  }
+  function acceptLogs(next) {
+    if(next.container_id!==reportedContainer){reportedComet="";reportedContainer=next.container_id || ""}
+    var comet=Model.reportedCometName(next.lines)
+    if(comet)reportedComet=comet
+    logs=next;error=""
+  }
+  function failRecord(message) {
+    blocked=true;pending=false;clearLogs();error=message;output="";stopReader()
+  }
+  function acceptRecord(record) {
+    try {
+      var update=Model.validateRuntimeLogUpdate(JSON.parse(record),connection.runner_id,instance.id,instance.config_revision)
+      received=true
+      if (update.error) {
+        clearLogs();error=update.error.message+(update.retry_after_ms ? " Retry in "+Math.ceil(update.retry_after_ms/1000)+"s." : "")
+        if (!update.retry_after_ms) { blocked=true;pending=false;stopReader() }
+      } else acceptLogs(update.logs)
+    } catch(e) { failRecord(e.message) }
+  }
+  function readChunk(data) {
+    if (stopping || requested!==selection || !eligible) return
+    // Split incrementally: bounded per NDJSON record, never per stream lifetime.
+    // 512 KiB accommodates JSON escaping of the server's 64 KiB bounded tail.
+    var offset=0
+    do {
+      var end=watching ? data.indexOf("\n",offset) : -1
+      var part=data.slice(offset,end<0 ? data.length : end)
+      if (output.length+part.length>524288) { failRecord("Log response exceeded its limit.");return }
+      output+=part
+      if (end<0) return
+      var record=output;output=""
+      acceptRecord(record)
+      if (stopping) return
+      offset=end+1
+    } while (offset<data.length)
   }
   Card {
     width: parent.width; implicitHeight: statusBody.implicitHeight+Style.space(28)
@@ -55,11 +125,11 @@ Column {
       id:logBody
       anchors.left:parent.left;anchors.right:parent.right;anchors.top:parent.top;anchors.margins:Style.space(14);spacing:Style.space(8)
       Label { text:"Runtime / dojo output";font.bold:true }
-      Label { width:parent.width;caption:true;secondary:true;text:"Read-only Vere stdout/stderr · updates every 3 seconds · known key/code patterns redacted" }
+      Label { width:parent.width;caption:true;secondary:true;text:"Read-only Vere stdout/stderr · one connection while following · known key/code patterns redacted" }
       RowLayout {
         width:parent.width;spacing:Style.space(8)
-        ActionButton { objectName:"runtime-logs-refresh";text:"Refresh logs";enabled:root.readable;hint:root.reading ? "A log refresh is already in progress" : "Read the latest runtime output";onClicked:root.refresh() }
-        ActionButton { objectName:"runtime-logs-follow";text:root.following ? "Pause updates" : "Follow output";enabled:root.readable;onClicked:{root.following=!root.following;if(root.following)root.refresh()} }
+        ActionButton { objectName:"runtime-logs-refresh";text:"Refresh logs";enabled:root.readable;hint:root.running ? "The current reader is updating output; pause for a one-shot refresh" : "Read the latest runtime output";onClicked:root.refresh() }
+        ActionButton { objectName:"runtime-logs-follow";text:root.following ? "Pause updates" : "Follow output";enabled:root.following || root.readable;onClicked:root.following=!root.following }
         Item { Layout.preferredWidth:Style.space(22);Layout.preferredHeight:Style.space(22)
           Controls.BusyIndicator { objectName:"runtime-log-progress";anchors.fill:parent;running:root.showReading;opacity:root.showReading ? 1 : 0 }
         }
@@ -67,7 +137,7 @@ Column {
       }
       Label { objectName:"runtime-log-summary";width:parent.width;text:root.logs ? Model.runtimeNarration(root.logs.lines) : "";visible:text!=="";color:Design.accent }
       Label { width:parent.width;color:Design.danger;text:root.error;visible:text!=="" }
-      Label { width:parent.width;caption:true;secondary:true;wrapMode:Text.NoWrap;elide:Text.ElideRight;text:!root.readable ? "Logs need an available operator connection and an updated runner." : !root.logs ? "Waiting for runtime output…" : root.logs.source==="none" ? "No runtime log is available yet." : (root.logs.source==="retained" ? "Retained output from a removed container" : "Latest container output")+" · "+Model.humanTime(root.logs.observed_at,root.service.now)+(root.logs.truncated ? " · tail truncated" : "")+(!root.following ? " · paused" : "") }
+      Label { width:parent.width;caption:true;secondary:true;wrapMode:Text.NoWrap;elide:Text.ElideRight;text:!root.readable ? "Logs need an available operator connection and an updated runner." : root.blocked ? "Log updates stopped · Refresh logs after reviewing the error." : !root.logs ? (root.following ? "Waiting for runtime output…" : "Updates paused · Refresh logs to read once.") : root.logs.source==="none" ? "No runtime log is available yet." : (root.logs.source==="retained" ? "Retained output from a removed container" : "Latest container output")+" · "+Model.humanTime(root.logs.observed_at,root.service.now)+(root.logs.truncated ? " · tail truncated" : "")+(!root.following ? " · paused" : "") }
       Controls.ScrollView {
         width:parent.width;height:Style.space(250);visible:!!root.logs&&root.logs.lines.length>0
         contentWidth:availableWidth
@@ -83,24 +153,27 @@ Column {
       }
     }
   }
-  Timer { interval:3000;repeat:true;running:root.readable&&root.following;onTriggered:root.refresh() }
-  Timer { id:readingDelay;interval:250;onTriggered:root.showReading=reader.running }
+  onReadingChanged: { if(reading)readingDelay.restart();else{readingDelay.stop();showReading=false} }
+  Timer { id:readingDelay;interval:250;onTriggered:root.showReading=root.reading }
+  Timer { id:stopDeadline;interval:6000;onTriggered:if(reader.running && root.stopping)reader.signal(9) }
   Process {
     id:reader
-    onRunningChanged: {if(running)readingDelay.restart();else{readingDelay.stop();root.showReading=false}}
-    stdout:SplitParser {splitMarker:"";onRead:function(data){if(root.output.length+data.length>262144){root.oversized=true;reader.signal(9)}else root.output+=data}}
+    stdout:SplitParser {splitMarker:"";onRead:function(data){root.readChunk(data)}}
     stderr:SplitParser {splitMarker:"";onRead:function(data){if(root.errors.length+data.length<16384)root.errors+=data}}
     onExited:function(code,status) {
-      if(root.requested!==root.selection || !root.readable){root.output="";root.errors="";refreshSoon.restart();return}
-      if(code!==0 || status!==0 || root.oversized)root.error="Logs could not be read. "+(root.oversized ? "Response exceeded its limit." : Model.errorMessage(root.errors))
-      else try {
-        var next=Model.validateRuntimeLogs(JSON.parse(root.output),root.connection.runner_id,root.instance.id,root.instance.config_revision)
-        if(next.container_id!==root.reportedContainer){root.reportedComet="";root.reportedContainer=next.container_id || ""}
-        var comet=Model.reportedCometName(next.lines)
-        if(comet)root.reportedComet=comet
-        root.logs=next;root.error=""
-      }catch(e){root.error=e.message}
+      stopDeadline.stop()
+      if (!root.stopping && root.requested===root.selection && root.eligible) {
+        if (root.watching || code!==0 || status!==0) {
+          root.blocked=true;root.clearLogs()
+          if (!root.error) root.error="Log reader stopped. "+Model.errorMessage(root.errors)+" Refresh logs to retry."
+        } else try {
+          root.acceptLogs(Model.validateRuntimeLogs(JSON.parse(root.output),root.connection.runner_id,root.instance.id,root.instance.config_revision))
+          root.received=true
+        } catch(e) { root.blocked=true;root.clearLogs();root.error=e.message }
+      }
+      root.stopping=false
       root.output="";root.errors=""
+      refreshSoon.restart()
     }
   }
 }

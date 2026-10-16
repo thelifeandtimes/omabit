@@ -73,7 +73,7 @@ Window {
           anchors.fill: parent; anchors.leftMargin: Style.space(24); anchors.rightMargin: Style.space(24); spacing: Style.space(18)
           Column { spacing: Style.space(2)
             Label { text: "omabit"; font.pixelSize: Style.space(27); font.bold: true; font.letterSpacing: -1 }
-            Label { objectName: "monitor-version"; text: "0.1.0-rc.6 / DEVELOPMENT"; caption: true; secondary: true }
+            Label { objectName: "monitor-version"; text: "0.1.0-rc.7 / DEVELOPMENT"; caption: true; secondary: true }
           }
           Rectangle { width: 1; height: Style.space(28); color: Design.line }
           Column { Layout.fillWidth: true; spacing: Style.space(3)
@@ -185,7 +185,7 @@ Window {
               }
               Column {
                 width: parent.width; spacing: Style.space(16); visible: root.page === "overview"
-                RuntimePane { width:parent.width;service:root.service;connection:root.connection;instance:root.instance;active:root.visible&&root.page==="overview" }
+                RuntimePane { width:parent.width;service:root.service;connection:root.connection;instance:root.instance;active:root.visible&&root.visibility!==Window.Minimized&&root.page==="overview" }
                 GridLayout {
                   width: parent.width; columns: width < Style.space(590) ? 2 : 3; columnSpacing: Style.space(10); rowSpacing: Style.space(10)
                   Metric { objectName: "container-memory"; Layout.fillWidth: true; label: "CONTAINER RAM"; value: root.resources.value; note: root.resources.note; ratio: root.sample ? root.sample.value / root.sample.limit : -1 }

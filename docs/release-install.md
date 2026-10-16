@@ -1,4 +1,4 @@
-# Omabit 0.1.0-rc.6 binary bundle
+# Omabit 0.1.0-rc.7 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
@@ -9,12 +9,17 @@ use `omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enab
 Native installation uses the shared QML and pinned released tools. Published
 RC.1/RC.2 archives remain unchanged.
 
-RC.6 retains management and the separate rootless Docker engine as the existing pier
+RC.7 retains management and the separate rootless Docker engine as the existing pier
 owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
 user-owned files. Storage/import/deletion and bounded reboot resume continue.
 This remains a development prerelease.
 
-RC.6 corrects Recommended Apps default resolution when Omarchy supplies only
+RC.7 adds persistent, identity-pinned runtime-log following to remove per-refresh
+SSH/PAM/logind sessions. It cancels on pause/hide/minimize/navigation, uses bounded
+retry backoff and stops on identity/access/configuration failures. The collector
+and plugin are updated together. See [RC.7 notes](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-rc7.md).
+
+RC.6 corrected Recommended Apps default resolution when Omarchy supplies only
 explicit widget settings. It includes the RC.5 refinements below and the same
 backend/runtime implementation and supplied pill bytes.
 
@@ -90,7 +95,7 @@ An operator may override that URL in plugin settings.
 The selected bytes are hashed/uploaded before registration and used on first Start.
 Initialized piers resume without reapplying a pill.
 
-The RC.5 release also attaches a frozen copy of the supplied bytes: **59,351,751 bytes**,
+This release also attaches the frozen supplied bytes qualified for RC.5: **59,351,751 bytes**,
 SHA-256 `85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62`.
 It passed a disposable fake first boot, healthy HTTP/identity checks and clean stop.
 Application inventory and OTA behavior are separate from this runtime smoke gate.

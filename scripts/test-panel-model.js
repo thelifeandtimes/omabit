@@ -63,6 +63,11 @@ assert.equal(model.validateRuntimeLogs(logReply,"runner-log","moon",1),logReply)
 assert.throws(()=>model.validateRuntimeLogs(logReply,"replacement","moon",1));
 assert.throws(()=>model.validateRuntimeLogs(logReply,"runner-log","different",1));
 assert.throws(()=>model.validateRuntimeLogs({...logReply,lines:["x".repeat(4097)]},"runner-log","moon",1));
+const logUpdate={runner_id:"runner-log",instance_id:"moon",config_revision:1,logs:logReply};
+assert.equal(model.validateRuntimeLogUpdate(logUpdate,"runner-log","moon",1),logUpdate);
+const logFailure={...logUpdate,logs:undefined,error:{code:"connection_unavailable",message:"Retrying"},retry_after_ms:5000};
+assert.equal(model.validateRuntimeLogUpdate(logFailure,"runner-log","moon",1),logFailure);
+for (const update of [{...logUpdate,instance_id:"other"},{...logUpdate,logs:{...logReply,config_revision:2}},{...logUpdate,error:logFailure.error},{...logFailure,retry_after_ms:0},{...logFailure,retry_after_ms:30001},{...logUpdate,retry_after_ms:1000}]) assert.throws(()=>model.validateRuntimeLogUpdate(update,"runner-log","moon",1));
 console.log("PASS: runtime diagnostics show the failure/exit/OOM cause, and logs bind identity/revision with bounded narration");
 const now = Date.now();
 const storageConnection={...registerConnection,features:["storage-locations","import-pier","delete-pier"],snapshot:{...registerConnection.snapshot,piers:{roots:[{id:"default",path:"/var/lib/urbit-runner/piers"},{id:"ssd",path:"/mnt/ssd/ships"}]}}};

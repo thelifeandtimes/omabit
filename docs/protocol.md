@@ -76,6 +76,50 @@ retained when an owned container is removed; older removed containers may have n
 
 CLI: `urbit-collector --runner NAME --expected-runner-id ID logs INSTANCE --revision N`.
 
+#### Persistent collector log watch (RC.7)
+
+```bash
+urbit-collector --format json --runner NAME --expected-runner-id ID \
+  logs INSTANCE --revision N --watch --interval 3s
+```
+
+This polls the existing bounded endpoint with one long-lived, identity-pinned
+client. Successful polls reuse its private HTTP-over-SSH connection. Each newly
+dialed connection verifies the enrolled runner ID/mode before requesting logs;
+operator access and revision/runtime-generation checks still apply per request.
+The minimum interval is 1s; the default is 3s, measured after each completed read.
+
+Watch mode requires JSON and emits an immediate initial result followed by compact
+NDJSON records. Each record has `runner_id`, `instance_id`, `config_revision`, and
+exactly one of:
+
+- `logs`: a complete `RuntimeLogs` tail with its original bounds and redaction.
+- `error`: a sanitized `{code,message}`. A positive `retry_after_ms` announces a
+  transient failure; omitted retry delay means the watch terminates for review.
+
+A new record replaces the previous displayed tail; it does not append indefinitely.
+Errors invalidate the old tail. Transient connection/server errors use exponential
+backoff with equal jitter: 3–6s, 6–12s, 12–24s, then 15–30s until recovery. Successful
+reads reset the backoff. Server-side transient errors retain a usable transport;
+transport failures close it before reconnecting. Identity mismatch, access denial,
+configuration conflict, missing instance and invalid log responses stop the watch.
+A runtime-generation race (`runtime_changed`) is transient: the next bounded read
+selects and validates the current generation. Cancellation exits successfully and
+closes the client, including pending SSH handshakes.
+
+The desktop starts one watcher per selected overview. Pause, hidden/minimized
+window, navigation and changed selection/enrollment cancel it; the next reader
+waits for the old process to exit. Ordinary inventory updates do not restart it,
+and transient inventory unavailability does not reset its backoff. Unexpected
+collector exit or terminal error requires explicit Refresh/Follow or a new
+selection. While paused, Refresh remains a single bounded read. The display
+parses individual records with a 512 KiB serialized-record limit (including JSON
+escaping), retaining only the latest bounded tail and an incomplete record.
+
+Deploy the updated collector and plugin together. RC.6 prebuilt tools do not have
+`logs --watch`; the RC.7 UI deliberately does not fall back to repeated one-shot
+processes. This is client-side polling, not a new streaming server endpoint.
+
 ### Base transport
 
 HTTP/JSON over a private Unix socket. The runner does not bind a TCP port. The

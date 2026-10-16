@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -14,9 +15,77 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
+	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
+
+func TestBridgeKeepsLogConnectionAndRevalidatesRevocation(t *testing.T) {
+	dir := t.TempDir()
+	line, _ := AuthorizedKey([]byte(publicKey(t)), "operator")
+	grant, _ := ParseLine(line)
+	keys := filepath.Join(dir, "keys")
+	if err := os.WriteFile(keys, []byte(line), 0600); err != nil {
+		t.Fatal(err)
+	}
+	socket := filepath.Join(dir, "runner.sock")
+	ln, err := net.Listen("unix", socket)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var polls atomic.Int32
+	srv := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set(protocol.Header, "1")
+		if r.Header.Get(Header) != grant.Fingerprint {
+			t.Error("lost verified actor")
+		}
+		if r.URL.Path == "/hello" {
+			json.NewEncoder(w).Encode(protocol.Hello{ProtocolVersion: 1, RunnerID: "runner-logs", Mode: "development-managed", Actor: "ssh-key:" + grant.Fingerprint, AccessRole: "operator", Features: []string{"ssh-key-grants"}})
+			return
+		}
+		polls.Add(1)
+		json.NewEncoder(w).Encode(protocol.RuntimeLogs{RunnerID: "runner-logs", InstanceID: "alpha", ConfigRevision: 1, Source: "none", ObservedAt: time.Now().UTC(), Lines: []string{}})
+	})}
+	go srv.Serve(ln)
+	defer srv.Close()
+	// A single accepted byte stream is equivalent to one authenticated SSH
+	// session. The bridge must serve every poll and notice live grant revocation.
+	endpoint := filepath.Join(dir, "bridge.sock")
+	bridge, err := net.Listen("unix", endpoint)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer bridge.Close()
+	done := make(chan error, 1)
+	go func() {
+		conn, err := bridge.Accept()
+		if err != nil {
+			done <- err
+			return
+		}
+		defer conn.Close()
+		done <- Bridge(context.Background(), conn, conn, socket, keys, grant.Fingerprint)
+	}()
+	c := client.NewPinned(endpoint, client.Identity{RunnerID: "runner-logs", Mode: "development-managed"})
+	defer c.Close()
+	for i := 0; i < 5; i++ {
+		if _, err := c.RuntimeLogs(context.Background(), "runner-logs", "alpha", 1); err != nil {
+			t.Fatal("log poll required another session", err)
+		}
+	}
+	if err := os.WriteFile(keys, nil, 0600); err != nil {
+		t.Fatal(err)
+	}
+	_, err = c.RuntimeLogs(context.Background(), "runner-logs", "alpha", 1)
+	var remote *client.RemoteError
+	if !errors.As(err, &remote) || remote.Status != 403 || polls.Load() != 5 {
+		t.Fatal("revoked persistent session could still read logs", err, polls.Load())
+	}
+	if err := <-done; err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestBridgeRejectsLegacyAndOverwritesUntrustedActor(t *testing.T) {
 	for _, supported := range []bool{false, true} {

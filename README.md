@@ -105,7 +105,13 @@ go vet ./...
 go build -o ./build/ ./cmd/... ./backend/cmd/...
 node scripts/test-panel-model.js
 python3 -B scripts/test-panel.py --windows
+python3 -B scripts/test-log-watch.py
 ```
+
+RC.7 source includes a [persistent runtime-log watcher](docs/protocol.md#persistent-collector-log-watch-rc7)
+to eliminate per-refresh SSH/PAM sessions. The updated collector and plugin ship
+together. See the [RC.7 release notes](docs/release-rc7.md) and
+[D-Bus incident follow-up](docs/diagnostics/2026-10-16-dbus-log-watch.md).
 
 Existing ships and unrelated Docker installations are preserved during setup.
 Host changes use explicit OS authorization; desktop clients do not receive Docker

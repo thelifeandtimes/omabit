@@ -499,6 +499,16 @@ function validateRuntimeLogs(v,runner,instance,revision) {
   if (!v.lines.every(function(line){if(typeof line!=="string")return false;size+=line.length+1;return line.length<=4096}) || size>65536) throw new Error("Log response exceeds the display limit.")
   return v
 }
+function validateRuntimeLogUpdate(v,runner,instance,revision) {
+  if (!v || v.runner_id!==runner || v.instance_id!==instance || v.config_revision!==revision || !!v.logs===!!v.error) throw new Error("Log update does not match the selected ship.")
+  if (v.error) {
+    if (!validId(v.error.code) || typeof v.error.message!=="string" || v.error.message.length>512 || v.retry_after_ms!==undefined && (!Number.isInteger(v.retry_after_ms) || v.retry_after_ms<1 || v.retry_after_ms>30000)) throw new Error("Invalid log watch error.")
+  } else {
+    if (v.retry_after_ms!==undefined) throw new Error("Invalid log watch retry.")
+    validateRuntimeLogs(v.logs,runner,instance,revision)
+  }
+  return v
+}
 
 function available(connection, now) {
   return !!connection && connection.status === "available" && !!connection.snapshot

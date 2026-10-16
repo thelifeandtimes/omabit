@@ -83,6 +83,10 @@ func (c *sshConn) Close() error {
 }
 
 func dialSSH(ctx context.Context, config SSHConfig) (net.Conn, error) {
+	return startSSH(ctx, exec.Command("/usr/bin/ssh", sshArguments(config)...))
+}
+
+func startSSH(ctx context.Context, cmd *exec.Cmd) (net.Conn, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -96,7 +100,6 @@ func dialSSH(ctx context.Context, config SSHConfig) (net.Conn, error) {
 		write.Close()
 		return nil, err
 	}
-	cmd := exec.Command("/usr/bin/ssh", sshArguments(config)...)
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = in, out, io.Discard
 	if err := cmd.Start(); err != nil {
 		in.Close()

@@ -88,8 +88,9 @@ Commands:
   login-code INSTANCE --revision N --container-id FULL_ID --reveal
               Operator-only secret response; requires pinned --runner/--expected-runner-id.
   snapshot    Show the current runner snapshot.
-  logs INSTANCE --revision N
+  logs INSTANCE --revision N [--watch --interval 3s]
               Read a bounded operator-only runtime log tail from the pinned runner.
+              Watch reuses one connection; JSON updates include tails or retry/stop errors.
   piers       Discover enrolled, moved and unenrolled piers (archive is excluded).
   storage-root-add NAME --path /absolute/host/directory --request-id ID
               Add an identity-pinned, runner-owned storage location.

@@ -75,6 +75,11 @@ func verifyConnection(ctx context.Context, conn net.Conn, identity Identity) (_ 
 	}
 	// Close the connection on failures before closing a possibly undrained body.
 	data, readErr := io.ReadAll(io.LimitReader(resp.Body, maxResponseBytes+1))
+	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
+		conn.Close()
+		resp.Body.Close()
+		return nil, &RemoteError{Status: resp.StatusCode, Problem: protocol.APIError{Code: "runner_access_denied", Message: "runner identity handshake denied access"}}
+	}
 	if readErr != nil || len(data) > maxResponseBytes || resp.StatusCode != http.StatusOK || resp.Close {
 		conn.Close()
 		resp.Body.Close()

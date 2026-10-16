@@ -91,8 +91,9 @@ ShellRoot {
       phase=50
     } else if(phase===50) {
       var runtime=control(service.monitorWindow,"runtime-pane"),button=control(runtime,"runtime-logs-refresh")
+      if(!runtime.logs)return
       runtime.following=false
-      if(runtime.reading || !runtime.logs)return
+      if(runtime.running)return
       logGeometry={width:button.width,height:button.height,row:button.parent.height}
       button.clicked();button.clicked();phase=51
     } else if(phase===51) {
@@ -165,5 +166,6 @@ ShellRoot {
     assert any("suggest-port" in c for c in calls)
     assert not any(any(a in c for a in ("create-ship", "setup", "copy-code")) for c in calls)
     assert [c[c.index("create-comet")+1] for c in calls if "create-comet" in c] == ["ambiguous-comet", "uncertain-start"]
-    assert [c[c.index("operate")+1] for c in calls if "operate" in c] == ["uncertain-start"]
+    starts = [c for c in calls if "operate" in c]
+    assert [c[c.index("operate")+1] for c in starts] == ["uncertain-start"], starts
     print("PASS: preference persisted; CLI audit confirms no first-run mutations and exactly one authorized Start despite response loss")

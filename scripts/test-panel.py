@@ -95,7 +95,13 @@ elif "logs" in sys.argv:
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
     lines=["2026-10-02T15:00:00Z boot: "+name,"2026-10-02T15:00:01Z http: fail 504","<plain-text-fixture>"]
     if name=="comet-fixture": lines.insert(0,"found comet: ~doznec-salbud-salwex-sogref--tasweb-navfun-batwet-sigfet")
-    print(json.dumps({"runner_id":"runner-fixture","instance_id":name,"config_revision":revision,"source":"docker","observed_at":stamp,"container_id":"c"*64,"kind":"comet-boot","lines":lines,"truncated":False}))
+    logs={"runner_id":"runner-fixture","instance_id":name,"config_revision":revision,"source":"docker","observed_at":stamp,"container_id":"c"*64,"kind":"comet-boot","lines":lines,"truncated":False}
+    if "--watch" in sys.argv:
+        while True:
+            print(json.dumps({"runner_id":"runner-fixture","instance_id":name,"config_revision":revision,"logs":logs}),flush=True)
+            time.sleep(.2)
+    else:
+        print(json.dumps(logs))
 elif "move-host" in sys.argv:
     assert sys.argv[sys.argv.index("move-host")+1]=="alpha"
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
