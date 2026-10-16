@@ -37,6 +37,11 @@ func TestBootstrapUsesPermanentMountAndNeverStopsOrMovesTheShip(t *testing.T) {
 			t.Fatal("permanent bootstrap mount", args)
 		}
 	}
+	for _, call := range f.calls {
+		if strings.Contains(strings.Join(call, " "), "/udp") {
+			t.Fatal("fake published host UDP", call)
+		}
+	}
 	for _, e := range f.events {
 		if e == "stop-http-boot" || e == "rm-http-boot" || e == "start-http-restart" {
 			t.Fatal("bootstrap recycled the ship", e)
@@ -119,58 +124,115 @@ func TestOwnedKeyBootUsesPermanentPierAndCleansUpKeyWithoutRestart(t *testing.T)
 }
 
 func TestOwnedEnrollmentVerifiesWithAmesDisabledBeforeNetworkedResume(t *testing.T) {
-	f, state, persist := managedCometFixture(t)
-	state.NativeShip = "~sampel-palnet"
-	state.Comet.Ship = state.NativeShip
-	rel := "livenet/planets/sampel-palnet/pier"
-	p, err := pierstore.Parents(f.d.home, rel)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.MkdirAll(filepath.Join(p, ".urb/chk"), 0700); err != nil {
-		t.Fatal(err)
-	}
-	writePierEpochPath(t, p, "0i0", false)
-	identity, err := pierstore.Identify(p)
-	if err != nil {
-		t.Fatal(err)
-	}
-	mountIdentity, err := pierstore.IdentifyMount(filepath.Dir(p))
-	if err != nil {
-		t.Fatal(err)
-	}
-	state.Storage = &pierstore.Location{Path: rel, Identity: identity, MountIdentity: mountIdentity}
-	state.Adoption = &ManagedAdoption{Fingerprint: pierstore.Fingerprint(identity), Uncertain: true}
-	state, obs, err := applyManaged(context.Background(), "enroll-pier", state, persist, f.d)
-	if err != nil || obs.State != "stopped" || state.MaintenanceQualified() {
-		t.Fatal(obs, err)
-	}
-	if _, _, err := applyManaged(context.Background(), "pack", state, persist, f.d); err == nil {
-		t.Fatal("maintenance preceded identity verification")
-	}
-	f.d.hostIdentity = func(context.Context, string) (string, error) { return "~sampel-palnet", nil }
-	state, obs, err = applyManaged(context.Background(), "start", state, persist, f.d)
-	if err != nil || obs.Health != "healthy" || !state.Adoption.Verified {
-		t.Fatal(obs, err)
-	}
-	verified, resumed := false, false
-	for _, call := range f.calls {
-		if len(call) < 2 || call[0] != "container" || call[1] != "create" {
-			continue
-		}
-		joined := " " + strings.Join(call, " ") + " "
-		if strings.Contains(joined, " -c ") || strings.Contains(joined, " -w ") || strings.Contains(joined, " -k ") {
-			t.Fatal("import used creation/key flags")
-		}
-		if strings.Contains(joined, "comet-verify") {
-			verified = strings.Contains(joined, " -L ")
-		}
-		if strings.Contains(joined, "comet-resume") {
-			resumed = !strings.Contains(joined, " -L ") && verified
-		}
-	}
-	if !verified || !resumed {
-		t.Fatal("identity handover ordering", verified, resumed)
+	for _, tc := range []struct {
+		name, ship, tier string
+		mismatch         bool
+	}{
+		{"moon", "~dibpen-fogweg-dozzod-sarlev", "moons", false},
+		{"planet", "~sampel-palnet", "planets", false},
+		{"comet", fixtureComet, "comets", false},
+		{"identity-mismatch", "~sampel-palnet", "planets", true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f, state, persist := managedCometFixture(t)
+			state.Boot = &ManagedBoot{}
+			state.AmesPort = 34567
+			state.NativeShip = tc.ship
+			state.Comet.Ship = state.NativeShip
+			rel := "livenet/" + tc.tier + "/imported/pier"
+			p, err := pierstore.Parents(f.d.home, rel)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.MkdirAll(filepath.Join(p, ".urb/chk"), 0700); err != nil {
+				t.Fatal(err)
+			}
+			writePierEpochPath(t, p, "0i0", false)
+			identity, err := pierstore.Identify(p)
+			if err != nil {
+				t.Fatal(err)
+			}
+			mountIdentity, err := pierstore.IdentifyMount(filepath.Dir(p))
+			if err != nil {
+				t.Fatal(err)
+			}
+			state.Storage = &pierstore.Location{Path: rel, Identity: identity, MountIdentity: mountIdentity}
+			state.Adoption = &ManagedAdoption{Fingerprint: pierstore.Fingerprint(identity), Uncertain: true}
+			state, obs, err := applyManaged(context.Background(), "enroll-pier", state, persist, f.d)
+			if err != nil || obs.State != "stopped" || state.MaintenanceQualified() {
+				t.Fatal(obs, err)
+			}
+			if _, _, err := applyManaged(context.Background(), "pack", state, persist, f.d); err == nil {
+				t.Fatal("maintenance preceded identity verification")
+			}
+			f.d.hostIdentity = func(context.Context, string) (string, error) {
+				if tc.mismatch {
+					return "~marzod", nil
+				}
+				return tc.ship, nil
+			}
+			state, obs, err = applyManaged(context.Background(), "start", state, persist, f.d)
+			if tc.mismatch {
+				if err == nil || state.Adoption.Verified {
+					t.Fatal("mismatched identity accepted")
+				}
+				verified := false
+				for _, call := range f.calls {
+					joined := " " + strings.Join(call, " ") + " "
+					if strings.Contains(joined, "/udp") || strings.Contains(joined, "comet-resume") {
+						t.Fatal("networked resume before matching identity", call)
+					}
+					if strings.Contains(joined, "comet-verify") && strings.Contains(joined, " -L ") {
+						verified = true
+					}
+				}
+				if !verified {
+					t.Fatal("identity check was not reached")
+				}
+				return
+			}
+			if err != nil || obs.Health != "healthy" || !state.Adoption.Verified {
+				t.Fatal(obs, err)
+			}
+			verified, resumed := false, false
+			for _, call := range f.calls {
+				if len(call) < 2 || call[0] != "container" || call[1] != "create" {
+					continue
+				}
+				joined := " " + strings.Join(call, " ") + " "
+				if strings.Contains(joined, " -c ") || strings.Contains(joined, " -w ") || strings.Contains(joined, " -k ") {
+					t.Fatal("import used creation/key flags")
+				}
+				if strings.Contains(joined, "comet-verify") {
+					verified = strings.Contains(joined, " -L ")
+					if strings.Contains(joined, "/udp") {
+						t.Fatal("verification published UDP", call)
+					}
+				}
+				if strings.Contains(joined, "comet-resume") {
+					resumed = !strings.Contains(joined, " -L ") && verified
+					if !strings.Contains(joined, " --ames-port 34567 ") || !strings.Contains(joined, "0.0.0.0:34567:34567/udp") {
+						t.Fatal("resume omitted configured Ames publication", call)
+					}
+				}
+			}
+			if !verified || !resumed {
+				t.Fatal("identity handover ordering", verified, resumed)
+			}
+			if f.downloads != 0 {
+				t.Fatal("import downloaded a bootstrap pill")
+			}
+			_, obs, err = observeManaged(context.Background(), state, f.d)
+			if err != nil || obs.Health != "healthy" {
+				t.Fatal("published runtime failed inspection", obs, err)
+			}
+			f.editInspect = func(_ string, doc map[string]any) {
+				mapAt(mapAt(doc, "HostConfig"), "PortBindings")["34567/udp"] = []any{map[string]any{"HostIp": "127.0.0.1", "HostPort": "34568"}}
+			}
+			if _, _, err = observeManaged(context.Background(), state, f.d); err == nil {
+				t.Fatal("wrong imported Ames mapping accepted")
+			}
+		})
 	}
 }
 

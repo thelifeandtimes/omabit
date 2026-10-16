@@ -47,6 +47,9 @@ func TestDiscoveredEnrollmentAndMovedRelinkBindFilesystemIdentity(t *testing.T) 
 	if !v.Runtime.Adoption.Uncertain || !v.Public.IdentityPending || v.Runtime.Storage.Identity != id {
 		t.Fatal("enrollment lost its quarantine or identity")
 	}
+	if v.Runtime.Boot != nil || v.Runtime.AmesPort != 0 || v.Public.AmesPublished {
+		t.Fatal("fake enrollment enabled host Ames publication")
+	}
 	// Simulate completed stopped enrollment while preserving the real stored ID.
 	v.Public.ActiveOperationID = ""
 	v.Runtime.Adoption = nil
