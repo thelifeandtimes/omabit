@@ -7,6 +7,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/piercopy"
@@ -19,7 +20,30 @@ func RegisterStorageRoot(id, path string) (pierstore.StorageRoot, error) {
 	return pierstore.RegisterRoot(defaults().home, id, path)
 }
 func InspectExternalPier(ctx context.Context, path string) (pierstore.ExternalSource, error) {
-	return pierstore.InspectExternal(ctx, defaults().home, path)
+	return inspectExternalPier(ctx, path, defaults())
+}
+
+func inspectExternalPier(ctx context.Context, path string, d dependencies) (pierstore.ExternalSource, error) {
+	source, err := pierstore.InspectExternal(ctx, d.home, path)
+	if err != nil {
+		return pierstore.ExternalSource{}, err
+	}
+	q := &qualifier{d: d}
+	if err := q.accountBoundary(false); err != nil {
+		return pierstore.ExternalSource{}, err
+	}
+	if _, err := q.inspectEpochsAt(ctx, path); err != nil {
+		return pierstore.ExternalSource{}, err
+	}
+	// Bind compatibility to the same unchanged tree that the caller reviewed.
+	after, err := pierstore.InspectExternal(ctx, d.home, path)
+	if err != nil {
+		return pierstore.ExternalSource{}, err
+	}
+	if source != after {
+		return pierstore.ExternalSource{}, errors.New("source changed during epoch validation")
+	}
+	return source, nil
 }
 
 func applyPierDeletion(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
@@ -189,6 +213,149 @@ func applyPierDeletion(ctx context.Context, state ManagedState, persist func(Man
 	return state, ManagedObservation{State: "deleted", Health: "unknown"}, nil
 }
 
+// absentImportPaths conservatively requires both historical names to be absent.
+// Even an unrelated replacement needs human review: the journal cannot prove
+// that it is unrelated. Never follow symlinks or cross mounts to infer absence.
+func absentImportPaths(state ManagedState) error {
+	intent := state.ExternalImport
+	if intent == nil || !filepath.IsAbs(intent.Source.Path) || filepath.Clean(intent.Source.Path) != intent.Source.Path || intent.Source.Path == "/" ||
+		intent.HeldPath != filepath.Join(filepath.Dir(intent.Source.Path), ".omabit-import-"+state.ID, "pier") {
+		return errors.New("source/holding evidence paths require review")
+	}
+	root, err := unix.Open("/", unix.O_PATH|unix.O_DIRECTORY|unix.O_CLOEXEC, 0)
+	if err != nil {
+		return err
+	}
+	// External sources may live on mounted disks. Traverse without symlinks;
+	// once on the recorded source device, disallow every further mount crossing
+	// (including same-device bind mounts) through the parent and evidence paths.
+	// Legacy journals lack parent inode/mount IDs. Device renumbering therefore
+	// needs manual review rather than weakening this absence check.
+	parent := root
+	defer func() { unix.Close(parent) }()
+	var st unix.Stat_t
+	if err := unix.Fstat(parent, &st); err != nil {
+		return err
+	}
+	for _, part := range strings.Split(filepath.Dir(intent.Source.Path)[1:], "/") {
+		if part == "" {
+			continue
+		}
+		resolve := uint64(unix.RESOLVE_NO_SYMLINKS)
+		if st.Dev == intent.Source.Identity.Device {
+			resolve |= unix.RESOLVE_NO_XDEV
+		}
+		next, err := unix.Openat2(parent, part, &unix.OpenHow{
+			Flags:   unix.O_PATH | unix.O_DIRECTORY | unix.O_CLOEXEC,
+			Resolve: resolve,
+		})
+		if err != nil {
+			return errors.New("source parent is unavailable or unsafe")
+		}
+		unix.Close(parent)
+		parent = next
+		if err := unix.Fstat(parent, &st); err != nil {
+			return err
+		}
+	}
+	if st.Dev != intent.Source.Identity.Device {
+		return errors.New("source parent filesystem changed; review absence evidence")
+	}
+	for _, path := range []string{filepath.Base(intent.Source.Path), filepath.Join(filepath.Base(filepath.Dir(intent.HeldPath)), "pier")} {
+		fd, err := unix.Openat2(parent, path, &unix.OpenHow{
+			Flags:   unix.O_PATH | unix.O_CLOEXEC | unix.O_NOFOLLOW,
+			Resolve: unix.RESOLVE_NO_SYMLINKS | unix.RESOLVE_NO_XDEV,
+		})
+		if err == nil {
+			unix.Close(fd)
+			return errors.New("source/holding path exists; review retained or recreated data without removing it")
+		}
+		if !errors.Is(err, unix.ENOENT) {
+			return errors.New("source/holding absence cannot be established without unsafe or inaccessible traversal")
+		}
+	}
+	return nil
+}
+
+// applyImportRecovery only reads retained evidence. It never recreates, renames
+// or removes source/holding paths, nor runs Docker, Vere or preparation/bootstrap.
+func applyImportRecovery(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
+	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
+	if persist == nil || !state.ImportRecoveryEligible() {
+		return state, unknown, errors.New("recovery requires an interrupted prepared external enrollment with retained identity")
+	}
+	if err := absentImportPaths(state); err != nil {
+		return state, unknown, err
+	}
+	q, err := managedSession(&state, persist, d)
+	if err != nil {
+		return state, unknown, err
+	}
+	if err = q.accountBoundary(false); err != nil {
+		return state, unknown, err
+	}
+	for _, path := range append(q.storagePaths(), q.r.Directory, q.config) {
+		if err = q.owned(path, os.ModeDir, path == q.r.Directory || path == q.config); err != nil {
+			return state, unknown, err
+		}
+	}
+	path, err := pierstore.Check(d.home, *state.Storage)
+	if err != nil {
+		return state, unknown, err
+	}
+	if pierstore.Busy(path) {
+		return state, unknown, errors.New("retained destination has a Vere lock")
+	}
+	before, _, _, err := pierstore.TreeReview(ctx, path)
+	if err != nil {
+		return state, unknown, err
+	}
+	if err = pierstore.CheckStateFiles(ctx, path); err != nil {
+		return state, unknown, err
+	}
+	inv, err := q.inspectEpochs(ctx)
+	if err != nil {
+		return state, unknown, err
+	}
+	after, _, _, err := pierstore.TreeReview(ctx, path)
+	if err != nil {
+		return state, unknown, err
+	}
+	if before != after || pierstore.Busy(path) {
+		return state, unknown, errors.New("retained destination changed during recovery")
+	}
+	if _, err = pierstore.Check(d.home, *state.Storage); err != nil {
+		return state, unknown, err
+	}
+	if err = ctx.Err(); err != nil {
+		return state, unknown, err
+	}
+	if err = absentImportPaths(state); err != nil {
+		return state, unknown, err
+	}
+	// Offer completion to the journal. The managed store stages this callback
+	// without clearing durable fences, then commits state, observation and the
+	// succeeded receipt together in finish. A rejected callback stays fenced.
+	completed := state
+	adoption, intent := *state.Adoption, *state.ExternalImport
+	completed.Adoption, completed.ExternalImport = &adoption, &intent
+	now := time.Now().UTC()
+	completed.Initialized, completed.Epochs = true, inv
+	completed.Runtime = q.r
+	completed.Runtime.Stage = "stopped"
+	adoption.Uncertain, adoption.FinishedAt = false, &now
+	intent.Stage = "complete"
+	if state.Comet != nil {
+		comet := *state.Comet
+		comet.StartedAt, comet.FinishedAt, comet.Uncertain = &now, &now, false
+		completed.Comet = &comet
+	}
+	if err = persist(completed); err != nil {
+		return state, unknown, err
+	}
+	return completed, ManagedObservation{State: "stopped", Health: "unknown"}, nil
+}
+
 func applyExternalImport(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
@@ -204,7 +371,7 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 	if err = q.accountBoundary(false); err != nil {
 		return state, unknown, err
 	}
-	source, err := pierstore.InspectExternal(ctx, d.home, intent.Source.Path)
+	source, err := inspectExternalPier(ctx, intent.Source.Path, d)
 	if err != nil || source != intent.Source {
 		return state, unknown, errors.New("source changed or became inaccessible since import review; nothing was moved")
 	}

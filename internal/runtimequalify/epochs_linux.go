@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/epochs"
-	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
 // Metadata fingerprints intentionally exclude atime. They bind a preview to
@@ -32,18 +31,27 @@ type epochFingerprint struct {
 }
 
 func (q *qualifier) inspectEpochs(ctx context.Context) (*epochs.Inventory, error) {
+	if err := q.pier(); err != nil {
+		return nil, err
+	}
+	return q.inspectEpochsAt(ctx, q.pierPath())
+}
+
+// inspectEpochsAt is the same read-only compatibility gate for managed and
+// external piers. Callers must validate the pier identity and ancestors first.
+func (q *qualifier) inspectEpochsAt(ctx context.Context, path string) (*epochs.Inventory, error) {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
-	root, err := q.openPierDirectory("log")
+	root, err := q.openEpochDirectory(path, "log")
 	if err != nil {
 		return nil, err
 	}
 	defer root.Close()
-	first, err := q.scanEpochs(ctx, root)
+	first, err := q.scanEpochsAt(ctx, root, path)
 	if err != nil {
 		return nil, err
 	}
-	second, err := q.scanEpochs(ctx, root)
+	second, err := q.scanEpochsAt(ctx, root, path)
 	if err != nil {
 		return nil, err
 	}
@@ -58,15 +66,19 @@ func (q *qualifier) inspectEpochs(ctx context.Context) (*epochs.Inventory, error
 }
 
 func (q *qualifier) openPierDirectory(leaf string) (*os.Root, error) {
-	if leaf != "log" && leaf != "chk" {
-		return nil, errors.New("unsupported pier directory")
-	}
 	if err := q.pier(); err != nil {
 		return nil, err
 	}
+	return q.openEpochDirectory(q.pierPath(), leaf)
+}
+
+func (q *qualifier) openEpochDirectory(path, leaf string) (*os.Root, error) {
+	if leaf != "log" && leaf != "chk" {
+		return nil, errors.New("unsupported pier directory")
+	}
 	// Anchor at the validated managed instance, then open each directory without
 	// accepting symlinks. Root confines every later lookup, including rename races.
-	root, err := os.OpenRoot(q.pierPath())
+	root, err := os.OpenRoot(path)
 	if err != nil {
 		return nil, errors.New("epoch storage unavailable")
 	}
@@ -79,7 +91,7 @@ func (q *qualifier) openPierDirectory(leaf string) (*os.Root, error) {
 	rel := ""
 	for _, part := range []string{".urb", leaf} {
 		rel = filepath.Join(rel, part)
-		if err := q.owned(filepath.Join(q.pierPath(), rel), os.ModeDir, false); err != nil {
+		if err := q.owned(filepath.Join(path, rel), os.ModeDir, false); err != nil {
 			return nil, err
 		}
 		info, err := root.Lstat(part)
@@ -117,9 +129,13 @@ func boundedEntries(root *os.Root, limit int) ([]os.DirEntry, error) {
 }
 
 func (q *qualifier) scanEpochs(ctx context.Context, root *os.Root) (*epochs.Inventory, error) {
+	return q.scanEpochsAt(ctx, root, q.pierPath())
+}
+
+func (q *qualifier) scanEpochsAt(ctx context.Context, root *os.Root, path string) (*epochs.Inventory, error) {
 	inv := &epochs.Inventory{Source: epochs.Source, PierID: q.r.RunID, Entries: []epochs.Entry{}}
 	var manifest []epochFingerprint
-	base := filepath.Join(q.pierPath(), ".urb/log")
+	base := filepath.Join(path, ".urb/log")
 	rootInfo, err := root.Stat(".")
 	if err != nil {
 		return nil, errors.New("epoch root metadata unavailable")
@@ -271,7 +287,10 @@ func scanEpochDirectory(ctx context.Context, root *os.Root, name string, expecte
 			if file == "epoc.txt" {
 				version = value == "2"
 			} else {
-				vere = value == candidate.VereVersion
+				// Epoch provenance is not runtime identity. Only these vetted
+				// format-2 writers are compatible; never accept a version prefix.
+				// Runtime image and executable verification remain exactly pinned.
+				vere = value == "4.6" || value == "4.6-5a7614f"
 			}
 		}
 		database = database || file == "data.mdb"

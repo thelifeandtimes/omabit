@@ -130,7 +130,7 @@ Commands:
   configure INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT
               Replace configuration; all flags are required. Demo loom: 31..33,
               not universal runtime bounds.
-  operate INSTANCE start|stop|pack|meld|roll|inspect-epochs --revision N --request-id ID
+  operate INSTANCE start|stop|pack|meld|roll|inspect-epochs|recover-import --revision N --request-id ID
               Submit one operation; both flags are required.
   epoch-preview INSTANCE --revision N --expected-digest HASH --cutoff 0iEVENT
               Preview an oldest prefix from a recent stopped-pier inspection.
@@ -242,7 +242,7 @@ Use COMMAND --help for command flags and constraints.
 		flags.UintVar(&amesPort, "ames-port", 0, "required Ames port, 1..65535")
 		flags.UintVar(&loom, "loom", 0, "required demo loom exponent, 31..33 (not universal runtime bounds)")
 	case "operate":
-		usage += " INSTANCE start|stop|pack|meld|roll|inspect-epochs --revision N --request-id ID"
+		usage += " INSTANCE start|stop|pack|meld|roll|inspect-epochs|recover-import --revision N --request-id ID"
 		flags.Uint64Var(&revision, "revision", 0, "required positive expected configuration revision")
 		flags.StringVar(&requestID, "request-id", "", "required caller-chosen ID: [A-Za-z0-9_-], 1..64 characters")
 	case "epoch-preview", "epoch-prune":
@@ -335,8 +335,11 @@ Use COMMAND --help for command flags and constraints.
 			return fail(errors.New("--loom is required and must be in 31..33 for this demo, not universal runtime bounds"), 2)
 		}
 	case "operate":
-		if kind != "start" && kind != "stop" && kind != "pack" && kind != "meld" && kind != "roll" && kind != "inspect-epochs" {
-			return fail(errors.New("operation must be start, stop, pack, meld, roll, or inspect-epochs"), 2)
+		if kind != "start" && kind != "stop" && kind != "pack" && kind != "meld" && kind != "roll" && kind != "inspect-epochs" && kind != "recover-import" {
+			return fail(errors.New("operation must be start, stop, pack, meld, roll, inspect-epochs, or recover-import"), 2)
+		}
+		if kind == "recover-import" && (*runnerName == "" || *expectedRunner == "") {
+			return fail(errors.New("recover-import requires a pinned --runner/--expected-runner-id"), 2)
 		}
 		if !validID(requestID) {
 			return fail(errors.New("--request-id is required: use 1..64 ASCII letters, digits, underscores, or hyphens"), 2)
@@ -461,6 +464,9 @@ Use COMMAND --help for command flags and constraints.
 	case "operate":
 		if (kind == "pack" || kind == "meld" || kind == "roll") && !slices.Contains(hello.Features, "offline-"+kind) {
 			return fail(fmt.Errorf("this runner does not support offline %s", kind), 1)
+		}
+		if kind == "recover-import" && (hello.AccessRole != "operator" || !slices.Contains(hello.Features, "recover-import")) {
+			return fail(errors.New("import recovery requires an operator and an updated runner with recover-import capability"), 1)
 		}
 		if kind == "inspect-epochs" && !slices.Contains(hello.Features, "epoch-inventory") {
 			return fail(errors.New("this runner does not support epoch inventory"), 1)

@@ -36,6 +36,29 @@ func epochFixture(t *testing.T, f *fakeEngine, state ManagedState, names ...stri
 	return base
 }
 
+func TestEpochProvenanceAllowsOnlyVettedFormatTwoVersions(t *testing.T) {
+	for _, version := range []string{"4.6", candidate.VereVersion, "4.6-other", "4.6.1", "4.7", "", " 4.6"} {
+		t.Run(version, func(t *testing.T) {
+			f, state, persist := stoppedManagedFixture(t)
+			base := epochFixture(t, f, state, "0i0")
+			path := filepath.Join(base, "0i0/vere.txt")
+			body := version + "\n"
+			if err := os.WriteFile(path, []byte(body), 0600); err != nil {
+				t.Fatal(err)
+			}
+			_, _, err := applyManaged(context.Background(), "inspect-epochs", state, persist, f.d)
+			want := version == "4.6" || version == candidate.VereVersion
+			if (err == nil) != want {
+				t.Fatalf("version %q accepted=%v, want %v: %v", version, err == nil, want, err)
+			}
+			got, err := os.ReadFile(path)
+			if err != nil || string(got) != body {
+				t.Fatal("epoch metadata rewritten", err)
+			}
+		})
+	}
+}
+
 func TestEpochInspectionIsMetadataOnlyStableAndNumericallySorted(t *testing.T) {
 	f, state, persist := stoppedManagedFixture(t)
 	base := epochFixture(t, f, state, "0i0", "0i2", "0i10", "0i9007199254740993")

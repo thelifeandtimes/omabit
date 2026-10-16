@@ -28,6 +28,30 @@ See [storage management](storage-management.md) for the filesystem contract and 
 workflow. Current schema 16 upgrades schema 11–15 databases additively; older
 binaries refuse the upgraded database.
 
+### Import enrollment recovery (additive capability)
+
+`recover-import` adds an operator-only operation through the existing
+`POST /v1/instances/:id/operations` endpoint:
+
+```json
+{"kind":"recover-import","request_id":"reviewed-import-recovery","expected_revision":3}
+```
+
+It uses the normal actor-scoped replay journal, active-operation exclusion,
+configuration revision check and host work gate. It is not automatic import
+resumption: only a stopped, prepared, uninitialized external import at `enrolling`
+with retained matching storage/adoption evidence and no other uncertainty is
+eligible. The backend revalidates the retained destination and checks that both
+historical source/holding paths are absent, without changing them or launching a
+runtime. Even unrelated recreated data requires review. The completion callback
+does not publish private state: the original fence remains durable until the
+completed import/adoption state, stopped observation and succeeded receipt commit
+in one terminal transaction. Failure or restart before that commit stays fenced.
+Successful recovery leaves identity pending and
+does not authorize a Start. No database schema or runtime release pin changes.
+See [reviewed recovery procedure](storage-management.md#reviewed-recovery-procedure-not-deployment-instructions)
+for scope, integrity limitations and the identity-pinned collector command.
+
 ### Owner-user extension (schema 16)
 
 Installed owner hosts advertise `owner-user-runtime` and `human-pier-storage`.

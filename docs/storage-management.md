@@ -105,8 +105,9 @@ the operation receipt and the source/holding paths shown under registered locati
 Automatic recovery of an import that has already moved its source is not offered.
 A failed review/preparation that never moved its source can be explicitly stopped
 and its empty registration deleted before a new attempt.
-If the move completed but the subsequent enrollment/layout validation failed,
-explicit Stop followed by Delete can discard the now-owned destination as well.
+If the move completed but enrollment failed, first review
+[explicit enrollment recovery](#epoch-compatibility-and-interrupted-enrollment).
+Stop followed by Delete can remove the sole destination copy. It is not recovery.
 
 ## Permanently delete a pier
 
@@ -136,6 +137,94 @@ revision starts **above the previous instance's final revision** and its private
 runtime ID is new. Old reviewed commands and delayed polls cannot affect the
 replacement; old delete-request replay cannot delete it. Always use the revision
 from the current snapshot instead of assuming that a reused name starts at 1.
+
+### Epoch compatibility and interrupted enrollment
+
+Preview and the import worker both validate epochs **before moving the source**,
+using the same read-only scanner as enrollment. Supported epochs have format `2`
+and provenance exactly `4.6` (stock release) or `4.6-5a7614f` (pinned build).
+Trailing metadata whitespace remains allowed. Other releases, arbitrary build
+suffixes and other epoch formats are rejected. This does not relax the exact
+runtime image/executable pins and never rewrites `epoc.txt` or `vere.txt`.
+This is **header compatibility, not boot qualification**: Vere can still reject a
+stale snapshot or incompatible persisted state. Do not rewrite metadata to make
+such a pier pass. Before a runtime change, stop the source and run its original
+Vere binary's `prep` utility on that pier. Require successful completion before
+import or Start. This updates the snapshot through Vere, not by editing metadata.
+
+An older runner could move/copy the source, remove the holding directory, and then
+fail epoch validation. The narrow `recover-import` operation finishes only a
+**prepared, uninitialized external import at `enrolling`** with its original
+storage/mount identities and matching retained adoption fingerprint. It requires
+uncertain, unverified adoption, no prior adoption completion, no container/network
+records, and no independent provisioning, handoff or maintenance uncertainty.
+The existing private runtime directories must still be safe and present. An
+explicit Stop that only recorded `stopped` does not erase this evidence and does
+not prevent recovery. Stop is neither required nor a way to clear the quarantine.
+
+Recovery checks destination identity, ownership, links, mount boundaries, lock
+markers, state files, stable tree metadata and compatible epochs. It also requires
+**both historical source and holding paths to be absent**, before and after the
+destination checks. A duplicate pier (locked or not), unrelated replacement or
+inaccessible evidence all require review; recovery never deletes or changes them.
+It does not repeat copying/removal, bootstrap, contact Docker, or start Vere.
+
+Absence is checked through descriptor-relative, no-symlink traversal. After
+reaching the recorded source filesystem, subsequent mount crossings (including
+same-device bind mounts) are refused. Unavailable `openat2`, inaccessible parents,
+or a changed source device fail closed; device renumbering can therefore require
+manual review. The historical source parent must still be accessible. The legacy
+journal has no parent inode/mount ID, so this does not prove historical ancestry
+or detect an ordinary same-filesystem parent replacement. Keep external writers
+and supervisors stopped; these are bounded checks, not a filesystem freeze.
+
+The original private provisioning fence remains durable through validation and
+the completion callback. Only the terminal SQLite transaction publishes completed
+import/adoption state, the stopped observation and the succeeded receipt together.
+Failure or restart before that commit leaves the original fence intact, including
+after polling and Stop. Success keeps `identity_pending` true. A later Start is a
+**separate explicit action**, not part of recovery.
+
+The retained adoption fingerprint binds directory identity, not historical file
+contents. Legacy journals do not contain a destination content hash; recovery
+cannot prove that previously edited LMDB bytes are original. Stable metadata
+checks detect changes during validation, not every historical content edit.
+Runtime working directories are checked for their expected path, ownership and
+safe modes; they are **not bound to historical inodes**. A safely recreated private
+workspace passes those checks and is not evidence of historical integrity. Keep
+external supervisors stopped and resolve any independent integrity concern before
+requesting recovery. Locks are refused, never removed automatically.
+
+#### Reviewed recovery procedure (not deployment instructions)
+
+Use an independently reviewed build advertising `recover-import`. Installing it
+or operating a real pier requires separate authorization. All names below are
+placeholders.
+
+1. Inspect the identity-pinned runner's snapshot. Confirm the target instance,
+   current configuration revision, desired state `stopped`, no active operation,
+   and external-import stage `enrolling`. Review the retained enrollment failure;
+   do not repeat `import-pier`, edit SQLite, rewrite epoch metadata, or use Delete
+   to bypass it. Earlier copy/move phases, unprepared or already initialized
+   registrations are deliberately unsupported.
+2. With operator access, submit exactly one revision-bound recovery request:
+
+   ```text
+   urbit-collector --runner HOST --expected-runner-id RUNNER_ID \
+     operate INSTANCE recover-import --revision CURRENT_REVISION \
+     --request-id reviewed-import-recovery
+   ```
+
+3. Read the same runner's snapshot again. Match the returned operation ID and wait
+   for its terminal result. `queued` is not success. A successful result must show
+   desired/observed `stopped`, import stage `complete`, `recovery_required: false`,
+   and `identity_pending: true`; no runtime was started. Stop here.
+4. If the reply is lost, repeat the **identical** request to retrieve its receipt,
+   not re-execute recovery. A failed/interrupted request retains its result. After
+   reviewing the cause and a fresh revision, a new request ID permits another
+   explicit attempt only if the narrow eligibility checks still hold. A completed
+   import rejects a new recovery request. Do not widen recovery by changing state
+   records or deleting files.
 
 ## CLI equivalents
 

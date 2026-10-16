@@ -78,6 +78,8 @@ shared implementation remains under `internal/` in one Go module.
 - Identity-pinned collector connections, operator/observer grants and Eyre sessions.
 - Local first-run setup with visible progress and automatic collector enrollment.
 - Stopped cross-host handoff with verified contents and permanent source fencing.
+- Stock Vere 4.6 epoch import checks before source movement, plus explicit recovery of retained enrollment failures.
+  See [import compatibility and recovery verification](docs/diagnostics/import-recovery-verification.md).
 - New-ship selection between bare bootstrap and a supplied Recommended Apps pill.
 
 Owned-pier import is implemented as explicit enrollment of a fully transferred,

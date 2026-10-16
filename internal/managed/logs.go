@@ -115,7 +115,7 @@ func attachRuntimeStatus(tx *sql.Tx, v *storedInstance) error {
 		break
 	}
 	var body []byte
-	err := tx.QueryRow(`SELECT body FROM operations WHERE json_extract(body,'$.instance_id')=? AND json_extract(body,'$.config_revision') > COALESCE((SELECT revision FROM deleted_instances WHERE id=?),0) AND json_extract(body,'$.kind') IN ('start','stop','startup-resume','pack','meld','roll','routine-pack','routine-meld','move-pier','enroll-pier','import-pier','delete-pier','prune-epochs') ORDER BY rowid DESC LIMIT 1`, v.Public.ID, v.Public.ID).Scan(&body)
+	err := tx.QueryRow(`SELECT body FROM operations WHERE json_extract(body,'$.instance_id')=? AND json_extract(body,'$.config_revision') > COALESCE((SELECT revision FROM deleted_instances WHERE id=?),0) AND json_extract(body,'$.kind') IN ('start','stop','startup-resume','pack','meld','roll','routine-pack','routine-meld','move-pier','enroll-pier','import-pier','recover-import','delete-pier','prune-epochs') ORDER BY rowid DESC LIMIT 1`, v.Public.ID, v.Public.ID).Scan(&body)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
