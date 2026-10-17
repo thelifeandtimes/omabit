@@ -23,6 +23,8 @@ import (
 
 type timings struct{ command, pull, download, ready, poll, stop, cleanup, pack, cleanupCommand time.Duration }
 type dependencies struct {
+	loom             uint8
+	nativeControl    bool
 	bootstrap        *protocol.Bootstrap
 	fake             *ManagedFake
 	storage          *pierstore.Location

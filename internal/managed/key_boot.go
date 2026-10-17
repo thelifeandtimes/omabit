@@ -42,6 +42,7 @@ func (r *Server) serveCreateShip(w http.ResponseWriter, req *http.Request, actor
 }
 
 func (s *store) registerShip(actor string, req protocol.CreateShipRequest) (protocol.Operation, bool, error) {
+
 	req.Key = strings.TrimSpace(req.Key)
 	req.Ship = "~" + strings.TrimPrefix(strings.TrimSpace(req.Ship), "~")
 	if message := protocol.ShipNameProblem(req.Ship); message != "" {
@@ -129,7 +130,7 @@ func (s *store) registerShip(actor string, req protocol.CreateShipRequest) (prot
 	if err != nil {
 		return protocol.Operation{}, false, err
 	}
-	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: revision, Ship: req.Ship, Mode: class, PierPath: req.PierPath, DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: id, Port: req.Config.HTTPPort, AmesPort: req.Config.AmesPort, Boot: &runtimequalify.ManagedBoot{Pill: req.Pill}, NativeShip: req.Ship, NativeKeyDigest: digest, Comet: &runtimequalify.ManagedComet{Ship: req.Ship}, Storage: &pierstore.Location{Path: req.PierPath}}}
+	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: revision, Ship: req.Ship, Mode: class, PierPath: req.PierPath, DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: id, Port: req.Config.HTTPPort, Loom: req.Config.Loom, NativeControl: req.Config.NativeControl, AmesPort: req.Config.AmesPort, Boot: &runtimequalify.ManagedBoot{Pill: req.Pill}, NativeShip: req.Ship, NativeKeyDigest: digest, Comet: &runtimequalify.ManagedComet{Ship: req.Ship}, Storage: &pierstore.Location{Path: req.PierPath}}}
 	v.Public.AmesPublished = true
 	v.Public.Bootstrap = &protocol.Bootstrap{Kind: "bare", Pill: req.Pill}
 	if req.Pill != nil {

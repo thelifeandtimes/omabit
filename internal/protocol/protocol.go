@@ -24,9 +24,10 @@ type Hello struct {
 }
 
 type Configuration struct {
-	HTTPPort uint16 `json:"http_port"`
-	AmesPort uint16 `json:"ames_port"`
-	Loom     uint8  `json:"loom"`
+	HTTPPort      uint16 `json:"http_port"`
+	AmesPort      uint16 `json:"ames_port"`
+	Loom          uint8  `json:"loom"`
+	NativeControl bool   `json:"native_control,omitempty"`
 }
 
 type Instance struct {
