@@ -27,7 +27,7 @@ import (
 
 const mode = "development-managed-fake"
 const DevelopmentMode = "development-managed"
-const currentSchema = 16
+const currentSchema = 18
 
 type storedInstance struct {
 	Public                protocol.Instance           `json:"public"`
@@ -160,19 +160,20 @@ CREATE TABLE instances (id TEXT PRIMARY KEY, body BLOB NOT NULL);
 CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TEXT NOT NULL,
  fingerprint TEXT NOT NULL, body BLOB NOT NULL, runtime BLOB,
  UNIQUE(actor, request_id));
-PRAGMA user_version=16;`); err != nil {
+PRAGMA user_version=18;`); err != nil {
 			return err
 		}
 		if _, err := tx.Exec("INSERT INTO meta VALUES ('runner_id', ?)", "runner-"+id); err != nil {
 			return err
 		}
-	} else if version >= 11 && version <= 15 {
-		// Older runners must not discard durable reboot-resume authorization.
-		if _, err := tx.Exec("PRAGMA user_version=16"); err != nil {
+	} else if version >= 11 && version <= 17 {
+		// Schema17 runners cannot manage native-enabled livenet launches safely.
+		// Bodies remain untouched: absent private fields mean loom31/conn disabled.
+		if _, err := tx.Exec("PRAGMA user_version=18"); err != nil {
 			return err
 		}
 	} else if version != currentSchema {
-		return errors.New("state database requires owner-user runtime and storage support (schema 16)")
+		return errors.New("state database requires all-ship native runtime support (schema 18)")
 	}
 	if _, err := tx.Exec("CREATE TABLE IF NOT EXISTS maintenance_policies (instance_id TEXT PRIMARY KEY REFERENCES instances(id), body BLOB NOT NULL)"); err != nil {
 		return err
@@ -294,8 +295,8 @@ func instances(q querier) ([]storedInstance, error) {
 }
 
 func validateConfig(c protocol.Configuration) error {
-	if c.HTTPPort < 1024 || c.AmesPort != 34343 || c.Loom != 31 {
-		return bad("development runtime requires HTTP port 1024..65535, loom 31, and guest Ames value 34343 (no host UDP publication)")
+	if c.HTTPPort < 1024 || c.AmesPort != 34343 || !protocol.ValidLoom(c.Loom) {
+		return bad("development runtime requires HTTP port 1024..65535, loom 20..34, and guest Ames value 34343 (no host UDP publication)")
 	}
 	return nil
 }
@@ -360,6 +361,7 @@ func (s *store) registerInstance(actor string, req protocol.CreateFakeRequest, s
 }
 
 func (s *store) registerKind(actor string, req protocol.CreateFakeRequest, source *protocol.ImportSource, comet bool) (protocol.Operation, bool, error) {
+
 	if req.Bootstrap != nil && (!protocol.ValidBootstrap(req.Bootstrap) || source != nil) {
 		return protocol.Operation{}, false, bad("bootstrap selection applies only to new ships; choose bare or a staged recommended pill")
 	}
@@ -466,7 +468,7 @@ func (s *store) registerKind(actor string, req protocol.CreateFakeRequest, sourc
 	if err != nil {
 		return protocol.Operation{}, false, err
 	}
-	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: revision, Mode: "fake", Ship: "~zod", DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: uuid, Port: req.Config.HTTPPort}}
+	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: revision, Mode: "fake", Ship: "~zod", DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: uuid, Port: req.Config.HTTPPort, Loom: req.Config.Loom, NativeControl: req.Config.NativeControl}}
 	v.Runtime.Fake = fake
 	if source == nil {
 		v.Runtime.Bootstrap = req.Bootstrap
@@ -543,6 +545,7 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 	if v.Runtime.Boot != nil {
 		validate = validateOwnedConfig
 	}
+
 	if err := validate(req.Config); err != nil {
 		return v.Public, err
 	}
@@ -876,6 +879,14 @@ func (s *store) beginOperation(opID string) (protocol.Operation, storedInstance,
 				}
 			}
 		}
+	}
+	// Stop/observation retain the previous runtime contract. New runtime work
+	// uses this revision, while each retained container keeps its own launch.
+	if op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || routineKind(op.Kind) {
+		if !protocol.ValidLoom(v.Public.Config.Loom) {
+			return op, v, bad("invalid runtime settings for this ship mode")
+		}
+		v.Runtime.Loom, v.Runtime.NativeControl = v.Public.Config.Loom, v.Public.Config.NativeControl
 	}
 	op.Status = "running"
 	if op.Kind == "start" || op.Kind == "startup-resume" {

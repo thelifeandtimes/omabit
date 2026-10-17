@@ -267,7 +267,7 @@ func TestUsageErrors(t *testing.T) {
 			values = append(values, "65536")
 		}
 		if name == "loom" {
-			values = append(values, "30", "34", "287")
+			values = append(values, "19", "35", "287")
 		}
 		for _, value := range values {
 			args := append([]string{}, configuration...)
@@ -352,8 +352,8 @@ func TestHelp(t *testing.T) {
 					t.Errorf("help must include %q: %s", text, &stdout)
 				}
 			}
-			if args[0] == "configure" && (!strings.Contains(stdout.String(), "31..33") || !strings.Contains(stdout.String(), "not universal runtime bounds")) {
-				t.Errorf("help must explain demo loom bounds: %s", &stdout)
+			if args[0] == "configure" && (!strings.Contains(stdout.String(), "20..34") || !strings.Contains(stdout.String(), "address space")) {
+				t.Errorf("help must explain pinned loom bounds: %s", &stdout)
 			}
 		})
 	}

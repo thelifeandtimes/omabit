@@ -30,6 +30,7 @@ KeyBootPane 1.0 KeyBootPane.qml
 CopyCodeButton 1.0 CopyCodeButton.qml
 Toast 1.0 Toast.qml
 ShipPortsPane 1.0 ShipPortsPane.qml
+RuntimeSettingsFields 1.0 RuntimeSettingsFields.qml
 RuntimePane 1.0 RuntimePane.qml
 HostMovePane 1.0 HostMovePane.qml
 BootstrapSelector 1.0 BootstrapSelector.qml

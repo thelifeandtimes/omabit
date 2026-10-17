@@ -82,6 +82,7 @@ shared implementation remains under `internal/` in one Go module.
 - Identity-pinned collector connections, operator/observer grants and Eyre sessions.
 - Local first-run setup with visible progress and automatic collector enrollment.
 - Stopped cross-host handoff with verified contents and permanent source fencing.
+- [Loom dropdown and owner-controlled native access](docs/development-runtime.md) for every ship class in source, with separate requested/recorded settings. The initial managed-fake native/Clay gate passed; [the all-ship manager update passed separately](docs/runtime-settings-validation.md).
 - New-ship selection between bare bootstrap and a supplied Recommended Apps pill.
 
 Owned-pier import is implemented as explicit enrollment of a fully transferred,

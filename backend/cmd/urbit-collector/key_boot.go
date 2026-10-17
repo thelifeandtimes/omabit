@@ -41,7 +41,8 @@ func readBootKey(path string) (string, error) {
 func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expected, format string, out io.Writer, fail func(error, int) int) int {
 	var req protocol.CreateShipRequest
 	var file, pillSource, bootstrap string
-	var port, ames uint
+	var port, ames, loom uint
+	var native, runtimeSettings bool
 	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
 		req.ID, args = args[0], args[1:]
 	}
@@ -54,15 +55,27 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	f.StringVar(&file, "key-file", "", "private local boot key file; contents never enter command arguments")
 	f.UintVar(&port, "http-port", 0, "host loopback HTTP port")
 	f.UintVar(&ames, "ames-port", 0, "host Ames UDP port; zero/omitted chooses automatically")
+	f.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 20..34: 20=1 MiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
+	f.BoolVar(&native, "native-control", false, "enable local-owner native control (default off)\n\n"+protocol.NativeControlWarning)
 	f.StringVar(&pillSource, "pill", "", "optional boot pill URL or local file; blank uses Vere canonical default")
 	f.StringVar(&bootstrap, "bootstrap", "", "bare or recommended; recommended requires --pill")
 	f.BoolVar(&req.ConfirmNetwork, "confirm-network", false, "boot a real networked identity on explicit Start")
 	if err := f.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			fmt.Fprintln(out, "Usage: urbit-collector --runner NAME --expected-runner-id ID create-ship --ship ~SHIP --key-file FILE --request-id ID --confirm-network [--http-port PORT --ames-port PORT --bootstrap bare|recommended --pill URL_OR_FILE]\nInstance name and tier path are derived; omitted ports are allocated atomically. Bare uses Vere's canonical default; recommended requires a selected pill.")
+			f.SetOutput(out)
+			f.PrintDefaults()
 			return 0
 		}
 		return fail(errors.New("invalid key-boot arguments"), 2)
+	}
+	f.Visit(func(flag *flag.Flag) {
+		if flag.Name == "loom" || flag.Name == "native-control" {
+			runtimeSettings = true
+		}
+	})
+	if loom < protocol.MinLoom || loom > protocol.MaxLoom {
+		return fail(errors.New("--loom must be in 20..34 for pinned Vere"), 2)
 	}
 	req.Ship = strings.TrimSpace(req.Ship)
 	if !strings.HasPrefix(req.Ship, "~") {
@@ -126,6 +139,12 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	if h.AccessRole != "operator" || !slices.Contains(h.Features, "key-boot-options") {
 		return fail(errors.New("runner requires operator key-boot capability"), 1)
 	}
+	if runtimeSettings && !slices.Contains(h.Features, protocol.RuntimeSettingsFeature) {
+		return fail(errors.New("update this runner for runtime-settings capability before changing loom/native control"), 1)
+	}
+	if native && !slices.Contains(h.Features, protocol.NativeControlAllShipsFeature) {
+		return fail(errors.New("update this runner for native-control-all-ships capability before enabling native control"), 1)
+	}
 	req.Key, err = readBootKey(file)
 	if err != nil {
 		return fail(err, 2)
@@ -134,7 +153,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	if err != nil {
 		return fail(err, 1)
 	}
-	req.Config = protocol.Configuration{HTTPPort: uint16(port), AmesPort: uint16(ames), Loom: 31}
+	req.Config = protocol.Configuration{HTTPPort: uint16(port), AmesPort: uint16(ames), Loom: uint8(loom), NativeControl: native}
 	op, err := c.CreateShip(ctx, req)
 	req.Key = ""
 	if err != nil {

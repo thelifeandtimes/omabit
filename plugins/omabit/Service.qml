@@ -336,9 +336,9 @@ Item {
     return accepted
   }
 
-  function configure(target, port) {
+  function configure(target, port, loom, nativeControl) {
     if (!canConfigure(target)) return false
-    try { return submit(Model.configure(target, port), "configure") }
+    try { return submit(Model.configure(target, port, loom, nativeControl), "configure") }
     catch (e) { lastError = e.message; return false }
   }
 
@@ -373,34 +373,37 @@ Item {
     return true
   }
 
-  function registerFake(connection, name, port, fakeShip, pierName, bootstrap, pillSource) {
-    return registerInstance(connection,name,port,"fake",true,fakeShip,pierName,bootstrap,pillSource)
+  function registerFake(connection, name, port, fakeShip, pierName, bootstrap, pillSource, loom, nativeControl) {
+    return registerInstance(connection,name,port,"fake",true,fakeShip,pierName,bootstrap,pillSource,loom,nativeControl)
   }
 
   function canRegisterComet(connection) {
     return observing && !busy && !!connection && connection.mode === "development-managed"
       && connection.access_role === "operator" && Model.hasFeature(connection,"create-comet") && Model.available(connection,now)
   }
-  function registerComet(connection,name,port,confirmed,pierPath,bootstrap,pillSource) {
-    return registerInstance(connection,name,port,"comet",confirmed,undefined,pierPath,bootstrap,pillSource)
+  function registerComet(connection,name,port,confirmed,pierPath,bootstrap,pillSource,loom,nativeControl) {
+    return registerInstance(connection,name,port,"comet",confirmed,undefined,pierPath,bootstrap,pillSource,loom,nativeControl)
   }
-  function registerInstance(connection,name,port,kind,confirmed,fakeShip,pierName,bootstrap,pillSource) {
+  function registerInstance(connection,name,port,kind,confirmed,fakeShip,pierName,bootstrap,pillSource,loom,nativeControl) {
     if (busy || !observing || !connection || !confirmed) return false
     var current=connections.filter(function(c){return c.name===connection.name && c.runner_id===connection.runner_id})[0]
     var problem=Model.registrationProblem(current,name,port,kind,now)
     bootstrap=bootstrap || "bare";pillSource=pillSource || ""
     if (!problem) problem=!Model.hasFeature(current,"bootstrap-selection") ? "Update this runner for boot-pill selection." : Model.bootstrapProblem(bootstrap,pillSource)
     if (!problem && kind === "comet" && !canRegisterComet(current)) problem="Comet creation is not available on this runner."
+    loom=loom===undefined ? 31 : Number(loom);nativeControl=nativeControl===true
+    var runtimeArgs=[]
+    try {runtimeArgs=Model.runtimeSettingsArgs(current,kind,loom,nativeControl)} catch(e) {problem=e.message}
     var options=kind === "fake" && (fakeShip !== undefined || pierName !== undefined)
     if (!problem && options) problem=Model.fakeOptionsProblem(current,fakeShip,pierName)
     if (problem) { lastError=problem; return false }
     requestIdentity = Model.requestId()
     var args=Model.selection(current).concat([kind === "comet" ? "create-comet" : "create-fake",name,"--http-port",String(port),"--request-id",requestIdentity])
-    args=args.concat(Model.bootstrapArgs(bootstrap,pillSource))
+    args=args.concat(Model.bootstrapArgs(bootstrap,pillSource),runtimeArgs)
     if (kind === "comet") args.push("--confirm-network")
     if (options) {pierName=Model.pierPath("fake",name,fakeShip,pierName);args=args.concat(["--ship",Model.fakeIdentity(fakeShip),"--pier-name",pierName.split("/").slice(-2,-1)[0]])}
     if (pierName !== undefined) args=args.concat(["--pier-path",pierName])
-    registrationOutcome={runner:current.runner_id,connection:current.name,instance:name,port:Number(port),kind:kind,bootstrap:bootstrap,pillSource:pillSource,ship:options ? Model.fakeIdentity(fakeShip) : "",pier:options ? pierName : "",request:requestIdentity,status:"submitting",message:"Registering “"+name+"”…"}
+    registrationOutcome={runner:current.runner_id,connection:current.name,instance:name,port:Number(port),kind:kind,bootstrap:bootstrap,pillSource:pillSource,loom:loom,nativeControl:nativeControl,ship:options ? Model.fakeIdentity(fakeShip) : "",pier:options ? pierName : "",request:requestIdentity,status:"submitting",message:"Registering “"+name+"”…"}
     return submit(args,kind === "comet" ? "register-comet" : "register")
   }
   function suggestPort(connection, token) {
@@ -504,7 +507,7 @@ Item {
     hostMoveOutcome={runner:target.runner,instance:target.instance,destination:destination.runner,name:name,status:"moving",message:"Moving the stopped pier. Both hosts retain durable phase receipts."}
     return submit(Model.hostMoveArgs(target,destination,name,httpPort,amesPort,requestIdentity),"move-host")
   }
-  function createFromKey(connection,ship,keyFile,httpPort,amesPort,pill,bootstrap,storageRoot,customPath) {
+  function createFromKey(connection,ship,keyFile,httpPort,amesPort,pill,bootstrap,storageRoot,customPath,loom,nativeControl) {
     bootstrap=bootstrap || (pill ? "recommended" : "bare")
     var bootProblem=Model.bootstrapProblem(bootstrap,pill || "")
     if (bootProblem) {lastError=bootProblem;return false}
@@ -514,13 +517,16 @@ Item {
     if (customPath) path=customPath
     if (busy || !observing || !Model.available(connection,now) || connection.access_role!=="operator" || !Model.hasFeature(connection,"key-boot-options") || !Model.validId(name) || !path || !keyFile || !Model.optionalPort(httpPort) || !Model.optionalPort(amesPort)) {lastError="Choose an owned Urbit ID, private key file and valid optional ports on an updated operator runner.";return false}
     if (Model.instances(connection).some(function(i){return i.id===name || i.mode!=="fake"&&i.ship===ship})) {lastError="This Urbit identity or instance is already registered.";return false}
+    loom=loom===undefined ? 31 : Number(loom);nativeControl=nativeControl===true
+    var runtimeArgs=[]
+    try {runtimeArgs=Model.runtimeSettingsArgs(connection,"owned",loom,nativeControl)} catch(e) {lastError=e.message;return false}
     requestIdentity=Model.requestId()
-    registrationOutcome={runner:connection.runner_id,connection:connection.name,instance:name,kind:"owned",ship:ship,pier:path,request:requestIdentity,status:"submitting",message:"Preparing boot files and registering the ship…"}
+    registrationOutcome={runner:connection.runner_id,connection:connection.name,instance:name,kind:"owned",ship:ship,pier:path,loom:loom,nativeControl:nativeControl,request:requestIdentity,status:"submitting",message:"Preparing boot files and registering the ship…"}
     var args=Model.selection(connection).concat(["create-ship","--ship",ship,"--key-file",keyFile,"--request-id",requestIdentity,"--confirm-network"])
     if (String(httpPort).trim()) args=args.concat(["--http-port",String(httpPort)])
     if (String(amesPort).trim()) args=args.concat(["--ames-port",String(amesPort)])
     if (customPath || storageRoot && storageRoot!=="default") args=args.concat(["--pier-path",path])
-    args=args.concat(Model.bootstrapArgs(bootstrap,pill || ""))
+    args=args.concat(Model.bootstrapArgs(bootstrap,pill || ""),runtimeArgs)
     return submit(args,"register-ship")
   }
   function acceptDevelopmentMode(connection) {

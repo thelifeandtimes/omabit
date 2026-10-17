@@ -33,6 +33,31 @@ The current repeated fresh-install exercises are development qualification only.
 5. Publish a clear support window and upgrade command/UI, including any necessary
    original-runtime preparation and maintenance window.
 
+## Development runtime settings
+
+Schema18 broadens explicit native control to all ship classes. Its version-only
+transaction accepts schemas11–17 without rewriting bodies or receipts. Schema17
+runners refuse the successor because their runtime validator forbids enabled livenet
+sockets. Source tests cover repeated schema17 upgrades and preserved request replay.
+A separately approved schema18 management update also preserved the four current
+instance configurations, running/stopped intent and both running container/process
+identities. It did not enable or exercise any livenet socket. Livenet runtime checks
+remain separate from both management updates.
+
+Schema17 records loom selection and development-fake native-control opt-in.
+The version-only transaction accepts schemas11–16 and leaves instance and operation
+bodies unchanged. Missing private launch fields mean the historical loom31 and
+native-control-off contract. Existing running containers retain that contract until
+an explicit replacement. Older schema16 runners refuse the new schema.
+
+Source tests cover legacy bodies, repeated migration, defaults, desired versus
+recorded settings and future-schema refusal. A separately approved management-only
+upgrade preserved two running ships' containers, processes, configuration and
+operation history. Fresh-fake native-thread acceptance also passed. This is not
+full qualification of every stable-release upgrade path. See [the guide](development-runtime.md)
+and [verification report](runtime-settings-validation.md).
+No database reset or downgrade-marker edit is an upgrade or rollback procedure.
+
 ## Current RC integration decisions
 
 The Ames enrollment fix applies to new live enrollments. Opening an existing

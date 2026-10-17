@@ -53,12 +53,16 @@ bootstrap, stopped-pier enrollment, maintenance and host handoff. Comets generat
 their identity internally. HTTP is loopback-only; owned ships publish configured Ames UDP.
 Collector enrollment must explicitly accept mode development-managed while
 retaining the same runner ID. Private state has explicit schema/downgrade guards.
+Validated settings support loom 20..34 (default 31) and owner-controlled native control
+for every ship class (default off). Inspect snapshot runtime status for recorded
+launch settings and the host-local socket path.
 Start/stop are explicit; incomplete bootstrap is quarantined, never retried.
 With --resume-running, startup may replace terminal runtime containers for
 initialized ships whose persisted desired state is running. Each ship gets at most
 one journaled attempt per host boot. Nonzero exits require a recorded healthy prior
 boot; intentionally stopped, interrupted and independently uncertain ships are skipped.
 `)
+				fmt.Fprintln(stdout, "\nWarning: known ship-crash bug\n"+protocol.NativeControlWarning)
 				return 0
 			}
 			fmt.Fprint(stdout, `Usage: urbit-runner serve-fake --acknowledge-development
@@ -66,11 +70,14 @@ boot; intentionally stopped, interrupted and independently uncertain ships are s
 Runs as the dedicated urbit-runner account. Serves a private Unix management API
 with SQLite-backed registrations, revisions, operations, and request replay.
 Supports fake ships and qualified-fake imports, explicit maintenance, loopback
-HTTP, the pinned image/pill and loom 31. Comets require serve-development.
+HTTP, the pinned image/pill and loom 20..34 (default 31). Comets require serve-development.
+Owner native control is default off.
+Inspect snapshot runtime status for recorded settings and the host-local socket path.
 Stopping this management process does NOT stop its independently running ships.
 Use urbit-collector operate INSTANCE stop before ending a development session.
 Interrupted work is recorded for reconciliation, never blindly re-executed.
 `)
+			fmt.Fprintln(stdout, "\nWarning: known ship-crash bug\n"+protocol.NativeControlWarning)
 			return 0
 		}
 		return fail(err, 2)

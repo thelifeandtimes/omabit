@@ -194,6 +194,8 @@ type Phase struct {
 // Dispatched intent remains uncertain until authenticated inspection, regardless
 // of empty inventories. A canceled client does not cancel a daemon-side create.
 type ContainerRecord struct {
+	Loom                 uint8           `json:"loom,omitempty"`
+	NativeControl        bool            `json:"native_control,omitempty"`
 	Name                 string          `json:"name"`
 	ID                   string          `json:"id"`
 	Kind                 string          `json:"kind"`

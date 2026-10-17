@@ -226,8 +226,9 @@ with source and freshness; unknown values are not zeroes. Vere 4.6 meld already
 includes compaction.
 
 Live loom-internal telemetry, utilization percentages and pressure-based advice are
-deferred. Keep the control socket disabled and avoid custom runtime builds. A larger
-runtime feature set is not a prerequisite for reliable ship operation. Future
+deferred. Native control stays off by default, with explicit owner opt-in for all
+ship classes documented in [runtime settings](development-runtime.md).
+Custom runtime builds remain out of scope. Future
 multi-runtime support, if needed, should be a simple `live` (upstream release) /
 `edge` (upstream develop) choice; see [runtime-policy.md](runtime-policy.md).
 

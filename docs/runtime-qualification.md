@@ -1,5 +1,16 @@
 # Runtime qualification record
 
+The all-ship successor has source/private tests and a successful separately approved
+management-only update. Livenet socket execution remains untested. See
+[revision02](runtime-settings-validation.md) for the evidence boundaries.
+
+The configurable loom and development-fake native-control gate passed on fresh
+managed fakes. Evidence includes actual loom34, private native replies, Clay bytes
+before/after replacement, default-disabled behavior and owned Stop. Historical
+default-disabled gates below remain separate. See the
+[settings report](runtime-settings-validation.md) and
+[acceptance procedure](development-runtime.md#approval-gated-managed-acceptance).
+
 Status: rootless setup, lifecycle, maintenance, host-loopback HTTP, service startup
 and clean host reboot/resume are accepted for the development fleet. This is still
 partial qualification, not general production-runtime support.

@@ -11,11 +11,20 @@ and health, Docker resource monitoring, pack/meld/roll, confirmed epoch pruning,
 UTC maintenance schedules, qualified fake import, SSH access and Eyre sessions.
 All use the released runtime. Existing managed instances already use this binary.
 
-Vere's control socket stays disabled with `--no-conn`. The tested 4.6 disconnect
-fault is avoided by not using that interface. Live loom-internal counters,
-utilization percentages and pressure-based maintenance advice are deferred. The UI
-continues to show container RAM, limits, tasks and measurement freshness; configured
-loom size remains configuration, not a measured utilization denominator.
+Vere's control socket stays disabled by default with `--no-conn`. The owner can
+explicitly opt in for any ship class through the [runtime settings](development-runtime.md).
+The all-ship source revision advertises `native-control-all-ships`; older deployed
+fake-only runners require an update. The pinned release predates the upstream
+4.6 disconnect fix. Opt-in carries that availability risk. Existing managed-fake
+acceptance does not establish livenet runtime qualification.
+
+The socket is primarily a development tool. Leave it disabled for routine ship
+management, where it is unnecessary and adds risk. This recommendation does not
+restrict the owner's choice by ship class.
+
+Live loom-internal counters, utilization percentages and pressure-based maintenance
+advice remain deferred. The UI shows container RAM, limits, tasks and measurement
+freshness. Configured loom address space is not a measured utilization denominator.
 
 The experimental patched-runtime build, executable overlays, socket client,
 qualification commands, custom upgrade plan and report-review exceptions have been
