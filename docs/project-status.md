@@ -2,13 +2,17 @@
 
 ## Where we are
 
-Unreleased source integrates [PRs #2/#3](diagnostics/pr2-pr3-integration.md): Ames
+RC.9 integrates [PRs #2/#3](diagnostics/pr2-pr3-integration.md): Ames
 publication for new live imports, universal pre-move epoch checks, and explicit
 non-destructive enrollment recovery adapted to named/guided/in-place imports.
 Stable 0.1.0 is gated on the [upgrade contract](upgrade-policy.md); fresh resets
 are development exercises, not the supported user update path.
 
-**[RC.8 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.8), with matching native binary pins.**
+**[RC.9 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.9), with matching native binary pins.**
+The local sourceport install was retired for the user's final fresh-setup check.
+Its test comet was cleanly stopped and preserved; the cold-reloaded desktop and
+isolated RC.9 setup probe report an empty collector, no installed host and ready
+prerequisites. See the [local RC.9 handoff](diagnostics/2026-10-17-rc9-local-reset.md).
 RC.8 simplifies setup approval and machine selection, adds source/location-only
 guided imports with progress, recognizes ship-named pier leaves, and accepts intact
 historical native-pier epochs and self-contained docked binaries for import.
@@ -91,12 +95,12 @@ order, not percentage of total effort.
 | Runtime foundation | Owner-user rootless Docker, default/custom-root fake/comet desk editing and lifecycle accepted locally; broader production qualification remains |
 | Persistent runner | Durable SQLite registrations, operations, attribution, reconciliation, resource admission, and development lifecycle accepted |
 | Collector and access | Named identity-pinned connections, SSH grants/revocation, inventory isolation, origin-bound Eyre sessions and subscriptions accepted in exercised development gates |
-| Omabit UI | Published RC.8 native plugin: compact approved setup, guided imports/progress and named piers, persistent log following and verified pill default; sourcebox user feedback continues |
+| Omabit UI | Published RC.9 native plugin: retained import recovery, compact approved setup, guided/named imports, persistent logs and verified pill default; final user onboarding check pending |
 | Maintenance and retention | Official-runtime fake/comet pack/meld/roll, inventory/previews, prefix pruning and UTC schedules accepted in exercised live gates; interruption/recovery hardening remains; loom-internal telemetry deferred |
 | Peer monitoring | Planned; current single-runner health/incident basics do not yet provide the phase-7 multi-host peer system |
 | Personal operator gateway | Planned |
 | Social utilities / Omarchy gossip | Planned; architecture and delivery/tag policy recorded |
-| Agents and release distribution | RC.8 assets and supplied pill published; production upgrades, full application/OTA qualification and agent/MCP distribution remain |
+| Agents and release distribution | RC.9 assets and supplied pill published; stable upgrade qualification, full application/OTA qualification and agent/MCP distribution remain |
 
 ## Current milestone
 

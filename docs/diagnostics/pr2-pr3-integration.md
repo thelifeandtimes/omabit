@@ -15,7 +15,11 @@ This integration incorporates work by **wundrellama (~dinnyt-divsud)**:
 
 The code and tests were adapted to RC.8 rather than replacing its guided import,
 named-pier, historical-epoch, dock-link and progress support. This integration is
-prepared for RC.9; published RC.8 artifacts remain immutable.
+published in [RC.9](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.9)
+from `d9b180fdd1ec5c34084c93109b005b9af4d49c7e`, with the contributor credited in
+the commit. [Source CI passed](https://github.com/thelifeandtimes/omabit/actions/runs/39053250523).
+All eight downloaded assets, actual empty-cache native bootstrap, binary build
+revisions and cache reuse were verified. See the [release/local reset handoff](2026-10-17-rc9-local-reset.md).
 
 ## Ames fix
 

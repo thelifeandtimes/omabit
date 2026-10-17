@@ -25,11 +25,14 @@ module under `internal/`. No Go compiler, local extracted bundle, Git LFS or
 committed binary blobs are needed for plugin installation. Published RC.2 assets
 are not rebuilt or replaced by this repository organization.
 
-Current pins select published **RC.8**, schema16 and owner-user host setup,
+Current pins select published **RC.9**, schema16 and owner-user host setup,
 including compact setup approval, one machine-use switch, guided identity-aware
 imports with progress, named pier leaves, and RC.7's persistent log following.
 The updated runner, collector and QML are distributed together. Existing hosts
 need a matching runner update for `guided-pier-import`/`named-pier-directories`.
+RC.9 additionally publishes Ames for new live enrollments and exposes operator-only
+retained import recovery. Its UI recovery action requires an updated runner with
+`recover-import`; the three published tools and QML are pinned together.
 The new UI rejects helpers without the owner-user setup contract.
 The service resolves packaged defaults when Omarchy passes only explicit inline
 settings. `recommended_pill_default` in monitor status verifies the effective

@@ -8,10 +8,10 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Published:** [**0.1.0-rc.8**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.8), a Linux/AMD64 development release candidate
+**Published:** [**0.1.0-rc.9**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.9), a Linux/AMD64 development release candidate
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and qualification scope](docs/release-rc8.md),
+[release notes and qualification scope](docs/release-rc9.md),
 and [Recommended Apps pill provenance](docs/pill-release.md). Final 0.1.0 is still pending.
 
 RC.3 makes `|mount` → ordinary copy/editor saves → `|commit` work directly on
@@ -30,6 +30,8 @@ RC.7 adds persistent log following, bounded reconnect backoff and reader lifecyc
 cleanup to remove per-refresh SSH/PAM/logind sessions.
 RC.8 simplifies initial setup and derives import identity, destination and port
 from the source/location selection, with progress receipts and ship-named piers.
+RC.9 adds Ames publication for new live enrollments, universal pre-move epoch
+checks and explicit retained-enrollment recovery, with a stable-upgrade release gate.
 Prior dedicated-account installations were
 [retired for the user-driven fresh-install exercise](docs/diagnostics/2026-10-15-rc2-release-retirement.md).
 
@@ -124,7 +126,7 @@ Host changes use explicit OS authorization; desktop clients do not receive Docke
 group access. RC formats remain developmental; stable 0.1.0 is gated on the
 [tested, non-destructive upgrade contract](docs/upgrade-policy.md).
 
-Unreleased source integrates the [Ames and import-recovery contributions](docs/diagnostics/pr2-pr3-integration.md)
+RC.9 integrates the [Ames and import-recovery contributions](docs/diagnostics/pr2-pr3-integration.md)
 from PRs #2/#3, adapted to the guided/named-pier flows. It preserves existing
 enrollment records and adds explicit recovery rather than requiring a fresh install.
 
