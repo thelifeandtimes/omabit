@@ -43,18 +43,25 @@ func (q *qualifier) inspectImportEpochs(ctx context.Context) (*epochs.Inventory,
 }
 
 func (q *qualifier) inspectEpochInventory(ctx context.Context, history bool) (*epochs.Inventory, error) {
+	if err := q.pier(); err != nil {
+		return nil, err
+	}
+	return q.inspectEpochInventoryAt(ctx, q.pierPath(), history)
+}
+
+func (q *qualifier) inspectEpochInventoryAt(ctx context.Context, path string, history bool) (*epochs.Inventory, error) {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
-	root, err := q.openPierDirectory("log")
+	root, err := q.openEpochDirectory(path, "log")
 	if err != nil {
 		return nil, err
 	}
 	defer root.Close()
-	first, err := q.scanEpochs(ctx, root, history)
+	first, err := scanPierEpochs(ctx, root, path, q.r.RunID, q.owned, history)
 	if err != nil {
 		return nil, err
 	}
-	second, err := q.scanEpochs(ctx, root, history)
+	second, err := scanPierEpochs(ctx, root, path, q.r.RunID, q.owned, history)
 	if err != nil {
 		return nil, err
 	}
@@ -69,15 +76,21 @@ func (q *qualifier) inspectEpochInventory(ctx context.Context, history bool) (*e
 }
 
 func (q *qualifier) openPierDirectory(leaf string) (*os.Root, error) {
-	if leaf != "log" && leaf != "chk" {
-		return nil, errors.New("unsupported pier directory")
-	}
 	if err := q.pier(); err != nil {
 		return nil, err
 	}
+	return q.openEpochDirectory(q.pierPath(), leaf)
+}
+
+// Shared by ordinary inspection, import preflight and recovery. Keep each
+// directory anchored and reject symlinks before entering it (PR #3).
+func (q *qualifier) openEpochDirectory(path, leaf string) (*os.Root, error) {
+	if leaf != "log" && leaf != "chk" {
+		return nil, errors.New("unsupported pier directory")
+	}
 	// Anchor at the validated managed instance, then open each directory without
 	// accepting symlinks. Root confines every later lookup, including rename races.
-	root, err := os.OpenRoot(q.pierPath())
+	root, err := os.OpenRoot(path)
 	if err != nil {
 		return nil, errors.New("epoch storage unavailable")
 	}
@@ -90,7 +103,7 @@ func (q *qualifier) openPierDirectory(leaf string) (*os.Root, error) {
 	rel := ""
 	for _, part := range []string{".urb", leaf} {
 		rel = filepath.Join(rel, part)
-		if err := q.owned(filepath.Join(q.pierPath(), rel), os.ModeDir, false); err != nil {
+		if err := q.owned(filepath.Join(path, rel), os.ModeDir, false); err != nil {
 			return nil, err
 		}
 		info, err := root.Lstat(part)

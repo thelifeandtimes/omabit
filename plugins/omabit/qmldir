@@ -36,4 +36,5 @@ BootstrapSelector 1.0 BootstrapSelector.qml
 StorageLocationSelector 1.0 StorageLocationSelector.qml
 StorageRootsPane 1.0 StorageRootsPane.qml
 PierImportPane 1.0 PierImportPane.qml
+ImportRecoveryPane 1.0 ImportRecoveryPane.qml
 DeletePierPane 1.0 DeletePierPane.qml

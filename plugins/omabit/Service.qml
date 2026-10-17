@@ -51,6 +51,7 @@ Item {
   property var storageOutcome: null
   property var externalImportPreview: null
   property var pendingExternalPreview: null
+  property var importRecoveryReview: null
   property var hostMoveOutcome: null
   property var routineOutcome: null
   property var epochInspection: null
@@ -486,6 +487,15 @@ Item {
     storageOutcome={runner:c.runner_id,instance:i.id,path:i.pier_path,request:requestIdentity,kind:"delete-pier",status:"submitting",message:"Submitting permanent pier deletion…"}
     return submit(Model.selection(c).concat(["delete-pier",i.id,"--revision",String(i.config_revision),"--request-id",requestIdentity,"--confirm-delete"]),"delete-pier")
   }
+  function recoverImport(target) {
+    if (busy || !observing || !target) return false
+    var c=connections.filter(function(c){return c.runner_id===target.runner && c.name===target.connection})[0]
+    var i=Model.instances(c).filter(function(i){return i.id===target.instance})[0]
+    if (!Model.currentImportRecovery(c,i,target,now)) {lastError="The recovery selection changed. Review a fresh stopped import.";return false}
+    requestIdentity=Model.requestId()
+    storageOutcome=Object.assign({},target,{request:requestIdentity,kind:"recover-import",status:"submitting",message:"Validating the retained import…"})
+    return submit(Model.selection(c).concat(["operate",target.instance,"recover-import","--revision",String(target.revision),"--request-id",requestIdentity]),"recover-import")
+  }
   function moveHost(target,destination,name,httpPort,amesPort) {
     if (busy || !observing) return false
     var problem=Model.hostMoveProblem(connections,target,destination,name,httpPort,amesPort,now)
@@ -527,7 +537,7 @@ Item {
     var registration=(kind === "register" || kind === "register-comet" || kind === "register-ship") ? registrationOutcome : null
     var registered=false
     var boot=kind==="first-boot" ? bootTarget : null, bootAccepted=false
-    var storage=(["enroll-pier","move-pier","delete-pier","import-pier","storage-root-add"].indexOf(kind)>=0) ? storageOutcome : null, storageAccepted=false
+    var storage=(["enroll-pier","move-pier","delete-pier","import-pier","recover-import","storage-root-add"].indexOf(kind)>=0) ? storageOutcome : null, storageAccepted=false
     var routine=kind === "routine-set" ? routineOutcome : null, routineSaved=false
     var inspecting=kind === "inspect-epochs" ? epochInspection : null, inspectionAccepted=false, inspectionOperation=""
     currentAction = ""
@@ -562,6 +572,7 @@ Item {
         }
         if (storage) {
           if (!result.id || result.instance_id!==storage.instance || result.request_id!==storage.request || result.kind!==storage.kind) throw new Error("Unverified storage operation acknowledgement")
+          if (kind==="recover-import" && result.config_revision!==storage.revision) throw new Error("Recovery revision changed")
           storageAccepted=true
         }
         if (registration) {
@@ -787,7 +798,7 @@ Item {
     function maintenance(): void { root.openMonitor(null, null, "maintenance") }
     function setup(): void { root.openMonitor(null, null, "setup") }
     function refresh(): void { root.refresh() }
-    function status(): string { return JSON.stringify({version:"0.1.0-rc.8",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
+    function status(): string { return JSON.stringify({version:"0.1.0-rc.9",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
     function close(): void { monitor.visible = false }
   }
   Process {

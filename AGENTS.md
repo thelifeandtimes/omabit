@@ -8,3 +8,8 @@ Never infer that a missing enrolled path means the pier is disposable: the user
 may have moved the actual pier elsewhere. Identify the filesystem object and
 process ownership before changing it. Prefer data-preserving, same-filesystem
 retirement renames for resets; preserve unrelated ships and host resources.
+
+Stable 0.1.0 must ship with a tested, non-destructive upgrade path to later
+versions. Read `docs/upgrade-policy.md` before changing persistent formats,
+install/update behavior or runtime contracts. Fresh-install resets are development
+exercises, not an acceptable upgrade procedure for users.

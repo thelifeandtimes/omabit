@@ -21,7 +21,31 @@ func RegisterStorageRoot(id, path string) (pierstore.StorageRoot, error) {
 	return pierstore.RegisterRoot(defaults().home, id, path)
 }
 func InspectExternalPier(ctx context.Context, path string) (pierstore.ExternalSource, error) {
-	return pierstore.InspectExternal(ctx, defaults().home, path)
+	return inspectExternalPier(ctx, path, defaults())
+}
+
+// Validate every import route, including the legacy CLI without --identify,
+// before mount preparation or moving/removing source data (adapted from PR #3).
+func inspectExternalPier(ctx context.Context, path string, d dependencies) (pierstore.ExternalSource, error) {
+	source, err := pierstore.InspectExternal(ctx, d.home, path)
+	if err != nil {
+		return pierstore.ExternalSource{}, err
+	}
+	q := &qualifier{d: d}
+	if err = q.accountBoundary(false); err != nil {
+		return pierstore.ExternalSource{}, err
+	}
+	if _, err = q.inspectEpochInventoryAt(ctx, path, true); err != nil {
+		return pierstore.ExternalSource{}, err
+	}
+	after, err := pierstore.InspectExternal(ctx, d.home, path)
+	if err != nil {
+		return pierstore.ExternalSource{}, err
+	}
+	if source != after {
+		return pierstore.ExternalSource{}, errors.New("source changed during epoch validation")
+	}
+	return source, nil
 }
 
 func applyPierDeletion(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
@@ -206,7 +230,7 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 	if err = q.accountBoundary(false); err != nil {
 		return state, unknown, err
 	}
-	source, err := pierstore.InspectExternal(ctx, d.home, intent.Source.Path)
+	source, err := inspectExternalPier(ctx, intent.Source.Path, d)
 	if err != nil || source != intent.Source {
 		return state, unknown, errors.New("source changed or became inaccessible since import review; nothing was moved")
 	}

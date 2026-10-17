@@ -120,6 +120,17 @@ function canDeletePier(connection,instance,now) {
 function externalReviewCurrent(connection,review,path,now) {
   return writable(connection,now) && connection.access_role==="operator" && hasFeature(connection,"import-pier") && !!review && review.runner===connection.runner_id && review.connection===connection.name && review.source.path===path && validDigest(review.source.fingerprint) && now-review.loadedAt>=0 && now-review.loadedAt<300000
 }
+function canRecoverImport(connection,instance,now) {
+  return available(connection,now) && connection.access_role==="operator" && hasFeature(connection,"recover-import") && !!instance && instance.desired_state==="stopped" && !instance.active_operation_id && !instance.delete_pending && !handoffFenced(instance) && !!instance.external_import && instance.external_import.stage==="enrolling" && !!instance.runtime_status && instance.runtime_status.import_recovery_available===true
+}
+function importRecoveryTarget(connection,instance) {
+  return {runner:connection.runner_id,connection:connection.name,instance:instance.id,revision:instance.config_revision,path:instance.pier_path,ship:instance.ship,source:instance.external_import.source,holding:instance.external_import.holding_path || ""}
+}
+function currentImportRecovery(connection,instance,target,now) {
+  if (!target || !canRecoverImport(connection,instance,now) || !instance.external_import) return false
+  var current=importRecoveryTarget(connection,instance)
+  return ["runner","connection","instance","revision","path","ship","source","holding"].every(function(key){return target[key]===current[key]})
+}
 function validatePierImportPreview(v,runner,path,root) {
   if (!v || v.runner_id!==runner || !v.source || v.source.path!==path || !validDigest(v.source.fingerprint) || !Number.isSafeInteger(v.source.bytes) || v.source.bytes<0 || !Number.isInteger(v.source.files) || v.source.files<0 || v.source.files>8192 || v.storage_root!==root || !validId(v.instance_id) || !validPierPath(v.destination) || typeof v.ship!=="string" || !/^~[a-z-]+$/.test(v.ship) || ["livenet","fakenet"].indexOf(v.network)<0 || !Number.isInteger(v.http_port) || v.http_port<1024 || v.http_port>65535 || typeof v.in_place!=="boolean") throw new Error("Import review does not match the selected source, host and storage location.")
   var parts=v.destination.split("/"),location=parts[0][0]==="@" ? parts.shift().slice(1) : "default"

@@ -105,6 +105,7 @@ Column {
       width: root.width; spacing: Style.space(6)
       Label { width: parent.width; text: Model.instanceTitle(registered.modelData)+" · "+registered.modelData.id+"\n"+Model.absolutePierPath(root.connection,registered.modelData.pier_path || ""); caption: true }
       Label { width: parent.width; visible: !!registered.modelData.external_import && registered.modelData.external_import.stage!=="complete"; text: visible ? "Import phase: "+registered.modelData.external_import.stage+" · "+(registered.modelData.external_import.copied_bytes || 0)+" bytes copied\nSource: "+registered.modelData.external_import.source+"\nHeld source: "+(registered.modelData.external_import.holding_path || "not moved")+"\nInspect the activity receipt before continuing an interrupted import." : ""; secondary: true; caption: true }
+      ImportRecoveryPane { width:parent.width;service:root.service;connection:root.connection;instance:registered.modelData }
       ActionButton { property var ship: registered.modelData; text: "Move…"; compact: true; enabled: root.connection && root.connection.access_role==="operator" && !root.service.busy && !Model.handoffFenced(ship) && !ship.delete_pending && ship.desired_state==="stopped" && !ship.recovery_required && !ship.active_operation_id; onClicked: {root.moving=JSON.parse(JSON.stringify(ship));root.selected=null;root.submitted=false;destination.text=ship.pier_path || ""} }
       DeletePierPane { width: parent.width; service: root.service; connection: root.connection; instance: registered.modelData }
     }

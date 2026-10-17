@@ -599,7 +599,7 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 }
 
 func (s *store) accept(actor, id string, req protocol.OperationRequest) (protocol.Operation, bool, error) {
-	if !protocol.ValidID(id) || !protocol.ValidID(req.RequestID) || req.ExpectedRevision == 0 || req.ExpectedRevision > math.MaxInt64 || (req.Kind != "start" && req.Kind != "stop" && req.Kind != "pack" && req.Kind != "meld" && req.Kind != "roll" && req.Kind != "inspect-epochs" && req.Kind != "prune-epochs" && req.Kind != "move-pier" && req.Kind != "delete-pier") {
+	if !protocol.ValidID(id) || !protocol.ValidID(req.RequestID) || req.ExpectedRevision == 0 || req.ExpectedRevision > math.MaxInt64 || (req.Kind != "start" && req.Kind != "stop" && req.Kind != "pack" && req.Kind != "meld" && req.Kind != "roll" && req.Kind != "inspect-epochs" && req.Kind != "prune-epochs" && req.Kind != "move-pier" && req.Kind != "delete-pier" && req.Kind != "recover-import") {
 		return protocol.Operation{}, false, bad("require a supported operation, valid request ID, and positive revision")
 	}
 	if (req.Kind == "delete-pier") != req.ConfirmDelete {
@@ -644,6 +644,9 @@ func (s *store) accept(actor, id string, req protocol.OperationRequest) (protoco
 	if v.Runtime.Deletion != nil && req.Kind != "delete-pier" {
 		return protocol.Operation{}, false, conflict("deletion_pending", "pier deletion is pending; only explicit deletion continuation is available")
 	}
+	if req.Kind == "recover-import" && (v.Public.DesiredState != "stopped" || !v.Runtime.ImportRecoveryEligible()) {
+		return protocol.Operation{}, false, conflict("invalid_state", "recovery requires a stopped interrupted prepared external enrollment with retained identity")
+	}
 	if req.Kind == "delete-pier" {
 		if v.Public.DesiredState != "stopped" || v.Runtime.Deletion == nil && v.Public.ObservedState != "stopped" && v.Public.ObservedState != "uninitialized" {
 			return protocol.Operation{}, false, conflict("invalid_state", "stop the runtime before deleting its pier")
@@ -675,7 +678,7 @@ func (s *store) accept(actor, id string, req protocol.OperationRequest) (protoco
 	if req.Kind != "stop" && req.Kind != "delete-pier" && v.Runtime.UncertainMaintenance() {
 		return protocol.Operation{}, false, conflict("recovery_required", "interrupted maintenance requires manual review")
 	}
-	if req.Kind != "stop" && req.Kind != "delete-pier" && v.Runtime.UncertainProvisioning() {
+	if req.Kind != "stop" && req.Kind != "delete-pier" && req.Kind != "recover-import" && v.Runtime.UncertainProvisioning() {
 		return protocol.Operation{}, false, conflict("recovery_required", "incomplete provisioning or identity verification requires manual review")
 	}
 	if req.Kind == "roll" && v.Runtime.RollNeedsRuntime {
@@ -815,6 +818,15 @@ func (s *store) runtimeUpdate(id, opID string, state runtimequalify.ManagedState
 	if v.Public.ActiveOperationID != opID || v.Runtime.ID != state.ID {
 		return errors.New("operation no longer owns instance runtime")
 	}
+	op, err := loadOperation(tx, opID)
+	if err != nil {
+		return err
+	}
+	if op.Kind == "recover-import" {
+		// Recovery has no incremental resource intents. Keep the original
+		// private fence until finish commits completion and receipt together.
+		return nil
+	}
 	v.Runtime, v.RuntimeRevision = state, v.RuntimeRevision+1
 	updateImportReport(&v)
 	v.Public.Routine = state.Routine
@@ -848,7 +860,7 @@ func (s *store) beginOperation(opID string) (protocol.Operation, storedInstance,
 	if op.Status != "queued" || v.Public.ActiveOperationID != op.ID {
 		return op, v, errors.New("operation is not queued for this instance")
 	}
-	if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "delete-pier" || op.Kind == "import-pier" || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
+	if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "delete-pier" || op.Kind == "recover-import" || op.Kind == "import-pier" || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
 		// A worker timeout does not stop a daemon-side utility. Recheck after
 		// acquiring the host gate, including jobs queued before that timeout and
 		// retained intents loaded after management restart. Explicit stop remains
@@ -879,7 +891,7 @@ func (s *store) beginOperation(opID string) (protocol.Operation, storedInstance,
 		v.Public.ObservedState = "inspecting"
 	} else if op.Kind == "import-fake" || op.Kind == "import-pier" {
 		v.Public.ObservedState = "importing"
-	} else if op.Kind == "enroll-pier" {
+	} else if op.Kind == "enroll-pier" || op.Kind == "recover-import" {
 		v.Public.ObservedState = "enrolling"
 	} else if op.Kind == "move-pier" || strings.HasSuffix(op.Kind, "-handoff") {
 		v.Public.ObservedState = "moving"
@@ -911,6 +923,16 @@ func (s *store) finish(op protocol.Operation, state runtimequalify.ManagedState,
 	}
 	if v.Public.ActiveOperationID != op.ID || v.Runtime.ID != state.ID {
 		return errors.New("operation ownership changed")
+	}
+	if op.Kind == "recover-import" {
+		if interrupted && cause == nil {
+			cause = errors.New("recovery interrupted before completion publication")
+		}
+		if cause != nil {
+			state = v.Runtime
+		} else if !state.Initialized || state.UncertainProvisioning() || state.ExternalImport == nil || state.ExternalImport.Stage != "complete" || state.Adoption == nil || state.Adoption.Verified || state.Adoption.FinishedAt == nil || observation.State != "stopped" || observation.RecoveryRequired {
+			return errors.New("recovery has no validated stopped completion receipt")
+		}
 	}
 	now := time.Now().UTC()
 	op.Status, op.FinishedAt = "succeeded", &now

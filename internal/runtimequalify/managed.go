@@ -66,6 +66,22 @@ type ManagedExternalImport struct {
 	HeldPath    string                   `json:"held_path,omitempty"`
 }
 
+// Recovery only finishes a retained prepared external enrollment. It cannot
+// resume copying, bootstrap a new pier, or change an existing runtime's ports.
+func (s ManagedState) ImportRecoveryEligible() bool {
+	publication := s.Boot == nil || s.Boot.Pill == nil && s.Comet != nil && s.NativeShip == s.Comet.Ship && s.networkIdentityValid() && s.AmesPort >= 1024
+	return s.ExternalImport != nil && s.ExternalImport.Stage == "enrolling" &&
+		s.Prepared && !s.Initialized && s.Storage != nil && !s.Storage.Uncertain &&
+		s.Storage.Identity.Inode != 0 && s.Storage.Identity.UrbInode != 0 && s.Storage.MountIdentity.Inode != 0 &&
+		s.Adoption != nil && s.Adoption.Uncertain && !s.Adoption.Verified && s.Adoption.FinishedAt == nil &&
+		s.Adoption.Fingerprint == pierstore.Fingerprint(s.Storage.Identity) &&
+		!s.Handoff.Fenced() && s.Deletion == nil && !s.UncertainMaintenance() &&
+		s.Import == nil && s.Bootstrap == nil && publication && s.NativeKeyDigest == "" && s.MoveTarget == "" &&
+		(s.Fake == nil || !s.Fake.Uncertain) &&
+		(s.Comet == nil || !s.Comet.Uncertain && s.Comet.StartedAt == nil && s.Comet.FinishedAt == nil) &&
+		len(s.Runtime.Containers) == 0 && s.Runtime.Network == nil
+}
+
 func (s ManagedState) ExternalImportInFlight() bool {
 	if s.ExternalImport == nil || s.ExternalImport.Stage == "complete" {
 		return false

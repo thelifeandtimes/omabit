@@ -110,6 +110,7 @@ go build -o ./build/ ./cmd/... ./backend/cmd/...
 node scripts/test-panel-model.js
 python3 -B scripts/test-panel.py --windows
 python3 -B scripts/test-log-watch.py
+python3 -B scripts/test-import-recovery.py
 ```
 
 RC.7 source includes a [persistent runtime-log watcher](docs/protocol.md#persistent-collector-log-watch-rc7)
@@ -120,8 +121,12 @@ together. See the [RC.7 release notes](docs/release-rc7.md) and
 Existing ships and unrelated Docker installations are preserved during setup.
 Live operations on the user's hosts follow the [protected-ship policy](docs/protected-ships.md).
 Host changes use explicit OS authorization; desktop clients do not receive Docker
-group access. Development data/report formats are not a backwards-compatible
-release contract.
+group access. RC formats remain developmental; stable 0.1.0 is gated on the
+[tested, non-destructive upgrade contract](docs/upgrade-policy.md).
+
+Unreleased source integrates the [Ames and import-recovery contributions](docs/diagnostics/pr2-pr3-integration.md)
+from PRs #2/#3, adapted to the guided/named-pier flows. It preserves existing
+enrollment records and adds explicit recovery rather than requiring a fresh install.
 
 ## Documentation
 

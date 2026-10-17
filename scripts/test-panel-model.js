@@ -457,3 +457,14 @@ assert.equal(model.importProgress([importConnection],{...importTarget,revision:2
 assert.match(model.importProgress([{...importConnection,status:"unavailable"}],importTarget,now).detail,/Connection unavailable/);
 assert.equal(model.importProgress([importConnection],{...importTarget,status:"failed"},now).active,false);
 console.log("PASS: guided import binds identity/network/destination and progress uses the exact operation/revision without another polling connection");
+const recoveryConnection={...importConnection,features:["recover-import"]};
+const recoverable={...importInstance,desired_state:"stopped",recovery_required:true,pier_path:"fakeships/zod/zod",ship:"~zod",runtime_status:{import_recovery_available:true},external_import:{...importInstance.external_import,stage:"enrolling",holding_path:"/incoming/.omabit-import-id/pier"}};
+assert.equal(model.canRecoverImport(recoveryConnection,recoverable,now),true);
+const recoveryTarget=model.importRecoveryTarget(recoveryConnection,recoverable);
+assert.equal(model.currentImportRecovery(recoveryConnection,recoverable,recoveryTarget,now),true);
+for(const other of [{...recoverable,config_revision:2},{...recoverable,ship:"~nec"},{...recoverable,pier_path:"fakeships/other/zod"},{...recoverable,external_import:{...recoverable.external_import,holding_path:"/other/pier"}},{...recoverable,external_import:undefined}])assert.equal(model.currentImportRecovery(recoveryConnection,other,recoveryTarget,now),false);
+for(const c of [{...recoveryConnection,access_role:"observer"},{...recoveryConnection,status:"unavailable"},{...recoveryConnection,features:[]},{...recoveryConnection,runner_id:"replacement"}])assert.equal(model.currentImportRecovery(c,recoverable,recoveryTarget,now),false);
+assert.equal(model.canRecoverImport(recoveryConnection,{...recoverable,active_operation_id:"other"},now),false);
+assert.equal(model.canRecoverImport(recoveryConnection,{...recoverable,desired_state:"running"},now),false);
+assert.equal(model.canRecoverImport(recoveryConnection,{...recoverable,runtime_status:{}},now),false);
+console.log("PASS: import recovery binds runner/revision/location/evidence and requires fresh operator capability and backend eligibility");

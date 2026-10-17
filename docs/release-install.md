@@ -1,4 +1,4 @@
-# Omabit 0.1.0-rc.8 binary bundle
+# Omabit 0.1.0-rc.9 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
@@ -13,6 +13,12 @@ RC.7 retains management and the separate rootless Docker engine as the existing 
 owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
 user-owned files. Storage/import/deletion and bounded reboot resume continue.
 This remains a development prerelease.
+
+RC.9 adds host Ames UDP publication for new live enrollments, universal pre-move
+epoch checks and explicit retained-enrollment recovery in the CLI and desktop.
+Recovery supports guided, moved, in-place and named-pier flows and leaves ships
+stopped. See [RC.9 notes](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-rc9.md)
+and the [stable upgrade requirement](https://github.com/thelifeandtimes/omabit/blob/master/docs/upgrade-policy.md).
 
 RC.8 simplifies initial setup to one machine-use toggle and an installation
 approval checkbox with expandable details. Guided import needs only source and

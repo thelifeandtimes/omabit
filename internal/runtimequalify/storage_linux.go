@@ -65,7 +65,7 @@ func applyPierEnrollment(ctx context.Context, state ManagedState, persist func(M
 		return state, unknown, errors.New("enrollment working directory already exists")
 	}
 	state.Prepared = true
-	q.r = Result{Profile: q.d.profile, RunID: state.ID, Directory: dir, Image: candidate.Image, Platform: candidate.Platform, EngineVersion: rootless.EngineVersion, VereVersion: candidate.VereVersion, PillURL: candidate.PillURL, PillSHA256: d.pillSHA, PillBytes: d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
+	q.r = Result{Profile: q.d.profile, RunID: state.ID, Directory: dir, Image: candidate.Image, Platform: candidate.Platform, EngineVersion: rootless.EngineVersion, VereVersion: candidate.VereVersion, PillURL: q.pillSource(), PillSHA256: q.d.pillSHA, PillBytes: q.d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
 	state.Runtime = q.r
 	if err = persist(state); err != nil {
 		return state, unknown, err

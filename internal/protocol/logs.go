@@ -6,18 +6,19 @@ const MaxLogBytes = 64 << 10
 const MaxLogLines = 200
 
 type RuntimeStatus struct {
-	LaunchError            string     `json:"launch_error,omitempty"`
-	Stage                  string     `json:"stage,omitempty"`
-	Initialized            bool       `json:"initialized"`
-	ContainerID            string     `json:"container_id,omitempty"`
-	ContainerKind          string     `json:"container_kind,omitempty"`
-	Running                *bool      `json:"running,omitempty"`
-	ExitCode               *int       `json:"exit_code,omitempty"`
-	OOMKilled              *bool      `json:"oom_killed,omitempty"`
-	ObservedAt             *time.Time `json:"observed_at,omitempty"`
-	LastOperation          *Operation `json:"last_operation,omitempty"`
-	DefaultSnapshotMinutes uint32     `json:"default_snapshot_minutes"`
-	SnapshotMinutes        *uint32    `json:"snapshot_minutes,omitempty"`
+	ImportRecoveryAvailable bool       `json:"import_recovery_available,omitempty"`
+	LaunchError             string     `json:"launch_error,omitempty"`
+	Stage                   string     `json:"stage,omitempty"`
+	Initialized             bool       `json:"initialized"`
+	ContainerID             string     `json:"container_id,omitempty"`
+	ContainerKind           string     `json:"container_kind,omitempty"`
+	Running                 *bool      `json:"running,omitempty"`
+	ExitCode                *int       `json:"exit_code,omitempty"`
+	OOMKilled               *bool      `json:"oom_killed,omitempty"`
+	ObservedAt              *time.Time `json:"observed_at,omitempty"`
+	LastOperation           *Operation `json:"last_operation,omitempty"`
+	DefaultSnapshotMinutes  uint32     `json:"default_snapshot_minutes"`
+	SnapshotMinutes         *uint32    `json:"snapshot_minutes,omitempty"`
 }
 
 type LogsRequest struct {

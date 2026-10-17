@@ -2,6 +2,12 @@
 
 ## Where we are
 
+Unreleased source integrates [PRs #2/#3](diagnostics/pr2-pr3-integration.md): Ames
+publication for new live imports, universal pre-move epoch checks, and explicit
+non-destructive enrollment recovery adapted to named/guided/in-place imports.
+Stable 0.1.0 is gated on the [upgrade contract](upgrade-policy.md); fresh resets
+are development exercises, not the supported user update path.
+
 **[RC.8 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.8), with matching native binary pins.**
 RC.8 simplifies setup approval and machine selection, adds source/location-only
 guided imports with progress, recognizes ship-named pier leaves, and accepts intact

@@ -130,11 +130,52 @@ Imports record phase, original path, holding path and copied-byte/file progress.
 An interruption preserves the source/partial destination and fences runtime Start;
 it does not retry a copy, erase evidence, or bootstrap the partial target. Inspect
 the operation receipt and the source/holding paths shown under registered locations.
-Automatic recovery of an import that has already moved its source is not offered.
+Automatic retry of data transfer is not offered.
 A failed review/preparation that never moved its source can be explicitly stopped
 and its empty registration deleted before a new attempt.
-If the move completed but the subsequent enrollment/layout validation failed,
-explicit Stop followed by Delete can discard the now-owned destination as well.
+If the move completed but enrollment/layout validation failed, preserve the
+destination and review the explicit recovery procedure below. Deleting that
+destination could discard the only retained copy; it is not a recovery procedure.
+
+### Finish retained enrollment (RC.9)
+
+An explicit `recover-import` operation can finish a **prepared, uninitialized**
+external import that stopped at `enrolling`. It supports both moved imports and
+RC.8's in-place imports, including live imports with Ames publication configured.
+In **Setup → Import a pier & storage locations → Registered locations**, eligible
+instances offer **Review recovery… → Validate and finish enrollment**. The server
+revalidates the exact runner/instance/revision and filesystem evidence.
+
+```bash
+urbit-collector --runner HOST --expected-runner-id RUNNER_ID \
+  operate INSTANCE recover-import --revision CURRENT_REVISION --request-id UNIQUE_ID
+```
+
+Recovery completes the journaled enrollment and leaves the ship stopped and
+identity-pending. It reads retained evidence without starting Vere/Docker,
+rewriting metadata, removing locks, moving data, or deleting a source/target.
+The completed state and success receipt are published atomically. A failed or
+interrupted attempt stays fenced; retries require an explicit new review/request.
+
+For a moved import, both historical source and holding names must be absent.
+Any recreated directory, inaccessible ancestor, symlink or unsupported mount/
+device transition causes refusal. Do not remove evidence to make this check pass.
+For in-place enrollment, the source must instead be the same recorded target
+filesystem object, with no holding path. Guided imports also recheck their public
+ship identity and fake/live metadata.
+
+This is not general copy resumption or repair. Earlier transfer phases, missing
+workspaces, retained runtime resources, unsupported epochs and unrelated recovery
+states still require manual review. Legacy directory fingerprints do not prove
+historical file contents, and legacy journals lack source-parent/mount identities;
+keep external writers/supervisors stopped. Device renumbering can require review.
+Plain in-tree `enroll-pier` failures without an external import receipt are outside
+this operation's scope.
+
+Epoch compatibility alone does not guarantee a prepared snapshot. A runtime
+change may still require the original Vere's `prep` utility on a stopped pier.
+Plan that separately; never rewrite historical version metadata to bypass a check.
+See [integration provenance and tests](diagnostics/pr2-pr3-integration.md).
 
 ## Permanently delete a pier
 

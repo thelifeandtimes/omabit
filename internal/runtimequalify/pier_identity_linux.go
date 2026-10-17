@@ -57,24 +57,9 @@ func inspectExternalEpochs(ctx context.Context, path string) error {
 	if err := pierstore.CheckStateFiles(ctx, path); err != nil {
 		return err
 	}
-	root, err := os.OpenRoot(filepath.Join(path, ".urb/log"))
-	if err != nil {
-		return err
-	}
-	defer root.Close()
 	q := &qualifier{d: defaults(), uid: os.Geteuid(), gid: os.Getegid()}
-	first, err := scanPierEpochs(ctx, root, path, "source-review", q.owned, true)
-	if err != nil {
-		return err
-	}
-	second, err := scanPierEpochs(ctx, root, path, "source-review", q.owned, true)
-	if err != nil {
-		return err
-	}
-	if first.Digest != second.Digest {
-		return errors.New("source epochs changed during review")
-	}
-	return nil
+	_, err := q.inspectEpochInventoryAt(ctx, path, true)
+	return err
 }
 
 // Inspect an automatic destination without creating directories. Existing

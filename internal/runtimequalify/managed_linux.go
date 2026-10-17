@@ -181,6 +181,9 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 	if action == "import-pier" {
 		return applyExternalImport(ctx, state, persist, d)
 	}
+	if action == "recover-import" {
+		return applyImportRecovery(ctx, state, persist, d)
+	}
 	if action == "prepare-handoff" || action == "receive-handoff" || action == "commit-handoff" {
 		return applyHandoff(ctx, action, state, persist, d)
 	}

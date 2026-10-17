@@ -34,6 +34,21 @@ accepted for import when its latest epoch is 4.6/v2; mixed history is labeled
 Testnet means an alternate Ethereum/Azimuth RPC endpoint. It is a UI/documentation
 stub; the public offline fake/live bit cannot determine a live ship's RPC endpoint.
 
+The RC.9 `recover-import` capability adds that explicit instance operation
+to the existing operator-only operations endpoint. It requires a selected revision
+and actor-scoped request ID. `runtime_status.import_recovery_available` is a UI
+eligibility hint, not authorization: the worker checks current retained evidence
+behind the host work gate. It leaves successful recovery stopped/identity-pending
+and publishes completion and its succeeded receipt atomically. Source/holding
+absence checks apply only to moved imports; an in-place source must match the
+recorded target object. Partial copies and unrelated uncertainty are not recoverable
+through this operation. No automatically retried mutations are added.
+
+New live enrollments reserve/publish host Ames UDP ports like owned-key boots and
+incoming published handoffs. The initial `comet-verify` runtime still uses `-L`
+without UDP publication. Existing schema16 network contracts are preserved on open;
+see the [upgrade requirement](upgrade-policy.md) for the pre-stable migration gate.
+
 Capabilities `storage-locations`, `import-pier`, and `delete-pier` add operator-only
 storage actions. `POST /v1/storage-roots` binds a location name to an absolute owned
 directory; `POST /v1/pier-import-preview` reviews a stopped host source, and

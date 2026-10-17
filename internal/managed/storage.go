@@ -233,10 +233,18 @@ func (s *store) enrollPierSource(actor string, req protocol.EnrollPierRequest, s
 		}
 		v = storedInstance{Public: protocol.Instance{ID: req.ID, Label: base.Label, Ship: req.Ship, Mode: source.Kind, Config: base.Config, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "enrolling", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: id, Port: req.HTTPPort, Adoption: &runtimequalify.ManagedAdoption{Fingerprint: req.Fingerprint, Uncertain: true}}}
 		if source.Kind != "fake" {
-			v.Runtime.Comet = &runtimequalify.ManagedComet{Ship: req.Ship}
-			if source.Kind != "comet" {
-				v.Runtime.NativeShip = req.Ship
+			ames, err := s.choosePort(tx, req.ID, "udp", 0)
+			if err != nil {
+				return protocol.Operation{}, err
 			}
+			v.Public.Config.AmesPort, v.Runtime.AmesPort = ames, ames
+			v.Public.AmesPublished = true
+			// As with an incoming handoff, opt into host Ames publication.
+			// Enrollment initializes an existing pier without a key/bootstrap;
+			// comet-verify still disables Ames until its identity matches.
+			v.Runtime.Boot = &runtimequalify.ManagedBoot{}
+			v.Runtime.NativeShip = req.Ship
+			v.Runtime.Comet = &runtimequalify.ManagedComet{Ship: req.Ship}
 		} else {
 			v.Runtime.Fake = &runtimequalify.ManagedFake{Ship: req.Ship}
 		}
