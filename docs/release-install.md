@@ -1,4 +1,4 @@
-# Omabit 0.1.0-rc.9 binary bundle
+# Omabit 0.1.0-rc.10 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
@@ -13,6 +13,11 @@ RC.7 retains management and the separate rootless Docker engine as the existing 
 owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
 user-owned files. Storage/import/deletion and bounded reboot resume continue.
 This remains a development prerelease.
+
+RC.10 adds loom20–34 selection and default-off native control for every ship class,
+with separate requested and recorded launch settings. Legacy HTTP edits preserve
+native opt-in, and cross-host transfers preserve settings under signed receipts.
+See [RC.10 notes](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-rc10.md).
 
 RC.9 adds host Ames UDP publication for new live enrollments, universal pre-move
 epoch checks and explicit retained-enrollment recovery in the CLI and desktop.
@@ -76,8 +81,8 @@ and operator public key with the owner installer described below.
 
 This updates management services while preserving the owner, runner ID, SSH keys,
 grants and running containers. The historical `install-services.sh` refuses owner
-installations. Schema **16** retains permanent-layout records; older runners refuse
-it. Legacy dedicated-account hosts need explicit retirement/migration first; schema
+installations. Schema **19** upgrades supported schemas11–18 without rewriting
+instance/operation bodies; older runners refuse it. Legacy dedicated-account hosts need explicit retirement/migration first; schema
 upgrade alone does not migrate OS accounts or pier locations.
 
 ## Install or update a headless runner

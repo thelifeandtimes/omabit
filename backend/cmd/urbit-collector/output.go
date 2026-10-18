@@ -39,10 +39,40 @@ func cell(s string) string {
 	}, s)
 }
 
+func loomLabel(exponent uint8) string {
+	if !protocol.ValidLoom(exponent) {
+		return "unknown"
+	}
+	if exponent < 30 {
+		return fmt.Sprintf("%d (%d MiB)", exponent, uint64(1)<<(exponent-20))
+	}
+	return fmt.Sprintf("%d (%d GiB)", exponent, uint64(1)<<(exponent-30))
+}
+
+func controlLabel(enabled bool) string {
+	if enabled {
+		return "enabled"
+	}
+	return "disabled"
+}
+
 func instances(w io.Writer, values []protocol.Instance) {
 	fmt.Fprintln(w, "INSTANCE\tDESIRED\tOBSERVED\tHEALTH\tREV / APPLIED\tENDPOINT")
 	for _, v := range values {
 		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%d / %d\t%s\n", cell(v.ID), cell(v.DesiredState), cell(v.ObservedState), cell(v.Health), v.ConfigRevision, v.AppliedRevision, cell(v.Endpoint))
+		fmt.Fprintf(w, "  Requested loom: %s address space\n  Requested native control: %s\n", loomLabel(v.Config.Loom), controlLabel(v.Config.NativeControl))
+		if d := v.RuntimeStatus; d != nil {
+			if d.LaunchLoom != nil {
+				fmt.Fprintf(w, "  Recorded launch loom: %s address space\n", loomLabel(*d.LaunchLoom))
+			}
+			if d.LaunchNativeControl != nil {
+				fmt.Fprintf(w, "  Recorded launch native control: %s\n", controlLabel(*d.LaunchNativeControl))
+			}
+			if d.NativeControlSocket != "" {
+				fmt.Fprintf(w, "  Host-local socket path: %s (path only, reachability not verified)\n", cell(d.NativeControlSocket))
+			}
+		}
+		fmt.Fprintln(w, "  Loom is address space, not resident memory or the container memory limit.")
 		if v.RecoveryRequired {
 			fmt.Fprintln(w, "  Recovery required")
 		}

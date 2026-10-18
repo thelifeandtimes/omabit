@@ -21,7 +21,7 @@ comet_inventory=dict(inventory,pier_id="c"*32,digest="e"*64)
 if (directory/"inspection.json").exists():
     inventory["observed_at"]=json.loads((directory/"inspection.json").read_text())["finished_at"]
 features=["storage-locations","import-pier","delete-pier","bootstrap-selection","host-handoff","runtime-logs","create-fake","fake-ship-options","pier-storage","key-boot","key-boot-options","livenet-import","create-comet","container-cpu","offline-pack","offline-meld","offline-roll","epoch-inventory","epoch-prune-prefix","login-code","import-qualified-fake","maintenance-schedules","comet-compaction","comet-epochs"]
-features += ["host-port-suggestion","guided-pier-import","named-pier-directories"]
+features += ["runtime-settings","native-control-all-ships","runtime-settings-handoff","host-port-suggestion","guided-pier-import","named-pier-directories"]
 with (directory/"calls.jsonl").open("a") as log:
     log.write(json.dumps(sys.argv[1:])+"\\n")
 if "capture" in sys.argv:
@@ -41,6 +41,7 @@ elif "inventory" in sys.argv:
         if inspection: inventory["observed_at"]=inspection["finished_at"]
         snapshot={"runner_id":"runner-fixture","mode":"development-managed","instances":[{"id":"alpha","mode":"fake","ship":"~zod","config_revision":2,"applied_revision":2,"desired_state":state,"observed_state":"running" if state=="running" else "stopped","observed_at":now,"health":"healthy","config":{"http_port":18081,"ames_port":34343,"loom":31},"endpoint":"http://127.0.0.1:18081","epochs":inventory,"resources":{"status":"fresh","source":"docker-stats-v1.47","container_id":"c"*64,"observed_at":now,"memory_current_bytes":67108864,"memory_limit_bytes":4294967296,"pids_current":6}}],"operations":[inspection] if inspection else [],"incidents":[]}
         snapshot["instances"][0]["pier_path"]="fakeships/alpha/pier"
+        snapshot["instances"][0]["config"].update(loom=34,native_control=True)
         if (directory/"policy.json").exists(): snapshot["instances"][0]["schedule"]=json.loads((directory/"policy.json").read_text())
         snapshot["instances"][0]["resources"].update({"cpu_usage_percent":12.5,"cpu_limit_cores":2})
         snapshot["instances"][0]["runtime_status"]={"initialized":True}
@@ -121,6 +122,7 @@ elif "move-host" in sys.argv:
     print(json.dumps({"id":"b"*32,"source_runner":"runner-fixture","source_instance":"alpha","destination_runner":"runner-move-target","destination_instance":"alpha","state":"complete","direction":"in"}))
 elif "create-comet" in sys.argv:
     assert "--confirm-network" in sys.argv and "--request-id" in sys.argv
+    assert sys.argv[sys.argv.index("--loom")+1]=="34" and "--native-control=true" in sys.argv
     assert sys.argv[sys.argv.index("--expected-runner-id")+1] == "runner-fixture"
     instance=sys.argv[sys.argv.index("create-comet")+1]
     if instance=="taken-on-server":
@@ -131,6 +133,7 @@ elif "create-comet" in sys.argv:
     (directory/("created-"+instance+".json")).write_text(json.dumps({"id":instance,"mode":"comet","ship":"~doznec-salbud-salwex-sogref--tasweb-navfun-batwet-sigfet","config_revision":1,"config":{"http_port":int(sys.argv[sys.argv.index("--http-port")+1]),"ames_port":34343,"loom":31}}))
     print(json.dumps({"id":"op-comet-fixture","status":"succeeded","instance_id":instance,"request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-comet","config_revision":1}))
 elif "create-fake" in sys.argv:
+    assert sys.argv[sys.argv.index("--loom")+1]=="34" and "--native-control=true" in sys.argv
     assert sys.argv[sys.argv.index("--bootstrap")+1]=="recommended"
     assert sys.argv[sys.argv.index("--pill")+1]=="https://example.invalid/apps.pill"
     if sys.argv[sys.argv.index("--ship")+1]=="~foo":
@@ -142,12 +145,17 @@ elif "create-fake" in sys.argv:
     instance=sys.argv[sys.argv.index("create-fake")+1]
     (directory/("created-"+instance+".json")).write_text(json.dumps({"id":instance,"mode":"fake","ship":"~bus","config_revision":1,"config":{"http_port":18090,"ames_port":34343,"loom":31}}))
     print(json.dumps({"id":"op-named-fake","status":"succeeded","instance_id":instance,"request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-fake","config_revision":1}))
+elif "configure" in sys.argv:
+    assert sys.argv[sys.argv.index("--loom")+1]=="34" and "--native-control=true" in sys.argv
+    assert sys.argv[sys.argv.index("--revision")+1]=="2" and sys.argv[sys.argv.index("--http-port")+1]=="18095"
+    print(json.dumps({"id":"alpha","config_revision":3,"config":{"http_port":18095,"ames_port":34343,"loom":34,"native_control":True}}))
 elif "enroll-pier" in sys.argv:
     assert "--confirm-stopped" in sys.argv and sys.argv[sys.argv.index("--fingerprint")+1]=="f"*64
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
     assert sys.argv[sys.argv.index("--path")+1]=="fakeships/project/nec/pier"
     print(json.dumps({"id":"op-enroll-pier","instance_id":"nec","request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"enroll-pier","status":"queued"}))
 elif "create-ship" in sys.argv:
+    assert sys.argv[sys.argv.index("--loom")+1]=="32" and "--native-control=true" in sys.argv
     assert "--confirm-network" in sys.argv and sys.argv[sys.argv.index("--key-file")+1]=="/fixture/owned.key"
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
     assert "--http-port" not in sys.argv and "--ames-port" not in sys.argv and sys.argv[sys.argv.index("--pier-path")+1]=="livenet/planets/sampel-palnet/sampel-palnet"
@@ -296,7 +304,9 @@ ShellRoot {
   Plugin.Service { id: service; settings: testSettings }
   Plugin.Panel { id: panel; service: service; settings: testSettings; manageIpc: false; bar: null }
   Item { width: 600; visible: false; Plugin.SetupPane { id: setupFixture; width: 600; service: service; mode: "ship" } }
+  Item { visible: false; Plugin.ShipPortsPane { id: settingsFixture; width: 600; service: service; connection: service.connections[0] || null; instance: connection && connection.snapshot ? connection.snapshot.instances[0] : null } }
   Component { id: teardownRegistration; Plugin.RegistrationPane { width:600 } }
+  Component { id: runtimeComponent; Plugin.RuntimeSettingsFields { width:600 } }
   readonly property var maintenance: service.monitorWindow.maintenancePane
   property int phase: -2
   onPhaseChanged: console.log("Fixture phase", phase)
@@ -333,6 +343,22 @@ ShellRoot {
      onTriggered: {
        if (capturesPending) return
       if (phase === -2 && service.localSetupStatus && service.connections.length === 1) {
+        var runtime=runtimeComponent.createObject(null,{supported:true})
+        var loom=control(runtime,"runtime-loom"),native=control(runtime,"runtime-native-control")
+        var warnings=runtime.children.filter(function(item){return typeof item.text === "string" && item.text.indexOf("conn.sock")>=0 && item.text.indexOf("authority")>=0})
+        for(var required of ["Primarily for development", "Leave disabled for routine use", "known crash bug", "replies pending", "full ship-control authority"]) {
+          if(warnings.length!==1 || warnings[0].text.indexOf(required)<0) {Qt.exit(1);throw new Error("native-control warning must state "+required)}
+        }
+        if (loom.count!==15 || loom.currentIndex!==11 || runtime.selectedLoom!==31 || native.checked) throw new Error("loom dropdown must default to 31 with fifteen choices and native off")
+        for(var n=20;n<=34;n++) if(loom.textAt(n-20)!==Model.loomLabel(n)) throw new Error("loom dropdown label mismatch "+n)
+        loom.currentIndex=14;loom.activated(14)
+        if(runtime.selectedLoom!==34) throw new Error("dropdown selection not propagated")
+        native.checked=true;runtime.mode="comet"
+        if(!native.checked || native.enabled) throw new Error("old backend must disable live native without clearing desired true")
+        runtime.allShipsSupported=true
+        for(var mode of ["fake","comet","moon","planet","star","galaxy"]) {runtime.mode=mode;if(!native.enabled || !native.visible || !native.checked) throw new Error("all-ship checkbox lost "+mode)}
+        runtime.destroy()
+        console.log("PASS: loom dropdown entries/default/selection and all-ship capability gating preserve desired opt-in")
         if (service.setupCheckRequested || service.machineUse!=="") throw new Error("fresh onboarding already chose machine/check state")
         service.setMachineUse("laptop")
          if (service.setUpLocal(false) || !service.setUpLocal(true) || service.setUpLocal(true)) throw new Error("local setup approval/dispatch/busy guard failed")
@@ -429,8 +455,10 @@ ShellRoot {
         if (service.registerComet(service.connections[0],"new-comet",18088,false)) throw new Error("comet without acknowledgement")
         if (service.registerComet(service.connections[0],"comet-fixture",18088,true)) throw new Error("duplicate instance dispatched")
         if (service.registerComet(service.connections[0],"new-comet",18087,true)) throw new Error("duplicate port dispatched")
-        if (!service.registerComet(service.connections[0],"new-comet",18088,true)) throw new Error("comet registration failed")
+        if (!service.registerComet(service.connections[0],"new-comet",18088,true,undefined,"bare","",34,true)) throw new Error("comet registration failed")
         phase = 22
+      } else if (phase === 22 && !service.busy && service.registrationOutcome && service.registrationOutcome.status!=="succeeded") {
+        Qt.exit(1);throw new Error("comet native opt-in was not emitted to fixture CLI: "+service.lastError)
       } else if (phase === 22 && !service.busy && !service.pendingFirstBoot && !service.bootTarget && service.lastResult.indexOf("first-boot:") === 0) {
         console.log("PASS: explicit comet boot acknowledgement registers then starts exactly once")
         service.monitorWindow.selectedKey="runner-fixture/alpha"
@@ -493,6 +521,9 @@ ShellRoot {
          var choice=control(control(setupFixture,"registration-form"),"bootstrap-choice")
          choice.currentIndex=1;choice.activated(1);phase=29
        } else if (phase === 29) {
+        var loom=control(control(setupFixture,"registration-form"),"runtime-loom"),native=control(control(setupFixture,"registration-form"),"runtime-native-control")
+        if(!native.enabled) throw new Error("new runner did not enable comet native control")
+        loom.currentIndex=14;loom.activated(14);native.checked=true
         var consent = control(setupFixture,"comet-consent")
         consent.checked = true
         if (!consent.text || consent.indicator.x !== consent.leftPadding || consent.contentItem.x + consent.contentItem.leftPadding <= consent.indicator.x + consent.indicator.width) throw new Error("consent indicator overlaps its label")
@@ -511,6 +542,10 @@ ShellRoot {
          control(setupFixture,"registration-pier").text = "bus-data"
         phase = 31
        } else if (phase === 31) {
+         var loom=control(control(setupFixture,"registration-form"),"runtime-loom"), native=control(control(setupFixture,"registration-form"),"runtime-native-control")
+         if (!loom || !native) throw new Error("development runtime controls missing")
+         if (loom.currentIndex!==11 || native.checked) throw new Error("new fake defaults are not loom31/conn disabled")
+         loom.currentIndex=14;loom.activated(14);native.checked=true
          control(setupFixture,"comet-consent").checked=true
         var submit = control(setupFixture,"register-instance")
         if (!submit.enabled) throw new Error("named fake form unavailable")
@@ -521,12 +556,27 @@ ShellRoot {
          control(setupFixture,"registration-fake-ship").text = "~bus"
          phase = 33
        } else if (phase === 33) {
+         var loom=control(control(setupFixture,"registration-form"),"runtime-loom"),native=control(control(setupFixture,"registration-form"),"runtime-native-control")
+         if(loom.currentIndex!==11 || native.checked || control(setupFixture,"comet-consent").checked) throw new Error("different fake identity inherited settings or consent")
+         loom.currentIndex=14;loom.activated(14);native.checked=true;control(setupFixture,"comet-consent").checked=true
          var submit = control(setupFixture,"register-instance")
          if (!submit.enabled) throw new Error("corrected named fake form unavailable")
          submit.clicked(); phase = 34
        } else if (phase === 34 && !service.busy && !service.pendingFirstBoot && !service.bootTarget) {
           if (setupFixture.mode !== "ship" || service.registrationOutcome.status !== "succeeded" || service.registrationOutcome.ship !== "~bus" || service.registrationOutcome.pier !== "fakeships/bus-data/bus") throw new Error("named fake result lost identity or path")
         console.log("PASS: fake identity, instance name and pier directory are submitted independently")
+         control(settingsFixture,"edit-ship-ports").clicked();phase=35
+       } else if (phase === 35) {
+         var loom=control(settingsFixture,"runtime-loom"), native=control(settingsFixture,"runtime-native-control")
+         if (!loom || !native || loom.currentIndex!==14 || !native.checked) throw new Error("configuration editor lost selected runtime settings")
+         loom.currentIndex=11;loom.activated(11);native.checked=false
+         control(settingsFixture,"edit-ship-ports").clicked()
+         if(loom.currentIndex!==14 || !native.checked) throw new Error("form reload lost desired runtime settings")
+         control(settingsFixture,"ship-http-port").text="18095"
+         control(settingsFixture,"save-ship-http-port").clicked();phase=36
+       } else if (phase === 36 && !service.busy) {
+         if(service.lastError)throw new Error("runtime settings configuration failed: "+service.lastError)
+         console.log("PASS: QML runtime settings default safely, create loom34 native fake and preserve native settings during HTTP edits")
          if (testWindows) { service.monitorWindow.selectedKey="runner-fixture/alpha";service.openMonitor(null,null,"overview"); phase = 10 } else Qt.quit()
         } else if (phase === 10) {
           if (!service.monitorWindow.visible) throw new Error("monitor failed to map")
@@ -640,6 +690,9 @@ ShellRoot {
           service.monitorWindow.setupPane.mode="ship";service.monitorWindow.setupPane.shipKind="key"
           var form=control(service.monitorWindow.setupPane,"owned-key-form")
            control(form,"key-identity").text="~sampel-palnet";form.keyFile="/fixture/owned.key"
+           var loom=control(form,"runtime-loom"),native=control(form,"runtime-native-control")
+           if(!loom || !native || loom.currentIndex!==11 || native.checked || !native.enabled) throw new Error("owned-key runtime defaults missing")
+           loom.currentIndex=12;loom.activated(12);native.checked=true
            if(control(form,"key-register").enabled)throw new Error("key boot skipped consent")
            control(form,"key-boot-consent").checked=true
           if (control(form,"key-start").enabled || !control(form,"key-register").enabled) throw new Error("Start enabled before registration or registration unavailable")
@@ -654,6 +707,7 @@ ShellRoot {
           if (control(form,"key-start").enabled || control(form,"key-register").enabled || service.monitorWindow.page!=="overview") throw new Error("owned registration did not automatically boot/open management")
           service.monitorWindow.page="setup"
           control(form,"key-register-another").clicked()
+          if(control(form,"runtime-loom").currentIndex!==11 || control(form,"runtime-native-control").checked) throw new Error("another owned ship inherited runtime settings")
           if (control(form,"key-start").enabled) throw new Error("Start remained enabled on a blank registration form")
           service.lastError="old key-flow error"
          service.monitorWindow.setupPane.mode="home";phase=3021
@@ -748,7 +802,7 @@ ShellRoot {
          if (setup.mode!=="runner") throw new Error("Manage runners cannot add a connection")
           console.log("PASS: one Add a ship entry exposes comet/key provisioning; Manage runners includes offline collector enrollments without ship controls")
           var source=service.connections[0]
-          service.connections=service.connections.concat([{name:"remote-move",runner_id:"runner-move-target",mode:"development-managed",status:"available",access_role:"operator",checked_at:new Date().toISOString(),features:["host-handoff"],snapshot:{runner_id:"runner-move-target",mode:"development-managed",instances:[],operations:[],incidents:[]}}])
+           service.connections=service.connections.concat([{name:"remote-move",runner_id:"runner-move-target",mode:"development-managed",status:"available",access_role:"operator",checked_at:new Date().toISOString(),features:["host-handoff","runtime-settings-handoff"],snapshot:{runner_id:"runner-move-target",mode:"development-managed",instances:[],operations:[],incidents:[]}}])
           service.monitorWindow.selectedKey="runner-fixture/alpha";service.monitorWindow.page="overview";phase=306
         } else if (phase === 306) {
           var pane=control(service.monitorWindow,"host-move-pane")

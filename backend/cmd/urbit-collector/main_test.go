@@ -89,11 +89,11 @@ func TestCommands(t *testing.T) {
 	}{
 		{"hello", []string{"hello"}, "GET /hello", nil, hello},
 		{"snapshot", []string{"snapshot"}, "GET /v1/snapshot", nil, snapshot},
-		{"configure", []string{"configure", "alpha", "--revision", "1", "--http-port", "8080", "--ames-port", "34343", "--loom", "32"}, "PUT /v1/instances/alpha/configuration", protocol.ConfigureRequest{ExpectedRevision: 1, Config: config}, instance},
+		{"configure", []string{"configure", "alpha", "--revision", "1", "--http-port", "8080", "--ames-port", "34343", "--loom", "32"}, "PUT /v1/instances/alpha/configuration", protocol.ConfigureRequest{ExpectedRevision: 1, Config: config, PreserveNativeControl: true}, instance},
 		{"start", []string{"operate", "alpha", "start", "--revision", "2", "--request-id", "walkthrough-start"}, "POST /v1/instances/alpha/operations", protocol.OperationRequest{ExpectedRevision: 2, Kind: "start", RequestID: "walkthrough-start"}, operation},
 		{"stop", []string{"operate", "alpha", "stop", "--revision", "2", "--request-id", "Stop_09-"}, "POST /v1/instances/alpha/operations", protocol.OperationRequest{ExpectedRevision: 2, Kind: "stop", RequestID: "Stop_09-"}, stop},
-		{"lower_bounds", []string{"configure", "alpha", "--revision=1", "--http-port=1", "--ames-port=1", "--loom=31"}, "PUT /v1/instances/alpha/configuration", protocol.ConfigureRequest{ExpectedRevision: 1, Config: protocol.Configuration{HTTPPort: 1, AmesPort: 1, Loom: 31}}, instance},
-		{"upper_bounds", []string{"configure", "alpha", "--revision=18446744073709551615", "--http-port=65535", "--ames-port=65535", "--loom=33"}, "PUT /v1/instances/alpha/configuration", protocol.ConfigureRequest{ExpectedRevision: ^uint64(0), Config: protocol.Configuration{HTTPPort: 65535, AmesPort: 65535, Loom: 33}}, instance},
+		{"lower_bounds", []string{"configure", "alpha", "--revision=1", "--http-port=1", "--ames-port=1", "--loom=31"}, "PUT /v1/instances/alpha/configuration", protocol.ConfigureRequest{ExpectedRevision: 1, Config: protocol.Configuration{HTTPPort: 1, AmesPort: 1, Loom: 31}, PreserveNativeControl: true}, instance},
+		{"upper_bounds", []string{"configure", "alpha", "--revision=18446744073709551615", "--http-port=65535", "--ames-port=65535", "--loom=33"}, "PUT /v1/instances/alpha/configuration", protocol.ConfigureRequest{ExpectedRevision: ^uint64(0), Config: protocol.Configuration{HTTPPort: 65535, AmesPort: 65535, Loom: 33}, PreserveNativeControl: true}, instance},
 		{"long_id", []string{"operate", "alpha", "start", "--revision=2", "--request-id=" + strings.Repeat("a", 64)}, "POST /v1/instances/alpha/operations", protocol.OperationRequest{ExpectedRevision: 2, Kind: "start", RequestID: strings.Repeat("a", 64)}, operation},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
@@ -267,7 +267,7 @@ func TestUsageErrors(t *testing.T) {
 			values = append(values, "65536")
 		}
 		if name == "loom" {
-			values = append(values, "30", "34", "287")
+			values = append(values, "19", "35", "287")
 		}
 		for _, value := range values {
 			args := append([]string{}, configuration...)
@@ -352,8 +352,8 @@ func TestHelp(t *testing.T) {
 					t.Errorf("help must include %q: %s", text, &stdout)
 				}
 			}
-			if args[0] == "configure" && (!strings.Contains(stdout.String(), "31..33") || !strings.Contains(stdout.String(), "not universal runtime bounds")) {
-				t.Errorf("help must explain demo loom bounds: %s", &stdout)
+			if args[0] == "configure" && (!strings.Contains(stdout.String(), "20..34") || !strings.Contains(stdout.String(), "address space")) {
+				t.Errorf("help must explain pinned loom bounds: %s", &stdout)
 			}
 		})
 	}

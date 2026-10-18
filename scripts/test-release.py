@@ -54,6 +54,8 @@ def main():
         verify(package)
         build = json.loads((package / "BUILD.json").read_text())
         assert build["source_commit"] == metadata["source_commit"] and build["version"] == version
+        schema = int(subprocess.check_output([package / "build/urbit-runner", "state-schema"], text=True, timeout=10))
+        assert schema == build["schema"] == metadata["schema"], "binary/package/release schema mismatch"
         assert build["pill"]["sha256"] == metadata["pill"]["sha256"]
         manifest = json.loads((package / "plugins/omabit/manifest.json").read_text())
         assert manifest["version"] == version

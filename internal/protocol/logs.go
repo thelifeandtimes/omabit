@@ -6,6 +6,9 @@ const MaxLogBytes = 64 << 10
 const MaxLogLines = 200
 
 type RuntimeStatus struct {
+	LaunchLoom              *uint8     `json:"launch_loom,omitempty"`
+	LaunchNativeControl     *bool      `json:"launch_native_control,omitempty"`
+	NativeControlSocket     string     `json:"native_control_socket,omitempty"`
 	ImportRecoveryAvailable bool       `json:"import_recovery_available,omitempty"`
 	LaunchError             string     `json:"launch_error,omitempty"`
 	Stage                   string     `json:"stage,omitempty"`

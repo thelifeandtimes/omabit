@@ -14,6 +14,8 @@ import (
 // Only validated qualified-fake provenance can seed an imported initialized pier;
 // it is not an API for arbitrary filesystem paths or Docker resources.
 type ManagedState struct {
+	Loom                 uint8                  `json:"loom,omitempty"`
+	NativeControl        bool                   `json:"native_control,omitempty"`
 	StartupResume        *StartupResumeIntent   `json:"startup_resume,omitempty"`
 	Deletion             *ManagedDeletion       `json:"deletion,omitempty"`
 	ExternalImport       *ManagedExternalImport `json:"external_import,omitempty"`

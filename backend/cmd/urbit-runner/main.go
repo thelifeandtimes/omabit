@@ -14,12 +14,14 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/demo"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/localrpc"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/managed"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
 
 const usage = `Usage: urbit-runner COMMAND
 
 Commands:
+  state-schema               Print this binary's persistent state schema version.
   install-host --owner USER --bundle DIR --public-key FILE --acknowledge-host-changes
                              Install the owner's rootless engine, access and services.
   prepare-ssh --output DIR --public-key FILE --role operator|observer
@@ -103,6 +105,10 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	if len(args) == 1 && args[0] == "state-schema" {
+		fmt.Fprintln(stdout, managed.StateSchemaVersion)
+		return 0
+	}
 	if len(args) > 0 && args[0] == "owner-ssh" {
 		return runOwnerSSH(ctx, args[1:], stdout, stderr)
 	}

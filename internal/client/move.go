@@ -19,6 +19,7 @@ func MoveStopped(ctx context.Context, source, destination *Client, sourceRunner,
 	if !protocol.ValidID(req.RequestID) || len(req.RequestID) > 40 || sourceRunner == req.DestinationRunner {
 		return zero, errors.New("require distinct pinned runners and a request ID of at most 40 characters")
 	}
+	settingsHandoff := true
 	for _, endpoint := range []struct {
 		c  *Client
 		id string
@@ -30,6 +31,34 @@ func MoveStopped(ctx context.Context, source, destination *Client, sourceRunner,
 		if h.RunnerID != endpoint.id || h.AccessRole != "operator" || !slices.Contains(h.Features, "host-handoff") {
 			return zero, errors.New("both selected runners must provide operator host-handoff access")
 		}
+		settingsHandoff = settingsHandoff && slices.Contains(h.Features, protocol.RuntimeSettingsHandoffFeature)
+	}
+	// Inspect the selected revision before any mutation. Old collectors are also
+	// fenced by the source endpoint when they omit this capability acknowledgement.
+	original, err := source.Snapshot(ctx)
+	if err != nil {
+		return zero, err
+	}
+	if original.RunnerID != sourceRunner {
+		return zero, ErrIdentityMismatch
+	}
+	var selected *protocol.Instance
+	for i := range original.Instances {
+		if original.Instances[i].ID == instance {
+			selected = &original.Instances[i]
+			break
+		}
+	}
+	if selected == nil || selected.ConfigRevision != req.ExpectedRevision {
+		return zero, errors.New("source configuration changed; refresh the selected ship")
+	}
+	settings := protocol.RuntimeSettings{Loom: selected.Config.Loom, NativeControl: selected.Config.NativeControl}
+	req.DestinationRuntimeSettings = false
+	if settings.Nondefault() {
+		if !settingsHandoff {
+			return zero, errors.New("update both runners for runtime-settings-handoff before moving this ship")
+		}
+		req.DestinationRuntimeSettings = true
 	}
 	// Refuse predictable destination collisions before fencing the source.
 	s, err := destination.Snapshot(ctx)
@@ -54,6 +83,9 @@ func MoveStopped(ctx context.Context, source, destination *Client, sourceRunner,
 	}
 	if h.SourceRunner != sourceRunner || h.SourceInstance != instance || h.DestinationRunner != req.DestinationRunner || h.DestinationInstance != req.DestinationInstance || h.Direction != "out" {
 		return zero, errors.New("source handoff selection mismatch")
+	}
+	if settings.Nondefault() && (h.RuntimeSettings == nil || *h.RuntimeSettings != settings) {
+		return h, errors.New("source handoff runtime settings mismatch; retain its fence for review")
 	}
 	h, err = waitHandoff(ctx, source, h, "ready", "moved")
 	if err != nil {

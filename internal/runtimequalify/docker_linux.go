@@ -16,6 +16,7 @@ import (
 	"syscall"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
@@ -244,13 +245,27 @@ func commandAtInterval(kind string, minutes uint32) (string, []string) {
 
 func (q *qualifier) command(kind string) (string, []string) {
 	minutes := DefaultSnapshotMinutes
+	loom, native := protocol.EffectiveLoom(q.d.loom), q.d.managed && q.d.nativeControl
 	for _, c := range q.r.Containers {
 		if c.Kind == kind {
 			minutes = c.SnapshotMinutes
+			// Missing fields describe the historical launch, never desired settings.
+			loom, native = protocol.EffectiveLoom(c.Loom), c.NativeControl
 			break
 		}
 	}
 	entry, args := commandAtInterval(kind, minutes)
+	filteredSettings := make([]string, 0, len(args))
+	for i, arg := range args {
+		if arg == "--no-conn" && native {
+			continue
+		}
+		if i > 0 && args[i-1] == "--loom" {
+			arg = fmt.Sprint(loom)
+		}
+		filteredSettings = append(filteredSettings, arg)
+	}
+	args = filteredSettings
 	if q.d.boot != nil || q.d.bootstrap != nil {
 		filtered := make([]string, 0, len(args))
 		for i := 0; i < len(args); i++ {
@@ -279,6 +294,13 @@ func (q *qualifier) command(kind string) (string, []string) {
 	}
 	if q.d.managed && entry == "/bin/urbit" {
 		args[len(args)-1] = "/urbit/" + q.epochPierName()
+	}
+	if native && entry == "/bin/urbit" && len(args) > 0 && args[0] == "-t" {
+		// Pinned conn.c binds without chmod. Set the mask before Vere can
+		// create the socket; never race a host-side chmod. This literal wrapper
+		// is part of the authenticated launch contract, not a command API.
+		entry = "/bin/sh"
+		args = append([]string{"-c", `umask 077; exec /bin/urbit "$@"`, "urbit-native-control"}, args...)
 	}
 	return entry, args
 }
@@ -362,8 +384,12 @@ func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 	name := q.resourceName(kind)
 	record := ContainerRecord{Name: name, Kind: kind}
 	baseEntry, baseArgs := baseCommand(kind)
+	if baseEntry == "/bin/urbit" {
+		record.Loom = protocol.EffectiveLoom(q.d.loom)
+	}
 	if baseEntry == "/bin/urbit" && len(baseArgs) > 0 && baseArgs[0] == "-t" {
 		record.SnapshotMinutes = DefaultSnapshotMinutes
+		record.NativeControl = q.d.managed && q.d.nativeControl
 	}
 	q.r.Containers = append(q.r.Containers, record)
 	if err := q.save(); err != nil {

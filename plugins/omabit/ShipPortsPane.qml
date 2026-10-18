@@ -16,17 +16,18 @@ Column {
   onVisibleChanged: if (!visible) target=null
   ActionButton {
     objectName: "edit-ship-ports"
-    text: root.target ? "Reload HTTP configuration" : "Edit HTTP port…"
+    text: root.target ? "Reload runtime configuration" : "Edit runtime settings…"
     enabled: root.service && root.service.canConfigure(Model.edit(root.connection,root.instance))
-    onClicked: {root.target=Model.edit(root.connection,root.instance);httpPort.text=String(root.target.port);root.notice=""}
+    onClicked: {root.target=Model.edit(root.connection,root.instance);httpPort.text=String(root.target.port);runtimeSettings.selectedLoom=root.target.loom;runtimeSettings.nativeControl=root.target.nativeControl;root.notice=""}
   }
   Column {
     width: parent.width; spacing: Style.space(8); visible: !!root.target
     Label { text: "Host HTTP port"; secondary: true; caption: true }
     Field { id: httpPort; objectName: "ship-http-port"; width: parent.width; validator: IntValidator {bottom:1024;top:65535} }
+    RuntimeSettingsFields { id: runtimeSettings; width: parent.width; mode: root.target ? root.target.mode || "" : ""; supported: !!root.target && root.target.runtimeSettings; allShipsSupported: !!root.target && root.target.nativeAllShips }
     Label { width: parent.width; text: "Changes apply on the next explicit stop/start. The current revision is checked before saving."; secondary: true; caption: true }
     RowLayout {
-      ActionButton { objectName: "save-ship-http-port"; text: "Save HTTP port"; primary: true; enabled: root.target && root.service.canConfigure(root.target) && httpPort.acceptableInput; onClicked: {if(root.service.configure(root.target,httpPort.text)){root.target=null;root.notice="Change submitted. The configuration above and ship activity show the result."}else root.notice=root.service.lastError || "Ship state changed; reload the configuration."} }
+      ActionButton { objectName: "save-ship-http-port"; text: "Save runtime settings"; primary: true; enabled: root.target && root.service.canConfigure(root.target) && httpPort.acceptableInput && runtimeSettings.problem === ""; onClicked: {if(root.service.configure(root.target,httpPort.text,runtimeSettings.selectedLoom,runtimeSettings.nativeControl)){root.target=null;root.notice="Change submitted. The configuration above and ship activity show the result."}else root.notice=root.service.lastError || "Ship state changed; reload the configuration."} }
       ActionButton { text: "Cancel"; onClicked: root.target=null }
     }
   }

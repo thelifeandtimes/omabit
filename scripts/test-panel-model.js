@@ -111,6 +111,11 @@ const moveTarget=model.edit(moveSource,moveShip), moveDestination={connection:"r
 assert.equal(model.hostMoveProblem([moveSource,moveDest],moveTarget,moveDestination,"arrived","","",now),"");
 const populatedMoveDest={...moveDest,snapshot:{...moveDest.snapshot,instances:Array.from({length:32},(_,n)=>({id:"existing-"+n,mode:"fake",ship:"~zod"}))}};
 assert.equal(model.hostMoveProblem([moveSource,populatedMoveDest],moveTarget,moveDestination,"arrived","","",now),"");
+const largeMoveShip={...moveShip,config:{...moveShip.config,loom:34,native_control:true}};
+const settingsMoveSource={...moveSource,features:["host-handoff","runtime-settings-handoff"],snapshot:{...moveSource.snapshot,instances:[largeMoveShip]}};
+const settingsMoveDest={...moveDest,features:["host-handoff","runtime-settings-handoff"]};
+assert.match(model.hostMoveProblem([settingsMoveSource,moveDest],moveTarget,moveDestination,"arrived","","",now),/runtime-settings-handoff/);
+assert.equal(model.hostMoveProblem([settingsMoveSource,settingsMoveDest],moveTarget,moveDestination,"arrived","","",now),"");
 const largeImportSource={run_id:"a".repeat(32),content_digest:"b".repeat(64),ship:"~zod",files:7,bytes:100000000000,qualified_at:new Date(now).toISOString()};
 assert.equal(model.validImportSource(largeImportSource),true);
 assert.equal(model.validImportSource({...largeImportSource,bytes:100000000001}),false);

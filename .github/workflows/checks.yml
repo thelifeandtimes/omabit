@@ -35,6 +35,7 @@ jobs:
       - name: Desktop model and installer fixtures
         run: |
           node scripts/test-panel-model.js
+          node scripts/test-runtime-settings-model.js
           python3 -B scripts/test-panel-install.py
           python3 -B scripts/test-native-plugin.py
 

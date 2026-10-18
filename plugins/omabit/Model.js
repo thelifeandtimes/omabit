@@ -490,6 +490,9 @@ function runtimeStage(stage) {
 function runtimeDetail(instance) {
   if (!instance) return "Select a ship."
   var d=instance.runtime_status || {}, op=d.last_operation, parts=[]
+  if (d.launch_loom!==undefined) parts.push("Recorded launch: loom "+loomLabel(d.launch_loom)+" address space · native control "+(d.launch_native_control===true ? "enabled" : "disabled"))
+  if (instance.config) parts.push("Requested: loom "+loomLabel(instance.config.loom)+" address space · native control "+(instance.config.native_control===true ? "enabled" : "disabled"))
+  if (d.native_control_socket) parts.push("Host-local socket path: "+d.native_control_socket+" (path only; reachability not verified)")
   if (instance.active_operation_id) parts.push(runtimeStage(d.stage) || "Runner operation in progress")
   var exited=d.running===false && d.exit_code!==undefined
   if (exited) parts.push("Current runtime: container exited with code "+d.exit_code+" · OOM killed: "+(d.oom_killed===true ? "yes" : d.oom_killed===false ? "no" : "unknown"))
@@ -583,6 +586,7 @@ function hostMoveProblem(connections,target,destination,name,httpPort,amesPort,n
   var dest=connections.filter(function(c){return c.name===destination.connection&&c.runner_id===destination.runner})[0]
   if (!canMoveHost(source,ship,now)) return "Source changed or is unavailable. Stop it cleanly and review a fresh selection."
   if (!dest || !available(dest,now) || dest.access_role!=="operator" || !hasFeature(dest,"host-handoff") || source.runner_id===dest.runner_id) return "Choose another available operator runner with host-move support."
+  if (ship.config && (ship.config.loom!==31 || ship.config.native_control===true) && (!hasFeature(source,"runtime-settings-handoff") || !hasFeature(dest,"runtime-settings-handoff"))) return "Update both runners for runtime-settings-handoff to preserve this ship's loom and native control."
   if (!validId(name) || !validPierPath("fakeships/"+name+"/pier") || !optionalPort(httpPort) || !optionalPort(amesPort)) return "Choose an alphanumeric-leading destination name and optional ports from 1024 to 65535."
   var h=ship.handoff
   if (h&&h.direction==="out" && (h.destination_runner!==dest.runner_id || h.destination_instance!==name)) return "Continue this ship's already selected move. Its destination is fixed."
@@ -836,15 +840,43 @@ function edit(connection, instance) {
   if (!connection || !instance) return null
   return { connection: connection.name, runner: connection.runner_id, instance: instance.id,
     revision: instance.config_revision, port: instance.config.http_port,
-    ames: instance.config.ames_port, loom: instance.config.loom }
+    ames: instance.config.ames_port, loom: instance.config.loom, nativeControl: instance.config.native_control === true,
+    mode: instance.mode, runtimeSettings: hasFeature(connection,"runtime-settings"), nativeAllShips: hasFeature(connection,"native-control-all-ships") }
 }
 
-function configure(target, port) {
+function configure(target, port, loom, nativeControl) {
   if (!Number.isInteger(Number(port)) || Number(port) < 1024 || Number(port) > 65535)
     throw new Error("HTTP port must be 1024–65535")
-  return ["--runner", target.connection, "--expected-runner-id", target.runner,
+  loom = loom === undefined ? target.loom : Number(loom)
+  nativeControl = nativeControl === undefined ? target.nativeControl === true : nativeControl
+  var features = (target.runtimeSettings ? ["runtime-settings"] : []).concat(target.nativeAllShips ? ["native-control-all-ships"] : [])
+  // Pre-settings runners accept the historical 31..33 range for port edits.
+  var legacy = !target.runtimeSettings && !nativeControl && Number.isInteger(loom) && loom>=31 && loom<=33
+  var settings = legacy ? [] : runtimeSettingsArgs({features:features},target.mode,loom,nativeControl)
+  var args = ["--runner", target.connection, "--expected-runner-id", target.runner,
     "configure", target.instance, "--revision", String(target.revision),
-    "--http-port", String(port), "--ames-port", String(target.ames), "--loom", String(target.loom)]
+    "--http-port", String(port), "--ames-port", String(target.ames), "--loom", String(loom)]
+  if (settings.length && (target.mode === "fake" || target.nativeAllShips)) args.push("--native-control="+String(nativeControl))
+  return args
+}
+
+function loomLabel(exponent) {
+  var n=Number(exponent)
+  if (!Number.isInteger(n) || n<20 || n>34) return "Unsupported loom"
+  return n+" · "+Math.pow(2,n-(n<30 ? 20 : 30))+(n<30 ? " MiB" : " GiB")
+}
+function runtimeSettingsArgs(connection,kind,loom,nativeControl) {
+  loom=Number(loom)
+  if (!Number.isInteger(loom) || loom<20 || loom>34) throw new Error("Loom must be a byte exponent in 20..34")
+  if (typeof nativeControl!=="boolean") throw new Error("Choose native control explicitly")
+  if (nativeControl && kind!=="fake" && !hasFeature(connection,"native-control-all-ships")) throw new Error("Update this runner for native-control-all-ships")
+  if (!hasFeature(connection,"runtime-settings")) {
+    if (loom!==31 || nativeControl) throw new Error("Update this runner for runtime-settings")
+    return []
+  }
+  var args=["--loom",String(loom)]
+  if (kind==="fake" || hasFeature(connection,"native-control-all-ships")) args.push("--native-control="+String(nativeControl))
+  return args
 }
 
 function localPath(url) {

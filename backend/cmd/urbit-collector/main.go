@@ -210,6 +210,7 @@ Use COMMAND --help for command flags and constraints.
 	var bootstrap, pillSource string
 	var pierPath string
 	var fakeOptions bool
+	var nativeControl, nativeControlSet, runtimeSettings bool
 	var cutoff, digest string
 	var confirmHistoryLoss bool
 	var confirmNetwork bool
@@ -218,6 +219,8 @@ Use COMMAND --help for command flags and constraints.
 	switch command {
 	case "hello", "snapshot", "suggest-port":
 	case "create-fake", "create-comet":
+		flags.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 20..34: 20=1 MiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
+		flags.BoolVar(&nativeControl, "native-control", false, "enable local-owner native control (default off)\n\n"+protocol.NativeControlWarning)
 		usage += " INSTANCE --http-port PORT --request-id ID [--label TEXT]"
 		flags.UintVar(&httpPort, "http-port", 0, "required loopback host HTTP port, 1024..65535")
 		flags.StringVar(&requestID, "request-id", "", "required caller-chosen idempotency key")
@@ -227,20 +230,22 @@ Use COMMAND --help for command flags and constraints.
 		flags.StringVar(&pillSource, "pill", "", "selected pill URL or local file for recommended bootstrap")
 		usage += " [--bootstrap bare|recommended --pill URL_OR_FILE]"
 		if command == "create-fake" {
+
 			flags.StringVar(&fakeShip, "ship", "~zod", "fake Urbit identity, e.g. ~bus (no real keys or Ames)")
 			flags.StringVar(&pierName, "pier-name", "", "directory basename within instance storage; defaults to the instance name when options are supplied")
-			usage += " [--ship ~SHIP --pier-name DIRECTORY]"
+			usage += " [--ship ~SHIP --pier-name DIRECTORY] [--loom N] [--native-control]"
 		}
 		if command == "create-comet" {
 			flags.BoolVar(&confirmNetwork, "confirm-network", false, "acknowledge internally generated comet identity and outbound networking on explicit Start")
-			usage += " --confirm-network"
+			usage += " --confirm-network [--loom N] [--native-control]"
 		}
 	case "configure":
 		usage += " INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT"
 		flags.Uint64Var(&revision, "revision", 0, "required positive expected configuration revision")
 		flags.UintVar(&httpPort, "http-port", 0, "required HTTP port, 1..65535")
 		flags.UintVar(&amesPort, "ames-port", 0, "required Ames port, 1..65535")
-		flags.UintVar(&loom, "loom", 0, "required demo loom exponent, 31..33 (not universal runtime bounds)")
+		flags.UintVar(&loom, "loom", 0, "required loom byte exponent 20..34: 20=1 MiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
+		flags.BoolVar(&nativeControl, "native-control", false, "omitted=preserve existing setting; use =true/=false explicitly\n\n"+protocol.NativeControlWarning)
 	case "operate":
 		usage += " INSTANCE start|stop|pack|meld|roll|inspect-epochs|recover-import --revision N --request-id ID"
 		flags.Uint64Var(&revision, "revision", 0, "required positive expected configuration revision")
@@ -284,6 +289,12 @@ Use COMMAND --help for command flags and constraints.
 		return fail(errors.New("unexpected trailing arguments; command flags must follow positional arguments"), 2)
 	}
 	flags.Visit(func(f *flag.Flag) {
+		if f.Name == "native-control" {
+			nativeControlSet = true
+		}
+		if f.Name == "native-control" || f.Name == "loom" && command != "configure" {
+			runtimeSettings = true
+		}
 		if f.Name == "ship" || f.Name == "pier-name" {
 			fakeOptions = true
 		}
@@ -315,6 +326,9 @@ Use COMMAND --help for command flags and constraints.
 	}
 	switch command {
 	case "create-fake", "create-comet":
+		if loom < protocol.MinLoom || loom > protocol.MaxLoom {
+			return fail(errors.New("--loom must be in 20..34 for pinned Vere"), 2)
+		}
 		if _, err := bootstrapChoice(bootstrap, pillSource); err != nil {
 			return fail(err, 2)
 		}
@@ -331,9 +345,10 @@ Use COMMAND --help for command flags and constraints.
 		if httpPort == 0 || httpPort > 65535 || amesPort == 0 || amesPort > 65535 {
 			return fail(errors.New("--http-port and --ames-port are required and must be in 1..65535"), 2)
 		}
-		if loom < 31 || loom > 33 {
-			return fail(errors.New("--loom is required and must be in 31..33 for this demo, not universal runtime bounds"), 2)
+		if loom < protocol.MinLoom || loom > protocol.MaxLoom {
+			return fail(errors.New("--loom is required and must be in 20..34 for pinned Vere"), 2)
 		}
+		runtimeSettings = runtimeSettings || loom < 31 || loom > 33
 	case "operate":
 		if kind != "start" && kind != "stop" && kind != "pack" && kind != "meld" && kind != "roll" && kind != "inspect-epochs" && kind != "recover-import" {
 			return fail(errors.New("operation must be start, stop, pack, meld, roll, inspect-epochs, or recover-import"), 2)
@@ -394,6 +409,27 @@ Use COMMAND --help for command flags and constraints.
 		}
 		return fail(err, 1)
 	}
+	if runtimeSettings && !slices.Contains(hello.Features, protocol.RuntimeSettingsFeature) {
+		return fail(errors.New("update this runner for runtime-settings capability before changing loom/native control"), 1)
+	}
+	if nativeControl && command != "create-fake" && !slices.Contains(hello.Features, protocol.NativeControlAllShipsFeature) {
+		fake := false
+		if command == "configure" {
+			snapshot, err := checkedSnapshot(ctx, c, identity)
+			if err != nil {
+				return fail(err, 1)
+			}
+			for _, instance := range snapshot.Instances {
+				if instance.ID == instanceID {
+					fake = instance.Mode == "fake"
+					break
+				}
+			}
+		}
+		if !fake {
+			return fail(errors.New("update this runner for native-control-all-ships capability before enabling native control on a nonfake or unknown ship"), 1)
+		}
+	}
 	encoder := newOutput(stdout, format, command == "watch")
 	if pierPath != "" && !slices.Contains(hello.Features, "pier-storage") {
 		return fail(errors.New("update this runner for convention-based pier storage"), 1)
@@ -441,7 +477,7 @@ Use COMMAND --help for command flags and constraints.
 		if !slices.Contains(hello.Features, "create-fake") {
 			return fail(errors.New("this runner does not support create-fake"), 1)
 		}
-		req := protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: 31}}
+		req := protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl}}
 		if fakeOptions {
 			if !slices.Contains(hello.Features, "fake-ship-options") {
 				return fail(errors.New("update this runner to choose a fake identity and pier directory"), 1)
@@ -453,12 +489,13 @@ Use COMMAND --help for command flags and constraints.
 		if hello.Mode != "development-managed" || hello.AccessRole != "operator" || !slices.Contains(hello.Features, "create-comet") {
 			return fail(errors.New("comet creation requires an operator and the explicit development-managed mode/capability"), 1)
 		}
-		result, err = c.CreateComet(ctx, protocol.CreateCometRequest{CreateFakeRequest: protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: 31}}, ConfirmNetwork: confirmNetwork})
+		result, err = c.CreateComet(ctx, protocol.CreateCometRequest{CreateFakeRequest: protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl}}, ConfirmNetwork: confirmNetwork})
 	case "configure":
 		result, err = c.Configure(ctx, instanceID, protocol.ConfigureRequest{
-			ExpectedRevision: revision,
+			ExpectedRevision:      revision,
+			PreserveNativeControl: !nativeControlSet,
 			Config: protocol.Configuration{
-				HTTPPort: uint16(httpPort), AmesPort: uint16(amesPort), Loom: uint8(loom),
+				HTTPPort: uint16(httpPort), AmesPort: uint16(amesPort), Loom: uint8(loom), NativeControl: nativeControl,
 			},
 		})
 	case "operate":

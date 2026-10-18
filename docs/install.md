@@ -123,7 +123,11 @@ The guest HTTP port is 8080; the chosen host port is its loopback publication.
 Browser and +code buttons enable only after fresh, healthy runtime observations.
 
 Startup requires **5 GiB available physical RAM and 8 GiB free disk**. The current
-container limits remain 4 GiB RAM, two CPUs, 256 PIDs and loom 31. Once healthy, open
+container limits remain 4 GiB RAM, two CPUs and 256 PIDs. Loom defaults to 31.
+Source builds with `runtime-settings` support exponents 20–34. The successor
+`native-control-all-ships` capability supports owner native-control opt-in for every
+ship class. See [development runtime settings](development-runtime.md) for
+address-space labels, risks and recorded managed-fake acceptance. Once healthy, open
 the ship and use the operator-only code-copy action for sign-in.
 
 Long-running Vere processes default to **60-minute periodic snapshots**

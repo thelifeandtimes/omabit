@@ -211,10 +211,16 @@ The exploratory custom-runtime/control-socket branch has been removed: client,
 patched executable overlays, test commands, build recipe and rejection-review
 exceptions. There is no compatibility layer for those disposable reports.
 
-The sole runtime is the pinned official Vere 4.6 release. Managed ships already
-use it, with the control socket disabled. Existing lifecycle, maintenance, pruning,
-schedules, import, access and container-monitoring features remain the working core.
-Live loom-internal metrics and pressure-based advice are deferred.
+The sole runtime is the pinned official Vere 4.6 release. Native control stays off
+by default. Source now supports a [loom dropdown and owner opt-in for every ship
+class](development-runtime.md). The initial managed-fake native threads, Clay byte
+verification and explicit replacement/stop passed. The all-ship successor passed
+source/private tests and a separately approved management-only update. Livenet
+socket execution remains untested. Published desktop/tool
+pins remain unchanged.
+Existing lifecycle, maintenance, pruning, schedules, import, access and
+container-monitoring features remain. Live loom-internal metrics and pressure-based
+advice are deferred.
 
 Any future runtime choice should follow a simple `live` (upstream release) / `edge`
 (upstream develop) model. It is not being implemented now. Work is focused on reliable

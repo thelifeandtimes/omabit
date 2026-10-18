@@ -1,5 +1,62 @@
 # Runner protocol: checkpoint 1
 
+## RC.10 compatibility (schema 19)
+
+Schema19 upgrades schemas11–18 transactionally, preserving bodies and receipts.
+It fences older binaries from discarding settings-aware handoff contracts.
+
+Configuration updates distinguish an omitted `config.native_control` (preserve)
+from explicit `false` (disable). Creation still defaults off. New collectors send
+explicit false only when selected; old collectors' HTTP edits preserve opt-in.
+
+`runtime-settings-handoff` adds optional `runtime_settings:{loom,native_control}`
+to nondefault handoff offers, covered by `omabit-stopped-handoff-v2` commitments.
+Offers without settings keep the exact v1 bytes and loom31/native-off semantics.
+Before any mutation the collector checks both pinned runners' capabilities and
+the source revision. For nondefault settings it sends
+`destination_runtime_settings:true` in PrepareHandoffRequest; the source refuses
+legacy requests without that acknowledgement before fencing. Receipt retries
+must match the same signed settings. Destination public/private state retains
+the selection; networking ports remain destination-specific.
+
+## All-ship native control (contributed schema 18 preview)
+
+Capability `native-control-all-ships` supplements `runtime-settings`. Explicit
+`native_control:true` now applies to fake, comet, moon, planet, star and galaxy
+instances, including imported ships. Defaults, operator authorization and private
+Unix ownership remain unchanged. No setting is automatically enabled.
+
+New collectors gate nonfake opt-in before mutation against older fake-only runners.
+Fake-native workflows remain compatible with `runtime-settings` alone. Key creation
+and comet creation accept both runtime flags. Schema18 preserves schemas11–17 bodies
+and receipts transactionally, while refusing unsafe downgrade to schema17 code.
+The UI uses a labeled loom dropdown and exposes native opt-in for every ship class.
+See [revision verification](runtime-settings-validation.md).
+
+## Development runtime settings (historical schema 17)
+
+Capability `runtime-settings` extends the existing configuration and snapshot
+contracts. Configuration accepts loom byte exponents 20–34. New CLI registrations
+default to 31. Optional `native_control` defaults to false and is accepted only for
+development fakes. False is omitted from JSON to preserve old request fingerprints.
+Neither field changes an already running container.
+
+Per-container intents persist the selected loom and native-control state before
+creation. Missing historical intent fields mean loom31/native off. Snapshot
+`runtime_status.launch_loom` and `launch_native_control` describe that recorded
+launch, independently of desired `config` and its revision. An absent launch is
+not synthesized from requested values. `native_control_socket`, when present,
+is a runner-host-local path resolved from registered storage, not a liveness claim.
+
+Schema17 transactionally accepts schemas11–16 without rewriting stored bodies.
+Old schema16 code refuses schema17. No pier reset or runtime restart occurs during
+this migration. The existing revision, request replay and operation rules remain.
+No general execution endpoint is added. See the
+[operator guide and managed-fake acceptance](development-runtime.md).
+
+The checkpoint sections below record earlier contracts. Their fixed-loom and
+always-disabled-socket descriptions do not override this extension.
+
 ## Host port suggestion (RC.4)
 
 `host-port-suggestion` adds operator-only `GET /v1/port-suggestion`, returning

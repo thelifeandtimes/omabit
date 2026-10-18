@@ -56,6 +56,10 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 	if !runIDPattern.MatchString(state.ID) || state.Port < 1024 {
 		return nil, errors.New("invalid managed instance identity or HTTP port")
 	}
+	if !protocol.ValidLoom(protocol.EffectiveLoom(state.Loom)) {
+		return nil, errors.New("invalid loom")
+	}
+	d.loom, d.nativeControl = protocol.EffectiveLoom(state.Loom), state.NativeControl
 	d.profile, d.managed, d.hostPort = ProfileHTTP, true, state.Port
 	d.fake = state.Fake
 	d.storage = state.Storage
@@ -147,6 +151,10 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 			return nil, errors.New("unexpected managed container inventory")
 		}
 		for _, c := range q.r.Containers {
+			entry, args := baseCommand(c.Kind)
+			if !protocol.ValidLoom(protocol.EffectiveLoom(c.Loom)) || c.NativeControl && (entry != "/bin/urbit" || len(args) == 0 || args[0] != "-t") {
+				return nil, errors.New("invalid recorded runtime settings")
+			}
 			if c.SnapshotMinutes != 0 && c.SnapshotMinutes != DefaultSnapshotMinutes {
 				return nil, errors.New("invalid recorded snapshot interval")
 			}

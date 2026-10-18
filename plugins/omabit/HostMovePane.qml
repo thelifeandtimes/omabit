@@ -41,6 +41,7 @@ Column {
     Field { id: httpPort; objectName: "host-move-http"; width: parent.width; placeholderText: "Destination HTTP port (blank allocates / retains)"; enabled: !root.service.busy }
     Field { id: amesPort; width: parent.width; visible: !!root.instance && root.instance.ames_published===true; placeholderText: "Destination Ames UDP port (blank allocates / retains)"; enabled: !root.service.busy }
     Label { width: parent.width; visible: root.problem!==""; text: root.problem; color: Design.warning }
+    Label { width: parent.width; text: root.target ? "Preserved runtime settings: loom "+Model.loomLabel(root.target.loom)+" address space · native control "+(root.target.nativeControl ? "enabled for the destination's local owner" : "disabled")+"." : ""; caption: true; secondary: true }
     Label { width: parent.width; text: "Networking routes and maintenance schedules are host-specific. Review them on the destination before Start. Interrupted moves continue forward from their recorded phase."; caption: true; secondary: true }
     ActionButton { objectName: "submit-host-move"; text: root.outgoing ? "Continue stopped move" : "Move stopped ship"; primary: true; enabled: root.target && root.problem==="" && root.service.observing && !root.service.busy; onClicked: root.service.moveHost(root.target,root.selectedDestination,root.destinationName,httpPort.text,amesPort.text) }
     ActionButton { text: "Close review"; quiet: true; onClicked: root.target=null }

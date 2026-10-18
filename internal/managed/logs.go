@@ -98,6 +98,8 @@ func attachRuntimeStatus(tx *sql.Tx, v *storedInstance) error {
 		}
 		d.ContainerID = c.ID
 		d.ContainerKind = c.Kind
+		loom := protocol.EffectiveLoom(c.Loom)
+		d.LaunchLoom, d.LaunchNativeControl = &loom, &c.NativeControl
 		switch c.Kind {
 		case "http-boot", "http-restart", "comet-boot", "comet-resume", "comet-verify":
 			if c.ID != "" {

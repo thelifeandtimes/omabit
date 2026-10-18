@@ -109,6 +109,7 @@ def main():
         binaries.mkdir(parents=True)
         env = dict(os.environ, CGO_ENABLED="0", GOOS="linux", GOARCH="amd64")
         subprocess.run(["go", "build", "-trimpath", "-o", str(binaries) + "/", "./cmd/omabit", "./backend/cmd/urbit-collector", "./backend/cmd/urbit-runner"], cwd=ROOT, env=env, check=True)
+        schema = int(subprocess.check_output([binaries / "urbit-runner", "state-schema"], text=True, timeout=10).strip())
         (package / "plugins").mkdir()
         shutil.copytree(ROOT / "plugins/omabit", package / "plugins/omabit")
         (package / "scripts").mkdir()
@@ -122,7 +123,7 @@ def main():
         installer = package / "install.sh"
         installer.write_text('#!/usr/bin/env bash\nset -euo pipefail\nROOT="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"\nexec python3 -B "$ROOT/scripts/install-panel.py" "$@"\n')
         installer.chmod(0o755)
-        metadata = {"version": args.version, "prerelease": "-rc." in args.version, "source_commit": commit, "platform": "linux/amd64", "go_version": subprocess.check_output(["go", "version"], env=env, text=True).strip(), "schema": 16, "execution_model": "owner-user", "default_pier_root": "/srv/urbit/piers", "runtime": "4.6-5a7614f", "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd", "engine": "29.7.2", "pill": {"sha256": args.pill_sha256, "default_url": manifest["barWidget"]["defaults"]["recommendedPillUrl"], "application_inventory": "not_asserted"}}
+        metadata = {"version": args.version, "prerelease": "-rc." in args.version, "source_commit": commit, "platform": "linux/amd64", "go_version": subprocess.check_output(["go", "version"], env=env, text=True).strip(), "schema": schema, "execution_model": "owner-user", "default_pier_root": "/srv/urbit/piers", "runtime": "4.6-5a7614f", "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd", "engine": "29.7.2", "pill": {"sha256": args.pill_sha256, "default_url": manifest["barWidget"]["defaults"]["recommendedPillUrl"], "application_inventory": "not_asserted"}}
         (package / "BUILD.json").write_text(json.dumps(metadata, indent=2) + "\n")
         checksums(package)
         assets = stage / "assets"

@@ -24,9 +24,10 @@ type Hello struct {
 }
 
 type Configuration struct {
-	HTTPPort uint16 `json:"http_port"`
-	AmesPort uint16 `json:"ames_port"`
-	Loom     uint8  `json:"loom"`
+	HTTPPort      uint16 `json:"http_port"`
+	AmesPort      uint16 `json:"ames_port"`
+	Loom          uint8  `json:"loom"`
+	NativeControl bool   `json:"native_control,omitempty"`
 }
 
 type Instance struct {
@@ -218,6 +219,9 @@ type Snapshot struct {
 type ConfigureRequest struct {
 	ExpectedRevision uint64        `json:"expected_revision"`
 	Config           Configuration `json:"config"`
+	// Legacy requests omit native_control. Preserve that setting rather than
+	// interpreting an HTTP/loom edit as permission to disable it.
+	PreserveNativeControl bool `json:"-"`
 }
 
 type OperationRequest struct {

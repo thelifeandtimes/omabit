@@ -77,7 +77,16 @@ func (r *Server) prepareHandoff(w http.ResponseWriter, req *http.Request, actor,
 		r.respondError(w, conflict("revision_conflict", "source configuration changed"))
 		return
 	}
+	settings := protocol.RuntimeSettings{Loom: v.Public.Config.Loom, NativeControl: v.Public.Config.NativeControl}
+	if settings.Nondefault() && !body.DestinationRuntimeSettings {
+		r.respondError(w, conflict("runtime_settings_required", "update the collector and destination for runtime-settings-handoff before moving this ship"))
+		return
+	}
 	if h := v.Runtime.Handoff; h != nil && h.Direction == "out" {
+		if settings.Nondefault() && h.RuntimeSettings == nil {
+			r.respondError(w, conflict("handoff_settings_missing", "historical handoff lacks the selected runtime settings; retain the source fence for review"))
+			return
+		}
 		if h.DestinationRunner != body.DestinationRunner || h.DestinationInstance != body.DestinationInstance {
 			r.respondError(w, conflict("handoff_fenced", "source is already fenced for another move"))
 			return
@@ -115,6 +124,9 @@ func (r *Server) prepareHandoff(w http.ResponseWriter, req *http.Request, actor,
 	}
 	v.Runtime.Handoff = &protocol.Handoff{ID: key, Direction: "out", State: "preparing", SourceRunner: r.s.runnerID, SourceInstance: id, DestinationRunner: body.DestinationRunner, DestinationInstance: body.DestinationInstance, Ship: v.Public.Ship, Mode: v.Public.Mode, AmesPublished: v.Public.AmesPublished, CreatedAt: time.Now().UTC(), Message: "Source fenced; preparing stopped transfer."}
 	v.Runtime.Handoff.RollNeedsRuntime = v.Runtime.RollNeedsRuntime
+	if settings.Nondefault() {
+		v.Runtime.Handoff.RuntimeSettings = &settings
+	}
 	public, private, err := ed25519.GenerateKey(rand.Reader)
 	if err != nil {
 		r.respondError(w, err)
@@ -145,6 +157,14 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 		return
 	}
 	h := body.Offer
+	settings := protocol.RuntimeSettings{Loom: protocol.DefaultLoom}
+	if h.RuntimeSettings != nil {
+		settings = *h.RuntimeSettings
+		if !protocol.ValidLoom(settings.Loom) {
+			r.respondError(w, bad("invalid handoff runtime settings"))
+			return
+		}
+	}
 	if !fullHandoffID(h.ID) || !protocol.ValidID(body.RequestID) || h.DestinationRunner != r.s.runnerID || h.SourceRunner == r.s.runnerID || !protocol.ValidID(h.SourceRunner) || !protocol.ValidID(h.SourceInstance) || !protocol.ValidPierName(h.DestinationInstance) || !protocol.ValidFakeShip(h.Ship) || !validHandoffBytes(h) {
 		r.respondError(w, bad("invalid pinned handoff offer"))
 		return
@@ -218,7 +238,7 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 	h.Direction = "in"
 	h.State = "reserved"
 	h.Message = "Destination reserved; waiting for stopped pier data."
-	v := storedInstance{Public: protocol.Instance{ID: h.DestinationInstance, Label: h.DestinationInstance, Ship: h.Ship, Mode: h.Mode, AmesPublished: h.AmesPublished, PierPath: path, PierName: leaf, Config: protocol.Configuration{HTTPPort: httpPort, AmesPort: ames, Loom: 31}, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "moving", Health: "unknown", Handoff: &h}, Runtime: runtimequalify.ManagedState{ID: key, Port: httpPort, AmesPort: ames, Storage: &pierstore.Location{Path: path}, Handoff: &h}}
+	v := storedInstance{Public: protocol.Instance{ID: h.DestinationInstance, Label: h.DestinationInstance, Ship: h.Ship, Mode: h.Mode, AmesPublished: h.AmesPublished, PierPath: path, PierName: leaf, Config: protocol.Configuration{HTTPPort: httpPort, AmesPort: ames, Loom: settings.Loom, NativeControl: settings.NativeControl}, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "moving", Health: "unknown", Handoff: &h}, Runtime: runtimequalify.ManagedState{ID: key, Port: httpPort, AmesPort: ames, Loom: settings.Loom, NativeControl: settings.NativeControl, Storage: &pierstore.Location{Path: path}, Handoff: &h}}
 	if h.Mode == "fake" {
 		v.Runtime.Fake = &runtimequalify.ManagedFake{Ship: h.Ship}
 	} else {

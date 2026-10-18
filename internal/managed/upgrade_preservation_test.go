@@ -10,7 +10,7 @@ import (
 )
 
 func TestOpeningExistingStatePreservesLegacyAmesAndRecovery(t *testing.T) {
-	for _, version := range []int{15, 16} {
+	for version := 11; version < currentSchema; version++ {
 		t.Run(fmt.Sprint(version), func(t *testing.T) {
 			dir := privateDir(t)
 			s, err := testOpenStore(dir)
@@ -98,5 +98,19 @@ func TestOpeningExistingStatePreservesLegacyAmesAndRecovery(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestSchemaMigrationFailureRollsBack(t *testing.T) {
+	s := testStore(t)
+	if _, err := s.db.Exec("PRAGMA user_version=18; UPDATE meta SET value='invalid' WHERE key='runner_id'"); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.initialize(); err == nil {
+		t.Fatal("invalid identity migration succeeded")
+	}
+	var version int
+	if err := s.db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 18 {
+		t.Fatal("failed migration committed its version marker", version, err)
 	}
 }
