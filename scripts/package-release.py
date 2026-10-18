@@ -81,6 +81,9 @@ def export_source(root, destination, commit):
 
 
 def go_tool_environment(go):
+    # Probes and binary inspection have no HOME/XDG_CONFIG_HOME, so Go cannot
+    # locate telemetry configuration and defaults to off. Adding a private HOME
+    # requires explicitly disabling telemetry first; see go_environment.
     return dict(source_environment(), PATH=str(go.parent) + os.pathsep + SYSTEM_PATH,
                 GOENV="off", GOWORK="off", GOFLAGS="", GOEXPERIMENT="", GOTOOLCHAIN="local")
 
@@ -112,11 +115,19 @@ def go_environment(stage, go):
     home, temporary = stage / "home", stage / "tmp"
     home.mkdir()
     temporary.mkdir()
-    return dict(go_tool_environment(go), HOME=str(home), TMPDIR=str(temporary),
-                CGO_ENABLED="0", GOOS="linux", GOARCH="amd64", GOAMD64="v1",
-                GOPATH=str(stage / "gopath"),
-                GOMODCACHE=str(stage / "modules"), GOCACHE=str(stage / "cache"),
-                GOPROXY="https://proxy.golang.org", GOSUMDB="sum.golang.org")
+    env = dict(go_tool_environment(go), HOME=str(home), TMPDIR=str(temporary),
+               XDG_CONFIG_HOME=str(stage / "config"),
+               CGO_ENABLED="0", GOOS="linux", GOARCH="amd64", GOAMD64="v1",
+               GOPATH=str(stage / "gopath"),
+               GOMODCACHE=str(stage / "modules"), GOCACHE=str(stage / "cache"),
+               GOPROXY="https://proxy.golang.org", GOSUMDB="sum.golang.org")
+    # GOTELEMETRY is a read-only go env value in Go 1.25/1.27, not an environment
+    # control. A fresh config otherwise defaults to local collection, whose
+    # background child can outlive Go and race stage cleanup. This command skips
+    # telemetry startup and persists off in our private config before any queries
+    # or builds, without reading or changing the operator's telemetry settings.
+    subprocess.run([go, "telemetry", "off"], cwd=stage, env=env, check=True, timeout=10)
+    return env
 
 
 def check_modules(source, env, go):

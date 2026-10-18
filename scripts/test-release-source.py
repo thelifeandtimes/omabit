@@ -96,8 +96,53 @@ else:
             with patch.dict(os.environ, {"PATH": str(root / "system/bin")}):
                 subprocess.run([go, "env", "GOVERSION"], env=env, check=True, capture_output=True)
             invocations = [json.loads(line) for line in calls.read_text().splitlines()]
-            self.assertEqual([args[1:] for args in invocations], [["version"], ["env", "GOVERSION"]])
+            self.assertEqual([args[1:] for args in invocations],
+                             [["version"], ["telemetry", "off"], ["env", "GOVERSION"]])
             self.assertFalse((root / "wrong-go-used").exists())
+
+    def test_go_telemetry_disabled_in_private_build_config(self):
+        # Run with the selected real Go (CI's 1.25 as well as newer local Go).
+        # Check Go's effective mode, not an unsupported GOTELEMETRY=off override
+        # or a timing-dependent assumption that its sidecar has already exited.
+        with tempfile.TemporaryDirectory(dir=self.root) as temporary:
+            root = Path(temporary)
+            ambient = root / "ambient"
+            mode = ambient / "config/go/telemetry/mode"
+            mode.parent.mkdir(parents=True)
+            mode.write_text("on 2000-01-01\n")
+            settings = {"HOME": str(ambient / "home"), "XDG_CONFIG_HOME": str(ambient / "config"),
+                        "GOTELEMETRY": "on", "GOTELEMETRYDIR": str(mode.parent),
+                        "TEST_TELEMETRY_DIR": str(mode.parent), "GO_TELEMETRY_CHILD": "1",
+                        "GO_TELEMETRY_CHILD_UPLOAD": "1"}
+            with patch.dict(os.environ, settings):
+                go = packager.resolve_go()
+                probe = packager.go_tool_environment(go)
+                env = packager.go_environment(root, go)
+            for key in settings.keys() - {"HOME", "XDG_CONFIG_HOME"}:
+                self.assertNotIn(key, probe)
+                self.assertNotIn(key, env)
+            for key in ("HOME", "XDG_CONFIG_HOME"):
+                self.assertNotIn(key, probe)
+            config = root / "config"
+            telemetry = config / "go/telemetry"
+            self.assertEqual(env["XDG_CONFIG_HOME"], str(config))
+            self.assertEqual((telemetry / "mode").read_text().split()[0], "off")
+            for environment, directory in ((probe, ""), (env, str(telemetry))):
+                with self.subTest(directory=directory):
+                    subprocess.run([go, "version"], env=environment, check=True, capture_output=True, timeout=10)
+                    actual = json.loads(subprocess.check_output(
+                        [go, "env", "-json", "GOTELEMETRY", "GOTELEMETRYDIR"],
+                        env=environment, text=True, timeout=10))
+                    self.assertEqual(actual, {"GOTELEMETRY": "off", "GOTELEMETRYDIR": directory})
+                    self.assertEqual(subprocess.check_output([go, "telemetry"], env=environment,
+                                                            text=True, timeout=10).strip(), "off")
+            # No counters, upload tokens or reports; ordinary strict tempdir
+            # cleanup immediately follows, with no sleeps or ignored errors.
+            self.assertEqual(sorted(p.relative_to(config).as_posix() for p in config.rglob("*")),
+                             ["go", "go/telemetry", "go/telemetry/mode"])
+            self.assertEqual(list((root / "home").iterdir()), [])
+            self.assertEqual([p for p in ambient.rglob("*") if p.is_file()], [mode])
+            self.assertEqual(mode.read_text(), "on 2000-01-01\n")
 
     def test_missing_or_invalid_selected_toolchain_is_refused(self):
         with tempfile.TemporaryDirectory(dir=self.root) as temporary:
@@ -161,6 +206,10 @@ else:
             ambient = {"GOFLAGS": "-overlay=/outside/overlay.json -toolexec=/outside/compiler",
                        "GOWORK": "/outside/go.work", "GOENV": "/outside/go.env", "GOROOT": "/outside/go",
                        "GOEXPERIMENT": "arenas", "GOCACHEPROG": "/outside/cache", "GOTOOLCHAIN": "evil",
+                       "HOME": "/outside/home", "XDG_CONFIG_HOME": "/outside/config",
+                       "GOTELEMETRY": "on", "GOTELEMETRYDIR": "/outside/telemetry",
+                       "TEST_TELEMETRY_DIR": "/outside/test-telemetry", "GO_TELEMETRY_CHILD": "1",
+                       "GO_TELEMETRY_CHILD_UPLOAD": "1",
                        "GIT_DIR": "/outside/repository", "LD_PRELOAD": "/outside/library", "GOMODCACHE": "/outside/modules"}
             with patch.dict(os.environ, ambient):
                 go = packager.resolve_go()
@@ -171,7 +220,8 @@ else:
             self.assertEqual(env["GOENV"], "off")
             self.assertEqual(env["GOTOOLCHAIN"], "local")
             self.assertEqual(env["GOMODCACHE"], str(stage / "modules"))
-            for key in ("GOROOT", "GOCACHEPROG", "GIT_DIR", "LD_PRELOAD"):
+            for key in ("GOROOT", "GOCACHEPROG", "GIT_DIR", "LD_PRELOAD", "GOTELEMETRY", "GOTELEMETRYDIR",
+                        "TEST_TELEMETRY_DIR", "GO_TELEMETRY_CHILD", "GO_TELEMETRY_CHILD_UPLOAD"):
                 self.assertNotIn(key, env)
             project, outside = stage / "project", stage / "outside"
             project.mkdir()
@@ -219,9 +269,13 @@ else:
             argv = ["package-release.py", "--version", version, "--pill", str(pill),
                     "--pill-sha256", packager.sha256(pill), "--output", str(output)]
             ambient = {} if number == 1 else {"GOFLAGS": "-overlay=" + str(overlay), "GOWORK": str(workspace),
-                                            "GOENV": str(config), "GOCACHEPROG": "/nonexistent/cache-program",
-                                            "GOMODCACHE": "/nonexistent/modules", "GOTOOLCHAIN": "invalid-toolchain",
-                                            "GOROOT": "/nonexistent/go", "PATH": hosted_path}
+                                             "GOENV": str(config), "GOCACHEPROG": "/nonexistent/cache-program",
+                                             "GOMODCACHE": "/nonexistent/modules", "GOTOOLCHAIN": "invalid-toolchain",
+                                             "HOME": "/nonexistent/home", "XDG_CONFIG_HOME": "/nonexistent/config",
+                                             "GOTELEMETRY": "on", "GOTELEMETRYDIR": "/nonexistent/telemetry",
+                                             "TEST_TELEMETRY_DIR": "/nonexistent/test-telemetry",
+                                             "GO_TELEMETRY_CHILD": "1", "GO_TELEMETRY_CHILD_UPLOAD": "1",
+                                             "GOROOT": "/nonexistent/go", "PATH": hosted_path}
             if number == 2:
                 ignored.write_bytes(b"must not enter certified archive\n")
             with patch.object(packager, "ROOT", self.baseline), patch("sys.argv", argv), \
