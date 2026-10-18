@@ -25,7 +25,7 @@ module under `internal/`. No Go compiler, local extracted bundle, Git LFS or
 committed binary blobs are needed for plugin installation. Published RC.2 assets
 are not rebuilt or replaced by this repository organization.
 
-Current pins select published **RC.9**, schema16 and owner-user host setup,
+Current pins select published **RC.10**, schema19 and owner-user host setup,
 including compact setup approval, one machine-use switch, guided identity-aware
 imports with progress, named pier leaves, and RC.7's persistent log following.
 The updated runner, collector and QML are distributed together. Existing hosts
@@ -34,6 +34,10 @@ RC.9 additionally publishes Ames for new live enrollments and exposes operator-o
 retained import recovery. Its UI recovery action requires an updated runner with
 `recover-import`; the three published tools and QML are pinned together.
 The new UI rejects helpers without the owner-user setup contract.
+RC.10 adds loom/native settings, preserves omitted native values from older
+collectors and signs nondefault settings in cross-host transfers. Its frozen
+binaries passed real fake/comet native execution and repeated RC.9 management
+updates with running/stopped state and identities preserved.
 The service resolves packaged defaults when Omarchy passes only explicit inline
 settings. `recommended_pill_default` in monitor status verifies the effective
 source, rather than only the value recorded in the manifest.

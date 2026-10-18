@@ -2,6 +2,14 @@
 
 ## Where we are
 
+**[RC.10 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.10).**
+It integrates [PR #4](diagnostics/pr4-integration.md): loom20–34 and default-off
+native control, with immutable launch settings, legacy-client preservation,
+signed settings-aware host moves and schema19 downgrade protection. The frozen
+binaries passed real fake/comet native file threads and two in-place updates from
+RC.9, preserving the running container, stopped intent, settings, receipts and SSH
+identities. See [qualification](diagnostics/2026-10-18-rc10-qualification.md).
+
 RC.9 integrates [PRs #2/#3](diagnostics/pr2-pr3-integration.md): Ames
 publication for new live imports, universal pre-move epoch checks, and explicit
 non-destructive enrollment recovery adapted to named/guided/in-place imports.
@@ -95,12 +103,12 @@ order, not percentage of total effort.
 | Runtime foundation | Owner-user rootless Docker, default/custom-root fake/comet desk editing and lifecycle accepted locally; broader production qualification remains |
 | Persistent runner | Durable SQLite registrations, operations, attribution, reconciliation, resource admission, and development lifecycle accepted |
 | Collector and access | Named identity-pinned connections, SSH grants/revocation, inventory isolation, origin-bound Eyre sessions and subscriptions accepted in exercised development gates |
-| Omabit UI | Published RC.9 native plugin: retained import recovery, compact approved setup, guided/named imports, persistent logs and verified pill default; final user onboarding check pending |
+| Omabit UI | Published RC.10 native plugin: configurable loom/native control, retained import recovery, guided/named imports and persistent logs; user fresh-install review pending |
 | Maintenance and retention | Official-runtime fake/comet pack/meld/roll, inventory/previews, prefix pruning and UTC schedules accepted in exercised live gates; interruption/recovery hardening remains; loom-internal telemetry deferred |
 | Peer monitoring | Planned; current single-runner health/incident basics do not yet provide the phase-7 multi-host peer system |
 | Personal operator gateway | Planned |
 | Social utilities / Omarchy gossip | Planned; architecture and delivery/tag policy recorded |
-| Agents and release distribution | RC.9 assets and supplied pill published; stable upgrade qualification, full application/OTA qualification and agent/MCP distribution remain |
+| Agents and release distribution | RC.10 assets and supplied pill published; RC.9 management-update preservation verified; full stable-upgrader, application/OTA and agent/MCP qualification remain |
 
 ## Current milestone
 

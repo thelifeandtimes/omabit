@@ -1,6 +1,6 @@
 # Development loom and native control
 
-This source adds a loom-size dropdown and owner-controlled native access for every
+RC.10 adds a loom-size dropdown and owner-controlled native access for every
 ship class: fake, comet, moon, planet, star and galaxy. It does not automatically
 update installed runners or change existing running ships.
 The managed-fake gate passed for loom34, native file threads, a Clay byte round-trip
@@ -8,8 +8,10 @@ and explicit stop/start. See the [verification report](runtime-settings-validati
 Both the initial fake-only update and the all-ship successor were installed locally
 after separate approval, preserving existing ship settings and runtimes. The new
 preview exposes livenet opt-in, but no existing livenet socket was enabled or tested.
-Published desktop/tool pins remain unchanged. See the
-[all-ship revision report](runtime-settings-validation.md).
+RC.10 publishes matching desktop/tool pins and final-binary fake/comet native
+execution plus repeated RC.9 upgrade evidence. See the
+[RC.10 qualification](diagnostics/2026-10-18-rc10-qualification.md); the
+[contributor report](runtime-settings-validation.md) records earlier iterations.
 
 ## Settings and limits
 

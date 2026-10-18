@@ -1,5 +1,9 @@
 # Runtime settings validation
 
+This document records the contributor's pre-integration observations. The final
+RC.10/schema19 qualification is recorded [separately](diagnostics/2026-10-18-rc10-qualification.md)
+and in the published release's `qualification.json`.
+
 ## Scope
 
 Omabit supports loom exponents 20–34 and explicit native-control opt-in for all ship
