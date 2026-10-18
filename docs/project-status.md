@@ -2,10 +2,13 @@
 
 ## Where we are
 
-Current source simplifies boot forms: loom31 and default storage are under
+**[RC.11 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.11)**
+and simplifies boot forms: loom31 and default storage are under
 collapsed Advanced settings, new loom choices are30–34, native control is CLI-only,
 and owned-key boot links to Get an Urbit ID. Existing runtime settings and CLI
 native choices survive in-place updates; historical smaller looms remain manageable.
+The final runner was updated in place on sourceport, preserving the user's healthy
+`bare-comet`, its container and king/worker processes, settings and history.
 
 **[RC.10 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.10).**
 It integrates [PR #4](diagnostics/pr4-integration.md): loom20–34 and default-off
@@ -14,9 +17,9 @@ signed settings-aware host moves and schema19 downgrade protection. The frozen
 binaries passed real fake/comet native file threads and two in-place updates from
 RC.9, preserving the running container, stopped intent, settings, receipts and SSH
 identities. See [qualification](diagnostics/2026-10-18-rc10-qualification.md).
-Sourceport is now ready for the user's fresh RC.10 installation: the qualification
-installation was retired, all three stopped piers retained with unchanged
-fingerprints, and the cold shell/empty setup probe verified. See the
+Earlier on October18, sourceport was prepared for the user's fresh RC.10 installation:
+the qualification installation was retired, all three stopped piers retained with
+unchanged fingerprints, and the cold shell/empty setup probe verified. See the
 [local handoff](diagnostics/2026-10-18-rc10-local-reset.md).
 
 RC.9 integrates [PRs #2/#3](diagnostics/pr2-pr3-integration.md): Ames
@@ -112,12 +115,12 @@ order, not percentage of total effort.
 | Runtime foundation | Owner-user rootless Docker, default/custom-root fake/comet desk editing and lifecycle accepted locally; broader production qualification remains |
 | Persistent runner | Durable SQLite registrations, operations, attribution, reconciliation, resource admission, and development lifecycle accepted |
 | Collector and access | Named identity-pinned connections, SSH grants/revocation, inventory isolation, origin-bound Eyre sessions and subscriptions accepted in exercised development gates |
-| Omabit UI | Published RC.10 native plugin: configurable loom/native control, retained import recovery, guided/named imports and persistent logs; user fresh-install review pending |
+| Omabit UI | Published RC.11 native plugin: compact boot defaults, advanced loom/storage, CLI-only native control, retained import recovery, guided/named imports and persistent logs |
 | Maintenance and retention | Official-runtime fake/comet pack/meld/roll, inventory/previews, prefix pruning and UTC schedules accepted in exercised live gates; interruption/recovery hardening remains; loom-internal telemetry deferred |
 | Peer monitoring | Planned; current single-runner health/incident basics do not yet provide the phase-7 multi-host peer system |
 | Personal operator gateway | Planned |
 | Social utilities / Omarchy gossip | Planned; architecture and delivery/tag policy recorded |
-| Agents and release distribution | RC.10 assets and supplied pill published; RC.9 management-update preservation verified; full stable-upgrader, application/OTA and agent/MCP qualification remain |
+| Agents and release distribution | RC.11 assets and supplied pill published; RC.9→10 and RC.10→11 management preservation verified; full stable-upgrader, application/OTA and agent/MCP qualification remain |
 
 ## Current milestone
 
