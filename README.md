@@ -8,16 +8,17 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Published:** [**0.1.0-rc.11**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.11), a Linux/AMD64 development release candidate
+**Published:** [**0.1.0-rc.12**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.12), a Linux/AMD64 development release candidate
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and qualification scope](docs/release-rc11.md),
+[release notes and qualification scope](docs/release-rc12.md),
 and [Recommended Apps pill provenance](docs/pill-release.md). Final 0.1.0 is still pending.
 
-Post-RC.11 source includes the [adversarial-review fixes and qualification record](docs/reviews/2026-10-18-rc11-remediation.md),
-with the same desktop layout and component split. Source state is now schema20;
-existing RC.11 hosts use the documented [one-time offline management upgrade](docs/management-offline-upgrade.md).
-Published RC.11 assets and their pins still identify the original release.
+RC.12 includes the [adversarial-review fixes](docs/reviews/2026-10-18-rc11-remediation.md),
+with the same desktop layout and component split. Its frozen artifacts passed
+[power-cut, live runtime/upgrade, authenticated Ames and desktop qualification](docs/diagnostics/2026-10-18-rc12-release-qualification.md).
+State is schema20; existing RC.10/RC.11 owner-user hosts use the documented
+[one-time offline management upgrade](docs/management-offline-upgrade.md).
 
 RC.3 makes `|mount` → ordinary copy/editor saves → `|commit` work directly on
 user-owned files. Default piers live at **`/srv/urbit/piers/`**; custom locations
@@ -41,6 +42,9 @@ RC.10 adds configurable loom and default-off native control, preserves settings
 across older-client edits and signed host moves, and verifies an in-place RC.9 upgrade.
 RC.11 simplifies boot forms with collapsed Advanced settings, loom30–34 choices
 (default31), default storage and CLI-only native control, plus Urbit ID guidance.
+RC.12 hardens interruption recovery, identity/replay and credential contracts,
+adds transactional management upgrades and explicitly migrates legacy Ames
+publication without changing the desktop layout.
 Prior dedicated-account installations were
 [retired for the user-driven fresh-install exercise](docs/diagnostics/2026-10-15-rc2-release-retirement.md).
 

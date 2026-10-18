@@ -59,8 +59,10 @@ equivalent to original-writer qualification. These prototypes are outside the
 supported published-release window. See the fixture manifest in
 `internal/managed/testdata/historical-upgrades/` and the
 [release-by-release support matrix](reviews/2026-10-18-rc12-historical-upgrades.md).
-These source changes are not a claim that new release artifacts or live upgrades
-have been qualified.
+The frozen RC.12 artifacts subsequently passed the documented supported-host
+upgrade, runtime, guest power-cut and desktop gates. See the
+[release qualification record](diagnostics/2026-10-18-rc12-release-qualification.md)
+for results and limits; this does not replace the separate stable0.1.0 requirement.
 
 The integrated RC.10 uses schema19 and accepts schemas11–18 transactionally.
 This fences runtime-settings-aware handoffs from schema18 preview binaries that

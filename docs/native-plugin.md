@@ -25,7 +25,7 @@ module under `internal/`. No Go compiler, local extracted bundle, Git LFS or
 committed binary blobs are needed for plugin installation. Published RC.2 assets
 are not rebuilt or replaced by this repository organization.
 
-Current pins select published **RC.11**, schema19 and owner-user host setup,
+Current pins select published **RC.12**, schema20 and owner-user host setup,
 including compact setup approval, one machine-use switch, guided identity-aware
 imports with progress, named pier leaves, and RC.7's persistent log following.
 The updated runner, collector and QML are distributed together. Existing hosts
@@ -42,6 +42,12 @@ RC.11 puts loom/storage selection under Advanced settings, restricts new loom
 choices to30–34 and makes native control CLI-only. Its final runner passed an
 in-place update of the user's running comet, preserving container/process IDs,
 configuration, storage identities and access/enrollment records.
+RC.12 retains that layout and adds the reviewed recovery, replay, credential and
+transactional-update fixes. Its frozen bundle passed actual rootless runtime and
+management-upgrade qualification, guest power cuts, authenticated Ames roundtrips,
+mapped desktop and real clipboard checks. Existing RC.10/RC.11 schema19 hosts use
+the [explicit offline bridge](management-offline-upgrade.md); updating the desktop
+does not implicitly migrate a runner host.
 The service resolves packaged defaults when Omarchy passes only explicit inline
 settings. `recommended_pill_default` in monitor status verifies the effective
 source, rather than only the value recorded in the manifest.

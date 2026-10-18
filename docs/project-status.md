@@ -2,13 +2,16 @@
 
 ## Where we are
 
-**Post-RC.11 source remediation is implemented and locally verified.** The
-[remediation record](reviews/2026-10-18-rc11-remediation.md) maps all 29 review
-findings to fixes and maintained tests, records the independent implementation
-rechecks, and distinguishes remaining release qualification. The visible desktop
-and component split are retained. Source state is schema20; published schema19
-hosts have an explicit [one-time offline upgrade](management-offline-upgrade.md).
-These source changes are not yet a newly published or live-qualified release.
+**[RC.12 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.12)**
+from frozen source `1529c133`, with matching schema20 tool pins. The
+[remediation record](reviews/2026-10-18-rc11-remediation.md) maps all29 findings to
+fixes and maintained tests; the visible desktop and component split are retained.
+Frozen qualification passed 62 controlled guest power cuts, real rootless
+runtime/in-place management upgrades, authenticated bidirectional Ames checks,
+eight mapped desktop cases and actual sensitive clipboard expiry/replacement.
+See the [release qualification record](diagnostics/2026-10-18-rc12-release-qualification.md)
+for exact evidence and scope. Existing RC.10/RC.11 owner-user hosts have an explicit
+[one-time offline upgrade](management-offline-upgrade.md); stable0.1.0 remains pending.
 
 **[RC.11 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.11)**
 and simplifies boot forms: loom31 and default storage are under
