@@ -9,6 +9,8 @@ and owned-key boot links to Get an Urbit ID. Existing runtime settings and CLI
 native choices survive in-place updates; historical smaller looms remain manageable.
 The final runner was updated in place on sourceport, preserving the user's healthy
 `bare-comet`, its container and king/worker processes, settings and history.
+The cold-loaded desktop now reports RC.11 with the original bar position and panel
+preferences preserved. See the [in-place update record](diagnostics/2026-10-18-rc11-in-place-update.md).
 
 **[RC.10 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.10).**
 It integrates [PR #4](diagnostics/pr4-integration.md): loom20–34 and default-off
