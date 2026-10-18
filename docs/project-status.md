@@ -9,6 +9,10 @@ signed settings-aware host moves and schema19 downgrade protection. The frozen
 binaries passed real fake/comet native file threads and two in-place updates from
 RC.9, preserving the running container, stopped intent, settings, receipts and SSH
 identities. See [qualification](diagnostics/2026-10-18-rc10-qualification.md).
+Sourceport is now ready for the user's fresh RC.10 installation: the qualification
+installation was retired, all three stopped piers retained with unchanged
+fingerprints, and the cold shell/empty setup probe verified. See the
+[local handoff](diagnostics/2026-10-18-rc10-local-reset.md).
 
 RC.9 integrates [PRs #2/#3](diagnostics/pr2-pr3-integration.md): Ames
 publication for new live imports, universal pre-move epoch checks, and explicit
@@ -60,7 +64,7 @@ The verified binary bundle is staged on sourcebox. The selected repository model
 tools under `backend/cmd/` and shared implementation under `internal/`.
 The user will use the normal Omarchy plugin install command and host setup manually. See the
 [publication/retirement handoff](diagnostics/2026-10-15-rc2-release-retirement.md).
-Sourceport currently has disposable owner-user qualification resources. Earlier
+Sourceport's earlier disposable owner-user qualification resources are archived. Earlier
 on October 16, sourcebox completed the user's RC.6 fresh installation. Its `guac-demo` comet was gracefully
 stopped and its Omabit installation retired on October 16 for a user-driven RC.7
 pass. Data and all ten unrelated Urbit processes were preserved; a cold shell
