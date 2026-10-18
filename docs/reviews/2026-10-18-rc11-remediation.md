@@ -1,5 +1,11 @@
 # RC.11 review remediation and qualification record
 
+Follow-up: the fixes were frozen and published as RC.12. See the
+[final release qualification](../diagnostics/2026-10-18-rc12-release-qualification.md)
+for completed live runtime/upgrades, guest power cuts, authenticated Ames,
+clipboard, published downloads and stock desktop acceptance. The record below
+retains the earlier remediation-stage results and their then-outstanding gates.
+
 This records the source changes following the
 [architecture review](2026-10-18-rc11-adversarial-review.md) and
 [29-finding catalogue](2026-10-18-rc11-findings.md). The reviewed release was

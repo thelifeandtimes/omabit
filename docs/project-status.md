@@ -12,6 +12,10 @@ eight mapped desktop cases and actual sensitive clipboard expiry/replacement.
 See the [release qualification record](diagnostics/2026-10-18-rc12-release-qualification.md)
 for exact evidence and scope. Existing RC.10/RC.11 owner-user hosts have an explicit
 [one-time offline upgrade](management-offline-upgrade.md); stable0.1.0 remains pending.
+The published downloads and stock sourceport cold desktop update also passed,
+preserving preferences, bar placement, existing windows and both running host
+ships. The sourceport host manager itself remains unchanged; its schema19→20
+migration is a separate explicit operation.
 
 **[RC.11 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.11)**
 and simplifies boot forms: loom31 and default storage are under

@@ -157,8 +157,30 @@ The pin-file hash is `18ac46b34c96dd53e1214797684055c7a3eb1e1af60977ceeb8cbcf21a
 identical to the pins used for frozen mapped-desktop qualification.
 
 Evidence: `build/rc12-release/published-verification/report.json`.
-The stock Omarchy cold-update result is recorded in a follow-up evidence commit
-after these distribution pins become public; the frozen binaries are not rebuilt.
+
+The stock Omarchy cold update then passed on sourceport, advancing the clean
+installed checkout from `c26fc5da` to distribution commit
+`b6beac719d360fd7bdc5888668a201a7b5487619` using ordinary disable/update/restart/enable
+commands. A new private cache independently downloaded/verified the published
+tools before mutation. The old shell process exited; the new shell's actual IPC
+reported `version:"0.1.0-rc.12"`, `first_run:false`, `busy:false`, and the expected
+Recommended Apps default. The new stock bar surface was observed and visually
+checked through a private bar-only capture.
+
+The original right-section index1 placement, full bar layout/idle configuration,
+panel/runner preferences, existing window PIDs/workspaces and focus were preserved.
+The user's two running comets retained their original container IDs, PIDs1269096
+and1094395, and start times. Host manager PID1231704 and invocation
+`a771b984e7604285b872e02d99b036f3` were unchanged: this desktop acceptance did **not**
+perform the separately authorized schema19 host migration.
+
+Evidence: `/tmp/opencode/rc12-stock-cold-update1/report.json` and private `bar.png`;
+consolidated `build/rc12-release/post-publication.json`, SHA-256
+`26e45ff34b6986d84579e8ba26e3db1c0b70050f258772e00ed34112cf1be427`.
+The desktop update completed with the existing installation clean. All primary,
+frozen and legacy qualification VMs are powered off, with generated piers retained.
+The original never-initialized baseline and used development disk were preserved.
+The frozen release binaries were not rebuilt or replaced during publication.
 
 ## Scope retained
 

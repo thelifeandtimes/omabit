@@ -1,5 +1,10 @@
 # RC.12 preparation: mapped desktop qualification
 
+Follow-up: the exact frozen archive, actual clipboard provider and stock native
+cold update subsequently passed. See the
+[release qualification record](../diagnostics/2026-10-18-rc12-release-qualification.md).
+This document retains the earlier development-source preparation evidence.
+
 ## Result and scope
 
 **PASS: eight mapped development-source cases on sourceport**, 2026-10-18,

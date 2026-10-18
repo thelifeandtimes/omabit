@@ -1,5 +1,10 @@
 # RC.12 historical-writer research and upgrade support matrix
 
+Follow-up: frozen RC.12 artifacts and the supported owner-user schema19 host
+bridge subsequently passed live acceptance. See the
+[release qualification record](../diagnostics/2026-10-18-rc12-release-qualification.md).
+The database/host support distinction and unpublished-prototype limits below remain.
+
 ## Decision and qualification status
 
 **Target: `v0.1.0-rc.12`, schema20, prerelease.** Every published Omabit release
