@@ -43,7 +43,7 @@ Card {
         text: root.policy && root.policy.config.enabled ? "Disable policy" : "Enable policy"
         primary: root.policy && !root.policy.config.enabled
         enabled: root.service && root.policy && root.policy.instance_revision === root.instance.config_revision && root.service.canSaveRoutine(Model.routineTarget(root.connection,root.instance)) && !(root.outcome && root.outcome.status === "uncertain")
-        onClicked: root.service.saveRoutine(Model.routineTarget(root.connection,root.instance),Object.assign({},root.policy.config,{enabled:!root.policy.config.enabled,stop_running:root.policy.config.enabled ? root.policy.config.stop_running : true}))
+        onClicked: root.service.saveRoutine(Model.routineTarget(root.connection,root.instance),Object.assign({},root.policy.config,{enabled:!root.policy.config.enabled}))
       }
       ActionButton { text: root.policy ? "Edit policy…" : "Create policy…"; enabled: root.service && root.service.canSaveRoutine(Model.routineTarget(root.connection,root.instance)); onClicked: root.editRequested() }
     }

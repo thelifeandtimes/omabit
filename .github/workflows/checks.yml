@@ -27,7 +27,7 @@ jobs:
           go test ./...
           go vet ./...
       - name: Stateful transport and runtime race checks
-        run: go test -race ./internal/managed ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy ./internal/pierstore ./internal/piermeta
+        run: go test -race ./internal/managed ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy ./internal/pierstore ./internal/piermeta ./internal/hostinstall ./internal/hostsetup ./internal/omabittheme ./backend/cmd/urbit-collector ./backend/cmd/urbit-runner
       - name: Build Linux binaries
         run: |
           mkdir -p build
@@ -38,6 +38,24 @@ jobs:
           node scripts/test-runtime-settings-model.js
           python3 -B scripts/test-panel-install.py
           python3 -B scripts/test-native-plugin.py
+          python3 -B scripts/test-desktop-qualification.py
+          python3 -B scripts/test-import-recovery.py --static
+      - name: Release source isolation and reproducibility
+        run: python3 -B scripts/test-release-source.py --build
+
+  qml-offscreen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install isolated Qt runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends qml-qt6 qml6-module-qtquick qml6-module-qtquick-controls qml6-module-qtquick-dialogs qml6-module-qtquick-layouts qml6-module-qtquick-templates qml6-module-qtquick-window qml6-module-qtqml-workerscript qml6-module-qtqml-models
+      - name: Actual QML bindings and recovery interactions
+        env:
+          QT_QML_EXECUTABLE: /usr/lib/qt6/bin/qml
+        run: python3 -B scripts/test-rc11-panel-offscreen.py --require-qt
 
 # Mapped Quickshell tests and live runtime qualification require their separately
 # controlled Omarchy/Docker environments; they are not claimed by this CI job.

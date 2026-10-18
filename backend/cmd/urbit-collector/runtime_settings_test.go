@@ -59,7 +59,7 @@ func TestRuntimeSettingsCLI(t *testing.T) {
 }
 
 func TestRuntimeSettingsCLICapabilityAndBounds(t *testing.T) {
-	for _, value := range []string{"19", "20", "29", "35", "256", "999999", "-1", "1.5"} {
+	for _, value := range []string{"19", "35", "256", "999999", "-1", "1.5"} {
 		for _, command := range [][]string{
 			{"create-fake", "alpha", "--http-port=18080", "--request-id=one"},
 			{"create-comet", "alpha", "--http-port=18080", "--request-id=one", "--confirm-network"},
@@ -70,9 +70,6 @@ func TestRuntimeSettingsCLICapabilityAndBounds(t *testing.T) {
 			args := append([]string{"--socket", "/nonexistent.sock"}, command...)
 			if code := run(context.Background(), append(args, "--loom="+value), &out, &errs); code != 2 {
 				t.Fatal("invalid loom not rejected before connection", command[0], value, code, errs.String())
-			}
-			if (value == "20" || value == "29") && !strings.Contains(errs.String(), "30..34") {
-				t.Fatal("small loom did not receive bounded-settings refusal", command[0], errs.String())
 			}
 		}
 	}

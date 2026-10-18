@@ -107,7 +107,36 @@ function storageRoots(connection) {
   var c=connection && connection.snapshot && connection.snapshot.piers
   return c && c.roots && c.roots.length ? c.roots.filter(function(r){return r.id==="default"}).concat(c.roots.filter(function(r){return r.id!=="default"})) : [{id:"default",path:c && c.root || "/srv/urbit/piers"}]
 }
-function storagePath(root,path) { return path[0]==="@" || !root || root==="default" ? path : "@"+root+"/"+path }
+function splitStoragePath(path) {
+  var parts=String(path || "").split("/"), root=parts[0][0]==="@" ? parts.shift().slice(1) : "default"
+  return {root:root,path:parts.join("/")}
+}
+function storagePath(root,path) {
+  if (root==="") return ""
+  root=root || "default";path=String(path || "")
+  // A pasted prefix must agree with the visible selector, never override it.
+  if (path[0]==="@") return splitStoragePath(path).root===root ? path : ""
+  return root==="default" ? path : "@"+root+"/"+path
+}
+function pierMoveTarget(connection,instance) {
+  if (!connection || !instance) return null
+  var catalogue=connection.snapshot && connection.snapshot.piers
+  var source=catalogue && (catalogue.candidates || []).filter(function(p){return p.path===instance.pier_path})[0]
+  var location=storageRoots(connection).filter(function(r){return r.id===splitStoragePath(instance.pier_path).root})[0], identity=location && location.identity || {}
+  return Object.freeze({connection:connection.name,runner:connection.runner_id,instance:instance.id,revision:instance.config_revision,
+    path:instance.pier_path,ship:instance.ship || "",mode:instance.mode || "",absolutePath:absolutePierPath(connection,instance.pier_path),rootIdentity:JSON.stringify([identity.device,identity.inode,identity.birth]),fingerprint:source ? source.fingerprint : ""})
+}
+function currentPierMove(connection,target,now) {
+  if (!target || !available(connection,now) || connection.name!==target.connection || connection.runner_id!==target.runner || connection.access_role!=="operator" || !hasFeature(connection,"pier-storage")) return false
+  var i=instances(connection).filter(function(i){return i.id===target.instance})[0]
+  if (!i || !validPierPath(i.pier_path) || i.desired_state!=="stopped" || ["stopped","uninitialized"].indexOf(i.observed_state)<0 || !fresh(i.observed_at,now,30000) || i.active_operation_id || i.recovery_required || i.delete_pending || handoffFenced(i)) return false
+  var current=pierMoveTarget(connection,i)
+  if (!Object.keys(current).every(function(key){return current[key]===target[key]})) return false
+  var catalogue=connection.snapshot.piers
+  var source=catalogue && (catalogue.candidates || []).filter(function(p){return p.path===target.path})[0]
+  if (source && (source.enrolled_by!==i.id || source.moved===true || !currentPierSource(connection,source,now))) return false
+  return !catalogue || !catalogue.error
+}
 function absolutePierPath(connection,path) {
   var parts=String(path || "").split("/"), id=parts[0][0]==="@" ? parts.shift().slice(1) : "default"
   var root=storageRoots(connection).filter(function(r){return r.id===id})[0]
@@ -140,21 +169,26 @@ function validatePierImportPreview(v,runner,path,root) {
 function importStage(stage) {
   return ({reviewed:"Reviewing the stopped source", "holding-source":"Securing the source in its private holding directory",moving:"Moving the pier into the selected location",copying:"Copying the pier across filesystems",verifying:"Verifying source and destination contents","removing-source":"Removing the verified old copy",enrolling:"Enrolling the stopped ship",complete:"Import complete — ship remains stopped"})[stage] || "Waiting for the runner"
 }
+function importRequestKey(target) { return target ? JSON.stringify([target.runner,target.connection,target.request]) : "" }
 function importProgress(connections,target,now) {
   var empty={active:true,indeterminate:true,value:0,detail:target ? target.message : "",log:""}
   if (!target || target.kind!=="import-pier") return empty
+  if (target.progress && !target.progress.active) return target.progress
   if (target.status==="failed") {empty.active=false;empty.indeterminate=false;return empty}
   var c=connections.filter(function(c){return c.runner_id===target.runner && c.name===target.connection})[0]
   if (!available(c,now)) {empty.detail="Connection unavailable. The runner may still be importing; wait for its receipt before retrying.";return empty}
   var op=(c.snapshot.operations || []).filter(function(o){return o.instance_id===target.instance && o.request_id===target.request && o.kind==="import-pier" && (!target.operation || o.id===target.operation) && (!target.revision || o.config_revision===target.revision)})[0]
   var i=instances(c).filter(function(i){return i.id===target.instance && (!op || i.config_revision===op.config_revision)})[0]
-  if (!op || !i || !i.external_import || i.external_import.source!==target.source) return empty
-  var s=i.external_import,done=op.status==="succeeded" && s.stage==="complete",failed=op.status==="failed"
+  var done=!!op && op.status==="succeeded", failed=!!op && ["failed","interrupted"].indexOf(op.status)>=0
+  // The receipt resolves this request even after configure, deletion or reuse of
+  // its instance name. Only current, matching source evidence supplies step logs.
+  if (!op || !i || !i.external_import || i.external_import.source!==target.source) return done ? {active:false,indeterminate:false,value:1,detail:"Import complete — recorded request succeeded. Current ship details are unavailable for this request.",log:""} : failed ? {active:false,indeterminate:false,value:0,detail:"Import needs review. Its recorded data has been retained.",log:"Import stopped: "+String(op.message || "Inspect the recorded source and destination before retrying.").slice(0,512)} : empty
+  var s=i.external_import
   var ratio=s.total_bytes>0 ? Math.max(0,Math.min(1,(s.copied_bytes || 0)/s.total_bytes)) : 0
   var events=Array.isArray(s.events) ? s.events.slice(-16) : []
   var log=events.map(function(e){return (e.at ? humanTime(e.at,now)+" · " : "")+importStage(e.stage)}).join("\n")
   if(failed)log+="\nImport stopped: "+String(op.message || "Inspect the recorded source and destination before retrying.").slice(0,512)
-  return {active:!done&&!failed,indeterminate:!done&&!failed&&s.stage!=="copying",value:done ? 1 : ratio,detail:failed ? "Import needs review. Its recorded data has been retained." : importStage(s.stage)+(s.stage==="copying" ? " · "+bytesText(s.copied_bytes || 0)+" / "+bytesText(s.total_bytes || 0) : ""),log:log}
+  return {active:!done&&!failed,indeterminate:!done&&!failed&&s.stage!=="copying",value:done ? 1 : ratio,detail:failed ? "Import needs review. Its recorded data has been retained." : done ? importStage("complete") : importStage(s.stage)+(s.stage==="copying" ? " · "+bytesText(s.copied_bytes || 0)+" / "+bytesText(s.total_bytes || 0) : ""),log:log}
 }
 function pierPath(kind,name,ship,input) {
   input=String(input || "").trim()
@@ -220,6 +254,11 @@ function registrationFailure(text) {
   return {message:errorMessage(text),uncertain:["instance_exists","port_conflict","pier_path_conflict","pier_changed_or_busy","pier_not_found","pier_already_enrolled","relink_conflict","invalid_state","revision_conflict","recovery_required","ship_already_enrolled","source_changed","source_reserved","source_unavailable","identity_changed","key_staging_failed","development_capacity","invalid_request","comet_mode_required","unauthorized_peer","operator_required","ssh_access_denied"].indexOf(code)<0}
 }
 function errorCode(text) { try { return JSON.parse(text).error.code || "" } catch (_) { return "" } }
+function inspectionRejected(code,text,outputFailed) {
+  // These operate errors are returned before journal admission. Generic client,
+  // transport and journal errors cannot establish whether a request took effect.
+  return !outputFailed && (code===2 || code===1 && ["invalid_state","revision_conflict","invalid_request","instance_not_found","instance_busy","handoff_fenced","deletion_pending","recovery_required","unauthorized_peer","operator_required","ssh_access_denied"].indexOf(errorCode(text))>=0)
+}
 function runnerPreference(preferences, connection) { return connection ? (preferences || {})[connection.runner_id] || {} : {} }
 function runnerTitle(connection, preferences) { return runnerPreference(preferences, connection).label || connection.name }
 function runnerAddress(connection, registrations, preferences) {
@@ -443,6 +482,8 @@ function resourceView(connection,instance,now,observing) {
   var sample=current ? memorySample(instance,now) : null
   return {value:sample ? bytesText(sample.value) : "Unknown",note:sample ? "of "+bytesText(sample.limit) : "No fresh sample",sample:sample,inactive:false}
 }
+function inspectionKey(connection,instance) { return connection && instance ? JSON.stringify([connection.runner_id,connection.name,instance.id]) : "" }
+function inspectionPending(target) { return !!target && ["submitting","queued","running","uncertain"].indexOf(target.status)>=0 }
 function inspectionStatus(connections,target,now) {
   if (!target) return null
   var c=connections.filter(function(c){return c.name === target.connection && c.runner_id === target.runner})[0]

@@ -320,7 +320,7 @@ func TestRecoverWorkspaceAndPublicationFailure(t *testing.T) {
 				callback = func(ManagedState) error { return errors.New("journal unavailable") }
 			}
 			next, obs, err := applyManaged(context.Background(), "recover-import", s, callback, f.d)
-			if fault == "safe-replacement" {
+			if fault == "safe-replacement" || fault == "missing" {
 				if err != nil || obs.RecoveryRequired || !next.Initialized {
 					t.Fatal(obs, err)
 				}

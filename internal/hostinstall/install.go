@@ -1,5 +1,5 @@
-// Package hostinstall is a development-only, OS-authorized first-install helper.
-// It is not a package installer, updater, rollback mechanism, or runtime qualifier.
+// Package hostinstall provides OS-authorized installation and journaled management
+// activation. Runtime and historical-release qualification remain separate gates.
 package hostinstall
 
 import (
@@ -14,8 +14,12 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostsetup"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/managed"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 )
 
@@ -60,20 +64,29 @@ func newInstaller() installer {
 // All injection is private and per invocation. Tests use a temporary filesystem,
 // synthetic ownership/NSS evidence, and a runner that never executes a process.
 type installer struct {
-	root         string
-	euid         int
-	goos, goarch string
-	verified     func(string) (map[string][]byte, error)
-	inspect      func() hostsetup.Report
-	inspectOwner func(string) hostsetup.Report
-	chownOwner   func(string, uint32, uint32) error
-	lookupUser   func(string) (*user.User, error)
-	lookupGroup  func(string) (*user.Group, error)
-	groupIDs     func(*user.User) ([]string, error)
-	lstat        func(string) (os.FileInfo, error)
-	chown        func(*os.File) error
-	run          func(context.Context, string, []string, []string) ([]byte, error)
-	mutated      bool
+	root                  string
+	euid                  int
+	goos, goarch          string
+	verified              func(string) (map[string][]byte, error)
+	inspect               func() hostsetup.Report
+	inspectOwner          func(string) hostsetup.Report
+	chownOwner            func(string, uint32, uint32) error
+	lookupUser            func(string) (*user.User, error)
+	lookupGroup           func(string) (*user.Group, error)
+	groupIDs              func(*user.User) ([]string, error)
+	lstat                 func(string) (os.FileInfo, error)
+	chown                 func(*os.File) error
+	run                   func(context.Context, string, []string, []string) ([]byte, error)
+	mutated               bool
+	publishFile           func(string, string) error
+	syncDirectory         func(string) error
+	activationEvidence    func(context.Context, string) (serviceEvidence, error)
+	activationStopped     func(context.Context, string, string) error
+	updateRPC             func(context.Context, string, uint32, int, *protocol.ManagementUpdateRequest) (protocol.ManagementUpdateStatus, error)
+	activationTimeout     time.Duration
+	offlineArtifactSchema func(context.Context, []byte, ownerhost.Profile) (int, error)
+	offlineStateCall      func(context.Context, *managed.OfflineStateLock, ownerhost.Profile, managed.OfflineUpdateRequest) (managed.OfflineUpdateState, error)
+	offlineLock           func(string, uint32) (*managed.OfflineStateLock, error)
 }
 
 func (i *installer) install(ctx context.Context, bundle string) (result Result, err error) {
@@ -95,6 +108,10 @@ func (i *installer) install(ctx context.Context, bundle string) (result Result, 
 	files, err := i.verified(bundle)
 	if err != nil {
 		return result, fmt.Errorf("verify bundle: %w", err)
+	}
+	nss, err := i.readMetadata(ctx, "/etc/nsswitch.conf")
+	if err != nil || !hostsetup.LocalIdentityAuthority(string(nss)) || !hostsetup.FileSubIDAuthority(string(nss)) {
+		return result, errors.New("automatic dedicated-account subordinate IDs require authoritative files-only NSS; configure reserved ranges and account explicitly")
 	}
 	// Only this fixed inventory is installed, exclusively from the verified bytes.
 	artifacts := []struct {

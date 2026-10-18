@@ -70,6 +70,7 @@ func newFixture(t *testing.T) *fixture {
 		f.put("/usr/bin/"+name, "not an executable: tests must never run this", 0755)
 	}
 	f.put("/proc/sys/kernel/unprivileged_userns_clone", "1", 0644)
+	f.put("/etc/nsswitch.conf", "passwd: files\ngroup: files\nsubid: files\n", 0644)
 	for _, path := range []string{"/var/lib", "/etc/systemd/user", "/run/user"} {
 		f.mkdir(path, 0755)
 	}

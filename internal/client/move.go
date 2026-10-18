@@ -103,6 +103,13 @@ func MoveStopped(ctx context.Context, source, destination *Client, sourceRunner,
 	if !incoming.SameTransfer(h) || incoming.Direction != "in" {
 		return h, errors.New("destination handoff selection mismatch")
 	}
+	// Read current state and revision together after reservation, bound to this
+	// exact transfer rather than merely to a reusable destination name. This also
+	// tolerates a reservation response that predates subsequent receipt progress.
+	incoming, destinationRevision, err := destinationHandoff(ctx, destination, h)
+	if err != nil {
+		return h, err
+	}
 	if incoming.State == "complete" {
 		if !incoming.ValidCommitment(incoming.Commitment) {
 			return h, errors.New("invalid completed handoff receipt")
@@ -114,7 +121,7 @@ func MoveStopped(ctx context.Context, source, destination *Client, sourceRunner,
 			return h, err
 		}
 	} else if incoming.State == "receiving" && incoming.Error != "" {
-		_, err = destination.FinishHandoff(ctx, h.ID, "retry", protocol.FinishHandoffRequest{SHA256: h.SHA256, ExpectedRevision: 1, RequestID: base + "-retry"})
+		_, err = destination.FinishHandoff(ctx, h.ID, "retry", protocol.FinishHandoffRequest{SHA256: h.SHA256, ExpectedRevision: destinationRevision, RequestID: base + "-retry"})
 		if err != nil {
 			return h, err
 		}
@@ -136,11 +143,27 @@ func MoveStopped(ctx context.Context, source, destination *Client, sourceRunner,
 	if !incoming.ValidCommitment(h.Commitment) {
 		return h, errors.New("source commitment does not authorize this destination")
 	}
-	result, err := destination.FinishHandoff(ctx, h.ID, "activate", protocol.FinishHandoffRequest{SHA256: h.SHA256, ExpectedRevision: 1, RequestID: base + "-activate", Commitment: h.Commitment})
+	result, err := destination.FinishHandoff(ctx, h.ID, "activate", protocol.FinishHandoffRequest{SHA256: h.SHA256, ExpectedRevision: destinationRevision, RequestID: base + "-activate", Commitment: h.Commitment})
 	if err == nil && (!result.SameTransfer(h) || result.Direction != "in" || result.State != "complete" || !result.ValidCommitment(result.Commitment)) {
 		return h, errors.New("invalid destination activation receipt")
 	}
 	return result, err
+}
+
+func destinationHandoff(ctx context.Context, c *Client, expected protocol.Handoff) (protocol.Handoff, uint64, error) {
+	s, err := c.Snapshot(ctx)
+	if err != nil {
+		return protocol.Handoff{}, 0, err
+	}
+	if s.RunnerID != expected.DestinationRunner {
+		return protocol.Handoff{}, 0, ErrIdentityMismatch
+	}
+	for _, i := range s.Instances {
+		if i.ID == expected.DestinationInstance && i.ConfigRevision != 0 && i.Handoff != nil && i.Handoff.Direction == "in" && i.Handoff.SameTransfer(expected) {
+			return *i.Handoff, i.ConfigRevision, nil
+		}
+	}
+	return protocol.Handoff{}, 0, errors.New("destination revision is not bound to this handoff")
 }
 
 func waitHandoff(ctx context.Context, c *Client, expected protocol.Handoff, states ...string) (protocol.Handoff, error) {

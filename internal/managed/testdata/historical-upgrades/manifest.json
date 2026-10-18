@@ -1,0 +1,140 @@
+{
+  "format": 2,
+  "qualification_target": {
+    "release": "v0.1.0-rc.12",
+    "channel": "prerelease",
+    "state_schema": 20,
+    "evidence": "source-tests-only"
+  },
+  "qualification_note": "docs/reviews/2026-10-18-rc12-historical-upgrades.md",
+  "accepted_schema_window": [
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "supported_release_scope": "database-reader",
+  "supported_releases": [
+    {
+      "release": "v0.1.0-rc.1",
+      "schema": 13,
+      "fixture": "rc1.json",
+      "source_commit": "d67ea3ad6d1a3d768bf22bea73e594d8c799742e",
+      "host_upgrade": "unsupported"
+    },
+    {
+      "release": "v0.1.0-rc.2",
+      "schema": 15,
+      "fixture": "rc2.json",
+      "source_commit": "691eea7f808237458c1bf0c8865a62cd5cee11dc",
+      "host_upgrade": "unsupported"
+    },
+    {
+      "release": "v0.1.0-rc.3",
+      "schema": 16,
+      "fixture": "rc3.json",
+      "source_commit": "1b6b79193c6ac58f378ed5c6c689fe9d89045257",
+      "host_upgrade": "unsupported"
+    },
+    {
+      "release": "v0.1.0-rc.4",
+      "schema": 16,
+      "fixture": "rc4.json",
+      "source_commit": "919ba0ce445e3e952d95ab4bff167e938dd9fdda",
+      "host_upgrade": "unsupported"
+    },
+    {
+      "release": "v0.1.0-rc.5",
+      "schema": 16,
+      "fixture": "rc5.json",
+      "source_commit": "b973b5a9cc07197531cfbd1a5e8f60444772e5d2",
+      "host_upgrade": "unsupported"
+    },
+    {
+      "release": "v0.1.0-rc.6",
+      "schema": 16,
+      "fixture": "rc6.json",
+      "source_commit": "2786969d308da9a5b4c948bfc93e3892449657d8",
+      "host_upgrade": "unsupported"
+    },
+    {
+      "release": "v0.1.0-rc.7",
+      "schema": 16,
+      "fixture": "rc7.json",
+      "source_commit": "07e407a4d4c5b4142425547c55094e218bee0697",
+      "host_upgrade": "unsupported"
+    },
+    {
+      "release": "v0.1.0-rc.8",
+      "schema": 16,
+      "fixture": "rc8.json",
+      "source_commit": "f972dee22d20070de35b6f26a6ce3d4e1d2497de",
+      "host_upgrade": "unsupported"
+    },
+    {
+      "release": "v0.1.0-rc.9",
+      "schema": 16,
+      "fixture": "rc9.json",
+      "source_commit": "d9b180fdd1ec5c34084c93109b005b9af4d49c7e",
+      "host_upgrade": "unsupported"
+    },
+    {
+      "release": "v0.1.0-rc.10",
+      "schema": 19,
+      "fixture": "rc10.json",
+      "source_commit": "f6981e6ce4b9bb1bddc1334ff23a3f1ae9e9794a",
+      "host_upgrade": "owner-user-schema19-offline"
+    },
+    {
+      "release": "v0.1.0-rc.11",
+      "schema": 19,
+      "fixture": "rc11.json",
+      "source_commit": "abfff0529a19adc02cf9f4b93eeef78c645dfa8f",
+      "host_upgrade": "owner-user-schema19-offline"
+    }
+  ],
+  "host_upgrade": {
+    "initial_schemas": [
+      19
+    ],
+    "deployment": "owner-user-linux-amd64",
+    "procedure": "docs/management-offline-upgrade.md",
+    "evidence": "source-tests-only"
+  },
+  "prototype_schemas": [
+    11,
+    12,
+    14,
+    17,
+    18
+  ],
+  "preview_fixtures": [
+    "preview14.json",
+    "preview18.json"
+  ],
+  "fixtures": [
+    "rc1.json",
+    "preview14.json",
+    "rc2.json",
+    "rc3.json",
+    "rc4.json",
+    "rc5.json",
+    "rc6.json",
+    "rc7.json",
+    "rc8.json",
+    "rc9.json",
+    "preview18.json",
+    "rc10.json",
+    "rc11.json"
+  ],
+  "unavailable_writers": {
+    "11": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. Consolidated commit 34d8ea55 advances schema1 directly to schema13, accepting 11/12 only as inputs. No RC.1-11 release writes schema11.",
+    "12": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. The schema13 writer accepts schema12 but does not produce it. No RC.1-11 release writes schema12.",
+    "17": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. Runtime-settings commit ba4ba805 advances schema16 directly to schema18. No RC.1-11 release writes schema17."
+  }
+}

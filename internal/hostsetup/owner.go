@@ -82,6 +82,8 @@ func InspectOwner(name string) Report {
 	}
 	passwd, e1 := os.ReadFile("/etc/passwd")
 	groups, e2 := os.ReadFile("/etc/group")
+	nss, _ := os.ReadFile("/etc/nsswitch.conf")
+	reservations, _ := os.ReadFile(SubIDReservationsPath)
 	uids, gids := LocalIDs(string(passwd), string(groups))
 	if e1 != nil || e2 != nil {
 		uids, gids = nil, nil
@@ -93,9 +95,9 @@ func InspectOwner(name string) Report {
 		data, err := os.ReadFile("/etc/" + item.name)
 		status, detail := "unknown", "Cannot read subordinate ID allocation."
 		if err == nil {
-			status, detail = ValidateSubIDs(p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.ids)
+			status, detail = ValidateSubIDAuthority(string(nss), reservations, p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.name, item.ids)
 		}
-		if status == "missing" {
+		if status == "missing" && LocalIdentityAuthority(string(nss)) {
 			detail = "Host setup will allocate a non-overlapping range for this existing user."
 		}
 		detail = strings.ReplaceAll(strings.ReplaceAll(detail, "Dedicated account", "Selected user"), "dedicated-account", "owner-user")

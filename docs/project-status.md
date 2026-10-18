@@ -2,6 +2,14 @@
 
 ## Where we are
 
+**Post-RC.11 source remediation is implemented and locally verified.** The
+[remediation record](reviews/2026-10-18-rc11-remediation.md) maps all 29 review
+findings to fixes and maintained tests, records the independent implementation
+rechecks, and distinguishes remaining release qualification. The visible desktop
+and component split are retained. Source state is schema20; published schema19
+hosts have an explicit [one-time offline upgrade](management-offline-upgrade.md).
+These source changes are not yet a newly published or live-qualified release.
+
 **[RC.11 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.11)**
 and simplifies boot forms: loom31 and default storage are under
 collapsed Advanced settings, new loom choices are30–34, native control is CLI-only,

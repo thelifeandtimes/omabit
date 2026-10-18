@@ -23,12 +23,17 @@ func (r *Server) serveCreateShip(w http.ResponseWriter, req *http.Request, actor
 		r.respondError(w, bad("key boot requires operator access on development-managed"))
 		return
 	}
+	replayOnly, err := protocol.CreationReplayOnly(req.Header)
+	if err != nil {
+		r.respondError(w, bad(err.Error()))
+		return
+	}
 	var body protocol.CreateShipRequest
 	if err := decode(w, req, &body); err != nil {
 		r.respondError(w, err)
 		return
 	}
-	op, replayed, err := r.s.registerShip(actor, body)
+	op, replayed, err := r.s.registerShipReplay(actor, body, replayOnly)
 	body.Key = ""
 	if err != nil {
 		r.respondError(w, err)
@@ -42,7 +47,10 @@ func (r *Server) serveCreateShip(w http.ResponseWriter, req *http.Request, actor
 }
 
 func (s *store) registerShip(actor string, req protocol.CreateShipRequest) (protocol.Operation, bool, error) {
+	return s.registerShipReplay(actor, req, false)
+}
 
+func (s *store) registerShipReplay(actor string, req protocol.CreateShipRequest, replayOnly bool) (protocol.Operation, bool, error) {
 	req.Key = strings.TrimSpace(req.Key)
 	req.Ship = "~" + strings.TrimPrefix(strings.TrimSpace(req.Ship), "~")
 	if message := protocol.ShipNameProblem(req.Ship); message != "" {
@@ -65,9 +73,6 @@ func (s *store) registerShip(actor string, req protocol.CreateShipRequest) (prot
 	}
 	if req.Pill != nil && !protocol.ValidBootPill(req.Pill) {
 		return protocol.Operation{}, false, bad("invalid selected pill descriptor")
-	}
-	if err := s.checkStorage(req.PierPath); err != nil {
-		return protocol.Operation{}, false, err
 	}
 	if class == "" || class == "comet" || !req.ConfirmNetwork || !protocol.ValidBootKey(req.Key) || pierstore.Kind(req.PierPath) != class {
 		return protocol.Operation{}, false, bad("require a valid owned ~ship, private 0w key, matching livenet directory and network acknowledgement")
@@ -92,6 +97,12 @@ func (s *store) registerShip(actor string, req protocol.CreateShipRequest) (prot
 	defer tx.Rollback()
 	if op, hit, err := replay(tx, actor, req.RequestID, string(fingerprint)); hit || err != nil {
 		return op, true, err
+	}
+	if replayOnly {
+		return protocol.Operation{}, false, conflict("replay_not_found", "no matching creation receipt exists for this actor; replay-only requests cannot create a ship")
+	}
+	if err := s.checkStorage(req.PierPath); err != nil {
+		return protocol.Operation{}, false, err
 	}
 	if err := validateConfig(registration.Config); err != nil {
 		return protocol.Operation{}, false, err

@@ -57,10 +57,13 @@ func newTransport(dial func(context.Context) (net.Conn, error), identity *Identi
 			defer stopLifetime()
 			defer stop()
 			conn, err := dial(ctx)
-			if err != nil || identity == nil {
+			if err != nil {
 				return conn, err
 			}
-			return verifyConnection(ctx, conn, *identity)
+			if replay, _ := ctx.Value(creationReplayKey{}).(bool); identity != nil || replay {
+				return verifyConnectionRequirements(ctx, conn, identity)
+			}
+			return conn, nil
 		},
 	}
 	return &Client{cancel: cancel, httpClient: &http.Client{
@@ -277,6 +280,9 @@ func (c *Client) do(ctx context.Context, method, path string, payload, result an
 	}
 	if versioned {
 		req.Header.Set(protocol.Header, strconv.Itoa(protocol.Version))
+	}
+	if replay, _ := ctx.Value(creationReplayKey{}).(bool); replay && method == http.MethodPost && (path == "/v1/instances" || path == "/v1/comets" || path == "/v1/ships") {
+		req.Header.Set(protocol.CreationReplayHeader, "true")
 	}
 	if method == http.MethodPut || method == http.MethodPost {
 		// Even a failed write on a reused connection must not replay a mutation.

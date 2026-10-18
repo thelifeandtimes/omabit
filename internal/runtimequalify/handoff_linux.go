@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/bootpill"
@@ -21,7 +22,7 @@ import (
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
-func applyHandoff(ctx context.Context, action string, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
+func applyHandoff(ctx context.Context, action string, state ManagedState, persist func(ManagedState) error, d dependencies, extract ...func(context.Context, io.Reader, *os.Root) (piercopy.Summary, error)) (ManagedState, ManagedObservation, error) {
 	obs := ManagedObservation{State: "moving", Health: "unknown"}
 	h := state.Handoff
 	if h == nil || !runIDPattern.MatchString(h.ID) || persist == nil {
@@ -165,27 +166,8 @@ func applyHandoff(ctx context.Context, action string, state ManagedState, persis
 		if err = q.save(); err != nil {
 			return finish(err)
 		}
-		if !state.Initialized {
-			// Only unactivated data owned by this incoming handoff may be restaged.
-			if _, err = pierstore.CheckMount(d.home, *state.Storage); err != nil {
-				return finish(err)
-			}
-			if err = os.RemoveAll(q.pierPath()); err != nil {
-				return finish(err)
-			}
-			state.Storage.Identity = pierstore.Identity{}
-			if err = os.Mkdir(q.pierPath(), 0700); err != nil {
-				return finish(err)
-			}
-			root, err := os.OpenRoot(q.pierPath())
-			if err != nil {
-				return finish(err)
-			}
-			_, err = piercopy.ReadArchive(ctx, file, root)
-			root.Close()
-			if err != nil {
-				return finish(err)
-			}
+		if err = q.receiveHandoffPier(ctx, &state, file, extract...); err != nil {
+			return finish(err)
 		}
 		if err = q.pier(); err != nil {
 			return finish(err)
@@ -201,6 +183,9 @@ func applyHandoff(ctx context.Context, action string, state ManagedState, persis
 		}
 		if err = pierstore.CheckStateFiles(ctx, q.pierPath()); err != nil {
 			return finish(err)
+		}
+		if pierstore.Busy(q.pierPath()) {
+			return finish(errors.New("received pier has a Vere lock"))
 		}
 		inv, err := q.inspectEpochs(ctx)
 		if err != nil {
@@ -272,4 +257,111 @@ func applyHandoff(ctx context.Context, action string, state ManagedState, persis
 		return finish(q.save())
 	}
 	return finish(errors.New("unknown handoff operation"))
+}
+
+// Each attempt is extracted outside the active mount into a uniquely named,
+// transfer-bound staging directory. Incomplete attempts are retained in archive:
+// a recorded parent alone is never authority to delete its unrecorded children.
+// This also permits retry after mkdir but before the staging identity was saved.
+func (q *qualifier) receiveHandoffPier(ctx context.Context, state *ManagedState, file io.Reader, extract ...func(context.Context, io.Reader, *os.Root) (piercopy.Summary, error)) error {
+	h := state.Handoff
+	target := q.pierPath()
+	if _, err := pierstore.CheckMount(q.d.home, *state.Storage); err != nil {
+		return err
+	}
+	if _, err := os.Lstat(target); err == nil {
+		// Legacy initialized/partially published receipts may already have a
+		// recorded child. Verify it; never restage over it or adopt by name.
+		if _, err = pierstore.Check(q.d.home, *state.Storage); err != nil {
+			return errors.New("incoming mount contains an unrecorded or replaced pier; retained for review")
+		}
+		return nil // caller verifies the frozen content and epoch inventory
+	} else if !errors.Is(err, os.ErrNotExist) {
+		return err
+	}
+	if state.Initialized {
+		return errors.New("initialized incoming pier is missing")
+	}
+	storageRoot, _, err := pierstore.Resolve(q.d.home, state.Storage.Path)
+	if err != nil {
+		return err
+	}
+	archive := filepath.Join(storageRoot, "archive")
+	if _, err = pierstore.IdentifyMount(archive); err != nil {
+		return err
+	}
+	stage := state.HandoffStaging
+	if stage != nil {
+		if stage.TransferID != h.ID || stage.SHA256 != h.SHA256 || filepath.Dir(stage.Path) != archive || !strings.HasPrefix(filepath.Base(stage.Path), "incoming-"+h.ID+"-") {
+			return errors.New("incoming staging does not belong to this transfer")
+		}
+		actual, err := pierstore.IdentifyMount(stage.Path)
+		if err != nil || !actual.SameObject(stage.Directory) {
+			return errors.New("incoming staging was replaced or moved; retained for review")
+		}
+		if pierstore.Busy(stage.Path) {
+			return errors.New("incoming staging has a Vere lock")
+		}
+	}
+	if stage == nil || !stage.Ready {
+		path, err := os.MkdirTemp(archive, "incoming-"+h.ID+"-")
+		if err != nil {
+			return err
+		}
+		identity, err := pierstore.IdentifyMount(path)
+		if err != nil {
+			return err
+		}
+		if err = pierstore.SyncDirectory(archive); err != nil {
+			return err
+		}
+		stage = &ManagedHandoffStaging{TransferID: h.ID, SHA256: h.SHA256, Path: path, Directory: identity}
+		state.HandoffStaging = stage
+		if err = q.save(); err != nil {
+			return err
+		}
+		root, err := os.OpenRoot(path)
+		if err != nil {
+			return err
+		}
+		read := piercopy.ReadArchive
+		if len(extract) > 0 && extract[0] != nil {
+			read = extract[0]
+		}
+		summary, err := read(ctx, file, root)
+		root.Close()
+		if err != nil {
+			return err
+		}
+		if summary.Digest != h.TreeDigest || pierstore.Busy(path) {
+			return errors.New("incoming staging does not match the frozen source")
+		}
+		stage.Pier, err = pierstore.Identify(path)
+		if err != nil {
+			return err
+		}
+		stage.Ready = true
+		// Save the final child identity before its no-replacement publication.
+		state.Storage.Identity = stage.Pier
+		if err = q.save(); err != nil {
+			return err
+		}
+	}
+	actual, err := pierstore.Identify(stage.Path)
+	if err != nil || !actual.SameObject(stage.Pier) || !stage.Pier.SameObject(state.Storage.Identity) || pierstore.Busy(stage.Path) {
+		return errors.New("incoming staging identity changed before publication")
+	}
+	root, err := os.OpenRoot(stage.Path)
+	if err != nil {
+		return err
+	}
+	summary, err := piercopy.Measure(ctx, root)
+	root.Close()
+	if err != nil || summary.Digest != h.TreeDigest {
+		return errors.New("incoming staging content changed before publication")
+	}
+	if _, err = pierstore.CheckMount(q.d.home, *state.Storage); err != nil {
+		return err
+	}
+	return pierstore.RenameDirectory(stage.Path, target)
 }

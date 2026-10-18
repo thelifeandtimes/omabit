@@ -39,18 +39,21 @@ func (realBackend) Observe(ctx context.Context, state runtimequalify.ManagedStat
 // Server serves only the private local management API. Its host/state lock must
 // outlive it. Close stops management workers, not the independently running ships.
 type Server struct {
-	s        *store
-	b        backend
-	ctx      context.Context
-	cancel   context.CancelFunc
-	wg       sync.WaitGroup
-	mu       sync.Mutex
-	closing  bool
-	workGate chan struct{}
-	failed   atomic.Bool
-	uid      uint32
-	keys     string
-	bootID   string
+	s                         *store
+	b                         backend
+	ctx                       context.Context
+	cancel                    context.CancelFunc
+	wg                        sync.WaitGroup
+	mu                        sync.Mutex
+	closing                   bool
+	workGate                  chan struct{}
+	failed                    atomic.Bool
+	uid                       uint32
+	keys                      string
+	bootID                    string
+	updateFence               managementFence
+	updateBulk, updateWorkers int
+	executableSHA256          string
 }
 
 func New(dir string) (*Server, error) { return newServer(dir, realBackend{}, 10*time.Second) }
@@ -125,6 +128,16 @@ func newServerWithStartup(dir string, b backend, interval time.Duration, comets 
 		s.close()
 		return nil, err
 	}
+	fence, err := loadManagementFence(s)
+	if err != nil {
+		s.close()
+		return nil, err
+	}
+	digest, err := executableDigest()
+	if err != nil {
+		s.close()
+		return nil, err
+	}
 	var resume []storedInstance
 	if bootID != "" {
 		if !bootIDPattern.MatchString(bootID) {
@@ -132,6 +145,8 @@ func newServerWithStartup(dir string, b backend, interval time.Duration, comets 
 			return nil, errors.New("invalid host boot identity")
 		}
 		s.bootID = bootID
+		// Retain reboot eligibility before observations, including while fenced.
+		// Candidate bookkeeping never dispatches; resumeStartup gates admission.
 		resume, err = s.startupCandidates()
 		if err != nil {
 			s.close()
@@ -140,6 +155,7 @@ func newServerWithStartup(dir string, b backend, interval time.Duration, comets 
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	r := &Server{s: s, b: b, ctx: ctx, cancel: cancel, workGate: make(chan struct{}, 1), uid: uint32(os.Geteuid()), bootID: bootID}
+	r.updateFence, r.executableSHA256 = fence, digest
 	if len(resume) > 0 {
 		r.wg.Add(1)
 		go r.resumeStartup(resume, interval)
@@ -207,9 +223,11 @@ func (r *Server) poll(interval time.Duration) {
 
 func (r *Server) launch(op protocol.Operation) {
 	// Caller holds r.mu across journal acceptance and worker registration.
+	r.updateWorkers++
 	r.wg.Add(1)
 	go func() {
 		defer r.wg.Done()
+		defer func() { r.mu.Lock(); r.updateWorkers--; r.mu.Unlock() }()
 		if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "delete-pier" || op.Kind == "recover-import" || op.Kind == "import-pier" || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
 			select {
 			case r.workGate <- struct{}{}:
@@ -271,6 +289,19 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		r.respondError(w, &fault{403, protocol.APIError{Code: "origin_not_allowed", Message: "runner RPC does not accept browser origins"}})
 		return
 	}
+	if req.URL.Path == protocol.ManagementUpdatePath {
+		_, attributed := req.Header[http.CanonicalHeaderKey(access.Header)]
+		if uid != 0 || attributed {
+			r.respondError(w, &fault{403, protocol.APIError{Code: "local_installer_required", Message: "management activation requires a direct local root Unix peer"}})
+			return
+		}
+		if req.Header.Get(protocol.Header) != strconv.Itoa(protocol.Version) {
+			r.respondError(w, &fault{426, protocol.APIError{Code: "protocol_mismatch", Message: "management update requires protocol 1"}})
+			return
+		}
+		r.serveManagementUpdate(w, req)
+		return
+	}
 	actor := fmt.Sprintf("local-uid:%d", uid)
 	role := "operator"
 	if values, present := req.Header[http.CanonicalHeaderKey(access.Header)]; present {
@@ -289,6 +320,8 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodGet && req.URL.Path == "/hello" {
 		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials", "offline-pack", "offline-meld", "offline-roll", "container-resources", "container-cpu", "epoch-inventory", "epoch-prune-genesis", "epoch-prune-prefix"}
 		features = append(features, "maintenance-schedules")
+		features = append(features, protocol.CreationReplayFeature)
+		features = append(features, protocol.ManagementUpdateFeature)
 		features = append(features, "fake-ship-options", "host-port-suggestion")
 		if p, err := ownerhost.Current(); err == nil && p != nil {
 			features = append(features, "owner-user-runtime", "human-pier-storage")
@@ -309,6 +342,9 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 		if r.s.mode == DevelopmentMode {
 			features = append(features, "create-comet", "comet-compaction", "comet-epochs", "comet-prune-prefix")
+			if _, ok := r.b.(amesPublicationBackend); ok {
+				features = append(features, protocol.AmesPublicationFeature)
+			}
 		}
 		if _, ok := r.b.(codeBackend); ok {
 			features = append(features, "login-code")
@@ -333,6 +369,11 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if req.URL.Path == protocol.PillUploadPath {
+		if err := r.beginUpdateBulk(); err != nil {
+			r.respondError(w, err)
+			return
+		}
+		defer r.endUpdateBulk()
 		if r.ctx.Err() != nil || r.failed.Load() {
 			r.respondError(w, conflict("runner_unavailable", "runner is unavailable"))
 			return
@@ -361,6 +402,11 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 	if protocol.HandoffDataPath(req.URL.Path) {
+		if err := r.beginUpdateBulk(); err != nil {
+			r.respondError(w, err)
+			return
+		}
+		defer r.endUpdateBulk()
 		r.handoffData(w, req, actor, role, strings.Split(req.URL.Path, "/")[3])
 		return
 	}
@@ -368,6 +414,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	defer r.mu.Unlock()
 	if r.closing || r.failed.Load() {
 		r.respondError(w, &fault{503, protocol.APIError{Code: "runner_unavailable", Message: "runner is stopping or state storage needs review"}})
+		return
+	}
+	if r.updateFence.Held && req.Method != http.MethodGet {
+		r.respondError(w, conflict("management_quiesced", "management update holds admission; resume the activation journal"))
 		return
 	}
 	if req.Method == http.MethodGet && req.URL.Path == "/v1/port-suggestion" {
@@ -415,6 +465,11 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if req.Method == http.MethodPost && req.URL.Path == "/v1/comets" {
+		replayOnly, err := protocol.CreationReplayOnly(req.Header)
+		if err != nil {
+			r.respondError(w, bad(err.Error()))
+			return
+		}
 		var body protocol.CreateCometRequest
 		if err := decode(w, req, &body); err != nil {
 			r.respondError(w, err)
@@ -424,7 +479,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			r.respondError(w, bad("comet registration requires explicit networked-identity acknowledgement"))
 			return
 		}
-		op, replayed, err := r.s.registerKind(actor, body.CreateFakeRequest, nil, true)
+		op, replayed, err := r.s.registerKindReplay(actor, body.CreateFakeRequest, nil, true, replayOnly)
 		if err != nil {
 			r.respondError(w, err)
 			return
@@ -437,12 +492,17 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if req.Method == http.MethodPost && req.URL.Path == "/v1/instances" {
+		replayOnly, err := protocol.CreationReplayOnly(req.Header)
+		if err != nil {
+			r.respondError(w, bad(err.Error()))
+			return
+		}
 		var body protocol.CreateFakeRequest
 		if err := decode(w, req, &body); err != nil {
 			r.respondError(w, err)
 			return
 		}
-		op, replay, err := r.s.register(actor, body)
+		op, replay, err := r.s.registerKindReplay(actor, body, nil, false, replayOnly)
 		if err != nil {
 			r.respondError(w, err)
 			return
@@ -460,6 +520,8 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	switch {
+	case req.Method == http.MethodPost && parts[4] == "publish-ames":
+		r.servePublishAmes(w, req, actor, role, parts[3])
 	case req.Method == "POST" && parts[4] == "handoff":
 		r.prepareHandoff(w, req, actor, role, parts[3])
 	case req.Method == http.MethodPost && parts[4] == "logs":
@@ -521,6 +583,10 @@ func decode(w http.ResponseWriter, req *http.Request, value any) error {
 }
 
 func (r *Server) respondError(w http.ResponseWriter, err error) {
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		respond(w, http.StatusRequestTimeout, protocol.ErrorResponse{Error: protocol.APIError{Code: "request_canceled", Message: "request canceled or deadline exceeded; retry independently"}})
+		return
+	}
 	var f *fault
 	if errors.As(err, &f) {
 		respond(w, f.status, protocol.ErrorResponse{Error: f.problem})

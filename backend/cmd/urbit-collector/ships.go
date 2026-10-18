@@ -68,23 +68,22 @@ func loginShip(ctx context.Context, r *collection.Registry, s collection.Ship, c
 	defer clear(data)
 	ref := collection.NewSessionRef()
 	key := credentials.Scope(s.ID, s.Origin, ref)
-	cleanup := func() {
-		cleanup, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		_ = c.Logout(cleanup)
-		_ = store.Delete(cleanup, key)
-	}
-	if err := store.Save(ctx, key, data); err != nil {
-		cleanup()
-		return shipInfo{}, err
-	}
-	updated, err := r.SetShipSession(ctx, s, ref)
+	updated, err := r.SaveShipSession(ctx, s, ref, func(save context.Context) error {
+		return store.Save(save, key, data)
+	})
 	if err != nil {
-		// A CAS conflict proves the new reference was not committed. Other IO
-		// failures can be post-rename durability failures: preserve that credential
-		// for a status check rather than deleting a possibly referenced session.
-		if errors.Is(err, collection.ErrShipConflict) {
-			cleanup()
+		// Publication errors can follow rename. Re-read before revoking; if state
+		// is unavailable, the durable intent remains for a later logout/retry.
+		check, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		current, readErr := r.Ship(check, s.Name)
+		cancel()
+		if errors.Is(err, collection.ErrShipConflict) || readErr == nil && current.ID == s.ID && current.SessionRef != ref {
+			remote, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			_ = c.Logout(remote)
+			cancel()
+			if readErr == nil && current.ID == s.ID {
+				_, _ = cleanupRetired(context.Background(), r, current)
+			}
 		}
 		return shipInfo{}, err
 	}
@@ -95,19 +94,35 @@ func loginShip(ctx context.Context, r *collection.Registry, s collection.Ship, c
 }
 
 func logoutShip(ctx context.Context, r *collection.Registry, s collection.Ship) (shipInfo, error) {
-	if s.SessionRef != "" {
-		updated, err := r.SetShipSession(ctx, s, "")
+	// Failed/interrupted saves can fill every cleanup slot while a session is
+	// still active. Drain the selected retired references before needing a slot
+	// for that session. Cleanup never includes its active reference.
+	remoteConfirmed, err := cleanupRetired(ctx, r, s)
+	if err != nil {
+		return shipInfo{}, errors.New("retired credential cleanup is pending, retry ship-logout")
+	}
+	current, err := r.Ship(ctx, s.Name)
+	if err != nil {
+		return shipInfo{}, err
+	}
+	// Cleanup does not advance the session revision. A rotation during that IO
+	// belongs to another command; do not adopt it as this logout's new target.
+	if current.ID != s.ID || current.Revision != s.Revision || current.SessionRef != s.SessionRef {
+		return shipInfo{}, collection.ErrShipConflict
+	}
+	if current.SessionRef != "" {
+		updated, err := r.SetShipSession(ctx, current, "")
 		if err != nil {
 			return shipInfo{}, err
 		}
-		s = updated
+		current = updated
 	}
-	remoteConfirmed, err := cleanupRetired(ctx, r, s)
+	confirmed, err := cleanupRetired(ctx, r, current)
 	if err != nil {
 		return shipInfo{}, errors.New("session detached; credential cleanup is pending, retry ship-logout")
 	}
-	result := info(s, "logged_out")
-	if !remoteConfirmed {
+	result := info(current, "logged_out")
+	if !remoteConfirmed || !confirmed {
 		result.Message = "local credential cleared; server-side logout was not confirmed"
 	}
 	return result, nil
@@ -127,18 +142,28 @@ func cleanupRetired(ctx context.Context, r *collection.Registry, s collection.Sh
 		old.SessionRef = ref
 		// Only this enrollment's retired sessions are revoked, never all browser
 		// sessions. The metadata keeps retry intent until deletion succeeds.
-		if c, e := sessionClient(ctx, r, old); e == nil {
-			if c.Logout(ctx) != nil {
+		remote, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		if c, e := sessionClient(remote, r, old); e == nil {
+			if c.Logout(remote) != nil {
 				confirmed = false
 			}
 			c.Close()
 		} else {
 			confirmed = false
 		}
-		if err := store.Delete(ctx, secretKey(old)); err != nil {
+		cancel()
+		// A stalled remote response or canceled caller cannot consume either the
+		// local deletion budget or the independent journal-completion budget.
+		local, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		err := store.Delete(local, secretKey(old))
+		cancel()
+		if err != nil {
 			return false, err
 		}
-		if err := r.CompleteCredentialCleanup(ctx, s.ID, []string{ref}); err != nil {
+		finish, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		err = r.CompleteCredentialCleanup(finish, s.ID, []string{ref})
+		cancel()
+		if err != nil {
 			return false, err
 		}
 	}

@@ -29,4 +29,13 @@ assert.equal(model.storageRoots(null)[0].path,'/srv/urbit/piers');
 const roots=[{id:'ssd',path:'/custom'},{id:'default',path:'/srv/urbit/piers'}];
 assert.equal(model.storageRoots({snapshot:{piers:{roots}}})[0].id,'default');
 assert.equal(roots[0].id,'ssd','default ordering must not mutate the snapshot');
+for (const [root,relative,stored] of [['default','fakeships/lab/zod','fakeships/lab/zod'],['ssd','fakeships/lab/zod','@ssd/fakeships/lab/zod'],['hdd','livenet/planets/sampel-palnet/sampel-palnet','@hdd/livenet/planets/sampel-palnet/sampel-palnet']]) {
+  const parts=model.splitStoragePath(stored);
+  assert.equal(parts.root,root);assert.equal(parts.path,relative);
+  assert.equal(model.storagePath(root,relative),stored);
+  assert.equal(model.storagePath(root,stored),stored);
+}
+assert.equal(model.storagePath('hdd','@ssd/fakeships/renamed/zod'),'');
+assert.equal(model.storagePath('default','@ssd/fakeships/renamed/zod'),'');
+assert.equal(model.storagePath('','fakeships/renamed/zod'),'','removed/unselected storage cannot silently mean default');
 console.log('PASS: UI offers loom30–34 and default storage, preserves CLI native settings, and distinguishes historical launches');

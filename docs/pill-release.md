@@ -7,17 +7,19 @@ the Recommended Apps pill. New-ship forms expose exactly two choices:
 
 - **bare bootstrap**: no `-B`/`-u` override; Vere selects its normal
   bootstrap.urbit.org pill.
-- **Recommended Apps**: use the configured direct HTTPS URL. Omabit
-  downloads, stages and verifies the artifact, then supplies `-B` on first boot.
+- **Recommended Apps**: the built-in choice uses the frozen release artifact and
+  trusted SHA-256/size below. An explicitly configured different HTTPS URL or CLI
+  local file is custom provisioning. Omabit verifies and stages it, then supplies
+  `-B` on first boot.
 
 Bare is the initial selection. Choosing Recommended Apps without a configured URL
 blocks registration with a clear message; it never falls back to another pill.
 These choices apply to new comets, owned-key ships and development fakes. Existing
 piers and subsequent runtime starts use initialized resume, not pill provisioning.
 
-### Current supplied pill — RC.5
+### Current supplied pill — RC.11
 
-The default Recommended Apps URL is:
+The existing desktop default remains a known release alias:
 
 ```text
 https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill
@@ -27,10 +29,19 @@ The October 15 download was **59,351,751 bytes**, SHA-256
 `85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62`, with S3
 ETag `"f6be01d6c61667d844b65ae00d7fe92e-4"` and Last-Modified 18:04:58 UTC.
 Conditional download pinned that object revision during release preparation.
-RC.5 attaches the frozen copy as `omabit-recommended-apps-0.1.0-rc.5.pill` while
-using the requested provider URL as the UI default. Later changes at that URL do
-not change the frozen release artifact; registration hashes and verifies the
-actual selected bytes each time.
+RC.11 publishes that same frozen content as
+`omabit-recommended-apps-0.1.0-rc.11.pill`. Its published asset metadata was checked
+on2026-10-18 and matches both values above. The collector resolves the known S3
+alias to this versioned artifact and requires those trusted bytes before upload:
+
+```text
+https://github.com/thelifeandtimes/omabit/releases/download/v0.1.0-rc.11/omabit-recommended-apps-0.1.0-rc.11.pill
+```
+
+Changed content, a missing release asset or a digest/size mismatch fails without
+falling back to the mutable provider object. The trust root is the accepted
+checkout/release channel containing these pins; hashes establish equality with
+that release, not independent publisher or reproducible-build authentication.
 
 This pill passed a disposable fake boot, healthy identity/HTTP check and clean
 stop. Its detailed application inventory and OTA behavior have not been asserted.
@@ -82,8 +93,13 @@ create-ship --ship ~SHIP --key-file FILE ... --bootstrap bare
 create-ship --ship ~SHIP --key-file FILE ... --bootstrap recommended --pill HTTPS_ASSET_URL
 ```
 
-`create-fake` supports the same bootstrap flags. CLI `--pill` also accepts a local
-file for artifact validation. Omitting bootstrap flags defaults new registrations
+`create-fake` supports the same bootstrap flags. CLI `--pill` also accepts an
+explicitly custom local file. Custom network URLs and all redirects require
+HTTPS, without URL user credentials. To bind custom content to trusted metadata,
+provide both `--pill-sha256 HEX_DIGEST` and `--pill-size BYTE_COUNT`; verification
+precedes runner upload. Omitting those flags for a custom source records the
+downloaded hash/size for transfer continuity only. Built-in release pins cannot
+be overridden by these flags. Omitting bootstrap flags defaults new registrations
 on updated runners to bare. The selector is fixed at registration and the staged
 content hash/size becomes part of its durable identity/replay checks.
 

@@ -10,7 +10,8 @@ Column {
   objectName: "external-pier-import"
   property var service
   property var connection
-  property bool submitted: false
+  property var submission: null
+  readonly property bool submitted: !!submission
   property alias sourcePath: source.text
   readonly property string selection: connection ? connection.runner_id+"/"+connection.name : ""
   readonly property var review: service ? service.externalImportPreview : null
@@ -19,11 +20,21 @@ Column {
   readonly property bool current: !!service && Model.externalReviewCurrent(connection,review,source.text.trim(),service.now) && !!review.plan && review.plan.storage_root===location.rootID
   readonly property var plan: current ? review.plan : null
   readonly property bool inspecting: !!service && service.currentAction==="preview-pier"
-  readonly property var outcome: service && service.storageOutcome && service.storageOutcome.runner===(connection && connection.runner_id) && service.storageOutcome.source===source.text.trim() ? service.storageOutcome : null
+  readonly property var outcome: submission ? (service && service.importOutcomes[Model.importRequestKey(submission)]) || submission : null
   readonly property var progress: Model.importProgress(service ? service.connections : [],outcome,service ? service.now : Date.now())
-  onSelectionChanged: { submitted=false;clearReview() }
+  onSelectionChanged: { reviewAnother();clearReview() }
   function clearReview() { consent.checked=false;if(service)service.externalImportPreview=null }
-  function inspect() { clearReview();return service.previewExternalPier(connection,source.text.trim(),location.rootID) }
+  function reviewAnother() {
+    if (service && service.busy || submitted && progress.active) return false
+    submission=null;clearReview();return true
+  }
+  function inspect() { if (submitted) return false;clearReview();return service.previewExternalPier(connection,source.text.trim(),location.rootID) }
+  function submitImport() {
+    if (submitted || !current) return false
+    var target=service.importExternalPier(connection,review,consent.checked)
+    if (!target) return false
+    submission=target;return true
+  }
   spacing: Style.space(10)
   Label { text: "Import an existing pier"; font.pixelSize: Style.space(21); font.bold: true }
   Label { width: parent.width; text: "Choose the stopped pier directory (the folder containing .urb) and a storage location. Omabit reads its identity and fake/live mode, chooses the instance path and HTTP port, and moves it safely. The ship stays stopped."; secondary: true }
@@ -41,7 +52,7 @@ Column {
   Label { objectName:"import-pier-plan";width:parent.width;visible:root.current;text:root.plan ? root.plan.ship+" · "+(root.plan.network==="fakenet" ? "Fakenet" : "Livenet (Vere live mode)")+"\nInstance: "+root.plan.instance_id+" · HTTP "+root.plan.http_port+"\nDestination: "+Model.absolutePierPath(root.connection,root.plan.destination)+"\n"+root.plan.source.files+" files · "+Model.bytesText(root.plan.source.bytes)+(root.plan.in_place ? " · already in place" : "") : "" }
   Label { width:parent.width;caption:true;secondary:true;text:"Testnet — coming soon: alternate Ethereum/Azimuth RPC endpoints. Offline fake/live metadata does not identify a live pier's Ethereum endpoint." }
   CheckField { id:consent;objectName:"import-pier-consent";width:parent.width;text:root.plan && root.plan.in_place ? "This pier is stopped everywhere. Enroll it at this location." : "This pier is stopped everywhere. Move it to the reviewed location.";enabled:root.current&&!root.submitted&&!root.service.busy }
-  ActionButton { objectName:"import-pier-submit";primary:true;text:root.submitted ? "Import submitted" : root.plan && root.plan.in_place ? "Enroll stopped pier" : "Move and import pier";enabled:root.current&&!root.submitted&&!root.service.busy&&consent.checked;onClicked:if(root.service.importExternalPier(root.connection,root.review,consent.checked))root.submitted=true }
+  ActionButton { objectName:"import-pier-submit";primary:true;text:root.submitted ? "Import submitted" : root.plan && root.plan.in_place ? "Enroll stopped pier" : "Move and import pier";enabled:root.current&&!root.submitted&&!root.service.busy&&consent.checked;onClicked:root.submitImport() }
   Column {
     width:parent.width;spacing:Style.space(8);visible:root.submitted && !!root.outcome
     Label { objectName:"import-pier-progress-detail";width:parent.width;text:root.progress.detail }
@@ -51,5 +62,5 @@ Column {
       Controls.TextArea { objectName:"import-pier-steps";text:root.progress.log;textFormat:TextEdit.PlainText;readOnly:true;selectByMouse:true;wrapMode:TextEdit.Wrap;color:Design.ink;font.pixelSize:Style.space(13);background:Rectangle {color:Design.background;radius:Style.space(5)} }
     }
   }
-  ActionButton { text:"Review another pier";quiet:true;visible:root.submitted;enabled:!root.service.busy&&!root.progress.active;onClicked:{root.submitted=false;root.clearReview()} }
+  ActionButton { text:"Review another pier";quiet:true;visible:root.submitted;enabled:!root.service.busy&&!root.progress.active;onClicked:root.reviewAnother() }
 }

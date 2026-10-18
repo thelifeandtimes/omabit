@@ -1,4 +1,4 @@
-# Omabit 0.1.0-rc.11 binary bundle
+# Omabit 0.1.0-rc.12 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
@@ -13,6 +13,11 @@ RC.7 retains management and the separate rootless Docker engine as the existing 
 owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
 user-owned files. Storage/import/deletion and bounded reboot resume continue.
 This remains a development prerelease.
+
+RC.12 hardens storage/recovery, identity/replay, credentials and release/update
+contracts after the adversarial review, retaining the existing desktop layout and
+workflows. It uses **schema20**. See [RC.12 notes](https://github.com/thelifeandtimes/omabit/blob/v0.1.0-rc.12/docs/release-rc12.md) and the
+[remediation record](https://github.com/thelifeandtimes/omabit/blob/v0.1.0-rc.12/docs/reviews/2026-10-18-rc11-remediation.md).
 
 RC.11 collapses loom and storage choices under **Advanced settings**, limits new
 loom selections to30–34 (default31), and makes native control CLI-only. Owned-key
@@ -81,14 +86,22 @@ It does not install OS packages or replace unrelated Docker installations.
 
 ## Update an already configured local runner
 
-Wait for accepted operations to finish, then reuse the reviewed rootless bundle
-and operator public key with the owner installer described below.
+RC.10/RC.11 owner-user hosts first use the new executable's explicit
+[one-time offline upgrade](https://github.com/thelifeandtimes/omabit/blob/v0.1.0-rc.12/docs/management-offline-upgrade.md). That procedure stops
+only management, preserves running runtime containers, holds the existing state
+lock and commits migration/admission fencing transactionally. It does not reset or
+re-enroll piers. The ordinary command safely refuses an online historical manager
+that lacks quiescence support.
 
-This updates management services while preserving the owner, runner ID, SSH keys,
-grants and running containers. The historical `install-services.sh` refuses owner
-installations. Schema **19** upgrades supported schemas11–18 without rewriting
-instance/operation bodies; older runners refuse it. Legacy dedicated-account hosts need explicit retirement/migration first; schema
-upgrade alone does not migrate OS accounts or pier locations.
+Subsequent quiescence-aware updates reuse the reviewed rootless bundle and operator
+public key with the ordinary owner installer below. They preserve owner, runner
+identity, SSH keys/grants and running containers. Retained generations and the
+activation journal provide repeat-command recovery and schema-compatible rollback.
+Schema **20** reads historical schemas11–19 without rewriting original bodies or
+receipts; older runners refuse it. Database readability does not migrate OS accounts
+or pier locations: the qualified initial host bridge is owner-user schema19.
+See the [published-release support matrix](https://github.com/thelifeandtimes/omabit/blob/v0.1.0-rc.12/docs/reviews/2026-10-18-rc12-historical-upgrades.md).
+The historical `install-services.sh` refuses owner installations.
 
 ## Install or update a headless runner
 
@@ -115,7 +128,12 @@ bootstrap selection to Vere. Recommended Apps now defaults to the supplied URL:
 `https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill`
 
 An operator may override that URL in plugin settings.
-The selected bytes are hashed/uploaded before registration and used on first Start.
+The built-in URL is a compatibility alias for the immutable RC.11 pill artifact,
+whose SHA-256 and size are compiled into the RC.12 collector. RC.12 republishes the
+same supplied bytes; no new pill composition or application inventory is claimed.
+Network provisioning requires HTTPS. Custom HTTPS/local sources remain explicit
+operator inputs and can additionally supply `--pill-sha256` and `--pill-size`.
+Verified bytes are uploaded before registration and used on first Start.
 Initialized piers resume without reapplying a pill.
 
 This release also attaches the frozen supplied bytes qualified for RC.5: **59,351,751 bytes**,

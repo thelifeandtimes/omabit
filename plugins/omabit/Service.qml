@@ -49,12 +49,14 @@ Item {
   property string requestIdentity: ""
   property var registrationOutcome: null
   property var storageOutcome: null
+  property var importOutcomes: ({})
   property var externalImportPreview: null
   property var pendingExternalPreview: null
   property var importRecoveryReview: null
   property var hostMoveOutcome: null
   property var routineOutcome: null
   property var epochInspection: null
+  property var inspections: ({})
   property double now: Date.now()
   property bool refreshing: false
   property bool refreshPending: false
@@ -255,6 +257,7 @@ Item {
 
   function operate(connection, instance, kind) {
     if (busy || !observing || !Model.canOperate(connection, instance, kind, now)) return false
+    if (kind === "inspect-epochs" && Model.inspectionPending(inspections[Model.inspectionKey(connection,instance)])) return false
     var selected = connections.some(function(c) {
       return c.name === connection.name && c.runner_id === connection.runner_id
         && c.snapshot && c.snapshot.instances.some(function(i) {
@@ -263,13 +266,21 @@ Item {
     })
     if (!selected) { lastError = "The selected runtime changed; inspect a fresh observation."; return false }
     requestIdentity = Model.requestId()
-    if (kind === "inspect-epochs") epochInspection={connection:connection.name,runner:connection.runner_id,instance:instance.id,revision:instance.config_revision,request:requestIdentity,status:"submitting",message:"Requesting an inspection of the stopped pier…"}
+    if (kind === "inspect-epochs") rememberInspection({connection:connection.name,runner:connection.runner_id,instance:instance.id,revision:instance.config_revision,request:requestIdentity,status:"submitting",message:"Requesting an inspection of the stopped pier…"})
     return submit(Model.operate(connection, instance, kind, requestIdentity), kind)
   }
 
+  function rememberInspection(target) {
+    var next=Object.assign({},inspections)
+    next[Model.inspectionKey({runner_id:target.runner,name:target.connection},{id:target.instance})]=target
+    inspections=next;epochInspection=target
+  }
   function reconcileInspection() {
-    var next=Model.inspectionStatus(connections,epochInspection,now)
-    if (JSON.stringify(next) !== JSON.stringify(epochInspection)) epochInspection=next
+    var next=Object.assign({},inspections)
+    Object.keys(next).forEach(function(key){next[key]=Model.inspectionStatus(connections,next[key],now)})
+    if (JSON.stringify(next)!==JSON.stringify(inspections)) inspections=next
+    var latest=Model.inspectionStatus(connections,epochInspection,now)
+    if (JSON.stringify(latest)!==JSON.stringify(epochInspection)) epochInspection=latest
   }
 
   function clearEpochPreview() { epochPreview = null; previewTarget = null; pendingPreviewTarget = null }
@@ -294,7 +305,7 @@ Item {
     var target = previewTarget || pendingPreviewTarget
     if (target && (!observing || !Model.currentEpochTarget(connections, target, now))) clearEpochPreview()
   }
-  onConnectionsChanged: { invalidateEpochPreview(); invalidateImportCatalogue(); reconcileInspection() }
+  onConnectionsChanged: { invalidateEpochPreview(); invalidateImportCatalogue(); reconcileInspection(); reconcileImports() }
   onNowChanged: invalidateEpochPreview()
   onObservingChanged: invalidateEpochPreview()
 
@@ -444,11 +455,12 @@ Item {
     storageOutcome={runner:current.runner_id,instance:name,path:source.path,request:requestIdentity,kind:source.enrolled_by ? "relink-pier" : "enroll-pier",status:"submitting",message:"Submitting pier enrollment…"}
     return submit(args,"enroll-pier")
   }
-  function movePier(connection,instance,path) {
-    if (busy || !observing || Model.handoffFenced(instance) || connection.access_role!=="operator" || !Model.hasFeature(connection,"pier-storage") || !Model.validPierPath(path) || !Model.available(connection,now) || instance.desired_state!=="stopped" || instance.active_operation_id || instance.recovery_required || ["stopped","uninitialized"].indexOf(instance.observed_state)<0) return false
+  function movePier(connection,target,storageRoot,relativePath) {
+    var c=storageConnection(connection,"pier-storage"), path=Model.storagePath(storageRoot,relativePath)
+    if (!Model.currentPierMove(c,target,now) || !storageRoot || !Model.validPierPath(path) || path===target.path || !Model.storageRoots(c).some(function(r){return r.id===storageRoot})) {lastError="The move selection changed. Review the current stopped pier and destination.";return false}
     requestIdentity=Model.requestId()
-    storageOutcome={runner:connection.runner_id,instance:instance.id,path:path,request:requestIdentity,kind:"move-pier",status:"submitting",message:"Submitting stopped-pier move…"}
-    return submit(Model.selection(connection).concat(["move-pier",instance.id,"--path",path,"--revision",String(instance.config_revision),"--request-id",requestIdentity]),"move-pier")
+    storageOutcome={runner:target.runner,connection:target.connection,instance:target.instance,path:path,request:requestIdentity,kind:"move-pier",status:"submitting",message:"Submitting stopped-pier move…"}
+    return submit(["--runner",target.connection,"--expected-runner-id",target.runner,"move-pier",target.instance,"--path",path,"--revision",String(target.revision),"--request-id",requestIdentity],"move-pier")
   }
   function storageConnection(connection,feature) {
     if (busy || !observing || !connection) return null
@@ -466,9 +478,10 @@ Item {
   function previewExternalPier(connection,path,storageRoot) {
     if (busy) return false
     var c=storageConnection(connection,"guided-pier-import")
-    if (!c || !Model.hostPath(path)) {lastError="Enter the absolute existing pier directory on the selected runner host.";return false}
+    storageRoot=storageRoot===undefined ? "default" : storageRoot
+    if (!c || !Model.hostPath(path) || !Model.storageRoots(c).some(function(r){return r.id===storageRoot})) {lastError="Enter the absolute existing pier directory and choose a storage location on the selected runner host.";return false}
     externalImportPreview=null
-    pendingExternalPreview={runner:c.runner_id,connection:c.name,path:path,storageRoot:storageRoot || "default"}
+    pendingExternalPreview={runner:c.runner_id,connection:c.name,path:path,storageRoot:storageRoot}
     return submit(Model.selection(c).concat(["preview-pier","--source",path,"--storage-root",pendingExternalPreview.storageRoot]),"preview-pier")
   }
   function importExternalPier(connection,review,confirmed) {
@@ -477,9 +490,24 @@ Item {
     if (!c || !confirmed || !Model.externalReviewCurrent(c,review,review && review.source.path,now) || !review.plan) {lastError="Inspect the source and confirm the reviewed import.";return false}
     var plan=review.plan
     try { Model.validatePierImportPreview(plan,c.runner_id,review.source.path,plan.storage_root) } catch(e) {lastError=e.message;return false}
+    if (Object.keys(importOutcomes).some(function(key){var o=importOutcomes[key];return o.runner===c.runner_id && o.source===review.source.path && Model.importProgress(connections,o,now).active})) {lastError="This source already has an unresolved import request. Wait for its receipt.";return false}
     requestIdentity=Model.requestId()
-    storageOutcome={runner:c.runner_id,connection:c.name,instance:plan.instance_id,source:review.source.path,path:plan.destination,ship:plan.ship,request:requestIdentity,kind:"import-pier",status:"submitting",message:"Submitting reviewed pier import…"}
-    return submit(Model.selection(c).concat(["import-pier",plan.instance_id,"--source",review.source.path,"--path",plan.destination,"--ship",plan.ship,"--fingerprint",review.source.fingerprint,"--http-port",String(plan.http_port),"--request-id",requestIdentity,"--confirm-stopped","--identify"]),"import-pier")
+    var target=Object.freeze({runner:c.runner_id,connection:c.name,instance:plan.instance_id,source:review.source.path,path:plan.destination,ship:plan.ship,request:requestIdentity,kind:"import-pier",status:"submitting",message:"Submitting reviewed pier import…"})
+    storageOutcome=target
+    if (!submit(Model.selection(c).concat(["import-pier",plan.instance_id,"--source",review.source.path,"--path",plan.destination,"--ship",plan.ship,"--fingerprint",review.source.fingerprint,"--http-port",String(plan.http_port),"--request-id",requestIdentity,"--confirm-stopped","--identify"]),"import-pier")) return false
+    rememberImport(target)
+    return target
+  }
+  function rememberImport(target) {
+    var key=Model.importRequestKey(target), old=importOutcomes[key], next=Object.assign({},importOutcomes)
+    var retained=Object.assign({},target,{progress:old && old.progress})
+    retained.progress=Model.importProgress(connections,retained,now)
+    next[key]=retained;importOutcomes=next
+  }
+  function reconcileImports() {
+    var next=Object.assign({},importOutcomes)
+    Object.keys(next).forEach(function(key){var o=next[key];next[key]=Object.assign({},o,{progress:Model.importProgress(connections,o,now)})})
+    if (JSON.stringify(next)!==JSON.stringify(importOutcomes)) importOutcomes=next
   }
   function deletePier(connection,target,typed) {
     if (busy) return false
@@ -636,6 +664,7 @@ Item {
       stored.status=storageAccepted ? "accepted" : !outputFailed && (code===2 || code!==0 && !Model.registrationFailure(errors).uncertain) ? "failed" : "uncertain"
       stored.message=storageAccepted ? "Request accepted. The fleet and activity show completion; no automatic Start was requested." : lastError
       storageOutcome=stored
+      if (stored.kind==="import-pier") rememberImport(stored)
     }
     if (hostMove) hostMoveOutcome=Object.assign({},hostMove,{status:hostMoved ? "complete" : "paused",message:hostMoved ? "Move complete. The destination is stopped; choose Start there when ready." : lastError+" Read the recorded phase and continue the same move."})
     if (routine) {
@@ -645,7 +674,8 @@ Item {
       routineOutcome=saved
     }
     if (inspecting) {
-      epochInspection=Object.assign({},inspecting,{operation:inspectionOperation,status:inspectionAccepted ? "queued" : "uncertain",message:inspectionAccepted ? "Inspection accepted. Waiting for the runner's inventory…" : "Inspection acknowledgement unavailable. Checking the journal; do not resubmit blindly."})
+      var rejected=!inspectionAccepted && Model.inspectionRejected(code,errors,outputFailed)
+      rememberInspection(Object.assign({},inspecting,{operation:inspectionOperation,status:inspectionAccepted ? "queued" : rejected ? "failed" : "uncertain",message:inspectionAccepted ? "Inspection accepted. Waiting for the runner's inventory…" : rejected ? lastError+" Review the current stopped ship and inspect again." : "Inspection acknowledgement unavailable. Checking the journal; do not resubmit blindly."}))
       reconcileInspection()
     }
     output = ""; errors = ""
@@ -804,7 +834,7 @@ Item {
     function maintenance(): void { root.openMonitor(null, null, "maintenance") }
     function setup(): void { root.openMonitor(null, null, "setup") }
     function refresh(): void { root.refresh() }
-    function status(): string { return JSON.stringify({version:"0.1.0-rc.11",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
+    function status(): string { return JSON.stringify({version:"0.1.0-rc.12",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
     function close(): void { monitor.visible = false }
   }
   Process {

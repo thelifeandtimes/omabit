@@ -1,13 +1,19 @@
 #!/usr/bin/env python3
 """Verify built assets and exercise the extracted bundle's isolated installer."""
 import argparse
+import datetime
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
 import subprocess
 import tarfile
 import tempfile
+
+spec = importlib.util.spec_from_file_location("release_source", Path(__file__).with_name("package-release.py"))
+release_source = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(release_source)
 
 
 def digest(path):
@@ -30,13 +36,30 @@ def verify(directory):
     assert set(recorded) == actual, "unrecorded or missing package content"
 
 
+def verify_build(binary, metadata, go):
+    output = subprocess.check_output([go, "version", "-m", binary],
+                                     env=release_source.go_tool_environment(go), text=True)
+    settings = dict(line.strip().split("\t", 1)[1].split("=", 1)
+                    for line in output.splitlines() if line.strip().startswith("build\t"))
+    assert settings["vcs"] == "git" and settings["vcs.revision"] == metadata["source_commit"]
+    assert settings["vcs.modified"] == "false", "binary certifies modified source"
+    assert settings["-trimpath"] == "true" and settings["CGO_ENABLED"] == "0"
+    assert settings["GOOS"] == "linux" and settings["GOARCH"] == "amd64" and settings["GOAMD64"] == "v1"
+    assert "-overlay" not in settings and "-modfile" not in settings
+    timestamp = datetime.datetime.fromisoformat(settings["vcs.time"].replace("Z", "+00:00"))
+    assert int(timestamp.timestamp()) == metadata["source_epoch"]
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("assets", type=Path)
     args = parser.parse_args()
+    go = release_source.resolve_go()
     assets = args.assets.resolve()
     verify(assets)
     metadata = json.loads((assets / "release.json").read_text())
+    assert metadata["source_inputs"] == "git-commit-blobs-v1"
+    assert metadata["build_environment"] == "isolated-go-v1"
     version = metadata["version"]
     for entry in metadata["assets"]:
         path = assets / entry["name"]
@@ -54,6 +77,8 @@ def main():
         verify(package)
         build = json.loads((package / "BUILD.json").read_text())
         assert build["source_commit"] == metadata["source_commit"] and build["version"] == version
+        for key in ("source_tree", "source_epoch", "source_inputs", "build_environment", "go_version"):
+            assert build[key] == metadata[key], "archive/release provenance mismatch: " + key
         schema = int(subprocess.check_output([package / "build/urbit-runner", "state-schema"], text=True, timeout=10))
         assert schema == build["schema"] == metadata["schema"], "binary/package/release schema mismatch"
         assert build["pill"]["sha256"] == metadata["pill"]["sha256"]
@@ -68,6 +93,7 @@ def main():
         for command in ("omabit", "urbit-collector", "urbit-runner"):
             binary = package / "build" / command
             assert digest(binary) == digest(assets / (command + "-linux-amd64"))
+            verify_build(binary, metadata, go)
             result = subprocess.run([binary, "--help"], capture_output=True, timeout=10)
             assert result.returncode == 0, (command, result.stderr)
         for path in ("internal/rootless/assets/daemon.json", "deploy/systemd/urbit-runner.service",

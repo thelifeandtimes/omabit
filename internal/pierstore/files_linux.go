@@ -256,6 +256,9 @@ func PrepareMount(home string, location *Location) (string, error) {
 		return "", errors.New("mount root already exists or cannot be created; review it instead of adopting it")
 	}
 	location.MountIdentity, err = IdentifyMount(mount)
+	if err == nil {
+		err = SyncDestinationParents(home, *location, nil)
+	}
 	return mount, err
 }
 

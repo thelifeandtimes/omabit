@@ -23,8 +23,13 @@ func TestNewShipCLIUploadsOnlySelectedRecommendedPill(t *testing.T) {
 				body := "test recommended apps pill"
 				meta := protocol.BootPill{SHA256: fmt.Sprintf("%x", sha256.Sum256([]byte(body))), Bytes: int64(len(body))}
 				downloads, uploads, registrations := 0, 0, 0
-				artifact := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { downloads++; io.WriteString(w, body) }))
+				artifact := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { downloads++; io.WriteString(w, body) }))
 				defer artifact.Close()
+				oldTransport := http.DefaultTransport
+				transport := oldTransport.(*http.Transport).Clone()
+				transport.TLSClientConfig = artifact.Client().Transport.(*http.Transport).TLSClientConfig.Clone()
+				http.DefaultTransport = transport
+				t.Cleanup(func() { http.DefaultTransport = oldTransport; transport.CloseIdleConnections() })
 				socket := fakeRunner(t, func(w http.ResponseWriter, r *http.Request) {
 					if r.URL.Path == "/hello" {
 						reply(t, w, protocol.Hello{ProtocolVersion: 1, RunnerID: "runner-pill", Mode: "development-managed", AccessRole: "operator", Features: []string{"create-fake", "create-comet", "bootstrap-selection"}})

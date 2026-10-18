@@ -17,7 +17,7 @@ import (
 
 // One authenticated bulk exchange per SSH connection. The payload is streamed,
 // never buffered in the bridge or interpreted as additional RPC requests.
-func forwardHandoff(ctx context.Context, req *http.Request, input io.Reader, output io.Writer, socket string, grant Grant) error {
+func forwardHandoff(ctx context.Context, req *http.Request, output io.Writer, socket string, grant Grant, pin *bridgeIdentity) error {
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
 	defer cancel()
 	conn, err := (&net.Dialer{}).DialContext(ctx, "unix", socket)
@@ -25,12 +25,7 @@ func forwardHandoff(ctx context.Context, req *http.Request, input io.Reader, out
 		return errors.New("local runner unavailable")
 	}
 	defer conn.Close()
-	stop := context.AfterFunc(ctx, func() {
-		conn.Close()
-		if c, ok := input.(io.Closer); ok {
-			c.Close()
-		}
-	})
+	stop := context.AfterFunc(ctx, func() { conn.Close() })
 	defer stop()
 	deadline, _ := ctx.Deadline()
 	if err = conn.SetDeadline(deadline); err != nil {
@@ -51,6 +46,9 @@ func forwardHandoff(ctx context.Context, req *http.Request, input io.Reader, out
 	var hello protocol.Hello
 	if err != nil || len(data) > 1<<20 || response.StatusCode != 200 || response.Close || json.Unmarshal(data, &hello) != nil || hello.ProtocolVersion != protocol.Version || hello.Actor != "ssh-key:"+grant.Fingerprint || hello.AccessRole != grant.Role || !slices.Contains(hello.Features, "host-handoff") || !slices.Contains(hello.Features, "ssh-key-grants") {
 		return errors.New("runner does not authenticate handoff delegation")
+	}
+	if err := pin.check(hello); err != nil {
+		return err
 	}
 	local, err := http.NewRequestWithContext(ctx, req.Method, "http://runner"+req.URL.EscapedPath(), req.Body)
 	if err != nil {

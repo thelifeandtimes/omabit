@@ -18,8 +18,9 @@ func TestPillURLFileAndHashBoundPublication(t *testing.T) {
 	dir := t.TempDir()
 	os.Chmod(dir, 0700)
 	data := strings.Repeat("fixture-pill", 1024)
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, data) }))
+	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, data) }))
 	defer server.Close()
+	trustPillTLS(t, server)
 	file, meta, err := Resolve(context.Background(), server.URL, dir)
 	if err != nil {
 		t.Fatal(err)

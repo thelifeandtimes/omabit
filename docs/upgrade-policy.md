@@ -35,6 +35,33 @@ The current repeated fresh-install exercises are development qualification only.
 
 ## Development runtime settings
 
+The post-RC.11 source remediation advances to **schema20**, accepting existing
+schemas11–19 without resetting instances or receipts. The new version fences
+older runners from ignoring durable management-update admission, object-bound
+deletion/staging evidence, maintenance dispatch phases and handoff audit receipts.
+Historical signature bytes and actor/request fingerprints remain unchanged.
+Already-persisted interrupted imports have explicit evidence-checked recovery;
+unexplained replacement objects and ambiguous legacy maintenance stay preserved.
+
+Quiescence-aware managers use a durable local-root update fence, verified retained
+executable generations and a restart-safe activation journal. Runtime processes
+remain independent. A previously published schema19 manager lacks that admission
+contract: use the explicit [one-time offline upgrade](management-offline-upgrade.md),
+which holds the existing runtime lock, migrates and fences in one transaction,
+and preserves owner, piers, configuration, history and running containers. An
+older binary is never restored across an incompatible schema migration.
+
+Historical fixtures produced by original RC.1–11 writers and the recovered
+schema14/schema18 previews now cover schemas13,14,15,16,18,19. Every published
+release has its own pinned original-writer fixture. Original writers for unpublished
+schemas11,12,17 remain unavailable; their synthetic migration coverage is not
+equivalent to original-writer qualification. These prototypes are outside the
+supported published-release window. See the fixture manifest in
+`internal/managed/testdata/historical-upgrades/` and the
+[release-by-release support matrix](reviews/2026-10-18-rc12-historical-upgrades.md).
+These source changes are not a claim that new release artifacts or live upgrades
+have been qualified.
+
 The integrated RC.10 uses schema19 and accepts schemas11–18 transactionally.
 This fences runtime-settings-aware handoffs from schema18 preview binaries that
 would discard their settings. Historical handoffs retain their original signature
@@ -79,9 +106,14 @@ No database reset or downgrade-marker edit is an upgrade or rollback procedure.
 The Ames enrollment fix applies to new live enrollments. Opening an existing
 database must not silently publish a new UDP port or change a running container's
 network contract. Legacy unpublished enrollments remain readable with their current
-settings; a reviewed stopped-state publication migration is a pre-stable follow-up.
-Its migration must resolve port conflicts and runtime provenance while preserving
-configuration revision/replay rules, without requiring deletion or re-enrollment.
+settings. The post-RC.11 source provides explicit `publish-ames` for a cleanly
+stopped enrolled live ship, with capability, identity/provenance, filesystem and
+host/reserved-port checks. It advances the configuration revision, records the
+authenticated actor/request and prior launch contract, and leaves the ship stopped;
+publication happens on the next explicit Start. Exact replay survives restart.
+It requires neither deletion nor re-enrollment. See
+[legacy Ames publication](legacy-ames-publication.md) for the CLI contract and
+qualification limits.
 
 Import recovery is an explicit stopped-state journal operation, not an automatic
 upgrade side effect. Existing schema16 records and their private recovery fences

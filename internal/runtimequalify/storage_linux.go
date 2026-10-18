@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
@@ -65,7 +66,7 @@ func applyPierEnrollment(ctx context.Context, state ManagedState, persist func(M
 		return state, unknown, errors.New("enrollment working directory already exists")
 	}
 	state.Prepared = true
-	q.r = Result{Profile: q.d.profile, RunID: state.ID, Directory: dir, Image: candidate.Image, Platform: candidate.Platform, EngineVersion: rootless.EngineVersion, VereVersion: candidate.VereVersion, PillURL: q.pillSource(), PillSHA256: q.d.pillSHA, PillBytes: q.d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
+	q.r = q.enrollmentRuntime(state.ID)
 	state.Runtime = q.r
 	if err = persist(state); err != nil {
 		return state, unknown, err
@@ -80,22 +81,80 @@ func applyPierEnrollment(ctx context.Context, state ManagedState, persist func(M
 	if err != nil {
 		return state, unknown, err
 	}
-	now := time.Now().UTC()
-	state.Initialized = true
-	state.Runtime = q.r
-	state.Epochs = inv
-	state.Adoption.FinishedAt = &now
-	state.Adoption.Uncertain = false
+	// Publish initialized/adoption/import completion as one state. A failed
+	// callback must leave the caller's retained enrollment intent recoverable.
+	completed := state
+	adoption := *state.Adoption
+	completed.Adoption = &adoption
 	if state.Comet != nil {
-		state.Comet.StartedAt = &now
-		state.Comet.FinishedAt = &now
-		state.Comet.Uncertain = false
+		comet := *state.Comet
+		completed.Comet = &comet
 	}
-	if err = persist(state); err != nil {
-		state.Adoption.Uncertain = true
+	if state.ExternalImport != nil {
+		intent := *state.ExternalImport
+		completed.ExternalImport = &intent
+		intent.Events = append([]protocol.ImportEvent(nil), intent.Events...)
+		intent.Stage = "complete"
+		intent.Events = append(intent.Events, protocol.ImportEvent{Stage: "complete", At: time.Now().UTC()})
+		if len(intent.Events) > 16 {
+			intent.Events = intent.Events[len(intent.Events)-16:]
+		}
+	}
+	now := time.Now().UTC()
+	completed.Initialized = true
+	completed.Runtime = q.r
+	completed.Epochs = inv
+	completed.Adoption.FinishedAt = &now
+	completed.Adoption.Uncertain = false
+	if completed.Comet != nil {
+		completed.Comet.StartedAt = &now
+		completed.Comet.FinishedAt = &now
+		completed.Comet.Uncertain = false
+	}
+	if err = persist(completed); err != nil {
 		return state, unknown, err
 	}
-	return state, ManagedObservation{State: "stopped", Health: "unknown"}, nil
+	return completed, ManagedObservation{State: "stopped", Health: "unknown"}, nil
+}
+
+// This is management workspace provenance only. It does not create or adopt
+// storage, provision a pill/key, or dispatch a runtime.
+func (q *qualifier) enrollmentRuntime(id string) Result {
+	dir := filepath.Join(q.base, id)
+	return Result{Profile: q.d.profile, RunID: id, Directory: dir, Image: candidate.Image, Platform: candidate.Platform, EngineVersion: rootless.EngineVersion, VereVersion: candidate.VereVersion, PillURL: q.pillSource(), PillSHA256: q.d.pillSHA, PillBytes: q.d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
+}
+
+// applyLegacyImportCompletionRecovery handles the historical split write:
+// enrollment finished, but its enclosing import still says enrolling. Reuse the
+// normal recovery's read-only source, mount, child, lock and epoch validation;
+// never re-enroll or reconstruct a pier. Admission and execution use the same
+// normalization of the historical finished evidence.
+func applyLegacyImportCompletionRecovery(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
+	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
+	candidate, eligible := state.legacyImportCompletionCandidate()
+	if persist == nil || !eligible {
+		return state, unknown, errors.New("legacy completion requires finished enrollment evidence")
+	}
+	// applyImportRecovery checks the full unchanged eligibility predicate on
+	// this normalized proposal, and never persists it as an intermediate state.
+	completed := state
+	_, obs, err := applyImportRecovery(ctx, candidate, func(proposed ManagedState) error {
+		finished := *state.Adoption.FinishedAt
+		proposed.Adoption.FinishedAt = &finished
+		if proposed.Comet != nil {
+			started, finished := *state.Comet.StartedAt, *state.Comet.FinishedAt
+			proposed.Comet.StartedAt, proposed.Comet.FinishedAt = &started, &finished
+		}
+		if err := persist(proposed); err != nil {
+			return err
+		}
+		completed = proposed
+		return nil
+	}, d)
+	if err != nil {
+		return state, unknown, err
+	}
+	return completed, obs, nil
 }
 
 func applyPierMove(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {

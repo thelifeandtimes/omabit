@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/epochs"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 )
 
 // This destructive path is deliberately confined to a newly generated
@@ -93,7 +94,10 @@ func (q *qualifier) prunePrefix(ctx context.Context) error {
 // durable, explicitly confirmed request. Qualification still uses its own guard.
 func (q *qualifier) stoppedPruneBoundary(ctx context.Context) error {
 	if !q.d.managed {
-		return q.pruneBoundary(ctx)
+		if err := q.pruneBoundary(ctx); err != nil {
+			return err
+		}
+		return q.pruneLockBoundary()
 	}
 	base := filepath.Join(q.d.home, ".local/share/urbit-runner/managed")
 	if (q.d.profile != ProfileHTTP && q.d.profile != ProfileComet) || q.r.Profile != q.d.profile || !runIDPattern.MatchString(q.r.RunID) || q.base != base || q.r.Directory != filepath.Join(base, q.r.RunID) {
@@ -107,7 +111,20 @@ func (q *qualifier) stoppedPruneBoundary(ctx context.Context) error {
 			return errors.New("prefix deletion requires every owned container removed")
 		}
 	}
-	return q.boundary()
+	if err := q.boundary(); err != nil {
+		return err
+	}
+	return q.pruneLockBoundary()
+}
+
+func (q *qualifier) pruneLockBoundary() error {
+	if q.d.managed && q.d.storage == nil {
+		return errors.New("prefix deletion requires recorded storage")
+	}
+	if pierstore.Busy(q.pierPath()) {
+		return errors.New("prefix deletion requires a pier without recognized Vere locks")
+	}
+	return nil
 }
 
 // Shared exact unlink engine. No arbitrary path, recursion or broader cutoff.
@@ -206,7 +223,7 @@ func (q *qualifier) deleteGenesis(ctx context.Context, expectedDigest string) er
 			return err
 		}
 	}
-	if err := ctx.Err(); err != nil {
+	if err := q.stoppedPruneBoundary(ctx); err != nil {
 		return err
 	}
 	if _, err := boundedEntries(target, 0); err != nil {

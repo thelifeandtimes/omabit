@@ -1,6 +1,7 @@
 package hostinstall
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -9,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+
+	"golang.org/x/sys/unix"
 )
 
 func (i *installer) path(path string) string { return filepath.Join(i.root, path) }
@@ -63,6 +66,9 @@ func (i *installer) parents(ctx context.Context, path string, create bool) error
 			if err != nil {
 				return fmt.Errorf("secure created directory %s: %w", current, err)
 			}
+			if err := i.syncInstallDirectory(filepath.Dir(i.path(current))); err != nil {
+				return err
+			}
 			info, err = i.lstat(i.path(current))
 		}
 		uid, _, ok := ownership(info)
@@ -77,17 +83,47 @@ func (i *installer) write(ctx context.Context, path string, data []byte, mode os
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	f, err := os.OpenFile(i.path(path), os.O_WRONLY|os.O_CREATE|os.O_EXCL|syscall.O_NOFOLLOW, 0600)
+	f, err := os.CreateTemp(filepath.Dir(i.path(path)), ".omabit-create-*")
 	if err != nil {
 		return fmt.Errorf("exclusively create %s: %w", path, err)
 	}
-	i.mutated = true
+	defer os.Remove(f.Name())
 	_, writeErr := f.Write(data)
-	err = errors.Join(writeErr, i.chown(f), f.Chmod(mode), f.Sync(), f.Close())
+	err = errors.Join(writeErr, i.chown(f), f.Chmod(mode))
+	// Validate the staged bytes before making a first-created file visible.
+	actual := make([]byte, len(data))
+	_, readErr := f.ReadAt(actual, 0)
+	if readErr != nil || !bytes.Equal(actual, data) {
+		err = errors.Join(err, errors.New("staged installation bytes changed"))
+	}
+	err = errors.Join(err, f.Sync(), f.Close())
 	if err != nil {
 		return fmt.Errorf("install %s: %w", path, err)
 	}
-	return nil
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	if i.publishFile != nil {
+		err = i.publishFile(f.Name(), i.path(path))
+	} else {
+		err = unix.Renameat2(unix.AT_FDCWD, f.Name(), unix.AT_FDCWD, i.path(path), unix.RENAME_NOREPLACE)
+	}
+	if err != nil {
+		return fmt.Errorf("publish %s without replacement: %w", path, err)
+	}
+	i.mutated = true
+	return i.syncInstallDirectory(filepath.Dir(i.path(path)))
+}
+
+func (i *installer) syncInstallDirectory(path string) error {
+	if i.syncDirectory != nil {
+		return i.syncDirectory(path)
+	}
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	return errors.Join(f.Sync(), f.Close())
 }
 
 func (i *installer) readMetadata(ctx context.Context, path string) ([]byte, error) {

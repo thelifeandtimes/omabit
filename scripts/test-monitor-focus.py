@@ -9,8 +9,8 @@ from pathlib import Path
 import subprocess
 import tempfile
 import time
+from desktop_fixture import ROOT, HARNESS_ROOT, environment, stop_process, save_evidence, preserve_desktop
 
-ROOT = Path(__file__).resolve().parents[1]
 TITLE = "Omabit · Monitor & maintenance"
 
 
@@ -57,7 +57,7 @@ def main():
     original = hypr("activewindow")
     original_workspace = hypr("activeworkspace")
     using_lua = hypr("status").get("configProvider") == "lua"
-    spec = importlib.util.spec_from_file_location("panel_fixture", ROOT / "scripts/test-panel.py")
+    spec = importlib.util.spec_from_file_location("panel_fixture", HARNESS_ROOT / "scripts/test-panel.py")
     fixtures = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(fixtures)
     process = None
@@ -71,19 +71,8 @@ def main():
         helper = directory / "collector-fixture"
         helper.write_text(fixtures.FAKE)
         helper.chmod(0o700)
-        runtime = directory / "runtime"
-        runtime.mkdir(mode=0o700)
-        desktop_runtime = Path(os.environ["XDG_RUNTIME_DIR"])
-        # Isolate Quickshell's own IPC/logs, while retaining compositor access.
-        (runtime / "hypr").mkdir()
-        (runtime / "hypr/f").symlink_to(desktop_runtime / "hypr" / os.environ["HYPRLAND_INSTANCE_SIGNATURE"])
-        display = os.environ["WAYLAND_DISPLAY"]
-        if not display.startswith("/"):
-            display = str(desktop_runtime / display)
-        env = dict(os.environ, WAYLAND_DISPLAY=display, XDG_RUNTIME_DIR=str(runtime),
-                   HYPRLAND_INSTANCE_SIGNATURE="f",
-                   XDG_STATE_HOME=str(directory / "state"), OMABIT_FIXTURE_DESKTOP_RUNTIME=str(desktop_runtime),
-                   OMABIT_FIXTURE_TIME=datetime.datetime.now(datetime.timezone.utc).isoformat())
+        env = environment(directory)
+        mapped_windows = []
         qml = '''import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -129,7 +118,7 @@ ShellRoot {
         log_path = directory / "quickshell.log"
         try:
             with log_path.open("w") as log:
-                process = subprocess.Popen(["qs", "--no-color", "-p", str(directory)], env=env, stdout=log, stderr=subprocess.STDOUT)
+                process = subprocess.Popen(["qs", "--no-color", "-p", str(directory)], env=env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
 
             def ipc(method):
                 return run("qs", "ipc", "--pid", str(process.pid), "call", "focus-test", method, env=env)
@@ -150,6 +139,7 @@ ShellRoot {
             ipc("menu")
             window = wait(lambda: windows() and windows()[0], "monitor did not map")
             address = window["address"]
+            mapped_windows.append(window)
             wait(lambda: focused(address), "first open did not focus the monitor")
             assert len(windows()) == 1
             print("PASS: actual menu-button handler opens and focuses one monitor window")
@@ -164,6 +154,7 @@ ShellRoot {
                  "reopening did not switch workspace and focus the existing window")
             assert len(windows()) == 1 and windows()[0]["address"] == address
             assert windows()[0]["workspace"]["name"] == destination
+            mapped_windows.extend(windows())
             print("PASS: existing monitor keeps its address/workspace and receives focus from another workspace")
 
             ipc("menu")
@@ -178,12 +169,14 @@ ShellRoot {
             wait(lambda: focused(address), "special-workspace monitor was not activated")
             assert windows()[0]["workspace"]["name"] == special
             assert any(m.get("specialWorkspace", {}).get("name") == special for m in hypr("monitors"))
+            mapped_windows.extend(windows())
             print("PASS: activation also reveals a monitor on a special workspace")
 
             ipc("close")
             wait(lambda: not windows(), "closed monitor remained mapped")
             ipc("menu")
             reopened = wait(lambda: windows() and windows()[0], "closed monitor did not reopen")
+            mapped_windows.append(reopened)
             wait(lambda: focused(reopened["address"]), "reopened monitor did not receive focus")
             assert len(windows()) == 1
             assert not json.loads(ipc("state"))["error"]
@@ -193,11 +186,8 @@ ShellRoot {
             raise
         finally:
             if process:
-                process.terminate()
-                try:
-                    process.wait(timeout=10)
-                except subprocess.TimeoutExpired:
-                    process.kill(); process.wait()
+                stop_process(process)
+            save_evidence(directory, log_path.read_text(), mapped_windows)
             # Only fixture windows were moved. Restore the user's original view.
             if original.get("address") and any(w["address"] == original["address"] for w in hypr("clients")):
                 dispatch("focuswindow", "address:" + original["address"], using_lua)
@@ -211,4 +201,5 @@ ShellRoot {
 
 
 if __name__ == "__main__":
-    main()
+    with preserve_desktop():
+        main()

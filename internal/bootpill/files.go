@@ -55,6 +55,9 @@ func (r contextReader) Read(p []byte) (int, error) {
 }
 
 func Stage(ctx context.Context, dir string, input io.Reader, expected *protocol.BootPill) (path string, meta protocol.BootPill, err error) {
+	if expected != nil && !protocol.ValidBootPill(expected) {
+		return "", meta, errors.New("invalid expected boot pill descriptor")
+	}
 	if err = PrivateDirectory(dir); err != nil {
 		return
 	}
@@ -69,7 +72,11 @@ func Stage(ctx context.Context, dir string, input io.Reader, expected *protocol.
 		}
 	}()
 	h := sha256.New()
-	n, err := io.Copy(io.MultiWriter(f, h), io.LimitReader(contextReader{ctx, input}, protocol.MaxBootPillBytes+1))
+	limit := protocol.MaxBootPillBytes
+	if expected != nil {
+		limit = expected.Bytes
+	}
+	n, err := io.Copy(io.MultiWriter(f, h), io.LimitReader(contextReader{ctx, input}, limit+1))
 	if err != nil || n <= 0 || n > protocol.MaxBootPillBytes {
 		return "", meta, errors.New("pill transfer failed or exceeds 4 GB")
 	}

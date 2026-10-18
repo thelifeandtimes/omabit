@@ -1,0 +1,51 @@
+{
+  "source_commit": "f6981e6ce4b9bb1bddc1334ff23a3f1ae9e9794a",
+  "schema": 19,
+  "runner_id": "runner-0d528db2f62f669f7c84e1431955847e",
+  "requests": [
+    {
+      "path": "/v1/instances",
+      "body": {"bootstrap":{"kind":"bare"},"id":"rc10-fake","label":"","config":{"http_port":18080,"ames_port":34343,"loom":29},"request_id":"rc10-fake"},
+      "cli": ["create-fake","rc10-fake","--http-port=18080","--request-id=rc10-fake","--loom=29"]
+    },
+    {
+      "path": "/v1/comets",
+      "body": {"bootstrap":{"kind":"bare"},"id":"rc10-comet","label":"","config":{"http_port":18081,"ames_port":34343,"loom":29},"request_id":"rc10-comet","confirm_network":true},
+      "cli": ["create-comet","rc10-comet","--http-port=18081","--request-id=rc10-comet","--loom=29","--confirm-network"]
+    },
+    {
+      "path": "/v1/ships",
+      "body": {"id":"sampel-palnet","label":"","ship":"~sampel-palnet","pier_path":"livenet/planets/sampel-palnet/sampel-palnet","config":{"http_port":0,"ames_port":0,"loom":29},"request_id":"rc10-ship","key":"0wfixture.synthetic.only","confirm_network":true},
+      "cli": ["create-ship","--ship=~sampel-palnet","--request-id=rc10-ship","--loom=29","--confirm-network"]
+    }
+  ],
+  "instances": [
+    {"public":{"bootstrap":{"kind":"bare"},"id":"rc10-comet","label":"rc10-comet","config":{"http_port":18081,"ames_port":34343,"loom":29},"config_revision":1,"applied_revision":0,"desired_state":"stopped","observed_state":"uninitialized","mode":"comet","pier_name":"pier","pier_path":"livenet/comets/rc10-comet/pier","health":"unknown"},"runtime":{"loom":29,"bootstrap":{"kind":"bare"},"id":"7d45a38c28ae5503afa289ac9ad67e5c","port":18081,"prepared":false,"initialized":false,"runtime":{"run_id":"","directory":"","report_path":"","checkpoint_passed":false,"runtime_qualified":false,"cleanup_complete":false,"phases":null,"containers":null,"image":"","image_id":"","repo_digest":"","platform":"","engine_version":"","vere_version":"","pill_url":"","pill_sha256":"","pill_bytes":0,"pill_path":"","mem_available_bytes":0,"disk_available_bytes":0,"limits_observed":false,"pier_metadata_seen":false},"comet":{"uncertain":false},"storage":{"path":"livenet/comets/rc10-comet/pier","identity":{"device":0,"inode":0,"urb_device":0,"urb_inode":0,"birth":"","urb_birth":""},"mount_identity":{"device":0,"inode":0,"birth":""}}},"runtime_revision":0,"runtime_config_revision":0},
+    {"public":{"bootstrap":{"kind":"bare"},"id":"rc10-fake","label":"rc10-fake","config":{"http_port":18080,"ames_port":34343,"loom":29},"config_revision":1,"applied_revision":0,"desired_state":"stopped","observed_state":"uninitialized","mode":"fake","ship":"~zod","pier_name":"zod","pier_path":"fakeships/rc10-fake/zod","health":"unknown"},"runtime":{"loom":29,"bootstrap":{"kind":"bare"},"id":"9e324e4f7058258f0f5390ad9a062080","port":18080,"prepared":false,"initialized":false,"runtime":{"run_id":"","directory":"","report_path":"","checkpoint_passed":false,"runtime_qualified":false,"cleanup_complete":false,"phases":null,"containers":null,"image":"","image_id":"","repo_digest":"","platform":"","engine_version":"","vere_version":"","pill_url":"","pill_sha256":"","pill_bytes":0,"pill_path":"","mem_available_bytes":0,"disk_available_bytes":0,"limits_observed":false,"pier_metadata_seen":false},"storage":{"path":"fakeships/rc10-fake/zod","identity":{"device":0,"inode":0,"urb_device":0,"urb_inode":0,"birth":"","urb_birth":""},"mount_identity":{"device":0,"inode":0,"birth":""}}},"runtime_revision":0,"runtime_config_revision":0},
+    {"public":{"bootstrap":{"kind":"bare"},"id":"sampel-palnet","label":"sampel-palnet","config":{"http_port":18082,"ames_port":34343,"loom":29},"config_revision":1,"applied_revision":0,"desired_state":"stopped","observed_state":"uninitialized","mode":"planet","ship":"~sampel-palnet","pier_path":"livenet/planets/sampel-palnet/sampel-palnet","ames_published":true,"health":"unknown"},"runtime":{"loom":29,"id":"31bd35f0ab780b68593555b9a9615116","port":18082,"prepared":false,"initialized":false,"runtime":{"run_id":"","directory":"","report_path":"","checkpoint_passed":false,"runtime_qualified":false,"cleanup_complete":false,"phases":null,"containers":null,"image":"","image_id":"","repo_digest":"","platform":"","engine_version":"","vere_version":"","pill_url":"","pill_sha256":"","pill_bytes":0,"pill_path":"","mem_available_bytes":0,"disk_available_bytes":0,"limits_observed":false,"pier_metadata_seen":false},"comet":{"ship":"~sampel-palnet","uncertain":false},"storage":{"path":"livenet/planets/sampel-palnet/sampel-palnet","identity":{"device":0,"inode":0,"urb_device":0,"urb_inode":0,"birth":"","urb_birth":""},"mount_identity":{"device":0,"inode":0,"birth":""}},"native_ship":"~sampel-palnet","native_key_digest":"8d2ea0d6ccb6f743351a5f62f4064a3355839dc95b646ab3108689fbc7b34099","boot":{},"ames_port":34343},"runtime_revision":0,"runtime_config_revision":0}
+  ],
+  "operations": [
+    {
+      "id": "op-a3387c1b01af75e45e05ad4afb2f7587",
+      "actor": "local-uid:0",
+      "request_id": "rc10-comet",
+      "fingerprint": "{\"Kind\":\"register-comet\",\"Request\":{\"bootstrap\":{\"kind\":\"bare\"},\"id\":\"rc10-comet\",\"label\":\"rc10-comet\",\"config\":{\"http_port\":18081,\"ames_port\":34343,\"loom\":29},\"request_id\":\"rc10-comet\"}}",
+      "body": {"id":"op-a3387c1b01af75e45e05ad4afb2f7587","request_id":"rc10-comet","instance_id":"rc10-comet","kind":"register-comet","actor":"local-uid:0","status":"succeeded","config_revision":1,"created_at":"2026-10-18T08:03:09.075132912Z","finished_at":"2026-10-18T08:03:09.075132912Z"}
+    },
+    {
+      "id": "op-90425ba41ba61e74e3abad21bcf727a1",
+      "actor": "local-uid:0",
+      "request_id": "rc10-fake",
+      "fingerprint": "{\"Kind\":\"register-fake\",\"Request\":{\"bootstrap\":{\"kind\":\"bare\"},\"id\":\"rc10-fake\",\"label\":\"rc10-fake\",\"config\":{\"http_port\":18080,\"ames_port\":34343,\"loom\":29},\"request_id\":\"rc10-fake\"}}",
+      "body": {"id":"op-90425ba41ba61e74e3abad21bcf727a1","request_id":"rc10-fake","instance_id":"rc10-fake","kind":"register-fake","actor":"local-uid:0","status":"succeeded","config_revision":1,"created_at":"2026-10-18T08:03:09.074800588Z","finished_at":"2026-10-18T08:03:09.074800588Z"}
+    },
+    {
+      "id": "op-0f2481d567008db0d5ba00e8444dcabd",
+      "actor": "local-uid:0",
+      "request_id": "rc10-ship",
+      "fingerprint": "{\"Kind\":\"register-ship\",\"Request\":{\"id\":\"sampel-palnet\",\"label\":\"sampel-palnet\",\"ship\":\"~sampel-palnet\",\"pier_path\":\"livenet/planets/sampel-palnet/sampel-palnet\",\"config\":{\"http_port\":0,\"ames_port\":0,\"loom\":29},\"request_id\":\"rc10-ship\",\"confirm_network\":true},\"KeyDigest\":\"8d2ea0d6ccb6f743351a5f62f4064a3355839dc95b646ab3108689fbc7b34099\"}",
+      "body": {"id":"op-0f2481d567008db0d5ba00e8444dcabd","request_id":"rc10-ship","instance_id":"sampel-palnet","kind":"register-ship","actor":"local-uid:0","status":"succeeded","config_revision":1,"created_at":"2026-10-18T08:03:09.075580866Z","finished_at":"2026-10-18T08:03:09.075580866Z"}
+    }
+  ],
+  "keys": {"31bd35f0ab780b68593555b9a9615116.key":"0wfixture.synthetic.only"}
+}

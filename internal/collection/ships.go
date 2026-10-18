@@ -21,15 +21,17 @@ import (
 // Ship is application enrollment, independent of any runner-managed instance.
 // SessionRef is an opaque credential-store reference, never a session token.
 type Ship struct {
-	Name        string    `json:"name"`
-	ID          string    `json:"id"`
-	Origin      string    `json:"origin"`
-	Ship        string    `json:"ship"`
-	Credentials string    `json:"credentials"`
-	Revision    uint64    `json:"revision"`
-	SessionRef  string    `json:"session_ref,omitempty"`
-	Retired     []string  `json:"retired_sessions,omitempty"`
-	EnrolledAt  time.Time `json:"enrolled_at"`
+	Name        string `json:"name"`
+	ID          string `json:"id"`
+	Origin      string `json:"origin"`
+	Ship        string `json:"ship"`
+	Credentials string `json:"credentials"`
+	Revision    uint64 `json:"revision"`
+	SessionRef  string `json:"session_ref,omitempty"`
+	// Retired also journals a newly allocated reference before credential Save.
+	// It is removed only by atomic promotion to SessionRef or confirmed cleanup.
+	Retired    []string  `json:"retired_sessions,omitempty"`
+	EnrolledAt time.Time `json:"enrolled_at"`
 }
 type shipsFile struct {
 	Version int    `json:"version"`
@@ -151,8 +153,9 @@ func (r *Registry) EnrollShip(ctx context.Context, name, rawOrigin, ship, creden
 }
 
 // SetShipSession uses CAS so a slow login/logout cannot overwrite a newer one.
-// Credential IO and HTTP are outside the registry lock. Watchers never write
-// credentials back, so they cannot resurrect a forgotten or replaced session.
+// New credentials must use SaveShipSession to journal their reference before IO.
+// Watchers never write credentials back, so they cannot resurrect a forgotten or
+// replaced session.
 func (r *Registry) SetShipSession(ctx context.Context, expected Ship, ref string) (Ship, error) {
 	if ref != "" && !validRef(ref) {
 		return Ship{}, errors.New("invalid credential reference")
@@ -177,6 +180,58 @@ func (r *Registry) SetShipSession(ctx context.Context, expected Ship, ref string
 				if len(s.Retired) >= 32 {
 					return errors.New("clear retired credentials before logging in again")
 				}
+				s.Retired = append(s.Retired, s.SessionRef)
+			}
+			s.SessionRef = ref
+			s.Revision++
+			state.Ships[i] = s
+			result = s
+			return r.writeFile("ships.json", state)
+		}
+		return ErrShipConflict
+	})
+	return result, err
+}
+
+// SaveShipSession durably records cleanup intent BEFORE save can persist a token.
+// The existing retired_sessions schema already represents this intent, including
+// an absent credential, so version-1 readers remain safe. Keep the registry lock
+// across bounded local credential IO and publication: cleanup/forget cannot see
+// the pending ref, delete it, then race a late Save. HTTP never holds this lock.
+// A failed/abandoned save leaves the reference available to ship-logout on restart.
+func (r *Registry) SaveShipSession(ctx context.Context, expected Ship, ref string, save func(context.Context) error) (Ship, error) {
+	if !validRef(ref) || save == nil {
+		return Ship{}, errors.New("invalid credential save intent")
+	}
+	var result Ship
+	err := r.locked(ctx, func() error {
+		state, err := r.readShips()
+		if err != nil {
+			return err
+		}
+		for i, s := range state.Ships {
+			if s.Name != expected.Name {
+				continue
+			}
+			if s.ID != expected.ID || s.Revision != expected.Revision || s.Revision == ^uint64(0) || ref == s.SessionRef || slices.Contains(s.Retired, ref) {
+				return ErrShipConflict
+			}
+			if len(s.Retired) >= 32 {
+				return errors.New("clear retired credentials before logging in again")
+			}
+			s.Retired = append(s.Retired, ref)
+			state.Ships[i] = s
+			if err := r.writeFile("ships.json", state); err != nil {
+				return err
+			}
+			bounded, cancel := context.WithTimeout(ctx, 15*time.Second)
+			err = save(bounded)
+			cancel()
+			if err != nil {
+				return err // the credential may already exist; keep retry intent
+			}
+			s.Retired = slices.Delete(s.Retired, len(s.Retired)-1, len(s.Retired))
+			if s.SessionRef != "" {
 				s.Retired = append(s.Retired, s.SessionRef)
 			}
 			s.SessionRef = ref

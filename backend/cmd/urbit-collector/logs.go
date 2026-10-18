@@ -60,7 +60,9 @@ func runLogs(ctx context.Context, args []string, dir, socket, runner, expected, 
 	}
 	if format == "text" {
 		for _, line := range logs.Lines {
-			fmt.Fprintln(out, line)
+			if _, err := fmt.Fprintln(out, cell(line)); err != nil {
+				return fail(errors.New("could not write runtime logs"), 1)
+			}
 		}
 		return 0
 	}

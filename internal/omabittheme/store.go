@@ -37,6 +37,40 @@ type State struct {
 }
 type Store struct{ dir string }
 
+const maxStateBytes = 256 << 10
+const maxPreferences = 64
+
+func validateState(state *State) error {
+	if state.Version != 1 || state.Ships == nil || len(state.Ships) > maxPreferences {
+		return errors.New("invalid Omabit state or theme preference capacity reached; refusing reset")
+	}
+	for id, p := range state.Ships {
+		if id != p.ID || len(id) != 32 || p.Revision == 0 || len(p.LastError) > 512 {
+			return errors.New("invalid Omabit preference")
+		}
+	}
+	if m := state.Migration; m != nil {
+		if len(m.SourceDigest) != 64 || len(m.PausedDigest) != 64 || m.Imported == nil || m.Cleared == nil || m.Original.Version != 2 {
+			return errors.New("invalid migration recovery journal")
+		}
+	}
+	return nil
+}
+
+func encodeState(state *State) ([]byte, error) {
+	if err := validateState(state); err != nil {
+		return nil, err
+	}
+	data, err := json.MarshalIndent(state, "", "  ")
+	if err != nil {
+		return nil, err
+	}
+	if len(data) > maxStateBytes {
+		return nil, errors.New("Omabit state exceeds serialized size limit")
+	}
+	return data, nil
+}
+
 func OpenStore(dir string) (*Store, error) {
 	// Reuse the collector's private-directory policy, but keep all Omarchy-specific
 	// preferences in a separate directory and schema, never its runner database.
@@ -102,25 +136,18 @@ func (s *Store) Update(ctx context.Context, fn func(*State) error) error {
 	state := State{Version: 1, Ships: map[string]Preference{}}
 	f, err := private(filepath.Join(s.dir, "themes.json"), os.O_RDONLY)
 	if err == nil {
-		data, e := io.ReadAll(io.LimitReader(f, 262145))
+		data, e := io.ReadAll(io.LimitReader(f, maxStateBytes+1))
 		f.Close()
-		if e != nil || len(data) > 262144 {
+		if e != nil || len(data) > maxStateBytes {
 			return errors.New("invalid bounded Omabit state")
 		}
 		d := json.NewDecoder(bytes.NewReader(data))
 		d.DisallowUnknownFields()
-		if d.Decode(&state) != nil || d.Decode(new(any)) != io.EOF || state.Version != 1 || state.Ships == nil || len(state.Ships) > 64 {
+		if d.Decode(&state) != nil || d.Decode(new(any)) != io.EOF {
 			return errors.New("invalid Omabit state; refusing reset")
 		}
-		for id, p := range state.Ships {
-			if id != p.ID || len(id) != 32 || p.Revision == 0 || len(p.LastError) > 512 {
-				return errors.New("invalid Omabit preference")
-			}
-		}
-		if m := state.Migration; m != nil {
-			if len(m.SourceDigest) != 64 || len(m.PausedDigest) != 64 || m.Imported == nil || m.Cleared == nil || m.Original.Version != 2 {
-				return errors.New("invalid migration recovery journal")
-			}
+		if err := validateState(&state); err != nil {
+			return err
 		}
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return err
@@ -129,13 +156,18 @@ func (s *Store) Update(ctx context.Context, fn func(*State) error) error {
 	if err := fn(&state); err != nil {
 		return err
 	}
-	after, err := json.MarshalIndent(state, "", "  ")
-	if err != nil {
+	if err := validateState(&state); err != nil {
 		return err
 	}
 	compact, _ := json.Marshal(state)
 	if bytes.Equal(before, compact) {
 		return nil
+	}
+	// Validate the actual serialized size before replacement. A read-only no-op
+	// above still accepts old compact JSON within the reader's original limit.
+	after, err := encodeState(&state)
+	if err != nil {
+		return err
 	}
 	f, err = os.CreateTemp(s.dir, ".theme-*")
 	if err != nil {
@@ -171,7 +203,7 @@ func (s *Store) Auto(ctx context.Context, ship collection.Ship, enabled bool) er
 	return s.Update(ctx, func(state *State) error {
 		p := state.Ships[ship.ID]
 		if p.ID == "" {
-			if len(state.Ships) >= 64 {
+			if len(state.Ships) >= maxPreferences {
 				return errors.New("theme preference capacity reached")
 			}
 			p = Preference{ID: ship.ID, Name: ship.Name, Origin: ship.Origin, Ship: ship.Ship}
@@ -188,6 +220,37 @@ func (s *Store) Auto(ctx context.Context, ship collection.Ship, enabled bool) er
 			p.AuthenticationRequired = false
 		}
 		state.Ships[p.ID] = p
+		return nil
+	})
+}
+
+// PruneForgotten removes only unchanged preferences observed before the registry
+// snapshot. A concurrently added preference is never mistaken for stale state;
+// an unfinished migration retains its imported identities for recovery.
+func (s *Store) PruneForgotten(ctx context.Context, r *collection.Registry) error {
+	before, err := s.Snapshot(ctx)
+	if err != nil {
+		return err
+	}
+	ships, err := r.Ships(ctx)
+	if err != nil {
+		return err
+	}
+	live := make(map[string]bool, len(ships))
+	for _, ship := range ships {
+		live[ship.ID] = true
+	}
+	return s.Update(ctx, func(state *State) error {
+		if m := state.Migration; m != nil && !m.Complete {
+			for _, id := range m.Imported {
+				live[id] = true
+			}
+		}
+		for id, old := range before.Ships {
+			if current, ok := state.Ships[id]; ok && current == old && !live[id] {
+				delete(state.Ships, id)
+			}
+		}
 		return nil
 	})
 }

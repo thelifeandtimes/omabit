@@ -93,8 +93,11 @@ func importRecoveryEvidence(state ManagedState, home string) error {
 
 func applyImportRecovery(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
+	if state.Initialized {
+		return applyLegacyImportCompletionRecovery(ctx, state, persist, d)
+	}
 	if persist == nil || !state.ImportRecoveryEligible() {
-		return state, unknown, errors.New("recovery requires an interrupted prepared external enrollment with retained identity")
+		return state, unknown, errors.New("recovery requires an interrupted external enrollment with retained identity")
 	}
 	if err := ctx.Err(); err != nil {
 		return state, unknown, err
@@ -109,10 +112,21 @@ func applyImportRecovery(ctx context.Context, state ManagedState, persist func(M
 	if err = q.accountBoundary(false); err != nil {
 		return state, unknown, err
 	}
-	for _, path := range append(q.storagePaths(), q.r.Directory, q.config) {
-		if err = q.owned(path, os.ModeDir, path == q.r.Directory || path == q.config); err != nil {
+	if !state.Prepared {
+		// Historical imports could persist enrolling before the workspace intent.
+		// Eligibility requires an entirely empty runtime record in this case.
+		// Derive only its canonical management workspace; all retained source,
+		// mount, child, lock, epoch and identity evidence is still checked below.
+		q.r = q.enrollmentRuntime(state.ID)
+	}
+	for _, path := range q.storagePaths() {
+		if err = q.owned(path, os.ModeDir, false); err != nil {
 			return state, unknown, err
 		}
+	}
+	workspace, err := q.reviewImportRecoveryWorkspace()
+	if err != nil {
+		return state, unknown, err
 	}
 	path, err := pierstore.Check(d.home, *state.Storage)
 	if err != nil {
@@ -146,20 +160,31 @@ func applyImportRecovery(ctx context.Context, state ManagedState, persist func(M
 			return state, unknown, errors.New("retained identity or network differs from the guided import")
 		}
 	}
-	after, _, _, err := pierstore.TreeReview(ctx, path)
-	if err != nil {
+	revalidate := func() error {
+		after, _, _, err := pierstore.TreeReview(ctx, path)
+		if err != nil {
+			return err
+		}
+		if before != after || pierstore.Busy(path) {
+			return errors.New("retained destination changed during recovery")
+		}
+		if _, err = pierstore.Check(d.home, *state.Storage); err != nil {
+			return err
+		}
+		if err = ctx.Err(); err != nil {
+			return err
+		}
+		return importRecoveryEvidence(state, d.home)
+	}
+	if err = revalidate(); err != nil {
 		return state, unknown, err
 	}
-	if before != after || pierstore.Busy(path) {
-		return state, unknown, errors.New("retained destination changed during recovery")
-	}
-	if _, err = pierstore.Check(d.home, *state.Storage); err != nil {
+	// Prepared is journaled before mkdir during enrollment. Only after all pier
+	// evidence passes may recovery fill those missing private workspace entries.
+	if err = q.completeImportRecoveryWorkspace(workspace); err != nil {
 		return state, unknown, err
 	}
-	if err = ctx.Err(); err != nil {
-		return state, unknown, err
-	}
-	if err = importRecoveryEvidence(state, d.home); err != nil {
+	if err = revalidate(); err != nil {
 		return state, unknown, err
 	}
 	// This is a proposed completion only. The store suppresses incremental
@@ -168,7 +193,7 @@ func applyImportRecovery(ctx context.Context, state ManagedState, persist func(M
 	adoption, intent := *state.Adoption, *state.ExternalImport
 	completed.Adoption, completed.ExternalImport = &adoption, &intent
 	now := time.Now().UTC()
-	completed.Initialized, completed.Epochs = true, inv
+	completed.Prepared, completed.Initialized, completed.Epochs = true, true, inv
 	completed.Runtime = q.r
 	completed.Runtime.Stage = "stopped"
 	adoption.Uncertain, adoption.FinishedAt = false, &now
@@ -186,4 +211,101 @@ func applyImportRecovery(ctx context.Context, state ManagedState, persist func(M
 		return state, unknown, err
 	}
 	return completed, ManagedObservation{State: "stopped", Health: "unknown"}, nil
+}
+
+type importRecoveryWorkspace struct {
+	paths      [3]string
+	identities [3]pierstore.DirectoryIdentity
+}
+
+func (q *qualifier) reviewImportRecoveryWorkspace() (*importRecoveryWorkspace, error) {
+	w := &importRecoveryWorkspace{paths: [3]string{q.base, q.r.Directory, q.config}}
+	for i, path := range w.paths {
+		if _, err := os.Lstat(path); errors.Is(err, os.ErrNotExist) && i > 0 {
+			continue
+		} else if err != nil {
+			return nil, err
+		}
+		if err := q.owned(path, os.ModeDir, i > 0); err != nil {
+			return nil, err
+		}
+		id, err := pierstore.IdentifyMount(path)
+		if err != nil {
+			return nil, err
+		}
+		w.identities[i] = id
+	}
+	return w, nil
+}
+
+func (q *qualifier) checkImportRecoveryWorkspace(w *importRecoveryWorkspace) error {
+	for _, path := range q.storagePaths() {
+		if err := q.owned(path, os.ModeDir, false); err != nil {
+			return err
+		}
+	}
+	for i, path := range w.paths {
+		if w.identities[i].Inode == 0 {
+			if _, err := os.Lstat(path); !errors.Is(err, os.ErrNotExist) {
+				return errors.New("unrecorded workspace entry appeared during recovery")
+			}
+			continue
+		}
+		if err := q.owned(path, os.ModeDir, i > 0); err != nil {
+			return err
+		}
+		id, err := pierstore.IdentifyMount(path)
+		if err != nil || !id.SameObject(w.identities[i]) {
+			return errors.New("recovery workspace directory was replaced")
+		}
+	}
+	return nil
+}
+
+func (q *qualifier) completeImportRecoveryWorkspace(w *importRecoveryWorkspace) error {
+	if err := q.checkImportRecoveryWorkspace(w); err != nil {
+		return err
+	}
+	root, err := os.OpenRoot(q.base)
+	if err != nil {
+		return err
+	}
+	defer root.Close()
+	opened, err := root.Stat(".")
+	if err != nil {
+		return err
+	}
+	for i := 1; i < len(w.paths); i++ {
+		if err = q.checkImportRecoveryWorkspace(w); err != nil {
+			return err
+		}
+		current, err := os.Lstat(q.base)
+		if err != nil || !os.SameFile(opened, current) {
+			return errors.New("recovery workspace parent changed")
+		}
+		if w.identities[i].Inode != 0 {
+			continue
+		}
+		relative, err := filepath.Rel(q.base, w.paths[i])
+		if err != nil || !filepath.IsLocal(relative) || relative == "." {
+			return errors.New("invalid recovery workspace path")
+		}
+		// Exclusive creation, never MkdirAll, chmod, replacement or cleanup.
+		if err = root.Mkdir(relative, 0700); err != nil {
+			return err
+		}
+		w.identities[i], err = pierstore.IdentifyMount(w.paths[i])
+		if err != nil {
+			return err
+		}
+	}
+	if err = q.checkImportRecoveryWorkspace(w); err != nil {
+		return err
+	}
+	for i := len(w.paths) - 1; i >= 0; i-- {
+		if err = pierstore.SyncDirectory(w.paths[i]); err != nil {
+			return err
+		}
+	}
+	return q.checkImportRecoveryWorkspace(w)
 }

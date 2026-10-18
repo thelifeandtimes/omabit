@@ -40,7 +40,7 @@ func TestBridgeStreamsHandoffInBothDirectionsAndRejectsTrailingRPC(t *testing.T)
 			t.Error("unbound actor")
 		}
 		if r.URL.Path == "/hello" {
-			json.NewEncoder(w).Encode(protocol.Hello{ProtocolVersion: 1, Features: []string{"ssh-key-grants", "host-handoff"}, Actor: "ssh-key:" + grant.Fingerprint, AccessRole: "operator"})
+			json.NewEncoder(w).Encode(protocol.Hello{ProtocolVersion: 1, RunnerID: "runner", Mode: "development-managed", Features: []string{"ssh-key-grants", "host-handoff"}, Actor: "ssh-key:" + grant.Fingerprint, AccessRole: "operator"})
 			return
 		}
 		if r.URL.Path != path {

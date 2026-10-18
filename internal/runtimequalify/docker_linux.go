@@ -436,6 +436,9 @@ func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 	// that the daemon will never finish a create accepted in the background.
 	q.r.Containers[index].CreateDispatched = true
 	q.r.Containers[index].CreateUncertain = true
+	if q.d.managed && q.r.Stage == managedMaintenancePendingStage(kind) {
+		q.r.Stage = "maintenance-dispatched-" + kind
+	}
 	if err := q.save(); err != nil {
 		q.r.Containers[index].CreateDispatched = false
 		q.r.Containers[index].CreateUncertain = false
@@ -566,9 +569,16 @@ func (q *qualifier) cleanup() error {
 	return errors.Join(errs...)
 }
 
+// Only an intent without any contrary dispatch/daemon evidence can be retired
+// locally. Missing containers or a missing dispatch flag alone are not proof.
+func containerCreateUndispatched(r ContainerRecord) bool {
+	return !r.CreateDispatched && !r.CreateUncertain && r.ID == "" && r.LastState == nil &&
+		!r.AliveObserved && !r.PrivateHTTPReachable && r.HostEndpoint == "" && !r.HostHTTPVerified
+}
+
 func (q *qualifier) cleanupOne(ctx context.Context, index int) error {
 	r := &q.r.Containers[index]
-	if !r.CreateDispatched {
+	if containerCreateUndispatched(*r) {
 		r.Removed = true // proven locally: no create could have been sent
 		return q.save()
 	}

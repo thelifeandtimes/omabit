@@ -130,6 +130,9 @@ Commands:
   configure INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT
               Replace HTTP/Ames/loom configuration; loom must be 30..34 (1–16 GiB).
               Native control is CLI-only; omit --native-control to preserve it.
+  publish-ames INSTANCE --revision N --ames-port PORT --request-id ID --confirm-network
+              Enable next-Start UDP publication for a stopped legacy live enrollment.
+              Requires a pinned --runner/--expected-runner-id; leaves the ship stopped.
   operate INSTANCE start|stop|pack|meld|roll|inspect-epochs|recover-import --revision N --request-id ID
               Submit one operation; both flags are required.
   epoch-preview INSTANCE --revision N --expected-digest HASH --cutoff 0iEVENT
@@ -178,6 +181,9 @@ Use COMMAND --help for command flags and constraints.
 	if command == "logs" {
 		return runLogs(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
 	}
+	if command == "publish-ames" {
+		return runPublishAmes(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
 	if command == "move-host" {
 		return runHandoff(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
 	}
@@ -208,6 +214,8 @@ Use COMMAND --help for command flags and constraints.
 	var label string
 	var fakeShip, pierName string
 	var bootstrap, pillSource string
+	var pillSHA string
+	var pillSize int64
 	var pierPath string
 	var fakeOptions bool
 	var nativeControl, nativeControlSet, runtimeSettings bool
@@ -227,7 +235,9 @@ Use COMMAND --help for command flags and constraints.
 		flags.StringVar(&label, "label", "", "optional display label")
 		flags.StringVar(&pierPath, "pier-path", "", "permanent pier path, e.g. fakeships/project/zod/pier or livenet/comets/testing-comet-1/pier")
 		flags.StringVar(&bootstrap, "bootstrap", "", "bare or recommended; recommended requires --pill")
-		flags.StringVar(&pillSource, "pill", "", "selected pill URL or local file for recommended bootstrap")
+		flags.StringVar(&pillSource, "pill", "", "Recommended Apps release URL (known S3 default is a frozen release alias), or explicit custom HTTPS URL/local file")
+		flags.StringVar(&pillSHA, "pill-sha256", "", "trusted expected SHA-256 for a custom pill; requires --pill-size (built-in release is always pinned)")
+		flags.Int64Var(&pillSize, "pill-size", 0, "trusted expected byte count for a custom pill; requires --pill-sha256")
 		usage += " [--bootstrap bare|recommended --pill URL_OR_FILE]"
 		if command == "create-fake" {
 
@@ -326,10 +336,13 @@ Use COMMAND --help for command flags and constraints.
 	}
 	switch command {
 	case "create-fake", "create-comet":
-		if loom < protocol.MinLoom || loom > protocol.MaxLoom {
+		if !validCreationLoom(loom) {
 			return fail(errors.New("--loom must be in 30..34 (1–16 GiB)"), 2)
 		}
 		if _, err := bootstrapChoice(bootstrap, pillSource); err != nil {
+			return fail(err, 2)
+		}
+		if _, err := expectedPill(pillSource, pillSHA, pillSize); err != nil {
 			return fail(err, 2)
 		}
 		if pierPath != "" && (!pierstore.ValidPath(pierPath) || (command == "create-fake" && pierstore.Kind(pierPath) != "fake") || (command == "create-comet" && pierstore.Kind(pierPath) != "comet")) {
@@ -412,6 +425,12 @@ Use COMMAND --help for command flags and constraints.
 	if runtimeSettings && !slices.Contains(hello.Features, protocol.RuntimeSettingsFeature) {
 		return fail(errors.New("update this runner for runtime-settings capability before changing loom/native control"), 1)
 	}
+	if command == "create-fake" || command == "create-comet" {
+		ctx, err = creationContext(ctx, loom, hello)
+		if err != nil {
+			return fail(err, 1)
+		}
+	}
 	if nativeControl && command != "create-fake" && !slices.Contains(hello.Features, protocol.NativeControlAllShipsFeature) {
 		fake := false
 		if command == "configure" {
@@ -450,7 +469,8 @@ Use COMMAND --help for command flags and constraints.
 		}
 		if supported {
 			choice, _ := bootstrapChoice(bootstrap, pillSource)
-			p, err := stageSelectedPill(ctx, c, pillSource)
+			expected, _ := expectedPill(pillSource, pillSHA, pillSize)
+			p, err := stageSelectedPillExpected(ctx, c, pillSource, expected)
 			if err != nil {
 				return fail(err, 1)
 			}

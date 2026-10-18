@@ -149,6 +149,8 @@ func (p probe) inspect() Report {
 	r.add("account", status, detail)
 	status, detail, groupIDs := p.groups(account.gid)
 	r.add("account-groups", status, detail)
+	nss, _ := p.read("etc/nsswitch.conf")
+	reservations, _ := p.read(strings.TrimPrefix(SubIDReservationsPath, "/"))
 	for _, name := range []string{"subuid", "subgid"} {
 		text, err := p.read("etc/" + name)
 		status, detail = unavailable(err)
@@ -161,7 +163,7 @@ func (p probe) inspect() Report {
 					hostIDs = append(groupIDs, account.hostGIDs...)
 				}
 			}
-			status, detail = subids(text, account.uid, hostIDs)
+			status, detail = ValidateSubIDAuthority(nss, []byte(reservations), rootless.AccountName, text, account.uid, name, hostIDs)
 		}
 		r.add(name, status, detail)
 	}

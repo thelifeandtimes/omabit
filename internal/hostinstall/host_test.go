@@ -36,8 +36,9 @@ func hostFixture(t *testing.T) (*fixture, hostProbe) {
 			if slices.Contains(args, "-y") {
 				return hostPublic(2), nil
 			}
-			f.put(hostKeyPath, "private fixture", 0600)
-			f.put(hostKeyPath+".pub", string(hostPublic(2)), 0644)
+			keyPath := args[len(args)-1]
+			f.put(keyPath, "private fixture", 0600)
+			f.put(keyPath+".pub", string(hostPublic(2)), 0644)
 		}
 		if path == "/usr/bin/usermod" {
 			f.put("/etc/passwd", "root:x:0:0::/root:/bin/sh\nurbit-runner:x:942:942::/var/lib/urbit-runner:"+access.ShellPath+"\n", 0644)
@@ -50,6 +51,7 @@ func hostFixture(t *testing.T) (*fixture, hostProbe) {
 	probe := func(context.Context, string) (protocol.Hello, bool, error) {
 		return protocol.Hello{ProtocolVersion: 1, RunnerID: "runner-" + strings.Repeat("a", 32), Mode: "development-managed"}, false, nil
 	}
+	configureActivationFixture(f)
 	return f, probe
 }
 

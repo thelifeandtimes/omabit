@@ -11,27 +11,58 @@ Column {
   property var instance
   property var maintenanceTarget: null
   property var retentionTarget: null
+  property var handledInspections: ({})
+  property int reviewGeneration: 0
   property string section: "manual"
   signal revealRequested(var item)
   readonly property alias routinePane: routinePolicy
-  readonly property string selectionKey: connection && instance ? connection.runner_id + "/" + instance.id : ""
-  readonly property var inspection: service && service.epochInspection && connection && instance && service.epochInspection.runner === connection.runner_id && service.epochInspection.instance === instance.id ? service.epochInspection : null
-  readonly property bool inspecting: !!inspection && ["submitting","queued","running","uncertain"].indexOf(inspection.status)>=0
+  readonly property string selectionKey: Model.inspectionKey(connection,instance)
+  readonly property var inspection: service ? service.inspections[Model.inspectionKey(connection,instance)] || null : null
+  readonly property bool inspecting: Model.inspectionPending(inspection)
   onSelectionKeyChanged: clearReview()
   onVisibleChanged: if (!visible) clearReview()
+  onSectionChanged: reviewGeneration++
   spacing: Style.space(16)
   Label { width: parent.width; visible: root.instance && root.instance.mode === "comet" && !Model.hasFeature(root.connection,"comet-prune-prefix"); text: "This runner supports comet history previews only. Update the runner for confirmed history removal."; color: Design.warning }
-  function clearReview() { maintenanceTarget = null; retentionTarget = null; consent.checked = false; if (service) service.clearEpochPreview() }
+  function clearReview() { reviewGeneration++; maintenanceTarget = null; retentionTarget = null; consent.checked = false; if (service) service.clearEpochPreview() }
   function reviewMaintenance(c, i, kind) { clearReview(); maintenanceTarget = Model.maintenanceTarget(c,i,kind,service.now) }
   function reviewRetention(c, i) { clearReview(); retentionTarget = Model.epochTarget(c,i,service.now); Qt.callLater(function(){if (root.visible && root.retentionTarget) root.revealRequested(historyReview)}) }
   function selectCutoff(name) { service.clearEpochPreview(); consent.checked = false; retentionTarget = Model.selectedEpochTarget(retentionTarget,name) }
+  function queueInspectionReview() {
+    var owner=service, handled=Object.assign({},handledInspections)
+    if (!owner) return
+    Object.keys(owner.inspections).forEach(function(key) {
+      var target=owner.inspections[key]
+      if (!target || target.status!=="ready") return
+      var request=JSON.stringify([target.runner,target.connection,target.instance,target.revision,target.request])
+      if (handled[request]) return
+      // Consume each completion once, including completions while hidden or on
+      // another ship. Reconnects must not reopen old or explicitly closed reviews.
+      handled[request]=true
+      if (!root.visible || root.section!=="manual" || key!==root.selectionKey) return
+      var selected=Object.freeze(Object.assign({},target)), generation=root.reviewGeneration
+      // Reconciliation emits from inside connectionsChanged, before the monitor's
+      // connection/instance bindings have necessarily reached the new snapshot.
+      Qt.callLater(function(){root.openInspectionReview(owner,selected,generation)})
+    })
+    handledInspections=handled
+  }
+  function openInspectionReview(owner,target,generation) {
+    if (service!==owner || reviewGeneration!==generation || !visible || section!=="manual" || !owner.observing) return
+    if (!connection || !instance || connection.runner_id!==target.runner || connection.name!==target.connection || instance.id!==target.instance || instance.config_revision!==target.revision) return
+    var latest=owner.inspections[selectionKey]
+    if (!latest || latest.status!=="ready" || latest.request!==target.request || latest.revision!==target.revision || latest.operation!==target.operation) return
+    // Start from pending so a missing receipt cannot reuse a retained ready state.
+    if (Model.inspectionStatus(owner.connections,Object.assign({},target,{status:"queued"}),owner.now).status!=="ready" || !Model.canReviewEpochs(connection,instance,owner.now)) return
+    var review=Model.epochTarget(connection,instance,owner.now)
+    if (!Model.currentEpochTarget(owner.connections,review,owner.now)) return
+    reviewRetention(connection,instance)
+  }
   Connections {
     target: root.service
     function onEpochPreviewChanged() { consent.checked = false }
     function onCanConfirmPruneChanged() { if (!root.service.canConfirmPrune) consent.checked = false }
-    function onEpochInspectionChanged() {
-      if (root.visible && root.section === "manual" && root.inspection && root.inspection.status === "ready" && Model.canReviewEpochs(root.connection,root.instance,root.service.now)) root.reviewRetention(root.connection,root.instance)
-    }
+    function onInspectionsChanged() { root.queueInspectionReview() }
   }
   RowLayout {
     ActionButton { text: "Manual maintenance"; primary: root.section === "manual"; onClicked: root.section = "manual" }

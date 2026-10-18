@@ -1,48 +1,55 @@
 #!/usr/bin/env python3
 """Mapped recovery review, immutable selection and one-shot dispatch fixture."""
 import datetime
+import argparse
 import importlib.util
 import json
 import os
 from pathlib import Path
 import subprocess
 import tempfile
+from desktop_fixture import ROOT, NATIVE, HARNESS_ROOT, run_qs
 
-ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location("panel_fixture", ROOT / "scripts/test-panel.py")
+spec = importlib.util.spec_from_file_location("panel_fixture", HARNESS_ROOT / "scripts/test-panel.py")
 fixture = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(fixture)
 
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--static", action="store_true", help="verify the generated CLI scenario without QML or a compositor")
+parser.add_argument("--native", action="store_true", help="exercise the canonical release entry-point wrapper")
+args = parser.parse_args()
+
 with tempfile.TemporaryDirectory(prefix="omabit-recovery-") as temporary:
     directory = Path(temporary)
+    helper = fixture.write_fixture(directory, "collector", extra_features=["recover-import"], import_recovery=True)
+    observation = fixture.assert_fixture_capabilities(helper, {"recover-import", "pier-storage", "storage-locations", "runtime-settings"})
+    ship = observation["snapshot"]["instances"][0]
+    assert ship["runtime_status"]["import_recovery_available"] and ship["external_import"]["stage"] == "enrolling"
+    if args.static:
+        command = [str(helper), "--runner", "fixture", "--expected-runner-id", "runner-fixture", "operate", "alpha", "recover-import", "--revision", "2", "--request-id"]
+        env = dict(os.environ, OMABIT_FIXTURE_TIME=datetime.datetime.now(datetime.timezone.utc).isoformat())
+        refused = subprocess.run(command + ["refused"], env=env, capture_output=True, text=True, timeout=5)
+        assert refused.returncode == 1 and json.loads(refused.stderr)["error"]["code"] == "revision_conflict"
+        accepted = json.loads(subprocess.check_output(command + ["retry"], env=env, text=True, timeout=5))
+        assert accepted["request_id"] == "retry" and accepted["status"] == "queued"
+        completed = fixture.assert_fixture_capabilities(helper, {"recover-import"})
+        assert completed["snapshot"]["operations"][-1]["status"] == "succeeded"
+        assert completed["snapshot"]["instances"][0]["observed_state"] == "stopped"
+        # Reproduce the original missing-injection case as a negative control.
+        baseline_dir = directory / "baseline"
+        baseline_dir.mkdir()
+        baseline = fixture.write_fixture(baseline_dir, import_recovery=True)
+        try:
+            fixture.assert_fixture_capabilities(baseline, {"recover-import"})
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError("missing fixture capability was silently accepted")
+        print("PASS: explicit recovery capabilities, pre-mapping prerequisites, refusal/retry and stopped receipt fixture")
+        raise SystemExit(0)
     for name in ("Commons", "Ui", "services"):
         (directory / name).symlink_to(Path("/usr/share/omarchy/shell") / name)
     (directory / "Plugin").symlink_to(ROOT / "plugins/omabit")
-    helper = directory / "collector"
-    code = fixture.FAKE.replace('features += ["host-port-suggestion",', 'features += ["recover-import","host-port-suggestion",')
-    code = code.replace('if "capture" in sys.argv:', '''if "operate" in sys.argv and sys.argv[sys.argv.index("operate")+2]=="recover-import":
-    assert sys.argv[sys.argv.index("--runner")+1]=="fixture"
-    assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
-    assert sys.argv[sys.argv.index("operate")+1]=="alpha"
-    assert sys.argv[sys.argv.index("--revision")+1]=="2"
-    if not (directory/"refused-once").exists():
-        (directory/"refused-once").touch()
-        print(json.dumps(dict(error=dict(code="revision_conflict",message="Review the current selection."))),file=sys.stderr)
-        sys.exit(1)
-    op=dict(id="op-recovered",kind="recover-import",instance_id="alpha",request_id=sys.argv[sys.argv.index("--request-id")+1],config_revision=2,status="succeeded")
-    (directory/"recovered.json").write_text(json.dumps(op))
-    time.sleep(.4)
-    print(json.dumps(dict(op,status="queued")))
-elif "capture" in sys.argv:''')
-    code = code.replace('snapshot["instances"][0]["runtime_status"]={"initialized":True}', '''recovered=(directory/"recovered.json").exists()
-        ship=snapshot["instances"][0]
-        ship.update(desired_state="stopped",observed_state="stopped" if recovered else "unknown",recovery_required=not recovered,identity_pending=True)
-        ship["runtime_status"]={"initialized":recovered,"import_recovery_available":not recovered}
-        ship["external_import"]={"stage":"complete" if recovered else "enrolling","source":"/fixture/old-source","holding_path":"/fixture/.omabit-import-old/pier"}
-        if recovered: snapshot["operations"].append(json.loads((directory/"recovered.json").read_text()))''')
-    compile(code,str(helper),"exec")
-    helper.write_text(code)
-    helper.chmod(0o700)
     qml = '''import QtQuick
 import Quickshell
 import "Plugin" as Plugin
@@ -99,19 +106,10 @@ ShellRoot {
     }
   } }
 }'''.replace("HELPER", json.dumps(str(helper)))
+    if args.native:
+        qml = qml.replace('import "Plugin" as Plugin', 'import "Plugin" as Plugin\nimport ' + json.dumps(NATIVE.as_uri()) + ' as Native').replace("Plugin.Service {", "Native.Service {")
     (directory / "shell.qml").write_text(qml)
-    runtime = directory / "runtime"
-    runtime.mkdir(mode=0o700)
-    (runtime / "hypr").mkdir()
-    (runtime / "hypr/f").symlink_to(Path(os.environ["XDG_RUNTIME_DIR"]) / "hypr" / os.environ["HYPRLAND_INSTANCE_SIGNATURE"])
-    display = os.environ["WAYLAND_DISPLAY"]
-    if not display.startswith("/"):
-        display = str(Path(os.environ["XDG_RUNTIME_DIR"]) / display)
-    env = dict(os.environ, WAYLAND_DISPLAY=display, XDG_RUNTIME_DIR=str(runtime), HYPRLAND_INSTANCE_SIGNATURE="f", XDG_STATE_HOME=str(directory / "state"), OMABIT_FIXTURE_TIME=datetime.datetime.now(datetime.timezone.utc).isoformat())
-    try:
-        result = subprocess.run(["qs", "--no-color", "-p", str(directory)], env=env, capture_output=True, text=True, timeout=20)
-    except subprocess.TimeoutExpired as e:
-        raise AssertionError((e.stdout or b"").decode() + (e.stderr or b"").decode()) from e
+    result = run_qs(directory, timeout=20)
     text = result.stdout + result.stderr
     assert result.returncode == 0 and text.count("PASS:") == 1 and not any(e in text for e in ("Error:", "Unable to assign", "Binding loop")), text
     calls = [json.loads(line) for line in (directory / "calls.jsonl").read_text().splitlines()]

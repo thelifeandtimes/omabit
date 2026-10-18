@@ -214,6 +214,13 @@ func (r *Server) resumeStartup(candidates []storedInstance, interval time.Durati
 	for len(pending) > 0 && r.ctx.Err() == nil {
 		next := pending[:0]
 		for _, initial := range pending {
+			r.mu.Lock()
+			fenced := r.updateFence.Held
+			r.mu.Unlock()
+			if fenced {
+				next = append(next, initial)
+				continue
+			}
 			if r.ctx.Err() != nil {
 				return
 			}
@@ -247,6 +254,11 @@ func (r *Server) resumeStartup(candidates []storedInstance, interval time.Durati
 				continue
 			}
 			r.mu.Lock()
+			if r.updateFence.Held {
+				next = append(next, initial)
+				r.mu.Unlock()
+				continue
+			}
 			if r.closing || r.failed.Load() {
 				r.mu.Unlock()
 				return

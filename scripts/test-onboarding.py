@@ -7,9 +7,9 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+from desktop_fixture import ROOT, HARNESS_ROOT, run_qs
 
-ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location("panel_fixture", ROOT / "scripts/test-panel.py")
+spec = importlib.util.spec_from_file_location("panel_fixture", HARNESS_ROOT / "scripts/test-panel.py")
 fixture = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(fixture)
 
@@ -132,8 +132,10 @@ ShellRoot {
       phase=7
     } else if(phase===7 && !service.busy) {
       var form=control(service.monitorWindow.setupPane,"registration-form")
-      if(control(form,"registration-port").text!=="18123" || control(form,"registration-name").text!=="my-required-name")throw new Error("Host suggestion altered name or ignored host reply")
-      var location=control(form,"storage-location-selector")
+       if(control(form,"registration-port").text!=="18123" || control(form,"registration-name").text!=="my-required-name")throw new Error("Host suggestion altered name or ignored host reply")
+       if(form.advanced || control(form,"storage-location-selector").visible)throw new Error("Storage controls should start under Advanced")
+       control(form,"registration-advanced-toggle").clicked()
+       var location=control(form,"storage-location-selector")
       location.currentIndex=location.count-1;location.activated(location.currentIndex)
       if(!control(form,"registration-pier").visible)throw new Error("Custom selection did not reveal pier path")
       location.currentIndex=0;location.activated(0)
@@ -155,15 +157,7 @@ ShellRoot {
   } }
 }'''.replace("HELPER", json.dumps(str(helper)))
     (directory / "shell.qml").write_text(qml)
-    runtime = directory / "runtime"
-    runtime.mkdir(mode=0o700)
-    (runtime / "hypr").mkdir()
-    (runtime / "hypr/f").symlink_to(Path(os.environ["XDG_RUNTIME_DIR"]) / "hypr" / os.environ["HYPRLAND_INSTANCE_SIGNATURE"])
-    display = os.environ["WAYLAND_DISPLAY"]
-    if not display.startswith("/"):
-        display = str(Path(os.environ["XDG_RUNTIME_DIR"]) / display)
-    env = dict(os.environ, WAYLAND_DISPLAY=display, XDG_RUNTIME_DIR=str(runtime), HYPRLAND_INSTANCE_SIGNATURE="f", XDG_STATE_HOME=str(directory / "state"), OMABIT_FIXTURE_TIME=datetime.datetime.now(datetime.timezone.utc).isoformat())
-    result = subprocess.run(["qs", "--no-color", "-p", str(directory)], env=env, capture_output=True, text=True, timeout=35)
+    result = run_qs(directory, timeout=35)
     text = result.stdout + result.stderr
     assert result.returncode == 0 and text.count("PASS:") == 5 and not any(e in text for e in ("Error:", "Unable to assign", "Binding loop")), text
     for line in text.splitlines():

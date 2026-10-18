@@ -7,13 +7,14 @@ import os
 import pathlib
 import subprocess
 import tempfile
+from desktop_fixture import ROOT, NATIVE, run_qs
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 FAKE = '''#!/usr/bin/env python3
 import datetime,json,os,pathlib,subprocess,sys,time
 directory=pathlib.Path(__file__).parent
 stamp=os.environ["OMABIT_FIXTURE_TIME"]
+config=json.loads((directory/"fixture-config.json").read_text()) if (directory/"fixture-config.json").exists() else {}
 names=["0i0","0i9007199254740992","0i9007199254740993","0i18446744073709551615"]
 entries=[{"name":name,"digest":str(i+1)*64,"logical_bytes":100+i,"allocated_bytes":4096,"file_count":4 if i==0 else 5,"snapshot_bytes":0 if i==0 else 90,"shared_files":False,"protected":i>=2} for i,name in enumerate(names)]
 inventory={"source":"vere-4.6-epoch-v2","pier_id":"a"*32,"digest":"d"*64,"observed_at":stamp,"entries":entries}
@@ -22,9 +23,23 @@ if (directory/"inspection.json").exists():
     inventory["observed_at"]=json.loads((directory/"inspection.json").read_text())["finished_at"]
 features=["storage-locations","import-pier","delete-pier","bootstrap-selection","host-handoff","runtime-logs","create-fake","fake-ship-options","pier-storage","key-boot","key-boot-options","livenet-import","create-comet","container-cpu","offline-pack","offline-meld","offline-roll","epoch-inventory","epoch-prune-prefix","login-code","import-qualified-fake","maintenance-schedules","comet-compaction","comet-epochs"]
 features += ["runtime-settings","native-control-all-ships","runtime-settings-handoff","host-port-suggestion","guided-pier-import","named-pier-directories"]
+features += config.get("extra_features",[])
 with (directory/"calls.jsonl").open("a") as log:
     log.write(json.dumps(sys.argv[1:])+"\\n")
-if "capture" in sys.argv:
+if config.get("import_recovery") and "operate" in sys.argv and sys.argv[sys.argv.index("operate")+2]=="recover-import":
+    assert sys.argv[sys.argv.index("--runner")+1]=="fixture"
+    assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
+    assert sys.argv[sys.argv.index("operate")+1]=="alpha"
+    assert sys.argv[sys.argv.index("--revision")+1]=="2"
+    if not (directory/"refused-once").exists():
+        (directory/"refused-once").touch()
+        print(json.dumps(dict(error=dict(code="revision_conflict",message="Review the current selection."))),file=sys.stderr)
+        sys.exit(1)
+    op=dict(id="op-recovered",kind="recover-import",instance_id="alpha",request_id=sys.argv[sys.argv.index("--request-id")+1],config_revision=2,status="succeeded")
+    (directory/"recovered.json").write_text(json.dumps(op))
+    time.sleep(.4)
+    print(json.dumps(dict(op,status="queued")))
+elif "capture" in sys.argv:
     env=dict(os.environ,XDG_RUNTIME_DIR=os.environ["OMABIT_FIXTURE_DESKTOP_RUNTIME"],HYPRLAND_INSTANCE_SIGNATURE=os.environ.get("OMABIT_FIXTURE_HYPRLAND_INSTANCE",os.environ.get("HYPRLAND_INSTANCE_SIGNATURE","")))
     clients=json.loads(subprocess.check_output(["hyprctl","-j","clients"],env=env))
     window=next(c for c in clients if c["pid"]==os.getppid() and c["title"]=="Omabit · Monitor & maintenance")
@@ -45,6 +60,13 @@ elif "inventory" in sys.argv:
         if (directory/"policy.json").exists(): snapshot["instances"][0]["schedule"]=json.loads((directory/"policy.json").read_text())
         snapshot["instances"][0]["resources"].update({"cpu_usage_percent":12.5,"cpu_limit_cores":2})
         snapshot["instances"][0]["runtime_status"]={"initialized":True}
+        if config.get("import_recovery"):
+            recovered=(directory/"recovered.json").exists()
+            ship=snapshot["instances"][0]
+            ship.update(desired_state="stopped",observed_state="stopped" if recovered else "unknown",recovery_required=not recovered,identity_pending=True)
+            ship["runtime_status"]={"initialized":recovered,"import_recovery_available":not recovered}
+            ship["external_import"]={"stage":"complete" if recovered else "enrolling","source":"/fixture/old-source","holding_path":"/fixture/.omabit-import-old/pier"}
+            if recovered: snapshot["operations"].append(json.loads((directory/"recovered.json").read_text()))
         snapshot["piers"]={"runner_id":"runner-fixture","root":"/var/lib/urbit-runner/piers","observed_at":now,"candidates":[{"path":"fakeships/project/nec/pier","kind":"fake","fingerprint":"f"*64,"busy":False},{"path":"fakeships/project/zod/pier","kind":"fake","fingerprint":"a"*64,"busy":False,"enrolled_by":"alpha"}]}
         snapshot["instances"].append({"id":"comet-fixture","mode":"comet","ship":"~doznec-salbud-salwex-sogref--tasweb-navfun-batwet-sigfet","config_revision":2,"applied_revision":2,"desired_state":"stopped","observed_state":"stopped","observed_at":now,"health":"unknown","config":{"http_port":18087,"ames_port":34343,"loom":31},"epochs":comet_inventory})
         if (directory/"owned-registered.json").exists():
@@ -68,6 +90,7 @@ elif "inventory" in sys.argv:
         if (directory/"deleted-alpha").exists(): snapshot["instances"]=[i for i in snapshot["instances"] if i["id"]!="alpha"]
         available_features=features+(["comet-prune-prefix"] if (directory/"comet-pruning-qualified").exists() else [])
         print(json.dumps({"name":"fixture","runner_id":"runner-fixture","mode":"development-managed","access_role":"operator","features":available_features,"status":"available","checked_at":now,"snapshot":snapshot}),flush=True)
+        if "--once" in sys.argv: break
         time.sleep(.2)
 elif "suggest-port" in sys.argv:
     time.sleep(.6)
@@ -252,6 +275,27 @@ else:
 '''
 
 
+def write_fixture(directory, name="collector-fixture", *, extra_features=(), import_recovery=False):
+    """Configure scenarios as data; never rewrite the collector's source text."""
+    assert all(isinstance(feature, str) and feature for feature in extra_features)
+    compile(FAKE, "fixture-collector", "exec")
+    (directory / "fixture-config.json").write_text(json.dumps({
+        "extra_features": list(extra_features), "import_recovery": import_recovery,
+    }))
+    helper = directory / name
+    helper.write_text(FAKE)
+    helper.chmod(0o700)
+    return helper
+
+
+def assert_fixture_capabilities(helper, required):
+    env = dict(os.environ, OMABIT_FIXTURE_TIME=datetime.datetime.now(datetime.timezone.utc).isoformat())
+    observation = json.loads(subprocess.check_output([str(helper), "inventory", "--once"], env=env, text=True, timeout=5))
+    missing = set(required) - set(observation["features"])
+    assert not missing, f"Fixture is missing required capabilities: {sorted(missing)}"
+    return observation
+
+
 def main():
     compile(FAKE, "fixture-collector", "exec")
     parser = argparse.ArgumentParser()
@@ -271,14 +315,8 @@ def main():
         for name in ("Commons", "Ui", "services"):
             (directory / name).symlink_to(pathlib.Path("/usr/share/omarchy/shell") / name)
         (directory / "Plugin").symlink_to(ROOT / "plugins/omabit")
-        helper = directory / "collector-fixture"
-        helper.write_text(FAKE)
-        helper.chmod(0o700)
-        runtime = directory / "runtime"
-        runtime.mkdir(mode=0o700)
-        # Native Hyprland IPC needs a short socket path within the isolated runtime.
-        (runtime / "hypr").mkdir()
-        (runtime / "hypr/f").symlink_to(pathlib.Path(os.environ["XDG_RUNTIME_DIR"]) / "hypr" / os.environ["HYPRLAND_INSTANCE_SIGNATURE"])
+        helper = write_fixture(directory)
+        assert_fixture_capabilities(helper, {"runtime-settings", "guided-pier-import", "pier-storage", "epoch-inventory"})
         picker_files = directory / "picker-fixtures"
         picker_files.mkdir(mode=0o700)
         key_file = picker_files / "owned key λ #1.key"
@@ -393,8 +431,8 @@ ShellRoot {
          var inspect = control(maintenance,"inspect-epochs")
          if (!inspect || !inspect.enabled) throw new Error("inspection action missing")
          inspect.clicked(); phase = 101
-       } else if (phase === 101 && service.epochInspection && service.epochInspection.status === "ready") {
-         if (!maintenance.retentionTarget || !control(maintenance,"history-review").visible || control(maintenance,"inspection-feedback").text.indexOf("Inspection complete")<0) throw new Error("inspection did not open its result")
+       } else if (phase === 101 && service.epochInspection && service.epochInspection.status === "ready" && maintenance.retentionTarget) {
+         if (!Model.currentEpochTarget(service.connections,maintenance.retentionTarget,service.now) || !control(maintenance,"history-review").visible || control(maintenance,"inspection-feedback").text.indexOf("Inspection complete")<0) throw new Error("inspection did not open its current result")
          console.log("PASS: asynchronous inspection opens a bound inventory review with clear completion feedback")
          var c=service.connections[0], i=c.snapshot.instances[0]
          maintenance.reviewMaintenance(c, i, "pack")
@@ -836,7 +874,7 @@ ShellRoot {
            if (!storage.catalogue.roots || storage.catalogue.roots.length!==2) return
             storage.showImport=true
             var form=control(storage,"external-pier-import")
-            form.submitted=false
+            if (!form.reviewAnother()) throw new Error("Previous import is still unresolved")
             control(form,"import-pier-source").text="/fixture/incoming/zod"
             var roots=control(form,"storage-location-selector");roots.currentIndex=1;roots.activated(1)
            control(form,"import-pier-review").clicked();phase=311
@@ -873,23 +911,11 @@ ShellRoot {
 }''' % ("true" if args.windows else "false",json.dumps(str(pathlib.Path(args.capture_dir).absolute()) if args.capture_dir else ""),json.dumps(key_file.as_uri()),json.dumps(pill_file.as_uri()),json.dumps(str(helper)),json.dumps(str(helper))))
         if args.native:
             qml = (directory / "shell.qml").read_text()
-            qml = qml.replace('import "Plugin" as Plugin', 'import "Plugin" as Plugin\nimport ' + json.dumps((ROOT / "native").as_uri()) + ' as Native')
+            qml = qml.replace('import "Plugin" as Plugin', 'import "Plugin" as Plugin\nimport ' + json.dumps(NATIVE.as_uri()) + ' as Native')
             qml = qml.replace("Plugin.Service {", "Native.Service {").replace("Plugin.Panel {", "Native.Panel {")
-            qml = qml.replace("if (capturesPending) return", "if (capturesPending) return\n        if (String(service.toolsDirectory)!==" + json.dumps((ROOT / "native/bin").as_uri()) + ") throw new Error(\"native tool directory mismatch\")")
+            qml = qml.replace("if (capturesPending) return", "if (capturesPending) return\n        if (String(service.toolsDirectory)!==" + json.dumps((NATIVE / "bin").as_uri()) + ") throw new Error(\"native tool directory mismatch\")")
             (directory / "shell.qml").write_text(qml)
-        # Quickshell PanelWindow has no offscreen backend. Connect to the current
-        # compositor but keep the panel closed; use a separate IPC/log runtime.
-        display = os.environ.get("WAYLAND_DISPLAY", "")
-        if not display:
-            raise RuntimeError("a Wayland session is required for the closed-panel load test")
-        if not display.startswith("/"):
-            display = str(pathlib.Path(os.environ["XDG_RUNTIME_DIR"]) / display)
-        env = dict(os.environ, QT_QPA_PLATFORM="wayland", WAYLAND_DISPLAY=display, XDG_RUNTIME_DIR=str(runtime), HYPRLAND_INSTANCE_SIGNATURE="f", OMABIT_FIXTURE_HYPRLAND_INSTANCE=os.environ["HYPRLAND_INSTANCE_SIGNATURE"], NO_COLOR="1",
-                   XDG_STATE_HOME=str(directory / "state"), OMABIT_FIXTURE_DESKTOP_RUNTIME=os.environ["XDG_RUNTIME_DIR"], OMABIT_FIXTURE_TIME=datetime.datetime.now(datetime.timezone.utc).isoformat())
-        try:
-            result = subprocess.run(["qs", "--no-color", "-p", str(directory)], env=env, capture_output=True, text=True, timeout=60)
-        except subprocess.TimeoutExpired as error:
-            raise RuntimeError((error.stdout or b"").decode(errors="replace") + (error.stderr or b"").decode(errors="replace")) from None
+        result = run_qs(directory, timeout=90, mapped=args.windows)
         text = result.stdout + result.stderr
         if result.returncode != 0 or "PASS: real QML" not in text:
             raise RuntimeError(text)

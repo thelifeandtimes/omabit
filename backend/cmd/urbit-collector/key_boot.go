@@ -41,6 +41,8 @@ func readBootKey(path string) (string, error) {
 func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expected, format string, out io.Writer, fail func(error, int) int) int {
 	var req protocol.CreateShipRequest
 	var file, pillSource, bootstrap string
+	var pillSHA string
+	var pillSize int64
 	var port, ames, loom uint
 	var native, runtimeSettings bool
 	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
@@ -57,7 +59,9 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	f.UintVar(&ames, "ames-port", 0, "host Ames UDP port; zero/omitted chooses automatically")
 	f.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
 	f.BoolVar(&native, "native-control", false, "enable local-owner native control (default off)\n\n"+protocol.NativeControlWarning)
-	f.StringVar(&pillSource, "pill", "", "optional boot pill URL or local file; blank uses Vere canonical default")
+	f.StringVar(&pillSource, "pill", "", "Recommended Apps release URL (known S3 default is a frozen release alias), or explicit custom HTTPS URL/local file; blank uses Vere canonical default")
+	f.StringVar(&pillSHA, "pill-sha256", "", "trusted expected SHA-256 for a custom pill; requires --pill-size (built-in release is always pinned)")
+	f.Int64Var(&pillSize, "pill-size", 0, "trusted expected byte count for a custom pill; requires --pill-sha256")
 	f.StringVar(&bootstrap, "bootstrap", "", "bare or recommended; recommended requires --pill")
 	f.BoolVar(&req.ConfirmNetwork, "confirm-network", false, "boot a real networked identity on explicit Start")
 	if err := f.Parse(args); err != nil {
@@ -74,7 +78,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 			runtimeSettings = true
 		}
 	})
-	if loom < protocol.MinLoom || loom > protocol.MaxLoom {
+	if !validCreationLoom(loom) {
 		return fail(errors.New("--loom must be in 30..34 (1–16 GiB)"), 2)
 	}
 	req.Ship = strings.TrimSpace(req.Ship)
@@ -119,6 +123,10 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	if _, err := bootstrapChoice(bootstrap, pillSource); err != nil {
 		return fail(err, 2)
 	}
+	expectedPill, err := expectedPill(pillSource, pillSHA, pillSize)
+	if err != nil {
+		return fail(err, 2)
+	}
 	r, err := openRegistry(dir)
 	if err != nil {
 		return fail(err, 1)
@@ -142,6 +150,10 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	if runtimeSettings && !slices.Contains(h.Features, protocol.RuntimeSettingsFeature) {
 		return fail(errors.New("update this runner for runtime-settings capability before changing loom/native control"), 1)
 	}
+	ctx, err = creationContext(ctx, loom, h)
+	if err != nil {
+		return fail(err, 1)
+	}
 	if native && !slices.Contains(h.Features, protocol.NativeControlAllShipsFeature) {
 		return fail(errors.New("update this runner for native-control-all-ships capability before enabling native control"), 1)
 	}
@@ -149,7 +161,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	if err != nil {
 		return fail(err, 2)
 	}
-	req.Pill, err = stageSelectedPill(ctx, c, pillSource)
+	req.Pill, err = stageSelectedPillExpected(ctx, c, pillSource, expectedPill)
 	if err != nil {
 		return fail(err, 1)
 	}

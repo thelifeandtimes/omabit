@@ -92,6 +92,9 @@ func TestAdditionalRootsStayPinnedAndDiscoveryRetainsTheMountContract(t *testing
 }
 
 func TestHostPathAllowsOnlyTheRunnersNarrowACLGrant(t *testing.T) {
+	// Exercise the dedicated-runner policy explicitly, like the owner-mode
+	// fixtures. HostPath selects the owner-workspace policy when t.TempDir is
+	// under an installed owner's home (including via GOTMPDIR).
 	dir := t.TempDir()
 	acl := func(writer uint32) []byte {
 		b := make([]byte, 4+5*8)
@@ -107,13 +110,13 @@ func TestHostPathAllowsOnlyTheRunnersNarrowACLGrant(t *testing.T) {
 	if err := unix.Setxattr(dir, "system.posix_acl_access", acl(uint32(os.Geteuid())), 0); err != nil {
 		t.Fatal(err)
 	}
-	if err := HostPath(dir); err != nil {
+	if err := hostPathMode(dir, false); err != nil {
 		t.Fatal("narrow service ACL refused", err)
 	}
 	if err := unix.Setxattr(dir, "system.posix_acl_access", acl(uint32(os.Geteuid())+10000), 0); err != nil {
 		t.Fatal(err)
 	}
-	if err := HostPath(dir); err == nil {
+	if err := hostPathMode(dir, false); err == nil {
 		t.Fatal("unrelated ACL writer accepted")
 	}
 }

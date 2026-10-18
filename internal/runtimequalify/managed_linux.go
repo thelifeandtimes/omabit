@@ -357,12 +357,23 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		return finish(ManagedObservation{State: "stopped", Health: "unknown"}, nil)
 	}
 	if action == "stop" {
-		q.r.Stage = "stopping"
+		// Keep a durable pre-dispatch phase through Stop's own callbacks. A
+		// restart during cleanup must not turn a report-only intent ambiguous.
+		pendingReport := managedMaintenanceReportPending(state, q.r)
+		if !pendingReport {
+			q.r.Stage = "stopping"
+		}
 		if err := q.save(); err != nil {
 			return finish(unknown, err)
 		}
 		for i, c := range q.r.Containers {
 			if c.Removed {
+				continue
+			}
+			if containerCreateUndispatched(c) {
+				if err := q.cleanupOne(ctx, i); err != nil {
+					return finish(unknown, err)
+				}
 				continue
 			}
 			actual, err := q.inspect(ctx, i)
@@ -380,7 +391,18 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 				return finish(unknown, err)
 			}
 		}
-		q.r.Stage = "stopped"
+		if managedMaintenanceUndispatched(state, q.r) {
+			previousStage := q.r.Stage
+			q.r.Stage = "stopped"
+			state.MaintenanceUncertain = false
+			if err := q.save(); err != nil {
+				q.r.Stage = previousStage
+				state.MaintenanceUncertain = true
+				return finish(unknown, err)
+			}
+		} else if !pendingReport {
+			q.r.Stage = "stopped"
+		}
 		return finish(ManagedObservation{State: "stopped", Health: "unknown", RecoveryRequired: !state.Initialized || state.UncertainMaintenance() || state.UncertainProvisioning()}, nil)
 	}
 	if maintenance {
@@ -434,7 +456,16 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 			state.Maintenance.EpochsBefore = epochNames(beforeEpochs)
 		}
 		state.MaintenanceUncertain = true
+		previousStage := q.r.Stage
+		// This phase and the report commit together before offlineUtility can
+		// even append its container intent. create replaces it atomically with
+		// the dispatch marker before sending any request to the daemon.
+		q.r.Stage = managedMaintenancePendingStage(utility)
 		if err := q.save(); err != nil {
+			// Without an acknowledged publication, the returned in-memory state
+			// cannot claim durable phase evidence. A committed callback recovered
+			// after a crash still contains the pending phase and can resolve it.
+			q.r.Stage = previousStage
 			return finish(unknown, err)
 		}
 		if err := q.offlineUtility(ctx, utility); err != nil {
@@ -465,6 +496,7 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		state.Maintenance.AfterPierBytes = after
 		state.Maintenance.FinishedAt = &now
 		state.MaintenanceUncertain = false
+		q.r.Stage = "stopped"
 		if action == "roll" {
 			state.RollNeedsRuntime = true
 		}
@@ -551,6 +583,16 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		kind = "http-boot"
 	} else if err := q.pier(); err != nil {
 		return finish(unknown, err)
+	}
+	// Image/pill preparation, the probe and network setup can outlast the
+	// earlier admission. Check both runtime and selected pier storage again
+	// before recording provisioning uncertainty or creating a runtime. A
+	// refusal here leaves only resolved preparation resources and is retryable.
+	for _, path := range []string{q.r.Directory, filepath.Dir(q.pierPath())} {
+		mem, disk, err := q.d.admission(path)
+		if err != nil || mem < 5<<30 || disk < 8<<30 {
+			return finish(unknown, errors.New("start requires at least 5 GiB available RAM and 8 GiB free disk immediately before dispatch"))
+		}
 	}
 	if state.Comet != nil {
 		kind = "comet-resume"
@@ -639,6 +681,54 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 	}
 	q.r.Stage = "ready"
 	return finish(ManagedObservation{State: "running", Health: "healthy", Endpoint: strings.TrimSuffix(q.r.Containers[i].HostEndpoint, "/~/host")}, nil)
+}
+
+func managedMaintenancePendingStage(kind string) string { return "maintenance-pending-" + kind }
+
+func managedMaintenanceReportPending(state ManagedState, runtime Result) bool {
+	m := state.Maintenance
+	if !state.MaintenanceUncertain || m == nil || m.FinishedAt != nil || m.StartedAt.IsZero() ||
+		(m.Kind != "pack" && m.Kind != "meld" && m.Kind != "roll") {
+		return false
+	}
+	kind := m.Kind
+	if state.Comet != nil {
+		kind = "comet-" + kind
+	}
+	return runtime.Stage == managedMaintenancePendingStage(kind)
+}
+
+// A maintenance attempt resets the inventory before recording its report and
+// pending phase. Either that explicit phase or a matching undispatched utility
+// intent proves non-dispatch, provided no record carries contrary evidence.
+// Historical report-only states lack that proof; successful cleanup of
+// dispatched work and unrelated pruning fences also remain conservative.
+func managedMaintenanceUndispatched(state ManagedState, runtime Result) bool {
+	m := state.Maintenance
+	if !state.MaintenanceUncertain || m == nil || m.StartedAt.IsZero() || m.FinishedAt != nil ||
+		(m.Kind != "pack" && m.Kind != "meld" && m.Kind != "roll") ||
+		state.Runtime.Prune != nil && (state.Runtime.Prune.Uncertain || state.Runtime.Prune.FinishedAt == nil) ||
+		state.PrefixPrune != nil && (state.PrefixPrune.Uncertain || state.PrefixPrune.FinishedAt == nil) {
+		return false
+	}
+	kind := m.Kind
+	if state.Comet != nil {
+		kind = "comet-" + kind
+	}
+	found := false
+	for _, c := range runtime.Containers {
+		if !c.Removed || c.CreateUncertain {
+			return false
+		}
+		if c.Kind == "probe" {
+			continue
+		}
+		if found || c.Kind != kind || !containerCreateUndispatched(c) {
+			return false
+		}
+		found = true
+	}
+	return found || managedMaintenanceReportPending(state, runtime)
 }
 
 // ObserveManaged inspects runtime state and reads bounded one-shot Docker stats.

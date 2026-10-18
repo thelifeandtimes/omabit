@@ -159,7 +159,7 @@ func TestBridgeStreamsOnlyBoundedOperatorPillUploads(t *testing.T) {
 	srv := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set(protocol.Header, "1")
 		if r.URL.Path == "/hello" {
-			json.NewEncoder(w).Encode(protocol.Hello{ProtocolVersion: 1, Features: []string{"ssh-key-grants"}, Actor: "ssh-key:" + grant.Fingerprint, AccessRole: "operator"})
+			json.NewEncoder(w).Encode(protocol.Hello{ProtocolVersion: 1, RunnerID: "runner", Mode: "development-managed", Features: []string{"ssh-key-grants"}, Actor: "ssh-key:" + grant.Fingerprint, AccessRole: "operator"})
 			return
 		}
 		data, _ := io.ReadAll(r.Body)

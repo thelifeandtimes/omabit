@@ -14,6 +14,120 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = ("omabit", "urbit-collector", "urbit-runner")
+SYSTEM_PATH = "/usr/bin:/bin"
+
+
+def source_environment():
+    # In particular, do not inherit GIT_DIR, replacement objects, global filters,
+    # GOFLAGS overlays, go env -w, workspaces, compiler wrappers or cache helpers.
+    return {"PATH": SYSTEM_PATH, "LC_ALL": "C", "TZ": "UTC",
+            "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_NO_REPLACE_OBJECTS": "1", "GIT_OPTIONAL_LOCKS": "0"}
+
+
+def source_git(root, *args, text=True):
+    return subprocess.check_output(["git", "-c", "core.fsmonitor=false", *args],
+                                   cwd=root, env=source_environment(), text=text)
+
+
+def clean_commit(root):
+    if source_git(root, "status", "--porcelain=v1", "--untracked-files=all").strip():
+        raise RuntimeError("commit source changes before building a release")
+    return source_git(root, "rev-parse", "HEAD").strip()
+
+
+def export_source(root, destination, commit):
+    """Materialize only commit blobs, without checkout filters/export attributes.
+
+    Fetching existing objects and populating an index creates no new commits. The
+    private repository lets Go retain its normal, truthful clean VCS build stamp.
+    Never copy the caller's index, config, ignored files or working tree.
+    """
+    destination.mkdir()
+    source_git(destination, "init", "--quiet", "--template=")
+    source_git(destination, "fetch", "--quiet", "--depth=1", "--no-tags", str(root), commit)
+    source_git(destination, "update-ref", "HEAD", commit)
+    source_git(destination, "read-tree", commit)
+    entries = source_git(destination, "ls-tree", "-rz", "--full-tree", commit, text=False)
+    with subprocess.Popen(["git", "cat-file", "--batch"], cwd=destination,
+                          env=source_environment(), stdin=subprocess.PIPE, stdout=subprocess.PIPE) as blobs:
+        for entry in entries.split(b"\0"):
+            if not entry:
+                continue
+            attributes, raw_name = entry.split(b"\t", 1)
+            mode, kind, oid = attributes.split()
+            name = os.fsdecode(raw_name)
+            path = Path(name)
+            if (mode not in (b"100644", b"100755") or kind != b"blob" or path.is_absolute()
+                    or ".." in path.parts or ".git" in path.parts):
+                raise RuntimeError("unsupported tracked release input: " + name)
+            blobs.stdin.write(oid + b"\n")
+            blobs.stdin.flush()
+            actual_oid, actual_kind, size = blobs.stdout.readline().split()
+            if actual_oid != oid or actual_kind != b"blob":
+                raise RuntimeError("invalid source object")
+            contents = blobs.stdout.read(int(size))
+            if len(contents) != int(size) or blobs.stdout.read(1) != b"\n":
+                raise RuntimeError("incomplete source object")
+            target = destination / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(contents)
+            target.chmod(0o755 if mode == b"100755" else 0o644)
+        blobs.stdin.close()
+        if blobs.wait() != 0:
+            raise RuntimeError("source export failed")
+    if clean_commit(destination) != commit:
+        raise RuntimeError("export does not match the committed source")
+
+
+def go_tool_environment(go):
+    return dict(source_environment(), PATH=str(go.parent) + os.pathsep + SYSTEM_PATH,
+                GOENV="off", GOWORK="off", GOFLAGS="", GOEXPERIMENT="", GOTOOLCHAIN="local")
+
+
+def resolve_go():
+    """Trust the operator's PATH selection (including actions/setup-go), once.
+
+    Resolve it before constructing the allowlisted subprocess environment. Every
+    Go invocation then uses this absolute executable, never a system-Go fallback
+    or an ambient toolchain/config override.
+    """
+    selected = shutil.which("go")
+    if selected is None:
+        raise RuntimeError("select an installed Go toolchain on PATH before packaging")
+    go = Path(selected).resolve(strict=True)
+    if not go.is_file() or not os.access(go, os.X_OK):
+        raise RuntimeError("selected Go toolchain is not an executable file: " + str(go))
+    try:
+        version = subprocess.check_output([go, "version"], cwd=go.parent,
+                                          env=go_tool_environment(go), text=True, timeout=10).strip()
+    except (OSError, subprocess.SubprocessError) as error:
+        raise RuntimeError("cannot run selected Go toolchain: " + str(go)) from error
+    if not re.fullmatch(r"go version (?:go\d+\.\d+\S*|devel .+) \S+/\S+", version):
+        raise RuntimeError("selected executable did not identify a Go toolchain: " + str(go))
+    return go
+
+
+def go_environment(stage, go):
+    home, temporary = stage / "home", stage / "tmp"
+    home.mkdir()
+    temporary.mkdir()
+    return dict(go_tool_environment(go), HOME=str(home), TMPDIR=str(temporary),
+                CGO_ENABLED="0", GOOS="linux", GOARCH="amd64", GOAMD64="v1",
+                GOPATH=str(stage / "gopath"),
+                GOMODCACHE=str(stage / "modules"), GOCACHE=str(stage / "cache"),
+                GOPROXY="https://proxy.golang.org", GOSUMDB="sum.golang.org")
+
+
+def check_modules(source, env, go):
+    modules = subprocess.check_output([go, "list", "-mod=readonly", "-m", "-json", "all"],
+                                      cwd=source, env=env, text=True)
+    decoder = json.JSONDecoder()
+    while modules.strip():
+        module, end = decoder.raw_decode(modules.lstrip())
+        modules = modules.lstrip()[end:]
+        if "Replace" in module and not module["Replace"].get("Version"):
+            raise RuntimeError("release modules must not use local filesystem replacements")
 
 
 def sha256(path):
@@ -25,7 +139,7 @@ def sha256(path):
 
 
 def git(*args):
-    return subprocess.check_output(["git", *args], cwd=ROOT, text=True).strip()
+    return source_git(ROOT, *args).strip()
 
 
 def checksums(directory):
@@ -87,43 +201,55 @@ def main():
         checksums(final)
         print("Attached qualification and refreshed release checksums:", final)
         return
-    if git("status", "--porcelain"):
-        parser.error("commit source changes before building a release")
-    manifest = json.loads((ROOT / "plugins/omabit/manifest.json").read_text())
-    if manifest["version"] != args.version:
-        parser.error("plugin version and release version must match")
+    try:
+        commit = clean_commit(ROOT)
+    except RuntimeError as error:
+        parser.error(str(error))
     if args.pill is None or not args.pill.is_file() or not re.fullmatch(r"[0-9a-f]{64}", args.pill_sha256 or ""):
         parser.error("require a frozen --pill and --pill-sha256")
     if args.pill.is_symlink() or not 0 < args.pill.stat().st_size <= 4_000_000_000 or sha256(args.pill) != args.pill_sha256:
         parser.error("pill does not match its bounded expected content")
     if final.exists():
         parser.error("version output already exists; inspect rather than overwrite")
+    try:
+        go = resolve_go()
+    except RuntimeError as error:
+        parser.error(str(error))
     output.mkdir(parents=True, exist_ok=True)
-    commit = git("rev-parse", "HEAD")
-    epoch = int(git("show", "-s", "--format=%ct", "HEAD"))
+    epoch = int(git("show", "-s", "--format=%ct", commit))
     prefix = "omabit-" + args.version + "-linux-amd64"
     with tempfile.TemporaryDirectory(prefix=".release-", dir=output) as temporary:
         stage = Path(temporary)
+        source = stage / "source"
+        export_source(ROOT, source, commit)
+        manifest = json.loads((source / "plugins/omabit/manifest.json").read_text())
+        if manifest["version"] != args.version:
+            parser.error("plugin version and release version must match")
         package = stage / prefix
         binaries = package / "build"
         binaries.mkdir(parents=True)
-        env = dict(os.environ, CGO_ENABLED="0", GOOS="linux", GOARCH="amd64")
-        subprocess.run(["go", "build", "-trimpath", "-o", str(binaries) + "/", "./cmd/omabit", "./backend/cmd/urbit-collector", "./backend/cmd/urbit-runner"], cwd=ROOT, env=env, check=True)
-        schema = int(subprocess.check_output([binaries / "urbit-runner", "state-schema"], text=True, timeout=10).strip())
+        env = go_environment(stage, go)
+        check_modules(source, env, go)
+        subprocess.run([go, "build", "-mod=readonly", "-buildvcs=true", "-trimpath", "-o", str(binaries) + "/", "./cmd/omabit", "./backend/cmd/urbit-collector", "./backend/cmd/urbit-runner"], cwd=source, env=env, check=True)
+        schema = int(subprocess.check_output([binaries / "urbit-runner", "state-schema"], cwd=source,
+                                             env=env, text=True, timeout=10).strip())
         (package / "plugins").mkdir()
-        shutil.copytree(ROOT / "plugins/omabit", package / "plugins/omabit")
+        shutil.copytree(source / "plugins/omabit", package / "plugins/omabit")
         (package / "scripts").mkdir()
         for name in ("install-panel.py", "install-services.sh"):
-            shutil.copy2(ROOT / "scripts" / name, package / "scripts" / name)
-        shutil.copytree(ROOT / "deploy", package / "deploy")
+            shutil.copy2(source / "scripts" / name, package / "scripts" / name)
+        shutil.copytree(source / "deploy", package / "deploy")
         # install-services.sh consumes this file in addition to the unit templates.
         (package / "internal/rootless/assets").mkdir(parents=True)
-        shutil.copy2(ROOT / "internal/rootless/assets/daemon.json", package / "internal/rootless/assets/daemon.json")
-        shutil.copy2(ROOT / "docs/release-install.md", package / "README.md")
+        shutil.copy2(source / "internal/rootless/assets/daemon.json", package / "internal/rootless/assets/daemon.json")
+        shutil.copy2(source / "docs/release-install.md", package / "README.md")
         installer = package / "install.sh"
         installer.write_text('#!/usr/bin/env bash\nset -euo pipefail\nROOT="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"\nexec python3 -B "$ROOT/scripts/install-panel.py" "$@"\n')
         installer.chmod(0o755)
-        metadata = {"version": args.version, "prerelease": "-rc." in args.version, "source_commit": commit, "platform": "linux/amd64", "go_version": subprocess.check_output(["go", "version"], env=env, text=True).strip(), "schema": schema, "execution_model": "owner-user", "default_pier_root": "/srv/urbit/piers", "runtime": "4.6-5a7614f", "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd", "engine": "29.7.2", "pill": {"sha256": args.pill_sha256, "default_url": manifest["barWidget"]["defaults"]["recommendedPillUrl"], "application_inventory": "not_asserted"}}
+        metadata = {"version": args.version, "prerelease": "-rc." in args.version, "source_commit": commit, "platform": "linux/amd64", "go_version": subprocess.check_output([go, "version"], env=env, text=True).strip(), "schema": schema, "execution_model": "owner-user", "default_pier_root": "/srv/urbit/piers", "runtime": "4.6-5a7614f", "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd", "engine": "29.7.2", "pill": {"sha256": args.pill_sha256, "default_url": manifest["barWidget"]["defaults"]["recommendedPillUrl"], "application_inventory": "not_asserted"}}
+        metadata.update(source_tree=source_git(source, "rev-parse", "HEAD^{tree}").strip(),
+                        source_epoch=epoch, source_inputs="git-commit-blobs-v1",
+                        build_environment="isolated-go-v1")
         (package / "BUILD.json").write_text(json.dumps(metadata, indent=2) + "\n")
         checksums(package)
         assets = stage / "assets"
@@ -139,7 +265,7 @@ def main():
         metadata["assets"] = [artifact(p) for p in sorted(assets.iterdir())]
         (assets / "release.json").write_text(json.dumps(metadata, indent=2) + "\n")
         checksums(assets)
-        if git("status", "--porcelain") or git("rev-parse", "HEAD") != commit:
+        if clean_commit(source) != commit or clean_commit(ROOT) != commit:
             raise RuntimeError("source changed during packaging")
         assets.rename(final)
     print("Built release assets:", final)

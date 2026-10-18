@@ -105,6 +105,9 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	if len(args) == 1 && args[0] == "management-offline-state" {
+		return runOfflineState(ctx, os.Stdin, stdout, stderr)
+	}
 	if len(args) == 1 && args[0] == "state-schema" {
 		fmt.Fprintln(stdout, managed.StateSchemaVersion)
 		return 0

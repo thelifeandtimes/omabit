@@ -1,0 +1,24 @@
+package collection
+
+import (
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
+
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
+)
+
+// Use the original private registry writer without contacting an SSH endpoint.
+func TestG02GenerateHistoricalCollection(t *testing.T) {
+	dir := os.Getenv("G02_OUTPUT_DIR")
+	if dir == "" { t.Fatal("use scripts/test-historical-upgrades.py") }
+	id, err := os.ReadFile(filepath.Join(dir, "runner-id"))
+	if err != nil { t.Fatal(err) }
+	r, err := Open(filepath.Join(dir, "collector"))
+	if err != nil { t.Fatal(err) }
+	err = r.write(registryFile{Version: 1, Connections: []Connection{{Name: "synthetic", Transport: "ssh",
+		SSH: &client.SSHConfig{Host: "g02.invalid", ConfigFile: "/synthetic/g02/ssh-config"}, RunnerID: string(id),
+		Mode: "development-managed", EnrolledAt: time.Date(2000,1,1,0,0,0,0,time.UTC), Revision: 3}}})
+	if err != nil { t.Fatal(err) }
+}

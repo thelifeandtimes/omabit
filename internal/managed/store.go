@@ -139,6 +139,15 @@ func (s *store) initialize() error {
 		return err
 	}
 	defer tx.Rollback()
+	if err := s.initializeTransaction(tx); err != nil {
+		return err
+	}
+	return tx.Commit()
+}
+
+// Shared by ordinary opening and offline activation, which commits the schema
+// migration together with its management fence while holding the runtime flock.
+func (s *store) initializeTransaction(tx *sql.Tx) error {
 	var version int
 	if err := tx.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		return err
@@ -190,7 +199,7 @@ CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TE
 	if _, err := hex.DecodeString(strings.TrimPrefix(s.runnerID, "runner-")); err != nil {
 		return errors.New("invalid stable runner identity")
 	}
-	return tx.Commit()
+	return nil
 }
 
 type querier interface {
@@ -363,7 +372,13 @@ func (s *store) registerInstance(actor string, req protocol.CreateFakeRequest, s
 }
 
 func (s *store) registerKind(actor string, req protocol.CreateFakeRequest, source *protocol.ImportSource, comet bool) (protocol.Operation, bool, error) {
+	return s.registerKindReplay(actor, req, source, comet, false)
+}
 
+// registerKindReplay retains the historical fingerprint and returns only its
+// actor-scoped receipt when replayOnly is set. The guard precedes all admission
+// checks and effects for a new registration.
+func (s *store) registerKindReplay(actor string, req protocol.CreateFakeRequest, source *protocol.ImportSource, comet, replayOnly bool) (protocol.Operation, bool, error) {
 	if req.Bootstrap != nil && (!protocol.ValidBootstrap(req.Bootstrap) || source != nil) {
 		return protocol.Operation{}, false, bad("bootstrap selection applies only to new ships; choose bare or a staged recommended pill")
 	}
@@ -385,9 +400,6 @@ func (s *store) registerKind(actor string, req protocol.CreateFakeRequest, sourc
 	}
 	if !pierstore.ValidPath(location) || (comet && pierstore.Kind(location) != "comet") || (!comet && pierstore.Kind(location) != "fake") {
 		return protocol.Operation{}, false, bad("choose a relative pier path in the appropriate fakeships or livenet/comets tree")
-	}
-	if err := s.checkStorage(location); err != nil {
-		return protocol.Operation{}, false, err
 	}
 	var fake *runtimequalify.ManagedFake
 	if req.FakeShip != "" || req.PierName != "" {
@@ -429,6 +441,12 @@ func (s *store) registerKind(actor string, req protocol.CreateFakeRequest, sourc
 	defer tx.Rollback()
 	if op, found, err := replay(tx, actor, req.RequestID, fingerprint); found || err != nil {
 		return op, true, err
+	}
+	if replayOnly {
+		return protocol.Operation{}, false, conflict("replay_not_found", "no matching creation receipt exists for this actor; replay-only requests cannot create a ship")
+	}
+	if err := s.checkStorage(location); err != nil {
+		return protocol.Operation{}, false, err
 	}
 	if err := validateConfig(req.Config); err != nil {
 		return protocol.Operation{}, false, err
@@ -1136,8 +1154,33 @@ func (s *store) reconcileInterrupted() error {
 		if err != nil {
 			return err
 		}
+		// Acceptance changes desired intent, but a queued Start has not crossed
+		// beginOperation's dispatch boundary. Preserve its previous observation
+		// and private fences rather than inventing a provisioning failure. A
+		// retained runtime callback is contrary evidence even for a legacy queued
+		// receipt, so that case still takes the conservative reconciliation path.
+		queuedStart := op.Kind == "start" && op.Status == "queued"
+		if queuedStart {
+			var hasRuntime bool
+			if err := tx.QueryRow("SELECT runtime IS NOT NULL FROM operations WHERE id=?", op.ID).Scan(&hasRuntime); err != nil {
+				return err
+			}
+			queuedStart = !hasRuntime
+		}
 		now := time.Now().UTC()
 		op.Status, op.Message, op.FinishedAt = "interrupted", "runner restarted before the operation outcome was committed; inspect before retrying", &now
+		if queuedStart {
+			op.Message = "runner restarted before the queued start was dispatched; submit a new request to retry"
+			v.Public.ActiveOperationID = ""
+			v.Startup, v.Public.Resources = nil, nil
+			if err := saveOperation(tx, op); err != nil {
+				return err
+			}
+			if err := saveInstance(tx, v); err != nil {
+				return err
+			}
+			continue
+		}
 		if strings.HasSuffix(op.Kind, "-handoff") && v.Runtime.Handoff != nil {
 			v.Runtime.Handoff.Error = "Handoff interrupted; continue the same move to reconcile its recorded phase."
 			v.Public.Handoff = v.Runtime.Handoff

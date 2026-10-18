@@ -1,6 +1,7 @@
 package runtimequalify
 
 import (
+	"reflect"
 	"regexp"
 	"time"
 
@@ -22,6 +23,7 @@ type ManagedState struct {
 	Bootstrap            *protocol.Bootstrap    `json:"bootstrap,omitempty"`
 	Handoff              *protocol.Handoff      `json:"handoff,omitempty"`
 	HandoffSigningKey    []byte                 `json:"handoff_signing_key,omitempty"`
+	HandoffStaging       *ManagedHandoffStaging `json:"handoff_staging,omitempty"`
 	ID                   string                 `json:"id"`
 	Port                 uint16                 `json:"port"`
 	Prepared             bool                   `json:"prepared"`
@@ -56,6 +58,19 @@ type StartupResumeIntent struct {
 type ManagedDeletion struct {
 	Stage string                      `json:"stage"`
 	Mount pierstore.DirectoryIdentity `json:"mount"`
+	Tree  *pierstore.RemovalTree      `json:"tree,omitempty"`
+}
+
+// Staging is private transfer evidence, never part of the signed public offer.
+// An incomplete attempt is retained when a fresh attempt is needed; retries
+// never recursively remove data whose individual children were not recorded.
+type ManagedHandoffStaging struct {
+	TransferID string                      `json:"transfer_id"`
+	SHA256     string                      `json:"sha256"`
+	Path       string                      `json:"path"`
+	Directory  pierstore.DirectoryIdentity `json:"directory"`
+	Pier       pierstore.Identity          `json:"pier"`
+	Ready      bool                        `json:"ready"`
 }
 
 type ManagedExternalImport struct {
@@ -68,12 +83,19 @@ type ManagedExternalImport struct {
 	HeldPath    string                   `json:"held_path,omitempty"`
 }
 
-// Recovery only finishes a retained prepared external enrollment. It cannot
+// Recovery only finishes a retained external enrollment. It cannot
 // resume copying, bootstrap a new pier, or change an existing runtime's ports.
 func (s ManagedState) ImportRecoveryEligible() bool {
+	if s.Initialized {
+		var ok bool
+		s, ok = s.legacyImportCompletionCandidate()
+		if !ok {
+			return false
+		}
+	}
 	publication := s.Boot == nil || s.Boot.Pill == nil && s.Comet != nil && s.NativeShip == s.Comet.Ship && s.networkIdentityValid() && s.AmesPort >= 1024
 	return s.ExternalImport != nil && s.ExternalImport.Stage == "enrolling" &&
-		s.Prepared && !s.Initialized && s.Storage != nil && !s.Storage.Uncertain &&
+		(s.Prepared || reflect.DeepEqual(s.Runtime, Result{})) && !s.Initialized && s.Storage != nil && !s.Storage.Uncertain &&
 		s.Storage.Identity.Inode != 0 && s.Storage.Identity.UrbInode != 0 && s.Storage.MountIdentity.Inode != 0 &&
 		s.Adoption != nil && s.Adoption.Uncertain && !s.Adoption.Verified && s.Adoption.FinishedAt == nil &&
 		s.Adoption.Fingerprint == pierstore.Fingerprint(s.Storage.Identity) &&
@@ -82,6 +104,29 @@ func (s ManagedState) ImportRecoveryEligible() bool {
 		(s.Fake == nil || !s.Fake.Uncertain) &&
 		(s.Comet == nil || !s.Comet.Uncertain && s.Comet.StartedAt == nil && s.Comet.FinishedAt == nil) &&
 		len(s.Runtime.Containers) == 0 && s.Runtime.Network == nil
+}
+
+// Older enrollment completion wrote Initialized before the enclosing import's
+// complete phase. Normalize only that finished evidence into a recovery proposal.
+// Copy the pointer-backed records before clearing fields: admission and snapshot
+// queries must never mutate the retained journal state or its timestamps.
+func (s ManagedState) legacyImportCompletionCandidate() (ManagedState, bool) {
+	if !s.Prepared || !s.Initialized || s.Adoption == nil || s.Adoption.Uncertain || s.Adoption.Verified || s.Adoption.FinishedAt == nil || s.Adoption.FinishedAt.IsZero() {
+		return s, false
+	}
+	if s.Comet != nil {
+		if s.Comet.Uncertain || !s.networkIdentityValid() || s.Comet.StartedAt == nil || s.Comet.StartedAt.IsZero() ||
+			s.Comet.FinishedAt == nil || s.Comet.FinishedAt.IsZero() || s.Comet.FinishedAt.Before(*s.Comet.StartedAt) || s.Adoption.FinishedAt.Before(*s.Comet.FinishedAt) {
+			return s, false
+		}
+		comet := *s.Comet
+		comet.StartedAt, comet.FinishedAt = nil, nil
+		s.Comet = &comet
+	}
+	adoption := *s.Adoption
+	adoption.Uncertain, adoption.FinishedAt = true, nil
+	s.Adoption, s.Initialized = &adoption, false
+	return s, true
 }
 
 func (s ManagedState) ExternalImportInFlight() bool {

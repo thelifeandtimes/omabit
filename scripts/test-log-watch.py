@@ -5,8 +5,8 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+from desktop_fixture import ROOT, run_qs
 
-ROOT = Path(__file__).resolve().parents[1]
 
 HELPER = r'''#!/usr/bin/env python3
 import datetime,json,os,pathlib,signal,sys,time
@@ -173,16 +173,7 @@ with tempfile.TemporaryDirectory(prefix="omabit-log-watch-") as temporary:
     helper.write_text(HELPER)
     helper.chmod(0o700)
     (directory / "shell.qml").write_text(QML.replace("HELPER", json.dumps(str(helper))))
-    runtime = directory / "runtime"
-    runtime.mkdir(mode=0o700)
-    display = os.environ["WAYLAND_DISPLAY"]
-    if not display.startswith("/"):
-        display = str(Path(os.environ["XDG_RUNTIME_DIR"]) / display)
-    env = dict(os.environ, WAYLAND_DISPLAY=display, XDG_RUNTIME_DIR=str(runtime), XDG_STATE_HOME=str(directory / "state"))
-    try:
-        result = subprocess.run(["qs", "--no-color", "-p", str(directory)], env=env, capture_output=True, text=True, timeout=45)
-    except subprocess.TimeoutExpired as e:
-        raise AssertionError((e.stdout or b"").decode() + (e.stderr or b"").decode()) from e
+    result = run_qs(directory, timeout=45)
     text = result.stdout + result.stderr
     assert result.returncode == 0 and text.count("PASS:") == 3 and not any(e in text for e in ("Error:", "Unable to assign", "Binding loop")), text
     events = [json.loads(line) for line in (directory / "events.jsonl").read_text().splitlines()]

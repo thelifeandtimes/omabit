@@ -9,6 +9,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"slices"
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
@@ -43,7 +44,11 @@ type bufferedConn struct {
 
 func (c *bufferedConn) Read(p []byte) (int, error) { return c.reader.Read(p) }
 
-func verifyConnection(ctx context.Context, conn net.Conn, identity Identity) (_ net.Conn, err error) {
+func verifyConnection(ctx context.Context, conn net.Conn, identity Identity) (net.Conn, error) {
+	return verifyConnectionRequirements(ctx, conn, &identity)
+}
+
+func verifyConnectionRequirements(ctx context.Context, conn net.Conn, identity *Identity) (_ net.Conn, err error) {
 	stop := context.AfterFunc(ctx, func() { conn.Close() })
 	defer func() {
 		stop()
@@ -95,8 +100,13 @@ func verifyConnection(ctx context.Context, conn net.Conn, identity Identity) (_ 
 	if hello.ProtocolVersion != protocol.Version {
 		return nil, errors.New("incompatible runner protocol during identity verification")
 	}
-	if err := identity.Check(hello.RunnerID, hello.Mode); err != nil {
-		return nil, err
+	if identity != nil {
+		if err := identity.Check(hello.RunnerID, hello.Mode); err != nil {
+			return nil, err
+		}
+	}
+	if replay, _ := ctx.Value(creationReplayKey{}).(bool); replay && !slices.Contains(hello.Features, protocol.CreationReplayFeature) {
+		return nil, errors.New("runner no longer supports creation-replay-only; historical request was not forwarded")
 	}
 	if err := ctx.Err(); err != nil {
 		return nil, err

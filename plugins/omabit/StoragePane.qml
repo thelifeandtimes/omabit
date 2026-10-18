@@ -21,19 +21,36 @@ Column {
   readonly property var runners: service ? service.connections.filter(function(c){return Model.hasFeature(c,"pier-storage")}) : []
   readonly property var connection: preferredConnection || runners[runner.currentIndex] || null
   readonly property var catalogue: connection && connection.snapshot ? connection.snapshot.piers : null
+  readonly property string moveDestination: moveLocation.rootID ? Model.storagePath(moveLocation.rootID,destination.text) : ""
   spacing: Style.space(12)
-  onConnectionChanged: { if (selected && (!connection || selected.runner!==connection.runner_id)) selected=null }
+  onConnectionChanged: invalidateMove()
+  function invalidateMove() {
+    if (selected && (!connection || selected.runner!==connection.runner_id)) selected=null
+    var current=service && connection ? service.connections.filter(function(c){return c.name===connection.name && c.runner_id===connection.runner_id})[0] : null
+    if (moving && (!service || !Model.currentPierMove(current,moving,service.now))) { moving=null;submitted=false }
+  }
+  function reviewMove(ship) {
+    var target=Model.pierMoveTarget(connection,ship)
+    if (!service || !Model.currentPierMove(connection,target,service.now)) return false
+    var parts=Model.splitStoragePath(target.path)
+    if (!moveLocation.selectRoot(parts.root)) return false
+    moving=target;selected=null;submitted=false;destination.text=parts.path
+    return true
+  }
   Connections {
     target: root.service
+    function onConnectionsChanged() { root.invalidateMove() }
+    function onNowChanged() { if (!root.submitted) root.invalidateMove() }
     function onStorageOutcomeChanged() {
       var o=root.service.storageOutcome
-      if (o && root.connection && o.runner===root.connection.runner_id && o.status==="failed" && (root.selected && o.path===root.selected.source.path || root.moving && o.instance===root.moving.id)) root.submitted=false
+      if (o && root.connection && o.runner===root.connection.runner_id && o.status==="failed" && (root.selected && o.path===root.selected.source.path || root.moving && o.instance===root.moving.instance)) root.submitted=false
     }
   }
   function choose(source) {
     if (source.enrolled_by && source.moved !== true) { reviewError="This pier is already enrolled as "+source.enrolled_by+"."; return }
     if (!source.enrolled_by) {
-      selected=null;showImport=true;importer.submitted=false
+      if (!importer.reviewAnother()) return
+      selected=null;moving=null;showImport=true
       importer.sourcePath=Model.absolutePierPath(connection,source.path)
       importer.inspect();return
     }
@@ -106,7 +123,7 @@ Column {
       Label { width: parent.width; text: Model.instanceTitle(registered.modelData)+" · "+registered.modelData.id+"\n"+Model.absolutePierPath(root.connection,registered.modelData.pier_path || ""); caption: true }
       Label { width: parent.width; visible: !!registered.modelData.external_import && registered.modelData.external_import.stage!=="complete"; text: visible ? "Import phase: "+registered.modelData.external_import.stage+" · "+(registered.modelData.external_import.copied_bytes || 0)+" bytes copied\nSource: "+registered.modelData.external_import.source+"\nHeld source: "+(registered.modelData.external_import.holding_path || "not moved")+"\nInspect the activity receipt before continuing an interrupted import." : ""; secondary: true; caption: true }
       ImportRecoveryPane { width:parent.width;service:root.service;connection:root.connection;instance:registered.modelData }
-      ActionButton { property var ship: registered.modelData; text: "Move…"; compact: true; enabled: root.connection && root.connection.access_role==="operator" && !root.service.busy && !Model.handoffFenced(ship) && !ship.delete_pending && ship.desired_state==="stopped" && !ship.recovery_required && !ship.active_operation_id; onClicked: {root.moving=JSON.parse(JSON.stringify(ship));root.selected=null;root.submitted=false;destination.text=ship.pier_path || ""} }
+      ActionButton { property var ship: registered.modelData; text: "Move…"; compact: true; enabled: root.connection && root.connection.access_role==="operator" && !root.service.busy && !Model.handoffFenced(ship) && !ship.delete_pending && ship.desired_state==="stopped" && !ship.recovery_required && !ship.active_operation_id; onClicked: root.reviewMove(ship) }
       DeletePierPane { width: parent.width; service: root.service; connection: root.connection; instance: registered.modelData }
     }
   }
@@ -114,7 +131,7 @@ Column {
     width: parent.width;spacing: Style.space(8);visible: !!root.moving
     StorageLocationSelector { id: moveLocation; width: parent.width; connection: root.connection; enabled: !root.submitted }
     Field { id: destination; width: parent.width; placeholderText: "Destination path below the selected location"; enabled: !root.submitted }
-    ActionButton { text: root.submitted ? "Move submitted" : "Move stopped pier"; enabled: root.moving && Model.storagePath(moveLocation.rootID,destination.text)!==root.moving.pier_path && !root.submitted && !root.service.busy && Model.validPierPath(destination.text); onClicked: if(root.service.movePier(root.connection,root.moving,Model.storagePath(moveLocation.rootID,destination.text)))root.submitted=true }
+    ActionButton { text: root.submitted ? "Move submitted" : "Move stopped pier"; enabled: root.moving && root.moveDestination!==root.moving.path && !root.submitted && !root.service.busy && Model.validPierPath(root.moveDestination) && Model.currentPierMove(root.connection,root.moving,root.service.now); onClicked: if(root.service.movePier(root.connection,root.moving,moveLocation.rootID,destination.text))root.submitted=true }
     Label { width: parent.width; text: "Moves are same-filesystem, no-overwrite renames. Keep external moves stopped, then use discovery to reconnect the same pier."; secondary: true;caption:true }
   }
   Label { width: parent.width; visible: root.service && !!root.service.lastError; text: root.service ? root.service.lastError : ""; color: Design.danger }

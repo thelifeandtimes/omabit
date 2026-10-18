@@ -129,7 +129,7 @@ func (q *qualifier) unlinkEpochTarget(ctx context.Context, log *os.Root, d *Epoc
 			return err
 		}
 	}
-	if err := ctx.Err(); err != nil {
+	if err := q.stoppedPruneBoundary(ctx); err != nil {
 		return err
 	}
 	if _, err := boundedEntries(target, 0); err != nil {

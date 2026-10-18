@@ -14,6 +14,11 @@ See [binary bundle installation](docs/release-install.md),
 [release notes and qualification scope](docs/release-rc11.md),
 and [Recommended Apps pill provenance](docs/pill-release.md). Final 0.1.0 is still pending.
 
+Post-RC.11 source includes the [adversarial-review fixes and qualification record](docs/reviews/2026-10-18-rc11-remediation.md),
+with the same desktop layout and component split. Source state is now schema20;
+existing RC.11 hosts use the documented [one-time offline management upgrade](docs/management-offline-upgrade.md).
+Published RC.11 assets and their pins still identify the original release.
+
 RC.3 makes `|mount` → ordinary copy/editor saves → `|commit` work directly on
 user-owned files. Default piers live at **`/srv/urbit/piers/`**; custom locations
 use ordinary user permissions. See the [owner-user runtime](docs/owner-user-runtime.md).
@@ -115,6 +120,7 @@ go test ./...
 go vet ./...
 go build -o ./build/ ./cmd/... ./backend/cmd/...
 node scripts/test-panel-model.js
+python3 -B scripts/test-rc11-panel-offscreen.py --require-qt
 python3 -B scripts/test-panel.py --windows
 python3 -B scripts/test-log-watch.py
 python3 -B scripts/test-import-recovery.py

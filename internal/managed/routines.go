@@ -210,7 +210,7 @@ func (r *Server) scheduleLoop() {
 func (r *Server) dispatchRoutines(now time.Time) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	if r.closing || r.failed.Load() {
+	if r.closing || r.failed.Load() || r.updateFence.Held {
 		return
 	}
 	all, err := instances(r.s.db)

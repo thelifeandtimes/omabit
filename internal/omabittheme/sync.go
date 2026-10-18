@@ -14,6 +14,9 @@ func Sync(ctx context.Context, r *collection.Registry, store *Store, ship collec
 	if err := palette.Validate(); err != nil {
 		return err
 	}
+	if err := store.PruneForgotten(ctx, r); err != nil {
+		return err
+	}
 	unlock, err := store.LockShip(ship.ID)
 	if err != nil {
 		if !force && errors.Is(err, ErrBusy) {

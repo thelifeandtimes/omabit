@@ -1,0 +1,207 @@
+package managed
+
+// Compiled ONLY inside a tracked historical source export by the Python driver.
+// All state is synthetic. No server, backend, Docker, SSH, or pier I/O is used.
+// synctest fixes time; rand.Reader fixes IDs before original code persists them.
+import (
+	"bytes"
+	"crypto/ed25519"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/binary"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+	"testing/synctest"
+	"time"
+
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/routines"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
+)
+
+type g02Random struct { n uint64 }
+func (r *g02Random) Read(p []byte) (int, error) {
+	for i := range p {
+		block := sha256.Sum256([]byte(fmt.Sprintf("G02 synthetic random %d", r.n/32)))
+		p[i] = block[r.n%32]
+		r.n++
+	}
+	return len(p), nil
+}
+
+func TestG02GenerateHistorical(t *testing.T) {
+	if os.Getenv("G02_OUTPUT_DIR") == "" { t.Fatal("use scripts/test-historical-upgrades.py") }
+	synctest.Test(t, g02Generate)
+}
+
+func g02Generate(t *testing.T) {
+	check := func(err error) { t.Helper(); if err != nil { t.Fatal(err) } }
+	old := rand.Reader
+	rand.Reader = &g02Random{}
+	defer func() { rand.Reader = old }()
+	dir := os.Getenv("G02_OUTPUT_DIR")
+	check(os.Mkdir(filepath.Join(dir, "state"), 0700))
+	s, err := openStore(filepath.Join(dir, "state"))
+	check(err)
+	defer s.close()
+	s.portAvailable = func(string, uint16) bool { return true }
+	s.mode = DevelopmentMode
+	/*STORAGE_VALIDATOR*/
+	var schema int
+	check(s.db.QueryRow("PRAGMA user_version").Scan(&schema))
+	if schema != /*SCHEMA*/ { t.Fatalf("original writer produced schema %d", schema) }
+
+	// Public keys are generated from a documented, non-secret test-only seed.
+	seed := sha256.Sum256([]byte("G02 PUBLIC SYNTHETIC SIGNING SEED; NEVER USE"))
+	private := ed25519.NewKeyFromSeed(seed[:])
+	public := private.Public().(ed25519.PublicKey)
+	wire := make([]byte, 51)
+	binary.BigEndian.PutUint32(wire, 11)
+	copy(wire[4:], "ssh-ed25519")
+	binary.BigEndian.PutUint32(wire[15:], 32)
+	copy(wire[19:], public)
+	publine := "ssh-ed25519 " + base64.StdEncoding.EncodeToString(wire)
+	grant, err := access.AuthorizedKey([]byte(publine), "operator")
+	check(err)
+	g, err := access.ParseLine(grant)
+	check(err)
+	actor := "ssh-key:" + g.Fingerprint
+	check(os.WriteFile(filepath.Join(dir, "authorized_keys"), []byte(grant+"\n"), 0600))
+	check(os.WriteFile(filepath.Join(dir, "known_hosts"), []byte("g02.invalid "+publine+"\n"), 0600))
+
+	now := time.Now().UTC()
+	ids := []string{"running", "stopped", "interrupted", "pending", "queued", "moved"}
+	for i, id := range ids {
+		req := protocol.CreateFakeRequest{ID: id, Label: "Synthetic " + id, RequestID: "register-" + id,
+			Config: protocol.Configuration{HTTPPort: uint16(18080+i), AmesPort: 34343, Loom: 31},
+			PierPath: "fakeships/custom-"+id+"/pier"}
+		/*NAMED_ROOT*/
+		/*SETTINGS*/
+		_, hit, err := s.register(actor, req)
+		check(err)
+		if hit { t.Fatal("unexpected replay") }
+		if id == "queued" || id == "pending" { continue }
+		// Original admission/begin/runtime-journal/finish code; the runtime
+		// observation is synthetic, just like the historical package's fake backend.
+		op, _, err := s.accept(actor, id, protocol.OperationRequest{Kind: "start", RequestID: "start-"+id, ExpectedRevision: 1})
+		check(err)
+		op, v, err := s.beginOperation(op.ID)
+		check(err)
+		v.Runtime.Prepared, v.Runtime.Initialized = true, true
+		v.Runtime.Storage.Identity = pierstore.Identity{Device: 7, Inode: uint64(200+i), UrbDevice: 7, UrbInode: uint64(300+i), Birth: "1000000000.000000001", UrbBirth: "1000000000.000000002"}
+		v.Runtime.Storage.MountIdentity = pierstore.DirectoryIdentity{Device: 7, Inode: uint64(100+i), Birth: "1000000000.000000000"}
+		v.Runtime.Runtime.Containers = []runtimequalify.ContainerRecord{{ID: strings.Repeat(fmt.Sprint(i+1), 64), Name: "g02-synthetic-"+id, Kind: "fake-resume", CreateDispatched: true}}
+		check(s.runtimeUpdate(id, op.ID, v.Runtime))
+		check(s.finish(op, v.Runtime, runtimequalify.ManagedObservation{State: "running", Health: "healthy", Endpoint: fmt.Sprintf("http://127.0.0.1:%d", req.Config.HTTPPort)}, nil, false))
+		if id == "running" { continue }
+		op, _, err = s.accept(actor, id, protocol.OperationRequest{Kind: "stop", RequestID: "stop-"+id, ExpectedRevision: 1})
+		check(err)
+		op, v, err = s.beginOperation(op.ID)
+		check(err)
+		if id == "interrupted" { continue }
+		v.Runtime.Runtime.Containers[0].Removed = true
+		check(s.runtimeUpdate(id, op.ID, v.Runtime))
+		check(s.finish(op, v.Runtime, runtimequalify.ManagedObservation{State: "stopped", Health: "unknown"}, nil, false))
+	}
+	check(s.reconcileInterrupted()) // includes an already-interrupted historical receipt
+	// Same request ID, independent authenticated actor: a distinct durable receipt.
+	_, _, err = s.register("local-uid:4242", protocol.CreateFakeRequest{ID: "other-actor", RequestID: "register-queued",
+		Config: protocol.Configuration{HTTPPort: 18100, AmesPort: 34343, Loom: 31}, PierPath: "fakeships/other-actor/pier"})
+	check(err)
+	// Exercise each release's actual enrollment/Ames-publication contract. The
+	// supplied discovery observation is invented, never read from a real pier.
+	enrollment := protocol.EnrollPierRequest{ID: "enrolled", Label: "Synthetic enrollment", Ship: "~sampel-palnet",
+		Path: "livenet/planets/synthetic/pier", Fingerprint: strings.Repeat("e", 64), HTTPPort: 18101,
+		RequestID: "enroll-existing", ConfirmStopped: true}
+	enrollmentFingerprint, err := json.Marshal(struct { Kind string; Request protocol.EnrollPierRequest }{"enroll-pier", enrollment})
+	check(err)
+	source := pierstore.Candidate{Path: enrollment.Path, Kind: "planet", Fingerprint: enrollment.Fingerprint,
+		Identity: pierstore.Identity{Device: 7, Inode: 500, UrbDevice: 7, UrbInode: 501, Birth: "1000000000.000000003", UrbBirth: "1000000000.000000004"},
+		MountIdentity: pierstore.DirectoryIdentity{Device: 7, Inode: 499, Birth: "1000000000.000000005"}}
+	enrolledOp, err := s.enrollPier(actor, enrollment, source, string(enrollmentFingerprint))
+	check(err)
+	enrolledOp, enrolled, err := s.beginOperation(enrolledOp.ID)
+	check(err)
+	enrolled.Runtime.Prepared, enrolled.Runtime.Initialized = true, true
+	enrolled.Runtime.Adoption.Uncertain, enrolled.Runtime.Adoption.Verified = false, true
+	enrolled.Runtime.Adoption.FinishedAt = &now
+	check(s.runtimeUpdate("enrolled", enrolledOp.ID, enrolled.Runtime))
+	check(s.finish(enrolledOp, enrolled.Runtime, runtimequalify.ManagedObservation{State: "stopped", Health: "unknown"}, nil, false))
+	for _, id := range []string{"running", "stopped"} {
+		_, err := s.putRoutine(actor, id, routines.Update{ExpectedInstanceRevision: 1,
+			Config: routines.Config{Enabled: true, Action: "pack", Weekdays: []int{1,4}, HourUTC: 3, MinuteUTC: 15, WindowMinutes: 30, StopRunning: id == "stopped", Resume: id == "stopped"}})
+		check(err)
+	}
+	// Preserve both queued-only and journaled in-flight work for current reconciliation.
+	for _, id := range []string{"pending", "queued"} {
+		op, _, err := s.accept(actor, id, protocol.OperationRequest{Kind: "stop", RequestID: "stop-"+id, ExpectedRevision: 1})
+		check(err)
+		if id == "pending" {
+			_, v, err := s.beginOperation(op.ID)
+			check(err)
+			check(s.runtimeUpdate(id, op.ID, v.Runtime))
+		}
+	}
+
+	// A source-side completed signed transfer. Use the original protocol's
+	// CommitmentBytes and original persistence helpers, including its v1/v2 shape.
+	v, err := loadInstance(s.db, "moved")
+	check(err)
+	h := &protocol.Handoff{ID: strings.Repeat("a", 32), Direction: "out", State: "ready", SourceRunner: s.runnerID,
+		SourceInstance: "moved", DestinationRunner: "runner-"+strings.Repeat("b", 32), DestinationInstance: "arrived",
+		Ship: "~zod", Mode: "fake", SHA256: strings.Repeat("c", 64), TreeDigest: strings.Repeat("d", 64), Bytes: 42,
+		CreatedAt: now, VerifyKey: hex.EncodeToString(public)}
+	/*HANDOFF_SETTINGS*/
+	v.Runtime.Handoff, v.Runtime.HandoffSigningKey = h, private
+	tx, err := s.db.Begin()
+	check(err)
+	op, err := handoffOperation(tx, &v, actor, "commit-handoff", "commit-moved")
+	check(err)
+	check(tx.Commit())
+	op, v, err = s.beginOperation(op.ID)
+	check(err)
+	h = v.Runtime.Handoff
+	h.State = "moved"
+	h.Commitment = hex.EncodeToString(ed25519.Sign(private, h.CommitmentBytes()))
+	if !h.ValidCommitment(h.Commitment) { t.Fatal("original signature validation failed") }
+	check(s.runtimeUpdate("moved", op.ID, v.Runtime))
+	check(s.finish(op, v.Runtime, runtimequalify.ManagedObservation{State: "moved", Health: "unknown"}, nil, false))
+	check(os.WriteFile(filepath.Join(dir, "commitment.bin"), h.CommitmentBytes(), 0600))
+	check(os.WriteFile(filepath.Join(dir, "runner-id"), []byte(s.runnerID), 0600))
+	/*ROOT_REGISTRY*/
+	check(s.close())
+}
+
+// json is also used when the selected historical release predates named roots.
+var _ = json.Marshal
+
+// The driver supplies a database upgraded by CURRENT openStore, then runs this
+// test with the original reader. This is a real cross-source downgrade refusal,
+// not a future version marker applied to an otherwise old database.
+func TestG02HistoricalOldReaderRefusal(t *testing.T) {
+	dir := os.Getenv("G02_SUCCESSOR_DIR")
+	if dir == "" { t.Skip("driver did not request a downgrade check") }
+	path := filepath.Join(dir, "runner.sqlite")
+	before, err := os.ReadFile(path)
+	if err != nil { t.Fatal(err) }
+	if len(before) < 64 { t.Fatal("truncated successor database") }
+	version := int(binary.BigEndian.Uint32(before[60:64]))
+	if version == currentSchema { t.Skip("current source has the same schema; no downgrade boundary") }
+	if version < currentSchema { t.Fatal("driver supplied an older database") }
+	for pass := 0; pass < 2; pass++ {
+		s, err := openStore(dir)
+		if err == nil { s.close(); t.Fatal("original reader accepted successor schema", version) }
+		after, err := os.ReadFile(path)
+		if err != nil { t.Fatal(err) }
+		if !bytes.Equal(before, after) { t.Fatal("original reader modified successor database") }
+	}
+	t.Logf("original schema%d refused real schema%d state without modification", currentSchema, version)
+}

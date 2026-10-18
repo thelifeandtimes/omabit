@@ -13,7 +13,6 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
-	"time"
 
 	serviceunits "git.thechristophgroup.org/thelifeandtimes/omabit/deploy/systemd"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
@@ -23,6 +22,12 @@ import (
 )
 
 func InstallOwnerHost(ctx context.Context, bundle string, public []byte, name string, progress func(string)) (HostResult, error) {
+	return InstallOwnerHostWithOptions(ctx, bundle, public, name, HostOptions{}, progress)
+}
+
+type HostOptions struct{ OfflineUpgrade bool }
+
+func InstallOwnerHostWithOptions(ctx context.Context, bundle string, public []byte, name string, options HostOptions, progress func(string)) (HostResult, error) {
 	i := newInstaller()
 	if i.euid != 0 || i.goos != "linux" || i.goarch != "amd64" {
 		return HostResult{}, errors.New("owner setup requires OS authorization on Linux x86-64")
@@ -37,6 +42,13 @@ func InstallOwnerHost(ctx context.Context, bundle string, public []byte, name st
 	if e1 != nil || e2 != nil {
 		return HostResult{}, errors.New("invalid owner IDs")
 	}
+	if options.OfflineUpgrade {
+		installed, err := ownerhost.Load()
+		if err != nil || installed == nil || installed.Name != p.Name || installed.UID != p.UID || installed.GID != p.GID || installed.Home != p.Home {
+			return HostResult{}, errors.New("offline upgrade requires the existing installed owner identity")
+		}
+		p = *installed // retain the installed pier root, including custom paths
+	}
 	f, err := os.Open("/proc/self/exe")
 	if err != nil {
 		return HostResult{}, err
@@ -45,6 +57,9 @@ func InstallOwnerHost(ctx context.Context, bundle string, public []byte, name st
 	binary, err := io.ReadAll(io.LimitReader(f, (128<<20)+1))
 	if err != nil {
 		return HostResult{}, err
+	}
+	if options.OfflineUpgrade {
+		return i.installOwnerOffline(ctx, bundle, public, binary, p, progress)
 	}
 	return i.installOwner(ctx, bundle, public, binary, p, probeHostRunner, progress)
 }
@@ -127,6 +142,25 @@ func freeSubIDs(text string, ids []uint64) (uint64, error) {
 }
 
 func (i *installer) ownerMappings(ctx context.Context, p ownerhost.Profile) error {
+	nss, err := i.readInstalled(ctx, "/etc/nsswitch.conf", maxOutput)
+	if err != nil {
+		return fmt.Errorf("cannot establish identity authority: %w", err)
+	}
+	if !hostsetup.FileSubIDAuthority(string(nss)) {
+		return errors.New("subordinate-ID NSS is not file-backed; configure reserved mappings through its authority")
+	}
+	local := hostsetup.LocalIdentityAuthority(string(nss))
+	var reserved hostsetup.SubIDReservations
+	if !local {
+		data, err := i.readInstalled(ctx, hostsetup.SubIDReservationsPath, 8192)
+		if err != nil {
+			return errors.New("external or unknown NSS identity sources require root-owned subid-reservations.json and preconfigured reserved subuid/subgid ranges; enumeration is not authoritative")
+		}
+		reserved, err = hostsetup.ParseSubIDReservations(data)
+		if err != nil {
+			return err
+		}
+	}
 	passwd, err := i.readInstalled(ctx, "/etc/passwd", maxOutput)
 	if err != nil {
 		return err
@@ -149,6 +183,16 @@ func (i *installer) ownerMappings(ctx context.Context, p ownerhost.Profile) erro
 			return err
 		}
 		status, detail := hostsetup.ValidateSubIDs(p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.ids)
+		if !local {
+			span := reserved.UID
+			if item.file == "subgid" {
+				span = reserved.GID
+			}
+			status, detail = hostsetup.ValidateReservedSubIDs(p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.ids, span)
+			if status != "pass" {
+				return fmt.Errorf("configure reserved %s ranges explicitly: %s", item.file, detail)
+			}
+		}
 		if status == "pass" {
 			continue
 		}
@@ -259,7 +303,7 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 	if err = i.parents(ctx, ownerhost.Path, true); err != nil {
 		return result, err
 	}
-	lockPath := "/etc/urbit-runner/.owner-setup.lock"
+	lockPath := "/etc/urbit-runner/.setup.lock"
 	if _, e := i.readInstalled(ctx, lockPath, 0); e != nil && !errors.Is(e, os.ErrNotExist) {
 		return result, e
 	}
@@ -355,13 +399,9 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 		return result, err
 	}
 	socket := fmt.Sprintf("/run/user/%d/urbit-runner/runner.sock", p.UID)
-	previousID := ""
-	if _, e := i.lstat(i.path(socket)); e == nil {
-		h, busy, e := probe(ctx, socket)
-		if e != nil || busy {
-			return result, errors.New("existing runner is unavailable or busy; inspect before update")
-		}
-		previousID = h.RunnerID
+	activation, err := i.prepareActivation(ctx, p.Name, socket, p.UID, binary, probe)
+	if err != nil {
+		return result, err
 	}
 	emit("access")
 	keys, e := i.readInstalled(ctx, access.DefaultKeys, 65536)
@@ -396,7 +436,7 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 		if _, e := i.lstat(i.path(sshConfigPath)); e == nil {
 			return result, errors.New("existing SSH host key is missing; refusing rotation")
 		}
-		if _, err = i.command(ctx, "/usr/bin/ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-f", hostKeyPath); err != nil {
+		if err = i.createHostKey(ctx); err != nil {
 			return result, err
 		}
 	} else if e != nil || len(key) == 0 {
@@ -411,6 +451,9 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 		return result, err
 	}
 	if _, err = access.AuthorizedKey(pub, "operator"); err != nil {
+		return result, err
+	}
+	if err = i.completeHostPublicKey(ctx, pub); err != nil {
 		return result, err
 	}
 	result.HostPublicKey = strings.Join(strings.Fields(string(pub))[:2], " ")
@@ -436,40 +479,20 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 			return result, err
 		}
 	}
-	if err = manager("stop", "urbit-runner.service"); err != nil {
-		return result, err
-	}
-	if err = i.installFile(ctx, access.ShellPath, binary, 0755, true); err != nil {
-		return result, err
-	}
 	if _, err = i.command(ctx, "/usr/bin/systemctl", "daemon-reload"); err != nil {
 		return result, err
 	}
 	if err = manager("daemon-reload"); err != nil {
 		return result, err
 	}
-	if err = manager("enable", "--now", "urbit-runner.service"); err != nil {
-		return result, err
-	}
 	if _, err = i.command(ctx, "/usr/bin/systemctl", "enable", "--now", "urbit-runner-ssh.service"); err != nil {
 		return result, err
 	}
 	emit("verify")
-	deadline, cancel := context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
-	for deadline.Err() == nil {
-		h, _, e := probe(deadline, socket)
-		if e == nil {
-			if h.Mode != "development-managed" || !strings.HasPrefix(h.RunnerID, "runner-") || previousID != "" && h.RunnerID != previousID {
-				return result, errors.New("runner identity changed")
-			}
-			result.RunnerID, result.Mode, result.SSHPort, result.Ready = h.RunnerID, h.Mode, SSHPort, true
-			return result, nil
-		}
-		select {
-		case <-deadline.Done():
-		case <-time.After(250 * time.Millisecond):
-		}
+	status, err := i.activateManagement(ctx, socket, activation, manager)
+	if err != nil {
+		return result, err
 	}
-	return result, errors.New("owner services installed but runner is not ready; inspect urbit-runner.service")
+	result.RunnerID, result.Mode, result.SSHPort, result.Ready = status.RunnerID, status.Mode, SSHPort, true
+	return result, nil
 }

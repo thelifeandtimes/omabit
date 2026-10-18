@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -191,6 +192,45 @@ func legacyCredential(data []byte, ship LegacyShip) ([]byte, error) {
 	return json.Marshal(map[string]any{"origin": old.URL, "ship": old.Ship, "cookie_name": old.Name, "cookie_value": old.Value, "expires": time.Now().UTC().Add(24 * time.Hour)})
 }
 
+func migratedPreference(source LegacyShip, entry collection.Ship) Preference {
+	return Preference{ID: entry.ID, Name: entry.Name, Origin: entry.Origin, Ship: entry.Ship, Automatic: source.Automatic, Pending: source.Pending, Revision: 1, Fingerprint: source.Fingerprint, LastTheme: source.LastTheme, LastPublished: source.LastPublished, LastError: source.LastError, AuthenticationRequired: source.AuthenticationRequired}
+}
+
+// Check the largest expected journal (all imported preferences and progress
+// entries) before disabling the old publisher or copying/clearing credentials.
+// The final Update guard also protects against concurrent preference changes.
+func preflightMigration(state *State) error {
+	raw, err := json.Marshal(state)
+	if err != nil {
+		return err
+	}
+	var projected State
+	if err := json.Unmarshal(raw, &projected); err != nil {
+		return err
+	}
+	m := projected.Migration
+	for n, source := range m.Original.Ships {
+		id := m.Imported[source.ID]
+		if id == "" {
+			// Reserve a unique placeholder of the actual enrollment ID's length.
+			for i := n + 1; ; i++ {
+				id = fmt.Sprintf("%032x", i)
+				if _, exists := projected.Ships[id]; !exists {
+					break
+				}
+			}
+		}
+		if _, ok := projected.Ships[id]; !ok {
+			entry := collection.Ship{ID: id, Name: "legacy-" + source.ID[:16], Origin: source.URL, Ship: source.Ship}
+			projected.Ships[id] = migratedPreference(source, entry)
+		}
+		m.Imported[source.ID] = id
+		m.Cleared[source.ID] = false // longer encoding than the eventual true
+	}
+	_, err = encodeState(&projected)
+	return err
+}
+
 func ApplyMigration(ctx context.Context, r *collection.Registry, store *Store, dir, expected string, backend MigrationBackend) error {
 	// Verify the legacy directory itself without changing its permissions.
 	info, err := os.Lstat(dir)
@@ -213,6 +253,9 @@ func ApplyMigration(ctx context.Context, r *collection.Registry, store *Store, d
 	}
 	old, data, err := readLegacy(dir)
 	if err != nil {
+		return err
+	}
+	if err := store.PruneForgotten(ctx, r); err != nil {
 		return err
 	}
 	state, err := store.Snapshot(ctx)
@@ -240,7 +283,7 @@ func ApplyMigration(ctx context.Context, r *collection.Registry, store *Store, d
 				return errors.New("another migration already exists")
 			}
 			s.Migration = m
-			return nil
+			return preflightMigration(s)
 		}); err != nil {
 			return err
 		}
@@ -255,6 +298,9 @@ func ApplyMigration(ctx context.Context, r *collection.Registry, store *Store, d
 	}
 	if digest(data) != m.SourceDigest && digest(data) != m.PausedDigest {
 		return errors.New("legacy state changed after migration began")
+	}
+	if err := preflightMigration(&state); err != nil {
+		return err
 	}
 	if err := backend.DisableLegacy(ctx); err != nil {
 		return err
@@ -302,6 +348,7 @@ func ApplyMigration(ctx context.Context, r *collection.Registry, store *Store, d
 				return err
 			}
 			err = client.RestoreSession(secret)
+			clear(secret)
 			if err == nil {
 				err = client.Check(ctx)
 			}
@@ -322,17 +369,36 @@ func ApplyMigration(ctx context.Context, r *collection.Registry, store *Store, d
 			ref := collection.NewSessionRef()
 			copy := entry
 			copy.SessionRef = ref
-			err = credentials.Save(ctx, shipaccess.Key(copy), encoded)
+			entry, err = r.SaveShipSession(ctx, entry, ref, func(save context.Context) error {
+				return credentials.Save(save, shipaccess.Key(copy), encoded)
+			})
 			clear(encoded)
 			if err != nil {
 				return err
 			}
-			entry, err = r.SetShipSession(ctx, entry, ref)
+		}
+		// Interrupted copies can reference the same remote cookie as the current
+		// session. Retire those local copies without revoking the shared session.
+		if len(entry.Retired) > 0 {
+			credentialStore, err := backend.Store(r, entry)
 			if err != nil {
-				if errors.Is(err, collection.ErrShipConflict) {
-					_ = credentials.Delete(ctx, shipaccess.Key(copy))
-				}
 				return err
+			}
+			for _, ref := range entry.Retired {
+				copy := entry
+				copy.SessionRef = ref
+				local, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				err := credentialStore.Delete(local, shipaccess.Key(copy))
+				cancel()
+				if err != nil {
+					return err
+				}
+				finish, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				err = r.CompleteCredentialCleanup(finish, entry.ID, []string{ref})
+				cancel()
+				if err != nil {
+					return err
+				}
 			}
 		}
 		if err := store.Update(ctx, func(s *State) error {
@@ -340,7 +406,7 @@ func ApplyMigration(ctx context.Context, r *collection.Registry, store *Store, d
 				return errors.New("imported enrollment identity changed")
 			}
 			if _, ok := s.Ships[entry.ID]; !ok {
-				s.Ships[entry.ID] = Preference{ID: entry.ID, Name: entry.Name, Origin: entry.Origin, Ship: entry.Ship, Automatic: source.Automatic, Pending: source.Pending, Revision: 1, Fingerprint: source.Fingerprint, LastTheme: source.LastTheme, LastPublished: source.LastPublished, LastError: source.LastError, AuthenticationRequired: source.AuthenticationRequired}
+				s.Ships[entry.ID] = migratedPreference(source, entry)
 			}
 			s.Migration.Imported[source.ID] = entry.ID
 			return nil

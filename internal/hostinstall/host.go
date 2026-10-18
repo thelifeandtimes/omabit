@@ -128,7 +128,9 @@ func (i *installer) installFile(ctx context.Context, path string, data []byte, m
 				return err
 			}
 			if info.Mode().Perm() == mode {
-				return nil
+				// Reestablish the publication barrier on retries, including after
+				// an earlier directory-sync failure with complete bytes visible.
+				return i.syncInstallDirectory(filepath.Dir(i.path(path)))
 			}
 			i.mutated = true
 			return os.Chmod(i.path(path), mode)
@@ -159,11 +161,7 @@ func (i *installer) installFile(ctx context.Context, path string, data []byte, m
 		return err
 	}
 	i.mutated = true
-	dir, err := os.Open(filepath.Dir(i.path(path)))
-	if err != nil {
-		return err
-	}
-	return errors.Join(dir.Sync(), dir.Close())
+	return i.syncInstallDirectory(filepath.Dir(i.path(path)))
 }
 
 func (i *installer) installHost(ctx context.Context, bundle string, public, binary []byte, probe hostProbe, progress func(string)) (result HostResult, err error) {
@@ -289,19 +287,9 @@ func (i *installer) installHost(ctx context.Context, bundle string, public, bina
 		return result, err
 	}
 	socket := fmt.Sprintf("/run/user/%d/urbit-runner/runner.sock", uid)
-	var previousID string
-	if _, err := i.lstat(i.path(socket)); err == nil {
-		h, busy, err := probe(ctx, socket)
-		if err != nil {
-			return result, fmt.Errorf("existing management is unavailable; resolve it before setup: %w", err)
-		}
-		if busy {
-			return result, errors.New("wait for active runner operations to finish before setup")
-		}
-		previousID = h.RunnerID
-		if _, err := i.lstat(i.path(managerUnit)); err != nil {
-			return result, errors.New("stop the existing foreground runner before installing its service")
-		}
+	activation, err := i.prepareActivation(ctx, rootless.AccountName, socket, uid, binary, probe)
+	if err != nil {
+		return result, err
 	}
 	emit("access")
 	config, err := i.readInstalled(ctx, sshConfigPath, maxOutput)
@@ -350,7 +338,7 @@ func (i *installer) installHost(ctx context.Context, bundle string, public, bina
 		if err := i.parents(ctx, hostKeyPath, true); err != nil {
 			return result, err
 		}
-		if _, err := i.command(ctx, "/usr/bin/ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-C", "urbit-runner", "-f", hostKeyPath); err != nil {
+		if err := i.createHostKey(ctx); err != nil {
 			return result, err
 		}
 		i.mutated = true
@@ -367,6 +355,9 @@ func (i *installer) installHost(ctx context.Context, bundle string, public, bina
 	}
 	if _, err := access.AuthorizedKey(pub, "operator"); err != nil {
 		return result, errors.New("SSH host key must be Ed25519")
+	}
+	if err := i.completeHostPublicKey(ctx, pub); err != nil {
+		return result, err
 	}
 	result.HostPublicKey = strings.Join(strings.Fields(string(pub))[:2], " ")
 	if err := i.installFile(ctx, access.DefaultKeys, keys, 0644, true); err != nil {
@@ -395,12 +386,6 @@ func (i *installer) installHost(ctx context.Context, bundle string, public, bina
 	if err := userManager("daemon-reload"); err != nil {
 		return result, err
 	}
-	if err := userManager("stop", "urbit-runner.service"); err != nil {
-		return result, err
-	}
-	if err := i.installFile(ctx, access.ShellPath, binary, 0755, true); err != nil {
-		return result, err
-	}
 	if _, err := i.command(ctx, "/usr/bin/usermod", "--shell", access.ShellPath, rootless.AccountName); err != nil {
 		return result, err
 	}
@@ -413,28 +398,14 @@ func (i *installer) installHost(ctx context.Context, bundle string, public, bina
 	if err := userManager("daemon-reload"); err != nil {
 		return result, err
 	}
-	if err := userManager("enable", "--now", "urbit-runner.service"); err != nil {
-		return result, err
-	}
 	if _, err := i.command(ctx, "/usr/bin/systemctl", "enable", "--now", "urbit-runner-ssh.service"); err != nil {
 		return result, err
 	}
 	emit("verify")
-	deadline, cancel := context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
-	for deadline.Err() == nil {
-		h, _, probeErr := probe(deadline, socket)
-		if probeErr == nil {
-			if h.Mode != "development-managed" || !strings.HasPrefix(h.RunnerID, "runner-") || previousID != "" && previousID != h.RunnerID {
-				return result, errors.New("runner identity or mode changed during setup")
-			}
-			result.RunnerID, result.Mode, result.SSHPort, result.Ready = h.RunnerID, h.Mode, SSHPort, true
-			return result, nil
-		}
-		select {
-		case <-deadline.Done():
-		case <-time.After(250 * time.Millisecond):
-		}
+	status, err := i.activateManagement(ctx, socket, activation, userManager)
+	if err != nil {
+		return result, err
 	}
-	return result, errors.New("services were installed but management is not ready; inspect urbit-runner.service and rerun setup after resolving the error")
+	result.RunnerID, result.Mode, result.SSHPort, result.Ready = status.RunnerID, status.Mode, SSHPort, true
+	return result, nil
 }

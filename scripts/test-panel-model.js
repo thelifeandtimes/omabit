@@ -461,6 +461,22 @@ assert.match(model.importProgress([importConnection],importTarget,now).log,/Secu
 assert.equal(model.importProgress([importConnection],{...importTarget,revision:2},now).indeterminate,true);
 assert.match(model.importProgress([{...importConnection,status:"unavailable"}],importTarget,now).detail,/Connection unavailable/);
 assert.equal(model.importProgress([importConnection],{...importTarget,status:"failed"},now).active,false);
+const completedImport=clone(importConnection);
+completedImport.snapshot.operations[0].status="succeeded";
+completedImport.snapshot.instances[0].external_import.stage="complete";
+const completedProgress=model.importProgress([completedImport],importTarget,now);
+assert.equal(completedProgress.active,false);
+assert.equal(model.importProgress([],{...importTarget,progress:completedProgress},now+60000).value,1,"recorded completion remains terminal when the runner disappears");
+for (const replacement of [{...importTarget,runner:"replacement"},{...importTarget,request:"other-request"},{...importTarget,operation:"other-operation"},{...importTarget,revision:2}])
+  assert.equal(model.importProgress([completedImport],replacement,now).active,true,"unrelated proof must not unlock an import");
+const sourceChangedProgress=model.importProgress([completedImport],{...importTarget,source:"/different/source"},now);
+assert.equal(sourceChangedProgress.active,false,"the same bound request is terminal, independent of source detail availability");
+assert.equal(sourceChangedProgress.log,"","do not use another source's step history");
+completedImport.snapshot.operations[0].status="failed";
+const failedProgress=model.importProgress([completedImport],importTarget,now);
+assert.equal(failedProgress.active,false);
+assert.match(failedProgress.log,/Securing the source/);
+assert.match(failedProgress.log,/Import stopped:/);
 console.log("PASS: guided import binds identity/network/destination and progress uses the exact operation/revision without another polling connection");
 const recoveryConnection={...importConnection,features:["recover-import"]};
 const recoverable={...importInstance,desired_state:"stopped",recovery_required:true,pier_path:"fakeships/zod/zod",ship:"~zod",runtime_status:{import_recovery_available:true},external_import:{...importInstance.external_import,stage:"enrolling",holding_path:"/incoming/.omabit-import-id/pier"}};
@@ -473,3 +489,6 @@ assert.equal(model.canRecoverImport(recoveryConnection,{...recoverable,active_op
 assert.equal(model.canRecoverImport(recoveryConnection,{...recoverable,desired_state:"running"},now),false);
 assert.equal(model.canRecoverImport(recoveryConnection,{...recoverable,runtime_status:{}},now),false);
 console.log("PASS: import recovery binds runner/revision/location/evidence and requires fresh operator capability and backend eligibility");
+
+// Keep actual QML dispatch/state regressions in the standard model-check entrypoint.
+require("./test-rc11-panel-state.js");

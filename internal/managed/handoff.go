@@ -48,6 +48,61 @@ func handoffOperation(tx *sql.Tx, v *storedInstance, actor, kind, request string
 	return op, insertOperation(tx, op, fingerprint)
 }
 
+// Synchronous handoff mutations keep their exact acceptance response beside the
+// ordinary actor-scoped operation. Reservation RPC replay still reports current
+// transfer progress for existing coordinators; the audit receipt never changes.
+// Completed receipts are never worker inputs. Keeping this private extension out
+// of Handoff preserves historical signature bytes and the public protocol; the
+// schema20 fence prevents older writers losing it.
+type handoffReceipt struct {
+	Status  int              `json:"status"`
+	Handoff protocol.Handoff `json:"handoff"`
+}
+
+type handoffReceiptOperation struct {
+	protocol.Operation
+	Receipt *handoffReceipt `json:"handoff_receipt,omitempty"`
+}
+
+func handoffFingerprint(kind, id string, request any) string {
+	data, _ := json.Marshal([]any{kind, id, request})
+	return fmt.Sprintf("handoff-receipt-v1:%x", sha256.Sum256(data))
+}
+
+func replayHandoff(tx *sql.Tx, actor, request, fingerprint string) (*handoffReceipt, error) {
+	op, hit, err := replay(tx, actor, request, fingerprint)
+	if err != nil || !hit {
+		return nil, err
+	}
+	var data []byte
+	if err = tx.QueryRow("SELECT body FROM operations WHERE id=?", op.ID).Scan(&data); err != nil {
+		return nil, err
+	}
+	var stored handoffReceiptOperation
+	if json.Unmarshal(data, &stored) != nil || stored.Receipt == nil || stored.Status != "succeeded" || (stored.Receipt.Status != 200 && stored.Receipt.Status != 201) {
+		return nil, errors.New("invalid stored handoff receipt")
+	}
+	return stored.Receipt, nil
+}
+
+func recordHandoffReceipt(tx *sql.Tx, v storedInstance, actor, kind, request, fingerprint string, status int) error {
+	key, err := randomID()
+	if err != nil {
+		return err
+	}
+	now := time.Now().UTC()
+	op := protocol.Operation{ID: "op-" + key, InstanceID: v.Public.ID, Actor: actor, Kind: kind, RequestID: request, ConfigRevision: v.Public.ConfigRevision, Status: "succeeded", CreatedAt: now, FinishedAt: &now}
+	if err = insertOperation(tx, op, fingerprint); err != nil {
+		return err
+	}
+	data, err := json.Marshal(handoffReceiptOperation{Operation: op, Receipt: &handoffReceipt{Status: status, Handoff: *v.Runtime.Handoff}})
+	if err != nil {
+		return err
+	}
+	_, err = tx.Exec("UPDATE operations SET body=? WHERE id=?", data, op.ID)
+	return err
+}
+
 func (r *Server) prepareHandoff(w http.ResponseWriter, req *http.Request, actor, role, id string) {
 	if role != "operator" {
 		r.respondError(w, bad("host moves require operator access"))
@@ -156,6 +211,38 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 		r.respondError(w, err)
 		return
 	}
+	if !protocol.ValidID(body.RequestID) {
+		r.respondError(w, bad("valid handoff request ID required"))
+		return
+	}
+	tx, err := r.s.db.Begin()
+	if err != nil {
+		r.respondError(w, err)
+		return
+	}
+	defer tx.Rollback()
+	fingerprint := handoffFingerprint("reserve-handoff", "", body)
+	if receipt, err := replayHandoff(tx, actor, body.RequestID, fingerprint); err != nil {
+		r.respondError(w, err)
+		return
+	} else if receipt != nil {
+		// Reservation is also the historical continuation/status endpoint. An
+		// older collector trusts its phase and would retransmit an already
+		// received archive if we returned the frozen 'reserved' audit response.
+		// Resolve only the exact accepted transfer, never a reused name or ID.
+		v, err := loadHandoff(tx, receipt.Handoff.ID)
+		if err != nil {
+			r.respondError(w, err)
+			return
+		}
+		h := v.Runtime.Handoff
+		if v.Public.ID != receipt.Handoff.DestinationInstance || h.Direction != "in" || !h.SameTransfer(receipt.Handoff) {
+			r.respondError(w, conflict("handoff_conflict", "accepted handoff no longer matches the destination transfer"))
+			return
+		}
+		respond(w, 200, h)
+		return
+	}
 	h := body.Offer
 	settings := protocol.RuntimeSettings{Loom: protocol.DefaultLoom}
 	if h.RuntimeSettings != nil {
@@ -173,12 +260,6 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 		r.respondError(w, bad("handoff ship classification mismatch"))
 		return
 	}
-	tx, err := r.s.db.Begin()
-	if err != nil {
-		r.respondError(w, err)
-		return
-	}
-	defer tx.Rollback()
 	all, err := instances(tx)
 	if err != nil {
 		r.respondError(w, err)
@@ -193,6 +274,15 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 		if old := v.Runtime.Handoff; old != nil && old.ID == h.ID {
 			if !old.SameTransfer(h) || body.HTTPPort != 0 && body.HTTPPort != v.Public.Config.HTTPPort || h.AmesPublished && body.AmesPort != 0 && body.AmesPort != v.Public.Config.AmesPort {
 				r.respondError(w, conflict("handoff_conflict", "handoff offer changed"))
+				return
+			}
+			// Legacy transfers have no reservation receipt. Record this actor's
+			// new request without rewriting the transfer or its signed fields.
+			if err = recordHandoffReceipt(tx, v, actor, "reserve-handoff", body.RequestID, fingerprint, 200); err == nil {
+				err = tx.Commit()
+			}
+			if err != nil {
+				r.respondError(w, err)
 				return
 			}
 			respond(w, 200, old)
@@ -254,6 +344,9 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 	v.Runtime.RollNeedsRuntime = h.RollNeedsRuntime
 	data, _ := json.Marshal(v)
 	if _, err = tx.Exec("INSERT INTO instances VALUES(?,?)", v.Public.ID, data); err == nil {
+		err = recordHandoffReceipt(tx, v, actor, "reserve-handoff", body.RequestID, fingerprint, 201)
+	}
+	if err == nil {
 		err = tx.Commit()
 	}
 	if err != nil {
@@ -278,7 +371,11 @@ func validHandoffBytes(h protocol.Handoff) bool {
 	return fullContainerID.MatchString(h.SHA256) && fullContainerID.MatchString(h.TreeDigest) && h.Bytes > 0 && h.Bytes <= protocol.MaxHandoffBytes
 }
 func (s *store) handoff(id string) (storedInstance, error) {
-	all, err := instances(s.db)
+	return loadHandoff(s.db, id)
+}
+
+func loadHandoff(q querier, id string) (storedInstance, error) {
+	all, err := instances(q)
 	if err != nil {
 		return storedInstance{}, err
 	}
@@ -293,6 +390,10 @@ func (s *store) handoff(id string) (storedInstance, error) {
 func (r *Server) handoffControl(w http.ResponseWriter, req *http.Request, actor, role, id, verb string) {
 	if role != "operator" {
 		r.respondError(w, bad("host moves require operator access"))
+		return
+	}
+	if req.Method == "POST" && verb == "activate" {
+		r.activateHandoff(w, req, actor, id)
 		return
 	}
 	v, err := r.s.handoff(id)
@@ -345,15 +446,50 @@ func (r *Server) handoffControl(w http.ResponseWriter, req *http.Request, actor,
 		respond(w, 202, h)
 		return
 	}
-	if verb == "activate" && h.Direction == "in" {
-		if !h.ValidCommitment(body.Commitment) {
-			r.respondError(w, conflict("handoff_uncommitted", "destination requires the source's matching signed commitment"))
-			return
-		}
-		if h.State == "complete" {
-			respond(w, 200, h)
-			return
-		}
+	r.respondError(w, bad("unsupported handoff action"))
+}
+
+func (r *Server) activateHandoff(w http.ResponseWriter, req *http.Request, actor, id string) {
+	var body protocol.FinishHandoffRequest
+	if err := decode(w, req, &body); err != nil {
+		r.respondError(w, err)
+		return
+	}
+	if !protocol.ValidID(body.RequestID) {
+		r.respondError(w, bad("valid handoff request ID required"))
+		return
+	}
+	tx, err := r.s.db.Begin()
+	if err != nil {
+		r.respondError(w, err)
+		return
+	}
+	defer tx.Rollback()
+	fingerprint := handoffFingerprint("activate-handoff", id, body)
+	// Replay precedes live transfer/revision lookup: later configuration, moves,
+	// or retirement must not change the result of an already accepted request.
+	if receipt, err := replayHandoff(tx, actor, body.RequestID, fingerprint); err != nil {
+		r.respondError(w, err)
+		return
+	} else if receipt != nil {
+		respond(w, receipt.Status, receipt.Handoff)
+		return
+	}
+	v, err := loadHandoff(tx, id)
+	if err != nil {
+		r.respondError(w, err)
+		return
+	}
+	h := v.Runtime.Handoff
+	if h.Direction != "in" || body.SHA256 != h.SHA256 || body.ExpectedRevision != v.Public.ConfigRevision {
+		r.respondError(w, bad("handoff commitment must match its revision and digest"))
+		return
+	}
+	if !h.ValidCommitment(body.Commitment) {
+		r.respondError(w, conflict("handoff_uncommitted", "destination requires the source's matching signed commitment"))
+		return
+	}
+	if h.State != "complete" {
 		if h.State != "received" || !v.Runtime.Initialized || v.Public.ActiveOperationID != "" {
 			r.respondError(w, conflict("invalid_state", "destination transfer has not been verified"))
 			return
@@ -366,25 +502,24 @@ func (r *Server) handoffControl(w http.ResponseWriter, req *http.Request, actor,
 		v.Public.RecoveryRequired = false
 		v.Public.Handoff = h
 		v.RuntimeRevision++
-		tx, err := r.s.db.Begin()
-		if err != nil {
+		if err = saveInstance(tx, v); err != nil {
 			r.respondError(w, err)
 			return
 		}
-		defer tx.Rollback()
-		if err = saveInstance(tx, v); err == nil {
-			err = tx.Commit()
-		}
-		if err != nil {
-			r.respondError(w, err)
-			return
-		}
-		respond(w, 200, h)
+	}
+	if err = recordHandoffReceipt(tx, v, actor, "activate-handoff", body.RequestID, fingerprint, 200); err == nil {
+		err = tx.Commit()
+	}
+	if err != nil {
+		r.respondError(w, err)
 		return
 	}
-	r.respondError(w, bad("unsupported handoff action"))
+	respond(w, 200, h)
 }
 
+// ServeHTTP owns bulk-update admission for the entire exchange (including GET
+// exports and PUTs waiting on workGate). Keep dispatch through that server gate;
+// the local locks below protect transfer lookup and final publication only.
 func (r *Server) handoffData(w http.ResponseWriter, req *http.Request, actor, role, id string) {
 	if role != "operator" {
 		r.respondError(w, bad("handoff data requires operator access"))

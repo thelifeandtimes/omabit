@@ -20,7 +20,9 @@ resuming an old copy after the original advances can regress Urbit networking st
 
 Destination networking is host-specific. The source's @p, fake/livenet class, Ames
 publication intent, current pier contents and outstanding roll-before-run guard are
-preserved. Destination configuration starts at revision 1; host ports can differ.
+preserved. A new destination name starts at revision 1; a reused name advances
+past its deleted revision. The collector reads the actual revision from the
+matching transfer's snapshot. Host ports can differ.
 Source history and maintenance policies remain on the source; policies are not
 automatically enabled on the destination. A moved source remains a fenced journal
 record. There is no fixed registration-count cap, so retained move records do not
@@ -61,6 +63,23 @@ workflow, not a federation-wide identity/ownership protocol.
 Source files and private spool artifacts are retained as development evidence, not
 exposed as selectable restore points. Archive is excluded from discovery and Start.
 
+### Reservation replay compatibility
+
+`POST /v1/handoffs` is both a reservation and continuation endpoint. First
+acceptance returns HTTP 201 with the reserved transfer. Repeating the same
+actor/request ID and input returns HTTP 200 with the **current phase of that exact
+transfer**, including `receiving`, `received`, or `complete`. Existing RC.11
+collectors depend on this response to resume without retransmitting received data.
+This behavior requires no new header or protocol version.
+
+Schema20 runners atomically retain the original acceptance status and transfer
+body in the private operation audit receipt alongside the reservation. Replay
+does not rewrite that receipt or repeat the mutation. Changed input under the
+same actor/request ID is rejected before lookup of current transfer state. A
+missing or replaced transfer is refused rather than re-reserved or substituted.
+Activation retains its original completed response on exact replay, including
+after later configuration changes. Legacy transfer signature bytes are preserved.
+
 ## Bounds and storage format
 
 - Linux/AMD64, pinned official runtime and permanent `/urbit/pier` layout.
@@ -85,6 +104,18 @@ Automated tests cover fake/comet stopped transfer and initialized resume, source
 changes, failed receive and commit, continuation after manager restart, signature
 binding, ordinary-operation/startup fences, observer refusal, bounded SSH streaming,
 unsafe tar entries, format migration and the mapped desktop interaction.
+
+The optional published-RC.11 collector regression uses a SHA-256-pinned old binary
+against temporary Unix sockets, SQLite journals and synthetic handoff backends:
+
+```bash
+OMABIT_RC11_COLLECTOR=/path/to/urbit-collector-linux-amd64 \
+  go test ./internal/managed -run '^TestHandoffPublishedRC11CollectorContinuation$' -count=1
+```
+
+It interrupts before source commitment after destination receipt, restarts the
+destination, and repeats the same old-collector command. Completion must preserve
+the original reservation audit receipt and perform no second data upload.
 
 Real two-host handoff acceptance passed with the already-stopped `panel-check` fake:
 about 1.05 GB transferred, source Start refused, destination identity verified by

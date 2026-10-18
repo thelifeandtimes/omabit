@@ -12,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 
+	"golang.org/x/sys/unix"
+
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
@@ -34,7 +36,7 @@ func runSSHShell(ctx context.Context, args []string, stdout, stderr io.Writer) i
 		return 1
 	}
 	socket := "/run/user/" + strconv.Itoa(os.Geteuid()) + "/urbit-runner/runner.sock"
-	if err := access.Bridge(ctx, os.Stdin, stdout, socket, access.DefaultKeys, grant.Fingerprint); err != nil {
+	if err := sshBridge(ctx, os.Stdin, stdout, socket, access.DefaultKeys, grant.Fingerprint); err != nil {
 		fmt.Fprintln(stderr, err)
 		return 1
 	}
@@ -52,7 +54,7 @@ func runOwnerSSH(ctx context.Context, args []string, stdout, stderr io.Writer) i
 		return 1
 	}
 	socket := "/run/user/" + strconv.Itoa(os.Geteuid()) + "/urbit-runner/runner.sock"
-	if err = access.Bridge(ctx, os.Stdin, stdout, socket, access.DefaultKeys, g.Fingerprint); err != nil {
+	if err = sshBridge(ctx, os.Stdin, stdout, socket, access.DefaultKeys, g.Fingerprint); err != nil {
 		fmt.Fprintln(stderr, err)
 		return 1
 	}
@@ -127,9 +129,41 @@ func runSSH(ctx context.Context, command string, args []string, stdout, stderr i
 		fmt.Fprintln(stderr, err)
 		return 1
 	}
-	if err := access.Bridge(ctx, os.Stdin, stdout, socket, keys, fingerprint); err != nil {
+	if err := sshBridge(ctx, os.Stdin, stdout, socket, keys, fingerprint); err != nil {
 		fmt.Fprintln(stderr, err)
 		return 1
 	}
 	return 0
+}
+
+// Inherited SSH stdio may be blocking descriptors outside Go's poller. Merely
+// closing os.Stdin/os.Stdout does not interrupt their pending syscalls. Give the
+// bridge session-owned, pollable duplicates so cancellation releases both waits.
+func sshBridge(ctx context.Context, input *os.File, output io.Writer, socket, keys, fingerprint string) error {
+	in, err := sshStream(input)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	if f, ok := output.(*os.File); ok {
+		out, err := sshStream(f)
+		if err != nil {
+			return err
+		}
+		defer out.Close()
+		output = out
+	}
+	return access.Bridge(ctx, in, output, socket, keys, fingerprint)
+}
+
+func sshStream(f *os.File) (*os.File, error) {
+	fd, err := unix.FcntlInt(f.Fd(), unix.F_DUPFD_CLOEXEC, 0)
+	if err != nil {
+		return nil, err
+	}
+	if err = unix.SetNonblock(fd, true); err != nil {
+		unix.Close(fd)
+		return nil, err
+	}
+	return os.NewFile(uintptr(fd), f.Name()), nil
 }

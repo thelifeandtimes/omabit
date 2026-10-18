@@ -104,12 +104,14 @@ func applyPierDeletion(ctx context.Context, state ManagedState, persist func(Man
 			if pierstore.Busy(source) {
 				return state, unknown, errors.New("pier still has a Vere lock")
 			}
-			if state.Initialized {
+			if state.Initialized || state.Storage.Identity.Inode != 0 {
 				if _, e = pierstore.Check(d.home, *state.Storage); e != nil {
 					return state, unknown, e
 				}
+			} else if children, err := os.ReadDir(mount); err != nil || len(children) != 0 {
+				return state, unknown, errors.New("uninitialized mount contains an unrecorded child; retained for review")
 			}
-			if _, _, _, e = pierstore.TreeReview(ctx, mount); e != nil {
+			if intent.Tree, e = pierstore.ReviewRemoval(ctx, mount); e != nil {
 				return state, unknown, e
 			}
 			if _, e = pierstore.IdentifyMount(filepath.Dir(trash)); e != nil {
@@ -127,9 +129,15 @@ func applyPierDeletion(ctx context.Context, state ManagedState, persist func(Man
 			if e != nil || !actual.SameObject(intent.Mount) {
 				return state, unknown, errors.New("deletion rename outcome needs review")
 			}
+			if err = deletionTreeBoundary(ctx, &state, trash, filepath.Base(source), persist); err != nil {
+				return state, unknown, err
+			}
 		} else {
 			if _, e := pierstore.CheckMount(d.home, *state.Storage); e != nil {
 				return state, unknown, e
+			}
+			if err = deletionTreeBoundary(ctx, &state, filepath.Dir(source), filepath.Base(source), persist); err != nil {
+				return state, unknown, err
 			}
 			if err = pierstore.RenameDirectory(filepath.Dir(source), trash); err != nil {
 				return state, unknown, err
@@ -146,15 +154,15 @@ func applyPierDeletion(ctx context.Context, state ManagedState, persist func(Man
 			if !actual.SameObject(intent.Mount) {
 				return state, unknown, errors.New("deletion directory was replaced")
 			}
-			if _, _, _, e = pierstore.TreeReview(ctx, trash); e != nil {
-				return state, unknown, e
+			if err = deletionTreeBoundary(ctx, &state, trash, filepath.Base(source), persist); err != nil {
+				return state, unknown, err
 			}
-			root, e := os.OpenRoot(filepath.Dir(trash))
-			if e != nil {
-				return state, unknown, e
-			}
-			err = root.RemoveAll(filepath.Base(trash))
-			root.Close()
+			err = intent.Tree.Remove(ctx, trash, func() error {
+				if pierstore.Busy(filepath.Join(trash, filepath.Base(source))) {
+					return errors.New("pier acquired a Vere lock during deletion")
+				}
+				return nil
+			}, d.remove)
 			if err != nil {
 				return state, unknown, err
 			}
@@ -215,7 +223,72 @@ func applyPierDeletion(ctx context.Context, state ManagedState, persist func(Man
 	return state, ManagedObservation{State: "deleted", Health: "unknown"}, nil
 }
 
-func applyExternalImport(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
+func deletionTreeBoundary(ctx context.Context, state *ManagedState, mount, leaf string, persist func(ManagedState) error) error {
+	intent := state.Deletion
+	actual, err := pierstore.IdentifyMount(mount)
+	if err != nil || !actual.SameObject(intent.Mount) {
+		return errors.New("deletion mount was replaced")
+	}
+	path := filepath.Join(mount, leaf)
+	if pierstore.Busy(path) {
+		return errors.New("pier still has a Vere lock")
+	}
+	if state.Storage.Identity.Inode == 0 {
+		children, err := os.ReadDir(mount)
+		if err != nil || len(children) != 0 || intent.Tree != nil && len(intent.Tree.Entries) != 1 {
+			return errors.New("deletion has no recorded child identity; only an empty mount may be removed")
+		}
+		if intent.Tree == nil {
+			intent.Tree, err = pierstore.ReviewRemoval(ctx, mount)
+			if err != nil {
+				return err
+			}
+			if err = persist(*state); err != nil {
+				return err
+			}
+		}
+	}
+	if intent.Tree == nil {
+		// Pre-schema20 journals have no per-object manifest. Upgrade only while
+		// the complete recorded child identity still exists, including .urb.
+		// Never invent ownership from a remaining/replacement subtree.
+		id, err := pierstore.Identify(path)
+		if err != nil || state.Storage.Identity.Inode == 0 || !id.SameObject(state.Storage.Identity) {
+			return errors.New("legacy deletion needs its recorded pier identity before continuation")
+		}
+		children, err := os.ReadDir(mount)
+		if err != nil || len(children) != 1 || children[0].Name() != leaf || !children[0].IsDir() {
+			return errors.New("legacy deletion mount has unexplained children")
+		}
+		intent.Tree, err = pierstore.ReviewRemoval(ctx, mount)
+		if err != nil {
+			return err
+		}
+		if err = persist(*state); err != nil {
+			return err
+		}
+	}
+	if recorded := state.Storage.Identity; recorded.Inode != 0 {
+		// Bind the manifest itself to the enrolled child, not just whatever
+		// happened to be present when the tree traversal ran. Keep this evidence
+		// after those directories have been unlinked in a partial deletion.
+		want := map[string]pierstore.DirectoryIdentity{
+			leaf:                        {Device: recorded.Device, Inode: recorded.Inode, Birth: recorded.Birth},
+			filepath.Join(leaf, ".urb"): {Device: recorded.UrbDevice, Inode: recorded.UrbInode, Birth: recorded.UrbBirth},
+		}
+		for _, entry := range intent.Tree.Entries {
+			if id, exists := want[entry.Path]; exists && entry.Directory && entry.Identity.SameObject(id) {
+				delete(want, entry.Path)
+			}
+		}
+		if len(want) != 0 {
+			return errors.New("deletion manifest does not bind the registered pier")
+		}
+	}
+	return intent.Tree.Check(ctx, mount)
+}
+
+func applyExternalImport(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies, destinationSync ...func(string) error) (ManagedState, ManagedObservation, error) {
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
 	defer cancel()
@@ -284,13 +357,7 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 		if err = stage("enrolling"); err != nil {
 			return state, unknown, err
 		}
-		state, obs, err := applyPierEnrollment(ctx, state, persist, d)
-		if err != nil {
-			return state, unknown, err
-		}
-		state.ExternalImport.Stage = "complete"
-		state.ExternalImport.Events = append(state.ExternalImport.Events, protocol.ImportEvent{Stage: "complete", At: time.Now().UTC()})
-		return state, obs, persist(state)
+		return applyPierEnrollment(ctx, state, persist, d)
 	}
 	_, disk, err := d.admission(filepath.Dir(target))
 	if err != nil || disk < 8<<30 {
@@ -323,6 +390,9 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 	if err = stage("moving"); err != nil {
 		return state, unknown, err
 	}
+	if err = pierstore.SyncDestinationParents(d.home, *state.Storage, nil); err != nil {
+		return state, unknown, err
+	}
 	rename := d.renamePier
 	if rename == nil {
 		rename = pierstore.RenameDirectory
@@ -348,8 +418,14 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 			return state, unknown, e
 		}
 		defer b.Close()
+		// Freeze deletion authority before copying. A later review must not
+		// silently authorize newer source bytes that the destination never got.
+		removal, e := pierstore.ReviewRemoval(ctx, intent.HeldPath)
+		if e != nil {
+			return state, unknown, e
+		}
 		lastReport := time.Time{}
-		if _, err = piercopy.Copy(ctx, a, b, func(files int, bytes int64) error {
+		copied, err := piercopy.Copy(ctx, a, b, func(files int, bytes int64) error {
 			if err := ctx.Err(); err != nil {
 				return err
 			}
@@ -359,18 +435,51 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 			}
 			lastReport = time.Now()
 			return persist(state)
-		}, func() error { return stage("verifying") }); err != nil {
+		}, func() error { return stage("verifying") })
+		if err != nil {
+			return state, unknown, err
+		}
+		var sync func(string) error
+		if len(destinationSync) != 0 {
+			sync = destinationSync[0]
+		}
+		if err = pierstore.SyncDestination(d.home, *state.Storage, sync); err != nil {
 			return state, unknown, err
 		}
 		if err = stage("removing-source"); err != nil {
 			return state, unknown, err
 		}
-		held, e := os.OpenRoot(heldDir)
-		if e != nil {
-			return state, unknown, e
+		identity, e := pierstore.Identify(intent.HeldPath)
+		if e != nil || !identity.SameObject(source.Identity) || pierstore.Busy(intent.HeldPath) {
+			return state, unknown, errors.New("held source changed before removal")
 		}
-		err = held.RemoveAll("pier")
-		held.Close()
+		if err = removal.Check(ctx, intent.HeldPath); err != nil {
+			return state, unknown, err
+		}
+		still, e := piercopy.Measure(ctx, a)
+		if e != nil || still != copied {
+			return state, unknown, errors.New("held source content changed after copy verification; retained for review")
+		}
+		published, e := piercopy.Measure(ctx, b)
+		if e != nil || published != copied {
+			return state, unknown, errors.New("destination content changed after copy verification; source retained")
+		}
+		for root, path := range map[*os.Root]string{a: intent.HeldPath, b: target} {
+			opened, e := root.Stat(".")
+			current, statErr := os.Lstat(path)
+			if e != nil || statErr != nil || !os.SameFile(opened, current) {
+				return state, unknown, errors.New("verified import directory moved or was replaced before source removal")
+			}
+		}
+		if _, err = pierstore.CheckMount(d.home, *state.Storage); err != nil {
+			return state, unknown, err
+		}
+		err = removal.Remove(ctx, intent.HeldPath, func() error {
+			if pierstore.Busy(intent.HeldPath) {
+				return errors.New("held source acquired a Vere lock")
+			}
+			return nil
+		}, d.remove)
 		if err != nil {
 			return state, unknown, err
 		}
@@ -391,13 +500,5 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 	if err = stage("enrolling"); err != nil {
 		return state, unknown, err
 	}
-	state, obs, err := applyPierEnrollment(ctx, state, persist, d)
-	if err != nil {
-		return state, unknown, err
-	}
-	intent = state.ExternalImport
-	if err = stage("complete"); err != nil {
-		return state, unknown, err
-	}
-	return state, obs, nil
+	return applyPierEnrollment(ctx, state, persist, d)
 }

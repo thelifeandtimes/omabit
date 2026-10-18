@@ -279,6 +279,7 @@ func TestRecoveryGates(t *testing.T) {
 				v.Runtime.MaintenanceUncertain = true
 			case "unprepared":
 				v.Runtime.Prepared = false
+				v.Runtime.Runtime.RunID = "unexplained-runtime-evidence"
 			case "bootstrap":
 				v.Runtime.Bootstrap = &protocol.Bootstrap{Kind: "bare"}
 			case "key":

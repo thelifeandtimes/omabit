@@ -38,6 +38,7 @@ func (f *fixtureFS) Stat(path string) (fs.FileInfo, error) {
 
 func fixture() (probe, *fixtureFS) {
 	f := &fixtureFS{files: fstest.MapFS{}, denied: map[string]bool{}}
+	f.files["etc/nsswitch.conf"] = &fstest.MapFile{Data: []byte("passwd: files\ngroup: files\nsubid: files\n"), Mode: 0644}
 	for path, text := range map[string]string{
 		"sys/fs/cgroup/cgroup.controllers":                 "cpuset cpu io memory hugetlb pids\n",
 		"proc/sys/kernel/unprivileged_userns_clone":        "1\n",

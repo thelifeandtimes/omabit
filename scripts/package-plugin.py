@@ -2,15 +2,19 @@
 """Reproduce a legacy flattened plugin export from a frozen binary release."""
 import argparse
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 import shutil
-import subprocess
 import tarfile
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = ("omabit", "urbit-collector", "urbit-runner")
+
+spec = importlib.util.spec_from_file_location("release_source", ROOT / "scripts/package-release.py")
+release_source = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(release_source)
 
 
 def digest(path):
@@ -18,7 +22,7 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def generate(assets, destination, distribution_commit):
+def generate(assets, destination, distribution_commit, source=ROOT):
     release = json.loads((assets / "release.json").read_text())
     version = release["version"]
     names = {}
@@ -37,8 +41,7 @@ def generate(assets, destination, distribution_commit):
     pins = {"version": version, "source_commit": release["source_commit"], "platform": release["platform"],
             "binaries": {name: entries[name + "-linux-amd64"] for name in COMMANDS}}
     # Validate the generated pins with the same code used on the desktop.
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("native_runtime", ROOT / "native/bootstrap/runtime.py")
+    spec = importlib.util.spec_from_file_location("native_runtime", source / "native/bootstrap/runtime.py")
     runtime = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(runtime)
     runtime.validate_manifest(pins)
@@ -64,11 +67,11 @@ def generate(assets, destination, distribution_commit):
         if manifest["version"] != version or manifest["id"] != "thelifeandtimes.omabit":
             raise RuntimeError("Plugin identity/version mismatch")
         (output / "bootstrap").mkdir()
-        shutil.copy2(ROOT / "native/bootstrap/runtime.py", output / "bootstrap/runtime.py")
+        shutil.copy2(source / "native/bootstrap/runtime.py", output / "bootstrap/runtime.py")
         (output / "bootstrap/release.json").write_text(json.dumps(pins, indent=2) + "\n")
         (output / "bin").mkdir()
         for name in COMMANDS:
-            shutil.copy2(ROOT / "native/bootstrap/launch.py", output / "bin" / name)
+            shutil.copy2(source / "native/bootstrap/launch.py", output / "bin" / name)
             (output / "bin" / name).chmod(0o755)
         provenance = {"generated": True, "version": version, "release_source_commit": release["source_commit"],
                       "distribution_source_commit": distribution_commit, "archive_sha256": names[archive_name],
@@ -136,13 +139,21 @@ def main():
     parser.add_argument("assets", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    if subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip():
+    try:
+        commit = release_source.clean_commit(ROOT)
+    except RuntimeError:
         parser.error("commit distribution source before generating a publishable plugin")
-    commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
-    result = generate(args.assets.resolve(), args.output.absolute(), commit)
-    if (subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()
-            or subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip() != commit):
-        raise RuntimeError("Distribution source changed during generation; do not publish this output")
+    destination = args.output.absolute()
+    with tempfile.TemporaryDirectory(prefix=".distribution-", dir=destination.parent) as temporary:
+        working = Path(temporary)
+        source = working / "source"
+        release_source.export_source(ROOT, source, commit)
+        result = generate(args.assets.resolve(), working / "plugin", commit, source)
+        if release_source.clean_commit(ROOT) != commit:
+            raise RuntimeError("Distribution source changed during generation")
+        if destination.exists() or destination.is_symlink():
+            raise RuntimeError("Output already exists; inspect rather than overwrite")
+        (working / "plugin").rename(destination)
     print(json.dumps(result, indent=2))
 
 
