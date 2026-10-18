@@ -105,7 +105,7 @@ function validPierPath(value) {
 }
 function storageRoots(connection) {
   var c=connection && connection.snapshot && connection.snapshot.piers
-  return c && c.roots && c.roots.length ? c.roots : [{id:"default",path:c && c.root || "/var/lib/urbit-runner/piers"}]
+  return c && c.roots && c.roots.length ? c.roots.filter(function(r){return r.id==="default"}).concat(c.roots.filter(function(r){return r.id!=="default"})) : [{id:"default",path:c && c.root || "/srv/urbit/piers"}]
 }
 function storagePath(root,path) { return path[0]==="@" || !root || root==="default" ? path : "@"+root+"/"+path }
 function absolutePierPath(connection,path) {
@@ -844,20 +844,18 @@ function edit(connection, instance) {
     mode: instance.mode, runtimeSettings: hasFeature(connection,"runtime-settings"), nativeAllShips: hasFeature(connection,"native-control-all-ships") }
 }
 
-function configure(target, port, loom, nativeControl) {
+function configure(target, port, loom) {
   if (!Number.isInteger(Number(port)) || Number(port) < 1024 || Number(port) > 65535)
     throw new Error("HTTP port must be 1024–65535")
   loom = loom === undefined ? target.loom : Number(loom)
-  nativeControl = nativeControl === undefined ? target.nativeControl === true : nativeControl
-  var features = (target.runtimeSettings ? ["runtime-settings"] : []).concat(target.nativeAllShips ? ["native-control-all-ships"] : [])
+  var features = target.runtimeSettings ? ["runtime-settings"] : []
   // Pre-settings runners accept the historical 31..33 range for port edits.
-  var legacy = !target.runtimeSettings && !nativeControl && Number.isInteger(loom) && loom>=31 && loom<=33
-  var settings = legacy ? [] : runtimeSettingsArgs({features:features},target.mode,loom,nativeControl)
-  var args = ["--runner", target.connection, "--expected-runner-id", target.runner,
+  var legacy = !target.runtimeSettings && Number.isInteger(loom) && loom>=31 && loom<=33
+  if (!legacy) runtimeSettingsArgs({features:features},loom)
+  // Native control is CLI-only. Omitting it preserves any existing CLI choice.
+  return ["--runner", target.connection, "--expected-runner-id", target.runner,
     "configure", target.instance, "--revision", String(target.revision),
     "--http-port", String(port), "--ames-port", String(target.ames), "--loom", String(loom)]
-  if (settings.length && (target.mode === "fake" || target.nativeAllShips)) args.push("--native-control="+String(nativeControl))
-  return args
 }
 
 function loomLabel(exponent) {
@@ -865,18 +863,14 @@ function loomLabel(exponent) {
   if (!Number.isInteger(n) || n<20 || n>34) return "Unsupported loom"
   return n+" · "+Math.pow(2,n-(n<30 ? 20 : 30))+(n<30 ? " MiB" : " GiB")
 }
-function runtimeSettingsArgs(connection,kind,loom,nativeControl) {
+function runtimeSettingsArgs(connection,loom) {
   loom=Number(loom)
-  if (!Number.isInteger(loom) || loom<20 || loom>34) throw new Error("Loom must be a byte exponent in 20..34")
-  if (typeof nativeControl!=="boolean") throw new Error("Choose native control explicitly")
-  if (nativeControl && kind!=="fake" && !hasFeature(connection,"native-control-all-ships")) throw new Error("Update this runner for native-control-all-ships")
+  if (!Number.isInteger(loom) || loom<30 || loom>34) throw new Error("Loom must be a byte exponent in 30..34 (1–16 GiB)")
   if (!hasFeature(connection,"runtime-settings")) {
-    if (loom!==31 || nativeControl) throw new Error("Update this runner for runtime-settings")
+    if (loom!==31) throw new Error("Update this runner for runtime-settings")
     return []
   }
-  var args=["--loom",String(loom)]
-  if (kind==="fake" || hasFeature(connection,"native-control-all-ships")) args.push("--native-control="+String(nativeControl))
-  return args
+  return ["--loom",String(loom)]
 }
 
 function localPath(url) {

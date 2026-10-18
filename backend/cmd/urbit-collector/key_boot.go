@@ -55,7 +55,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	f.StringVar(&file, "key-file", "", "private local boot key file; contents never enter command arguments")
 	f.UintVar(&port, "http-port", 0, "host loopback HTTP port")
 	f.UintVar(&ames, "ames-port", 0, "host Ames UDP port; zero/omitted chooses automatically")
-	f.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 20..34: 20=1 MiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
+	f.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
 	f.BoolVar(&native, "native-control", false, "enable local-owner native control (default off)\n\n"+protocol.NativeControlWarning)
 	f.StringVar(&pillSource, "pill", "", "optional boot pill URL or local file; blank uses Vere canonical default")
 	f.StringVar(&bootstrap, "bootstrap", "", "bare or recommended; recommended requires --pill")
@@ -75,7 +75,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 		}
 	})
 	if loom < protocol.MinLoom || loom > protocol.MaxLoom {
-		return fail(errors.New("--loom must be in 20..34 for pinned Vere"), 2)
+		return fail(errors.New("--loom must be in 30..34 (1–16 GiB)"), 2)
 	}
 	req.Ship = strings.TrimSpace(req.Ship)
 	if !strings.HasPrefix(req.Ship, "~") {

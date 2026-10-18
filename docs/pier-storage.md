@@ -137,8 +137,11 @@ replacement container during first boot.
 **Setup → Add a ship → Galaxy / star / planet / moon** requires only an owned `@p`
 and private key file.
 The instance name is the ID without `~`; the path is inferred from its tier.
-The runner allocates available HTTP and Ames ports atomically. Advanced configuration
-contains port overrides. A Boot pill dropdown chooses bare bootstrap or Recommended
+The runner allocates available HTTP and Ames ports atomically. Collapsed **Advanced
+settings** contains loom selection (default31, choices30–34), storage location
+(default `/srv/urbit/piers`) and port overrides. The form links to
+[Get an Urbit ID](https://urbit.org/overview/running-urbit/get-urbit-id).
+A Boot pill dropdown chooses bare bootstrap or Recommended
 Apps for first boot. Only the key filename
 enters QML/argv. The collector reads a bounded, owned,
 private regular file; key contents travel in the authenticated RPC body and are

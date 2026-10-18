@@ -11,6 +11,7 @@ Column {
   property string kind: "comet"
   property string portToken: ""
   property string submitError: ""
+  property bool advanced: false
   signal showFleet()
   spacing: Style.space(9)
   readonly property string selection: connection ? connection.runner_id + "/" + connection.name : ""
@@ -21,7 +22,7 @@ Column {
     var o=service ? service.registrationOutcome : null
     return o && connection && o.runner === connection.runner_id && o.instance === instanceName.text.trim()
       && o.kind === kind && o.port === Number(httpPort.text) && o.bootstrap === bootstrap.kind && o.pillSource === bootstrap.source
-      && o.loom === runtimeSettings.selectedLoom && o.nativeControl === runtimeSettings.nativeControl
+      && o.loom === runtimeSettings.selectedLoom
       && (kind !== "fake" || o.ship === Model.fakeIdentity(fakeShip.text) && o.pier === pier) ? o : null
   }
   readonly property bool registered: !!outcome && outcome.status === "succeeded"
@@ -35,11 +36,11 @@ Column {
     portToken=Model.requestId();consent.checked=false
     service.suggestPort(connection,portToken)
   }
-  function resetRuntime() { if(runtimeSettings) {runtimeSettings.selectedLoom=31;runtimeSettings.nativeControl=false} if(consent) consent.checked=false }
+  function resetRuntime() { if(runtimeSettings) runtimeSettings.selectedLoom=31; if(consent) consent.checked=false }
   readonly property string registrationSelection: selection+"/"+kind+"/"+instanceName.text+"/"+(kind==="fake" ? fakeShip.text : "")
   onRegistrationSelectionChanged: resetRuntime()
-  onSelectionChanged: { runtimeSettings.selectedLoom=31;runtimeSettings.nativeControl=false;consent.checked=false;portToken="";httpPort.text="";suggestion.restart() }
-  onKindChanged: { consent.checked=false;instanceName.text=kind==="fake" ? Model.fakeIdentity(fakeShip.text).slice(1) : "";suggestion.restart() }
+  onSelectionChanged: { resetRuntime();advanced=false;portToken="";httpPort.text="";suggestion.restart() }
+  onKindChanged: { consent.checked=false;advanced=false;if(storageLocation)storageLocation.reset();instanceName.text=kind==="fake" ? Model.fakeIdentity(fakeShip.text).slice(1) : "";suggestion.restart() }
   onVisibleChanged: if (visible) suggestion.restart()
   Timer { id:suggestion;interval:0;running:true;onTriggered:if(root.visible && !httpPort.text && root.connection)root.suggestPort() }
   Connections {
@@ -59,11 +60,15 @@ Column {
     Label { text: "Fake Urbit identity"; caption: true; secondary: true }
     Field { id: fakeShip; objectName: "registration-fake-ship"; width: parent.width; text: "~zod"; placeholderText: "e.g. ~bus"; enabled: !!root.service && !root.service.busy; onTextEdited: {instanceName.text=Model.fakeIdentity(text).slice(1);consent.checked=false;root.service.editRegistration()} }
   }
-  RuntimeSettingsFields { id: runtimeSettings; width: parent.width; mode: root.kind; supported: Model.hasFeature(root.connection,"runtime-settings"); allShipsSupported: Model.hasFeature(root.connection,"native-control-all-ships"); enabled: !!root.service && !root.service.busy && !root.registered; onEdited: {consent.checked=false;root.service.editRegistration();root.submitError=""} }
-  StorageLocationSelector { id: storageLocation; allowCustom: true; width: parent.width; connection: root.connection; enabled: !!root.service && !root.service.busy && !root.registered; onEdited: {consent.checked=false;root.service.editRegistration()} }
-  Label { visible: storageLocation.customPath; text: "Custom pier path · below selected storage location"; caption: true; secondary: true }
-  Field { id: pierName; objectName: "registration-pier"; width: parent.width; visible: storageLocation.customPath; placeholderText: root.kind === "fake" ? "e.g. fakeships/project-one/zod/pier" : "e.g. livenet/comets/testing-comet-1/pier"; enabled: !!root.service && !root.service.busy; onTextEdited: {consent.checked=false;root.service.editRegistration()} }
-  Label { width: parent.width; secondary: true; caption: true; text: "Destination: " + Model.absolutePierPath(root.connection,root.pier) }
+  ActionButton { objectName: "registration-advanced-toggle"; text: root.advanced ? "Advanced settings −" : "Advanced settings +"; quiet: true; onClicked: root.advanced=!root.advanced }
+  Column {
+    objectName: "registration-advanced"; width: parent.width; spacing: Style.space(9); visible: root.advanced
+    RuntimeSettingsFields { id: runtimeSettings; width: parent.width; supported: Model.hasFeature(root.connection,"runtime-settings"); enabled: !!root.service && !root.service.busy && !root.registered; onEdited: {consent.checked=false;root.service.editRegistration();root.submitError=""} }
+    StorageLocationSelector { id: storageLocation; allowCustom: true; width: parent.width; connection: root.connection; enabled: !!root.service && !root.service.busy && !root.registered; onEdited: {consent.checked=false;root.service.editRegistration()} }
+    Label { visible: storageLocation.customPath; text: "Custom pier path · below selected storage location"; caption: true; secondary: true }
+    Field { id: pierName; objectName: "registration-pier"; width: parent.width; visible: storageLocation.customPath; placeholderText: root.kind === "fake" ? "e.g. fakeships/project-one/zod/pier" : "e.g. livenet/comets/testing-comet-1/pier"; enabled: !!root.service && !root.service.busy; onTextEdited: {consent.checked=false;root.service.editRegistration()} }
+    Label { width: parent.width; secondary: true; caption: true; text: "Destination: " + Model.absolutePierPath(root.connection,root.pier) }
+  }
   Label { text: "Host HTTP port"; caption: true; secondary: true }
   Field { id: httpPort; objectName: "registration-port"; width: parent.width; placeholderText: "Unused port, 1024–65535"; validator: IntValidator { bottom:1024; top:65535 } enabled: !!root.service && !root.service.busy; onTextEdited: {root.portToken="";consent.checked=false;root.service.editRegistration()} }
   Label { width: parent.width; secondary: true; caption: true; text: "Your Urbit ship will run in Docker at port 8080 and be exposed on this host at the selected port." }
@@ -89,7 +94,7 @@ Column {
       enabled: !!root.service && root.service.observing && !root.service.busy && !root.registered && root.problem === "" && consent.checked && !(root.outcome && root.outcome.status === "uncertain")
       onClicked: {
         root.submitError=""
-        var accepted=root.kind === "fake" ? root.service.registerFake(root.connection,instanceName.text.trim(),httpPort.text,fakeShip.text,root.pier,bootstrap.kind,bootstrap.source,runtimeSettings.selectedLoom,runtimeSettings.nativeControl) : root.service.registerComet(root.connection,instanceName.text.trim(),httpPort.text,consent.checked,root.pier,bootstrap.kind,bootstrap.source,runtimeSettings.selectedLoom,runtimeSettings.nativeControl)
+        var accepted=root.kind === "fake" ? root.service.registerFake(root.connection,instanceName.text.trim(),httpPort.text,fakeShip.text,root.pier,bootstrap.kind,bootstrap.source,runtimeSettings.selectedLoom) : root.service.registerComet(root.connection,instanceName.text.trim(),httpPort.text,consent.checked,root.pier,bootstrap.kind,bootstrap.source,runtimeSettings.selectedLoom)
         if (!accepted) root.submitError=root.service.lastError || "The selection changed; review a fresh runner observation."
       }
     }

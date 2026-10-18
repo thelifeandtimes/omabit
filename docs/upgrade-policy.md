@@ -43,6 +43,14 @@ checks before source fencing. Legacy configuration requests preserve omitted
 native-control values; explicit false still disables them on the next replacement.
 Release metadata obtains the schema from the built runner's `state-schema` command.
 
+The subsequent boot-form refinement restricts new loom selections to30–34 and
+makes native control CLI-only. Existing smaller RC.10 configurations/launches,
+signed transfers and actor-scoped creation replays retain their historical contract.
+Observation, Stop, resume and maintenance must remain possible without relabeling
+or clamping stored values. New configuration requests use the narrower bounds.
+Desktop edits omit native control and preserve an existing CLI choice. This is an
+in-place source update with no persistent format change or reset requirement.
+
 The contributed schema18 preview broadens explicit native control to all ship classes. Its version-only
 transaction accepts schemas11–17 without rewriting bodies or receipts. Schema17
 runners refuse the successor because their runtime validator forbids enabled livenet

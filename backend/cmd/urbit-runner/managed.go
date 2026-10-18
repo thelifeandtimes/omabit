@@ -53,7 +53,7 @@ bootstrap, stopped-pier enrollment, maintenance and host handoff. Comets generat
 their identity internally. HTTP is loopback-only; owned ships publish configured Ames UDP.
 Collector enrollment must explicitly accept mode development-managed while
 retaining the same runner ID. Private state has explicit schema/downgrade guards.
-Validated settings support loom 20..34 (default 31) and owner-controlled native control
+Validated settings support loom 30..34 (default 31) and CLI-only native control
 for every ship class (default off). Inspect snapshot runtime status for recorded
 launch settings and the host-local socket path.
 Start/stop are explicit; incomplete bootstrap is quarantined, never retried.
@@ -70,7 +70,7 @@ boot; intentionally stopped, interrupted and independently uncertain ships are s
 Runs as the dedicated urbit-runner account. Serves a private Unix management API
 with SQLite-backed registrations, revisions, operations, and request replay.
 Supports fake ships and qualified-fake imports, explicit maintenance, loopback
-HTTP, the pinned image/pill and loom 20..34 (default 31). Comets require serve-development.
+HTTP, the pinned image/pill and loom 30..34 (default 31). Comets require serve-development.
 Owner native control is default off.
 Inspect snapshot runtime status for recorded settings and the host-local socket path.
 Stopping this management process does NOT stop its independently running ships.

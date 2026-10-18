@@ -4,18 +4,16 @@ vm.runInContext(fs.readFileSync(path.join(__dirname,'../plugins/omabit/Model.js'
 const c={name:'local',runner_id:'runner-test',features:['runtime-settings']};
 const i={id:'dev',mode:'fake',config_revision:7,config:{http_port:18080,ames_port:34343,loom:34,native_control:true}};
 const target=model.edit(c,i);
-assert.ok(Array.from(model.configure(target,18081)).includes('--native-control=true'),'HTTP-only edit must preserve native control');
-assert.ok(Array.from(model.configure(target,18081,32,false)).includes('--native-control=false'),'explicit disable must be sent');
-assert.equal(Array.from(model.configure(target,18081,32,false)).slice(-2)[1],'--native-control=false');
-assert.throws(()=>model.configure(target,18081,35,false),/20.*34/);
-assert.throws(()=>model.configure({...target,mode:'planet'},18081,34,true),/native-control-all-ships/);
-assert.throws(()=>model.configure({...target,runtimeSettings:false},18081,34,true),/Update/);
+assert.ok(!Array.from(model.configure(target,18081)).some(a=>a.startsWith('--native-control')),'HTTP-only edit preserves native control by omission');
+assert.equal(Array.from(model.configure(target,18081,32)).at(-1),'32');
+for (const loom of [19,20,29,35,31.5]) assert.throws(()=>model.configure(target,18081,loom),/30.*34/);
+assert.throws(()=>model.configure({...target,runtimeSettings:false},18081,34),/Update/);
 for (const [exp,label] of [[20,'20 · 1 MiB'],[29,'29 · 512 MiB'],[30,'30 · 1 GiB'],[31,'31 · 2 GiB'],[34,'34 · 16 GiB']]) assert.equal(model.loomLabel(exp),label);
 assert.equal(model.loomLabel(35),'Unsupported loom');
-assert.deepEqual(Array.from(model.runtimeSettingsArgs(c,'fake',34,true)),['--loom','34','--native-control=true']);
-assert.throws(()=>model.runtimeSettingsArgs(c,'comet',34,true),/native-control-all-ships/);
-assert.throws(()=>model.runtimeSettingsArgs({...c,features:[]},'fake',34,true),/Update/);
-assert.deepEqual(Array.from(model.runtimeSettingsArgs({...c,features:[]},'fake',31,false)),[]);
+for (let loom=30;loom<=34;loom++) assert.deepEqual(Array.from(model.runtimeSettingsArgs(c,loom)),['--loom',String(loom)]);
+for (const loom of [0,20,29,35,31.5]) assert.throws(()=>model.runtimeSettingsArgs(c,loom),/30.*34/);
+assert.throws(()=>model.runtimeSettingsArgs({...c,features:[]},34),/Update/);
+assert.deepEqual(Array.from(model.runtimeSettingsArgs({...c,features:[]},31)),[]);
 const detail=model.runtimeDetail({...i,runtime_status:{launch_loom:31,launch_native_control:false}});
 assert.match(detail,/Recorded launch.*31.*2 GiB.*disabled/);
 assert.match(detail,/Requested.*34.*16 GiB.*enabled/);
@@ -23,10 +21,12 @@ assert.match(model.runtimeDetail({...i,runtime_status:{launch_loom:34,launch_nat
 const all={...c,features:['runtime-settings','native-control-all-ships']};
 for (const mode of ['fake','comet','moon','planet','star','galaxy','']) {
   const edit=model.edit(all,{...i,mode});
-  assert.ok(Array.from(model.configure(edit,18081)).includes('--native-control=true'),'HTTP edit preserves '+mode+' opt-in');
-  assert.deepEqual(Array.from(model.runtimeSettingsArgs(all,mode,34,true)),['--loom','34','--native-control=true']);
-  assert.deepEqual(Array.from(model.runtimeSettingsArgs(all,mode,31,false)),['--loom','31','--native-control=false']);
+  assert.ok(!Array.from(model.configure(edit,18081)).some(a=>a.startsWith('--native-control')),'UI preserves '+mode+' CLI opt-in by omission');
 }
-assert.deepEqual(Array.from(model.runtimeSettingsArgs(c,'comet',31,false)),['--loom','31'],'old comet CLI must not receive new boolean flag');
+assert.deepEqual(Array.from(model.runtimeSettingsArgs(c,31)),['--loom','31'],'creation uses the default-off native contract');
 assert.doesNotThrow(()=>model.configure({...target,runtimeSettings:false,loom:32,nativeControl:false},18081));
-console.log('PASS: all-ship runtime settings preserve HTTP edits, validate pinned range, gate capabilities and distinguish recorded from requested state');
+assert.equal(model.storageRoots(null)[0].path,'/srv/urbit/piers');
+const roots=[{id:'ssd',path:'/custom'},{id:'default',path:'/srv/urbit/piers'}];
+assert.equal(model.storageRoots({snapshot:{piers:{roots}}})[0].id,'default');
+assert.equal(roots[0].id,'ssd','default ordering must not mutate the snapshot');
+console.log('PASS: UI offers loom30–34 and default storage, preserves CLI native settings, and distinguishes historical launches');

@@ -15,7 +15,7 @@ Column {
   readonly property string ship: Model.fakeIdentity(identity.text)
   readonly property string instanceName: ship.slice(1)
   readonly property string runtimeSelection: (connection ? connection.runner_id+"/"+connection.name : "")+"/"+ship
-  onRuntimeSelectionChanged: {if(runtimeSettings) {runtimeSettings.selectedLoom=31;runtimeSettings.nativeControl=false} if(bootConsent) bootConsent.checked=false}
+  onRuntimeSelectionChanged: {if(runtimeSettings) runtimeSettings.selectedLoom=31; if(bootConsent) bootConsent.checked=false}
   readonly property string destination: Model.ownedPierPath(ship) ? Model.storagePath(storageLocation.rootID,storageLocation.customPath && customPier.text.trim() ? customPier.text.trim() : Model.ownedPierPath(ship)) : ""
   readonly property string selectedPill: bootstrap.source
   readonly property var currentConnection: service && connection ? service.connections.filter(function(c){return c.name===root.connection.name && c.runner_id===root.connection.runner_id})[0] || null : null
@@ -30,6 +30,7 @@ Column {
   spacing: Style.space(12)
   Label { text: "Boot an owned ship from a key"; font.pixelSize: Style.space(21); font.bold: true }
   Label { width: parent.width; text: "Choose your Urbit ID and private key file. Omabit names the instance from its @p, selects its pier directory, allocates available ports and boots it with your confirmation."; secondary: true }
+  ActionButton { objectName: "get-urbit-id"; property url url: "https://urbit.org/overview/running-urbit/get-urbit-id"; text: "Get an Urbit ID ↗"; quiet: true; compact: true; hint: url; onClicked: Qt.openUrlExternally(url) }
   BootstrapSelector { id: bootstrap; width: parent.width; service: root.service; visible: !root.registered; enabled: !root.submitted && !!root.service && !root.service.busy; onEdited: {root.submitError="";bootConsent.checked=false} }
   Label { width: parent.width; visible: root.registered && !!root.registeredInstance.bootstrap; text: visible ? "Boot pill: "+(root.registeredInstance.bootstrap.kind==="bare" ? "bare bootstrap" : "Recommended Apps") : ""; caption: true; secondary: true }
   Label { text: "Expected Urbit ID"; caption: true; secondary: true }
@@ -46,24 +47,25 @@ Column {
     options: FileDialog.DontUseNativeDialog
     onAccepted: root.keyFile=Model.localPath(selectedFile)
   }
-  StorageLocationSelector { id: storageLocation; allowCustom: true; width: parent.width; connection: root.connection; visible: !root.registered; enabled: !root.submitted && !root.service.busy; onEdited: bootConsent.checked=false }
-  Field { id: customPier; objectName: "key-pier-path"; width: parent.width; visible: storageLocation.customPath; placeholderText: Model.ownedPierPath(root.ship); enabled: !root.submitted && !root.service.busy; onTextEdited: bootConsent.checked=false }
-  Label { width: parent.width; visible: root.destination!==""; text: "Instance: "+root.instanceName+"\nPier: "+Model.absolutePierPath(root.connection,root.destination); secondary: true; caption: true }
-  ActionButton { objectName: "key-advanced-toggle"; text: root.advanced ? "Advanced configuration −" : "Advanced configuration +"; quiet: true; onClicked: root.advanced=!root.advanced }
+  Label { width: parent.width; visible: root.destination!==""; text: "Instance: "+root.instanceName; secondary: true; caption: true }
+  ActionButton { objectName: "key-advanced-toggle"; text: root.advanced ? "Advanced settings −" : "Advanced settings +"; quiet: true; onClicked: root.advanced=!root.advanced }
   Column {
     objectName: "key-advanced"; width: parent.width; spacing: Style.space(10); visible: root.advanced
+    RuntimeSettingsFields { id: runtimeSettings; width: parent.width; supported: Model.hasFeature(root.connection,"runtime-settings"); enabled: !root.submitted && !!root.service && !root.service.busy; onEdited: {bootConsent.checked=false;root.submitError=""} }
+    StorageLocationSelector { id: storageLocation; allowCustom: true; width: parent.width; connection: root.connection; visible: !root.registered; enabled: !root.submitted && !root.service.busy; onEdited: bootConsent.checked=false }
+    Field { id: customPier; objectName: "key-pier-path"; width: parent.width; visible: storageLocation.customPath; placeholderText: Model.ownedPierPath(root.ship); enabled: !root.submitted && !root.service.busy; onTextEdited: bootConsent.checked=false }
+    Label { width: parent.width; visible: root.destination!==""; text: "Pier: "+Model.absolutePierPath(root.connection,root.destination); secondary: true; caption: true }
     Label { text: "Ames UDP port"; caption: true; secondary: true }
     Field { id: amesPort; objectName: "key-ames-port"; width: parent.width; placeholderText: "Automatic"; enabled: !root.submitted && !root.service.busy; validator: IntValidator {bottom:1024;top:65535} onTextEdited: bootConsent.checked=false }
     Label { text: "HTTP port"; caption: true; secondary: true }
     Field { id: httpPort; objectName: "key-http-port"; width: parent.width; placeholderText: "Automatic"; enabled: !root.submitted && !root.service.busy; validator: IntValidator {bottom:1024;top:65535} onTextEdited: bootConsent.checked=false }
     Label { width: parent.width; text: "Your Urbit ship will run in Docker at port 8080 and be exposed on this host at the selected HTTP port. Ames UDP is published on the selected host port."; secondary: true; caption: true }
-    RuntimeSettingsFields { id: runtimeSettings; width: parent.width; mode: "owned"; supported: Model.hasFeature(root.connection,"runtime-settings"); allShipsSupported: Model.hasFeature(root.connection,"native-control-all-ships"); enabled: !root.submitted && !!root.service && !root.service.busy; onEdited: {bootConsent.checked=false;root.submitError=""} }
   }
   Label { width: parent.width; visible: root.problem!=="" && identity.text!==""; text: root.problem; secondary: true; caption: true }
   CheckField { id: bootConsent; objectName: "key-boot-consent"; width: parent.width; visible: !root.registered; enabled: !root.submitted && !root.service.busy; text: "Boot this identity now with these settings." }
   Flow {
     width: parent.width; spacing: Style.space(8)
-    ActionButton { objectName: "key-register"; text: root.registered ? "Boot submitted" : root.submitted ? "Starting…" : root.service.busy ? "Preparing boot files…" : "Boot ship"; primary: !root.registered; enabled: root.connection && root.connection.access_role==="operator" && Model.hasFeature(root.connection,"key-boot-options") && !root.submitted && !root.service.busy && root.problem==="" && bootConsent.checked; onClicked: {root.submitError="";if(!root.service.createFromKey(root.connection,root.ship,root.keyFile,httpPort.text,amesPort.text,root.selectedPill,bootstrap.kind,storageLocation.rootID,root.destination,runtimeSettings.selectedLoom,runtimeSettings.nativeControl))root.submitError=root.service.lastError} }
+    ActionButton { objectName: "key-register"; text: root.registered ? "Boot submitted" : root.submitted ? "Starting…" : root.service.busy ? "Preparing boot files…" : "Boot ship"; primary: !root.registered; enabled: root.connection && root.connection.access_role==="operator" && Model.hasFeature(root.connection,"key-boot-options") && !root.submitted && !root.service.busy && root.problem==="" && bootConsent.checked; onClicked: {root.submitError="";if(!root.service.createFromKey(root.connection,root.ship,root.keyFile,httpPort.text,amesPort.text,root.selectedPill,bootstrap.kind,storageLocation.rootID,root.destination,runtimeSettings.selectedLoom))root.submitError=root.service.lastError} }
     ActionButton {
       objectName: "key-start"
       text: "▶ Start"
@@ -79,5 +81,5 @@ Column {
     }
   }
   Label { objectName: "key-registration-feedback"; width: parent.width; visible: root.registered || !!root.outcome || root.submitError!==""; text: root.outcome ? root.outcome.message : root.registered ? "Registered “"+root.instanceName+"”. Choose Start when ready." : root.submitError; color: root.registered || root.outcome && root.outcome.status==="succeeded" ? Design.success : root.outcome && root.outcome.status==="submitting" ? Design.accent : Design.danger }
-  ActionButton { objectName: "key-register-another"; text: "Register another ship"; visible: root.registered || !!root.outcome && root.outcome.status==="succeeded"; enabled: !root.service.busy; onClicked: {root.service.editRegistration();root.submitError="";root.keyFile="";identity.text="";httpPort.text="";amesPort.text="";bootstrap.reset()} }
+  ActionButton { objectName: "key-register-another"; text: "Register another ship"; visible: root.registered || !!root.outcome && root.outcome.status==="succeeded"; enabled: !root.service.busy; onClicked: {root.service.editRegistration();root.submitError="";root.keyFile="";identity.text="";httpPort.text="";amesPort.text="";customPier.text="";storageLocation.reset();root.advanced=false;bootstrap.reset()} }
 }

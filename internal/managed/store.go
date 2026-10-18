@@ -296,7 +296,7 @@ func instances(q querier) ([]storedInstance, error) {
 
 func validateConfig(c protocol.Configuration) error {
 	if c.HTTPPort < 1024 || c.AmesPort != 34343 || !protocol.ValidLoom(c.Loom) {
-		return bad("development runtime requires HTTP port 1024..65535, loom 20..34, and guest Ames value 34343 (no host UDP publication)")
+		return bad("development runtime requires HTTP port 1024..65535, loom 30..34, and guest Ames value 34343 (no host UDP publication)")
 	}
 	return nil
 }
@@ -332,8 +332,10 @@ func registrationFingerprint(req *protocol.CreateFakeRequest, source *protocol.I
 	if !protocol.ValidID(req.ID) || !protocol.ValidID(req.RequestID) {
 		return "", bad("valid instance and request IDs are required")
 	}
-	if err := validateConfig(req.Config); err != nil {
-		return "", err
+	// Historical request fingerprints must remain replayable after tightening
+	// selectable loom bounds. New registrations are validated after replay lookup.
+	if req.Config.HTTPPort < 1024 || req.Config.AmesPort != 34343 || !protocol.ValidRecordedLoom(req.Config.Loom) {
+		return "", bad("invalid registration configuration")
 	}
 	if req.Label == "" {
 		req.Label = req.ID
@@ -427,6 +429,9 @@ func (s *store) registerKind(actor string, req protocol.CreateFakeRequest, sourc
 	defer tx.Rollback()
 	if op, found, err := replay(tx, actor, req.RequestID, fingerprint); found || err != nil {
 		return op, true, err
+	}
+	if err := validateConfig(req.Config); err != nil {
+		return protocol.Operation{}, false, err
 	}
 	if req.Bootstrap != nil {
 		if err := s.checkStagedPill(req.Bootstrap.Pill); err != nil {
@@ -886,7 +891,7 @@ func (s *store) beginOperation(opID string) (protocol.Operation, storedInstance,
 	// Stop/observation retain the previous runtime contract. New runtime work
 	// uses this revision, while each retained container keeps its own launch.
 	if op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || routineKind(op.Kind) {
-		if !protocol.ValidLoom(v.Public.Config.Loom) {
+		if !protocol.ValidRecordedLoom(v.Public.Config.Loom) {
 			return op, v, bad("invalid runtime settings for this ship mode")
 		}
 		v.Runtime.Loom, v.Runtime.NativeControl = v.Public.Config.Loom, v.Public.Config.NativeControl

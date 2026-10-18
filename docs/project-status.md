@@ -2,6 +2,11 @@
 
 ## Where we are
 
+Current source simplifies boot forms: loom31 and default storage are under
+collapsed Advanced settings, new loom choices are30–34, native control is CLI-only,
+and owned-key boot links to Get an Urbit ID. Existing runtime settings and CLI
+native choices survive in-place updates; historical smaller looms remain manageable.
+
 **[RC.10 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.10).**
 It integrates [PR #4](diagnostics/pr4-integration.md): loom20–34 and default-off
 native control, with immutable launch settings, legacy-client preservation,
@@ -224,12 +229,11 @@ patched executable overlays, test commands, build recipe and rejection-review
 exceptions. There is no compatibility layer for those disposable reports.
 
 The sole runtime is the pinned official Vere 4.6 release. Native control stays off
-by default. Source now supports a [loom dropdown and owner opt-in for every ship
-class](development-runtime.md). The initial managed-fake native threads, Clay byte
-verification and explicit replacement/stop passed. The all-ship successor passed
-source/private tests and a separately approved management-only update. Livenet
-socket execution remains untested. Published desktop/tool
-pins remain unchanged.
+by default and is configured only through the CLI. Source offers a
+[loom30–34 dropdown under Advanced settings](development-runtime.md). The earlier
+managed-fake native/Clay gate and final RC.10 fake/comet native checks passed,
+alongside repeated in-place management updates. See the linked qualification
+records for the exact tested boundaries.
 Existing lifecycle, maintenance, pruning, schedules, import, access and
 container-monitoring features remain. Live loom-internal metrics and pressure-based
 advice are deferred.

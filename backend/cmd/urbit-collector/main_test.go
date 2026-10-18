@@ -352,7 +352,7 @@ func TestHelp(t *testing.T) {
 					t.Errorf("help must include %q: %s", text, &stdout)
 				}
 			}
-			if args[0] == "configure" && (!strings.Contains(stdout.String(), "20..34") || !strings.Contains(stdout.String(), "address space")) {
+			if args[0] == "configure" && (!strings.Contains(stdout.String(), "30..34") || !strings.Contains(stdout.String(), "address space")) {
 				t.Errorf("help must explain pinned loom bounds: %s", &stdout)
 			}
 		})

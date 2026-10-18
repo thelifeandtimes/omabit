@@ -1,13 +1,12 @@
 # Development loom and native control
 
-RC.10 adds a loom-size dropdown and owner-controlled native access for every
-ship class: fake, comet, moon, planet, star and galaxy. It does not automatically
-update installed runners or change existing running ships.
-The managed-fake gate passed for loom34, native file threads, a Clay byte round-trip
-and explicit stop/start. See the [verification report](runtime-settings-validation.md).
-Both the initial fake-only update and the all-ship successor were installed locally
-after separate approval, preserving existing ship settings and runtimes. The new
-preview exposes livenet opt-in, but no existing livenet socket was enabled or tested.
+Current source keeps loom31 and the default `/srv/urbit/piers` storage location
+behind collapsed **Advanced settings** in the boot forms. New loom choices are
+30–34 (1–16 GiB). Native `conn.sock` control defaults off and can be enabled or
+disabled only through the CLI; it is available for every ship class.
+
+The earlier managed-fake gate passed for loom34, native file threads, a Clay byte
+round-trip and explicit stop/start. See the [verification report](runtime-settings-validation.md).
 RC.10 publishes matching desktop/tool pins and final-binary fake/comet native
 execution plus repeated RC.9 upgrade evidence. See the
 [RC.10 qualification](diagnostics/2026-10-18-rc10-qualification.md); the
@@ -17,23 +16,25 @@ execution plus repeated RC.9 upgrade evidence. See the
 
 | Setting | Default | Supported values |
 | --- | --- | --- |
-| Loom byte exponent | 31 | 20 through 34, inclusive |
-| Native control socket | Off | Explicit owner opt-in for any ship class |
+| Loom byte exponent | 31 | 30 through 34, inclusive; Advanced settings or CLI |
+| Native control socket | Off | Explicit CLI opt-in for any ship class |
+| Storage location | `/srv/urbit/piers` | Configured runner location; Advanced settings |
 
 Loom size is `2^exponent` bytes of address space. Examples:
 
 | Exponent | Address space |
 | --- | --- |
-| 20 | 1 MiB |
 | 30 | 1 GiB |
 | 31 | 2 GiB |
 | 32 | 4 GiB |
 | 33 | 8 GiB |
 | 34 | 16 GiB |
 
-These bounds come from the pinned Vere `4.6-5a7614f` parser and allocator.
-They are parser limits, not a promise that every pill fits in every loom.
-Small looms can fail to boot. Reducing a populated pier's loom can also fail.
+Omabit deliberately restricts new choices to 30–34 even though pinned Vere
+`4.6-5a7614f` accepts 20–34. A selectable size is not a promise that every pill
+fits in it. Reducing a populated pier's loom can fail.
+Historical smaller settings and launch records remain manageable without an
+automatic rewrite; new registration/configuration requests must use 30–34.
 
 **Address space is not resident memory (RSS) or a container memory allowance.**
 The existing container cap remains 4 GiB, with no additional swap allowance.
@@ -45,8 +46,8 @@ starting a workload. Loom34 does not make a memory-heavy workload fit under the 
 Common configuration validates the same loom range for every ship class. Native
 control is an owner decision, not a ship-class restriction. The runner must advertise
 `native-control-all-ships` to enable it on nonfake ships. Older `runtime-settings`
-runners retain their fake-only behavior. No new livenet execution qualification
-accompanies this successor.
+runners retain their fake-only behavior. Final RC.10 qualification includes
+disposable fake and comet native execution, as recorded above.
 
 ## CLI
 
@@ -105,11 +106,15 @@ They are not live measurements. Check observed state, container identity and fre
 
 ## Desktop
 
-The forms provide a **Loom address space** dropdown with all 15 supported exponents
-and calculated MiB/GiB labels. **Enable local-owner native control** appears for
-every ship class and defaults off. Owned-key creation includes these settings under
-Advanced configuration. An older fake-only backend disables nonfake opt-in with
-explicit upgrade guidance, rather than presenting it as a product-policy ban.
+Comet, fake and owned-key boot forms default to loom31 and the runner's default
+storage root. Expand **Advanced settings** to choose loom30–34 or another configured
+storage location. Owned-key port overrides remain in that section. The key form
+also links to [Get an Urbit ID](https://urbit.org/overview/running-urbit/get-urbit-id).
+
+Native-control toggles and their development warning are CLI-only. Desktop creation
+uses the native-off default, and desktop edits omit native control so a prior CLI
+choice is preserved. Runtime diagnostics still report requested/recorded native
+state and the host-local socket path when applicable.
 
 For a registered ship, open **Connectivity & runtime → Edit runtime settings**.
 The editor preserves native control during an HTTP-only edit. Saving checks the

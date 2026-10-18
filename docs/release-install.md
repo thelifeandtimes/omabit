@@ -1,4 +1,4 @@
-# Omabit 0.1.0-rc.10 binary bundle
+# Omabit 0.1.0-rc.11 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
@@ -13,6 +13,11 @@ RC.7 retains management and the separate rootless Docker engine as the existing 
 owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
 user-owned files. Storage/import/deletion and bounded reboot resume continue.
 This remains a development prerelease.
+
+RC.11 collapses loom and storage choices under **Advanced settings**, limits new
+loom selections to30–34 (default31), and makes native control CLI-only. Owned-key
+boot includes Get an Urbit ID guidance. Historical runtime settings and existing
+CLI native choices are preserved. See [RC.11 notes](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-rc11.md).
 
 RC.10 adds loom20–34 selection and default-off native control for every ship class,
 with separate requested and recorded launch settings. Legacy HTTP edits preserve

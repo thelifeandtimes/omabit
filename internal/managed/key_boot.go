@@ -93,6 +93,9 @@ func (s *store) registerShip(actor string, req protocol.CreateShipRequest) (prot
 	if op, hit, err := replay(tx, actor, req.RequestID, string(fingerprint)); hit || err != nil {
 		return op, true, err
 	}
+	if err := validateConfig(registration.Config); err != nil {
+		return protocol.Operation{}, false, err
+	}
 	revision, err := initialRevision(tx, req.ID)
 	if err != nil {
 		return protocol.Operation{}, false, err

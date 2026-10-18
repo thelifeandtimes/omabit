@@ -160,7 +160,7 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 	settings := protocol.RuntimeSettings{Loom: protocol.DefaultLoom}
 	if h.RuntimeSettings != nil {
 		settings = *h.RuntimeSettings
-		if !protocol.ValidLoom(settings.Loom) {
+		if !protocol.ValidRecordedLoom(settings.Loom) {
 			r.respondError(w, bad("invalid handoff runtime settings"))
 			return
 		}

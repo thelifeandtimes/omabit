@@ -350,3 +350,35 @@ func TestRuntimeSettingsInvalidAdmission(t *testing.T) {
 		}
 	}
 }
+
+func TestHistoricalSmallLoomObservationAndReplacement(t *testing.T) {
+	f, state, persist := managedFixture(t)
+	state.Loom = 29 // Existing RC.10 configuration; no new registration request.
+	state, _, err := applyManaged(context.Background(), "start", state, persist, f.d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range state.Runtime.Containers {
+		if c.Kind != "probe" && c.Loom != 29 {
+			t.Fatal("historical launch relabeled", c)
+		}
+	}
+	state.Loom = 31 // A new desired selection must not invalidate the old launch.
+	state, obs, err := observeManaged(context.Background(), state, f.d)
+	if err != nil || obs.Health != "healthy" {
+		t.Fatal("historical runtime became unmanageable", obs, err)
+	}
+	state, _, err = applyManaged(context.Background(), "stop", state, persist, f.d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	state, _, err = applyManaged(context.Background(), "start", state, persist, f.d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range state.Runtime.Containers {
+		if c.Kind != "probe" && c.Loom != 31 {
+			t.Fatal("replacement lost new selection", c)
+		}
+	}
+}

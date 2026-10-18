@@ -6,6 +6,9 @@ Column {
   id: root
   property var connection
   property bool allowCustom: false
+  readonly property string selection: connection ? connection.runner_id+"/"+connection.name : ""
+  onSelectionChanged: reset()
+  function reset() { if(selector) selector.currentIndex=0; if(customStorage) customStorage.currentIndex=0 }
   readonly property bool customPath: allowCustom && selector.currentIndex===roots.length
   readonly property var roots: Model.storageRoots(connection)
   readonly property string rootID: (roots[customPath ? customStorage.currentIndex : selector.currentIndex] || roots[0]).id

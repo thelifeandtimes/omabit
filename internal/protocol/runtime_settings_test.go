@@ -1,26 +1,17 @@
 package protocol
 
-import (
-	"os"
-	"regexp"
-	"strconv"
-	"testing"
-)
+import "testing"
 
-func TestNativeControlWarningMatchesUI(t *testing.T) {
-	data, err := os.ReadFile("../../plugins/omabit/RuntimeSettingsFields.qml")
-	if err != nil {
-		t.Fatal(err)
+func TestSelectableAndHistoricalLoomBounds(t *testing.T) {
+	for _, tc := range []struct {
+		loom                   uint8
+		selectable, historical bool
+	}{{0, false, false}, {19, false, false}, {20, false, true}, {29, false, true}, {30, true, true}, {31, true, true}, {34, true, true}, {35, false, false}, {255, false, false}} {
+		if ValidLoom(tc.loom) != tc.selectable || ValidRecordedLoom(tc.loom) != tc.historical {
+			t.Fatalf("loom %d: selectable=%v historical=%v", tc.loom, ValidLoom(tc.loom), ValidRecordedLoom(tc.loom))
+		}
 	}
-	match := regexp.MustCompile(`(?s)objectName:\s*"runtime-native-warning".*?text:\s*("(?:\\.|[^"\\])*")`).FindSubmatch(data)
-	if len(match) != 2 {
-		t.Fatal("native-control UI warning is not a literal text field")
-	}
-	text, err := strconv.Unquote(string(match[1]))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if text != NativeControlWarning {
-		t.Fatalf("CLI and UI native-control warnings differ:\nCLI: %q\nUI: %q", NativeControlWarning, text)
+	if EffectiveLoom(0) != 31 || EffectiveLoom(29) != 29 {
+		t.Fatal("historical defaults or explicit launch values changed")
 	}
 }

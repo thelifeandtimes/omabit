@@ -85,3 +85,59 @@ func TestHandoffPreservesRuntimeSettingsAndRetry(t *testing.T) {
 		t.Fatal("settings lost", v, err)
 	}
 }
+
+func TestHistoricalSmallLoomPreservedAndReplayed(t *testing.T) {
+	dir := privateDir(t)
+	s, err := testOpenStore(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { s.close() }()
+	req := registration("historical", "old-request", 18080)
+	op, _, err := s.register("actor", req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Reconstruct a previously accepted RC.10 request and persisted settings.
+	req.Config.Loom = 29
+	fingerprint, err := registrationFingerprint(&req, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, err := loadInstance(s.db, req.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	v.Public.Config.Loom, v.Runtime.Loom = 29, 29
+	saveRecoveryFixture(t, s, v)
+	if _, err = s.db.Exec("UPDATE operations SET fingerprint=? WHERE id=?", fingerprint, op.ID); err != nil {
+		t.Fatal(err)
+	}
+	if err = s.close(); err != nil {
+		t.Fatal(err)
+	}
+	s, err = testOpenStore(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, err = loadInstance(s.db, req.ID)
+	if err != nil || v.Public.Config.Loom != 29 || v.Runtime.Loom != 29 {
+		t.Fatal("upgrade rewrote historical settings", err)
+	}
+	got, replayed, err := s.register("actor", req)
+	if err != nil || !replayed || got.ID != op.ID {
+		t.Fatal("historical replay refused", got, replayed, err)
+	}
+	req.ID, req.RequestID = "new-small", "new-request"
+	if _, _, err = s.register("actor", req); err == nil {
+		t.Fatal("new small-loom registration accepted")
+	}
+	start, _, err := s.accept("actor", v.Public.ID, protocol.OperationRequest{Kind: "start", ExpectedRevision: 1, RequestID: "resume-existing"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, active, err := s.beginOperation(start.ID)
+	if err != nil || active.Runtime.Loom != 29 {
+		t.Fatal("historical lifecycle was stranded", err)
+	}
+}

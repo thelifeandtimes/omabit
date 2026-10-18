@@ -243,7 +243,7 @@ func TestRuntimeSettingsLivenetRegistrationAndConfigure(t *testing.T) {
 func TestRuntimeSettingsPinnedLoomRange(t *testing.T) {
 	for loom := 0; loom <= 255; loom++ {
 		c := settingsConfig(t, loom, false)
-		want := loom >= 20 && loom <= 34
+		want := loom >= 30 && loom <= 34
 		if err := validateConfig(c); (err == nil) != want {
 			t.Errorf("fake loom %d accepted=%t want=%t", loom, err == nil, want)
 		}

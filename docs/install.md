@@ -124,9 +124,12 @@ Browser and +code buttons enable only after fresh, healthy runtime observations.
 
 Startup requires **5 GiB available physical RAM and 8 GiB free disk**. The current
 container limits remain 4 GiB RAM, two CPUs and 256 PIDs. Loom defaults to 31.
-Source builds with `runtime-settings` support exponents 20–34. The successor
-`native-control-all-ships` capability supports owner native-control opt-in for every
-ship class. See [development runtime settings](development-runtime.md) for
+Source builds with `runtime-settings` offer exponents 30–34 (1–16 GiB). Loom and
+storage selection are under collapsed **Advanced settings**; storage defaults to
+`/srv/urbit/piers`. Native control defaults off and is CLI-only. The
+`native-control-all-ships` capability supports CLI opt-in for every
+ship class. Owned-key boot links to [Get an Urbit ID](https://urbit.org/overview/running-urbit/get-urbit-id).
+See [development runtime settings](development-runtime.md) for
 address-space labels, risks and recorded managed-fake acceptance. Once healthy, open
 the ship and use the operator-only code-copy action for sign-in.
 

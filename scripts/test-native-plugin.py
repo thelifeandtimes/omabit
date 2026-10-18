@@ -34,6 +34,8 @@ class NativePluginTests(unittest.TestCase):
         entries = root.pop("entryPoints")
         component.pop("entryPoints")
         self.assertEqual(root, component)
+        self.assertIn('version:'+json.dumps(root["version"]), (ROOT / "plugins/omabit/Service.qml").read_text(),
+                      "loaded-QML status version must identify the release being installed")
         self.assertEqual(entries, {"service": "native/Service.qml", "barWidget": "native/Panel.qml"})
         for name in entries.values():
             self.assertTrue((ROOT / name).is_file())

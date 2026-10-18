@@ -1,5 +1,17 @@
 # Runner protocol: checkpoint 1
 
+## Current boot settings policy
+
+New registration/configuration requests accept loom30–34, default31. The desktop
+places loom and storage selection under Advanced settings and exposes native
+control only as read-only runtime status; enable/disable remains available through
+CLI options and their authenticated RPC requests. Omitted native-control updates
+preserve the existing choice.
+
+Historical loom20–29 records, creation-request replays and signed handoff contracts
+remain readable and manageable. Narrowing new selections does not rewrite stored
+configuration or change existing launch arguments. The persistent schema remains19.
+
 ## RC.10 compatibility (schema 19)
 
 Schema19 upgrades schemas11–18 transactionally, preserving bodies and receipts.

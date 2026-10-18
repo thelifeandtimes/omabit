@@ -128,8 +128,8 @@ Commands:
                [--bootstrap bare|recommended --pill URL_OR_FILE]
               Register a new comet; first explicit Start generates its identity.
   configure INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT
-              Replace configuration; all flags are required. Demo loom: 31..33,
-              not universal runtime bounds.
+              Replace HTTP/Ames/loom configuration; loom must be 30..34 (1–16 GiB).
+              Native control is CLI-only; omit --native-control to preserve it.
   operate INSTANCE start|stop|pack|meld|roll|inspect-epochs|recover-import --revision N --request-id ID
               Submit one operation; both flags are required.
   epoch-preview INSTANCE --revision N --expected-digest HASH --cutoff 0iEVENT
@@ -219,7 +219,7 @@ Use COMMAND --help for command flags and constraints.
 	switch command {
 	case "hello", "snapshot", "suggest-port":
 	case "create-fake", "create-comet":
-		flags.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 20..34: 20=1 MiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
+		flags.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
 		flags.BoolVar(&nativeControl, "native-control", false, "enable local-owner native control (default off)\n\n"+protocol.NativeControlWarning)
 		usage += " INSTANCE --http-port PORT --request-id ID [--label TEXT]"
 		flags.UintVar(&httpPort, "http-port", 0, "required loopback host HTTP port, 1024..65535")
@@ -244,7 +244,7 @@ Use COMMAND --help for command flags and constraints.
 		flags.Uint64Var(&revision, "revision", 0, "required positive expected configuration revision")
 		flags.UintVar(&httpPort, "http-port", 0, "required HTTP port, 1..65535")
 		flags.UintVar(&amesPort, "ames-port", 0, "required Ames port, 1..65535")
-		flags.UintVar(&loom, "loom", 0, "required loom byte exponent 20..34: 20=1 MiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
+		flags.UintVar(&loom, "loom", 0, "required loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
 		flags.BoolVar(&nativeControl, "native-control", false, "omitted=preserve existing setting; use =true/=false explicitly\n\n"+protocol.NativeControlWarning)
 	case "operate":
 		usage += " INSTANCE start|stop|pack|meld|roll|inspect-epochs|recover-import --revision N --request-id ID"
@@ -327,7 +327,7 @@ Use COMMAND --help for command flags and constraints.
 	switch command {
 	case "create-fake", "create-comet":
 		if loom < protocol.MinLoom || loom > protocol.MaxLoom {
-			return fail(errors.New("--loom must be in 20..34 for pinned Vere"), 2)
+			return fail(errors.New("--loom must be in 30..34 (1–16 GiB)"), 2)
 		}
 		if _, err := bootstrapChoice(bootstrap, pillSource); err != nil {
 			return fail(err, 2)
@@ -346,7 +346,7 @@ Use COMMAND --help for command flags and constraints.
 			return fail(errors.New("--http-port and --ames-port are required and must be in 1..65535"), 2)
 		}
 		if loom < protocol.MinLoom || loom > protocol.MaxLoom {
-			return fail(errors.New("--loom is required and must be in 20..34 for pinned Vere"), 2)
+			return fail(errors.New("--loom is required and must be in 30..34 (1–16 GiB)"), 2)
 		}
 		runtimeSettings = runtimeSettings || loom < 31 || loom > 33
 	case "operate":

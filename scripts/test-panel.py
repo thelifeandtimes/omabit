@@ -122,18 +122,19 @@ elif "move-host" in sys.argv:
     print(json.dumps({"id":"b"*32,"source_runner":"runner-fixture","source_instance":"alpha","destination_runner":"runner-move-target","destination_instance":"alpha","state":"complete","direction":"in"}))
 elif "create-comet" in sys.argv:
     assert "--confirm-network" in sys.argv and "--request-id" in sys.argv
-    assert sys.argv[sys.argv.index("--loom")+1]=="34" and "--native-control=true" in sys.argv
     assert sys.argv[sys.argv.index("--expected-runner-id")+1] == "runner-fixture"
     instance=sys.argv[sys.argv.index("create-comet")+1]
+    assert sys.argv[sys.argv.index("--loom")+1]==("31" if instance=="new-comet" else "34")
+    assert not any(a.startswith("--native-control") for a in sys.argv)
     if instance=="taken-on-server":
         assert sys.argv[sys.argv.index("--bootstrap")+1]=="recommended"
         assert sys.argv[sys.argv.index("--pill")+1]=="https://example.invalid/apps.pill"
         print(json.dumps({"error":{"code":"instance_exists","message":"instance ID is already registered"}}),file=sys.stderr)
         sys.exit(1)
-    (directory/("created-"+instance+".json")).write_text(json.dumps({"id":instance,"mode":"comet","ship":"~doznec-salbud-salwex-sogref--tasweb-navfun-batwet-sigfet","config_revision":1,"config":{"http_port":int(sys.argv[sys.argv.index("--http-port")+1]),"ames_port":34343,"loom":31}}))
+    (directory/("created-"+instance+".json")).write_text(json.dumps({"id":instance,"mode":"comet","ship":"~doznec-salbud-salwex-sogref--tasweb-navfun-batwet-sigfet","config_revision":1,"config":{"http_port":int(sys.argv[sys.argv.index("--http-port")+1]),"ames_port":34343,"loom":int(sys.argv[sys.argv.index("--loom")+1])}}))
     print(json.dumps({"id":"op-comet-fixture","status":"succeeded","instance_id":instance,"request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-comet","config_revision":1}))
 elif "create-fake" in sys.argv:
-    assert sys.argv[sys.argv.index("--loom")+1]=="34" and "--native-control=true" in sys.argv
+    assert sys.argv[sys.argv.index("--loom")+1]=="34" and not any(a.startswith("--native-control") for a in sys.argv)
     assert sys.argv[sys.argv.index("--bootstrap")+1]=="recommended"
     assert sys.argv[sys.argv.index("--pill")+1]=="https://example.invalid/apps.pill"
     if sys.argv[sys.argv.index("--ship")+1]=="~foo":
@@ -143,10 +144,10 @@ elif "create-fake" in sys.argv:
     assert sys.argv[sys.argv.index("--pier-name")+1]=="bus-data"
     assert sys.argv[sys.argv.index("--pier-path")+1]=="fakeships/bus-data/bus"
     instance=sys.argv[sys.argv.index("create-fake")+1]
-    (directory/("created-"+instance+".json")).write_text(json.dumps({"id":instance,"mode":"fake","ship":"~bus","config_revision":1,"config":{"http_port":18090,"ames_port":34343,"loom":31}}))
+    (directory/("created-"+instance+".json")).write_text(json.dumps({"id":instance,"mode":"fake","ship":"~bus","config_revision":1,"config":{"http_port":18090,"ames_port":34343,"loom":34}}))
     print(json.dumps({"id":"op-named-fake","status":"succeeded","instance_id":instance,"request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-fake","config_revision":1}))
 elif "configure" in sys.argv:
-    assert sys.argv[sys.argv.index("--loom")+1]=="34" and "--native-control=true" in sys.argv
+    assert sys.argv[sys.argv.index("--loom")+1]=="34" and not any(a.startswith("--native-control") for a in sys.argv)
     assert sys.argv[sys.argv.index("--revision")+1]=="2" and sys.argv[sys.argv.index("--http-port")+1]=="18095"
     print(json.dumps({"id":"alpha","config_revision":3,"config":{"http_port":18095,"ames_port":34343,"loom":34,"native_control":True}}))
 elif "enroll-pier" in sys.argv:
@@ -155,12 +156,12 @@ elif "enroll-pier" in sys.argv:
     assert sys.argv[sys.argv.index("--path")+1]=="fakeships/project/nec/pier"
     print(json.dumps({"id":"op-enroll-pier","instance_id":"nec","request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"enroll-pier","status":"queued"}))
 elif "create-ship" in sys.argv:
-    assert sys.argv[sys.argv.index("--loom")+1]=="32" and "--native-control=true" in sys.argv
+    assert sys.argv[sys.argv.index("--loom")+1]=="32" and not any(a.startswith("--native-control") for a in sys.argv)
     assert "--confirm-network" in sys.argv and sys.argv[sys.argv.index("--key-file")+1]=="/fixture/owned.key"
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
     assert "--http-port" not in sys.argv and "--ames-port" not in sys.argv and sys.argv[sys.argv.index("--pier-path")+1]=="livenet/planets/sampel-palnet/sampel-palnet"
     assert sys.argv[sys.argv.index("--bootstrap")+1]=="bare" and "--pill" not in sys.argv
-    (directory/"owned-registered.json").write_text(json.dumps({"id":"sampel-palnet","ship":"~sampel-palnet","mode":"planet","config_revision":1,"applied_revision":0,"config":{"http_port":18091,"ames_port":34344,"loom":31}}))
+    (directory/"owned-registered.json").write_text(json.dumps({"id":"sampel-palnet","ship":"~sampel-palnet","mode":"planet","config_revision":1,"applied_revision":0,"config":{"http_port":18091,"ames_port":34344,"loom":32}}))
     print(json.dumps({"id":"op-key-ship","instance_id":"sampel-palnet","request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-ship","status":"succeeded","config_revision":1}))
 elif "operate" in sys.argv and sys.argv[sys.argv.index("operate")+2]=="start":
     instance=sys.argv[sys.argv.index("operate")+1]
@@ -344,21 +345,18 @@ ShellRoot {
        if (capturesPending) return
       if (phase === -2 && service.localSetupStatus && service.connections.length === 1) {
         var runtime=runtimeComponent.createObject(null,{supported:true})
-        var loom=control(runtime,"runtime-loom"),native=control(runtime,"runtime-native-control")
-        var warnings=runtime.children.filter(function(item){return typeof item.text === "string" && item.text.indexOf("conn.sock")>=0 && item.text.indexOf("authority")>=0})
-        for(var required of ["Primarily for development", "Leave disabled for routine use", "known crash bug", "replies pending", "full ship-control authority"]) {
-          if(warnings.length!==1 || warnings[0].text.indexOf(required)<0) {Qt.exit(1);throw new Error("native-control warning must state "+required)}
-        }
-        if (loom.count!==15 || loom.currentIndex!==11 || runtime.selectedLoom!==31 || native.checked) throw new Error("loom dropdown must default to 31 with fifteen choices and native off")
-        for(var n=20;n<=34;n++) if(loom.textAt(n-20)!==Model.loomLabel(n)) throw new Error("loom dropdown label mismatch "+n)
-        loom.currentIndex=14;loom.activated(14)
-        if(runtime.selectedLoom!==34) throw new Error("dropdown selection not propagated")
-        native.checked=true;runtime.mode="comet"
-        if(!native.checked || native.enabled) throw new Error("old backend must disable live native without clearing desired true")
-        runtime.allShipsSupported=true
-        for(var mode of ["fake","comet","moon","planet","star","galaxy"]) {runtime.mode=mode;if(!native.enabled || !native.visible || !native.checked) throw new Error("all-ship checkbox lost "+mode)}
-        runtime.destroy()
-        console.log("PASS: loom dropdown entries/default/selection and all-ship capability gating preserve desired opt-in")
+         var loom=control(runtime,"runtime-loom")
+         if(control(runtime,"runtime-native-control") || control(runtime,"runtime-native-warning")) throw new Error("native control must be CLI-only")
+         if (loom.count!==5 || loom.currentIndex!==1 || runtime.selectedLoom!==31) throw new Error("loom dropdown must default to 31 with five choices")
+         for(var n=30;n<=34;n++) if(loom.textAt(n-30)!==Model.loomLabel(n)) throw new Error("loom dropdown label mismatch "+n)
+         loom.currentIndex=4;loom.activated(4)
+         if(runtime.selectedLoom!==34) throw new Error("dropdown selection not propagated")
+         runtime.selectedLoom=29
+         if(runtime.problem.indexOf("30..34")<0) throw new Error("small loom selection was accepted")
+         runtime.selectedLoom=31;runtime.supported=false
+         if(loom.enabled || runtime.problem!=="") throw new Error("old runner defaults unavailable")
+         runtime.destroy()
+         console.log("PASS: loom30–34 dropdown defaults to31; native control and its warning are absent from desktop fields")
         if (service.setupCheckRequested || service.machineUse!=="") throw new Error("fresh onboarding already chose machine/check state")
         service.setMachineUse("laptop")
          if (service.setUpLocal(false) || !service.setUpLocal(true) || service.setUpLocal(true)) throw new Error("local setup approval/dispatch/busy guard failed")
@@ -370,8 +368,12 @@ ShellRoot {
         phase = 0
       } else if (phase === 0 && service.connections.length === 1) {
         if (!service.registrations.length) return
-        var teardown=teardownRegistration.createObject(null,{service:service,connection:service.connections[0]})
-        teardown.kind="fake";teardown.destroy()
+         var teardown=teardownRegistration.createObject(null,{service:service,connection:service.connections[0]})
+         if(teardown.advanced || control(teardown,"registration-advanced").visible || control(teardown,"runtime-loom").visible || control(teardown,"storage-location-selector").visible) throw new Error("boot settings should start collapsed")
+         if(control(teardown,"runtime-loom").currentIndex!==1 || control(teardown,"storage-location-selector").currentIndex!==0) throw new Error("default loom/storage changed")
+         control(teardown,"registration-advanced-toggle").clicked()
+         if(!control(teardown,"runtime-loom").visible || !control(teardown,"storage-location-selector").visible) throw new Error("advanced settings did not reveal loom/storage")
+         teardown.kind="fake";teardown.destroy()
         if (!service.saveRunnerPresentation(service.connections[0], "Fixture", "Local fixture", "http://127.0.0.1")) throw new Error("presentation settings failed")
         if (Model.shipURL(service.connections[0],service.connections[0].snapshot.instances[0],service.registrations,service.runnerPreferences) !== "http://127.0.0.1:18081") throw new Error("browser host composition failed")
         if (service.connections[0].snapshot.instances[0].health !== "healthy") throw new Error("bad fixture state")
@@ -455,10 +457,10 @@ ShellRoot {
         if (service.registerComet(service.connections[0],"new-comet",18088,false)) throw new Error("comet without acknowledgement")
         if (service.registerComet(service.connections[0],"comet-fixture",18088,true)) throw new Error("duplicate instance dispatched")
         if (service.registerComet(service.connections[0],"new-comet",18087,true)) throw new Error("duplicate port dispatched")
-        if (!service.registerComet(service.connections[0],"new-comet",18088,true,undefined,"bare","",34,true)) throw new Error("comet registration failed")
+         if (!service.registerComet(service.connections[0],"new-comet",18088,true,undefined,"bare","")) throw new Error("comet registration failed")
         phase = 22
       } else if (phase === 22 && !service.busy && service.registrationOutcome && service.registrationOutcome.status!=="succeeded") {
-        Qt.exit(1);throw new Error("comet native opt-in was not emitted to fixture CLI: "+service.lastError)
+         Qt.exit(1);throw new Error("default comet settings were not emitted to fixture CLI: "+service.lastError)
       } else if (phase === 22 && !service.busy && !service.pendingFirstBoot && !service.bootTarget && service.lastResult.indexOf("first-boot:") === 0) {
         console.log("PASS: explicit comet boot acknowledgement registers then starts exactly once")
         service.monitorWindow.selectedKey="runner-fixture/alpha"
@@ -521,9 +523,10 @@ ShellRoot {
          var choice=control(control(setupFixture,"registration-form"),"bootstrap-choice")
          choice.currentIndex=1;choice.activated(1);phase=29
        } else if (phase === 29) {
-        var loom=control(control(setupFixture,"registration-form"),"runtime-loom"),native=control(control(setupFixture,"registration-form"),"runtime-native-control")
-        if(!native.enabled) throw new Error("new runner did not enable comet native control")
-        loom.currentIndex=14;loom.activated(14);native.checked=true
+         var form=control(setupFixture,"registration-form"),loom=control(form,"runtime-loom")
+         if(form.advanced || control(form,"runtime-native-control")) throw new Error("comet advanced defaults changed")
+         control(form,"registration-advanced-toggle").clicked()
+         loom.currentIndex=4;loom.activated(4)
         var consent = control(setupFixture,"comet-consent")
         consent.checked = true
         if (!consent.text || consent.indicator.x !== consent.leftPadding || consent.contentItem.x + consent.contentItem.leftPadding <= consent.indicator.x + consent.indicator.width) throw new Error("consent indicator overlaps its label")
@@ -537,15 +540,16 @@ ShellRoot {
         control(setupFixture,"registration-name").text = "bus-lab"
         control(setupFixture,"registration-port").text = "18090"
          control(setupFixture,"registration-fake-ship").text = "~foo"
+          control(setupFixture,"registration-advanced-toggle").clicked()
          var location=control(control(setupFixture,"registration-form"),"storage-location-selector")
          location.currentIndex=location.count-1;location.activated(location.currentIndex)
          control(setupFixture,"registration-pier").text = "bus-data"
         phase = 31
        } else if (phase === 31) {
-         var loom=control(control(setupFixture,"registration-form"),"runtime-loom"), native=control(control(setupFixture,"registration-form"),"runtime-native-control")
-         if (!loom || !native) throw new Error("development runtime controls missing")
-         if (loom.currentIndex!==11 || native.checked) throw new Error("new fake defaults are not loom31/conn disabled")
-         loom.currentIndex=14;loom.activated(14);native.checked=true
+          var form=control(setupFixture,"registration-form"),loom=control(form,"runtime-loom")
+          if (!loom || control(form,"runtime-native-control")) throw new Error("loom field missing or native control exposed")
+          if (loom.currentIndex!==1) throw new Error("new fake default is not loom31")
+          loom.currentIndex=4;loom.activated(4)
          control(setupFixture,"comet-consent").checked=true
         var submit = control(setupFixture,"register-instance")
         if (!submit.enabled) throw new Error("named fake form unavailable")
@@ -556,9 +560,9 @@ ShellRoot {
          control(setupFixture,"registration-fake-ship").text = "~bus"
          phase = 33
        } else if (phase === 33) {
-         var loom=control(control(setupFixture,"registration-form"),"runtime-loom"),native=control(control(setupFixture,"registration-form"),"runtime-native-control")
-         if(loom.currentIndex!==11 || native.checked || control(setupFixture,"comet-consent").checked) throw new Error("different fake identity inherited settings or consent")
-         loom.currentIndex=14;loom.activated(14);native.checked=true;control(setupFixture,"comet-consent").checked=true
+          var loom=control(control(setupFixture,"registration-form"),"runtime-loom")
+          if(loom.currentIndex!==1 || control(setupFixture,"comet-consent").checked) throw new Error("different fake identity inherited settings or consent")
+          loom.currentIndex=4;loom.activated(4);control(setupFixture,"comet-consent").checked=true
          var submit = control(setupFixture,"register-instance")
          if (!submit.enabled) throw new Error("corrected named fake form unavailable")
          submit.clicked(); phase = 34
@@ -567,16 +571,16 @@ ShellRoot {
         console.log("PASS: fake identity, instance name and pier directory are submitted independently")
          control(settingsFixture,"edit-ship-ports").clicked();phase=35
        } else if (phase === 35) {
-         var loom=control(settingsFixture,"runtime-loom"), native=control(settingsFixture,"runtime-native-control")
-         if (!loom || !native || loom.currentIndex!==14 || !native.checked) throw new Error("configuration editor lost selected runtime settings")
-         loom.currentIndex=11;loom.activated(11);native.checked=false
-         control(settingsFixture,"edit-ship-ports").clicked()
-         if(loom.currentIndex!==14 || !native.checked) throw new Error("form reload lost desired runtime settings")
+          var loom=control(settingsFixture,"runtime-loom")
+          if (!loom || control(settingsFixture,"runtime-native-control") || loom.currentIndex!==4 || !settingsFixture.target.nativeControl) throw new Error("configuration editor lost selected settings or exposed native control")
+          loom.currentIndex=1;loom.activated(1)
+          control(settingsFixture,"edit-ship-ports").clicked()
+          if(loom.currentIndex!==4 || !settingsFixture.target.nativeControl) throw new Error("form reload lost desired runtime settings")
          control(settingsFixture,"ship-http-port").text="18095"
          control(settingsFixture,"save-ship-http-port").clicked();phase=36
        } else if (phase === 36 && !service.busy) {
          if(service.lastError)throw new Error("runtime settings configuration failed: "+service.lastError)
-         console.log("PASS: QML runtime settings default safely, create loom34 native fake and preserve native settings during HTTP edits")
+          console.log("PASS: advanced boot settings default safely, create loom34/native-off fake and preserve CLI native settings during HTTP edits")
          if (testWindows) { service.monitorWindow.selectedKey="runner-fixture/alpha";service.openMonitor(null,null,"overview"); phase = 10 } else Qt.quit()
         } else if (phase === 10) {
           if (!service.monitorWindow.visible) throw new Error("monitor failed to map")
@@ -690,9 +694,13 @@ ShellRoot {
           service.monitorWindow.setupPane.mode="ship";service.monitorWindow.setupPane.shipKind="key"
           var form=control(service.monitorWindow.setupPane,"owned-key-form")
            control(form,"key-identity").text="~sampel-palnet";form.keyFile="/fixture/owned.key"
-           var loom=control(form,"runtime-loom"),native=control(form,"runtime-native-control")
-           if(!loom || !native || loom.currentIndex!==11 || native.checked || !native.enabled) throw new Error("owned-key runtime defaults missing")
-           loom.currentIndex=12;loom.activated(12);native.checked=true
+            var loom=control(form,"runtime-loom"),storage=control(form,"storage-location-selector")
+            if(!loom || loom.currentIndex!==1 || control(form,"runtime-native-control") || loom.visible || storage.visible) throw new Error("owned-key advanced defaults missing or exposed")
+            var link=control(form,"get-urbit-id")
+            if(!link || !link.visible || String(link.url)!=="https://urbit.org/overview/running-urbit/get-urbit-id") throw new Error("Urbit ID guidance link missing")
+            control(form,"key-advanced-toggle").clicked()
+            if(!loom.visible || !storage.visible || storage.currentIndex!==0) throw new Error("key advanced settings did not preserve default storage")
+            loom.currentIndex=2;loom.activated(2)
            if(control(form,"key-register").enabled)throw new Error("key boot skipped consent")
            control(form,"key-boot-consent").checked=true
           if (control(form,"key-start").enabled || !control(form,"key-register").enabled) throw new Error("Start enabled before registration or registration unavailable")
@@ -707,7 +715,7 @@ ShellRoot {
           if (control(form,"key-start").enabled || control(form,"key-register").enabled || service.monitorWindow.page!=="overview") throw new Error("owned registration did not automatically boot/open management")
           service.monitorWindow.page="setup"
           control(form,"key-register-another").clicked()
-          if(control(form,"runtime-loom").currentIndex!==11 || control(form,"runtime-native-control").checked) throw new Error("another owned ship inherited runtime settings")
+           if(control(form,"runtime-loom").currentIndex!==1 || form.advanced || control(form,"storage-location-selector").currentIndex!==0) throw new Error("another owned ship inherited advanced settings")
           if (control(form,"key-start").enabled) throw new Error("Start remained enabled on a blank registration form")
           service.lastError="old key-flow error"
          service.monitorWindow.setupPane.mode="home";phase=3021
@@ -898,6 +906,7 @@ ShellRoot {
         assert len({c[c.index("--request-id") + 1] for c in mutations}) == expected_mutations
         assert len([c for c in calls if "routine-set" in c]) == 3
         assert all("fixture-only-secret" not in c for c in calls)
+        assert not any(any(a.startswith("--native-control") for a in c) for c in calls), "desktop attempted to modify CLI-only native control"
         assert not any(any(a in c for a in ("ships","ship-login","theme-sync")) for c in calls), "Coming Soon UI started application-session work"
         print("PASS: fixture CLI audit confirms bound maintenance and registration, local duplicate refusal, no automatic retry, and no secret in argv")
 

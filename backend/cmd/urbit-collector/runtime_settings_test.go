@@ -20,7 +20,8 @@ func TestRuntimeSettingsCLI(t *testing.T) {
 		{"create", []string{"create-fake", "alpha", "--http-port=18080", "--request-id=one", "--loom=34", "--native-control"}, 34, true},
 		{"default", []string{"create-fake", "alpha", "--http-port=18080", "--request-id=one"}, 31, false},
 		{"configure", []string{"configure", "alpha", "--revision=1", "--http-port=18080", "--ames-port=34343", "--loom=34", "--native-control=true"}, 34, true},
-		{"disable", []string{"configure", "alpha", "--revision=1", "--http-port=18080", "--ames-port=34343", "--loom=20", "--native-control=false"}, 20, false},
+		{"minimum", []string{"create-fake", "alpha", "--http-port=18080", "--request-id=one", "--loom=30"}, 30, false},
+		{"disable", []string{"configure", "alpha", "--revision=1", "--http-port=18080", "--ames-port=34343", "--loom=30", "--native-control=false"}, 30, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			calls := 0
@@ -58,10 +59,21 @@ func TestRuntimeSettingsCLI(t *testing.T) {
 }
 
 func TestRuntimeSettingsCLICapabilityAndBounds(t *testing.T) {
-	for _, value := range []string{"19", "35", "256", "999999", "-1", "1.5"} {
-		var out, errs bytes.Buffer
-		if code := run(context.Background(), []string{"--socket", "/nonexistent.sock", "create-fake", "alpha", "--http-port=18080", "--request-id=one", "--loom=" + value}, &out, &errs); code != 2 {
-			t.Fatal("invalid loom not rejected before connection", value, code, errs.String())
+	for _, value := range []string{"19", "20", "29", "35", "256", "999999", "-1", "1.5"} {
+		for _, command := range [][]string{
+			{"create-fake", "alpha", "--http-port=18080", "--request-id=one"},
+			{"create-comet", "alpha", "--http-port=18080", "--request-id=one", "--confirm-network"},
+			{"create-ship", "--ship=~sampel-palnet", "--key-file=/missing", "--request-id=one", "--confirm-network"},
+			{"configure", "alpha", "--revision=1", "--http-port=18080", "--ames-port=34343"},
+		} {
+			var out, errs bytes.Buffer
+			args := append([]string{"--socket", "/nonexistent.sock"}, command...)
+			if code := run(context.Background(), append(args, "--loom="+value), &out, &errs); code != 2 {
+				t.Fatal("invalid loom not rejected before connection", command[0], value, code, errs.String())
+			}
+			if (value == "20" || value == "29") && !strings.Contains(errs.String(), "30..34") {
+				t.Fatal("small loom did not receive bounded-settings refusal", command[0], errs.String())
+			}
 		}
 	}
 	calls := 0
@@ -85,7 +97,7 @@ func TestRuntimeSettingsCLIHelp(t *testing.T) {
 		if code := run(context.Background(), []string{cmd, "--help"}, &out, &errs); code != 0 {
 			t.Fatal(code, errs.String())
 		}
-		for _, text := range []string{"20..34", "2 GiB", "16 GiB", "full ship-control", "disconnect", "4 GiB", "resident", "Primarily for development", "Leave disabled for routine use", "unnecessary and adds risk", "known crash bug", "Keep clients connected until every reply has been received", "Do not kill clients or use short timeouts"} {
+		for _, text := range []string{"30..34", "1 GiB", "2 GiB", "16 GiB", "full ship-control", "disconnect", "4 GiB", "resident", "Primarily for development", "Leave disabled for routine use", "unnecessary and adds risk", "known crash bug", "Keep clients connected until every reply has been received", "Do not kill clients or use short timeouts"} {
 			if !strings.Contains(out.String(), text) {
 				t.Errorf("%s help missing %q", cmd, text)
 			}

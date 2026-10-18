@@ -40,7 +40,7 @@ func cell(s string) string {
 }
 
 func loomLabel(exponent uint8) string {
-	if !protocol.ValidLoom(exponent) {
+	if !protocol.ValidRecordedLoom(exponent) {
 		return "unknown"
 	}
 	if exponent < 30 {
