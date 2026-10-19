@@ -1,5 +1,11 @@
 # Native Omarchy GitHub installation
 
+**Development-source follow-up:** the new `native/v1` bootstrap and isolated test
+profiles are described in [desktop development](desktop-development.md). Published
+RC.13 still uses the static wrappers and cold-update procedure documented below.
+The new architecture uses stock Omarchy's retained-service mechanism and verified
+release-specific QML paths; it does not patch Omarchy's updater or shell.
+
 Run as your ordinary user inside the Omarchy desktop:
 
 ```bash
@@ -96,6 +102,31 @@ This uses Omarchy's Git fast-forward workflow. Runner host upgrades remain separ
 The snapshot/binary-bundle installer is a different ownership model: it does not
 replace a git-managed checkout, and native `plugin add` refuses an existing plugin
 with the same ID. Choose the native path for a fresh standard Omarchy install.
+
+### Empty fleet after `plugin update`
+
+A successful Git update/rescan does not guarantee that the long-running shell has
+loaded the new service and QML. On sourceport's RC.12→RC.13 update, the files and
+tool pins were RC.13 but live monitor IPC still reported RC.12, the collector feed
+had stopped, and reload-time bindings referenced a null service. Both ships and
+the saved runner connection were healthy. See the
+[diagnosis and verified recovery](diagnostics/2026-10-19-rc13-stale-update.md).
+
+On an unlocked desktop, after any setup/submission has finished, recover with:
+
+```bash
+omarchy restart shell
+omarchy shell thelifeandtimes.omabit.monitor status
+```
+
+Check that `version` matches the installed root manifest, then reopen the fleet.
+If it remains empty, inspect the bundled collector's `runners` and `inventory`
+results rather than treating the missing display as deleted enrollment.
+
+An existing host's `setup-status` may correctly report `ready:true`,
+`host_present:true`, `can_setup:false`: it is already set up. Updating/reloading the
+desktop does not turn it into a fresh installation or upgrade the installed runner.
+Existing-host runner upgrades follow the [schema21 procedure](host-compatibility-upgrades.md).
 
 ### Reinstalling in an existing desktop session
 

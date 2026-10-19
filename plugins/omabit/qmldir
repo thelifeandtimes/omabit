@@ -4,6 +4,7 @@ Panel 1.0 Panel.qml
 SetupPane 1.0 SetupPane.qml
 HostSetupPane 1.0 HostSetupPane.qml
 HostCompatibility 1.0 HostCompatibility.qml
+DesktopDiagnostics 1.0 DesktopDiagnostics.qml
 MachineUsePane 1.0 MachineUsePane.qml
 ApplicationsPane 1.0 ApplicationsPane.qml
 MonitorWindow 1.0 MonitorWindow.qml

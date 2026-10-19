@@ -35,6 +35,13 @@ The current repeated fresh-install exercises are development qualification only.
 
 ## Development runtime settings
 
+Unreleased desktop-bootstrap work adds a separate version1 desktop activation and
+profile store. Default user paths remain unchanged; named profiles have private
+XDG roots. Immutable UI/tool generations share a bootstrap/profile contract, and
+unknown formats are refused rather than relabeled. Desktop selection never opens
+or downgrades a runner database. See [desktop development](desktop-development.md)
+for activation, recovery and stock-Omarchy upgrade scenarios.
+
 The **RC.13** host-compatibility work advances to **schema21**. It
 accepts schemas11–20 without rewriting historical instance bodies, signatures or
 receipts, and adds genuine RC.12/schema20 writer fixtures. New container records

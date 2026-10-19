@@ -44,7 +44,7 @@ Column {
   RowLayout {
     width: parent.width; visible: root.mode !== "home"
     ActionButton { compact: true; quiet: true; text: ["runner","edit","connection"].indexOf(root.mode)>=0 ? "← Runners" : "← Setup"; onClicked: root.mode = ["runner","edit","connection"].indexOf(root.mode)>=0 ? "manage" : "home" }
-    Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; secondary: true; caption: true; text: "OMABIT 0.1.0-rc.13 · SETUP" }
+    Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; secondary: true; caption: true; text: "OMABIT "+(root.service ? root.service.applicationVersion : "Loading")+" · SETUP" }
   }
   Column {
     width: parent.width; spacing: Style.space(8); visible: root.mode === "home"
@@ -80,6 +80,7 @@ Column {
     }
   }
   HostSetupPane { width: parent.width; visible: root.mode === "local"; service: root.service; onAddShip: { root.addShip(); root.shipKind = "comet" } }
+  DesktopDiagnostics { width:parent.width; service:root.service; visible:root.mode==="home" && !!root.service && !!root.service.bootstrap }
   Column {
     width: parent.width; spacing: Style.space(12); visible: root.mode==="remote"
     Label { text: "Set up a remote server"; font.pixelSize: Style.space(22); font.bold: true }

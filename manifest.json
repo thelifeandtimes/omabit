@@ -6,7 +6,8 @@
   "author": "Omabit contributors",
   "description": "A compact Urbit fleet menu, setup pane, and monitoring/maintenance workspace through urbit-collector.",
   "kinds": ["service", "bar-widget"],
-  "entryPoints": {"service": "native/Service.qml", "barWidget": "native/Panel.qml"},
+  "entryPoints": {"service": "native/v1/Service.qml", "barWidget": "native/v1/Panel.qml"},
+  "keepLoaded": true,
   "barWidget": {
     "displayName": "Omabit",
     "category": "System",

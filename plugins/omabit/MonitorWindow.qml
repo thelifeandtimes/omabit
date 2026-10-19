@@ -45,8 +45,8 @@ Window {
     onFailed: if (root.service) root.service.lastError = "Could not focus the monitor window. Try opening it again."
   }
   onVisibleChanged: if (!visible) maintenance.clearReview()
-  onSelectedKeyChanged: { technical = false; bodyScroll.contentY = 0; revealTimer.stop(); revealTarget=null }
-  onPageChanged: { bodyScroll.contentY = 0; revealTimer.stop(); revealTarget=null }
+  onSelectedKeyChanged: { technical = false; bodyScroll.contentY = 0; revealTimer.stop(); revealTarget=null;if(service && typeof service.saveDesktopView==="function")service.saveDesktopView() }
+  onPageChanged: { bodyScroll.contentY = 0; revealTimer.stop(); revealTarget=null;if(service && typeof service.saveDesktopView==="function")service.saveDesktopView() }
   function revealItem(item) {
     revealTarget=item; revealTimer.restart()
   }
@@ -73,7 +73,7 @@ Window {
           anchors.fill: parent; anchors.leftMargin: Style.space(24); anchors.rightMargin: Style.space(24); spacing: Style.space(18)
           Column { spacing: Style.space(2)
             Label { text: "omabit"; font.pixelSize: Style.space(27); font.bold: true; font.letterSpacing: -1 }
-            Label { objectName: "monitor-version"; text: "0.1.0-rc.13 / DEVELOPMENT"; caption: true; secondary: true }
+            Label { objectName: "monitor-version"; text: (root.service ? root.service.applicationVersion : "Loading")+" / DEVELOPMENT"; caption: true; secondary: true }
           }
           Rectangle { width: 1; height: Style.space(28); color: Design.line }
           Column { Layout.fillWidth: true; spacing: Style.space(3)

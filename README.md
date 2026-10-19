@@ -67,6 +67,11 @@ This repository is directly installable through Omarchy's native GitHub plugin i
 and verifies the pinned prebuilt tools on first use; no Go compiler or local bundle
 directory is required. See [native plugin distribution](docs/native-plugin.md).
 
+For an existing desktop installation, use the documented
+[cold update sequence](docs/native-plugin.md#updates). Running `plugin update` alone
+can leave the shell using stale QML; a missing fleet after that update can be a
+desktop reload problem even while the host and ships remain healthy.
+
 Then open **~+ → Setup → Set up this computer**. The guided flow checks prerequisites,
 prepares private desktop access, asks for OS authorization, installs the background
 services and connects your desktop automatically. Choose **Add a ship → New comet**
@@ -127,6 +132,10 @@ See [repository ownership and publishing](docs/repository.md) for the Tend split
 Git remotes, and the current Go module identity.
 
 ## Development
+
+Unreleased source adds a retained bootstrap, immutable UI/tool releases and isolated
+test profiles for stock Omarchy. See [desktop development and upgrade testing](docs/desktop-development.md)
+for candidate builds, version selection, fresh profiles and guarded VM scenarios.
 
 ```bash
 go test ./...

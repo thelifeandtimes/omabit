@@ -42,6 +42,8 @@ jobs:
           node scripts/test-runtime-settings-model.js
           python3 -B scripts/test-panel-install.py
           python3 -B scripts/test-native-plugin.py
+          python3 -B scripts/test-desktop-bootstrap.py
+          python3 -B -m unittest discover -s scripts/qualification/desktop -p 'test_*.py'
           python3 -B scripts/test-desktop-qualification.py
           python3 -B scripts/test-import-recovery.py --static
           python3 -B -m unittest discover -s scripts/qualification/host-packages -p 'test_*.py'

@@ -2,6 +2,11 @@
   "version": "0.1.0-rc.13",
   "source_commit": "13d6f82206312d7c7d9b9dec5dd9eb8cf821b3c5",
   "platform": "linux/amd64",
+  "bundle": {
+    "name": "omabit-0.1.0-rc.13-linux-amd64.tar.gz",
+    "bytes": 29832489,
+    "sha256": "c092ab3a13cb38d29506f79a0ee191420406c5a2b7d3e43202f3603952bc8550"
+  },
   "binaries": {
     "omabit": {
       "name": "omabit-linux-amd64",

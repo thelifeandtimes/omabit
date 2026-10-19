@@ -28,6 +28,8 @@ ApplicationWindow {
     property var settings: ({})
     property double now: Date.parse(test.fixtures.pending.checked_at)
     property bool busy: false
+    property bool activationEnabled: true
+    property bool localSetupAllowed: true
     property bool observing: true
     property bool settingUp: false
     readonly property bool checkingSetup: localStatus.running

@@ -32,14 +32,15 @@ class NativePluginTests(unittest.TestCase):
         root = json.loads((ROOT / "manifest.json").read_text())
         component = json.loads((ROOT / "plugins/omabit/manifest.json").read_text())
         entries = root.pop("entryPoints")
+        self.assertTrue(root.pop("keepLoaded"))
         component.pop("entryPoints")
         self.assertEqual(root, component)
-        self.assertIn('version:'+json.dumps(root["version"]), (ROOT / "plugins/omabit/Service.qml").read_text(),
+        self.assertIn('property string applicationVersion: '+json.dumps(root["version"]), (ROOT / "plugins/omabit/Service.qml").read_text(),
                       "loaded-QML status version must identify the release being installed")
         for name in ("MonitorWindow.qml", "SetupPane.qml", "Panel.qml"):
-            self.assertIn(root["version"], (ROOT / "plugins/omabit" / name).read_text(),
+            self.assertIn("service.applicationVersion", (ROOT / "plugins/omabit" / name).read_text(),
                           "visible UI version must match the release manifest: " + name)
-        self.assertEqual(entries, {"service": "native/Service.qml", "barWidget": "native/Panel.qml"})
+        self.assertEqual(entries, {"service": "native/v1/Service.qml", "barWidget": "native/v1/Panel.qml"})
         for name in entries.values():
             self.assertTrue((ROOT / name).is_file())
         pins = json.loads((ROOT / "native/bootstrap/release.json").read_text())

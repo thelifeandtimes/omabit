@@ -156,12 +156,16 @@ def main():
             manifest = json.loads((source / "plugins/omabit/manifest.json").read_text())
             version = manifest["version"]
             report["ui_version"] = version
-            assert "version:" + json.dumps(version) in (source / "plugins/omabit/Service.qml").read_text(), "loaded-QML status version differs from manifest"
+            version_contract = ('property string applicationVersion: ' if (source / "plugins/omabit/DESKTOP.json").exists() else "version:") + json.dumps(version)
+            assert version_contract in (source / "plugins/omabit/Service.qml").read_text(), "loaded-QML status version differs from manifest"
             if args.expect_version:
                 assert version == args.expect_version, "unexpected UI version"
             if needs_native:
                 root_manifest = json.loads((native.parent / "manifest.json").read_text())
-                assert root_manifest.pop("entryPoints") == {"service": "native/Service.qml", "barWidget": "native/Panel.qml"}
+                entries = root_manifest.pop("entryPoints")
+                assert entries in ({"service": "native/Service.qml", "barWidget": "native/Panel.qml"},
+                                   {"service": "native/v1/Service.qml", "barWidget": "native/v1/Panel.qml"})
+                root_manifest.pop("keepLoaded", None)
                 component_manifest = dict(manifest)
                 component_manifest.pop("entryPoints")
                 assert root_manifest == component_manifest, "canonical and packaged manifests disagree"

@@ -6,9 +6,19 @@ import "Model.js" as Model
 
 Item {
   id: root
+  readonly property int bootstrapAPI: 1
+  readonly property string applicationVersion: "0.1.0-rc.13"
   property var shell: null
   property var manifest: null
   property var settings: ({})
+  property var bootstrap: null
+  property string profileName: "default"
+  property var profileEnvironment: ({})
+  property bool localSetupAllowed: true
+  property bool activationEnabled: true
+  readonly property bool reloadSafe: !busy && !copyingCode && !checkingSetup && !themeSync.running && !pendingFirstBoot
+  property int reconnectAttempts: 0
+  property bool desktopViewLoaded: false
   property var connections: []
   property var ships: []
   property var registrations: []
@@ -60,7 +70,7 @@ Item {
   property double now: Date.now()
   property bool refreshing: false
   property bool refreshPending: false
-  readonly property bool busy: action.running || currentAction !== "" || settingUp
+  readonly property bool busy: !activationEnabled || action.running || currentAction !== "" || settingUp
   readonly property bool observing: feed.running && !feedError
   property string feedError: ""
   property string output: ""
@@ -91,17 +101,24 @@ Item {
   property string paletteOutput: ""
   property string themeSyncOutput: ""
   property url toolsDirectory: Qt.resolvedUrl("bin")
-  readonly property string omabit: settings.omabitPath || Model.localPath(toolsDirectory) + "/omabit"
+  readonly property string omabit: (profileName==="default" && settings.omabitPath) || Model.localPath(toolsDirectory) + "/omabit"
   readonly property bool canLogin: !busy && currentAction === ""
-  readonly property string collector: settings.collectorPath || Model.localPath(toolsDirectory) + "/urbit-collector"
+  readonly property string collector: (profileName==="default" && settings.collectorPath) || Model.localPath(toolsDirectory) + "/urbit-collector"
 
   function command(args) {
     var prefix = [collector, "--format", "json"]
-    if (settings.configDir) prefix = prefix.concat(["--config-dir", settings.configDir])
-    return prefix.concat(args)
+    if (profileName==="default" && settings.configDir) prefix = prefix.concat(["--config-dir", settings.configDir])
+    return profileCommand(prefix.concat(args))
+  }
+
+  function profileCommand(args) {
+    var keys=Object.keys(profileEnvironment)
+    if (!keys.length) return args
+    return ["/usr/bin/env"].concat(keys.map(function(key){return key+"="+profileEnvironment[key]})).concat(args)
   }
 
   function checkLocalSetup(manual) {
+    if (!localSetupAllowed) { localSetupError="Local host setup is disabled in test profile “"+profileName+"”. Enable it explicitly only on the intended test host.";return }
     if (checkingSetup || settingUp) return
     if (manual===true) setupCheckRequested=true
     localStatusOutput = ""; localSetupError = ""
@@ -137,7 +154,7 @@ Item {
   }
 
   function refresh() {
-    if (busy) { refreshPending = true; return }
+    if (activationEnabled && busy) { refreshPending = true; return }
     checkLocalSetup()
     clearEpochPreview()
     importCatalogue = null; pendingImportConnection = null
@@ -177,8 +194,8 @@ Item {
 
   function themeCommand(args) {
     var prefix = [omabit, "--format", "json"]
-    if (settings.configDir) prefix = prefix.concat(["--config-dir", settings.configDir])
-    return prefix.concat(args)
+    if (profileName==="default" && settings.configDir) prefix = prefix.concat(["--config-dir", settings.configDir])
+    return profileCommand(prefix.concat(args))
   }
   function loadTheme() {
     if (!themeInfo.running) { themeOutput = ""; themeInfo.command = themeCommand(["theme-status"]); themeInfo.running = true }
@@ -196,7 +213,9 @@ Item {
   function startFeed() {
     if (feed.running) return
     if (!registrationsLoaded) return
-    connections = []
+    // Retain observations across reconnects; observing=false keeps actions gated.
+    // Only explicitly removed enrollments are removed from the displayed fleet.
+    connections = connections.filter(function(c){return registrations.some(function(r){return r.runner_id===c.runner_id && r.name===c.name})})
     feedError = ""
     refreshing = false
     if (registrations.length===0) return
@@ -688,7 +707,22 @@ Item {
     if (refreshPending || ((kind === "enroll" || kind === "runner-edit" || kind === "runner-accept-mode") && !lastError)) Qt.callLater(refresh)
   }
 
-  Component.onCompleted: Qt.callLater(refresh)
+  function saveDesktopView() {
+    if (!desktopViewLoaded) return
+    preferences.desktopPage=monitor.page
+    preferences.desktopSelection=monitor.selectedKey
+    // Settings' property-change writeback is debounced. Flush the explicit keys
+    // before a bootstrap/process restart, rather than only syncing its old map.
+    preferences.setValue("desktopPage",monitor.page)
+    preferences.setValue("desktopSelection",monitor.selectedKey)
+    preferences.sync()
+  }
+  Component.onCompleted: {
+    if (["overview","maintenance","activity","setup"].indexOf(preferences.desktopPage)>=0) monitor.page=preferences.desktopPage
+    if (preferences.desktopSelection.length<=512) monitor.selectedKey=preferences.desktopSelection
+    desktopViewLoaded=true
+    Qt.callLater(refresh)
+  }
   Component.onDestruction: pendingInput = ""
   Timer { interval: 1000; repeat: true; running: true; onTriggered: root.now = Date.now() }
   Timer {
@@ -709,7 +743,7 @@ Item {
             root.notificationQueue = root.notificationQueue.concat(Model.notices(previous, next)).slice(-8)
             root.pumpNotifications()
           }
-          root.connections = Model.merge(root.connections, next); root.feedError = ""
+          root.connections = Model.merge(root.connections, next); root.feedError = ""; root.reconnectAttempts=0
            root.memoryHistory = Model.recordSamples(root.memoryHistory, next, root.now)
            root.cpuHistory = Model.recordSamples(root.cpuHistory, next, root.now,"cpu")
         }
@@ -719,11 +753,16 @@ Item {
     stderr: SplitParser { onRead: function(line) { if (!root.firstRun && line.length < 8192) root.feedError = "Collector inventory is unavailable. Check enrollment and SSH access." } }
     onExited: function(code, status) {
       if (root.refreshing) Qt.callLater(root.startFeed)
-      else if (!root.firstRun && !root.feedError) root.feedError = "Inventory polling stopped. Refresh to reconnect."
+      else if (!root.firstRun) { if (!root.feedError) root.feedError = "Inventory polling stopped. Reconnecting…"; reconnect.restart() }
     }
     onRunningChanged: if (!running) Qt.callLater(function() {
       if (!feed.running && !root.firstRun && !root.refreshing && !root.feedError) root.feedError = "Inventory process is unavailable. Check the collector executable and refresh."
     })
+  }
+  Timer {
+    id: reconnect
+    interval:Math.min(30000,1000*Math.pow(2,Math.min(root.reconnectAttempts,5)))
+    onTriggered: { if (!feed.running && root.registrationsLoaded && root.registrations.length) {root.reconnectAttempts++;root.startFeed()} }
   }
   Process {
     id: action
@@ -823,9 +862,11 @@ Item {
   }
   Core.Settings {
     id: preferences
-    location: "file://" + (Quickshell.env("XDG_STATE_HOME") || Quickshell.env("HOME") + "/.local/state") + "/omabit/panel.ini"
+    location: "file://" + (root.profileEnvironment.XDG_STATE_HOME || Quickshell.env("XDG_STATE_HOME") || Quickshell.env("HOME") + "/.local/state") + "/omabit/panel.ini"
     property string runners: "{}"
     property string machineUse: ""
+    property string desktopPage: "overview"
+    property string desktopSelection: ""
   }
   MonitorWindow { id: monitor; service: root }
   IpcHandler {
@@ -835,7 +876,7 @@ Item {
     function maintenance(): void { root.openMonitor(null, null, "maintenance") }
     function setup(): void { root.openMonitor(null, null, "setup") }
     function refresh(): void { root.refresh() }
-    function status(): string { return JSON.stringify({version:"0.1.0-rc.13",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
+    function status(): string { return JSON.stringify({version:root.applicationVersion,visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
     function close(): void { monitor.visible = false }
   }
   Process {

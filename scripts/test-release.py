@@ -92,7 +92,12 @@ def main():
         manifest = json.loads((package / "plugins/omabit/manifest.json").read_text())
         assert manifest["version"] == version
         for name in ("Service.qml", "MonitorWindow.qml", "SetupPane.qml", "Panel.qml"):
-            assert version in (package / "plugins/omabit" / name).read_text(), "stale packaged UI version: " + name
+            text = (package / "plugins/omabit" / name).read_text()
+            if (package / "plugins/omabit/DESKTOP.json").exists():
+                expected = 'property string applicationVersion: ' + json.dumps(version) if name == "Service.qml" else "service.applicationVersion"
+            else:
+                expected = version
+            assert expected in text, "stale packaged UI version: " + name
         if "default_url" in metadata["pill"]:
             assert manifest["barWidget"]["defaults"]["recommendedPillUrl"] == build["pill"]["default_url"] == metadata["pill"]["default_url"]
             assert metadata["pill"]["default_url"].startswith("https://")
