@@ -8,7 +8,7 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Release candidate:** [**0.1.0-rc.13**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.13), a Linux/AMD64 development release candidate
+**Published:** [**0.1.0-rc.13**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.13), a Linux/AMD64 development release candidate
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
 [release notes and qualification scope](docs/release-rc13.md),
@@ -25,7 +25,7 @@ adds Pacman and Debian/Ubuntu package authentication, shared engine/API checks,
 headless/fleet reports and safe startup-guard migration. It uses schema21 and retains
 the existing component boundaries and desktop workflow. Fresh-install testing on
 two Omarchy versions and full runtime qualification of new engine/distro profiles
-remain pending; see the [verification record](docs/diagnostics/host-compatibility-development.md).
+remain pending; see the [publication and verification record](docs/diagnostics/2026-10-19-rc13-publication.md).
 
 RC.3 makes `|mount` → ordinary copy/editor saves → `|commit` work directly on
 user-owned files. Default piers live at **`/srv/urbit/piers/`**; custom locations

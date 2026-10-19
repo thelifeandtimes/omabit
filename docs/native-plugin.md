@@ -25,7 +25,7 @@ module under `internal/`. No Go compiler, local extracted bundle, Git LFS or
 committed binary blobs are needed for plugin installation. Published RC.2 assets
 are not rebuilt or replaced by this repository organization.
 
-Current pins select published **RC.12**, schema20 and owner-user host setup,
+Current pins select published **RC.13**, schema21 and owner-user host setup,
 including compact setup approval, one machine-use switch, guided identity-aware
 imports with progress, named pier leaves, and RC.7's persistent log following.
 The updated runner, collector and QML are distributed together. Existing hosts
@@ -48,6 +48,12 @@ management-upgrade qualification, guest power cuts, authenticated Ames roundtrip
 mapped desktop and real clipboard checks. Existing RC.10/RC.11 schema19 hosts use
 the [explicit offline bridge](management-offline-upgrade.md); updating the desktop
 does not implicitly migrate a runner host.
+RC.13 adds distribution-native Pacman/Debian/Ubuntu package authentication, compatible
+Docker27.2.0–29.x/API1.47 checks and shared compatibility reporting. All visible
+version labels and the monitor's live status identify0.1.0-rc.13. The published
+tools passed clean reproducible builds and isolated installation checks; fresh host
+acceptance on the two requested Omarchy versions remains pending. See the
+[RC.13 notes](release-rc13.md) and [schema21 upgrade guide](host-compatibility-upgrades.md).
 The service resolves packaged defaults when Omarchy passes only explicit inline
 settings. `recommended_pill_default` in monitor status verifies the effective
 source, rather than only the value recorded in the manifest.
