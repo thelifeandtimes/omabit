@@ -4,6 +4,10 @@ This records development verification performed before the initial bootstrap/pro
 commit, following RC.13 distribution commit `b70f013`. It is not a new published
 release or a completed two-version Omarchy VM matrix.
 
+Follow-up: the implementation was committed and
+[deployed on sourceport through stock Omarchy](2026-10-19-desktop-bootstrap-sourceport.md),
+with a clean committed bundle, preserved live fleet and successful profile round trip.
+
 ## Implemented
 
 - Native API-v1 service/widget adapters use stock `keepLoaded` behavior and load
