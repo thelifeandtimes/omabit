@@ -9,7 +9,9 @@ Never edits a historical production file, changes a checkout, or uses a live run
 The schema14 source bundle retains the original stash and its untracked-file parent;
 it is imported only into a private temporary Git repository, never the checkout.
 The support manifest distinguishes release database coverage from the narrower
-schema19 owner-user host bridge. Unavailable prototype writers are explicit gaps.
+owner-user host paths: schema19 offline and schema20 quiescence-aware online.
+RC.12 qualification stays frozen; schema21 is an unreleased development target.
+Unavailable prototype writers are explicit gaps.
 """
 
 import argparse
@@ -42,9 +44,10 @@ SOURCES = [
     ("preview18", "ba4ba805221a6ef3e29829c9bda1bfeff0c0c7c2", 18),
     ("rc10", "f6981e6ce4b9bb1bddc1334ff23a3f1ae9e9794a", 19),
     ("rc11", "abfff0529a19adc02cf9f4b93eeef78c645dfa8f", 19),
+    ("rc12", "1529c1335754d15c6efd03d77ce2af7ede3d48f0", 20),
 ]
 # Pin peeled commits independently of mutable refs. RC.2 has an annotated tag;
-# its tag object is not the source commit. RC.10/11 also have public release tags,
+# its tag object is not the source commit. RC.10–12 also have public release tags,
 # but their original commit refs work in local histories without those tags.
 RELEASE_COMMITS = [
     "d67ea3ad6d1a3d768bf22bea73e594d8c799742e",
@@ -58,13 +61,14 @@ RELEASE_COMMITS = [
     "d9b180fdd1ec5c34084c93109b005b9af4d49c7e",
     "f6981e6ce4b9bb1bddc1334ff23a3f1ae9e9794a",
     "abfff0529a19adc02cf9f4b93eeef78c645dfa8f",
+    "1529c1335754d15c6efd03d77ce2af7ede3d48f0",
 ]
 SOURCE_COMMITS = {f"rc{n}": commit for n, commit in enumerate(RELEASE_COMMITS, 1)}
 SOURCE_COMMITS.update(preview14=SCHEMA14["commit"], preview18="ba4ba805221a6ef3e29829c9bda1bfeff0c0c7c2")
 GAPS = {
-    "11": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. Consolidated commit 34d8ea55 advances schema1 directly to schema13, accepting 11/12 only as inputs. No RC.1-11 release writes schema11.",
-    "12": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. The schema13 writer accepts schema12 but does not produce it. No RC.1-11 release writes schema12.",
-    "17": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. Runtime-settings commit ba4ba805 advances schema16 directly to schema18. No RC.1-11 release writes schema17.",
+    "11": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. Consolidated commit 34d8ea55 advances schema1 directly to schema13, accepting 11/12 only as inputs. No RC.1-12 release writes schema11.",
+    "12": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. The schema13 writer accepts schema12 but does not produce it. No RC.1-12 release writes schema12.",
+    "17": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. Runtime-settings commit ba4ba805 advances schema16 directly to schema18. No RC.1-12 release writes schema17.",
 }
 
 
@@ -91,12 +95,15 @@ def support_manifest():
         "qualification_target": {"release": "v0.1.0-rc.12", "channel": "prerelease", "state_schema": 20,
                                  "evidence": "source-tests-only"},
         "qualification_note": "docs/reviews/2026-10-18-rc12-historical-upgrades.md",
-        "accepted_schema_window": list(range(11, 20)),
+        "development_test_target": {"release": "unreleased", "channel": "development", "state_schema": 21,
+                                    "evidence": "source-tests-only"},
+        "development_test_note": "The reader window and fixture inventory below test the unreleased development target. The RC.12/schema20 qualification target and linked historical evidence remain frozen; these tests do not qualify a new release or artifact.",
+        "accepted_schema_window": list(range(11, 21)),
         "supported_release_scope": "database-reader",
         "supported_releases": [
             {"release": f"v0.1.0-rc.{n}", "schema": schemas[f"rc{n}"], "fixture": f"rc{n}.json",
              "source_commit": commit,
-             "host_upgrade": "owner-user-schema19-offline" if schemas[f"rc{n}"] == 19 else "unsupported"}
+             "host_upgrade": {19: "owner-user-schema19-offline", 20: "owner-user-quiescence-online"}.get(schemas[f"rc{n}"], "unsupported")}
             for n, commit in enumerate(RELEASE_COMMITS, 1)
         ],
         "host_upgrade": {"initial_schemas": [19], "deployment": "owner-user-linux-amd64",
@@ -152,7 +159,7 @@ def generate(name, ref, schema, scratch, env):
         "STORAGE_VALIDATOR": "s.validateStorage = func(string) error { return nil }" if schema >= 14 else "",
         "NAMED_ROOT": 'req.PierPath = "@ssd/" + req.PierPath' if schema >= 14 else "",
         "SETTINGS": ('req.Config.NativeControl = true; req.Config.Loom = 34; '
-                     + ('if id == "running" { req.Config.Loom = 29 }' if name != "rc11" else "")) if schema >= 18 else "",
+                     + ('if id == "running" { req.Config.Loom = 29 }' if name in ("preview18", "rc10") else "")) if schema >= 18 else "",
         "HANDOFF_SETTINGS": "h.RuntimeSettings = &protocol.RuntimeSettings{Loom: 34, NativeControl: true}" if schema >= 19 else "",
         # Fixed fake filesystem identities, marshaled by the original type.
         # No filesystem identity from this machine is exported or rebound.
@@ -260,10 +267,15 @@ def main():
                 subprocess.run(["go", "test", "-count=1", "./internal/managed",
                                 "-run=^TestG02HistoricalExportForOldReaders$"], cwd=ROOT,
                                env=dict(env, G02_EXPORT_DIR=str(successor)), check=True)
-                for name, _, _ in SOURCES:
-                    subprocess.run(["go", "test", "-v", "-count=1", "./internal/managed",
-                                    "-run=^TestG02HistoricalOldReaderRefusal$"], cwd=scratch / name,
-                                   env=dict(env, G02_SUCCESSOR_DIR=str(successor / name)), check=True)
+                successor_schema = json.loads(manifest)["development_test_target"]["state_schema"]
+                for name, _, schema in SOURCES:
+                    assert schema < successor_schema, (name, "not an old reader")
+                    output = run("go", "test", "-v", "-count=1", "./internal/managed",
+                                 "-run=^TestG02HistoricalOldReaderRefusal$", cwd=scratch / name,
+                                 env=dict(env, G02_SUCCESSOR_DIR=str(successor / name))).decode()
+                    print(output, end="", flush=True)
+                    # A skipped/missing test is not downgrade-refusal evidence.
+                    assert f"original schema{schema} refused real schema{successor_schema} state without modification" in output, (name, "missing original-reader refusal")
     if not args.only:
         subprocess.run(["go", "test", "-count=1", "./internal/managed", "-run=^TestG02Historical"], cwd=ROOT, check=True)
 

@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 )
 
@@ -25,10 +26,11 @@ type Check struct {
 }
 
 type Report struct {
-	SchemaVersion    int     `json:"schema_version"`
-	Deployment       string  `json:"deployment"`
-	RuntimeQualified bool    `json:"runtime_qualified"`
-	Checks           []Check `json:"checks"`
+	SchemaVersion    int                `json:"schema_version"`
+	Deployment       string             `json:"deployment"`
+	RuntimeQualified bool               `json:"runtime_qualified"`
+	Checks           []Check            `json:"checks"`
+	Compatibility    *hostcompat.Report `json:"compatibility,omitempty"`
 }
 
 // Inspect reads local metadata only. It never executes programs, connects to
@@ -98,7 +100,8 @@ func (p probe) metadata(r *Report, id, path string, valid func(fs.FileMode) bool
 }
 
 func (p probe) inspect() Report {
-	r := Report{SchemaVersion: 1, Deployment: deployment}
+	compatibility := hostcompat.Inspect(p.files, p.goos, p.goarch)
+	r := Report{SchemaVersion: 1, Deployment: deployment, Compatibility: &compatibility}
 	status := "pass"
 	if p.goos != "linux" || p.goarch != "amd64" {
 		status = "blocked"
@@ -134,7 +137,14 @@ func (p probe) inspect() Report {
 	for _, name := range strings.Fields("docker dockerd rootlesskit slirp4netns newuidmap newgidmap systemctl loginctl runuser useradd getsubids iptables") {
 		// Follow package-managed executable symlinks; ownership/setuid/capability
 		// decisions require a separate authorized verification, not this probe.
-		info, err := fs.Stat(p.files, "usr/bin/"+name)
+		var info fs.FileInfo
+		var err error
+		for _, path := range rootless.ExecutablePaths(name) {
+			info, err = fs.Stat(p.files, strings.TrimPrefix(path, "/"))
+			if !errors.Is(err, fs.ErrNotExist) {
+				break
+			}
+		}
 		status, detail := "pass", "Regular executable metadata present; package integrity and effective privileges unverified."
 		if err != nil {
 			status, detail = unavailable(err)
@@ -143,7 +153,7 @@ func (p probe) inspect() Report {
 		}
 		r.add("binary-"+name, status, detail)
 	}
-	status, detail := p.engineVersion()
+	status, detail := engineVersionCheck(compatibility)
 	r.add("docker-version", status, detail)
 	status, detail, account := p.account()
 	r.add("account", status, detail)

@@ -1,0 +1,46 @@
+#!/bin/sh
+# Omabit native package transaction refresh, format 1. Installed root-owned.
+# Exit success keeps OS upgrades independent of authentication availability.
+# Only the verifier's authenticated receipts are evidence, never this exit code.
+PATH=/usr/bin:/usr/sbin:/bin:/sbin
+LC_ALL=C
+LANG=C
+export PATH LC_ALL LANG
+umask 077
+
+failed() {
+	printf '%s\n' 'omabit: native package verification refresh failed, was unsafe, or timed out. The OS transaction continues; authentication remains unresolved. Run the local verify-host-packages command and review host-check before new runtime work.' >&2
+	exit 0
+}
+
+# Transaction targets, archive filenames, environment and stdin are never code or
+# arguments. Verification resolves native metadata and cache paths independently.
+[ "$#" -eq 0 ] || failed
+exec </dev/null
+[ "$(/usr/bin/id -u)" = 0 ] || failed
+
+trusted() {
+	[ ! -L "$1" ] || return 1
+	[ "$(/usr/bin/stat -c %u -- "$1")" = 0 ] || return 1
+	permissions=$(/usr/bin/stat -c %a -- "$1") || return 1
+	case "$permissions" in ''|*[!0-7]*) return 1;; esac
+	[ "${#permissions}" -le 4 ] || return 1
+	[ "$((0$permissions & 022))" -eq 0 ] || return 1
+}
+for directory in / /usr /usr/bin /usr/local /usr/local/lib /usr/local/lib/urbit-runner /usr/local/lib/urbit-runner/current /usr/local/lib/urbit-runner/package-hooks; do
+	[ -d "$directory" ] && trusted "$directory" || failed
+done
+runner=/usr/local/lib/urbit-runner/current/urbit-runner
+for executable in "$runner" /usr/bin/env /usr/bin/timeout; do
+	[ -f "$executable" ] && [ -x "$executable" ] && trusted "$executable" || failed
+	[ "$(/usr/bin/stat -c %h -- "$executable")" = 1 ] || failed
+done
+
+# GNU timeout bounds the verifier and its children, not existing engines/ships.
+# Core also has bounded parsers, subprocesses and a two-minute refresh deadline.
+if ! /usr/bin/env -i PATH=/usr/bin:/usr/sbin:/bin:/sbin HOME=/root LANG=C LC_ALL=C \
+	/usr/bin/timeout --kill-after=5s 130s "$runner" \
+	verify-host-packages --acknowledge-local-verification --format json >/dev/null 2>&1; then
+	failed
+fi
+exit 0

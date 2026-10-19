@@ -3,6 +3,7 @@
 package hostinstall
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -16,6 +17,7 @@ import (
 	"strings"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostsetup"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/managed"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
@@ -53,9 +55,12 @@ func newInstaller() installer {
 	return installer{
 		root: "/", euid: os.Geteuid(), goos: runtime.GOOS, goarch: runtime.GOARCH,
 		verified: rootless.VerifiedFiles, inspect: hostsetup.Inspect,
-		inspectOwner: hostsetup.InspectOwner,
-		chownOwner:   func(path string, uid, gid uint32) error { return os.Chown(path, int(uid), int(gid)) },
-		lookupUser:   user.Lookup, lookupGroup: user.LookupGroup, groupIDs: (*user.User).GroupIds,
+		inspectOwner:                   hostsetup.InspectOwner,
+		verifyCompatibility:            hostcompat.VerifyCurrent,
+		verifyCompatibilityWithOptions: hostcompat.VerifyCurrentWithOptions,
+		inspectCompatibility:           hostcompat.InspectCurrent,
+		chownOwner:                     func(path string, uid, gid uint32) error { return os.Chown(path, int(uid), int(gid)) },
+		lookupUser:                     user.Lookup, lookupGroup: user.LookupGroup, groupIDs: (*user.User).GroupIds,
 		lstat: os.Lstat, chown: func(f *os.File) error { return f.Chown(0, 0) },
 		run: runCommand,
 	}
@@ -64,29 +69,32 @@ func newInstaller() installer {
 // All injection is private and per invocation. Tests use a temporary filesystem,
 // synthetic ownership/NSS evidence, and a runner that never executes a process.
 type installer struct {
-	root                  string
-	euid                  int
-	goos, goarch          string
-	verified              func(string) (map[string][]byte, error)
-	inspect               func() hostsetup.Report
-	inspectOwner          func(string) hostsetup.Report
-	chownOwner            func(string, uint32, uint32) error
-	lookupUser            func(string) (*user.User, error)
-	lookupGroup           func(string) (*user.Group, error)
-	groupIDs              func(*user.User) ([]string, error)
-	lstat                 func(string) (os.FileInfo, error)
-	chown                 func(*os.File) error
-	run                   func(context.Context, string, []string, []string) ([]byte, error)
-	mutated               bool
-	publishFile           func(string, string) error
-	syncDirectory         func(string) error
-	activationEvidence    func(context.Context, string) (serviceEvidence, error)
-	activationStopped     func(context.Context, string, string) error
-	updateRPC             func(context.Context, string, uint32, int, *protocol.ManagementUpdateRequest) (protocol.ManagementUpdateStatus, error)
-	activationTimeout     time.Duration
-	offlineArtifactSchema func(context.Context, []byte, ownerhost.Profile) (int, error)
-	offlineStateCall      func(context.Context, *managed.OfflineStateLock, ownerhost.Profile, managed.OfflineUpdateRequest) (managed.OfflineUpdateState, error)
-	offlineLock           func(string, uint32) (*managed.OfflineStateLock, error)
+	root                           string
+	euid                           int
+	goos, goarch                   string
+	verified                       func(string) (map[string][]byte, error)
+	inspect                        func() hostsetup.Report
+	inspectOwner                   func(string) hostsetup.Report
+	verifyCompatibility            func(context.Context) (hostcompat.Report, error)
+	verifyCompatibilityWithOptions func(context.Context, hostcompat.VerificationOptions) (hostcompat.Report, error)
+	inspectCompatibility           func() hostcompat.Report
+	chownOwner                     func(string, uint32, uint32) error
+	lookupUser                     func(string) (*user.User, error)
+	lookupGroup                    func(string) (*user.Group, error)
+	groupIDs                       func(*user.User) ([]string, error)
+	lstat                          func(string) (os.FileInfo, error)
+	chown                          func(*os.File) error
+	run                            func(context.Context, string, []string, []string) ([]byte, error)
+	mutated                        bool
+	publishFile                    func(string, string) error
+	syncDirectory                  func(string) error
+	activationEvidence             func(context.Context, string) (serviceEvidence, error)
+	activationStopped              func(context.Context, string, string) error
+	updateRPC                      func(context.Context, string, uint32, int, *protocol.ManagementUpdateRequest) (protocol.ManagementUpdateStatus, error)
+	activationTimeout              time.Duration
+	offlineArtifactSchema          func(context.Context, []byte, ownerhost.Profile) (int, error)
+	offlineStateCall               func(context.Context, *managed.OfflineStateLock, ownerhost.Profile, managed.OfflineUpdateRequest) (managed.OfflineUpdateState, error)
+	offlineLock                    func(string, uint32) (*managed.OfflineStateLock, error)
 }
 
 func (i *installer) install(ctx context.Context, bundle string) (result Result, err error) {
@@ -104,6 +112,9 @@ func (i *installer) install(ctx context.Context, bundle string) (result Result, 
 	}
 	if i.euid != 0 || i.goos != "linux" || i.goarch != "amd64" {
 		return result, fmt.Errorf("installation requires euid 0 on linux/amd64")
+	}
+	if err := i.requireCompatibility(ctx); err != nil {
+		return result, err
 	}
 	files, err := i.verified(bundle)
 	if err != nil {
@@ -154,6 +165,11 @@ func (i *installer) install(ctx context.Context, bundle string) (result Result, 
 			return result, err
 		}
 	}
+	dockerd, err := i.resolveHelper(ctx, "/usr/bin/dockerd")
+	if err != nil {
+		return result, err
+	}
+	files[rootless.UnitName] = bytes.ReplaceAll(files[rootless.UnitName], []byte("Environment=DOCKERD=/usr/bin/dockerd"), []byte("Environment=DOCKERD="+dockerd))
 	// The UID-specific runtime directory is checked later; its root-owned
 	// parents can and must be validated before any installation writes.
 	if err := i.parents(ctx, "/run/user/"+rootless.SocketName, false); err != nil {
@@ -177,10 +193,10 @@ func (i *installer) install(ctx context.Context, bundle string) (result Result, 
 	if err != nil {
 		return result, err
 	}
-	prefix := "Docker version " + rootless.EngineVersion + ", build "
 	text := strings.TrimSpace(string(version))
-	if !strings.HasPrefix(text, prefix) || len(strings.Fields(strings.TrimPrefix(text, prefix))) != 1 {
-		return result, fmt.Errorf("/usr/bin/dockerd must report exactly Docker version %s", rootless.EngineVersion)
+	upstream, build, ok := strings.Cut(strings.TrimPrefix(text, "Docker version "), ", build ")
+	if !strings.HasPrefix(text, "Docker version ") || !ok || len(strings.Fields(build)) != 1 || hostcompat.EngineVersionStatus(upstream) != "compatible" {
+		return result, fmt.Errorf("native dockerd must report a supported stable engine version")
 	}
 	help, err := i.command(ctx, "/usr/bin/useradd", "--help")
 	if err != nil {
@@ -211,9 +227,13 @@ func (i *installer) install(ctx context.Context, bundle string) (result Result, 
 	if err := i.absent(rootless.HomeDir); err != nil {
 		return result, err
 	}
+	nologin, err := i.resolveHelper(ctx, "/usr/bin/nologin")
+	if err != nil {
+		return result, err
+	}
 	_, err = i.command(ctx, "/usr/bin/useradd",
 		"--system", "--user-group", "--create-home", "--home-dir", rootless.HomeDir,
-		"--shell", "/usr/bin/nologin", "--groups", "", "--add-subids-for-system",
+		"--shell", nologin, "--groups", "", "--add-subids-for-system",
 		"--key", "HOME_MODE=0700", "--key", "SUB_UID_COUNT=65536", "--key", "SUB_GID_COUNT=65536", rootless.AccountName)
 	if err != nil {
 		return result, err
@@ -260,6 +280,9 @@ func (i *installer) install(ctx context.Context, bundle string) (result Result, 
 		return result, err
 	}
 	if err := verifyInfo(info); err != nil {
+		return result, err
+	}
+	if err := i.verifyEngineAPI(ctx, socket, nil, info); err != nil {
 		return result, err
 	}
 	result.RootlessVerified = true
@@ -366,7 +389,7 @@ func (i *installer) checkAccountMode(ctx context.Context, account *user.User, ui
 			}
 			matches++
 			if database == "passwd" {
-				shellOK := len(fields) == 7 && (fields[6] == "/usr/bin/nologin" || !fresh && (fields[6] == "/usr/local/lib/urbit-runner/current/urbit-runner" || fields[6] == "/usr/local/lib/urbit-runner/checkpoints/4b/urbit-runner"))
+				shellOK := len(fields) == 7 && (slices.Contains(rootless.ExecutablePaths("nologin"), fields[6]) || !fresh && (fields[6] == "/usr/local/lib/urbit-runner/current/urbit-runner" || fields[6] == "/usr/local/lib/urbit-runner/checkpoints/4b/urbit-runner"))
 				if len(fields) != 7 || fields[2] != account.Uid || fields[3] != account.Gid || fields[5] != rootless.HomeDir || !shellOK {
 					return fmt.Errorf("new local account does not match NSS identity or nologin shell")
 				}
@@ -424,9 +447,9 @@ func verifyInfo(data []byte) error {
 	if len(data) > maxOutput || json.Unmarshal(data, &info) != nil {
 		return fmt.Errorf("engine info is not a bounded JSON object")
 	}
-	if info.ServerVersion != rootless.EngineVersion || !slices.Contains(info.SecurityOptions, "name=rootless") ||
+	if hostcompat.EngineVersionStatus(info.ServerVersion) != "compatible" || !slices.Contains(info.SecurityOptions, "name=rootless") ||
 		info.CgroupDriver != "systemd" || info.CgroupVersion != "2" || info.DockerRootDir != rootless.HomeDir+"/.local/share/urbit-runner/docker" {
-		return fmt.Errorf("engine self-report must match version %s, name=rootless, systemd cgroup v2, and the dedicated Docker data root; runtime remains unqualified", rootless.EngineVersion)
+		return fmt.Errorf("engine self-report must be compatible, name=rootless, systemd cgroup v2, and the dedicated Docker data root; runtime remains unqualified")
 	}
 	return nil
 }

@@ -1,0 +1,5 @@
+// Omabit native package transaction hook, format 1.
+// The early fragment orders refresh before conventional docker-clean/cache hooks.
+// The wrapper consumes no package-manager stdin or arguments. Its exit status is
+// deliberately not authentication evidence and must not abort an OS transaction.
+DPkg::Post-Invoke { "/usr/local/lib/urbit-runner/package-hooks/refresh-host-packages || true"; };

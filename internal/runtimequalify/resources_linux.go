@@ -10,6 +10,8 @@ import (
 	"net"
 	"net/http"
 	"time"
+
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 )
 
 const statsLimit = 256 << 10
@@ -54,7 +56,7 @@ func readDockerStats(ctx context.Context, socket, id string) (string, error) {
 		}}
 	defer transport.CloseIdleConnections()
 	client := &http.Client{Transport: transport, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://docker/v1.47/containers/"+id+"/stats?stream=false&one-shot=true", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://docker/v"+hostcompat.APIVersion+"/containers/"+id+"/stats?stream=false&one-shot=true", nil)
 	if err != nil {
 		return "", errors.New("cannot prepare resource request")
 	}

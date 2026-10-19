@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
@@ -30,6 +31,9 @@ func readManagedLogs(ctx context.Context, state ManagedState, d dependencies) (p
 	for i := len(q.r.Containers) - 1; i >= 0; i-- {
 		c := q.r.Containers[i]
 		if c.Kind != "probe" && !c.Removed {
+			if err := q.verifyEngineAccess(ctx, true); err != nil {
+				return protocol.RuntimeLogs{}, err
+			}
 			return q.containerLogs(ctx, i)
 		}
 	}
@@ -71,7 +75,7 @@ func readDockerLogs(ctx context.Context, socket, id string) (string, error) {
 	}}
 	defer transport.CloseIdleConnections()
 	client := &http.Client{Transport: transport, Timeout: 3 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
-	req, _ := http.NewRequestWithContext(ctx, "GET", "http://docker/v1.47/containers/"+id+"/logs?stdout=true&stderr=true&timestamps=true&tail=200", nil)
+	req, _ := http.NewRequestWithContext(ctx, "GET", "http://docker/v"+hostcompat.APIVersion+"/containers/"+id+"/logs?stdout=true&stderr=true&timestamps=true&tail=200", nil)
 	resp, err := client.Do(req)
 	if err != nil {
 		return "", errors.New("private runtime logs unavailable")

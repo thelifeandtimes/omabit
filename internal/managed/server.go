@@ -54,6 +54,7 @@ type Server struct {
 	updateFence               managementFence
 	updateBulk, updateWorkers int
 	executableSHA256          string
+	hostCompatibility         hostCompatibilityCache
 }
 
 func New(dir string) (*Server, error) { return newServer(dir, realBackend{}, 10*time.Second) }
@@ -206,6 +207,9 @@ func (r *Server) poll(interval time.Duration) {
 				if err != nil {
 					state = v.Runtime
 					observation = runtimequalify.ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
+					if errors.Is(err, runtimequalify.ErrHostCompatibility) {
+						observation.RecoveryRequired = runtimequalify.RecoveryRequiredOnCompatibility(state, v.Public.RecoveryRequired)
+					}
 				}
 				if err := r.s.observe(v, state, observation); err != nil {
 					r.failed.Store(true)
@@ -322,6 +326,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		features = append(features, "maintenance-schedules")
 		features = append(features, protocol.CreationReplayFeature)
 		features = append(features, protocol.ManagementUpdateFeature)
+		features = append(features, protocol.HostCompatibilityFeature)
 		features = append(features, "fake-ship-options", "host-port-suggestion")
 		if p, err := ownerhost.Current(); err == nil && p != nil {
 			features = append(features, "owner-user-runtime", "human-pier-storage")
@@ -366,6 +371,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if req.Header.Get(protocol.Header) != strconv.Itoa(protocol.Version) {
 		r.respondError(w, &fault{426, protocol.APIError{Code: "protocol_mismatch", Message: "send Urbit-Runner-Protocol: 1"}})
+		return
+	}
+	if req.URL.Path == protocol.HostCompatibilityPath {
+		r.serveHostCompatibility(w, req)
 		return
 	}
 	if req.URL.Path == protocol.PillUploadPath {

@@ -1,0 +1,18 @@
+# Runtime output belongs outside this source directory, inside the disposable VM.
+/run/
+/evidence/
+/inputs/
+/key-*/
+/multi-keys/
+*.qcow2
+*.img
+*.deb
+*.pkg.tar.*
+*.log
+*.tar*
+*.asc
+*.gpg
+*.sig
+*.key
+*.pem
+/urbit-runner*

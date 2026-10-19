@@ -23,12 +23,18 @@ func applyRoutine(ctx context.Context, action string, state ManagedState, persis
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
 	defer cancel()
 	state, observed, err := observeManaged(ctx, state, d)
+	if errors.Is(err, ErrHostCompatibility) {
+		return state, observed, err
+	}
 	if err != nil || observed.RecoveryRequired || (observed.State != "running" && observed.State != "stopped") || p.WasRunning != (observed.State == "running") || p.WasRunning && !p.StopRunning {
 		return state, unknown, errors.New("routine runtime state changed before dispatch")
 	}
 	q, err := managedSession(&state, persist, d)
 	if err != nil {
 		return state, unknown, err
+	}
+	if err := q.verifyEngine(ctx); err != nil {
+		return state, compatibilityObservation(state), err
 	}
 	mem, disk, err := q.d.admission(q.base)
 	if err != nil || mem < 5<<30 || disk < 8<<30 {

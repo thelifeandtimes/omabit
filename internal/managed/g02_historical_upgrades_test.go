@@ -67,14 +67,17 @@ type g02Release struct {
 	HostUpgrade  string `json:"host_upgrade"`
 }
 
+type g02Target struct {
+	Release     string
+	Channel     string
+	StateSchema int `json:"state_schema"`
+	Evidence    string
+}
+
 type g02Manifest struct {
-	Format              int
-	QualificationTarget struct {
-		Release     string
-		Channel     string
-		StateSchema int `json:"state_schema"`
-		Evidence    string
-	} `json:"qualification_target"`
+	Format                int
+	QualificationTarget   g02Target    `json:"qualification_target"`
+	DevelopmentTestTarget g02Target    `json:"development_test_target"`
 	AcceptedSchemaWindow  []int        `json:"accepted_schema_window"`
 	SupportedReleaseScope string       `json:"supported_release_scope"`
 	SupportedReleases     []g02Release `json:"supported_releases"`
@@ -102,10 +105,14 @@ func g02ManifestData(t *testing.T) []byte {
 // of that prototype, and database coverage is not a host-install support promise.
 func g02ValidateManifest(m g02Manifest, fixtures map[string]g02Fixture) error {
 	target := m.QualificationTarget
-	if currentSchema != 20 || m.Format != 2 || target.Release != "v0.1.0-rc.12" || target.Channel != "prerelease" || target.StateSchema != currentSchema || target.Evidence != "source-tests-only" {
-		return errors.New("review historical qualification for the new release/schema; RC12 source evidence is not stable/artifact qualification")
+	if m.Format != 2 || target.Release != "v0.1.0-rc.12" || target.Channel != "prerelease" || target.StateSchema != 20 || target.Evidence != "source-tests-only" {
+		return errors.New("preserve historical RC12/schema20 source qualification separately from current development tests")
 	}
-	if !slices.Equal(m.AcceptedSchemaWindow, []int{11, 12, 13, 14, 15, 16, 17, 18, 19}) || !slices.Equal(m.PrototypeSchemas, []int{11, 12, 14, 17, 18}) || m.SupportedReleaseScope != "database-reader" {
+	development := m.DevelopmentTestTarget
+	if currentSchema != 21 || development.StateSchema != currentSchema || development.Release != "unreleased" || development.Channel != "development" || development.Evidence != "source-tests-only" {
+		return errors.New("review the development schema target explicitly; source tests are not release/artifact qualification")
+	}
+	if !slices.Equal(m.AcceptedSchemaWindow, []int{11, 12, 13, 14, 15, 16, 17, 18, 19, 20}) || !slices.Equal(m.PrototypeSchemas, []int{11, 12, 14, 17, 18}) || m.SupportedReleaseScope != "database-reader" {
 		return errors.New("reader window, release support and unpublished prototypes must remain distinct")
 	}
 	if !slices.Equal(m.HostUpgrade.InitialSchemas, []int{19}) || m.HostUpgrade.Deployment != "owner-user-linux-amd64" || m.HostUpgrade.Procedure != "docs/management-offline-upgrade.md" || m.HostUpgrade.Evidence != "source-tests-only" {
@@ -123,27 +130,34 @@ func g02ValidateManifest(m g02Manifest, fixtures map[string]g02Fixture) error {
 	if len(listed) != len(fixtures) {
 		return errors.New("unlisted historical fixture")
 	}
-	// Freeze the published RC.1-11 inventory, not merely the number of schemas.
+	// Freeze the published RC.1-12 inventory, not merely the number of schemas.
 	// A future support-window change must explicitly review this release gate.
 	required := map[string]string{}
-	for n := 1; n <= 11; n++ {
+	for n := 1; n <= 12; n++ {
 		required[fmt.Sprintf("v0.1.0-rc.%d", n)] = fmt.Sprintf("rc%d.json", n)
 	}
 	used := map[string]bool{}
+	sources := map[string]bool{}
 	for _, release := range m.SupportedReleases {
 		name, ok := required[release.Release]
 		f := fixtures[release.Fixture]
-		if !ok || name != release.Fixture || !listed[name] || used[name] || f.Schema != release.Schema || f.SourceCommit != release.SourceCommit || len(release.SourceCommit) != 40 || slices.Contains(m.PrototypeSchemas, release.Schema) {
+		if !ok || name != release.Fixture || !listed[name] || used[name] || sources[release.SourceCommit] || f.Schema != release.Schema || f.SourceCommit != release.SourceCommit || len(release.SourceCommit) != 40 || slices.Contains(m.PrototypeSchemas, release.Schema) {
 			return fmt.Errorf("supported release %s lacks its own pinned original fixture", release.Release)
+		}
+		if name == "rc12.json" && (f.Schema != 20 || f.SourceCommit != "1529c1335754d15c6efd03d77ce2af7ede3d48f0" || f.SourceTree != "c623bda87c95ecfa9a8808945a49520ac7ec93b2") {
+			return errors.New("RC12 must use its published schema20 writer, not relabeled development state")
 		}
 		wantHost := "unsupported"
 		if slices.Contains(m.HostUpgrade.InitialSchemas, release.Schema) {
 			wantHost = "owner-user-schema19-offline"
+		} else if release.Schema == 20 {
+			wantHost = "owner-user-quiescence-online"
 		}
 		if release.HostUpgrade != wantHost {
 			return fmt.Errorf("%s overstates or omits host support", release.Release)
 		}
 		used[name] = true
+		sources[release.SourceCommit] = true
 		delete(required, release.Release)
 	}
 	if len(required) != 0 {
@@ -202,7 +216,7 @@ func g02Fixtures(t *testing.T) []g02Fixture {
 		decoder := json.NewDecoder(bytes.NewReader(data))
 		decoder.UseNumber()
 		g02Check(t, decoder.Decode(&f))
-		if f.Format != 1 || !f.Synthetic || len(f.SourceCommit) != 40 || len(f.SourceTree) != 40 || len(f.WriterSHA256) != 64 || f.Schema < 11 || f.Schema > 19 || len(f.Hashes) < 20 {
+		if f.Format != 1 || !f.Synthetic || len(f.SourceCommit) != 40 || len(f.SourceTree) != 40 || len(f.WriterSHA256) != 64 || f.Schema < 11 || f.Schema >= currentSchema || len(f.Hashes) < 20 {
 			t.Fatal("missing provenance/coverage", name)
 		}
 		if f.Schema == 14 {
@@ -240,6 +254,19 @@ func TestG02HistoricalSupportManifestRejectsLostReleaseOrInventedEvidence(t *tes
 			rc.SourceCommit = strings.Repeat("0", 40)
 			f["rc11.json"] = rc
 		}},
+		{"reused-source-for-distinct-release", func(m *g02Manifest, f map[string]g02Fixture) {
+			rc := f["rc3.json"]
+			rc.SourceCommit = f["rc4.json"].SourceCommit
+			f["rc3.json"] = rc
+			m.SupportedReleases[2].SourceCommit = rc.SourceCommit
+		}},
+		{"missing-rc12", func(m *g02Manifest, _ map[string]g02Fixture) { m.SupportedReleases = m.SupportedReleases[:11] }},
+		{"substitute-rc12-source-and-manifest", func(m *g02Manifest, f map[string]g02Fixture) {
+			rc := f["rc12.json"]
+			rc.SourceCommit = strings.Repeat("0", 40)
+			f["rc12.json"] = rc
+			m.SupportedReleases[11].SourceCommit = rc.SourceCommit
+		}},
 		{"preview-as-release", func(m *g02Manifest, _ map[string]g02Fixture) {
 			m.SupportedReleases[0].Fixture, m.SupportedReleases[0].Schema = "preview14.json", 14
 		}},
@@ -252,6 +279,11 @@ func TestG02HistoricalSupportManifestRejectsLostReleaseOrInventedEvidence(t *tes
 		}},
 		{"reader-window-as-host-window", func(m *g02Manifest, _ map[string]g02Fixture) { m.HostUpgrade.InitialSchemas = m.AcceptedSchemaWindow }},
 		{"stable-claim", func(m *g02Manifest, _ map[string]g02Fixture) { m.QualificationTarget.Channel = "stable" }},
+		{"relabel-rc12-schema", func(m *g02Manifest, _ map[string]g02Fixture) { m.QualificationTarget.StateSchema = currentSchema }},
+		{"development-as-release", func(m *g02Manifest, _ map[string]g02Fixture) { m.DevelopmentTestTarget.Release = "v0.1.0-rc.12" }},
+		{"development-as-stable", func(m *g02Manifest, _ map[string]g02Fixture) { m.DevelopmentTestTarget.Channel = "stable" }},
+		{"development-as-artifact-evidence", func(m *g02Manifest, _ map[string]g02Fixture) { m.DevelopmentTestTarget.Evidence = "artifact-qualified" }},
+		{"stale-development-schema", func(m *g02Manifest, _ map[string]g02Fixture) { m.DevelopmentTestTarget.StateSchema = 20 }},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			var m g02Manifest
@@ -547,6 +579,11 @@ func TestG02HistoricalUpgradePreservesOriginalBytesAndReplay(t *testing.T) {
 					}
 					if f.Schema < 18 && (v.Runtime.Loom != 0 || v.Runtime.NativeControl || v.Public.Config.Loom != 31) {
 						t.Fatal("legacy launch defaults were rewritten")
+					}
+					for _, c := range v.Runtime.Runtime.Containers {
+						if c.EngineVersion != "" {
+							t.Fatal("historical container acquired invented engine-version evidence", id)
+						}
 					}
 				}
 				moved, err := loadInstance(s.db, "moved")

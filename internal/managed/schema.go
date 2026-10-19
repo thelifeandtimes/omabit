@@ -1,7 +1,8 @@
 package managed
 
 // StateSchemaVersion is also queried from the built runner by release tooling.
-// Schema20 fences durable management-update admission, object-bound destructive
-// recovery and actor-scoped handoff receipts from older runners. The migration
-// preserves existing instance bodies, historical signatures and replay records.
-const StateSchemaVersion = 20
+// Schema21 fences per-container engine-version evidence and portable host-engine
+// contracts from schema20 and older runners. The version-only migration accepts
+// schemas11–20, preserving instance bodies, historical signatures and replay
+// records; it does not infer launch evidence from the currently installed engine.
+const StateSchemaVersion = 21

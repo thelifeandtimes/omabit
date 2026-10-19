@@ -17,7 +17,7 @@ assert.equal(model.setupEvent(JSON.stringify({step:"ready",status:"complete",res
 assert.throws(() => model.validateSetupStatus({...setupReady,browser_base:"https://unrelated.example"}));
 assert.throws(() => model.validateSetupStatus({...setupReady,connection:{...setupReady.connection,mode:"simulation"}}));
 assert.throws(() => model.setupEvent(JSON.stringify({step:"execute-arbitrary",status:"complete"})));
-assert.throws(() => model.setupEvent("x".repeat(65537)));
+assert.throws(() => model.setupEvent("x".repeat(131073)));
 assert.equal(model.setupStepIndex("services"),model.setupStepIndex("authorize"));
 console.log("PASS: local setup progress is bounded and ready state binds the local development runner");
 const registerConnection={name:"local",runner_id:"runner-local",mode:"development-managed",status:"available",checked_at:new Date().toISOString(),access_role:"operator",features:["create-fake","fake-ship-options","create-comet"],snapshot:{instances:[{id:"comet",mode:"comet",config:{http_port:18080},endpoint:"http://127.0.0.1:18081"},{id:"development",mode:"fake",config:{http_port:18082}}]}};

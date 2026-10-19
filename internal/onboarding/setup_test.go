@@ -14,6 +14,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostinstall"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostsetup"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
@@ -240,5 +241,68 @@ func TestPrivateSetupStorageAndSSHConfiguration(t *testing.T) {
 		if !strings.Contains(string(data), want) {
 			t.Fatal("missing SSH boundary", want)
 		}
+	}
+}
+
+func TestCompatibilityIsForwardedWithoutDesktopVersionPolicy(t *testing.T) {
+	d, dir, config, _, _ := setupFixture(t)
+	r := &hostcompat.Report{
+		SchemaVersion: 1, PolicyID: hostcompat.PolicyID, Platform: "linux/amd64",
+		Distribution:           hostcompat.Distribution{ID: "debian", Provider: "deb", Profile: "unqualified"},
+		InstalledEngineVersion: "29.9.1", Compatibility: "unknown", Qualification: "unqualified", Provenance: "metadata-only",
+		// Read-only metadata inspection has not observed an engine yet. Its
+		// runtime permissions do not replace the runner's setup prerequisites.
+		CanMutate: false, Guidance: []string{"Install Debian's native rootless prerequisites."},
+	}
+	d.inspect = func() hostsetup.Report {
+		return hostsetup.Report{Compatibility: r, Checks: []hostsetup.Check{{ID: "docker-version", Status: "pass"}}}
+	}
+	d.tool = func(path string) bool { return path != "/usr/bin/sshd" }
+	s, err := inspect(context.Background(), config, dir, d)
+	if err != nil || !s.CanSetup || s.Compatibility != r {
+		t.Fatal("report or core setup eligibility changed", s, err)
+	}
+	data, err := json.Marshal(s)
+	if err != nil || !bytes.Contains(data, []byte(`"compatibility":{"schema_version":1`)) || !bytes.Contains(data, []byte(`"installed_engine_version":"29.9.1"`)) {
+		t.Fatal("structured report lost from setup-status", string(data), err)
+	}
+	for _, c := range s.Checks {
+		if c.ID == "binary-sshd" && c.Status != "pass" {
+			t.Fatal("native /usr/sbin/sshd was not recognized", c)
+		}
+	}
+}
+
+func TestSetupUsesReportGuidanceBeforePreparingOrAuthorizing(t *testing.T) {
+	d, dir, config, runner, calls := setupFixture(t)
+	const guidance = "Install the Debian native packages listed by the runner, then repeat its preflight check."
+	d.inspect = func() hostsetup.Report {
+		return hostsetup.Report{Compatibility: &hostcompat.Report{Guidance: []string{guidance}}, Checks: []hostsetup.Check{{ID: "docker-version", Status: "unknown", Detail: "Native engine evidence is unresolved."}}}
+	}
+	d.prepare = func(context.Context, string) (rootless.Manifest, error) {
+		t.Fatal("blocked prerequisites reached preparation")
+		return rootless.Manifest{}, nil
+	}
+	s, err := setup(context.Background(), config, dir, runner, d, nil)
+	if err == nil || !strings.Contains(err.Error(), guidance) || s.CanSetup || *calls != 0 {
+		t.Fatal(s, err)
+	}
+	if strings.Contains(err.Error(), "Omarchy") || strings.Contains(err.Error(), rootless.EngineVersion) {
+		t.Fatal("desktop substituted fixed distro/version policy", err)
+	}
+}
+
+func TestPrerequisiteDriftPreservesReadyConnection(t *testing.T) {
+	d, dir, config, runner, calls := setupFixture(t)
+	before, err := setup(context.Background(), config, dir, runner, d, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	d.inspect = func() hostsetup.Report {
+		return hostsetup.Report{Compatibility: &hostcompat.Report{Compatibility: "unknown", CanStop: true}, Checks: []hostsetup.Check{{ID: "docker-version", Status: "unknown", Detail: "Installed package evidence changed."}}}
+	}
+	after, err := setup(context.Background(), config, dir, runner, d, nil)
+	if err != nil || !after.Ready || after.CanSetup || after.Connection == nil || after.Connection.RunnerID != before.Connection.RunnerID || *calls != 1 {
+		t.Fatal("prerequisite drift hid or recreated the enrolled runner", after, err)
 	}
 }

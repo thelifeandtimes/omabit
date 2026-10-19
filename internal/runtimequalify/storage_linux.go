@@ -11,7 +11,6 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
-	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
@@ -121,7 +120,7 @@ func applyPierEnrollment(ctx context.Context, state ManagedState, persist func(M
 // storage, provision a pill/key, or dispatch a runtime.
 func (q *qualifier) enrollmentRuntime(id string) Result {
 	dir := filepath.Join(q.base, id)
-	return Result{Profile: q.d.profile, RunID: id, Directory: dir, Image: candidate.Image, Platform: candidate.Platform, EngineVersion: rootless.EngineVersion, VereVersion: candidate.VereVersion, PillURL: q.pillSource(), PillSHA256: q.d.pillSHA, PillBytes: q.d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
+	return Result{Profile: q.d.profile, RunID: id, Directory: dir, Image: candidate.Image, Platform: candidate.Platform, VereVersion: candidate.VereVersion, PillURL: q.pillSource(), PillSHA256: q.d.pillSHA, PillBytes: q.d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
 }
 
 // applyLegacyImportCompletionRecovery handles the historical split write:

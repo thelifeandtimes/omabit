@@ -14,6 +14,8 @@ import (
 	"strings"
 	"syscall"
 	"time"
+
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 )
 
 const (
@@ -24,7 +26,7 @@ const (
 	maxDownloadBytes = 1 << 20
 )
 
-//go:embed assets/urbit-docker.service assets/check-engine.sh assets/daemon.json
+//go:embed assets/urbit-docker.service assets/check-engine.sh assets/daemon.json assets/legacy/*
 var assets embed.FS
 
 // Manifest describes schema version 1 of a preparation bundle. Files lists every
@@ -33,7 +35,9 @@ var assets embed.FS
 // or claim that any container image has been qualified. UnitPath is the intended
 // root-owned global user-unit location, not a path written by Prepare.
 type Manifest struct {
-	SchemaVersion  int            `json:"schema_version"`
+	SchemaVersion int `json:"schema_version"`
+	// EngineVersion retains the historical baseline for schema-1 readers, not
+	// an admission pin. SourceCommit/LauncherSHA256 identify the launcher.
 	EngineVersion  string         `json:"engine_version"`
 	SourceCommit   string         `json:"source_commit"`
 	LauncherURL    string         `json:"launcher_url"`
@@ -235,10 +239,39 @@ func renderedAsset(name string) ([]byte, error) {
 		{"@INSTALL_DIR@", InstallDir}, {"@ENGINE_VERSION@", EngineVersion},
 		{"@LAUNCHER_SHA256@", LauncherSHA256}, {"@ACCOUNT@", AccountName},
 		{"@HOME@", HomeDir}, {"@SOCKET@", SocketName},
+		{"@SAFE_PATH@", SafePath}, {"@ENGINE_VERSION_POLICY@", hostcompat.EngineVersionShell()},
 	} {
 		text = strings.ReplaceAll(text, replacement[0], replacement[1])
 	}
 	return []byte(text), nil
+}
+
+// ServiceFiles returns compiled-in reviewed guard/unit bytes for guard-only
+// repair, without trusting a caller bundle or downloading the pinned launcher.
+func ServiceFiles() (map[string][]byte, error) {
+	files := make(map[string][]byte)
+	for _, name := range []string{"check-engine.sh", UnitName} {
+		data, err := renderedAsset(name)
+		if err != nil {
+			return nil, err
+		}
+		files[name] = data
+	}
+	return files, nil
+}
+
+// PreviousServiceFiles is the exact formerly generated 29.7.2 content. It is
+// migration evidence, never a fallback to weaken the current policy.
+func PreviousServiceFiles() (map[string][]byte, error) {
+	files := make(map[string][]byte)
+	for _, name := range []string{"check-engine.sh", UnitName} {
+		data, err := renderedAsset("legacy/" + name)
+		if err != nil {
+			return nil, err
+		}
+		files[name] = data
+	}
+	return files, nil
 }
 
 // VerifiedFiles snapshots the bundle's exact bytes for an authorized installer.

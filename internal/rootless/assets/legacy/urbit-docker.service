@@ -1,0 +1,38 @@
+# Review artifact. Install root-owned at /etc/systemd/user/urbit-docker.service.
+# Scripts must be installed root-owned and executable; the bundle is inert.
+# Do not add NoNewPrivileges=yes: newuidmap/newgidmap need their privileges.
+[Unit]
+Description=Dedicated-account rootless Docker @ENGINE_VERSION@ for Urbit
+ConditionUser=@ACCOUNT@
+Requires=dbus.socket
+After=dbus.socket
+
+[Service]
+Type=notify
+NotifyAccess=all
+Environment=PATH=/usr/bin:/bin
+Environment=HOME=@HOME@
+Environment=DOCKERD=/usr/bin/dockerd
+Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_NET=slirp4netns
+Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_PORT_DRIVER=builtin
+Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_STATE_DIR=%t/urbit-rootlesskit
+Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_DISABLE_HOST_LOOPBACK=true
+Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_DETACH_NETNS=true
+Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_FLAGS=
+UnsetEnvironment=_DOCKERD_ROOTLESS_CHILD _DOCKERD_ROOTLESS_SELINUX
+ExecStartPre=@INSTALL_DIR@/check-engine.sh
+# Namespace GID 0 maps to the dedicated account's host GID, not host group docker.
+ExecStart=@INSTALL_DIR@/dockerd-rootless.sh --group=0 --host=unix://%t/@SOCKET@ --data-root=%h/.local/share/urbit-runner/docker --exec-root=%t/urbit-docker --pidfile=%t/urbit-docker.pid --exec-opt native.cgroupdriver=systemd --config-file @INSTALL_DIR@/daemon.json
+Delegate=yes
+KillMode=mixed
+Restart=on-failure
+RestartSec=2
+TimeoutStartSec=120
+TimeoutStopSec=360
+TasksMax=infinity
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=0
+
+[Install]
+WantedBy=default.target

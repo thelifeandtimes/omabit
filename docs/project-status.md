@@ -2,6 +2,13 @@
 
 ## Where we are
 
+**RC.13 is prepared for publication and fresh-install testing.** It introduces
+schema21 and [distribution-native host compatibility](host-compatibility.md), with
+Pacman/Debian/Ubuntu authentication and shared runner/collector/UI reporting.
+The [release notes](release-rc13.md) and [development verification record](diagnostics/host-compatibility-development.md)
+describe completed checks and the pending two-Omarchy/full-stack tests. The visible
+monitor, setup header, bar tooltip, live status and manifests identify RC.13.
+
 **[RC.12 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.12)**
 from frozen source `1529c133`, with matching schema20 tool pins. The
 [remediation record](reviews/2026-10-18-rc11-remediation.md) maps all29 findings to

@@ -4,8 +4,9 @@ Omabit has a single local setup flow for the owner's separate rootless engine, b
 services, private desktop access and runner enrollment. The panel guides you through
 it, and the same flow is available from a terminal.
 
-**Implemented today:** Linux x86-64 with systemd/cgroup v2, Docker 29.7.2, the official
-Vere 4.6 runtime, new comets/fakes, owned-key boot and stopped in-tree pier enrollment.
+**Implemented today:** Linux x86-64 with systemd/cgroup v2, stable Docker27.2.0–29.x
+with API1.47 and [native package authentication](host-compatibility.md), the official
+Vere4.6 runtime, new comets/fakes, owned-key boot and stopped in-tree pier enrollment.
 The local moon has passed key boot/recovery; broader owned import/network and clean
 remote-host acceptance remain. This page describes source installation; published
 release binaries have a separate [bundle guide](release-install.md). For the disposable

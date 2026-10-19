@@ -1,6 +1,7 @@
 package hostsetup
 
 import (
+	"errors"
 	"os"
 	"os/user"
 	"strconv"
@@ -54,7 +55,7 @@ func InspectCurrentOwner() Report {
 
 func InspectOwner(name string) Report {
 	base := Inspect()
-	r := Report{SchemaVersion: 1, Deployment: "owner-user-rootless"}
+	r := Report{SchemaVersion: 1, Deployment: "owner-user-rootless", Compatibility: base.Compatibility}
 	for _, c := range base.Checks {
 		if c.ID == "binary-useradd" {
 			continue
@@ -71,6 +72,7 @@ func InspectOwner(name string) Report {
 	}
 	r.add("owner-account", "pass", "Runner and rootless containers will run as "+p.Name+" (UID "+strconv.FormatUint(uint64(p.UID), 10)+").")
 	installed, err := ownerhost.Load()
+	preserve := err == nil && installed != nil && installed.Version == p.Version && installed.Name == p.Name && installed.UID == p.UID && installed.GID == p.GID && installed.Home == p.Home
 	if err != nil || installed != nil && (installed.Name != p.Name || installed.UID != p.UID || installed.GID != p.GID || installed.Home != p.Home) {
 		r.add("account", "blocked", "Installed owner profile is invalid or belongs to another user; it was preserved.")
 	} else if installed != nil {
@@ -83,10 +85,15 @@ func InspectOwner(name string) Report {
 	passwd, e1 := os.ReadFile("/etc/passwd")
 	groups, e2 := os.ReadFile("/etc/group")
 	nss, _ := os.ReadFile("/etc/nsswitch.conf")
-	reservations, _ := os.ReadFile(SubIDReservationsPath)
+	reservations, reservationErr := os.ReadFile(SubIDReservationsPath)
 	uids, gids := LocalIDs(string(passwd), string(groups))
 	if e1 != nil || e2 != nil {
 		uids, gids = nil, nil
+	}
+	if preserve && uids != nil && gids != nil {
+		// The currently resolved installed owner is known even when its identity
+		// is absent from the local files; this does not enumerate external NSS.
+		uids, gids = append(uids, 0, uint64(p.UID)), append(gids, 0, uint64(p.GID))
 	}
 	for _, item := range []struct {
 		name string
@@ -95,13 +102,26 @@ func InspectOwner(name string) Report {
 		data, err := os.ReadFile("/etc/" + item.name)
 		status, detail := "unknown", "Cannot read subordinate ID allocation."
 		if err == nil {
-			status, detail = ValidateSubIDAuthority(string(nss), reservations, p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.name, item.ids)
+			status, detail = ownerSubIDStatus(string(nss), reservations, reservationErr, preserve, p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.name, item.ids)
 		}
-		if status == "missing" && LocalIdentityAuthority(string(nss)) {
+		if status == "missing" && preserve {
+			detail = "Installed-owner grants need explicit review; management updates preserve existing ranges and never allocate replacements."
+		} else if status == "missing" && LocalIdentityAuthority(string(nss)) {
 			detail = "Host setup will allocate a non-overlapping range for this existing user."
 		}
 		detail = strings.ReplaceAll(strings.ReplaceAll(detail, "Dedicated account", "Selected user"), "dedicated-account", "owner-user")
 		r.add(item.name, status, detail)
 	}
 	return r
+}
+
+func ownerSubIDStatus(nss string, reservations []byte, reservationErr error, preserve bool, name, text, uid, kind string, ids []uint64) (string, string) {
+	if preserve && FileSubIDAuthority(nss) && !LocalIdentityAuthority(nss) && errors.Is(reservationErr, os.ErrNotExist) {
+		status, detail := ValidateSubIDs(name, text, uid, ids)
+		if status != "pass" {
+			return status, detail
+		}
+		return "unknown", "Existing file grants pass known local checks only; external identity-domain collision safety remains unknown. Authorized management updates may preserve these grants without allocation. New grants still require explicit reserved authority."
+	}
+	return ValidateSubIDAuthority(nss, reservations, name, text, uid, kind, ids)
 }

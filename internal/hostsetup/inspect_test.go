@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"slices"
 	"strings"
+	"syscall"
 	"testing"
 	"testing/fstest"
 
@@ -26,37 +27,66 @@ func (f *fixtureFS) Open(path string) (fs.File, error) {
 	if f.denied[path] {
 		return nil, &fs.PathError{Op: "private-error", Path: "private-path", Err: fs.ErrPermission}
 	}
-	return f.files.Open(path)
+	file, err := f.files.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	return fixtureFile{file}, nil
 }
 
 func (f *fixtureFS) Stat(path string) (fs.FileInfo, error) {
 	if f.denied[path] {
 		return nil, &fs.PathError{Op: "private-error", Path: "private-path", Err: fs.ErrPermission}
 	}
-	return f.files.Stat(path)
+	info, err := f.files.Stat(path)
+	if err != nil {
+		return nil, err
+	}
+	return rootInfo{info}, nil
 }
+
+type rootInfo struct{ fs.FileInfo }
+
+func (rootInfo) Sys() any { return &syscall.Stat_t{} }
+
+type fixtureFile struct{ fs.File }
+
+func (f fixtureFile) Stat() (fs.FileInfo, error) {
+	info, err := f.File.Stat()
+	if err != nil {
+		return nil, err
+	}
+	return rootInfo{info}, nil
+}
+func (f fixtureFile) ReadDir(n int) ([]fs.DirEntry, error) { return f.File.(fs.ReadDirFile).ReadDir(n) }
 
 func fixture() (probe, *fixtureFS) {
 	f := &fixtureFS{files: fstest.MapFS{}, denied: map[string]bool{}}
 	f.files["etc/nsswitch.conf"] = &fstest.MapFile{Data: []byte("passwd: files\ngroup: files\nsubid: files\n"), Mode: 0644}
 	for path, text := range map[string]string{
-		"sys/fs/cgroup/cgroup.controllers":                 "cpuset cpu io memory hugetlb pids\n",
-		"proc/sys/kernel/unprivileged_userns_clone":        "1\n",
-		"proc/sys/user/max_user_namespaces":                "32768\n",
-		"etc/passwd":                                       "root:x:0:0:root:/root:/bin/bash\nurbit-runner:x:942:942:Private GECOS:/var/lib/urbit-runner:/usr/bin/nologin\ndesktop:x:1000:1000:Private Desktop:/home/desktop:/bin/bash\n",
-		"etc/group":                                        "root:x:0:\nurbit-runner:x:942:\nwheel:x:998:desktop\ndocker:x:997:desktop\n",
-		"etc/subuid":                                       "desktop:100000:65536\nurbit-runner:200000:65536\n",
-		"etc/subgid":                                       "1000:100000:65536\n942:200000:65536\n",
-		"var/lib/pacman/local/docker-29.7.2-1/desc":        "%NAME%\ndocker\n\n%VERSION%\n1:" + rootless.EngineVersion + "-1\n\n%DESC%\nDocker engine\n",
-		"var/lib/systemd/linger/urbit-runner":              "",
-		"etc/shadow":                                       "shadow-secret",
-		"home/desktop/.docker/config.json":                 "docker-config-secret",
-		"var/lib/urbit-runner/.docker/config.json":         "runner-config-secret",
-		"etc/docker/daemon.json":                           "daemon-config-secret",
-		"var/lib/pacman/local/docker-compose-9-1/desc":     "%NAME%\ndocker-compose\n\n%VERSION%\n9-1\n",
-		"var/lib/pacman/local/docker-buildx-9-1/desc":      "intentionally-invalid",
-		"var/lib/pacman/local/docker-rootless-9-1/desc":    "intentionally-invalid",
-		"var/lib/pacman/local/docker-rootless-extras/desc": "intentionally-invalid",
+		"sys/fs/cgroup/cgroup.controllers":                  "cpuset cpu io memory hugetlb pids\n",
+		"proc/sys/kernel/unprivileged_userns_clone":         "1\n",
+		"proc/sys/user/max_user_namespaces":                 "32768\n",
+		"etc/passwd":                                        "root:x:0:0:root:/root:/bin/bash\nurbit-runner:x:942:942:Private GECOS:/var/lib/urbit-runner:/usr/bin/nologin\ndesktop:x:1000:1000:Private Desktop:/home/desktop:/bin/bash\n",
+		"etc/group":                                         "root:x:0:\nurbit-runner:x:942:\nwheel:x:998:desktop\ndocker:x:997:desktop\n",
+		"etc/subuid":                                        "desktop:100000:65536\nurbit-runner:200000:65536\n",
+		"etc/subgid":                                        "1000:100000:65536\n942:200000:65536\n",
+		"var/lib/pacman/local/docker-29.7.2-1/desc":         "%NAME%\ndocker\n\n%VERSION%\n1:" + rootless.EngineVersion + "-1\n\n%DESC%\nDocker engine\n",
+		"var/lib/systemd/linger/urbit-runner":               "",
+		"etc/shadow":                                        "shadow-secret",
+		"home/desktop/.docker/config.json":                  "docker-config-secret",
+		"var/lib/urbit-runner/.docker/config.json":          "runner-config-secret",
+		"etc/docker/daemon.json":                            "daemon-config-secret",
+		"var/lib/pacman/local/docker-compose-9-1/desc":      "%NAME%\ndocker-compose\n\n%VERSION%\n9-1\n",
+		"var/lib/pacman/local/docker-buildx-9-1/desc":       "%NAME%\ndocker-buildx\n\n%VERSION%\n9-1\n",
+		"var/lib/pacman/local/docker-rootless-9-1/desc":     "%NAME%\ndocker-rootless\n\n%VERSION%\n9-1\n",
+		"var/lib/pacman/local/docker-rootless-extras/desc":  "%NAME%\ndocker-rootless-extras\n\n%VERSION%\n9-1\n",
+		"var/lib/pacman/local/docker-29.7.2-1/files":        "%FILES%\nusr/bin/dockerd\nusr/bin/docker\n",
+		"var/lib/pacman/local/docker-compose-9-1/files":     "%FILES%\nusr/bin/docker-compose\n",
+		"var/lib/pacman/local/docker-buildx-9-1/files":      "%FILES%\nusr/bin/docker-buildx\n",
+		"var/lib/pacman/local/docker-rootless-9-1/files":    "%FILES%\nusr/bin/other-rootless\n",
+		"var/lib/pacman/local/docker-rootless-extras/files": "%FILES%\nusr/bin/other-extras\n",
+		"etc/os-release":                                    "ID=arch\n",
 	} {
 		f.files[path] = &fstest.MapFile{Data: []byte(text), Mode: 0644}
 	}
@@ -204,7 +234,7 @@ func TestAbsentVersusDeniedEvidence(t *testing.T) {
 		{"usr/bin/docker", "binary-docker", "missing"},
 		{"var/lib/systemd/linger/urbit-runner", "linger", "missing"},
 		{"run/user/942/urbit-docker.sock", "account-socket", "missing"},
-		{"var/lib/pacman/local/docker-29.7.2-1/desc", "docker-version", "missing"},
+		{"var/lib/pacman/local/docker-29.7.2-1/desc", "docker-version", "unknown"},
 	} {
 		t.Run(tc.id, func(t *testing.T) {
 			p, f := fixture()
@@ -294,7 +324,7 @@ func TestInspectionIsRedactedAndLeavesFixtureUnchanged(t *testing.T) {
 		}
 	}
 	for _, path := range f.opened {
-		if strings.Contains(path, "shadow") || strings.Contains(path, ".docker") || strings.Contains(path, "daemon.json") || strings.Contains(path, "docker-compose") || strings.Contains(path, "docker-buildx") || strings.Contains(path, "docker-rootless") || strings.HasPrefix(path, "usr/bin/") || strings.HasSuffix(path, ".sock") {
+		if strings.Contains(path, "shadow") || strings.Contains(path, ".docker") || strings.Contains(path, "daemon.json") || strings.HasPrefix(path, "usr/bin/") || strings.HasSuffix(path, ".sock") {
 			t.Fatalf("forbidden open: %s", path)
 		}
 	}

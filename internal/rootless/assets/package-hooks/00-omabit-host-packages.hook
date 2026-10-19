@@ -1,0 +1,13 @@
+# Omabit native package transaction hook, format 1.
+# Runs before conventional post-transaction package-cache cleanup hooks.
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Refreshing Omabit native package authentication evidence...
+When = PostTransaction
+Exec = /usr/local/lib/urbit-runner/package-hooks/refresh-host-packages

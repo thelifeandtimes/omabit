@@ -1,4 +1,4 @@
-# Omabit 0.1.0-rc.12 binary bundle
+# Omabit 0.1.0-rc.13 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
@@ -13,6 +13,13 @@ RC.7 retains management and the separate rootless Docker engine as the existing 
 owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
 user-owned files. Storage/import/deletion and bounded reboot resume continue.
 This remains a development prerelease.
+
+RC.13 introduces **schema21** and distribution-native host compatibility: stable
+Docker27.2.0–29.x, API1.47 checks, native Pacman/Debian/Ubuntu authentication,
+package-refresh hooks and shared headless/fleet/UI reporting. See
+[RC.13 notes](https://github.com/thelifeandtimes/omabit/blob/v0.1.0-rc.13/docs/release-rc13.md).
+Fresh-install acceptance on two Omarchy versions is pending user testing; compatible
+does not mean every engine/distro stack is live-runtime-qualified.
 
 RC.12 hardens storage/recovery, identity/replay, credentials and release/update
 contracts after the adversarial review, retaining the existing desktop layout and
@@ -80,27 +87,31 @@ for first-time host setup. Terminal equivalent:
 ```
 
 Prerequisites: Omarchy/Quickshell and Python 3 for the desktop; Linux x86-64,
-systemd/cgroup v2, Docker 29.7.2, RootlessKit, slirp4netns and OpenSSH for hosting.
+systemd/cgroup v2, stable Docker27.2.0–29.x with API1.47, RootlessKit, slirp4netns
+and OpenSSH for hosting. Native package authenticity and host identity checks apply;
+see [host compatibility](https://github.com/thelifeandtimes/omabit/blob/v0.1.0-rc.13/docs/host-compatibility.md).
 The setup flow verifies prerequisites and uses the selected existing Unix user.
 It does not install OS packages or replace unrelated Docker installations.
 
 ## Update an already configured local runner
 
 RC.10/RC.11 owner-user hosts first use the new executable's explicit
-[one-time offline upgrade](https://github.com/thelifeandtimes/omabit/blob/v0.1.0-rc.12/docs/management-offline-upgrade.md). That procedure stops
+[one-time offline upgrade](https://github.com/thelifeandtimes/omabit/blob/v0.1.0-rc.13/docs/management-offline-upgrade.md). That procedure stops
 only management, preserves running runtime containers, holds the existing state
 lock and commits migration/admission fencing transactionally. It does not reset or
 re-enroll piers. The ordinary command safely refuses an online historical manager
 that lacks quiescence support.
 
-Subsequent quiescence-aware updates reuse the reviewed rootless bundle and operator
-public key with the ordinary owner installer below. They preserve owner, runner
+RC.12/schema20 and subsequent quiescence-aware updates use a new rootless bundle
+prepared by the target executable and the existing operator public key with the
+ordinary owner installer below. Old RC.12 guard/unit templates do not match RC.13.
+Updates preserve owner, runner
 identity, SSH keys/grants and running containers. Retained generations and the
 activation journal provide repeat-command recovery and schema-compatible rollback.
-Schema **20** reads historical schemas11–19 without rewriting original bodies or
+Schema **21** reads historical schemas11–20 without rewriting original bodies or
 receipts; older runners refuse it. Database readability does not migrate OS accounts
-or pier locations: the qualified initial host bridge is owner-user schema19.
-See the [published-release support matrix](https://github.com/thelifeandtimes/omabit/blob/v0.1.0-rc.12/docs/reviews/2026-10-18-rc12-historical-upgrades.md).
+or pier locations. Source tests cover owner-user schema19 offline and schema20 online
+updates; see the [upgrade procedure and scope](https://github.com/thelifeandtimes/omabit/blob/v0.1.0-rc.13/docs/host-compatibility-upgrades.md).
 The historical `install-services.sh` refuses owner installations.
 
 ## Install or update a headless runner
@@ -115,7 +126,7 @@ sudo ./build/urbit-runner install-host --owner "$USER" \
   --acknowledge-host-changes
 ```
 
-For an existing host, reuse its reviewed rootless bundle and public operator key.
+Choose a new bundle output directory and reuse the existing host's public operator key.
 The install receipt supplies the stable runner ID and management SSH host key;
 verify/pin these when enrolling the host in the collector. Management SSH is a
 restricted RPC endpoint, not a general shell or SFTP service.
@@ -129,7 +140,7 @@ bootstrap selection to Vere. Recommended Apps now defaults to the supplied URL:
 
 An operator may override that URL in plugin settings.
 The built-in URL is a compatibility alias for the immutable RC.11 pill artifact,
-whose SHA-256 and size are compiled into the RC.12 collector. RC.12 republishes the
+whose SHA-256 and size are compiled into the RC.13 collector. RC.13 republishes the
 same supplied bytes; no new pill composition or application inventory is claimed.
 Network provisioning requires HTTPS. Custom HTTPS/local sources remain explicit
 operator inputs and can additionally supply `--pill-sha256` and `--pill-size`.

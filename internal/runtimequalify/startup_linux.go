@@ -26,6 +26,9 @@ func applyStartupResume(ctx context.Context, state ManagedState, persist func(Ma
 	if err != nil {
 		return state, unknown, err
 	}
+	if err := q.verifyEngine(ctx); err != nil {
+		return state, compatibilityObservation(state), err
+	}
 	mem, disk, err := q.d.admission(q.r.Directory)
 	if err != nil || mem < 5<<30 || disk < 8<<30 {
 		return state, unknown, errors.New("startup resume requires 5 GiB available RAM and 8 GiB disk")

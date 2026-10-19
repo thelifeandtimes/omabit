@@ -14,10 +14,10 @@ import (
 	"syscall"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/piercopy"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
-	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
@@ -73,7 +73,7 @@ func (q *qualifier) importSourceInfo(id string) (protocol.ImportSource, Result, 
 	if err != nil {
 		return s, r, err
 	}
-	if r.Profile != ProfileImport || !r.CheckpointPassed || !r.CleanupComplete || !r.LimitsObserved || !r.PierMetadataSeen || r.RuntimeQualified || r.PierImport == nil || r.Image != candidate.Image || !acceptedImageID(r.ImageID) || (r.RepoDigest != candidate.Image && r.RepoDigest != strings.TrimPrefix(candidate.Image, "docker.io/")) || r.EngineVersion != rootless.EngineVersion || r.Platform != candidate.Platform || r.VereVersion != candidate.VereVersion || r.PillSHA256 != q.d.pillSHA || r.PillBytes != q.d.pillBytes || r.PillURL != candidate.PillURL || r.PillPath != filepath.Join(r.Directory, candidate.PillName) {
+	if r.Profile != ProfileImport || !r.CheckpointPassed || !r.CleanupComplete || !r.LimitsObserved || !r.PierMetadataSeen || r.RuntimeQualified || r.PierImport == nil || r.Image != candidate.Image || !acceptedImageID(r.ImageID) || (r.RepoDigest != candidate.Image && r.RepoDigest != strings.TrimPrefix(candidate.Image, "docker.io/")) || !hostcompat.ValidateRecordedEngineVersion(r.EngineVersion) || r.Platform != candidate.Platform || r.VereVersion != candidate.VereVersion || r.PillSHA256 != q.d.pillSHA || r.PillBytes != q.d.pillBytes || r.PillURL != candidate.PillURL || r.PillPath != filepath.Join(r.Directory, candidate.PillName) {
 		return s, r, errors.New("source is not a completed pinned disposable-fake import qualification")
 	}
 	if err := q.priorReport(id); err != nil {
@@ -202,7 +202,7 @@ func applyImportedFake(ctx context.Context, state ManagedState, persist func(Man
 	state.Import.StartedAt = &now
 	state.Import.Uncertain = true
 	state.Prepared = true
-	q.r = Result{Profile: ProfileHTTP, RunID: state.ID, Directory: dir, Image: candidate.Image, ImageID: report.ImageID, RepoDigest: report.RepoDigest, Platform: candidate.Platform, EngineVersion: rootless.EngineVersion, VereVersion: candidate.VereVersion, PillURL: candidate.PillURL, PillSHA256: d.pillSHA, PillBytes: d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
+	q.r = Result{Profile: ProfileHTTP, RunID: state.ID, Directory: dir, Image: candidate.Image, ImageID: report.ImageID, RepoDigest: report.RepoDigest, Platform: candidate.Platform, EngineVersion: catalogue.engineEvidence.Version, VereVersion: candidate.VereVersion, PillURL: candidate.PillURL, PillSHA256: d.pillSHA, PillBytes: d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
 	if err := q.save(); err != nil {
 		return finish(err)
 	}

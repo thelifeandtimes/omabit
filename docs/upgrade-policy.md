@@ -35,6 +35,17 @@ The current repeated fresh-install exercises are development qualification only.
 
 ## Development runtime settings
 
+The **RC.13** host-compatibility work advances to **schema21**. It
+accepts schemas11–20 without rewriting historical instance bodies, signatures or
+receipts, and adds genuine RC.12/schema20 writer fixtures. New container records
+carry the observed engine version; historical omitted fields remain omitted.
+Older runners must refuse the successor rather than discard this evidence or
+apply obsolete engine-admission assumptions. See
+[host compatibility](host-compatibility.md) and its
+[upgrade procedure](host-compatibility-upgrades.md). Source and isolated
+native-package verification do not qualify every new runtime/distro combination;
+the [RC.13 notes](release-rc13.md) and attached qualification record define its scope.
+
 The post-RC.11 source remediation advances to **schema20**, accepting existing
 schemas11–19 without resetting instances or receipts. The new version fences
 older runners from ignoring durable management-update admission, object-bound

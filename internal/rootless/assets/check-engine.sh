@@ -1,8 +1,9 @@
 #!/bin/sh
 # Review artifact: only the installed dedicated-account service executes this check.
 set -eu
-PATH=/usr/bin:/bin
-export PATH
+PATH=@SAFE_PATH@
+LC_ALL=C
+export PATH LC_ALL
 
 fail() {
 	printf '%s\n' "$1" >&2
@@ -18,17 +19,63 @@ $account
 EOF
 [ "$home" = '@HOME@' ] || fail 'Unexpected passwd home for the dedicated account.'
 
-[ -f /usr/bin/dockerd ] && [ -x /usr/bin/dockerd ] || fail 'Missing /usr/bin/dockerd.'
-[ "$(stat -Lc %u /usr/bin/dockerd)" = 0 ] || fail '/usr/bin/dockerd must be root-owned.'
-permissions=$(stat -Lc %a /usr/bin/dockerd) || fail 'Cannot inspect dockerd permissions.'
-[ "$((0$permissions & 022))" -eq 0 ] || fail '/usr/bin/dockerd must not be group/world writable.'
-version=$(/usr/bin/dockerd --version) || fail 'Cannot read the Docker engine version.'
+# Native packages are authenticated by the OS-authorized installer. This boot
+# guard checks local root trust, not publisher signatures or dpkg/MD5 metadata.
+trusted() {
+	[ ! -L "$1" ] || fail 'Unexpected symlink in trusted engine path.'
+	[ "$(stat -c %u "$1")" = 0 ] || fail 'Engine paths must be root-owned.'
+	permissions=$(stat -c %a "$1") || fail 'Cannot inspect trusted permissions.'
+	[ "$((0$permissions & 022))" -eq 0 ] || fail 'Engine paths must not be group/world writable.'
+}
+for directory in / /usr /usr/bin /usr/local /usr/local/lib /usr/local/lib/urbit-runner /usr/local/lib/urbit-runner/rootless '@INSTALL_DIR@'; do
+	[ -d "$directory" ] || fail 'Missing trusted engine directory.'
+	trusted "$directory"
+done
+native_path() {
+	native=/usr/bin/$1
+	if [ ! -e "$native" ] && [ ! -L "$native" ]; then
+		trusted /usr/sbin
+		native=/usr/sbin/$1
+	fi
+	resolved=$native
+	depth=0
+	while [ -L "$resolved" ]; do
+		[ "$depth" -lt 6 ] || fail 'Native executable alias loop.'
+		depth=$((depth + 1))
+		[ "$(stat -c %u "$resolved")" = 0 ] || fail 'Native aliases must be root-owned.'
+		target=$(readlink "$resolved") || fail 'Cannot read native alias.'
+		case "$target" in
+			/*) ;;
+			*[!a-zA-Z0-9_.-]*) fail 'Unreviewed relative native alias.' ;;
+			*) target=${resolved%/*}/$target ;;
+		esac
+		case "$target" in
+			/usr/bin/"$1") trusted /usr/bin ;;
+			/usr/sbin/"$1") trusted /usr/sbin ;;
+			/etc/alternatives/iptables) [ "$1" = iptables ] || fail 'Unreviewed native alias.'; trusted /etc; trusted /etc/alternatives ;;
+			/usr/bin/iptables-nft|/usr/bin/iptables-legacy|/usr/bin/xtables-nft-multi|/usr/bin/xtables-legacy-multi) [ "$1" = iptables ] || fail 'Unreviewed native alias.'; trusted /usr/bin ;;
+			/usr/sbin/iptables-nft|/usr/sbin/iptables-legacy|/usr/sbin/xtables-nft-multi|/usr/sbin/xtables-legacy-multi) [ "$1" = iptables ] || fail 'Unreviewed native alias.'; trusted /usr/sbin ;;
+			*) fail 'Native alias leaves reviewed distribution paths.' ;;
+		esac
+		resolved=$target
+	done
+	[ -f "$resolved" ] && [ -x "$resolved" ] || fail 'Missing native executable.'
+	trusted "$resolved"
+}
+for helper in docker rootlesskit slirp4netns newuidmap newgidmap iptables; do
+	native_path "$helper"
+done
+native_path dockerd
+dockerd=$native
+version=$("$dockerd" --version) || fail 'Cannot read the Docker engine version.'
 case "$version" in
-	'Docker version @ENGINE_VERSION@, build '?*) ;;
-	*) fail 'Expected exactly Docker version @ENGINE_VERSION@.' ;;
+	'Docker version '*', build '?*) version=${version#Docker version }; version=${version%%, build *} ;;
+	*) fail 'Malformed Docker engine version.' ;;
 esac
+@ENGINE_VERSION_POLICY@
+engine_version_supported "$version" || fail 'Docker engine is outside supported stable API compatibility families.'
 
 launcher='@INSTALL_DIR@/dockerd-rootless.sh'
 [ -f "$launcher" ] || fail 'Missing pinned launcher.'
-[ "$(stat -Lc %u "$launcher")" = 0 ] || fail 'The installed launcher must be root-owned.'
+trusted "$launcher"
 printf '%s  %s\n' '@LAUNCHER_SHA256@' "$launcher" | sha256sum --check --status - || fail 'Launcher SHA-256 mismatch.'

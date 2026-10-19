@@ -142,6 +142,9 @@ func (i *installer) installOwnerOffline(ctx context.Context, bundle string, publ
 				if err != nil {
 					return result, err
 				}
+				if err := i.installPackageHooks(ctx, binary); err != nil {
+					return result, err
+				}
 				result.RunnerID, result.Mode, result.Ready = status.RunnerID, status.Mode, true
 				return result, nil
 			}
@@ -289,6 +292,9 @@ func (i *installer) installOwnerOffline(ctx context.Context, bundle string, publ
 	status, err := i.finishActivation(ctx, socket, j, j.Target, "complete")
 	if err != nil {
 		return result, fmt.Errorf("offline activation not verified; retain state/journal/generations and rerun --offline-upgrade: %w", err)
+	}
+	if err := i.installPackageHooks(ctx, binary); err != nil {
+		return result, err
 	}
 	result.RunnerID, result.Mode, result.Ready = status.RunnerID, status.Mode, true
 	return result, nil

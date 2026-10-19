@@ -21,6 +21,9 @@ import (
 func offlineOwnerFixture(t *testing.T) (*fixture, ownerhost.Profile, *sql.DB, string) {
 	t.Helper()
 	f, p, _ := ownerFixture(t)
+	// The historical fixture has running ships on an independent engine; the
+	// management-only bridge must not manufacture/start it by enabling a unit.
+	f.engineStarted()
 	profile, _ := json.Marshal(p)
 	f.put(ownerhost.Path, string(profile)+"\n", 0644)
 	f.put(managerUnit, string(ownerManagerUnit(p)), 0644)
@@ -133,7 +136,7 @@ func TestRC11OfflineSchema19UpgradePreservesStateAndRepeatedOnlinePath(t *testin
 		}
 		before[table] = body
 	}
-	result, err := f.i.installOwnerOffline(ctx, "/bundle", hostPublic(1), []byte("new-schema20-fixture"), p, nil)
+	result, err := f.i.installOwnerOffline(ctx, "/bundle", hostPublic(1), []byte("new-current-schema-fixture"), p, nil)
 	if err != nil || !result.Ready || result.RunnerID != "runner-"+strings.Repeat("a", 32) {
 		t.Fatal(result, err)
 	}
@@ -153,7 +156,7 @@ func TestRC11OfflineSchema19UpgradePreservesStateAndRepeatedOnlinePath(t *testin
 		t.Fatal(err)
 	}
 	for range 2 {
-		if r, err := f.i.installOwnerOffline(ctx, "/bundle", hostPublic(1), []byte("new-schema20-fixture"), p, nil); err != nil || !r.Ready {
+		if r, err := f.i.installOwnerOffline(ctx, "/bundle", hostPublic(1), []byte("new-current-schema-fixture"), p, nil); err != nil || !r.Ready {
 			t.Fatal(r, err)
 		}
 	}
@@ -162,7 +165,7 @@ func TestRC11OfflineSchema19UpgradePreservesStateAndRepeatedOnlinePath(t *testin
 	probe := func(context.Context, string) (protocol.Hello, bool, error) {
 		return protocol.Hello{RunnerID: result.RunnerID, Mode: result.Mode}, false, nil
 	}
-	if r, err := f.i.installOwner(ctx, "/bundle", hostPublic(1), []byte("new-schema20-fixture"), p, probe, nil); err != nil || !r.Ready {
+	if r, err := f.i.installOwner(ctx, "/bundle", hostPublic(1), []byte("new-current-schema-fixture"), p, probe, nil); err != nil || !r.Ready {
 		t.Fatal(r, err)
 	}
 	for _, c := range f.calls {

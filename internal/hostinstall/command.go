@@ -14,6 +14,7 @@ import (
 	"syscall"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 )
 
@@ -22,36 +23,75 @@ const (
 	maxOutput      = 1 << 20
 )
 
-var helpers = strings.Fields("dockerd docker rootlesskit slirp4netns newuidmap newgidmap useradd getsubids systemctl loginctl runuser id getent env nologin test")
+var helpers = strings.Fields("dockerd docker rootlesskit slirp4netns newuidmap newgidmap useradd getsubids systemctl loginctl runuser id getent env nologin test iptables")
 var hostHelpers = strings.Fields("sshd ssh-keygen usermod")
+var packageHookHelpers = strings.Fields("stat timeout pacman-conf apt-config")
 
 func (i *installer) helper(ctx context.Context, path string) error {
-	if filepath.Dir(path) != "/usr/bin" || (!slices.Contains(helpers, filepath.Base(path)) && !slices.Contains(hostHelpers, filepath.Base(path))) {
-		return fmt.Errorf("command is not an approved /usr/bin helper: %s", path)
+	_, err := i.resolveHelper(ctx, path)
+	return err
+}
+
+func (i *installer) resolveHelper(ctx context.Context, path string) (string, error) {
+	name := filepath.Base(path)
+	aliases := rootless.ExecutablePaths(name)
+	if !slices.Contains(aliases, path) || (!slices.Contains(helpers, name) && !slices.Contains(hostHelpers, name) && !slices.Contains(packageHookHelpers, name)) {
+		return "", fmt.Errorf("command is not an approved native helper: %s", path)
 	}
-	if err := i.parents(ctx, path, false); err != nil {
-		return err
-	}
-	info, err := i.lstat(i.path(path))
-	if errors.Is(err, os.ErrNotExist) {
-		hint := "install its repository package, then rerun urbit-runner preflight"
-		if path == "/usr/bin/rootlesskit" || path == "/usr/bin/slirp4netns" {
-			hint = "install repository packages rootlesskit and slirp4netns, then rerun urbit-runner preflight"
+	for _, candidate := range aliases {
+		if err := i.parents(ctx, candidate, false); err != nil {
+			return "", err
 		}
-		return fmt.Errorf("missing prerequisite %s: %s", path, hint)
+		_, err := i.lstat(i.path(candidate))
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return "", fmt.Errorf("inspect prerequisite %s: %w", candidate, err)
+		}
+		current := candidate
+		for depth := 0; depth < 6; depth++ {
+			if err := i.parents(ctx, current, false); err != nil {
+				return "", err
+			}
+			info, err := i.lstat(i.path(current))
+			uid, _, ok := ownership(info)
+			if err != nil || !ok || uid != 0 {
+				return "", fmt.Errorf("unsafe native helper %s", current)
+			}
+			if info.Mode()&os.ModeSymlink != 0 {
+				target, err := os.Readlink(i.path(current))
+				if err != nil {
+					return "", err
+				}
+				if !filepath.IsAbs(target) {
+					target = filepath.Join(filepath.Dir(current), target)
+				}
+				target = filepath.Clean(target)
+				if !rootless.ExecutableLink(name, current, target) {
+					return "", fmt.Errorf("unapproved native helper alias %s", current)
+				}
+				current = target
+				continue
+			}
+			if !info.Mode().IsRegular() || info.Mode().Perm()&0111 == 0 || info.Mode().Perm()&0022 != 0 {
+				return "", fmt.Errorf("%s must be a regular root-owned executable without group/world write", current)
+			}
+			// Invoke the validated alias: xtables dispatch depends on argv[0].
+			return candidate, nil
+		}
+		return "", errors.New("native helper alias loop")
 	}
-	if err != nil {
-		return fmt.Errorf("inspect prerequisite %s: %w", path, err)
+	hint := "install its native repository package"
+	if name == "rootlesskit" || name == "slirp4netns" {
+		hint = "install native repository packages rootlesskit and slirp4netns"
 	}
-	uid, _, ok := ownership(info)
-	if !ok || !info.Mode().IsRegular() || uid != 0 || info.Mode().Perm()&0111 == 0 || info.Mode().Perm()&0022 != 0 {
-		return fmt.Errorf("%s must already be a regular root-owned executable, not a symlink or group/world writable", path)
-	}
-	return nil
+	return "", fmt.Errorf("missing prerequisite %s (including reviewed native aliases): %s, then rerun urbit-runner preflight", path, hint)
 }
 
 func (i *installer) command(ctx context.Context, path string, args ...string) ([]byte, error) {
-	if err := i.helper(ctx, path); err != nil {
+	resolved, err := i.resolveHelper(ctx, path)
+	if err != nil {
 		return nil, err
 	}
 	ctx, cancel := context.WithTimeout(ctx, commandTimeout)
@@ -60,8 +100,8 @@ func (i *installer) command(ctx context.Context, path string, args ...string) ([
 		return nil, err
 	}
 	// Do not inherit Docker overrides, proxies, loader settings, or a caller's bus.
-	env := []string{"PATH=/usr/bin:/bin", "HOME=/root", "LANG=C", "LC_ALL=C", "SYSTEMD_PAGER=", "SYSTEMD_PAGERSECURE=1", "SYSTEMD_COLORS=0"}
-	out, err := i.run(ctx, path, args, env)
+	env := []string{"PATH=" + rootless.SafePath, "HOME=/root", "LANG=C", "LC_ALL=C", "SYSTEMD_PAGER=", "SYSTEMD_PAGERSECURE=1", "SYSTEMD_COLORS=0"}
+	out, err := i.run(ctx, resolved, args, env)
 	if ctx.Err() != nil {
 		err = errors.Join(ctx.Err(), err)
 	}
@@ -80,9 +120,13 @@ func (i *installer) asAccount(ctx context.Context, path string, args ...string) 
 			return nil, err
 		}
 	}
+	resolved, err := i.resolveHelper(ctx, path)
+	if err != nil {
+		return nil, err
+	}
 	return i.command(ctx, "/usr/bin/runuser", append([]string{
 		"-u", rootless.AccountName, "--", "/usr/bin/env", "-i",
-		"HOME=" + rootless.HomeDir, "PATH=/usr/bin:/bin", path,
+		"HOME=" + rootless.HomeDir, "PATH=" + rootless.SafePath, "DOCKER_API_VERSION=" + hostcompat.APIVersion, resolved,
 	}, args...)...)
 }
 

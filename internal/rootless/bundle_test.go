@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -242,7 +243,7 @@ func TestPrepareBundle(t *testing.T) {
 					if err != nil || !bytes.Equal(data, fixture) {
 						t.Fatalf("modified upstream file %s: %v", file.Name, err)
 					}
-				} else if bytes.Contains(data, []byte("@")) {
+				} else if regexp.MustCompile(`@[A-Z_]+@`).Match(data) {
 					t.Fatalf("unexpanded placeholder in %s", file.Name)
 				}
 			}
@@ -552,7 +553,7 @@ func TestRenderedAssetsAndShellSyntax(t *testing.T) {
 	unit := string(data)
 	for _, line := range []string{
 		"ConditionUser=" + AccountName, "Requires=dbus.socket", "After=dbus.socket",
-		"Type=notify", "NotifyAccess=all", "Environment=PATH=/usr/bin:/bin", "Environment=HOME=" + HomeDir,
+		"Type=notify", "NotifyAccess=all", "Environment=PATH=" + SafePath, "Environment=HOME=" + HomeDir,
 		"Environment=DOCKERD=/usr/bin/dockerd", "Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_NET=slirp4netns",
 		"Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_PORT_DRIVER=builtin", "Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_STATE_DIR=%t/urbit-rootlesskit",
 		"ExecStartPre=" + InstallDir + "/check-engine.sh",
@@ -573,7 +574,7 @@ func TestRenderedAssetsAndShellSyntax(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, required := range []string{"\"$1\"", "id -u", "id -un", "'" + AccountName + "'", "'" + HomeDir + "'", "stat -Lc %u /usr/bin/dockerd", "/usr/bin/dockerd --version", "'Docker version " + EngineVersion + ", build '?*)", LauncherSHA256, InstallDir + "/dockerd-rootless.sh", "sha256sum --check --status -"} {
+	for _, required := range []string{"\"$1\"", "id -u", "id -un", "'" + AccountName + "'", "'" + HomeDir + "'", "stat -c %u", "native_path dockerd", `"$dockerd" --version`, `engine_version_supported "$version"`, LauncherSHA256, InstallDir + "/dockerd-rootless.sh", "sha256sum --check --status -"} {
 		if !strings.Contains(string(data), required) {
 			t.Errorf("missing preflight check %q", required)
 		}

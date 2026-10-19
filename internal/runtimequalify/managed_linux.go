@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/epochs"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
-	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
@@ -143,6 +143,9 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 	q.base = filepath.Join(d.home, ".local/share/urbit-runner/managed")
 	dir := filepath.Join(q.base, state.ID)
 	if state.Prepared {
+		if q.r.EngineVersion != "" && !hostcompat.ValidateRecordedEngineVersion(q.r.EngineVersion) {
+			return nil, errors.New("invalid recorded provisioning engine version")
+		}
 		if q.r.RunID != state.ID || q.r.Directory != dir || q.r.PillPath != filepath.Join(dir, candidate.PillName) || q.r.Profile != d.profile ||
 			q.r.Image != candidate.Image || q.r.VereVersion != candidate.VereVersion || q.r.PillSHA256 != d.pillSHA || q.r.PillBytes != d.pillBytes || q.r.PillURL != q.pillSource() {
 			return nil, errors.New("managed runtime state does not match its registered identity and candidate")
@@ -151,6 +154,9 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 			return nil, errors.New("unexpected managed container inventory")
 		}
 		for _, c := range q.r.Containers {
+			if c.EngineVersion != "" && !hostcompat.ValidateRecordedEngineVersion(c.EngineVersion) {
+				return nil, errors.New("invalid recorded launch engine version")
+			}
 			entry, args := baseCommand(c.Kind)
 			if !protocol.ValidRecordedLoom(protocol.EffectiveLoom(c.Loom)) || c.NativeControl && (entry != "/bin/urbit" || len(args) == 0 || args[0] != "-t") {
 				return nil, errors.New("invalid recorded runtime settings")
@@ -182,6 +188,14 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 }
 
 func applyManaged(ctx context.Context, action string, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
+	state, obs, err := applyManagedAction(ctx, action, state, persist, d)
+	if errors.Is(err, ErrHostCompatibility) {
+		obs = compatibilityObservation(state)
+	}
+	return state, obs, err
+}
+
+func applyManagedAction(ctx context.Context, action string, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
 	if action == "delete-pier" {
 		return applyPierDeletion(ctx, state, persist, d)
@@ -245,7 +259,6 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 			return state, unknown, err
 		}
 	}
-	state.Epochs = nil
 	q, err := managedSession(&state, persist, d)
 	if err != nil {
 		return state, unknown, err
@@ -254,7 +267,7 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		state.Runtime = q.r
 		return state, obs, err
 	}
-	if err := q.boundary(); err != nil {
+	if err := q.accountBoundary(false); err != nil {
 		return finish(unknown, err)
 	}
 	if action != "stop" && state.Initialized {
@@ -285,6 +298,18 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 	if action == "stop" && !state.Prepared {
 		return state, ManagedObservation{State: "uninitialized", Health: "unknown", RecoveryRequired: state.UncertainProvisioning()}, nil
 	}
+	// Admission precedes workspace creation, intent changes and maintenance.
+	// Stop may use an API-compatible unsupported family, but all controls remain
+	// bound to the recorded container identity below.
+	if err := q.verifyEngineAccess(ctx, action == "stop" || inspection); err != nil {
+		return finish(unknown, err)
+	}
+	state.Epochs = nil
+	if state.Prepared && action == "start" && q.r.EngineVersion == "" && recordedEngineEvidenceValid(q.r) {
+		// An offline enrollment has no original daemon observation. Its first
+		// runtime preparation supplies one; nonempty history remains immutable.
+		q.r.EngineVersion = q.engineEvidence.Version
+	}
 	if !state.Prepared {
 		dir := filepath.Join(q.base, state.ID)
 		if _, err := os.Lstat(dir); !errors.Is(err, os.ErrNotExist) {
@@ -293,7 +318,7 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		// Record ownership before creating storage, without adopting any existing
 		// path. An interruption here leaves a conservative recovery requirement.
 		q.r = Result{Profile: q.d.profile, RunID: state.ID, Directory: dir, Image: candidate.Image,
-			Platform: candidate.Platform, EngineVersion: rootless.EngineVersion, VereVersion: candidate.VereVersion,
+			Platform: candidate.Platform, EngineVersion: q.engineEvidence.Version, VereVersion: candidate.VereVersion,
 			PillURL: q.pillSource(), PillSHA256: q.d.pillSHA, PillBytes: q.d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
 		state.Prepared = true
 		if err := q.save(); err != nil {
@@ -312,9 +337,6 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		if err := q.owned(path, os.ModeDir, path == q.r.Directory || path == q.config); err != nil {
 			return finish(unknown, err)
 		}
-	}
-	if err := q.verifyEngine(ctx); err != nil {
-		return finish(unknown, err)
 	}
 	if pruning {
 		originalPersist := q.d.persist
@@ -391,7 +413,7 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 				return finish(unknown, err)
 			}
 		}
-		if managedMaintenanceUndispatched(state, q.r) {
+		if !q.restrictedEngine && managedMaintenanceUndispatched(state, q.r) {
 			previousStage := q.r.Stage
 			q.r.Stage = "stopped"
 			state.MaintenanceUncertain = false
@@ -594,6 +616,7 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 			return finish(unknown, errors.New("start requires at least 5 GiB available RAM and 8 GiB free disk immediately before dispatch"))
 		}
 	}
+	var bootDispatchIntent func() func()
 	if state.Comet != nil {
 		kind = "comet-resume"
 		if state.Adoption != nil && !state.Adoption.Verified {
@@ -601,15 +624,20 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 		}
 		if !state.Initialized {
 			kind = "comet-boot"
-			now := time.Now().UTC()
-			state.Comet.StartedAt = &now
-			state.Comet.Uncertain = true
-			if err := q.save(); err != nil {
-				return finish(unknown, err)
+			bootDispatchIntent = func() func() {
+				// Publish this fence atomically with the boot's dispatch marker,
+				// after create's final host admission and local preparation. A
+				// refused create must not leave a report-only provisioning fence.
+				now := time.Now().UTC()
+				previous := state.Comet
+				next := *previous
+				next.StartedAt, next.Uncertain = &now, true
+				state.Comet = &next
+				return func() { state.Comet = previous }
 			}
 		}
 	}
-	i, err := q.create(ctx, kind)
+	i, err := q.createWithDispatchIntent(ctx, kind, bootDispatchIntent)
 	if err != nil {
 		return finish(unknown, err)
 	}
@@ -738,6 +766,14 @@ func ObserveManaged(ctx context.Context, state ManagedState) (ManagedState, Mana
 }
 
 func observeManaged(ctx context.Context, state ManagedState, d dependencies) (ManagedState, ManagedObservation, error) {
+	state, obs, err := observeManagedRuntime(ctx, state, d)
+	if errors.Is(err, ErrHostCompatibility) {
+		obs = compatibilityObservation(state)
+	}
+	return state, obs, err
+}
+
+func observeManagedRuntime(ctx context.Context, state ManagedState, d dependencies) (ManagedState, ManagedObservation, error) {
 	if state.Handoff.Fenced() {
 		status := "moving"
 		if state.Handoff.State == "moved" {
@@ -763,7 +799,7 @@ func observeManaged(ctx context.Context, state ManagedState, d dependencies) (Ma
 	if err != nil {
 		return state, unknown, err
 	}
-	if err := q.verifyEngine(ctx); err != nil {
+	if err := q.verifyEngineAccess(ctx, true); err != nil {
 		return state, unknown, err
 	}
 	obs := ManagedObservation{State: "stopped", Health: "unknown", RecoveryRequired: !state.Initialized}

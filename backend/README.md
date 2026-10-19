@@ -27,6 +27,13 @@ allowing atomic cross-component changes without prematurely creating a public Go
 library API. The desktop-specific Go helper remains `cmd/omabit/`; its theme and
 clipboard features are not part of these generic executables.
 
+The [RC.13 host-compatibility implementation](../docs/host-compatibility.md)
+provides native Pacman/Debian/Ubuntu evidence and package verification, shared
+Docker API checks, local `host-check`, and collector fleet reports. Collector-only
+machines need no local Docker stack. Unknown host providers remain explicit;
+metadata compatibility and native-package tests do not imply full runtime/distro
+qualification. Source schema21 preserves historical records and fences older runners.
+
 Historical checkpoint documents refer to the old `cmd/urbit-*` source paths. Current
 build/package/CI commands use `backend/cmd/`; executable names and protocol/data
 identities have not changed.

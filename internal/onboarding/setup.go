@@ -15,6 +15,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostinstall"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostsetup"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
@@ -31,6 +32,7 @@ type Status struct {
 	Connection     *collection.Connection `json:"connection,omitempty"`
 	BrowserBase    string                 `json:"browser_base,omitempty"`
 	Hint           string                 `json:"hint,omitempty"`
+	Compatibility  *hostcompat.Report     `json:"compatibility,omitempty"`
 }
 
 type Event struct {
@@ -78,7 +80,9 @@ func Inspect(ctx context.Context, config string) (Status, error) {
 
 func inspect(ctx context.Context, config, dir string, d dependencies) (Status, error) {
 	s := Status{CanSetup: true, Checks: []hostsetup.Check{}, ExecutionModel: "owner-user", PierRoot: ownerhost.DefaultPiers}
-	for _, c := range d.inspect().Checks {
+	report := d.inspect()
+	s.Compatibility = report.Compatibility
+	for _, c := range report.Checks {
 		if c.ID == "account" {
 			s.HostPresent = c.Status == "pass"
 		}
@@ -101,16 +105,17 @@ func inspect(ctx context.Context, config, dir string, d dependencies) (Status, e
 	}
 	for _, name := range []string{"ssh", "ssh-keygen", "sshd", "pkexec"} {
 		c := hostsetup.Check{ID: "binary-" + name, Status: "pass", Detail: name + " is available"}
-		if !d.tool("/usr/bin/" + name) {
+		// Debian installs sshd in /usr/sbin. Resolve only fixed system paths;
+		// desktop PATH is not evidence for privileged host setup.
+		if !d.tool("/usr/bin/"+name) && !(name == "sshd" && d.tool("/usr/sbin/sshd")) {
 			c.Status = "missing"
-			c.Detail = "Install " + name + " before local setup"
+			c.Detail = "Install the native OS package providing " + name + " before local setup."
 			s.CanSetup = false
 		}
 		s.Checks = append(s.Checks, c)
 	}
-	if !s.CanSetup {
-		return s, nil
-	}
+	// Setup eligibility and an existing connection are independent. Package
+	// updates must not hide enrolled ships or suggest recreating their host.
 	data, err := readPrivate(filepath.Join(dir, "ready.json"), 16384)
 	if errors.Is(err, os.ErrNotExist) {
 		return s, nil
@@ -143,6 +148,20 @@ func inspect(ctx context.Context, config, dir string, d dependencies) (Status, e
 	s.Connection = &c
 	s.BrowserBase = "http://127.0.0.1"
 	return s, nil
+}
+
+func prerequisiteGuidance(s Status) string {
+	parts := []string{"Resolve the listed host checks with this distribution's native packages, then check again."}
+	if s.Compatibility != nil && len(s.Compatibility.Guidance) > 0 {
+		parts = append(parts, s.Compatibility.Guidance...)
+	} else {
+		for _, c := range s.Checks {
+			if c.Status != "pass" && c.Detail != "" {
+				parts = append(parts, c.Detail)
+			}
+		}
+	}
+	return strings.Join(parts, "\n")
 }
 
 func Setup(ctx context.Context, config string, emit func(Event)) (Status, error) {
@@ -179,7 +198,7 @@ func setup(ctx context.Context, config, dir, runner string, d dependencies, emit
 		return s, nil
 	}
 	if !s.CanSetup {
-		return s, errors.New("Install the listed prerequisites first. On Omarchy, use its package manager for docker, rootlesskit, slirp4netns and openssh; the supported Docker version is " + rootless.EngineVersion + ".")
+		return s, errors.New(prerequisiteGuidance(s))
 	}
 	if !executable(runner) {
 		return s, errors.New("The bundled urbit-runner is missing. Rebuild and reinstall the Omabit panel.")

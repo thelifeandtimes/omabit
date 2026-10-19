@@ -146,6 +146,12 @@ func observation(w io.Writer, v collection.Observation) {
 	if v.Error != nil {
 		fmt.Fprintf(w, "  %s: %s\n", cell(v.Error.Code), cell(v.Error.Message))
 	}
+	if v.HostCompatibilityStatus != "" {
+		fmt.Fprintf(w, "  Host compatibility: %s\n", cell(v.HostCompatibilityStatus))
+	}
+	if v.HostCompatibilityError != nil {
+		fmt.Fprintf(w, "  %s: %s\n", cell(v.HostCompatibilityError.Code), cell(v.HostCompatibilityError.Message))
+	}
 	if v.Snapshot != nil {
 		instances(w, v.Snapshot.Instances)
 		for _, incident := range v.Snapshot.Incidents {
@@ -164,6 +170,8 @@ func (o *output) Encode(value any) error {
 	var text strings.Builder
 	w := tabwriter.NewWriter(&text, 0, 4, 2, ' ', 0)
 	switch v := value.(type) {
+	case protocol.HostCompatibilityReport:
+		hostCompatibilityText(w, v)
 	case protocol.ErrorResponse:
 		fmt.Fprintf(w, "Error %s: %s\n", cell(v.Error.Code), cell(v.Error.Message))
 		if v.Error.CurrentRevision != nil {

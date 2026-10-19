@@ -10,8 +10,21 @@ running containers, pier paths, owner, access grants and SSH host identity.
 ## Exact one-time procedure
 
 Use the new schema20-or-later runner executable from the accepted release/source
-build, the existing verified rootless bundle, and an already enrolled operator's
-public key. The selected Unix owner must match `/etc/urbit-runner/owner.json`.
+build, a verified rootless bundle matching that executable, and an already enrolled
+operator's public key. The selected Unix owner must match
+`/etc/urbit-runner/owner.json`.
+
+For published RC.12/schema20, the existing verified bundle remains usable. For
+**RC.13/schema21**, prepare a new bundle as an ordinary user before
+the maintenance window; its generated guard/unit templates differ from RC.12:
+
+```sh
+/absolute/path/to/new/urbit-runner prepare-rootless \
+  --output /absolute/path/to/new/rootless-bundle
+```
+
+Use that output as `--bundle` below. See the
+[schema21 upgrade guide](host-compatibility-upgrades.md) for its support scope.
 
 1. In the existing manager, let operations finish and disable scheduled routines
    for the maintenance window. Resolve reported uncertain work before proceeding.
@@ -29,7 +42,7 @@ public key. The selected Unix owner must match `/etc/urbit-runner/owner.json`.
    ```sh
    sudo /absolute/path/to/new/urbit-runner install-host \
      --owner YOUR_EXISTING_OWNER \
-     --bundle /absolute/path/to/existing/verified-rootless-bundle \
+     --bundle /absolute/path/to/matching/verified-rootless-bundle \
      --public-key /absolute/path/to/existing/operator.pub \
      --acknowledge-host-changes --offline-upgrade
    ```
@@ -39,6 +52,14 @@ installer to cancel work or stop a running historical manager. If work raced the
 manual stop, the durable inspection refuses queued/running operations and retained
 uncertainty. Before migration, restart the original manager to finish/reconcile
 that work, then repeat the procedure. The refusal does not clear recovery records.
+
+For an RC.13/schema21 target, this bridge remains management-only and installs
+native package-refresh hooks after successful activation. It does not replace the
+existing engine guard or perform the normal setup's package authentication. Finish
+the separate [guard repair and package verification](host-compatibility-upgrades.md#old-docker2972-guard-and-package-authentication)
+with the new executable before admitting new runtime work. Guard repair verifies
+packages without starting/restarting the engine; any needed engine start/restart
+requires separate coordination.
 
 ## What the compatibility path verifies
 

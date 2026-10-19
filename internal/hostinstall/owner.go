@@ -16,6 +16,7 @@ import (
 
 	serviceunits "git.thechristophgroup.org/thelifeandtimes/omabit/deploy/systemd"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostsetup"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
@@ -42,13 +43,13 @@ func InstallOwnerHostWithOptions(ctx context.Context, bundle string, public []by
 	if e1 != nil || e2 != nil {
 		return HostResult{}, errors.New("invalid owner IDs")
 	}
-	if options.OfflineUpgrade {
-		installed, err := ownerhost.Load()
-		if err != nil || installed == nil || installed.Name != p.Name || installed.UID != p.UID || installed.GID != p.GID || installed.Home != p.Home {
-			return HostResult{}, errors.New("offline upgrade requires the existing installed owner identity")
-		}
-		p = *installed // retain the installed pier root, including custom paths
+	installed, err := ownerhost.Load()
+	if err != nil || installed != nil && (installed.Name != p.Name || installed.UID != p.UID || installed.GID != p.GID || installed.Home != p.Home) || options.OfflineUpgrade && installed == nil {
+		return HostResult{}, errors.New("setup requires the unchanged installed owner identity")
 	}
+	if installed != nil {
+		p = *installed
+	} // preserve custom registered pier roots
 	f, err := os.Open("/proc/self/exe")
 	if err != nil {
 		return HostResult{}, err
@@ -101,7 +102,14 @@ func ownerEngineCheck(template []byte, p ownerhost.Profile) []byte {
 }
 
 func (i *installer) ownerCommand(ctx context.Context, p ownerhost.Profile, path string, args ...string) ([]byte, error) {
-	return i.command(ctx, "/usr/bin/runuser", append([]string{"-u", p.Name, "--", "/usr/bin/env", "-i", "HOME=" + p.Home, "PATH=/usr/bin:/bin", "XDG_RUNTIME_DIR=/run/user/" + strconv.FormatUint(uint64(p.UID), 10), path}, args...)...)
+	resolved, err := i.resolveHelper(ctx, path)
+	if err != nil {
+		return nil, err
+	}
+	if err := i.helper(ctx, "/usr/bin/env"); err != nil {
+		return nil, err
+	}
+	return i.command(ctx, "/usr/bin/runuser", append([]string{"-u", p.Name, "--", "/usr/bin/env", "-i", "HOME=" + p.Home, "PATH=" + rootless.SafePath, "DOCKER_API_VERSION=" + hostcompat.APIVersion, "XDG_RUNTIME_DIR=/run/user/" + strconv.FormatUint(uint64(p.UID), 10), resolved}, args...)...)
 }
 
 func freeSubIDs(text string, ids []uint64) (uint64, error) {
@@ -218,13 +226,109 @@ func (i *installer) ownerMappings(ctx context.Context, p ownerhost.Profile) erro
 	return nil
 }
 
+// An installed owner's existing file grants are already delegated OS authority.
+// A management update may preserve that authority without proving completeness
+// of external NSS enumeration. This path is strictly read-only: missing/invalid
+// grants never fall through to allocation, including on a files-only host.
+// The public entrypoint resolves the current NSS identity; rebind the trusted
+// installed profile/home here and reject contradictory local owner records.
+func (i *installer) preserveOwnerMappings(ctx context.Context, p ownerhost.Profile) error {
+	data, err := i.readInstalled(ctx, ownerhost.Path, 8192)
+	if err != nil {
+		return err
+	}
+	var installed ownerhost.Profile
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	decoder.DisallowUnknownFields()
+	var extra any
+	if decoder.Decode(&installed) != nil || decoder.Decode(&extra) != io.EOF || installed.Validate() != nil || installed != p {
+		return errors.New("preserving subordinate IDs requires the exact installed owner profile and revision")
+	}
+	home, err := i.lstat(i.path(p.Home))
+	uid, _, ok := ownership(home)
+	if err != nil || !ok || !home.IsDir() || home.Mode()&os.ModeSymlink != 0 || uid != p.UID || home.Mode().Perm()&0022 != 0 {
+		return errors.New("preserving subordinate IDs requires the unchanged safely owned home")
+	}
+	nss, err := i.readInstalled(ctx, "/etc/nsswitch.conf", maxOutput)
+	if err != nil {
+		return fmt.Errorf("cannot establish subordinate-ID authority: %w", err)
+	}
+	if !hostsetup.FileSubIDAuthority(string(nss)) {
+		return errors.New("subordinate-ID authority is not file-backed; existing file grants cannot authorize preservation")
+	}
+	passwd, err := i.readInstalled(ctx, "/etc/passwd", maxOutput)
+	if err != nil {
+		return err
+	}
+	groups, err := i.readInstalled(ctx, "/etc/group", maxOutput)
+	if err != nil {
+		return err
+	}
+	uids, gids := hostsetup.LocalIDs(string(passwd), string(groups))
+	if uids == nil || gids == nil {
+		return errors.New("known local ID inventory is unavailable; subordinate IDs were preserved for review")
+	}
+	ownerRecords := 0
+	for _, line := range strings.Split(string(passwd), "\n") {
+		fields := strings.Split(line, ":")
+		if len(fields) != 7 || fields[0] != p.Name {
+			continue
+		}
+		ownerRecords++
+		u, ue := strconv.ParseUint(fields[2], 10, 32)
+		g, ge := strconv.ParseUint(fields[3], 10, 32)
+		if ownerRecords != 1 || ue != nil || ge != nil || u != uint64(p.UID) || g != uint64(p.GID) || fields[5] != p.Home {
+			return errors.New("local owner identity contradicts the installed profile; subordinate IDs were preserved for review")
+		}
+	}
+	// The selected NSS owner need not occur in the local files. Its known IDs
+	// still participate in collision checks; this is not global enumeration.
+	uids, gids = append(uids, 0, uint64(p.UID)), append(gids, 0, uint64(p.GID))
+	var reserved *hostsetup.SubIDReservations
+	if !hostsetup.LocalIdentityAuthority(string(nss)) {
+		data, err := i.readInstalled(ctx, hostsetup.SubIDReservationsPath, 8192)
+		if err == nil {
+			value, err := hostsetup.ParseSubIDReservations(data)
+			if err != nil {
+				return err
+			}
+			reserved = &value
+		} else if !errors.Is(err, os.ErrNotExist) {
+			return err
+		}
+		// No reservation is invented when absent. Global collision safety stays
+		// unknown; only unchanged existing authority is admitted for this update.
+	}
+	for _, item := range []struct {
+		name string
+		ids  []uint64
+	}{{"subuid", uids}, {"subgid", gids}} {
+		grant, err := i.readInstalled(ctx, "/etc/"+item.name, maxOutput)
+		if err != nil {
+			return err
+		}
+		status, detail := hostsetup.ValidateSubIDs(p.Name, string(grant), strconv.FormatUint(uint64(p.UID), 10), item.ids)
+		if reserved != nil {
+			span := reserved.UID
+			if item.name == "subgid" {
+				span = reserved.GID
+			}
+			status, detail = hostsetup.ValidateReservedSubIDs(p.Name, string(grant), strconv.FormatUint(uint64(p.UID), 10), item.ids, span)
+		}
+		if status != "pass" {
+			return fmt.Errorf("existing %s grants require explicit review; management updates never allocate subordinate IDs: %s", item.name, detail)
+		}
+	}
+	return nil
+}
+
 func verifyOwnerInfo(data []byte, p ownerhost.Profile) error {
 	var info struct {
 		ServerVersion, CgroupDriver, CgroupVersion, DockerRootDir string
 		SecurityOptions                                           []string
 	}
-	if len(data) > maxOutput || json.Unmarshal(data, &info) != nil || info.ServerVersion != rootless.EngineVersion || info.CgroupDriver != "systemd" || info.CgroupVersion != "2" || !slices.Contains(info.SecurityOptions, "name=rootless") || info.DockerRootDir != filepath.Join(p.Home, ".local/share/urbit-runner/docker") {
-		return errors.New("explicit owner engine must be rootless with the pinned version, cgroup v2 and isolated user data root")
+	if len(data) > maxOutput || json.Unmarshal(data, &info) != nil || hostcompat.EngineVersionStatus(info.ServerVersion) != "compatible" || info.CgroupDriver != "systemd" || info.CgroupVersion != "2" || !slices.Contains(info.SecurityOptions, "name=rootless") || info.DockerRootDir != filepath.Join(p.Home, ".local/share/urbit-runner/docker") {
+		return errors.New("explicit owner engine must be compatible and rootless with cgroup v2 and isolated user data root")
 	}
 	return nil
 }
@@ -235,6 +339,9 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 		return result, errors.New("owner setup requires root on Linux x86-64")
 	}
 	if err = p.Validate(); err != nil {
+		return result, err
+	}
+	if err = i.requireCompatibility(ctx); err != nil {
 		return result, err
 	}
 	if len(binary) == 0 || len(binary) > 128<<20 {
@@ -315,12 +422,33 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 	if err = syscall.Flock(int(lock.Fd()), syscall.LOCK_EX|syscall.LOCK_NB); err != nil {
 		return result, errors.New("another owner setup is running")
 	}
+	// Recheck classification under the setup lock: a preceding installer may
+	// have published/completed this owner since the initial read.
+	lockedOwner, lockedErr := i.readInstalled(ctx, ownerhost.Path, 8192)
+	if lockedErr == nil {
+		var previous ownerhost.Profile
+		if json.Unmarshal(lockedOwner, &previous) != nil || previous != p {
+			return result, errors.New("installed owner changed before setup acquired its lock")
+		}
+	} else if !errors.Is(lockedErr, os.ErrNotExist) || readErr == nil {
+		return result, errors.New("installed owner evidence disappeared or became unavailable; preserving it for review")
+	}
+	engineActivation, err := i.loadOwnerEngineActivation(ctx, p, lockedErr == nil)
+	if err != nil {
+		return result, err
+	}
+	initialEngineStart := engineActivation != nil && engineActivation.Stage == "prepared"
 	emit := func(step string) {
 		if progress != nil {
 			progress(step)
 		}
 	}
-	if err = i.ownerMappings(ctx, p); err != nil {
+	if lockedErr == nil {
+		err = i.preserveOwnerMappings(ctx, p)
+	} else {
+		err = i.ownerMappings(ctx, p)
+	}
+	if err != nil {
 		return result, err
 	}
 	if err = i.parents(ctx, p.Piers, true); err != nil {
@@ -344,47 +472,49 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 	if e != nil || !ok || !info.IsDir() || info.Mode()&os.ModeSymlink != 0 || u != p.UID || g != p.GID || info.Mode().Perm()&0022 != 0 {
 		return result, errors.New("default pier root already exists with incompatible ownership; it was not recursively changed")
 	}
+	if engineActivation != nil {
+		if err = i.saveOwnerEngineActivation(ctx, *engineActivation, false); err != nil {
+			return result, err
+		}
+	}
 	profile, _ := json.Marshal(p)
 	if err = i.installFile(ctx, ownerhost.Path, append(profile, '\n'), 0644, false); err != nil {
 		return result, err
 	}
 	emit("engine")
-	for _, name := range []string{"dockerd-rootless.sh", "check-engine.sh", "daemon.json", "LICENSE", "NOTICE"} {
+	for _, name := range []string{"dockerd-rootless.sh", "daemon.json", "LICENSE", "NOTICE"} {
 		mode := os.FileMode(0644)
 		if strings.HasSuffix(name, ".sh") {
 			mode = 0755
 		}
-		data, replace := files[name], false
-		if name == "check-engine.sh" {
-			data = ownerEngineCheck(data, p)
-			// A partial owner install from the initial development implementation
-			// may retain the exact verified legacy guard. Replace only that known
-			// content, never an administrator's modified engine check.
-			old, e := i.readInstalled(ctx, rootless.InstallDir+"/"+name, maxOutput)
-			replace = e == nil && bytes.Equal(old, files[name])
-		}
-		if err = i.installFile(ctx, rootless.InstallDir+"/"+name, data, mode, replace); err != nil {
+		if err = i.installFile(ctx, rootless.InstallDir+"/"+name, files[name], mode, false); err != nil {
 			return result, err
 		}
 	}
-	if err = i.installFile(ctx, unitPath, ownerEngineUnit(files[rootless.UnitName], p), 0644, false); err != nil {
+	if _, err = i.updateEngineGuard(ctx, files, &p, true); err != nil {
 		return result, err
 	}
 	manager := func(args ...string) error {
 		_, e := i.command(ctx, "/usr/bin/systemctl", append([]string{"--user", "--machine=" + p.Name + "@.host"}, args...)...)
 		return e
 	}
-	if _, err = i.command(ctx, "/usr/bin/loginctl", "enable-linger", p.Name); err != nil {
-		return result, err
-	}
-	i.mutated = true
-	if _, err = i.command(ctx, "/usr/bin/systemctl", "start", fmt.Sprintf("user@%d.service", p.UID)); err != nil {
-		return result, err
+	if initialEngineStart {
+		i.mutated = true // the service action can succeed even if acknowledgement is lost
+		if _, err = i.command(ctx, "/usr/bin/loginctl", "enable-linger", p.Name); err != nil {
+			return result, err
+		}
+		if _, err = i.command(ctx, "/usr/bin/systemctl", "start", fmt.Sprintf("user@%d.service", p.UID)); err != nil {
+			return result, err
+		}
 	}
 	if err = manager("daemon-reload"); err != nil {
 		return result, err
 	}
-	if err = manager("enable", "--now", rootless.UnitName); err != nil {
+	enable := []string{"enable", rootless.UnitName}
+	if initialEngineStart {
+		enable = []string{"enable", "--now", rootless.UnitName}
+	}
+	if err = manager(enable...); err != nil {
 		return result, err
 	}
 	engine := fmt.Sprintf("/run/user/%d/%s", p.UID, rootless.SocketName)
@@ -397,6 +527,14 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 	}
 	if err = verifyOwnerInfo(data, p); err != nil {
 		return result, err
+	}
+	if err = i.verifyEngineAPI(ctx, engine, &p, data); err != nil {
+		return result, err
+	}
+	if initialEngineStart {
+		if err = i.saveOwnerEngineActivation(ctx, *engineActivation, true); err != nil {
+			return result, err
+		}
 	}
 	socket := fmt.Sprintf("/run/user/%d/urbit-runner/runner.sock", p.UID)
 	activation, err := i.prepareActivation(ctx, p.Name, socket, p.UID, binary, probe)
@@ -475,6 +613,12 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 		if e != nil {
 			return result, e
 		}
+		if item.path == sshUnit {
+			data, e = i.nativeSSHUnit(ctx, data)
+			if e != nil {
+				return result, e
+			}
+		}
 		if err = i.installFile(ctx, item.path, data, 0644, false); err != nil {
 			return result, err
 		}
@@ -492,6 +636,11 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 	status, err := i.activateManagement(ctx, socket, activation, manager)
 	if err != nil {
 		return result, err
+	}
+	if activation.Stage == "complete" {
+		if err := i.installPackageHooks(ctx, binary); err != nil {
+			return result, err
+		}
 	}
 	result.RunnerID, result.Mode, result.SSHPort, result.Ready = status.RunnerID, status.Mode, SSHPort, true
 	return result, nil

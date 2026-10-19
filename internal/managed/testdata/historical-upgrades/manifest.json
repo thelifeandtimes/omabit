@@ -7,6 +7,13 @@
     "evidence": "source-tests-only"
   },
   "qualification_note": "docs/reviews/2026-10-18-rc12-historical-upgrades.md",
+  "development_test_target": {
+    "release": "unreleased",
+    "channel": "development",
+    "state_schema": 21,
+    "evidence": "source-tests-only"
+  },
+  "development_test_note": "The reader window and fixture inventory below test the unreleased development target. The RC.12/schema20 qualification target and linked historical evidence remain frozen; these tests do not qualify a new release or artifact.",
   "accepted_schema_window": [
     11,
     12,
@@ -16,7 +23,8 @@
     16,
     17,
     18,
-    19
+    19,
+    20
   ],
   "supported_release_scope": "database-reader",
   "supported_releases": [
@@ -96,6 +104,13 @@
       "fixture": "rc11.json",
       "source_commit": "abfff0529a19adc02cf9f4b93eeef78c645dfa8f",
       "host_upgrade": "owner-user-schema19-offline"
+    },
+    {
+      "release": "v0.1.0-rc.12",
+      "schema": 20,
+      "fixture": "rc12.json",
+      "source_commit": "1529c1335754d15c6efd03d77ce2af7ede3d48f0",
+      "host_upgrade": "owner-user-quiescence-online"
     }
   ],
   "host_upgrade": {
@@ -130,11 +145,12 @@
     "rc9.json",
     "preview18.json",
     "rc10.json",
-    "rc11.json"
+    "rc11.json",
+    "rc12.json"
   ],
   "unavailable_writers": {
-    "11": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. Consolidated commit 34d8ea55 advances schema1 directly to schema13, accepting 11/12 only as inputs. No RC.1-11 release writes schema11.",
-    "12": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. The schema13 writer accepts schema12 but does not produce it. No RC.1-11 release writes schema12.",
-    "17": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. Runtime-settings commit ba4ba805 advances schema16 directly to schema18. No RC.1-11 release writes schema17."
+    "11": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. Consolidated commit 34d8ea55 advances schema1 directly to schema13, accepting 11/12 only as inputs. No RC.1-12 release writes schema11.",
+    "12": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. The schema13 writer accepts schema12 but does not produce it. No RC.1-12 release writes schema12.",
+    "17": "Unpublished prototype: no original writer found in local objects/reflogs/stash or public omabit/tend history. Runtime-settings commit ba4ba805 advances schema16 directly to schema18. No RC.1-12 release writes schema17."
   }
 }

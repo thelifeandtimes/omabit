@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
-	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
@@ -31,7 +30,7 @@ func validateAmesPublication(ctx context.Context, state ManagedState, d dependen
 	if err != nil {
 		return err
 	}
-	if q.r.Platform != candidate.Platform || q.r.EngineVersion != rootless.EngineVersion ||
+	if q.r.Platform != candidate.Platform || !recordedEngineEvidenceValid(q.r) ||
 		q.r.ImageID != "" && (!acceptedImageID(q.r.ImageID) || q.r.RepoDigest != candidate.Image && q.r.RepoDigest != strings.TrimPrefix(candidate.Image, "docker.io/")) ||
 		q.r.ImageID == "" && q.r.RepoDigest != "" {
 		return errors.New("legacy runtime platform or image provenance requires review")

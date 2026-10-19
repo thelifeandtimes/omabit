@@ -85,6 +85,9 @@ Commands:
   inventory [--watch] [--interval 1s]
               Observe all enrolled runners; watch emits independent NDJSON updates.
   hello       Verify compatibility and show runner capabilities.
+  host-check [--format json|text]
+              Read cached native-package and live private-engine compatibility evidence.
+              Requires operator or observer access; no local Docker is needed.
   login-code INSTANCE --revision N --container-id FULL_ID --reveal
               Operator-only secret response; requires pinned --runner/--expected-runner-id.
   snapshot    Show the current runner snapshot.
@@ -153,6 +156,12 @@ Commands:
                Manage independent, origin-bound Eyre application sessions.
 
 Use --format text for readable tables, including watch output.
+For host-check, --format json|text is accepted before or after the subcommand.
+Package verification and guard repair are local root runner commands:
+  urbit-runner verify-host-packages --acknowledge-local-verification [--fetch-missing]
+  urbit-runner repair-engine-guard --acknowledge-host-changes [--fetch-missing]
+These local helpers default to offline verification. --fetch-missing permits native
+package download-only commands, never package installation, updates or key imports.
 Use COMMAND --help for command flags and constraints.
 
 `+scope)
@@ -177,6 +186,9 @@ Use COMMAND --help for command flags and constraints.
 	}
 	if command == "login-code" {
 		return runLoginCode(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if command == "host-check" {
+		return runHostCheck(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, stderr)
 	}
 	if command == "logs" {
 		return runLogs(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)

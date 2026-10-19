@@ -138,6 +138,7 @@ Item {
 
   function refresh() {
     if (busy) { refreshPending = true; return }
+    checkLocalSetup()
     clearEpochPreview()
     importCatalogue = null; pendingImportConnection = null
     refreshPending = false
@@ -687,7 +688,7 @@ Item {
     if (refreshPending || ((kind === "enroll" || kind === "runner-edit" || kind === "runner-accept-mode") && !lastError)) Qt.callLater(refresh)
   }
 
-  Component.onCompleted: { Qt.callLater(refresh); Qt.callLater(checkLocalSetup) }
+  Component.onCompleted: Qt.callLater(refresh)
   Component.onDestruction: pendingInput = ""
   Timer { interval: 1000; repeat: true; running: true; onTriggered: root.now = Date.now() }
   Timer {
@@ -740,7 +741,7 @@ Item {
   Process {
     id: localStatus
     objectName: "localSetupStatus"
-    stdout: SplitParser { splitMarker: ""; onRead: function(data) { if (root.localStatusOutput.length + data.length > 65536) { localStatus.signal(9); return } root.localStatusOutput += data } }
+    stdout: SplitParser { splitMarker: ""; onRead: function(data) { if (root.localStatusOutput.length + data.length > 131072) { localStatus.signal(9); return } root.localStatusOutput += data } }
     stderr: SplitParser { onRead: function(line) {} }
     onExited: function(code,status) {
       if (code === 0 && status === 0) {
@@ -834,7 +835,7 @@ Item {
     function maintenance(): void { root.openMonitor(null, null, "maintenance") }
     function setup(): void { root.openMonitor(null, null, "setup") }
     function refresh(): void { root.refresh() }
-    function status(): string { return JSON.stringify({version:"0.1.0-rc.12",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
+    function status(): string { return JSON.stringify({version:"0.1.0-rc.13",visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
     function close(): void { monitor.visible = false }
   }
   Process {

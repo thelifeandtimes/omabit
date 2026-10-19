@@ -19,6 +19,7 @@ import (
 	"testing"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
@@ -35,6 +36,8 @@ type fakeEngine struct {
 	events                 []string
 	leftover               bool
 	editInfo               func(map[string]any)
+	engine                 hostcompat.Engine
+	hostReport             hostcompat.Report
 	editImage              func(map[string]any)
 	editInspect            func(string, map[string]any)
 	cgroups, version, http string
@@ -121,6 +124,35 @@ func fixture(t *testing.T) *fakeEngine {
 		return candidate.Artifact{Path: path, SHA256: f.d.pillSHA, Bytes: f.d.pillBytes, URL: candidate.PillURL}, err
 	}
 	f.d.execute = f.execute
+	f.engine = hostcompat.Engine{Version: "29.7.2", APIVersion: "1.54", MinAPIVersion: "1.44", Rootless: true, CgroupDriver: "systemd", CgroupVersion: "2", DataRoot: filepath.Join(f.d.home, ".local/share/urbit-runner/docker")}
+	// Authentication is explicit fixture evidence, not a version inference.
+	// This distro/stack remains unqualified even though its bytes are verified.
+	f.hostReport = hostcompat.Report{Platform: "linux/amd64", InstalledEngineVersion: "29.7.2", Distribution: hostcompat.Distribution{ID: "fixture", Profile: "unqualified"}}
+	for _, role := range []string{"engine", "cli", "containerd", "oci-runtime", "rootlesskit", "network", "uidmap", "gidmap"} {
+		f.hostReport.Packages = append(f.hostReport.Packages, hostcompat.Package{Role: role, Name: "fixture-" + role, Version: "fixture", Provenance: "verified", Executables: []string{"/usr/bin/fixture-" + role}})
+	}
+	f.d.InspectHost = func() hostcompat.Report { return f.hostReport }
+	f.d.ProbeEngine = func(ctx context.Context, socket, dataRoot string) (hostcompat.Engine, error) {
+		if _, ok := ctx.Deadline(); !ok || socket != filepath.Join(f.d.runtimeDir, rootless.SocketName) || dataRoot != filepath.Join(f.d.home, ".local/share/urbit-runner/docker") {
+			t.Fatal("unbounded or misrouted engine probe")
+		}
+		f.events = append(f.events, "engine-api")
+		e := f.engine
+		// Retain the existing negative /info fixtures, now explicitly converted
+		// at the native probe seam alongside separate /version API evidence.
+		info := map[string]any{"ServerVersion": e.Version, "SecurityOptions": []string{"name=rootless"}, "CgroupDriver": e.CgroupDriver, "CgroupVersion": e.CgroupVersion, "DockerRootDir": e.DataRoot}
+		if f.editInfo != nil {
+			f.editInfo(info)
+		}
+		e.Version = info["ServerVersion"].(string)
+		e.CgroupDriver, e.CgroupVersion, e.DataRoot = info["CgroupDriver"].(string), info["CgroupVersion"].(string), info["DockerRootDir"].(string)
+		rootless := false
+		for _, option := range info["SecurityOptions"].([]string) {
+			rootless = rootless || option == "name=rootless"
+		}
+		e.Rootless = e.Rootless && rootless
+		return e, nil
+	}
 	f.d.stats = func(ctx context.Context, socket, id string) (string, error) {
 		if _, ok := ctx.Deadline(); !ok || socket != filepath.Join(f.d.runtimeDir, rootless.SocketName) {
 			t.Fatal("unbounded or misrouted stats read")
@@ -175,7 +207,7 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 	if filepath.Base(full[3]) != "docker-config" {
 		t.Fatalf("unsafe config: %q", full)
 	}
-	if !reflect.DeepEqual(env, []string{"HOME=" + f.d.home, "PATH=/usr/bin:/bin", "LANG=C"}) {
+	if !reflect.DeepEqual(env, []string{"HOME=" + f.d.home, "PATH=/usr/bin:/bin", "LANG=C", "DOCKER_API_VERSION=" + hostcompat.APIVersion}) {
 		t.Fatalf("inherited environment: %q", env)
 	}
 	args := append([]string(nil), full[4:]...)
@@ -186,13 +218,6 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 		}
 	}
 	switch args[0] {
-	case "info":
-		f.events = append(f.events, "info")
-		info := map[string]any{"ServerVersion": rootless.EngineVersion, "SecurityOptions": []string{"name=rootless", "name=seccomp,profile=builtin"}, "CgroupDriver": "systemd", "CgroupVersion": "2", "DockerRootDir": filepath.Join(f.d.home, ".local/share/urbit-runner/docker")}
-		if f.editInfo != nil {
-			f.editInfo(info)
-		}
-		return encode(t, info), nil
 	case "image":
 		if args[1] == "pull" {
 			f.events = append(f.events, "pull")
@@ -551,7 +576,7 @@ func TestSuccessCheckpointOrderAndIsolation(t *testing.T) {
 	if !reflect.DeepEqual(phases, []string{"engine", "image", "pill", "probe", "boot", "restart", "pack", "post-pack", "cleanup"}) {
 		t.Fatalf("progress leaked or missing: %q", phases)
 	}
-	want := []string{"info", "pull", "image-inspect", "download", "create-probe", "start-probe", "cgroups", "version", "stop-probe", "rm-probe", "create-boot", "start-boot", "http-boot", "stop-boot", "rm-boot", "create-restart", "start-restart", "http-restart", "stop-restart", "rm-restart", "create-pack", "start-pack", "wait-pack", "rm-pack", "create-post-pack", "start-post-pack", "http-post-pack", "stop-post-pack", "rm-post-pack"}
+	want := []string{"engine-api", "pull", "image-inspect", "download", "engine-api", "create-probe", "start-probe", "cgroups", "version", "stop-probe", "rm-probe", "engine-api", "create-boot", "start-boot", "http-boot", "stop-boot", "rm-boot", "engine-api", "create-restart", "start-restart", "http-restart", "stop-restart", "rm-restart", "engine-api", "create-pack", "start-pack", "wait-pack", "rm-pack", "engine-api", "create-post-pack", "start-post-pack", "http-post-pack", "stop-post-pack", "rm-post-pack"}
 	if !reflect.DeepEqual(f.events, want) {
 		t.Fatalf("wrong safety ordering\n%q", f.events)
 	}
@@ -659,7 +684,7 @@ func TestEngineRejectedBeforePullOrDownload(t *testing.T) {
 	for name, edit := range map[string]func(map[string]any){
 		"rootful":   func(d map[string]any) { d["SecurityOptions"] = []string{"name=notrootless"} },
 		"substring": func(d map[string]any) { d["SecurityOptions"] = []string{"name=rootless,untrusted=true"} },
-		"version":   func(d map[string]any) { d["ServerVersion"] = "29.7.1" },
+		"version":   func(d map[string]any) { d["ServerVersion"] = "30.0.0" },
 		"driver":    func(d map[string]any) { d["CgroupDriver"] = "cgroupfs" },
 		"v1":        func(d map[string]any) { d["CgroupVersion"] = "1" },
 		"rootdir":   func(d map[string]any) { d["DockerRootDir"] = "/var/lib/docker" },
@@ -668,7 +693,7 @@ func TestEngineRejectedBeforePullOrDownload(t *testing.T) {
 			f := fixture(t)
 			f.editInfo = edit
 			r, err := run(context.Background(), nil, f.d)
-			if err == nil || !reflect.DeepEqual(f.events, []string{"info"}) || f.downloads != 0 {
+			if err == nil || !reflect.DeepEqual(f.events, []string{"engine-api"}) || f.downloads != 0 {
 				t.Fatalf("engine accepted: %v %q", err, f.events)
 			}
 			assertReport(t, r)

@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostports"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
@@ -41,6 +42,8 @@ type dependencies struct {
 	stat             func(string) (node, error)
 	admission        func(string) (uint64, uint64, error)
 	execute          func(context.Context, []string, []string) (string, error)
+	ProbeEngine      func(context.Context, string, string) (hostcompat.Engine, error)
+	InspectHost      func() hostcompat.Report
 	stats            func(context.Context, string, string) (string, error)
 	logs             func(context.Context, string, string) (string, error)
 	portAvailable    func(string, uint16) bool
@@ -61,6 +64,8 @@ type qualifier struct {
 	uid, gid                    int
 	socket, base, config, phase string
 	progress                    func(string)
+	engineEvidence              hostcompat.Engine
+	restrictedEngine            bool
 }
 
 // Run has no runtime, image, identity, pier, shell or endpoint overrides. All
@@ -151,6 +156,7 @@ func defaults() dependencies {
 		profile: ProfileLifecycle, hostProbe: probeHostHTTP, hostIdentity: readHostIdentity,
 		home: home, identity: currentIdentity, stat: statNode,
 		admission: available, execute: executeDocker, download: candidate.DownloadPill,
+		ProbeEngine: hostcompat.ProbeEngine, InspectHost: hostcompat.InspectCurrent,
 		stats:         readDockerStats,
 		logs:          readDockerLogs,
 		portAvailable: hostports.Available,
@@ -213,8 +219,8 @@ func run(ctx context.Context, progress func(string), d dependencies) (result Res
 	}
 	q.r = Result{Profile: d.profile, RunID: id, Directory: dir, ReportPath: filepath.Join(dir, "report.json"),
 		Image: candidate.Image, Platform: candidate.Platform,
-		EngineVersion: rootless.EngineVersion, VereVersion: candidate.VereVersion,
-		PillURL: candidate.PillURL, PillSHA256: d.pillSHA, PillBytes: d.pillBytes,
+		VereVersion: candidate.VereVersion,
+		PillURL:     candidate.PillURL, PillSHA256: d.pillSHA, PillBytes: d.pillBytes,
 		PillPath: filepath.Join(dir, candidate.PillName), MemAvailableBytes: mem, DiskAvailableBytes: disk,
 		Phases: []Phase{}, Containers: []ContainerRecord{}}
 	q.config = filepath.Join(dir, "docker-config")
@@ -261,7 +267,7 @@ func run(ctx context.Context, progress func(string), d dependencies) (result Res
 		work         func(context.Context) error
 	}
 	steps := []step{
-		{"engine", "pinned private rootless engine; no leftover qualification containers", q.engine},
+		{"engine", "compatible private rootless engine; no leftover qualification containers", q.engine},
 		{"image", "candidate image ID, platform and repository digest verified", q.image},
 		{"pill", "local pill size and SHA-256 verified", q.pill},
 		{"probe", "live cgroup limits and Vere version verified", q.probe},

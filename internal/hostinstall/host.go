@@ -174,6 +174,9 @@ func (i *installer) installHost(ctx context.Context, bundle string, public, bina
 	if i.euid != 0 || i.goos != "linux" || i.goarch != "amd64" {
 		return result, errors.New("host setup requires root on Linux x86-64")
 	}
+	if err := i.requireCompatibility(ctx); err != nil {
+		return result, err
+	}
 	line, err := access.AuthorizedKey(public, "operator")
 	if err != nil {
 		return result, err
@@ -241,18 +244,11 @@ func (i *installer) installHost(ctx context.Context, bundle string, public, bina
 	}
 	// Existing installations must retain the pinned launcher. Configuration and
 	// unit edits remain the administrator's, rather than being overwritten blindly.
-	for _, name := range []string{"dockerd-rootless.sh", "check-engine.sh", "LICENSE", "NOTICE"} {
+	for _, name := range []string{"dockerd-rootless.sh", "LICENSE", "NOTICE"} {
 		data, err := i.readInstalled(ctx, rootless.InstallDir+"/"+name, maxOutput)
 		if err != nil || !bytes.Equal(data, files[name]) {
-			return result, fmt.Errorf("existing rootless artifact %s does not match the installed engine version", name)
+			return result, fmt.Errorf("existing rootless artifact %s does not match the pinned launcher bundle", name)
 		}
-	}
-	engineUnit, err := i.readInstalled(ctx, unitPath, maxOutput)
-	if err != nil {
-		return result, err
-	}
-	if !bytes.Equal(engineUnit, files[rootless.UnitName]) && !bytes.Equal(engineUnit, bytes.ReplaceAll(files[rootless.UnitName], []byte("TimeoutStopSec=360"), []byte("TimeoutStopSec=120"))) {
-		return result, errors.New("rootless service has local changes; preserving it")
 	}
 	daemon, err := i.readInstalled(ctx, rootless.InstallDir+"/daemon.json", maxOutput)
 	if err != nil {
@@ -261,18 +257,18 @@ func (i *installer) installHost(ctx context.Context, bundle string, public, bina
 	if !bytes.Equal(daemon, files["daemon.json"]) && strings.TrimSpace(string(daemon)) != "{}" {
 		return result, errors.New("dedicated Docker configuration has local changes; preserving it")
 	}
+	if _, err := i.updateEngineGuard(ctx, files, nil, false); err != nil {
+		return result, err
+	}
 	userManager := func(args ...string) error {
 		_, err := i.command(ctx, "/usr/bin/systemctl", append([]string{"--user", "--machine=" + rootless.AccountName + "@.host"}, args...)...)
 		return err
 	}
 	i.mutated = true // service activation may proceed even if its acknowledgement is lost
-	if _, err := i.command(ctx, "/usr/bin/loginctl", "enable-linger", rootless.AccountName); err != nil {
+	if err := userManager("daemon-reload"); err != nil {
 		return result, err
 	}
-	if _, err := i.command(ctx, "/usr/bin/systemctl", "start", fmt.Sprintf("user@%d.service", uid)); err != nil {
-		return result, err
-	}
-	if err := userManager("enable", "--now", rootless.UnitName); err != nil {
+	if err := userManager("enable", rootless.UnitName); err != nil {
 		return result, err
 	}
 	engineSocket := fmt.Sprintf("/run/user/%d/%s", uid, rootless.SocketName)
@@ -284,6 +280,9 @@ func (i *installer) installHost(ctx context.Context, bundle string, public, bina
 		return result, err
 	}
 	if err := verifyInfo(info); err != nil {
+		return result, err
+	}
+	if err := i.verifyEngineAPI(ctx, engineSocket, nil, info); err != nil {
 		return result, err
 	}
 	socket := fmt.Sprintf("/run/user/%d/urbit-runner/runner.sock", uid)
@@ -379,6 +378,12 @@ func (i *installer) installHost(ctx context.Context, bundle string, public, bina
 		if err != nil {
 			return result, err
 		}
+		if item.path == sshUnit {
+			data, err = i.nativeSSHUnit(ctx, data)
+			if err != nil {
+				return result, err
+			}
+		}
 		if err := i.installFile(ctx, item.path, data, 0644, false); err != nil {
 			return result, err
 		}
@@ -405,6 +410,11 @@ func (i *installer) installHost(ctx context.Context, bundle string, public, bina
 	status, err := i.activateManagement(ctx, socket, activation, userManager)
 	if err != nil {
 		return result, err
+	}
+	if activation.Stage == "complete" {
+		if err := i.installPackageHooks(ctx, binary); err != nil {
+			return result, err
+		}
 	}
 	result.RunnerID, result.Mode, result.SSHPort, result.Ready = status.RunnerID, status.Mode, SSHPort, true
 	return result, nil

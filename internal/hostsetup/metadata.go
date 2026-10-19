@@ -1,11 +1,11 @@
 package hostsetup
 
 import (
-	"io/fs"
 	"sort"
 	"strconv"
 	"strings"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 )
 
@@ -78,83 +78,19 @@ func ValidateSubIDs(name, text, uid string, hostIDs []uint64) (string, string) {
 }
 
 func (p probe) engineVersion() (string, string) {
-	info, err := fs.Stat(p.files, "var/lib/pacman/local")
-	if err != nil || !info.IsDir() {
-		return "unknown", "Pacman package database is unavailable or not a directory; Docker version is unknown."
+	return engineVersionCheck(hostcompat.Inspect(p.files, p.goos, p.goarch))
+}
+
+// Preserve the original check ID/status vocabulary for older CLI consumers.
+// A pass here describes version compatibility only, never payload authentication.
+func engineVersionCheck(report hostcompat.Report) (string, string) {
+	if report.InstalledEngineVersion == "" {
+		return "unknown", "Native package engine version is unresolved; review compatibility checks and platform guidance. No executable was run."
 	}
-	entries, err := fs.ReadDir(p.files, "var/lib/pacman/local")
-	if err != nil {
-		return "unknown", "Pacman package metadata is unavailable; Docker version is unknown and no program was executed."
+	switch hostcompat.EngineVersionStatus(report.InstalledEngineVersion) {
+	case "compatible", "qualified", "compatible-unqualified":
+		return "pass", "Native package engine version meets compatibility policy; payload authenticity, running engine and full-stack qualification are separate checks."
+	default:
+		return "blocked", "Native package engine version is outside the supported compatibility policy; review platform guidance."
 	}
-	version := ""
-	for _, entry := range entries {
-		suffix, match := strings.CutPrefix(entry.Name(), "docker-")
-		// Only engine version directories, not compose/buildx/rootless packages.
-		if !match || suffix == "" || suffix[0] < '0' || suffix[0] > '9' {
-			continue
-		}
-		text, err := p.read("var/lib/pacman/local/" + entry.Name() + "/desc")
-		if err != nil {
-			return "unknown", "Docker package metadata is unreadable or invalid."
-		}
-		name, candidate := "", ""
-		lines := strings.Split(text, "\n")
-		for i, line := range lines {
-			if line != "%NAME%" && line != "%VERSION%" {
-				continue
-			}
-			if i+1 >= len(lines) || lines[i+1] == "" || (i+2 < len(lines) && lines[i+2] != "") {
-				return "unknown", "Docker package metadata is malformed."
-			}
-			field := &name
-			if line == "%VERSION%" {
-				field = &candidate
-			}
-			if *field != "" {
-				return "unknown", "Docker package metadata has duplicate fields."
-			}
-			*field = lines[i+1]
-		}
-		if name == "" || candidate == "" || len(candidate) > 128 {
-			return "unknown", "Docker package metadata is incomplete or invalid."
-		}
-		if name != "docker" {
-			continue
-		}
-		if version != "" {
-			return "unknown", "Multiple Docker engine package records are ambiguous."
-		}
-		if epoch, rest, found := strings.Cut(candidate, ":"); found {
-			if _, ok := number(epoch); !ok {
-				return "unknown", "Docker package epoch is malformed."
-			}
-			candidate = rest
-		}
-		release := strings.LastIndex(candidate, "-")
-		if release < 1 {
-			return "unknown", "Docker package release is malformed."
-		}
-		for _, part := range strings.Split(candidate[release+1:], ".") {
-			if _, ok := number(part); !ok {
-				return "unknown", "Docker package release is malformed."
-			}
-		}
-		version = candidate[:release]
-		parts := strings.Split(version, ".")
-		if len(parts) != 3 {
-			return "unknown", "Docker upstream version is malformed or unrecognized."
-		}
-		for _, part := range parts {
-			if _, ok := number(part); !ok {
-				return "unknown", "Docker upstream version is malformed or unrecognized."
-			}
-		}
-	}
-	if version == "" {
-		return "missing", "No Docker engine package record found in the local Pacman database."
-	}
-	if version != rootless.EngineVersion {
-		return "blocked", "Docker package upstream version " + version + " does not match required " + rootless.EngineVersion + "."
-	}
-	return "pass", "Docker package metadata matches upstream " + rootless.EngineVersion + "; installed binaries and runtime remain unverified."
 }

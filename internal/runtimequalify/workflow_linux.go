@@ -17,7 +17,6 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
-	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
@@ -25,6 +24,8 @@ func (q *qualifier) engine(ctx context.Context) error {
 	if err := q.verifyEngine(ctx); err != nil {
 		return err
 	}
+	// This is a fresh qualification report, never a historical report refresh.
+	q.r.EngineVersion = q.engineEvidence.Version
 	out, err := q.docker(ctx, q.d.times.command, "container", "ls", "--all", "--filter", "label="+label+"=true", "--format", "{{.Names}}")
 	if err != nil {
 		return err
@@ -38,30 +39,6 @@ func (q *qualifier) engine(ctx context.Context) error {
 	}
 	if strings.TrimSpace(out) != "" {
 		return errors.New("leftover qualification networks require manual review")
-	}
-	return nil
-}
-
-func (q *qualifier) verifyEngine(ctx context.Context) error {
-	out, err := q.docker(ctx, q.d.times.command, "info", "--format", "{{json .}}")
-	if err != nil {
-		return err
-	}
-	var info struct {
-		ServerVersion, CgroupDriver, CgroupVersion, DockerRootDir string
-		SecurityOptions                                           []string
-	}
-	if json.Unmarshal([]byte(out), &info) != nil {
-		return errors.New("invalid engine information")
-	}
-	rootlessOption := false
-	for _, s := range info.SecurityOptions {
-		if s == "name=rootless" {
-			rootlessOption = true
-		}
-	}
-	if !rootlessOption || info.ServerVersion != rootless.EngineVersion || info.CgroupDriver != "systemd" || info.CgroupVersion != "2" || info.DockerRootDir != filepath.Join(q.d.home, ".local/share/urbit-runner/docker") {
-		return errors.New("engine does not match the pinned private rootless configuration")
 	}
 	return nil
 }

@@ -117,6 +117,7 @@ Column {
       Label { objectName:"runtime-reported-comet";width:parent.width;visible:root.readable && !!root.reportedComet && !!root.instance && root.instance.mode==="comet" && !root.instance.ship;text:"Vere reported "+root.reportedComet+" · verifying startup";color:Design.accent }
       Label { width:parent.width;caption:true;secondary:true;visible:!!root.operation;text:root.operation ? "Operation: "+root.operation.id+"\nStarted: "+Model.humanTime(root.operation.created_at,root.service.now)+(root.operation.finished_at ? " · Finished: "+Model.humanTime(root.operation.finished_at,root.service.now) : " · Elapsed: "+Math.max(0,Math.floor((root.service.now-Date.parse(root.operation.created_at))/1000))+"s") : "" }
       Label { width:parent.width;caption:true;secondary:true;visible:!!root.diagnostic.container_id;text:"Container: "+root.diagnostic.container_id+"\n"+(root.diagnostic.container_kind || "")+(root.diagnostic.observed_at ? " · Observed "+Model.humanTime(root.diagnostic.observed_at,root.service.now) : "") }
+      HostCompatibility { objectName:"runtime-host-compatibility";width:parent.width;report:Model.hostCompatibility(root.connection);envelope:root.connection ? root.connection.host_compatibility || null : null;problem:Model.hostCompatibilityHint(root.connection,root.service ? root.service.now : Date.now());now:root.service ? root.service.now : Date.now() }
     }
   }
   Card {

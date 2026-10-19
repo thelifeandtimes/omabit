@@ -109,5 +109,5 @@ func Load(path, id string) (Grant, error) {
 }
 
 func (g Grant) Allows(method, path string) bool {
-	return g.Role == "operator" || (g.Role == "observer" && method == "GET" && (path == "/hello" || path == "/v1/snapshot"))
+	return g.Role == "operator" || (g.Role == "observer" && method == "GET" && (path == "/hello" || path == "/v1/snapshot" || path == "/v1/host-compatibility"))
 }

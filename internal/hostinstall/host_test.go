@@ -43,7 +43,8 @@ func hostFixture(t *testing.T) (*fixture, hostProbe) {
 		if path == "/usr/bin/usermod" {
 			f.put("/etc/passwd", "root:x:0:0::/root:/bin/sh\nurbit-runner:x:942:942::/var/lib/urbit-runner:"+access.ShellPath+"\n", 0644)
 		}
-		if path == "/usr/bin/systemctl" && slices.Contains(args, "enable") && slices.Contains(args, "urbit-runner.service") {
+		if path == "/usr/bin/systemctl" && slices.Contains(args, "urbit-runner.service") &&
+			(slices.Contains(args, "enable") && slices.Contains(args, "--now") || slices.Contains(args, "start")) {
 			f.put("/run/user/942/urbit-runner/runner.sock", "inert socket fixture", 0600)
 		}
 		return out, nil

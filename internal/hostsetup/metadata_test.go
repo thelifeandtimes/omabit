@@ -181,8 +181,10 @@ func TestPackageVersion(t *testing.T) {
 		{"epoch-match", "%NAME%\ndocker\n\n%VERSION%\n1:29.7.2-1\n", "pass"},
 		{"plain-match", "%VERSION%\n29.7.2-2\n\n%NAME%\ndocker\n", "pass"},
 		{"decimal-release", "%NAME%\ndocker\n\n%VERSION%\n29.7.2-1.1\n", "pass"},
-		{"mismatch", "%NAME%\ndocker\n\n%VERSION%\n1:28.5.0-1\n", "blocked"},
-		{"not-engine", "%NAME%\ndocker-buildx\n\n%VERSION%\n1:29.7.2-1\n", "missing"},
+		{"compatible-older", "%NAME%\ndocker\n\n%VERSION%\n1:28.5.0-1\n", "pass"},
+		{"compatible-newer", "%NAME%\ndocker\n\n%VERSION%\n1:29.9.1-1\n", "pass"},
+		{"unsupported", "%NAME%\ndocker\n\n%VERSION%\n1:30.0.0-1\n", "blocked"},
+		{"prerelease", "%NAME%\ndocker\n\n%VERSION%\n29.9.1-rc1-1\n", "unknown"},
 		{"missing-name", "%VERSION%\n1:29.7.2-1\n", "unknown"},
 		{"missing-version", "%NAME%\ndocker\n", "unknown"},
 		{"duplicate-name", "%NAME%\ndocker\n\n%NAME%\ndocker\n\n%VERSION%\n29.7.2-1\n", "unknown"},
@@ -191,11 +193,6 @@ func TestPackageVersion(t *testing.T) {
 		{"empty", "", "unknown"},
 		{"multiple-values", "%NAME%\ndocker\nunexpected\n\n%VERSION%\n29.7.2-1\n", "unknown"},
 		{"bad-epoch", "%NAME%\ndocker\n\n%VERSION%\nepoch:29.7.2-1\n", "unknown"},
-		{"empty-release", "%NAME%\ndocker\n\n%VERSION%\n29.7.2-\n", "unknown"},
-		{"no-release", "%NAME%\ndocker\n\n%VERSION%\n29.7.2\n", "unknown"},
-		{"bad-release", "%NAME%\ndocker\n\n%VERSION%\n29.7.2-secret\n", "unknown"},
-		{"dot-release", "%NAME%\ndocker\n\n%VERSION%\n29.7.2-.\n", "unknown"},
-		{"empty-release-component", "%NAME%\ndocker\n\n%VERSION%\n29.7.2-1..1\n", "unknown"},
 		{"long-version", "%NAME%\ndocker\n\n%VERSION%\n" + strings.Repeat("0", 129) + ".7.2-1\n", "unknown"},
 		{"bad-upstream", "%NAME%\ndocker\n\n%VERSION%\nprivate.7.2-1\n", "unknown"},
 		{"non-version", "%NAME%\ndocker\n\n%VERSION%\nprivate-1\n", "unknown"},
@@ -225,6 +222,7 @@ func TestPackageVersion(t *testing.T) {
 				f.files["var/lib/pacman/local"] = &fstest.MapFile{Mode: fs.ModeNamedPipe | 0600}
 			case "duplicate":
 				f.files["var/lib/pacman/local/docker-29.7.2-2/desc"] = f.files["var/lib/pacman/local/docker-29.7.2-1/desc"]
+				f.files["var/lib/pacman/local/docker-29.7.2-2/files"] = f.files["var/lib/pacman/local/docker-29.7.2-1/files"]
 			case "missing-desc":
 				delete(f.files, "var/lib/pacman/local/docker-29.7.2-1/desc")
 				f.files["var/lib/pacman/local/docker-29.7.2-1"] = &fstest.MapFile{Mode: fs.ModeDir | 0755}
@@ -235,8 +233,10 @@ func TestPackageVersion(t *testing.T) {
 			if status != "unknown" {
 				t.Fatalf("got %s (%s), want unknown", status, detail)
 			}
-			if tc == "special-database" && len(f.opened) != 0 {
-				t.Fatal("special file opened as package database directory")
+			for _, path := range f.opened {
+				if tc == "special-database" && path == "var/lib/pacman/local" {
+					t.Fatal("special file opened as package database directory")
+				}
 			}
 		})
 	}

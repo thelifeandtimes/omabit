@@ -56,6 +56,9 @@ func (q *qualifier) inspectNetwork(ctx context.Context) (bridge, error) {
 	if !networkProfile(q.d.profile) || r == nil || r.Removed {
 		return bridge{}, errUntrustedNetwork
 	}
+	if q.restrictedEngine && !containerIDPattern.MatchString(r.ID) {
+		return bridge{}, errUntrustedNetwork
+	}
 	out, err := q.docker(ctx, q.d.times.command, "network", "inspect", r.Name)
 	if err != nil {
 		return bridge{}, err
@@ -89,6 +92,9 @@ func (q *qualifier) inspectNetwork(ctx context.Context) (bridge, error) {
 func (q *qualifier) createNetwork(ctx context.Context) error {
 	if !networkProfile(q.d.profile) || q.r.Network != nil {
 		return errors.New("network creation is only available once in the HTTP profile")
+	}
+	if err := q.verifyEngine(ctx); err != nil {
+		return err
 	}
 	q.r.Network = &NetworkRecord{Name: q.resourceName("http")}
 	if err := q.save(); err != nil {

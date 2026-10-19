@@ -26,6 +26,8 @@ const (
 
 // Result is also the private report.json schema. RuntimeQualified is always
 // false: these bounded checkpoints do not qualify a production runtime.
+// EngineVersion records original provisioning/qualification evidence and is
+// never rewritten when a newer daemon observes or resumes this runtime.
 type Result struct {
 	Stage              string                `json:"stage,omitempty"`
 	RetainedLogs       *protocol.RuntimeLogs `json:"retained_logs,omitempty"`
@@ -194,6 +196,8 @@ type Phase struct {
 // Dispatched intent remains uncertain until authenticated inspection, regardless
 // of empty inventories. A canceled client does not cancel a daemon-side create.
 type ContainerRecord struct {
+	// Empty on historical records; never infer it from the current daemon.
+	EngineVersion        string          `json:"engine_version,omitempty"`
 	Loom                 uint8           `json:"loom,omitempty"`
 	NativeControl        bool            `json:"native_control,omitempty"`
 	Name                 string          `json:"name"`

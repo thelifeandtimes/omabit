@@ -2,7 +2,7 @@
 # Scripts must be installed root-owned and executable; the bundle is inert.
 # Do not add NoNewPrivileges=yes: newuidmap/newgidmap need their privileges.
 [Unit]
-Description=Dedicated-account rootless Docker @ENGINE_VERSION@ for Urbit
+Description=Account-bound rootless Docker for Urbit (native engine compatibility policy)
 ConditionUser=@ACCOUNT@
 Requires=dbus.socket
 After=dbus.socket
@@ -10,7 +10,7 @@ After=dbus.socket
 [Service]
 Type=notify
 NotifyAccess=all
-Environment=PATH=/usr/bin:/bin
+Environment=PATH=@SAFE_PATH@
 Environment=HOME=@HOME@
 Environment=DOCKERD=/usr/bin/dockerd
 Environment=DOCKERD_ROOTLESS_ROOTLESSKIT_NET=slirp4netns

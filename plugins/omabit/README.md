@@ -1,4 +1,28 @@
-# Omabit unified desktop plugin — 0.1.0-rc.2
+# Omabit unified desktop plugin — 0.1.0-rc.13
+
+## Host compatibility checks
+
+Local setup, **Manage runners**, and the existing runtime-status card display the
+runner's structured host report: distribution/provider/profile, installed packages
+and running engine, compatibility, qualification, provenance, restart state,
+permissions, evidence time, checks and native-distribution guidance. Expand the
+existing local **View details** control for the full local report. Compatibility
+warnings stay separate from pier recovery. Only a fresh, matching live report's
+`can_stop` and `can_mutate` flags restrict controls; Stop is independent of admission
+for new runtime work. Metadata-only reports and qualification labels are diagnostic.
+Every request still goes through the runner's current safety checks.
+
+Host revalidation is automatic through the existing collector inventory polling,
+including after native package updates and explicit engine restarts. The runner
+owns bounded evidence caching and freshness. **Refresh** also rechecks local setup
+metadata using `omabit setup-status` and restarts collector observation. No opt-in
+setting is required. These reads do not install/update packages or restart engines;
+no update hook, remote executable policy or desktop configuration change is needed.
+
+Older runners retain their ship inventory and controls and show an explicit
+`host-compatibility-v1` upgrade hint. A missing or invalid optional report affects
+only host diagnostics, not the entire fleet. Local setup status forwards
+`hostsetup.Report.compatibility`; collector observations use `host_compatibility`.
 
 Opening **Monitor & maintenance** activates the existing monitor on its workspace
 instead of merely marking it visible. Activation matches this process's exact

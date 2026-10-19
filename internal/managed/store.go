@@ -982,6 +982,7 @@ func (s *store) finish(op protocol.Operation, state runtimequalify.ManagedState,
 		}
 		state.Routine.Stage = prefix + state.Routine.Stage
 	}
+	priorRecovery := v.Public.RecoveryRequired
 	v.Runtime, v.RuntimeRevision = state, v.RuntimeRevision+1
 	v.Public.ActiveOperationID = ""
 	applyObservation(&v, observation, now)
@@ -1001,6 +1002,13 @@ func (s *store) finish(op protocol.Operation, state runtimequalify.ManagedState,
 			op.Message = op.Message[:1024]
 		}
 		v.Public.ObservedState, v.Public.Health, v.Public.RecoveryRequired = "unknown", "unknown", true
+		if errors.Is(cause, runtimequalify.ErrHostCompatibility) {
+			// Refused host admission is not evidence that a pier needs repair.
+			// Preserve any real prior or newly journaled uncertain outcome; never
+			// manufacture one just because packages/API evidence is unavailable.
+			v.Public.RecoveryRequired = runtimequalify.RecoveryRequiredOnCompatibility(state, priorRecovery || observation.RecoveryRequired)
+			op.Message = "host compatibility prevented runtime work; inspect host-check before retrying"
+		}
 		v.Public.Resources, v.Public.Epochs = nil, nil
 	} else if op.Kind == "start" || op.Kind == "startup-resume" {
 		v.Public.AppliedRevision = op.ConfigRevision
@@ -1167,8 +1175,29 @@ func (s *store) reconcileInterrupted() error {
 			}
 			queuedStart = !hasRuntime
 		}
+		// Only a matching current-writer callback can prove this first boot
+		// never reached Docker. Keep public recovery required until explicit
+		// Stop retires its intent and a fresh observation verifies preparation.
+		undispatchedBoot := op.Kind == "start" && op.Status == "running" && op.InstanceID == v.Public.ID &&
+			v.Public.DesiredState == "running" && !v.Public.RecoveryRequired &&
+			v.Public.AppliedRevision == 0 && v.RuntimeConfigRevision == op.ConfigRevision && op.ConfigRevision == v.Public.ConfigRevision &&
+			v.Runtime.UndispatchedInitialBoot()
+		if undispatchedBoot {
+			var checkpoint []byte
+			if err := tx.QueryRow("SELECT runtime FROM operations WHERE id=?", op.ID).Scan(&checkpoint); err != nil {
+				return err
+			}
+			current, err := json.Marshal(v.Runtime)
+			if err != nil {
+				return err
+			}
+			undispatchedBoot = string(checkpoint) == string(current)
+		}
 		now := time.Now().UTC()
 		op.Status, op.Message, op.FinishedAt = "interrupted", "runner restarted before the operation outcome was committed; inspect before retrying", &now
+		if undispatchedBoot {
+			op.Message = "runner restarted before first-boot dispatch; explicitly Stop preparation and refresh observation before retrying"
+		}
 		if queuedStart {
 			op.Message = "runner restarted before the queued start was dispatched; submit a new request to retry"
 			v.Public.ActiveOperationID = ""
@@ -1197,10 +1226,10 @@ func (s *store) reconcileInterrupted() error {
 			v.Runtime.Routine.Stage = "interrupted"
 			v.Public.Routine = v.Runtime.Routine
 		}
-		if op.Kind == "start" && v.Runtime.Comet != nil && (v.Public.Ship == "" || !v.Runtime.Initialized || v.Public.AppliedRevision == 0) {
+		if op.Kind == "start" && !undispatchedBoot && v.Runtime.Comet != nil && (v.Public.Ship == "" || !v.Runtime.Initialized || v.Public.AppliedRevision == 0) {
 			v.Runtime.Comet.Uncertain = true
 		}
-		if op.Kind == "start" && v.Runtime.Storage != nil && v.Runtime.Prepared && v.Public.AppliedRevision == 0 {
+		if op.Kind == "start" && !undispatchedBoot && v.Runtime.Storage != nil && v.Runtime.Prepared && v.Public.AppliedRevision == 0 {
 			v.Runtime.Storage.Uncertain = true
 		}
 		if op.Kind == "import-fake" && v.Runtime.Import != nil {

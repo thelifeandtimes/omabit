@@ -18,6 +18,7 @@ import (
 	"testing"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostsetup"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 )
@@ -66,7 +67,19 @@ func newFixture(t *testing.T) *fixture {
 		chown:    func(*os.File) error { return nil },
 		groupIDs: func(*user.User) ([]string, error) { return []string{"942"}, nil },
 	}
-	for _, name := range helpers {
+	f.i.verifyCompatibility = func(context.Context) (hostcompat.Report, error) {
+		return hostcompat.Report{InstalledEngineVersion: rootless.EngineVersion, Provenance: "verified"}, nil
+	}
+	f.i.verifyCompatibilityWithOptions = func(ctx context.Context, options hostcompat.VerificationOptions) (hostcompat.Report, error) {
+		if !options.FetchMissing {
+			t.Fatal("setup did not authorize missing-evidence retrieval")
+		}
+		return f.i.verifyCompatibility(ctx)
+	}
+	f.i.inspectCompatibility = func() hostcompat.Report {
+		return hostcompat.Report{InstalledEngineVersion: rootless.EngineVersion, Provenance: "verified", Distribution: hostcompat.Distribution{Provider: "pacman"}}
+	}
+	for _, name := range append(slices.Clone(helpers), packageHookHelpers...) {
 		f.put("/usr/bin/"+name, "not an executable: tests must never run this", 0755)
 	}
 	f.put("/proc/sys/kernel/unprivileged_userns_clone", "1", 0644)
@@ -147,6 +160,17 @@ func newFixture(t *testing.T) *fixture {
 			}
 		}
 		switch {
+		case path == "/usr/bin/pacman-conf":
+			if slices.Equal(args, []string{"CacheDir"}) {
+				return []byte("/var/cache/pacman/pkg/\n"), nil
+			}
+			return []byte("/etc/pacman.d/hooks\n"), nil
+		case path == "/usr/bin/apt-config":
+			out := "Dir \"/\";\nDir::Etc \"etc/apt\";\nDir::Etc::parts \"apt.conf.d\";\nDir::Cache \"var/cache/apt\";\nDir::Cache::archives \"archives/\";\n"
+			if _, err := os.Stat(f.i.path(rootless.APTPackageHookPath)); err == nil {
+				out += "DPkg::Post-Invoke:: \"" + rootless.PackageRefreshPath + " || true\";\n"
+			}
+			return []byte(out), nil
 		case path == "/usr/bin/dockerd":
 			return []byte("Docker version 29.7.2, build reviewed\n"), nil
 		case path == "/usr/bin/useradd" && slices.Equal(args, []string{"--help"}):
@@ -160,18 +184,29 @@ func newFixture(t *testing.T) *fixture {
 			if f.afterCreate != nil {
 				f.afterCreate()
 			}
-		case path == "/usr/bin/systemctl" && slices.Contains(args, "enable"):
-			f.mkdir("/run/user/942", 0700)
-			f.metadata["/run/user/942"] = fakeInfo{uid: testUID, gid: testUID, mode: os.ModeDir | 0700}
-			// Socket evidence is synthetic; tests never bind or contact a socket.
-			f.put(testSocket, "not a socket", 0600)
-			f.metadata[testSocket] = fakeInfo{uid: testUID, gid: testUID, mode: os.ModeSocket | 0660}
+		case path == "/usr/bin/systemctl" && slices.Contains(args, rootless.UnitName) &&
+			(slices.Contains(args, "enable") && slices.Contains(args, "--now") || slices.Contains(args, "start")):
+			f.engineStarted()
 		case path == "/usr/bin/runuser" && slices.Contains(args, "/usr/bin/docker"):
+			if slices.Contains(args, "version") {
+				var info map[string]any
+				json.Unmarshal(f.info, &info)
+				return json.Marshal(map[string]any{"Version": info["ServerVersion"], "APIVersion": "1.54", "MinAPIVersion": "1.44"})
+			}
 			return f.info, nil
 		}
 		return nil, nil
 	}
 	return f
+}
+
+// Explicit fixture evidence for an already running engine. Plain systemctl
+// enable (or enabling an unrelated service) does not create a socket.
+func (f *fixture) engineStarted() {
+	f.mkdir("/run/user/942", 0700)
+	f.metadata["/run/user/942"] = fakeInfo{uid: testUID, gid: testUID, mode: os.ModeDir | 0700}
+	f.put(testSocket, "not a socket", 0600)
+	f.metadata[testSocket] = fakeInfo{uid: testUID, gid: testUID, mode: os.ModeSocket | 0660}
 }
 
 func (f *fixture) mkdir(path string, mode os.FileMode) {
@@ -290,9 +325,10 @@ func TestFirstInstallSnapshotAndCommands(t *testing.T) {
 		{"/usr/bin/systemctl", "start", "user@942.service"},
 		{"/usr/bin/systemctl", "--user", "--machine=urbit-runner@.host", "daemon-reload"},
 		{"/usr/bin/systemctl", "--user", "--machine=urbit-runner@.host", "enable", "--now", rootless.UnitName},
-		{"/usr/bin/runuser", "-u", rootless.AccountName, "--", "/usr/bin/env", "-i", "HOME=" + rootless.HomeDir, "PATH=/usr/bin:/bin", "/usr/bin/docker", "--host", "unix://" + testSocket, "info", "--format", "{{json .}}"},
+		{"/usr/bin/runuser", "-u", rootless.AccountName, "--", "/usr/bin/env", "-i", "HOME=" + rootless.HomeDir, "PATH=" + rootless.SafePath, "DOCKER_API_VERSION=" + hostcompat.APIVersion, "/usr/bin/docker", "--host", "unix://" + testSocket, "info", "--format", "{{json .}}"},
+		{"/usr/bin/runuser", "-u", rootless.AccountName, "--", "/usr/bin/env", "-i", "HOME=" + rootless.HomeDir, "PATH=" + rootless.SafePath, "DOCKER_API_VERSION=" + hostcompat.APIVersion, "/usr/bin/docker", "--host", "unix://" + testSocket, "version", "--format", "{{json .Server}}"},
 	}
-	wantEnv := []string{"PATH=/usr/bin:/bin", "HOME=/root", "LANG=C", "LC_ALL=C", "SYSTEMD_PAGER=", "SYSTEMD_PAGERSECURE=1", "SYSTEMD_COLORS=0"}
+	wantEnv := []string{"PATH=" + rootless.SafePath, "HOME=/root", "LANG=C", "LC_ALL=C", "SYSTEMD_PAGER=", "SYSTEMD_PAGERSECURE=1", "SYSTEMD_COLORS=0"}
 	var got [][]string
 	for _, c := range f.calls {
 		got = append(got, append([]string{c.path}, c.args...))
@@ -372,7 +408,7 @@ func TestValidationNeverMutates(t *testing.T) {
 			run := f.i.run
 			f.i.run = func(ctx context.Context, path string, args, env []string) ([]byte, error) {
 				if path == "/usr/bin/dockerd" {
-					return []byte("Docker version 29.7.20, build wrong"), nil
+					return []byte("Docker version 30.0.0, build wrong"), nil
 				}
 				return run(ctx, path, args, env)
 			}
@@ -643,7 +679,7 @@ func TestRootfulAccessCheckedWithoutConnecting(t *testing.T) {
 			for _, c := range f.calls {
 				if slices.Contains(c.args, "/run/docker.sock") {
 					checks++
-					want := []string{"-u", rootless.AccountName, "--", "/usr/bin/env", "-i", "HOME=" + rootless.HomeDir, "PATH=/usr/bin:/bin", "/usr/bin/test", "!", "-w", "/run/docker.sock"}
+					want := []string{"-u", rootless.AccountName, "--", "/usr/bin/env", "-i", "HOME=" + rootless.HomeDir, "PATH=" + rootless.SafePath, "DOCKER_API_VERSION=" + hostcompat.APIVersion, "/usr/bin/test", "!", "-w", "/run/docker.sock"}
 					if c.path != "/usr/bin/runuser" || !slices.Equal(c.args, want) {
 						t.Fatalf("unexpected rootful interaction: %+v", c)
 					}
@@ -699,7 +735,7 @@ func TestUnsafeSocketNeverContactsEngine(t *testing.T) {
 
 func TestInfoRejectsUnverifiedEngines(t *testing.T) {
 	for field, values := range map[string][]any{
-		"ServerVersion":   {"29.7.20", "29.7.2-dev", "", nil},
+		"ServerVersion":   {"30.0.0", "29.7.2-dev", "", nil},
 		"SecurityOptions": {[]string{"name=rootless-extra"}, []string{"rootless"}, []string{"name=rootful"}, nil},
 		"CgroupDriver":    {"cgroupfs", "", nil}, "CgroupVersion": {"1", 2, nil},
 		"DockerRootDir": {"/var/lib/docker", rootless.HomeDir + "/.local/share/docker", rootless.HomeDir + "/.local/share/urbit-runner/docker/", nil},

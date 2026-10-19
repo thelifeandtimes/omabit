@@ -22,6 +22,10 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: '22'
+      - name: Native authentication test tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gnupg libarchive-tools
       - name: Go tests and vet
         run: |
           go test ./...
@@ -40,6 +44,7 @@ jobs:
           python3 -B scripts/test-native-plugin.py
           python3 -B scripts/test-desktop-qualification.py
           python3 -B scripts/test-import-recovery.py --static
+          python3 -B -m unittest discover -s scripts/qualification/host-packages -p 'test_*.py'
       - name: Release source isolation and reproducibility
         run: python3 -B scripts/test-release-source.py --build
 
@@ -48,6 +53,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
       - name: Install isolated Qt runtime
         run: |
           sudo apt-get update
@@ -55,7 +64,9 @@ jobs:
       - name: Actual QML bindings and recovery interactions
         env:
           QT_QML_EXECUTABLE: /usr/lib/qt6/bin/qml
-        run: python3 -B scripts/test-rc11-panel-offscreen.py --require-qt
+        run: |
+          python3 -B scripts/test-rc11-panel-offscreen.py --require-qt
+          python3 -B scripts/test-host-compatibility-offscreen.py --require-qt
 
 # Mapped Quickshell tests and live runtime qualification require their separately
 # controlled Omarchy/Docker environments; they are not claimed by this CI job.

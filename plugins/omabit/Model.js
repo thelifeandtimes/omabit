@@ -20,7 +20,114 @@ function validateSetupStatus(v) {
     throw new Error("Invalid prerequisite checks")
   if (v.ready && (!v.connection || !validId(v.connection.name) || !validId(v.connection.runner_id) || v.connection.mode !== "development-managed" || v.browser_base !== "http://127.0.0.1"))
     throw new Error("Invalid local runner identity")
+  v.compatibility_problem = ""
+  if (v.compatibility) {
+    try { validateHostCompatibility(v.compatibility) }
+    catch (_) { v.compatibility = null; v.compatibility_problem = "Local host compatibility report could not be read. Update the Omabit and runner helpers, then Check again." }
+  }
   return v
+}
+
+// Validate the optional diagnostic independently of inventory. Version support,
+// provenance and operation eligibility are decisions made by the core report.
+function validateHostCompatibility(r) {
+  function object(v) { return !!v && typeof v === "object" && !Array.isArray(v) }
+  function text(v, limit) { return typeof v === "string" && v.length <= limit && !/[\u0000-\u0008\u000b-\u001f\u007f]/.test(v) }
+  function fields(v, names, limit) { return object(v) && names.every(function(n) { return v[n] === undefined || text(v[n],limit) }) }
+  function list(v, limit, valid) { return v === undefined || v === null || Array.isArray(v) && v.length <= limit && v.every(valid) }
+  if (!r || r.schema_version !== 1 || JSON.stringify(r).length > 65536
+      || !text(r.policy_id,128) || !r.policy_id || !text(r.platform,128)
+      || !r.distribution || !fields(r.distribution,["id","version_id","provider","profile"],256)
+      || !list(r.distribution.id_like,16,function(s){return text(s,128)})
+      || !fields(r,["installed_engine_version"],256)
+      || !["compatibility","qualification","provenance"].every(function(n){return text(r[n],128)})
+      || !["restart_pending","can_observe","can_stop","can_mutate"].every(function(n){return typeof r[n] === "boolean"})
+      || !text(r.observed_at,128) || !isFinite(Date.parse(r.observed_at))
+      || r.engine !== null && r.engine !== undefined && (!fields(r.engine,["version","api_version","min_api_version","cgroup_driver","cgroup_version"],256) || !fields(r.engine,["data_root"],2048) || typeof r.engine.rootless !== "boolean")
+      || !list(r.packages,64,function(p){return p && fields(p,["role","name","version","upstream_version","provenance"],256) && fields(p,["detail"],8192) && list(p.executables,32,function(s){return text(s,2048)})})
+      || !list(r.checks,128,function(c){return c && text(c.id,128) && text(c.status,128) && text(c.detail,8192)})
+      || !list(r.guidance,32,function(s){return text(s,8192)})) throw new Error("Invalid host compatibility report")
+  return r
+}
+
+function hostCompatibility(connection) {
+  var value=connection && connection.host_compatibility
+  return value ? value.report || value : null
+}
+
+function validateHostCompatibilityEnvelope(value, connection) {
+  if (!value || value.schema_version !== 1 || value.protocol_version !== 1 || value.runner_id !== connection.runner_id || value.mode !== connection.mode
+      || !hasFeature(connection,"host-compatibility-v1") || !hasFeature(value,"host-compatibility-v1") || connection.status === "identity_mismatch"
+      || typeof value.expires_at !== "string" || !isFinite(Date.parse(value.expires_at))) throw new Error("Unbound host compatibility report")
+  var report=validateHostCompatibility(value.report), lifetime=Date.parse(value.expires_at)-Date.parse(report.observed_at)
+  if (lifetime <= 0 || lifetime > 300000) throw new Error("Invalid host compatibility expiry")
+  if (value.metadata_observed_at !== undefined && (typeof value.metadata_observed_at !== "string" || !isFinite(Date.parse(value.metadata_observed_at))
+      || Date.parse(value.metadata_observed_at)>Date.parse(report.observed_at))) throw new Error("Invalid native evidence time")
+  return report
+}
+
+// Metadata inspection intentionally returns false capability flags without a
+// running engine. Only a fresh, identity-bound live evaluation may restrict
+// controls. Qualification/provenance strings are diagnostic; core owns policy.
+function liveHostCompatibility(connection, now) {
+  var value=connection && connection.host_compatibility
+  if (!available(connection,now) || connection.host_compatibility_status !== "available" || connection.host_compatibility_error || connection.host_compatibility_problem
+      || !value || !value.report || !value.report.engine || connection.snapshot.runner_id !== connection.runner_id || connection.snapshot.mode !== connection.mode) return null
+  try {
+    var report=validateHostCompatibilityEnvelope(value,connection)
+    return fresh(report.observed_at,now,300000) && Date.parse(value.expires_at)>now ? report : null
+  } catch (_) { return null }
+}
+
+function compatibilitySummary(r) {
+  if (!r) return "Host compatibility: not reported"
+  return "Host compatibility: "+r.compatibility+" · qualification: "+r.qualification+" · provenance: "+r.provenance
+    +(r.restart_pending ? "\nEngine restart pending — installed packages and the running daemon differ. Review host guidance before a coordinated restart." : "")
+}
+
+function compatibilityEvidence(r, now, envelope) {
+  if (!r) return ""
+  var stale=!fresh(r.observed_at,now,300000) || envelope && envelope.expires_at && Date.parse(envelope.expires_at)<=now
+  var text="Host evidence: "+shortTime(r.observed_at)+(stale ? " · stale; refresh to recheck" : "")
+  if (envelope && envelope.metadata_observed_at) text+="\nNative package evidence: "+envelope.metadata_observed_at
+  if (envelope && envelope.expires_at) text+="\nReport expires: "+envelope.expires_at
+  return text
+}
+
+function compatibilityFacts(r, now, envelope) {
+  if (!r) return ""
+  var d=r.distribution, e=r.engine, lines=["Policy: "+r.policy_id+" · platform: "+r.platform,
+    "Distribution: "+(d.id || "unknown")+(d.version_id ? " "+d.version_id : "")+" · provider: "+(d.provider || "unknown")+" · profile: "+(d.profile || "none"),
+    "Installed engine: "+(r.installed_engine_version || "unknown")+" · running engine: "+(e && e.version || "not observed")]
+  if (e) lines.push("Engine API: "+(e.api_version || "unknown")+" · minimum API: "+(e.min_api_version || "unknown")+" · rootless: "+(e.rootless ? "yes" : "no")+" · cgroup: "+(e.cgroup_driver || "unknown")+" / "+(e.cgroup_version || "unknown")+(e.data_root ? "\nEngine data root: "+e.data_root : ""))
+  lines.push(r.engine ? "Reported live permissions: observe "+(r.can_observe ? "yes" : "no")+" · Stop "+(r.can_stop ? "yes" : "no")+" · new runtime work "+(r.can_mutate ? "yes" : "no") : "Metadata only: live control permissions have not been evaluated.")
+  lines.push("Restart pending: "+(r.restart_pending ? "yes" : "no"))
+  lines.push(compatibilityEvidence(r,now,envelope))
+  ;(r.packages || []).forEach(function(p){lines.push("Package "+(p.role || "unknown")+": "+(p.name || "unknown")+" "+(p.version || "unknown")+(p.upstream_version ? " · upstream "+p.upstream_version : "")+" · provenance: "+(p.provenance || "unknown")+(p.detail ? "\n"+p.detail : ""))})
+  return lines.join("\n")
+}
+
+function compatibilityChecks(r, details) {
+  return !r ? "" : (r.checks || []).filter(function(c){return details || ["pass","info"].indexOf(c.status)<0}).map(function(c){return c.id+": "+c.status+" — "+c.detail}).join("\n")
+}
+
+function compatibilityGuidance(r) { return r ? (r.guidance || []).join("\n") : "" }
+
+function hostCompatibilityHint(connection, now) {
+  if (!connection) return "Host compatibility has not been checked yet."
+  if (connection.host_compatibility_problem) return connection.host_compatibility_problem
+  if (connection.status === "identity_mismatch") return "Host identity needs review before compatibility can be checked."
+  if (!available(connection,now)) return "Runner inventory is unavailable. Showing last known ships and any independently verified host evidence."
+  if (!hasFeature(connection,"host-compatibility-v1") || connection.host_compatibility_status === "unsupported") return "Update this runner for host-compatibility-v1 checks. Its existing ship inventory remains available."
+  var problem=connection.host_compatibility_error && connection.host_compatibility_error.code
+  if (problem === "host_report_identity_mismatch") return "Host compatibility identity did not match the pinned runner. Review the runner connection; its separate ship inventory is retained."
+  if (problem === "host_report_timeout") return "Host compatibility check timed out. Refresh to retry; ship inventory remains available."
+  var value=connection.host_compatibility
+  if (connection.host_compatibility_status === "stale" || value && value.expires_at && Date.parse(value.expires_at) <= now) return "Host compatibility evidence is stale. Refresh to recheck before new runtime work."
+  if (!hostCompatibility(connection)) return "Host compatibility report unavailable. Refresh to retry; update the collector and runner if it persists. Ship inventory remains available."
+  if (!value.report) return "Host compatibility is diagnostic only. Update the collector and runner for identity-bound live reports."
+  if (!hostCompatibility(connection).engine) return "Host metadata is available; live engine permissions are unresolved. Existing controls still use the runner's per-request safety checks."
+  return ""
 }
 function setupStepIndex(step) {
   var groups = {check:0,key:1,download:2,authorize:3,engine:3,access:3,services:3,verify:3,host:3,connect:4,ready:5}
@@ -30,7 +137,7 @@ function setupStepLabel(step) {
   return {check:"Checking this computer",key:"Preparing desktop access",download:"Verifying host helper",authorize:"Waiting for OS authorization",engine:"Preparing the dedicated engine",access:"Configuring private SSH access",services:"Installing background services",verify:"Checking runner readiness",host:"Host setup complete",connect:"Connecting your desktop",ready:"Ready to add a ship"}[step] || "Local setup"
 }
 function setupEvent(text) {
-  if (text.length > 65536) throw new Error("Setup response exceeds limit")
+  if (text.length > 131072) throw new Error("Setup response exceeds limit")
   var v = JSON.parse(text)
   if (!v || (setupStepIndex(v.step) < 0 && v.step !== "setup") || ["running","complete","failed"].indexOf(v.status) < 0 || (v.message !== undefined && (typeof v.message !== "string" || v.message.length > 16384))) throw new Error("Invalid setup progress")
   if (v.result) validateSetupStatus(v.result)
@@ -53,6 +160,21 @@ function observation(text) {
       && Number.isInteger(i.config.http_port) && Number.isInteger(i.config.ames_port)
       && Number.isInteger(i.config.loom)
   })) throw new Error("Invalid instance configuration in collector observation")
+  v.host_compatibility_problem = ""
+  if (v.host_compatibility) {
+    try {
+      var report=v.host_compatibility
+      if (!hasFeature(v,"host-compatibility-v1") || v.status==="identity_mismatch" || report.runner_id !== undefined && report.runner_id !== v.runner_id)
+        throw new Error("Unbound host compatibility report")
+      if (report.report) {
+        report=validateHostCompatibilityEnvelope(report,v)
+      }
+      validateHostCompatibility(report)
+    } catch (_) {
+      v.host_compatibility=null
+      v.host_compatibility_problem="Host compatibility report could not be verified. Refresh and update the collector/runner helpers. Ship inventory remains available."
+    }
+  }
   return v
 }
 
@@ -596,12 +718,17 @@ function available(connection, now) {
 }
 
 function writable(connection, now) {
-  return available(connection, now) && connection.access_role !== "observer"
+  var report=liveHostCompatibility(connection,now)
+  return available(connection, now) && connection.access_role !== "observer" && (!report || report.can_mutate)
 }
 
 function canOperate(connection, instance, kind, now) {
-  if (!writable(connection, now) || !instance || instance.active_operation_id || instance.delete_pending || handoffFenced(instance)) return false
-  if (kind === "stop") return instance.observed_state === "running" || instance.recovery_required === true
+  if (!available(connection, now) || connection.access_role === "observer" || !instance || instance.active_operation_id || instance.delete_pending || handoffFenced(instance)) return false
+  // Unsupported/uncertain engine versions may still permit identity-verified
+  // Stop. Never route Stop through the new-runtime-work gate.
+  var report=liveHostCompatibility(connection,now)
+  if (kind === "stop") return (!report || report.can_stop) && (instance.observed_state === "running" || instance.recovery_required === true)
+  if (!writable(connection,now)) return false
   if (instance.recovery_required) return false
   if (kind === "start") return ["stopped", "uninitialized"].indexOf(instance.observed_state) >= 0
   if (instance.identity_pending && kind!=="inspect-epochs") return false

@@ -18,8 +18,6 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/piercopy"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
-	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
-	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
 func applyHandoff(ctx context.Context, action string, state ManagedState, persist func(ManagedState) error, d dependencies, extract ...func(context.Context, io.Reader, *os.Root) (piercopy.Summary, error)) (ManagedState, ManagedObservation, error) {
@@ -147,7 +145,8 @@ func applyHandoff(ctx context.Context, action string, state ManagedState, persis
 				return finish(errors.New("destination working storage already exists"))
 			}
 			state.Prepared = true
-			q.r = Result{Profile: q.d.profile, RunID: state.ID, Directory: dir, Image: candidate.Image, Platform: candidate.Platform, EngineVersion: rootless.EngineVersion, VereVersion: candidate.VereVersion, PillURL: q.pillSource(), PillSHA256: q.d.pillSHA, PillBytes: q.d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Stage: "receiving-handoff", Containers: []ContainerRecord{}}
+			q.r = q.enrollmentRuntime(state.ID)
+			q.r.Stage = "receiving-handoff"
 			if err = q.save(); err != nil {
 				return finish(err)
 			}

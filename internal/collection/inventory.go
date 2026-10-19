@@ -3,6 +3,7 @@ package collection
 import (
 	"context"
 	"errors"
+	"slices"
 	"sync"
 	"time"
 
@@ -13,15 +14,18 @@ import (
 // Observation keeps instance IDs scoped to a connection and stable runner ID.
 // Unavailable runners have no current snapshot; absence is not a ship crash.
 type Observation struct {
-	Name       string             `json:"name"`
-	RunnerID   string             `json:"runner_id"`
-	Mode       string             `json:"mode"`
-	AccessRole string             `json:"access_role,omitempty"`
-	Features   []string           `json:"features,omitempty"`
-	Status     string             `json:"status"`
-	CheckedAt  time.Time          `json:"checked_at"`
-	Snapshot   *protocol.Snapshot `json:"snapshot,omitempty"`
-	Error      *protocol.APIError `json:"error,omitempty"`
+	Name                    string                            `json:"name"`
+	RunnerID                string                            `json:"runner_id"`
+	Mode                    string                            `json:"mode"`
+	AccessRole              string                            `json:"access_role,omitempty"`
+	Features                []string                          `json:"features,omitempty"`
+	Status                  string                            `json:"status"`
+	CheckedAt               time.Time                         `json:"checked_at"`
+	Snapshot                *protocol.Snapshot                `json:"snapshot,omitempty"`
+	Error                   *protocol.APIError                `json:"error,omitempty"`
+	HostCompatibility       *protocol.HostCompatibilityReport `json:"host_compatibility,omitempty"`
+	HostCompatibilityStatus string                            `json:"host_compatibility_status,omitempty"`
+	HostCompatibilityError  *protocol.APIError                `json:"host_compatibility_error,omitempty"`
 }
 
 type Inventory struct {
@@ -49,7 +53,39 @@ func inspectClient(ctx context.Context, entry Connection, c *client.Client) Obse
 	if err == nil {
 		result.AccessRole = hello.AccessRole
 		result.Features = hello.Features
+		// Independent requests share the per-runner deadline. Host evidence cannot
+		// erase a usable snapshot, nor does unavailable inventory hide a host report.
+		var reportWG sync.WaitGroup
+		reportWG.Add(1)
+		go func() {
+			defer reportWG.Done()
+			result.HostCompatibilityStatus = "unsupported"
+			if !slices.Contains(hello.Features, protocol.HostCompatibilityFeature) {
+				result.HostCompatibilityError = &protocol.APIError{Code: "host_report_unsupported", Message: client.ErrHostCompatibilityUnsupported.Error()}
+				return
+			}
+			report, reportErr := c.HostCompatibility(ctx, entry.Identity())
+			if reportErr == nil {
+				result.HostCompatibility, result.HostCompatibilityStatus = &report, "available"
+				if time.Now().After(report.ExpiresAt) {
+					result.HostCompatibilityStatus = "stale"
+				}
+				return
+			}
+			result.HostCompatibilityStatus = "unavailable"
+			problem := protocol.APIError{Code: "host_report_unavailable", Message: client.ErrHostCompatibilityUnavailable.Error()}
+			if errors.Is(reportErr, client.ErrIdentityMismatch) {
+				problem.Code = "host_report_identity_mismatch"
+			} else if errors.Is(reportErr, context.DeadlineExceeded) {
+				problem.Code = "host_report_timeout"
+			} else if errors.Is(reportErr, client.ErrHostCompatibilityUnsupported) {
+				result.HostCompatibilityStatus, problem.Code = "unsupported", "host_report_unsupported"
+				problem.Message = client.ErrHostCompatibilityUnsupported.Error()
+			}
+			result.HostCompatibilityError = &problem
+		}()
 		snapshot, err = c.Snapshot(ctx)
+		reportWG.Wait()
 	}
 	if err == nil {
 		err = entry.Identity().Check(snapshot.RunnerID, snapshot.Mode)

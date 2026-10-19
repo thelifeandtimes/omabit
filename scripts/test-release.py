@@ -81,9 +81,18 @@ def main():
             assert build[key] == metadata[key], "archive/release provenance mismatch: " + key
         schema = int(subprocess.check_output([package / "build/urbit-runner", "state-schema"], text=True, timeout=10))
         assert schema == build["schema"] == metadata["schema"], "binary/package/release schema mismatch"
+        if schema >= 21:
+            assert build["engine"] == metadata["engine"] == "distribution-native"
+            assert build["engine_policy"] == metadata["engine_policy"], "engine policy metadata mismatch"
+            policy = metadata["engine_policy"]
+            assert policy["id"] == "docker-rootless-v1" and policy["required_api"] == "1.47"
+            assert policy["stable_minimum_inclusive"] == "27.2.0" and policy["stable_maximum_exclusive"] == "30.0.0"
+            assert policy["qualification"] == "exact-stack-evidence-required"
         assert build["pill"]["sha256"] == metadata["pill"]["sha256"]
         manifest = json.loads((package / "plugins/omabit/manifest.json").read_text())
         assert manifest["version"] == version
+        for name in ("Service.qml", "MonitorWindow.qml", "SetupPane.qml", "Panel.qml"):
+            assert version in (package / "plugins/omabit" / name).read_text(), "stale packaged UI version: " + name
         if "default_url" in metadata["pill"]:
             assert manifest["barWidget"]["defaults"]["recommendedPillUrl"] == build["pill"]["default_url"] == metadata["pill"]["default_url"]
             assert metadata["pill"]["default_url"].startswith("https://")

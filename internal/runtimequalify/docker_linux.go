@@ -16,6 +16,7 @@ import (
 	"syscall"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostcompat"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
@@ -105,7 +106,7 @@ func (q *qualifier) docker(ctx context.Context, timeout time.Duration, args ...s
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	args = append([]string{"--host", "unix://" + q.socket, "--config", q.config}, args...)
-	out, err := q.d.execute(ctx, args, []string{"HOME=" + q.d.home, "PATH=/usr/bin:/bin", "LANG=C"})
+	out, err := q.d.execute(ctx, args, []string{"HOME=" + q.d.home, "PATH=/usr/bin:/bin", "LANG=C", "DOCKER_API_VERSION=" + hostcompat.APIVersion})
 	if err != nil || ctx.Err() != nil || len(out) > outputLimit {
 		status := "client failure"
 		var exit *exec.ExitError
@@ -171,6 +172,9 @@ type container struct {
 
 func (q *qualifier) inspect(ctx context.Context, index int) (container, error) {
 	r := &q.r.Containers[index]
+	if q.restrictedEngine && !containerIDPattern.MatchString(r.ID) {
+		return container{}, errUntrustedContainer
+	}
 	out, err := q.docker(ctx, q.d.times.command, "container", "inspect", r.Name)
 	if err != nil {
 		return container{}, err
@@ -352,6 +356,15 @@ func (q *qualifier) containment(c container, kind string) error {
 }
 
 func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
+	return q.createWithDispatchIntent(ctx, kind, nil)
+}
+
+// beforeDispatch adds a caller's provisioning fence to the same durable write as
+// the container dispatch marker. Admission and local preparation can still fail
+// before that boundary without making an undispatched boot ambiguous. The hook
+// must only update the state published by q.save and return its undo function;
+// it never dispatches work itself.
+func (q *qualifier) createWithDispatchIntent(ctx context.Context, kind string, beforeDispatch func() func()) (int, error) {
 	index := len(q.r.Containers)
 	allowed := kind == "probe" ||
 		(q.d.managed && q.d.profile == ProfileHTTP && (kind == "pack" || kind == "meld" || kind == "roll")) ||
@@ -370,6 +383,11 @@ func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 	if !allowed {
 		return index, errors.New("container kind is not allowed for this qualification profile")
 	}
+	// Re-probe at the new launch boundary: installed package metadata and an
+	// earlier daemon observation cannot identify the daemon handling this create.
+	if err := q.verifyEngine(ctx); err != nil {
+		return index, err
+	}
 	network := "none"
 	if isNetworkedKind(kind) {
 		n, err := q.inspectNetwork(ctx)
@@ -382,7 +400,7 @@ func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 		return index, errors.New("verified backend image identity required before create")
 	}
 	name := q.resourceName(kind)
-	record := ContainerRecord{Name: name, Kind: kind}
+	record := ContainerRecord{Name: name, Kind: kind, EngineVersion: q.engineEvidence.Version}
 	baseEntry, baseArgs := baseCommand(kind)
 	if baseEntry == "/bin/urbit" {
 		record.Loom = protocol.EffectiveLoom(q.d.loom)
@@ -434,14 +452,25 @@ func (q *qualifier) create(ctx context.Context, kind string) (int, error) {
 	// Persist a conservative dispatch marker BEFORE the client can send a
 	// request. Crashes or client errors cannot turn an empty listing into proof
 	// that the daemon will never finish a create accepted in the background.
+	previousRecord, previousStage := q.r.Containers[index], q.r.Stage
 	q.r.Containers[index].CreateDispatched = true
 	q.r.Containers[index].CreateUncertain = true
+	var undoDispatchIntent func()
+	if beforeDispatch != nil {
+		undoDispatchIntent = beforeDispatch()
+	}
 	if q.d.managed && q.r.Stage == managedMaintenancePendingStage(kind) {
 		q.r.Stage = "maintenance-dispatched-" + kind
 	}
 	if err := q.save(); err != nil {
-		q.r.Containers[index].CreateDispatched = false
-		q.r.Containers[index].CreateUncertain = false
+		// No Docker call is possible before this write returns successfully.
+		// Return a consistent non-dispatch tuple for the manager's finish write,
+		// including a lost acknowledgment after commit. If this process dies
+		// before finish, the already-persisted dispatch fence stays conservative.
+		q.r.Containers[index], q.r.Stage = previousRecord, previousStage
+		if undoDispatchIntent != nil {
+			undoDispatchIntent()
+		}
 		return index, err
 	}
 	out, err := q.docker(ctx, q.d.times.command, args...)
@@ -473,7 +502,7 @@ func (q *qualifier) control(ctx context.Context, index int, timeout time.Duratio
 	if err != nil {
 		return "", err
 	}
-	if verb == "start" || verb == "exec" || verb == "wait" {
+	if verb == "start" || verb == "exec" || verb == "wait" || q.restrictedEngine {
 		if isNetworkedKind(q.r.Containers[index].Kind) {
 			if _, err := q.inspectNetwork(ctx); err != nil {
 				return "", err
@@ -514,6 +543,11 @@ func (q *qualifier) remove(ctx context.Context, index int) error {
 	c, err := q.inspect(ctx, index)
 	if err != nil {
 		return err
+	}
+	if q.restrictedEngine {
+		if err := q.containment(c, q.r.Containers[index].Kind); err != nil {
+			return err
+		}
 	}
 	if active(c) || c.State.Dead {
 		return errors.New("cannot confirm container stopped")
@@ -567,13 +601,6 @@ func (q *qualifier) cleanup() error {
 		errs = append(errs, err)
 	}
 	return errors.Join(errs...)
-}
-
-// Only an intent without any contrary dispatch/daemon evidence can be retired
-// locally. Missing containers or a missing dispatch flag alone are not proof.
-func containerCreateUndispatched(r ContainerRecord) bool {
-	return !r.CreateDispatched && !r.CreateUncertain && r.ID == "" && r.LastState == nil &&
-		!r.AliveObserved && !r.PrivateHTTPReachable && r.HostEndpoint == "" && !r.HostHTTPVerified
 }
 
 func (q *qualifier) cleanupOne(ctx context.Context, index int) error {

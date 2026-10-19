@@ -169,13 +169,12 @@ func TestSubordinateAllocationAvoidsRealUIDsAndExistingRanges(t *testing.T) {
 }
 
 func TestOwnerEngineCheckUsesRealGuardTemplateAndPreservesLauncherPin(t *testing.T) {
-	data, err := os.ReadFile("../rootless/assets/check-engine.sh")
+	files, err := rootless.ServiceFiles()
 	if err != nil {
 		t.Fatal(err)
 	}
-	legacy := strings.NewReplacer("@ACCOUNT@", rootless.AccountName, "@HOME@", rootless.HomeDir, "@ENGINE_VERSION@", rootless.EngineVersion, "@INSTALL_DIR@", rootless.InstallDir, "@LAUNCHER_SHA256@", rootless.LauncherSHA256).Replace(string(data))
 	p := ownerhost.Profile{Version: 1, Name: "desktop", UID: 1000, GID: 1000, Home: "/home/desktop", Piers: ownerhost.DefaultPiers}
-	check := string(ownerEngineCheck([]byte(legacy), p))
+	check := string(ownerEngineCheck(files["check-engine.sh"], p))
 	for _, want := range []string{`[ "$(id -un)" = 'desktop' ]`, `[ "${HOME:-}" = '/home/desktop' ]`, `getent passwd 'desktop'`, `[ "$home" = '/home/desktop' ]`, rootless.InstallDir + "/dockerd-rootless.sh", rootless.LauncherSHA256} {
 		if !strings.Contains(check, want) {
 			t.Fatal("missing owner guard", want, check)

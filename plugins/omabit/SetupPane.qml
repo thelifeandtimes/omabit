@@ -44,7 +44,7 @@ Column {
   RowLayout {
     width: parent.width; visible: root.mode !== "home"
     ActionButton { compact: true; quiet: true; text: ["runner","edit","connection"].indexOf(root.mode)>=0 ? "← Runners" : "← Setup"; onClicked: root.mode = ["runner","edit","connection"].indexOf(root.mode)>=0 ? "manage" : "home" }
-    Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; secondary: true; caption: true; text: "OMABIT 0.1.0-rc.9 · SETUP" }
+    Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; secondary: true; caption: true; text: "OMABIT 0.1.0-rc.13 · SETUP" }
   }
   Column {
     width: parent.width; spacing: Style.space(8); visible: root.mode === "home"
@@ -136,6 +136,7 @@ Column {
           }
           Label { width: parent.width; visible: !!row.observation && row.observation.status === "identity_mismatch"; text: "If this same runner was switched to serve-development, explicitly accept its broader mode below. Runner identity remains pinned."; caption: true; color: Design.warning }
           ActionButton { visible: !!row.observation && row.observation.status === "identity_mismatch"; text: "Accept development mode"; enabled: !root.service.busy; onClicked: root.service.acceptDevelopmentMode(row.observation) }
+          HostCompatibility { objectName: "runner-host-compatibility-"+row.modelData.name; width: parent.width; report: Model.hostCompatibility(row.observation); envelope: row.observation ? row.observation.host_compatibility || null : null; problem: Model.hostCompatibilityHint(row.observation,root.service.now); now: root.service.now; details: true }
         }
       }
     }

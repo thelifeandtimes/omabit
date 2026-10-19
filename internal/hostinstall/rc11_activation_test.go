@@ -34,7 +34,7 @@ func configureActivationFixture(f *fixture) {
 			if slices.Contains(args, "stop") {
 				active = false
 			}
-			if slices.Contains(args, "enable") || slices.Contains(args, "start") {
+			if slices.Contains(args, "enable") && slices.Contains(args, "--now") || slices.Contains(args, "start") {
 				data, err := os.ReadFile(f.i.path(access.ShellPath))
 				if err != nil {
 					return nil, err
@@ -242,7 +242,7 @@ func TestRC11CompatibleRollbackAndReleaseReplay(t *testing.T) {
 
 func TestRC11RollbackRefusesPossiblyMigratedSchema(t *testing.T) {
 	f, _, _ := ownerFixture(t)
-	j := &activationJournal{Previous: &executableGeneration{SHA256: strings.Repeat("a", 64), MinSchema: 11, Schema: 19}, Target: executableGeneration{SHA256: strings.Repeat("b", 64), MinSchema: 11, Schema: 20}}
+	j := &activationJournal{Previous: &executableGeneration{SHA256: strings.Repeat("a", 64), MinSchema: 11, Schema: 19}, Target: executableGeneration{SHA256: strings.Repeat("b", 64), MinSchema: 11, Schema: managed.StateSchemaVersion}}
 	_, err := f.i.rollbackManagement(context.Background(), "fixture", j, func(...string) error { t.Fatal("rollback dispatched"); return nil })
 	if err == nil || !strings.Contains(err.Error(), "schema") {
 		t.Fatal(err)

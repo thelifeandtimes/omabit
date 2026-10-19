@@ -1,6 +1,7 @@
 package hostinstall
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"os"
@@ -12,7 +13,87 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/managed"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 )
+
+func TestOfflineHookPublicationRetryPreservesLiveReleasedManager(t *testing.T) {
+	f, p, db, _ := offlineOwnerFixture(t)
+	ctx := context.Background()
+	binary := []byte("new-current-schema-fixture")
+	f.i.publishFile = func(from, to string) error {
+		if to == f.i.path(rootless.PacmanPackageHookPath) {
+			return errors.New("interrupted native hook publication")
+		}
+		return os.Rename(from, to)
+	}
+	result, err := f.i.installOwnerOffline(ctx, "/bundle", hostPublic(1), binary, p, nil)
+	if err == nil || result.Ready || !result.Partial {
+		t.Fatal(result, err)
+	}
+	if j := retryJournal(t, f); j.Stage != "complete" {
+		t.Fatal("failure was not after release", j.Stage)
+	}
+	if _, err := os.Stat(f.i.path(rootless.PacmanPackageHookPath)); !os.IsNotExist(err) {
+		t.Fatal("hook fault was not reached", err)
+	}
+	before, err := f.i.activationEvidence(ctx, p.Name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	queries := []string{"SELECT value FROM meta WHERE key='management_update_v1'", "SELECT hex(body) FROM operations WHERE id='op-old'", "SELECT hex(body) FROM instances WHERE id='stopped'"}
+	state := make([]string, len(queries))
+	for n, query := range queries {
+		if err := db.QueryRow(query).Scan(&state[n]); err != nil {
+			t.Fatal(err)
+		}
+	}
+	f.i.publishFile, f.calls = nil, nil
+	f.i.offlineLock = func(string, uint32) (*managed.OfflineStateLock, error) {
+		t.Fatal("released live manager was relocked")
+		return nil, nil
+	}
+	rpc := f.i.updateRPC
+	f.i.updateRPC = func(ctx context.Context, socket string, uid uint32, pid int, req *protocol.ManagementUpdateRequest) (protocol.ManagementUpdateStatus, error) {
+		if req != nil {
+			t.Fatal("released update fence was reacquired/released", req.Action)
+		}
+		return rpc(ctx, socket, uid, pid, req)
+	}
+	files, _ := rootless.PackageHookFiles("pacman")
+	for range 2 {
+		result, err := f.i.installOwnerOffline(ctx, "/bundle", hostPublic(1), binary, p, nil)
+		if err != nil || !result.Ready {
+			t.Fatal(result, err)
+		}
+		for path, expected := range files {
+			data, err := f.i.readInstalled(ctx, path, maxOutput)
+			if err != nil || !bytes.Equal(data, expected) {
+				t.Fatal("ready without reviewed hook", path, err)
+			}
+		}
+	}
+	// A completed continuation must also revalidate existing hooks, not merely
+	// return the already released manager's readiness after a local edit.
+	f.put(rootless.PacmanPackageHookPath, "# administrator override\n", 0644)
+	if result, err := f.i.installOwnerOffline(ctx, "/bundle", hostPublic(1), binary, p, nil); err == nil || result.Ready {
+		t.Fatal("edited hook was not revalidated", result, err)
+	}
+	after, err := f.i.activationEvidence(ctx, p.Name)
+	if err != nil || before != after {
+		t.Fatal("live management invocation changed", before, after, err)
+	}
+	for _, c := range f.calls {
+		if c.path == "/usr/bin/systemctl" {
+			t.Fatal("hook recovery changed a service", c)
+		}
+	}
+	for n, query := range queries {
+		var after string
+		if err := db.QueryRow(query).Scan(&after); err != nil || after != state[n] {
+			t.Fatal("hook recovery changed state/fence", query, err)
+		}
+	}
+}
 
 func TestRC11OfflineVerifiedRetryStartsForwardDespitePostReleaseWork(t *testing.T) {
 	for _, scenario := range []string{"held", "released-queued", "released-running", "released-uncertain", "complete-queued"} {

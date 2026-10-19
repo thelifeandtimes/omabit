@@ -31,6 +31,13 @@ Commands:
   ssh-bridge --socket PATH --authorized-keys FILE --fingerprint ID
                              Fixed-command SSH RPC bridge (development fixtures).
   preflight                  Read local prerequisites without contacting Docker.
+  doctor                     Alias for metadata-only preflight.
+  host-check [--format json|text] [--live]
+                             Report native packages; --live probes the installed owner's engine.
+  verify-host-packages --acknowledge-local-verification [--fetch-missing] [--format json|text]
+                             Local root: authenticate native packages; optional download-only fetch.
+  repair-engine-guard --acknowledge-host-changes [--fetch-missing] [--format json|text]
+                             Local root: refresh recognized guards/units; optional download-only fetch.
   setup-plan                 Show the rootless installation review plan as JSON.
   prepare-rootless --output /absolute/new/directory
                              Fetch pinned, inert rootless setup review artifacts.
@@ -128,7 +135,16 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		fmt.Fprint(stdout, usage)
 		return 0
 	}
-	if len(args) > 0 && (args[0] == "preflight" || args[0] == "setup-plan" || args[0] == "prepare-rootless" || args[0] == "install-rootless") {
+	if len(args) > 0 && args[0] == "host-check" {
+		return runHostCheck(ctx, args[1:], stdout, stderr)
+	}
+	if len(args) > 0 && args[0] == "verify-host-packages" {
+		return runVerifyHostPackages(ctx, args[1:], stdout, stderr)
+	}
+	if len(args) > 0 && args[0] == "repair-engine-guard" {
+		return runRepairEngineGuard(ctx, args[1:], stdout, stderr)
+	}
+	if len(args) > 0 && (args[0] == "preflight" || args[0] == "doctor" || args[0] == "setup-plan" || args[0] == "prepare-rootless" || args[0] == "install-rootless") {
 		return runSetup(ctx, args, stdout, stderr)
 	}
 	if len(args) > 0 && (args[0] == "runtime-plan" || args[0] == "qualify-runtime") {
