@@ -2,7 +2,9 @@
 
 ## Where we are
 
-**RC.14 is prepared for publication and workstation testing.** It packages the
+**[RC.14 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.14)**
+from source `17f2ac55`, with matching native bundle/tool pins and successful
+[source CI](https://github.com/thelifeandtimes/omabit/actions/runs/39364956092). It packages the
 retained stock-Omarchy bootstrap, immutable UI/tool generations and isolated test
 profiles. The committed implementation passed a live sourceport migration and
 profile round trip with both ships preserved and no shell restart; see the
