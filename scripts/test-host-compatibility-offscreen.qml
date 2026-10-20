@@ -69,6 +69,7 @@ ApplicationWindow {
     onTriggered: {
       if(phase===0) {
         if(setup.detailsOpen || control(setup,"setup-install-approval").checked || control(setup,"local-setup-primary").enabled)throw new Error("Existing setup approval/layout changed")
+        if(control(setup,"local-host-compatibility").visible || control(setup,"setup-progress-checklist").visible)throw new Error("Fresh setup was replaced by technical diagnostics or claimed progress")
         control(setup,"setup-view-details").clicked()
         if(!setup.detailsOpen || control(setup,"host-compatibility-facts").text.indexOf("provider: deb")<0 || control(setup,"host-compatibility-facts").text.indexOf("5:29.9.1-1")<0)throw new Error("Structured local details missing")
         if(control(setup,"host-compatibility-guidance").text!=="Review Debian native package evidence.")throw new Error("Distribution guidance replaced")
@@ -77,12 +78,16 @@ ApplicationWindow {
         if(Model.canOperate(connection,ship,"stop",root.now)!==connection.host_compatibility.report.can_stop || Model.canOperate(connection,Object.assign({},ship,{observed_state:"stopped"}),"start",root.now)!==connection.host_compatibility.report.can_mutate)throw new Error("Backend Stop/new-work permissions were replaced by UI rules")
         control(setup,"setup-install-approval").checked=true
         if(!control(setup,"local-setup-primary").enabled)throw new Error("Metadata runtime permissions replaced core setup prerequisites")
+        root.settingUp=true;root.localSetupStep="authorize"
+        if(!control(setup,"setup-progress-checklist").visible || control(setup,"setup-progress-state-0").text!=="✓" || control(setup,"setup-progress-state-2").text!=="✓" || control(setup,"setup-progress-state-3").text!=="4")throw new Error("Authorization phase lost the checked-off setup steps")
+        root.settingUp=false
         console.log("PASS: real setup/runtime rows show native facts separately from recovery and retain controls")
         root.localSetupStatus=Object.assign({},root.localSetupStatus,{ready:true,can_setup:false,connection:{name:"fixture",runner_id:"runner-fixture"}})
         test.connection=Model.observation(JSON.stringify(fixtures.older))
         phase=1
       } else if(phase===1) {
         if(control(setup,"local-setup-primary").text!=="Add a ship →")throw new Error("Package drift lost connected setup")
+        if(!control(setup,"setup-progress-checklist").visible || control(setup,"setup-progress-state-5").text!=="✓")throw new Error("Completed setup lost its completed checklist")
         if(control(runtime,"host-compatibility-summary").text.indexOf("Update this runner")<0 || Model.instances(connection).length!==1)throw new Error("Older runner lost inventory or upgrade hint")
         root.refresh()
         if(!localStatus.running || localStatus.command.join(" ")!=="fixture-omabit --format json setup-status" || root.setupCheckRequested)throw new Error("Refresh did not use read-only existing helper")

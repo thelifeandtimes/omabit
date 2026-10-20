@@ -132,8 +132,11 @@ cache layouts require reviewed support. See [hook details](../internal/hostinsta
 Authorized updates migrate only exact known generated guards/units, retaining
 the launcher/data paths, owner, SSH and state. An established stopped engine is
 not started as a side effect. Interrupted initial setup has separate activation
-evidence so it can resume. Existing valid subordinate-ID grants are preserved
-without allocating more authority; fresh allocation retains the strict NSS policy.
+evidence so it can resume. Both fresh setup and updates reuse valid existing
+OS-assigned subordinate-ID grants after owner/file validation. Consuming those
+grants does not require a previous Omabit installation. Creating new ranges retains
+the strict NSS allocation policy; unknown external identity domains are not treated
+as completely enumerable.
 
 If the old exact-version guard has already blocked the engine:
 

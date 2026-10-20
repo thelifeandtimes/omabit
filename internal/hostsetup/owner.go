@@ -1,7 +1,6 @@
 package hostsetup
 
 import (
-	"errors"
 	"os"
 	"os/user"
 	"strconv"
@@ -43,6 +42,35 @@ func LocalIDs(passwd, groups string) ([]uint64, []uint64) {
 		gids = append(gids, g)
 	}
 	return uids, gids
+}
+
+// LocalOwnerBinding identifies an already existing local login account. Consuming
+// its OS-delegated file grants does not require Omabit to have installed a profile
+// first, nor does it imply that external NSS enumeration is complete.
+func LocalOwnerBinding(passwd string, p ownerhost.Profile) bool {
+	if p.Validate() != nil {
+		return false
+	}
+	seen := false
+	for _, line := range strings.Split(passwd, "\n") {
+		if strings.TrimSpace(line) == "" {
+			continue
+		}
+		fields := strings.Split(line, ":")
+		if len(fields) != 7 {
+			return false
+		}
+		if fields[0] != p.Name {
+			continue
+		}
+		uid, uidErr := strconv.ParseUint(fields[2], 10, 32)
+		gid, gidErr := strconv.ParseUint(fields[3], 10, 32)
+		if seen || uidErr != nil || gidErr != nil || uid != uint64(p.UID) || gid != uint64(p.GID) || fields[5] != p.Home {
+			return false
+		}
+		seen = true
+	}
+	return seen
 }
 
 func InspectCurrentOwner() Report {
@@ -90,9 +118,10 @@ func InspectOwner(name string) Report {
 	if e1 != nil || e2 != nil {
 		uids, gids = nil, nil
 	}
-	if preserve && uids != nil && gids != nil {
-		// The currently resolved installed owner is known even when its identity
-		// is absent from the local files; this does not enumerate external NSS.
+	reuse := preserve || e1 == nil && LocalOwnerBinding(string(passwd), p)
+	if reuse && uids != nil && gids != nil {
+		// Include the selected owner's known IDs explicitly. An installed owner
+		// may be absent from local files; this does not enumerate external NSS.
 		uids, gids = append(uids, 0, uint64(p.UID)), append(gids, 0, uint64(p.GID))
 	}
 	for _, item := range []struct {
@@ -102,7 +131,7 @@ func InspectOwner(name string) Report {
 		data, err := os.ReadFile("/etc/" + item.name)
 		status, detail := "unknown", "Cannot read subordinate ID allocation."
 		if err == nil {
-			status, detail = ownerSubIDStatus(string(nss), reservations, reservationErr, preserve, p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.name, item.ids)
+			status, detail = ValidateOwnerSubIDAuthority(string(nss), reservations, reservationErr, reuse, p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.name, item.ids)
 		}
 		if status == "missing" && preserve {
 			detail = "Installed-owner grants need explicit review; management updates preserve existing ranges and never allocate replacements."
@@ -113,15 +142,4 @@ func InspectOwner(name string) Report {
 		r.add(item.name, status, detail)
 	}
 	return r
-}
-
-func ownerSubIDStatus(nss string, reservations []byte, reservationErr error, preserve bool, name, text, uid, kind string, ids []uint64) (string, string) {
-	if preserve && FileSubIDAuthority(nss) && !LocalIdentityAuthority(nss) && errors.Is(reservationErr, os.ErrNotExist) {
-		status, detail := ValidateSubIDs(name, text, uid, ids)
-		if status != "pass" {
-			return status, detail
-		}
-		return "unknown", "Existing file grants pass known local checks only; external identity-domain collision safety remains unknown. Authorized management updates may preserve these grants without allocation. New grants still require explicit reserved authority."
-	}
-	return ValidateSubIDAuthority(nss, reservations, name, text, uid, kind, ids)
 }

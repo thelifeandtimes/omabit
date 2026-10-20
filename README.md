@@ -8,11 +8,16 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Published:** [**0.1.0-rc.14**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.14), a Linux/AMD64 development release candidate
+**Release candidate:** [**0.1.0-rc.15**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.15), a Linux/AMD64 development release candidate
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and qualification scope](docs/release-rc14.md),
+[release notes and qualification scope](docs/release-rc15.md),
 and [Recommended Apps pill provenance](docs/pill-release.md). Final 0.1.0 is still pending.
+
+**RC.15** fixes first-time host setup on stock Omarchy by reusing existing
+OS-assigned user-namespace IDs without requiring a prior Omabit installation.
+The guided checklist and OS authorization flow remain the setup path; technical
+host diagnostics are under **View details**.
 
 **RC.14** adds a retained bootstrap for stock Omarchy, verified immutable UI/tool
 bundles, automatic desktop activation/recovery and isolated development profiles.

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"os"
 	"strings"
 )
 
@@ -98,4 +99,34 @@ func ValidateSubIDAuthority(nss string, reservations []byte, name, text, uid, ki
 		span = r.GID
 	}
 	return ValidateReservedSubIDs(name, text, uid, ids, span)
+}
+
+// ValidateOwnerSubIDAuthority permits read-only reuse of existing OS delegation
+// for a bound local account or an installed owner profile. This is distinct from
+// inventing new ranges: unknown/external identity domains still cannot authorize
+// allocation through incomplete enumeration. Privileged callers must recheck the
+// root ownership/permissions of these files and the selected account/home binding.
+func ValidateOwnerSubIDAuthority(nss string, reservations []byte, reservationErr error, reuse bool, name, text, uid, kind string, ids []uint64) (string, string) {
+	if !FileSubIDAuthority(nss) || LocalIdentityAuthority(nss) {
+		return ValidateSubIDAuthority(nss, reservations, name, text, uid, kind, ids)
+	}
+	if reservationErr == nil {
+		// An explicit policy remains authoritative, including malformed/conflicting
+		// policies. Reuse must not silently bypass it.
+		return ValidateSubIDAuthority(nss, reservations, name, text, uid, kind, ids)
+	}
+	if !errors.Is(reservationErr, os.ErrNotExist) {
+		return "blocked", "The configured user-namespace ID policy could not be read; have the host administrator review it."
+	}
+	if reuse {
+		status, detail := ValidateSubIDs(name, text, uid, ids)
+		if status == "pass" {
+			return "pass", "Existing OS-assigned user-namespace IDs can be reused without allocation. Known local collisions and grant overlaps were checked; this does not claim complete external NSS enumeration."
+		}
+		if status == "missing" {
+			return "blocked", "This account needs at least 65536 OS-assigned user-namespace IDs in both /etc/subuid and /etc/subgid. Existing ranges are preserved; new ranges on this identity configuration require the host administrator's reserved authority."
+		}
+		return status, detail
+	}
+	return ValidateSubIDAuthority(nss, reservations, name, text, uid, kind, ids)
 }

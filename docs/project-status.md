@@ -2,6 +2,12 @@
 
 ## Where we are
 
+**RC.15 is prepared to fix the sourcebox fresh-install blocker.** Read-only
+inspection confirmed stock Omarchy4.0.3-1, a local UID/GID1000 account, authoritative
+root-owned `100000:65536` grants in both subordinate-ID files, and no installed
+Omabit owner profile. The prior check wrongly required that application profile
+before accepting the existing OS delegation. See [RC.15 notes](release-rc15.md).
+
 **[RC.14 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.14)**
 from source `17f2ac55`, with matching native bundle/tool pins and successful
 [source CI](https://github.com/thelifeandtimes/omabit/actions/runs/39364956092). It packages the

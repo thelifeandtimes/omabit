@@ -7,7 +7,7 @@ import "Model.js" as Model
 Item {
   id: root
   readonly property int bootstrapAPI: 1
-  readonly property string applicationVersion: "0.1.0-rc.14"
+  readonly property string applicationVersion: "0.1.0-rc.15"
   property var shell: null
   property var manifest: null
   property var settings: ({})

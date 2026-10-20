@@ -158,15 +158,12 @@ func (i *installer) ownerMappings(ctx context.Context, p ownerhost.Profile) erro
 		return errors.New("subordinate-ID NSS is not file-backed; configure reserved mappings through its authority")
 	}
 	local := hostsetup.LocalIdentityAuthority(string(nss))
-	var reserved hostsetup.SubIDReservations
+	var reservations []byte
+	var reservationErr error
 	if !local {
-		data, err := i.readInstalled(ctx, hostsetup.SubIDReservationsPath, 8192)
-		if err != nil {
-			return errors.New("external or unknown NSS identity sources require root-owned subid-reservations.json and preconfigured reserved subuid/subgid ranges; enumeration is not authoritative")
-		}
-		reserved, err = hostsetup.ParseSubIDReservations(data)
-		if err != nil {
-			return err
+		reservations, reservationErr = i.readInstalled(ctx, hostsetup.SubIDReservationsPath, 8192)
+		if reservationErr != nil && !errors.Is(reservationErr, os.ErrNotExist) {
+			return reservationErr
 		}
 	}
 	passwd, err := i.readInstalled(ctx, "/etc/passwd", maxOutput)
@@ -181,6 +178,19 @@ func (i *installer) ownerMappings(ctx context.Context, p ownerhost.Profile) erro
 	if uids == nil || gids == nil {
 		return errors.New("local ID inventory unavailable")
 	}
+	reuse := hostsetup.LocalOwnerBinding(string(passwd), p)
+	if local && !reuse {
+		return errors.New("selected owner no longer matches the local login account")
+	}
+	uids, gids = append(uids, 0, uint64(p.UID)), append(gids, 0, uint64(p.GID))
+	type mapping struct {
+		file, flag string
+		ids        []uint64
+		allocate   bool
+	}
+	var mappings []mapping
+	// Validate BOTH files before allocating either range. Reuse checks only
+	// consume authority the OS has already granted to the exact selected owner.
 	for _, item := range []struct {
 		file, flag string
 		ids        []uint64
@@ -190,22 +200,20 @@ func (i *installer) ownerMappings(ctx context.Context, p ownerhost.Profile) erro
 		if err != nil {
 			return err
 		}
-		status, detail := hostsetup.ValidateSubIDs(p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.ids)
-		if !local {
-			span := reserved.UID
-			if item.file == "subgid" {
-				span = reserved.GID
-			}
-			status, detail = hostsetup.ValidateReservedSubIDs(p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.ids, span)
-			if status != "pass" {
-				return fmt.Errorf("configure reserved %s ranges explicitly: %s", item.file, detail)
-			}
+		status, detail := hostsetup.ValidateOwnerSubIDAuthority(string(nss), reservations, reservationErr, reuse, p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.file, item.ids)
+		if status != "pass" && !(local && status == "missing") {
+			return errors.New(detail)
 		}
-		if status == "pass" {
+		mappings = append(mappings, mapping{item.file, item.flag, item.ids, status == "missing"})
+	}
+	for _, item := range mappings {
+		if !item.allocate {
 			continue
 		}
-		if status != "missing" {
-			return errors.New(detail)
+		path := "/etc/" + item.file
+		data, err := i.readInstalled(ctx, path, maxOutput)
+		if err != nil {
+			return err
 		}
 		start, err := freeSubIDs(string(data), item.ids)
 		if err != nil {
@@ -219,7 +227,7 @@ func (i *installer) ownerMappings(ctx context.Context, p ownerhost.Profile) erro
 		if err != nil {
 			return err
 		}
-		if status, detail = hostsetup.ValidateSubIDs(p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.ids); status != "pass" {
+		if status, detail := hostsetup.ValidateSubIDs(p.Name, string(data), strconv.FormatUint(uint64(p.UID), 10), item.ids); status != "pass" {
 			return errors.New(detail)
 		}
 	}

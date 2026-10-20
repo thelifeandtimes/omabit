@@ -35,6 +35,12 @@ The current repeated fresh-install exercises are development qualification only.
 
 ## Development runtime settings
 
+RC.15 separates reuse of existing OS-delegated subordinate IDs from allocation of
+new ranges. Fresh owner setup validates the local account binding and both
+root-owned grant files without requiring an existing Omabit profile. Existing
+explicit reservation policies still apply; unknown identity domains do not gain
+automatic allocation authority. No runner/desktop schema change is involved.
+
 RC.14 adds a separate version1 desktop activation and
 profile store. Default user paths remain unchanged; named profiles have private
 XDG roots. Immutable UI/tool generations share a bootstrap/profile contract, and

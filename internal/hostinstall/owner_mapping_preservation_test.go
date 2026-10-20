@@ -110,7 +110,7 @@ func TestInstalledOwnerMappingsNeverAllocateMissingGrants(t *testing.T) {
 	}
 }
 
-func TestFreshOwnerStillRequiresUnknownNSSReservations(t *testing.T) {
+func TestFreshOwnerReusesOSGrantsButNeverAllocatesUnknownNSSRanges(t *testing.T) {
 	for _, existingGrants := range []bool{false, true} {
 		f, p, probe := ownerFixture(t)
 		f.put("/etc/nsswitch.conf", systemdIdentityNSS, 0644)
@@ -121,15 +121,28 @@ func TestFreshOwnerStillRequiresUnknownNSSReservations(t *testing.T) {
 		beforeUID, _ := os.ReadFile(f.i.path("/etc/subuid"))
 		beforeGID, _ := os.ReadFile(f.i.path("/etc/subgid"))
 		result, err := f.i.installOwner(context.Background(), "/bundle", hostPublic(1), []byte("runner"), p, probe, nil)
-		if err == nil || result.Ready || !strings.Contains(err.Error(), "reserv") || len(f.calls) != 0 {
-			t.Fatal("fresh unknown-NSS setup bypassed authority", result, err)
+		if existingGrants {
+			if err != nil || !result.Ready {
+				t.Fatal("existing OS grants blocked fresh setup", result, err)
+			}
+		} else if err == nil || result.Ready || !strings.Contains(err.Error(), "reserved authority") || len(f.calls) != 0 {
+			t.Fatal("fresh setup allocated unknown-NSS ranges", result, err)
+		}
+		for _, call := range f.calls {
+			if call.path == "/usr/bin/usermod" || call.path == "/usr/bin/useradd" {
+				t.Fatal("existing OS grant was changed", call)
+			}
 		}
 		for path, want := range map[string][]byte{"/etc/subuid": beforeUID, "/etc/subgid": beforeGID} {
 			if got, _ := os.ReadFile(f.i.path(path)); !bytes.Equal(got, want) {
 				t.Fatal("fresh refused setup changed grants", path)
 			}
 		}
-		for _, path := range []string{ownerhost.Path, hostsetup.SubIDReservationsPath} {
+		paths := []string{hostsetup.SubIDReservationsPath}
+		if !existingGrants {
+			paths = append(paths, ownerhost.Path)
+		}
+		for _, path := range paths {
 			if _, err := os.Stat(f.i.path(path)); !os.IsNotExist(err) {
 				t.Fatal("fresh refusal invented authority", path, err)
 			}

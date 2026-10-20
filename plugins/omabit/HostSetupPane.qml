@@ -37,7 +37,7 @@ Column {
         objectName: "setup-install-details"
         width: parent.width; spacing: Style.space(10); visible: root.detailsOpen
       Label { width: parent.width; caption: true; secondary: true; text: "The runner and its separate rootless Docker engine run as your Unix user. Setup creates /srv/urbit/piers for your ordinary file access, plus restricted management SSH and reboot services. Your login shell and personal SSH settings are preserved. Host changes ask for OS authorization; setup does not boot a ship." }
-      Label { objectName: "setup-binaries"; width: parent.width; caption: true; secondary: true; text: "Software: omabit (desktop/setup helper), urbit-collector (runner client), and urbit-runner (host service). The plugin downloads checksum-verified release binaries into ~/.cache/omabit/native-binaries/. Authorized setup installs urbit-runner at /usr/local/lib/urbit-runner/current/urbit-runner and Docker's verified rootless launcher under /usr/local/lib/urbit-runner/rootless/. The launcher's artifact version is independent of the OS-installed engine's compatibility." }
+      Label { objectName: "setup-binaries"; width: parent.width; caption: true; secondary: true; text: "Software: omabit (desktop/setup helper), urbit-collector (runner client), and urbit-runner (host service). The native desktop uses a checksum-verified UI/tool bundle under ~/.cache/omabit/releases/. Authorized setup installs urbit-runner at /usr/local/lib/urbit-runner/current/urbit-runner and Docker's verified rootless launcher under /usr/local/lib/urbit-runner/rootless/. The launcher's artifact version is independent of the OS-installed engine's compatibility." }
       Label { width: parent.width; caption: true; secondary: true; text: "Docker, RootlessKit, slirp4netns and OpenSSH come from your OS packages. Ships use the pinned official Vere 4.6 container image. You can build Omabit's three tools from source with Go 1.25+ and install them yourself." }
       Flow {
         width: parent.width; spacing: Style.space(8)
@@ -51,14 +51,16 @@ Column {
   }
   MachineUsePane { width: parent.width; service: root.service; visible: !root.ready }
   Column {
-    width: parent.width; spacing: Style.space(9); visible: root.running
+    objectName: "setup-progress-checklist"
+    width: parent.width; spacing: Style.space(9); visible: root.running || root.ready
     Repeater {
       model: ["Check prerequisites","Create private desktop access","Verify host helper","Set up background services","Connect and pin the runner","Ready to add your first ship"]
       RowLayout {
         required property int index
         required property string modelData
+        objectName: "setup-progress-step-"+index
         width: root.width; spacing: Style.space(10)
-        StatusBadge { text: root.step > index || root.ready ? "✓" : String(index+1); tone: root.step > index || root.ready ? "good" : root.step === index && root.running ? "accent" : "muted" }
+        StatusBadge { objectName: "setup-progress-state-"+parent.index; text: root.step > index || root.ready ? "✓" : String(index+1); tone: root.step > index || root.ready ? "good" : root.step === index && root.running ? "accent" : "muted" }
         Label { Layout.fillWidth: true; text: modelData; font.bold: root.step === index; secondary: root.step !== index && !root.ready }
         Controls.BusyIndicator { running: root.running && root.step === index; visible: running; implicitWidth: Style.space(22); implicitHeight: Style.space(22) }
       }
@@ -69,20 +71,20 @@ Column {
   Label { width: parent.width; visible: !!root.status && !!root.status.hint && !root.ready; text: root.status ? root.status.hint || "" : ""; secondary: true }
   HostCompatibility {
     objectName: "local-host-compatibility"
-    width: parent.width; visible: !!root.status
+    width: parent.width; visible: root.detailsOpen && !!root.status
     report: root.status ? root.status.compatibility || null : null
     problem: root.status ? root.status.compatibility_problem || (report ? "" : "Update the local Omabit and runner helpers for structured host compatibility checks.") : ""
     details: root.detailsOpen
     now: root.service ? root.service.now : Date.now()
   }
   Column {
-    width: parent.width; spacing: Style.space(7); visible: !!root.status && !root.status.can_setup
+    width: parent.width; spacing: Style.space(7); visible: !!root.status && !root.status.can_setup && !root.ready && !root.running
     Label { text: "A few prerequisites need attention"; font.bold: true }
     Repeater {
-      model: root.status ? root.status.checks.filter(function(c){ return c.status !== "pass" }) : []
+      model: root.status ? root.status.checks.filter(function(c,index,checks){ return c.status !== "pass" && !checks.slice(0,index).some(function(previous){return previous.status!=="pass" && previous.detail===c.detail}) }) : []
       Label { required property var modelData; width: root.width; text: modelData.detail; caption: true; color: Design.warning }
     }
-    Label { width: parent.width; secondary: true; caption: true; text: root.status && root.status.compatibility && (root.status.compatibility.guidance || []).length ? "Review the host guidance above, then Check again." : "Resolve the listed checks with this distribution's native packages, then Check again. Existing runner connections can still be used." }
+    Label { width: parent.width; secondary: true; caption: true; text: "Resolve the listed prerequisites, then Check again. Additional diagnostics are available in View details." }
   }
   RowLayout {
     width: parent.width
