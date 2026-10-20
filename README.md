@@ -1,5 +1,10 @@
 # Omabit
 
+**EDGE — opt-in bleeding-edge channel, not stable.** This branch starts from the
+verified0.1.0 bundle. Subsequent UI/QoL iterations use immutable `-edge.N`
+prereleases; backend-affecting changes require a new minor release line. Use the
+explicit channel updater below. Stable users should use `master`.
+
 A local Urbit fleet for Omarchy: run ships with the official Vere runtime, monitor
 them from the desktop, and manage maintenance without keeping terminal sessions open.
 
@@ -76,15 +81,18 @@ Prior dedicated-account installations were
 In a terminal inside your Omarchy desktop:
 
 ```bash
-omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enable
+omarchy plugin install https://github.com/thelifeandtimes/omabit.git
+python3 -B "$HOME/.config/omarchy/plugins/thelifeandtimes.omabit/scripts/omabit-channel.py" switch edge
+omarchy plugin enable thelifeandtimes.omabit
 ```
 
 This repository is directly installable through Omarchy's native GitHub plugin installer. The plugin downloads
 and verifies the pinned prebuilt tools on first use; no Go compiler or local bundle
 directory is required. See [native plugin distribution](docs/native-plugin.md).
 
-For an existing native desktop installation, use
-`omarchy plugin update thelifeandtimes.omabit`. RC.14's bootstrap prepares the
+For an existing edge installation, use
+`python3 -B "$HOME/.config/omarchy/plugins/thelifeandtimes.omabit/scripts/omabit-channel.py" update`.
+Stock `omarchy plugin update` follows remote HEAD (master), not edge. The bootstrap prepares the
 selected release and activates it when ready; see [updates](docs/native-plugin.md#updates)
 for diagnostics, explicit version pins and legacy recovery.
 
