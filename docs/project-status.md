@@ -2,11 +2,14 @@
 
 ## Where we are
 
-**RC.15 is prepared to fix the sourcebox fresh-install blocker.** Read-only
+**[RC.15 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.15)**
+from `55ddde08`, with matching native pins and successful source CI. Read-only
 inspection confirmed stock Omarchy4.0.3-1, a local UID/GID1000 account, authoritative
 root-owned `100000:65536` grants in both subordinate-ID files, and no installed
 Omabit owner profile. The prior check wrongly required that application profile
-before accepting the existing OS delegation. See [RC.15 notes](release-rc15.md).
+before accepting the existing OS delegation. The frozen helper changed actual
+sourcebox `can_setup:false` to `true`, with configuration and12 Urbit processes
+preserved. See [RC.15 notes](release-rc15.md) and the [verification record](diagnostics/rc15-sourcebox-setup-fix.md).
 
 **[RC.14 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.14)**
 from source `17f2ac55`, with matching native bundle/tool pins and successful

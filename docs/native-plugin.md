@@ -1,6 +1,6 @@
 # Native Omarchy GitHub installation
 
-**RC.14** uses the `native/v1` bootstrap and isolated test profiles described in
+**RC.14 and later** use the `native/v1` bootstrap and isolated test profiles described in
 [desktop development](desktop-development.md). It uses stock Omarchy's retained-service
 mechanism and verified release-specific QML paths. Older static-wrapper recovery
 instructions remain below for RC.13 and earlier installations.
@@ -33,7 +33,7 @@ module under `internal/`. No Go compiler, local extracted bundle, Git LFS or
 committed binary blobs are needed for plugin installation. Published RC.2 assets
 are not rebuilt or replaced by this repository organization.
 
-The RC.14 distribution selects **RC.14**, schema21 and owner-user host setup,
+Current pins select published **RC.15**, schema21 and owner-user host setup,
 including compact setup approval, one machine-use switch, guided identity-aware
 imports with progress, named pier leaves, and RC.7's persistent log following.
 The updated runner, collector and QML are distributed together. Existing hosts
@@ -64,6 +64,10 @@ acceptance on the two requested Omarchy versions remains pending. See the
 RC.14 adds the retained bootstrap, isolated test profiles and shared runtime
 version display. See the [RC.14 notes](release-rc14.md) for tested scope and the
 planned workstation/Omarchy acceptance sequence.
+RC.15 corrects the sourcebox first-install blocker by reusing existing OS-assigned
+subordinate IDs without requiring a prior Omabit profile. The setup checklist and
+authorization flow remain primary, with technical diagnostics under View details.
+See the [RC.15 notes](release-rc15.md) and [target verification](diagnostics/rc15-sourcebox-setup-fix.md).
 The service resolves packaged defaults when Omarchy passes only explicit inline
 settings. `recommended_pill_default` in monitor status verifies the effective
 source, rather than only the value recorded in the manifest.
