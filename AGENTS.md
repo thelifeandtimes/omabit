@@ -1,5 +1,24 @@
 # Repository operational guidance
 
+## Branches and versions (user requirements)
+
+Read `docs/development-policy.md` before branching, publishing, or merging.
+
+- `master` is protected and release-only. Never push directly to it or bypass its
+  protections. Merge reviewed release PRs with passing required checks.
+- Stable releases on `master` are full minor/major versions (`X.Y.0`). Do not ship
+  standalone UI/quality-of-life patch updates there; accumulate them on `edge` for
+  a later reviewed minor/major release.
+- Changes affecting `urbit-collector` or `urbit-runner`, including shared runtime,
+  protocol, installer or dependency code, require a new minor (or major) release
+  line. Do not disguise backend changes as UI patches.
+- `edge` is the opt-in bleeding-edge/personal channel, explicitly not stable.
+  Publish its artifacts as immutable `-edge.N` prereleases, never as latest stable.
+- `develop` is unqualified development with no stability guarantee. Start ordinary
+  development here or on topic branches; promote tested work deliberately.
+- Preserve these rules in contributor docs and CI. Native edge/develop updates must
+  fetch their explicit branch; stock Omarchy's updater fetches remote HEAD.
+
 Before any live pier import, move, reset, retirement, or deletion, read
 `docs/protected-ships.md` and apply its identity protection rules. These rules are
 user requirements, including for sourcebox fresh-install cleanups.

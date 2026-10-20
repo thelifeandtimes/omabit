@@ -3,6 +3,7 @@
 import argparse
 import gzip
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -15,6 +16,9 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 COMMANDS = ("omabit", "urbit-collector", "urbit-runner")
 SYSTEM_PATH = "/usr/bin:/bin"
+_policy_spec = importlib.util.spec_from_file_location("omabit_release_policy", Path(__file__).with_name("release_policy.py"))
+policy = importlib.util.module_from_spec(_policy_spec)
+_policy_spec.loader.exec_module(policy)
 
 
 def source_environment():
@@ -189,8 +193,8 @@ def main():
     parser.add_argument("--output", type=Path, default=ROOT / "dist")
     parser.add_argument("--qualification", type=Path, help="attach qualification to an already built version; does not rebuild artifacts")
     args = parser.parse_args()
-    if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-rc\.[0-9]+)?", args.version):
-        parser.error("use a release version such as 0.1.0-rc.1")
+    if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|edge)\.[0-9]+)?", args.version):
+        parser.error("use a stable, rc.N or edge.N release version")
     output = args.output.resolve()
     final = output / args.version
     if args.qualification:
@@ -236,6 +240,10 @@ def main():
         manifest = json.loads((source / "plugins/omabit/manifest.json").read_text())
         if manifest["version"] != args.version:
             parser.error("plugin version and release version must match")
+        pins = json.loads((source / "native/bootstrap/release.json").read_text())
+        backend_source = policy.backend_digest(source)
+        policy.validate_publication(args.version, pins["version"],
+                                    backend_source != pins.get("backend_source_sha256"), manifest.get("releaseChannel", "stable"))
         package = stage / prefix
         binaries = package / "build"
         binaries.mkdir(parents=True)
@@ -257,13 +265,14 @@ def main():
         installer = package / "install.sh"
         installer.write_text('#!/usr/bin/env bash\nset -euo pipefail\nROOT="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"\nexec python3 -B "$ROOT/scripts/install-panel.py" "$@"\n')
         installer.chmod(0o755)
-        metadata = {"version": args.version, "prerelease": "-rc." in args.version, "source_commit": commit, "platform": "linux/amd64", "go_version": subprocess.check_output([go, "version"], env=env, text=True).strip(), "schema": schema, "execution_model": "owner-user", "default_pier_root": "/srv/urbit/piers", "runtime": "4.6-5a7614f", "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd", "engine": "distribution-native", "pill": {"sha256": args.pill_sha256, "default_url": manifest["barWidget"]["defaults"]["recommendedPillUrl"], "application_inventory": "not_asserted"}}
+        metadata = {"version": args.version, "prerelease": "-" in args.version, "source_commit": commit, "platform": "linux/amd64", "go_version": subprocess.check_output([go, "version"], env=env, text=True).strip(), "schema": schema, "execution_model": "owner-user", "default_pier_root": "/srv/urbit/piers", "runtime": "4.6-5a7614f", "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd", "engine": "distribution-native", "pill": {"sha256": args.pill_sha256, "default_url": manifest["barWidget"]["defaults"]["recommendedPillUrl"], "application_inventory": "not_asserted"}}
         metadata["engine_policy"] = {
             "id": "docker-rootless-v1", "stable_minimum_inclusive": "27.2.0",
             "stable_maximum_exclusive": "30.0.0", "required_api": "1.47",
             "native_providers": ["pacman", "deb"], "rootless_launcher_version": "29.7.2",
             "qualification": "exact-stack-evidence-required",
         }
+        metadata["backend_source_sha256"] = backend_source
         metadata.update(source_tree=source_git(source, "rev-parse", "HEAD^{tree}").strip(),
                         source_epoch=epoch, source_inputs="git-commit-blobs-v1",
                         build_environment="isolated-go-v1")
