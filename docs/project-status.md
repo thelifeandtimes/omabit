@@ -2,6 +2,12 @@
 
 ## Where we are
 
+**Stable0.1.0 is being prepared through a release PR.** Master now requires PRs
+and passing source/Qt checks, including for administrators. The new
+[development policy](development-policy.md) reserves master for minor/major stable
+releases, edge for opt-in bleeding-edge work, and develop for unqualified work.
+Forward-upgrade qualification and exact release pins are part of the stable gate.
+
 **[RC.15 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.15)**
 from `55ddde08`, with matching native pins and successful source CI. Read-only
 inspection confirmed stock Omarchy4.0.3-1, a local UID/GID1000 account, authoritative

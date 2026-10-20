@@ -30,7 +30,7 @@ class BootstrapError(Exception):
 
 def validate_manifest(manifest):
     if (not isinstance(manifest, dict)
-            or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-rc\.[0-9]+)?", manifest.get("version", ""))
+            or not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+(?:-(?:rc|edge)\.[0-9]+)?", manifest.get("version", ""))
             or not re.fullmatch(r"[0-9a-f]{40}", manifest.get("source_commit", ""))
             or manifest.get("platform") != "linux/amd64"
             or not isinstance(manifest.get("binaries"), dict)

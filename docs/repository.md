@@ -46,6 +46,11 @@ separate work; it is not implemented by this repository cutover.
 
 ## Source publication versus release assets
 
+`master`, `edge` and `develop` follow the [user's development policy](development-policy.md).
+Master is protected and accepts stable minor/major releases by PR only. Small
+UI/QoL changes accumulate on edge; backend-affecting changes require a new minor
+or major release line. Develop is explicitly unqualified.
+
 The authoritative source and native Omarchy installation repository are both
 <https://github.com/thelifeandtimes/omabit>. Its root manifest loads small wrappers
 under `native/`, referencing the shared `plugins/omabit/` QML and checksum-pinned
@@ -63,6 +68,6 @@ qualification records. Pill bytes and generated packages are release assets,
 excluded from source commits. The provided pill's metadata and reported contents
 are recorded in [pill-plan.json](pill-plan.json).
 
-Source publication does not itself tag or publish the official 0.1.0 release.
+Source publication does not itself tag or publish a release.
 CI runs the source/model/installer tests; mapped desktop checks and actual pill
 bootstrap acceptance remain separately recorded qualification steps.

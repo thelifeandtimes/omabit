@@ -1,4 +1,4 @@
-# Omabit unified desktop plugin — 0.1.0-rc.15
+# Omabit unified desktop plugin — 0.1.0
 
 ## Host compatibility checks
 

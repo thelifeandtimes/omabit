@@ -1,6 +1,6 @@
-# Omabit 0.1.0-rc.15 binary bundle
+# Omabit 0.1.0 binary bundle
 
-This is an early release candidate for Linux x86-64. It contains prebuilt
+This is the initial stable release for supported Linux x86-64 hosts. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
 Go is not required to use this bundle.
 
@@ -13,7 +13,7 @@ snapshot-installation model, with cold replacement for updates.
 RC.7 retains management and the separate rootless Docker engine as the existing pier
 owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
 user-owned files. Storage/import/deletion and bounded reboot resume continue.
-This remains a development prerelease.
+See the [0.1.0 support and upgrade contract](https://github.com/thelifeandtimes/omabit/blob/v0.1.0/docs/release-0.1.0.md).
 
 RC.15 corrects the first-install subordinate-ID check on stock Omarchy. Existing
 root-owned OS grants for the selected local account are reused after validation;
@@ -155,7 +155,7 @@ bootstrap selection to Vere. Recommended Apps now defaults to the supplied URL:
 
 An operator may override that URL in plugin settings.
 The built-in URL is a compatibility alias for the immutable RC.11 pill artifact,
-whose SHA-256 and size are compiled into the RC.15 collector. RC.15 republishes the
+whose SHA-256 and size are compiled into the 0.1.0 collector. This release republishes the
 same supplied bytes; no new pill composition or application inventory is claimed.
 Network provisioning requires HTTPS. Custom HTTPS/local sources remain explicit
 operator inputs and can additionally supply `--pill-sha256` and `--pill-size`.

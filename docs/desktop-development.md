@@ -5,6 +5,11 @@ static wrappers; updating the native plugin installs the new bootstrap. Candidat
 builds/imports and isolated qualification also work directly from this checkout.
 No change to stock Omarchy is required.
 
+For work after stable0.1.0, follow the [branch/version policy](development-policy.md).
+`master` is release-only; use edge/develop or topic branches for iteration. Edge
+artifacts use `-edge.N` names and explicit branch updates, and the UI labels the
+distribution channel independently of the loaded artifact version.
+
 ## Architecture and compatibility
 
 The native manifest selects `native/v1/Service.qml` and `native/v1/Panel.qml`, with
@@ -95,7 +100,7 @@ Import the result (the command also prints its release digest):
 ```sh
 python3 -B scripts/omabit-dev.py import-release \
   build/dev-upgrade-1/release.json \
-  build/dev-upgrade-1/omabit-0.1.0-rc.14-linux-amd64.tar.gz
+  build/dev-upgrade-1/omabit-0.1.0-linux-amd64.tar.gz
 python3 -B scripts/omabit-dev.py profile-create development
 python3 -B scripts/omabit-dev.py select development --release RELEASE_DIGEST
 ```
