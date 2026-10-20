@@ -1,4 +1,4 @@
-# Omabit 0.1.0-rc.13 binary bundle
+# Omabit 0.1.0-rc.14 binary bundle
 
 This is an early release candidate for Linux x86-64. It contains prebuilt
 `omabit`, `urbit-collector`, `urbit-runner`, the Omarchy plugin and service templates.
@@ -6,13 +6,21 @@ Go is not required to use this bundle.
 
 For native GitHub installation through Omarchy instead of extracting this archive,
 use `omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enable`.
-Native installation uses the shared QML and pinned released tools. Published
-RC.1/RC.2 archives remain unchanged.
+Native installation uses the retained bootstrap and a complete checksum-pinned
+UI/tool bundle. The extracted archive's installer below remains the separate
+snapshot-installation model, with cold replacement for updates.
 
 RC.7 retains management and the separate rootless Docker engine as the existing pier
 owner, with `/srv/urbit/piers/` as default storage. Mounted desks are ordinary
 user-owned files. Storage/import/deletion and bounded reboot resume continue.
 This remains a development prerelease.
+
+RC.14 adds retained desktop activation, immutable release-specific QML/tool paths,
+isolated test profiles and development tooling. It keeps runner **schema21** and
+adds a separate version1 desktop activation/profile store. See
+[RC.14 notes](https://github.com/thelifeandtimes/omabit/blob/v0.1.0-rc.14/docs/release-rc14.md).
+Remote-only workstations can enroll an existing runner without local host setup or
+Docker; fresh desktop and fresh host installation are separate checks.
 
 RC.13 introduces **schema21** and distribution-native host compatibility: stable
 Docker27.2.0–29.x, API1.47 checks, native Pacman/Debian/Ubuntu authentication,
@@ -140,7 +148,7 @@ bootstrap selection to Vere. Recommended Apps now defaults to the supplied URL:
 
 An operator may override that URL in plugin settings.
 The built-in URL is a compatibility alias for the immutable RC.11 pill artifact,
-whose SHA-256 and size are compiled into the RC.13 collector. RC.13 republishes the
+whose SHA-256 and size are compiled into the RC.14 collector. RC.14 republishes the
 same supplied bytes; no new pill composition or application inventory is claimed.
 Network provisioning requires HTTPS. Custom HTTPS/local sources remain explicit
 operator inputs and can additionally supply `--pill-sha256` and `--pill-size`.

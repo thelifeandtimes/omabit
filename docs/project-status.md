@@ -2,6 +2,14 @@
 
 ## Where we are
 
+**RC.14 is prepared for publication and workstation testing.** It packages the
+retained stock-Omarchy bootstrap, immutable UI/tool generations and isolated test
+profiles. The committed implementation passed a live sourceport migration and
+profile round trip with both ships preserved and no shell restart; see the
+[local deployment record](diagnostics/2026-10-19-desktop-bootstrap-sourceport.md).
+The [RC.14 notes](release-rc14.md) separate that evidence from final-artifact checks
+and the user's planned fresh-workstation, remote-runner and Omarchy-upgrade tests.
+
 **[RC.13 is published](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.13)**
 from source `13d6f822`, with matching native tool pins and successful source CI.
 It introduces

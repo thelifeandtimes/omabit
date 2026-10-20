@@ -1,9 +1,9 @@
 # Desktop releases, profiles and upgrade qualification
 
-This is **development source after RC.13**. The published RC.13 plugin still uses
-the old static wrappers. Interactive switching below requires the new bootstrap
-to be installed; building/importing candidates and isolated qualification work
-directly from this checkout. No change to stock Omarchy is required.
+This describes the **RC.14** desktop architecture. Older RC.13 installations use
+static wrappers; updating the native plugin installs the new bootstrap. Candidate
+builds/imports and isolated qualification also work directly from this checkout.
+No change to stock Omarchy is required.
 
 ## Architecture and compatibility
 
@@ -95,7 +95,7 @@ Import the result (the command also prints its release digest):
 ```sh
 python3 -B scripts/omabit-dev.py import-release \
   build/dev-upgrade-1/release.json \
-  build/dev-upgrade-1/omabit-0.1.0-rc.13-linux-amd64.tar.gz
+  build/dev-upgrade-1/omabit-0.1.0-rc.14-linux-amd64.tar.gz
 python3 -B scripts/omabit-dev.py profile-create development
 python3 -B scripts/omabit-dev.py select development --release RELEASE_DIGEST
 ```

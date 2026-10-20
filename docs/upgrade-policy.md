@@ -35,7 +35,7 @@ The current repeated fresh-install exercises are development qualification only.
 
 ## Development runtime settings
 
-Unreleased desktop-bootstrap work adds a separate version1 desktop activation and
+RC.14 adds a separate version1 desktop activation and
 profile store. Default user paths remain unchanged; named profiles have private
 XDG roots. Immutable UI/tool generations share a bootstrap/profile contract, and
 unknown formats are refused rather than relabeled. Desktop selection never opens

@@ -8,11 +8,16 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Published:** [**0.1.0-rc.13**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.13), a Linux/AMD64 development release candidate
+**Release candidate:** [**0.1.0-rc.14**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0-rc.14), a Linux/AMD64 development release candidate
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and qualification scope](docs/release-rc13.md),
+[release notes and qualification scope](docs/release-rc14.md),
 and [Recommended Apps pill provenance](docs/pill-release.md). Final 0.1.0 is still pending.
+
+**RC.14** adds a retained bootstrap for stock Omarchy, verified immutable UI/tool
+bundles, automatic desktop activation/recovery and isolated development profiles.
+Existing default-profile enrollment and preferences are retained. See
+[how desktop releases and profiles work](docs/desktop-development.md).
 
 RC.12 includes the [adversarial-review fixes](docs/reviews/2026-10-18-rc11-remediation.md),
 with the same desktop layout and component split. Its frozen artifacts passed
@@ -67,15 +72,19 @@ This repository is directly installable through Omarchy's native GitHub plugin i
 and verifies the pinned prebuilt tools on first use; no Go compiler or local bundle
 directory is required. See [native plugin distribution](docs/native-plugin.md).
 
-For an existing desktop installation, use the documented
-[cold update sequence](docs/native-plugin.md#updates). Running `plugin update` alone
-can leave the shell using stale QML; a missing fleet after that update can be a
-desktop reload problem even while the host and ships remain healthy.
+For an existing native desktop installation, use
+`omarchy plugin update thelifeandtimes.omabit`. RC.14's bootstrap prepares the
+selected release and activates it when ready; see [updates](docs/native-plugin.md#updates)
+for diagnostics, explicit version pins and legacy recovery.
 
 Then open **~+ → Setup → Set up this computer**. The guided flow checks prerequisites,
 prepares private desktop access, asks for OS authorization, installs the background
 services and connects your desktop automatically. Choose **Add a ship → New comet**
 when it reports ready.
+
+To manage an existing remote runner, use **Setup → Manage runners → Connect another
+runner** with its authorized SSH connection. Remote-only desktop use needs no local
+Docker engine. Local host setup and remote enrollment are separate operations.
 
 For development from a source checkout:
 
@@ -133,7 +142,7 @@ Git remotes, and the current Go module identity.
 
 ## Development
 
-Unreleased source adds a retained bootstrap, immutable UI/tool releases and isolated
+RC.14 provides a retained bootstrap, immutable UI/tool releases and isolated
 test profiles for stock Omarchy. See [desktop development and upgrade testing](docs/desktop-development.md)
 for candidate builds, version selection, fresh profiles and guarded VM scenarios.
 
