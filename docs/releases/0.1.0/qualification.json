@@ -1,0 +1,62 @@
+{
+  "version": "0.1.0",
+  "source_commit": "9cc1d217df19c0aa9bcf6d92a5f8da500f022ffc",
+  "source_tree": "7a072f1195b19310f690d3bb97f90245cafcd73e",
+  "backend_source_sha256": "39208a8981410811791fc2e64444211c47e60f74764c00ec517e6d80fd41dc45",
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "channel": "stable",
+  "platform": "linux/amd64",
+  "runner_schema": 21,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "desktop_environment": {
+    "frozen_bundle": "Actual Quickshell service/widget qualification on Omarchy4.0.4-1 using isolated HOME/XDG and the existing display; no installed plugin mutation",
+    "prior_live_bootstrap": "Omarchy4.0.4-1 stock updater and profile round trip at source35be5a9, recorded in docs/diagnostics/2026-10-19-desktop-bootstrap-sourceport.md",
+    "fresh_setup": "User confirmed RC.15 setup works on sourcebox Omarchy4.0.3-1 after the frozen-helper preflight recorded in docs/diagnostics/rc15-sourcebox-setup-fix.md",
+    "limits": "The complete two-Omarchy fresh-guest matrix and planned remote-workstation/OS-upgrade sequence were not rerun with frozen stable artifacts"
+  },
+  "ci": {
+    "source": "https://github.com/thelifeandtimes/omabit/actions/runs/39377532455",
+    "initial_pr": "https://github.com/thelifeandtimes/omabit/actions/runs/39377747120",
+    "conclusion": "success"
+  },
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "evidence_sha256": "67e0d1ba1a44046521b90df941cd1bd8c1a13ae8d18ca6e68d1a7a9a14e1175f",
+    "source_commit": "9cc1d217df19c0aa9bcf6d92a5f8da500f022ffc",
+    "environment": "Dedicated unprivileged QEMU/KVM Arch guest overlay; real Docker29.7.2, rootless systemd/cgroup-v2 and official Vere4.6",
+    "incoming_upgrade": {"from_schema": 20, "to_schema": 21, "passed": true, "evidence_sha256": "c02770ecc87e875e459bc3c01cb1beb9ecd14932e23a0c5867c9e5a912ac7e97"},
+    "forward_checks": [
+      "Stable21 -> distinct clean same-source schema21 generation",
+      "Compatible return to the official stable21 generation",
+      "Stable21 -> prospective schema22 writer using the actual version-only migrator",
+      "Exact repeat of each successful generation without restarting management",
+      "Original actor-scoped registration receipt replay across every generation",
+      "Stable21 downgrade after schema22 refused without manager restart/replacement"
+    ],
+    "downgrade_message": "candidate cannot read current state schema; healthy management was preserved",
+    "preserved": ["running fake container/PID/start time/image/mounts/ports", "stopped fleet intent", "runner/instance identities and configurations", "operation receipts and fingerprints", "policies and deletion history", "owner/access/SSH keys and collector pins", "pier directory objects and ownership", "engine invocation", "database ownership"],
+    "successor_fixtures": {
+      "same_schema": {"schema": 21, "sha256": "99e3afb0139c5e8d6e97a806a43567c8f7e65d12956cd6d8ff01657f8752dd4c", "source_modified": false, "variant": "same source built with -ldflags=-s -w"},
+      "next_schema": {"schema": 22, "sha256": "da7c20b2727da20a8e6ab87ca3d5873035b5047f95c8c28eb1085b9075ab6d76", "source_modified": true, "only_change": "StateSchemaVersion 21 -> 22", "scope": "Test fixture, not a published future release"}
+    },
+    "native_authentication": "All eight package roles verified using native signatures and installed payload hashes. Original signed engine package archives from the retained lab inputs were restored to the guest package cache; no package/engine/version evidence was mocked.",
+    "disposition": "All disposable ships stopped; guest powered off. Prior backing disk hash and live host runtime observations unchanged."
+  },
+  "frozen_artifacts": {
+    "go_version": "go version go1.27.0-X:nodwarf5 linux/amd64",
+    "independent_clean_builds": 2,
+    "byte_identical": true,
+    "checks": ["asset/archive checksums", "clean source/tree/epoch provenance", "executable help and schema", "isolated desktop install/replace/customization preservation", "actual Quickshell service/widget and real helpers in isolated profile", "profile view restoration", "govulncheck v1.9.0: no vulnerabilities in three binaries"],
+    "assets": [
+      {"name": "omabit-0.1.0-linux-amd64.tar.gz", "bytes": 29827841, "sha256": "4fa01ee996b8e8d7eeee83eddc19cc8c3db1394d150a8332d52a9a381e2da6a7"},
+      {"name": "omabit-linux-amd64", "bytes": 17675994, "sha256": "16ad0685fd666452499b223692956e5446411d3e57b146d531bcc53ded257b5d"},
+      {"name": "omabit-recommended-apps-0.1.0.pill", "bytes": 59351751, "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"},
+      {"name": "urbit-collector-linux-amd64", "bytes": 11873020, "sha256": "d5d77c24131ed1dc5dd57a2f550db5d1c56fe269e48d72c839d89a236df8d8c9"},
+      {"name": "urbit-runner-linux-amd64", "bytes": 22352020, "sha256": "72bd87cdbb56b800730200e3f5c5c16d677355949ede3563f57dba5c9d9e1a37"}
+    ]
+  },
+  "scope_limits": ["Successor fixtures prove the upgrade machinery, not unknown future release changes", "Exact new Docker/distribution profiles still require their own live qualification", "Pill application inventory/OTA behavior is not newly asserted", "Historical API mode name development-managed remains for compatibility"],
+  "local_evidence": "build/stable-0.1.0/evidence-1792477173752782385/stable-upgrade-evidence/1792477091813512563-forward/"
+}

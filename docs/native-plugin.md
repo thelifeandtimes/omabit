@@ -33,7 +33,7 @@ module under `internal/`. No Go compiler, local extracted bundle, Git LFS or
 committed binary blobs are needed for plugin installation. Published RC.2 assets
 are not rebuilt or replaced by this repository organization.
 
-Current pins select published **RC.15**, schema21 and owner-user host setup,
+Stable0.1.0 pins select **0.1.0**, schema21 and owner-user host setup,
 including compact setup approval, one machine-use switch, guided identity-aware
 imports with progress, named pier leaves, and RC.7's persistent log following.
 The updated runner, collector and QML are distributed together. Existing hosts
@@ -78,8 +78,9 @@ On first use the bootstrap retrieves the complete Linux/AMD64 desktop archive fr
 the pinned versioned GitHub release. Archive and binary names, byte sizes, source
 commit and SHA-256 hashes are recorded in `native/bootstrap/release.json`. HTTPS
 redirects remain HTTPS; truncated, oversized or hash-mismatched downloads are refused.
-Tool pins name an already published build and advance after release publication;
-they are not a self-referential hash of the Git commit that stores those pins.
+Tool pins name an already built and verified release. For stable promotions they
+are reviewed with the frozen draft before publication; they are not a
+self-referential hash of the Git commit that stores those pins.
 
 The UI and tools are prepared together under a lock and atomically promoted into
 `$XDG_CACHE_HOME/omabit/releases/<descriptor-digest>/` (normally under `~/.cache`).
@@ -98,6 +99,10 @@ enroll a host or start a ship. Those remain explicit **Set up this computer** ac
 using the normal OS authorization flow.
 
 ## Updates
+
+The stable channel uses the command below. Opt-in edge/develop checkouts use the
+[explicit channel updater](development-policy.md#edgedevelop-installation-and-updates),
+because stock Omarchy fetches remote HEAD rather than the selected branch.
 
 For the native plugin:
 

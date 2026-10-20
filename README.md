@@ -8,7 +8,7 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Stable release preparation:** [**0.1.0**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0), a Linux/AMD64 release
+**Stable release:** [**0.1.0**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0), a Linux/AMD64 release
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
 [release notes and support scope](docs/release-0.1.0.md),
