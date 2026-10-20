@@ -1,5 +1,10 @@
 # Omabit
 
+**DEVELOP — unqualified development, with no stability guarantee.** This branch
+starts from the 0.1.0 baseline. Use development snapshots and isolated profiles to
+test changes, then promote tested work deliberately to edge or a release branch.
+Stable users should use `master`; personal bleeding-edge use belongs on `edge`.
+
 A local Urbit fleet for Omarchy: run ships with the official Vere runtime, monitor
 them from the desktop, and manage maintenance without keeping terminal sessions open.
 
@@ -76,15 +81,18 @@ Prior dedicated-account installations were
 In a terminal inside your Omarchy desktop:
 
 ```bash
-omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enable
+omarchy plugin install https://github.com/thelifeandtimes/omabit.git
+python3 -B "$HOME/.config/omarchy/plugins/thelifeandtimes.omabit/scripts/omabit-channel.py" switch develop
+omarchy plugin enable thelifeandtimes.omabit
 ```
 
 This repository is directly installable through Omarchy's native GitHub plugin installer. The plugin downloads
 and verifies the pinned prebuilt tools on first use; no Go compiler or local bundle
 directory is required. See [native plugin distribution](docs/native-plugin.md).
 
-For an existing native desktop installation, use
-`omarchy plugin update thelifeandtimes.omabit`. RC.14's bootstrap prepares the
+For an existing develop installation, use
+`python3 -B "$HOME/.config/omarchy/plugins/thelifeandtimes.omabit/scripts/omabit-channel.py" update`.
+Stock `omarchy plugin update` follows remote HEAD (master), not develop. The bootstrap prepares the
 selected release and activates it when ready; see [updates](docs/native-plugin.md#updates)
 for diagnostics, explicit version pins and legacy recovery.
 
