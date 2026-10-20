@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Release provenance fixtures: existing commit objects only; no test commits.
 
-Run with --build for two independent full builds plus the existing bundle smoke.
+Run with --build for two independent full builds plus the existing bundle smoke
+when the source identifies a publishable version/channel. Develop and an edge seed
+still following stable pins must prove public-packaging refusal instead.
 The current packaging implementation operates on an isolated committed baseline;
 this does NOT certify the uncommitted application/installer changes in a checkout.
 """
@@ -233,9 +235,34 @@ else:
             with self.assertRaisesRegex(RuntimeError, "local filesystem replacements"):
                 packager.check_modules(project, env, go)
 
+    def publication_refusal(self):
+        manifest = json.loads((self.baseline / "plugins/omabit/manifest.json").read_text())
+        if manifest.get("releaseChannel") == "develop":
+            return "develop is unqualified"
+        if manifest.get("releaseChannel") == "edge" and "-edge." not in manifest["version"]:
+            return "edge artifacts must use immutable -edge.N"
+        return None
+
+    def test_non_release_channel_cannot_publish(self):
+        reason = self.publication_refusal()
+        if reason is None:
+            self.skipTest("publishable source is covered by full reproduction")
+        version = json.loads((self.baseline / "plugins/omabit/manifest.json").read_text())["version"]
+        pill = self.root / "refusal.pill"
+        pill.write_bytes(b"inert refusal test pill; never booted\n")
+        output = self.root / "refused-publication"
+        with patch.object(packager, "ROOT", self.baseline), patch("sys.argv", [
+                "package-release.py", "--version", version, "--pill", str(pill),
+                "--pill-sha256", packager.sha256(pill), "--output", str(output)]):
+            with self.assertRaisesRegex(ValueError, reason):
+                packager.main()
+        self.assertEqual(list(output.iterdir()), [], "refused channel must not leave public artifacts")
+
     def test_full_reproduction_with_negative_environment_and_existing_smoke(self):
         if not BUILD:
             self.skipTest("use --build for independent binary builds and package smoke")
+        if self.publication_refusal():
+            self.skipTest("non-release channel: actual publication refusal is tested separately")
         pill = self.root / "inert.pill"
         pill.write_bytes(b"inert release test pill; never booted\n")
         version = json.loads((self.baseline / "plugins/omabit/manifest.json").read_text())["version"]
