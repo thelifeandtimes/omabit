@@ -22,7 +22,7 @@ Card {
     anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(14); spacing: Style.space(10)
     RowLayout {
       width: parent.width
-      Label { Layout.fillWidth: true; text: root.policy ? "Scheduled " + root.policy.config.action : "Routine maintenance"; font.bold: true; font.pixelSize: Style.space(18) }
+      CardTitle { Layout.fillWidth: true; text: root.policy ? "Scheduled " + root.policy.config.action : "Routine maintenance" }
       StatusBadge { objectName: "routine-policy-status"; text: !root.policy ? "Not set" : root.policy.config.enabled ? "Enabled" : "Saved · disabled"; tone: root.policy && root.policy.config.enabled ? "good" : "muted" }
     }
     Label { width: parent.width; text: Model.routineTiming(root.policy); font.bold: !!root.policy }

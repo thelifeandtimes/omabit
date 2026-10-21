@@ -44,7 +44,7 @@ Column {
           ShipName { objectName: "activity-subject"; Layout.fillWidth: true; Layout.minimumWidth: 0; instance: event.modelData.subject; font.bold: true; font.pixelSize: Style.space(13) }
           Label { objectName: "activity-time"; Layout.alignment: Qt.AlignRight | Qt.AlignTop; text: Model.humanTime(event.modelData.time,root.service.now); secondary: true; caption: true }
         }
-        Label { objectName: "activity-action"; width: parent.width; text: Model.operationTitle(event.modelData.kind); font.bold: true }
+        CardTitle { objectName: "activity-action"; width: parent.width; text: Model.operationTitle(event.modelData.kind) }
         RowLayout {
           width: parent.width
           ActionButton { id: details; objectName: "activity-details"; compact: true; quiet: true; text: root.expanded === event.modelData.key ? "Less −" : "Details +"; onClicked: root.expanded = root.expanded === event.modelData.key ? "" : event.modelData.key }

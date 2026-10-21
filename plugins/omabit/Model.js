@@ -2,6 +2,21 @@ function validId(value) {
   return typeof value === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(value)
 }
 
+function validRemoteHost(value) { return typeof value==="string" && /^[A-Za-z0-9_][A-Za-z0-9._-]{0,252}$/.test(value) }
+function validateRemoteSetup(value) {
+  if (!value || value.version!==1 || ["idle","prepared","opening_terminal","authenticate","prepare","authorize","verify","connected","revoked","failed","interrupted"].indexOf(value.phase)<0 || typeof value.busy!=="boolean" || typeof value.message!=="string" || value.message.length>8192 || !Number.isInteger(value.ships) || value.ships<0)
+    throw new Error("Invalid remote setup status")
+  if (value.phase!=="idle" && (!/^[a-f0-9]{32}$/.test(value.id || "") || !value.options || !validRemoteHost(value.options.host) || !validId(value.options.name) || ["operator","observer"].indexOf(value.options.role)<0)) throw new Error("Remote setup target is not bound")
+  if (value.phase==="connected" && (!validId(value.runner_id) || !validId(value.connection) || value.mode!=="development-managed")) throw new Error("Remote connection is not verified")
+  return value
+}
+function remoteSetupArgs(options) {
+  if (!options || !validRemoteHost(options.host)) throw new Error("Enter an SSH alias or hostname.")
+  var args=["remote-setup-start","--host",options.host]
+  ;[["name","name"],["user","user"],["port","port"],["config","ssh-config"],["owner","owner"],["role","role"]].forEach(function(pair){if(options[pair[0]])args=args.concat(["--"+pair[1],String(options[pair[0]])])})
+  return args
+}
+
 function recommendedPillSource(settings, manifest) {
   settings=settings || {}
   // Omarchy can pass only the explicit inline settings. An explicitly empty
@@ -647,8 +662,35 @@ function operationTitle(kind) {
     "configure-routine":"Update maintenance policy","routine-pack":"Scheduled pack","routine-meld":"Scheduled meld","login-code":"Get +code"}[kind] || String(kind || "Event").replace(/-/g," ")
 }
 
+function runtimeActionKey(connection,instance) { return connection && instance ? JSON.stringify([connection.runner_id,connection.name,instance.id,instance.config_revision]) : "" }
+function runtimeActionTarget(args) {
+  var command=args.indexOf("operate"),runner=args.indexOf("--expected-runner-id"),connection=args.indexOf("--runner"),revision=args.indexOf("--revision")
+  if(command<0 || runner<0 || connection<0 || revision<0)return null
+  var target={runner_id:args[runner+1],name:args[connection+1]},ship={id:args[command+1],config_revision:Number(args[revision+1])}
+  if(!validId(target.runner_id)||!validId(target.name)||!validId(ship.id)||!Number.isSafeInteger(ship.config_revision)||ship.config_revision<1)return null
+  return {key:runtimeActionKey(target,ship),title:operationTitle(args[command+2])}
+}
+
 function runtimeStage(stage) {
   return {"preparing-runtime":"Preparing runtime","preparing-pill":"Preparing boot pill","starting-runtime":"Starting runtime","waiting-for-identity":"Booting · checking identity","moving-pier":"Moving stopped pier","stopping":"Stopping runtime","stopped":"Stopped","ready":"Ready"}[stage] || ""
+}
+function runtimeLoom(instance) {
+  var d=instance && instance.runtime_status || {}, config=instance && instance.config || {}
+  var recorded=d.launch_loom!==undefined, n=Number(recorded ? d.launch_loom : config.loom)
+  if (!Number.isInteger(n) || n<20 || n>34) return {label:"Loom unknown",hint:"Loom size has not been reported."}
+  var hint=(recorded ? "Recorded launch" : "Configured for the next launch; actual launch size not reported")+": "+loomLabel(n)+" address space. This is not current RAM usage."
+  if (recorded && config.loom!==undefined && Number(config.loom)!==n) hint+=" Requested for the next launch: "+loomLabel(config.loom)+"."
+  return {label:Math.pow(2,n-(n<30 ? 20 : 30))+(n<30 ? "MB" : "GB")+" Loom",hint:hint}
+}
+function runtimeNotice(instance) {
+  if (!instance) return ""
+  var d=instance.runtime_status || {}, parts=[]
+  if (instance.active_operation_id) parts.push(runtimeStage(d.stage) || "Runner operation in progress")
+  if (d.running===false && d.exit_code!==undefined && (d.exit_code!==0 || d.oom_killed===true || instance.observed_state==="failed"))
+    parts.push("Urbit exited with code "+d.exit_code+(d.oom_killed===true ? " · out of memory" : "")+". See Urbit Logs and Technical details.")
+  if (d.launch_error) parts.push(d.launch_error)
+  if (instance.recovery_required) parts.push("Recovery needs review. Check Urbit Logs and Technical details before restarting.")
+  return parts.join("\n")
 }
 function runtimeDetail(instance) {
   if (!instance) return "Select a ship."
@@ -684,6 +726,17 @@ function runtimeNarration(lines) {
     previous=prefix
   })
   return out.slice(-4).join("\n")
+}
+function priorityRuntimeLogs(lines) {
+  // This is only a text filter over the already-redacted tail, not a health or
+  // severity report. Keep original timestamps/order and a line of context.
+  lines=lines || []
+  var selected={}
+  lines.forEach(function(line,index) {
+    if (!/\b(?:errors?|err|warnings?|warn|fail(?:ed|ure|ures)?|fatal|panic|crash(?:ed)?|exception|timeout|timed out|out of memory|oom|segfault)\b/i.test(line)) return
+    for (var n=Math.max(0,index-1);n<=Math.min(lines.length-1,index+1);n++) selected[n]=true
+  })
+  return lines.filter(function(_,index){return selected[index]===true})
 }
 // Early display only: the runner still verifies its authoritative identity via
 // the pinned runtime's identity endpoint before declaring boot healthy.

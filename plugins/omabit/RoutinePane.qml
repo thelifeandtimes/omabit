@@ -42,6 +42,7 @@ Column {
     Column {
       id: form
       anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(14); spacing: Style.space(12)
+      CardTitle { text: "Maintenance policy" }
       Label { width: parent.width; text: "Saving enables this policy. Scheduled maintenance stops the ship when needed; choose below whether to resume it after success."; secondary: true; caption: true }
       SelectField { id: action; width: parent.width; model: ["pack","meld"] }
       Label { text: "UTC weekdays"; secondary: true; caption: true }

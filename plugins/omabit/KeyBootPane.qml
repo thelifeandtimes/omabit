@@ -28,8 +28,8 @@ Column {
   readonly property bool submitted: registered || !!outcome && outcome.status!=="failed"
   readonly property string problem: registered ? "" : !destination || !Model.validPierPath(destination) ? "Enter a galaxy, star, planet or moon identity and valid destination." : !root.keyFile ? "Choose the private key file." : !Model.optionalPort(httpPort.text) || !Model.optionalPort(amesPort.text) ? "Advanced ports must be blank or 1024–65535." : runtimeSettings.problem || bootstrap.problem
   spacing: Style.space(12)
-  Label { text: "Boot an owned ship from a key"; font.pixelSize: Style.space(21); font.bold: true }
-  Label { width: parent.width; text: "Choose your Urbit ID and private key file. Omabit names the instance from its @p, selects its pier directory, allocates available ports and boots it with your confirmation."; secondary: true }
+  Label { text: "Your Urbit ID and boot key"; font.pixelSize: Style.space(21); font.bold: true }
+  Label { width: parent.width; text: "Enter your Urbit ID and choose its private boot-key file. Omabit uses your Urbit ID to name the instance, chooses its data directory and available ports, and boots it with your confirmation."; secondary: true }
   ActionButton { objectName: "get-urbit-id"; property url url: "https://urbit.org/overview/running-urbit/get-urbit-id"; text: "Get an Urbit ID ↗"; quiet: true; compact: true; hint: url; onClicked: Qt.openUrlExternally(url) }
   BootstrapSelector { id: bootstrap; width: parent.width; service: root.service; visible: !root.registered; enabled: !root.submitted && !!root.service && !root.service.busy; onEdited: {root.submitError="";bootConsent.checked=false} }
   Label { width: parent.width; visible: root.registered && !!root.registeredInstance.bootstrap; text: visible ? "Boot pill: "+(root.registeredInstance.bootstrap.kind==="bare" ? "bare bootstrap" : "Recommended Apps") : ""; caption: true; secondary: true }

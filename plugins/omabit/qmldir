@@ -3,6 +3,7 @@ Service 1.0 Service.qml
 Panel 1.0 Panel.qml
 SetupPane 1.0 SetupPane.qml
 HostSetupPane 1.0 HostSetupPane.qml
+RemoteRunnerPane 1.0 RemoteRunnerPane.qml
 HostCompatibility 1.0 HostCompatibility.qml
 DesktopDiagnostics 1.0 DesktopDiagnostics.qml
 MachineUsePane 1.0 MachineUsePane.qml
@@ -18,9 +19,12 @@ SwitchField 1.0 SwitchField.qml
 RegistrationPane 1.0 RegistrationPane.qml
 StatusBadge 1.0 StatusBadge.qml
 Card 1.0 Card.qml
+CardTitle 1.0 CardTitle.qml
 Field 1.0 Field.qml
 Label 1.0 Label.qml
 SelectField 1.0 SelectField.qml
+EditableSelectField 1.0 EditableSelectField.qml
+SSHHostField 1.0 SSHHostField.qml
 ImportPane 1.0 ImportPane.qml
 RoutinePane 1.0 RoutinePane.qml
 Hint 1.0 Hint.qml
@@ -34,6 +38,8 @@ Toast 1.0 Toast.qml
 ShipPortsPane 1.0 ShipPortsPane.qml
 RuntimeSettingsFields 1.0 RuntimeSettingsFields.qml
 RuntimePane 1.0 RuntimePane.qml
+RuntimeDetails 1.0 RuntimeDetails.qml
+ConnectivityStatus 1.0 ConnectivityStatus.qml
 HostMovePane 1.0 HostMovePane.qml
 BootstrapSelector 1.0 BootstrapSelector.qml
 StorageLocationSelector 1.0 StorageLocationSelector.qml

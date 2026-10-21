@@ -19,6 +19,17 @@ Read `docs/development-policy.md` before branching, publishing, or merging.
 - Preserve these rules in contributor docs and CI. Native edge/develop updates must
   fetch their explicit branch; stock Omarchy's updater fetches remote HEAD.
 
+## Remote onboarding (0.2.0 direction)
+
+- Use the user's existing SSH alias/port for the one-time authorized setup, then
+  provision a distinct restricted Omabit management key for each desktop/runner.
+- Existing-runner pairing is access-only: preserve its binary, services, ships,
+  identities and history. Fresh installation must be explicitly detected/approved.
+- Verify a fresh unattended connection, runner identity and key role before saving
+  enrollment. Keep the existing dedicated-port transport supported for old installs.
+- Preserve pending attempt/key/installer bindings on retry; failed revocation must
+  never silently become reauthorization. New backend work targets the0.2.0 line.
+
 Before any live pier import, move, reset, retirement, or deletion, read
 `docs/protected-ships.md` and apply its identity protection rules. These rules are
 user requirements, including for sourcebox fresh-install cleanups.

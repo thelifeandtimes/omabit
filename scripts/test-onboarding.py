@@ -19,7 +19,8 @@ with tempfile.TemporaryDirectory(prefix="omabit-onboarding-") as temporary:
         (directory / name).symlink_to(Path("/usr/share/omarchy/shell") / name)
     (directory / "Plugin").symlink_to(ROOT / "plugins/omabit")
     helper = directory / "collector-fixture"
-    code = fixture.FAKE.replace('if "capture" in sys.argv:', '''if "fixture-enroll" in sys.argv:
+    assert fixture.FAKE.count('elif "capture" in sys.argv:') == 1
+    code = fixture.FAKE.replace('elif "capture" in sys.argv:', '''elif "fixture-enroll" in sys.argv:
     (directory/"enrolled").touch()
 elif "runners" in sys.argv and not (directory/"enrolled").exists():
     print("[]")
@@ -58,6 +59,7 @@ ShellRoot {
   }
   Process { id: enroll; command:[HELPER,"fixture-enroll"]; onExited:service.refresh() }
   Timer { interval:100;repeat:true;running:true;onTriggered: {
+    try {
     if (phase===0 && service.firstRun && service.localSetupStatus) {
       if(service.feedError || service.observing || service.machineUse!=="" || service.setupCheckRequested)throw new Error("Fresh collector is not an empty welcome state")
       if(control(panel,"open-monitor").text!=="Start Setup →" || control(panel,"fleet-welcome").text.indexOf('An "urbit ship"')!==0)throw new Error("Missing requested welcome/CTA")
@@ -106,14 +108,14 @@ ShellRoot {
       button.clicked();button.clicked();phase=51
     } else if(phase===51) {
       var runtime=control(service.monitorWindow,"runtime-pane"),button=control(runtime,"runtime-logs-refresh")
-      if(button.text!=="Refresh logs" || !button.enabled || button.width!==logGeometry.width || button.height!==logGeometry.height || button.parent.height!==logGeometry.row)throw new Error("Log polling changed refresh control geometry/state")
+       if(button.text!=="↻" || !button.enabled || button.width!==logGeometry.width || button.height!==logGeometry.height || button.parent.height!==logGeometry.row)throw new Error("Log polling changed refresh control geometry/state")
       if(runtime.reading)return
       console.log("PASS: log refresh retains its label, enabled state and row geometry during a slow request")
       service.openSetup("ship");service.monitorWindow.setupPane.shipKind="comet";phase=6
     } else if(phase===6 && !service.busy) {
       var form=control(service.monitorWindow.setupPane,"registration-form")
       var choice=control(form,"bootstrap-choice")
-      choice.currentIndex=1;choice.activated(1)
+       if(choice.currentIndex!==1 || control(form,"bootstrap-selector").kind!=="recommended")throw new Error("Recommended Apps is not the default for a new comet")
       if(control(form,"bootstrap-selector").source!=="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill")throw new Error("Omitted inline setting lost the packaged Recommended Apps default")
       choice.currentIndex=0;choice.activated(0)
       if(control(form,"bootstrap-selector").source!=="")throw new Error("Bare bootstrap inherited Recommended Apps")
@@ -126,7 +128,7 @@ ShellRoot {
       control(form,"suggest-host-port").clicked();phase=62
     } else if(phase===62) {
       var form=control(service.monitorWindow.setupPane,"registration-form")
-      if(control(service.monitorWindow,"monitor-action-progress").visible || control(panel,"fleet-action-progress").visible || form.implicitHeight!==portFormHeight)throw new Error("Port lookup moved the pane or showed global progress")
+       if(control(service.monitorWindow,"monitor-action-progress").visible || control(panel,"fleet-action-progress").visible || form.implicitHeight!==portFormHeight)throw new Error("Port lookup moved the pane or showed global progress: "+JSON.stringify({before:portFormHeight,after:form.implicitHeight,monitor:control(service.monitorWindow,"monitor-action-progress").visible,fleet:control(panel,"fleet-action-progress").visible,problem:form.problem,action:service.currentAction}))
       if(service.checkingPort && control(form,"port-check-progress").text!=="Checking host ports…")throw new Error("Missing inline port progress")
       if(service.busy)return
       phase=7
@@ -153,6 +155,10 @@ ShellRoot {
       if(++settle<5)return
       console.log("PASS: uncertain registration never boots, and uncertain first Start is not automatically retried")
       service.monitorWindow.visible=false;Qt.quit()
+    }
+    } catch(error) {
+      console.error("Fixture phase "+phase+": "+error)
+      running=false;Qt.exit(1)
     }
   } }
 }'''.replace("HELPER", json.dumps(str(helper)))

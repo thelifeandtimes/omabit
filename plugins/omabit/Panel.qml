@@ -56,7 +56,7 @@ Ui.Panel {
       id: form
       anchors.fill: parent
       Keys.onEscapePressed: root.close()
-      Toast { service: root.service; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: Style.space(12) }
+      Toast { objectName:"fleet-action-progress";service: root.service; anchors.horizontalCenter: parent.horizontalCenter; anchors.bottom: parent.bottom; anchors.bottomMargin: Style.space(12) }
       Flickable {
         id: scroll
         anchors.fill: parent; contentWidth: width; contentHeight: content.implicitHeight
@@ -75,8 +75,6 @@ Ui.Panel {
             ActionButton { compact: true; quiet: true; text: "↻"; hint: "Refresh runner observations"; enabled: root.service && !root.service.busy; onClicked: root.service.refresh() }
             ActionButton { compact: true; text: root.pane === "fleet" ? "Setup" : "← Fleet"; onClicked: { root.pane = root.pane === "fleet" ? "setup" : "fleet"; scroll.contentY = 0 } }
           }
-          Label { width: parent.width; visible: text !== "" && !(root.service && root.service.firstRun); color: Design.danger; text: root.service ? root.service.feedError || (root.pane!=="setup" ? root.service.lastError : "") : "Collector service unavailable" }
-          Label { objectName: "fleet-action-progress"; width: parent.width; visible: !!root.service && root.service.actionProgressVisible; secondary: true; caption: true; text: root.service ? root.service.settingUp ? "Setting up this computer…" : "Submitting " + root.service.currentAction + "…" : "" }
           ActionButton { width: parent.width; visible: Model.discoveredPiers(root.connections).length>0; text: Model.discoveredPiers(root.connections).length+" discovered piers need enrollment or location review →"; onClicked: {root.pane="setup";setup.mode="storage";scroll.contentY=0} }
           Column {
             width: parent.width; spacing: Style.space(12); visible: root.pane === "fleet"
@@ -94,7 +92,7 @@ Ui.Panel {
                   RowLayout {
                     width: parent.width; spacing: Style.space(8)
                     StatusBadge { dotOnly: true; tone: runner.online ? "good" : "warn"; text: runner.online ? "Connected" : "Unavailable"; hint: runner.modelData.runner_id }
-                    Label { text: Model.runnerTitle(runner.modelData, root.service.runnerPreferences); font.bold: true; Layout.maximumWidth: runner.width * 0.4; elide: Text.ElideRight; wrapMode: Text.NoWrap }
+                    CardTitle { text: Model.runnerTitle(runner.modelData, root.service.runnerPreferences); Layout.maximumWidth: runner.width * 0.4; elide: Text.ElideRight; wrapMode: Text.NoWrap }
                     Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; caption: true; secondary: true; elide: Text.ElideMiddle; wrapMode: Text.NoWrap; text: Model.runnerAddress(runner.modelData, root.service.registrations, root.service.runnerPreferences) }
                   }
                   Rectangle { width: parent.width; height: 1; color: Design.line }

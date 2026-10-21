@@ -31,7 +31,7 @@ jobs:
           go test ./...
           go vet ./...
       - name: Stateful transport and runtime race checks
-        run: go test -race ./internal/managed ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy ./internal/pierstore ./internal/piermeta ./internal/hostinstall ./internal/hostsetup ./internal/omabittheme ./backend/cmd/urbit-collector ./backend/cmd/urbit-runner
+        run: go test -race ./internal/managed ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy ./internal/pierstore ./internal/piermeta ./internal/hostinstall ./internal/hostsetup ./internal/onboarding ./internal/remotesetup ./internal/omabittheme ./backend/cmd/urbit-collector ./backend/cmd/urbit-runner
       - name: Build Linux binaries
         run: |
           mkdir -p build
@@ -42,6 +42,7 @@ jobs:
           node scripts/test-runtime-settings-model.js
           python3 -B scripts/test-panel-install.py
           python3 -B scripts/test-native-plugin.py
+          python3 -B scripts/test-ssh-hosts.py
           python3 -B scripts/test-release-policy.py
           python3 -B scripts/test-channels.py
           python3 -B scripts/test-desktop-bootstrap.py

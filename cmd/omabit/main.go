@@ -38,7 +38,7 @@ func run(ctx context.Context, args []string) int {
 	stateDir := flags.String("state-dir", "", "Omabit preference directory")
 	flags.StringVar(&format, "format", "json", "json or text")
 	flags.Usage = func() {
-		fmt.Fprintln(os.Stdout, "Usage: omabit [--format text] [--config-dir DIR] [--state-dir DIR] COMMAND\nCommands: setup, setup-status, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID")
+		fmt.Fprintln(os.Stdout, "Usage: omabit [--format text] [--config-dir DIR] [--state-dir DIR] COMMAND\nCommands: setup, setup-status, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID")
 	}
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -55,6 +55,9 @@ func run(ctx context.Context, args []string) int {
 	args = args[1:]
 	if command == "setup" || command == "setup-status" {
 		return localSetup(ctx, command, args, *config, format)
+	}
+	if command == "remote-setup" || command == "remote-setup-prepare" || command == "remote-setup-start" || command == "remote-setup-status" || command == "remote-setup-run" {
+		return remoteSetup(ctx, command, args, *config, format)
 	}
 	output := func(value any) int {
 		if format == "text" && readable(os.Stdout, value) {

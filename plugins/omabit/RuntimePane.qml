@@ -13,6 +13,7 @@ Column {
   property var instance
   property bool active: false
   property bool following: true
+  property bool priorityOnly: false
   property var logs: null
   property string error: ""
   property string output: ""
@@ -33,10 +34,9 @@ Column {
   readonly property string selection: connection && instance && service ? JSON.stringify([connection.name,connection.runner_id,connection.mode,instance.id,instance.config_revision,service.collector,service.settings.configDir || "",(service.registrations || []).filter(function(r){return r.name===root.connection.name})]) : ""
   readonly property bool eligible: active && !!service && service.observing && !!instance && !!connection && (connection.status==="unavailable" || connection.access_role==="operator" && connection.status!=="identity_mismatch" && Model.hasFeature(connection,"runtime-logs"))
   readonly property bool readable: eligible && Model.available(connection,service.now)
-  readonly property var diagnostic: instance && instance.runtime_status || ({})
-  readonly property var operation: diagnostic.last_operation || null
+  readonly property var displayedLines: logs ? (priorityOnly ? Model.priorityRuntimeLogs(logs.lines) : logs.lines) : []
   spacing: Style.space(12)
-  onSelectionChanged: { clearLogs();error="";blocked=false;pending=following;stopReader();refreshSoon.restart() }
+  onSelectionChanged: { clearLogs();priorityOnly=false;error="";blocked=false;pending=following;stopReader();refreshSoon.restart() }
   onEligibleChanged: {
     if (!eligible) { pending=false;clearLogs();stopReader() }
     else if (following && !blocked) { pending=true;refreshSoon.restart() }
@@ -108,43 +108,45 @@ Column {
     } while (offset<data.length)
   }
   Card {
-    width: parent.width; implicitHeight: statusBody.implicitHeight+Style.space(28)
-    Column {
-      id: statusBody
-      anchors.left: parent.left;anchors.right:parent.right;anchors.top:parent.top;anchors.margins:Style.space(14);spacing:Style.space(8)
-      Label { text: "Runtime status";font.bold:true }
-      Label { objectName:"runtime-status-detail";width:parent.width;text:Model.runtimeDetail(root.instance);color:root.instance && root.instance.recovery_required ? Design.danger : Design.ink }
-      Label { objectName:"runtime-reported-comet";width:parent.width;visible:root.readable && !!root.reportedComet && !!root.instance && root.instance.mode==="comet" && !root.instance.ship;text:"Vere reported "+root.reportedComet+" · verifying startup";color:Design.accent }
-      Label { width:parent.width;caption:true;secondary:true;visible:!!root.operation;text:root.operation ? "Operation: "+root.operation.id+"\nStarted: "+Model.humanTime(root.operation.created_at,root.service.now)+(root.operation.finished_at ? " · Finished: "+Model.humanTime(root.operation.finished_at,root.service.now) : " · Elapsed: "+Math.max(0,Math.floor((root.service.now-Date.parse(root.operation.created_at))/1000))+"s") : "" }
-      Label { width:parent.width;caption:true;secondary:true;visible:!!root.diagnostic.container_id;text:"Container: "+root.diagnostic.container_id+"\n"+(root.diagnostic.container_kind || "")+(root.diagnostic.observed_at ? " · Observed "+Model.humanTime(root.diagnostic.observed_at,root.service.now) : "") }
-      HostCompatibility { objectName:"runtime-host-compatibility";width:parent.width;report:Model.hostCompatibility(root.connection);envelope:root.connection ? root.connection.host_compatibility || null : null;problem:Model.hostCompatibilityHint(root.connection,root.service ? root.service.now : Date.now());now:root.service ? root.service.now : Date.now() }
-    }
-  }
-  Card {
     width:parent.width;implicitHeight:logBody.implicitHeight+Style.space(28)
     Column {
       id:logBody
       anchors.left:parent.left;anchors.right:parent.right;anchors.top:parent.top;anchors.margins:Style.space(14);spacing:Style.space(8)
-      Label { text:"Runtime / dojo output";font.bold:true }
-      Label { width:parent.width;caption:true;secondary:true;text:"Read-only Vere stdout/stderr · one connection while following · known key/code patterns redacted" }
       RowLayout {
-        width:parent.width;spacing:Style.space(8)
-        ActionButton { objectName:"runtime-logs-refresh";text:"Refresh logs";enabled:root.readable;hint:root.running ? "The current reader is updating output; pause for a one-shot refresh" : "Read the latest runtime output";onClicked:root.refresh() }
-        ActionButton { objectName:"runtime-logs-follow";text:root.following ? "Pause updates" : "Follow output";enabled:root.following || root.readable;onClicked:root.following=!root.following }
+        objectName: "runtime-logs-header"; width: parent.width; spacing: Style.space(6)
+        CardTitle {
+          objectName:"runtime-logs-title";text:"Urbit Logs"; Layout.fillWidth: true
+          HoverHandler { id: logTitleHover }
+          Hint { text:"Read-only Vere stdout/stderr · one connection while following · known key/code patterns redacted";visible:logTitleHover.hovered }
+          Accessible.description: "Read-only Vere output. Known key/code patterns are redacted."
+        }
         Item { Layout.preferredWidth:Style.space(22);Layout.preferredHeight:Style.space(22)
           Controls.BusyIndicator { objectName:"runtime-log-progress";anchors.fill:parent;running:root.showReading;opacity:root.showReading ? 1 : 0 }
         }
-        Item { Layout.fillWidth:true }
+        ActionButton { objectName:"runtime-logs-follow";text:root.following ? "Ⅱ" : "▶";compact:true;quiet:true;Layout.preferredWidth:Style.space(30);hint:root.following ? "Pause log updates" : "Follow log output";Accessible.name:hint;enabled:root.following || root.readable;onClicked:root.following=!root.following }
+        ActionButton { objectName:"runtime-logs-refresh";text:"↻";compact:true;quiet:true;Layout.preferredWidth:Style.space(30);enabled:root.readable;hint:root.running ? "The current reader is updating output; pause for a one-shot refresh" : "Refresh logs";Accessible.name:"Refresh logs";onClicked:root.refresh() }
       }
-      Label { objectName:"runtime-log-summary";width:parent.width;text:root.logs ? Model.runtimeNarration(root.logs.lines) : "";visible:text!=="";color:Design.accent }
-      Label { width:parent.width;color:Design.danger;text:root.error;visible:text!=="" }
+      Flow {
+        width:parent.width;spacing:Style.space(8)
+        SwitchField {
+          id: priorityToggle
+          objectName: "runtime-logs-filter"; text: "Priority logs only"
+          height: Style.space(36); checked: root.priorityOnly; hoverEnabled: true
+          onToggled: root.priorityOnly=checked
+          Accessible.description: "Off shows all available output. On shows error/warning matches with surrounding context."
+          Hint { text:"Priority logs match error/warning text in the available tail, with surrounding lines for context. This filter does not determine ship health.";visible:priorityToggle.hovered }
+        }
+      }
+      Label { objectName:"runtime-reported-comet";width:parent.width;visible:root.readable && !!root.reportedComet && !!root.instance && root.instance.mode==="comet" && !root.instance.ship;text:"Vere reported "+root.reportedComet+" · verifying startup";color:Design.accent }
+      Label { objectName:"runtime-log-error";width:parent.width;color:Design.danger;text:root.error ? "Log connection: "+root.error : "";visible:text!=="" }
       Label { width:parent.width;caption:true;secondary:true;wrapMode:Text.NoWrap;elide:Text.ElideRight;text:!root.readable ? "Logs need an available operator connection and an updated runner." : root.blocked ? "Log updates stopped · Refresh logs after reviewing the error." : !root.logs ? (root.following ? "Waiting for runtime output…" : "Updates paused · Refresh logs to read once.") : root.logs.source==="none" ? "No runtime log is available yet." : (root.logs.source==="retained" ? "Retained output from a removed container" : "Latest container output")+" · "+Model.humanTime(root.logs.observed_at,root.service.now)+(root.logs.truncated ? " · tail truncated" : "")+(!root.following ? " · paused" : "") }
+      Label { objectName:"runtime-log-filter-status";width:parent.width;caption:true;secondary:true;visible:root.priorityOnly && !!root.logs;text:!root.logs ? "" : root.displayedLines.length ? "Priority logs with context · "+root.displayedLines.length+" of "+root.logs.lines.length+" lines" : "No priority entries in the latest "+root.logs.lines.length+" log lines. Turn off Priority logs only to see all available output." }
       Controls.ScrollView {
-        width:parent.width;height:Style.space(250);visible:!!root.logs&&root.logs.lines.length>0
+        width:parent.width;height:Style.space(250);visible:root.displayedLines.length>0
         contentWidth:availableWidth
         Controls.TextArea {
           objectName:"runtime-log-text"
-          text:root.logs ? root.logs.lines.join("\n") : ""
+          text:root.displayedLines.join("\n")
           textFormat:TextEdit.PlainText;readOnly:true;selectByMouse:true;wrapMode:TextEdit.WrapAnywhere
           color:Design.ink;selectionColor:Design.accent;selectedTextColor:Design.background
           font.family:"monospace";font.pixelSize:Style.space(12)

@@ -23,7 +23,7 @@ Column {
   readonly property var outcome: submission ? (service && service.importOutcomes[Model.importRequestKey(submission)]) || submission : null
   readonly property var progress: Model.importProgress(service ? service.connections : [],outcome,service ? service.now : Date.now())
   onSelectionChanged: { reviewAnother();clearReview() }
-  function clearReview() { consent.checked=false;if(service)service.externalImportPreview=null }
+  function clearReview() { consent.checked=false;if(visible && service)service.externalImportPreview=null }
   function reviewAnother() {
     if (service && service.busy || submitted && progress.active) return false
     submission=null;clearReview();return true

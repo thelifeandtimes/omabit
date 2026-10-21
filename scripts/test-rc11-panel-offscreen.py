@@ -23,7 +23,7 @@ COMPONENTS = (
     "Model.js", "StorageLocationSelector.qml", "SelectField.qml", "Label.qml",
     "Design.qml", "PierImportPane.qml", "ActionButton.qml", "Field.qml",
     "CheckField.qml", "Hint.qml", "MaintenancePane.qml", "RoutinePane.qml",
-    "RoutineCard.qml", "Card.qml", "StatusBadge.qml", "ImportRecoveryPane.qml",
+    "RoutineCard.qml", "Card.qml", "CardTitle.qml", "StatusBadge.qml", "ImportRecoveryPane.qml",
 )
 
 

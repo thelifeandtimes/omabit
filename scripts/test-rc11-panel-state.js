@@ -148,7 +148,7 @@ function review(c,name="zod") {
   return {runner:c.runner_id,connection:c.name,source,loadedAt:now,plan:{runner_id:c.runner_id,source,storage_root:"default",instance_id:name,destination:"fakeships/"+name+"/"+name,ship:"~"+name,network:"fakenet",kind:"fake",http_port:18090,in_place:false}};
 }
 function importPane(s,c,r) {
-  const pane=scope("PierImportPane.qml",{service:s,connection:c,review:r,current:true,submission:null,consent:{checked:true}},["clearReview","reviewAnother","submitImport"]);
+  const pane=scope("PierImportPane.qml",{service:s,connection:c,review:r,current:true,submission:null,visible:true,consent:{checked:true}},["clearReview","reviewAnother","submitImport"]);
   for(const [name,type] of [["submitted","bool"],["outcome","var"],["progress","var"]])binding(pane,"PierImportPane.qml",name,type);
   return pane;
 }
@@ -161,6 +161,14 @@ function importReceipt(s,c,target,status="succeeded",stage="complete") {
 // RC11-27: two simultaneously retained forms, last-action replacement, receipt
 // arrival before/after ack, and terminal evidence disappearing from inventory.
 const ic=runner("import"),imports=service([ic]),form=importPane(imports,ic,review(ic));
+const hiddenForm=importPane(imports,ic,review(ic));hiddenForm.visible=false;
+imports.externalImportPreview=form.review;
+hiddenForm.clearReview();
+assert.equal(hiddenForm.consent.checked,false);
+assert.equal(imports.externalImportPreview,form.review,"hidden import form must not clear the visible form's review");
+form.clearReview();
+assert.equal(imports.externalImportPreview,null,"visible import form must invalidate its review");
+form.consent.checked=true;
 assert.equal(form.submitImport(),true);const first=form.submission;
 assert.equal(Object.isFrozen(first),true);assert.equal(form.submitImport(),false);
 assert.equal(form.reviewAnother(),false);

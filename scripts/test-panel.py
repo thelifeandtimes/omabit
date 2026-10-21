@@ -59,7 +59,7 @@ elif "inventory" in sys.argv:
         snapshot["instances"][0]["config"].update(loom=34,native_control=True)
         if (directory/"policy.json").exists(): snapshot["instances"][0]["schedule"]=json.loads((directory/"policy.json").read_text())
         snapshot["instances"][0]["resources"].update({"cpu_usage_percent":12.5,"cpu_limit_cores":2})
-        snapshot["instances"][0]["runtime_status"]={"initialized":True}
+        snapshot["instances"][0]["runtime_status"]={"initialized":True,"launch_loom":31,"launch_native_control":False,"snapshot_minutes":60}
         if config.get("import_recovery"):
             recovered=(directory/"recovered.json").exists()
             ship=snapshot["instances"][0]
@@ -183,7 +183,8 @@ elif "create-ship" in sys.argv:
     assert "--confirm-network" in sys.argv and sys.argv[sys.argv.index("--key-file")+1]=="/fixture/owned.key"
     assert sys.argv[sys.argv.index("--expected-runner-id")+1]=="runner-fixture"
     assert "--http-port" not in sys.argv and "--ames-port" not in sys.argv and sys.argv[sys.argv.index("--pier-path")+1]=="livenet/planets/sampel-palnet/sampel-palnet"
-    assert sys.argv[sys.argv.index("--bootstrap")+1]=="bare" and "--pill" not in sys.argv
+    assert sys.argv[sys.argv.index("--bootstrap")+1]=="recommended"
+    assert sys.argv[sys.argv.index("--pill")+1]=="https://example.invalid/apps.pill"
     (directory/"owned-registered.json").write_text(json.dumps({"id":"sampel-palnet","ship":"~sampel-palnet","mode":"planet","config_revision":1,"applied_revision":0,"config":{"http_port":18091,"ames_port":34344,"loom":32}}))
     print(json.dumps({"id":"op-key-ship","instance_id":"sampel-palnet","request_id":sys.argv[sys.argv.index("--request-id")+1],"kind":"register-ship","status":"succeeded","config_revision":1}))
 elif "operate" in sys.argv and sys.argv[sys.argv.index("operate")+2]=="start":
@@ -235,11 +236,27 @@ elif "ship-login" in sys.argv:
     assert "fixture-only-secret" not in sys.argv
     assert sys.stdin.read() == "fixture-only-secret"
     print(json.dumps({"id":"a"*32,"name":"app-fixture","status":"authenticated"}))
+elif "remote-setup-start" in sys.argv:
+    state={"version":1,"id":"a"*32,"options":{"host":"sourcebox","name":"sourcebox","role":"operator"},"phase":"opening_terminal","message":"Fixture setup terminal opened","busy":True,"ships":0,"at":time.time(),"revoke":"--revoke" in sys.argv}
+    (directory/"remote-setup.json").write_text(json.dumps(state))
+    print(json.dumps(state))
+elif "remote-setup-status" in sys.argv:
+    if (directory/"remote-setup.json").exists():
+        state=json.loads((directory/"remote-setup.json").read_text())
+        if time.time()-state["at"]>1:
+            state.update(phase="revoked" if state["revoke"] else "connected",busy=False,runner_id="runner-remote",mode="development-managed",connection="sourcebox",ships=2,message="Access revoked" if state["revoke"] else "Sourcebox connected. Found 2 ships.")
+        print(json.dumps(state))
+    else:
+        print(json.dumps({"version":1,"id":"","options":{},"phase":"idle","message":"","busy":False,"ships":0}))
 elif "setup-status" in sys.argv:
-    print(json.dumps({"execution_model":"owner-user","ready":False,"can_setup":True,"host_present":False,"checks":[]}))
+    ready=(directory/"setup-ready").exists()
+    status={"execution_model":"owner-user","ready":ready,"can_setup":True,"host_present":ready,"checks":[]}
+    if ready: status.update(connection={"name":"fixture","runner_id":"runner-fixture","mode":"development-managed"},browser_base="http://127.0.0.1")
+    print(json.dumps(status))
 elif "setup" in sys.argv:
     for step in ("check","key","download","authorize","engine","access","services","verify","connect"):
         print(json.dumps({"step":step,"status":"running"}),flush=True)
+    (directory/"setup-ready").touch()
     print(json.dumps({"step":"ready","status":"complete","result":{"execution_model":"owner-user","ready":True,"can_setup":True,"checks":[],"connection":{"name":"fixture","runner_id":"runner-fixture","mode":"development-managed"},"browser_base":"http://127.0.0.1"}}),flush=True)
 elif "theme-status" in sys.argv:
     print(json.dumps({"version":1,"ships":{}}))
@@ -350,6 +367,7 @@ ShellRoot {
   property int phase: -2
   onPhaseChanged: console.log("Fixture phase", phase)
   property string uncertainRequest: ""
+  property real alertHeaderY: 0
   function capture(name) {
     if (!captureDirectory || captures[name]) return false
     capturesPending=1; capturing=name
@@ -380,6 +398,7 @@ ShellRoot {
   Timer {
     interval: 300; repeat: true; running: true
      onTriggered: {
+      try {
        if (capturesPending) return
       if (phase === -2 && service.localSetupStatus && service.connections.length === 1) {
         var runtime=runtimeComponent.createObject(null,{supported:true})
@@ -400,7 +419,7 @@ ShellRoot {
          if (service.setUpLocal(false) || !service.setUpLocal(true) || service.setUpLocal(true)) throw new Error("local setup approval/dispatch/busy guard failed")
         phase = -1
       } else if (phase === -1 && !service.settingUp) {
-        if (service.localSetupError || !service.localSetupStatus.ready || service.localSetupStep !== "ready") throw new Error("local setup did not finish with verified readiness")
+        if (service.localSetupError || !service.localSetupStatus.ready || service.localSetupStep !== "ready") { Qt.exit(1); throw new Error("local setup did not finish with verified readiness: "+service.localSetupError+" "+JSON.stringify(service.localSetupStatus)) }
         if (service.runnerPreferences["runner-fixture"].browserBase !== "http://127.0.0.1") throw new Error("local browser default was not applied")
         console.log("PASS: guided local setup streams progress, prevents duplicate dispatch and applies verified local connection defaults")
         phase = 0
@@ -415,6 +434,9 @@ ShellRoot {
         if (!service.saveRunnerPresentation(service.connections[0], "Fixture", "Local fixture", "http://127.0.0.1")) throw new Error("presentation settings failed")
         if (Model.shipURL(service.connections[0],service.connections[0].snapshot.instances[0],service.registrations,service.runnerPreferences) !== "http://127.0.0.1:18081") throw new Error("browser host composition failed")
         if (service.connections[0].snapshot.instances[0].health !== "healthy") throw new Error("bad fixture state")
+        var runningContext=control(service.monitorWindow,"monitor-ship-context")
+        if(control(runningContext,"ship-context-status").text!=="healthy (2GB loom)")throw new Error("running loom is not inline with ship status")
+        if (control(maintenance,"run-pack").enabled || maintenance.runMaintenance("pack")) throw new Error("direct maintenance accepted a running ship")
          var codeButton=control(service.monitorWindow,"monitor-copy-code")
          if (!codeButton || !codeButton.enabled) throw new Error("full-window +code action unavailable")
          var fleetCode=control(panel,"fleet-copy-code-alpha")
@@ -435,14 +457,14 @@ ShellRoot {
          if (!Model.currentEpochTarget(service.connections,maintenance.retentionTarget,service.now) || !control(maintenance,"history-review").visible || control(maintenance,"inspection-feedback").text.indexOf("Inspection complete")<0) throw new Error("inspection did not open its current result")
          console.log("PASS: asynchronous inspection opens a bound inventory review with clear completion feedback")
          var c=service.connections[0], i=c.snapshot.instances[0]
-         maintenance.reviewMaintenance(c, i, "pack")
-        if (service.maintain(Object.assign({}, maintenance.maintenanceTarget, {revision: 999}))) throw new Error("stale maintenance submitted")
-        var run = control(maintenance, "confirm-maintenance")
-        if (!run || !run.enabled) throw new Error("maintenance confirmation missing")
-        run.clicked()
+        if (service.maintain(Object.assign({}, Model.maintenanceTarget(c,i,"pack",service.now), {revision: 999}))) throw new Error("stale maintenance submitted")
+        var run = control(maintenance, "run-pack")
+        if (!run || !run.enabled || run.text!=="Run pack" || control(maintenance,"confirm-maintenance")) throw new Error("direct maintenance action missing or still opens a confirmation card")
+        run.clicked();run.clicked()
+        if (maintenance.runMaintenance("pack")) throw new Error("duplicate maintenance dispatch")
         phase = 2
       } else if (phase === 2 && !service.busy && service.lastResult.indexOf("pack:") === 0) {
-        service.maintain(Model.maintenanceTarget(service.connections[0], service.connections[0].snapshot.instances[0], "meld", service.now))
+        control(maintenance,"run-meld").clicked()
         uncertainRequest = service.requestIdentity
         phase = 3
       } else if (phase === 3 && !service.busy && service.lastError) {
@@ -480,7 +502,7 @@ ShellRoot {
         phase = 9
       } else if (phase === 9) {
         if (!control(service.monitorWindow.setupPane,"applications-coming-soon").visible || control(service.monitorWindow.setupPane,"shipLoginCode")) throw new Error("Application Connections is not a Coming Soon stub")
-        console.log("PASS: real QML maintenance confirmation, immutable pruning review, error/request retention, and Coming Soon application stub")
+        console.log("PASS: real QML one-click maintenance, immutable pruning review, error/request retention, and Coming Soon application stub")
         if (!service.loadImportSources(service.connections[0])) throw new Error("import catalogue request failed")
         phase = 20
       } else if (phase === 20 && service.importCatalogue && !service.busy) {
@@ -524,9 +546,8 @@ ShellRoot {
         maintenance.section = "manual"
         var c = service.connections[0], comet = c.snapshot.instances.filter(function(i) { return i.id === "comet-fixture" })[0]
         service.monitorWindow.selectedKey = c.runner_id + "/" + comet.id
-        maintenance.reviewMaintenance(c,comet,"roll")
-        var roll = control(maintenance,"confirm-maintenance")
-        if (!roll || !roll.enabled) throw new Error("comet roll confirmation unavailable")
+        var roll = control(maintenance,"run-roll")
+        if (!roll || !roll.enabled) throw new Error("direct comet roll unavailable")
         roll.clicked(); phase = 24
       } else if (phase === 24 && !service.busy && service.lastResult.indexOf("roll:") === 0) {
         var c = service.connections[0], comet = c.snapshot.instances.filter(function(i) { return i.id === "comet-fixture" })[0]
@@ -536,7 +557,7 @@ ShellRoot {
       } else if (phase === 25 && !service.busy && service.epochPreview) {
         var consent = control(maintenance,"confirm-history-loss"), remove = control(maintenance,"delete-prefix")
         if (service.epochPreview.deletion_supported || service.canConfirmPrune || !consent || consent.enabled || !remove || remove.enabled || service.prunePreview(true)) throw new Error("comet preview enabled deletion")
-        console.log("PASS: comet roll confirmation and preview render with deletion consent/action disabled")
+        console.log("PASS: direct comet roll and preview render with deletion consent/action disabled")
         phase = 26
       } else if (phase === 26 && Model.hasFeature(service.connections[0],"comet-prune-prefix")) {
         if (service.canConfirmPrune) throw new Error("new capability silently upgraded the old preview")
@@ -583,21 +604,23 @@ ShellRoot {
          location.currentIndex=location.count-1;location.activated(location.currentIndex)
          control(setupFixture,"registration-pier").text = "bus-data"
         phase = 31
-       } else if (phase === 31) {
-          var form=control(setupFixture,"registration-form"),loom=control(form,"runtime-loom")
+        } else if (phase === 31) {
+           var form=control(setupFixture,"registration-form"),loom=control(form,"runtime-loom")
+           if(service.busy||!service.observing||!Model.available(form.connection,service.now))return
           if (!loom || control(form,"runtime-native-control")) throw new Error("loom field missing or native control exposed")
           if (loom.currentIndex!==1) throw new Error("new fake default is not loom31")
           loom.currentIndex=4;loom.activated(4)
          control(setupFixture,"comet-consent").checked=true
         var submit = control(setupFixture,"register-instance")
-        if (!submit.enabled) throw new Error("named fake form unavailable")
+         if (!submit.enabled) throw new Error("named fake form unavailable: "+JSON.stringify({problem:form.problem,port:control(form,"registration-port").text,pier:form.pier,registered:form.registered,consent:control(form,"comet-consent").checked,busy:service.busy,outcome:form.outcome}))
         submit.clicked(); phase = 32
        } else if (phase === 32 && !service.busy) {
          if (setupFixture.mode !== "ship" || service.registrationOutcome.status !== "failed" || !control(setupFixture,"register-instance").enabled) throw new Error("local validation became an uncertain registration")
          console.log("PASS: local fake-name validation retains a correctable form without claiming an uncertain mutation")
          control(setupFixture,"registration-fake-ship").text = "~bus"
          phase = 33
-       } else if (phase === 33) {
+        } else if (phase === 33) {
+           if(service.busy||!service.observing||!Model.available(control(setupFixture,"registration-form").connection,service.now))return
           var loom=control(control(setupFixture,"registration-form"),"runtime-loom")
           if(loom.currentIndex!==1 || control(setupFixture,"comet-consent").checked) throw new Error("different fake identity inherited settings or consent")
           loom.currentIndex=4;loom.activated(4);control(setupFixture,"comet-consent").checked=true
@@ -625,6 +648,15 @@ ShellRoot {
           var runtime=control(service.monitorWindow,"runtime-pane")
           if (!runtime.logs) return
           if (runtime.logs.instance_id!=="alpha" || control(runtime,"runtime-log-text").text.indexOf("boot: alpha")<0 || control(runtime,"runtime-log-text").textFormat!==TextEdit.PlainText) throw new Error("runtime logs missing or not plain text")
+           var logHeader=control(runtime,"runtime-logs-header"),refreshLogs=control(runtime,"runtime-logs-refresh"),followLogs=control(runtime,"runtime-logs-follow")
+           if(refreshLogs.text!=="↻"||followLogs.text!=="Ⅱ"||Math.abs(refreshLogs.x+refreshLogs.width-logHeader.width)>1||followLogs.x>=refreshLogs.x)throw new Error("compact log controls are not in the top-right header")
+           var details=control(service.monitorWindow,"ship-runtime-details"), toggle=control(service.monitorWindow,"ship-technical-toggle")
+           var stoppedContext=control(service.monitorWindow,"monitor-ship-context")
+           if(details.visible || control(runtime,"runtime-loom-badge") || control(stoppedContext,"ship-context-status").text!=="stopped" || stoppedContext.annotation!=="")throw new Error("stopped ship still displays loom or standalone runtime status")
+           toggle.clicked()
+           if(!details.visible || control(details,"runtime-status-detail").text.indexOf("Requested: loom")<0)throw new Error("technical toggle did not reveal runtime details")
+           toggle.clicked()
+           if(details.visible)throw new Error("technical toggle did not collapse runtime details")
           control(runtime,"runtime-logs-follow").clicked()
           if (runtime.following) throw new Error("logs cannot be paused")
           control(runtime,"runtime-logs-follow").clicked()
@@ -632,7 +664,23 @@ ShellRoot {
          var nav=control(service.monitorWindow,"nav-ship-alpha")
          if (!nav || nav.text !== "[~zod]" || !nav.font.italic || control(service.monitorWindow,"container-memory").value !== "N/A") throw new Error("fleet identity or stopped RAM rendering failed")
          if (control(service.monitorWindow,"monitor-refresh").text !== "↻" || control(service.monitorWindow,"monitor-ship-context").instanceName !== "alpha") throw new Error("header/context refinement missing")
-         service.monitorWindow.selectedKey="runner-fixture/comet-fixture"; phase=14
+          alertHeaderY=control(service.monitorWindow,"monitor-ship-context").mapToItem(service.monitorWindow.contentItem,0,0).y
+          service.toastText="";service.currentAction="start";phase=1010
+        } else if (phase === 1010) {
+          var context=control(service.monitorWindow,"monitor-ship-context"),toast=control(service.monitorWindow,"monitor-action-progress")
+          if(Math.abs(context.mapToItem(service.monitorWindow.contentItem,0,0).y-alertHeaderY)>1||toast.messageText!=="Submitting Start…")throw new Error("submission message shifted ship context instead of overlaying it")
+          service.currentAction=""
+          service.lastError="Fixture start request needs review"
+          service.rememberRuntimeActionError(Model.runtimeActionTarget(["--runner","fixture","--expected-runner-id","runner-fixture","operate","alpha","start","--revision","2"]),service.lastError)
+          phase=1011
+        } else if (phase === 1011) {
+          var context=control(service.monitorWindow,"monitor-ship-context"),notice=control(service.monitorWindow,"connectivity-request-error")
+          if(Math.abs(context.mapToItem(service.monitorWindow.contentItem,0,0).y-alertHeaderY)>1||!notice.visible||notice.text.indexOf("Fixture start request")<0)throw new Error("persistent request failure shifted context or was lost")
+          var c=service.connections[0],alpha=c.snapshot.instances[0],comet=c.snapshot.instances[1]
+          if(service.runtimeActionError(c,comet)!=="")throw new Error("request failure crossed ship identity")
+          service.dismissRuntimeActionError(c,alpha);service.lastError="";service.toastText=""
+          console.log("PASS: progress/error toasts leave ship context fixed; persistent failures stay in the bound connectivity card")
+          service.monitorWindow.selectedKey="runner-fixture/comet-fixture";phase=14
         } else if (phase === 14) {
           var runtime=control(service.monitorWindow,"runtime-pane")
           if (!runtime.logs) return
@@ -674,8 +722,11 @@ ShellRoot {
         if (service.monitorWindow.activityPane.runnerFilter !== "runner-fixture") throw new Error("runner activity filter failed")
          console.log("PASS: monitoring window maps and renders overview, maintenance, activity and themed filter popup")
          console.log("PASS: full-window setup, primary @p/sidebar instance labels, stopped N/A readings, +code routing and wrapped comet titles")
-         service.monitorWindow.page="maintenance"; maintenance.section="manual"
-         maintenance.reviewRetention(service.connections[0],service.connections[0].snapshot.instances[0]); phase=17
+          service.monitorWindow.page="maintenance"; maintenance.section="manual";maintenance.clearReview();phase=131
+       } else if (phase === 131) {
+          if (control(maintenance,"confirm-maintenance") || control(maintenance,"run-pack").text!=="Run pack")throw new Error("manual maintenance still uses a detached confirmation")
+          if (capture("manual-maintenance")) return
+          maintenance.reviewRetention(service.connections[0],service.connections[0].snapshot.instances[0]); phase=17
        } else if (phase === 17) {
          var scroll=control(service.monitorWindow,"monitor-scroll")
          scroll.contentY=Math.max(0,scroll.contentHeight-scroll.height); phase=18
@@ -728,14 +779,18 @@ ShellRoot {
            if(form.progress.active)return
            if(form.progress.value!==1 || control(form,"import-pier-steps").text.indexOf("Import complete")<0)throw new Error("completed import missing progress/log receipt")
           if (capture("pier-storage")) return
-          console.log("PASS: discovered pier enrollment requires fresh fingerprint/runner binding and explicit stopped-source confirmation")
-          service.monitorWindow.setupPane.mode="ship";service.monitorWindow.setupPane.shipKind="key"
-          var form=control(service.monitorWindow.setupPane,"owned-key-form")
+           console.log("PASS: discovered pier enrollment requires fresh fingerprint/runner binding and explicit stopped-source confirmation")
+           service.monitorWindow.setupPane.mode="ship";service.monitorWindow.setupPane.shipKind="key"
+           phase=3011
+        } else if (phase === 3011) {
+           var form=control(service.monitorWindow.setupPane,"owned-key-form")
+           if(service.busy||!service.observing||!Model.available(form.connection,service.now))return
            control(form,"key-identity").text="~sampel-palnet";form.keyFile="/fixture/owned.key"
             var loom=control(form,"runtime-loom"),storage=control(form,"storage-location-selector")
             if(!loom || loom.currentIndex!==1 || control(form,"runtime-native-control") || loom.visible || storage.visible) throw new Error("owned-key advanced defaults missing or exposed")
             var link=control(form,"get-urbit-id")
             if(!link || !link.visible || String(link.url)!=="https://urbit.org/overview/running-urbit/get-urbit-id") throw new Error("Urbit ID guidance link missing")
+            if(control(form,"bootstrap-choice").currentIndex!==1 || form.selectedPill!=="https://example.invalid/apps.pill")throw new Error("Recommended Apps is not the default for a new owned identity")
             control(form,"key-advanced-toggle").clicked()
             if(!loom.visible || !storage.visible || storage.currentIndex!==0) throw new Error("key advanced settings did not preserve default storage")
             loom.currentIndex=2;loom.activated(2)
@@ -751,8 +806,10 @@ ShellRoot {
           if (!form.registeredInstance) return
           if (form.registeredInstance.observed_state!=="running") return
           if (control(form,"key-start").enabled || control(form,"key-register").enabled || service.monitorWindow.page!=="overview") throw new Error("owned registration did not automatically boot/open management")
-          service.monitorWindow.page="setup"
-          control(form,"key-register-another").clicked()
+           service.monitorWindow.page="setup"
+           var bootChoice=control(form,"bootstrap-choice");bootChoice.currentIndex=0;bootChoice.activated(0)
+           control(form,"key-register-another").clicked()
+           if(control(form,"bootstrap-choice").currentIndex!==1)throw new Error("Register another ship did not restore Recommended Apps")
            if(control(form,"runtime-loom").currentIndex!==1 || form.advanced || control(form,"storage-location-selector").currentIndex!==0) throw new Error("another owned ship inherited advanced settings")
           if (control(form,"key-start").enabled) throw new Error("Start remained enabled on a blank registration form")
           service.lastError="old key-flow error"
@@ -762,11 +819,41 @@ ShellRoot {
          if (service.lastError || control(setup,"setup-card-key") || control(setup,"setup-card-ship")) throw new Error("setup retained stale errors or duplicate provisioning cards")
          control(setup,"setup-add-ship").clicked()
          if (setup.mode!=="ship") throw new Error("Add a ship did not open provisioning")
-         control(setup,"add-ship-method-comet").clicked()
-         if (!control(setup,"registration-form").visible) throw new Error("comet flow is not in Add a ship")
-         control(setup,"add-ship-method-key").clicked();phase=303
-       } else if (phase === 303) {
-         if (!control(service.monitorWindow.setupPane,"owned-key-form").visible) throw new Error("key flow is not in Add a ship")
+           control(setup,"add-ship-method-comet").clicked()
+           if (!control(setup,"registration-form").visible) throw new Error("comet flow is not in Add a ship")
+           if(control(setup,"add-ship-method-comet").text!=="Boot Ephemeral Identity" || control(setup,"provisioning-explanation").text.indexOf("cannot rotate")<0)throw new Error("Ephemeral identity explanation missing")
+           if(!control(setup,"comet-form-title").visible || control(setup,"registration-explainer").text.indexOf("Restarting the same pier")<0)throw new Error("Comet form lacks its heading or identity/pier explanation")
+           phase=3022
+        } else if (phase === 3022) {
+           if(capture("comet-form"))return
+           var setup=service.monitorWindow.setupPane
+           control(setup,"add-ship-method-import").clicked()
+           if(control(setup,"add-ship-method-import").text!=="Import existing pier" || control(setup,"provisioning-explanation").text.indexOf("data and history")<0)throw new Error("Existing pier explanation missing")
+           var storage=control(setup,"provisioning-pier-import")
+           storage.showImport=false
+           if(!storage.provisioning || !control(storage,"external-pier-import").visible || control(storage,"open-pier-import").visible || control(storage,"storage-page-title").visible || control(storage,"storage-root-summary").visible)throw new Error("Provisioning import can still be closed or has duplicate storage chrome")
+           storage.preferredConnection=null
+           if(storage.connection!==null)throw new Error("Provisioning import silently selected a different runner")
+           storage.preferredConnection=Qt.binding(function(){return service.monitorWindow.setupPane.provisioningRunner})
+           phase=3023
+        } else if (phase === 3023) {
+           var setup=service.monitorWindow.setupPane,storage=control(setup,"provisioning-pier-import")
+           if(service.busy||!service.observing||!Model.available(storage.connection,service.now))return
+           if(capture("provisioning-import"))return
+           var discovered=control(storage,"discovered-pier-row-fakeships/project/zod/pier"),registered=control(storage,"registered-location-row-alpha")
+           if(!discovered||!registered)return
+           if(discovered.implicitHeight>Style.space(64)||registered.implicitHeight>Style.space(80))throw new Error("Pier rows are not compact")
+           var move=control(registered,"move-location-alpha"),remove=control(registered,"delete-location-alpha")
+           if(move.parent!==remove.parent || Math.abs(move.y-remove.y)>1)throw new Error("Registered location actions are not inline")
+           if(!remove.enabled)throw new Error("Stopped pier deletion review is unavailable")
+           remove.clicked()
+           if(!control(registered,"delete-pier-name").visible || control(registered,"delete-pier-submit").enabled)throw new Error("Compact deletion action skipped its typed confirmation")
+           control(registered,"delete-pier-close").clicked()
+           console.log("PASS: comet guidance, always-open runner-bound import and compact pier rows retain destructive-action review")
+           control(setup,"add-ship-method-key").clicked();phase=303
+        } else if (phase === 303) {
+          if (!control(service.monitorWindow.setupPane,"owned-key-form").visible) throw new Error("key flow is not in Add a ship")
+          if(control(service.monitorWindow.setupPane,"add-ship-method-key").text!=="Boot Permanent Identity" || control(service.monitorWindow.setupPane,"provisioning-explanation").text.indexOf("Azimuth")<0)throw new Error("Permanent identity explanation missing")
          if (control(service.monitorWindow.setupPane,"key-advanced").visible) throw new Error("advanced boot choices were not collapsed")
          if (capture("key-boot")) return
           control(service.monitorWindow.setupPane,"key-identity").text="~dibpen-fogweg-dozzod-sarlev"
@@ -840,8 +927,12 @@ ShellRoot {
           console.log("PASS: confirmed owned creation boots once, opens progress, and restored forms cannot duplicate Start")
           service.monitorWindow.page="setup";service.monitorWindow.setupPane.mode="manage";phase=305
        } else if (phase === 305) {
-         var setup=service.monitorWindow.setupPane
-         if (!control(setup,"managed-runner-offline-runner") || control(setup,"ship-http-port")) throw new Error("Manage runners lost local enrollments or still contains ship controls")
+          var setup=service.monitorWindow.setupPane
+          if (!control(setup,"managed-runner-offline-runner") || control(setup,"ship-http-port")) throw new Error("Manage runners lost local enrollments or still contains ship controls")
+          var details=control(setup,"runner-details-fixture"),toggle=control(setup,"runner-details-toggle-fixture")
+          if(!details||details.visible||!toggle)throw new Error("runner technical details did not start collapsed")
+          toggle.clicked();if(!details.visible)throw new Error("runner details could not be opened")
+          toggle.clicked();if(details.visible)throw new Error("runner details could not be collapsed")
          if (!control(service.monitorWindow,"edit-ship-ports")) throw new Error("ship configuration control was lost")
          if (capture("manage-runners")) return
          control(setup,"add-runner-connection").clicked()
@@ -904,9 +995,14 @@ ShellRoot {
         } else if (phase === 314 && !service.busy) {
            if (service.lastError || service.storageOutcome.kind!=="delete-pier" || service.storageOutcome.status!=="accepted") throw new Error("deletion acknowledgement failed")
            console.log("PASS: destructive deletion requires stopped instance and typed identity, and submits once with runner/revision binding")
-           service.monitorWindow.visible=false;Qt.quit()
+            service.monitorWindow.visible=false;Qt.quit()
+       }
+      } catch (error) {
+        console.error("Fixture phase "+phase+": "+error)
+        running=false
+        Qt.exit(1)
       }
-    }
+     }
   }
 }''' % ("true" if args.windows else "false",json.dumps(str(pathlib.Path(args.capture_dir).absolute()) if args.capture_dir else ""),json.dumps(key_file.as_uri()),json.dumps(pill_file.as_uri()),json.dumps(str(helper)),json.dumps(str(helper))))
         if args.native:
@@ -915,7 +1011,7 @@ ShellRoot {
             qml = qml.replace("Plugin.Service {", "Native.Service {").replace("Plugin.Panel {", "Native.Panel {")
             qml = qml.replace("if (capturesPending) return", "if (capturesPending) return\n        if (String(service.toolsDirectory)!==" + json.dumps((NATIVE / "bin").as_uri()) + ") throw new Error(\"native tool directory mismatch\")")
             (directory / "shell.qml").write_text(qml)
-        result = run_qs(directory, timeout=90, mapped=args.windows)
+        result = run_qs(directory, timeout=180 if args.windows else 90, mapped=args.windows)
         text = result.stdout + result.stderr
         if result.returncode != 0 or "PASS: real QML" not in text:
             raise RuntimeError(text)

@@ -24,7 +24,7 @@ Column {
       spacing: Style.space(10)
       RowLayout {
         width: parent.width
-        Label { Layout.fillWidth: true; text: root.ready ? "Your local runner is ready" : "Set up this computer"; font.pixelSize: Style.space(23); font.bold: true }
+        CardTitle { Layout.fillWidth: true; text: root.ready ? "Your local runner is ready" : "Set up this computer" }
         StatusBadge { text: root.ready ? "Connected" : root.running ? "Setting up" : "Local host"; tone: root.ready ? "good" : root.running ? "accent" : "muted" }
       }
       Label { width: parent.width; secondary: true; text: root.ready ? "The background services and private desktop connection are ready. Your ships can keep running when this panel is closed." : "Setup will install Urbit software on this machine. Please check the box to approve." }
