@@ -1,0 +1,63 @@
+{
+  "version": "0.2.0",
+  "channel": "stable",
+  "platform": "linux/amd64",
+  "source_commit": "fa0687c4f628eb88841a361205fe9a6fcf90f03b",
+  "source_tree": "208ed1ace15290da8dac851ca5d8a461c25afb98",
+  "backend_source_sha256": "0037fb93743416371a72df0ab2707fb8987dd2a6c512a8e8fd12b754e4937d10",
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "runner_schema": 21,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "ci": {
+    "source": "https://github.com/thelifeandtimes/omabit/actions/runs/39529768839",
+    "conclusion": "success"
+  },
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "source_commit": "fa0687c4f628eb88841a361205fe9a6fcf90f03b",
+    "evidence_sha256": "c961fd1d3a75e0846a0f3e6e0b151867bd3dc57291d2b02999cf53a384bc9a7f",
+    "from_version": "0.1.0",
+    "to_version": "0.2.0",
+    "from_schema": 21,
+    "to_schema": 21,
+    "environment": "Dedicated unprivileged QEMU/KVM Arch overlay; real native Docker29.9.1, rootless systemd/cgroup-v2 and official Vere4.6",
+    "checks": [
+      "Published stable0.1.0 writer creates a stopped fake and boots an existing initialized fake",
+      "Actual frozen0.2.0 management installer upgrades while the fake runs",
+      "Exact repeated installation does not restart management",
+      "Old and new collectors replay the original actor-scoped creation receipt",
+      "Compatible same-schema return to published0.1.0, followed by another0.2.0 upgrade"
+    ],
+    "preserved": ["runner and ship identities", "configuration and paths", "running container/PID/start time/image/mounts/ports", "stopped intent", "engine invocation", "pier objects and ownership", "database ownership/schema", "operations/policies/deletion history", "grants/SSH files/subordinate IDs", "desktop enrollment"],
+    "disposition": "Disposable fake stopped normally; all guest ships stopped and guest powered off. Backing disk hash and live host runtime unchanged."
+  },
+  "remote_onboarding": {
+    "frozen_existing_pairing": true,
+    "frozen_pairing_evidence_sha256": "c154e52b122ae5da0b9e4268d1772f470c5402b0442d36340d09d43d595bcd0a",
+    "frozen_checks": ["real encrypted administrator key through PTY without agent", "fresh dedicated-key RPC identity/role and inventory", "pairing preserves installed management/runtime/configuration", "repeat pairing", "revocation and repeated revocation"],
+    "prior_development_checks": "Independent clean Arch/Pacman installation; actual stable0.1.0 access-only pairing with running fake; shell/forwarding denial; active-session revocation; cancellation/resume. Separately recorded in docs/diagnostics/2026-10-20-remote-onboarding.md.",
+    "limits": "Prior development checks are not relabeled as frozen-artifact runs. APT fresh installation and custom bastion/SSH policies remain unqualified."
+  },
+  "desktop": {
+    "environment": "Omarchy4.0.4-1; isolated HOME/XDG with stock Qt/Quickshell modules",
+    "checks": ["full mapped panel and CLI audit", "guided remote wizard", "first-run onboarding", "both Qt offscreen suites", "actual frozen packaged bootstrap activation and failure recovery", "isolated profile and selected view survive process restart"],
+    "limits": "The complete two-Omarchy fresh-guest matrix has not been repeated with frozen artifacts."
+  },
+  "frozen_artifacts": {
+    "go_version": "go version go1.27.0-X:nodwarf5 linux/amd64",
+    "independent_clean_builds": 2,
+    "byte_identical": true,
+    "checks": ["archive and asset checksums", "clean VCS/source-tree/epoch provenance", "exact committed UI bytes", "binary help and schema", "govulncheck v1.9.0: no vulnerabilities in three binaries"],
+    "assets": [
+      {"name":"omabit-0.2.0-linux-amd64.tar.gz","bytes":30054728,"sha256":"fc06a083285581e5b2ad5b35f36a65bad7f2542d07d87107034cb78b396155da"},
+      {"name":"omabit-linux-amd64","bytes":17918773,"sha256":"103a397a00d0cef26b6fecf35022b8d7a12ed246f5463edbe1e652fae92a67e0"},
+      {"name":"omabit-recommended-apps-0.2.0.pill","bytes":59351751,"sha256":"85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"},
+      {"name":"urbit-collector-linux-amd64","bytes":11873465,"sha256":"bf20758143cb24546458d9c8c63285d46bd7294615f25d9d7ec3e25a7afd455c"},
+      {"name":"urbit-runner-linux-amd64","bytes":22505552,"sha256":"2a092940e63f0aa22611337181cad0ef5aa9a20b4ce5f8ef7990341016eb73ad"}
+    ]
+  },
+  "local_evidence": "build/stable-0.2.0/",
+  "scope_limits": ["exact runtime qualification remains distinct from compatibility and native provenance", "Recommended Apps inventory and OTA behavior not newly asserted", "historical development-managed API mode retained", "video production is separate from release qualification"]
+}
