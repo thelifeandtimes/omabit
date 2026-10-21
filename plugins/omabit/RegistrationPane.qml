@@ -51,7 +51,8 @@ Column {
     }
   }
 
-  Label { width: parent.width; secondary: true; text: root.kind === "fake" ? "Boot a development identity with container-local Ames and outbound HTTP access." : "Boot a new comet identity. Choose a required local name; the Urbit identity is generated during startup." }
+  Label { objectName: "comet-form-title"; width: parent.width; visible: root.kind === "comet"; text: "Your comet identity"; font.pixelSize: Style.space(21); font.bold: true }
+  Label { objectName: "registration-explainer"; width: parent.width; secondary: true; text: root.kind === "fake" ? "Boot a development identity with container-local Ames and outbound HTTP access." : "No purchased Urbit ID or boot-key file is needed. Omabit generates your comet’s identity and keys on first boot. Its long ~name identifies it on the network; choose a short local name below to recognize it in your fleet. Restarting the same pier keeps the same identity and data." }
   BootstrapSelector { id: bootstrap; width: parent.width; service: root.service; enabled: !!root.service && !root.service.busy && !root.registered; onEdited: {consent.checked=false;root.service.editRegistration();root.submitError=""} }
   Label { text: "Instance name · required, unique on this runner"; caption: true; secondary: true }
   Field { id: instanceName; objectName: "registration-name"; width: parent.width; enabled: !!root.service && !root.service.busy && !root.registered; placeholderText: Model.suggestInstance(root.connection,root.kind); onTextEdited: {consent.checked=false;root.service.editRegistration()} }

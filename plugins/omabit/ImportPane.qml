@@ -40,7 +40,8 @@ Column {
     Column {
       id: review
       anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(12); spacing: Style.space(10)
-      Label { width: parent.width; text: root.target ? root.target.connection + " / " + root.target.instance + " · HTTP " + root.target.port : ""; font.bold: true }
+      CardTitle { text: "Import review" }
+      Label { width: parent.width; text: root.target ? root.target.connection + " / " + root.target.instance + " · HTTP " + root.target.port : "" }
       Label { width: parent.width; text: root.target ? "Source " + root.target.source.run_id + "\n" + root.target.source.files + " files · " + Model.bytesText(root.target.source.bytes) + "\nDigest " + root.target.source.content_digest : ""; secondary: true; caption: true }
       Label { width: parent.width; text: "Copies into fresh runner-owned storage and reserves this source once. The imported ship remains stopped; Start is a separate action."; secondary: true }
       CheckField { id: consent; width: parent.width; enabled: root.service.canImport(root.target); text: "I confirm this selected source is stopped." }

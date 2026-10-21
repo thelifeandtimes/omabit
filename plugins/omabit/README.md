@@ -1,8 +1,68 @@
-# Omabit unified desktop plugin — 0.1.0
+# Omabit unified desktop plugin — 0.2.0 development
+
+## Shared card presentation
+
+Card headings use one uppercase monospace caption style. Urbit Logs keeps its
+pause/play and refresh icons in the top-right header, with the priority filter
+below. Submission/error toasts overlay the view without moving ship context;
+ongoing runtime/connection diagnostics and identity-bound request failures live in
+Connectivity & runtime. Runner management cards show a compact inventory/access
+summary and put endpoint IDs and host compatibility reports under Technical details.
+
+The remote host field is an editable dropdown. Suggestions are read without sudo
+from literal SSH Host aliases, bounded Include files and readable known-host entries.
+The reader never runs SSH, Match exec or KnownHostsCommand, and does not contact
+suggested hosts. Wildcard entries and hashed hostnames are omitted; custom hosts
+remain editable, and selecting a known-host port fills the existing port field.
+
+## Guided remote runners
+
+**Connect another runner** and **Set up remote server** now use the same guided
+flow. Enter an ordinary SSH alias, authenticate/approve the detected action in the
+setup terminal, then return to verified enrollment. Advanced retains prepared SSH
+and Unix-socket connections. See [remote onboarding](../../docs/remote-runner-setup.md)
+for authentication, dedicated keys, fresh dependencies, resume and revocation.
+
+## Provisioning choices
+
+**Add a ship** offers **Boot Ephemeral Identity**, **Boot Permanent Identity**, and
+**Import existing pier**, with a contextual explanation of comet keys, owned
+identities/Azimuth, or bringing an existing ship's data into management.
+New boot forms default to **Recommended Apps**, including when registering another
+owned ship. **bare bootstrap** remains an explicit choice. A missing configured
+recommendation is reported rather than silently changing the selection.
+
+The comet form explains automatic first-boot identity/key generation, the local
+instance label versus the network's `~name`, and reuse of the same pier on restart.
+Import provisioning displays its form directly and always keeps it open for the
+selected runner. Discovered piers and registered locations use compact rows with
+full paths on hover and inline actions; deletion still opens its typed review.
+
+## UI-only runtime and maintenance polish
+
+- The ship context shows **healthy (2GB loom)** while the ship is running; stopped
+  ships have no loom suffix. There is no separate Runtime status card. Recorded/requested
+  settings, last operation, snapshot interval and container/host diagnostics are
+  under **Technical details**. Current boot progress and recovery notices remain
+  visible. The status suffix prefers recorded launch evidence; its tooltip explains any
+  different requested size and distinguishes loom address space from RAM usage.
+- **Urbit Logs** shows the original timestamped output once. The **Priority logs only**
+  toggle filters the available tail for error/warning text with surrounding lines;
+  turning it off restores all output. This is a display filter, not a ship-health assessment.
+  Hover the heading for read-only/redaction information.
+- Manual maintenance has direct **Run pack**, **Run meld** and **Run roll** actions,
+  using the existing identity/revision-bound dispatch and stopped-pier checks.
+  History removal still has its separate exact-history preview and consent.
+
+These changes use the existing binaries. Automatic runner-update discovery and a
+one-click installer need a separate helper/API change: the current local setup
+returns immediately for an already connected host, and the collector does not
+expose a remote upgrade command. Missing capabilities are not a release-version
+comparison, so they are not presented as a verified update-available indicator.
 
 ## Host compatibility checks
 
-Local setup, **Manage runners**, and the existing runtime-status card display the
+Local setup, **Manage runners**, and the ship's **Technical details** display the
 runner's structured host report: distribution/provider/profile, installed packages
 and running engine, compatibility, qualification, provenance, restart state,
 permissions, evidence time, checks and native-distribution guidance. Expand the
@@ -130,7 +190,7 @@ smaller, the task metric reads Task Records, and the menubar mark is a circled t
 Owned key boot requires only the expected Urbit ID and private key file. Instance
 name and tier path are derived. HTTP and Ames UDP ports are allocated by the runner
 inside the registration transaction; Advanced configuration exposes port overrides.
-The Boot pill dropdown selects bare bootstrap or Recommended Apps. The latter uses
+The Boot pill dropdown defaults to Recommended Apps and also offers bare bootstrap. Recommended Apps uses
 `recommendedPillUrl`; bare always leaves bootstrap selection to Vere. The CLI also
 accepts local pill files. Selected pills are staged by hash/size through an
 authenticated bounded upload.

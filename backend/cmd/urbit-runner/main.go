@@ -23,7 +23,11 @@ const usage = `Usage: urbit-runner COMMAND
 Commands:
   state-schema               Print this binary's persistent state schema version.
   install-host --owner USER --bundle DIR --public-key FILE --acknowledge-host-changes
-                             Install the owner's rootless engine, access and services.
+                              Install the owner's rootless engine, access and services.
+  authorize-desktop --public-key FILE --expected-runner-id ID --ssh-connection TUPLE
+                    --acknowledge-host-changes [--role operator|observer] [--revoke]
+                             Add/revoke a restricted key on the existing SSH endpoint.
+  remote-bootstrap           Interactive, OS-authorized remote onboarding helper.
   prepare-ssh --output DIR --public-key FILE --role operator|observer
                              Write inert loopback SSH review configuration.
   ssh-authorized-key --public-key FILE --role operator|observer
@@ -124,6 +128,12 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	}
 	if len(args) > 0 && args[0] == "install-host" {
 		return runInstallHost(ctx, args[1:], stdout, stderr)
+	}
+	if len(args) > 0 && args[0] == "authorize-desktop" {
+		return runDesktopAccess(ctx, args[1:], stdout, stderr)
+	}
+	if len(args) > 0 && args[0] == "remote-bootstrap" {
+		return runRemoteBootstrap(ctx, args[1:], stdout, stderr)
 	}
 	if len(args) > 0 && args[0] == "-c" {
 		return runSSHShell(ctx, args, stdout, stderr)

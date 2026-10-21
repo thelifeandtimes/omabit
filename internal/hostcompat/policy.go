@@ -109,6 +109,12 @@ func EngineVersionStatus(version string) string {
 	return "compatible"
 }
 
+// EnginePackageVersionStatus applies the same policy to a native repository
+// candidate before provisioning installs it. Metadata is not provenance evidence.
+func EnginePackageVersionStatus(version string) string {
+	return EngineVersionStatus(upstreamVersion(version))
+}
+
 // ValidateRecordedEngineVersion validates history without applying today's new
 // work policy. Callers must not rewrite a historical version to the baseline.
 func ValidateRecordedEngineVersion(version string) bool {

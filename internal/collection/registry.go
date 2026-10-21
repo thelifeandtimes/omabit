@@ -459,3 +459,29 @@ func (r *Registry) Forget(ctx context.Context, name, expectedID string) error {
 		return errors.New("unknown enrolled runner")
 	})
 }
+
+// ForgetSSHExpected removes only the exact enrollment observed by credential
+// revocation. A concurrent rename/rebind is preserved, as is an already absent
+// entry after a lost acknowledgement. No network request is required.
+func (r *Registry) ForgetSSHExpected(ctx context.Context, expected Connection) error {
+	if expected.validate() != nil || expected.Transport != "ssh" || expected.Revision == 0 {
+		return errors.New("require an exact SSH enrollment for credential revocation")
+	}
+	return r.locked(ctx, func() error {
+		state, err := r.read()
+		if err != nil {
+			return err
+		}
+		for index, current := range state.Connections {
+			if current.Name != expected.Name {
+				continue
+			}
+			if current.RunnerID != expected.RunnerID || current.Revision != expected.Revision || current.Mode != expected.Mode || !current.EnrolledAt.Equal(expected.EnrolledAt) || current.endpointKey() != expected.endpointKey() {
+				return nil
+			}
+			state.Connections = slices.Delete(state.Connections, index, index+1)
+			return r.write(state)
+		}
+		return nil
+	})
+}

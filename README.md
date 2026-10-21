@@ -1,9 +1,9 @@
 # Omabit
 
-**DEVELOP — unqualified development, with no stability guarantee.** This branch
-starts from the 0.1.0 baseline. Use development snapshots and isolated profiles to
-test changes, then promote tested work deliberately to edge or a release branch.
-Stable users should use `master`; personal bleeding-edge use belongs on `edge`.
+**New in 0.2.0:** [guided remote-runner setup](docs/remote-runner-setup.md)
+uses an existing SSH login, provisions a dedicated restricted management key, and
+verifies unattended access before enrollment. It supports pairing existing runners
+and approved fresh-host installation through the same workflow.
 
 A local Urbit fleet for Omarchy: run ships with the official Vere runtime, monitor
 them from the desktop, and manage maintenance without keeping terminal sessions open.
@@ -13,10 +13,10 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Stable release:** [**0.1.0**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.1.0), a Linux/AMD64 release
+**Stable release:** [**0.2.0**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.2.0), a Linux/AMD64 release
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and support scope](docs/release-0.1.0.md),
+[release notes and support scope](docs/release-0.2.0.md),
 and [Recommended Apps pill provenance](docs/pill-release.md).
 
 **Channels:** `master` is protected, PR-only and reserved for stable minor/major
@@ -81,28 +81,28 @@ Prior dedicated-account installations were
 In a terminal inside your Omarchy desktop:
 
 ```bash
-omarchy plugin install https://github.com/thelifeandtimes/omabit.git
-python3 -B "$HOME/.config/omarchy/plugins/thelifeandtimes.omabit/scripts/omabit-channel.py" switch develop
-omarchy plugin enable thelifeandtimes.omabit
+omarchy plugin install https://github.com/thelifeandtimes/omabit.git --enable
 ```
 
 This repository is directly installable through Omarchy's native GitHub plugin installer. The plugin downloads
 and verifies the pinned prebuilt tools on first use; no Go compiler or local bundle
 directory is required. See [native plugin distribution](docs/native-plugin.md).
 
-For an existing develop installation, use
-`python3 -B "$HOME/.config/omarchy/plugins/thelifeandtimes.omabit/scripts/omabit-channel.py" update`.
-Stock `omarchy plugin update` follows remote HEAD (master), not develop. The bootstrap prepares the
+For an existing stable installation, use
+`omarchy plugin update thelifeandtimes.omabit`. Edge/develop use the explicit
+[channel updater](docs/development-policy.md#edgedevelop-installation-and-updates).
+The bootstrap prepares the
 selected release and activates it when ready; see [updates](docs/native-plugin.md#updates)
 for diagnostics, explicit version pins and legacy recovery.
 
 Then open **~+ → Setup → Set up this computer**. The guided flow checks prerequisites,
 prepares private desktop access, asks for OS authorization, installs the background
-services and connects your desktop automatically. Choose **Add a ship → New comet**
+services and connects your desktop automatically. Choose **Add a ship → Boot Ephemeral Identity**
 when it reports ready.
 
 To manage an existing remote runner, use **Setup → Manage runners → Connect another
-runner** with its authorized SSH connection. Remote-only desktop use needs no local
+runner** with its existing SSH alias or host. The guided terminal authenticates your
+ordinary login once and provisions a dedicated restricted management key. Remote-only desktop use needs no local
 Docker engine. Local host setup and remote enrollment are separate operations.
 
 For development from a source checkout:

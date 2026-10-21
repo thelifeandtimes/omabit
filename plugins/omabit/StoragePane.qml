@@ -8,6 +8,7 @@ Column {
   objectName: "pier-storage"
   property var service
   property var preferredConnection: null
+  property bool provisioning: false
   property var selected: null
   property var moving: null
   property bool submitted: false
@@ -19,7 +20,7 @@ Column {
   property bool showImport: !!preferredConnection
   property bool showStorageLocations: false
   readonly property var runners: service ? service.connections.filter(function(c){return Model.hasFeature(c,"pier-storage")}) : []
-  readonly property var connection: preferredConnection || runners[runner.currentIndex] || null
+  readonly property var connection: provisioning ? preferredConnection : preferredConnection || runners[runner.currentIndex] || null
   readonly property var catalogue: connection && connection.snapshot ? connection.snapshot.piers : null
   readonly property string moveDestination: moveLocation.rootID ? Model.storagePath(moveLocation.rootID,destination.text) : ""
   spacing: Style.space(12)
@@ -66,19 +67,24 @@ Column {
     if (service.enrollDiscovered(connection,selected.source,draftName.trim(),draftShip.trim(),draftPort,confirmed)) submitted=true
     else reviewError=service.lastError || "This review is no longer current. Refresh discovery and review the pier again."
   }
-  Label { text: "Pier storage"; font.pixelSize: Style.space(22); font.bold: true }
-  Label { width: parent.width; text: "Import an existing stopped pier by its host path, choose storage locations, or manage discovered and registered piers."; secondary: true }
-  SelectField { id: runner; width: parent.width; visible: !root.preferredConnection; model: root.runners.map(function(c){return Model.runnerTitle(c,root.service.runnerPreferences)}); onActivated: { root.selected=null;root.moving=null } }
-  Label { width: parent.width; text: root.catalogue ? "Root: "+root.catalogue.root : "Select an updated runner."; caption: true; secondary: true }
+  Label { objectName: "storage-page-title"; visible: !root.provisioning; text: "Pier storage"; font.pixelSize: Style.space(22); font.bold: true }
+  Label { width: parent.width; visible: !root.provisioning; text: "Import an existing stopped pier by its host path, choose storage locations, or manage discovered and registered piers."; secondary: true }
+  SelectField { id: runner; width: parent.width; visible: !root.provisioning && !root.preferredConnection; model: root.runners.map(function(c){return Model.runnerTitle(c,root.service.runnerPreferences)}); onActivated: { root.selected=null;root.moving=null } }
+  Label { objectName: "storage-root-summary"; width: parent.width; visible: !root.provisioning; text: root.catalogue ? "Root: "+root.catalogue.root : "Select an updated runner."; caption: true; secondary: true }
   Label { width: parent.width; visible: !!root.connection && !Model.hasFeature(root.connection,"storage-locations"); text: "Update this runner to enable configurable locations, host-path import and pier deletion."; color: Design.warning }
-  ActionButton { objectName: "open-pier-import"; text: root.showImport ? "Close import form" : "+ Import an existing pier…"; primary: !root.showImport; onClicked: root.showImport=!root.showImport }
-  PierImportPane { id:importer;width: parent.width; service: root.service; connection: root.connection; visible: root.showImport }
+  ActionButton { objectName: "open-pier-import"; visible: !root.provisioning; text: root.showImport ? "Close import form" : "+ Import an existing pier…"; primary: !root.showImport; onClicked: root.showImport=!root.showImport }
+  PierImportPane { id:importer;width: parent.width; service: root.service; connection: root.connection; visible: root.provisioning || root.showImport }
   ActionButton { objectName:"manage-storage-locations";text:root.showStorageLocations ? "Hide storage locations ▾" : "Manage storage locations ›";quiet:true;onClicked:root.showStorageLocations=!root.showStorageLocations }
   StorageRootsPane { width: parent.width; service: root.service; connection: root.connection;visible:root.showStorageLocations }
-  Label { width: parent.width; text: "New imports use <instance-name>/<ship-name>. Discovery recognizes .urb under ship-named and legacy pier directories. Each instance has an exclusive mount; archive/ is excluded."; caption: true; secondary: true }
+  Label { width: parent.width; visible: root.showStorageLocations; text: "New imports use <instance-name>/<ship-name>. Discovery recognizes .urb under ship-named and legacy pier directories. Each instance has an exclusive mount; archive/ is excluded."; caption: true; secondary: true }
   Label { width: parent.width; visible: root.catalogue && !!root.catalogue.error; text: root.catalogue ? root.catalogue.error || "" : ""; color: Design.warning }
-  ActionButton { text: "Refresh discovery"; enabled: root.service && !root.service.busy; onClicked: root.service.refresh() }
-  Label { text: "Discovered piers"; font.bold: true }
+  RowLayout {
+    width: parent.width
+    CardTitle { text: "Discovered piers"; Layout.fillWidth: true }
+    ActionButton { text: "↻"; compact: true; quiet: true; hint: "Refresh discovered piers"; Accessible.name: hint; enabled: root.service && !root.service.busy; onClicked: root.service.refresh() }
+  }
+  Column {
+  width:parent.width;spacing:Style.space(4)
   Repeater {
     model: root.catalogue ? root.catalogue.candidates || [] : []
     Card {
@@ -86,13 +92,26 @@ Column {
       required property var modelData
       readonly property bool expanded: !!root.selected && root.selected.source.path===modelData.path
       readonly property bool needsReview: !modelData.enrolled_by || modelData.moved === true
-      width: root.width; implicitHeight: contents.implicitHeight+Style.space(24)
+      objectName: "discovered-pier-row-"+modelData.path
+      width: root.width; implicitHeight: contents.implicitHeight+Style.space(16)
       Column {
         id: contents
-        anchors.left: parent.left;anchors.right: parent.right;anchors.top: parent.top;anchors.margins: Style.space(12);spacing: Style.space(8)
-        Label { width: parent.width; text: candidate.modelData.path; font.bold: true }
-        Label { width: parent.width; text: candidate.modelData.problem || (candidate.modelData.enrolled_by ? (candidate.modelData.moved ? "Moved — reconnect ":"Enrolled as ")+candidate.modelData.enrolled_by : "Unenrolled pier")+(candidate.modelData.busy ? " · Vere lock present" : ""); caption: true; secondary: true }
-        ActionButton { objectName: "review-pier-"+candidate.modelData.path; text: candidate.modelData.moved === true ? "Reconnect location…" : "Enroll for management…"; visible: candidate.needsReview && !candidate.expanded; enabled: candidate.needsReview && root.connection && root.connection.access_role==="operator" && !root.service.busy && !candidate.modelData.problem && !candidate.modelData.busy; onClicked: root.choose(candidate.modelData) }
+        anchors.left: parent.left;anchors.right: parent.right;anchors.top: parent.top;anchors.margins: Style.space(8);spacing: Style.space(4)
+        RowLayout {
+          width:parent.width;spacing:Style.space(8)
+          Label {
+            Layout.fillWidth:true;Layout.minimumWidth:0;text:candidate.modelData.path;caption:true;font.family:"monospace";wrapMode:Text.NoWrap;elide:Text.ElideMiddle
+            HoverHandler { id: discoveredPathHover }
+            Hint { text:candidate.modelData.path;visible:discoveredPathHover.hovered }
+          }
+          Label {
+            visible:!candidate.needsReview;Layout.maximumWidth:root.width*0.35;text:"Enrolled as "+(candidate.modelData.enrolled_by || "");caption:true;secondary:true;wrapMode:Text.NoWrap;elide:Text.ElideRight
+            HoverHandler { id: enrolledHover }
+            Hint { text:"Enrolled as "+(candidate.modelData.enrolled_by || "");visible:enrolledHover.hovered }
+          }
+          ActionButton { objectName: "review-pier-"+candidate.modelData.path; text: candidate.modelData.moved === true ? "Reconnect…" : "Import…"; compact:true; visible: candidate.needsReview && !candidate.expanded; enabled: candidate.needsReview && root.connection && root.connection.access_role==="operator" && !root.service.busy && !candidate.modelData.problem && !candidate.modelData.busy; onClicked: root.choose(candidate.modelData) }
+        }
+        Label { width: parent.width; visible:text!==""; text:(candidate.modelData.problem || "")+(candidate.modelData.busy ? (candidate.modelData.problem ? " · " : "")+"Vere lock present" : ""); caption: true; color:Design.warning }
         Column {
           objectName: "pier-enrollment-"+candidate.modelData.path
           width: parent.width; visible: candidate.expanded; spacing: Style.space(10)
@@ -112,20 +131,46 @@ Column {
       }
     }
   }
+  }
   Label { visible: root.catalogue && root.catalogue.candidates.length===0; text: "No initialized piers found in the discovery tree."; secondary: true }
-  Label { text: "Registered locations"; font.bold: true }
+  CardTitle { text: "Registered locations" }
+  Column {
+  width:parent.width;spacing:Style.space(4)
   Repeater {
     model: Model.instances(root.connection)
-    Column {
+    Card {
       id: registered
       required property var modelData
-      width: root.width; spacing: Style.space(6)
-      Label { width: parent.width; text: Model.instanceTitle(registered.modelData)+" · "+registered.modelData.id+"\n"+Model.absolutePierPath(root.connection,registered.modelData.pier_path || ""); caption: true }
+      objectName:"registered-location-row-"+modelData.id
+      width: root.width; implicitHeight:registeredBody.implicitHeight+Style.space(16)
+      Column {
+      id:registeredBody
+      anchors.left:parent.left;anchors.right:parent.right;anchors.top:parent.top;anchors.margins:Style.space(8);spacing:Style.space(6)
+      RowLayout {
+        width:parent.width;spacing:Style.space(8)
+        Column {
+          Layout.fillWidth:true;Layout.minimumWidth:0;Layout.preferredWidth:1;spacing:Style.space(3)
+          RowLayout {
+            width:parent.width;spacing:Style.space(8)
+            Label { Layout.maximumWidth:parent.width*0.5;text:registered.modelData.id;caption:true;font.bold:true;wrapMode:Text.NoWrap;elide:Text.ElideRight }
+            ShipName { Layout.fillWidth:true;Layout.minimumWidth:0;instance:registered.modelData;compact:true;caption:true;secondary:true }
+          }
+          Label {
+            id: registeredPath
+            width:parent.width;text:Model.absolutePierPath(root.connection,registered.modelData.pier_path || "");caption:true;secondary:true;wrapMode:Text.NoWrap;elide:Text.ElideMiddle
+            HoverHandler { id: registeredPathHover }
+            Hint { text:registeredPath.text;visible:registeredPathHover.hovered }
+          }
+        }
+        ActionButton { objectName:"move-location-"+registered.modelData.id;property var ship:registered.modelData;text:"Move…";compact:true;enabled:root.connection && root.connection.access_role==="operator" && !root.service.busy && !Model.handoffFenced(ship) && !ship.delete_pending && ship.desired_state==="stopped" && !ship.recovery_required && !ship.active_operation_id;onClicked:root.reviewMove(ship) }
+        ActionButton { objectName:"delete-location-"+registered.modelData.id;text:registered.modelData.delete_pending ? "Continue…" : "Delete…";compact:true;danger:true;hint:"Review pier deletion";enabled:root.service && !root.service.busy && Model.canDeletePier(root.connection,registered.modelData,root.service.now);onClicked:deletion.review() }
+      }
       Label { width: parent.width; visible: !!registered.modelData.external_import && registered.modelData.external_import.stage!=="complete"; text: visible ? "Import phase: "+registered.modelData.external_import.stage+" · "+(registered.modelData.external_import.copied_bytes || 0)+" bytes copied\nSource: "+registered.modelData.external_import.source+"\nHeld source: "+(registered.modelData.external_import.holding_path || "not moved")+"\nInspect the activity receipt before continuing an interrupted import." : ""; secondary: true; caption: true }
       ImportRecoveryPane { width:parent.width;service:root.service;connection:root.connection;instance:registered.modelData }
-      ActionButton { property var ship: registered.modelData; text: "Move…"; compact: true; enabled: root.connection && root.connection.access_role==="operator" && !root.service.busy && !Model.handoffFenced(ship) && !ship.delete_pending && ship.desired_state==="stopped" && !ship.recovery_required && !ship.active_operation_id; onClicked: root.reviewMove(ship) }
-      DeletePierPane { width: parent.width; service: root.service; connection: root.connection; instance: registered.modelData }
+      DeletePierPane { id:deletion;showTrigger:false;width:parent.width;service:root.service;connection:root.connection;instance:registered.modelData }
+      }
     }
+  }
   }
   Column {
     width: parent.width;spacing: Style.space(8);visible: !!root.moving

@@ -24,6 +24,9 @@ Window {
   readonly property var connection: selected ? selected.connection : null
   readonly property var instance: selected ? selected.instance : null
   readonly property var status: instance ? Model.shipStatus(connection,instance,service.now,service.observing) : ({label:"Select a ship",tone:"muted",detail:""})
+  readonly property var runningLoom: service && service.observing && Model.available(connection,service.now)
+    && instance && instance.observed_state === "running" && Model.fresh(instance.observed_at,service.now,30000)
+    && (!instance.runtime_status || instance.runtime_status.running !== false) ? Model.runtimeLoom(instance) : null
   readonly property var resources: Model.resourceView(connection,instance,service.now,service.observing)
   readonly property var sample: resources.sample
   readonly property var cpu: Model.cpuView(connection,instance,service.now,service.observing)
@@ -64,7 +67,7 @@ Window {
     objectName: "monitor-content"
     anchors.fill: parent; focus: true
     Keys.onEscapePressed: root.visible = false
-    Toast { service: root.service; anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: Style.space(86) }
+    Toast { objectName:"monitor-action-progress";service: root.service; anchors.horizontalCenter: parent.horizontalCenter; anchors.top: parent.top; anchors.topMargin: Style.space(86) }
     ColumnLayout {
       anchors.fill: parent; spacing: 0
       Rectangle {
@@ -159,15 +162,12 @@ Window {
           Column {
             id: body
             x: (bodyScroll.width - width) / 2; y: Style.space(24); width: Math.min(bodyScroll.width - Style.space(48), Style.space(1150)); spacing: Style.space(20)
-            Label { width: parent.width; visible: text !== ""; text: root.service.feedError || (root.page!=="setup" ? root.service.lastError : ""); color: Design.danger }
-            Label { objectName: "monitor-action-progress"; width: parent.width; visible: root.service.actionProgressVisible; text: root.service.settingUp ? "Setting up this computer…" : "Submitting " + root.service.currentAction + "…"; color: Design.accent }
-            ActionButton { width: parent.width; visible: Model.discoveredPiers(root.service.connections).length>0 && root.page!=="setup"; text: Model.discoveredPiers(root.service.connections).length+" discovered piers need enrollment or location review →"; onClicked: {root.page="setup";windowSetup.mode="storage"} }
             Column {
               width: parent.width; spacing: Style.space(20); visible: root.page !== "activity" && root.page !== "setup" && !!root.instance
               Column {
                 width: parent.width
                 spacing: Style.space(10)
-                ShipContext { objectName: "monitor-ship-context"; width: parent.width; host: root.connection ? Model.runnerTitle(root.connection,root.service.runnerPreferences) : ""; instanceName: root.instance ? root.instance.id : ""; status: root.status.label; tone: root.status.tone; hint: root.status.detail }
+                ShipContext { objectName: "monitor-ship-context"; width: parent.width; host: root.connection ? Model.runnerTitle(root.connection,root.service.runnerPreferences) : ""; instanceName: root.instance ? root.instance.id : ""; status: root.status.label; annotation: root.runningLoom ? root.runningLoom.label.replace(" Loom"," loom") : ""; tone: root.status.tone; hint: root.status.detail+(root.runningLoom ? "\n"+root.runningLoom.hint : "") }
                 ShipName { objectName: "monitor-ship-name"; width: parent.width; instance: root.instance; font.pixelSize: Style.space(30); font.bold: true }
                 Flow {
                   width: parent.width; spacing: Style.space(8)
@@ -176,7 +176,6 @@ Window {
                 CopyCodeButton { objectName: "monitor-copy-code"; service: root.service; runnerID: root.connection ? root.connection.runner_id : ""; connectionName: root.connection ? root.connection.name : ""; instanceID: root.instance ? root.instance.id : "" }
                 ActionButton { objectName: "monitor-open-ship"; text: "Open ship ↗"; hint: "Open this ship when startup and health checks complete"; enabled: root.service.observing && Model.shipLive(root.connection,root.instance,root.service.now) && !!Model.shipURL(root.connection,root.instance,root.service.registrations,root.service.runnerPreferences); onClicked: root.service.openShip(root.connection,root.instance) }
                 }
-                Label { width: parent.width; caption: true; secondary: true; text: Model.codeUnavailable(root.connection,root.instance,root.service.now,root.service.observing); visible: text !== "" }
               }
               RowLayout {
                 ActionButton { text: "Overview"; primary: root.page === "overview"; onClicked: root.page = "overview" }
@@ -197,7 +196,7 @@ Window {
                   Card {
                     Layout.fillWidth: true; implicitHeight: rollSummary.implicitHeight + Style.space(28)
                     Column { id: rollSummary; anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(14); spacing: Style.space(8)
-                      Label { text: "Last roll"; font.bold: true }
+                      CardTitle { text: "Last roll" }
                       Label { width: parent.width; text: root.roll ? Model.humanTime(root.roll.finished_at,root.service.now) : "No completed roll recorded"; color: root.roll ? Design.accent : Design.muted }
                       Label { width: parent.width; text: root.roll ? "Created epoch " + root.roll.created_epoch : "Rolling creates a new history segment and snapshot."; caption: true; secondary: true }
                     }
@@ -205,7 +204,7 @@ Window {
                   Card {
                     Layout.fillWidth: true; implicitHeight: pruneSummary.implicitHeight + Style.space(28)
                     Column { id: pruneSummary; anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(14); spacing: Style.space(8)
-                      Label { text: "Last prune"; font.bold: true }
+                      CardTitle { text: "Last prune" }
                       Label { width: parent.width; text: root.instance && root.instance.pruning ? root.instance.pruning.uncertain || !root.instance.pruning.finished_at ? "Incomplete · review required" : Model.humanTime(root.instance.pruning.finished_at,root.service.now) : "No history removal recorded"; color: root.instance && root.instance.pruning ? Design.accent : Design.muted }
                       Label { width: parent.width; text: root.instance && root.instance.pruning ? "Removed " + (root.instance.pruning.removed_epochs || []).length + " old epochs through " + root.instance.pruning.cutoff : "Old history is removed only after explicit review."; caption: true; secondary: true }
                     }
@@ -219,7 +218,7 @@ Window {
                     id: cpuBody
                     anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(16); spacing: Style.space(10)
                     RowLayout { width: parent.width
-                      Label { text: "Container CPU"; font.bold: true; Layout.fillWidth: true }
+                      CardTitle { text: "Container CPU"; Layout.fillWidth: true }
                       StatusBadge { objectName: "container-cpu-value"; text: root.cpu.value; tone: root.cpu.sample ? "good" : "muted" }
                     }
                     ResourceChart { objectName: "cpu-chart"; width: parent.width; metric: "cpu"; samples: root.selected ? root.service.cpuHistory[root.selected.key] || [] : []; emptyText: root.cpu.inactive ? root.cpu.note : "Collecting CPU samples…" }
@@ -233,7 +232,7 @@ Window {
                     id: ram
                     anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(16); spacing: Style.space(10)
                     RowLayout { width: parent.width
-                      Label { text: "Container Memory"; font.bold: true; Layout.fillWidth: true }
+                      CardTitle { text: "Container Memory"; Layout.fillWidth: true }
                       StatusBadge { text: root.resources.inactive ? "Stopped · historical chart" : root.sample ? "Live" : "No fresh sample"; tone: root.sample ? "good" : "muted" }
                     }
                     ResourceChart { objectName: "memory-chart"; width: parent.width; samples: root.selected ? root.service.memoryHistory[root.selected.key] || [] : []; emptyText: root.resources.inactive ? root.resources.note : "Collecting memory samples…" }
@@ -246,7 +245,7 @@ Window {
                     id: epochBody
                     anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(16); spacing: Style.space(12)
                     RowLayout { width: parent.width
-                      Label { text: "Epoch history · oldest to newest"; font.bold: true; Layout.fillWidth: true }
+                      CardTitle { text: "Epoch history · oldest to newest"; Layout.fillWidth: true }
                       ActionButton { text: "Manage retention →"; compact: true; quiet: true; onClicked: root.page = "maintenance" }
                     }
                     Flow {
@@ -273,21 +272,25 @@ Window {
                   }
                 }
                 Card {
+                  objectName: "connectivity-runtime-card"
                   width: parent.width; implicitHeight: network.implicitHeight + Style.space(32)
                   Column {
                     id: network
                     anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(16); spacing: Style.space(10)
-                    Label { text: "Connectivity & runtime"; font.bold: true }
-                    Label { width: parent.width; text: root.instance ? "Host HTTP  " + root.instance.config.http_port + (root.instance.mode === "fake" ? "     Ames: container loopback" : (root.instance.ames_published ? "     Ames UDP  " : "     Guest Ames  ") + root.instance.config.ames_port) + "     Requested loom  " + Model.loomLabel(root.instance.config.loom) : "" }
+                    CardTitle { text: "Connectivity & runtime" }
+                    ConnectivityStatus { width:parent.width;service:root.service;connection:root.connection;instance:root.instance }
+                    Label { width: parent.width; text: root.instance ? "Host HTTP  " + root.instance.config.http_port + (root.instance.mode === "fake" ? "     Ames: container loopback" : (root.instance.ames_published ? "     Ames UDP  " : "     Guest Ames  ") + root.instance.config.ames_port) : "" }
                     Label { width: parent.width; visible: !!root.instance; text: root.instance && root.connection && root.instance.pier_path ? "Pier: "+Model.absolutePierPath(root.connection,root.instance.pier_path) : "Pier location unavailable"; secondary: true; caption: true }
                     Label { width: parent.width; text: root.instance ? "Desired / observed: " + root.instance.desired_state + " / " + root.instance.observed_state + "\nConfiguration / applied: " + root.instance.config_revision + " / " + root.instance.applied_revision : ""; secondary: true; caption: true }
                     Label { width: parent.width; text: root.instance && root.instance.ames_published ? "Ames UDP is published on host port "+root.instance.config.ames_port+". HTTP is loopback-only." : root.instance && root.instance.mode !== "fake" ? "Outbound Ames is enabled; the guest UDP port is not published on the host." : "Development fake: Ames is restricted to this container's loopback, with no host UDP publication. Outbound HTTP remains available. A second isolated fake with the same name is allowed; sharing the same pier is not."; secondary: true; caption: true }
                     ShipPortsPane { width: parent.width; service: root.service; connection: root.connection; instance: root.instance }
                     HostMovePane { width: parent.width; service: root.service; connection: root.connection; instance: root.instance }
                     DeletePierPane { objectName: "overview-delete-pier"; width: parent.width; service: root.service; connection: root.connection; instance: root.instance }
+                    ActionButton { width:parent.width;visible:Model.discoveredPiers(root.service.connections).length>0;text:Model.discoveredPiers(root.service.connections).length+" discovered piers need enrollment or location review →";onClicked:{root.page="setup";windowSetup.mode="storage"} }
                   }
                 }
-                ActionButton { text: root.technical ? "Technical details −" : "Technical details +"; quiet: true; onClicked: root.technical = !root.technical }
+                ActionButton { objectName: "ship-technical-toggle"; text: root.technical ? "Technical details −" : "Technical details +"; quiet: true; onClicked: root.technical = !root.technical }
+                RuntimeDetails { objectName: "ship-runtime-details"; width: parent.width; visible: root.technical; connection: root.connection; instance: root.instance; now: root.service.now }
                 Label { width: parent.width; visible: root.technical && !!root.roll; text: Model.maintenanceText(root.roll); secondary: true; caption: true }
                 Label { width: parent.width; visible: root.technical && root.instance && !!root.instance.maintenance && root.instance.maintenance.kind !== "roll"; text: Model.maintenanceText(root.instance ? root.instance.maintenance : null); secondary: true; caption: true }
                 Label { width: parent.width; visible: root.technical && root.instance && !!root.instance.pruning; text: Model.pruningText(root.instance ? root.instance.pruning : null); secondary: true; caption: true }
@@ -298,6 +301,7 @@ Window {
               MaintenancePane { id: maintenance; width: parent.width; service: root.service; connection: root.connection; instance: root.instance; visible: root.page === "maintenance"; onRevealRequested: function(item) { root.revealItem(item) } }
             }
             Label { width: parent.width; visible: root.page !== "activity" && root.page !== "setup" && !root.instance; text: "Select a ship from the fleet to inspect its runtime. Your selection will not silently switch to a replacement runner."; secondary: true }
+            Label { width:parent.width;visible:!root.instance&&text!=="";text:root.service.feedError;color:Design.warning }
             ActivityPane { id: activity; width: parent.width; service: root.service; visible: root.page === "activity" }
             Column {
               width: parent.width; spacing: Style.space(16); visible: root.page === "setup"
@@ -318,7 +322,7 @@ Window {
     implicitHeight: Style.space(118)
     Column {
       anchors.fill: parent; anchors.margins: Style.space(14); spacing: Style.space(8)
-      Label { text: parent.parent.label; secondary: true; caption: true; font.letterSpacing: 0.6 }
+      CardTitle { text: parent.parent.label }
       Label { width: parent.width; text: parent.parent.value; font.pixelSize: Style.space(23); font.bold: true; elide: Text.ElideRight; wrapMode: Text.NoWrap }
       Rectangle {
         width: parent.width; height: Style.space(4); radius: 2; color: Design.line; visible: parent.parent.ratio >= 0

@@ -93,6 +93,12 @@ per-key revocation remain in effect for remote requests. Local processes belongi
 to the same Unix owner have that owner's filesystem authority, as with bare-metal
 Vere.
 
+The0.2.0 [guided remote setup](remote-runner-setup.md) additionally supports the
+ordinary SSH endpoint. After explicit authorization it adds its dedicated key's
+restricted forced-command entry to the owner's SSH key file, preserving other
+entries. Pairing an existing runner does not reinstall or restart it. The separate
+loopback endpoint remains available.
+
 The engine still verifies rootless mode, the pinned version, cgroup v2 and its
 isolated data root. Container mount restrictions, dropped capabilities, no-new-
 privileges and resource limits remain. It never falls back to the system Docker

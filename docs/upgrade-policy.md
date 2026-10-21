@@ -35,6 +35,15 @@ The current repeated fresh-install exercises are development qualification only.
 
 ## Development runtime settings
 
+The0.2.0 remote-onboarding work keeps runner schema21 and desktop state/API1.
+Pairing an existing runner modifies only the dedicated access grant and its exact
+forced-command SSH key entry. New version1 attempt journals are separate from the
+runner database and native-package evidence. Existing operator keys, port22222
+connections, piers and running/stopped intent remain valid. Fresh installation and
+known interrupted installation use the established owner-user installer; a missing
+profile/path never authorizes recreating an existing runtime. See
+[remote setup](remote-runner-setup.md) and its development verification record.
+
 RC.15 separates reuse of existing OS-delegated subordinate IDs from allocation of
 new ranges. Fresh owner setup validates the local account binding and both
 root-owned grant files without requiring an existing Omabit profile. Existing

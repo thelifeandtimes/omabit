@@ -12,6 +12,12 @@ Column {
   property string transport: "ssh"
   property string shipKind: "comet"
   property bool developmentOptions: false
+  readonly property var provisioningMethods: [
+    {key:"comet",label:"Boot Ephemeral Identity",description:"Generate and boot a ‘comet’ identity. Comets are ephemeral or temporary identities which self-attest their own keys, but cannot rotate them. Great for just getting started and experimentation."},
+    {key:"key",label:"Boot Permanent Identity",description:"Boot a fresh instance of your Urbit. Requires cryptographic ownership of an Urbit ID. Once you own your own Urbit ID, you can set networking keys in Urbit’s ‘Azimuth’ Public Key Infrastructure (PKI)."},
+    {key:"import",label:"Import existing pier",description:"Already booted your ship and want to import it to Omabit? Bring its existing pier—the folder holding its data and history—under Omabit’s management. Stop the ship, place the pier on the selected runner, then choose its directory below."}
+  ]
+  readonly property var provisioningMethod: provisioningMethods.filter(function(method){return method.key===root.shipKind})[0] || null
   onShipKindChanged: if (shipKind==="fake" || shipKind==="pier") developmentOptions=true
   property var editing: null
   property var connectionTarget: null
@@ -52,7 +58,7 @@ Column {
     Card {
       width: root.width; implicitHeight: localIntro.implicitHeight + Style.space(28)
       Column { id: localIntro; anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(14); spacing: Style.space(9)
-        Label { text: root.service && root.service.localSetupStatus && root.service.localSetupStatus.ready ? "This computer is connected" : "Start here: your local Urbit host"; font.bold: true }
+        CardTitle { text: root.service && root.service.localSetupStatus && root.service.localSetupStatus.ready ? "This computer is connected" : "Start here: your local Urbit host" }
         Label { width: parent.width; secondary: true; text: root.service && root.service.localSetupStatus && root.service.localSetupStatus.ready ? "Using the existing “" + root.service.localSetupStatus.connection.name + "” runner. Its ships and data are already available in the fleet." : "Set up background services and private desktop access in one guided flow." }
         RowLayout {
           ActionButton { objectName: "setup-add-ship"; text: "Add a ship →"; visible: root.readyRunners.length>0; primary: true; onClicked: root.addShip() }
@@ -71,7 +77,7 @@ Column {
         objectName: "setup-card-"+modelData.key
         width: root.width; implicitHeight: Style.space(70)
         Column { anchors.left: parent.left; anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; anchors.margins: Style.space(16); spacing: Style.space(5)
-          Label { text: modelData.title; font.bold: true }
+          CardTitle { text: modelData.title }
           Label { text: modelData.detail; caption: true; secondary: true }
         }
         MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.mode = parent.modelData.key }
@@ -81,30 +87,8 @@ Column {
   }
   HostSetupPane { width: parent.width; visible: root.mode === "local"; service: root.service; onAddShip: { root.addShip(); root.shipKind = "comet" } }
   DesktopDiagnostics { width:parent.width; service:root.service; visible:root.mode==="home" && !!root.service && !!root.service.bootstrap }
-  Column {
-    width: parent.width; spacing: Style.space(12); visible: root.mode==="remote"
-    Label { text: "Set up a remote server"; font.pixelSize: Style.space(22); font.bold: true }
-    Label { width: parent.width; text: "Omabit on this laptop can manage Urbit runners on a VPS, workstation, or other always-on machine through SSH."; secondary: true }
-    Label { width: parent.width; text: "1. Install the standalone urbit-runner on the remote Linux host and complete its owner-user setup.\n2. Configure a restricted management SSH connection and verify its host key.\n3. Connect that runner here, then boot and manage ships from your fleet."; secondary: true }
-    ActionButton { text: "Remote installation guide ↗"; onClicked: Qt.openUrlExternally("https://github.com/thelifeandtimes/omabit/blob/master/docs/owner-user-runtime.md") }
-    ActionButton { text: "Connect installed runner →"; primary: true; onClicked: {root.transport="ssh";root.mode="runner"} }
-  }
+  RemoteRunnerPane { width:parent.width;visible:root.mode==="remote"||root.mode==="runner";service:root.service;onViewRunners:root.mode="manage" }
   StoragePane { width: parent.width; visible: root.mode === "storage"; service: root.service }
-  Column {
-    width: parent.width; spacing: Style.space(10); visible: root.mode === "runner"
-    Label { text: "Connect a runner"; font.pixelSize: Style.space(19); font.bold: true }
-    Label { width: parent.width; text: "The runner must already be installed. Enrollment verifies and pins its identity."; secondary: true }
-    RowLayout {
-      ActionButton { text: "Remote / SSH"; primary: root.transport === "ssh"; onClicked: root.transport = "ssh" }
-      ActionButton { text: "Local socket"; primary: root.transport === "unix"; onClicked: root.transport = "unix" }
-    }
-    Label { text: "Connection name"; caption: true; secondary: true }
-    Field { id: name; width: parent.width; placeholderText: "e.g. workstation" }
-    Label { text: root.transport === "ssh" ? "SSH host or configured alias" : "Absolute runner socket path"; caption: true; secondary: true }
-    Field { id: address; width: parent.width; placeholderText: root.transport === "ssh" ? "e.g. urbit-home" : "/run/user/959/urbit-runner/runner.sock" }
-    Field { id: sshConfig; width: parent.width; visible: root.transport === "ssh"; placeholderText: "Optional absolute SSH config path" }
-    ActionButton { text: "Connect runner"; primary: true; enabled: root.service && !root.service.busy; onClicked: if (root.service.enroll(name.text.trim(), address.text.trim(), sshConfig.text.trim(), root.transport)) root.mode = "manage" }
-  }
   Column {
     objectName: "manage-runners"
     width: parent.width; spacing: Style.space(10); visible: root.mode === "manage"
@@ -119,25 +103,34 @@ Column {
         required property var modelData
         objectName: "managed-runner-"+modelData.name
         readonly property var observation: root.runners.filter(function(c){return c.name===row.modelData.name && c.runner_id===row.modelData.runner_id})[0] || null
+        property bool detailsOpen: false
+        readonly property bool online: !!row.observation && root.service.observing && Model.available(row.observation,root.service.now)
+        readonly property var compatibility: Model.liveHostCompatibility(row.observation,root.service.now)
         width: root.width; implicitHeight: body.implicitHeight + Style.space(24)
         Column {
           id: body
           anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(12); spacing: Style.space(8)
           RowLayout {
             width: parent.width
-            Label { Layout.fillWidth: true; text: Model.runnerTitle(row.modelData, root.service.runnerPreferences); font.bold: true }
-            StatusBadge { text: row.observation && Model.available(row.observation,root.service.now) ? "Connected" : row.observation && row.observation.status==="identity_mismatch" ? "Needs review" : "Unavailable"; tone: row.observation && Model.available(row.observation,root.service.now) ? "good" : "muted" }
+            CardTitle { Layout.fillWidth: true; text: Model.runnerTitle(row.modelData, root.service.runnerPreferences) }
+            StatusBadge { text: row.online ? "Connected" : row.observation && row.observation.status==="identity_mismatch" ? "Needs review" : "Unavailable"; tone: row.online ? "good" : "muted" }
           }
-          Label { width: parent.width; caption: true; secondary: true; text: Model.runnerAddress(row.modelData, root.service.registrations, root.service.runnerPreferences) }
-          Label { width: parent.width; text: "Connection: "+row.modelData.name+" · "+(row.modelData.transport || "unknown")+"\nEndpoint: "+(row.modelData.transport==="ssh" ? row.modelData.ssh.host : row.modelData.socket)+"\nPinned runner: "+row.modelData.runner_id; secondary: true; caption: true }
+          Label { objectName:"runner-summary-"+row.modelData.name;width:parent.width;secondary:true;text:(row.observation && row.observation.snapshot ? (row.online ? "" : "Last seen · ")+Model.instances(row.observation).length+(Model.instances(row.observation).length===1 ? " ship" : " ships") : "Inventory not loaded")+(row.observation && row.observation.access_role ? " · "+(row.observation.access_role==="operator" ? "Operator access" : "Read-only access") : "")+(Model.runnerPreference(root.service.runnerPreferences,row.modelData).location ? " · "+Model.runnerPreference(root.service.runnerPreferences,row.modelData).location : "") }
+          Label { width:parent.width;caption:true;color:Design.warning;visible:text!=="";text:row.observation&&row.observation.status==="identity_mismatch" ? "Connection identity or mode needs review in Technical details." : row.compatibility&&row.compatibility.restart_pending ? "Engine restart pending · see Technical details." : row.compatibility&&!row.compatibility.can_mutate ? "Host checks need attention · see Technical details." : "" }
           Flow {
             width: parent.width; spacing: Style.space(8)
-            ActionButton { compact: true; text: "Edit connection…"; enabled: !root.service.busy; onClicked: root.editConnection(row.modelData) }
-            ActionButton { compact: true; text: "Display & browser host…"; enabled: !root.service.busy; onClicked: root.editRunner(row.modelData) }
+            ActionButton { compact: true; text: "Connection…"; enabled: !root.service.busy; onClicked: root.editConnection(row.modelData) }
+            ActionButton { compact: true; text: "Display settings…"; enabled: !root.service.busy; onClicked: root.editRunner(row.modelData) }
+            ActionButton { objectName:"runner-details-toggle-"+row.modelData.name;compact:true;quiet:true;text:row.detailsOpen ? "Technical details −" : "Technical details +";onClicked:row.detailsOpen=!row.detailsOpen }
           }
+          Column {
+          objectName:"runner-details-"+row.modelData.name;width:parent.width;spacing:Style.space(8);visible:row.detailsOpen
+          Rectangle { width:parent.width;height:1;color:Design.line }
+          Label { width: parent.width; text: "Connection: "+row.modelData.name+" · "+(row.modelData.transport || "unknown")+"\nEndpoint: "+(row.modelData.transport==="ssh" ? row.modelData.ssh.host : row.modelData.socket)+"\nPinned runner: "+row.modelData.runner_id; secondary: true; caption: true }
           Label { width: parent.width; visible: !!row.observation && row.observation.status === "identity_mismatch"; text: "If this same runner was switched to serve-development, explicitly accept its broader mode below. Runner identity remains pinned."; caption: true; color: Design.warning }
           ActionButton { visible: !!row.observation && row.observation.status === "identity_mismatch"; text: "Accept development mode"; enabled: !root.service.busy; onClicked: root.service.acceptDevelopmentMode(row.observation) }
           HostCompatibility { objectName: "runner-host-compatibility-"+row.modelData.name; width: parent.width; report: Model.hostCompatibility(row.observation); envelope: row.observation ? row.observation.host_compatibility || null : null; problem: Model.hostCompatibilityHint(row.observation,root.service.now); now: root.service.now; details: true }
+          }
         }
       }
     }
@@ -179,8 +172,19 @@ Column {
     Flow {
       width: parent.width; spacing: Style.space(6)
       Repeater {
-        model: [{key:"comet",label:"New comet"},{key:"key",label:"Galaxy / star / planet / moon"},{key:"import",label:"Existing pier"}]
+        model: root.provisioningMethods
         ActionButton { required property var modelData; objectName: "add-ship-method-"+modelData.key; text: modelData.label; primary: root.shipKind === modelData.key; compact: true; onClicked: root.shipKind = modelData.key }
+      }
+    }
+    Card {
+      objectName: "provisioning-explainer"
+      width: parent.width; visible: !!root.provisioningMethod
+      implicitHeight: methodExplanation.implicitHeight+Style.space(24)
+      Label {
+        id: methodExplanation; objectName: "provisioning-explanation"
+        anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(12)
+        text: root.provisioningMethod ? root.provisioningMethod.description : ""
+        secondary: true
       }
     }
     ActionButton { text: root.developmentOptions ? "Development options −" : "Development options +"; quiet: true; compact: true; onClicked: root.developmentOptions=!root.developmentOptions }
@@ -190,7 +194,7 @@ Column {
       ActionButton { text: "Qualified development import"; primary: root.shipKind==="pier"; compact: true; onClicked: root.shipKind="pier" }
     }
     KeyBootPane { width: parent.width; visible: root.shipKind === "key"; service: root.service; connection: root.provisioningRunner }
-    StoragePane { width: parent.width; visible: root.shipKind === "import"; service: root.service; preferredConnection: root.provisioningRunner }
+    StoragePane { objectName: "provisioning-pier-import"; width: parent.width; visible: root.shipKind === "import"; provisioning: true; service: root.service; preferredConnection: root.provisioningRunner }
     ImportPane { width: parent.width; visible: root.shipKind === "pier"; service: root.service; connection: targetRunner.currentIndex >= 0 ? root.readyRunners[targetRunner.currentIndex] : null }
     RegistrationPane { width: parent.width; visible: root.shipKind === "fake" || root.shipKind === "comet"; service: root.service; connection: root.provisioningRunner; kind: root.shipKind; onShowFleet: root.showFleet() }
   }

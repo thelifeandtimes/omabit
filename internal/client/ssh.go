@@ -36,11 +36,19 @@ func (s SSHConfig) Validate() error {
 }
 
 func NewSSH(config SSHConfig, identity *Identity) *Client {
+	return NewSSHWithEnvironment(config, identity, nil)
+}
+
+// NewSSHWithEnvironment permits onboarding to prove a fresh connection without
+// an inherited authentication agent. Nil retains the ordinary process environment.
+func NewSSHWithEnvironment(config SSHConfig, identity *Identity, environment []string) *Client {
 	return newTransport(func(ctx context.Context) (net.Conn, error) {
 		if err := config.Validate(); err != nil {
 			return nil, err
 		}
-		return dialSSH(ctx, config)
+		cmd := exec.Command("/usr/bin/ssh", sshArguments(config)...)
+		cmd.Env = environment
+		return startSSH(ctx, cmd)
 	}, identity)
 }
 

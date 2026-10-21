@@ -7,7 +7,7 @@ import "Model.js" as Model
 Item {
   id: root
   readonly property int bootstrapAPI: 1
-  readonly property string applicationVersion: "0.1.0"
+  readonly property string applicationVersion: "0.2.0"
   readonly property string distributionChannel: bootstrap && bootstrap.manifest && bootstrap.manifest.releaseChannel || manifest && manifest.releaseChannel || "stable"
   readonly property string releaseLabel: bootstrap && bootstrap.active && bootstrap.active.development ? "DEVELOPMENT" : distributionChannel === "develop" ? "UNQUALIFIED DEVELOPMENT" : distributionChannel === "edge" || applicationVersion.indexOf("-edge.") >= 0 ? "EDGE · NOT STABLE" : applicationVersion.indexOf("-") >= 0 ? "PRERELEASE" : "STABLE"
   property var shell: null
@@ -18,7 +18,7 @@ Item {
   property var profileEnvironment: ({})
   property bool localSetupAllowed: true
   property bool activationEnabled: true
-  readonly property bool reloadSafe: !busy && !copyingCode && !checkingSetup && !themeSync.running && !pendingFirstBoot
+  readonly property bool reloadSafe: !busy && !remoteSetupBusy && !copyingCode && !checkingSetup && !themeSync.running && !pendingFirstBoot
   property int reconnectAttempts: 0
   property bool desktopViewLoaded: false
   property var connections: []
@@ -47,7 +47,19 @@ Item {
   property var pendingImportConnection: null
   property string codeNotice: ""
   property string toastText: ""
-  function showToast(text) { toastText=text; toastExpiry.restart() }
+  property string toastTone: "accent"
+  function showToast(text,tone) { toastText=String(text).slice(0,360)+(String(text).length>360 ? "…" : "");toastTone=tone || "accent";toastExpiry.interval=toastTone==="bad" ? 8000 : 4500;toastExpiry.restart() }
+  property var runtimeActionErrors: ({})
+  property var pendingRuntimeAction: null
+  property string finishingAction: ""
+  function runtimeActionError(connection,instance) { return runtimeActionErrors[Model.runtimeActionKey(connection,instance)] || "" }
+  function dismissRuntimeActionError(connection,instance) { var next=Object.assign({},runtimeActionErrors);delete next[Model.runtimeActionKey(connection,instance)];runtimeActionErrors=next }
+  function rememberRuntimeActionError(target,message) {
+    var next=Object.assign({},runtimeActionErrors)
+    if(message)next[target.key]=target.title+": "+message;else delete next[target.key]
+    var keys=Object.keys(next);while(keys.length>256){delete next[keys.shift()]}
+    runtimeActionErrors=next
+  }
   property string codeOutput: ""
   property string codeSubject: ""
   readonly property bool copyingCode: codeCopy.running
@@ -57,6 +69,7 @@ Item {
     catch (_) { return ({}) }
   }
   property string lastError: ""
+  onLastErrorChanged: if(lastError && ["suggest-port","remote-setup-start"].indexOf(finishingAction)<0 && currentAction!=="suggest-port") showToast(lastError,"bad")
   property string lastResult: ""
   property string requestIdentity: ""
   property var registrationOutcome: null
@@ -75,6 +88,7 @@ Item {
   readonly property bool busy: !activationEnabled || action.running || currentAction !== "" || settingUp
   readonly property bool observing: feed.running && !feedError
   property string feedError: ""
+  onFeedErrorChanged: if(feedError && !firstRun)showToast(feedError,"warn")
   property string output: ""
   property string errors: ""
   property string currentAction: ""
@@ -87,6 +101,13 @@ Item {
   property bool localSetupFinished: false
   readonly property bool settingUp: localSetup.running || localSetupPending
   readonly property bool checkingSetup: localStatus.running
+  property var remoteSetup: null
+  property string remoteSetupError: ""
+  property string remoteSetupOutput: ""
+  property string remoteSetupErrors: ""
+  property int remoteSetupGeneration: 0
+  property int remoteStatusGeneration: 0
+  readonly property bool remoteSetupBusy: !!remoteSetup && remoteSetup.busy
   property var epochPreview: null
   property var previewTarget: null
   property var pendingPreviewTarget: null
@@ -143,6 +164,29 @@ Item {
     localSetupFinished = false; localSetupPending = true
     localSetup.command = themeCommand(["setup"]); localSetup.running = true
     return true
+  }
+  function acceptRemoteSetup(value) {
+    value=Model.validateRemoteSetup(value)
+    var previous=remoteSetup
+    remoteSetup=value;remoteSetupError=""
+    if (!value.busy && ["connected","revoked"].indexOf(value.phase)>=0 && (!previous || previous.id!==value.id || previous.phase!==value.phase || previous.busy)) Qt.callLater(refresh)
+  }
+  function checkRemoteSetup() {
+    if (remoteStatus.running || currentAction==="remote-setup-start") return
+    remoteSetupOutput="";remoteSetupErrors="";remoteStatusGeneration=remoteSetupGeneration
+    var args=["remote-setup-status"]
+    if (remoteSetup && remoteSetup.id) args=args.concat(["--id",remoteSetup.id])
+    remoteStatus.command=themeCommand(args);remoteStatus.running=true
+  }
+  function startRemoteSetup(options) {
+    if (busy || remoteSetupBusy) return false
+    try {remoteSetupGeneration++;remoteSetupError="";return submit(Model.remoteSetupArgs(options),"remote-setup-start","",true)}
+    catch(e){remoteSetupError=e.message;return false}
+  }
+  function resumeRemoteSetup(id,revoke) {
+    if (busy || remoteSetupBusy || !/^[a-f0-9]{32}$/.test(id)) return false
+    remoteSetupGeneration++;remoteSetupError=""
+    return submit(["remote-setup-start","--id",id].concat(revoke ? ["--revoke"] : []),"remote-setup-start","",true)
   }
   function finishLocalSetup(code) {
     if (!localSetupPending) return
@@ -243,6 +287,7 @@ Item {
 
   function submit(args, name, input, useThemeHelper) {
     if (busy) return false
+    pendingRuntimeAction=Model.runtimeActionTarget(args)
     if (name !== "epoch-preview") clearEpochPreview()
     generation++
     currentAction = name
@@ -589,6 +634,8 @@ Item {
     if (!currentAction) return
     timeout.stop()
     var kind = currentAction
+    if("finishingAction" in root)root.finishingAction=kind
+    var runtimeTarget=root.pendingRuntimeAction || null
     var hostMove=kind==="move-host" ? hostMoveOutcome : null, hostMoved=false
     var registration=(kind === "register" || kind === "register-comet" || kind === "register-ship") ? registrationOutcome : null
     var registered=false
@@ -650,7 +697,10 @@ Item {
           next[result.id] = result
           shipStatus = next
         }
-        if (kind === "import-sources") {
+        if (kind === "remote-setup-start") {
+          acceptRemoteSetup(result)
+          lastResult=result.message
+        } else if (kind === "import-sources") {
           var selected = pendingImportConnection; pendingImportConnection = null
           if (!selected || !observing || !Model.importAvailable(connections,selected,now) || result.runner_id !== selected.runner
               || !Array.isArray(result.sources) || result.sources.length > 256 || !result.sources.every(Model.validImportSource)) throw new Error("Invalid import catalogue")
@@ -701,12 +751,15 @@ Item {
       reconcileInspection()
     }
     output = ""; errors = ""
+    if(runtimeTarget) {root.rememberRuntimeActionError(runtimeTarget,lastError);root.pendingRuntimeAction=null}
     if (kind==="suggest-port") {portError=lastError;lastError="";lastResult=""}
+    if (kind==="remote-setup-start") {remoteSetupError=lastError;lastError="";lastResult="";Qt.callLater(checkRemoteSetup)}
     if (kind === "epoch-preview" && lastError) clearEpochPreview()
     if (kind === "import-sources" && lastError) { importCatalogue = null; pendingImportConnection = null }
     if (kind.indexOf("ship-") === 0) Qt.callLater(loadShips)
     if (kind.indexOf("theme-") === 0) { Qt.callLater(loadTheme); if (!lastError) Qt.callLater(syncThemes) }
     if (refreshPending || ((kind === "enroll" || kind === "runner-edit" || kind === "runner-accept-mode") && !lastError)) Qt.callLater(refresh)
+    if("finishingAction" in root)root.finishingAction=""
   }
 
   function saveDesktopView() {
@@ -779,6 +832,19 @@ Item {
       Qt.callLater(function() { if (root.generation === current && root.currentAction && !action.running) root.finish(-1) })
     }
   }
+  Process {
+    id: remoteStatus
+    stdout: SplitParser { splitMarker:"";onRead:function(data){if(root.remoteSetupOutput.length+data.length>65536){remoteStatus.signal(9);return}root.remoteSetupOutput+=data} }
+    stderr: SplitParser { splitMarker:"";onRead:function(data){if(root.remoteSetupErrors.length+data.length<8192)root.remoteSetupErrors+=data} }
+    onExited:function(code,status) {
+      if(root.remoteStatusGeneration===root.remoteSetupGeneration) {
+        if(code===0&&status===0){try{root.acceptRemoteSetup(JSON.parse(root.remoteSetupOutput))}catch(e){root.remoteSetupError=e.message}}
+        else root.remoteSetupError=Model.errorMessage(root.remoteSetupErrors)
+      }
+      root.remoteSetupOutput="";root.remoteSetupErrors=""
+    }
+  }
+  Timer { interval:2000;repeat:true;running:root.remoteSetupBusy;onTriggered:root.checkRemoteSetup() }
   Process {
     id: localStatus
     objectName: "localSetupStatus"

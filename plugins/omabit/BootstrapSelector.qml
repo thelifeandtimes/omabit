@@ -11,13 +11,14 @@ Column {
   readonly property string problem: Model.bootstrapProblem(kind, source)
   signal edited()
   spacing: Style.space(8)
-  function reset() { choice.currentIndex=0 }
+  function reset() { choice.currentIndex=1 }
   Label { text: "Boot pill"; caption: true; secondary: true }
   SelectField {
     id: choice
     objectName: "bootstrap-choice"
     width: parent.width
     model: ["bare bootstrap", "Recommended Apps"]
+    currentIndex: 1
     onActivated: root.edited()
   }
   Label {
