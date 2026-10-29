@@ -1,6 +1,6 @@
 # Native DEV review — reliability and release preparation, October 29
 
-Review build **0.2.0-dev.20261028.3**, sourcebox. Use **Omabit · DEV**, **Network Theme — DEV**, and **Urbit DMs — DEV** in the main desktop. This is unqualified development, not a published release. Theme and DMs now use presentation generation `ui-20261029-cohesion-8`. This guide supersedes the previous feedback-pass state in M467; release preparation is tracked in M470–M473.
+Review build **0.3.0-dev.review1**, sourcebox. Use **Omabit · DEV**, **Network Theme — DEV**, and **Urbit DMs — DEV** in the main desktop. This is unqualified development, not a published release. Theme and DMs now use presentation generation `ui-20261029-cohesion-8`. This guide supersedes the previous feedback-pass state in M467; release preparation is tracked in M470–M475.
 
 ## What changed
 
@@ -38,7 +38,11 @@ Both moons completed retained-pier restart and clean Stop (exit 0). All three pr
 
 Both DEV plugins accepted independent sessions on the fake `demo-zod`. A revocation overlapping its restart remained explicitly pending; recovery finished that same revocation, reconciled local state, and archived the receipt. DMs closed its exact channel and cleared its account while Theme remained connected. The personal outbound-message journal's hash was unchanged. Theme was then independently disconnected and reconciled. No personal DM was sent or retried.
 
-The full runtime and manager Go suites pass, as do the relevant collector/client/collection regressions. A race-detector test proves slow project observation does not hold the mutation lock. DMs: all 152 Python tests and 7 actual-QML checks pass. Actual Omabit Service/Panel/Monitor and forms, plus Theme's 20 QML/helper checks, pass. Fresh keyed shutdown is covered by identity/lost-response/timeout tests and the earlier qualified hood exit experiment; this pass did not boot another keyed identity solely to repeat that check.
+The final candidate preserves all6 DEV container processes across manager activation.
+A clean demo-nec Stop/Start and exact receipt replay passed, followed by expected
+HTTP identities and fresh metrics on all3 fakes; the2 moons remain stopped.
+
+The full runtime and manager Go suites pass in UTC, as do the relevant collector/client/collection regressions. A race-detector test proves slow project observation does not hold the mutation lock. DMs: all 152 Python tests and 7 actual-QML checks pass. Actual Omabit Service/Panel/Monitor and forms, plus Theme's 20 QML/helper checks, pass. Fresh keyed shutdown is covered by identity/lost-response/timeout tests and the earlier qualified hood exit experiment; this pass did not boot another keyed identity solely to repeat that check.
 
 Expanded project anchor/whole-engine recovery, project maintenance/epoch integration and existing-pier project import remain unfinished. Security/privacy review is tracked explicitly: keyring lock/reboot, revocation, same-UID plugin access, metadata/log retention and upgrade behavior. Independent sessions are ordinary Eyre owner sessions, not desk-specific permissions or a malicious-plugin sandbox. Wallet implementation remains out of scope.
 
@@ -46,8 +50,8 @@ Expanded project anchor/whole-engine recovery, project maintenance/epoch integra
 
 | Area | Implemented / demonstrated | Still open |
 | --- | --- | --- |
-| Ship management/import | Existing manager, identity-based import layout, actionable import diagnostics, interrupted-copy restoration, new/existing configurable resource policies | Remaining native failure cases, valuable-pier manual review, release-wide upgrade qualification |
-| CLI and skills | Bundled operator/developer skills and style conventions,130 offline help entries,57-command walkthrough, capability checks, project create/add/status/lifecycle commands | Richer guided recovery for newly expanded projects; public release gate still pending |
+| Ship management/import | Existing manager, identity-based import layout, actionable import diagnostics, interrupted-copy restoration, new/existing configurable resource policies | Remaining native failure cases, valuable-pier manual review, other distribution/upgrade combinations |
+| CLI and skills | Bundled operator/developer skills and style conventions,130 offline help entries,57-command walkthrough, capability checks, project create/add/status/lifecycle commands | Richer guided recovery for newly expanded projects; protected release checks and publication |
 | Fake projects | Shared namespace networking, project grouping, empty/new/existing-project creation, live member controls/auth/metrics, clean member restart, earlier persistent state/subscription and isolation tests | Expanded anchor/engine recovery, project maintenance, existing-pier project import |
 | Shared plugin authentication | Independent Theme/DMs sessions, managed/hosted login, matching plugin entry, direct plugin-to-ship traffic, independent disconnect with visible client reset and interrupted-revocation recovery | Broader hosted environments, real backend update combinations, keyring lock/reboot qualification |
 | App setup/distribution | Plugin-owned setup/compatibility guidance and earlier Tend proof; Omart remains marketplace owner | General public-publisher/update-order workflow; desk-served artifacts and Urgit distribution are optional future experiments |
@@ -67,6 +71,6 @@ urbit-collector-dev --format text project-operate --help
 urbit-runner-dev resource-policy show
 ```
 
-Omabit retains `ui-20261028-reliability-4`; Theme and DMs use `ui-20261029-cohesion-8`. DEV-specific state, IPC and keyring identities remain isolated. Production runner/engine PIDs 3050/2166 retain their October 21 start times. No tmux ship or `~/temp-ur` was inspected or operated on.
+Omabit uses `ui-20261029-release-030`; Theme and DMs use `ui-20261029-cohesion-8`. DEV-specific state, IPC and keyring identities remain isolated. Production runner/engine PIDs 3050/2166 retain their October 21 start times. No tmux ship or `~/temp-ur` was inspected or operated on.
 
 The earlier native reliability pass created no VM or full evidence bundle. Release upgrade checks now use bounded offline disposable guests, preserving compact evidence and retiring superseded generated disks. Moon replay/snapshots grew the retained DEV piers; historical Zig/npm build caches and inactive npm dependencies were pruned with a manifest, preserving all piers, VM disks/backing chains, sources, lockfiles and verified runtime artifacts. Current combined allocation is recorded in [the compact reliability receipt](diagnostics/2026-10-28-native-reliability.json); do not launch another large experiment without measuring and making room first.

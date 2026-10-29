@@ -6372,3 +6372,31 @@ compact results/hash receipts. User review disks, DEV piers and production remai
 untouched. Theme/DMs PRs merged after passing CI; release drafts remain unpublished.
 Authentication functionality is qualified separately from the still-open broader
 security/privacy audit and wallet key custody work (M468).
+
+## M475 — Frozen0.3.0 candidate passes upgrade and native DEV smoke (2026-10-29)
+
+Status: final qualification/distribution; publication still requires protected PR
+checks. Supersedes M474's pending replacement-artifact note. Source dc420f133277abc6108477dd8f0b5ddca35e44b2
+is frozen. Candidate04 and its eight unpublished draft downloads match exactly.
+The actual Recommended Apps guest passes published0.1.0→0.2.0→0.3.0, schema21→47,
+repeat activation, old-client observation, old-writer refusal, manager restart
+and clean exit. The support guide explicitly requires0.1.0 users to take0.2.0
+first; direct skip and other distributions are not newly live-qualified.
+
+All36 test-bearing Go packages pass in UTC (managed292.569s), vet passes, and the
+project-network race suite passes (182.745s). All130 documented help entries were
+checked against the actual artifacts offline without state changes; five skill
+packaging tests pass. Native bundle startup/activation failure/restart checks pass;
+govulncheck1.9.0 finds no known vulnerabilities in all3 binaries. Complete managed
+race coverage remains a required four-group CI gate, not inferred from partial
+20/45-minute runs. The qualification record links its exact CI run.
+
+Only Omabit DEV received candidate binaries and ui-20261029-release-030, displayed
+as0.3.0-dev.review1. Its manager restart preserved all6 DEV container processes.
+Demo-nec clean Stop/Start and exact receipt replay succeeded; all3 fake HTTP host
+identities and fresh metrics pass, and both moons remain stopped. The ad-hoc probe
+was corrected from unauthenticated /~/name (visitor identity) to /~/host; collection
+inventory uses no runner selector and checks its sole returned runner ID. These
+were test-script corrections, not product defects. Theme/DMs retain cohesion-8.
+Production and personal-message baselines remain protected. Broader security/privacy
+qualification stays open as recorded in M468; this is not wallet custody assurance.

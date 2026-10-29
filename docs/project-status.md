@@ -1,3 +1,19 @@
+# 0.3.0 release checkpoint — October 29
+
+Frozen candidate source: `dc420f133277abc6108477dd8f0b5ddca35e44b2`.
+The [qualification record](releases/0.3.0/qualification.json) binds the actual
+published-binary upgrade rehearsal, artifact/CLI/native startup checks and their
+limits. Protected PR checks still gate publication. Theme0.4.0 and DMs0.2.0 have
+merged, passing companion changes and unpublished release drafts.
+
+The active review uses the main desktop's separately labeled DEV plugins;
+[manual checks](native-dev-review.md) describe current state. The core candidate
+is0.3.0 with DEV presentation label0.3.0-dev.review1. Production remains unchanged.
+Expanded project recovery, private-devnet delivery, collection switching UI and
+the broader security/privacy audit remain open; see the release scope and roadmap.
+
+---
+
 # Project status
 
 **0.3.0 is being prepared on release/0.3.0.** See the [current release notes](release-0.3.0.md), [CLI reference](cli/README.md), [upgrade guide](releases-0.3-upgrade.md), and [native DEV review](native-dev-review.md). Earlier dated sections below are historical evidence, not the current feature inventory.

@@ -1,0 +1,143 @@
+{
+  "version": "0.3.0",
+  "channel": "stable",
+  "platform": "linux/amd64",
+  "source_commit": "dc420f133277abc6108477dd8f0b5ddca35e44b2",
+  "source_tree": "07346e41288fcd57c9b5774bb84578a515ce6539",
+  "backend_source_sha256": "d5404eb6b772cb3c8aea8e65ce1749e5258fa81192b68cc6eef1fe59c2f0cfb6",
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "runner_schema": 47,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "ci": {
+    "frozen_source_run": "https://github.com/thelifeandtimes/omabit/actions/runs/40840469330",
+    "policy": "All required source (including all four managed race groups), QML and release-policy checks must pass before normal protected-branch merge. Consult the linked checks for their completed result."
+  },
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "source_commit": "dc420f133277abc6108477dd8f0b5ddca35e44b2",
+    "evidence_sha256": "3976d084ce232323cff77c667d370e5d20ce5a59cb62c935ace05b6f24551ac4",
+    "tested_path": [
+      "0.1.0",
+      "0.2.0",
+      "0.3.0"
+    ],
+    "from_schema": 21,
+    "to_schema": 47,
+    "environment": "Offline fresh Arch/Omarchy QEMU guest; native rootless Docker and pinned official Vere4.6; no host services, credentials or network adapter.",
+    "checks": [
+      "Genuine published0.1.0/0.2.0 binaries and hash-verified frozen0.3.0 candidate",
+      "Fresh Recommended Apps fakes: one running, one stopped",
+      "Exact repeated0.3.0 management activation",
+      "Old collector observation and old runner refusal without changing schema47 state",
+      "Management restart then clean shutdown of the remaining fake"
+    ],
+    "preserved": [
+      "runner and ship identities",
+      "configuration, paths and ports",
+      "running container process and engine invocation",
+      "stopped intent",
+      "operation history",
+      "owner and filesystem permissions",
+      "access and enrollment state"
+    ],
+    "disposition": "All guest ships stopped; guest powered off. Generated disks eligible for retirement; compact evidence retained."
+  },
+  "source_validation": {
+    "go_tests": "All36 test-bearing packages passed in UTC; managed292.569seconds",
+    "go_vet": "passed",
+    "project_network_race": "passed in UTC,182.745seconds",
+    "managed_race": "Complete executable inventory split into four disjoint CI groups; every group is required by source gate. Earlier cumulative20/45-minute timeouts are not passes.",
+    "cli": {
+      "help_entries": 130,
+      "networkless": true,
+      "state_untouched": true,
+      "simulated_workflow_commands": 57,
+      "simulated_tasks": 6
+    },
+    "skill_package_tests": 5,
+    "timezone_regressions": [
+      "UTC/east/west journal JSON reopen",
+      "exact historical checkpoint preservation",
+      "changed nanosecond, owner, acknowledgement and nil/empty evidence refusal"
+    ]
+  },
+  "desktop": {
+    "frozen_bundle": "Actual native Qt/Quickshell startup, busy deferral, failed activation rollback, mismatched version refusal and profile restart passed in isolated HOME/XDG.",
+    "companions": {
+      "theme": {
+        "version": "0.4.0",
+        "merge_commit": "6755b6a46f5a16aabe6369dc752c29258062bffa",
+        "python_tests": 290,
+        "installer_tests": 20
+      },
+      "dms": {
+        "version": "0.2.0",
+        "merge_commit": "7bc6f5ec8b0eb0e38fb864c27b8c71360e4f9156",
+        "python_tests": 152,
+        "qml_tests": 7
+      }
+    },
+    "visual_review": "Paired actual Qt/native light/dark/narrow/long-identity popups and sign-in windows. Same header and connection-choice components; independent plugin runtime."
+  },
+  "native_dev": {
+    "passed": true,
+    "evidence_sha256": "3ba05b18e42d6b51e7e01d35c0c179b3560815549d347328a3cd3cfdc71be7f5",
+    "checks": [
+      "Candidate manager activation preserved all6 DEV container processes",
+      "Clean project member Stop/Start and exact receipt replay",
+      "Three fakes retain expected HTTP identities and fresh metrics",
+      "Both review moons retained stopped intent"
+    ],
+    "production": "Production manager/engine unchanged; tmux and ~/temp-ur excluded; personal message journal hash unchanged."
+  },
+  "frozen_artifacts": {
+    "go_version": "go version go1.27.3 linux/amd64",
+    "checks": [
+      "Package smoke and per-asset checksums",
+      "All8 unpublished draft downloads byte-verified",
+      "130 CLI entries checked against actual binaries",
+      "govulncheck1.9.0: no known vulnerabilities in all3 binaries"
+    ],
+    "assets": [
+      {
+        "name": "omabit-0.3.0-linux-amd64.tar.gz",
+        "bytes": 31212128,
+        "sha256": "b6182614098d10cfe5fd2fa9afb89fef9cc1500d3050d78aefb3b56fcdbfa966"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 17500785,
+        "sha256": "03c7afa27b20d1d8f05c00bdd0f6ffcff03ee315c303cc24e3f3295f420820b2"
+      },
+      {
+        "name": "omabit-recommended-apps-0.3.0.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.3.0.tar.gz",
+        "bytes": 23284,
+        "sha256": "092cc855ca5fcaf480cee4deeb2730071fe3fea0bb52e5199b603a45997b6390"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 12504414,
+        "sha256": "2e29dfdf404630dc09422a4abc63bcf7fc62ad68e036edd180f1f3f3efdc5aaf"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 26549460,
+        "sha256": "e415b5249469d352697ba792bdba85b92d3db09bd436ab46e03bebe098f4eea3"
+      }
+    ]
+  },
+  "scope_limits": [
+    "Live upgrade qualification follows0.1.0\u21920.2.0\u21920.3.0; direct0.1 skip and other distributions not newly qualified",
+    "Power-cut/interruption boundaries use source fixtures; this guest does not claim power-cut testing",
+    "Expanded project anchor/engine failure recovery, project maintenance/import, turnkey private Ethereum chains and public collection switching UI remain experimental/incomplete",
+    "Recommended Apps pill bytes are preserved; application inventory/OTA behavior is not newly asserted",
+    "Functional authentication qualification is not a broader security/privacy audit or malicious same-UID plugin isolation; wallet custody remains out of scope"
+  ]
+}

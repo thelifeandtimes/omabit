@@ -1,7 +1,7 @@
 # Omabit 0.3.0
 
-Release candidate preparation; not yet published. Final artifact/upgrade results
-will be recorded under docs/releases/0.3.0 before stable publication.
+Linux/AMD64 release. See the [qualification record](releases/0.3.0/qualification.json)
+for exact frozen artifacts, completed upgrade tests, required CI and support limits.
 
 ## What changes from 0.2.0
 
@@ -49,10 +49,17 @@ checks do not establish malicious-plugin isolation.
 
 ## Validation and publication
 
-The release gates include Go/vet/race, original-writer migrations and replay,
-QML/installer/package tests,130 offline help entries,57 simulated CLI workflow
-commands, paired native UI renders, and real DEV lifecycle/maintenance/transport
-checks. Exact results, failures, fixes and limits belong in the final qualification
-record. Publication requires frozen source, immutable verified assets, protected
-release-PR checks and a merge commit. Stable download pins still point to0.2.0
-until that sequence is complete.
+The frozen binaries passed the actual published0.1.0→0.2.0→0.3.0 upgrade
+rehearsal with a running fake and a stopped fake, repeat activation, old-client
+observation, schema47 downgrade refusal and manager restart. Native startup and
+activation recovery, package checks, all130 offline CLI help entries and the
+five skill-package checks passed. UTC recovery regressions and the complete Go
+suite pass; the source gate also requires all four managed-state race groups.
+Earlier development evidence includes57 simulated CLI workflow commands, paired
+native UI renders, and DEV lifecycle, maintenance and direct transport checks.
+
+A final UTC portability fix preserves timestamp instants across journal JSON
+reopen without accepting changed ownership or acknowledgements. The qualification
+record distinguishes completed results, superseded failures and scope limits.
+Publication requires the protected release PR and every required check to pass;
+the pinned artifact source remains unchanged by distribution documentation.

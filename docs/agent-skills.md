@@ -26,7 +26,8 @@ its presence does not upgrade an older runner or authorize a fleet action.
 
 The normal desktop loader continues selecting its existing UI/tool bundle; it does
 not activate skills or modify the agent's settings. Historical source exports that
-predate skills keep their original asset set. Four packaging fixtures cover exact
+predate skills keep their original asset set. Five packaging fixtures cover exact
 bytes/provenance, reproducibility, historical exports, incomplete inventory and
-unsafe resources. A future frozen full release build remains a release gate; no
-new public artifact has been published by this development work.
+unsafe resources. The0.3.0 frozen release includes both skills and the complete
+CLI reference; see [qualification](releases/0.3.0/qualification.json) for exact
+source and artifact identities. Publication remains subject to protected PR checks.

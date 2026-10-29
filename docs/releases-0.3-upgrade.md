@@ -1,10 +1,12 @@
 # Upgrade to Omabit 0.3.0
 
-Release preparation: this guide becomes a supported release procedure only when
-0.3.0's published qualification record reports the upgrade gate passed.
+The [published qualification record](releases/0.3.0/qualification.json) identifies
+the frozen binaries and the completed non-destructive upgrade rehearsal.
 
 The supported stable sources are **0.1.0 and 0.2.0**, both owner-user installations
-with schema21. The target uses **runner schema47**, management protocol1 and
+with schema21. The live-qualified path is0.1.0→0.2.0→0.3.0; users still
+on0.1.0 should first follow the0.2.0 upgrade procedure. Directly skipping0.2.0 is
+not newly live-qualified. The target uses **runner schema47**, management protocol1 and
 desktop/bootstrap state1. The new project journals migrate transactionally;
 opening a database does not start ships or alter existing settings, ports,
 identities, grants, storage roots or operation receipts. Older runners refuse
@@ -70,4 +72,6 @@ suite, same-transaction corruption regressions, mixed-client observation tests,
 and an offline guest using the actual published0.1.0/0.2.0 binaries. That guest
 creates only new fake identities and verifies running/stopped intent, runtime
 process continuity, repeat activation and old-reader refusal against the frozen
-0.3.0 artifacts. Consult its actual result before treating preparation as passed.
+0.3.0 artifacts. The successful guest then stopped its own fake and powered off.
+Source fixtures cover interruption boundaries; this guest does not claim power-cut
+qualification or other distribution/package combinations.
