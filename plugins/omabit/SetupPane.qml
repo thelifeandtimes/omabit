@@ -68,7 +68,7 @@ Column {
           width: parent.width; spacing: Style.space(8)
           ActionButton { objectName: "setup-add-ship"; text: "Add a ship →"; visible: root.readyRunners.length>0; primary: true; onClicked: root.addShip() }
           ActionButton { text: "Set up this computer →"; visible: root.service && (!root.service.localSetupStatus || !root.service.localSetupStatus.ready); primary: root.readyRunners.length===0; onClicked: { root.mode="local";root.service.checkLocalSetup() } }
-          ActionButton { text: "Local setup details"; quiet: true; visible: root.service && root.service.localSetupStatus && root.service.localSetupStatus.ready; onClicked: { root.mode="local";root.service.checkLocalSetup() } }
+          ActionButton { text: "Local services & updates"; quiet: true; visible: root.service && root.service.localSetupStatus && root.service.localSetupStatus.ready; onClicked: { root.mode="local";root.service.checkLocalSetup() } }
         }
       }
     }

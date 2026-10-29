@@ -1,6 +1,6 @@
 # Omabit CLI
 
-- [omabit](omabit.md): desktop setup, optional appearance policy and private clipboard handoff.
+- [omabit](omabit.md): desktop setup/service updates, optional appearance policy and private clipboard handoff.
 - [urbit-collector](urbit-collector.md): runner selection, fleet and ship operations, projects, imports and application connections.
 - [urbit-runner](urbit-runner.md): local hosting, installer, resource policy and runtime qualification.
 

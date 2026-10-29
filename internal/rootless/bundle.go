@@ -77,7 +77,7 @@ type ManifestFile struct {
 func Prepare(ctx context.Context, output string) (Manifest, error) {
 	client := newDownloadClient()
 	defer client.CloseIdleConnections()
-	return prepare(ctx, output, client)
+	return prepareFrom(ctx, output, client, InstallDir)
 }
 
 func newDownloadClient() *http.Client {
@@ -99,6 +99,13 @@ func newDownloadClient() *http.Client {
 
 // The client injection is private: callers cannot change pins, URLs, or TLS policy.
 func prepare(ctx context.Context, output string, client *http.Client) (Manifest, error) {
+	return prepareFrom(ctx, output, client, "")
+}
+
+// Only the fixed installed directory is used by public callers. Reusing exact
+// upstream bytes avoids a network dependency for an otherwise unchanged upgrade.
+// Templates always come from this binary; installed scripts are never executed.
+func prepareFrom(ctx context.Context, output string, client *http.Client, installed string) (Manifest, error) {
 	var empty Manifest
 	if os.Geteuid() == 0 {
 		return empty, fmt.Errorf("rootless preparation must not run as root")
@@ -180,7 +187,10 @@ func prepare(ctx context.Context, output string, client *http.Client) (Manifest,
 	for i := range artifacts {
 		a := &artifacts[i]
 		if a.url != "" {
-			a.data, err = download(ctx, client, a.url, a.hash)
+			a.data = installedArtifact(installed, a.name, a.hash)
+			if a.data == nil {
+				a.data, err = download(ctx, client, a.url, a.hash)
+			}
 		} else {
 			a.data, err = renderedAsset(a.name)
 		}
@@ -363,4 +373,30 @@ func download(ctx context.Context, client *http.Client, url, expectedHash string
 		return nil, fmt.Errorf("%s: SHA-256 mismatch: got %s, want %s", url, actual, expectedHash)
 	}
 	return data, nil
+}
+
+// A local hit is only an optimization. Pins, size limits and file-type checks
+// remain authoritative; invalid or unavailable bytes fall back to verified HTTPS.
+func installedArtifact(dir, name, hash string) []byte {
+	if dir == "" {
+		return nil
+	}
+	resolved, err := filepath.EvalSymlinks(dir)
+	if err != nil || resolved != dir {
+		return nil
+	}
+	f, err := os.OpenFile(filepath.Join(dir, name), os.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, 0)
+	if err != nil {
+		return nil
+	}
+	defer f.Close()
+	info, err := f.Stat()
+	if err != nil || !info.Mode().IsRegular() || info.Size() > maxDownloadBytes {
+		return nil
+	}
+	data, err := io.ReadAll(io.LimitReader(f, maxDownloadBytes+1))
+	if err != nil || len(data) > maxDownloadBytes || fmt.Sprintf("%x", sha256.Sum256(data)) != hash {
+		return nil
+	}
+	return data
 }

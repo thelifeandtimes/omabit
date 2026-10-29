@@ -1,47 +1,57 @@
 # Development and release policy
 
-These are user requirements, established for the v0.1.0 stable release.
+These are user requirements, clarified on2026-10-29: master must remain a
+working, installable Omarchy plugin with a tested upgrade path between releases.
+This supersedes the earlier minor-only numbering rule and narrow0.3.1 exception.
 
 ## Branches
 
 | Branch | Purpose | Delivery contract |
 | --- | --- | --- |
-| `master` | Stable minor/major releases | Protected; PR merges only; required CI; no direct/admin bypass pushes |
+| `master` | Qualified stable releases | Protected; PR merges only; required CI; no direct/admin bypass pushes |
 | `edge` | Personal/bleeding-edge improvements | Explicit opt-in; not stable; immutable pinned bundles when published |
 | `develop` | Unqualified development | No guarantee of working source, artifacts, setup or upgrades |
 
-Use topic branches for work and `release/X.Y.0` for stable promotions. Small UI and
-quality-of-life updates belong on edge, not standalone master merges. They can be
-included in a later reviewed minor/major release. Branch protection also forbids
-force-pushing/deleting master and requires resolved PR conversations.
+Use topic branches for work and `release/X.Y.Z` for stable promotions, including
+patch releases. A stable label requires qualification; it is not determined by
+which version digit changes. Branch protection forbids force-pushing/deleting
+master and requires resolved PR conversations.
 
 The initial protections require PRs and passing CI, including for administrators.
 They do not require a second person's approval: this personal repository must allow
 its owner to review and merge a PR without an unavailable independent approver.
 
-## Versioning
+## Versioning and the installable-master contract
 
-- Stable: `X.Y.0`, for example `0.1.0`, `0.2.0`, `1.0.0`.
-- UI/QoL edge iterations: for example `0.1.1-edge.1`, `0.1.1-edge.2`.
-- Collector/runner-affecting work: target a new minor or major line, for example
-  `0.2.0-edge.1` followed by stable `0.2.0`. Prerelease iterations may refine that
-  unreleased line; they do not create another stable patch release.
-- Release candidates may use `X.Y.0-rc.N` on preparation branches, not as the final
-  version merged into master.
-- Development snapshots keep explicit labels/source digests and are not stable
-  releases merely because their base version is stable.
+- Stable versions are strictly increasing `X.Y.Z`, including patches such as0.3.1.
+- Prereleases use `-rc.N` or `-edge.N`; development snapshots are not stable.
+- Published versions and artifacts are immutable. Local packaging may reproduce
+  an existing version into a fresh output directory; this does not authorize
+  republishing it or merging a same-version product change into master.
+- Runner/collector changes require coordinated artifacts and migration/recovery
+  qualification regardless of whether a patch, minor or major version is chosen.
 
-Backend-affecting paths conservatively include `backend/`, all shared `internal/`,
-`deploy/`, `go.mod`, `go.sum`, and shared packaging/bootstrap-verification code.
-Any actual effect on a shipped runner/collector
-contract also requires a minor line even when its source is outside those paths.
-Changing only a binary's VCS stamp does not count as a backend implementation change.
+The required release-policy check verifies a matching `release/X.Y.Z` branch,
+newer stable version, matching root/component/UI versions, exact frozen artifact
+pins, backend source identity and passed non-destructive upgrade evidence.
+The qualification record must declare `stable_upgrade.paths`: an ordered list of
+stable versions ending at the proposed release, a repository JSON evidence path
+and its SHA256. At least one path must include the previous stable release.
+Intermediate versions are allowed (for example0.2.0→0.3.0→0.3.1), with the tested
+steps and supported starting state documented in the linked evidence. CI verifies
+the evidence bytes, successful result and frozen target identity; review must
+assess whether the actual rehearsal supports the claimed path and its limits.
 
-The stable release policy check enforces a newer minor/major, patch-zero stable
-version and `release/X.Y.0` source branch. Initial RC→stable promotion of the same
-version is permitted. Root/component manifests and the compiled UI version must
-agree. Final pins must identify that version and a frozen source ancestor with
-matching backend/UI/build inputs.
+Source, race, QML, packaging/provenance and native bootstrap tests remain release
+gates. The current plugin must load with its selected bundled helpers; unsupported
+or intermediate upgrades must have explicit guidance instead of silently leaving
+mixed tools or broken state. A numbering rule cannot establish that contract.
+
+Only release pins, documentation and the exact governance-file allowlist in
+`scripts/release_policy.py` may change after the artifact freeze. Governance means
+contributor instructions and release-policy checks/tests, not packaging code,
+bootstrap, CI workflows, skills, QML, Go, installer or runtime inputs. The frozen
+source identity and rehearsed assets remain authoritative.
 
 ## Stable publication: one reviewed release PR
 
@@ -102,3 +112,14 @@ stable guarantee. Explicit profile pins remain explicit across channel changes.
 To return to stable, use `omabit-channel.py switch stable`. Returning to a stable
 desktop does not downgrade an installed runner database. Use isolated profiles and
 disposable guests for experiments involving incompatible state.
+
+## Transition from the old gate (2026-10-29)
+
+The user authorized replacing the minor-only merge requirement after its effect
+was explained. The old trusted-base checker cannot accept its own replacement
+inside0.3.1. For this transition only, after all other required tests pass, retain
+PR review and source/QML requirements, temporarily remove the old release-policy
+requirement, merge the reviewed policy/release PR, then immediately restore and
+verify the full protection. Record the exact head, checks, merge and restoration.
+Subsequent releases must pass the new trusted-base qualification check normally.
+Do not use this transition as authority to waive a product/test failure.

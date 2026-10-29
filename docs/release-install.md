@@ -1,4 +1,4 @@
-# Omabit 0.3.0 binary bundle
+# Omabit 0.3.1 binary bundle
 
 This Linux x86-64 bundle contains prebuilt `omabit`, `urbit-collector`,
 `urbit-runner`, the Omarchy plugin, service templates, CLI references and agent
@@ -46,6 +46,11 @@ OS packages. Guided setup explains any missing dependencies before installation.
 
 ## Install or update a runner
 
+For an existing local Omabit Setup installation, use **Setup → Local services &
+updates → Check services → Update services**, then authorize the OS prompt.
+See the [guided upgrade](guided-service-upgrades.md). The commands below remain
+for standalone/headless installations.
+
 The supported stable upgrade sources are owner-user0.1.0 and0.2.0 (schema21).
 The target uses **schema47**, management protocol1 and desktop/bootstrap state1.
 Finish pending management work first. Prepare a new launcher bundle with the
@@ -83,7 +88,7 @@ protected master distribution commit when the tag identifies frozen source.
 New-ship forms offer Bare and Recommended Apps. Recommended Apps uses the existing
 stable pill: **59,351,751 bytes**, SHA-256
 `85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62`.
-0.3.0 republishes those unchanged bytes. The configured compatibility alias
+0.3.1 republishes those unchanged bytes. The configured compatibility alias
 `https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill` resolves to the
 immutable RC.11 asset and compiled hash/size; changed content fails verification.
 No new application composition or OTA inventory is claimed.

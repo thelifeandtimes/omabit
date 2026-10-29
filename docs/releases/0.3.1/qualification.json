@@ -1,0 +1,164 @@
+{
+  "version": "0.3.1",
+  "platform": "linux/amd64",
+  "source_commit": "a13ca6787735f155ca2a9abf58c54098e010ac53",
+  "source_tree": "b329367343c1a78c38497b072172cef786426a04",
+  "backend_source_sha256": "03e3ae5e03820bd35ba5c14d29d9eddd1d82ecbb75de88f1a787607f1f8629ec",
+  "channel": "stable",
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "runner_schema": 47,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "evidence_sha256": "2259b7719fe5fe2cf725205fc29f20adda0f5ab66676ac8f088e6b35ad937222",
+    "evidence": "docs/releases/0.3.1/rehearsal.json",
+    "scenarios": [
+      {
+        "input": {
+          "desktop": "0.2.0",
+          "collector": "0.2.0",
+          "runner": "0.2.0"
+        },
+        "source_commit": "a13ca6787735f155ca2a9abf58c54098e010ac53",
+        "passed": true,
+        "schema_before": 21,
+        "schema_after": 47,
+        "runner_id": "runner-0b7fc35e477cf9632d064cad7192aa31",
+        "authorization_denied_preserved": true,
+        "retained_retry_passed": true,
+        "running_container_preserved": true,
+        "access_preserved": true,
+        "recheck_noop": true,
+        "old_reader_refusal": true,
+        "result_sha256": "578ced61baa765f2e472d6cb66ddf8009da0524e8df23880c2e0bdcfd2f27aee",
+        "host_sha256": "c3716945e4bb897bf1925953f97d1dc591ac057f100d062a16d691727734b82e",
+        "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/guided-upgrade-031-from020-01"
+      },
+      {
+        "input": {
+          "desktop": "0.3.0",
+          "collector": "0.2.0",
+          "runner": "0.2.0"
+        },
+        "source_commit": "a13ca6787735f155ca2a9abf58c54098e010ac53",
+        "passed": true,
+        "schema_before": 21,
+        "schema_after": 47,
+        "runner_id": "runner-5308e8064597731cccf752d9085cabeb",
+        "authorization_denied_preserved": true,
+        "retained_retry_passed": true,
+        "running_container_preserved": true,
+        "access_preserved": true,
+        "recheck_noop": true,
+        "old_reader_refusal": true,
+        "result_sha256": "5cc8feb2d41a7694bf2f56295e93d2b81c3455f5d24da62c28cb471fa2903287",
+        "host_sha256": "128b4372fe0605c16a1f4f94f4cbc475c184e254f7d11df418ab22253576e5cc",
+        "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/guided-upgrade-031-from030-01"
+      }
+    ],
+    "preserved": [
+      "runner and ship identities",
+      "pier paths, ports, settings and revisions",
+      "running engine/container processes",
+      "stopped intent",
+      "operation history",
+      "owner, access keys and collector enrollment"
+    ],
+    "from_schema": 21,
+    "to_schema": 47,
+    "paths": [
+      {
+        "versions": [
+          "0.2.0",
+          "0.3.1"
+        ],
+        "evidence": "docs/releases/0.3.1/from-0.2.0-result.json",
+        "evidence_sha256": "578ced61baa765f2e472d6cb66ddf8009da0524e8df23880c2e0bdcfd2f27aee",
+        "starting_services": "0.2.0"
+      },
+      {
+        "versions": [
+          "0.3.0",
+          "0.3.1"
+        ],
+        "evidence": "docs/releases/0.3.1/from-0.3.0-result.json",
+        "evidence_sha256": "5cc8feb2d41a7694bf2f56295e93d2b81c3455f5d24da62c28cb471fa2903287",
+        "starting_services": "0.2.0"
+      }
+    ]
+  },
+  "validation": {
+    "passed": true,
+    "candidate_source": "a13ca6787735f155ca2a9abf58c54098e010ac53",
+    "race_and_vet": [
+      "internal/rootless",
+      "internal/onboarding",
+      "internal/hostinstall",
+      "cmd/omabit",
+      "backend/cmd/urbit-runner"
+    ],
+    "release_policy_cases": 6,
+    "qt_upgrade_cases": 3,
+    "desktop_loader_cases": 12,
+    "quickshell_bootstrap_cases": 4,
+    "exact_cli_help_entries": 132,
+    "exact_release_archive_checks": true,
+    "cold_https_preparation": true,
+    "capture_acknowledgement": true,
+    "production_services_unchanged": true,
+    "measured_storage_bytes": 32481746944,
+    "ordinary_du_unreadable_overlay_work_entries": 18,
+    "budget_bytes": 42949672960
+  },
+  "frozen_artifacts": {
+    "go_version": "go version go1.27.3 linux/amd64",
+    "assets": [
+      {
+        "name": "omabit-0.3.1-linux-amd64.tar.gz",
+        "bytes": 31527327,
+        "sha256": "794fb12bacee08ad4e06509f3356feb1d1cb25b8936327631ac6f72d6c6bdb61"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 18076863,
+        "sha256": "edf567d252e393b68b78f95d429f79c05ca874e76f3295ef74438b9059f4a30b"
+      },
+      {
+        "name": "omabit-recommended-apps-0.3.1.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.3.1.tar.gz",
+        "bytes": 23285,
+        "sha256": "2fab26194bd82a15d0486e5fde8b491fca5d309aadafeb467cc3beb5d2fdcb45"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 12504414,
+        "sha256": "1ad505a5927eb8704b949e31f4bad21a51e65f9b304567f9e8110a134722088b"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 26568120,
+        "sha256": "1db979295b8a6c5782cc6ede2b105522357dbc8424ead4f3b9349478d4cba939"
+      }
+    ],
+    "policy": "Reuse the exact rehearsed binaries and archive. Post-freeze changes are documentation, native pins and explicitly listed release-governance files only; no shipped runtime, UI, installer, package implementation or CI workflow changes."
+  },
+  "ci": {
+    "policy": "Require passing source, all managed race shards, QML, and stable-release qualification. The user replaced minor-only numbering with tested, non-destructive upgrade paths on2026-10-29. A single transition of the old trusted-base gate installs this policy; all other protections remain required."
+  },
+  "scope_limits": [
+    "Guest-only polkit denial/grant exercises real pkexec, not human password entry.",
+    "Actual sealed-archive importer with harness-driven activation acknowledgements; Omarchy updater/rescan remains a human integration check.",
+    "Old setup receipt reconstructed from real published installer and SSH enrollment; not a fresh-onboarding test.",
+    "Local owner-user installation only; remote runners, OS package changes and power-cut recovery are outside this rehearsal.",
+    "Runner schema47 is unchanged from0.3.0. The actual guided-button rehearsals both started with0.2.0 services/schema21; an already upgraded0.3.0 runner is covered by source installer fixtures, not a separate new runtime guest.",
+    "0.1.0 users take0.2.0 first. No schema downgrade, reset, automatic message replay or remote-runner upgrade is authorized.",
+    "The frozen archive README retains the0.3.0 manual instructions; the0.3.1 release notes and guided-service-upgrades.md are the current button-based upgrade instructions.",
+    "Broader security/privacy and wallet storage review remains open. Existing0.3.0 feature and platform limits still apply."
+  ]
+}

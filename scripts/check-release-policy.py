@@ -6,7 +6,8 @@ import json
 import re
 import subprocess
 
-from release_policy import backend_path, validate_master_promotion
+from release_policy import (backend_path, validate_master_promotion,
+                            validate_distribution_changes, validate_upgrade_paths)
 
 
 def git(*args):
@@ -64,19 +65,20 @@ def main():
         raise ValueError("final release pins must name this stable version and its frozen source")
     subprocess.run(["git", "merge-base", "--is-ancestor", pins["source_commit"], args.head], check=True, timeout=30)
     changed = git("diff", "--name-only", pins["source_commit"], args.head).splitlines()
-    if any(path not in ("native/bootstrap/release.json", "README.md") and not path.startswith("docs/") for path in changed):
-        raise ValueError("runtime/UI/build inputs changed after artifact source freeze")
+    validate_distribution_changes(changed)
     record = document(args.head, "docs/releases/" + root["version"] + "/qualification.json")
     if record.get("version") != root["version"] or record.get("source_commit") != pins["source_commit"]:
         raise ValueError("qualification must bind the frozen release source")
     upgrade = record.get("stable_upgrade", {})
     if upgrade.get("passed") is not True or upgrade.get("non_destructive") is not True or not re.fullmatch(r"[0-9a-f]{64}", upgrade.get("evidence_sha256", "")):
         raise ValueError("stable promotion requires recorded non-destructive forward-upgrade evidence")
+    validate_upgrade_paths(upgrade, base["version"], root["version"], pins["source_commit"],
+        lambda path: subprocess.check_output(["git", "show", args.head + ":" + path], timeout=30))
     if not re.fullmatch(r"[0-9a-f]{64}", pins.get("backend_source_sha256", "")) or record.get("backend_source_sha256") != pins["backend_source_sha256"]:
         raise ValueError("backend source identity must match qualification and release pins")
     if frozen_backend_digest(pins["source_commit"]) != pins["backend_source_sha256"]:
         raise ValueError("backend source digest differs from the frozen commit")
-    print("PASS: protected stable minor/major promotion, matching frozen artifacts and upgrade evidence")
+    print("PASS: qualified stable promotion, matching frozen artifacts and tested upgrade path")
 
 
 if __name__ == "__main__":

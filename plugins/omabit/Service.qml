@@ -7,7 +7,7 @@ import "Model.js" as Model
 Item {
   id: root
   readonly property int bootstrapAPI: 1
-  readonly property string applicationVersion: "0.3.0"
+  readonly property string applicationVersion: "0.3.1"
   readonly property string distributionChannel: bootstrap && bootstrap.manifest && bootstrap.manifest.releaseChannel || manifest && manifest.releaseChannel || "stable"
   readonly property string releaseLabel: bootstrap && bootstrap.active && bootstrap.active.development ? "DEVELOPMENT" : distributionChannel === "develop" ? "UNQUALIFIED DEVELOPMENT" : distributionChannel === "edge" || applicationVersion.indexOf("-edge.") >= 0 ? "EDGE · NOT STABLE" : applicationVersion.indexOf("-") >= 0 ? "PRERELEASE" : "STABLE"
   property var shell: null
@@ -46,7 +46,7 @@ Item {
     auxiliaryReaders = auxiliaryReaders.filter(function(entry) { return entry !== reader })
   }
   readonly property bool transportChildrenRunning: inventoryExitPending || pendingAuxiliaryReaders.length > 0 || feed.running || action.running
-    || remoteStatus.running || localStatus.running || localSetup.running || themeInfo.running
+    || serviceUpdater.busy || remoteStatus.running || localStatus.running || localSetup.running || themeInfo.running
     || paletteInfo.running || themeSync.running || notification.running || codeCopy.running
     || registrationList.running || shipList.running || appConnections.busy || projectCreator.busy
   readonly property var transportState: ({closed:transportStopping && !transportChildrenRunning && !auxiliaryReaderLost && unconfirmedHelperExits.length === 0,
@@ -75,6 +75,8 @@ Item {
   property bool desktopViewLoaded: false
   property var connections: []
   property var ships: []
+  readonly property alias serviceUpgrade: serviceUpdater
+  ServiceUpgrade { id: serviceUpdater; service: root }
   readonly property alias applicationConnections: appConnections
   ApplicationConnections { id: appConnections; service: root }
   readonly property alias projectCreation: projectCreator
@@ -142,7 +144,7 @@ Item {
   property double now: Date.now()
   property bool refreshing: false
   property bool refreshPending: false
-  readonly property bool busy: !activationEnabled || action.running || currentAction !== "" || settingUp || appConnections.busy || projectCreator.busy
+  readonly property bool busy: !activationEnabled || action.running || currentAction !== "" || settingUp || serviceUpdater.busy || appConnections.busy || projectCreator.busy
   readonly property bool observing: feed.running && !feedError
   property string feedError: ""
   onFeedErrorChanged: if(feedError && !firstRun)showToast(feedError,"warn")
@@ -200,7 +202,7 @@ Item {
   function checkLocalSetup(manual) {
     if (transportStopping) return
     if (!localSetupAllowed) { localSetupError="Local host setup is disabled in test profile “"+profileName+"”. Enable it explicitly only on the intended test host.";return }
-    if (checkingSetup || settingUp) return
+    if (checkingSetup || settingUp || busy) return
     if (manual===true) setupCheckRequested=true
     localStatusOutput = ""; localSetupError = ""
     localStatus.command = themeCommand(["setup-status"]); localStatus.running = true

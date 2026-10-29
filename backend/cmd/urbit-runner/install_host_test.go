@@ -34,3 +34,22 @@ func TestInstallHostRequiresAcknowledgementAndBoundedPublicInput(t *testing.T) {
 		t.Fatal("missing structured result", &out)
 	}
 }
+
+func TestGuidedInstallForwardsExpectedRunnerIdentity(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "operator.pub")
+	if err := os.WriteFile(path, []byte("public fixture"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	var out, errs bytes.Buffer
+	called := false
+	code := runInstallHostOptionsWith(context.Background(), []string{"--owner", "desktop", "--bundle", "/bundle", "--public-key", path, "--expected-runner-id", "runner-original", "--acknowledge-host-changes"}, &out, &errs, func(_ context.Context, _ string, _ []byte, owner string, options hostinstall.HostOptions, _ func(string)) (hostinstall.HostResult, error) {
+		called = true
+		if owner != "desktop" || options.ExpectedRunnerID != "runner-original" || options.OfflineUpgrade {
+			t.Fatal(owner, options)
+		}
+		return hostinstall.HostResult{Ready: true}, nil
+	})
+	if code != 0 || !called {
+		t.Fatal(code, &errs)
+	}
+}

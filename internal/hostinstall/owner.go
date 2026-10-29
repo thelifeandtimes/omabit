@@ -26,7 +26,10 @@ func InstallOwnerHost(ctx context.Context, bundle string, public []byte, name st
 	return InstallOwnerHostWithOptions(ctx, bundle, public, name, HostOptions{}, progress)
 }
 
-type HostOptions struct{ OfflineUpgrade bool }
+type HostOptions struct {
+	OfflineUpgrade   bool
+	ExpectedRunnerID string
+}
 
 func InstallOwnerHostWithOptions(ctx context.Context, bundle string, public []byte, name string, options HostOptions, progress func(string)) (HostResult, error) {
 	i := newInstaller()
@@ -59,10 +62,15 @@ func InstallOwnerHostWithOptions(ctx context.Context, bundle string, public []by
 	if err != nil {
 		return HostResult{}, err
 	}
+	if options.ExpectedRunnerID != "" {
+		if installed == nil || options.OfflineUpgrade {
+			return HostResult{}, errors.New("a guided upgrade requires an existing online owner installation")
+		}
+	}
 	if options.OfflineUpgrade {
 		return i.installOwnerOffline(ctx, bundle, public, binary, p, progress)
 	}
-	return i.installOwner(ctx, bundle, public, binary, p, probeHostRunner, progress)
+	return i.installOwner(ctx, bundle, public, binary, p, probeHostRunner, progress, options.ExpectedRunnerID)
 }
 
 func ownerManagerUnit(p ownerhost.Profile) []byte {
@@ -341,7 +349,7 @@ func verifyOwnerInfo(data []byte, p ownerhost.Profile) error {
 	return nil
 }
 
-func (i *installer) installOwner(ctx context.Context, bundle string, public, binary []byte, p ownerhost.Profile, probe hostProbe, progress func(string)) (result HostResult, err error) {
+func (i *installer) installOwner(ctx context.Context, bundle string, public, binary []byte, p ownerhost.Profile, probe hostProbe, progress func(string), expected ...string) (result HostResult, err error) {
 	defer func() { result.Partial = err != nil && i.mutated }()
 	if i.euid != 0 || i.goos != "linux" || i.goarch != "amd64" {
 		return result, errors.New("owner setup requires root on Linux x86-64")
@@ -440,6 +448,14 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 		}
 	} else if !errors.Is(lockedErr, os.ErrNotExist) || readErr == nil {
 		return result, errors.New("installed owner evidence disappeared or became unavailable; preserving it for review")
+	}
+	if len(expected) > 0 && expected[0] != "" {
+		if lockedErr != nil {
+			return result, errors.New("guided update requires the original owner installation")
+		}
+		if err = i.checkUpgradeIdentity(ctx, p, expected[0], binary, probe); err != nil {
+			return result, err
+		}
 	}
 	engineActivation, err := i.loadOwnerEngineActivation(ctx, p, lockedErr == nil)
 	if err != nil {

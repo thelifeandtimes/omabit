@@ -6,12 +6,11 @@ Read `docs/development-policy.md` before branching, publishing, or merging.
 
 - `master` is protected and release-only. Never push directly to it or bypass its
   protections. Merge reviewed release PRs with passing required checks.
-- Stable releases on `master` are full minor/major versions (`X.Y.0`). Do not ship
-  standalone UI/quality-of-life patch updates there; accumulate them on `edge` for
-  a later reviewed minor/major release.
-- Changes affecting `urbit-collector` or `urbit-runner`, including shared runtime,
-  protocol, installer or dependency code, require a new minor (or major) release
-  line. Do not disguise backend changes as UI patches.
+- Stable releases may use any newer `X.Y.Z`, including patch releases. The gate
+  is a working native plugin and a tested, non-destructive upgrade path from the
+  previous stable release; intermediate releases are allowed when documented.
+- Collector/runner changes require matching artifacts, migration/recovery tests
+  and a stated support window, regardless of the version digit that changes.
 - `edge` is the opt-in bleeding-edge/personal channel, explicitly not stable.
   Publish its artifacts as immutable `-edge.N` prereleases, never as latest stable.
 - `develop` is unqualified development with no stability guarantee. Start ordinary
@@ -60,3 +59,14 @@ The user requested durable development memories with explicit supersession. Keep
 stable decision IDs, date, evidence and status; link replacement decisions rather
 than silently rewriting history. Distinguish hypotheses, failed experiments and
 qualified behavior. Never store credentials in these notes.
+
+## Release qualification policy clarification (2026-10-29)
+
+The user replaced the minor-only rule and narrow0.3.1 exception: master must
+contain installable, working releases with a documented tested upgrade path.
+Patch versions are allowed. Preserve PR review, source/race/QML gates, artifact
+pins, frozen runtime inputs, and upgrade evidence. Release-governance files may
+change after the artifact freeze; runtime, UI, installer and packaging inputs may
+not. The user authorized modifying the merge requirement to install this policy;
+record the transition and restore the qualification check after that merge.
+No production service upgrade is implied by release publication.

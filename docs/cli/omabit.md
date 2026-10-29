@@ -8,7 +8,7 @@ Global options precede the command. Command options follow its positional argume
 
 ```text
 Usage: omabit [--format text] [--config-dir DIR] [--state-dir DIR] COMMAND
-Commands: setup, setup-status, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID
+Commands: setup, setup-status, service-upgrade-status, service-upgrade --expected-runner-id ID --target-sha256 SHA --acknowledge-host-changes, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID
 ```
 
 ## copy-code
@@ -106,6 +106,26 @@ Usage of remote-setup-start:
 Usage of remote-setup-status:
   -id string
         resume an existing remote setup ID
+```
+
+## service-upgrade
+
+```text
+Usage: omabit [--config-dir DIR] service-upgrade --expected-runner-id ID --target-sha256 SHA --acknowledge-host-changes
+Explicitly update local owner services to the exact target shown by service-upgrade-status.
+Run as the desktop user. Downloads pinned launcher dependencies, requests OS authorization,
+preserves identities/access/ships and verifies readiness. Busy management refuses safely.
+Retry keeps the original executable/bundle; a newer desktop cannot retarget a pending update.
+Does not update OS packages, remote runners or the historical offline schema19 bridge.
+```
+
+## service-upgrade-status
+
+```text
+Usage: omabit [--config-dir DIR] service-upgrade-status
+Read the existing local owner/enrollment and compare the installed runner with the
+current desktop bundle. Reports an unfinished retained attempt before a new target.
+No downloads, authorization, key generation, service changes or ship mutations.
 ```
 
 ## setup
