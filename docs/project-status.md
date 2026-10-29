@@ -1,6 +1,6 @@
 # 0.3.0 release checkpoint — October 29
 
-Frozen candidate source: `8cce14b9afaa1ce45dd98c31b679f76a6017fc03`.
+Frozen candidate source: `ffb3f7c036af3d62220cd2610d77548900568c15`.
 The [qualification record](releases/0.3.0/qualification.json) binds the actual
 published-binary upgrade rehearsal, artifact/CLI/native startup checks and their
 limits. Protected PR checks still gate publication. Theme0.4.0 and DMs0.2.0 have

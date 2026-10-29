@@ -6522,3 +6522,26 @@ The same read-only DEV observation fell from2.36 to0.54 sampled CPU seconds
 measurement, not a general performance guarantee. Candidate07 must rebuild and
 repeat exact-artifact and upgrade gates before publication. Production services,
 DEV container processes and personal message history were not changed by diagnosis.
+
+## M481 — Final0.3.0 artifact, upgrade and DEV verification (2026-10-29)
+
+Status: distribution prepared; protected PR checks still gate publication.
+Supersedes M480's pending rebuild and M479's candidate source. Candidate07 is
+frozen at `ffb3f7c036af3d62220cd2610d77548900568c15`. Actual package/provenance/reproducibility checks,
+130 offline CLI entries,57 workflow commands, native startup/activation recovery,
+all3 vulnerability scans and focused runtime race regressions pass. Matching
+headers and connection-choice components remain byte-identical across Theme/DMs.
+
+The new offline guest passes published0.1.0→0.2.0→frozen0.3.0, repeated activation,
+old-client observation, old-writer refusal, manager restart and clean shutdown.
+The earlier genuine0.1.0 WaitDelay/recovery history remains in candidate06; it is
+not relabeled as this run. Compact host/result files bind this final source.
+
+Exact final DEV activation preserves all6 container processes. The DEV ~nec then
+passes clean Stop/Start and exact request replay. All3 fakes report matching HTTP
+identities and metrics; both moons remain stopped. The test initially parsed the
+plain-text host endpoint as JSON; the read-only probe was corrected without
+repeating lifecycle actions. The manager CPU observation drops from80–90% to28.6%
+over a20-second window. This is useful measured improvement, not a zero-cost or
+fleet-scale performance claim. Production and personal-message baselines remain
+unchanged; M468's security/privacy and wallet follow-up is still open.
