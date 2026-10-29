@@ -71,8 +71,10 @@ ApplicationWindow {
      console.log("PASS: isolation and invalid-output recovery")
      hostService.localSetupAllowed=false;notice.active=true
      test.check(!notice.visible && !worker.running,"isolated profile has no dependency action")
-     hostService.localSetupAllowed=true
-     test.check(worker.running && worker.command[3]==="service-upgrade-status","menubar opening checks only status")
+     hostService.activationEnabled=false;hostService.localSetupAllowed=true
+     test.check(!worker.running,"activation wait must not dispatch")
+     hostService.activationEnabled=true
+     test.check(worker.running && worker.command[3]==="service-upgrade-status","menubar checks after activation becomes available")
      test.line(test.offered);test.exit(0);break
     case 5:
      var button=find(notice,"menubar-update-dependencies")

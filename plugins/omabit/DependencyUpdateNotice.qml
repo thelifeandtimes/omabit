@@ -23,6 +23,10 @@ Card {
     target:root.service
     function onCheckingSetupChanged() { if (!root.service.checkingSetup) root.inspect() }
   }
+  Connections {
+    target:root.updater
+    function onCanStartChanged() { if (root.updater.canStart) root.inspect() }
+  }
   Column {
     id: body
     anchors.left:parent.left;anchors.right:parent.right;anchors.top:parent.top

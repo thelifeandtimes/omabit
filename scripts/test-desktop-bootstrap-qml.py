@@ -85,8 +85,9 @@ def main():
             env["WAYLAND_DISPLAY"] = display if display.startswith("/") else str(Path(os.environ["XDG_RUNTIME_DIR"]) / display)
             env["QT_QPA_PLATFORM"] = "wayland"
         # Production's release cache is outside the shell configuration tree.
-        # Keeping it inside lets Quickshell discover undeclared QML types and
-        # masks missing qmldir entries during a real installed-plugin update.
+        # Match that boundary here instead of relying on implicit discovery of
+        # QML types from the configuration tree. Registry completeness is checked
+        # separately; a cold fixture does not reproduce every live-shell cache.
         configuration = root / "shell-config"
         configuration.mkdir()
         shutil.copytree(ROOT / "native", configuration / "native")
