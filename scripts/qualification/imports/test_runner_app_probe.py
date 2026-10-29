@@ -1,4 +1,5 @@
 import copy
+from contextlib import contextmanager
 import importlib.util
 from pathlib import Path
 import sys
@@ -81,6 +82,24 @@ class ProbeTests(unittest.TestCase):
         self.assertEqual(calls.count('anchor'),cycles*2);self.assertEqual(calls.count('before'),cycles);self.assertEqual(calls.count('after'),cycles)
         self.assertEqual(calls.count(('zod','nec')),cycles*2 if live_peer else 1);self.assertEqual(calls.count(('zod','zod')),0 if live_peer else 3)
 
+@contextmanager
+def guest_owner_metadata(root, owner=1000):
+    """Model the admitted guest UID; retain real type/mode/link/size metadata.
+
+    Offline fixtures run under arbitrary CI accounts. Only the temporary fixture
+    tree represents guest UID1000; production admission and ownership stay strict.
+    """
+    original = Path.lstat
+    def observed(path):
+        info = original(path)
+        if path == root or root in path.parents:
+            fields = {name: getattr(info, name) for name in dir(info) if name.startswith('st_')}
+            fields['st_uid'] = owner
+            return SimpleNamespace(**fields)
+        return info
+    with patch.object(Path, 'lstat', observed):
+        yield
+
 class PublishedProbeTests(unittest.TestCase):
     def spec(self):
         value=fixture();value['http_transport']='published-loopback'
@@ -93,7 +112,7 @@ class PublishedProbeTests(unittest.TestCase):
             with self.assertRaises(ValueError):probe.validate_spec(value)
     def test_direct_login_uses_stdin_and_session_survives_new_probe(self):
         import tempfile,os,json
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory() as tmp, guest_owner_metadata(Path(tmp)):
             root=Path(tmp);state={};response=SimpleNamespace(returncode=0,stdout=b'\n204',stderr=b'')
             client=probe.Probe(self.spec(),state,lambda:None)
             with patch.object(client,'session_root',return_value=root),patch.object(probe.subprocess,'run',return_value=response) as run:
@@ -112,7 +131,7 @@ class PublishedProbeTests(unittest.TestCase):
             self.assertNotIn('private-test',json.dumps(state))
     def test_untrusted_cookie_files_never_invoke_client(self):
         import tempfile,os
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory() as tmp, guest_owner_metadata(Path(tmp)):
             root=Path(tmp);client=probe.Probe(self.spec(),{},lambda:None)
             with patch.object(client,'session_root',return_value=root),patch.object(probe.subprocess,'run') as run:
                 path=root/'zod.cookie';path.write_text('cookie');path.chmod(0o644)
@@ -124,9 +143,20 @@ class PublishedProbeTests(unittest.TestCase):
                 path.unlink();path.mkdir()
                 with self.assertRaises(ValueError):client.http('zod','/~/host')
                 run.assert_not_called()
+    def test_foreign_guest_owner_is_refused_before_client_or_directory_creation(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp, guest_owner_metadata(Path(tmp), owner=999):
+            root=Path(tmp);root.chmod(0o700);client=probe.Probe(self.spec(),{},lambda:None)
+            path=root/'zod.cookie';path.write_text('inert cookie');path.chmod(0o600)
+            with patch.object(client,'session_root',return_value=root),patch.object(probe.subprocess,'run') as run:
+                with self.assertRaisesRegex(ValueError,'private guest session file'):client.http('zod','/~/host')
+                run.assert_not_called()
+            with patch.object(probe,'SESSION_ROOT',root/'session'):
+                with self.assertRaisesRegex(ValueError,'guest runtime directory'):client.session_root()
+            self.assertFalse((root/'session').exists())
     def test_runtime_storage_refuses_non_tmpfs_before_creating_directory(self):
         import tempfile
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory() as tmp, guest_owner_metadata(Path(tmp)):
             root=Path(tmp);root.chmod(0o700);client=probe.Probe(self.spec(),{},lambda:None)
             with patch.object(probe,'SESSION_ROOT',root/'session'),patch.object(Path,'read_text',return_value='1 0 0:1 / / rw - ext4 /dev/root rw\n'):
                 with self.assertRaisesRegex(ValueError,'tmpfs'):client.session_root()

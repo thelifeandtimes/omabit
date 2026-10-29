@@ -6453,3 +6453,21 @@ and engine retain October21 start times, and the personal outbound journal diges
 is unchanged. Broader security/privacy qualification remains open under M468;
 functional authentication tests do not establish wallet custody or malicious
 same-UID plugin isolation.
+
+## M478 — Offline guest fixtures are independent of the CI owner (2026-10-29)
+
+Status: test-only source correction; supersedes M477's final-distribution status,
+not its successful upgrade/artifact evidence. Frozen-source CI completed all Go
+normal/race groups and QML successfully, then failed the offline probe fixtures.
+A networkless UID1001 reproduction identified two tests that treated CI-created
+files as if their owner were the explicitly admitted guest UID1000. The tests now
+model only ownership metadata in their private temporary tree, preserving actual
+file type, mode, size and link-count checks. Explicit foreign-owner tests refuse
+both cookies and runtime directories before any client call or directory creation.
+Real probe admission remains fixed to its guarded offline guest.
+
+All25 probe tests pass under UID1000 and1001, including strict ResourceWarning
+handling locally. All15 remaining offline CI fixture groups also pass in a
+networkless UID1001 namespace. No production runtime implementation changed.
+Rebuild from the corrected clean source and preserve exact-source qualification;
+do not relabel candidate05, and do not bypass the final protected checks.
