@@ -11,7 +11,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 COMPONENTS = (
-    "ServiceUpgrade.qml", "ServiceUpgradePane.qml", "Label.qml", "Design.qml",
+    "ServiceUpgrade.qml", "ServiceUpgradePane.qml", "DependencyUpdateNotice.qml", "Label.qml", "Design.qml",
     "ActionButton.qml", "Hint.qml", "Card.qml", "CardTitle.qml",
 )
 
@@ -60,7 +60,7 @@ def main():
         except subprocess.TimeoutExpired as error:
             raise AssertionError((error.stdout or b"").decode() + (error.stderr or b"").decode()) from error
         text = result.stdout + result.stderr
-        assert result.returncode == 0 and text.count("PASS:") == 3, text
+        assert result.returncode == 0 and text.count("PASS:") == 4, text
         assert not any(error in text for error in ("Error:", "FAIL:", "Unable to assign", "Binding loop", "Cannot assign", "is not defined")), text
         for line in text.splitlines():
             if "PASS:" in line:

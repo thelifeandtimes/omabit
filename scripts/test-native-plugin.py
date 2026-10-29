@@ -53,6 +53,14 @@ class NativePluginTests(unittest.TestCase):
             self.assertEqual(path.read_bytes(), template)
             self.assertEqual(path.stat().st_mode & 0o777, 0o755)
 
+    def test_qml_registry_covers_every_shipped_component(self):
+        plugin = ROOT / "plugins/omabit"
+        entries = [line.split()[-1] for line in (plugin / "qmldir").read_text().splitlines()
+                   if line.strip() and not line.lstrip().startswith("#")]
+        self.assertEqual(len(entries), len(set(entries)), "duplicate QML registry entry")
+        self.assertEqual(set(entries), {p.name for p in plugin.glob("*.qml")},
+                         "Quickshell hot activation requires explicit type registration")
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="omabit-native-test-")
         self.addCleanup(self.temporary.cleanup)

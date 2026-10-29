@@ -6696,3 +6696,23 @@ The user authorized changing the merge requirement after the legacy gate's
 bootstrap problem was explained. Apply the documented one-time transition only
 after all other checks pass and immediately restore full protection. Publication
 authorization remains active; production ships are untouched.
+
+
+## M488 — Explicit QML types and visible dependency updates (2026-10-29)
+
+Status: source fix; exact candidate qualification follows. The user's stock-shell
+0.3.0→0.3.1 update retained0.3.0 with `ServiceUpgradePane is not a type`. The
+published archive contains ServiceUpgrade.qml and ServiceUpgradePane.qml but
+omits both from qmldir. Register every shipped component explicitly and enforce
+registry completeness in CI. This supersedes any implication in M485–M487 that
+the isolated successful load covered every long-lived Omarchy shell update.
+Fresh and simple previous→new isolated loads of the old bundle still pass; the
+full host-specific resolution failure is not reproduced by that fixture.
+
+The new menubar notice performs a read-only local version check when opened and
+offers Update Dependencies. A verified offer starts the existing bound upgrade
+and opens local-service progress with OS authorization. Errors require a new
+check before retained retry; success hides the notice. Disabled host-setup
+profiles and fresh hosts do not offer a production update. No installer, Go,
+runner schema or authorization contract changes. Published0.3.1 stays immutable;
+the correction is prepared as0.3.2. No production service or ship was operated.
