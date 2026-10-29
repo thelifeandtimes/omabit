@@ -25,7 +25,7 @@ Card {
   }
   Connections {
     target:root.updater
-    function onCanStartChanged() { if (root.updater.canStart) root.inspect() }
+    function onCanStartChanged() { if (root.updater.canStart) Qt.callLater(root.inspect) }
   }
   Column {
     id: body

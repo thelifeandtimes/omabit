@@ -73,25 +73,26 @@ ApplicationWindow {
      test.check(!notice.visible && !worker.running,"isolated profile has no dependency action")
      hostService.activationEnabled=false;hostService.localSetupAllowed=true
      test.check(!worker.running,"activation wait must not dispatch")
-     hostService.activationEnabled=true
+     hostService.activationEnabled=true;break
+    case 5:
      test.check(worker.running && worker.command[3]==="service-upgrade-status","menubar checks after activation becomes available")
      test.line(test.offered);test.exit(0);break
-    case 5:
+    case 6:
      var button=find(notice,"menubar-update-dependencies")
      test.check(notice.visible && button.enabled && button.text==="Update Dependencies","update is obvious in widget")
      button.clicked();test.check(notice.opens===1 && worker.running && worker.command[3]==="service-upgrade","single widget action opens progress and updates")
      test.check(!button.enabled && !controller.upgrade(),"widget cannot dispatch twice")
      test.line({step:"upgrade",status:"failed",message:"Authorization cancelled"});test.exit(1);break
-    case 6:
+    case 7:
      test.check(notice.visible && !!controller.error,"widget retains cancelled update indication")
      find(notice,"menubar-update-dependencies").clicked()
      test.check(notice.opens===2 && worker.command[3]==="service-upgrade-status","failure action rechecks before retry")
      test.line(Object.assign({},test.offered,{pending:true}));test.exit(0);break
-    case 7:
+    case 8:
      find(notice,"menubar-update-dependencies").clicked()
      test.check(worker.command.indexOf(test.offered.target_sha256)>0,"widget retry binds original target")
      test.line({step:"upgrade",status:"complete",message:"Ready",result:Object.assign({},test.offered,{available:false,pending:false})});test.exit(0);break
-    case 8:
+    case 9:
      test.check(!notice.visible && hostService.refreshes===2,"completed dependencies clear widget notice")
      notice.active=false;hostService.localSetupStatus=({host_present:false,ready:false});notice.active=true
      test.check(!notice.visible && !worker.running,"fresh host uses onboarding instead of update")
