@@ -6545,3 +6545,45 @@ repeating lifecycle actions. The manager CPU observation drops from80–90% to28
 over a20-second window. This is useful measured improvement, not a zero-cost or
 fleet-scale performance claim. Production and personal-message baselines remain
 unchanged; M468's security/privacy and wallet follow-up is still open.
+
+
+## M482 — Publication and DMs native-install repair (2026-10-29)
+
+Status: observed and repaired. Supersedes M481's pending-publication status only.
+Omabit0.3.0, Theme0.4.0 and DMs0.2.0 are published; Omabit merged as
+`2dc56e988ee13925fd12f1303e32840febf823f1`. Candidate07's publication receipt remains
+in the compact release evidence; historical qualification boundaries are unchanged.
+
+The stable `urbit.dms` installation was a root symlink into the user's clean
+0.1.0 development checkout. Omarchy's validator rejects root and nested symlinks;
+its updater rolled back after validation failed. The old README's symlink advice
+is superseded by a normal, validated Git checkout and separately isolated DEV
+installation. Do not repair this by deleting/resetting the development repository.
+
+Replaced only the installed symlink with a validated0.2.0 checkout at
+`7bc6f5ec8b0eb0e38fb864c27b8c71360e4f9156`. The original link and repair receipt
+are retained in `~/.local/state/omabit-repairs/dms-native-8_8u6u5n/`; the original
+repo, saved application state and layout were preserved. Rescan succeeded and the
+normal updater reported current. Production runner/engine PIDs and start times
+remain unchanged. No personal message was retried.
+
+## M483 — Guided local service-upgrade buttons (2026-10-29)
+
+Status: implemented and fixture-tested; not yet a released or live-qualified
+upgrade path. Supersedes the product expectation that routine local upgrades
+require users to paste the install-host command batch. It does not supersede the
+published0.3.0 recovery procedure or imply those old artifacts contain this UI.
+
+Setup now has Check services, Update services, progress and retained Retry controls.
+The helper binds the current local owner, runner, enrollment and access bytes;
+uses the original operator key; retains one exact executable/dependency bundle;
+and requires OS authorization. The privileged identity check runs under the host
+setup lock. A new desktop cannot retarget an unfinished attempt. No host reset,
+key regeneration, implicit OS package update or engine restart is introduced.
+
+Source tests cover interruption, changed inputs, identity refusal, readiness and
+real Qt control bindings. DEV local-setup restrictions and reload interlocks are
+retained. Final new-artifact disposable-host upgrade qualification remains open;
+installer changes belong in the next minor release. See
+[the workflow and validation limits](guided-service-upgrades.md). Security/privacy
+review remains open as recorded in M468; no wallet-grade assurance is claimed.

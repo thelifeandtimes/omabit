@@ -46,10 +46,11 @@ func runInstallHostOptionsWith(ctx context.Context, args []string, stdout, stder
 	}
 	owner := flags.String("owner", name, "existing Unix user who will own the runner and pier files")
 	ack := flags.Bool("acknowledge-host-changes", false, "authorize owner storage, access and service setup")
+	expected := flags.String("expected-runner-id", "", "require the existing runner identity; never create a replacement host")
 	offline := flags.Bool("offline-upgrade", false, "one-time schema19 upgrade of an already stopped owner manager, preserving ships/state; also resumes its journal")
 	flags.Usage = func() {
 		fmt.Fprintln(stdout, "Usage: urbit-runner install-host --owner USER --bundle DIR --public-key FILE --acknowledge-host-changes\n\nRuns the runner and separate rootless Docker engine as the selected existing Unix\nuser. Creates /srv/urbit/piers for that owner and installs restricted management SSH\nand boot services. Preserves the login shell, personal SSH and unrelated Docker.\nLegacy dedicated-account installations require explicit retirement/migration.")
-		fmt.Fprintln(stdout, "\nAdd --offline-upgrade for the one-time schema19 compatibility bridge. Finish work\nand stop only the owner's urbit-runner.service first. The installer requires the\noriginal runtime flock, no foreground listener and no unresolved jobs, then\ntransactionally upgrades/fences state before activating the retained new binary.\nRerun the same command after interruption; never reset/re-enroll or lower schema.\nSee docs/management-offline-upgrade.md. Normal updates use online quiescence.")
+		fmt.Fprintln(stdout, "\nAdd --offline-upgrade for the one-time schema19 compatibility bridge. Finish work\nand stop only the owner's urbit-runner.service first. The installer requires the\noriginal runtime flock, no foreground listener and no unresolved jobs, then\ntransactionally upgrades/fences state before activating the retained new binary.\nRerun the same command after interruption; never reset/re-enroll or lower schema.\nSee docs/management-offline-upgrade.md. Normal updates use online quiescence.\nGuided updates add --expected-runner-id ID to bind the existing runner identity.")
 	}
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -80,7 +81,7 @@ func runInstallHostOptionsWith(ctx context.Context, args []string, stdout, stder
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	var outputErr error
-	result, err := install(ctx, *bundle, data, *owner, hostinstall.HostOptions{OfflineUpgrade: *offline}, func(step string) {
+	result, err := install(ctx, *bundle, data, *owner, hostinstall.HostOptions{OfflineUpgrade: *offline, ExpectedRunnerID: *expected}, func(step string) {
 		if outputErr == nil {
 			outputErr = encoder.Encode(map[string]string{"step": step, "status": "running"})
 			if outputErr != nil {

@@ -49,6 +49,11 @@ Column {
       }
     }
   }
+  ServiceUpgradePane {
+    width:parent.width
+    updater:root.service && root.service.serviceUpgrade ? root.service.serviceUpgrade : null
+    visible:!!updater && !!root.status && (root.status.host_present || root.ready) && root.service.localSetupAllowed
+  }
   MachineUsePane { width: parent.width; service: root.service; visible: !root.ready }
   Column {
     objectName: "setup-progress-checklist"

@@ -3,8 +3,9 @@
 Frozen candidate source: `ffb3f7c036af3d62220cd2610d77548900568c15`.
 The [qualification record](releases/0.3.0/qualification.json) binds the actual
 published-binary upgrade rehearsal, artifact/CLI/native startup checks and their
-limits. Protected PR checks still gate publication. Theme0.4.0 and DMs0.2.0 have
-merged, passing companion changes and unpublished release drafts.
+limits. Omabit0.3.0, Theme0.4.0 and DMs0.2.0 are published stable releases.
+The subsequent [guided service-update controls](guided-service-upgrades.md) are
+unreleased source work for the next minor release.
 
 The active review uses the main desktop's separately labeled DEV plugins;
 [manual checks](native-dev-review.md) describe current state. The core candidate
@@ -16,7 +17,7 @@ the broader security/privacy audit remain open; see the release scope and roadma
 
 # Project status
 
-**0.3.0 is being prepared on release/0.3.0.** See the [current release notes](release-0.3.0.md), [CLI reference](cli/README.md), [upgrade guide](releases-0.3-upgrade.md), and [native DEV review](native-dev-review.md). Earlier dated sections below are historical evidence, not the current feature inventory.
+**0.3.0 is published.** See the [current release notes](release-0.3.0.md), [CLI reference](cli/README.md), [upgrade guide](releases-0.3-upgrade.md), and [native DEV review](native-dev-review.md). Earlier dated sections below are historical evidence, not the current feature inventory.
 
 **2026-10-21 development work (unreleased):** the
 [platform roadmap](platform-roadmap.md) records the three product pillars and

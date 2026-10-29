@@ -11,7 +11,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 COMPONENTS = (
-    "ReaderLifecycle.qml", "Model.js", "HostCompatibility.qml", "HostSetupPane.qml", "RuntimePane.qml", "RuntimeDetails.qml", "ConnectivityStatus.qml", "CardTitle.qml",
+    "ReaderLifecycle.qml", "Model.js", "HostCompatibility.qml", "HostSetupPane.qml", "ServiceUpgradePane.qml", "RuntimePane.qml", "RuntimeDetails.qml", "ConnectivityStatus.qml", "CardTitle.qml",
     "MachineUsePane.qml", "SwitchField.qml", "CheckField.qml", "Label.qml",
     "Design.qml", "ActionButton.qml", "Hint.qml", "StatusBadge.qml", "Card.qml",
 )

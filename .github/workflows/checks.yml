@@ -106,6 +106,7 @@ jobs:
         run: |
           python3 -B scripts/test-rc11-panel-offscreen.py --require-qt
           python3 -B scripts/test-host-compatibility-offscreen.py --require-qt
+          python3 -B scripts/test-service-upgrade-offscreen.py --require-qt
 
 # Mapped Quickshell tests and live runtime qualification require their separately
 # controlled Omarchy/Docker environments; they are not claimed by this CI job.

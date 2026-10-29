@@ -219,6 +219,7 @@ original runtime flock, no foreground listener and no unresolved jobs, then
 transactionally upgrades/fences state before activating the retained new binary.
 Rerun the same command after interruption; never reset/re-enroll or lower schema.
 See docs/management-offline-upgrade.md. Normal updates use online quiescence.
+Guided updates add --expected-runner-id ID to bind the existing runner identity.
 ```
 
 ## meld-plan

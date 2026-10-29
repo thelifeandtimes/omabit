@@ -67,6 +67,10 @@ func (b *boundedStderr) Write(p []byte) (int, error) {
 }
 
 func installHost(ctx context.Context, runner, bundle, public string, emit func(Event)) (hostinstall.HostResult, error) {
+	return installHostExpected(ctx, runner, bundle, public, "", emit)
+}
+
+func installHostExpected(ctx context.Context, runner, bundle, public, expected string, emit func(Event)) (hostinstall.HostResult, error) {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Minute)
 	defer cancel()
 	program := "/usr/bin/pkexec"
@@ -77,7 +81,11 @@ func installHost(ctx context.Context, runner, bundle, public string, emit func(E
 	if err != nil {
 		return hostinstall.HostResult{}, err
 	}
-	cmd := exec.CommandContext(ctx, program, runner, "install-host", "--owner", owner.Username, "--bundle", bundle, "--public-key", public, "--acknowledge-host-changes")
+	args := []string{runner, "install-host", "--owner", owner.Username, "--bundle", bundle, "--public-key", public, "--acknowledge-host-changes"}
+	if expected != "" {
+		args = append(args, "--expected-runner-id", expected)
+	}
+	cmd := exec.CommandContext(ctx, program, args...)
 	cmd.WaitDelay = 2 * time.Second
 	if program == "/usr/bin/sudo" {
 		cmd.Stdin = os.Stdin
@@ -93,7 +101,7 @@ func installHost(ctx context.Context, runner, bundle, public string, emit func(E
 		return hostinstall.HostResult{}, err
 	}
 	if err := cmd.Start(); err != nil {
-		return hostinstall.HostResult{}, errors.New("Could not open OS authorization. Run omabit --format text setup from a terminal.")
+		return hostinstall.HostResult{}, errors.New("Could not open OS authorization. Check that the desktop authentication agent is running, then retry.")
 	}
 	var result hostinstall.HostResult
 	var failure string
@@ -130,7 +138,7 @@ func installHost(ctx context.Context, runner, bundle, public string, emit func(E
 		if strings.Contains(stderr.data.String(), "dismissed") || strings.Contains(stderr.data.String(), "authorized") {
 			return result, errors.New("Host setup was not authorized. Your existing installation was preserved; try again when ready.")
 		}
-		return result, errors.New("Host setup did not finish. Authorization may have been cancelled; inspect the current step or run omabit --format text setup in a terminal before retrying.")
+		return result, errors.New("Host setup did not finish. Authorization may have been cancelled; review the current step and retry when ready.")
 	}
 	return result, nil
 }
