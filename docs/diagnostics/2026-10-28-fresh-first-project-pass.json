@@ -1,0 +1,290 @@
+{
+  "case": "fresh-first-project-after-bounded-engine-probe",
+  "before": {
+    "runner": "runner-0ff8830d4889dcc4921646d4b05b1617",
+    "ordinary_instances": 0,
+    "projects": 0,
+    "docker_images": 0,
+    "build": {
+      "build": "20261027-feedback-pass-2",
+      "state": "not-onboarded",
+      "plugins": [
+        "thelifeandtimes.omabit.review",
+        "thelifeandtimes.urbit-theme.review",
+        "urbit.dms.review"
+      ],
+      "binary_sha256": {
+        "urbit-runner": "0fa1a1f0b8cffed05640d0234d0d6414df98b12843bdea68d9534fc7e43ebd83",
+        "urbit-collector": "e25b7e8e51fd5f8c5b1de5a34c163bafc673a854410b54a566d4843048a56857"
+      },
+      "guide_sha256": "b2bbb427ca25f9310fef439ce151452928bbe0e18df9cc2a9cb64a0592c63cf6",
+      "source_sha256": "2a876a64b268e04146c574521fd0bf1984a5fd5035c0ead19a027fa358488061",
+      "production_credentials": false
+    },
+    "binary_sha256": {
+      "urbit-runner": "0fa1a1f0b8cffed05640d0234d0d6414df98b12843bdea68d9534fc7e43ebd83",
+      "urbit-collector": "e25b7e8e51fd5f8c5b1de5a34c163bafc673a854410b54a566d4843048a56857"
+    }
+  },
+  "completion": {
+    "exit_code": 0,
+    "elapsed_seconds": 347.9699912071228
+  },
+  "progress": [
+    {
+      "phase": "working",
+      "step": "reserve"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "download-runtime"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "download-runtime"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "prepare"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "prepare",
+      "operation_id": "op-4236b363f17e0fe6d2e5ca27c0f71650"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "start-anchor"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "start-anchor",
+      "operation_id": "op-18e491665e644f04c15351fe22812ff8"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "prepare-storage",
+      "instance_id": "first-project-nec"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "prepare-storage",
+      "instance_id": "first-project-nec",
+      "operation_id": "op-46ff48cc4e04df11096f76c364bd5a73"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "launch",
+      "instance_id": "first-project-nec"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "launch",
+      "instance_id": "first-project-nec",
+      "operation_id": "op-e494043b83cb24efc55e21b03c03026a"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "prepare-storage",
+      "instance_id": "first-project-zod"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "prepare-storage",
+      "instance_id": "first-project-zod",
+      "operation_id": "op-41a30ca84551e4748260b060e76b9121"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "launch",
+      "instance_id": "first-project-zod"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "launch",
+      "instance_id": "first-project-zod",
+      "operation_id": "op-c934ae597cdab6c386c96b6afc70ac19"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "observe",
+      "instance_id": "first-project-nec"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "observe",
+      "instance_id": "first-project-nec",
+      "operation_id": "op-39286cdbc755fff8ca3554c15d3b0f21"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "observe",
+      "instance_id": "first-project-zod"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "step": "observe",
+      "instance_id": "first-project-zod",
+      "operation_id": "op-c4fecfea81469385055fa495c6dfdf8b"
+    },
+    {
+      "phase": "ready",
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "message": "All project members passed identity/readiness checks. Their saved receipts are available in project-status."
+    }
+  ],
+  "no_action_replays": true,
+  "runtime_observation": true,
+  "scope": "Native guest setup, zero prior projects/ships/images, pinned dependency acquisition, two initial launches and identity/readiness; no protected or human-reviewed ship accessed.",
+  "operations": [
+    {
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "id": "op-e1b067099661879a7e1d7ecc9557cae4",
+      "request_id": "first-project-20261027-1",
+      "instance_id": "",
+      "kind": "register-project",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:53:15.15408722Z",
+      "finished_at": "2026-10-28T06:53:15.15408722Z"
+    },
+    {
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "id": "op-4236b363f17e0fe6d2e5ca27c0f71650",
+      "request_id": "create-8e4597008e98e1670de064317180bc8d7056e056",
+      "instance_id": "",
+      "kind": "prepare-project",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:53:33.036254347Z",
+      "finished_at": "2026-10-28T06:53:34.932926563Z",
+      "message": "project resources prepared; no member was started"
+    },
+    {
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "id": "op-18e491665e644f04c15351fe22812ff8",
+      "request_id": "create-cf97ab7c86155f8285c3626051d89a8136164608",
+      "instance_id": "",
+      "kind": "start-project-anchor",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:53:35.125306309Z",
+      "finished_at": "2026-10-28T06:53:40.692550077Z",
+      "message": "project anchor started and observed; no member was started"
+    },
+    {
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "id": "op-46ff48cc4e04df11096f76c364bd5a73",
+      "request_id": "create-80c1dbb411f140a2f8078175ee75e025ceec6667",
+      "instance_id": "first-project-nec",
+      "kind": "prepare-project-member-storage",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:53:41.517112513Z",
+      "finished_at": "2026-10-28T06:53:41.760671483Z",
+      "message": "member mount prepared; no pier or ship was created"
+    },
+    {
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "id": "op-e494043b83cb24efc55e21b03c03026a",
+      "request_id": "create-3fb99ccfa336564af775e03d8854b9e6264e4395",
+      "instance_id": "first-project-nec",
+      "kind": "launch-project-member",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:53:42.549053059Z",
+      "finished_at": "2026-10-28T06:54:23.499949459Z",
+      "message": "member container running in its recorded namespace; ship readiness is not yet established"
+    },
+    {
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "id": "op-41a30ca84551e4748260b060e76b9121",
+      "request_id": "create-6d83fcb0659e2aa87ba10e3f09c32c05b6c052a1",
+      "instance_id": "first-project-zod",
+      "kind": "prepare-project-member-storage",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:54:24.026541821Z",
+      "finished_at": "2026-10-28T06:54:24.287655141Z",
+      "message": "member mount prepared; no pier or ship was created"
+    },
+    {
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "id": "op-c934ae597cdab6c386c96b6afc70ac19",
+      "request_id": "create-fac22ab0b7899470b78e9573619942da2827892f",
+      "instance_id": "first-project-zod",
+      "kind": "launch-project-member",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:54:27.348766739Z",
+      "finished_at": "2026-10-28T06:55:51.348576752Z",
+      "message": "member container running in its recorded namespace; ship readiness is not yet established"
+    },
+    {
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "id": "op-39286cdbc755fff8ca3554c15d3b0f21",
+      "request_id": "create-89859533318e295e0cb030d58aae279b1746f112",
+      "instance_id": "first-project-nec",
+      "kind": "observe-project-member",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:55:52.774648923Z",
+      "finished_at": "2026-10-28T06:58:57.948841683Z",
+      "message": "member identity and initialized storage observed; this receipt is historical evidence"
+    },
+    {
+      "project_id": "project-fdacc1d66c60db37d69cc1e1dc63e6f6",
+      "id": "op-c4fecfea81469385055fa495c6dfdf8b",
+      "request_id": "create-2964a9efa70649303968835cb2bbdf5f8fa8f9c8",
+      "instance_id": "first-project-zod",
+      "kind": "observe-project-member",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:58:58.908913391Z",
+      "finished_at": "2026-10-28T06:59:02.057715948Z",
+      "message": "member identity and initialized storage observed; this receipt is historical evidence"
+    }
+  ],
+  "http_identity": {
+    "~zod": {
+      "port": 18481,
+      "status": 200,
+      "body": "~zod"
+    },
+    "~nec": {
+      "port": 18482,
+      "status": 200,
+      "body": "~nec"
+    }
+  },
+  "runner_log": [
+    "Oct 27 23:52:09 omabit-review env[1835]: {\"mode\":\"development-managed\",\"socket\":\"/run/user/1000/urbit-runner/runner.sock\",\"state_directory\":\"/home/review/.local/share/urbit-runner/managed\"}"
+  ]
+}

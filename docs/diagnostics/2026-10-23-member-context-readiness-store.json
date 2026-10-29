@@ -1,0 +1,53 @@
+{
+  "focused_source_checks_passed": true,
+  "full_managed_race_status": "passed",
+  "full_managed_race_session": 41701,
+  "runtime_executed": false,
+  "schema": 36,
+  "prior_schema": 35,
+  "store_race_seconds": 49.217,
+  "queue_race_seconds": 12.504,
+  "vet_passed": true,
+  "original_reader_refused_actual_successor_unchanged": true,
+  "original_fixture_bytes": 483595,
+  "original_fixture_sha256": "0f03afba233ec206c2ae791c65a2445ddb24fcdf9b9f5b40a58c9202506d9293",
+  "original_source_sha256": "ea67857247fccc7b175e6bb4c54fc7110604b0f195850475781fca6b54cc3eba",
+  "original_fixture_independent_generations": 2,
+  "original_source_files": 1438,
+  "sources": {
+    "internal/managed/schema.go": "b17403dad0ea36766026dcdc70ed601821801487865199f0c5570005391741b9",
+    "internal/managed/store.go": "35b81ced8558357b75306200f8dce6ad065640a14a529385b28612ac7ece092b",
+    "internal/managed/project_member_context_readiness.go": "4ff43a48e30a73c0af747e80d9d38fb3c15da35a1677027886b5268c6be1f992",
+    "internal/managed/project_member_context_readiness_test.go": "a2ae704bb2c73028dcceaf707c118c4053fc061d0c390dcadfafc62d5c7dd95a",
+    "internal/managed/project_member_context_readiness_server_linux.go": "c8c8ede752819eb02c358ddbd431a0722d9bac85efc449af52aeeadf9516b25c",
+    "internal/managed/project_member_context_readiness_server_linux_test.go": "00cf1199dfa30947b88ea3908bd7abef662704cf249eef19e75739477f21a504",
+    "internal/managed/g02_historical_upgrades_test.go": "f0140a0c9cb6057725170141c65102c5f5eb9952fabb513177213c9fc2327350",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "4cef2ef381f2723927f91fd856cfede25cec8ae99d0f0a920466361338a28bd2",
+    "scripts/test-historical-upgrades.py": "e5be50f353d84611ea154773cc689700346fa001d3a51791900c247ecb9468a6",
+    "internal/projectnetwork/member_context.go": "c5df1a5f37763b3808bebc1e3ea0bcf1cc6e3a1c8d550e6cdc0548bf50da7daf",
+    "internal/projectnetwork/member_current_readiness.go": "250d60aff66a5e5c8e7023813fc27d29fcb26b406df9568d5e1f7a0909e2a1fd"
+  },
+  "logs": {
+    "omabit-context-readiness-compile.log": "982c60e17a3e59ee04cd5384c3b7ff3f567c997a8c74265775ff714478afdda1",
+    "omabit-context-readiness-historical.log": "47954a42ca2cfefecada946068d04b44e7877bb5efb996ce8d6eac75b98939e4",
+    "omabit-context-readiness-store-tests.log": "666c5368d16a15d6ec268320ebf46b092b6724f7e3c1850a48eafb317828087f",
+    "omabit-context-readiness-queue-tests.log": "e1ab522d3f2130ffb684b9679f0ec61dba530685be687c01337d4ce2e11352cf",
+    "omabit-context-readiness-queue-setup-failure.txt": "119e119687367255b917e093cbfc2e77817accadbe48c7de36d40dd6a58446b8",
+    "omabit-context-readiness-completed-stop.log": "3f16c725ab5d6f60d3da9daea4f5a012058cbd1fe55a96cd87202465748bfdd8",
+    "omabit-context-readiness-original-reader.log": "267e343f6f9c13aa514d0511b18be62bdb0edeb228205b96c17b40a394ab6613",
+    "omabit-context-readiness-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-schema35-freeze.log": "eae324df8a6198e55344bfc0fc3e4e103d5ea38a71b255164dbd2110069dd880",
+    "omabit-schema35-original-fixture.log": "7cf5ba34a596b3ebfde65d573fd519e7163a08f6eb813dcb7f50784ebaeacf67",
+    "omabit-context-readiness-full-managed-race.log": "d5f5ba52331d1990c12f3a2437955befb6f73f847cebb1c0c969a8bd57ddfb08"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-context-readiness-store",
+  "limits": [
+    "Private current-readiness only; current-context Stop admission/downstream lifecycle remains unintegrated.",
+    "All current members must lack retained Stop intent; no unrecorded restart adoption.",
+    "Appliance24 is frozen schema35 and cannot qualify schema36.",
+    "No installed database or runtime was operated."
+  ],
+  "full_managed_race_exit": 0,
+  "full_managed_race_seconds": 814.392,
+  "full_managed_race_note": "The tested production sources retain their recorded hashes. Later VM fixture-only wiring was independently compiled and host-refused."
+}

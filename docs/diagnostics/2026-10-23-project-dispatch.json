@@ -1,0 +1,26 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "source_sha256": {
+    "internal/projectnetwork/execute.go": "9afda2a30f6c5fe97ee5c00a05a9e010e1c6db16720220764a9e9f1c7a489895",
+    "internal/projectnetwork/execute_test.go": "85048763dc851264cee52086fdfd3f490c0615098a269e0b7f2ca7e24a39bada",
+    "internal/managed/project_worker.go": "58d849c894ab27d02b21212679a5d97a93c351a34b247d7bf814bdb7b12b978a",
+    "internal/managed/project_worker_test.go": "5a08f57ad6f7629c479c99a61822bb74d535b2d9398af45637d2249ff4e4ba17",
+    "internal/hostcompat/engine_identity.go": "59832c9ba53a5f335479b98d5ec7c65f96cfd873a2e320e9cfc24fd21e0a55d0",
+    "internal/hostcompat/policy.go": "1cd7c633b49d4936a5eb9c1674732fd0d1bd9b63c87c3dced7e936762beb3db3",
+    "internal/hostcompat/probe_linux.go": "cb07c7191692688496845050b4d87d90962e022392a0104f73a4fe475cb4a4ef",
+    "internal/hostcompat/probe_linux_test.go": "3e3a64556d7afb39b37298d6d928cfedd90d992eb8cb1c9c70f4f0854026b202"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-project-dispatch",
+  "qualification": [
+    "Controller race tests: every failed commit, lost create reply, error with exact ID, inspection mismatch, engine change and cancellation.",
+    "Actual SQLite worker with inert engine: creation/inspection read back the required prior durable step, uncertainty retains returned ID, repeat worker refused.",
+    "Private Unix engine ID and affected runtime compatibility race tests pass.",
+    "Schema22 fixture still reproduces and original reader refuses real schema24 unchanged."
+  ],
+  "limits": [
+    "The controller and private worker are not scheduled by server startup or RPC.",
+    "A real Docker preparation adapter, whole-runner mutation fence wiring and member lifecycle remain pending.",
+    "Prepared/running older VM appliances do not contain these new source changes."
+  ]
+}

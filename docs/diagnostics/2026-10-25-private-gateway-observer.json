@@ -1,0 +1,86 @@
+{
+  "memory": "M395",
+  "status": "integrated-observer-source-qualified",
+  "source_sha256": {
+    "internal/privatechain/runtime_input_gateway_linux.go": "f977714962da8fd1206bd6d30c3087d2ecbd8d695cdf257a47daedaa7d1dc1f6",
+    "internal/privatechain/runtime_input_gateway_linux_test.go": "a3a865d9f931110adb74ae1213c13e0fef2e86d2f29cfd5ac55c455d5b4859f7",
+    "internal/runtimequalify/private_gateway_observer_linux.go": "f54e515bb03be702d91be0c188ab73b16345533a717880abd3bf012e9c7cdee9",
+    "internal/runtimequalify/private_gateway_observer_linux_test.go": "9637287c4dd0630f57099b80158734bcbc853f5df8fe4358840b29bb7f22fcdf",
+    "internal/runtimequalify/private_gateway_mounts_linux.go": "a6bfc1d16b62b39f3ead2ccb9287f3398353f2282783835fee43fbe1bb79ca7e"
+  },
+  "checks": {
+    "memory": "M395",
+    "results": {
+      "privatechain": {
+        "exit": 0,
+        "checks": 434,
+        "top": 64,
+        "failed": []
+      },
+      "runtimequalify": {
+        "exit": 0,
+        "checks": 285,
+        "top": 28,
+        "failed": []
+      }
+    },
+    "seconds": 5.073677198030055,
+    "diff_check_exit": 0,
+    "source_sha256": {
+      "internal/privatechain/runtime_input_gateway_linux.go": "f977714962da8fd1206bd6d30c3087d2ecbd8d695cdf257a47daedaa7d1dc1f6",
+      "internal/privatechain/runtime_input_gateway_linux_test.go": "a3a865d9f931110adb74ae1213c13e0fef2e86d2f29cfd5ac55c455d5b4859f7",
+      "internal/runtimequalify/private_gateway_observer_linux.go": "f54e515bb03be702d91be0c188ab73b16345533a717880abd3bf012e9c7cdee9",
+      "internal/runtimequalify/private_gateway_observer_linux_test.go": "9637287c4dd0630f57099b80158734bcbc853f5df8fe4358840b29bb7f22fcdf",
+      "internal/runtimequalify/private_gateway_mounts_linux.go": "a6bfc1d16b62b39f3ead2ccb9287f3398353f2282783835fee43fbe1bb79ca7e"
+    },
+    "actual_gateway_or_docker_access": false,
+    "full_observer_source_integrated": true,
+    "runtime_qualified": false
+  },
+  "focused": {
+    "exit": 0,
+    "vet_exit": 0,
+    "seconds": 7.5112623569439165,
+    "top": 12,
+    "checks": 91,
+    "failed": []
+  },
+  "actual_generation_refusal": {
+    "exit": 0,
+    "passed": [
+      "TestPrivateGatewayOldGenerationQualification"
+    ],
+    "seconds": 10.08922631200403,
+    "actual_generation": "runtime-inputs-20261025-06",
+    "files": 12352,
+    "bytes": 834036904,
+    "actual_engine_access": false,
+    "input_program_executed": false
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-observer",
+  "evidence_sha256": {
+    "runtime_input_gateway_linux.go": "f977714962da8fd1206bd6d30c3087d2ecbd8d695cdf257a47daedaa7d1dc1f6",
+    "runtime_input_gateway_linux_test.go": "a3a865d9f931110adb74ae1213c13e0fef2e86d2f29cfd5ac55c455d5b4859f7",
+    "private_gateway_observer_linux.go": "f54e515bb03be702d91be0c188ab73b16345533a717880abd3bf012e9c7cdee9",
+    "private_gateway_observer_linux_test.go": "9637287c4dd0630f57099b80158734bcbc853f5df8fe4358840b29bb7f22fcdf",
+    "private_gateway_mounts_linux.go": "a6bfc1d16b62b39f3ead2ccb9287f3398353f2282783835fee43fbe1bb79ca7e",
+    "previous-mounts.go": "2af282b49d1302483e3835b46badb6a2393cd896d073f0cc99b0f1953448e9e5",
+    "tests01.jsonl": "7e896870eb3dbeab20cb098560477457384fd8b363a51d26aa518a6b4e26107c",
+    "tests02.jsonl": "45d02760039f9ec093150a10f30f70495c13594b426b01b7ec79da5f6c253334",
+    "vet01.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "vet02.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "check-result.json": "accf08605eee48b5eaf5fe5b906e56eed1f08d3257b3ad47612bed90e3588d66",
+    "check02-result.json": "b4b6073ae0083bf349a2b07073690ded5b782584e0fe9859a8f233008edf8551",
+    "old_generation_qualification_test.go": "bc1553ab029b9e00bec2c1e9db6453c117e7fce5325e214e3730b733574bd5cb",
+    "qualification01.jsonl": "000d99fad28b678795859195d0a1dce4b66fc195d3d510731bd9f41659fcc0ed",
+    "qualification-result.json": "3ef0eea12fba0132a186e86bc282ed1fc523482b99b509bd6c83ca25d9194c0a",
+    "integrated-privatechain.jsonl": "6317660317c53d31c4d0312505e1692d9c8d6009df1a678f98d1ffec262602e6",
+    "integrated-runtimequalify.jsonl": "6c77a07b734396b12703a4b16c3274471c3be779b193ffac0f802b419ff0a66c",
+    "integrated-result.json": "07d17eacb14d647641e3e72271eec33db850d7c2e492f82eb515bafd2d6081b9",
+    "applied.json": "2a44832d01c3acd8c609745ee742ce7d6495b1ac0e8a386c7188f975bf388193",
+    "integrate.py": "38031143857a37acea21924ba3aae84617403a59116cf1af5cd1ba0cd74f0c83"
+  },
+  "runtime_qualified": false,
+  "schema": 43,
+  "supersedes": "M394 missing complete observer composition only; resource preflight program pin, startup waiting, backend and runtime qualification remain."
+}

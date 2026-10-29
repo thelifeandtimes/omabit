@@ -1,0 +1,32 @@
+{
+  "memory": "M362",
+  "status": "source-and-built-offline-inspection-passed",
+  "tests": {
+    "git.thechristophgroup.org/thelifeandtimes/omabit/internal/privatechain": {
+      "top_level": 14,
+      "including_subcases": 131
+    },
+    "git.thechristophgroup.org/thelifeandtimes/omabit/backend/cmd/urbit-collector": {
+      "top_level": 88,
+      "including_subcases": 337
+    }
+  },
+  "race_passed": true,
+  "vet_passed": true,
+  "skills_validated": 2,
+  "walkthrough_cases": 9,
+  "files_verified": 12352,
+  "bytes_verified": 834035190,
+  "manifest_sha256": "2e501616bb6421b701a5c9faffdabdd286c4599e44658a6721b2d419e583a560",
+  "foundation_digest": "17a7d5fc3fb8e9314f5d6e806cad3e4ef0654388c87920ff729b48624e846410",
+  "collector_sha256": "94b7a78b06a9d9e8e18b60af28487c7950a333e311f8c3a2cde8087bf32bcbf3",
+  "runtime_authorized": false,
+  "original_manifest_writer_reader_retained": true,
+  "runner_schema_changed": false,
+  "registry_unopened": true,
+  "running_vm_inputs_changed": false,
+  "first_preparation": "refused before output creation because temporary payload archive had already been embedded in initramfs",
+  "fresh_preparation": "verified embedded payload plus pinned pill; private sealed output",
+  "raw_databases_keys_piers_exported": false,
+  "whole_gateway_runtime_pending": true
+}

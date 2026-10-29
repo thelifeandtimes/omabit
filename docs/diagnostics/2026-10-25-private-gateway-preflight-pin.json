@@ -1,0 +1,56 @@
+{
+  "memory": "M396",
+  "status": "integrated-pre-start-program-pin-qualified",
+  "source_sha256": {
+    "internal/runtimequalify/private_gateway_resources_linux.go": "3c19cb8878e2f2fde96170f3d988dc3df394ecd04765885e77bdbc9a1f138fa8",
+    "internal/runtimequalify/private_gateway_resources_linux_test.go": "1322871066e3f490ce561dfc8e4a230c386227596f15fd2f8513a62dca3b8d4c",
+    "internal/runtimequalify/private_gateway_observer_linux.go": "6b1675797992ad4c7ae731658e57ee75a3c6eb97ed297ffdbb9c4878d1e7d407"
+  },
+  "checks": {
+    "memory": "M396",
+    "exit": 0,
+    "checks": 287,
+    "top": 28,
+    "failed": [],
+    "seconds": 7.756422421021853,
+    "diff_check_exit": 0,
+    "source_sha256": {
+      "internal/runtimequalify/private_gateway_resources_linux.go": "3c19cb8878e2f2fde96170f3d988dc3df394ecd04765885e77bdbc9a1f138fa8",
+      "internal/runtimequalify/private_gateway_resources_linux_test.go": "1322871066e3f490ce561dfc8e4a230c386227596f15fd2f8513a62dca3b8d4c",
+      "internal/runtimequalify/private_gateway_observer_linux.go": "6b1675797992ad4c7ae731658e57ee75a3c6eb97ed297ffdbb9c4878d1e7d407"
+    },
+    "actual_engine_access": false,
+    "runtime_qualified": false
+  },
+  "focused_and_actual_generation_refusal": {
+    "exit": 0,
+    "vet_exit": 0,
+    "seconds": 10.775484837009571,
+    "top": 11,
+    "checks": 82,
+    "failed": [],
+    "actual_generation06_preflight_passed": true,
+    "actual_engine_access": false
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-preflight-pin",
+  "evidence_sha256": {
+    "private_gateway_resources_linux.go": "3c19cb8878e2f2fde96170f3d988dc3df394ecd04765885e77bdbc9a1f138fa8",
+    "private_gateway_resources_linux_test.go": "1322871066e3f490ce561dfc8e4a230c386227596f15fd2f8513a62dca3b8d4c",
+    "private_gateway_observer_linux.go": "6b1675797992ad4c7ae731658e57ee75a3c6eb97ed297ffdbb9c4878d1e7d407",
+    "previous-private_gateway_resources_linux.go": "96d5dff4fe964af26ac5bc6e5c97cbdcba617de29f21865f2115b7732a1e6823",
+    "previous-private_gateway_resources_linux_test.go": "96c36f92b2a56438aec96091808a7f0b8976550a289dca719067ef8da5bc31e2",
+    "previous-private_gateway_observer_linux.go": "f54e515bb03be702d91be0c188ab73b16345533a717880abd3bf012e9c7cdee9",
+    "old_generation_preflight_test.go": "13983283431c607fb8213e527509351ecdd0299371974b7c3fc1db0b9908e680",
+    "tests01.jsonl": "417840cfd99e5d6a7d6f56709b3a3c7c448b68502ea09ec40247e09c12858c89",
+    "vet01.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "check-result.json": "735db20d5ce09c379c2faa18817eb878ce224f37e7d9e41601b7557a2988127a",
+    "integrated-tests.jsonl": "2c3b6552dcecaf6425804c281584b63a51d636acefad509dcb614a85c4c6a066",
+    "integrated-result.json": "a72b00cb3512b40670fccdbc923e4aa7d115c79cbb95e36025b4cc0768869dd7",
+    "applied.json": "2a58456ef651dd5a3b5e1272e1b70ea88de153abe5f115be8f70f06667a175c4",
+    "previous-source.json": "f2e994925bc539c682d4d386b9d4233c3e7af25ac41f8976720b27f75c81058c",
+    "integrate.py": "fe6d7d400acd9e50f6f6f62b0319554b77eed04b7cef5efa0cfe07fadbe47ff7"
+  },
+  "runtime_qualified": false,
+  "schema": 43,
+  "supersedes": "M390 accepting any reviewed initializer in resource preflight and M395 pending pre-start program pin only."
+}

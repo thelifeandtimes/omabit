@@ -46,6 +46,9 @@ func currentIdentity() (identity, error) {
 		return i, err
 	}
 	i.account, i.home = u.Username, u.HomeDir
+	if p != nil {
+		i.home = p.Home
+	}
 	if i.accountUID, err = strconv.Atoi(u.Uid); err != nil {
 		return i, err
 	}

@@ -1,0 +1,31 @@
+{
+  "memory": "M366",
+  "passed": true,
+  "files": 12352,
+  "bytes": 834035190,
+  "manifest_sha256": "2e501616bb6421b701a5c9faffdabdd286c4599e44658a6721b2d419e583a560",
+  "foundation_digest": "17a7d5fc3fb8e9314f5d6e806cad3e4ef0654388c87920ff729b48624e846410",
+  "source_preparation_reproducible": true,
+  "manifest_identical_to_M362": true,
+  "independent_go_inspection_passed": true,
+  "runtime_authorized": false,
+  "runner_schema": 41,
+  "runtime_input_format": 1,
+  "raw_database_exported": false,
+  "partial_attempt_preserved": {
+    "exit": 1,
+    "timed_out": true,
+    "deadline_seconds": 240,
+    "subprocess_run_reaped_child": true,
+    "partial_output_preserved": true,
+    "manifest_present": false,
+    "regular_files": 10970
+  },
+  "tests": {
+    "top_level_tests": 8,
+    "passed": true,
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest test_runtime_input_preparation",
+    "initial_failure": "directory input raised IsADirectoryError before descriptor ownership transfer; corrected to validate and close the original FD on every exit",
+    "followup": "nonhex CPIO fields and dot/noncanonical paths refuse; malformed-file errors leave descriptor counts unchanged"
+  }
+}

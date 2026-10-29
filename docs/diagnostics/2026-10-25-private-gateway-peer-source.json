@@ -1,0 +1,19 @@
+{
+  "memory": "M358",
+  "go_top_level": 15,
+  "go_including_subcases": 109,
+  "python_top_level": 55,
+  "vet_passed": true,
+  "host_refusal": {
+    "exit": 80,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "binary_sha256": "1c8c407f6998a4d08ea72126b5f97754127970432613e412df7a21e47e62961f",
+    "host_entry_refused": true
+  },
+  "peer_runtime_started": false,
+  "preparation": "refused before output creation: quota 6510043136 bytes, required 8589934592 bytes",
+  "active_vm": "/tmp/omabit-import-guest-run-private-chain-20261025-10",
+  "active_vm_inputs_changed": false,
+  "public_runtime_enabled": false
+}

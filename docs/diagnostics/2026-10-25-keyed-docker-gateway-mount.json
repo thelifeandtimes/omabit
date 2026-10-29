@@ -1,0 +1,43 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-keyed-docker-gateway-mount",
+  "runtime_passed": false,
+  "failed_vm_seconds": 339.21,
+  "gateway_started": false,
+  "ships_booted": 0,
+  "image_pin_fix_admitted": true,
+  "undeclared_image_volume_refused": true,
+  "disk_hashes_unchanged_during_readonly_audit": true,
+  "source_fix": "Explicit read-only /urbit tmpfs and /lab working directory; no anonymous volume admitted",
+  "host_entry_refused": {
+    "host_refused": true,
+    "subprocess_dispatched": false
+  },
+  "empty_vm_retirements": [
+    {
+      "reason": "Retire a fully diagnosed, never-started gateway VM; no ship/pier/application state was created. Preserve all source and opaque failure proof while restoring bounded-runtime storage headroom.",
+      "runtime_archive": "/tmp/omabit-import-guest-run-private-chain-20261025-02/lab/root.qcow2.gz",
+      "archive_sha256": "810c67b4b6aaca1ff9dca653911eb880d89059c3cff6d86c10c64bf53eb1df7b",
+      "original_disk_sha256": "748f122ce8e41135b8a4e5f0a43149924712583909c918bf2776ae5cd8ca0ce8",
+      "bytes": 777396840,
+      "source_and_receipt_records_retained": true,
+      "gateway_never_started": true,
+      "ships_booted": 0,
+      "supersedes_only": "Private raw empty-VM archive retention; verification observations and digests remain unchanged",
+      "retired": true
+    },
+    {
+      "reason": "Retire a fully diagnosed, never-started gateway VM; no ship/pier/application state was created. Preserve all source and opaque failure proof while restoring bounded-runtime storage headroom.",
+      "runtime_archive": "/tmp/omabit-import-guest-run-private-chain-20261025-03/lab/root.qcow2.gz",
+      "archive_sha256": "c659ac2046a5a9bb3cc393fa99793a62a8d5b4bb833fbd5217fc006d49a09511",
+      "original_disk_sha256": "c341021e6f7738108163a29e375216a383210b5a48f4c9372ff094d7afb4b30d",
+      "bytes": 778838987,
+      "source_and_receipt_records_retained": true,
+      "gateway_never_started": true,
+      "ships_booted": 0,
+      "supersedes_only": "Private raw empty-VM archive retention; verification observations and digests remain unchanged",
+      "retired": true
+    }
+  ],
+  "pristine_input_relocation": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-docker-pristine-input/relocation.json",
+  "quota_note": "Pristine lower-layer input relocation did not free temporary quota; never weaken 8GiB VM admission or 2GiB running reserve."
+}

@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "scope": "offline DMs generation/reconnect regressions; no ship or desktop access",
+  "source": "/home/thelifeandtimes/repos/omarchy-urbit-dms-auth",
+  "source_sha256": {
+    "bridge.py": "6962debeaa185467c9c2b00cd6d95a9ec4dd13cafc4830a83bd80b9babaae190",
+    "test_stream_generation.py": "13a5602dcdb7c9ffe16983d9131161e78a44f5e401dfd4c0f2a711d4776ce3cd",
+    "test_bridge.py": "99bdf5b14b3e0ccc4c728a2fb726a57c6e81faa0f532709509290510645e32d7"
+  },
+  "before_fix": {
+    "tests": 3,
+    "failures": 3,
+    "reproduced": [
+      "backoff cleanup deleted replacement channel",
+      "queued acknowledgement targeted replacement channel",
+      "old contacts read replaced new account book"
+    ]
+  },
+  "after_fix": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python -m unittest test_stream_generation test_bridge",
+    "tests": 24,
+    "failures": 0
+  },
+  "limits": [
+    "actual ship reconnect/writes not yet exercised on this source",
+    "full collection/profile lifecycle remains unqualified",
+    "installed plugins unchanged"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "source_qualified": true,
+  "runtime_pass_claimed": false,
+  "schema": 27,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-observation-batch",
+  "appliance": "/tmp/omabit-import-appliance-20261023-14",
+  "source_files_verified": 102,
+  "embedded_test_sha256": "82849f6744c9f83e814a3fb101e85b2e1424a21578ed5cec87f8e425b9748071",
+  "logs": {
+    "omabit-member-observation-batch-tests.log": "c9c987c482c051a15368f404a209b653f5ecab97b7b3d4f5f2761ac18573e294",
+    "omabit-member-observation-batch-regression.log": "56f30f224dd2fff3e014c362bc68906033f4cd4c414e34da6842e2c006f87d1e",
+    "omabit-member-observation-batch-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-member-launch23-14-prepare.log": "03331b3fab25d2659848a44f64c5b3a21d0ea7116b9bce5b8ada7727a1891ea3",
+    "omabit-member-launch23-14-preparation-verification.log": "216b31ef67549f471e532dc6dbe1826280dd5b0436033e687f1e19ab9dded0e4"
+  },
+  "limits": [
+    "Freshness remains 30 seconds; no real trial14 result yet.",
+    "Readiness adapter included in binary but not exercised by the launch fixture.",
+    "Both prior shutdown failures remain unresolved and retained."
+  ]
+}

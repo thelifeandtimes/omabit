@@ -1,0 +1,54 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-checkpoint2-inspection",
+  "verification": {
+    "passed": true,
+    "native_runs": 1,
+    "controller_kills": 41,
+    "new_publication_kills": 4,
+    "new_activation_kills": 3,
+    "new_authority_format": 3,
+    "artifact_upgrade": {
+      "from": 5,
+      "to": 6
+    },
+    "new_application_instances": 3,
+    "total_application_instances": 9,
+    "sessions_preserved": 6,
+    "fresh_subscriptions": 5,
+    "unknown_dm_preserved_without_replay": true,
+    "final_channels_closed": 8,
+    "original_checkpoint_chain_and_canonical_history_verified": true,
+    "artifact_records_verified": 28,
+    "all_four_compositors_exit_zero": true,
+    "guardian_closed_with_root_exit_zero": true,
+    "scope_inactive": "omabit-continuation-inspection-native-20261025-01",
+    "actual_copied_plugins": true,
+    "private_unlocked_keyring": true,
+    "synthetic_eyre": true,
+    "public_installed_profiles_qualified": false,
+    "application_data_format_migration_qualified": false,
+    "production_resources_touched": false,
+    "focused_tests": 19,
+    "full_tests": 512,
+    "native_readonly_observations": [
+      "published-empty",
+      "committed-live",
+      "guards-closed",
+      "compositor-closed",
+      "ancestors-runtime-retired"
+    ],
+    "inspector_format": 3,
+    "authority_readers": [
+      1,
+      2,
+      3
+    ],
+    "original_inspectors_unchanged": true,
+    "scopes_inactive": [
+      "omabit-continuation-inspection-native-20261025-01",
+      "omabit-continuation-inspection-unit-20261025-01",
+      "omabit-continuation-inspection-unit-20261025-02"
+    ],
+    "first_runtime_runs_passed": true
+  }
+}

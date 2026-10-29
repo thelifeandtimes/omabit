@@ -1,0 +1,145 @@
+{
+  "verified": true,
+  "direct_published_eyre_requests": 65,
+  "ipv6_refusals": 2,
+  "administrative_bridge_refusals": 2,
+  "independent_sessions_revoked": 2,
+  "passed": true,
+  "result_sha256": "7804cafb4a62b2d3b33fc87935b7085693e317a7d0d4e8650e41765c2c9c73e6",
+  "seconds": 1349.52,
+  "subscription_revisions": [
+    0,
+    1,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    6
+  ],
+  "subscription_cursors": [
+    1,
+    2,
+    3,
+    4,
+    1,
+    2,
+    1,
+    2,
+    3
+  ],
+  "writes": 6,
+  "observations": 19,
+  "same_pier_container_replacement": true,
+  "sessions_retained": true,
+  "all_three_channels_deleted": true,
+  "anchor_recovery": {
+    "ok": true,
+    "anchor": "7865f6a386c964f3edb205ae9dab78b4a9435eacd42db677601660e0133b5dc4",
+    "old_namespace": "net:[4026532248]",
+    "old_members": {
+      "zod": "8e6878cc4862155bf249b0064e3825302f4542363c2e55bb0f9687beeac03eab",
+      "nec": "284355dc14b1c08364e2b7b3c93a77f9b7372afa26edd1c907e5b48b75ad6d6b"
+    },
+    "endpoint_refusals": [
+      {
+        "phase": "stopped",
+        "port": 8081,
+        "exit": 7,
+        "status": "000",
+        "response_bytes": 0,
+        "stderr_bytes": 0,
+        "unavailable": true
+      },
+      {
+        "phase": "stopped",
+        "port": 8082,
+        "exit": 7,
+        "status": "000",
+        "response_bytes": 0,
+        "stderr_bytes": 0,
+        "unavailable": true
+      },
+      {
+        "phase": "restarted-without-members",
+        "port": 8081,
+        "exit": 52,
+        "status": "000",
+        "response_bytes": 0,
+        "stderr_bytes": 0,
+        "unavailable": true
+      },
+      {
+        "phase": "restarted-without-members",
+        "port": 8082,
+        "exit": 52,
+        "status": "000",
+        "response_bytes": 0,
+        "stderr_bytes": 0,
+        "unavailable": true
+      }
+    ],
+    "old_members_retained": [
+      "zod",
+      "nec"
+    ],
+    "new_members": {
+      "zod": "923fabc7415ada8e2f23115b5c7904a24630604d6209726f9a9b639584b09489",
+      "nec": "ff2202b5675208517efb1869a294a6dd0cc91707c87ba246c320aa6cfabde030"
+    },
+    "channel": "/~/channel/omabit-state-696c5d1a80f838a8ef743fdda54c50a5",
+    "cursor_before": 1,
+    "state_before": {
+      "revision": 5,
+      "entries": [
+        "omabit-state-a6f329a2ac52337c4b3f0494",
+        "omabit-state-81fd8d0f183db79f9f611827",
+        "omabit-state-d36bcdc10543425da76e0c40",
+        "omabit-state-b3df7679c20c1b31e3c1f70b",
+        "omabit-state-67686c1354000040c32c2943"
+      ]
+    },
+    "anchor_stopped": {
+      "Running": false,
+      "OOMKilled": false,
+      "ExitCode": 143
+    },
+    "new_namespace": "net:[4026532307]",
+    "cursor_recovered": 2,
+    "same_piers": true,
+    "original_sessions": true,
+    "existing_subscription": true,
+    "final_state": {
+      "revision": 6,
+      "entries": [
+        "omabit-state-a6f329a2ac52337c4b3f0494",
+        "omabit-state-81fd8d0f183db79f9f611827",
+        "omabit-state-d36bcdc10543425da76e0c40",
+        "omabit-state-b3df7679c20c1b31e3c1f70b",
+        "omabit-state-67686c1354000040c32c2943",
+        "omabit-state-dfaa95c8d605d25442f45b3d"
+      ]
+    },
+    "all_old_members_stopped": true,
+    "publications_verified": true
+  },
+  "clean_stops": [
+    "nec",
+    "nec",
+    "zod",
+    "nec",
+    "zod"
+  ],
+  "scope_inactive": true,
+  "original_artifacts_and_disks_verified": true,
+  "extracted_files_verified": 16,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor08",
+  "original_receipts": 16,
+  "metadata_files": 36,
+  "limits": [
+    "Explicit offline qualification recovery, not runner member-recovery integration.",
+    "No automatic recovery, public project API, installed upgrade or release qualification.",
+    "No external-network reachability proof; QEMU has no NIC."
+  ]
+}

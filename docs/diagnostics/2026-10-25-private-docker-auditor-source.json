@@ -1,0 +1,17 @@
+{
+  "memory": "M350",
+  "reader_tests_and_subcases": 25,
+  "inert_outer_tests": 8,
+  "python_regressions": 40,
+  "host_entry_refusal": {
+    "exit": 80,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "binary_sha256": "6cc55ac5f49b93b46d45d3f86df8557914843c07f94bc15b2261689d9d4f5ba5",
+    "host_entry_refused": true
+  },
+  "static_checks_passed": true,
+  "runtime_audit_qualified": false,
+  "source_run_pending": "/tmp/omabit-import-guest-run-private-chain-20261025-09",
+  "raw_state_exported": false
+}

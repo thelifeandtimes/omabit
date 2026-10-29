@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"syscall"
 	"time"
@@ -179,7 +180,121 @@ CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TE
 		// Preserve bodies and receipts, including legacy handoff signatures.
 		// Older runners must not discard settings-aware handoff contracts.
 	} else if version != currentSchema {
-		return fmt.Errorf("state database requires runtime-settings handoff support (schema %d)", currentSchema)
+		return fmt.Errorf("state database requires compatible runner support (schema %d)", currentSchema)
+	}
+	if err := initializeProjects(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectExpansions(tx); err != nil {
+		return err
+	}
+	if err := initializePrivateProjects(tx); err != nil {
+		return err
+	}
+	if err := initializePrivateWorkspaces(tx); err != nil {
+		return err
+	}
+	if err := initializePrivateWorkspaceObservations(tx); err != nil {
+		return err
+	}
+	if err := initializePrivateGateways(tx); err != nil {
+		return err
+	}
+	if err := initializePrivateGatewayObservations(tx); err != nil {
+		return err
+	}
+	if err := initializePrivateMemberLaunches(tx); err != nil {
+		return err
+	}
+	if _, err := projectReservations(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectJobs(tx); err != nil {
+		return err
+	}
+	if err := validateProjectJobs(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectAnchorStarts(tx); err != nil {
+		return err
+	}
+	if err := validateProjectAnchorStarts(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectMemberStorage(tx); err != nil {
+		return err
+	}
+	if err := validateProjectMemberStorage(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectMemberLaunches(tx); err != nil {
+		return err
+	}
+	if err := validateProjectMemberLaunches(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectMemberReadiness(tx); err != nil {
+		return err
+	}
+	if err := validateProjectMemberReadiness(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectMemberStops(tx); err != nil {
+		return err
+	}
+	if err := validateProjectMemberStops(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectMemberStopExit(tx); err != nil {
+		return err
+	}
+	if err := validateProjectMemberStopExit(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectMemberRetirements(tx); err != nil {
+		return err
+	}
+	if err := validateProjectMemberRetirements(tx); err != nil {
+		return err
+	}
+	if err := migrateRepeatedMemberResumes(tx, version); err != nil {
+		return err
+	}
+	if err := initializeProjectMemberResumes(tx); err != nil {
+		return err
+	}
+	if err := validateProjectMemberResumes(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectMemberResumedReadiness(tx); err != nil {
+		return err
+	}
+	if err := validateProjectMemberResumedReadiness(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectMemberContextReadiness(tx); err != nil {
+		return err
+	}
+	if err := validateProjectMemberContextReadiness(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectAnchorRecoveries(tx); err != nil {
+		return err
+	}
+	if err := validateProjectAnchorRecoveries(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectRecoveryObservations(tx); err != nil {
+		return err
+	}
+	if err := validateProjectRecoveryObservations(tx); err != nil {
+		return err
+	}
+	if err := initializeProjectRecoveryContinuations(tx); err != nil {
+		return err
+	}
+	if err := validateProjectRecoveryContinuations(tx); err != nil {
+		return err
 	}
 	if _, err := tx.Exec(fmt.Sprintf("PRAGMA user_version=%d", currentSchema)); err != nil {
 		return err
@@ -311,6 +426,9 @@ func validateConfig(c protocol.Configuration) error {
 }
 
 func reservePort(tx *sql.Tx, id string, port uint16) error {
+	if err := reserveProjectPort(tx, port); err != nil {
+		return err
+	}
 	all, err := instances(tx)
 	if err != nil {
 		return err
@@ -561,6 +679,9 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 	if req.PreserveNativeControl {
 		req.Config.NativeControl = v.Public.Config.NativeControl
 	}
+	if v.Runtime.ImportRestore != nil {
+		return v.Public, conflict("restoration_pending", "finish source restoration before editing the failed registration")
+	}
 	validate := validateConfig
 	if v.Runtime.Deletion != nil {
 		return v.Public, conflict("deletion_pending", "pier deletion is pending")
@@ -628,8 +749,15 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 }
 
 func (s *store) accept(actor, id string, req protocol.OperationRequest) (protocol.Operation, bool, error) {
-	if !protocol.ValidID(id) || !protocol.ValidID(req.RequestID) || req.ExpectedRevision == 0 || req.ExpectedRevision > math.MaxInt64 || (req.Kind != "start" && req.Kind != "stop" && req.Kind != "pack" && req.Kind != "meld" && req.Kind != "roll" && req.Kind != "inspect-epochs" && req.Kind != "prune-epochs" && req.Kind != "move-pier" && req.Kind != "delete-pier" && req.Kind != "recover-import") {
+	if !protocol.ValidID(id) || !protocol.ValidID(req.RequestID) || req.ExpectedRevision == 0 || req.ExpectedRevision > math.MaxInt64 || (req.Kind != "start" && req.Kind != "stop" && req.Kind != "pack" && req.Kind != "meld" && req.Kind != "roll" && req.Kind != "inspect-epochs" && req.Kind != "prune-epochs" && req.Kind != "move-pier" && req.Kind != "delete-pier" && req.Kind != "recover-import" && req.Kind != protocol.ImportRestoreFeature) {
 		return protocol.Operation{}, false, bad("require a supported operation, valid request ID, and positive revision")
+	}
+	if req.Kind == protocol.ImportRestoreFeature {
+		if !req.ConfirmRestore || !epochs.ValidDigest(req.RestoreDigest) {
+			return protocol.Operation{}, false, bad("restore-import requires the reviewed digest and explicit source-restoration confirmation")
+		}
+	} else if req.ConfirmRestore || req.RestoreDigest != "" {
+		return protocol.Operation{}, false, bad("restoration fields are valid only for restore-import")
 	}
 	if (req.Kind == "delete-pier") != req.ConfirmDelete {
 		return protocol.Operation{}, false, bad("delete-pier requires explicit irreversible deletion confirmation")
@@ -673,6 +801,21 @@ func (s *store) accept(actor, id string, req protocol.OperationRequest) (protoco
 	if v.Runtime.Deletion != nil && req.Kind != "delete-pier" {
 		return protocol.Operation{}, false, conflict("deletion_pending", "pier deletion is pending; only explicit deletion continuation is available")
 	}
+	if v.Runtime.ImportRestore != nil && req.Kind != protocol.ImportRestoreFeature && req.Kind != "stop" {
+		return protocol.Operation{}, false, conflict("restoration_pending", "complete the reviewed source restoration before other operations")
+	}
+	if req.Kind == protocol.ImportRestoreFeature {
+		if v.Public.DesiredState != "stopped" || !v.Runtime.ImportRestoreEligible() {
+			return protocol.Operation{}, false, conflict("invalid_state", "source restoration requires a stopped interrupted partial external copy")
+		}
+		if pending := v.Runtime.ImportRestore; pending != nil && pending.Journal != nil {
+			if pending.Digest != req.RestoreDigest || pending.Journal.Review.Digest != req.RestoreDigest {
+				return protocol.Operation{}, false, conflict("restoration_pending", "resume the original reviewed restoration; its digest cannot be replaced")
+			}
+		} else {
+			v.Runtime.ImportRestore = &runtimequalify.ManagedImportRestore{Digest: req.RestoreDigest}
+		}
+	}
 	if req.Kind == "recover-import" && (v.Public.DesiredState != "stopped" || !v.Runtime.ImportRecoveryEligible()) {
 		return protocol.Operation{}, false, conflict("invalid_state", "recovery requires a stopped interrupted prepared external enrollment with retained identity")
 	}
@@ -707,7 +850,7 @@ func (s *store) accept(actor, id string, req protocol.OperationRequest) (protoco
 	if req.Kind != "stop" && req.Kind != "delete-pier" && v.Runtime.UncertainMaintenance() {
 		return protocol.Operation{}, false, conflict("recovery_required", "interrupted maintenance requires manual review")
 	}
-	if req.Kind != "stop" && req.Kind != "delete-pier" && req.Kind != "recover-import" && v.Runtime.UncertainProvisioning() {
+	if req.Kind != "stop" && req.Kind != "delete-pier" && req.Kind != "recover-import" && req.Kind != protocol.ImportRestoreFeature && v.Runtime.UncertainProvisioning() {
 		return protocol.Operation{}, false, conflict("recovery_required", "incomplete provisioning or identity verification requires manual review")
 	}
 	if req.Kind == "roll" && v.Runtime.RollNeedsRuntime {
@@ -851,6 +994,29 @@ func (s *store) runtimeUpdate(id, opID string, state runtimequalify.ManagedState
 	if err != nil {
 		return err
 	}
+	if op.Kind == protocol.ImportRestoreFeature {
+		before, after := v.Runtime.ImportRestore, state.ImportRestore
+		if before == nil || after == nil || after.Journal == nil || before.Digest != after.Digest || after.Digest != after.Journal.Review.Digest || after.Journal.Review.RuntimeID != state.ID {
+			return errors.New("restoration update changed its approved binding")
+		}
+		phases := map[string]int{"retaining-destination": 1, "restoring-source": 2, "complete": 3}
+		prior := 0
+		if before.Journal != nil {
+			prior = phases[before.Journal.Stage]
+			if prior == 0 || !sameRestoreRecord(before.Journal.Review, after.Journal.Review) {
+				return errors.New("restoration update changed the retained review")
+			}
+		}
+		next := phases[after.Journal.Stage]
+		if next == 0 || next < prior || next > prior+1 {
+			return errors.New("restoration update skipped or reversed a durable phase")
+		}
+		a, b := v.Runtime, state
+		a.ImportRestore, b.ImportRestore = nil, nil
+		if !reflect.DeepEqual(a, b) {
+			return errors.New("restoration update changed unrelated runtime evidence")
+		}
+	}
 	if op.Kind == "recover-import" {
 		// Recovery has no incremental resource intents. Keep the original
 		// private fence until finish commits completion and receipt together.
@@ -889,7 +1055,7 @@ func (s *store) beginOperation(opID string) (protocol.Operation, storedInstance,
 	if op.Status != "queued" || v.Public.ActiveOperationID != op.ID {
 		return op, v, errors.New("operation is not queued for this instance")
 	}
-	if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "delete-pier" || op.Kind == "recover-import" || op.Kind == "import-pier" || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
+	if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "delete-pier" || op.Kind == "recover-import" || op.Kind == protocol.ImportRestoreFeature || op.Kind == "import-pier" || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
 		// A worker timeout does not stop a daemon-side utility. Recheck after
 		// acquiring the host gate, including jobs queued before that timeout and
 		// retained intents loaded after management restart. Explicit stop remains
@@ -932,6 +1098,8 @@ func (s *store) beginOperation(opID string) (protocol.Operation, storedInstance,
 		v.Public.ObservedState = "enrolling"
 	} else if op.Kind == "move-pier" || strings.HasSuffix(op.Kind, "-handoff") {
 		v.Public.ObservedState = "moving"
+	} else if op.Kind == protocol.ImportRestoreFeature {
+		v.Public.ObservedState = "restoring"
 	} else if op.Kind == "delete-pier" {
 		v.Public.ObservedState = "deleting"
 	} else {
@@ -960,6 +1128,23 @@ func (s *store) finish(op protocol.Operation, state runtimequalify.ManagedState,
 	}
 	if v.Public.ActiveOperationID != op.ID || v.Runtime.ID != state.ID {
 		return errors.New("operation ownership changed")
+	}
+	if op.Kind == protocol.ImportRestoreFeature {
+		if interrupted && cause == nil {
+			cause = errors.New("source restoration interrupted before retirement publication")
+		}
+		if cause != nil {
+			state = v.Runtime
+		} else {
+			pending := v.Runtime.ImportRestore
+			if pending == nil || pending.Journal == nil || pending.Journal.Stage != "complete" || pending.Digest != pending.Journal.Review.Digest || !sameRestoreRecord(state.ImportRestore, pending) || observation.State != "restored" || v.Public.DesiredState != "stopped" {
+				return errors.New("source restoration has no durably validated completion receipt")
+			}
+			state = v.Runtime
+			result := restoreResult(pending.Journal.Review)
+			op.ImportRestoration = &result
+			op.Message = "source restored; partial destination retained; failed registration retired"
+		}
 	}
 	if op.Kind == "recover-import" {
 		if interrupted && cause == nil {
@@ -1018,8 +1203,8 @@ func (s *store) finish(op protocol.Operation, state runtimequalify.ManagedState,
 	} else {
 		s.recordHealthyBoot(&v)
 	}
-	if op.Kind == "delete-pier" && cause == nil {
-		if state.Deletion == nil || state.Deletion.Stage != "complete" {
+	if (op.Kind == "delete-pier" || op.Kind == protocol.ImportRestoreFeature) && cause == nil {
+		if op.Kind == "delete-pier" && (state.Deletion == nil || state.Deletion.Stage != "complete") {
 			return errors.New("deletion has no completed filesystem receipt")
 		}
 		if _, err := tx.Exec("DELETE FROM maintenance_policies WHERE instance_id=?", op.InstanceID); err != nil {
@@ -1150,6 +1335,67 @@ func (s *store) reconcileInterrupted() error {
 		return err
 	}
 	defer tx.Rollback()
+	if err := reconcileProjectExpansions(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectJobs(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectAnchorStarts(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectMemberStorage(tx); err != nil {
+		return err
+	}
+	if err := reconcilePrivateWorkspaces(tx); err != nil {
+		return err
+	}
+	if err := reconcilePrivateWorkspaceObservations(tx); err != nil {
+		return err
+	}
+	if err := reconcilePrivateGateways(tx); err != nil {
+		return err
+	}
+	if err := reconcilePrivateGatewayObservations(tx); err != nil {
+		return err
+	}
+	if err := reconcilePrivateMemberLaunches(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectMemberLaunches(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectMemberReadiness(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectMemberStops(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectMemberStopExit(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectMemberRetirements(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectMemberResumes(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectMemberResumedReadiness(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectMemberContextReadiness(tx); err != nil {
+		return err
+	}
+	// Continuations atomically interrupt their parent before generic recovery reconciliation.
+	if err := reconcileProjectRecoveryContinuations(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectAnchorRecoveries(tx); err != nil {
+		return err
+	}
+	if err := reconcileProjectRecoveryObservations(tx); err != nil {
+		return err
+	}
 	all, err := instances(tx)
 	if err != nil {
 		return err
@@ -1245,6 +1491,9 @@ func (s *store) reconcileInterrupted() error {
 		if err := saveInstance(tx, v); err != nil {
 			return err
 		}
+	}
+	if _, err := projectReservations(tx); err != nil {
+		return err
 	}
 	return tx.Commit()
 }

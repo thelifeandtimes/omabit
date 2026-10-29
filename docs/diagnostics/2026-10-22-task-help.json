@@ -1,0 +1,179 @@
+{
+  "source_sha256": {
+    "backend/cmd/urbit-collector/main.go": "2c2d8b53783000b5cf52edacf1dbb07628ad61bb01d64b2ccb7704fcbb248ab1",
+    "backend/cmd/urbit-collector/task_help.go": "cf396a5c8fcc12ec1a6b139ccbc83b15abbb0634c7761ad6ffaaa76c54410e8f",
+    "backend/cmd/urbit-collector/task_help_test.go": "326b27e211cd35d2d11b732a2752969b16821360a407a31a5a754e96a1c6a94e",
+    "skills/omabit-operator/SKILL.md": "c77043115f54543d4124d0f06014f58edff74f39e827d2c822e645c1d18cad3a"
+  },
+  "smoke": {
+    "binary": "/tmp/omabit-task-help-collector-20261022",
+    "binary_sha256": "c057550cdce06d4ea1aa1d55a2b62543f7f238593aa63e36f3c3ba7384fed046",
+    "namespace": "private user/network/mount/PID; no host home, sockets, services or credentials",
+    "records": [
+      {
+        "command": [
+          "--config-dir",
+          "/home/absent/registry",
+          "--format",
+          "json",
+          "help"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"schema_version\": 1,\n  \"notice\": \"Offline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\",\n  \"topics\": [\n    {\n      \"name\": \"runners\",\n      \"summary\": \"Select a runner and inspect its identity, authority and fleet.\"\n    },\n    {\n      \"name\": \"ships\",\n      \"summary\": \"Observe and operate ships managed by a selected runner.\"\n    },\n    {\n      \"name\": \"imports\",\n      \"summary\": \"Review a stopped pier, import it and resolve retained recovery state.\"\n    },\n    {\n      \"name\": \"connections\",\n      \"summary\": \"Sign in to an Eyre ship or approve an independent plugin session.\"\n    },\n    {\n      \"name\": \"hosting\",\n      \"summary\": \"Inspect runner hosting evidence and separate repair from observation.\"\n    }\n  ],\n  \"next\": [\n    \"urbit-collector --format text help TOPIC\",\n    \"urbit-collector help TOPIC\",\n    \"urbit-collector COMMAND --help\",\n    \"urbit-collector --help\"\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "--config-dir",
+          "/home/absent/registry",
+          "--format",
+          "json",
+          "help",
+          "runners"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"schema_version\": 1,\n  \"notice\": \"Offline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\",\n  \"topic\": {\n    \"name\": \"runners\",\n    \"summary\": \"Select a runner and inspect its identity, authority and fleet.\",\n    \"commands\": [\n      {\n        \"name\": \"runners\",\n        \"effect\": \"Read saved runner connections locally.\"\n      },\n      {\n        \"name\": \"hello\",\n        \"effect\": \"Contact one selected runner for identity, mode, role and features.\"\n      },\n      {\n        \"name\": \"snapshot\",\n        \"effect\": \"Read the selected runner's instances and operation receipts.\"\n      },\n      {\n        \"name\": \"inventory\",\n        \"effect\": \"Contact all enrolled runners; watch reports each independently.\"\n      },\n      {\n        \"name\": \"enroll\",\n        \"effect\": \"Verify and save a new runner connection.\"\n      },\n      {\n        \"name\": \"runner-edit\",\n        \"effect\": \"Verify the same runner at a new endpoint and update local enrollment.\"\n      },\n      {\n        \"name\": \"forget\",\n        \"effect\": \"Remove local enrollment; does not stop its ships.\"\n      }\n    ],\n    \"guidance\": [\n      \"Start with --config-dir REGISTRY runners. Then put --config-dir REGISTRY --runner NAME --expected-runner-id ID before hello and snapshot, using the saved runner_id.\",\n      \"Unreachable is not stopped. A desktop profile does not isolate the runner's ships. Honor excluded ships and hosts without probing them.\",\n      \"An identity mismatch requires resolving the intended runner; do not overwrite enrollment to suppress it. hello, not this guide, establishes supported features and authority.\"\n    ]\n  },\n  \"next\": [\n    \"urbit-collector COMMAND --help\",\n    \"urbit-collector help\"\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "--config-dir",
+          "/home/absent/registry",
+          "--format",
+          "json",
+          "help",
+          "ships"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"schema_version\": 1,\n  \"notice\": \"Offline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\",\n  \"topic\": {\n    \"name\": \"ships\",\n    \"summary\": \"Observe and operate ships managed by a selected runner.\",\n    \"commands\": [\n      {\n        \"name\": \"snapshot\",\n        \"effect\": \"Read desired/observed state, revisions, recovery status and operation receipts.\"\n      },\n      {\n        \"name\": \"watch\",\n        \"effect\": \"Poll snapshots until canceled; JSON output is NDJSON.\"\n      },\n      {\n        \"name\": \"logs\",\n        \"effect\": \"Read a bounded runtime log tail with operator authority.\"\n      },\n      {\n        \"name\": \"operate\",\n        \"effect\": \"Submit an explicit start, stop, maintenance or import-recovery operation.\"\n      },\n      {\n        \"name\": \"configure\",\n        \"effect\": \"Change requested runtime settings at an expected revision.\"\n      },\n      {\n        \"name\": \"create-fake\",\n        \"effect\": \"Register a fresh fake; boot occurs on explicit Start.\"\n      },\n      {\n        \"name\": \"create-ship\",\n        \"effect\": \"Stage a keyed identity and boot material; boot occurs on explicit Start.\"\n      },\n      {\n        \"name\": \"create-comet\",\n        \"effect\": \"Register a new comet configuration; mining/networking occurs on explicit Start.\"\n      }\n    ],\n    \"guidance\": [\n      \"Pin --runner NAME --expected-runner-id ID and inspect hello/snapshot. Bind actions to instance ID and current config_revision; the instance name need not be the Urbit identity.\",\n      \"Read operate --help, then use operate INSTANCE start|stop --revision N --request-id ID for the authorized action. Submission success is not completion: follow that exact operation in snapshot until terminal, then check resulting state.\",\n      \"After a revision conflict, refresh and review the intended effect. After a lost acknowledgement, retain the original request ID and reconcile its receipt; do not guess by retrying with a new ID.\",\n      \"Logs may contain sensitive data. Ordinary status does not require login-code or credentials. For hosted Eyre sessions, see help connections.\"\n    ]\n  },\n  \"next\": [\n    \"urbit-collector COMMAND --help\",\n    \"urbit-collector help\"\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "--config-dir",
+          "/home/absent/registry",
+          "--format",
+          "json",
+          "help",
+          "imports"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"schema_version\": 1,\n  \"notice\": \"Offline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\",\n  \"topic\": {\n    \"name\": \"imports\",\n    \"summary\": \"Review a stopped pier, import it and resolve retained recovery state.\",\n    \"commands\": [\n      {\n        \"name\": \"piers\",\n        \"effect\": \"Inspect pier discovery on the selected runner.\"\n      },\n      {\n        \"name\": \"preview-pier\",\n        \"effect\": \"Inspect a stopped source and derive identity, destination and fingerprint.\"\n      },\n      {\n        \"name\": \"import-pier\",\n        \"effect\": \"Move/copy the reviewed source into managed storage; completion stays stopped.\"\n      },\n      {\n        \"name\": \"snapshot\",\n        \"effect\": \"Read import progress, terminal result and retained recovery evidence.\"\n      },\n      {\n        \"name\": \"operate\",\n        \"effect\": \"Explicitly recover a retained import, or Start after reviewing stopped completion.\"\n      },\n      {\n        \"name\": \"enroll-pier\",\n        \"effect\": \"Register a discovered stopped pier or relink a moved registered pier.\"\n      },\n      {\n        \"name\": \"move-pier\",\n        \"effect\": \"Move a stopped registered pier without replacing a destination.\"\n      }\n    ],\n    \"guidance\": [\n      \"Pin the selected runner and use preview-pier --help. Source paths belong to that runner host, not the collector machine. Inspect only the authorized stopped source.\",\n      \"Review the derived instance/ship/network, fingerprint, exclusive instance parent and named pier child. Use import-pier --help for the reviewed inputs and --confirm-stopped; that flag does not stop a running ship.\",\n      \"Preserve a rejected source. Use its quoted entry/check to diagnose ownership, links, mounts or file types; do not recursively chmod/chown or delete lock files as a repair.\",\n      \"Follow the exact operation receipt. Retained-source or recovery-required state needs its specific recovery action and current revision; do not delete the source, overwrite a destination or restart blindly.\",\n      \"Successful import stays stopped and may have identity_pending. Explicit Start is a separate operation that verifies the running identity.\"\n    ]\n  },\n  \"next\": [\n    \"urbit-collector COMMAND --help\",\n    \"urbit-collector help\"\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "--config-dir",
+          "/home/absent/registry",
+          "--format",
+          "json",
+          "help",
+          "connections"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"schema_version\": 1,\n  \"notice\": \"Offline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\",\n  \"topic\": {\n    \"name\": \"connections\",\n    \"summary\": \"Sign in to an Eyre ship or approve an independent plugin session.\",\n    \"commands\": [\n      {\n        \"name\": \"ships\",\n        \"effect\": \"Read locally enrolled Eyre connections; no runner is required.\"\n      },\n      {\n        \"name\": \"ship-enroll\",\n        \"effect\": \"Save an origin-bound Eyre connection and expected ship identity.\"\n      },\n      {\n        \"name\": \"ship-login\",\n        \"effect\": \"Read +code from stdin, verify identity and save a session.\"\n      },\n      {\n        \"name\": \"ship-status\",\n        \"effect\": \"Check the enrolled ship/session against Eyre.\"\n      },\n      {\n        \"name\": \"ship-logout\",\n        \"effect\": \"Revoke the selected collector session.\"\n      },\n      {\n        \"name\": \"app-plugins\",\n        \"effect\": \"Inspect locally installed connection-helper declarations without executing them.\"\n      },\n      {\n        \"name\": \"app-connections\",\n        \"effect\": \"Read durable application attempts locally.\"\n      },\n      {\n        \"name\": \"app-connect\",\n        \"effect\": \"Issue and hand off an independent session to the exact approved plugin/profile.\"\n      },\n      {\n        \"name\": \"app-disconnect\",\n        \"effect\": \"Revoke only the selected application attempt's session.\"\n      },\n      {\n        \"name\": \"app-recover\",\n        \"effect\": \"Recover an interrupted attempt without retrying issuance or delivery.\"\n      },\n      {\n        \"name\": \"app-reconcile\",\n        \"effect\": \"Clean the selected receiver state after confirmed revocation.\"\n      },\n      {\n        \"name\": \"app-archive\",\n        \"effect\": \"Archive a fully closed/reconciled attempt while retaining its replay receipt.\"\n      },\n      {\n        \"name\": \"app-connection\",\n        \"effect\": \"Read one active or archived request locally.\"\n      }\n    ],\n    \"guidance\": [\n      \"Use --config-dir REGISTRY, without --runner or --socket. Hosted ships work independently of runner enrollment. Put the login code on stdin with ship-login NAME --code-stdin; never in arguments or reports.\",\n      \"Before app-connect, read ships, app-plugins and app-connections. Its --help specifies the exact ship ID/revision, plugin/profile/artifact, request ID and broad-session acknowledgement.\",\n      \"Each plugin receives a separate ordinary Eyre session. Eyre does not isolate desks. Plugins send data directly to the ship and retain standalone URL/+code sign-in; Omabit is not their data proxy.\",\n      \"On uncertain results, inspect the durable request before recovery. Do not replay approval. Disconnect/recover/reconcile require the attempt's current revision; archive retains permanent replay protection.\"\n    ]\n  },\n  \"next\": [\n    \"urbit-collector COMMAND --help\",\n    \"urbit-collector help\"\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "--config-dir",
+          "/home/absent/registry",
+          "--format",
+          "json",
+          "help",
+          "hosting"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"schema_version\": 1,\n  \"notice\": \"Offline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\",\n  \"topic\": {\n    \"name\": \"hosting\",\n    \"summary\": \"Inspect runner hosting evidence and separate repair from observation.\",\n    \"commands\": [\n      {\n        \"name\": \"hello\",\n        \"effect\": \"Read the selected runner's capabilities and access role.\"\n      },\n      {\n        \"name\": \"host-check\",\n        \"effect\": \"Read cached native-package and live private-engine compatibility evidence.\"\n      },\n      {\n        \"name\": \"snapshot\",\n        \"effect\": \"Read runtime, operation and recovery status.\"\n      }\n    ],\n    \"guidance\": [\n      \"Use host-check --help with a pinned runner. The collector needs no local Docker access. A successful report does not itself qualify hosting or repair a failed check.\",\n      \"Installation, local package verification/repair and qualification are separate urbit-runner commands with different effects; read that binary's help before using them.\",\n      \"Qualification creates disposable runtime resources. Use only the authorized host/test boundary; do not substitute the active engine or inspect excluded ships. A profile alone does not isolate host services.\"\n    ]\n  },\n  \"next\": [\n    \"urbit-collector COMMAND --help\",\n    \"urbit-collector help\"\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "--config-dir",
+          "/home/absent/registry",
+          "--format",
+          "text",
+          "help"
+        ],
+        "exit": 0,
+        "stdout": "Usage: urbit-collector [--format json|text] help [TOPIC]\n\nOffline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\n\n  runners      Select a runner and inspect its identity, authority and fleet.\n  ships        Observe and operate ships managed by a selected runner.\n  imports      Review a stopped pier, import it and resolve retained recovery state.\n  connections  Sign in to an Eyre ship or approve an independent plugin session.\n  hosting      Inspect runner hosting evidence and separate repair from observation.\n\nNext:\n  urbit-collector --format text help TOPIC\n  urbit-collector help TOPIC\n  urbit-collector COMMAND --help\n  urbit-collector --help\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "--config-dir",
+          "/home/absent/registry",
+          "--format",
+          "text",
+          "help",
+          "runners"
+        ],
+        "exit": 0,
+        "stdout": "Usage: urbit-collector [--format json|text] help [TOPIC]\n\nOffline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\n\nrunners: Select a runner and inspect its identity, authority and fleet.\n\n  runners           Read saved runner connections locally.\n  hello             Contact one selected runner for identity, mode, role and features.\n  snapshot          Read the selected runner's instances and operation receipts.\n  inventory         Contact all enrolled runners; watch reports each independently.\n  enroll            Verify and save a new runner connection.\n  runner-edit       Verify the same runner at a new endpoint and update local enrollment.\n  forget            Remove local enrollment; does not stop its ships.\n\nStart with --config-dir REGISTRY runners. Then put --config-dir REGISTRY --runner NAME --expected-runner-id ID before hello and snapshot, using the saved runner_id.\n\n\nUnreachable is not stopped. A desktop profile does not isolate the runner's ships. Honor excluded ships and hosts without probing them.\n\n\nAn identity mismatch requires resolving the intended runner; do not overwrite enrollment to suppress it. hello, not this guide, establishes supported features and authority.\n\n\nNext:\n  urbit-collector COMMAND --help\n  urbit-collector help\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "--config-dir",
+          "/home/absent/registry",
+          "--format",
+          "text",
+          "help",
+          "ships"
+        ],
+        "exit": 0,
+        "stdout": "Usage: urbit-collector [--format json|text] help [TOPIC]\n\nOffline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\n\nships: Observe and operate ships managed by a selected runner.\n\n  snapshot          Read desired/observed state, revisions, recovery status and operation receipts.\n  watch             Poll snapshots until canceled; JSON output is NDJSON.\n  logs              Read a bounded runtime log tail with operator authority.\n  operate           Submit an explicit start, stop, maintenance or import-recovery operation.\n  configure         Change requested runtime settings at an expected revision.\n  create-fake       Register a fresh fake; boot occurs on explicit Start.\n  create-ship       Stage a keyed identity and boot material; boot occurs on explicit Start.\n  create-comet      Register a new comet configuration; mining/networking occurs on explicit Start.\n\nPin --runner NAME --expected-runner-id ID and inspect hello/snapshot. Bind actions to instance ID and current config_revision; the instance name need not be the Urbit identity.\n\n\nRead operate --help, then use operate INSTANCE start|stop --revision N --request-id ID for the authorized action. Submission success is not completion: follow that exact operation in snapshot until terminal, then check resulting state.\n\n\nAfter a revision conflict, refresh and review the intended effect. After a lost acknowledgement, retain the original request ID and reconcile its receipt; do not guess by retrying with a new ID.\n\n\nLogs may contain sensitive data. Ordinary status does not require login-code or credentials. For hosted Eyre sessions, see help connections.\n\n\nNext:\n  urbit-collector COMMAND --help\n  urbit-collector help\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "--config-dir",
+          "/home/absent/registry",
+          "--format",
+          "text",
+          "help",
+          "imports"
+        ],
+        "exit": 0,
+        "stdout": "Usage: urbit-collector [--format json|text] help [TOPIC]\n\nOffline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\n\nimports: Review a stopped pier, import it and resolve retained recovery state.\n\n  piers             Inspect pier discovery on the selected runner.\n  preview-pier      Inspect a stopped source and derive identity, destination and fingerprint.\n  import-pier       Move/copy the reviewed source into managed storage; completion stays stopped.\n  snapshot          Read import progress, terminal result and retained recovery evidence.\n  operate           Explicitly recover a retained import, or Start after reviewing stopped completion.\n  enroll-pier       Register a discovered stopped pier or relink a moved registered pier.\n  move-pier         Move a stopped registered pier without replacing a destination.\n\nPin the selected runner and use preview-pier --help. Source paths belong to that runner host, not the collector machine. Inspect only the authorized stopped source.\n\n\nReview the derived instance/ship/network, fingerprint, exclusive instance parent and named pier child. Use import-pier --help for the reviewed inputs and --confirm-stopped; that flag does not stop a running ship.\n\n\nPreserve a rejected source. Use its quoted entry/check to diagnose ownership, links, mounts or file types; do not recursively chmod/chown or delete lock files as a repair.\n\n\nFollow the exact operation receipt. Retained-source or recovery-required state needs its specific recovery action and current revision; do not delete the source, overwrite a destination or restart blindly.\n\n\nSuccessful import stays stopped and may have identity_pending. Explicit Start is a separate operation that verifies the running identity.\n\n\nNext:\n  urbit-collector COMMAND --help\n  urbit-collector help\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "--config-dir",
+          "/home/absent/registry",
+          "--format",
+          "text",
+          "help",
+          "connections"
+        ],
+        "exit": 0,
+        "stdout": "Usage: urbit-collector [--format json|text] help [TOPIC]\n\nOffline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\n\nconnections: Sign in to an Eyre ship or approve an independent plugin session.\n\n  ships             Read locally enrolled Eyre connections; no runner is required.\n  ship-enroll       Save an origin-bound Eyre connection and expected ship identity.\n  ship-login        Read +code from stdin, verify identity and save a session.\n  ship-status       Check the enrolled ship/session against Eyre.\n  ship-logout       Revoke the selected collector session.\n  app-plugins       Inspect locally installed connection-helper declarations without executing them.\n  app-connections   Read durable application attempts locally.\n  app-connect       Issue and hand off an independent session to the exact approved plugin/profile.\n  app-disconnect    Revoke only the selected application attempt's session.\n  app-recover       Recover an interrupted attempt without retrying issuance or delivery.\n  app-reconcile     Clean the selected receiver state after confirmed revocation.\n  app-archive       Archive a fully closed/reconciled attempt while retaining its replay receipt.\n  app-connection    Read one active or archived request locally.\n\nUse --config-dir REGISTRY, without --runner or --socket. Hosted ships work independently of runner enrollment. Put the login code on stdin with ship-login NAME --code-stdin; never in arguments or reports.\n\n\nBefore app-connect, read ships, app-plugins and app-connections. Its --help specifies the exact ship ID/revision, plugin/profile/artifact, request ID and broad-session acknowledgement.\n\n\nEach plugin receives a separate ordinary Eyre session. Eyre does not isolate desks. Plugins send data directly to the ship and retain standalone URL/+code sign-in; Omabit is not their data proxy.\n\n\nOn uncertain results, inspect the durable request before recovery. Do not replay approval. Disconnect/recover/reconcile require the attempt's current revision; archive retains permanent replay protection.\n\n\nNext:\n  urbit-collector COMMAND --help\n  urbit-collector help\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "--config-dir",
+          "/home/absent/registry",
+          "--format",
+          "text",
+          "help",
+          "hosting"
+        ],
+        "exit": 0,
+        "stdout": "Usage: urbit-collector [--format json|text] help [TOPIC]\n\nOffline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\n\nhosting: Inspect runner hosting evidence and separate repair from observation.\n\n  hello             Read the selected runner's capabilities and access role.\n  host-check        Read cached native-package and live private-engine compatibility evidence.\n  snapshot          Read runtime, operation and recovery status.\n\nUse host-check --help with a pinned runner. The collector needs no local Docker access. A successful report does not itself qualify hosting or repair a failed check.\n\n\nInstallation, local package verification/repair and qualification are separate urbit-runner commands with different effects; read that binary's help before using them.\n\n\nQualification creates disposable runtime resources. Use only the authorized host/test boundary; do not substitute the active engine or inspect excluded ships. A profile alone does not isolate host services.\n\n\nNext:\n  urbit-collector COMMAND --help\n  urbit-collector help\n",
+        "stderr": ""
+      }
+    ]
+  },
+  "test_log": {
+    "path": "/tmp/omabit-task-help-tests-20261022.log",
+    "sha256": "69755cd23feeed776cf8246c95b237c553e4dce601f3830e69a28fcfbcb4bd4b",
+    "result": "ok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/backend/cmd/urbit-collector\t7.806s"
+  },
+  "checks": [
+    "go vet ./cmd/urbit-collector passed",
+    "skill-creator quick_validate with /usr/bin/python passed",
+    "git diff --check passed"
+  ]
+}

@@ -208,13 +208,16 @@ func (s *SecretService) Delete(ctx context.Context, key string) error {
 	return nil
 }
 
-type cappedBuffer struct{ bytes.Buffer }
+type cappedBuffer struct{ buffer bytes.Buffer }
+
+func (b *cappedBuffer) Bytes() []byte { return b.buffer.Bytes() }
+func (b *cappedBuffer) Len() int      { return b.buffer.Len() }
 
 func (b *cappedBuffer) Write(p []byte) (int, error) {
 	if b.Len()+len(p) > limit {
 		return 0, ErrStore
 	}
-	return b.Buffer.Write(p)
+	return b.buffer.Write(p)
 }
 
 func runSecretTool(ctx context.Context, args []string, input []byte) ([]byte, bool, error) {

@@ -1,0 +1,47 @@
+{
+  "source_checks_passed": true,
+  "runtime_qualified": false,
+  "in_running_appliance23": false,
+  "schema_changed": false,
+  "private_probe_tests": 12,
+  "peer_identity_checks": "unchanged accepted; eight changed cases and absent peer refused",
+  "narrow_race_seconds": 1.03,
+  "vet_passed": true,
+  "guards": [
+    {
+      "case": "explicit-host-guard",
+      "exit": 1,
+      "expected_refusal": "disposable guest admission refused"
+    },
+    {
+      "case": "appliance-guard",
+      "exit": 1,
+      "expected_refusal": "--exercise-project-live-peer requires --exercise-project-app-state"
+    }
+  ],
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-running-peer-recovery-source",
+  "source_sha256": {
+    "internal/managed/project_vm_test.go": "f903a8e9919a6291401065d6ad2d3fbff91e8546c8f132c46db042309ec0501f",
+    "internal/managed/project_live_peer_vm_test.go": "d1b36a8e05f66f9598b310f5eca77345310c0adcada3e40bccd9d128f135cc1d",
+    "internal/managed/project_application_vm_test.go": "85b6edccb58a73ac2268e61ee8172e868c55a608adfdf3952f64b641cd894df9",
+    "internal/managed/project_member_launch_vm_test.go": "fddb4492bac083ce0a39fe83508c9a702e1825d8d04ceb486cc67d28597fea29",
+    "internal/managed/project_member_stop_vm_test.go": "bd284e73f9916cb031f57ca3c5c66e9cdcb6c18b4b9599751b88e24c260d50a8",
+    "internal/managed/project_member_current_stop_vm_test.go": "77fc9e16b8baed93a63c05fbe5227dbdf1992ddd8b92a9934f44bbe38082c3c3",
+    "internal/managed/project_member_storage_vm_test.go": "1ee75123aebabc7f64477d7330ea0fbc516fea50b5ddaa896a3c6034a5b79abc",
+    "internal/managed/project_anchor_vm_test.go": "0b624c8ddaf5094203756dd8bc5639d449b5f48b95da70f752ba46c9a5bf6746",
+    "scripts/qualification/imports/appliance.py": "cbb977350cd805bb6d5e8855f727ab001875ca1854c4445ac9e34d4bd5cbc526",
+    "scripts/qualification/imports/guest.py": "6af85b34f9dc40ec3790af35304f92241dd8f0cbcfd849d739ed5734fbbc2d03",
+    "scripts/qualification/imports/runner_app_probe.py": "b4420e04860b937bea3f7ec8a55319061847e7bc6c33ab01cc54abffb80383d6",
+    "scripts/qualification/imports/test_runner_app_probe.py": "08957390d9730ee5f067e7ff04021a93465e75e5ced3f47e3cbce0aecdb1eeb5"
+  },
+  "evidence_sha256": {
+    "omabit-live-peer-source-tests.log": "7bf342b1ff2baa209e97b33ac8fa676bdcda4eb5573ace7d4865a3bcec681895",
+    "omabit-live-peer-source-race.log": "b41cfcbcb42754338aaba81fffcdc6361c257581e3078ca5ccc55185ef0e77a4",
+    "omabit-live-peer-python-tests.log": "670a39115e7523a8984e4842e16547cb2094b03fad392b037b4b9dc8b2656e62",
+    "omabit-live-peer-python-combined.log": "4e9583fbd8b7dfd17b1b52f963bca5e078ab351e78d6c9726b2c05ff184c10db",
+    "omabit-live-peer-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-live-peer-guards.json": "b7aca3e0772a85b85d99cd848d4424f7852bf44c93a18a7a986a85402e3f9252",
+    "omabit-live-peer-explicit-host-guard.log": "149202678a38512a4f6e7ccb1a71927289d5074b36eebb00ba57a7d587a5fdf3",
+    "omabit-live-peer-appliance-guard.log": "a397390d6e0e4cb1c8725844445568a6f9b5aef920cf587a21d721e633583e00"
+  }
+}

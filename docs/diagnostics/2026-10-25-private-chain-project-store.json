@@ -1,0 +1,62 @@
+{
+  "memory": "M353",
+  "schema": 41,
+  "scope": "synthetic source/store qualification only",
+  "snapshot": {
+    "schema": 40,
+    "path": "/home/thelifeandtimes/repos/omabit-platform-overhaul/internal/managed/testdata/historical-upgrades/schema40-source.tar.gz",
+    "source_files": 2429,
+    "archive_bytes": 5015756,
+    "sha256": "052de08d5f4aaec592af98396bf457c3b21bc16847e14d59ae1ae6843e58e14f"
+  },
+  "fixture": {
+    "schema": 40,
+    "bytes": 1288412,
+    "sha256": "006a7a33198f014a10bb33d240e5a1c37bd1f45cd5b25b946d5526b4eed5cac1",
+    "reproduced": true,
+    "tables": {
+      "deleted_instances": 0,
+      "instances": 8,
+      "maintenance_policies": 2,
+      "meta": 1,
+      "operations": 44,
+      "project_anchor_recoveries": 2,
+      "project_anchor_starts": 1,
+      "project_jobs": 1,
+      "project_member_context_readiness": 1,
+      "project_member_launches": 2,
+      "project_member_readiness": 2,
+      "project_member_resumed_readiness": 0,
+      "project_member_resumes": 1,
+      "project_member_retirements": 1,
+      "project_member_stop_exits": 1,
+      "project_member_stops": 1,
+      "project_member_storage": 2,
+      "project_members": 2,
+      "project_recovery_continuations": 2,
+      "project_recovery_members": 4,
+      "project_recovery_observations": 2,
+      "projects": 1
+    }
+  },
+  "tests": {
+    "focused": {
+      "top": 5,
+      "with_subcases": 28
+    },
+    "historical_reservations": {
+      "top": 17,
+      "with_subcases": 279
+    },
+    "race": {
+      "top": 6,
+      "with_subcases": 29
+    },
+    "vet": "passed"
+  },
+  "original_reader": "schema40 refused actual populated schema41 without modification",
+  "full_managed_regression": "running separately; not claimed here",
+  "runtime_dispatch": false,
+  "public_route": false,
+  "production_effects": false
+}

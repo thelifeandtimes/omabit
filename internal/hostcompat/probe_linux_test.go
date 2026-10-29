@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 )
 
 func engineFixture(t *testing.T, version string, change func(string, map[string]any), response func(http.ResponseWriter, *http.Request) bool) (string, string, *[]string, *sync.Mutex) {
@@ -155,5 +156,85 @@ func TestProbeRejectsSymlinksAndWritableBoundaries(t *testing.T) {
 	}
 	if _, err := ProbeEngine(context.Background(), socket, data); err == nil {
 		t.Fatal("writable data root accepted")
+	}
+}
+
+func TestProbeRetainsExactEngineIdentityWithoutChangingLegacyReports(t *testing.T) {
+	for _, id := range []string{"", "01234567-0123-0123-0123-0123456789ab", "ABCD:EFGH:1234:5678", "changed-engine"} {
+		socket, root, _, _ := engineFixture(t, "29.9.1", func(path string, body map[string]any) {
+			if strings.HasSuffix(path, "/info") && id != "" {
+				body["ID"] = id
+			}
+		}, nil)
+		engine, err := ProbeEngine(context.Background(), socket, root)
+		if err != nil || engine.ID != id {
+			t.Fatal(engine, err)
+		}
+		if id == "" {
+			if CheckEngineIdentity(engine, "") == nil {
+				t.Fatal("missing ID admitted new project work")
+			}
+			data, _ := json.Marshal(engine)
+			if strings.Contains(string(data), `"id":`) {
+				t.Fatal("historical report gained empty identity")
+			}
+		} else {
+			if err := CheckEngineIdentity(engine, id); err != nil {
+				t.Fatal(err)
+			}
+			if CheckEngineIdentity(engine, "different-engine") == nil {
+				t.Fatal("replacement engine accepted")
+			}
+		}
+	}
+	for _, id := range []string{"invalid\nidentity", strings.Repeat("x", 129), "../daemon", "☃"} {
+		socket, root, _, _ := engineFixture(t, "29.9.1", func(path string, body map[string]any) {
+			if strings.HasSuffix(path, "/info") {
+				body["ID"] = id
+			}
+		}, nil)
+		if _, err := ProbeEngine(context.Background(), socket, root); !errors.Is(err, errProbe) {
+			t.Fatal("invalid engine ID accepted", err)
+		}
+	}
+}
+
+func TestProbeAllowsSlowHealthyVersionHeaders(t *testing.T) {
+	socket, root, _, _ := engineFixture(t, "29.9.1", nil, func(w http.ResponseWriter, r *http.Request) bool {
+		if r.URL.Path == "/version" {
+			select {
+			case <-time.After(2250 * time.Millisecond):
+			case <-r.Context().Done():
+				return true
+			}
+		}
+		return false
+	})
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if engine, err := ProbeEngine(ctx, socket, root); err != nil || engine.Version != "29.9.1" {
+		t.Fatalf("healthy delayed engine refused: %+v %v", engine, err)
+	}
+}
+
+func TestProbeCallerDeadlineBoundsHeadersAndBody(t *testing.T) {
+	for _, body := range []bool{false, true} {
+		t.Run(map[bool]string{false: "headers", true: "body"}[body], func(t *testing.T) {
+			socket, root, _, _ := engineFixture(t, "29.9.1", nil, func(w http.ResponseWriter, r *http.Request) bool {
+				if body {
+					w.WriteHeader(http.StatusOK)
+					w.(http.Flusher).Flush()
+				}
+				<-r.Context().Done()
+				return true
+			})
+			ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+			defer cancel()
+			start := time.Now()
+			engine, err := ProbeEngine(ctx, socket, root)
+			if !errors.Is(err, errProbe) || !errors.Is(err, context.DeadlineExceeded) || engine != (Engine{}) || time.Since(start) > time.Second {
+				t.Fatalf("deadline lost or evidence accepted: %+v %v", engine, err)
+			}
+		})
 	}
 }

@@ -1,0 +1,27 @@
+{
+  "verified": true,
+  "passed": true,
+  "ship_operations": false,
+  "anchor_started": false,
+  "returned_ids_journaled": true,
+  "sequence": 6,
+  "volume_inventory_unchanged": true,
+  "database_receipts_match": true,
+  "repeat_dispatch_refused": true,
+  "reopen_unchanged": true,
+  "scope_inactive": true,
+  "seconds": 207.38,
+  "result_sha256": "c9e30614a48b08b3d91f4ad5c7a223c201918dbef2e2fa6e4368c978450d0366",
+  "database_sha256": "4c6e5fb19a345d06f6f43ec287b57437548a27d6bdb7955edc05e5d7d1877add",
+  "bridge": "a945a5ff35cad5f3910f83acbbbf9c8c56af8cb9524a618e5bfc2b37d742fd84",
+  "anchor": "293241c826d8edd616cf195b3ad29fcbfaf600b66a579cb7505ef1af1bb061b1",
+  "engine": "a27fc9b7-909c-404c-9d58-7714e29b569b",
+  "extracted_files_verified": 17,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-project07",
+  "current_source_replay_sha256": {
+    "omabit-project23-07-current-source-replay.log": "765ff10ad448f99a1e5ce14a816ffc9cc387fb8ffa15dd9f8e8a79b706dc1df0",
+    "project_recorded_linux_test.go": "d72d5b8e2e2b4047ad5ecaccd98f9b3973d19a5477b267ece98b370b84ff9fc2",
+    "project_resource_contract_linux.go": "2db8852f5619f4cdcce14e5c8cd7ded325050f5f97ecc73e6c25b394778b8c7f"
+  },
+  "metadata_files_verified": 40
+}

@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "scope": "offline fake-engine source regressions; no real runtime operation",
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-admin-discovery",
+  "source_sha256": {
+    "internal/runtimequalify/login_code_linux.go": "89734311bced98e7ce9037479c9f270cde8a2ff558ec915725f6382979459a34",
+    "internal/runtimequalify/http_ports_linux.go": "25a9d2e4ffb1f828dcfd10ca77601d8955a1bb6f7adaa2258f67eed965ffd614",
+    "internal/runtimequalify/login_code_linux_test.go": "d1d6c0acec88ff9348fdcfcb7dd108815011c9dd80fc890224def5ed4264ba9c"
+  },
+  "tests": {
+    "command": "OMABIT_TEST_FAKE_ZOD=0 go test -race ./internal/runtimequalify ./internal/managed -run 'TestLoginCode|TestPrivateHTTPPort|Test.*Code' -count=1",
+    "log_sha256": "4b166b6f16356ce3dd93b5a05d225a8829ab324d6c17de7872c9132f67fb2b2e",
+    "vet": [
+      "internal/runtimequalify",
+      "internal/managed"
+    ],
+    "sandbox_trial": "Ownership admission failed on temporary fixture profiles inside sandbox; identical offline race tests passed outside sandbox."
+  },
+  "runtime_qualified": false
+}

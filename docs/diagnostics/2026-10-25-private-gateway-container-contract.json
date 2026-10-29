@@ -1,0 +1,49 @@
+{
+  "memory": "M385",
+  "status": "integrated-source-qualified",
+  "source_sha256": {
+    "internal/runtimequalify/private_gateway_network_linux.go": "3bb2da72d39cafd1fb453289d733fcf73aa22a43f606b3e4ab6aa2f9b9e187ef",
+    "internal/runtimequalify/private_gateway_container_linux.go": "e16be9b920290c98e04ea029e203d00163925da22838e42b78ac0fcaa3736d3a",
+    "internal/runtimequalify/private_gateway_container_linux_test.go": "8ea6f885a562b6344c07b00b449326580d090e233b3daff3330d2da049372b8a"
+  },
+  "staged": {
+    "exit": 0,
+    "vet_exit": 0,
+    "seconds": 6.966056915000081,
+    "top": 14,
+    "checks": 168,
+    "failed": []
+  },
+  "integrated": {
+    "exit": 0,
+    "seconds": 1.8941368460073136,
+    "checks": 166,
+    "top": 12,
+    "source_sha256": {
+      "internal/runtimequalify/private_gateway_network_linux.go": "3bb2da72d39cafd1fb453289d733fcf73aa22a43f606b3e4ab6aa2f9b9e187ef",
+      "internal/runtimequalify/private_gateway_container_linux.go": "e16be9b920290c98e04ea029e203d00163925da22838e42b78ac0fcaa3736d3a",
+      "internal/runtimequalify/private_gateway_container_linux_test.go": "8ea6f885a562b6344c07b00b449326580d090e233b3daff3330d2da049372b8a"
+    }
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-container-contract",
+  "evidence_sha256": {
+    "private_gateway_network_linux.go": "3bb2da72d39cafd1fb453289d733fcf73aa22a43f606b3e4ab6aa2f9b9e187ef",
+    "private_gateway_container_linux.go": "e16be9b920290c98e04ea029e203d00163925da22838e42b78ac0fcaa3736d3a",
+    "private_gateway_container_linux_test.go": "8ea6f885a562b6344c07b00b449326580d090e233b3daff3330d2da049372b8a",
+    "previous-network.go": "a19fe16376e73b4975496b0e7b92014c37ad3fa9f6a76f0483f5aac64ccacfe9",
+    "check01-result.json": "419c10cdab642b21b2d008c0b3500f81abf910fb8f16bedba559c48abbf88b50",
+    "check02-result.json": "0f931a550a1552a74545e940351e8210ad6e96cb37b7991b0619ec66b3587700",
+    "integrated-result.json": "d9486da9cbdbc188788c4074f3257e05e1dd6da762b5c5d56efe4ce76cb3644c",
+    "applied.json": "f2bf48ecae4c840dc5230f69b011e65ea2cc21a215e1558e7a8d3858cf05d8ea",
+    "tests01.jsonl": "e972213a45d4858516f777bdfa68da3f82beb6daadd014e3b821dd6abd68d0c3",
+    "tests02.jsonl": "6cc271437ffbaafa962a26d1b5bfde5ada6fdb7e1d6c30394c45f5828cf4af25",
+    "vet02.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "integrated-tests.jsonl": "891b6adfdb21cff3735bd20095aae145763d983d426e9fd05a4be9602f5ec98d"
+  },
+  "schema": 43,
+  "runtime_effects": false,
+  "public_runtime_dispatch": false,
+  "previous_network_sha256": "a19fe16376e73b4975496b0e7b92014c37ad3fa9f6a76f0483f5aac64ccacfe9",
+  "initial_fixture_failure": "configured and active port dictionaries shared one mutable map; corrected to independent maps",
+  "supersedes": "M383 allocation identity binding and M384 pending container-contract source only"
+}

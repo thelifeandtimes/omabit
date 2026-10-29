@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "kind": "pure explicit multiple recovery boundaries",
+  "seconds": {
+    "second-attempt1": 2.247,
+    "focused-race-attempt1": 61.07,
+    "full-race": 196.44,
+    "adapter-regression": 254.309
+  },
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-recovery-epochs",
+  "manifest": {
+    "omabit-recovery-epochs-compile.log": "d2133063c2ac226396beae63d8d0b950770a315ca369d16e6e5d749a5e326c40",
+    "omabit-recovery-epochs-second-attempt1.log": "8235edc474174efb3c0ca7b6c6eec2032c7eb96ea24ce76311d0d325e6d8f943",
+    "omabit-recovery-epochs-focused-race-attempt1.log": "cc4202a2626b557c0518322fb4339b1a78827b780ce8c02d4434e89e062f1854",
+    "omabit-recovery-epochs-full-race.log": "826a6df8655f3afd4cc81299c48d9c3b6b977f1f86584e6249489eed1fec5832",
+    "omabit-recovery-epochs-adapter-regression.log": "fba78560eb7114ff8fe79c278113fc926bbb2f02d273e87176e979fedfee77b5",
+    "omabit-recovery-epochs-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovery-epochs-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovery-epochs-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/projectnetwork/anchor_recovery_epochs.go": "913ec29a4d7bf906aed8f602ed19c12b5e50536bfc6986d757ab835ae3aab5d8",
+    "source/internal/projectnetwork/anchor_recovery_epochs_test.go": "8057132f75d240e123e3d3c020b8a835139c8206a78bf3e288f6c2ac780edeb6",
+    "source/internal/projectnetwork/anchor_drain.go": "806d76563d4e18629362c3dce3a4845e90f798f6b65737330e86ccea600f3d6c",
+    "source/internal/projectnetwork/member_current_readiness.go": "9b396f22504dc47e0184abb047a48df5ae870d2bfefeb93e0e531315c7c20513",
+    "source/internal/projectnetwork/anchor_recovery_review.go": "3163238c6bd4fe5f5b42693cc9104d6abb12b6bf6188545ae95522b939eb3080",
+    "source/internal/projectnetwork/anchor_retirement.go": "4b57b501c9bfdcb4c15794c56a59af7d695fc4bca35ecece6f0daa5cfeb844d2",
+    "source/internal/projectnetwork/anchor_namespace.go": "6a536cdb78f2f9e84864ffb962711f7b8d2a0748fe0b049bbc9046839a0f1fd3",
+    "source/internal/projectnetwork/anchor_replacement.go": "2891bc622cac3522da82f5474e9460ea7565119e95cd94151de9726688b2462e",
+    "source/internal/projectnetwork/anchor_replacement_test.go": "ac4fe8c706d4f8d10b0c7c1a958c15edc7e152f46759bce8687ccfa5f4dc03c1",
+    "source/internal/projectnetwork/recovered_member_generations.go": "782989ecf5a34f6e9cb6043fac6b784c2fff6dfe8f21e1ac48b5eadd427cc662",
+    "source/internal/projectnetwork/anchor_recovery_readiness.go": "7f051b62321dc14f7ed216ba1e3786daac2c5b3c241a3b752f0e6f0a67cca285"
+  }
+}

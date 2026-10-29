@@ -1,0 +1,1 @@
+{"barWidget":{"defaultSection":"right","displayName":"Test theme (qualification-stable)"},"entryPoints":{"barWidget":"Panel.qml","service":"Service.qml"},"id":"thelifeandtimes.urbit-theme.qualification-stable","kinds":["service","bar-widget"],"name":"Test theme (qualification-stable)","schemaVersion":1,"version":"1.0.0"}

@@ -1,0 +1,26 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 30,
+  "queue_cases": 7,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-stop-exit-preparation",
+  "source_files_verified": 127,
+  "embedded_test_sha256": "4f646284ff034c4c2e227b0329aa3a422340536c78be19295ac75807360a6a52",
+  "appliance": "/tmp/omabit-import-appliance-20261023-17",
+  "logs": {
+    "omabit-stop-exit-queue-tests.log": "5447ea913165d10f16c755d00e9ae6792906a1503961b7980a8ffbbe93d4d41f",
+    "omabit-stop-exit-queue-regression.log": "65062b39c117cbce747f2e609c34d65f1ac57ac4ec32466c65b45ebcf735f0fe",
+    "omabit-stop-exit-queue-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-stop-exit-vm-guards.log": "4c09dbe38d81edbcdf5d3433080115a7fec2281b62ef598131523a2ccfa56b44",
+    "omabit-stop-exit-vm-host-refusal.log": "0cc81d3bcab6a5a7943b7ab03f39dc59c72d76baec1b4c4fa4336e8b41c00a2a",
+    "omabit-member-stop-exit23-17-prepare.log": "adc85999f122bf0a1e198d5f7e053f9319375ee236d38e0a34b1b53c40d78268",
+    "omabit-member-stop-exit23-17-preparation-verification.log": "948debf09fa42586129f2eab37bcb1ee46424b999943f3e32d347380ae7a0ee3"
+  },
+  "limits": [
+    "No public route or startup dispatch.",
+    "Original uncertain Stop remains unchanged and fenced.",
+    "Current recovery requires unchanged peer lifecycle state; a peer transition across downtime is not resolved by this observation.",
+    "Lost reply is injected by the disposable fixture after real TERM/exit, not a claim of a real network outage.",
+    "Resume, namespace recovery and real schema30 recovery remain pending."
+  ]
+}

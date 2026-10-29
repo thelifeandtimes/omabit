@@ -1,0 +1,33 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "lifecycle_cases": 16,
+  "adapter_race_seconds": 101.584,
+  "model_race_seconds": 2.982,
+  "vet_passed": true,
+  "sources": {
+    "internal/runtimequalify/project_member_resumed_lifecycle_linux.go": "04b61828a49cf32bfb92b034f29a72f233d28ed128feb629d02411ac67fc6b38",
+    "internal/runtimequalify/project_member_resumed_lifecycle_linux_test.go": "84ef31c9b14083996f8484589899089c9ee231a58174dedc3a2b546d76b57054",
+    "internal/runtimequalify/project_member_stop_exit_linux.go": "276852af4b570b9ed61ab0038d3cd2364f953e62c8c591f2f5a03b60b1592ad8",
+    "internal/runtimequalify/project_member_resume_linux.go": "e392d31c0fac7175760ff436a8153b3d67d34e54e86efd995b1073512c264aca",
+    "internal/runtimequalify/project_member_resumed_readiness_linux.go": "fe375f81d4508d85c65abad7b626e676c598dabab3473e6e86cec13b3af16c64",
+    "internal/projectnetwork/member_generations.go": "066fadc75c06dd3377753445ad65fb1522175c26592573db97d216da8ecf9f53",
+    "internal/projectnetwork/member_generations_test.go": "61a1cc4e091aacde3dcb9a44998ca84cf0ebea03e2d51a17dd1391d07e6ada6b"
+  },
+  "logs": {
+    "omabit-later-generation-adapter-initial.log": "e9e74ed33c83ba73825af97cd7e4adb7a107c7b425921885735eeda78ea4b9ca",
+    "omabit-later-generation-adapter-tests.log": "8b20cf49ab23e07862beb3113e4c10803237833851586748d0771c358265ea29",
+    "omabit-later-generation-adapter-regression.log": "09a47bc6daf326ad8a92f83d30d70f0da0ecf78970ff4247d72f1c1a58c86667",
+    "omabit-generation-prefix-history-tests.log": "ae657bafad3de124cbe1f520902b185cf4ff95dc7dc0d5bb371fed3f7176ce18",
+    "omabit-later-generation-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-later-generation-adapter-final-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-later-generation-adapters",
+  "limits": [
+    "inert engine and temporary filesystem only",
+    "store still schema34 with one resume per member",
+    "current readiness retains its exact original peer binding",
+    "full adapter regression compiled before additive prefix-history helper; model suite and final vet cover that helper",
+    "frozen VM21 does not contain these new adapters"
+  ]
+}

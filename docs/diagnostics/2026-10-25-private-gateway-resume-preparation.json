@@ -1,0 +1,27 @@
+{
+  "memory": "M356",
+  "status": "fresh-runtime-in-progress",
+  "tests": {
+    "python_top_level": 49,
+    "passed": true
+  },
+  "payload": {
+    "added": [
+      "src/docker_gateway_resume.cjs",
+      "src/docker_resume_case.py",
+      "src/gateway_resume_contract.cjs"
+    ],
+    "removed": [],
+    "changed": [
+      "src/guest.py"
+    ],
+    "all_other_inputs_unchanged": true,
+    "files": 12360,
+    "build_sha256": "72efb0c936784ddeb48e184566b5445a5b22d3b59770ff4945eff5a57afde3b5"
+  },
+  "run": "/tmp/omabit-import-guest-run-private-chain-20261025-10",
+  "scope": "omabit-import-guest-5ce97159e7a64f429db2032c6b4a8c88.scope",
+  "session_id": 33146,
+  "runtime_passed": false,
+  "public_runner_lifecycle_enabled": false
+}

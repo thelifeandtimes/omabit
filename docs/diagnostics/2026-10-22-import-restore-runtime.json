@@ -1,0 +1,228 @@
+{
+  "checkpoint": "partial-copy-restore-reimport",
+  "passed": true,
+  "runner_schema": 22,
+  "run": "/tmp/omabit-import-guest-run-20261022-10",
+  "appliance": "/tmp/omabit-import-appliance-20261022-09",
+  "inspection": "/tmp/omabit-import-inspection-20261022-10",
+  "seconds": 849.99,
+  "clean_shutdown": true,
+  "scope": "omabit-import-guest-1aff2184533544c893d0e556f41076f2",
+  "scope_status": "inactive",
+  "runner_sha256": "324dac52a969b3d5fd8828dafce25ab6c9012da923dcbf4656d9750b4c8fc4c4",
+  "collector_sha256": "6a421bcb554edde49a71c3dafc2e5591aa1e6fd2357692afb10edff69a6231b2",
+  "runtime": {
+    "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+    "id": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+    "version": "urbit 4.6-5a7614f\ngmp: 6.2.1\nsigsegv: 2.14\nopenssl: OpenSSL 1.1.1w  11 Sep 2023\nlibuv: 1.50.0\nlibh2o: 0.13.6\nlmdb: 0.9.70\ncurl: 8.9.1"
+  },
+  "case": {
+    "passed": true,
+    "ship": "~zod",
+    "source": "/home/lab/import-source/unclassified-pier",
+    "destination": "/srv/urbit/piers/fakeships/zod/zod",
+    "import_operation": "op-54270b81b4ba8aef7b978b70340832a6",
+    "start_operation": "op-9790167b25306e3510b095e06bcafc59",
+    "stop_operation": "op-39d6ca8964bbb6086d40dd08f8ed0ac8",
+    "preview_source_unchanged": true,
+    "mode": "copy",
+    "same_filesystem_rename": false,
+    "cross_filesystem_copy": true,
+    "parent_mount": "/srv/urbit/piers/fakeships/zod",
+    "identity_verified": true,
+    "final_state": "stopped",
+    "checkpoint": "partial-copy-restore-reimport",
+    "restoration": {
+      "restore_operation": "op-f9e2709941220c1bdcacb6404dabb0c4",
+      "failed_import_operation": "op-511d86dab838f968a5384cd25bbf4b25",
+      "failed_revision": 1,
+      "restored_source_same_inode": true,
+      "retained_partial_same_inode": true,
+      "archive": "/srv/urbit/piers/archive/import-4e5ecb015c9a5045cfef0a4bc04a1dd0",
+      "empty_holding": "/home/lab/import-source/.omabit-import-4e5ecb015c9a5045cfef0a4bc04a1dd0",
+      "terminal_replays_unchanged": true
+    },
+    "old_replays_preserved_new_registration": true,
+    "retained_archive_unchanged": true
+  },
+  "preview": {
+    "source": "/home/lab/import-source/.omabit-import-4e5ecb015c9a5045cfef0a4bc04a1dd0/pier",
+    "restore_to": "/home/lab/import-source/unclassified-pier",
+    "destination": "/srv/urbit/piers/fakeships/zod",
+    "retain_at": "/srv/urbit/piers/archive/import-4e5ecb015c9a5045cfef0a4bc04a1dd0",
+    "review_digest": "3611acf862c78abae0244507ff9c450612d25afcd7241dcbeb7703556eb7546f",
+    "runner_id": "runner-4ed0199f9df9c07f68fb12a97483d8fd",
+    "instance_id": "zod",
+    "config_revision": 1,
+    "source_files": 7,
+    "source_bytes": 1016823820,
+    "destination_files": 1,
+    "destination_bytes": 60030976,
+    "stage": "review",
+    "continuation": false
+  },
+  "run_result_sha256": "0ccae80c9e2ce074739272c4c786230afac201d12c01931f50ff34fe65c66b77",
+  "extraction_sha256": "b124e6f943b6a886e180af8584c845b09c9bceeef3ab4161dc10d76e99245b77",
+  "build_sha256": "8fb4e272ae953ec3e8e52fb7c487d017974fb76844ef4e50fa86c60038dda8ab",
+  "artifact_sha256": {
+    "base.raw": "c6faf82b0a0b25d9fefe0d8eaedae65e25abe86dda111f3078ccdeedbd40b140",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "disk_sha256": {
+    "root.qcow2": "a4f230b28476f360db0a18d827a42a6f380fbbf9793da8a5599dce6135072f11",
+    "source.qcow2": "c6db918fb5c976e78e0297664a2d23d8e0e98f88a8e326c0fb2b23a2c47ac0db"
+  },
+  "receipt_sha256": {
+    "restore-preview.log": "06277a18a105767bcd4d6c2a1748cda58498b479ea6744f8450a0c2a8887cc48",
+    "restore-submit.log": "4c8bf195d2a57afe4d49d3162cb8fc63c5ed2902a7f243b02539c2bd2073b3ed",
+    "restore-import-snapshot.json": "5a21a0a8f14925abecba4e7bd875bee8dc3e01935aec77c767ce1203c4640e22",
+    "restore-terminal-replay.log": "789c36860b0a89dbd790de4b01cf2fb057d4c0baca54788b750a1533817c14de",
+    "failed-import-terminal-replay.log": "9cc4fce962ff7a5133923349eeb0673eeee7b40f869889bbc130f059d1139ea4",
+    "after-restoration-replays.log": "7612924cfd3a46b01b91b30b1767f8963428885a1b31f283b1a0f9706a13f12b",
+    "source-restoration.json": "1fc99feba5480bc67251a7c5d154a4446302d8a5edad98414e08687f08ee5bf7",
+    "reimport-guided-preview.log": "3a4ed8c9cf70a91b153f4a91352b7a2ef47dcf5766fc0514aa11e63691e82138",
+    "reimport-submit.log": "1e3c73125876361167adbb3beb4f4ab402ebf049b50f8dae742db721039b85a3",
+    "restore-replay-after-reimport.log": "789c36860b0a89dbd790de4b01cf2fb057d4c0baca54788b750a1533817c14de",
+    "failed-import-replay-after-reimport.log": "9cc4fce962ff7a5133923349eeb0673eeee7b40f869889bbc130f059d1139ea4",
+    "reimport-after-old-replays.log": "065bac714ea1c9ade1dda68aa44b294241213005884b40b08cb45855cf6cb2c8",
+    "runtime-mounts.log": "734a0a99e45f01070409a8f6513de66dcbe22c4e9da3e9e95aabb8e2697e7698",
+    "stop-snapshot.json": "0452aeb9078fd06f388cbd59e5b2c9e0db3a79611d3b17598996140eb239becb",
+    "import-case.json": "c785bc295bfd6cd37efc64b9af4771bd8a79e1f650dfcb253eeafcd025f461d7"
+  },
+  "extracted_receipt_count": 69,
+  "extracted_receipt_bytes": 110484,
+  "database": {
+    "sha256": "5a1e074b02cc01b82f0847e1b046c5101b1ed6c4ed8b3a8eb5ee043d6ecbc488",
+    "quick_check": "ok",
+    "tombstones": [
+      [
+        "zod",
+        "op-f9e2709941220c1bdcacb6404dabb0c4",
+        1
+      ]
+    ],
+    "operations": [
+      {
+        "id": "op-511d86dab838f968a5384cd25bbf4b25",
+        "kind": "import-pier",
+        "status": "interrupted",
+        "config_revision": 1
+      },
+      {
+        "id": "op-f9e2709941220c1bdcacb6404dabb0c4",
+        "kind": "restore-import",
+        "status": "succeeded",
+        "config_revision": 1
+      },
+      {
+        "id": "op-54270b81b4ba8aef7b978b70340832a6",
+        "kind": "import-pier",
+        "status": "succeeded",
+        "config_revision": 2
+      },
+      {
+        "id": "op-9790167b25306e3510b095e06bcafc59",
+        "kind": "start",
+        "status": "succeeded",
+        "config_revision": 2
+      },
+      {
+        "id": "op-39d6ca8964bbb6086d40dd08f8ed0ac8",
+        "kind": "stop",
+        "status": "succeeded",
+        "config_revision": 2
+      }
+    ]
+  },
+  "source_sha256": {
+    "backend/cmd/urbit-collector/main.go": "a2fb42c59436ddbb65d86eb812664cc3bb6bd4642b501716c9361294f44e2a19",
+    "backend/cmd/urbit-collector/operational_help_test.go": "f03da3fe74d0c71375ed127c5ca5d1c3d67cd5840b858e82db9b6c01c72415d0",
+    "backend/cmd/urbit-collector/storage.go": "933591e07b1c5d168306a6e2c6177cfefb55895c2dc35572cd613e05b8ca2e4b",
+    "backend/cmd/urbit-collector/task_help.go": "4aa5f7169a5469d4e1324bab4c5bab064f385f8c0bfb9d4910011b6701203ec8",
+    "internal/client/import_restore.go": "90891efe621222a7c3671d12a1357607cb571b78cd56b1cde7d06b4b594c96fb",
+    "internal/client/import_restore_test.go": "01201bc4d7985554a273fec79d7990cf33423f3d3b15ec95248c2de0e9aad251",
+    "internal/managed/g02_historical_upgrades_test.go": "92cee5a1eef92e57ccd332310a35351c3a85292a85e6b9531f6ec7fd03ca5ea4",
+    "internal/managed/import_restore.go": "747599588496101d59cd2176ee6f053cbd5b655e2a6152be73038346a6186194",
+    "internal/managed/import_restore_test.go": "faa8d9f27434e0e85aa380d9bcfc3ed5ec3a1f1e31827a1a5cc39ea56cb82c94",
+    "internal/managed/logs.go": "bda76893a440632f3ebe3463672e067afeb0f4a49bc13c01bc794a17a3acf719",
+    "internal/managed/schema.go": "a58133fa2f8b27a422bcce24edcb27a133e2a5583f07ec11dd269f408f5445b8",
+    "internal/managed/server.go": "6167325734ebdb1eb1564215de59dbe8d207542fe742105d8347172e768af8a3",
+    "internal/managed/store.go": "4a1f87a424b81ddd153cfe4982cc6b95aeb5f74c63a67297bfaeaf3120c78e6f",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "7c168781a2d6a0ef7dbef649ba8f9b26fa2824019127f8f09bdb6bac7d2f7287",
+    "internal/managed/testdata/historical-upgrades/schema21.json": "f2c259caf5bb8626172da332adff1ffb6f9ef71c5f5fccdfd8cae058907148f1",
+    "internal/protocol/import_restore.go": "990c73e84352331a286bde32b64fbf28fe48982886ec1c3c17fb10df611ea27d",
+    "internal/protocol/logs.go": "1108691d8a30cd32a941aa5ca6abc3ab7897398cb941782f9b52e1dfea79978b",
+    "internal/protocol/protocol.go": "b934a45e07bf985748e820a40c5d7fcf74fd3817726fbb41f9fcf4ce6b443a91",
+    "internal/runtimequalify/import_restore.go": "7fba5822b6a9f13edf7b0890db0e39c7dea431fb82443145e72e8b19007b4e30",
+    "internal/runtimequalify/import_restore_managed_linux.go": "1c1087385ee67c84f4d2b5f4a949a5c8ce0c406415bb2c73e390e29aa50ca42d",
+    "internal/runtimequalify/import_restore_managed_linux_test.go": "191bf76476125a8df77d46f2c9fa46a8d40d77056a761b65e427434f39a37831",
+    "internal/runtimequalify/import_restore_moves_linux.go": "5c16d07431221de923c4ce97cb93f97a91ff2dca0b29df2d6b72f38658467984",
+    "internal/runtimequalify/import_restore_moves_linux_test.go": "ad7a7b9ea1ab272f9b4e0153b17950b843f7ac355f5f64a1f9a0d1cc3162544b",
+    "internal/runtimequalify/import_restore_other.go": "239f48e1fd7d4ddf9e0f346bbeb3c1e052e7baad92449a673e0577c9ac62aede",
+    "internal/runtimequalify/import_restore_review_linux.go": "fe86c1649d6d16bc876713357bc9d5a7580615461407bb47a897cbdf35404941",
+    "internal/runtimequalify/import_restore_review_linux_test.go": "08ad52922515a227549fe3a0d8cf550f1fb6e0042ef25cb1122868945e5daa47",
+    "internal/runtimequalify/managed.go": "43afd95647edad6450906bfcc4cc089adef57ae27f6c7a3467174df5b1f0a2ad",
+    "internal/runtimequalify/managed_linux.go": "8cd5e03dd9adb675973b6c513d746ad9c7277935a7fbce8ee22c849bf29b56a6",
+    "scripts/test-historical-upgrades.py": "9f5603105d2541ed36d5562a0832f679157e645b2cb1e26fa128020de4aaa2d8",
+    "skills/omabit-operator/references/imports.md": "f696d7fc9a0550fda29b76f869b71555552e4a82bbf3b7c1f39886535cbf6ed9",
+    "scripts/qualification/imports/appliance.py": "d2fe844808556e1704942421be61a4112d011fecf4307dd5e8958b3ef245e45a",
+    "scripts/qualification/imports/guest.py": "9473ac499f28b085df6db5af79590748a4abc13fb23ba50283e9250ef10c2335",
+    "scripts/qualification/imports/import_case.py": "dd6744ed42363e6dfa77cd60b8337d5776848931fa2ec2a36cb6ac67c19b81d0",
+    "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+    "scripts/qualification/imports/storage.py": "5752ff1b1b47f0c6eeb981b662bef8a192dc234fb50466518b15e7e9bc90ccd3",
+    "scripts/qualification/imports/extract_results.py": "ad2b441f1eadd3159ac689105caa18a08cde71ff5349595ddee068e6f7cf1a8a",
+    "scripts/qualification/imports/README.md": "0ec54ec65d6099b9f043e0796bd44f810b4a86324f1d9fd606c55b35de806732",
+    "docs/project-fake-networks.md": "9f019a709faca39280f3cc5d2964f497286404bdeef5dde12c8b4ec737729e8e"
+  },
+  "prior_integration_sources_unchanged": true,
+  "validation": [
+    "actual VM restoration/replay/re-import/Start/identity/mount/Stop",
+    "read-only database integrity/schema/tombstone/receipts",
+    "all extracted receipt and retained disk hashes",
+    "driver syntax",
+    "invalid restoration flag combinations rejected before preparation",
+    "git diff --check"
+  ],
+  "production_installed": false,
+  "guided_ui_integrated": false,
+  "partial_copy_receipt_note": "copy-interruption.json describes the intermediate preservation and recover-import refusal only; import-case.json records the subsequent successful restore-import and fresh import.",
+  "earlier_evidence_relocation": [
+    {
+      "original_path": "/tmp/omabit-import-appliance-20261022-08/artifacts",
+      "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-import09/appliance08-artifacts",
+      "sha256": {
+        "base.raw": "79af6630fe383fae0f55aedb50a2f5eb5984036991fe85e1a1d124c0a59a427c",
+        "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+        "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+        "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+      },
+      "scope_inactive": true
+    },
+    {
+      "original_path": "/tmp/omabit-import-guest-run-20261022-09/lab",
+      "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-import09/run09-lab",
+      "sha256": {
+        "root.qcow2": "0fc4f82ed93c7384a0e7546aa21e42a5cf5b944eb7e17a9bdeac1048367cb03d",
+        "source.qcow2": "190d629a46e3db163421e4d0f3219f1e0b8f09307bae2ce281442580a1a6212c"
+      },
+      "scope_inactive": true
+    }
+  ],
+  "failed_staging_archive": {
+    "staging": "/tmp/omabit-import-appliance-20261022-01/rootfs",
+    "archive": "/tmp/omabit-import-appliance-20261022-01/rootfs-preserved.tar.gz",
+    "manifest": "/tmp/omabit-import-appliance-20261022-01/rootfs-preserved.json",
+    "archive_sha256": "213109b24bc0d2cd61f9f3081a4d6da716b49c46f852be1cb09cd9d92bef55e6",
+    "entries": 36086,
+    "source_allocated_bytes": 1217150976,
+    "archive_bytes": 572849195,
+    "original_disks_and_logs_retained": true
+  },
+  "derived_conversion_cleanup": {
+    "path": "/tmp/omabit-import-inspection-20261022-10/guest.raw",
+    "verified_sha256": "f83bb5a84f60878a4b5560070ca676b915d136ff226cd9bd2db0077a20ba2a25",
+    "original_images_and_receipts_retained": true
+  }
+}

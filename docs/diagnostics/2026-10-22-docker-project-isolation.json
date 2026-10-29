@@ -1,0 +1,159 @@
+{
+  "passed": true,
+  "scope": "two simultaneous fresh duplicate-identity projects; private no-NIC QEMU and private rootless Docker; no publications",
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-docker-project17",
+  "independent_verification": {
+    "passed": true,
+    "result_sha256": "d68b1b619d30530ad60adb954e2588db7a4b4901f58849ba1916f834bdba90a0",
+    "second_project_sha256": "be17f5272833f92a569a4232792c15d25708a05f02b6be192f8a3d396bf0bd4f",
+    "seconds": 2744.57,
+    "projects": [
+      {
+        "project": "omabit-network-a",
+        "writes": 5,
+        "observations": 17,
+        "subscription_revisions": [
+          0,
+          1,
+          2,
+          3,
+          3,
+          4
+        ],
+        "subscription_cursors": [
+          1,
+          2,
+          3,
+          4,
+          1,
+          2
+        ],
+        "both_channels_deleted": true,
+        "clean_stops": [
+          "nec",
+          "nec",
+          "zod"
+        ]
+      },
+      {
+        "project": "omabit-network-b",
+        "writes": 5,
+        "observations": 17,
+        "subscription_revisions": [
+          0,
+          1,
+          2,
+          3,
+          3,
+          4
+        ],
+        "subscription_cursors": [
+          1,
+          2,
+          3,
+          4,
+          1,
+          2
+        ],
+        "both_channels_deleted": true,
+        "clean_stops": [
+          "nec",
+          "nec",
+          "zod"
+        ]
+      }
+    ],
+    "cross_cookie_checks": [
+      {
+        "from": "omabit-network-a",
+        "to": "omabit-network-b",
+        "ship": "zod",
+        "status": 401
+      },
+      {
+        "from": "omabit-network-a",
+        "to": "omabit-network-b",
+        "ship": "nec",
+        "status": 401
+      },
+      {
+        "from": "omabit-network-b",
+        "to": "omabit-network-a",
+        "ship": "zod",
+        "status": 401
+      },
+      {
+        "from": "omabit-network-b",
+        "to": "omabit-network-a",
+        "ship": "nec",
+        "status": 401
+      }
+    ],
+    "independent_state": true,
+    "scope_inactive": true,
+    "original_artifacts_and_disks_verified": true,
+    "extracted_files_verified": 17
+  },
+  "frozen_build": {
+    "exercise_import": false,
+    "exercise_fake_network": true,
+    "network_state": true,
+    "network_isolation": true,
+    "import_mode": "rename",
+    "interrupt_copy": false,
+    "restore_copy": false,
+    "restore_ui": false,
+    "ui_source_sha256": {},
+    "root_disk_gib": 12,
+    "packages_manifest_sha256": "c9736a95de42fda4edcee2a72675449930bcd57cd110ef704a638e07f68c2cc9",
+    "kernel_source": "/usr/lib/modules/7.2.11-arch1-1/vmlinuz",
+    "modules": 29,
+    "artifacts": {
+      "base.raw": "406192ce76dd8dfedaa8bcf636845e588a073d9e8ed09ca053815ba9002ccdb3",
+      "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+      "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+      "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+    },
+    "source_sha256": {
+      "scripts/qualification/imports/appliance.py": "3e405e63cf1775e9708a7cd8d9b998d8ece30fd6206104f1a0731680f7a6740f",
+      "scripts/qualification/imports/guest.py": "c80b76bd2ac0e99fba114de878145338ac8e548684d8a1cd88a15c28e5390ce6",
+      "scripts/qualification/imports/import_case.py": "27ae2fd0628db1f00aedde980c427c9d76e7ecd6a5cf0fde2c8ae5920ec31e0e",
+      "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+      "scripts/qualification/fake-networks/network_case.py": "4f54fcf1bee1aeadd0c12cd8cea96e1c3093b68f8c4bc836107d74fef1145bea",
+      "scripts/qualification/fake-networks/state_case.py": "58250c80ee6b860ee9988c3397418b8396c0f0f0195465507bf8762ba5451bf6",
+      "scripts/qualification/fake-networks/omabit-state.hoon": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+      "scripts/qualification/fake-networks/project_isolation.py": "9431d5fa9d24581ba8048447f04be613c3667a5a7ea8b1dd26b91df72f2f659a"
+    },
+    "runner_sha256": "f8daaf25dbfcf01f89c94331f05dbca2a88150fba11d8d0aa2a5e0b997dca922",
+    "collector_sha256": "3e0e67056352e8e67d6bcd14cae0f06cf43caae53ecfc7bff62d27cd358e2593"
+  },
+  "unit": "omabit-import-guest-72ddb0d1ab40468a9d53c89a068cbb2c",
+  "metadata_manifest_sha256": "c808e6cb9e4bdc49a93c8915fd24e96f95e1026470f46c6129f3aa5362dca735",
+  "relocation": [
+    {
+      "original_path": "/tmp/omabit-import-appliance-20261022-16/artifacts",
+      "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-docker-project17/appliance16-artifacts",
+      "sha256": {
+        "base.raw": "406192ce76dd8dfedaa8bcf636845e588a073d9e8ed09ca053815ba9002ccdb3",
+        "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+        "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+        "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+      },
+      "scope_inactive": true
+    },
+    {
+      "original_path": "/tmp/omabit-import-guest-run-20261022-17/lab",
+      "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-docker-project17/run17-lab",
+      "sha256": {
+        "root.qcow2": "1d14890503dc574c5b4971a7226e13a93897ede0e09343c607c23eab7911353e"
+      },
+      "scope_inactive": true
+    }
+  ],
+  "limitations": [
+    "No runner project integration or host publication",
+    "No anchor restart, power loss or agent upgrades",
+    "Liveness asserted by frozen case source; raw comparison inspect records not retained",
+    "No production ships, desktop or keyring involved"
+  ]
+}

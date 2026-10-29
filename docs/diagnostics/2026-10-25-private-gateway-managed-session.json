@@ -1,0 +1,137 @@
+{
+  "memory": "M399",
+  "source_sha256": {
+    "internal/managed/private_gateway_backend_linux.go": "cf971adebf7baeb04f238f9f624327a1b9099ead266d184fb6cb6403a71f2f98",
+    "internal/runtimequalify/private_gateway_client_linux.go": "d3b57a05465553ee5e27043459e3893190f19a1ec1179acfcab88d58dbd94526",
+    "internal/runtimequalify/private_gateway_client_linux_test.go": "11265a804c39f21876e48d967eb0d5d7340ba0fad433d13e6ec51b91f746ffa8",
+    "internal/runtimequalify/private_gateway_session_linux.go": "35598482f2a2e9c7b8373b2aa3bb633a777e57cdf2dbf5c20355cdd223f03d30",
+    "internal/runtimequalify/private_gateway_session_linux_test.go": "b24dc4b7fb863cecf5223382a22487f1df6d40ec33b2bba695ca37f1c837887d"
+  },
+  "focused": {
+    "source_sha256": {
+      "private_gateway_backend_linux.go": "cf971adebf7baeb04f238f9f624327a1b9099ead266d184fb6cb6403a71f2f98",
+      "private_gateway_client_linux.go": "d3b57a05465553ee5e27043459e3893190f19a1ec1179acfcab88d58dbd94526",
+      "private_gateway_client_linux_test.go": "11265a804c39f21876e48d967eb0d5d7340ba0fad433d13e6ec51b91f746ffa8",
+      "private_gateway_session_linux.go": "35598482f2a2e9c7b8373b2aa3bb633a777e57cdf2dbf5c20355cdd223f03d30",
+      "private_gateway_session_linux_test.go": "b24dc4b7fb863cecf5223382a22487f1df6d40ec33b2bba695ca37f1c837887d",
+      "qualified_session_linux_test.go": "00045360b35aa83934ab8e87fc7e4bea9134502fab694d9eaf1d4e7363ac9433"
+    },
+    "actual_docker_access": false,
+    "private_home": "/tmp/omabit-private-gateway-session-20261025-01/check-home",
+    "results": {
+      "session": {
+        "exit": 0,
+        "checks": 42,
+        "top": 10,
+        "failed": [],
+        "command": [
+          "go",
+          "test",
+          "-overlay=/tmp/omabit-private-gateway-session-20261025-01/qualified-overlay.json",
+          "-p=2",
+          "-race",
+          "-count=1",
+          "-timeout=5m",
+          "-json",
+          "./internal/runtimequalify",
+          "-run",
+          "^Test(PrivateGateway(Client|Session)|QualifiedPrivateGatewaySession)"
+        ]
+      },
+      "queue": {
+        "exit": 0,
+        "checks": 83,
+        "top": 10,
+        "failed": [],
+        "command": [
+          "go",
+          "test",
+          "-overlay=/tmp/omabit-private-gateway-session-20261025-01/qualified-overlay.json",
+          "-p=2",
+          "-race",
+          "-count=1",
+          "-timeout=5m",
+          "-json",
+          "./internal/managed",
+          "-run",
+          "^TestPrivate(LifecycleQueue|WorkspaceQueue)"
+        ]
+      }
+    },
+    "vet_exit": 0,
+    "seconds": 58.44165842898656
+  },
+  "integrated": {
+    "source_sha256": {
+      "internal/managed/private_gateway_backend_linux.go": "cf971adebf7baeb04f238f9f624327a1b9099ead266d184fb6cb6403a71f2f98",
+      "internal/runtimequalify/private_gateway_client_linux.go": "d3b57a05465553ee5e27043459e3893190f19a1ec1179acfcab88d58dbd94526",
+      "internal/runtimequalify/private_gateway_client_linux_test.go": "11265a804c39f21876e48d967eb0d5d7340ba0fad433d13e6ec51b91f746ffa8",
+      "internal/runtimequalify/private_gateway_session_linux.go": "35598482f2a2e9c7b8373b2aa3bb633a777e57cdf2dbf5c20355cdd223f03d30",
+      "internal/runtimequalify/private_gateway_session_linux_test.go": "b24dc4b7fb863cecf5223382a22487f1df6d40ec33b2bba695ca37f1c837887d"
+    },
+    "results": {
+      "gateway": {
+        "exit": 0,
+        "checks": 353,
+        "top": 43,
+        "failed": [],
+        "command": [
+          "go",
+          "test",
+          "-p=2",
+          "-race",
+          "-count=1",
+          "-timeout=5m",
+          "-json",
+          "./internal/runtimequalify",
+          "-run",
+          "^TestPrivateGateway"
+        ]
+      },
+      "runner-build": {
+        "exit": 0,
+        "checks": 0,
+        "top": 0,
+        "failed": [],
+        "command": [
+          "go",
+          "test",
+          "-p=2",
+          "-race",
+          "-count=1",
+          "-timeout=5m",
+          "-json",
+          "./backend/cmd/urbit-runner",
+          "-run",
+          "^$"
+        ]
+      }
+    },
+    "actual_docker_access": false,
+    "diff_check_exit": 0,
+    "seconds": 13.742978259979282
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-managed-session",
+  "artifact_sha256": {
+    "private_gateway_backend_linux.go": "cf971adebf7baeb04f238f9f624327a1b9099ead266d184fb6cb6403a71f2f98",
+    "private_gateway_client_linux.go": "d3b57a05465553ee5e27043459e3893190f19a1ec1179acfcab88d58dbd94526",
+    "private_gateway_client_linux_test.go": "11265a804c39f21876e48d967eb0d5d7340ba0fad433d13e6ec51b91f746ffa8",
+    "private_gateway_session_linux.go": "35598482f2a2e9c7b8373b2aa3bb633a777e57cdf2dbf5c20355cdd223f03d30",
+    "private_gateway_session_linux_test.go": "b24dc4b7fb863cecf5223382a22487f1df6d40ec33b2bba695ca37f1c837887d",
+    "qualified_session_linux_test.go": "00045360b35aa83934ab8e87fc7e4bea9134502fab694d9eaf1d4e7363ac9433",
+    "check.py": "aebddb39b0c19a9e3d01f09d316c8175d58cb23351a40f2f711acf81c5172b1c",
+    "check-result.json": "fcf1f750c0733a3417328f843e16a9eefdcc359ecf39e184253e9ce041050132",
+    "session-tests.jsonl": "748415c2a0fe2c857380f268662be5b9a97c676831ce7a0e25fc2c633acc345e",
+    "queue-tests.jsonl": "9f557ba1d5e30de6f3b821b53b87cecd4d8f09542a6752df9d09aca9f6e92472",
+    "vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "integrate.py": "ee8539b93ff3f87f039ada37b33d60ac9c3c8ca1b6c0f0c80313467a54aaac4c",
+    "integrated-result.json": "968126dba1306db16470a1373512f2f4de35d2923ba5e988c5a7818900b7b3ac",
+    "gateway-integrated.jsonl": "ae186dbd31a33d9b4d3a0cc06dfb537335a42120c499ada6189bc5d1762d4b1e",
+    "runner-build-integrated.jsonl": "20b20fe7b4d7cd54e57b9819aba86ec5ebb4e506a83576e6016c9a8fc50fa7f3",
+    "diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "runtime_qualified": false,
+  "schema_changed": false,
+  "public_route_added": false,
+  "production_operations": false
+}

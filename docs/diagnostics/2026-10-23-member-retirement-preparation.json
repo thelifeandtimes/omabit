@@ -1,0 +1,41 @@
+{
+  "verified": true,
+  "runtime_executed": false,
+  "source_files_verified": 136,
+  "artifacts": {
+    "base.raw": "4cb0b3e56d15acda666ed5d71429941451eb0725e01608617a1eeb53588533d0",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "embedded_test_sha256": "2610e6222e954051253e124882b95d9d40bdf7bed0e93ee4d3dfee25fd722a30",
+  "staging_removed": true,
+  "case": {
+    "exercise_project_member_launch": true,
+    "exercise_project_member_storage": false,
+    "exercise_project_anchor_start": false,
+    "exercise_project_preparation": false,
+    "network_anchor_recovery": false,
+    "network_published": false,
+    "exercise_login_code": false,
+    "exercise_endpoints": false,
+    "endpoint_network": "internal",
+    "exercise_import": false,
+    "exercise_fake_network": false,
+    "network_state": false,
+    "network_isolation": false,
+    "import_mode": "rename",
+    "interrupt_copy": false,
+    "restore_copy": false,
+    "restore_ui": false
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-retirement-preparation",
+  "logs": {
+    "omabit-retirement-vm18-guards.log": "4c09dbe38d81edbcdf5d3433080115a7fec2281b62ef598131523a2ccfa56b44",
+    "omabit-retirement-vm18-explicit-host-guard.log": "890b1a05530126f93e95eea175d04c3faf3a62108b1a7d038fb21433e872fd5d",
+    "omabit-retirement-vm18-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-retirement-vm18-prepare.log": "172405da8d55abef6fe4d1c974225e97cf6367847f016b28bb71cce0ab13485e",
+    "omabit-retirement-vm18-preparation-verification.log": "359299dd313605306e1108d0e2cac2397a2de9326e63cdde76c738162ad6747b",
+    "omabit-verify-member-retirement23-18.py": "cb376095933f99e0e67dd8f9fedc1448dd3f95c9d7d64ebc138e86bf4e738a84"
+  }
+}

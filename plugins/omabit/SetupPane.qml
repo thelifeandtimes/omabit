@@ -8,7 +8,11 @@ Column {
   id: root
   property var service
   property bool active: true
+  property bool compact: false
   property string mode: "home"
+  property string requestedApplication: ""
+  function openApplications(pluginId) { requestedApplication=pluginId || ""; mode="apps" }
+  function openProject(connection,id) {mode="projects";projectNetworks.present(connection,id)}
   property string transport: "ssh"
   property string shipKind: "comet"
   property bool developmentOptions: false
@@ -27,7 +31,7 @@ Column {
   readonly property var runners: service ? service.connections : []
   readonly property var managedRunners: service ? service.registrations : []
   readonly property var readyRunners: runners.filter(function(c) { return root.service.observing && Model.writable(c, root.service.now) && Model.hasFeature(c, "create-fake") })
-  readonly property var provisioningRunner: targetRunner.currentIndex >= 0 ? readyRunners[targetRunner.currentIndex] : null
+  readonly property var provisioningRunner: readyRunners.length === 1 ? readyRunners[0] : targetRunner.currentIndex >= 0 ? readyRunners[targetRunner.currentIndex] : null
   readonly property string provisioningSelection: provisioningRunner ? provisioningRunner.runner_id + "/" + provisioningRunner.name : ""
   onProvisioningSelectionChanged: if (provisioningRunner && shipKind === "comet" && !Model.hasFeature(provisioningRunner,"create-comet")) shipKind = "fake"
   onModeChanged: if (service && !service.busy) { service.lastError=""; service.lastResult="" }
@@ -58,9 +62,10 @@ Column {
     Card {
       width: root.width; implicitHeight: localIntro.implicitHeight + Style.space(28)
       Column { id: localIntro; anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: Style.space(14); spacing: Style.space(9)
-        CardTitle { text: root.service && root.service.localSetupStatus && root.service.localSetupStatus.ready ? "This computer is connected" : "Start here: your local Urbit host" }
+        CardTitle { width: parent.width; text: root.service && root.service.localSetupStatus && root.service.localSetupStatus.ready ? "This computer is connected" : "Start here: your local Urbit host" }
         Label { width: parent.width; secondary: true; text: root.service && root.service.localSetupStatus && root.service.localSetupStatus.ready ? "Using the existing “" + root.service.localSetupStatus.connection.name + "” runner. Its ships and data are already available in the fleet." : "Set up background services and private desktop access in one guided flow." }
-        RowLayout {
+        Flow {
+          width: parent.width; spacing: Style.space(8)
           ActionButton { objectName: "setup-add-ship"; text: "Add a ship →"; visible: root.readyRunners.length>0; primary: true; onClicked: root.addShip() }
           ActionButton { text: "Set up this computer →"; visible: root.service && (!root.service.localSetupStatus || !root.service.localSetupStatus.ready); primary: root.readyRunners.length===0; onClicked: { root.mode="local";root.service.checkLocalSetup() } }
           ActionButton { text: "Local setup details"; quiet: true; visible: root.service && root.service.localSetupStatus && root.service.localSetupStatus.ready; onClicked: { root.mode="local";root.service.checkLocalSetup() } }
@@ -71,17 +76,19 @@ Column {
       model: [
         {key:"storage",title:"▣  Import a pier & storage locations",detail:"Move an existing pier into management; choose storage or delete stopped piers"},
         {key:"manage", title:"↔  Manage runners", detail:"Add and edit the runner connections enrolled in this collector"},
-        {key:"apps", title:"◇  Application Connections", detail:"Coming Soon"}]
+        {key:"projects", title:"⌘  Project networks", detail:"Inspect and manage development project networks"},
+        {key:"hosted",title:"◇  Remotely Hosted Urbits",detail:"Add and sign in to ships from a hosting provider or another host"},
+        {key:"apps", title:"◇  Application Connections", detail:"Approve installed plugins to connect directly to your ship"}]
       Card {
         required property var modelData
         objectName: "setup-card-"+modelData.key
-        width: root.width; implicitHeight: Style.space(70)
-        Column { anchors.left: parent.left; anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; anchors.margins: Style.space(16); spacing: Style.space(5)
-          CardTitle { text: modelData.title }
-          Label { text: modelData.detail; caption: true; secondary: true }
+        width: root.width; implicitHeight: Math.max(Style.space(70), setupCardText.implicitHeight + Style.space(32))
+        Column { id: setupCardText; anchors.left: parent.left; anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; anchors.leftMargin: Style.space(16); anchors.rightMargin: setupCardArrow.width + Style.space(24); spacing: Style.space(5)
+          CardTitle { width: parent.width; text: modelData.title }
+          Label { width: parent.width; text: modelData.detail; caption: true; secondary: true }
         }
         MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.mode = parent.modelData.key }
-        ActionButton { anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; anchors.rightMargin: Style.space(12); text: "›"; quiet: true; hint: modelData.title; onClicked: root.mode = parent.modelData.key }
+        ActionButton { id: setupCardArrow; anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; anchors.rightMargin: Style.space(12); text: "›"; quiet: true; hint: modelData.title; onClicked: root.mode = parent.modelData.key }
       }
     }
   }
@@ -165,11 +172,13 @@ Column {
   Column {
     width: parent.width; spacing: Style.space(10); visible: root.mode === "ship"
     Label { text: "Add a ship"; font.pixelSize: Style.space(19); font.bold: true }
-    Label { text: "1 / Choose a runner"; secondary: true; caption: true }
-    SelectField { id: targetRunner; width: parent.width; model: root.readyRunners.map(function(c){return Model.runnerTitle(c,root.service.runnerPreferences)}) }
+    Label { visible: !root.compact || root.readyRunners.length > 1; text: "1 / Choose a runner"; secondary: true; caption: true }
+    SelectField { id: targetRunner; objectName: "add-ship-runner"; visible: !root.compact || root.readyRunners.length > 1; width: parent.width; model: root.readyRunners.map(function(c){return Model.runnerTitle(c,root.service.runnerPreferences)}) }
     Label { visible: root.readyRunners.length === 0; text: "Connect an available operator runner first."; color: Design.warning }
-    Label { text: "2 / Provisioning method"; secondary: true; caption: true }
+    Label { visible: !root.compact; text: "2 / Provisioning method"; secondary: true; caption: true }
+    SelectField { objectName: "compact-ship-method"; width: parent.width; visible: root.compact; model: root.provisioningMethods.map(function(m){return m.label}).concat(["Development fake", "Qualified development import"]); currentIndex: ["comet","key","import","fake","pier"].indexOf(root.shipKind); onActivated: root.shipKind=["comet","key","import","fake","pier"][currentIndex] }
     Flow {
+      visible: !root.compact
       width: parent.width; spacing: Style.space(6)
       Repeater {
         model: root.provisioningMethods
@@ -178,7 +187,7 @@ Column {
     }
     Card {
       objectName: "provisioning-explainer"
-      width: parent.width; visible: !!root.provisioningMethod
+      width: parent.width; visible: !root.compact && !!root.provisioningMethod
       implicitHeight: methodExplanation.implicitHeight+Style.space(24)
       Label {
         id: methodExplanation; objectName: "provisioning-explanation"
@@ -187,18 +196,20 @@ Column {
         secondary: true
       }
     }
-    ActionButton { text: root.developmentOptions ? "Development options −" : "Development options +"; quiet: true; compact: true; onClicked: root.developmentOptions=!root.developmentOptions }
+    ActionButton { visible: !root.compact; text: root.developmentOptions ? "Development options −" : "Development options +"; quiet: true; compact: true; onClicked: root.developmentOptions=!root.developmentOptions }
     Flow {
-      width: parent.width; spacing: Style.space(6); visible: root.developmentOptions
+      width: parent.width; spacing: Style.space(6); visible: !root.compact && root.developmentOptions
       ActionButton { text: "Development fake"; primary: root.shipKind==="fake"; compact: true; onClicked: root.shipKind="fake" }
       ActionButton { text: "Qualified development import"; primary: root.shipKind==="pier"; compact: true; onClicked: root.shipKind="pier" }
     }
     KeyBootPane { width: parent.width; visible: root.shipKind === "key"; service: root.service; connection: root.provisioningRunner }
     StoragePane { objectName: "provisioning-pier-import"; width: parent.width; visible: root.shipKind === "import"; provisioning: true; service: root.service; preferredConnection: root.provisioningRunner }
     ImportPane { width: parent.width; visible: root.shipKind === "pier"; service: root.service; connection: targetRunner.currentIndex >= 0 ? root.readyRunners[targetRunner.currentIndex] : null }
-    RegistrationPane { width: parent.width; visible: root.shipKind === "fake" || root.shipKind === "comet"; service: root.service; connection: root.provisioningRunner; kind: root.shipKind; onShowFleet: root.showFleet() }
+    RegistrationPane { compact: root.compact; width: parent.width; visible: root.shipKind === "fake" || root.shipKind === "comet"; service: root.service; connection: root.provisioningRunner; kind: root.shipKind; onShowFleet: root.showFleet(); onShowProjects: root.mode="projects" }
   }
-  ApplicationsPane { width: parent.width; visible: root.mode === "apps"; active: visible && root.active; service: root.service }
+  ProjectNetworksPane { id:projectNetworks; onAddShip: {root.shipKind="fake";root.addShip()} width: parent.width; visible: root.mode === "projects"; active: visible && root.active; service: root.service }
+  HostedUrbitsPane {width:parent.width;service:root.service;active:root.active&&root.mode==="hosted";visible:root.mode==="hosted";onShowApplications:root.mode="apps"}
+  ApplicationsPane { requestedPlugin:root.requestedApplication; onShowHosted:root.mode="hosted"; width: parent.width; visible: root.mode === "apps"; active: visible && root.active; service: root.service }
   Column {
     width: parent.width; spacing: Style.space(10); visible: root.mode === "gaps"
     Label { text: "Secure +code access"; font.pixelSize: Style.space(19); font.bold: true }

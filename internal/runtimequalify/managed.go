@@ -15,6 +15,7 @@ import (
 // Only validated qualified-fake provenance can seed an imported initialized pier;
 // it is not an API for arbitrary filesystem paths or Docker resources.
 type ManagedState struct {
+	ImportRestore        *ManagedImportRestore  `json:"import_restore,omitempty"`
 	Loom                 uint8                  `json:"loom,omitempty"`
 	NativeControl        bool                   `json:"native_control,omitempty"`
 	StartupResume        *StartupResumeIntent   `json:"startup_resume,omitempty"`
@@ -86,6 +87,9 @@ type ManagedExternalImport struct {
 // Recovery only finishes a retained external enrollment. It cannot
 // resume copying, bootstrap a new pier, or change an existing runtime's ports.
 func (s ManagedState) ImportRecoveryEligible() bool {
+	if s.ImportRestore != nil {
+		return false
+	}
 	if s.Initialized {
 		var ok bool
 		s, ok = s.legacyImportCompletionCandidate()
@@ -130,6 +134,9 @@ func (s ManagedState) legacyImportCompletionCandidate() (ManagedState, bool) {
 }
 
 func (s ManagedState) ExternalImportInFlight() bool {
+	if s.ImportRestore != nil {
+		return true
+	}
 	if s.ExternalImport == nil || s.ExternalImport.Stage == "complete" {
 		return false
 	}
@@ -199,7 +206,7 @@ type ManagedImport struct {
 }
 
 func (s ManagedState) UncertainProvisioning() bool {
-	return s.Deletion != nil || s.ExternalImport != nil && s.ExternalImport.Stage != "complete" || s.Handoff.Fenced() || s.Adoption != nil && (s.Adoption.Uncertain || s.Adoption.FinishedAt == nil) || s.Storage != nil && s.Storage.Uncertain || s.Fake != nil && s.Fake.Uncertain || s.Import != nil && (s.Import.Uncertain || s.Import.FinishedAt == nil || !s.Initialized) ||
+	return s.ImportRestore != nil || s.Deletion != nil || s.ExternalImport != nil && s.ExternalImport.Stage != "complete" || s.Handoff.Fenced() || s.Adoption != nil && (s.Adoption.Uncertain || s.Adoption.FinishedAt == nil) || s.Storage != nil && s.Storage.Uncertain || s.Fake != nil && s.Fake.Uncertain || s.Import != nil && (s.Import.Uncertain || s.Import.FinishedAt == nil || !s.Initialized) ||
 		s.Comet != nil && (s.Comet.Uncertain || s.Comet.StartedAt != nil && (s.Comet.FinishedAt == nil || !s.Initialized || !s.networkIdentityValid()))
 }
 

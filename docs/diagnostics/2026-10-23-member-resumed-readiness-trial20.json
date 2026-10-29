@@ -1,0 +1,35 @@
+{
+  "evidence_verified": true,
+  "passed": false,
+  "schema": 33,
+  "seconds": 1385.05,
+  "failure": "Fixture reused observe-vm-zod actor/request for initial and replacement readiness; rejected before new admission.",
+  "resumed_readiness_rows": 0,
+  "fixture_identity_http_status": 200,
+  "clean_shutdown": true,
+  "clean_member_stops": true,
+  "scope_inactive": true,
+  "outer_exec_exit": 1,
+  "guest_process_exit": 0,
+  "extracted_files_verified": 19,
+  "journal_mirrors_verified": 13,
+  "post_stop_files_verified": 7,
+  "post_stop_bytes_verified": 1016852492,
+  "result_sha256": "4787b048c412a082a7a018f374dd0c76d65fba88d7f8fdd7dd5a024d9915dd6f",
+  "database_sha256": "cfc2d121f1fbf11f8e3cfbdc84d9ad3a10e4732dc24a8fc07a8cc2a67df0d440",
+  "limits": [
+    "No runtime resumed-readiness qualification.",
+    "No reopen gate was reached.",
+    "M103 prior successful first replacement remains separate."
+  ],
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-resumed-readiness20",
+  "originals_retained": true,
+  "source_files_verified": 156,
+  "embedded_test_sha256": "24c0ba252ec3fc9337bb3f45bfe1dab3fe37234039e2d3a63d4d74ecb198a515",
+  "additional_logs": {
+    "omabit-resumed-readiness-vm20-extraction.log": "5a0944dba050b8a7ab9f5f03909e211648347e0eb7ad19b42b1c6962d582b13d",
+    "omabit-resumed-readiness-vm20-independent-verification.log": "fe8393086fb0911bc6a6212b1532387b65a3cdd1c4bcda3535f2429d26dd426e",
+    "omabit-resumed-readiness-vm20-independent-verification-initial.log": "39d8149c9485358aca17bf5c47749675e8bade527e0c4653028363364875a5bd",
+    "omabit-resumed-readiness-vm20-retention.log": "71a7c0fbfafb2869ac0576e56d3380205b6cefa71a0e27279346b0bd2768037b"
+  }
+}

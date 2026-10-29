@@ -1,0 +1,295 @@
+{
+  "created_at": "2026-10-29T06:17:57.716554+00:00",
+  "status": "completed",
+  "missing_namespace_base_host_path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-docker-pristine-input/base.raw",
+  "removed": [
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/runtime-20261025-09/root.qcow2",
+      "sha256": "305668ffde66ae139366dac3b4d6fd2c97aec4100d23fa32ab3a67d97a5ac0e0",
+      "allocated_bytes": 3663003648,
+      "info": {
+        "children": [
+          {
+            "name": "file",
+            "info": {
+              "children": [],
+              "virtual-size": 3663003648,
+              "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/runtime-20261025-09/root.qcow2",
+              "format": "file",
+              "actual-size": 3663003648,
+              "format-specific": {
+                "type": "file",
+                "data": {}
+              },
+              "dirty-flag": false
+            }
+          }
+        ],
+        "backing-filename-format": "raw",
+        "virtual-size": 12884901888,
+        "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/runtime-20261025-09/root.qcow2",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 3663003648,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "compression-type": "zlib",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false,
+            "extended-l2": false
+          }
+        },
+        "full-backing-filename": "/artifacts/base.raw",
+        "backing-filename": "/artifacts/base.raw",
+        "dirty-flag": false
+      },
+      "reason": "M448 confirmed shared base was removed; isolated obsolete qualification overlay, no active QEMU or child overlay"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/managed-member-trace-disk-20261026-01/root.qcow2",
+      "sha256": "f971d2028fa19e1a1168074c6631edf4180e50ea8def6374c0f4dd44b794dff1",
+      "allocated_bytes": 3635216384,
+      "info": {
+        "children": [
+          {
+            "name": "file",
+            "info": {
+              "children": [],
+              "virtual-size": 3635216384,
+              "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/managed-member-trace-disk-20261026-01/root.qcow2",
+              "format": "file",
+              "actual-size": 3635216384,
+              "format-specific": {
+                "type": "file",
+                "data": {}
+              },
+              "dirty-flag": false
+            }
+          }
+        ],
+        "backing-filename-format": "raw",
+        "virtual-size": 12884901888,
+        "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/managed-member-trace-disk-20261026-01/root.qcow2",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 3635216384,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "compression-type": "zlib",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false,
+            "extended-l2": false
+          }
+        },
+        "full-backing-filename": "/artifacts/base.raw",
+        "backing-filename": "/artifacts/base.raw",
+        "dirty-flag": false
+      },
+      "reason": "M448 confirmed shared base was removed; isolated obsolete qualification overlay, no active QEMU or child overlay"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/managed-member-inventory-disk-20261026-01/root.qcow2",
+      "sha256": "6a68df77d0c2a36eca528d5c03d780adf09903b3582842591956beb7008a331c",
+      "allocated_bytes": 3629056000,
+      "info": {
+        "children": [
+          {
+            "name": "file",
+            "info": {
+              "children": [],
+              "virtual-size": 3629056000,
+              "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/managed-member-inventory-disk-20261026-01/root.qcow2",
+              "format": "file",
+              "actual-size": 3629056000,
+              "format-specific": {
+                "type": "file",
+                "data": {}
+              },
+              "dirty-flag": false
+            }
+          }
+        ],
+        "backing-filename-format": "raw",
+        "virtual-size": 12884901888,
+        "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/managed-member-inventory-disk-20261026-01/root.qcow2",
+        "cluster-size": 65536,
+        "format": "qcow2",
+        "actual-size": 3629056000,
+        "format-specific": {
+          "type": "qcow2",
+          "data": {
+            "compat": "1.1",
+            "compression-type": "zlib",
+            "lazy-refcounts": false,
+            "refcount-bits": 16,
+            "corrupt": false,
+            "extended-l2": false
+          }
+        },
+        "full-backing-filename": "/artifacts/base.raw",
+        "backing-filename": "/artifacts/base.raw",
+        "dirty-flag": false
+      },
+      "reason": "M448 confirmed shared base was removed; isolated obsolete qualification overlay, no active QEMU or child overlay"
+    }
+  ],
+  "retained_other_overlay_inventory": {
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261027-01/portable/base.qcow2": {
+      "children": [
+        {
+          "name": "file",
+          "info": {
+            "children": [],
+            "virtual-size": 1977876480,
+            "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261027-01/portable/base.qcow2",
+            "format": "file",
+            "actual-size": 1971204096,
+            "format-specific": {
+              "type": "file",
+              "data": {}
+            },
+            "dirty-flag": false
+          }
+        }
+      ],
+      "virtual-size": 17179869184,
+      "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261027-01/portable/base.qcow2",
+      "cluster-size": 65536,
+      "format": "qcow2",
+      "actual-size": 1971204096,
+      "format-specific": {
+        "type": "qcow2",
+        "data": {
+          "compat": "1.1",
+          "compression-type": "zlib",
+          "lazy-refcounts": false,
+          "refcount-bits": 16,
+          "corrupt": false,
+          "extended-l2": false
+        }
+      },
+      "dirty-flag": false
+    },
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261027-01/portable/state/session.qcow2": {
+      "children": [
+        {
+          "name": "file",
+          "info": {
+            "children": [],
+            "virtual-size": 1342963712,
+            "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261027-01/portable/state/session.qcow2",
+            "format": "file",
+            "actual-size": 968298496,
+            "format-specific": {
+              "type": "file",
+              "data": {}
+            },
+            "dirty-flag": false
+          }
+        }
+      ],
+      "backing-filename-format": "qcow2",
+      "virtual-size": 17179869184,
+      "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261027-01/portable/state/session.qcow2",
+      "cluster-size": 65536,
+      "format": "qcow2",
+      "actual-size": 968298496,
+      "format-specific": {
+        "type": "qcow2",
+        "data": {
+          "compat": "1.1",
+          "compression-type": "zlib",
+          "lazy-refcounts": false,
+          "refcount-bits": 16,
+          "corrupt": false,
+          "extended-l2": false
+        }
+      },
+      "full-backing-filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261027-01/portable/state/../base.qcow2",
+      "backing-filename": "../base.qcow2",
+      "dirty-flag": false
+    },
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261026-01/portable/base.qcow2": {
+      "children": [
+        {
+          "name": "file",
+          "info": {
+            "children": [],
+            "virtual-size": 2320564224,
+            "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261026-01/portable/base.qcow2",
+            "format": "file",
+            "actual-size": 1879990272,
+            "format-specific": {
+              "type": "file",
+              "data": {}
+            },
+            "dirty-flag": false
+          }
+        }
+      ],
+      "virtual-size": 17179869184,
+      "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261026-01/portable/base.qcow2",
+      "cluster-size": 65536,
+      "format": "qcow2",
+      "actual-size": 1879990272,
+      "format-specific": {
+        "type": "qcow2",
+        "data": {
+          "compat": "1.1",
+          "compression-type": "zstd",
+          "lazy-refcounts": false,
+          "refcount-bits": 16,
+          "corrupt": false,
+          "extended-l2": false
+        }
+      },
+      "dirty-flag": false
+    },
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261026-01/portable/state/session.qcow2": {
+      "children": [
+        {
+          "name": "file",
+          "info": {
+            "children": [],
+            "virtual-size": 1157824512,
+            "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261026-01/portable/state/session.qcow2",
+            "format": "file",
+            "actual-size": 1002704896,
+            "format-specific": {
+              "type": "file",
+              "data": {}
+            },
+            "dirty-flag": false
+          }
+        }
+      ],
+      "backing-filename-format": "qcow2",
+      "virtual-size": 17179869184,
+      "filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261026-01/portable/state/session.qcow2",
+      "cluster-size": 65536,
+      "format": "qcow2",
+      "actual-size": 1002704896,
+      "format-specific": {
+        "type": "qcow2",
+        "data": {
+          "compat": "1.1",
+          "compression-type": "zlib",
+          "lazy-refcounts": false,
+          "refcount-bits": 16,
+          "corrupt": false,
+          "extended-l2": false
+        }
+      },
+      "full-backing-filename": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261026-01/portable/state/../base.qcow2",
+      "backing-filename": "../base.qcow2",
+      "dirty-flag": false
+    }
+  },
+  "freed_allocated_bytes": 10927276032
+}

@@ -232,7 +232,7 @@ func (r *Server) launch(op protocol.Operation) {
 	go func() {
 		defer r.wg.Done()
 		defer func() { r.mu.Lock(); r.updateWorkers--; r.mu.Unlock() }()
-		if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "delete-pier" || op.Kind == "recover-import" || op.Kind == "import-pier" || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
+		if strings.HasSuffix(op.Kind, "-handoff") || op.Kind == "delete-pier" || op.Kind == "recover-import" || op.Kind == protocol.ImportRestoreFeature || op.Kind == "import-pier" || op.Kind == "start" || op.Kind == "startup-resume" || op.Kind == "move-pier" || op.Kind == "enroll-pier" || op.Kind == "pack" || op.Kind == "meld" || op.Kind == "roll" || op.Kind == "prune-epochs" || op.Kind == "import-fake" || routineKind(op.Kind) {
 			select {
 			case r.workGate <- struct{}{}:
 				defer func() { <-r.workGate }()
@@ -294,6 +294,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if req.URL.Path == protocol.ManagementUpdatePath {
+		if ownerhost.Development() {
+			r.respondError(w, &fault{403, protocol.APIError{Code: "development_update_disabled", Message: "Update the separate development artifacts explicitly; host installers are unavailable here"}})
+			return
+		}
 		_, attributed := req.Header[http.CanonicalHeaderKey(access.Header)]
 		if uid != 0 || attributed {
 			r.respondError(w, &fault{403, protocol.APIError{Code: "local_installer_required", Message: "management activation requires a direct local root Unix peer"}})
@@ -324,8 +328,15 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodGet && req.URL.Path == "/hello" {
 		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials", "offline-pack", "offline-meld", "offline-roll", "container-resources", "container-cpu", "epoch-inventory", "epoch-prune-genesis", "epoch-prune-prefix"}
 		features = append(features, "maintenance-schedules")
-		features = append(features, protocol.CreationReplayFeature)
-		features = append(features, protocol.ManagementUpdateFeature)
+		features = append(features, protocol.CreationReplayFeature, protocol.ProjectInventoryFeature, protocol.ProjectStatusFeature, protocol.ProjectRecoveryCheckpointFeature, protocol.ProjectRecoverySourceFeature, protocol.ProjectRegistrationFeature, protocol.PrivateChainRegistrationFeature, protocol.PrivateChainInventoryFeature)
+		features = append(features, r.projectActionFeatures()...)
+		if _, ok := r.b.(projectDependenciesBackend); ok {
+			features = append(features, protocol.ProjectDependenciesFeature)
+		}
+		features = append(features, r.projectRecoveryActionFeatures()...)
+		if !ownerhost.Development() {
+			features = append(features, protocol.ManagementUpdateFeature)
+		}
 		features = append(features, protocol.HostCompatibilityFeature)
 		features = append(features, "fake-ship-options", "host-port-suggestion")
 		if p, err := ownerhost.Current(); err == nil && p != nil {
@@ -333,6 +344,9 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 		if _, ok := r.b.(storageActionsBackend); ok {
 			features = append(features, "storage-locations", "import-pier", "delete-pier", "recover-import")
+		}
+		if _, ok := r.b.(importRestoreBackend); ok {
+			features = append(features, protocol.ImportRestoreFeature)
 		}
 		if _, ok := r.b.(storageBackend); ok {
 			features = append(features, "bootstrap-selection")
@@ -377,6 +391,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		r.serveHostCompatibility(w, req)
 		return
 	}
+	if req.URL.Path == protocol.ProjectDependenciesPath {
+		r.serveProjectDependencies(w, req, role)
+		return
+	}
 	if req.URL.Path == protocol.PillUploadPath {
 		if err := r.beginUpdateBulk(); err != nil {
 			r.respondError(w, err)
@@ -390,6 +408,59 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		r.stagePill(w, req, role)
 		return
 	}
+	if project, parent, kind, ok := protocol.ProjectRecoveryActionIDs(req.URL.Path); ok && req.Method == http.MethodPost {
+		r.serveProjectRecoveryAction(w, req, actor, role, project, parent, kind)
+		return
+	}
+	if project, ok := protocol.ProjectActionID(req.URL.Path); ok && req.Method == http.MethodPost {
+		r.serveProjectAction(w, req, actor, role, project)
+		return
+	}
+	if id, ok := protocol.ProjectRecoverySourceID(req.URL.Path); ok && req.Method == http.MethodGet {
+		v, err := r.s.projectRecoverySource(req.Context(), id)
+		if err != nil {
+			r.respondError(w, err)
+			return
+		}
+		respond(w, http.StatusOK, v)
+		return
+	}
+	if project, operation, ok := protocol.ProjectRecoveryCheckpointIDs(req.URL.Path); ok && req.Method == http.MethodGet {
+		checkpoint, err := r.s.projectRecoveryCheckpoint(req.Context(), project, operation)
+		if err != nil {
+			r.respondError(w, err)
+			return
+		}
+		respond(w, http.StatusOK, checkpoint)
+		return
+	}
+	if project, ok := protocol.ProjectStatusID(req.URL.Path); ok && req.Method == http.MethodGet {
+		status, err := r.s.projectStatus(req.Context(), project)
+		if err != nil {
+			r.respondError(w, err)
+			return
+		}
+		respond(w, http.StatusOK, status)
+		return
+	}
+	if req.Method == http.MethodGet && req.URL.Path == protocol.PrivateChainProjectsPath {
+		inventory, err := r.s.privateProjectInventory(req.Context())
+		if err != nil {
+			r.respondError(w, err)
+			return
+		}
+		respond(w, http.StatusOK, inventory)
+		return
+	}
+	if req.Method == http.MethodGet && req.URL.Path == protocol.ProjectInventoryPath {
+		inventory, err := r.s.projectInventory(req.Context())
+		if err != nil {
+			r.respondError(w, err)
+			return
+		}
+		respond(w, http.StatusOK, inventory)
+		return
+	}
 	if req.Method == http.MethodGet && req.URL.Path == "/v1/snapshot" {
 		snapshot, err := r.s.snapshot()
 		if err != nil {
@@ -399,6 +470,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if r.failed.Load() {
 			snapshot.Incidents = append(snapshot.Incidents, protocol.Incident{ID: "state-store", Code: "state_store_error", Message: "state journal failed; mutations are disabled until the store is reviewed", Active: true, ObservedAt: time.Now().UTC()})
 		}
+		r.attachProjectFleet(req.Context(), &snapshot)
 		snapshot.Piers = r.pierCatalogue(req.Context())
 		attachNativeControlPaths(&snapshot)
 		respond(w, 200, snapshot)
@@ -440,6 +512,14 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		respond(w, 200, protocol.PortSuggestion{RunnerID: r.s.runnerID, HTTPPort: port, ContainerPort: 8080, ObservedAt: time.Now().UTC()})
+		return
+	}
+	if req.Method == http.MethodPost && req.URL.Path == protocol.PrivateChainProjectsPath {
+		r.servePrivateProjectRegistration(w, req, actor, role)
+		return
+	}
+	if req.Method == http.MethodPost && req.URL.Path == protocol.ProjectInventoryPath {
+		r.serveProjectRegistration(w, req, actor, role)
 		return
 	}
 	if req.Method == "POST" && req.URL.Path == "/v1/handoffs" {
@@ -529,6 +609,8 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	switch {
+	case req.Method == http.MethodPost && parts[4] == "restore-import-preview":
+		r.serveImportRestorePreview(w, req, role, parts[3])
 	case req.Method == http.MethodPost && parts[4] == "publish-ames":
 		r.servePublishAmes(w, req, actor, role, parts[3])
 	case req.Method == "POST" && parts[4] == "handoff":
@@ -556,6 +638,12 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if err := decode(w, req, &body); err != nil {
 			r.respondError(w, err)
 			return
+		}
+		if body.Kind == protocol.ImportRestoreFeature {
+			if _, ok := r.b.(importRestoreBackend); !ok {
+				r.respondError(w, bad("update the runner for source restoration"))
+				return
+			}
 		}
 		op, replay, err := r.s.accept(actor, parts[3], body)
 		if err != nil {

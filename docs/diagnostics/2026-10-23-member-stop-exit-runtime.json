@@ -1,0 +1,158 @@
+{
+  "verified": true,
+  "passed": true,
+  "schema": 30,
+  "member_launches": [
+    {
+      "instance_id": "vm-zod",
+      "container": "8a49d84f024db5593fc78df311d62ce3ac89b8a9e926c2b99ddd21f4bfb2959b",
+      "namespace": {
+        "boot_id": "35bd16a6-5417-4138-87dd-7016fdfa6371",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 133460,
+      "workspace_birth": "1792793248:786516783",
+      "clean_stop": true,
+      "identity_http_status": 200
+    },
+    {
+      "instance_id": "vm-nec",
+      "container": "cf2dc257f8c52ccb5074f3c211c099071f42df7abe7229ee5f92116eed9240ff",
+      "namespace": {
+        "boot_id": "35bd16a6-5417-4138-87dd-7016fdfa6371",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 262146,
+      "workspace_birth": "1792793656:457564221",
+      "clean_stop": true,
+      "identity_http_status": 200
+    }
+  ],
+  "readiness": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-68d237238b41604e5c4641c90460bd40",
+      "ship": "~zod",
+      "captured_at": "2026-10-23T22:24:08.177989222Z",
+      "pier_inode": 133482,
+      "urb_inode": 133494,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-87f43f333978579057e9d61675e5714c",
+      "ship": "~nec",
+      "captured_at": "2026-10-23T22:24:25.561919733Z",
+      "pier_inode": 262168,
+      "urb_inode": 262180,
+      "reopen_unchanged": true
+    }
+  ],
+  "stops": [
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-54fa5c5637c4a67694420409dc8acae3",
+      "container_id": "cf2dc257f8c52ccb5074f3c211c099071f42df7abe7229ee5f92116eed9240ff",
+      "started_at": "2026-10-23T22:14:43.806387858Z",
+      "finished_at": "2026-10-23T22:24:45.415320745Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "peer_exits": 0,
+      "original_status": "succeeded",
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-94e5c3eb1894975abf9d00b4364e8e77",
+      "container_id": "8a49d84f024db5593fc78df311d62ce3ac89b8a9e926c2b99ddd21f4bfb2959b",
+      "started_at": "2026-10-23T22:07:52.04209909Z",
+      "finished_at": "2026-10-23T22:25:08.693883242Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "peer_exits": 1,
+      "original_status": "interrupted",
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "recoveries": [
+    {
+      "instance_id": "vm-zod",
+      "stop_operation_id": "op-94e5c3eb1894975abf9d00b4364e8e77",
+      "operation_id": "op-13b0dfcc3d7ad3ff3336beff5157241e",
+      "original_status": "interrupted",
+      "original_phase": "stop-dispatched",
+      "original_unchanged": true,
+      "clean_exit": true,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "member_storage_verified": [
+    {
+      "instance": "vm-nec",
+      "mount": "/srv/urbit/piers/fakeships/vm-nec",
+      "inode": 133440,
+      "birth": "1792793236:464515350",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "nec"
+    },
+    {
+      "instance": "vm-zod",
+      "mount": "/srv/urbit/piers/fakeships/vm-zod",
+      "inode": 133456,
+      "birth": "1792793236:517515356",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "zod"
+    }
+  ],
+  "ship_operations": true,
+  "namespace": {
+    "boot_id": "35bd16a6-5417-4138-87dd-7016fdfa6371",
+    "device": 5,
+    "inode": 4026532248
+  },
+  "clean_anchor_stop": true,
+  "returned_ids_journaled": true,
+  "volume_inventory_unchanged": true,
+  "database_receipts_match": true,
+  "repeat_dispatch_refused": true,
+  "reopen_unchanged": true,
+  "scope_inactive": true,
+  "seconds": 1306.48,
+  "result_sha256": "398f8d34c9d632ce99d7808fa9a21c3d572f3ad98af29e5471c4a01a13d75d94",
+  "database_sha256": "bc90f4ff486da910c97d36682b507c052d3ae0d46096d64685aa4a9963c45ec9",
+  "bridge": "b7dcbf4892c26fa043b09435834d55947abbc734a6a5c4dbdbb4748b60cc68a5",
+  "anchor": "9a2cfb71130c42a6fa20a8cc204eca62865a770c8b4b00301606013518fc07b9",
+  "engine": "59ae2604-04b3-4403-9a89-c346a3923e2c",
+  "extracted_files_verified": 17,
+  "limits": [
+    "Readiness is historical identity/storage evidence, not current runtime authority.",
+    "Read-only recovery after injected Stop reply loss qualified; no resume, changed-peer/namespace recovery or public API qualified."
+  ],
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-stop-exit17",
+  "outer_execution": {
+    "exec_session_id": 41342,
+    "exec_session_exit_code": 143,
+    "guest_driver_child_exit": 0,
+    "guest_driver_result_complete": true,
+    "guest_clean_shutdown": true,
+    "scope_state": "inactive",
+    "cause": "not established; preserve discrepancy separately from guest evidence",
+    "scope_query_exit": 4
+  },
+  "source_preparation": "2026-10-23-member-stop-exit-preparation.json",
+  "embedded_test_sha256": "4f646284ff034c4c2e227b0329aa3a422340536c78be19295ac75807360a6a52",
+  "logs": {
+    "omabit-member-stop-exit23-17-extract.log": "d989ebf3d31babefe4ee6821ffdbe1698add36d4637c49a46c5df6e74898b2ec",
+    "omabit-member-stop-exit23-17-independent.log": "5ac6d14fe52634ba79a97be17fe2a762881ffafd1535bf168d5875e6c5917b77",
+    "omabit-member-stop-exit23-17-retain.log": "28e7bd4bb04a6a9553111a91de3041d3bf02deabf9446b0606884fa10b6e1b7e"
+  }
+}

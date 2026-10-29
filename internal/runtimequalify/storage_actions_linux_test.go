@@ -284,6 +284,9 @@ func TestGuidedDestinationAndNamedImportInPlaceOrRename(t *testing.T) {
 				t.Fatal(obs, err)
 			}
 			for _, container := range f.containers {
+				if fakeMountRoot(container) != filepath.Dir(target) {
+					t.Fatal("runtime mounted more than the exclusive instance parent", fakeMountRoot(container))
+				}
 				args := mapAt(container.doc, "Config")["Cmd"].([]string)
 				if args[len(args)-1] != "/urbit/zod" {
 					t.Fatal("named pier runtime command lost", args)

@@ -1,0 +1,221 @@
+{
+  "checkpoint": "private Docker fake-network channel and restart trial 03",
+  "ok": false,
+  "seconds": 1510.64,
+  "run": "/tmp/omabit-import-guest-run-20261022-14",
+  "appliance": "/tmp/omabit-import-appliance-20261022-13",
+  "inspection": "/tmp/omabit-import-inspection-20261022-14",
+  "clean_shutdown": true,
+  "scope_inactive": true,
+  "scope_admission": {
+    "LoadState": "loaded",
+    "ActiveState": "active",
+    "CPUQuotaPerSecUSec": "1s",
+    "MemoryMax": "12884901888",
+    "MemorySwapMax": "0",
+    "TasksMax": "128"
+  },
+  "probe": {
+    "ok": false,
+    "project": "omabit-network-a",
+    "ships": {
+      "zod": {
+        "container": "59d6eec4f55feb90f980e9366efe7e3c215dbeaf9cfcc76e3e655feb18c5b6ee",
+        "pier": "/home/lab/fake-network/zod/zod",
+        "http_port": 8081,
+        "port_inventory": [
+          [
+            "12321",
+            "insecure",
+            "loopback"
+          ],
+          [
+            "8081",
+            "insecure",
+            "public"
+          ]
+        ],
+        "loopback_port": 12321,
+        "authenticated_inventory": true
+      },
+      "nec": {
+        "container": "425aed40236a503d9b1a0c18614c4f3a01359775fa269fe4e94f473196598316",
+        "pier": "/home/lab/fake-network/nec/nec",
+        "http_port": 8082,
+        "port_inventory": [
+          [
+            "12322",
+            "insecure",
+            "loopback"
+          ],
+          [
+            "8082",
+            "insecure",
+            "public"
+          ]
+        ],
+        "loopback_port": 12322,
+        "authenticated_inventory": true
+      }
+    },
+    "messages": [],
+    "attempts": [
+      {
+        "phase": "local-check",
+        "sender": "~zod",
+        "receiver": "~zod",
+        "nonce": "omabit-local-check-8336fc715cbdfe1dd5537873",
+        "channel": "/~/channel/omabit-network-cab86cd2274924185e522b8274656ab0",
+        "state": "acknowledged",
+        "stream_exit": 28,
+        "event_id": 0,
+        "receipt": {
+          "ok": "ok",
+          "id": 1,
+          "response": "poke"
+        },
+        "channel_deleted": true
+      },
+      {
+        "phase": "local-check",
+        "sender": "~nec",
+        "receiver": "~nec",
+        "nonce": "omabit-local-check-e502b82bf77f0a3778bd5804",
+        "channel": "/~/channel/omabit-network-fbdb4f9e88c9ca154d78f5178e193ecd",
+        "state": "acknowledged",
+        "stream_exit": 28,
+        "event_id": 0,
+        "receipt": {
+          "ok": "ok",
+          "id": 1,
+          "response": "poke"
+        },
+        "channel_deleted": true
+      },
+      {
+        "phase": "first",
+        "sender": "~zod",
+        "receiver": "~nec",
+        "nonce": "omabit-first-9a01590088b981f21722e5a1",
+        "channel": "/~/channel/omabit-network-4d3bf8d9823e329500cc2d1f140d1e6a",
+        "state": "pending",
+        "channel_deleted": true
+      }
+    ],
+    "local_checks": [
+      {
+        "phase": "local-check",
+        "sender": "~zod",
+        "receiver": "~zod",
+        "nonce": "omabit-local-check-8336fc715cbdfe1dd5537873",
+        "channel": "/~/channel/omabit-network-cab86cd2274924185e522b8274656ab0",
+        "event_id": 0,
+        "gall_ack": {
+          "ok": "ok",
+          "id": 1,
+          "response": "poke"
+        }
+      },
+      {
+        "phase": "local-check",
+        "sender": "~nec",
+        "receiver": "~nec",
+        "nonce": "omabit-local-check-e502b82bf77f0a3778bd5804",
+        "channel": "/~/channel/omabit-network-fbdb4f9e88c9ca154d78f5178e193ecd",
+        "event_id": 0,
+        "gall_ack": {
+          "ok": "ok",
+          "id": 1,
+          "response": "poke"
+        }
+      }
+    ],
+    "clean_stops": [
+      "nec",
+      "zod"
+    ],
+    "anchor": "1095c866c850fec29383ba04921834c9d0851338c3bb130a4031413b8c759d4a",
+    "network_namespace": "net:[4026532247]",
+    "ipv4_routes": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+    "network_devices": "Inter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:   39335     545    0    0    0     0          0         0    39335     545    0    0    0     0       0          0\n",
+    "cross_ship_sessions_refused": true,
+    "error": "Eyre channel submission refused",
+    "diagnostic_snapshot": {
+      "ships": {
+        "zod": {
+          "state": {
+            "Running": true,
+            "ExitCode": 0,
+            "OOMKilled": false
+          },
+          "transport_lines": [
+            "mesa: live on 31337 (localhost only)"
+          ],
+          "spider_tree": {
+            "status": 200,
+            "bytes": 142,
+            "jam_hex": "05c0af35b430b716b63039b2961618bb1a97b93633b230979ab430313b9731b11bb61b979bb9b432359736b598baba05c0af35b430b716b63039b29616183b1a97b7b4329c3a97b8183a1b19971b1a9cb63417b1b41b3135179a34ba35b90540af35b430b716b63039b2961618bb1a979bb032b918973137b81c1c171c9b99323717ba37ba3534179a30379c5901"
+          }
+        },
+        "nec": {
+          "state": {
+            "Running": true,
+            "ExitCode": 0,
+            "OOMKilled": false
+          },
+          "transport_lines": [
+            "mesa: live on 31338 (localhost only)"
+          ],
+          "spider_tree": {
+            "status": 200,
+            "bytes": 140,
+            "jam_hex": "05c0af35b430b716b63039b29616183b1b973a36b518391734b6b4b7319719bab6b71897323336ba369733193618b805c0a735b430b716b63039b29616183b3a323bb93797b630b53333971bb19b321c97373b3a9834173ab534b5b90540af35b430b716b63039b2961618bb1917b13799183a17b11835b3321733b819341b97b4319c1819179a98b41a5c01"
+          }
+        }
+      },
+      "errors": [],
+      "udp": "   sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode ref pointer drops            \n   19: 0100007F:7A69 00000000:0000 07 00000000:00000000 00:00000000 00000000     0        0 26182 2 0000000051ccd52b 0         \n   20: 0100007F:7A6A 00000000:0000 07 00000000:00000000 00:00000000 00000000     0        0 47106 2 000000005910825b 0         \n",
+      "tcp": "  sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode                                                     \n   0: 0100007F:1F91 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 26675 1 000000007bebcbc7 100 0 0 10 0                     \n   1: 0100007F:1F92 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 47107 1 0000000094faa764 100 0 0 10 0                     \n   2: 0100007F:3021 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 26676 1 000000007585fd9a 100 0 0 10 0                     \n   3: 0100007F:3022 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 47108 1 000000006bcd2b5a 100 0 0 10 0                     \n   4: 0100007F:DF8A 0100007F:1F92 06 00000000:00000000 03:0000152E 00000000     0        0 0 3 00000000f02bc1d4                                      \n   5: 0100007F:DF96 0100007F:1F92 06 00000000:00000000 03:00001593 00000000     0        0 0 3 0000000074157e30                                      \n   6: 0100007F:E426 0100007F:1F91 06 00000000:00000000 03:0000164F 00000000     0        0 0 3 0000000090312c08                                      \n   7: 0100007F:E42E 0100007F:1F91 06 00000000:00000000 03:000016AB 00000000     0        0 0 3 0000000089ff2e63                                      \n",
+      "snmp": "Ip: Forwarding DefaultTTL InReceives InHdrErrors InAddrErrors ForwDatagrams InUnknownProtos InDiscards InDelivers OutRequests OutDiscards OutNoRoutes ReasmTimeout ReasmReqds ReasmOKs ReasmFails FragOKs FragFails FragCreates OutTransmits\nIp: 2 64 735 0 0 0 0 0 735 735 0 240 0 0 0 0 0 0 0 735\nIcmp: InMsgs InErrors InCsumErrors InDestUnreachs InTimeExcds InParmProbs InSrcQuenchs InRedirects InEchos InEchoReps InTimestamps InTimestampReps InAddrMasks InAddrMaskReps OutMsgs OutErrors OutRateLimitGlobal OutRateLimitHost OutDestUnreachs OutTimeExcds OutParmProbs OutSrcQuenchs OutRedirects OutEchos OutEchoReps OutTimestamps OutTimestampReps OutAddrMasks OutAddrMaskReps\nIcmp: 76 0 0 76 0 0 0 0 0 0 0 0 0 0 76 0 0 0 76 0 0 0 0 0 0 0 0 0 0\nIcmpMsg: InType3 OutType3\nIcmpMsg: 76 76\nTcp: RtoAlgorithm RtoMin RtoMax MaxConn ActiveOpens PassiveOpens AttemptFails EstabResets CurrEstab InSegs OutSegs RetransSegs InErrs OutRsts InCsumErrors\nTcp: 1 200 120000 -1 181 22 159 2 0 548 548 0 0 161 0\nUdp: InDatagrams NoPorts InErrors OutDatagrams RcvbufErrors SndbufErrors InCsumErrors IgnoredMulti MemErrors\nUdp: 35 76 0 111 0 0 0 0 0\n",
+      "dev": "Inter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:   58511     735    0    0    0     0          0         0    58511     735    0    0    0     0       0          0\n",
+      "route": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n"
+    },
+    "cleanup_errors": []
+  },
+  "source_sha256": {
+    "scripts/qualification/imports/appliance.py": "823419a50ae3e27f1a9434c3a607b39928d944e4dfcb705465fe57393990d2f4",
+    "scripts/qualification/imports/guest.py": "c80b76bd2ac0e99fba114de878145338ac8e548684d8a1cd88a15c28e5390ce6",
+    "scripts/qualification/imports/import_case.py": "27ae2fd0628db1f00aedde980c427c9d76e7ecd6a5cf0fde2c8ae5920ec31e0e",
+    "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+    "scripts/qualification/fake-networks/network_case.py": "e8c7c40c4fd7cda49248397a5b24d48f633816876e9b333a54f3c9a7cd11eedb"
+  },
+  "artifacts": {
+    "base.raw": "40dc7d593081988021825e37420b54774a7ea05cf368577c986b7c595d9ea85c",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "all_disk_sha256": {
+    "root.qcow2": "0931a239ec386a4feb632faa67aa6244649a42aec8c47e64a8319638e6fa81db"
+  },
+  "evidence_sha256": {
+    "/tmp/omabit-import-guest-run-20261022-14/result.json": "34c54cf7c51404f7dbb28fcbbb7674391d00b7ec7a7bb458c2ae43d2029c776a",
+    "/tmp/omabit-import-inspection-20261022-14/extraction.json": "9d545bab0c54e8f028bfa4bec6a1aa441ff26cefb087b9e829300b583a8c6053",
+    "/tmp/omabit-import-inspection-20261022-14/results/fake-network.json": "f88ff03d0ee4a2d2bfaad77c6dbaab7a91852a1fe379f261050fc2c60f74db93"
+  },
+  "extracted_file_count": 18,
+  "extracted_bytes": 75112,
+  "verification_script_sha256": "f7fb3b38adcbddd922f48e15631b89025dc0c333e0b115e3cabc12936acc6f7e",
+  "native_remote_control": {
+    "path": "/tmp/omabit-thread-probe-20261022-08",
+    "scope_inactive": true,
+    "clean_shutdown": true,
+    "response": {
+      "status": 500,
+      "bytes": 5,
+      "sha256": "e1d770b842a61ed7b8d78e5b2da16894d8a7f66246d664bf388a85225b2226f5"
+    },
+    "body": "crud!",
+    "remote_channel_deleted": true
+  }
+}

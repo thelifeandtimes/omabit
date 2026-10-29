@@ -74,6 +74,7 @@ Column {
   Label { width: parent.width; visible: !!root.connection && !Model.hasFeature(root.connection,"storage-locations"); text: "Update this runner to enable configurable locations, host-path import and pier deletion."; color: Design.warning }
   ActionButton { objectName: "open-pier-import"; visible: !root.provisioning; text: root.showImport ? "Close import form" : "+ Import an existing pier…"; primary: !root.showImport; onClicked: root.showImport=!root.showImport }
   PierImportPane { id:importer;width: parent.width; service: root.service; connection: root.connection; visible: root.provisioning || root.showImport }
+  ImportRestorePane { width:parent.width;service:root.service;connection:root.connection;onInspectRequested:function(path){if(importer.reviewAnother()){root.showImport=true;importer.sourcePath=path;importer.inspect()}} }
   ActionButton { objectName:"manage-storage-locations";text:root.showStorageLocations ? "Hide storage locations ▾" : "Manage storage locations ›";quiet:true;onClicked:root.showStorageLocations=!root.showStorageLocations }
   StorageRootsPane { width: parent.width; service: root.service; connection: root.connection;visible:root.showStorageLocations }
   Label { width: parent.width; visible: root.showStorageLocations; text: "New imports use <instance-name>/<ship-name>. Discovery recognizes .urb under ship-named and legacy pier directories. Each instance has an exclusive mount; archive/ is excluded."; caption: true; secondary: true }
@@ -167,6 +168,7 @@ Column {
       }
       Label { width: parent.width; visible: !!registered.modelData.external_import && registered.modelData.external_import.stage!=="complete"; text: visible ? "Import phase: "+registered.modelData.external_import.stage+" · "+(registered.modelData.external_import.copied_bytes || 0)+" bytes copied\nSource: "+registered.modelData.external_import.source+"\nHeld source: "+(registered.modelData.external_import.holding_path || "not moved")+"\nInspect the activity receipt before continuing an interrupted import." : ""; secondary: true; caption: true }
       ImportRecoveryPane { width:parent.width;service:root.service;connection:root.connection;instance:registered.modelData }
+      ActionButton { objectName:"review-source-restoration-"+registered.modelData.id;text:"Restore original source…";quiet:true;visible:!!registered.modelData.runtime_status && registered.modelData.runtime_status.import_restore_available===true;enabled:!!(root.service && root.service.importRestoration) && !root.service.busy && !!root.service.importRestoration.targetFor(root.connection,registered.modelData) && !root.service.importRestoration.unresolved(root.service.importRestoration.targetFor(root.connection,registered.modelData));onClicked:if(root.service.importRestoration.preview(root.connection,registered.modelData))root.showImport=false }
       DeletePierPane { id:deletion;showTrigger:false;width:parent.width;service:root.service;connection:root.connection;instance:registered.modelData }
       }
     }

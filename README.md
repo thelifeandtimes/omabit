@@ -8,6 +8,10 @@ and approved fresh-host installation through the same workflow.
 A local Urbit fleet for Omarchy: run ships with the official Vere runtime, monitor
 them from the desktop, and manage maintenance without keeping terminal sessions open.
 
+The [platform roadmap](docs/platform-roadmap.md) sequences reliability, project
+networks, shared application connections and app installation into small validation
+steps. Its product anchor is **“Multiplayer apps without a subscription.”**
+
 This repository is the ship-running and orchestration project at
 [thelifeandtimes/omabit](https://github.com/thelifeandtimes/omabit).
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
@@ -165,6 +169,9 @@ RC.14 provides a retained bootstrap, immutable UI/tool releases and isolated
 test profiles for stock Omarchy. See [desktop development and upgrade testing](docs/desktop-development.md)
 for candidate builds, version selection, fresh profiles and guarded VM scenarios.
 
+Prepared multi-plugin collections also have a [read-only runtime compatibility check](docs/collection-runtime-preflight.md); it does not activate or install plugins.
+Retained runtime history has a separate [read-only authority inspector](docs/retained-authority-inspection.md), including after compositor exit.
+
 ```bash
 go test ./...
 go vet ./...
@@ -193,6 +200,10 @@ enrollment records and adds explicit recovery rather than requiring a fresh inst
 
 ## Documentation
 
+- [Complete CLI reference](docs/cli/README.md) (generated and tested offline for all three binaries)
+- [Agent skill distribution](docs/agent-skills.md) (source directories and verified archive convention)
+- [Agent operator skill](skills/omabit-operator/SKILL.md) (source development; fleet observation, operations and imports)
+- [Plugin developer skill](skills/omabit-plugin-developer/SKILL.md) (source guidance; standalone apps, optional authentication, backend readiness and isolation)
 - [Fresh installation and first ship](docs/install.md)
 - [Sourcebox fresh native installation](docs/sourcebox-clean-install.md)
 - [Owner-user runtime and desk editing](docs/owner-user-runtime.md)
@@ -209,3 +220,8 @@ enrollment records and adds explicit recovery rather than requiring a fresh inst
 
 Historical development walkthroughs are under `docs/checkpoints/`; new installations
 should use the installation guide above.
+
+Unreleased platform work now includes [Application Connections](docs/application-connections.md):
+local helper discovery, explicit approval/recovery commands, and a tested offscreen
+panel. It is not installed or enabled in existing plugin installations. See the
+[checkpoint and remaining gates](docs/diagnostics/2026-10-21-approval-flow.md).

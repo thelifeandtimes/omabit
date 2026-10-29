@@ -9,6 +9,7 @@ Column {
   id: root
   objectName: "runtime-pane"
   property var service
+  ReaderLifecycle { id: lifecycle; service: root.service; process: reader; kind: "runtime-logs" }
   property var connection
   property var instance
   property bool active: false
@@ -32,7 +33,7 @@ Column {
   // Enrollment changes matter; replacing an inventory object every two seconds
   // does not. A transient inventory failure must not reset the watcher's backoff.
   readonly property string selection: connection && instance && service ? JSON.stringify([connection.name,connection.runner_id,connection.mode,instance.id,instance.config_revision,service.collector,service.settings.configDir || "",(service.registrations || []).filter(function(r){return r.name===root.connection.name})]) : ""
-  readonly property bool eligible: active && !!service && service.observing && !!instance && !!connection && (connection.status==="unavailable" || connection.access_role==="operator" && connection.status!=="identity_mismatch" && Model.hasFeature(connection,"runtime-logs"))
+  readonly property bool eligible: active && !!service && lifecycle.admitted && service.observing && !!instance && !!connection && (connection.status==="unavailable" || connection.access_role==="operator" && connection.status!=="identity_mismatch" && Model.hasFeature(connection,"runtime-logs"))
   readonly property bool readable: eligible && Model.available(connection,service.now)
   readonly property var displayedLines: logs ? (priorityOnly ? Model.priorityRuntimeLogs(logs.lines) : logs.lines) : []
   spacing: Style.space(12)

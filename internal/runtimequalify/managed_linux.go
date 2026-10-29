@@ -197,6 +197,12 @@ func applyManaged(ctx context.Context, action string, state ManagedState, persis
 
 func applyManagedAction(ctx context.Context, action string, state ManagedState, persist func(ManagedState) error, d dependencies) (ManagedState, ManagedObservation, error) {
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
+	if action == "restore-import" {
+		return applyImportRestore(ctx, state, persist, d)
+	}
+	if state.ImportRestore != nil && action != "stop" {
+		return state, unknown, errors.New("source restoration must be completed before other runtime work")
+	}
 	if action == "delete-pier" {
 		return applyPierDeletion(ctx, state, persist, d)
 	}
@@ -280,7 +286,12 @@ func applyManagedAction(ctx context.Context, action string, state ManagedState, 
 			return finish(unknown, err)
 		}
 	}
-	if action == "start" || maintenance {
+	if action == "start" {
+		if err := q.admitStart(q.base, state.Initialized, "start admission"); err != nil {
+			return finish(unknown, err)
+		}
+	}
+	if maintenance {
 		mem, disk, err := q.d.admission(q.base)
 		if err != nil || mem < 5<<30 || disk < 8<<30 {
 			return finish(unknown, errors.New("runtime work requires at least 5 GiB available RAM and 8 GiB free disk"))
@@ -538,9 +549,8 @@ func applyManagedAction(ctx context.Context, action string, state ManagedState, 
 	if n := q.r.Network; n != nil && n.CreateUncertain {
 		return finish(unknown, errors.New("uncertain managed network requires manual recovery"))
 	}
-	mem, disk, err := q.d.admission(q.r.Directory)
-	if err != nil || mem < 5<<30 || disk < 8<<30 {
-		return finish(unknown, errors.New("start requires at least 5 GiB available RAM and 8 GiB free disk"))
+	if err := q.admitStart(q.r.Directory, state.Initialized, "start preparation"); err != nil {
+		return finish(unknown, err)
 	}
 	if !state.Initialized {
 		if state.NativeShip != "" {
@@ -611,9 +621,8 @@ func applyManagedAction(ctx context.Context, action string, state ManagedState, 
 	// before recording provisioning uncertainty or creating a runtime. A
 	// refusal here leaves only resolved preparation resources and is retryable.
 	for _, path := range []string{q.r.Directory, filepath.Dir(q.pierPath())} {
-		mem, disk, err := q.d.admission(path)
-		if err != nil || mem < 5<<30 || disk < 8<<30 {
-			return finish(unknown, errors.New("start requires at least 5 GiB available RAM and 8 GiB free disk immediately before dispatch"))
+		if err := q.admitStart(path, state.Initialized, "start immediately before dispatch"); err != nil {
+			return finish(unknown, err)
 		}
 	}
 	var bootDispatchIntent func() func()

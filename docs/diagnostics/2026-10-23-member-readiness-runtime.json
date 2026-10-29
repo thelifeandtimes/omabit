@@ -1,0 +1,107 @@
+{
+  "verified": true,
+  "passed": true,
+  "schema": 28,
+  "member_launches": [
+    {
+      "instance_id": "vm-zod",
+      "container": "9f25e9bdb12776f52a2574442e51776888581dac82956a775264cc047326da91",
+      "namespace": {
+        "boot_id": "dbd8e8fa-4e57-4502-b743-ba53d8d0d001",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 133460,
+      "workspace_birth": "1792789373:262159661",
+      "clean_stop": true,
+      "identity_http_status": 200
+    },
+    {
+      "instance_id": "vm-nec",
+      "container": "b8d397c03bca570f2128144398f1f5f75db2661b74ddf3f9e511c316ccdf6f7f",
+      "namespace": {
+        "boot_id": "dbd8e8fa-4e57-4502-b743-ba53d8d0d001",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 133511,
+      "workspace_birth": "1792789774:692115752",
+      "clean_stop": true,
+      "identity_http_status": 200
+    }
+  ],
+  "readiness": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-14cfc049196180329917ee379f4b65a6",
+      "ship": "~zod",
+      "captured_at": "2026-10-23T21:19:10.09654855Z",
+      "pier_inode": 133482,
+      "urb_inode": 133494,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-c91d813234d394dbdab81f188e13d6d4",
+      "ship": "~nec",
+      "captured_at": "2026-10-23T21:19:26.596506845Z",
+      "pier_inode": 133533,
+      "urb_inode": 133545,
+      "reopen_unchanged": true
+    }
+  ],
+  "member_storage_verified": [
+    {
+      "instance": "vm-nec",
+      "mount": "/srv/urbit/piers/fakeships/vm-nec",
+      "inode": 133440,
+      "birth": "1792789360:548161051",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "nec"
+    },
+    {
+      "instance": "vm-zod",
+      "mount": "/srv/urbit/piers/fakeships/vm-zod",
+      "inode": 133456,
+      "birth": "1792789360:602161045",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "zod"
+    }
+  ],
+  "ship_operations": true,
+  "namespace": {
+    "boot_id": "dbd8e8fa-4e57-4502-b743-ba53d8d0d001",
+    "device": 5,
+    "inode": 4026532248
+  },
+  "clean_anchor_stop": true,
+  "returned_ids_journaled": true,
+  "volume_inventory_unchanged": true,
+  "database_receipts_match": true,
+  "repeat_dispatch_refused": true,
+  "reopen_unchanged": true,
+  "scope_inactive": true,
+  "seconds": 1231.94,
+  "result_sha256": "66bca194e6181cf64bfe8da16f5bbfbc31b49f25dcce96097205a73cf8e795ba",
+  "database_sha256": "935f92d6be4799547f27747646cd5f02f40b3fada042d44ec668f6699520adab",
+  "bridge": "30a17652c43cc71835e6cacf78bffdf30d44a895ba7208fab3ed350f0e0c7811",
+  "anchor": "df20c6a7ce7db1809f7d6140d34e544ce016e41de7b5c6322399c93dd0288794",
+  "engine": "6bb77ad2-104a-4a2e-a322-8f489440cdd4",
+  "extracted_files_verified": 17,
+  "limits": [
+    "Readiness is historical identity/storage evidence, not current runtime authority.",
+    "No durable Stop/resume/recovery or public API qualified."
+  ],
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-readiness15",
+  "source_preparation": "2026-10-23-member-readiness-preparation.json",
+  "embedded_test_sha256": "032e966cec68980d5a40005dcdc13bebeb83d3e4259565a9c066536ee57cec56",
+  "logs": {
+    "omabit-member-readiness23-15-extract.log": "98d16ca03af2094b643bac68d40a708e22052691004657e0aa5de2556c8ca22c",
+    "omabit-member-readiness23-15-independent.log": "0160ecce3343deeb4263882b97761f95276e2320623e10c42577a415d2f01aa5",
+    "omabit-member-readiness23-15-retain.log": "a2e5f1e9e23dc4ffbf61ed99fd7d3ce073d34ee717a48a1b5d0c67015c937ae0"
+  }
+}

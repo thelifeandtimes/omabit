@@ -1,0 +1,26 @@
+{
+  "inputs": {
+    "run_id": "omabit-auth-164f5ebb80e14b199c8e84e5b981ffee",
+    "host_network_namespace": "net:[4026531833]",
+    "host_pid_namespace": "pid:[4026531836]",
+    "artifact_sha256": {
+      "eyre.test": "e2a7529b0617aad01f25b1ea941d721a35b7aa820d078e89c9571ea752b731e4",
+      "qualify.py": "98880bdc13a13450a455f985869ff53cee36f1e524041c203ca1ae4a53ce1531",
+      "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+      "urbit": "47ad302e8934271dfc00dcdab1d553c6d6460b105e3099ff47e0e4e4231bb26d"
+    },
+    "source_sha256": {
+      "internal/eyre/client.go": "caa5f7f86a11691f438b175801c550e51023a99e6a83e7fa82b8a3a8ba2f2951",
+      "internal/eyre/independent_session.go": "8865bc5b9cd74d8780ff54e8b39cec53351459c1505325fd97d57d951c95f2ab",
+      "internal/eyre/isolated_live_test.go": "a7a48d2e2a4cbc40f1470923832f1383557f3117d6003db80c46128583c3a0d1"
+    }
+  },
+  "result": {
+    "run_id": "omabit-auth-164f5ebb80e14b199c8e84e5b981ffee",
+    "boot_ready": true,
+    "test_exit": 0,
+    "clean_shutdown": true,
+    "log_truncated": false
+  },
+  "test_log": "=== RUN   TestIndependentSessionsIsolatedLive\n    isolated_live_test.go:114: PASS: fresh isolated fake; two independent sessions; direct desk reads; remote revocation affects only the selected session; credentials omitted\n--- PASS: TestIndependentSessionsIsolatedLive (0.38s)\nPASS\n"
+}

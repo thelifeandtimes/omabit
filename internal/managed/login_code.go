@@ -3,6 +3,7 @@ package managed
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"regexp"
 	"time"
@@ -37,6 +38,9 @@ func (r *Server) loginCode(w http.ResponseWriter, req *http.Request, actor, role
 		r.respondError(w, bad("require the selected revision and full runtime container ID"))
 		return
 	}
+	if r.projectLoginCode(w, req, actor, id, body) {
+		return
+	}
 	v, err := loadInstance(r.s.db, id)
 	if err != nil {
 		r.respondError(w, err)
@@ -52,11 +56,14 @@ func (r *Server) loginCode(w http.ResponseWriter, req *http.Request, actor, role
 		r.respondError(w, &fault{501, protocol.APIError{Code: "unsupported", Message: "runtime code retrieval unavailable"}})
 		return
 	}
-	ctx, cancel := context.WithTimeout(req.Context(), 4*time.Second)
+	// Extend only this response past the server's ordinary five-second bound.
+	// The backend remains bounded and all lifecycle selection checks stay in place.
+	_ = http.NewResponseController(w).SetWriteDeadline(time.Now().Add(protocol.LoginCodeReplyTimeout))
+	ctx, cancel := context.WithTimeout(req.Context(), protocol.LoginCodeReadTimeout)
 	defer cancel()
 	code, err := b.LoginCode(ctx, v.Runtime, body.ContainerID)
 	success := err == nil && ctx.Err() == nil && protocol.ValidLoginCode(code)
-	if err := r.s.auditCode(actor, id, p.ConfigRevision, success); err != nil {
+	if err := r.s.auditCode(actor, id, p.ConfigRevision, success, err, ctx.Err() == context.DeadlineExceeded); err != nil {
 		r.failed.Store(true)
 		r.respondError(w, err)
 		return
@@ -68,7 +75,7 @@ func (r *Server) loginCode(w http.ResponseWriter, req *http.Request, actor, role
 	respond(w, 200, protocol.LoginCode{RunnerID: r.s.runnerID, InstanceID: id, ConfigRevision: p.ConfigRevision, ContainerID: body.ContainerID, Code: code})
 }
 
-func (s *store) auditCode(actor, id string, revision uint64, success bool) error {
+func (s *store) auditCode(actor, id string, revision uint64, success bool, failure error, deadline bool) error {
 	key, err := randomID()
 	if err != nil {
 		return err
@@ -77,6 +84,9 @@ func (s *store) auditCode(actor, id string, revision uint64, success bool) error
 	op := protocol.Operation{ID: "op-" + key, RequestID: "server-code-" + key, InstanceID: id, Kind: "login-code", Actor: actor, ConfigRevision: revision, CreatedAt: now, FinishedAt: &now, Status: "failed", Message: "login-code access failed"}
 	if success {
 		op.Status, op.Message = "succeeded", "login-code access completed (secret not retained)"
+	} else {
+		stage, expired := runtimequalify.LoginCodeDiagnostic(failure)
+		op.Message = fmt.Sprintf("login-code access failed (stage=%s, deadline_expired=%t)", stage, deadline || expired)
 	}
 	data, err := json.Marshal(op)
 	if err != nil {

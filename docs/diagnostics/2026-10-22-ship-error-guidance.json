@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "source_sha256": {
+    "backend/cmd/urbit-collector/error_guidance.go": "c14f3ff7aaa8f13a53a3840f063d1d14c92649aa2dac60698ec8dc50d216b794",
+    "backend/cmd/urbit-collector/error_guidance_test.go": "e1553327ab5a1eca3e3b01658aeab35f07ee7f73d4fcd467cff4a412ad40deea",
+    "skills/omabit-operator/references/operations.md": "c530f7638a36b359c719bddc05ff067c40fa81ec602732d9e0746d3ff8982ab4"
+  },
+  "checks": [
+    "collector race suite",
+    "collector go vet",
+    "git diff --check"
+  ],
+  "guidance_kinds": [
+    "resolve_ship_origin",
+    "restore_credential_access",
+    "review_ship_login"
+  ],
+  "integration": [
+    "JSON/text missing-session error",
+    "one public identity probe during enrollment; no further HTTP dispatch",
+    "preserved connection metadata"
+  ],
+  "limits": [
+    "typed source/CLI fixture tests only",
+    "ship-status result shape unchanged",
+    "no production or hosted ship",
+    "no release build"
+  ],
+  "fixture_corrections": [
+    "registry must create its own mode0700 child directory",
+    "ship enrollment verifies public identity; supplied httptest endpoint instead of assuming metadata-only enrollment"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "source_sha256": {
+    "internal/runtimequalify/private_gateway_container_linux.go": "e38fecf26314167fde1fbacf46f84ad6bebdfa83c518fe9accd174fbfeb82d81",
+    "internal/runtimequalify/private_gateway_mounts_linux.go": "185bd974d042880d9010931f3114f5ae0322c1653b83c92467c470b156abfd82",
+    "internal/runtimequalify/private_gateway_container_linux_test.go": "b8c8ed15b4058200dd0c27981f2c0d243754534a75cb6396db17d2c7281fca6c",
+    "internal/runtimequalify/private_gateway_observer_linux_test.go": "4dffcf1da78658fdbb71f7e85fa9a12110d90590cfef9324a7fbaedf5dab1f6f",
+    "internal/runtimequalify/private_gateway_driver_linux_test.go": "7921e0e72923b3ff5ce4b7838cab9a3e112d50bfb11d9b4c19ed3a8b8e21e278"
+  },
+  "checks": {
+    "gateway": 0,
+    "vet": 0,
+    "diff": 0
+  },
+  "gateway_checks": 354,
+  "schema_changed": false,
+  "runtime_qualified": false,
+  "memory": "M402",
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-tmpfs-inspection",
+  "original_failures": [
+    "TestPrivateGatewayTmpfsHostConfigRepresentation",
+    "TestPrivateGatewayDriverWaitsWithoutRepeatingEffects"
+  ],
+  "artifact_sha256": {
+    "baseline.json": "6d0c21313053503f6d1727c59a77150d1a8a893d9ed21aacecfc720481fd509d",
+    "baseline-overlay.json": "d9655535ec6dcf780e854ed324321d02cc17552623d053522102f44ca3d98318",
+    "overlay.json": "112f72ae5b8892472989e07eaca8d09763d334f0d07b21851f8746ed10effb65",
+    "baseline-tests.jsonl": "a411161663079da1c1b05e633f4ba41239e674be3b3f733b5ec1d6da935381cf",
+    "gateway-tests.jsonl": "bba49828d7a0c6be1490e6e3c7415efce91454a423cffa13b39c1d222b83d584",
+    "gateway-integrated.log": "43e164b79c681af795b3777517ed9ef25131ba9279ef7ce9740844ff91469224",
+    "vet-integrated.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diff-integrated.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "integrated-result.json": "e60691f8eba6d19a5b32a7649dff07d5505b9ec1d7e824af3ae4aec19141871a",
+    "retention08-result.json": "ca16d8d4dcc1647ae6827ffb45014de322e7e46d7e55364aacbc3928cbff5326",
+    "retention13-result.json": "b4d4a35111190a3146721f2e8adad256a35fdf6c25067b83fb00d737ce19d251",
+    "retention15-result.json": "92a7ad76aca56f3b8ecbfd830072f5ed726603e9a5e880767983a0582010de95",
+    "private_gateway_container_linux.go": "e38fecf26314167fde1fbacf46f84ad6bebdfa83c518fe9accd174fbfeb82d81",
+    "private_gateway_mounts_linux.go": "185bd974d042880d9010931f3114f5ae0322c1653b83c92467c470b156abfd82",
+    "private_gateway_container_linux_test.go": "b8c8ed15b4058200dd0c27981f2c0d243754534a75cb6396db17d2c7281fca6c",
+    "private_gateway_observer_linux_test.go": "4dffcf1da78658fdbb71f7e85fa9a12110d90590cfef9324a7fbaedf5dab1f6f",
+    "private_gateway_driver_linux_test.go": "7921e0e72923b3ff5ce4b7838cab9a3e112d50bfb11d9b4c19ed3a8b8e21e278",
+    "original-private_gateway_container_linux.go": "e16be9b920290c98e04ea029e203d00163925da22838e42b78ac0fcaa3736d3a",
+    "original-private_gateway_mounts_linux.go": "a6bfc1d16b62b39f3ead2ccb9287f3398353f2282783835fee43fbe1bb79ca7e",
+    "original-private_gateway_container_linux_test.go": "8ea6f885a562b6344c07b00b449326580d090e233b3daff3330d2da049372b8a",
+    "original-private_gateway_observer_linux_test.go": "9637287c4dd0630f57099b80158734bcbc853f5df8fe4358840b29bb7f22fcdf",
+    "original-private_gateway_driver_linux_test.go": "2d338dc2313ecf82cf276f3780281e6a36129f8e24313b9a8ee51fb039c2c7f6",
+    "failed-vm-disk-retention.json": "cf3b20afd607fe106a88d00d7ecb2e7f0204df1243721be3390cfcd28b832277"
+  }
+}

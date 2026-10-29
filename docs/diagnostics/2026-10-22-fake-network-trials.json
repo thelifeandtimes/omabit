@@ -1,0 +1,124 @@
+{
+  "checkpoint": "private fake-network transport trial 01",
+  "ok": false,
+  "run": "/tmp/omabit-import-guest-run-20261022-12",
+  "appliance": "/tmp/omabit-import-appliance-20261022-11",
+  "inspection": "/tmp/omabit-import-inspection-20261022-12",
+  "seconds": 1403.7,
+  "clean_shutdown": true,
+  "scope_admission": {
+    "LoadState": "loaded",
+    "ActiveState": "active",
+    "CPUQuotaPerSecUSec": "1s",
+    "MemoryMax": "12884901888",
+    "MemorySwapMax": "0",
+    "TasksMax": "128"
+  },
+  "probe": {
+    "ok": false,
+    "project": "omabit-network-a",
+    "ships": {
+      "zod": {
+        "container": "52089d91b688f648743ae31b30fb5c48ac38199cd526d616f941877f7997aaa3",
+        "pier": "/home/lab/fake-network/zod/zod",
+        "http_port": 8081,
+        "port_inventory": [
+          [
+            "12321",
+            "insecure",
+            "loopback"
+          ],
+          [
+            "8081",
+            "insecure",
+            "public"
+          ]
+        ],
+        "loopback_port": 12321,
+        "authenticated_inventory": true
+      },
+      "nec": {
+        "container": "46a064fa1ba2188f1c56e51fc467e53005fd047238b5b5107eafbe3c1fe0345f",
+        "pier": "/home/lab/fake-network/nec/nec",
+        "http_port": 8082,
+        "port_inventory": [
+          [
+            "12322",
+            "insecure",
+            "loopback"
+          ],
+          [
+            "8082",
+            "insecure",
+            "public"
+          ]
+        ],
+        "loopback_port": 12322,
+        "authenticated_inventory": true
+      }
+    },
+    "messages": [],
+    "clean_stops": [
+      "nec",
+      "zod"
+    ],
+    "anchor": "96860e19eda07e8173553db3c916ffa0fdd5b45215cf78cd0ae13cffa8663de7",
+    "network_namespace": "net:[4026532247]",
+    "ipv4_routes": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+    "network_devices": "Inter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:   39235     543    0    0    0     0          0         0    39235     543    0    0    0     0       0          0\n",
+    "cross_ship_sessions_refused": true,
+    "error": "private Docker command failed: exec",
+    "cleanup_errors": []
+  },
+  "source_sha256": {
+    "scripts/qualification/imports/appliance.py": "823419a50ae3e27f1a9434c3a607b39928d944e4dfcb705465fe57393990d2f4",
+    "scripts/qualification/imports/guest.py": "c80b76bd2ac0e99fba114de878145338ac8e548684d8a1cd88a15c28e5390ce6",
+    "scripts/qualification/imports/import_case.py": "27ae2fd0628db1f00aedde980c427c9d76e7ecd6a5cf0fde2c8ae5920ec31e0e",
+    "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+    "scripts/qualification/fake-networks/network_case.py": "afce18b34a3b9a568c64a93cbd343be1e36de8543f1babff767825ee452e9974"
+  },
+  "artifacts": {
+    "base.raw": "333d2c94d2a5b494f0acf5bcf61c6ec66556486e784d1d389cd33b272b124782",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "all_disk_sha256": {
+    "root.qcow2": "1073a55c7c3e29e1e8e9298858e52bb876b61b9fe1180cc769d58d2fcb332c22"
+  },
+  "extracted_file_count": 18,
+  "extracted_bytes": 68421,
+  "evidence_sha256": {
+    "/tmp/omabit-import-guest-run-20261022-12/result.json": "c8f06c95f5866d54dc0e0f7047604924f424e947502e58885b63de2378b8b39e",
+    "/tmp/omabit-import-inspection-20261022-12/extraction.json": "e80f44d2e589c0131dcde4cb4bf11424c63d0f565e785d080ced82948fc0b806",
+    "/tmp/omabit-import-inspection-20261022-12/results/fake-network.json": "a80fd8274bfaf8f59b50f1b03a0f81e50882a46de33c0cc95a81d1997695c305",
+    "/tmp/omabit-import-inspection-20261022-12/zod-container.log": "e9eaf944ec75aeb43c75cd1c2cff67a6f152c627e40e43398eadbff6f9a43d78",
+    "/tmp/omabit-import-inspection-20261022-12/nec-container.log": "f488685f25576a12fbe5fde6b354d2849d83ea1bf84cb3f2c458e2921f8b90f3"
+  },
+  "limits": [
+    "First authenticated cross-ship hi did not complete; original harness discarded command exit code and stderr. Timeout is suspected, not established by the receipt.",
+    "Zero acknowledged messages; no restart, rejection or cross-project isolation pass.",
+    "No runner project integration or endpoint publication implemented."
+  ],
+  "retained_originals": [
+    {
+      "original_path": "/tmp/omabit-import-appliance-20261022-11/artifacts",
+      "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-network01/appliance11-artifacts",
+      "sha256": {
+        "base.raw": "333d2c94d2a5b494f0acf5bcf61c6ec66556486e784d1d389cd33b272b124782",
+        "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+        "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+        "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+      },
+      "scope_inactive": true
+    },
+    {
+      "original_path": "/tmp/omabit-import-guest-run-20261022-12/lab",
+      "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-network01/run12-lab",
+      "sha256": {
+        "root.qcow2": "1073a55c7c3e29e1e8e9298858e52bb876b61b9fe1180cc769d58d2fcb332c22"
+      },
+      "scope_inactive": true
+    }
+  ]
+}

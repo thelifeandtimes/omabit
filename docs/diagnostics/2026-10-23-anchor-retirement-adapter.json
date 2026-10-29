@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "kind": "inert concrete coordinated retirement adapter source gate",
+  "focused_race_seconds": 36.871,
+  "related_race_seconds": 105.032,
+  "vet_passed": true,
+  "diff_check_passed": true,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-retirement-adapter",
+  "manifest": {
+    "omabit-anchor-retirement-adapter-compile.log": "17768c7b7705c3bc4dbb4597a500050c104bfb122818e5b4761ee82015fa8ccc",
+    "omabit-anchor-retirement-adapter-tests-attempt1.log": "ec7816032d293bb63d5e94702fa7f9125b8cd11f02c38036f1aaa3846767a7d2",
+    "omabit-anchor-retirement-adapter-debug.log": "7798683d5641080d35a6d9052bd81a86005d893db6da364407a3c96518cb5f3a",
+    "omabit-anchor-retirement-adapter-tests-attempt2.log": "d07063bd531f664d114b870ee6c0c7e5fc908f3f0cc2277ec6c9f5fc23ef7d5b",
+    "omabit-anchor-retirement-related-race.log": "d6728886cdd96bcfd9e1f7d8e4d5c48c9c2aa32d5b6af19b2b67a6d17c14a900",
+    "omabit-anchor-retirement-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-retirement-adapter-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/runtimequalify/project_anchor_retirement_linux.go": "331a1f607132620a10c6f799811d028a0c361e9f56a346db5f35a5d392a7f6f7",
+    "source/internal/runtimequalify/project_anchor_retirement_linux_test.go": "35fbbe3222514ed8fadd1e2b855c3e5faf9fe93161aea9e791c9e8fe3fd65b32",
+    "source/internal/runtimequalify/project_member_contract_linux.go": "eb754a778ae71bd47f6d54ecee7a254a62f5b5f56baa98c855c1510fd9e1a72f",
+    "source/internal/runtimequalify/project_member_observation_linux.go": "b4bb763b4fb0570312cacd1ed292c75f8935cdf9c4a6c87d114a8d242b19b925",
+    "source/internal/projectnetwork/anchor_retirement.go": "2136df0b7a471a478d4fda7dd14c45cdfc6ba0444d1e2f40bf22898f8dc515f0"
+  }
+}

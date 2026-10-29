@@ -84,7 +84,9 @@ func nativeRunner(root rootFiles) commandRunner {
 
 func nativeStreamRunner(root *os.Root) streamRunner {
 	return func(ctx context.Context, tool string, args []string, limit int64, consume func(io.Reader) error) error {
-		if tool != "/usr/lib/apt/apt-helper" {
+		switch tool {
+		case "/usr/lib/apt/apt-helper", "/usr/bin/bsdtar", "/usr/bin/dpkg-deb":
+		default:
 			return errEvidence
 		}
 		_, info, err := resolve(root.FS(), strings.TrimPrefix(tool, "/"))

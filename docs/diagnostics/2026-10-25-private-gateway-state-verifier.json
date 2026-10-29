@@ -1,0 +1,47 @@
+{
+  "memory": "M394",
+  "status": "integrated-source-and-synthetic-filesystem-qualified",
+  "source_sha256": {
+    "internal/privatechain/gateway_state_linux.go": "717c3234d30ce7098046b364ad47827e9304f1f0fee9b2012850a7ca7e8b9e56",
+    "internal/privatechain/gateway_state_linux_test.go": "1ae96f2ca3148e8480f6256dbab06df5b37172abb76cb0632a0a8374b5dde8b2"
+  },
+  "checks": {
+    "memory": "M394",
+    "exit": 0,
+    "checks": 422,
+    "top": 62,
+    "failed": [],
+    "seconds": 2.2028111330000684,
+    "diff_check_exit": 0,
+    "source_sha256": {
+      "internal/privatechain/gateway_state_linux.go": "717c3234d30ce7098046b364ad47827e9304f1f0fee9b2012850a7ca7e8b9e56",
+      "internal/privatechain/gateway_state_linux_test.go": "1ae96f2ca3148e8480f6256dbab06df5b37172abb76cb0632a0a8374b5dde8b2"
+    },
+    "actual_gateway_or_docker_access": false,
+    "complete_observer": false
+  },
+  "focused": {
+    "exit": 0,
+    "vet_exit": 0,
+    "seconds": 2.1674901839578524,
+    "top": 5,
+    "checks": 27,
+    "failed": []
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-state-verifier",
+  "evidence_sha256": {
+    "gateway_state_linux.go": "717c3234d30ce7098046b364ad47827e9304f1f0fee9b2012850a7ca7e8b9e56",
+    "gateway_state_linux_test.go": "1ae96f2ca3148e8480f6256dbab06df5b37172abb76cb0632a0a8374b5dde8b2",
+    "tests01.jsonl": "df59fbe92975dae9706ef01d0e195db0d225fddc0928131d08afd34b305f61d3",
+    "vet01.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "check-result.json": "93a177a794ffeb331e2a749202989b902ed620908b41397ca943334df08f03d8",
+    "integrated-tests.jsonl": "8715e848c47f594065f3fecd500c1a7c72bcb637b43777e5d0787da6f49715a0",
+    "integrated-result.json": "638328419f36964d4d2b2c04a2a3f53dedb69d6882c64552e155f105ff93230b",
+    "applied.json": "cfef57f4cc4bf92ad88bec024c9b01e5fadd0e445e377ea3149d1dbf998ede7f",
+    "integrate.py": "ba6407825e484b46544d992db6de8a93f7fe43ade5a7924c62477e6d83808b72"
+  },
+  "schema": 43,
+  "complete_observer": false,
+  "actual_gateway_or_docker_access": false,
+  "supersedes": "M393 missing initialized-workspace verifier only; live composition and runtime qualification remain."
+}

@@ -1,0 +1,41 @@
+{
+  "prepared": true,
+  "runtime_executed": false,
+  "offline_tests": 41,
+  "appliance": "/tmp/omabit-import-appliance-20261023-05",
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-preparation",
+  "verified_artifacts": {
+    "base.raw": "3c2e466141dbb18202caa2b4089ee99d4b31aa4bc9ba852c81f61711c9f7b8d2",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "source_sha256": {
+    "scripts/qualification/imports/appliance.py": "308cb797ba8879ea9e6b638605ba53534ee0902360edf46f75d996b84f52bcf4",
+    "scripts/qualification/imports/guest.py": "918082c8f28f1e35886b81129cd8a13902b0999ad9a050f4eb90284b69c8c3a7",
+    "scripts/qualification/imports/import_case.py": "e5243d50edf31e12242e66b0fc84d8018b2d6c23274c8cd5c1621ca92c27d1c7",
+    "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+    "scripts/qualification/fake-networks/network_case.py": "069c88effbbe22f0ba9e903684773a9b5c132802c6b6a80af33cb76627078d24",
+    "scripts/qualification/fake-networks/state_case.py": "58250c80ee6b860ee9988c3397418b8396c0f0f0195465507bf8762ba5451bf6",
+    "scripts/qualification/fake-networks/omabit-state.hoon": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+    "scripts/qualification/fake-networks/project_isolation.py": "b198d35f6ad40e85784911310cf0734278eb8396902bf51394b934708ee3c3c4",
+    "scripts/qualification/fake-networks/published_client.py": "06d568a70279d95130e8cf63b0554f4327b289742769426d3c7b07153b738f97",
+    "scripts/qualification/fake-networks/endpoints_case.py": "8513fa38651d644a086056b9d8a4ab1137ccb528de17a96348ec561db7e6d644",
+    "scripts/qualification/fake-networks/anchor_recovery.py": "c40a10811537dc5ea53a9425a9642044b6400d02297b91750edf0cbe97a76540",
+    "scripts/qualification/fake-networks/test_anchor_recovery.py": "63eb4f60a97d96be305363c4d473da5a3345916dbdd31764c5f2dfcb79499f45"
+  },
+  "sequence": [
+    "ordinary same-pier receiver restart gate",
+    "new channel and fifth write queued before anchor stop",
+    "exact anchor stop/restart, changed namespace, public endpoints refused",
+    "old live members verified in old namespace",
+    "stop all old members before any replacement",
+    "same-pier new members, original sessions, queued subscription, sixth write",
+    "channel/session cleanup and clean stops"
+  ],
+  "limits": [
+    "No actual runtime claim yet",
+    "Not combined with duplicate-project flag",
+    "No runner lifecycle or public network qualification"
+  ]
+}

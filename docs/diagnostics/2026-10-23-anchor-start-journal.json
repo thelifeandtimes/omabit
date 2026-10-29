@@ -1,0 +1,31 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 25,
+  "original_schema24_snapshot_sha256": "69b23e268b73cb87db73b825d43c9692feeced18b30e5c8674d0c2b05f5edf54",
+  "source_sha256": {
+    "internal/managed/project_anchor_start.go": "dac7ced72a46827be020278511330ec617038268eb9bd8d8ef5ea835ca746186",
+    "internal/managed/project_anchor_start_test.go": "d429fa0f8af97f1cda8fe06d65db05585747c6eba7c386266e3bb81fd73c38d7",
+    "internal/managed/store.go": "75d64b0ffe6408b3a0f2ba9fce24d234ea1a6a39b61d305485552f53e66b6e59",
+    "internal/managed/schema.go": "cf3de49cf0509df134bf5dda1ef41d9ca8b3a2d4a84ae7d550dbd3fb93e8546a",
+    "internal/managed/g02_historical_upgrades_test.go": "62493b10d58bd23ca9923a51b84c4bbd2de482b50fb7a6fa852d681f1759f6bd",
+    "scripts/test-historical-upgrades.py": "1251583e830ddb03f5002d5c1a7a2ca21210c81ad39cfcb22ee2496a9606aa39",
+    "internal/managed/testdata/historical-upgrades/schema24.json": "d065cfb161a37d608492ce4a15822ad61f376cb0591901290d7e4c13cd95e47c",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "d6ce1e592242fa0047104ab503bf87d0487420ea9881e24b6438fe08e4524438",
+    "internal/projectnetwork/anchor_start.go": "e41bcd3267395601cd73d503a26a8b2759893348c15f97c863e77bdc5b0def8b"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-journal",
+  "logs": {
+    "omabit-anchor-journal-compile.log": "2d60cedd21ff19f5e94085f8c34bc122547fe86d04fc2040d2f3118fd9967513",
+    "omabit-anchor-journal-tests.log": "389b975a97284d9ecf9527ff464e293ca330cad152ecaca8246954d39e1ff739",
+    "omabit-anchor-journal-regression.log": "f83feb0341b2bb32717b5e0cbff1074c68a791d6a03e017d62f08b5940bfd7f0",
+    "omabit-anchor-journal-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-schema24-generate25.log": "08764b9b604e85bbe9bea0ea70fa98a4d821d6aa701ef8ccb234efde4b4be17b",
+    "omabit-schema24-reproduce25.log": "5b3f97f1af297c71493338d49d7825c203b0681be0580e923fa721c713cefa68"
+  },
+  "limits": [
+    "Private journal/controller worker only; no actual Docker Start adapter/server scheduling/RPC.",
+    "No installed state migration.",
+    "No member lifecycle or general recovery."
+  ]
+}

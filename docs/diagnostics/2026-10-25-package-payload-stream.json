@@ -1,0 +1,29 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-package-payload-stream",
+  "no_ships_started": true,
+  "baseline_failures": 3,
+  "baseline_native_timeout": {
+    "bytes": 100823040,
+    "context_error": "context deadline exceeded",
+    "diagnostic_trace": true,
+    "error": "signal: killed",
+    "operation": "-cf",
+    "step": "native-failure",
+    "tool": "/usr/bin/bsdtar"
+  },
+  "standalone_diagnostic_pass_not_qualification": true,
+  "streaming_candidate_verified_roles": 8,
+  "candidate_verification_seconds": 27.24659654,
+  "candidate_vm_seconds": 54.660201744001824,
+  "same_disk_hash": "bf054ba01a7ec018a4375f876077c843ce0bb136dedbbaf62306e0d9d77fef2b",
+  "candidate_binary_sha256": "b5c00107ab27184b246f9edff3f85a0992194c13ff31362cef323190202211d7",
+  "full_suite_top_level_passes": 60,
+  "full_suite_including_subtests": 125,
+  "focused_top_level_passes": 4,
+  "focused_including_subtests": 12,
+  "vet_passed": true,
+  "limits_unchanged": true,
+  "receipt_format_unchanged": true,
+  "production_untouched": true,
+  "next": "Fresh VM with explicit offline verification and candidate runner; gateway mount and Docker messaging still unqualified."
+}

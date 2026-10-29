@@ -347,7 +347,7 @@ func TestHelp(t *testing.T) {
 			if code := run(context.Background(), args, &stdout, &stderr); code != 0 || stderr.Len() != 0 {
 				t.Fatalf("exit = %d, stderr = %q", code, &stderr)
 			}
-			for _, text := range []string{"Usage:", "Development management client", "not a full collector daemon", "absolute path", "before the subcommand"} {
+			for _, text := range []string{"Usage:", "Omabit fleet management client", "runner owns runtime operations", "absolute path", "before the subcommand"} {
 				if !strings.Contains(stdout.String(), text) {
 					t.Errorf("help must include %q: %s", text, &stdout)
 				}

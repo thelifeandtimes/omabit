@@ -1,0 +1,33 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 27,
+  "previous_schema_snapshot": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-schema26-before-launch",
+  "previous_schema_snapshot_sha256": "a5f0af92d9ab4d504879a732f315e8902d67d0e59312e2b504aaec9c32db5ecd",
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-launch-store",
+  "source_sha256": {
+    "internal/managed/project_member_launch.go": "6e70587d5c16c3c60402938ed7b7e426541194e45c16e9001bbed22612191cd3",
+    "internal/managed/project_member_launch_test.go": "f3244d70ba5273bb2cf4c98748ab8122639053e2c58d2d6585ca47b46cbb381b",
+    "internal/managed/project_member_launch_worker_test.go": "d92b4101ea26b61c27ac4eb00955b8a573d35749461260afd67a4c1e4292669d",
+    "internal/managed/schema.go": "3f14a43ac5b7c973eb5cabccc6140aa0f403e5b46f156f4bea005227060b6966",
+    "internal/managed/store.go": "dcc020fddcfb633a288bcc626e6db79f70b26a22c7d659daa78826eb48810145",
+    "internal/managed/g02_historical_upgrades_test.go": "7a55f742e2e1b10cfedaf2d29d5838224f85280992ee4621be798500d22c5890",
+    "scripts/test-historical-upgrades.py": "7c8111112c8ed9170bfd55378371050a2c7f92d0fb4d905a88bddd0580f787b2",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "4c28c1fbb9dc8c9a03cc4c749c92de1f91b62e02909a733e123524042f338494",
+    "internal/managed/testdata/historical-upgrades/schema26.json": "b6139acd5d3029d1c474848a53dc365b33546c9496ddc0155b3a7ae78ae59b38",
+    "internal/projectnetwork/member_launch.go": "768d06f104376ccfd0ab6ffaa8b426f47b2fea87b046d04c414ad157928cd384"
+  },
+  "logs": {
+    "omabit-member-launch-store-tests.log": "cc310c065e7ffbb3e66debb6fffffda3b4bd0cf9648c6ced84c5e737fbec987e",
+    "omabit-member-launch-store-regression.log": "2cf1887f015f199594bbdb9222d5cb33016a1168f612e64baeef8df85118d627",
+    "omabit-member-launch-store-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-schema26-generate27.log": "6283de33084c88af22f70213fd1f899c990cdcb57fcdd5a1fb29ceb3c78d0c8a",
+    "omabit-schema26-reproduce27.log": "cfef9a40839bb15445f1a29ef7713a087f729ebb6c4575ea1c85a152311600fc",
+    "omabit-schema27-managed-full-race.log": "d19c4b018d07993d3a91a2310a67f3b4484ad7f9787e5fb69d3289f15f70ce2a"
+  },
+  "limits": [
+    "Initial launch persistence and inert worker only; no concrete member adapter, private server queue, public route or runtime qualification.",
+    "Succeeded launch receipt records running-container evidence only; ship identity/readiness and initialized pier evidence remain separate.",
+    "Schema26 original source/fixtures retained; no installed database migrated and frozen RC.12 release claims unchanged."
+  ]
+}

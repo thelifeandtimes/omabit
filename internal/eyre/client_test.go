@@ -76,9 +76,14 @@ func fakeEyre(t *testing.T, handler http.HandlerFunc) (*Client, *atomic.Bool) {
 }
 
 func TestOriginAndPathBoundaries(t *testing.T) {
-	for _, raw := range []string{"http://example.com", "http://localhost:8080", "https://user:secret@example.com", "https://example.com/path", "https://example.com?password=secret", "https://example.com#fragment", "file:///tmp/session", "https://example.com:65536", "http://[::ffff:192.168.1.1]", "https://example.com/%2e%2e", "https://example.com/\n"} {
+	for _, raw := range []string{"https://user:secret@example.com", "https://example.com/path", "https://example.com?password=secret", "https://example.com#fragment", "file:///tmp/session", "https://example.com:65536", "https://example.com/%2e%2e", "https://example.com/\n"} {
 		if _, err := Origin(raw); err == nil {
 			t.Fatalf("unsafe origin accepted: %q", raw)
+		}
+	}
+	for _, raw := range []string{"http://localhost:8080", "http://192.168.1.10:8080", "http://100.64.0.5:8080", "http://ship.tailnet:8080", "http://[fd00::1]:8080", "http://example.com"} {
+		if got, err := Origin(raw); err != nil || got != raw {
+			t.Fatalf("explicit HTTP endpoint rejected: %s %v", got, err)
 		}
 	}
 	if got, err := Origin("https://EXAMPLE.com:443/"); err != nil || got != "https://example.com" {

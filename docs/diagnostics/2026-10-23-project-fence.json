@@ -1,0 +1,25 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "source_sha256": {
+    "internal/managed/project_server_linux.go": "bef40aad55796911f8bccb58444416d4ebfd905278ea3369f45c63bcf6da883a",
+    "internal/managed/project_server_linux_test.go": "66051523e0c167043f9c0591cbdf162c9624d1d59a85b85ee97d68a42e8fcfec",
+    "internal/managed/project_worker.go": "83dee94c0df9ae63947aa1e3041e3ee1eee5d075dcdf3e0a4c220a5ac59feb78",
+    "internal/managed/project_vm_test.go": "403fc7bfddf112a70fa43147557d2ba905e70c843656cbce4478648a8c460db4",
+    "scripts/qualification/imports/appliance.py": "9719acea21a665930ad52755d22406d74e591f223828ded1d28cc6d695115fb9",
+    "scripts/qualification/imports/guest.py": "18a803934b3fe24e68b68367efea1878d6f43894a64d8f9e2b5855c591210486"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-project-fence",
+  "logs": {
+    "omabit-project-server-tests.log": "e82998149097e1553bbe70203a91c23a632f4d35a6a609328f4822a3d74ba541",
+    "omabit-project-fence-regression.log": "739b9a83ce00841efcb013b05261edfc7727ed1eea716c5042db9544f5f8c63a",
+    "omabit-project-fence-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-project-vm-source-test.log": "520df09e69788cd83e32d9ebf61f1c110bb7ae309cbb2756197ff563be2b56ec",
+    "omabit-import-fixture-checks.log": "a6bbb810a93017267fb2397d662f0f9c57f2da8ce3bd1790afa9feac6ed76a0d"
+  },
+  "limits": [
+    "No public project API, CLI or automatic startup dispatch.",
+    "Actual VM test compiled and skipped on host as required; appliance packaging is in progress.",
+    "Project preparation creates stopped resources only; member lifecycle is pending."
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "prepared": true,
+  "runtime_executed": false,
+  "offline_tests": 37,
+  "appliance": "/tmp/omabit-import-appliance-20261023-03",
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-published-pairs-preparation",
+  "verified_artifacts": {
+    "base.raw": "e20ef4fde05f7207408ae39188cd1a13d38afda804089382e8e36f8f528a7237",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "source_sha256": {
+    "scripts/qualification/imports/appliance.py": "541bbc83259dd334a3b339c930be2ae21c2077e8ccea91a19e90c1c6eadc962d",
+    "scripts/qualification/imports/guest.py": "918082c8f28f1e35886b81129cd8a13902b0999ad9a050f4eb90284b69c8c3a7",
+    "scripts/qualification/imports/import_case.py": "e5243d50edf31e12242e66b0fc84d8018b2d6c23274c8cd5c1621ca92c27d1c7",
+    "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+    "scripts/qualification/fake-networks/network_case.py": "05aac2ff53f68b13e733d88e38ec0790ac6a3e62cda9999d3b554272fe0985a3",
+    "scripts/qualification/fake-networks/state_case.py": "58250c80ee6b860ee9988c3397418b8396c0f0f0195465507bf8762ba5451bf6",
+    "scripts/qualification/fake-networks/omabit-state.hoon": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+    "scripts/qualification/fake-networks/project_isolation.py": "b198d35f6ad40e85784911310cf0734278eb8396902bf51394b934708ee3c3c4",
+    "scripts/qualification/fake-networks/published_client.py": "06d568a70279d95130e8cf63b0554f4327b289742769426d3c7b07153b738f97",
+    "scripts/qualification/fake-networks/endpoints_case.py": "8513fa38651d644a086056b9d8a4ab1137ccb528de17a96348ec561db7e6d644",
+    "scripts/qualification/fake-networks/test_published.py": "b358dbbca08ea332382318632d8305485a415930285c58b7500769911826478a",
+    "scripts/qualification/fake-networks/test_project_isolation.py": "0ce3992f3167a6fbebe44c6a647ee6a0b73fff0000c05aa9eacc0745684a33c6"
+  },
+  "bindings": {
+    "a": {
+      "8081": 18281,
+      "8082": 18282
+    },
+    "b": {
+      "8081": 18291,
+      "8082": 18292
+    }
+  },
+  "boundary": "fresh no-NIC four-fake VM only; 14GiB guest/24GiB scope, no swap, one host CPU; not yet booted"
+}

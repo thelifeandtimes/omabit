@@ -1,0 +1,100 @@
+{
+  "source_sha256": {
+    "backend/cmd/urbit-collector/main.go": "a2fb42c59436ddbb65d86eb812664cc3bb6bd4642b501716c9361294f44e2a19",
+    "backend/cmd/urbit-collector/operational_help_test.go": "f03da3fe74d0c71375ed127c5ca5d1c3d67cd5840b858e82db9b6c01c72415d0",
+    "backend/cmd/urbit-collector/storage.go": "933591e07b1c5d168306a6e2c6177cfefb55895c2dc35572cd613e05b8ca2e4b",
+    "backend/cmd/urbit-collector/task_help.go": "4aa5f7169a5469d4e1324bab4c5bab064f385f8c0bfb9d4910011b6701203ec8",
+    "internal/client/import_restore.go": "90891efe621222a7c3671d12a1357607cb571b78cd56b1cde7d06b4b594c96fb",
+    "internal/client/import_restore_test.go": "01201bc4d7985554a273fec79d7990cf33423f3d3b15ec95248c2de0e9aad251",
+    "internal/managed/g02_historical_upgrades_test.go": "92cee5a1eef92e57ccd332310a35351c3a85292a85e6b9531f6ec7fd03ca5ea4",
+    "internal/managed/import_restore.go": "747599588496101d59cd2176ee6f053cbd5b655e2a6152be73038346a6186194",
+    "internal/managed/import_restore_test.go": "faa8d9f27434e0e85aa380d9bcfc3ed5ec3a1f1e31827a1a5cc39ea56cb82c94",
+    "internal/managed/logs.go": "bda76893a440632f3ebe3463672e067afeb0f4a49bc13c01bc794a17a3acf719",
+    "internal/managed/schema.go": "a58133fa2f8b27a422bcce24edcb27a133e2a5583f07ec11dd269f408f5445b8",
+    "internal/managed/server.go": "6167325734ebdb1eb1564215de59dbe8d207542fe742105d8347172e768af8a3",
+    "internal/managed/store.go": "4a1f87a424b81ddd153cfe4982cc6b95aeb5f74c63a67297bfaeaf3120c78e6f",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "7c168781a2d6a0ef7dbef649ba8f9b26fa2824019127f8f09bdb6bac7d2f7287",
+    "internal/managed/testdata/historical-upgrades/schema21.json": "f2c259caf5bb8626172da332adff1ffb6f9ef71c5f5fccdfd8cae058907148f1",
+    "internal/protocol/import_restore.go": "990c73e84352331a286bde32b64fbf28fe48982886ec1c3c17fb10df611ea27d",
+    "internal/protocol/logs.go": "1108691d8a30cd32a941aa5ca6abc3ab7897398cb941782f9b52e1dfea79978b",
+    "internal/protocol/protocol.go": "b934a45e07bf985748e820a40c5d7fcf74fd3817726fbb41f9fcf4ce6b443a91",
+    "internal/runtimequalify/import_restore.go": "7fba5822b6a9f13edf7b0890db0e39c7dea431fb82443145e72e8b19007b4e30",
+    "internal/runtimequalify/import_restore_managed_linux.go": "1c1087385ee67c84f4d2b5f4a949a5c8ce0c406415bb2c73e390e29aa50ca42d",
+    "internal/runtimequalify/import_restore_managed_linux_test.go": "191bf76476125a8df77d46f2c9fa46a8d40d77056a761b65e427434f39a37831",
+    "internal/runtimequalify/import_restore_moves_linux.go": "5c16d07431221de923c4ce97cb93f97a91ff2dca0b29df2d6b72f38658467984",
+    "internal/runtimequalify/import_restore_moves_linux_test.go": "ad7a7b9ea1ab272f9b4e0153b17950b843f7ac355f5f64a1f9a0d1cc3162544b",
+    "internal/runtimequalify/import_restore_other.go": "239f48e1fd7d4ddf9e0f346bbeb3c1e052e7baad92449a673e0577c9ac62aede",
+    "internal/runtimequalify/import_restore_review_linux.go": "fe86c1649d6d16bc876713357bc9d5a7580615461407bb47a897cbdf35404941",
+    "internal/runtimequalify/import_restore_review_linux_test.go": "08ad52922515a227549fe3a0d8cf550f1fb6e0042ef25cb1122868945e5daa47",
+    "internal/runtimequalify/managed.go": "43afd95647edad6450906bfcc4cc089adef57ae27f6c7a3467174df5b1f0a2ad",
+    "internal/runtimequalify/managed_linux.go": "8cd5e03dd9adb675973b6c513d746ad9c7277935a7fbce8ee22c849bf29b56a6",
+    "scripts/test-historical-upgrades.py": "9f5603105d2541ed36d5562a0832f679157e645b2cb1e26fa128020de4aaa2d8",
+    "skills/omabit-operator/references/imports.md": "f696d7fc9a0550fda29b76f869b71555552e4a82bbf3b7c1f39886535cbf6ed9"
+  },
+  "race_log": "/tmp/omabit-import-restore-integration-race-20261022.jsonl",
+  "race_log_sha256": "d41b9a692f468f8609f8ca09fba001fd9bce2ef5484e9f42c8c3f965c4a4b98f",
+  "race_package_results": [
+    {
+      "Time": "2026-10-22T03:50:44.396107549-07:00",
+      "Action": "pass",
+      "Package": "git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol",
+      "Elapsed": 1.018
+    },
+    {
+      "Time": "2026-10-22T03:50:45.189284431-07:00",
+      "Action": "pass",
+      "Package": "git.thechristophgroup.org/thelifeandtimes/omabit/internal/client",
+      "Elapsed": 1.811
+    },
+    {
+      "Time": "2026-10-22T03:50:46.99480756-07:00",
+      "Action": "pass",
+      "Package": "git.thechristophgroup.org/thelifeandtimes/omabit/backend/cmd/urbit-runner",
+      "Elapsed": 3.616
+    },
+    {
+      "Time": "2026-10-22T03:50:51.23443147-07:00",
+      "Action": "pass",
+      "Package": "git.thechristophgroup.org/thelifeandtimes/omabit/backend/cmd/urbit-collector",
+      "Elapsed": 7.856
+    },
+    {
+      "Time": "2026-10-22T03:51:46.054558098-07:00",
+      "Action": "pass",
+      "Package": "git.thechristophgroup.org/thelifeandtimes/omabit/internal/managed",
+      "Elapsed": 62.676
+    },
+    {
+      "Time": "2026-10-22T03:51:51.786384696-07:00",
+      "Action": "pass",
+      "Package": "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify",
+      "Elapsed": 68.408
+    }
+  ],
+  "after_race_help_only_update": "TestTaskHelp and TestOperationalHelp passed after adding navigation for the two new commands",
+  "old_reader": {
+    "original_commit": "b23312876c611e1d083bdcc9468469f7e716d749",
+    "original_schema": 21,
+    "successor_schema": 22,
+    "fixture_reproduced": true,
+    "fixture_sha256": "f2c259caf5bb8626172da332adff1ffb6f9ef71c5f5fccdfd8cae058907148f1",
+    "reader_result": "=== RUN   TestG02HistoricalOldReaderRefusal\n    g02_generate_historical_test.go:208: original schema21 refused real schema22 state without modification\n--- PASS: TestG02HistoricalOldReaderRefusal (0.00s)\nPASS\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/managed\t0.004s\n",
+    "scope": "original reader and current migrator on synthetic private state; no services or piers"
+  },
+  "old_reader_report_sha256": "3f99385f5c654df09eba26389dbe4d8191f7ff4de14b07f0e66627fed9779616",
+  "built_cli_smoke": "/tmp/omabit-restore-cli-smoke-20261022-02/result.json",
+  "built_cli_smoke_sha256": "d4eb720596aad1b3b99894f446d7a2174e39e81cb864fbe396aaf4e678f505f8",
+  "built_cli_cases": 12,
+  "collector_sha256": "330883b851d06eb5ad3ee83713a1fc419c90cacd9912eefb02722d3a987a0791",
+  "runner_sha256": "0052ae68eef7f28d509c165e455c29cdfd929225de6898618d754beb49130833",
+  "checks": [
+    "six-package vet passed",
+    "operator skill validation passed",
+    "git diff --check passed"
+  ],
+  "runner_schema": 22,
+  "source_api_exposed": true,
+  "installed": false,
+  "real_vm_restoration_qualified": false,
+  "guided_ui_integrated": false
+}

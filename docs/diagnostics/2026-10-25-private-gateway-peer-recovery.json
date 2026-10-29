@@ -1,0 +1,30 @@
+{
+  "memory": "M367",
+  "passed": true,
+  "run": "/tmp/omabit-import-guest-run-private-chain-20261025-12",
+  "inspection": "/tmp/omabit-private-chain-inspection-20261025-26",
+  "build_sha256": "128db7dc3a912c4672932773fa289d5dd7b543c9570963246f5b18da77e9b406",
+  "payload_sha256": "cdb364ad14647c41f06de54912332ef29c99cef0d0e417aa67772a47451c2ac6",
+  "runtime_seconds": 1975.13,
+  "audit_seconds": 11.711549361993093,
+  "base_and_overlay_unchanged_by_audit": true,
+  "same_chain_and_piers": true,
+  "original_head_hash_matched": true,
+  "initialization_performed_on_resume": false,
+  "original_sessions_survived": true,
+  "historical_namespace_number_repeated": true,
+  "gateway_state_revisions": [
+    4,
+    5,
+    6,
+    6,
+    7
+  ],
+  "writes_replayed": false,
+  "ship_stops": 5,
+  "gateway_stops": 2,
+  "clean_vm_shutdown": true,
+  "raw_state_exported": false,
+  "private_disk_sha256": "d95df206c08beca05a10a8cfc07c9c66548b2a8a22d29a69d0bbb3d21238c4f1",
+  "runner_schema_dispatch_still_reservation_only": 41
+}

@@ -1,0 +1,78 @@
+{
+  "memory": "M373",
+  "status": "source-qualified-prepared-unbooted",
+  "appliance": "/tmp/omabit-import-appliance-private-chain-20261025-16",
+  "build_sha256": "bdaa1f8bcb05f786ecf255964ce1ec49487f11bedeecdf8c6054496b12947b37",
+  "payload": {
+    "added": [
+      "src/docker_isolation.py"
+    ],
+    "removed": [
+      "src/docker_gateway_peers.py",
+      "src/docker_gateway_resume.cjs",
+      "src/docker_publication.py",
+      "src/docker_published_client.py",
+      "src/docker_resume_case.py",
+      "src/gateway_resume_contract.cjs"
+    ],
+    "changed": [
+      "src/docker_case.py",
+      "src/docker_peer.py",
+      "src/docker_runtime.py",
+      "src/guest.py"
+    ],
+    "all_other_inputs_unchanged": true,
+    "files": 12358,
+    "build_sha256": "bdaa1f8bcb05f786ecf255964ce1ec49487f11bedeecdf8c6054496b12947b37",
+    "pristine_backing_sha256": "0928760981aefcf4b115708b874ddfaee41ff39364e45d65aebf2434cd9871ad",
+    "source_and_artifact_hashes_verified": true
+  },
+  "checks": {
+    "python_full_suite": 90,
+    "audit_entry_focused": 11,
+    "new_audit_entry_cases": 1,
+    "boot_admission": 7,
+    "cpu_admission": 3,
+    "auditor_top_level": 30,
+    "auditor_including_subcases": 161,
+    "auditor_race": true,
+    "auditor_vet": true,
+    "compiled_host_refusal": {
+      "exit": 80,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "sha256": "143b83ce43272b9333cbbab5eefd2094ea165992a8330fee8834b34f9faf18fc"
+    }
+  },
+  "memory_admission": {
+    "required_available_bytes": 34359738368,
+    "observed_available_bytes": 30214799360,
+    "scope_cap_bytes": 25769803776,
+    "guest_ram_mib": 14336,
+    "swap": false,
+    "cpu_cores": 2,
+    "deadline_seconds": 7200
+  },
+  "runtime_started": false,
+  "runtime_qualified": false,
+  "runner_schema": 42,
+  "public_runner_dispatch_enabled": false,
+  "full_managed_regression": "still-running-session-24625",
+  "supersedes": "M372 next-step status only; no existing runtime qualification is replaced",
+  "source_sha256": {
+    "scripts/qualification/private-chains/docker_runtime.py": "f5fe78cf2ae3b64151827f038a0a4db571cb42b54179b161c3222a8c67650ea4",
+    "scripts/qualification/private-chains/docker_peer.py": "6f341a7e00d6c04fb7a1373213006d27bb942645907e0788f464e3e4afc1c8b0",
+    "scripts/qualification/private-chains/docker_case.py": "52afe89f73b26f8209f3511b3e4194ce562424342d30b484e70ea4554de9edbd",
+    "scripts/qualification/private-chains/docker_appliance.py": "8a0e0f78ee7b10475557aeb666940a5757034550fb29d5a1bb47856d7f60d14e",
+    "scripts/qualification/private-chains/docker_isolation.py": "2ace76cec1e0eef7363ea6d085c9497d7d422225957247caa132101dd9253983",
+    "scripts/qualification/private-chains/docker_isolation_guest.py": "8619b5d47dd5fee3dfa832e3fd35853eabdbde521d150741ebbf9e1278be07e0",
+    "scripts/qualification/private-chains/docker_inspect.py": "e0687240b32f253521d2faec3e1090f8621828ddddb8d0ef7ec31402321811b0",
+    "scripts/qualification/private-chains/test_docker_isolation.py": "81d488cf85845289fc71e98df442847f2d5ffdb0f72e4893ca8b40e9b8e52191",
+    "scripts/qualification/private-chains/test_docker_inspect.py": "e0134d2dd992c4f39ebca1c025b2bd357af05d68355c3423ce812ea7826812f5",
+    "scripts/qualification/private-chains/inspect-init/main.go": "a99a288e165c4d21f895486d6a9a367d1189180a9af2c96130433c69d7ac273f",
+    "scripts/qualification/private-chains/inspect-init/isolation_audit.go": "a0f42fb2e6511af607b3f3274ade28e55af93a64b82d3ae9a36a3d7ab65b4af9",
+    "scripts/qualification/private-chains/inspect-init/isolation_audit_test.go": "95e28d867c00587e7b3fbf7a11719e384774767e7d3f1303ceab6496d8fe6a60",
+    "scripts/qualification/imports/appliance.py": "6d1ef0ec6a3af0ff05fc3da490b78aea0c1a4b96052960a3cf302b971fef06b0",
+    "scripts/qualification/imports/test_private_chain_boot.py": "794fb9ba5cf783ce2a04b977c9da34368de84f649d7a2d2f6545ce083615cc7c"
+  }
+}

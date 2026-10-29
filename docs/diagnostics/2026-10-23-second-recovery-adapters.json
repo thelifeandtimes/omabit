@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "kind": "second concrete coordinated recovery with historical-retirement guards",
+  "before_fix_failed_as_expected": true,
+  "focused_race_seconds": 213.241,
+  "related_race_seconds": 309.22,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-second-recovery-adapters",
+  "manifest": {
+    "omabit-second-recovery-tests-before-guard.log": "d1b9ae427498907a2f66b55a5f8ed8eb0066a2702e8fd546fec79d67d7122e06",
+    "omabit-second-recovery-tests-after-guard.log": "b6a3428a17a63b739aeede3333a81c48252f468f0ed2f0c8a2a1c1b04cdac8c8",
+    "omabit-second-recovery-related-race.log": "a1afb5901f5e16700f0a32c4dc6cc25ccd8fb23b709d08eacc00c0b18c132455",
+    "omabit-second-recovery-vm-entry.log": "86780f685442583192f2dd9b6567fdd206e30f4d7ac5103e811c601cf1ac21c2",
+    "omabit-second-recovery-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-second-recovery-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/runtimequalify/project_anchor_second_recovery_linux_test.go": "9f55b6718b6d12c617ac746bfa685b105e2be1b3573aec9951217b93124c3f12",
+    "source/internal/runtimequalify/project_anchor_recovery_review_linux.go": "c7ed0dac5348b7e9bf11f262a000e6fdc994f43958547114a0c4e7c8582d3c48",
+    "source/internal/runtimequalify/project_anchor_drain_linux.go": "b4db7a33e200771c07d98fd58a367d5f0b4cd600a3434a33fd8891d85c73d63f",
+    "source/internal/runtimequalify/project_anchor_retirement_linux.go": "bd92edeb9c5e999c569de7273a34614f44ddb5975069c0ae568b5f4d95b38a58",
+    "source/internal/runtimequalify/project_anchor_replacement_linux.go": "7807689f38d5093452e102c6b51c9024b1d432fe13c5443d817bbe59339a9b9c",
+    "source/internal/runtimequalify/project_anchor_recovery_readiness_linux.go": "3dce4215bcde501bc6dead5cceebd672010abe9a618e3dbe2dcef47a7bbe3d1a"
+  }
+}

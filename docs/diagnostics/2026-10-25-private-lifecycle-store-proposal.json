@@ -1,0 +1,50 @@
+{
+  "memory": "M377",
+  "status": "staged-lifecycle-adapters-source-qualified",
+  "schema": 42,
+  "schema_changed": false,
+  "repository_installed": false,
+  "migration_activated": false,
+  "checks": {
+    "top_level": 25,
+    "including_subcases": 161,
+    "race": true,
+    "vet": true,
+    "log_sha256": "659cf1e4d580862299f1e8ae9680762f4d3b80fd577d00fec4f64b6307c392aa"
+  },
+  "source_sha256": {
+    "gateway.go": "701d1984a4a9c9e1e10d7e7f3c1a725a0273bfd5ac6ed1983124f2685c2f9e6c",
+    "private_gateway.go": "1d0e649685866f9fd3ada7f9c4e619e1742d3361dce5e31cbc5480be040fb390",
+    "private_gateway_test.go": "6d12fe3b780093e8c04a8088f3c37e484b4f7c617bf7bb582c17e5948ef8b348",
+    "private_workspace_observation.go": "7f49d2c5d09b31cf46cff63a61a085c6f5f874c490403dfe2ad0c0f191d0ff57",
+    "private_workspace_observation_test.go": "4ec378037669783959cf344f357a6d054fe0f3a240cef214b1ded263d0efea28",
+    "private_gateway_observation.go": "0233242f8b9caa611e4443452922cfe778e105a8cfdb7b43695570bc8d8aed01",
+    "private_gateway_observation_test.go": "52cf9ae56ba35958cced090073c444c5fed723ebc9ee29fce113cde65f1fe53a"
+  },
+  "review": {
+    "expected_negative_control_failed": true,
+    "negative_exit": 1,
+    "negative_log_sha256": "36ff9ccb661889cf607a6d1e90a136fc2933298f23c014c5d9ec4bdd8c28bcd6",
+    "vet_exit": 0,
+    "seconds": 5.059640267980285
+  },
+  "effects": "synthetic temporary SQLite databases and one fresh test-only directory tree; inert gateway driver",
+  "candidate_tables": [
+    "private_workspace_observations",
+    "private_project_gateways",
+    "private_gateway_observations"
+  ],
+  "original_attempts_preserved": true,
+  "fresh_startup_dispatch_only": true,
+  "observer_interfaces_have_no_creation_or_start_methods": true,
+  "cross_project_filesystem_claims_verified": true,
+  "public_dispatch_enabled": false,
+  "supersedes": "M375/M376 pending source database adapters only; no migration, global startup wiring or concrete gateway runtime qualification",
+  "next": [
+    "integrate candidate tables under one actual schema43 migration",
+    "wire global reservation validation and startup interruption without runtime dispatch",
+    "register/reproduce original42 and verify refusal of real populated43 state",
+    "complete shared parent provisioning, concrete adapters and fenced queues",
+    "qualify initial HTTP publication and concurrent private projects; then public runner integration"
+  ]
+}

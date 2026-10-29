@@ -4,6 +4,8 @@ import "Model.js" as Model
 
 EditableSelectField {
   id: root
+  property var service: null
+  ReaderLifecycle { id: lifecycle; service: root.service; process: reader; kind: "ssh-suggestions" }
   property string configFile: ""
   property string output: ""
   property string requestedConfig: ""
@@ -25,12 +27,19 @@ EditableSelectField {
     currentIndex=-1;editText=typed
   }
   function refreshSuggestions() {
-    if(!visible || reader.running)return
+    if(!visible || !lifecycle.admitted || reader.running)return
     output="";requestedConfig=configFile.trim()
     reader.command=["python3","-B",Model.localPath(Qt.resolvedUrl("ssh-hosts.py"))].concat(requestedConfig ? ["--config",requestedConfig] : [])
     reader.running=true
   }
   onVisibleChanged: {if(visible)refreshSoon.restart();else if(reader.running)reader.signal(15)}
+  Connections {
+    target: lifecycle
+    function onAdmittedChanged() {
+      if (lifecycle.admitted) refreshSoon.restart()
+      else { refreshSoon.stop(); if (reader.running) reader.signal(15) }
+    }
+  }
   onConfigFileChanged: refreshSoon.restart()
   Component.onCompleted: refreshSoon.restart()
   Timer { id:refreshSoon;interval:300;onTriggered:root.refreshSuggestions() }
@@ -41,6 +50,7 @@ EditableSelectField {
     stdout:SplitParser {splitMarker:"";onRead:function(data){if(root.output.length+data.length>262144){reader.signal(9);return}root.output+=data}}
     stderr:SplitParser {onRead:function(line){}}
     onExited:function(code,status) {
+      if (!lifecycle.admitted || !root.visible) { root.output=""; return }
       if(root.requestedConfig!==root.configFile.trim()){refreshSoon.restart();return}
       if(code===0&&status===0){try{root.acceptSuggestions(JSON.parse(root.output))}catch(_) {}}
       root.output=""

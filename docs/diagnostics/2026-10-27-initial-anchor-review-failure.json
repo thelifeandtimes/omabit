@@ -1,0 +1,105 @@
+{
+  "kind": "initial-anchor-review-failure",
+  "qualified": false,
+  "original_operation": {
+    "project_id": "project-38c35578afb26d0ae52164b5fe5790b2",
+    "id": "op-a5ae8fbae7b90d722e29e348668c6a82",
+    "request_id": "create-2bd75fb9ac874a6c5753b50c42a91ad53dc7fb1a",
+    "instance_id": "",
+    "kind": "start-project-anchor",
+    "actor": "local-uid:1000",
+    "status": "interrupted",
+    "config_revision": 1,
+    "created_at": "2026-10-28T04:58:06.065161054Z",
+    "finished_at": "2026-10-28T04:58:09.437591385Z",
+    "message": "anchor Start did not finish; retain the original receipt and inspect before recovery"
+  },
+  "original_journal": {
+    "prepared": {
+      "project_id": "project-38c35578afb26d0ae52164b5fe5790b2",
+      "project_revision": 1,
+      "generation": 1,
+      "operation_id": "op-80e99fd84c990c5595639e3e6824a85f",
+      "plan_digest": "af0f2ed387d1bd2862cfebd36f3ab51fcac8add939dc555ddb12133a7bafb861",
+      "engine_id": "80311c5e-e06a-4f44-8360-93140f3a0458",
+      "sequence": 6,
+      "bridge": {
+        "name": "urbit-project-38c35578afb26d0ae52164b5fe5790b2-g1-bridge",
+        "contract_digest": "753f18c748da900153cb38084ee16853dd0f05f1a1426ea240e7206f158f1868",
+        "phase": "observed",
+        "id": "4e59381fb4ce37dbefdfadbe1d7dc007140d93ebb1034c86f2417e1434616147"
+      },
+      "anchor": {
+        "name": "urbit-project-38c35578afb26d0ae52164b5fe5790b2-g1-anchor",
+        "contract_digest": "80201cbf1e1d07d99595437ad032dbb86db8102c02daa6b97d7d2931994dd6d1",
+        "phase": "observed",
+        "id": "c73ee55eed41ecf015ab22762d932a496de900a778bc12f63602c36f84055a6e"
+      }
+    },
+    "operation_id": "op-a5ae8fbae7b90d722e29e348668c6a82",
+    "phase": "started"
+  },
+  "subsequent_readonly_observation": {
+    "project_id": "project-38c35578afb26d0ae52164b5fe5790b2",
+    "revision": 1,
+    "generation": 1,
+    "engine_id": "80311c5e-e06a-4f44-8360-93140f3a0458",
+    "observed_at": "2026-10-28T05:15:17.630007257Z",
+    "complete": true,
+    "bridge": {
+      "resource": {
+        "id": "4e59381fb4ce37dbefdfadbe1d7dc007140d93ebb1034c86f2417e1434616147",
+        "contract_digest": "753f18c748da900153cb38084ee16853dd0f05f1a1426ea240e7206f158f1868"
+      },
+      "present": true
+    },
+    "bridge_attachments": [
+      "c73ee55eed41ecf015ab22762d932a496de900a778bc12f63602c36f84055a6e"
+    ],
+    "anchor": {
+      "resource": {
+        "id": "c73ee55eed41ecf015ab22762d932a496de900a778bc12f63602c36f84055a6e",
+        "contract_digest": "80201cbf1e1d07d99595437ad032dbb86db8102c02daa6b97d7d2931994dd6d1"
+      },
+      "present": true,
+      "running": true,
+      "namespace": {
+        "boot_id": "e17b129e-650c-48bc-8e7b-3235b8b94ad1",
+        "device": 5,
+        "inode": 4026532510
+      },
+      "bridge_id": "4e59381fb4ce37dbefdfadbe1d7dc007140d93ebb1034c86f2417e1434616147",
+      "requested": [
+        {
+          "internal_port": 8080,
+          "host_address": "127.0.0.1",
+          "host_port": 18382,
+          "protocol": "tcp"
+        },
+        {
+          "internal_port": 8081,
+          "host_address": "127.0.0.1",
+          "host_port": 18381,
+          "protocol": "tcp"
+        }
+      ],
+      "active": [
+        {
+          "internal_port": 8080,
+          "host_address": "127.0.0.1",
+          "host_port": 18382,
+          "protocol": "tcp"
+        },
+        {
+          "internal_port": 8081,
+          "host_address": "127.0.0.1",
+          "host_port": 18381,
+          "protocol": "tcp"
+        }
+      ]
+    },
+    "members": null
+  },
+  "diagnostic_sha256": "b9efcc8b8899d35ef675bbc99b962c08c39d105021e2e35abdd5b69ce24036db",
+  "limits": "Later inspection passed without restarting; original failure cause not yet established. No ship member launched."
+}

@@ -1,0 +1,37 @@
+{
+  "verified": true,
+  "passed": false,
+  "schema": 27,
+  "seconds": 672.63,
+  "scope_inactive": true,
+  "clean_vm_shutdown": true,
+  "clean_anchor_stop": true,
+  "quota_and_deadline_clear": true,
+  "first_member_running_receipt_verified": true,
+  "second_member_create_refused_before_effect": true,
+  "second_phase": "create-dispatched",
+  "first_member_cleanup_exit": 137,
+  "oom": false,
+  "init": false,
+  "container_ids": [
+    "b0fd59540eeb38dfb7456a04c1cb14f58a43579a1b078b59eb0c181fcb779991",
+    "ead418e1c0ab79c710cc8da43f82eb4166ac5e865127a4efc9e8879d95640a1f"
+  ],
+  "no_second_container": true,
+  "database_receipts_match": true,
+  "files_verified": 19,
+  "result_sha256": "dcb9c41139d79b432aab17731d393a547616b7b549032d5de3fe6ccb57bf06ce",
+  "database_sha256": "c924cdd250082a79b9d34678a35b9a77f254eeb5850f734890869c782e48062f",
+  "private_member_log_sha256": "7569893e6fda56981383401f2ed2300aaced35b88241f5d1c031267d23dd9468",
+  "findings": [
+    "Second member final dispatch refused stale preflight, preserving create-dispatched uncertainty with no container ID.",
+    "First member cleanup exhausted its 300-second limit and exited 137 without OOM; cause not yet isolated.",
+    "Fixture member contract lacks --init unlike previously passing fake-network cases."
+  ],
+  "next": [
+    "Reduce expensive artifact hashing inside the final observation window without weakening freshness or integrity.",
+    "Restore known-working init behavior and retest a fresh pair; do not infer the shutdown cause is proven."
+  ],
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-launch12",
+  "sources_retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-launch-vm-preparation/source"
+}

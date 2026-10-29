@@ -1,0 +1,94 @@
+{
+  "passed": false,
+  "failure_verified": true,
+  "schema": 37,
+  "scope_inactive": true,
+  "outer_exit": 1,
+  "qemu_exit": 0,
+  "clean_shutdown": true,
+  "seconds": 1997.98,
+  "extracted_files_verified": 19,
+  "result_sha256": "17f0ee39bdc5a78ae5a5928171b7e6347f43d102fc53727f8c93e01d04e75724",
+  "database_sha256": "330f3244293596f2a28dbd4fbbc5946fec55d7a33759ac36ce0fd0c75702afad",
+  "failure_stage": "sender replacement readiness",
+  "readiness_seconds": 41.500819,
+  "readiness_calls": [
+    "project",
+    "identity",
+    "project"
+  ],
+  "adapter_errors": null,
+  "setup_errors": null,
+  "readiness_operation": {
+    "project_id": "project-ae99eedd9fc23b20faa71639c7ae5b45",
+    "id": "op-fba850c38e493f4faa5dd602a8c39396",
+    "request_id": "observe-op-559233483822ce57ef8e898474912df7",
+    "instance_id": "vm-nec",
+    "kind": "observe-resumed-project-member",
+    "actor": "qualification",
+    "status": "interrupted",
+    "config_revision": 1,
+    "created_at": "2026-10-24T04:44:33.17027103Z",
+    "finished_at": "2026-10-24T04:45:14.671090002Z",
+    "message": "readiness observation did not complete; a new read-only request may retry without relaunching the member"
+  },
+  "readiness_journal": {
+    "operation_id": "op-fba850c38e493f4faa5dd602a8c39396",
+    "project_id": "project-ae99eedd9fc23b20faa71639c7ae5b45",
+    "instance_id": "vm-nec",
+    "resume_operation_id": "op-559233483822ce57ef8e898474912df7",
+    "phase": "observing",
+    "binding": {
+      "project_id": "project-ae99eedd9fc23b20faa71639c7ae5b45",
+      "revision": 1,
+      "generation": 1,
+      "plan_digest": "22d89c002b36049ee2395153a5c9058532ad43727e0e753e6ef100e9c8026303",
+      "engine_id": "20e255b8-3026-4ada-b1ed-7ee5494a04d3",
+      "bridge": {
+        "id": "0b00b4c9cba58808a0fb65b69c41ecc771f066f5f632b6dc3c020f4ebfbb334f",
+        "contract_digest": "3b43de10d40a64e092d67986b8f3a8969b6eb8c170e663dea711433a2467b9a1"
+      },
+      "anchor": {
+        "id": "f0bb08fc4f3d9ba7ae9a8b1af26944e28a50d590336766b3f39987f955295fb3",
+        "contract_digest": "dd1cdc3e6f1491e28a5fa25981f914b2c2f60a0f063646b78c4f0b1251b23f55"
+      },
+      "namespace": {
+        "boot_id": "95fe8dbb-c963-44ae-a6f5-fdd68d148866",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "members": [
+        {
+          "instance_id": "vm-nec",
+          "runtime_id": "cbfab7f967b4476072a5889273b7c6b6",
+          "container": {
+            "id": "328feb592e673cef4c2e1c6ac253b116bf2e6e11e3414797d12e3976ac7bfafc",
+            "contract_digest": "e154f44fa42a1d6a8e6e3e957a5e3b5fe531d963477db894b293b29a3a61a8dd"
+          }
+        },
+        {
+          "instance_id": "vm-zod",
+          "runtime_id": "be509a8f179c24dac9be3d9a17bff1fd",
+          "container": {
+            "id": "ea9272bb50cb668f6da1337cb4d7c8b492c54f9d8a207e0956a89bd702d7ac20",
+            "contract_digest": "4590cb0df69e895dab3d4f4084f70f013f72a72b1edbbbc2c17d762dd2b9765f"
+          }
+        }
+      ]
+    }
+  },
+  "anchor_review_reached": false,
+  "application_phases": [
+    "setup-before-first",
+    "after-first",
+    "before-second",
+    "after-second",
+    "before-peer"
+  ],
+  "application_transport": "published-loopback",
+  "three_replacements_recorded": true,
+  "both_final_pier_states_verified": true,
+  "private_container_inventory_verified": true,
+  "diagnosis": "Freshness expiry is a timing hypothesis; failed observations and worker error were not retained by this fixture. No specific root cause is yet proven.",
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-review27"
+}

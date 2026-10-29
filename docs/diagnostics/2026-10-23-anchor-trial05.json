@@ -1,0 +1,36 @@
+{
+  "verified": true,
+  "passed": false,
+  "scope_inactive": true,
+  "seconds": 1321.99,
+  "extracted_files_verified": 18,
+  "result_sha256": "2f4be55d7fdb412499dc06de013bf34681236aca17753461366805ee7048a664",
+  "failure": "first post-restart endpoint probe; original curl outcome was not recorded",
+  "anchor_stop_refusals": [
+    {
+      "phase": "stopped",
+      "port": 8081,
+      "exit": 7
+    },
+    {
+      "phase": "stopped",
+      "port": 8082,
+      "exit": 7
+    }
+  ],
+  "namespace_replaced": true,
+  "old_members_remained_live_in_old_namespace": true,
+  "member_replacements": 0,
+  "writes_before_failure": 5,
+  "all_created_ships_stopped_cleanly": true,
+  "session_and_subscription_cleanup_incomplete": true,
+  "original_artifacts_and_disks_verified": true,
+  "probe_fix_source_sha256": {
+    "scripts/qualification/fake-networks/anchor_recovery.py": "975765be73a6945570b08a1b459349bf700dfb2d724e5a7be3a25d3a2a09da4d",
+    "scripts/qualification/fake-networks/network_case.py": "02cfef2893029e9e7c612a6294835889dde68034c06b9c19a41000d7d0505bef",
+    "scripts/qualification/fake-networks/test_anchor_recovery.py": "b2787b84ac5dc70502af9c9e9d2e1b8e8dbd48d8c489a36f637912b5708cb373"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor05",
+  "prior_empty_reply_fixture_sha256": "5f72c7958a470d24eec33f89398c1f90307b2e521e83fec58bd850953439f4c9",
+  "source_tests": 43
+}

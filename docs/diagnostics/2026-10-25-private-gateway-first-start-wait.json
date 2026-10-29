@@ -1,0 +1,75 @@
+{
+  "memory": "M398",
+  "integrated": {
+    "exit": 0,
+    "checks": 312,
+    "top": 34,
+    "failed": [],
+    "command": [
+      "go",
+      "test",
+      "-p=2",
+      "-race",
+      "-count=1",
+      "-timeout=5m",
+      "-json",
+      "./internal/runtimequalify",
+      "-run",
+      "^TestPrivateGateway"
+    ],
+    "source_sha256": {
+      "internal/runtimequalify/private_gateway_driver_linux.go": "767ea6840576d66bdf4805fd3c313135210915ee7ca10ddc9083f3f29bac11be",
+      "internal/runtimequalify/private_gateway_driver_linux_test.go": "2d338dc2313ecf82cf276f3780281e6a36129f8e24313b9a8ee51fb039c2c7f6"
+    },
+    "diff_check_exit": 0,
+    "seconds": 9.060958248970564,
+    "actual_docker_access": false
+  },
+  "focused": {
+    "exit": 0,
+    "checks": 26,
+    "failed": [],
+    "command": [
+      "go",
+      "test",
+      "-overlay=/tmp/omabit-private-gateway-driver-20261025-01/qualified-overlay.json",
+      "-p=2",
+      "-race",
+      "-count=1",
+      "-timeout=5m",
+      "-json",
+      "./internal/runtimequalify",
+      "-run",
+      "^Test(PrivateGatewayDriver|QualifiedPrivateGatewayDriver)"
+    ],
+    "private_home": "/tmp/omabit-private-gateway-driver-20261025-01/check02-home",
+    "source_sha256": {
+      "private_gateway_driver_linux.go": "767ea6840576d66bdf4805fd3c313135210915ee7ca10ddc9083f3f29bac11be",
+      "private_gateway_driver_linux_test.go": "2d338dc2313ecf82cf276f3780281e6a36129f8e24313b9a8ee51fb039c2c7f6",
+      "qualified_driver_linux_test.go": "bb1dffb87f8fbd16e45928af38de67d86d6b76f32d5ee3527066ffc0e50db01f"
+    },
+    "actual_docker_access": false,
+    "vet_exit": 0,
+    "seconds": 11.660678988031577,
+    "actual_generation07_passed": true
+  },
+  "runtime_qualified": false,
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-first-start-wait",
+  "artifact_sha256": {
+    "private_gateway_driver_linux.go": "767ea6840576d66bdf4805fd3c313135210915ee7ca10ddc9083f3f29bac11be",
+    "private_gateway_driver_linux_test.go": "2d338dc2313ecf82cf276f3780281e6a36129f8e24313b9a8ee51fb039c2c7f6",
+    "qualified_driver_linux_test.go": "bb1dffb87f8fbd16e45928af38de67d86d6b76f32d5ee3527066ffc0e50db01f",
+    "previous-driver-test.go.txt": "9629905eafe08e2b5c9c7a23c30db529f6cae575d2c8a26defd91bb92d15ba5e",
+    "check.py": "1cce009c7be2d0e5e10809b5eba9397fe934c754711a6089b82a5d5fa74721c2",
+    "check-result.json": "7aebf6965d92b8310ded238f29b9522816191b9dd68df841b67e956826e98ed6",
+    "tests.jsonl": "9871ed6bd1a434cd6a6fc2af1d924e0c902d7f67b5707badce76cea5d9c86d9b",
+    "check02.py": "fb1672b149893de24a443afcb102d4bbe443905a7ec25264505d1034c87cb78b",
+    "check02-result.json": "e16d681e872035da4d8a69df087571659a4bbfcfdd0a905d8e847260d5138071",
+    "tests02.jsonl": "1d0543bff1dbebfa5e367519739969e7beecc6f5bd936bea808bc60bac677b5d",
+    "vet02.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "integrate.py": "7fdfa1fca26c9e4d3345d9576c68d545eab553e95cd528303e13035e6354c155",
+    "integrated-result.json": "f17b8a985fb125a056245427a0bdc250bcd1f22b3b9f995373669a92ed7e616a",
+    "integrated-tests.jsonl": "c2f3b8a4dfcbb703aa7d13351604f753dfb1adc5adede4ee3efa111ef8796326",
+    "diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

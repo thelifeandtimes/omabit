@@ -1,0 +1,60 @@
+{
+  "source_qualified": true,
+  "built_cli_namespace_walkthrough_passed": true,
+  "runtime_actions_available": false,
+  "runner_contacted": false,
+  "collector_race_seconds": 7.847,
+  "walkthrough": {
+    "passed": true,
+    "binary_sha256": "b8d1d28bf02134bcd40e2cd212742621194a4a92cb5c07a5cb7e68510bcf6b87",
+    "namespace": "private user/network/mount/pid/ipc/uts",
+    "host_home_run_docker_ssh_keyrings_mounted": false,
+    "cases": [
+      {
+        "case": "plan-json",
+        "exit": 0,
+        "stdout": "{\n  \"schema_version\": 1,\n  \"plan\": {\n    \"mode\": \"fake-galaxies-v1\",\n    \"label\": \"recovery-demo\",\n    \"members\": [\n      {\n        \"instance_id\": \"dev-nec\",\n        \"ship\": \"~nec\",\n        \"http_port\": 18382,\n        \"internal_http_port\": 8080\n      },\n      {\n        \"instance_id\": \"dev-zod\",\n        \"ship\": \"~zod\",\n        \"http_port\": 18381,\n        \"internal_http_port\": 8081\n      }\n    ],\n    \"bind_address\": \"127.0.0.1\",\n    \"shared_administration\": true\n  },\n  \"review_digest\": \"a679f8e6c6db3e2806f20bfff8e15761ebae9f2a1991b33eb0da44e955eaa585\",\n  \"reservation_check\": \"not-performed\",\n  \"runtime_authorized\": false,\n  \"notice\": \"Offline review only. No resources reserved or started; runner capability and fresh host admission remain required.\"\n}\n",
+        "stderr": ""
+      },
+      {
+        "case": "plan-text",
+        "exit": 0,
+        "stdout": "Offline project plan: recovery-demo\nMode: fake-galaxies-v1\nReview digest: a679f8e6c6db3e2806f20bfff8e15761ebae9f2a1991b33eb0da44e955eaa585\nINSTANCE  SHIP  RUNNER LOOPBACK HTTP PORT  INTERNAL HTTP PORT\ndev-nec   ~nec  18382                      8080\ndev-zod   ~zod  18381                      8081\nShared administrative loopback: yes\nOffline review only. No resources reserved or started; runner capability and fresh host admission remain required.\n",
+        "stderr": ""
+      },
+      {
+        "case": "help",
+        "exit": 0,
+        "stdout": "{\n  \"schema_version\": 1,\n  \"notice\": \"Offline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\",\n  \"topic\": {\n    \"name\": \"projects\",\n    \"summary\": \"Review an offline fake-galaxy network plan before runner admission.\",\n    \"commands\": [\n      {\n        \"name\": \"project-plan\",\n        \"effect\": \"Build a deterministic offline plan and review digest; no runner connection or resource changes.\"\n      },\n      {\n        \"name\": \"hello\",\n        \"effect\": \"Inspect a selected runner's advertised capabilities separately.\"\n      }\n    ],\n    \"guidance\": [\n      \"Use project-plan --help to specify every fresh instance, canonical galaxy and runner-loopback HTTP port. The initial complete member set determines internal ports.\",\n      \"Planning does not inspect host reservations, reserve ports or start ships. A review digest is not a project ID or runtime authority; do not assume a selected runner supports project operations.\",\n      \"Project members share administrative loopback access. Standalone fake directories remain separate from this explicitly reviewed project topology.\"\n    ]\n  },\n  \"next\": [\n    \"urbit-collector COMMAND --help\",\n    \"urbit-collector help\"\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "case": "reject-duplicate-port",
+        "exit": 2,
+        "stdout": "",
+        "stderr": "{\n  \"error\": {\n    \"code\": \"client_error\",\n    \"message\": \"member HTTP ports must be unprivileged, distinct and unreserved\"\n  }\n}\n"
+      },
+      {
+        "case": "reject-runner-selection",
+        "exit": 2,
+        "stdout": "",
+        "stderr": "{\n  \"error\": {\n    \"code\": \"client_error\",\n    \"message\": \"project-plan is offline; omit --runner, --socket and --expected-runner-id\"\n  }\n}\n"
+      }
+    ]
+  },
+  "source_sha256": {
+    "backend/cmd/urbit-collector/project_plan.go": "bca13eb7e25dfb7eaa7e3db8e5c392904404ce59f8abe9ec6adc60f391a5c248",
+    "backend/cmd/urbit-collector/project_plan_test.go": "c977eac4c65c34c8a6466e4eb6c4e650dca6c7ebaed440decf4771f1d2d5da66",
+    "backend/cmd/urbit-collector/main.go": "ee09867a6941e25aba75b88e45c5ee2aa5b3cb86cc65c2b9d5d1c4c0f4ed8915",
+    "backend/cmd/urbit-collector/output.go": "f3d7af7baa07de712fb323e51c07be3329d6f88a0e8d3b0c7edd06d7209a6efe",
+    "backend/cmd/urbit-collector/task_help.go": "7e14bb8e73549e31a9547e65abbf984bdc46d9570b3646af809ba9c619ff02cb"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-project-plan-cli",
+  "evidence_sha256": {
+    "omabit-project-plan-cli-tests.log": "93a4a5d16ad5aa87a34bb5756309291fdd7d339f1275205d2d84d544ac47479d",
+    "omabit-project-plan-collector-race.log": "fbf8a0ff0eb6b81cb1188e220279ea99221f51b2b16bc25e73f6968979f5e26a",
+    "omabit-project-plan-cli-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-project-plan-cli-walkthrough.json": "0eba1b2d2d60a41d760f7fd402444aeae00f5879e5657978a6055b6f47c8dde6"
+  },
+  "in_prepared_vm23": false
+}

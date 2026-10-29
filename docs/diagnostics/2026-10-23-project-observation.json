@@ -1,0 +1,20 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "persisted": false,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-project-observation",
+  "source_sha256": {
+    "internal/projectnetwork/plan.go": "e785dc47084db71565d472aaf47b2674cad3f12321066551f21550c5d9db0984",
+    "internal/projectnetwork/runtime.go": "75cebcb0c3e54959055d1172cb3a753e45026004fb4516286350402b8ba034d3",
+    "internal/projectnetwork/runtime_test.go": "32b7e2cb7cc8e1b52c8d8bd2abe5aa5206bdb070219cbbd80e6fa158dfd44d95"
+  },
+  "validation": [
+    "go test -race ./internal/projectnetwork -count=1",
+    "go vet ./internal/projectnetwork"
+  ],
+  "limits": [
+    "No Docker adapter, engine access, mutation or capability.",
+    "Durable runtime journal needs a schema fence before being stored.",
+    "Fresh observation collection must hold the runner mutation fence and independently validate full Docker creation contracts."
+  ]
+}

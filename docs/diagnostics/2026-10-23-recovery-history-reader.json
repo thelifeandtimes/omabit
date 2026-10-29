@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "kind": "concrete read-only recovery-history reconstruction",
+  "focused_race_seconds": [
+    30.403,
+    30.308
+  ],
+  "related_race_seconds": 307.923,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-recovery-history-reader",
+  "manifest": {
+    "omabit-recovery-history-reader-compile.log": "8c44547b3abb50bd537e72706b64aac3a77d2150d9b7a0d72e701a29390fe501",
+    "omabit-recovery-history-reader-tests-attempt1.log": "20c602fc952da39b127caf0ff010fc944dd2cfa44a1475941ad99ccae22d5448",
+    "omabit-recovery-history-reader-ordinary-tests-attempt1.log": "03bea649b27f6c237a1f5166754b1ae5452705d6e3087cb27748a2923814da8d",
+    "omabit-recovery-history-reader-related-race.log": "5b9557577ee9295979cf8d12cdfd2ad01f078ba0d83163c58d9bee27f57c28f0",
+    "omabit-recovery-history-reader-vm-entry.log": "f9105f74df86455377f734c3870c2a254f985a264d28a8ab8cd78944bb51c15e",
+    "omabit-recovery-history-reader-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovery-history-reader-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/runtimequalify/project_member_recovery_history_linux.go": "a5ed5df1457aa3a87909d0048e9a1eb32676bb05a4af36d62e412122a4550157",
+    "source/internal/runtimequalify/project_member_recovery_history_linux_test.go": "a269626cf25d8a5b40b8f263a1e9aeaf2a4e9b0c5bb41a6724af26b27976ad8d",
+    "source/internal/runtimequalify/project_anchor_recovery_review_linux.go": "65b46bb07dbadb565bdf75c5379c4b64374df5caaf88d46f4e14fc143cc11276",
+    "source/internal/runtimequalify/project_anchor_drain_linux.go": "da9a419a6f5b49bae04d27f31ea7d0fb8b18197d33e327d190c04fe3b888473f",
+    "source/internal/runtimequalify/project_recovered_resume_contract_linux_test.go": "60e759e2e75940992bbd0eac16a1ad039737a744b399d4ee652d6ad07a956b1e"
+  }
+}

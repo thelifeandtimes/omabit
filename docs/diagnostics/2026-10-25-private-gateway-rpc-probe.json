@@ -1,0 +1,61 @@
+{
+  "memory": "M393",
+  "status": "integrated-source-qualified-inert-rpc-and-engine",
+  "source_sha256": {
+    "internal/runtimequalify/private_gateway_probe.cjs": "d68afb92f5a43b414a31caf6c39f8c623b7ce508b56737f4390061eaeb358280",
+    "internal/runtimequalify/private_gateway_rpc_linux.go": "07896c85b0194755f9d86ed08627eebea15455c6aa21ae00b4bf54c688c7205c",
+    "internal/runtimequalify/private_gateway_rpc_linux_test.go": "b76ddaad3ecca045b4424f28b1fb4c64a664956bba9cbfbd4a21a8f39d7ed739",
+    "internal/runtimequalify/test_private_gateway_probe.cjs": "24ac07004c29c80f6ac1c8e4f72911cfa1726be0d46813c6de0a7fd126dccfeb"
+  },
+  "checks": {
+    "memory": "M393",
+    "go_exit": 0,
+    "node_exit": 0,
+    "go_top": 24,
+    "go_checks": 251,
+    "node_checks": 46,
+    "failed": [],
+    "seconds": 2.448525846004486,
+    "diff_check_exit": 0,
+    "source_sha256": {
+      "internal/runtimequalify/private_gateway_probe.cjs": "d68afb92f5a43b414a31caf6c39f8c623b7ce508b56737f4390061eaeb358280",
+      "internal/runtimequalify/private_gateway_rpc_linux.go": "07896c85b0194755f9d86ed08627eebea15455c6aa21ae00b4bf54c688c7205c",
+      "internal/runtimequalify/private_gateway_rpc_linux_test.go": "b76ddaad3ecca045b4424f28b1fb4c64a664956bba9cbfbd4a21a8f39d7ed739",
+      "internal/runtimequalify/test_private_gateway_probe.cjs": "24ac07004c29c80f6ac1c8e4f72911cfa1726be0d46813c6de0a7fd126dccfeb"
+    },
+    "actual_docker_or_ship_access": false,
+    "complete_observer": false
+  },
+  "focused": {
+    "exit": 0,
+    "vet_exit": 0,
+    "seconds": 6.727899088989943,
+    "top": 6,
+    "checks": 40,
+    "failed": []
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-rpc-probe",
+  "evidence_sha256": {
+    "private_gateway_probe.cjs": "d68afb92f5a43b414a31caf6c39f8c623b7ce508b56737f4390061eaeb358280",
+    "private_gateway_rpc_linux.go": "07896c85b0194755f9d86ed08627eebea15455c6aa21ae00b4bf54c688c7205c",
+    "private_gateway_rpc_linux_test.go": "b76ddaad3ecca045b4424f28b1fb4c64a664956bba9cbfbd4a21a8f39d7ed739",
+    "test_private_gateway_probe.cjs": "24ac07004c29c80f6ac1c8e4f72911cfa1726be0d46813c6de0a7fd126dccfeb",
+    "probe-tests01.tap": "fbec7e2bcf9472ff0454f2c4cc375961dd7c27d335d1b357b691b3dd8689ec40",
+    "probe-tests02.tap": "1e5242502481fb0a6d056fb27f6fc1571f8544624708226138c495dd493a9b43",
+    "go-tests01.jsonl": "966a63cbd76dcf2622abce26f96621b6bff7dfa970583762c9fcbbf93e04d94a",
+    "go-tests02.jsonl": "a43da810f53ee7d6127b0cdf084a6ff11e7c44ab20625fe12999da6c2f520c00",
+    "check-result.json": "1343a0bd9dffcd8bb90a245b497be492b4752c95b41bc75bbedab4545a73eb62",
+    "check02-result.json": "a38a640601aed6aca310eeeb74e9ed3fbb24a6de0e49a06e0127c70dc567cf12",
+    "vet01.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "vet02.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "integrated-go-tests.jsonl": "0793d3d4719dac1b04b29ed80b50994cbe149cc7e08cbd9c2c135fe51c4cb08b",
+    "integrated-node-tests.tap": "aa8d1bb9dcb379ceba25472fa8bd9fd7224d779a5e1319edc9edbb1d2dea4ca1",
+    "integrated-result.json": "531ff7b8beaf20f5ec0f0f2c6be3e2429edccd2afe49aab224a9b9e1c48d5cf1",
+    "applied.json": "c6862f77664d93cde808826adbebffdd845b238a25f59ac7499b9517a7a5e8a8",
+    "integrate.py": "59ac501c797939b61daf928a75827b3d4c012332dee9aaee9eb4fe7ef972fb54"
+  },
+  "schema": 43,
+  "complete_observer": false,
+  "actual_gateway_or_docker_access": false,
+  "supersedes": "M392 missing external RPC probe only; complete observation, managed integration, sealed inputs and runtime qualification remain."
+}

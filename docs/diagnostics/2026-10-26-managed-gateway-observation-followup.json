@@ -1,0 +1,51 @@
+{
+  "memory": "M407",
+  "boot": {
+    "exit": 1,
+    "output": "/tmp/omabit-import-guest-run-managed-private-20261026-01",
+    "seconds": 1294.8132170169847,
+    "scope_admitted": true,
+    "clean_shutdown": true,
+    "timed_out": false,
+    "storage_problem": null,
+    "guest_ok": false,
+    "guest_error": "managed-gateway-initialize failed",
+    "independent_audit_pending": true
+  },
+  "audit_seconds": 129.50965287699364,
+  "initializer_published_ready": true,
+  "container_lifetime_ms": 598986,
+  "container_exit": 0,
+  "recovery_attempted": false,
+  "runtime_qualified": false,
+  "overlay_unchanged": true,
+  "base_unchanged": true,
+  "retained_disk_sha256": "1f99b375eff8e1342790f580098019b87cac3396454ad322eb0c73bbf313e3da",
+  "input_verifier_timing": {
+    "deadline": true,
+    "durations_ms": [
+      95963,
+      4033
+    ],
+    "ok": false,
+    "stage": "verify"
+  },
+  "terminal_units": {
+    "omabit-private-supervisor-f10eef453f08482c9b79a75d944c7bcc.service": "failed",
+    "omabit-import-guest-0489289f2cde4f44a67d999251978954.scope": "inactive",
+    "omabit-private-inspect-eada4af55a1a46239b7e845e915ad5b5.scope": "inactive"
+  },
+  "diagnostic_overlay": {
+    "passed": true,
+    "checks": {
+      "gateway": 0,
+      "vet": 0
+    },
+    "test_passes": 355,
+    "failed_tests": [],
+    "overlay_sha256": "4e7a3e66647fe40e9ac609b049c7500d48b37a19ab27a1932d6454a00ad1fd35",
+    "production_source_modified": false,
+    "runtime_qualified": false
+  },
+  "protected_state_accessed": false
+}

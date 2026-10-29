@@ -1,0 +1,25 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "persistent_format_changed": false,
+  "adapter_cases": 56,
+  "regression_race_seconds": 25.715,
+  "vet_passed": true,
+  "sources": {
+    "internal/runtimequalify/project_member_current_readiness_linux.go": "9dd3864256933a339586dcf838e8a46df390b9a7438d0c5712e7f04d621d2c71",
+    "internal/runtimequalify/project_member_current_readiness_linux_test.go": "278c5aa40d9eb04ad32bdb1f7b09be63ac74db26f6a37f699e44ca50b50be58f"
+  },
+  "logs": {
+    "omabit-current-readiness-adapter-fixture-failure.log": "357e0bdf0bd2d314eb510a145be61c6f2eb95832b2369588497e3f8c46c385c3",
+    "omabit-current-readiness-adapter-regression.log": "157c7080a1b6ceeba849ebc3c49f64d02f8ded4ceff46b63a5362ce8b91c751d",
+    "omabit-current-readiness-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-current-readiness-adapter",
+  "retained_failure": "The negative urb-replacement fixture initially checked the old path after its own deliberate rename. It now checks the retained file inode and bytes; no product rule changed.",
+  "limits": [
+    "Requires all current members running; stopped-peer context is not supported by this adapter.",
+    "No durable current-context journal, admission/scheduling, public RPC or mutation path.",
+    "Original process continuity is proved only over the fresh observation bracket.",
+    "Frozen running appliance24 predates the current-context work."
+  ]
+}

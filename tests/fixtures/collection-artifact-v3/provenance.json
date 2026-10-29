@@ -1,0 +1,130 @@
+{
+  "memory": "M310",
+  "format": 3,
+  "role": "theme",
+  "profile": "qualification-stable",
+  "environment": null,
+  "source": {
+    "Panel.qml": {
+      "sha256": "55881f0da60444b334489f384f5d33fea391f2aa710ee2c3b11399f2da841982",
+      "bytes": 159,
+      "executable": false
+    },
+    "Service.qml": {
+      "sha256": "55881f0da60444b334489f384f5d33fea391f2aa710ee2c3b11399f2da841982",
+      "bytes": 159,
+      "executable": false
+    },
+    "helper.py": {
+      "sha256": "20335c7d7e4714519b840268f6f58400e0a544b6e0fd1d215ddf38cc2a13b03b",
+      "bytes": 29,
+      "executable": false
+    },
+    "manifest.json": {
+      "sha256": "eb19db3180fd220133e7812d8f393de9b936d007649bc57fee95e6a0371f505b",
+      "bytes": 275,
+      "executable": false
+    }
+  },
+  "admission": {
+    "Host.qml": {
+      "sha256": "d1d2186f6afa1458c3f0c3ac0e908b0d38f992c1a307bd446746babd9caad895",
+      "bytes": 7589,
+      "executable": false
+    },
+    "Registry.qml": {
+      "sha256": "61bb5074f64130646ec504354692eee8d3922c9ec35a3f5fa33e25253eedf493",
+      "bytes": 317,
+      "executable": false
+    },
+    "SharedHost.qml": {
+      "sha256": "685bd1b3ed468b34818e8368c97d58b421e8af6b5f27e363ff389b56f5f4263f",
+      "bytes": 975,
+      "executable": false
+    },
+    "WidgetHost.qml": {
+      "sha256": "b30baf1618037d6647162fa5b2c84137f459c20c768c4a1a30aa59d6f6c145f5",
+      "bytes": 6384,
+      "executable": false
+    },
+    "admission.py": {
+      "sha256": "aa51d8ce381a60c1540fcdfee24ad9cadf0686295599042a1686101a92612b39",
+      "bytes": 12424,
+      "executable": false
+    },
+    "admission_guard.py": {
+      "sha256": "4f829db5424f97c7e2f2c253494b24de3423c52f224c93c4b6c4dea3869ad222",
+      "bytes": 2332,
+      "executable": false
+    },
+    "artifacts.py": {
+      "sha256": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+      "bytes": 14147,
+      "executable": false
+    },
+    "journal.py": {
+      "sha256": "d8bf39a68b5b1fe2a6cb900173428aaeb0bb51acd50311f2d801b39fd605cff5",
+      "bytes": 26592,
+      "executable": false
+    },
+    "runtime_authority.py": {
+      "sha256": "2e794f05105899d8c687490eba17bca213e77316f1e4e8475b6545f15675c4b9",
+      "bytes": 56981,
+      "executable": false
+    },
+    "shared_admission.py": {
+      "sha256": "843d985a335f43dc9da2ae0fc70de1062a553ce75b08f030259b6328ad2bd4a9",
+      "bytes": 6878,
+      "executable": false
+    },
+    "shared_admission_guard.py": {
+      "sha256": "d43e2a24f2a4b22bc9130df10ae12486f288ebd5ceb38f168e35aea9a39fc51d",
+      "bytes": 2144,
+      "executable": false
+    }
+  },
+  "artifact_sha256": "99739cf551a126d85f3c157efaa67bd090844f60ca96c7af700479b3b8126825",
+  "note": "Frozen original format3 writer, dependencies and deterministic synthetic generation before explicit runtime protocol metadata. Never regenerate.",
+  "sha256": {
+    "dependencies/artifacts.py": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+    "dependencies/guarded_artifacts.py": "6c1f6cfbd7af19b0d14d8853ecd305aa1f9f39d18797758913e57516bae9f194",
+    "dependencies/journal.py": "d8bf39a68b5b1fe2a6cb900173428aaeb0bb51acd50311f2d801b39fd605cff5",
+    "generation/CollectionHost.qml": "162df660ffaeb2f8b5fcca8c0687f744d1f9a473cb490085d376f627237a495c",
+    "generation/CollectionRuntime.qml": "c94801ae07f55f7860b5ee5729f6acb9cc5e48aa2003d3cc88bb0e7d590b0e50",
+    "generation/CollectionWidget.qml": "1a98e6a31a5e1654fca0bdac48838afa2e4d770206aaad861a7b7831902b780a",
+    "generation/Panel.qml": "55881f0da60444b334489f384f5d33fea391f2aa710ee2c3b11399f2da841982",
+    "generation/Service.qml": "55881f0da60444b334489f384f5d33fea391f2aa710ee2c3b11399f2da841982",
+    "generation/application-profile.json": "4e604a0d02551a77cd8e717e23243a1a9decd195651ef59efd7a74b0ff002d35",
+    "generation/collection/Host.qml": "d1d2186f6afa1458c3f0c3ac0e908b0d38f992c1a307bd446746babd9caad895",
+    "generation/collection/Registry.qml": "61bb5074f64130646ec504354692eee8d3922c9ec35a3f5fa33e25253eedf493",
+    "generation/collection/SharedHost.qml": "685bd1b3ed468b34818e8368c97d58b421e8af6b5f27e363ff389b56f5f4263f",
+    "generation/collection/WidgetHost.qml": "b30baf1618037d6647162fa5b2c84137f459c20c768c4a1a30aa59d6f6c145f5",
+    "generation/collection/admission.py": "aa51d8ce381a60c1540fcdfee24ad9cadf0686295599042a1686101a92612b39",
+    "generation/collection/admission_guard.py": "4f829db5424f97c7e2f2c253494b24de3423c52f224c93c4b6c4dea3869ad222",
+    "generation/collection/artifacts.py": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+    "generation/collection/journal.py": "d8bf39a68b5b1fe2a6cb900173428aaeb0bb51acd50311f2d801b39fd605cff5",
+    "generation/collection/qmldir": "130da5fa5466205e7da551119a606aeb86020afdf31879e3e3b14113870a062e",
+    "generation/collection/runtime_authority.py": "2e794f05105899d8c687490eba17bca213e77316f1e4e8475b6545f15675c4b9",
+    "generation/collection/shared_admission.py": "843d985a335f43dc9da2ae0fc70de1062a553ce75b08f030259b6328ad2bd4a9",
+    "generation/collection/shared_admission_guard.py": "d43e2a24f2a4b22bc9130df10ae12486f288ebd5ceb38f168e35aea9a39fc51d",
+    "generation/collection-artifact.json": "f5734c98d35954672ad0b53dd785e162d810de3444648785154d95893a484709",
+    "generation/helper.py": "20335c7d7e4714519b840268f6f58400e0a544b6e0fd1d215ddf38cc2a13b03b",
+    "generation/manifest.json": "00e770072539ebd37da819a171426c817df3d2dc088110611ebd70675c619a92",
+    "source/Panel.qml": "55881f0da60444b334489f384f5d33fea391f2aa710ee2c3b11399f2da841982",
+    "source/Service.qml": "55881f0da60444b334489f384f5d33fea391f2aa710ee2c3b11399f2da841982",
+    "source/helper.py": "20335c7d7e4714519b840268f6f58400e0a544b6e0fd1d215ddf38cc2a13b03b",
+    "source/manifest.json": "eb19db3180fd220133e7812d8f393de9b936d007649bc57fee95e6a0371f505b",
+    "support/Host.qml": "d1d2186f6afa1458c3f0c3ac0e908b0d38f992c1a307bd446746babd9caad895",
+    "support/Registry.qml": "61bb5074f64130646ec504354692eee8d3922c9ec35a3f5fa33e25253eedf493",
+    "support/SharedHost.qml": "685bd1b3ed468b34818e8368c97d58b421e8af6b5f27e363ff389b56f5f4263f",
+    "support/WidgetHost.qml": "b30baf1618037d6647162fa5b2c84137f459c20c768c4a1a30aa59d6f6c145f5",
+    "support/admission.py": "aa51d8ce381a60c1540fcdfee24ad9cadf0686295599042a1686101a92612b39",
+    "support/admission_guard.py": "4f829db5424f97c7e2f2c253494b24de3423c52f224c93c4b6c4dea3869ad222",
+    "support/artifacts.py": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+    "support/journal.py": "d8bf39a68b5b1fe2a6cb900173428aaeb0bb51acd50311f2d801b39fd605cff5",
+    "support/runtime_authority.py": "2e794f05105899d8c687490eba17bca213e77316f1e4e8475b6545f15675c4b9",
+    "support/shared_admission.py": "843d985a335f43dc9da2ae0fc70de1062a553ce75b08f030259b6328ad2bd4a9",
+    "support/shared_admission_guard.py": "d43e2a24f2a4b22bc9130df10ae12486f288ebd5ceb38f168e35aea9a39fc51d",
+    "writer.py": "53cb2dfd3b3181aa68c08749ca678f57e75cfe83c43e092eb948e5ba3172d555"
+  }
+}

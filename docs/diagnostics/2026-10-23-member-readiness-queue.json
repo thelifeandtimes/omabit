@@ -1,0 +1,27 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 28,
+  "queue_cases": 5,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-readiness-queue",
+  "source_sha256": {
+    "internal/managed/project_member_readiness_server_linux.go": "b6961905c5b58a74b3737e1ef41ad725d249ba7945234e59bef4609e05b7ba75",
+    "internal/managed/project_member_readiness_server_linux_test.go": "9cbd81c05d2a9bb8e9d9c55c9ec60e22d67d2a8e13904e6a85e3b75eca724e32",
+    "internal/managed/project_member_readiness_vm_test.go": "437690ed83b8ca4e02ac0d4a6844bc85f6ccaf4d7289784d5b1ec49e8e6b0d30",
+    "internal/managed/project_member_launch_vm_test.go": "1dee28d1b40d4efe2de1765c4da3bfa02afcaf65461514c513f94f40421e6d60",
+    "internal/managed/project_vm_test.go": "3ff6e80325976546e8d026e3728c1c0b6b1fbba7a234376f5f0ca29f388568f4"
+  },
+  "logs": {
+    "omabit-readiness-queue-tests.log": "dcfec8d5dcd151adc8a0b9a1a687962144102c40ebd43398bb63ac7bae06ce6a",
+    "omabit-readiness-queue-regression.log": "adaa82b61c3f72c5e0d4e0cd267ad1545dc7781fc8641fdf7f5f7be3380a3296",
+    "omabit-readiness-queue-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-readiness-vm-guards.log": "4c09dbe38d81edbcdf5d3433080115a7fec2281b62ef598131523a2ccfa56b44",
+    "omabit-readiness-vm-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-readiness-vm-host-refusal.log": "0cc81d3bcab6a5a7943b7ab03f39dc59c72d76baec1b4c4fa4336e8b41c00a2a"
+  },
+  "limits": [
+    "Private queue only; no startup scheduling or public endpoint.",
+    "Real readiness VM fixture prepared, not executed.",
+    "VM14 remains the earlier frozen schema27 launch-only binary."
+  ]
+}

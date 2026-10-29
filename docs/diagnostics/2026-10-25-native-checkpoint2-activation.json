@@ -1,0 +1,34 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-native-checkpoint2-activation",
+  "verification": {
+    "passed": true,
+    "full_core_tests_unchanged": 493,
+    "native_runs": 1,
+    "controller_kills": 41,
+    "new_publication_kills": 4,
+    "new_activation_kills": 3,
+    "new_authority_format": 3,
+    "artifact_upgrade": {
+      "from": 5,
+      "to": 6
+    },
+    "new_application_instances": 3,
+    "total_application_instances": 9,
+    "sessions_preserved": 6,
+    "fresh_subscriptions": 5,
+    "unknown_dm_preserved_without_replay": true,
+    "final_channels_closed": 8,
+    "original_checkpoint_chain_and_canonical_history_verified": true,
+    "artifact_records_verified": 28,
+    "all_four_compositors_exit_zero": true,
+    "guardian_closed_with_root_exit_zero": true,
+    "scope_inactive": "omabit-continuation-activation-native-20261025-01",
+    "actual_copied_plugins": true,
+    "private_unlocked_keyring": true,
+    "synthetic_eyre": true,
+    "public_installed_profiles_qualified": false,
+    "application_data_format_migration_qualified": false,
+    "production_resources_touched": false,
+    "verifier_correction": "Compared prior journal hash with exact checkpoint-copied bytes rather than a reserialized equivalent; read-only audit corrected before retention."
+  }
+}

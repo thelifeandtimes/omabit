@@ -1,0 +1,42 @@
+{
+  "schema": 38,
+  "source_files": 1603,
+  "archive_bytes": 3454500,
+  "archive_sha256": "8b363b4c25c8f256b017abbeaedb0bb5b9be5e4d85f52d53778b1df90eea692b",
+  "archive": "/home/thelifeandtimes/repos/omabit-platform-overhaul/internal/managed/testdata/historical-upgrades/schema38-source.tar.gz",
+  "excluded_archives": {
+    "internal/managed/testdata/historical-upgrades/schema22-source.tar.gz": "4f5029ac1469d6cb8b74c99e3fe88eb6932ee2f561460e7a48dd02834b6f8ed5",
+    "internal/managed/testdata/historical-upgrades/schema23-source.tar.gz": "4dcd826f1d3268cfe1eb66abd586cb599266b04aff9b543677cc647db1bfb2dc",
+    "internal/managed/testdata/historical-upgrades/schema24-source.tar.gz": "69b23e268b73cb87db73b825d43c9692feeced18b30e5c8674d0c2b05f5edf54",
+    "internal/managed/testdata/historical-upgrades/schema25-source.tar.gz": "ea439418502436ac149c48d01316135834f762b67e629b84c0b410ef89639dd9",
+    "internal/managed/testdata/historical-upgrades/schema26-source.tar.gz": "a5f0af92d9ab4d504879a732f315e8902d67d0e59312e2b504aaec9c32db5ecd",
+    "internal/managed/testdata/historical-upgrades/schema27-source.tar.gz": "221f4e7ba757c65339759423c8d5f43232b65cd309755e9f4378ceeeca441904",
+    "internal/managed/testdata/historical-upgrades/schema28-source.tar.gz": "8386021e437e4d586b06695d69f3877c65d9cb5a7d81105ae04a61c1e3d13be3",
+    "internal/managed/testdata/historical-upgrades/schema29-source.tar.gz": "8527e8465d3fc2330bc6ba661577b6d3bc776b75da36c301f4557be6550a0331",
+    "internal/managed/testdata/historical-upgrades/schema30-source.tar.gz": "b8aa477ce568abee0c607b3375686b143fa04e69f62a90c389631b383114dea8",
+    "internal/managed/testdata/historical-upgrades/schema31-source.tar.gz": "74dcd3b8847474f3d2772af0177e0c85573f5a231fdab958b9a3f9af4829ebf9",
+    "internal/managed/testdata/historical-upgrades/schema32-source.tar.gz": "3af14bd5559188c9293a23ada1124f246606447935445cd438e6a5fb4305d7eb",
+    "internal/managed/testdata/historical-upgrades/schema33-source.tar.gz": "ce58e7e73ec6312b34f68ae09d8348a1edcdbd562b61b420d8a09dd408fff30b",
+    "internal/managed/testdata/historical-upgrades/schema34-source.tar.gz": "0e4893ae8fe8e9fbb486e3a34ccea1a5ec0d6717cfafa2a174331c7a519dceb4",
+    "internal/managed/testdata/historical-upgrades/schema35-source.tar.gz": "ea67857247fccc7b175e6bb4c54fc7110604b0f195850475781fca6b54cc3eba",
+    "internal/managed/testdata/historical-upgrades/schema36-source.tar.gz": "17340ebdb296525407a95e004b4779935df2e25f3acec3ae47f861b7bd651c2b",
+    "internal/managed/testdata/historical-upgrades/schema37-source.tar.gz": "57ed6461b9cd12f595a20139c3643e76cd79bdfd1d336b3d69c8a86547feec04"
+  },
+  "executed": false,
+  "fixture_bytes": 959559,
+  "fixture_sha256": "27ae5f540921aacf46ed429a10f43b75785616ac0f5a73053c2eb01b92a1138c",
+  "reproducible": true,
+  "tables": 20,
+  "recovery_phases": {
+    "complete": 1,
+    "draining": 1
+  },
+  "recovery_statuses": {
+    "succeeded": 1,
+    "interrupted": 1
+  },
+  "member_creators": 4,
+  "successor_refusal_executed": false,
+  "active_schema": 38,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-24-schema38-original-writer"
+}

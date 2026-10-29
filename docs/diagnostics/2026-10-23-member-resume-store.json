@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "scope": "schema32 persistence and original-reader source qualification",
+  "runtime_executed": false,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-resume-store",
+  "source_sha256": {
+    "internal/managed/project_member_resume.go": "1613b709a14f1847eb97e1fa61211feaadc2fa5ea82eb296c11508ffd152f354",
+    "internal/managed/project_member_resume_test.go": "64dc8e063b91e750289e5178b629c31d8cae51d059ec2bffb1bb6b8e0e6a95ea",
+    "internal/managed/schema.go": "96b40089bc33c565926f8e2ca8db06c75cc014f83c9c49dcb5e05e6a40e6c16a",
+    "internal/managed/store.go": "3660ea9df418fad45a1e0cacffed1d658f4ae364630fcad2ea3a3877cc8d8fd0",
+    "internal/managed/project_member_retirement.go": "8884ca20b5dd87803c9519f92731253a4975b6d65168258bce9b73ac1f009d02",
+    "internal/managed/g02_historical_upgrades_test.go": "077c8452278af0a2a2b6c27502887ec1f61226a3d10bb2370f1db3d21c3da04f",
+    "scripts/test-historical-upgrades.py": "e3fcbdb021987f3efa5c6ab6aaea45a895b4ec3f1bb6b2a9dba22408d5622a63",
+    "internal/managed/testdata/historical-upgrades/schema31.json": "984738691ca1b3291bf18c249f5bfcd9b8f26a0d732782e52fe5545e213f42d0",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "b413555eca3b6f40707f8fe4ef8b0645208c0c2f6eeba377040e4243c252fa28"
+  },
+  "logs": {
+    "omabit-resume-store-initial-tests.log": "06e31359a58a42e7f571f638637e3c0b82e190cc9c4efc43ac1458f37e617ef6",
+    "omabit-resume-store-tests.log": "a2095a41f0e336a300611c01b2e382380f9b4167a87d66e740bb937c39caebdb",
+    "omabit-resume-store-full-race.log": "4f3b8b6518414badcee3738a0982a98cde3e586af11b3e2b29c3aa2750c192e7",
+    "omabit-resume-store-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-schema31-freeze.log": "14f2ab7f0e0f99168da533da28113d50ccf885a59b294a83f3bad146530c0d45",
+    "omabit-schema31-preview.log": "ac3183479c23395aed31290059deb312127d0b14567162ee64a10e816c82eb97",
+    "omabit-schema31-reproduce-and-refuse32.log": "7e92467515368d2624e083caa85138f155b03a84634d934fb7f7d1ff1ec29064"
+  },
+  "schema31_archive_sha256": "74dcd3b8847474f3d2772af0177e0c85573f5a231fdab958b9a3f9af4829ebf9",
+  "schema31_fixture_bytes": 211127,
+  "schema31_fixture_limit": 229376,
+  "queue_in_full_suite": false
+}

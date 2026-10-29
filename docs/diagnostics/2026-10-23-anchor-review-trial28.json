@@ -1,0 +1,59 @@
+{
+  "passed": false,
+  "failure_verified": true,
+  "schema": 37,
+  "scope_inactive": true,
+  "outer_exit": 1,
+  "qemu_exit": 0,
+  "clean_shutdown": true,
+  "seconds": 2036.72,
+  "extracted_files_verified": 19,
+  "result_sha256": "3dd12e0954c9e397c71671c489e263c9cdadda79c766ee75a5a68730b83cbf64",
+  "database_sha256": "c73dadbd6336c89f5f76b7196338d3f3f06689103c96846cb759c4a545b601aa",
+  "failure_stage": "restarted anchor review",
+  "readiness": [
+    {
+      "instance": "vm-zod",
+      "seconds": 14.88719,
+      "observation_span_seconds": 14.067752
+    },
+    {
+      "instance": "vm-zod",
+      "seconds": 14.239114,
+      "observation_span_seconds": 13.465025
+    },
+    {
+      "instance": "vm-nec",
+      "seconds": 24.623486,
+      "observation_span_seconds": 21.370015
+    }
+  ],
+  "anchor_review_reached": true,
+  "stopped_anchor_review_recorded": true,
+  "restarted_anchor_review_passed": false,
+  "three_replacements_recorded": true,
+  "both_final_pier_states_verified": true,
+  "private_container_inventory_verified": true,
+  "secondary_fixture_panic": true,
+  "diagnosis": "Docker retains previous FinishedAt before the new StartedAt on a restarted running anchor; frozen recovery inspection delegates to initial-start validation requiring zero FinishedAt. Reopen fixture also dereferenced a missing final Stop after failed review left cleanup-only flags unset.",
+  "application_recovery": {
+    "passed": true,
+    "target": "~zod",
+    "initial_sender": "~nec",
+    "later_sender": "~nec",
+    "receiver_replacements": 2,
+    "sender_replacements": 1,
+    "writes": 12,
+    "subscriptions": 6,
+    "subscription_snapshots": 18,
+    "initial_logins": 2,
+    "later_logins": 0,
+    "uncertain_writes_replayed": false,
+    "same_original_sessions": true,
+    "queued_updates_survived_three_cycles": true,
+    "private_state_sha256": "82ce168e386fbf682f9bbaec4d6977bec7d5f63ad4de7bef42c906c8d46b2375",
+    "private_spec_sha256": "9cc767016675bb6fad7da963806444e3eb0340d90856a85769bb2abc027a1650",
+    "fixture_sha256": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f"
+  },
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-review28"
+}

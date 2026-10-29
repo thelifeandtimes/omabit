@@ -1,0 +1,32 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 28,
+  "cases": 24,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-readiness-store",
+  "original_schema27_sha256": "221f4e7ba757c65339759423c8d5f43232b65cd309755e9f4378ceeeca441904",
+  "source_sha256": {
+    "internal/managed/project_member_readiness.go": "8ef8a02fc77951260aecbad04d6e341fef1aada2dc2289b4c550cdccb2a6c924",
+    "internal/managed/project_member_readiness_test.go": "107c54d04f9d0f3851873568c4f1424d0ede36802e82d13c8aba5dc6eaf37536",
+    "internal/managed/schema.go": "0887966b67f0ed33f8c7d0ed5a4bf785bcdd15f8114025eef830bc899eeaf876",
+    "internal/managed/store.go": "49a76ac6e4291bb601b218fceeac20ae8eb4fc7e887463ee01cd2b85a9c8ab80",
+    "internal/managed/g02_historical_upgrades_test.go": "096588e0fbc92b408983fa84a976e1df4fb0ce3ac82f338654b7b5ee5974a54a",
+    "scripts/test-historical-upgrades.py": "0ddf64691dc40511011673fe7535ab7ee817b7aa980cb8760ff861ab4b98b4d8",
+    "internal/managed/testdata/historical-upgrades/schema27-source.tar.gz": "221f4e7ba757c65339759423c8d5f43232b65cd309755e9f4378ceeeca441904",
+    "internal/managed/testdata/historical-upgrades/schema27.json": "e2f7c7310e8e180039040e87b042de40409b652ab387d4d8ef16dbcdbe2e6788",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "9158e9002ed2ba762f2459819511e7467c3ac232fc2849beb2289568057c1f5e"
+  },
+  "logs": {
+    "omabit-readiness-store-tests.log": "cc8e8af34546b143ff4e17b1be66aa7e65cd23b88a663c1aedf275e9b1b190e9",
+    "omabit-readiness-store-full-race.log": "fbd86a6f6c1d90d39aaa33801a2caacb0f09b3f3d89f4722a5ff0f13b1eec4ed",
+    "omabit-readiness-store-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-readiness-schema27-generate.log": "026cce1d1b795b4bd4a1f0cd3e036a7ace88681726437dd67746e80230af941b",
+    "omabit-readiness-schema27-reproduce.log": "0aaae107f5bc0581bb897f5cf3f89b35eab7ddf481a1fdff6fd52a7da923ea24",
+    "omabit-schema27-freeze.log": "e629c1ba1bd7a349e05e1d0adffed24c50ed9175183bd824e2936ad66906bd4c"
+  },
+  "limits": [
+    "Private store/worker only; queue and runtime readiness qualification remain.",
+    "Completed evidence is historical and does not authorize future runtime mutations.",
+    "Running VM14 is frozen schema27 and cannot qualify schema28 persistence."
+  ]
+}

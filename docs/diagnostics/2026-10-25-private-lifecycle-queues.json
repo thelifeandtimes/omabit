@@ -1,0 +1,56 @@
+{
+  "memory": "M379",
+  "status": "staged-queue-source-race-and-vet-passed",
+  "schema": 43,
+  "overlay_only": true,
+  "installed_in_checkout": false,
+  "checks": {
+    "top_level": 6,
+    "including_subcases": 63,
+    "race": true,
+    "vet": true,
+    "seconds": 29.613393367966637,
+    "log_sha256": "cd0db8c192e5cbf20393e59876e16921d4af510572250da22c6c5e29bde3261c"
+  },
+  "source_sha256": {
+    "private_lifecycle_server_linux.go": "394237cf50818e23f2dc325979f3bf51929b77b66c3bce5304c5d3b0a296f01b",
+    "private_lifecycle_server_linux_test.go": "c54b8863c8a71afd7fbd2c50113fff59bc283dffca57e21465649ef2e6ee6486"
+  },
+  "boundaries": [
+    "common host work gate and management update fence",
+    "actor replay before backend lookup or input inspection",
+    "startup never dispatches workers",
+    "backend-selected paths and input/engine generation",
+    "queued receipt checked again before factory",
+    "cancellation and failed initialization retain original intent",
+    "all acquired handles closed including partial setup",
+    "nil and typed-nil factory handles refuse without calls",
+    "observation factory hides directory creation",
+    "real interrupted layout recovers without changing source receipt",
+    "retained maintenance and corrupt mirrors refuse before factory"
+  ],
+  "trials": [
+    {
+      "trial": 1,
+      "outcome": "real factory correctly refused already-observed workspace supplied by test; fixture corrected to an actual lost layout acknowledgement"
+    },
+    {
+      "trial": 2,
+      "outcome": "new test missing final brace; compile refused; source/log retained"
+    },
+    {
+      "trial": 3,
+      "outcome": "all63 race checks passed"
+    }
+  ],
+  "full_schema43_regression": {
+    "session": 13388,
+    "status": "running",
+    "source_includes_queues": false
+  },
+  "concrete_gateway_runtime": false,
+  "public_routes": false,
+  "production_or_installed_state_accessed": false,
+  "supersedes": "M378 pending internal scheduler source only; integration and full regression remain pending",
+  "next": "Finish full43 baseline; integrate the two queue files and verify affected regression; concrete gateway input/engine adapter and first-start publication remain."
+}

@@ -1,0 +1,69 @@
+{
+  "memory": "M403",
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-managed-private-launch-interruption",
+  "artifact_sha256": {
+    "termination-observation.json": "8e79bea34b078b500e04742e6d730ba5301313e24a1d1b319ffcfd3b39c1045c",
+    "compile02-result.json": "7216f925005fd9e3e956861356ab2c549a109d42ada18dd7581ce7b790da0fba",
+    "integrated-result.json": "70d1f1c884233220fd5752f9ce91358c0e7c99cc252adc6a969d2b8abbf317f4",
+    "prepared-result.json": "037159de5de897712741d199431f5b1217b934247fda091fc0e58c53c5d4916f",
+    "retention25-result.json": "49e1a7195ef81de96ff527a0407e16aec049fdd1277b11b41a56857962f8eeb5",
+    "disk-retention02-result.json": "b3bd7ed4b29aca8546301f0132c0ef557b1b045e5108eb84cefd57fc7fc4fde3",
+    "audit-run04-result.json": "a1e9695821491e02550c0ddc4bb4e726de1307e5cb3e3e2acd3e6f91df479135",
+    "boot.py": "dcc19e7932870d740e178b34d0252d56ad1393cc617fd5bc80369f1429d2e77b",
+    "boot02.py": "f8aac100540f28f333d8b985fa7657676f098b26e34d405850774057c5954e4b",
+    "audit-run04.py": "7d78aa96a6def9183aae7a37fd967ea7442220ec41dd4545ba1b5b5ddc34d829",
+    "audit04.json": "71f3f8613c1331ab3ccf6c9efb3092466383887f90d05711de09e77744d9fbea"
+  },
+  "runtime_qualified": false,
+  "termination_cause_known": false,
+  "audit": {
+    "ok": false,
+    "scope_admitted": true,
+    "scope_inactive": true,
+    "exit": 0,
+    "timed_out": false,
+    "seconds": 20.096292069007177,
+    "overlay_unchanged": true,
+    "overlay_after_sha256": "11229f65bd631539cf6131eb35f495726658303628409f8d7f8e8031a7d57cfe",
+    "base_unchanged": true,
+    "audit": {
+      "ok": false,
+      "raw_state_exported": false,
+      "reader_failure": {
+        "check": "database-fully-checkpointed",
+        "error_sha256": "f28795334a4a9760e82253f70129d3bdbf31ff8b933b7ffa41f07b3ed99c6e98",
+        "raw_message_exported": false
+      },
+      "schema": 1
+    },
+    "clean_shutdown": true,
+    "console_sha256": "b3a4e0ab5cd0ea30e794ade9387df7d77870e67cad8210111a1368c5724b6f2c",
+    "runtime_guest_ok": false
+  },
+  "retention": {
+    "source": "/tmp/omabit-import-guest-run-managed-private-20261025-02/lab",
+    "destination": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/managed-gateway-disk-20261025-02",
+    "bytes": 3192520704,
+    "sha256": "11229f65bd631539cf6131eb35f495726658303628409f8d7f8e8031a7d57cfe",
+    "disk_unchanged": true,
+    "all_scopes_inactive": true,
+    "compatibility_symlink": true,
+    "temporary_available": {
+      "filesystem_available_bytes": 22225600512,
+      "quota": {
+        "hard_blocks": 52485328,
+        "soft_blocks": 52485328,
+        "used_bytes": 44955619328,
+        "hard_inodes": 0,
+        "soft_inodes": 0,
+        "used_inodes": 322356,
+        "block_time": 0,
+        "inode_time": 0,
+        "valid": 63
+      },
+      "quota_available_bytes": 8789356544,
+      "available_bytes": 8789356544
+    },
+    "admission_floor_changed": false
+  }
+}

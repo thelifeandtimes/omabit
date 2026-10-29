@@ -1,0 +1,178 @@
+{
+  "verified": true,
+  "passed": true,
+  "schema": 32,
+  "member_launches": [
+    {
+      "instance_id": "vm-zod",
+      "container": "b457aa08651d28918ed926e2d3d621a769df1c7970c760de9a672490c32ed41d",
+      "namespace": {
+        "boot_id": "8623e3af-704f-4678-b34c-b3a137489e49",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 133460,
+      "workspace_birth": "1792797360:683857198",
+      "clean_stop": true,
+      "identity_http_status": 200
+    },
+    {
+      "instance_id": "vm-nec",
+      "container": "7290981706a7f945e8d437144daab8e68ca03b529e0314187107517f9b918fc8",
+      "namespace": {
+        "boot_id": "8623e3af-704f-4678-b34c-b3a137489e49",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 133511,
+      "workspace_birth": "1792797768:362812607",
+      "clean_stop": true,
+      "identity_http_status": 200
+    }
+  ],
+  "readiness": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-1a3de4dedb9e9921bdfedf16784e1c5c",
+      "ship": "~zod",
+      "captured_at": "2026-10-23T23:32:33.48389026Z",
+      "pier_inode": 133482,
+      "urb_inode": 133494,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-e25c550f8745ac795c9d932b848c45da",
+      "ship": "~nec",
+      "captured_at": "2026-10-23T23:32:50.534327702Z",
+      "pier_inode": 133533,
+      "urb_inode": 133545,
+      "reopen_unchanged": true
+    }
+  ],
+  "stops": [
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-491f8db84544e4e5351cbc7589b93c29",
+      "container_id": "7290981706a7f945e8d437144daab8e68ca03b529e0314187107517f9b918fc8",
+      "started_at": "2026-10-23T23:23:16.987793201Z",
+      "finished_at": "2026-10-23T23:33:10.405429899Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "peer_exits": 0,
+      "original_status": "succeeded",
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-94e998d7fcad70a91cf0ee2f5b980e72",
+      "container_id": "b457aa08651d28918ed926e2d3d621a769df1c7970c760de9a672490c32ed41d",
+      "started_at": "2026-10-23T23:16:24.337594164Z",
+      "finished_at": "2026-10-23T23:33:33.249744218Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "peer_exits": 1,
+      "original_status": "interrupted",
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "recoveries": [
+    {
+      "instance_id": "vm-zod",
+      "stop_operation_id": "op-94e998d7fcad70a91cf0ee2f5b980e72",
+      "operation_id": "op-bf47a12b901c243a8acdf9e5a2a96432",
+      "original_status": "interrupted",
+      "original_phase": "stop-dispatched",
+      "original_unchanged": true,
+      "clean_exit": true,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "retirements": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-51b7aea00c1c8ac0d11c27fbfad8cbd6",
+      "container_id": "b457aa08651d28918ed926e2d3d621a769df1c7970c760de9a672490c32ed41d",
+      "original_receipts_unchanged": true,
+      "historical_retirement_files": 7,
+      "historical_retirement_bytes": 1016848396,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "resumes": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-16bccf613dad701dd25277632bf8c60e",
+      "container_id": "74c1d961d0635090dc9f386844804647c85d5246e7d1d5035f94769688b34cff",
+      "generation": 2,
+      "ship": "~zod",
+      "original_retirement_unchanged": true,
+      "post_stop_state_files_verified": 7,
+      "post_stop_state_bytes_verified": 1016852492,
+      "replay_unchanged": true,
+      "reopen_unchanged": true,
+      "clean_stop": true
+    }
+  ],
+  "member_storage_verified": [
+    {
+      "instance": "vm-nec",
+      "mount": "/srv/urbit/piers/fakeships/vm-nec",
+      "inode": 133440,
+      "birth": "1792797345:444858865",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "nec"
+    },
+    {
+      "instance": "vm-zod",
+      "mount": "/srv/urbit/piers/fakeships/vm-zod",
+      "inode": 133456,
+      "birth": "1792797345:519858857",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "zod"
+    }
+  ],
+  "ship_operations": true,
+  "namespace": {
+    "boot_id": "8623e3af-704f-4678-b34c-b3a137489e49",
+    "device": 5,
+    "inode": 4026532248
+  },
+  "clean_anchor_stop": true,
+  "returned_ids_journaled": true,
+  "volume_inventory_unchanged": true,
+  "database_receipts_match": true,
+  "repeat_dispatch_refused": true,
+  "reopen_unchanged": true,
+  "scope_inactive": true,
+  "seconds": 1392.55,
+  "result_sha256": "1366843bc0973e542ad250dd6f30d04bd62b8406462c3ea0b908ab839266ea5c",
+  "database_sha256": "352661a4fd13216f03a8a1c711c8b24002b709b99fb7f94c59329754f90f1271",
+  "bridge": "0dff450982ec7f76d25e577d70464ad28753219440f9deb8a54b2c81da0f4cba",
+  "anchor": "f2190c06e975c594a6de35e15e4c1b85a75cd315ac390a4954e2be87f87b965f",
+  "engine": "fa91cf17-daa0-4eac-bdad-c7a0b8549d33",
+  "extracted_files_verified": 17,
+  "limits": [
+    "Readiness is historical identity/storage evidence, not current runtime authority.",
+    "First queued replacement and fixture identity recovery qualified; durable post-resume readiness, later generations, changed-peer/namespace recovery and public API remain."
+  ],
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-resume19",
+  "outer_exec_exit": 0,
+  "source_files_verified": 145,
+  "embedded_test_sha256": "2521c346bca70e3d96feab8efe3cd5e725b4bbb42011a0fd143dd981ca226599",
+  "originals_retained": true,
+  "guest_result_json_bytes": 221977,
+  "additional_logs": {
+    "omabit-resume-vm19-extraction.log": "71da12994cc92a8d9ab938f7c3c707e0f0f4ccd5f76a0f223577e8283c7fb04f",
+    "omabit-resume-vm19-independent-verification.log": "2c291a970e7a07e0abac9f541acb402e22cef87a3b3740f46e442e81d6beb7a5",
+    "omabit-resume-vm19-retention.log": "962d5d9aac2963a41399218b41f755faf875ad01d4491d8e3f178faf5b4581b0"
+  }
+}

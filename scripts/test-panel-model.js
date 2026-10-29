@@ -526,3 +526,6 @@ console.log("PASS: import recovery binds runner/revision/location/evidence and r
 
 // Keep actual QML dispatch/state regressions in the standard model-check entrypoint.
 require("./test-rc11-panel-state.js");
+
+// Restoration proof must survive fleet refresh, retirement and late callbacks.
+require("./test-import-restoration-state.js");

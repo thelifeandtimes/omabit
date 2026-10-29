@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "kind": "pure namespace succession source gate",
+  "full_projectnetwork_race_seconds": 26.833,
+  "vet_passed": true,
+  "diff_check_passed": true,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-namespace-model",
+  "manifest": {
+    "omabit-anchor-namespace-tests-attempt1.log": "eb6f9edd364dba6ff6f46d996099a04c397ad701313186ebf9aedbfdfd7c984a",
+    "omabit-anchor-namespace-tests-attempt2.log": "5544037ece7c2bb689ed56512b753ff46e24c0260a03b73530e232563de31fbb",
+    "omabit-anchor-namespace-full-race.log": "a5ed1125dd30c5d1ac2c8ff8a1b337ab9cd9e579aaaebbe02db2b65b6aa0902a",
+    "omabit-anchor-namespace-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-namespace-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/projectnetwork/anchor_namespace.go": "be386af23e9b0c707251e955e2909f18b7684b685afdcb3ee432e32068452a82",
+    "source/internal/projectnetwork/anchor_namespace_test.go": "2bacecfef9a62728b98ce2745eb05ed0842de5ea284cf4c5e381debd4783fc39"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-continuation-runtime-bundles",
+  "verification": {
+    "passed": true,
+    "focused_tests": 18,
+    "full_tests": 493,
+    "artifact_format": 6,
+    "protocol_format": 2,
+    "authorities": [
+      1,
+      2,
+      3
+    ],
+    "historical_artifacts_readable": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "original5_files": 64,
+    "original5_hash": "1a6a02479549c4ea16f241daf0526622935993fb85080f95293f8e5ccb3e77c3",
+    "original5_reproduces_and_refuses6": true,
+    "old_writers_unchanged": true,
+    "complete_pinned_transitive_imports": true,
+    "isolated_imports_without_checkout_or_site_packages": true,
+    "static_checks_execute_no_bundle_code": true,
+    "mixed5_6_supports2_refuses3": true,
+    "public_readonly_cli_default_authority": 1,
+    "first_runs_passed": true,
+    "source_and_exported_generations_verified": true,
+    "scopes_inactive": [
+      "omabit-continuation-artifacts-unit-20261025-01",
+      "omabit-continuation-artifacts-unit-20261025-02"
+    ],
+    "native_authority3_activation_qualified": false,
+    "production_resources_touched": false
+  }
+}

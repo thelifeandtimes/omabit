@@ -1,0 +1,267 @@
+{
+  "status": "diagnostic_failures_retained",
+  "controls": [
+    {
+      "control": 12,
+      "original_path": "/tmp/omabit-thread-probe-20261022-12",
+      "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-state-recovery/native12",
+      "inputs": {
+        "guard": {
+          "unit": "omabit-thread-probe-e7faf1fb5fe046d8b3d97f04963afa87",
+          "host_net": "net:[4026531833]",
+          "host_pid": "pid:[4026531836]",
+          "channel": false,
+          "remote_submission": false,
+          "khan_receipt": false,
+          "peer": true,
+          "application_state": true
+        },
+        "sha256": {
+          "omabit-state.hoon": "61ea870743bda73c6c7026d752fb434ddb80230e44af033994cd18f679323199",
+          "state_case.py": "78b8cde90318d6b5c93996e69f858c89f201518c6ea44c0c0dd0de9f04bfff99",
+          "peer_probe.py": "777fbe2ba273256bbe0b9b44f33501c75c2050a124f61854a8ca75baa4550d32",
+          "network_case.py": "ae306b8bb61467e1c2ee251887121f0a3d2f8726742f6513877a9d8f7bd8d796",
+          "thread_probe.py": "4f8819952c19df68bcd0f82e0f3e93ac237af38e558083b19d81c8741f29a7cd",
+          "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+          "urbit": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+        }
+      },
+      "exit": {
+        "exit": 1
+      },
+      "ok": false,
+      "error": "TimeoutError: timed out",
+      "state_test": {
+        "ok": false,
+        "writes": [],
+        "observations": [],
+        "channels_deleted": [],
+        "stage": "mount-test-desk"
+      },
+      "clean_stops": [
+        "nec",
+        "zod"
+      ],
+      "cleanup_errors": [],
+      "log_truncated": false
+    },
+    {
+      "control": 13,
+      "original_path": "/tmp/omabit-thread-probe-20261022-13",
+      "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-state-recovery/native13",
+      "inputs": {
+        "guard": {
+          "unit": "omabit-thread-probe-1be78dda1b624f2883109c132d15f37c",
+          "host_net": "net:[4026531833]",
+          "host_pid": "pid:[4026531836]",
+          "channel": false,
+          "remote_submission": false,
+          "khan_receipt": false,
+          "peer": true,
+          "application_state": true
+        },
+        "sha256": {
+          "omabit-state.hoon": "61ea870743bda73c6c7026d752fb434ddb80230e44af033994cd18f679323199",
+          "state_case.py": "a88ca6040f4f3259b06f6b7716385d61594550bbc5a04fe87b724c35ce8e771a",
+          "peer_probe.py": "777fbe2ba273256bbe0b9b44f33501c75c2050a124f61854a8ca75baa4550d32",
+          "network_case.py": "e94598baa305334eb909c71445ee61a32b13d0837f80b382677cf866cda5d0db",
+          "thread_probe.py": "4f8819952c19df68bcd0f82e0f3e93ac237af38e558083b19d81c8741f29a7cd",
+          "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+          "urbit": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+        }
+      },
+      "exit": {
+        "exit": 1
+      },
+      "ok": false,
+      "error": "ValueError: thread submission/receipt failed",
+      "state_test": {
+        "ok": false,
+        "writes": [],
+        "observations": [],
+        "channels_deleted": [],
+        "stage": "mount-test-desk",
+        "installation": [
+          {
+            "action": "mount",
+            "state": "acknowledged",
+            "status": 200,
+            "bytes": 50,
+            "receipt": "omabit-receipt-80fac9b757772e637352a110d2d9b9cd"
+          },
+          {
+            "action": "commit",
+            "state": "acknowledged",
+            "status": 200,
+            "bytes": 50,
+            "receipt": "omabit-receipt-4406b1aa382e8eb6b82916c0907500c4"
+          },
+          {
+            "action": "start",
+            "state": "pending",
+            "status": 500,
+            "bytes": 5
+          }
+        ],
+        "fixture_sha256": "61ea870743bda73c6c7026d752fb434ddb80230e44af033994cd18f679323199"
+      },
+      "clean_stops": [
+        "nec",
+        "zod"
+      ],
+      "cleanup_errors": [],
+      "log_truncated": false
+    },
+    {
+      "control": 14,
+      "original_path": "/tmp/omabit-thread-probe-20261022-14",
+      "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-state-recovery/native14",
+      "inputs": {
+        "guard": {
+          "unit": "omabit-thread-probe-b2b7ef083ed44e7c8dfe81a4f0f6c3db",
+          "host_net": "net:[4026531833]",
+          "host_pid": "pid:[4026531836]",
+          "channel": false,
+          "remote_submission": false,
+          "khan_receipt": false,
+          "peer": true,
+          "application_state": true
+        },
+        "sha256": {
+          "omabit-state.hoon": "61ea870743bda73c6c7026d752fb434ddb80230e44af033994cd18f679323199",
+          "state_case.py": "49300988a6d13fd76ac6165dc5a1770d3409f5952e8b89f232d129172cc1989a",
+          "peer_probe.py": "777fbe2ba273256bbe0b9b44f33501c75c2050a124f61854a8ca75baa4550d32",
+          "network_case.py": "e94598baa305334eb909c71445ee61a32b13d0837f80b382677cf866cda5d0db",
+          "thread_probe.py": "4f8819952c19df68bcd0f82e0f3e93ac237af38e558083b19d81c8741f29a7cd",
+          "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+          "urbit": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+        }
+      },
+      "exit": {
+        "exit": 1
+      },
+      "ok": false,
+      "error": "JSONDecodeError: Expecting value: line 1 column 1 (char 0)",
+      "state_test": {
+        "ok": false,
+        "writes": [],
+        "observations": [],
+        "channels_deleted": [],
+        "stage": "mount-test-desk",
+        "installation": [
+          {
+            "action": "mount",
+            "state": "acknowledged",
+            "status": 200,
+            "bytes": 49,
+            "response": "omabit-receipt-4272a86eec4ba64c74e508774335e70c",
+            "receipt": "omabit-receipt-4272a86eec4ba64c74e508774335e70c"
+          },
+          {
+            "action": "commit",
+            "state": "acknowledged",
+            "status": 200,
+            "bytes": 49,
+            "response": "omabit-receipt-efb037c51e14b797723f0212ebc036ce",
+            "receipt": "omabit-receipt-efb037c51e14b797723f0212ebc036ce"
+          },
+          {
+            "action": "start",
+            "state": "pending",
+            "status": 500,
+            "bytes": 5
+          }
+        ],
+        "fixture_sha256": "61ea870743bda73c6c7026d752fb434ddb80230e44af033994cd18f679323199"
+      },
+      "clean_stops": [
+        "nec",
+        "zod"
+      ],
+      "cleanup_errors": [],
+      "log_truncated": false
+    },
+    {
+      "control": 15,
+      "original_path": "/tmp/omabit-thread-probe-20261022-15",
+      "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-state-recovery/native15",
+      "inputs": {
+        "guard": {
+          "unit": "omabit-thread-probe-06ecceb2a1d1449caaae43905793c473",
+          "host_net": "net:[4026531833]",
+          "host_pid": "pid:[4026531836]",
+          "channel": false,
+          "remote_submission": false,
+          "khan_receipt": false,
+          "peer": true,
+          "application_state": true
+        },
+        "sha256": {
+          "omabit-state.hoon": "61ea870743bda73c6c7026d752fb434ddb80230e44af033994cd18f679323199",
+          "state_case.py": "20422c58f91b9b7596e1d96bcba17b7a490f7252250eb29499ba3530aa09e805",
+          "peer_probe.py": "777fbe2ba273256bbe0b9b44f33501c75c2050a124f61854a8ca75baa4550d32",
+          "network_case.py": "e94598baa305334eb909c71445ee61a32b13d0837f80b382677cf866cda5d0db",
+          "thread_probe.py": "4f8819952c19df68bcd0f82e0f3e93ac237af38e558083b19d81c8741f29a7cd",
+          "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+          "urbit": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+        }
+      },
+      "exit": {
+        "exit": 1
+      },
+      "ok": false,
+      "error": "RuntimeError: fixture start returned non-JSON HTTP 500",
+      "state_test": {
+        "ok": false,
+        "writes": [],
+        "observations": [],
+        "channels_deleted": [],
+        "stage": "mount-test-desk",
+        "installation": [
+          {
+            "action": "mount",
+            "state": "acknowledged",
+            "status": 200,
+            "bytes": 49,
+            "response": "omabit-receipt-4be3a9666043ebb5987d2f00ee606849",
+            "receipt": "omabit-receipt-4be3a9666043ebb5987d2f00ee606849"
+          },
+          {
+            "action": "commit",
+            "state": "acknowledged",
+            "status": 200,
+            "bytes": 49,
+            "response": "omabit-receipt-f7d4f9a8bd695f0d14049f222d90b9d0",
+            "receipt": "omabit-receipt-f7d4f9a8bd695f0d14049f222d90b9d0"
+          },
+          {
+            "action": "start",
+            "state": "pending",
+            "status": 500,
+            "bytes": 5,
+            "response_text": "crud!"
+          }
+        ],
+        "fixture_sha256": "61ea870743bda73c6c7026d752fb434ddb80230e44af033994cd18f679323199",
+        "start_diagnostics": [
+          {
+            "label": "lens-domes",
+            "status": 200,
+            "body": "\"%.n\\n\""
+          },
+          {
+            "label": "lens-rein",
+            "status": 200,
+            "body": "\"~\\n\""
+          }
+        ]
+      },
+      "clean_stops": [
+        "nec",
+        "zod"
+      ],
+      "cleanup_errors": [],
+      "log_truncated": false
+    }
+  ]
+}

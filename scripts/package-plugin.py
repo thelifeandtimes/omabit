@@ -63,6 +63,7 @@ def generate(assets, destination, distribution_commit, source=ROOT):
             raise RuntimeError("Archive source/version mismatch")
         output = working / "plugin"
         shutil.copytree(package / "plugins/omabit", output)
+        release_source.package_documentation(package, output)
         manifest = json.loads((output / "manifest.json").read_text())
         if manifest["version"] != version or manifest["id"] != "thelifeandtimes.omabit":
             raise RuntimeError("Plugin identity/version mismatch")

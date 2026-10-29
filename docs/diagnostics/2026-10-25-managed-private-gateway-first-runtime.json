@@ -1,0 +1,333 @@
+{
+  "memory": "M401",
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-managed-private-gateway-first-runtime",
+  "source_sha256": {
+    "internal/managed/private_gateway_vm_linux_test.go": "9fe726cf6f6a9c7bccb1fbd89b6517f1130732bb689c04847c5a3520ecca3975",
+    "scripts/qualification/private-chains/managed_gateway_guest.py": "9474b754ede9810bfffc4e1755b0aac5172df7a4e58246e08247a15e756aafa0",
+    "scripts/qualification/private-chains/managed_vm_inputs.py": "40c5cb0f69429e2853736e6673d55c8f718f3248b1624f10c89ff2857b6254b3"
+  },
+  "boot": {
+    "exit": 1,
+    "output": "/tmp/omabit-import-guest-run-managed-private-20261025-01",
+    "seconds": 623.8077949190047,
+    "scope_admitted": true,
+    "clean_shutdown": true,
+    "timed_out": false,
+    "storage_problem": null,
+    "guest_ok": false,
+    "guest_error": "managed-gateway-initialize failed",
+    "independent_audit_pending": true
+  },
+  "audits": [
+    {
+      "ok": false,
+      "scope_admitted": true,
+      "scope_inactive": true,
+      "exit": 0,
+      "timed_out": false,
+      "seconds": 15.347492903994862,
+      "overlay_unchanged": true,
+      "overlay_after_sha256": "9b184754e01064742eb6d725e3a2cd51cfe929ef77545afe129df70145c4c321",
+      "base_unchanged": true,
+      "audit": {
+        "chain_contents_read": false,
+        "key_contents_read": false,
+        "logs": {
+          "initialize": {
+            "bytes": 275,
+            "failure_stages": [],
+            "passed": false,
+            "present": true,
+            "raw_log_exported": false,
+            "sha256": "82eb92f765ab0f13fb58d0cb755e4b2d2f972b112f0d8ace3d56c0b74356b43a"
+          },
+          "recover": {
+            "present": false
+          },
+          "verify": {
+            "present": false
+          }
+        },
+        "managed_private_gateway": true,
+        "ok": false,
+        "raw_state_exported": false,
+        "read_only_disk": true,
+        "rows": {
+          "instances": 0,
+          "operations": 3,
+          "private_gateway_observations": 0,
+          "private_project_gateways": 1,
+          "private_project_workspaces": 1,
+          "private_projects": 1,
+          "projects": 0
+        },
+        "schema": 1,
+        "source_phase": "started"
+      },
+      "clean_shutdown": true,
+      "console_sha256": "737766c94cb69d534e214975e969dd7ad0d53fdb7c24f2c0ba95bb628e409472",
+      "runtime_guest_ok": false
+    },
+    {
+      "ok": false,
+      "scope_admitted": true,
+      "scope_inactive": true,
+      "exit": 0,
+      "timed_out": false,
+      "seconds": 12.53927189897513,
+      "overlay_unchanged": true,
+      "overlay_after_sha256": "9b184754e01064742eb6d725e3a2cd51cfe929ef77545afe129df70145c4c321",
+      "base_unchanged": true,
+      "audit": {
+        "chain_contents_read": false,
+        "key_contents_read": false,
+        "logs": {
+          "initialize": {
+            "bytes": 275,
+            "failure_stages": [],
+            "known_failures": [
+              "real backend never reported successful readiness"
+            ],
+            "passed": false,
+            "present": true,
+            "raw_log_exported": false,
+            "sha256": "82eb92f765ab0f13fb58d0cb755e4b2d2f972b112f0d8ace3d56c0b74356b43a"
+          },
+          "recover": {
+            "present": false
+          },
+          "verify": {
+            "present": false
+          }
+        },
+        "managed_private_gateway": true,
+        "ok": false,
+        "raw_state_exported": false,
+        "read_only_disk": true,
+        "rows": {
+          "instances": 0,
+          "operations": 3,
+          "private_gateway_observations": 0,
+          "private_project_gateways": 1,
+          "private_project_workspaces": 1,
+          "private_projects": 1,
+          "projects": 0
+        },
+        "runtime_diagnostic": {
+          "container": {
+            "dead": false,
+            "exit": 143,
+            "metadata_sha256": "aa5f824af144396289c2aa753b999a3878c85e5f585aa090a708da37ac84267a",
+            "oom_killed": false,
+            "running": false
+          },
+          "evaluator-failure.json": {
+            "present": false
+          },
+          "failure.txt": {
+            "present": false
+          },
+          "gateway-ready.json": {
+            "present": false
+          }
+        },
+        "schema": 1,
+        "source_phase": "started"
+      },
+      "clean_shutdown": true,
+      "console_sha256": "4bf983cce76f1d3affe675bac4754b577b4cdc0f4c034debef601649a9c40bc0",
+      "runtime_guest_ok": false
+    },
+    {
+      "ok": false,
+      "scope_admitted": true,
+      "scope_inactive": true,
+      "exit": 0,
+      "timed_out": false,
+      "seconds": 14.88221827003872,
+      "overlay_unchanged": true,
+      "overlay_after_sha256": "9b184754e01064742eb6d725e3a2cd51cfe929ef77545afe129df70145c4c321",
+      "base_unchanged": true,
+      "audit": {
+        "chain_contents_read": false,
+        "key_contents_read": false,
+        "logs": {
+          "initialize": {
+            "bytes": 275,
+            "failure_stages": [],
+            "known_failures": [
+              "real backend never reported successful readiness"
+            ],
+            "passed": false,
+            "present": true,
+            "raw_log_exported": false,
+            "sha256": "82eb92f765ab0f13fb58d0cb755e4b2d2f972b112f0d8ace3d56c0b74356b43a"
+          },
+          "recover": {
+            "present": false
+          },
+          "verify": {
+            "present": false
+          }
+        },
+        "managed_private_gateway": true,
+        "ok": false,
+        "raw_state_exported": false,
+        "read_only_disk": true,
+        "rows": {
+          "instances": 0,
+          "operations": 3,
+          "private_gateway_observations": 0,
+          "private_project_gateways": 1,
+          "private_project_workspaces": 1,
+          "private_projects": 1,
+          "projects": 0
+        },
+        "runtime_diagnostic": {
+          "container": {
+            "dead": false,
+            "exit": 143,
+            "metadata_sha256": "aa5f824af144396289c2aa753b999a3878c85e5f585aa090a708da37ac84267a",
+            "oom_killed": false,
+            "running": false
+          },
+          "container_lifetime_ms": 24710,
+          "evaluator-failure.json": {
+            "present": false
+          },
+          "failure.txt": {
+            "present": false
+          },
+          "gateway-ready.json": {
+            "present": false
+          },
+          "local_container_log": {
+            "bytes": 628,
+            "codes": [],
+            "known_stages": [],
+            "raw_text_exported": false,
+            "sha256": "6094722a0afb7a8f087001ed4faf2dfefb3b7e0affb790dc0f20db56b0d991e3",
+            "source_locations": null
+          },
+          "stored_mount_count": 8,
+          "stored_mounts": [
+            {
+              "bind": true,
+              "destination_matches": true,
+              "present": true,
+              "rprivate": true,
+              "source_empty": false,
+              "target": "/lab",
+              "tmpfs": false,
+              "writable": true
+            },
+            {
+              "bind": true,
+              "destination_matches": true,
+              "present": true,
+              "rprivate": true,
+              "source_empty": false,
+              "target": "/node",
+              "tmpfs": false,
+              "writable": false
+            },
+            {
+              "bind": true,
+              "destination_matches": true,
+              "present": true,
+              "rprivate": true,
+              "source_empty": false,
+              "target": "/tools",
+              "tmpfs": false,
+              "writable": false
+            },
+            {
+              "bind": true,
+              "destination_matches": true,
+              "present": true,
+              "rprivate": true,
+              "source_empty": false,
+              "target": "/source",
+              "tmpfs": false,
+              "writable": false
+            },
+            {
+              "bind": true,
+              "destination_matches": true,
+              "present": true,
+              "rprivate": true,
+              "source_empty": false,
+              "target": "/compiled",
+              "tmpfs": false,
+              "writable": false
+            },
+            {
+              "bind": true,
+              "destination_matches": true,
+              "present": true,
+              "rprivate": true,
+              "source_empty": false,
+              "target": "/deployment",
+              "tmpfs": false,
+              "writable": false
+            },
+            {
+              "bind": true,
+              "destination_matches": true,
+              "present": true,
+              "rprivate": true,
+              "source_empty": false,
+              "target": "/vere",
+              "tmpfs": false,
+              "writable": false
+            },
+            {
+              "bind": true,
+              "destination_matches": true,
+              "present": true,
+              "rprivate": true,
+              "source_empty": false,
+              "target": "/gateway.cjs",
+              "tmpfs": false,
+              "writable": false
+            },
+            {
+              "present": false,
+              "target": "/tmp"
+            },
+            {
+              "present": false,
+              "target": "/urbit"
+            }
+          ]
+        },
+        "schema": 1,
+        "source_phase": "started"
+      },
+      "clean_shutdown": true,
+      "console_sha256": "2244754ace905e717cce38bff8a06fa1118b54271a90d791d58df4bff57fd165",
+      "runtime_guest_ok": false
+    }
+  ],
+  "artifact_sha256": {
+    "private_gateway_vm_linux_test.go": "9fe726cf6f6a9c7bccb1fbd89b6517f1130732bb689c04847c5a3520ecca3975",
+    "guest.py": "9474b754ede9810bfffc4e1755b0aac5172df7a4e58246e08247a15e756aafa0",
+    "managed_vm_inputs.py": "40c5cb0f69429e2853736e6673d55c8f718f3248b1624f10c89ff2857b6254b3",
+    "compile02-result.json": "1d769638e55df923e2ab92e704fc5904d0892f3bae6bce53b1567480ce30579d",
+    "fixture-check-result.json": "a904582986d22213078115809f8966177feb4d2fad420e9eba2d39997106f8cd",
+    "integrated-result.json": "42c4e2832369360bd58910554cf47eb15b00052ced80af844faa08ba75108b66",
+    "prepared-result.json": "8ab9b88578506d05c5ef6d66369e79dfce175150b2e44624932b88ff54bc5042",
+    "retention24-result.json": "59c2c9972dd8509b2acc65d7f676975346d6372af9a8569df6d7e17bd7ebf2cb",
+    "boot-result.json": "7b0bfbe466f9502e508a099a214208c63e6ebfce86776f60b2e6aaf07c2fe2bf",
+    "audit-compile03-result.json": "d04e7230417c6361cc609a891385bf789e76e198260d7f5683a0cb3314e8e6c8",
+    "audit-run03-result.json": "81d7fa8d4882635faada98b8822fdcb84207c76189cd7cd71eb6ec12cb3ef85c",
+    "main.go": "a0296abb175be8e28d7fc38eb2b64ba256d3d3ac9afc622aad7770ff42532507",
+    "inspect.go": "1c6b463af4964960a72923e1fcf1af15417deb1db78e46fb9c1b6c2b4a59a411",
+    "audit01.json": "5bfaeacffc33d7b9749efd64f8d9d9b6ce735ea78261e4312fefe90dd17aa199",
+    "audit02.json": "174457b8b7e62af56b1a9c54b193f87d477e1e492e58bb320821cda9b8341ee2",
+    "audit03.json": "8e324cbe356f861af604faad981ef8a9b4014bc555f1e99ce5d474bb3842e4c2"
+  },
+  "runtime_qualified": false,
+  "recovery_attempted": false,
+  "protected_or_installed_state_accessed": false
+}

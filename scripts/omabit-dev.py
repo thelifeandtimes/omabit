@@ -100,6 +100,9 @@ def build(argv):
             shutil.copy2(package / "build" / name, assets / (name + "-linux-amd64"))
         metadata["assets"] = [packager.artifact(assets / (name + "-linux-amd64")) for name in packager.COMMANDS]
         metadata["assets"].append(packager.artifact(archive))
+        skill_asset = packager.package_skills(source, stage, assets, metadata, epoch)
+        if skill_asset:
+            metadata["assets"].append(skill_asset)
         (assets / "release.json").write_text(json.dumps(metadata, indent=2) + "\n")
         (assets / "source-inputs.json").write_text(json.dumps(snapshot, indent=2) + "\n")
         packager.checksums(assets)

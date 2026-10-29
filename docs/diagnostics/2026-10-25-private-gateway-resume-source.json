@@ -1,0 +1,15 @@
+{
+  "memory": "M355",
+  "scope": "pure retained-gateway admission and guarded source only",
+  "tests": {
+    "top_level": 5,
+    "including_subcases": 36,
+    "passed": 36
+  },
+  "first_failures": "sandbox denied child-process setup with EPERM; direct pure checks passed, guarded host command independently refused; narrowly escalated inert test suite passed",
+  "runtime_started": false,
+  "node_ganache_reopen_qualified": false,
+  "existing_initializer_changed": false,
+  "public_runtime_enabled": false,
+  "next": "fresh no-NIC VM controller with exact prior gateway/root/input bindings and retained-chain reopening evidence"
+}

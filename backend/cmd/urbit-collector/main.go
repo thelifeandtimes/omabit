@@ -21,8 +21,8 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
-const scope = `Development management client; inspect hello.mode/features for server capabilities.
-This is not a full collector daemon or production runtime manager.
+const scope = `Omabit fleet management client; inspect hello.mode/features for server capabilities.
+The collector selects runners; the runner owns runtime operations and persistent state.
 Select --socket with an absolute path or --runner with an enrolled name before the subcommand.
 Runner requests check Hello compatibility; listing and forgetting enrollment are local.
 Revisions and request IDs are never inferred; mutations are never automatically retried.
@@ -47,7 +47,7 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 			problem = protocol.APIError{Code: "runner_identity_mismatch", Message: client.ErrIdentityMismatch.Error()}
 		}
 		encoder := newOutput(stderr, format, false)
-		_ = encoder.Encode(protocol.ErrorResponse{Error: problem})
+		_ = encoder.Encode(guidedErrorResponse{Error: problem, Guidance: guidanceFor(err, problem)})
 		return code
 	}
 
@@ -63,7 +63,27 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		if errors.Is(err, flag.ErrHelp) {
 			fmt.Fprint(stdout, `Usage: urbit-collector [--config-dir /private/directory] [--socket /absolute/path/runner.sock | --runner NAME] COMMAND
 
+Start with help for offline task topics, or help TOPIC for a focused guide.
+
 Commands:
+  help [TOPIC]  Offline guidance in JSON (default) or --format text.
+  projects    Read selected runner project reservations; does not probe runtime.
+  project-create  Create and boot a complete fresh fake network; use --help.
+  project-add PROJECT  Add one fresh fake to an existing project; use --help.
+  project-operate PROJECT ACTION --revision N --review-digest HASH --request-id ID --confirm-action
+              Explicit initial project actions on a pinned operator runner; see --help.
+  project-register --plan FILE --review-digest HASH --request-id ID --confirm-reservation
+              Reserve reviewed fresh-fake membership only; requires pinned runner.
+  project-recover  Explicit coordinated recovery, observation or continuation.
+  project-recovery-source  Read saved recovery history and member receipt references.
+  project-recovery-checkpoint  Read a saved recovery checkpoint; no effects.
+  project-status  Read a selected project's saved operation history; no runtime probe.
+  private-chain-inputs  Verify a reviewed local input bundle; executes/starts nothing.
+  private-chain-register  Reserve a reviewed private-chain plan only; see --help.
+  private-chain-projects  Read saved private-chain reservations; no runtime probe.
+  private-chain-plan --label LABEL --foundation FILE --member INSTANCE:~SHIP:HTTP_PORT ... --shared-administration
+  project-plan --label LABEL --member INSTANCE:~GALAXY:HTTP_PORT ... --shared-administration
+              Review an offline fresh-fake project plan; reserves/starts nothing.
   enroll NAME --socket /absolute/path/runner.sock
   enroll NAME --ssh HOST_ALIAS [--ssh-config /absolute/config]
               Verify and save a named runner connection with its identity.
@@ -98,6 +118,8 @@ Commands:
   storage-root-add NAME --path /absolute/host/directory --request-id ID
               Add an identity-pinned, runner-owned storage location.
   preview-pier --source /absolute/host/pier [--storage-root default]
+  preview-import-restore INSTANCE --revision N
+  restore-import INSTANCE --revision N --restore-digest HASH --request-id ID --confirm-restore
               Review a stopped source; --storage-root derives identity, destination and port.
   import-pier INSTANCE --source /absolute/host/pier --path DESTINATION
               --ship ~SHIP --fingerprint HASH --http-port PORT --request-id ID --confirm-stopped [--identify]
@@ -145,6 +167,19 @@ Commands:
               Explicitly remove the selected oldest prefix, retaining newest two.
   watch [--interval 1s]
                Poll snapshots until canceled; minimum interval: 100ms.
+  app-plugins
+  app-connections
+  app-connection REQUEST_ID
+               Inspect installed connection helpers and durable attempts (no ship IO).
+  app-connect SHIP_NAME [selection flags] --approve-owner-session
+  app-managed-connect [fleet and plugin selection flags] --approve-owner-session
+               Approve an independent owner session for an exact installed helper.
+  app-archive REQUEST_ID --expected-revision N
+               Archive a fully closed attempt while retaining its replay receipt.
+  app-disconnect REQUEST_ID --expected-revision N
+  app-recover REQUEST_ID --expected-revision N
+  app-reconcile REQUEST_ID --expected-revision N
+               Revoke or recover only the selected application attempt; see --help.
   ship-enroll NAME --url ORIGIN --ship ~SHIP [--credentials secret-service|file]
   ships
   ship-login NAME --code-stdin
@@ -174,11 +209,50 @@ Use COMMAND --help for command flags and constraints.
 		return fail(errors.New("--format must be json or text"), 2)
 	}
 	if len(args) == 0 {
-		return fail(errors.New("a subcommand is required; use --help for usage"), 2)
+		return fail(errors.New("a subcommand is required; use help for task topics or --help for all commands"), 2)
 	}
 	command := args[0]
 	args = args[1:]
-	if slices.Contains([]string{"storage-root-add", "preview-pier", "import-pier", "delete-pier"}, command) {
+	if command == "help" {
+		return runTaskHelp(args, format, stdout, fail)
+	}
+	if command == "project-recover" {
+		return runProjectRecover(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if command == "project-recovery-source" {
+		return runProjectRecoverySource(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if command == "project-recovery-checkpoint" {
+		return runProjectRecoveryCheckpoint(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if command == "project-add" {
+		return runProjectAdd(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if command == "project-create" {
+		return runProjectCreate(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if command == "project-operate" {
+		return runProjectOperate(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if command == "project-register" {
+		return runProjectRegister(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if command == "private-chain-register" {
+		return runPrivateChainRegister(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if command == "private-chain-projects" {
+		return runPrivateChainProjects(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if command == "private-chain-inputs" {
+		return runPrivateChainInputs(ctx, args, *socket != "" || *runnerName != "" || *expectedRunner != "", format, stdout, fail)
+	}
+	if command == "private-chain-plan" {
+		return runPrivateChainPlan(args, *socket != "" || *runnerName != "" || *expectedRunner != "", format, stdout, fail)
+	}
+	if command == "project-plan" {
+		return runProjectPlan(args, *socket != "" || *runnerName != "" || *expectedRunner != "", format, stdout, fail)
+	}
+	if slices.Contains([]string{"storage-root-add", "preview-pier", "import-pier", "delete-pier", "preview-import-restore", "restore-import"}, command) {
 		return runStorage(ctx, command, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
 	}
 	if *expectedRunner != "" && (*runnerName == "" || !validID(*expectedRunner)) {
@@ -211,6 +285,12 @@ Use COMMAND --help for command flags and constraints.
 	if command == "import-sources" || command == "import-fake" {
 		return runImports(ctx, command, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
 	}
+	if command == "app-managed-connect" {
+		return runManagedApplication(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if slices.Contains([]string{"app-plugins", "app-connections", "app-connection", "app-archive", "app-connect", "app-disconnect", "app-recover", "app-reconcile"}, command) {
+		return runApplications(ctx, command, args, *configDir, *socket, *runnerName, format, stdout, fail)
+	}
 	if slices.Contains([]string{"ship-enroll", "ships", "ship-login", "ship-status", "ship-scry", "ship-watch", "ship-logout", "ship-forget"}, command) {
 		return runShips(ctx, command, args, *configDir, *socket, *runnerName, format, os.Stdin, stdout, fail)
 	}
@@ -238,6 +318,10 @@ Use COMMAND --help for command flags and constraints.
 	usage := command
 	switch command {
 	case "hello", "snapshot", "suggest-port":
+	case "project-status":
+		usage += " PROJECT\n\nRead recent saved operations only; no runtime probe or changes. Requires project-saved-status-v1. A recorded running operation does not prove the ship is running. Interrupted actions need explicit recovery, never blind retry."
+	case "projects":
+		usage += "\n\nRead saved project identities and port reservations only; no live runtime probe or resource changes. Requires project-reservations-v1."
 	case "create-fake", "create-comet":
 		flags.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
 		flags.BoolVar(&nativeControl, "native-control", false, "enable local-owner native control (default off)\n\n"+protocol.NativeControlWarning)
@@ -290,7 +374,7 @@ Use COMMAND --help for command flags and constraints.
 	}
 
 	var instanceID, kind string
-	if command == "configure" || command == "operate" || command == "create-fake" || command == "create-comet" || command == "epoch-preview" || command == "epoch-prune" {
+	if command == "project-status" || command == "configure" || command == "operate" || command == "create-fake" || command == "create-comet" || command == "epoch-preview" || command == "epoch-prune" {
 		if len(args) > 0 && args[0] != "--help" && args[0] != "-h" {
 			instanceID, args = args[0], args[1:]
 		}
@@ -321,6 +405,9 @@ Use COMMAND --help for command flags and constraints.
 			fakeOptions = true
 		}
 	})
+	if command == "project-status" && !validID(instanceID) {
+		return fail(errors.New("project-status requires a valid project ID; use projects to read saved IDs"), 2)
+	}
 	if fakeOptions {
 		if !strings.HasPrefix(fakeShip, "~") {
 			fakeShip = "~" + fakeShip
@@ -495,6 +582,10 @@ Use COMMAND --help for command flags and constraints.
 		result = hello
 	case "snapshot":
 		result, err = checkedSnapshot(ctx, c, identity)
+	case "project-status":
+		result, err = c.ProjectStatus(ctx, client.Identity{RunnerID: hello.RunnerID, Mode: hello.Mode}, instanceID)
+	case "projects":
+		result, err = c.Projects(ctx, client.Identity{RunnerID: hello.RunnerID, Mode: hello.Mode})
 	case "suggest-port":
 		if *expectedRunner == "" || !slices.Contains(hello.Features, "host-port-suggestion") {
 			return fail(errors.New("suggest-port requires a pinned runner with host-port-suggestion support"), 2)

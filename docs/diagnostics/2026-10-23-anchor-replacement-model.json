@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "kind": "pure serial coordinated replacement source gate",
+  "focused_race_seconds": 60.152,
+  "full_projectnetwork_race_seconds": 122.311,
+  "vet_passed": true,
+  "diff_check_passed": true,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-replacement-model",
+  "manifest": {
+    "omabit-anchor-replacement-compile.log": "176c7a9968c9d73c3accd4aa26b21cdfc0c3cd100d70c50786e55aee927bf788",
+    "omabit-anchor-replacement-tests-attempt1.log": "5d5e2499abe254a6f4f7bdd708b8384278fa7644f63223b136bc8dff639fe0ea",
+    "omabit-anchor-replacement-tests-attempt2.log": "b5e7bf149d30b8ced1e617f2e03ddebb4692feee087146ec52423b06eb264efc",
+    "omabit-anchor-replacement-full-race.log": "021fb7d3c73e53c6cf636c5429d3d2316a24dcb18a582388c37948b9c88c1d4b",
+    "omabit-anchor-replacement-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-replacement-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/projectnetwork/anchor_replacement.go": "a76e42d927d895b3b2199acf45f29fafb6be489ef0e5332e7f6ead6a562bea9e",
+    "source/internal/projectnetwork/anchor_replacement_test.go": "b6ce7e6865c967d3708be3ab82da1fbefbfb3c18d88093394b0a5c10ef2cc7a7",
+    "source/internal/projectnetwork/recovery_member_creation.go": "4bec489bdb31831dc11349c8eba5ecffe6ab100d5ced1d9db5a99f972f4380ea"
+  }
+}

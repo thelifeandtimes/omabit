@@ -1,0 +1,20 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema_changed": false,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-mounts",
+  "source_sha256": {
+    "internal/runtimequalify/project_member_mounts_linux.go": "2de9ff5e4f1630540b5f23833fdad419c01814d18ed195ebe45362e1e12d8f48",
+    "internal/runtimequalify/project_member_mounts_linux_test.go": "7b851e485d71de83089094cc531752d126bded0870fdfae18af034ac738e5b5d"
+  },
+  "logs": {
+    "omabit-member-mounts-tests.log": "3f874faee9faca8392f4b0325e3970d3c15240a2ba38807dc1a55cdcadc7c5d3",
+    "omabit-member-mounts-regression.log": "ec6ec294ddfd62eb6496fb3db8b5b4586b46765ca2adea1f02eb7f0d392d02eb",
+    "omabit-member-mounts-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "Negative preflight only; saved Docker source paths cannot prove historical active kernel-mount identity after path replacement.",
+    "Unknown volume/plugin sources refuse; admitting those needs a separately qualified source contract.",
+    "No dispatch, schema change, real engine or ship access. Lifecycle ownership, pier locks and actual runtime readiness remain."
+  ]
+}

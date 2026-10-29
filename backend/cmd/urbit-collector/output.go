@@ -9,6 +9,7 @@ import (
 	"time"
 	"unicode"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/applicationauth"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/epochs"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
@@ -170,8 +171,57 @@ func (o *output) Encode(value any) error {
 	var text strings.Builder
 	w := tabwriter.NewWriter(&text, 0, 4, 2, ' ', 0)
 	switch v := value.(type) {
+	case protocol.ProjectStatus:
+		fmt.Fprintf(w, "Saved project status: %s (%s) on %s\nRead at: %s\n", cell(v.Project.Label), cell(v.Project.ID), cell(v.RunnerID), v.ReadAt.UTC().Format(time.RFC3339Nano))
+		fmt.Fprintln(w, "OPERATION\tKIND\tMEMBER\tSAVED STATUS\tACTOR\tREQUEST")
+		for _, op := range v.Operations {
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s\n", cell(op.ID), cell(op.Kind), cell(op.InstanceID), cell(op.Status), cell(op.Actor), cell(op.RequestID))
+		}
+		if v.HasOlderOperations {
+			fmt.Fprintln(w, "Older operations exist; this is the newest 128 receipts.")
+		}
+		fmt.Fprintln(w, "Saved history only. Runtime observation was not performed; recorded running/succeeded operations do not prove current ship health. Do not blindly retry interrupted actions.")
+	case protocol.ProjectInventory:
+		fmt.Fprintf(w, "Stored project reservations on %s (%s)\nRead at: %s\n", cell(v.RunnerID), cell(v.Mode), v.ReadAt.UTC().Format(time.RFC3339Nano))
+		fmt.Fprintln(w, "PROJECT\tLABEL\tREVISION\tINSTANCE\tSHIP\tLOOPBACK HTTP PORT\tINTERNAL HTTP PORT")
+		for _, p := range v.Projects {
+			for _, m := range p.Members {
+				fmt.Fprintf(w, "%s\t%s\t%d\t%s\t%s\t%d\t%d\n", cell(p.ID), cell(p.Label), p.Revision, cell(m.InstanceID), cell(m.Ship), m.HTTPPort, m.InternalHTTPPort)
+			}
+		}
+		fmt.Fprintln(w, "Saved reservations only. Runtime observation was not performed; no live readiness or launch authority is implied.")
+	case privateChainInputsView:
+		fmt.Fprintf(w, "Private-chain runtime input inspection\nFormat: %s\nManifest SHA-256: %s\nFoundation digest: %s\nVerified files: %d\nVerified bytes: %d\n", cell(v.Format), v.ManifestSHA256, v.FoundationDigest, v.Files, v.Bytes)
+		fmt.Fprintln(w, "Runtime authorized: no. No inputs executed, installed or started; this inspection grants no runtime authority.")
+	case privateChainPlanView:
+		fmt.Fprintf(w, "Offline private-chain plan: %s\nMode: %s\nChain ID: %d\nGenesis: %s\nFoundation digest: %s\nReview digest: %s\n", cell(v.Plan.Label), cell(v.Plan.Mode), v.Plan.Foundation.ChainID, v.Plan.Foundation.Genesis, v.Plan.FoundationDigest, v.ReviewDigest)
+		fmt.Fprintln(w, "INSTANCE\tSHIP\tREQUESTED LOOPBACK HTTP PORT\tINTERNAL HTTP PORT")
+		for _, m := range v.Plan.Members {
+			fmt.Fprintf(w, "%s\t%s\t%d\t%d\n", cell(m.InstanceID), cell(m.Ship), m.HTTPPort, m.InternalHTTPPort)
+		}
+		fmt.Fprintln(w, "Shared administrative loopback: yes; chain RPC/Ames publication: disabled")
+		fmt.Fprintln(w, v.Notice)
+	case projectPlanView:
+		fmt.Fprintf(w, "Offline project plan: %s\nMode: %s\nReview digest: %s\n", cell(v.Plan.Label), v.Plan.Mode, v.ReviewDigest)
+		fmt.Fprintln(w, "INSTANCE\tSHIP\tRUNNER LOOPBACK HTTP PORT\tINTERNAL HTTP PORT")
+		for _, m := range v.Plan.Members {
+			fmt.Fprintf(w, "%s\t%s\t%d\t%d\n", cell(m.InstanceID), cell(m.Ship), m.HTTPPort, m.InternalHTTPPort)
+		}
+		fmt.Fprintln(w, "Shared administrative loopback: yes")
+		fmt.Fprintln(w, v.Notice)
 	case protocol.HostCompatibilityReport:
 		hostCompatibilityText(w, v)
+	case guidedErrorResponse:
+		fmt.Fprintf(w, "Error %s: %s\n", cell(v.Error.Code), cell(v.Error.Message))
+		if v.Error.CurrentRevision != nil {
+			fmt.Fprintln(w, "Current revision:", *v.Error.CurrentRevision)
+		}
+		if g := v.Guidance; g != nil {
+			fmt.Fprintf(w, "Next (%s): %s\n", cell(g.Kind), cell(g.Summary))
+			for _, next := range g.Next {
+				fmt.Fprintf(w, "  %s: %s\n", cell(next.Name), cell(next.Effect))
+			}
+		}
 	case protocol.ErrorResponse:
 		fmt.Fprintf(w, "Error %s: %s\n", cell(v.Error.Code), cell(v.Error.Message))
 		if v.Error.CurrentRevision != nil {
@@ -242,15 +292,33 @@ func (o *output) Encode(value any) error {
 		for _, c := range v.Connections {
 			observation(w, c)
 		}
+	case []applicationauth.InstalledPlugin:
+		fmt.Fprintln(w, "PLUGIN / PROFILE\tNAME\tSTATUS\tARTIFACT SHA256")
+		for _, p := range v {
+			fmt.Fprintf(w, "%s / %s\t%s\t%s\t%s\n", cell(p.Target.PluginID), cell(p.Target.Profile), cell(p.Name), cell(p.Status), cell(p.Target.SHA256))
+		}
+	case applicationView:
+		applicationText(w, v)
+	case []applicationView:
+		fmt.Fprintln(w, "REQUEST\tPLUGIN / PROFILE\tSHIP / ORIGIN\tPHASE\tREVISION\tNEXT")
+		for _, a := range v {
+			applicationText(w, a)
+		}
+	case applicationResult:
+		fmt.Fprintln(w, cell(v.Code), cell(v.Message))
+		if v.Connection != nil {
+			applicationText(w, *v.Connection)
+		}
 	case shipInfo:
+		fmt.Fprintf(w, "Enrollment ID: %s\nRevision: %d\n", cell(v.ID), v.Revision)
 		fmt.Fprintf(w, "Ship connection: %s\nShip: %s\nOrigin: %s\nCredentials: %s\nStatus: %s\n", cell(v.Name), cell(v.Ship), cell(v.Origin), cell(v.Credentials), cell(v.Status))
 		if v.Message != "" {
 			fmt.Fprintln(w, cell(v.Message))
 		}
 	case []shipInfo:
-		fmt.Fprintln(w, "NAME\tSHIP\tSTATUS\tCREDENTIALS\tORIGIN")
+		fmt.Fprintln(w, "NAME\tSHIP\tSTATUS\tCREDENTIALS\tORIGIN\tENROLLMENT ID / REVISION")
 		for _, s := range v {
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", cell(s.Name), cell(s.Ship), cell(s.Status), cell(s.Credentials), cell(s.Origin))
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\t%s / %d\n", cell(s.Name), cell(s.Ship), cell(s.Status), cell(s.Credentials), cell(s.Origin), cell(s.ID), s.Revision)
 		}
 	case shipData:
 		fmt.Fprintf(w, "%s: %s %s\n", cell(v.Name), cell(v.App), cell(v.Path))
@@ -290,4 +358,11 @@ func safeJSONText(s string) string {
 		}
 		return r
 	}, s)
+}
+
+func applicationText(w io.Writer, a applicationView) {
+	if a.Archived {
+		a.Phase = "archived"
+	}
+	fmt.Fprintf(w, "%s\t%s / %s\t%s / %s\t%s\t%d\t%s\n", cell(a.RequestID), cell(a.Target.PluginID), cell(a.Target.Profile), cell(a.Ship), cell(a.Origin), cell(a.Phase), a.Revision, cell(strings.Join(a.NextActions, ", ")))
 }

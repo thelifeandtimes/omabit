@@ -1,0 +1,22 @@
+{
+  "memory": [
+    "M306",
+    "M307"
+  ],
+  "authority_format": 1,
+  "reservation_format": 2,
+  "states_are_evidence_not_portable_authority": true,
+  "sha256": {
+    "admission.py": "13f225164419d74d3c24107d755af03e3cfca503b3c4633551d550ec27c083cc",
+    "artifacts.py": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+    "journal.py": "d8bf39a68b5b1fe2a6cb900173428aaeb0bb51acd50311f2d801b39fd605cff5",
+    "original-states/candidate-recovered/collection-journal-journal.json": "3dbb3e177e9eb52be27f76c60ce40c2f89b88afc2dcb32c88f177cd6b9ef1b75",
+    "original-states/candidate-recovered/runtime-authority-authority.json": "6a7f2aa5fd9097da604aca89de65cdf920055811f300a5e6fca6980d2e2c22f9",
+    "original-states/candidate-recovered/runtime-authority-reservation.json": "115eb098bf6814edcc0304c864bc10a1c2e857ebf067a7a6f893f4857bbc98ea",
+    "original-states/initial-adopted/collection-journal-journal.json": "ebd324430bf552eb14d6bf22bb35815578f6b7b34c24854c1568753bc9c42eff",
+    "original-states/initial-adopted/runtime-authority-authority.json": "d4544cb6c09e9bc849a1e690881ac49b6b5511b85fa852a631ad5e7217b652bb",
+    "original-states/initial-adopted/runtime-authority-reservation.json": "20832da01f094fc1b5c10a706b5bc4bb614c881c51a60fef38473ef2cacd3eab",
+    "shared_admission.py": "37aaa79d0f555aead1e046419bf3cdffae21f1a19019c47ffa4b6f84e55bfba1",
+    "writer.py": "4c2fa7ee3011dfa7b9add7856a792341ac5d69e9c39ee3ed23dcfed7457a1acf"
+  }
+}

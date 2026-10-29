@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "kind": "pure/concrete ordinary post-recovery creation contract",
+  "pure_race_seconds": 7.068,
+  "contract_race_seconds": 13.021,
+  "legacy_race_seconds": 1.063,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-recovered-resume-contract",
+  "manifest": {
+    "omabit-recovered-resume-creation-tests-attempt1.log": "c34d53ff895f82a0d09b5b3b6899fb4f41d580228d335dcd076ae9c5ad88af6d",
+    "omabit-recovered-resume-contract-tests-attempt1.log": "a5d989159a5f415155b2cdb98d7d4a53318b5c53be60a75bd44be731bdf0811a",
+    "omabit-recovered-resume-contract-legacy-race.log": "9702a44d6a991ce3cc1319fa792491d2d6fd6a66b4cf2ffcf6d54e8350939cba",
+    "omabit-recovered-resume-contract-vm-entry.log": "f9105f74df86455377f734c3870c2a254f985a264d28a8ab8cd78944bb51c15e",
+    "omabit-recovered-resume-contract-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovered-resume-contract-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/projectnetwork/recovered_resume_creation.go": "ad720ef0780682eb5658a2feb2a2115b82e5c606bcc68e2ee8b0301440af9723",
+    "source/internal/projectnetwork/recovered_resume_creation_test.go": "0115f25d2486077d5ddf53c5e287bbf8aea0d761382d23e743bff035c6249a1b",
+    "source/internal/runtimequalify/project_recovered_resume_contract_linux.go": "980a2b2c8598aa423b83e264789f6395fa4b110f069fb1d6fe6c68021439aca3",
+    "source/internal/runtimequalify/project_recovered_resume_contract_linux_test.go": "31b6301f9684523cc3201ebff10a554d56f84c52d1b3caecf0b6dac5c6766430",
+    "source/internal/runtimequalify/project_member_contract_linux.go": "d95d23c89e5d492b0569e7f60078db3fbcb99e1b3eee8a62eab02aa54cde3656"
+  }
+}

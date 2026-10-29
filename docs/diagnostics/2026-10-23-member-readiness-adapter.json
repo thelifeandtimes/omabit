@@ -1,0 +1,21 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 27,
+  "cases": 17,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-readiness-adapter",
+  "source_sha256": {
+    "internal/runtimequalify/project_member_readiness_linux.go": "7834909e8bfeb65f600b464311f118a5551662ef759ced1f0fcd5a3e9057686f",
+    "internal/runtimequalify/project_member_readiness_linux_test.go": "1c1d60e73842e9f5c439a4692a4d47aa3bc1110fba5a6ffce2cc0461e1569a75"
+  },
+  "logs": {
+    "omabit-member-readiness-adapter-tests.log": "538a9d5f7602252a8fe59105b75ef5ad34b7473a0be84057a8f8f0e64008a61d",
+    "omabit-member-readiness-adapter-regression.log": "80d0fae74d71cf53f8c1041318bbab23734834dd6270db6340448502bdfbfcc7",
+    "omabit-member-readiness-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "Injected engine and temporary directories only; no real ship accessed.",
+    "No persistent readiness journal, private server scheduling, public route or current-ready claim.",
+    "VM13 uses the prior frozen member-launch appliance and cannot qualify this adapter."
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-linked-desktop-cleanup",
+  "verification": {
+    "passed": true,
+    "focused_tests": 19,
+    "full_tests": 410,
+    "native_runs": 1,
+    "new_controller_kills": 2,
+    "total_controller_kills": 29,
+    "linked_cleanup_format": 2,
+    "original_writers_unchanged": true,
+    "original_reader_refuses_new_record": true,
+    "actual_plugin_cohorts_locked_and_preserved": true,
+    "remote_channels_open_after_process_closure": 2,
+    "remote_channels_closed_after_cleanup": 6,
+    "rejected_delete_preserves_prepared_intent": true,
+    "completed_retry_no_http_or_rewrite": true,
+    "sessions_preserved": 6,
+    "unknown_dm_preserved_without_replay": true,
+    "native_shell_exit_after_compositor_loss": 255,
+    "all_three_compositors_exit_zero": true,
+    "source_artifacts_metadata_independently_verified": true,
+    "scopes_inactive": [
+      "omabit-successor-cleanup-native-20261025-01",
+      "omabit-successor-cleanup-unit-20261025-01",
+      "omabit-successor-cleanup-unit-20261025-02",
+      "omabit-successor-cleanup-unit-20261025-03"
+    ],
+    "failed_trial": "01: synthetic test used the new cleanup request ID to locate the ancestor checkpoint; captured original checkpoint path before changing request ID",
+    "verifier_correction": "Read-only verifier field path corrected to channel; native scope reference corrected to current cleanup run before retention",
+    "linked_checkpoint_and_repeated_admission_qualified": false,
+    "public_installed_profiles_qualified": false,
+    "production_resources_touched": false
+  }
+}

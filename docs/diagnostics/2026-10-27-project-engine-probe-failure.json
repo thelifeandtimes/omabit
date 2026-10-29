@@ -1,0 +1,308 @@
+{
+  "case": "diagnostic-pair-engine-probe",
+  "before": {
+    "build": {
+      "runner_id": "runner-a7dc3582cc9ef46db533582aff8434ec",
+      "binary_sha256": {
+        "urbit-runner": "936a75fd1d30040c37d814f04efcf89454d79d1703f3f5b92b566d87d9ebdc4f",
+        "urbit-collector": "0227efda627bc75dcd05b04d547c96b67ccec2aefdab6cc381a68925d8809a19"
+      },
+      "original_failed_project_retained": true
+    },
+    "old_project_retained": "project-d67af17ec93324611f03750c62c73e0b",
+    "no_running_containers": true
+  },
+  "progress": [
+    {
+      "phase": "working",
+      "step": "reserve"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "download-runtime"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "download-runtime"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "prepare"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "prepare",
+      "operation_id": "op-7f39af9a4c616c49b4319d1acea64dfb"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "start-anchor"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "start-anchor",
+      "operation_id": "op-144f11e97dc7d16672ef3b6d77ca1ea3"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "prepare-storage",
+      "instance_id": "diagnostic-pair-nec"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "prepare-storage",
+      "instance_id": "diagnostic-pair-nec",
+      "operation_id": "op-dc59bc194c32696af06ee382ca7de72a"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "launch",
+      "instance_id": "diagnostic-pair-nec"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "launch",
+      "instance_id": "diagnostic-pair-nec",
+      "operation_id": "op-3505a03d99d7e33939ebbe9dd4067e96"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "prepare-storage",
+      "instance_id": "diagnostic-pair-zod"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "prepare-storage",
+      "instance_id": "diagnostic-pair-zod",
+      "operation_id": "op-f7063953446f05b22ec6c588069a1a60"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "step": "launch",
+      "instance_id": "diagnostic-pair-zod"
+    }
+  ],
+  "completion": {
+    "exit_code": 1,
+    "elapsed_seconds": 63.20062163700004
+  },
+  "error": {
+    "error": {
+      "code": "client_error",
+      "message": "project project-9026de24846dd7e39234ff94f1e233f2 stopped at launch diagnostic-pair-zod (interrupted, operation op-5f3b3f97136e7815ada880e5e2bfee3b); no further actions submitted"
+    }
+  },
+  "cause": "engine verification refused unavailable API evidence during the second member launch; Docker logs record canceled version requests",
+  "commands_retried": false,
+  "operations": [
+    {
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "id": "op-a05688350efa987f7f726459359b67c4",
+      "request_id": "diagnostic-pair-20261027-1",
+      "instance_id": "",
+      "kind": "register-project",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:29:26.583242418Z",
+      "finished_at": "2026-10-28T06:29:26.583242418Z"
+    },
+    {
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "id": "op-7f39af9a4c616c49b4319d1acea64dfb",
+      "request_id": "create-8858fc4b2bc53b9d6da6510703472cf2d7b1da53",
+      "instance_id": "",
+      "kind": "prepare-project",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:29:29.098997438Z",
+      "finished_at": "2026-10-28T06:29:31.614906269Z",
+      "message": "project resources prepared; no member was started"
+    },
+    {
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "id": "op-144f11e97dc7d16672ef3b6d77ca1ea3",
+      "request_id": "create-dab54b1ffa433505716f769585c56ec9a2f1c269",
+      "instance_id": "",
+      "kind": "start-project-anchor",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:29:32.278326981Z",
+      "finished_at": "2026-10-28T06:29:33.92429789Z",
+      "message": "project anchor started and observed; no member was started"
+    },
+    {
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "id": "op-dc59bc194c32696af06ee382ca7de72a",
+      "request_id": "create-6ab668c16f5a7aa6ae577ba8d3dc90d43cdd6f6b",
+      "instance_id": "diagnostic-pair-nec",
+      "kind": "prepare-project-member-storage",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:29:34.498070025Z",
+      "finished_at": "2026-10-28T06:29:34.752669632Z",
+      "message": "member mount prepared; no pier or ship was created"
+    },
+    {
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "id": "op-3505a03d99d7e33939ebbe9dd4067e96",
+      "request_id": "create-14c92fcf2a7143762b093bdbb65067a545fe89c8",
+      "instance_id": "diagnostic-pair-nec",
+      "kind": "launch-project-member",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:29:35.553872937Z",
+      "finished_at": "2026-10-28T06:29:49.880369131Z",
+      "message": "member container running in its recorded namespace; ship readiness is not yet established"
+    },
+    {
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "id": "op-f7063953446f05b22ec6c588069a1a60",
+      "request_id": "create-73f2adc3e37e96d2f4638cc001abafc3dedd776c",
+      "instance_id": "diagnostic-pair-zod",
+      "kind": "prepare-project-member-storage",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:29:50.786349805Z",
+      "finished_at": "2026-10-28T06:29:51.059303812Z",
+      "message": "member mount prepared; no pier or ship was created"
+    },
+    {
+      "project_id": "project-9026de24846dd7e39234ff94f1e233f2",
+      "id": "op-5f3b3f97136e7815ada880e5e2bfee3b",
+      "request_id": "create-2bf320f55a14ae83d1b9f5fd0ee6bd4d34c1e2f9",
+      "instance_id": "diagnostic-pair-zod",
+      "kind": "launch-project-member",
+      "actor": "local-uid:1000",
+      "status": "interrupted",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:29:51.832369347Z",
+      "finished_at": "2026-10-28T06:30:22.012242369Z",
+      "message": "member launch did not finish; retain original receipt, workspace, container and any pier data before recovery"
+    }
+  ],
+  "launches": [
+    {
+      "instance": "first-project-nec",
+      "phase": "running",
+      "container": {
+        "id": "c38903ae9dbed663ae6e68c7c44cafb487899bc1b81c8069869c47a24de3ce33",
+        "contract_digest": "b416592da8fc9d4fff87d1f8cae4dffe93d9798cfa61b0a4cd8fb952ce197354"
+      },
+      "no_launch_journal": false
+    },
+    {
+      "instance": "first-project-zod",
+      "phase": "workspace-created",
+      "container": {
+        "id": "",
+        "contract_digest": "7c60f423425b8f0f078c62e13a44c8fc6362196ca2453a952cd20c8d8636c307"
+      },
+      "no_launch_journal": false
+    },
+    {
+      "instance": "diagnostic-pair-nec",
+      "phase": "running",
+      "container": {
+        "id": "99c08a2eff7394358fd0d15f5fd0e6d51c538f0c38663e881723ce1ad83b7f7a",
+        "contract_digest": "cb8b6fb085660bc0f512a275111db5d6cbbdd3c7865f56bbad3992cdee858d1c"
+      },
+      "no_launch_journal": false
+    },
+    {
+      "instance": "diagnostic-pair-zod",
+      "phase": "started",
+      "container": {
+        "id": "a6334a0d227fe1194567212f2698fe439a3317833a09178a28fb4c4a1c80ac26",
+        "contract_digest": "36c949211435c463c1b4882b7089f73bc7bed9d5df96d63702a3c482da4ad8ad"
+      },
+      "no_launch_journal": false
+    }
+  ],
+  "runner_log": [
+    "Oct 27 23:22:58 omabit-review env[828]: {\"mode\":\"development-managed\",\"socket\":\"/run/user/1000/urbit-runner/runner.sock\",\"state_directory\":\"/home/review/.local/share/urbit-runner/managed\"}",
+    "Oct 27 23:24:06 omabit-review env[1899]: {\"mode\":\"development-managed\",\"socket\":\"/run/user/1000/urbit-runner/runner.sock\",\"state_directory\":\"/home/review/.local/share/urbit-runner/managed\"}",
+    "Oct 27 23:30:22 omabit-review env[1899]: 2026/10/27 23:30:22 project-member-launch project=project-9026de24846dd7e39234ff94f1e233f2 instance=diagnostic-pair-zod operation=op-5f3b3f97136e7815ada880e5e2bfee3b stage=engine failed=\"host runtime compatibility denied: private engine API evidence unavailable\"",
+    "Oct 27 23:30:22 omabit-review env[1899]: 2026/10/27 23:30:22 project-member-launch project=project-9026de24846dd7e39234ff94f1e233f2 instance=diagnostic-pair-zod operation=op-5f3b3f97136e7815ada880e5e2bfee3b failed=\"member launch engine identity could not be verified\""
+  ],
+  "capacity_samples": {
+    "count": 27,
+    "minimum_ram": 7272439808,
+    "minimum_disk": 10280517632
+  },
+  "later_engine_samples": [
+    {
+      "sample": 0,
+      "path": "/version",
+      "headers_seconds": 0.013,
+      "status": 200,
+      "bytes": 1120,
+      "engine": {
+        "Version": "29.9.1",
+        "ApiVersion": "1.56",
+        "MinAPIVersion": "1.40"
+      },
+      "seconds": 0.013
+    },
+    {
+      "sample": 0,
+      "path": "/v1.47/info",
+      "headers_seconds": 0.005,
+      "status": 200,
+      "bytes": 10176,
+      "engine": {
+        "ID": "14daf405-5131-49c7-977f-27cf76bcd2c6",
+        "ServerVersion": "29.9.1",
+        "SecurityOptions": [
+          "name=seccomp,profile=builtin",
+          "name=rootless",
+          "name=cgroupns"
+        ],
+        "CgroupDriver": "systemd",
+        "CgroupVersion": "2",
+        "DockerRootDir": "/home/review/.local/share/urbit-runner/docker"
+      },
+      "seconds": 0.005
+    }
+  ],
+  "docker_log": [
+    "Oct 27 23:22:47 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:22:47.121409949-07:00\" level=info msg=\"Daemon has completed initialization\"",
+    "Oct 27 23:22:47 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:22:47.121433945-07:00\" level=info msg=\"API listen on /run/user/1000/urbit-docker.sock\"",
+    "Oct 27 23:23:53 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:23:53.302643824-07:00\" level=info msg=\"request cancelled by client\" error=\"context canceled\" method=GET module=api request-url=/version status=499 vars=\"map[]\"",
+    "Oct 27 23:24:16 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:24:16.393175501-07:00\" level=info msg=\"request cancelled by client\" error=\"context canceled\" method=GET module=api request-url=/version status=499 vars=\"map[]\"",
+    "Oct 27 23:27:54 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:27:54.524168311-07:00\" level=info msg=\"request cancelled by client\" error=\"context canceled\" method=GET module=api request-url=/version status=499 vars=\"map[]\"",
+    "Oct 27 23:29:33 omabit-review dockerd-rootless.sh[483]: time=\"2026-10-27T23:29:33.171857914-07:00\" level=info msg=\"connecting to shim 8097c32486906def0cc0bae14a06f79d5d3adb598700839de395b50ce5b83c7e\" address=\"unix:///run/containerd/s/8837a780b75014e5430ef2969b5ddd0d80c9a637521847142edc46ed6f8838c3\" namespace=moby protocol=ttrpc version=3",
+    "Oct 27 23:29:33 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:29:33.268647086-07:00\" level=warning msg=\"failed to restore thread's network namespace\" error=\"operation not permitted\"",
+    "Oct 27 23:29:33 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:29:33.273168431-07:00\" level=warning msg=\"failed to restore thread's network namespace\" error=\"operation not permitted\"",
+    "Oct 27 23:29:33 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:29:33.273468090-07:00\" level=error msg=\"libnetwork: restoring thread network namespace failed\" error=\"operation not permitted\"",
+    "Oct 27 23:29:33 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:29:33.273674470-07:00\" level=warning msg=\"Failed to read stp_state file \\\"/sys/class/net/br-4e910563c7b0/bridge/stp_state\\\"\" eid=bee7bdb0bc30 ep=urbit-project-9026de24846dd7e39234ff94f1e233f2-g1-anchor error=\"open /sys/class/net/br-4e910563c7b0/bridge/stp_state: no such file or directory\" net=urbit-project-9026de24846dd7e39234ff94f1e233f2-g1-bridge nid=4e910563c7b0 veth=veth30a7019",
+    "Oct 27 23:29:33 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:29:33.273687910-07:00\" level=warning msg=\"Failed to open port state file, waiting for 20ms\" eid=bee7bdb0bc30 ep=urbit-project-9026de24846dd7e39234ff94f1e233f2-g1-anchor net=urbit-project-9026de24846dd7e39234ff94f1e233f2-g1-bridge nid=4e910563c7b0 port=/sys/class/net/br-4e910563c7b0/brif/veth7c82dd1/state veth=veth30a7019",
+    "Oct 27 23:29:33 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:29:33.293866368-07:00\" level=warning msg=\"failed to restore thread's network namespace\" error=\"operation not permitted\"",
+    "Oct 27 23:29:33 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:29:33.319791969-07:00\" level=info msg=\"sbJoin: gwep4 ''->'bee7bdb0bc30', gwep6 ''->''\" eid=bee7bdb0bc30 ep=urbit-project-9026de24846dd7e39234ff94f1e233f2-g1-anchor net=urbit-project-9026de24846dd7e39234ff94f1e233f2-g1-bridge nid=4e910563c7b0",
+    "Oct 27 23:29:39 omabit-review dockerd-rootless.sh[483]: time=\"2026-10-27T23:29:39.796414249-07:00\" level=info msg=\"connecting to shim 99c08a2eff7394358fd0d15f5fd0e6d51c538f0c38663e881723ce1ad83b7f7a\" address=\"unix:///run/containerd/s/f12249ebe490d7ade2ca1b3be43d48c7a5a1e5d0ea0bdc8c1456136f4a75412a\" namespace=moby protocol=ttrpc version=3",
+    "Oct 27 23:30:03 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:30:03.974596476-07:00\" level=warning msg=\"Failed to retrieve containerd version\" error=\"Canceled: context canceled\"",
+    "Oct 27 23:30:03 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:30:03.979286483-07:00\" level=info msg=\"request cancelled by client\" error=\"context canceled\" method=GET module=api request-url=/version status=499 vars=\"map[]\"",
+    "Oct 27 23:30:19 omabit-review dockerd-rootless.sh[483]: time=\"2026-10-27T23:30:19.488868187-07:00\" level=info msg=\"connecting to shim a6334a0d227fe1194567212f2698fe439a3317833a09178a28fb4c4a1c80ac26\" address=\"unix:///run/containerd/s/f4363193e5bde2bc46cdaf8b0a72f1dde13bf8a22c293b49f2bfbc059fc5e30b\" namespace=moby protocol=ttrpc version=3",
+    "Oct 27 23:30:26 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:30:26.037926076-07:00\" level=warning msg=\"Failed to retrieve containerd version\" error=\"Canceled: context canceled\"",
+    "Oct 27 23:32:12 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:32:12.624288046-07:00\" level=warning msg=\"Failed to retrieve containerd version\" error=\"Canceled: context canceled\"",
+    "Oct 27 23:32:20 omabit-review dockerd-rootless.sh[457]: time=\"2026-10-27T23:32:20.839473479-07:00\" level=warning msg=\"Failed to retrieve containerd version\" error=\"Canceled: context canceled\""
+  ]
+}

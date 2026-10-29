@@ -87,3 +87,17 @@ func TestLoginCodeAdmissionAndRedactedAudit(t *testing.T) {
 		t.Fatal("observer admitted")
 	}
 }
+
+func TestLoginCodeAuditRecordsOnlySafeDeadlineDiagnostic(t *testing.T) {
+	s := testStore(t)
+	if err := s.auditCode("actor", "synthetic", 1, false, errors.New("PRIVATE response"), true); err != nil {
+		t.Fatal(err)
+	}
+	var body []byte
+	if err := s.db.QueryRow("SELECT body FROM operations WHERE fingerprint='login-code-audit'").Scan(&body); err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(body), "PRIVATE") || !strings.Contains(string(body), "stage=unavailable, deadline_expired=true") {
+		t.Fatal("unsafe or missing diagnostic")
+	}
+}

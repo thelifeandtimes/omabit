@@ -1,0 +1,30 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-reusable-runtime-packages",
+  "verification": {
+    "passed": true,
+    "package_tests": 18,
+    "historical_cli_tests": 2,
+    "scopes_inactive": [
+      "omabit-repeated-artifacts-unit-20261025-01",
+      "omabit-repeated-artifacts-unit-20261025-02",
+      "omabit-repeated-artifacts-cli-20261025-03"
+    ],
+    "artifact_format": 7,
+    "authority_readers": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "old_writer6_reproduced_exactly": true,
+    "old_reader6_refuses7": true,
+    "mixed6_7_allows3_refuses4": true,
+    "bundle_imports_without_checkout_or_site_packages": true,
+    "frozen6_sha256": "ed20c91e931071c489f72d252bdc615f902778e62b489595dcaf5c8f987d9030",
+    "frozen6_files": 83,
+    "public_cli_default_authority": 1,
+    "initial_cli_integration_failure_retained": true,
+    "native_repeated_plugins_qualified": false,
+    "production_resources_touched": false
+  }
+}

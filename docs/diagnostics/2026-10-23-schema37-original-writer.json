@@ -1,0 +1,32 @@
+{
+  "passed": true,
+  "kind": "frozen original schema37 writer preparation",
+  "schema": 37,
+  "source_files": 1569,
+  "archive_sha256": "57ed6461b9cd12f595a20139c3643e76cd79bdfd1d336b3d69c8a86547feec04",
+  "fixture_sha256": "1ba8249a45a10bf769780f93dc8d71dd8555a1fedb1a13c093692558c2848bb1",
+  "fixture_bytes": 531102,
+  "reproducible": true,
+  "context_stops": [
+    {
+      "phase": "stop-dispatched",
+      "status": "interrupted"
+    },
+    {
+      "phase": "stopped",
+      "status": "succeeded"
+    }
+  ],
+  "successor_refusal_executed": false,
+  "migration_executed": false,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-schema37-original-writer",
+  "manifest": {
+    "schema37-source.tar.gz": "57ed6461b9cd12f595a20139c3643e76cd79bdfd1d336b3d69c8a86547feec04",
+    "schema37.json": "1ba8249a45a10bf769780f93dc8d71dd8555a1fedb1a13c093692558c2848bb1",
+    "test-historical-upgrades.py": "3e3e321b6479e1aee789ef7d2a7f432a2cec93e37c3abc47cebcc68f56ea3ab0",
+    "omabit-schema37-freeze.json": "4e53f3a008c6fdf52a5cefa28ee37bbb0759a670acd5c4986b94d3fb73b0675c",
+    "omabit-schema37-original-writer-attempt1.log": "44b4518427622106b5ca616e6c34ff62ac674d16c4a12e5a556f59ee76f3d9f5",
+    "omabit-schema37-original-writer-attempt2.log": "d8a8b7dd8612d369abd2128af3abf4c32c485744a7bf883a3a446a62c0345674",
+    "omabit-schema37-original-writer-reproducibility.log": "3d4e89c9bd5729fe211c0529eec1eb85ad256f57acb8150547f24593b6bcfbf1"
+  }
+}

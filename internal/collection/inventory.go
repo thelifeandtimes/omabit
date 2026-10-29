@@ -14,6 +14,9 @@ import (
 // Observation keeps instance IDs scoped to a connection and stable runner ID.
 // Unavailable runners have no current snapshot; absence is not a ship crash.
 type Observation struct {
+	ProjectInventory        *protocol.ProjectInventory        `json:"project_inventory,omitempty"`
+	ProjectInventoryStatus  string                            `json:"project_inventory_status,omitempty"`
+	Actor                   string                            `json:"actor,omitempty"`
 	Name                    string                            `json:"name"`
 	RunnerID                string                            `json:"runner_id"`
 	Mode                    string                            `json:"mode"`
@@ -52,11 +55,25 @@ func inspectClient(ctx context.Context, entry Connection, c *client.Client) Obse
 	}
 	if err == nil {
 		result.AccessRole = hello.AccessRole
+		result.Actor = hello.Actor
 		result.Features = hello.Features
 		// Independent requests share the per-runner deadline. Host evidence cannot
 		// erase a usable snapshot, nor does unavailable inventory hide a host report.
 		var reportWG sync.WaitGroup
-		reportWG.Add(1)
+		reportWG.Add(2)
+		go func() {
+			defer reportWG.Done()
+			result.ProjectInventoryStatus = "unsupported"
+			if !slices.Contains(hello.Features, protocol.ProjectInventoryFeature) {
+				return
+			}
+			result.ProjectInventoryStatus = "unavailable"
+			inventory, e := c.Projects(ctx, entry.Identity())
+			if e == nil {
+				result.ProjectInventory = &inventory
+				result.ProjectInventoryStatus = "available"
+			}
+		}()
 		go func() {
 			defer reportWG.Done()
 			result.HostCompatibilityStatus = "unsupported"

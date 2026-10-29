@@ -1,0 +1,209 @@
+{
+  "memory": "M326",
+  "format": 5,
+  "role": "theme",
+  "profile": "qualification-stable",
+  "environment": null,
+  "source": {
+    "Panel.qml": {
+      "sha256": "55881f0da60444b334489f384f5d33fea391f2aa710ee2c3b11399f2da841982",
+      "bytes": 159,
+      "executable": false
+    },
+    "Service.qml": {
+      "sha256": "55881f0da60444b334489f384f5d33fea391f2aa710ee2c3b11399f2da841982",
+      "bytes": 159,
+      "executable": false
+    },
+    "helper.py": {
+      "sha256": "20335c7d7e4714519b840268f6f58400e0a544b6e0fd1d215ddf38cc2a13b03b",
+      "bytes": 29,
+      "executable": false
+    },
+    "manifest.json": {
+      "sha256": "eb19db3180fd220133e7812d8f393de9b936d007649bc57fee95e6a0371f505b",
+      "bytes": 275,
+      "executable": false
+    }
+  },
+  "admission": {
+    "Host.qml": {
+      "sha256": "d1d2186f6afa1458c3f0c3ac0e908b0d38f992c1a307bd446746babd9caad895",
+      "bytes": 7589,
+      "executable": false
+    },
+    "Registry.qml": {
+      "sha256": "61bb5074f64130646ec504354692eee8d3922c9ec35a3f5fa33e25253eedf493",
+      "bytes": 317,
+      "executable": false
+    },
+    "SharedHost.qml": {
+      "sha256": "685bd1b3ed468b34818e8368c97d58b421e8af6b5f27e363ff389b56f5f4263f",
+      "bytes": 975,
+      "executable": false
+    },
+    "WidgetHost.qml": {
+      "sha256": "b30baf1618037d6647162fa5b2c84137f459c20c768c4a1a30aa59d6f6c145f5",
+      "bytes": 6384,
+      "executable": false
+    },
+    "admission.py": {
+      "sha256": "aa51d8ce381a60c1540fcdfee24ad9cadf0686295599042a1686101a92612b39",
+      "bytes": 12424,
+      "executable": false
+    },
+    "admission_guard.py": {
+      "sha256": "4f829db5424f97c7e2f2c253494b24de3423c52f224c93c4b6c4dea3869ad222",
+      "bytes": 2332,
+      "executable": false
+    },
+    "artifacts.py": {
+      "sha256": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+      "bytes": 14147,
+      "executable": false
+    },
+    "authority_inspection.py": {
+      "sha256": "3e497de15872288d5519216ee74c103516f86e734de6877b707c15957bcc2f4e",
+      "bytes": 14413,
+      "executable": false
+    },
+    "authority_provisioning.py": {
+      "sha256": "71ff82b5847c17388b23b0b9c7aca9ad8d5cdd6b0a620ca7dbe17bb454db503f",
+      "bytes": 15446,
+      "executable": false
+    },
+    "journal.py": {
+      "sha256": "465c2301231ebf4bc09849a0c3e4012ab05f13d4da3e1e26b828764355069449",
+      "bytes": 26620,
+      "executable": false
+    },
+    "runtime-protocol.json": {
+      "sha256": "8080d4640745967aae27202034014250e1fda8a9d636cdea55105eaaef713a7b",
+      "bytes": 83,
+      "executable": false
+    },
+    "runtime_authority.py": {
+      "sha256": "75b127119d9698cdd4dcd13abd86fe5bee1ef8ebf2da6f763ca17f5d0fd518d3",
+      "bytes": 57350,
+      "executable": false
+    },
+    "session_checkpoint.py": {
+      "sha256": "4b6fd81afc3a3e11492d79c5734da76b2d06bf8d899f71ded364c8a05fdb09d1",
+      "bytes": 10635,
+      "executable": false
+    },
+    "session_cleanup.py": {
+      "sha256": "ff0b386ef891c3bef7a5835e81936bf5ef803ee86e470f1174038197aca80758",
+      "bytes": 6459,
+      "executable": false
+    },
+    "session_successor.py": {
+      "sha256": "5486eb042ade4e2ad6f5b6e391af2122302ac1e5d25b06a4a2e260af65b4e109",
+      "bytes": 10949,
+      "executable": false
+    },
+    "shared_admission.py": {
+      "sha256": "843d985a335f43dc9da2ae0fc70de1062a553ce75b08f030259b6328ad2bd4a9",
+      "bytes": 6878,
+      "executable": false
+    },
+    "shared_admission_guard.py": {
+      "sha256": "d43e2a24f2a4b22bc9130df10ae12486f288ebd5ceb38f168e35aea9a39fc51d",
+      "bytes": 2144,
+      "executable": false
+    },
+    "startup_recovery.py": {
+      "sha256": "7d9887a93fbfd3e731ed4cdc506aff9d2bba7fcb9a31b27f2a5c50bb651815f7",
+      "bytes": 6258,
+      "executable": false
+    },
+    "successor-protocol.json": {
+      "sha256": "bb30aa413f1ceb633df2ad9d54b8cdaa7b765f691d070269a6f115f924926c0c",
+      "bytes": 89,
+      "executable": false
+    },
+    "successor_admission.py": {
+      "sha256": "1b19d01f60def0acdda727908cbf3f1506c0b835fd2eb5b481fd0dfa91582eb7",
+      "bytes": 797,
+      "executable": false
+    },
+    "successor_admission_guard.py": {
+      "sha256": "b979828fd7ffddc1052bac8c3b7cf5a8bd2535de1b5c8072444850017ee2da79",
+      "bytes": 2139,
+      "executable": false
+    },
+    "successor_authority.py": {
+      "sha256": "80e781edfef73509e6cacdc71ecc5ed54084bcc2261b426345efc04d7177762a",
+      "bytes": 17259,
+      "executable": false
+    }
+  },
+  "artifact_sha256": "1a6a02479549c4ea16f241daf0526622935993fb85080f95293f8e5ccb3e77c3",
+  "note": "Frozen original artifact5 writer/dependencies/support and deterministic synthetic generation before authority3 packaging. Never regenerate.",
+  "sha256": {
+    "dependencies/artifacts.py": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+    "dependencies/guarded_artifacts.py": "6c1f6cfbd7af19b0d14d8853ecd305aa1f9f39d18797758913e57516bae9f194",
+    "dependencies/journal.py": "465c2301231ebf4bc09849a0c3e4012ab05f13d4da3e1e26b828764355069449",
+    "dependencies/recovery_artifacts.py": "fc80e075be2d4059310d76b90d5000f511515cdb051f01ae1d56d3106bd63646",
+    "dependencies/shared_artifacts.py": "53cb2dfd3b3181aa68c08749ca678f57e75cfe83c43e092eb948e5ba3172d555",
+    "generation/CollectionHost.qml": "cf323a6590d741e91b789dd4e20d78afd066966162a0cf37c0fc576c080a99a0",
+    "generation/CollectionRuntime.qml": "4379be60a8edfcc7e74ee05bf3cc63e2bc18c59bac58df304a16ca9ed31836e5",
+    "generation/CollectionWidget.qml": "b6911101c0949f775250646a07985f6634b3c545e6bc8e435ca3e49550a6a67a",
+    "generation/Panel.qml": "55881f0da60444b334489f384f5d33fea391f2aa710ee2c3b11399f2da841982",
+    "generation/Service.qml": "55881f0da60444b334489f384f5d33fea391f2aa710ee2c3b11399f2da841982",
+    "generation/application-profile.json": "4e604a0d02551a77cd8e717e23243a1a9decd195651ef59efd7a74b0ff002d35",
+    "generation/collection/Host.qml": "d1d2186f6afa1458c3f0c3ac0e908b0d38f992c1a307bd446746babd9caad895",
+    "generation/collection/Registry.qml": "61bb5074f64130646ec504354692eee8d3922c9ec35a3f5fa33e25253eedf493",
+    "generation/collection/SharedHost.qml": "685bd1b3ed468b34818e8368c97d58b421e8af6b5f27e363ff389b56f5f4263f",
+    "generation/collection/WidgetHost.qml": "b30baf1618037d6647162fa5b2c84137f459c20c768c4a1a30aa59d6f6c145f5",
+    "generation/collection/admission.py": "aa51d8ce381a60c1540fcdfee24ad9cadf0686295599042a1686101a92612b39",
+    "generation/collection/admission_guard.py": "4f829db5424f97c7e2f2c253494b24de3423c52f224c93c4b6c4dea3869ad222",
+    "generation/collection/artifacts.py": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+    "generation/collection/authority_inspection.py": "3e497de15872288d5519216ee74c103516f86e734de6877b707c15957bcc2f4e",
+    "generation/collection/authority_provisioning.py": "71ff82b5847c17388b23b0b9c7aca9ad8d5cdd6b0a620ca7dbe17bb454db503f",
+    "generation/collection/journal.py": "465c2301231ebf4bc09849a0c3e4012ab05f13d4da3e1e26b828764355069449",
+    "generation/collection/qmldir": "130da5fa5466205e7da551119a606aeb86020afdf31879e3e3b14113870a062e",
+    "generation/collection/runtime-protocol.json": "8080d4640745967aae27202034014250e1fda8a9d636cdea55105eaaef713a7b",
+    "generation/collection/runtime_authority.py": "75b127119d9698cdd4dcd13abd86fe5bee1ef8ebf2da6f763ca17f5d0fd518d3",
+    "generation/collection/session_checkpoint.py": "4b6fd81afc3a3e11492d79c5734da76b2d06bf8d899f71ded364c8a05fdb09d1",
+    "generation/collection/session_cleanup.py": "ff0b386ef891c3bef7a5835e81936bf5ef803ee86e470f1174038197aca80758",
+    "generation/collection/session_successor.py": "5486eb042ade4e2ad6f5b6e391af2122302ac1e5d25b06a4a2e260af65b4e109",
+    "generation/collection/shared_admission.py": "843d985a335f43dc9da2ae0fc70de1062a553ce75b08f030259b6328ad2bd4a9",
+    "generation/collection/shared_admission_guard.py": "d43e2a24f2a4b22bc9130df10ae12486f288ebd5ceb38f168e35aea9a39fc51d",
+    "generation/collection/startup_recovery.py": "7d9887a93fbfd3e731ed4cdc506aff9d2bba7fcb9a31b27f2a5c50bb651815f7",
+    "generation/collection/successor-protocol.json": "bb30aa413f1ceb633df2ad9d54b8cdaa7b765f691d070269a6f115f924926c0c",
+    "generation/collection/successor_admission.py": "1b19d01f60def0acdda727908cbf3f1506c0b835fd2eb5b481fd0dfa91582eb7",
+    "generation/collection/successor_admission_guard.py": "b979828fd7ffddc1052bac8c3b7cf5a8bd2535de1b5c8072444850017ee2da79",
+    "generation/collection/successor_authority.py": "80e781edfef73509e6cacdc71ecc5ed54084bcc2261b426345efc04d7177762a",
+    "generation/collection-artifact.json": "ba7e3f46d9f5df357e801870b25bd97753636f095ddbd36f77d51d94539e11bc",
+    "generation/helper.py": "20335c7d7e4714519b840268f6f58400e0a544b6e0fd1d215ddf38cc2a13b03b",
+    "generation/manifest.json": "00e770072539ebd37da819a171426c817df3d2dc088110611ebd70675c619a92",
+    "source/Panel.qml": "55881f0da60444b334489f384f5d33fea391f2aa710ee2c3b11399f2da841982",
+    "source/Service.qml": "55881f0da60444b334489f384f5d33fea391f2aa710ee2c3b11399f2da841982",
+    "source/helper.py": "20335c7d7e4714519b840268f6f58400e0a544b6e0fd1d215ddf38cc2a13b03b",
+    "source/manifest.json": "eb19db3180fd220133e7812d8f393de9b936d007649bc57fee95e6a0371f505b",
+    "support/Host.qml": "d1d2186f6afa1458c3f0c3ac0e908b0d38f992c1a307bd446746babd9caad895",
+    "support/Registry.qml": "61bb5074f64130646ec504354692eee8d3922c9ec35a3f5fa33e25253eedf493",
+    "support/SharedHost.qml": "685bd1b3ed468b34818e8368c97d58b421e8af6b5f27e363ff389b56f5f4263f",
+    "support/WidgetHost.qml": "b30baf1618037d6647162fa5b2c84137f459c20c768c4a1a30aa59d6f6c145f5",
+    "support/admission.py": "aa51d8ce381a60c1540fcdfee24ad9cadf0686295599042a1686101a92612b39",
+    "support/admission_guard.py": "4f829db5424f97c7e2f2c253494b24de3423c52f224c93c4b6c4dea3869ad222",
+    "support/artifacts.py": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+    "support/authority_inspection.py": "3e497de15872288d5519216ee74c103516f86e734de6877b707c15957bcc2f4e",
+    "support/authority_provisioning.py": "71ff82b5847c17388b23b0b9c7aca9ad8d5cdd6b0a620ca7dbe17bb454db503f",
+    "support/journal.py": "465c2301231ebf4bc09849a0c3e4012ab05f13d4da3e1e26b828764355069449",
+    "support/runtime-protocol.json": "8080d4640745967aae27202034014250e1fda8a9d636cdea55105eaaef713a7b",
+    "support/runtime_authority.py": "75b127119d9698cdd4dcd13abd86fe5bee1ef8ebf2da6f763ca17f5d0fd518d3",
+    "support/session_checkpoint.py": "4b6fd81afc3a3e11492d79c5734da76b2d06bf8d899f71ded364c8a05fdb09d1",
+    "support/session_cleanup.py": "ff0b386ef891c3bef7a5835e81936bf5ef803ee86e470f1174038197aca80758",
+    "support/session_successor.py": "5486eb042ade4e2ad6f5b6e391af2122302ac1e5d25b06a4a2e260af65b4e109",
+    "support/shared_admission.py": "843d985a335f43dc9da2ae0fc70de1062a553ce75b08f030259b6328ad2bd4a9",
+    "support/shared_admission_guard.py": "d43e2a24f2a4b22bc9130df10ae12486f288ebd5ceb38f168e35aea9a39fc51d",
+    "support/startup_recovery.py": "7d9887a93fbfd3e731ed4cdc506aff9d2bba7fcb9a31b27f2a5c50bb651815f7",
+    "support/successor-protocol.json": "bb30aa413f1ceb633df2ad9d54b8cdaa7b765f691d070269a6f115f924926c0c",
+    "support/successor_admission.py": "1b19d01f60def0acdda727908cbf3f1506c0b835fd2eb5b481fd0dfa91582eb7",
+    "support/successor_admission_guard.py": "b979828fd7ffddc1052bac8c3b7cf5a8bd2535de1b5c8072444850017ee2da79",
+    "support/successor_authority.py": "80e781edfef73509e6cacdc71ecc5ed54084bcc2261b426345efc04d7177762a",
+    "writer.py": "e8ec4385945e758f4545a5c9508502997aad8f4017fd8a75a77dce1c67742154"
+  }
+}

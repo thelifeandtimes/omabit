@@ -1,0 +1,28 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "persistent_format_changed": false,
+  "pure_race_seconds": 4.431,
+  "adapter_race_seconds": 4.584,
+  "adapter_cases": 10,
+  "vet_passed": true,
+  "sources": {
+    "internal/projectnetwork/member_current_stop.go": "3b0812a21c5f0e33899c4d3fed9e2465a9fe5e28af2c1f4b8b8ecec4f731e517",
+    "internal/projectnetwork/member_current_stop_test.go": "eb4122c769b2ae1020af184262f99852755fd0ed201c99e51188a06d0ad538af",
+    "internal/runtimequalify/project_member_current_stop_linux.go": "473d08cc0de1607b202f668eb9dcc4d2e2b5aaafa314fe2ef1f696c77e4e80f7",
+    "internal/runtimequalify/project_member_current_stop_linux_test.go": "16380b62c77865845cd30bdd78c112bbd4ff556916a5c77920eee574eec2e61a"
+  },
+  "logs": {
+    "omabit-current-stop-model.log": "1465bc778ac53a993dae4c4e70ca84b6f8cd7c46783948d1050a16f4e1e121ac",
+    "omabit-current-stop-adapter.log": "e15beaf779ec7c4a0d91f801fcf16aa6980080d44631363c4a7a07f74f531caa",
+    "omabit-current-stop-project-race.log": "2beec5a0f81adb0b1eabd48cd4bb62d09ec65df6afb2ed50e987d190216b9971",
+    "omabit-current-stop-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-context-stop",
+  "limits": [
+    "No store acceptance, queue integration or public mutation is enabled.",
+    "All members must initially be running.",
+    "Stop exit/retirement/resume through this new context still need integration.",
+    "Appliance24 predates this source."
+  ]
+}

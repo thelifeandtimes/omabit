@@ -23,8 +23,15 @@ type storageActionsBackend interface {
 }
 
 func initialRevision(q querier, id string) (uint64, error) {
+	reserved, err := projectReservations(q)
+	if err != nil {
+		return 0, err
+	}
+	if reserved.Instances[id] {
+		return 0, conflict("instance_reserved", "instance ID is reserved by a project member")
+	}
 	var previous uint64
-	err := q.QueryRow("SELECT revision FROM deleted_instances WHERE id=?", id).Scan(&previous)
+	err = q.QueryRow("SELECT revision FROM deleted_instances WHERE id=?", id).Scan(&previous)
 	if errors.Is(err, sql.ErrNoRows) {
 		return 1, nil
 	}
@@ -52,6 +59,21 @@ func (r *Server) externalPathAvailable(b storageActionsBackend, path string) err
 	all, err := instances(r.s.db)
 	if err != nil {
 		return err
+	}
+	claims, err := projectMemberStorageClaims(r.s.db)
+	if err != nil {
+		return err
+	}
+	for _, member := range claims {
+		rootID, rel := pierstore.Split(member.Location.Path)
+		if rootID == "" {
+			rootID = "default"
+		}
+		for _, root := range roots {
+			if root.ID == rootID && pierstore.Overlap(path, filepath.Join(root.Path, pierstore.MountPath(rel))) {
+				return conflict("source_reserved", "source overlaps reserved project member storage")
+			}
+		}
 	}
 	for _, v := range all {
 		paths := []string{v.Runtime.MoveTarget}

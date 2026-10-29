@@ -31,6 +31,8 @@ type Configuration struct {
 }
 
 type Instance struct {
+	ProjectID         string                `json:"project_id,omitempty"`
+	ProjectLabel      string                `json:"project_label,omitempty"`
 	ExternalImport    *ExternalImportStatus `json:"external_import,omitempty"`
 	DeletePending     bool                  `json:"delete_pending,omitempty"`
 	Bootstrap         *Bootstrap            `json:"bootstrap,omitempty"`
@@ -115,16 +117,18 @@ type MaintenanceReport struct {
 }
 
 type Operation struct {
-	ID             string     `json:"id"`
-	RequestID      string     `json:"request_id"`
-	InstanceID     string     `json:"instance_id"`
-	Kind           string     `json:"kind"`
-	Actor          string     `json:"actor"`
-	Status         string     `json:"status"`
-	ConfigRevision uint64     `json:"config_revision"`
-	CreatedAt      time.Time  `json:"created_at"`
-	FinishedAt     *time.Time `json:"finished_at,omitempty"`
-	Message        string     `json:"message,omitempty"`
+	ProjectID         string               `json:"project_id,omitempty"`
+	ImportRestoration *ImportRestoreResult `json:"import_restoration,omitempty"`
+	ID                string               `json:"id"`
+	RequestID         string               `json:"request_id"`
+	InstanceID        string               `json:"instance_id"`
+	Kind              string               `json:"kind"`
+	Actor             string               `json:"actor"`
+	Status            string               `json:"status"`
+	ConfigRevision    uint64               `json:"config_revision"`
+	CreatedAt         time.Time            `json:"created_at"`
+	FinishedAt        *time.Time           `json:"finished_at,omitempty"`
+	Message           string               `json:"message,omitempty"`
 }
 
 type CreateFakeRequest struct {
@@ -225,6 +229,8 @@ type ConfigureRequest struct {
 }
 
 type OperationRequest struct {
+	ConfirmRestore     bool   `json:"confirm_restore,omitempty"`
+	RestoreDigest      string `json:"restore_digest,omitempty"`
 	ConfirmDelete      bool   `json:"confirm_delete,omitempty"`
 	RequestID          string `json:"request_id"`
 	Kind               string `json:"kind"`

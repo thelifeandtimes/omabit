@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "scope": "concrete adapter with inert Docker and temporary synthetic piers",
+  "runtime_executed": false,
+  "cases": 24,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-resume-adapter",
+  "source_sha256": {
+    "internal/runtimequalify/project_member_resume_linux.go": "006c218eb47533fbb2011d6b609550b2994ed2cfac4eea145ca413385bb7bd98",
+    "internal/runtimequalify/project_member_resume_linux_test.go": "51c89b122cb874a980f91c052b04296a23b85e35ad0490495e18099892e66725"
+  },
+  "logs": {
+    "omabit-member-resume-adapter-tests.log": "91f3e2c153db69967b6746104d8b88c9ec77cacaabd655e1303feb9eb338a852",
+    "omabit-member-resume-adapter-tests2.log": "97c9f7851fa7f3f9b0df8ae83f5efbd7dabd66ef1fcacf481677c439a7f03be3",
+    "omabit-member-resume-regression.log": "74ec4ede8c9cb5800989e01930296ebed88c66bddbe4ba0c09f0825cdaf9f4d6",
+    "omabit-member-resume-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "retained_failed_trial": "namespace-before initially allowed Create; fixed by fresh exact namespace checks before both dispatches",
+  "same_phase_reentry_refinement": {
+    "passed": true,
+    "test_source_sha256": "e35409ff0b2a868a355b8f4cc056e2e7743d26c97b4cc0859f8a87c8cfa6f797",
+    "log_sha256": "52f161c644b8d272a61bbdc2aa429640684f6e8159c639c03ea70a6dfe94df22",
+    "log": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-resume-adapter/omabit-member-resume-duplicate.log",
+    "supersedes": "Earlier duplicate case only checked replay after completion; the strengthened case also attempts reentry within each committed dispatch."
+  }
+}

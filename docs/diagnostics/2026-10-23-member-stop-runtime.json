@@ -1,0 +1,133 @@
+{
+  "verified": true,
+  "passed": true,
+  "schema": 29,
+  "member_launches": [
+    {
+      "instance_id": "vm-zod",
+      "container": "ea2c40f55e8b75903d4ee491d2ea3edc58a0e70e0727c0ac2530fb0675714c78",
+      "namespace": {
+        "boot_id": "5bda8907-2290-46a7-b33c-322978ef2993",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 133460,
+      "workspace_birth": "1792791668:925937986",
+      "clean_stop": true,
+      "identity_http_status": 200
+    },
+    {
+      "instance_id": "vm-nec",
+      "container": "2498f304c13537ac7f0b2985d59d2f370271df099cc11924e5c6cbb7dcc6a580",
+      "namespace": {
+        "boot_id": "5bda8907-2290-46a7-b33c-322978ef2993",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 262146,
+      "workspace_birth": "1792792072:377903796",
+      "clean_stop": true,
+      "identity_http_status": 200
+    }
+  ],
+  "readiness": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-97eeb38f7e0c2e5930056fe7c5782bde",
+      "ship": "~zod",
+      "captured_at": "2026-10-23T21:57:31.184950975Z",
+      "pier_inode": 133482,
+      "urb_inode": 133494,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-0b7b19a17c4f774bcc68033faf94e29d",
+      "ship": "~nec",
+      "captured_at": "2026-10-23T21:57:47.229824832Z",
+      "pier_inode": 262168,
+      "urb_inode": 262180,
+      "reopen_unchanged": true
+    }
+  ],
+  "stops": [
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-ea22fb755c6927e8508eff53584280f5",
+      "container_id": "2498f304c13537ac7f0b2985d59d2f370271df099cc11924e5c6cbb7dcc6a580",
+      "started_at": "2026-10-23T21:48:19.451368822Z",
+      "finished_at": "2026-10-23T21:58:08.050928484Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "peer_exits": 0,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-ccf4243464ae6f4c50120386f9aa162a",
+      "container_id": "ea2c40f55e8b75903d4ee491d2ea3edc58a0e70e0727c0ac2530fb0675714c78",
+      "started_at": "2026-10-23T21:41:32.262029542Z",
+      "finished_at": "2026-10-23T21:58:31.654876116Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "peer_exits": 1,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "member_storage_verified": [
+    {
+      "instance": "vm-nec",
+      "mount": "/srv/urbit/piers/fakeships/vm-nec",
+      "inode": 133440,
+      "birth": "1792791655:631939112",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "nec"
+    },
+    {
+      "instance": "vm-zod",
+      "mount": "/srv/urbit/piers/fakeships/vm-zod",
+      "inode": 133456,
+      "birth": "1792791655:689939107",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "zod"
+    }
+  ],
+  "ship_operations": true,
+  "namespace": {
+    "boot_id": "5bda8907-2290-46a7-b33c-322978ef2993",
+    "device": 5,
+    "inode": 4026532248
+  },
+  "clean_anchor_stop": true,
+  "returned_ids_journaled": true,
+  "volume_inventory_unchanged": true,
+  "database_receipts_match": true,
+  "repeat_dispatch_refused": true,
+  "reopen_unchanged": true,
+  "scope_inactive": true,
+  "seconds": 1293.24,
+  "result_sha256": "0f6eb48e6e8209297c0f3d123b0378ab6d7062dbc2bfd85a1e4fa104fdba85ab",
+  "database_sha256": "4eeede5f1a08406f57e111c60374f121247d47f665bfeacd39eb401493c9d07c",
+  "bridge": "a0d5020f62a430fbe2f396b06c2eb87616b99e91d735f0a1df138e8ee7356e8d",
+  "anchor": "2c77c9c18bcfa8c19504acbbe24054927fa877725bd5524a2f44ce08e681796f",
+  "engine": "13371d6d-8076-4b5b-aa80-bcf98b99f8e4",
+  "extracted_files_verified": 17,
+  "limits": [
+    "Readiness is historical identity/storage evidence, not current runtime authority.",
+    "Durable initial Stop qualified in this fixture; no resume/recovery or public API qualified."
+  ],
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-stop16",
+  "source_preparation": "2026-10-23-member-stop-preparation.json",
+  "embedded_test_sha256": "b6ba112e1a2bdd70f84e79bccfa6fd19f5e0fe2bacf80c027ef58750e25c4fc7",
+  "logs": {
+    "omabit-member-stop23-16-extract.log": "642be443e046c6032effba593b9c7eb298ccbef045e9f793f97ed72c957abb3b",
+    "omabit-member-stop23-16-independent.log": "e398118e00c0b228c1be9d2e3a979c28346c95dd5458acaab103a8d99979bc17",
+    "omabit-member-stop23-16-retain.log": "444c4aa35941acfeb87da44730ffeeea654090f35a7304fd69d7bba73e32af84"
+  }
+}

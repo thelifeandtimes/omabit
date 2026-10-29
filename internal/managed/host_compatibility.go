@@ -156,6 +156,9 @@ func (c *hostCompatibilityCache) observeEngine(ctx context.Context, metadata hos
 		return report
 	}
 	socket := filepath.Join("/run/user", strconv.FormatUint(uint64(p.UID), 10), rootless.SocketName)
+	if run := ownerhost.RuntimeDirectory(); run != "" {
+		socket = filepath.Join(run, rootless.SocketName)
+	}
 	dataRoot := filepath.Join(p.Home, ".local/share/urbit-runner/docker")
 	probe := c.probe
 	if probe == nil {

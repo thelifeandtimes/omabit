@@ -40,7 +40,7 @@ func TestWatchReusesTransportRefreshesRoleAndRejectsReplacement(t *testing.T) {
 			if replacement.Load() {
 				id = "runner-replacement"
 			}
-			json.NewEncoder(w).Encode(protocol.Hello{ProtocolVersion: 1, RunnerID: id, Mode: "simulation", AccessRole: role})
+			json.NewEncoder(w).Encode(protocol.Hello{ProtocolVersion: 1, RunnerID: id, Mode: "simulation", AccessRole: role, Actor: "actor-" + role})
 			return
 		}
 		if snapshots.Add(1) == 3 {
@@ -59,6 +59,9 @@ func TestWatchReusesTransportRefreshesRoleAndRejectsReplacement(t *testing.T) {
 			if o.Status != "available" || connections.Load() != 1 {
 				t.Errorf("healthy polls opened new connections: %d %+v", connections.Load(), o)
 			}
+			if o.Actor != "actor-"+o.AccessRole {
+				t.Error("kept stale actor on reused transport")
+			}
 			if updates == 1 {
 				observer.Store(true)
 			} else if o.AccessRole != "observer" {
@@ -68,7 +71,7 @@ func TestWatchReusesTransportRefreshesRoleAndRejectsReplacement(t *testing.T) {
 				replacement.Store(true)
 			}
 		} else {
-			if o.Status != "identity_mismatch" || o.Snapshot != nil || connections.Load() != 2 {
+			if o.Status != "identity_mismatch" || o.Snapshot != nil || o.Actor != "" || connections.Load() != 2 {
 				t.Errorf("replacement accepted: %+v, connections %d", o, connections.Load())
 			}
 			cancel()

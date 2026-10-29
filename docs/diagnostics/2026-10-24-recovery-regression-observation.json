@@ -1,0 +1,21 @@
+{
+  "schema": 38,
+  "full_managed_race_seconds": 1307.093,
+  "observation_race_seconds": 53.505,
+  "source_coverage": "full managed baseline plus focused changed queue readiness122.986s, VM cleanup10.299s and pure observation53.505s",
+  "frozen_appliance31_includes_observation_dispatcher": false,
+  "runtime_qualified": false,
+  "continuation_queue": false,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-24-recovery-regression-observation",
+  "manifest": {
+    "omabit-schema38-managed-race-attempt2.log": "1cb022eb068fda53c7172fa701785e762f8159f714a821705d38ca0d1aeb8b0c",
+    "omabit-schema38-managed-vet-attempt2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-schema38-managed-diff-attempt2.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovery-observation-attempt1.log": "3418403ecf241772b41e90a3671681f582925a012b1bbb87f169cd846d730475",
+    "omabit-recovery-observation-race.log": "fef7af41d4c9c9a857593c19a5f1ed0476d1efee87ab7d7010ead457098de544",
+    "omabit-recovery-observation-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovery-observation-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "anchor_recovery_observation.go": "68c322d29bc6067f2f88f5301a2458708a86cd5bfaf18427bf0c347807597c22",
+    "anchor_recovery_observation_test.go": "4a6230ec4f1ec8cb8f66cf08caddf62863117ce6d520802e7b747b524cdc005a"
+  }
+}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
@@ -14,6 +15,38 @@ type guidedFixture struct {
 	storageActionBackend
 	identity protocol.PierIdentity
 	occupied string
+}
+
+func TestGuidedImportReturnsEntryDiagnosticWithoutMovingSource(t *testing.T) {
+	b := &guidedFixture{storageActionBackend: storageActionBackend{home: privateDir(t)}, identity: protocol.PierIdentity{Ship: "~zod", Network: "fakenet", Kind: "fake"}}
+	if err := pierstore.Init(b.home); err != nil {
+		t.Fatal(err)
+	}
+	r, c, _ := testEndpoint(t, privateDir(t), b)
+	source := filepath.Join(privateDir(t), "source")
+	for _, dir := range []string{".urb/chk", ".urb/log", "base"} {
+		if err := os.MkdirAll(filepath.Join(source, dir), 0700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	file := filepath.Join(source, "base/app.hoon")
+	if err := os.WriteFile(file, []byte("synthetic source"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chmod(file, 0602); err != nil {
+		t.Fatal(err)
+	}
+	_, err := c.PreviewGuidedPierImport(context.Background(), r.s.runnerID, source, "default")
+	if err == nil || !strings.Contains(err.Error(), `pier entry "base/app.hoon"`) || !strings.Contains(err.Error(), "mode 0602") {
+		t.Fatal("collector did not receive actionable diagnostic", err)
+	}
+	if _, err := os.Stat(file); err != nil {
+		t.Fatal("source changed during preview", err)
+	}
+	rows, err := instances(r.s.db)
+	if err != nil || len(rows) != 0 {
+		t.Fatal("failed preview enrolled a ship", rows, err)
+	}
 }
 
 func (b *guidedFixture) InspectPierIdentity(context.Context, string) (protocol.PierIdentity, error) {

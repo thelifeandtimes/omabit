@@ -1,0 +1,52 @@
+{
+  "schema": 37,
+  "focused_checks_passed": true,
+  "runtime_executed": false,
+  "full_managed_race": {
+    "status": "passed",
+    "exit": 0,
+    "seconds": 972.505,
+    "log": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-current-context-lifecycle-store/omabit-current-stop-full-managed-race.log",
+    "sha256": "098d3ca8d64db85e5aa29816e59187288e8ba46c1861c720af21fc8732337c35",
+    "recorded_sources_unchanged": true,
+    "limitation": "Later VM26-only fixture changes compile and have separate host-refusal/probe checks; this suite started before those fixture changes."
+  },
+  "store_race_seconds": 42.264,
+  "queue_reopen_race_seconds": 80.716,
+  "historical_seconds": 4.332,
+  "original36_reproduced": true,
+  "original36_refuses_real37_unchanged": true,
+  "source": {
+    "internal/managed/schema.go": "0d259940d95c3475f2e76bfc6c992456af9fcd000638da7ff8650d005994ad8a",
+    "internal/managed/project_member_context_stop.go": "9b5880091fa391d32a8e12af1c8b17292b37f0b754dae4bdc7282a4ce9684aea",
+    "internal/managed/project_member_current_stop.go": "d39e5083169fd02420b8a010bbc3b465491e263274bec4e6ac6f62a3bddcadb8",
+    "internal/managed/project_member_stop.go": "bd9d286b26f601ec1aa1bb969d957378985fac44d6d4a1ef8a336bece4a8d45e",
+    "internal/managed/project_member_context_readiness.go": "e64f4d41d177cbd7b6447a788deb24ea6b711ba3bb2bf7a113807c0973ce7eea",
+    "internal/managed/project_member_context_lifecycle_server_linux.go": "5e44b9c46e65f0c34bf265d109f76eb8cf0e51da5ccffd6716e85c85bce82287",
+    "internal/managed/project_member_stop_server_linux.go": "3becfbe324a0f6c8eae562a7cd715818f9ffbf8b64ee1cd4adf1364b505c90c7",
+    "internal/managed/project_member_lifecycle_server_linux.go": "f55f00b2e9d8bddf33485c8d93add4b15198fe1066facebba977696344c00af3",
+    "internal/managed/project_member_stop_exit_server_linux.go": "b9e16992ceb32ef5b0463445e56810b9a642f86dc296cb9ba2af1a909746f11c",
+    "internal/managed/project_member_retirement_server_linux.go": "5ec8132669b3d2b69d7111eb5249fef1d7bc41e7bd49f22d8450f09509e4b8b2",
+    "internal/managed/project_member_context_stop_test.go": "28230fb2e0c2aaed655220501664014990cdb41112adcdba9868e4ca3b4ba6d0",
+    "internal/managed/project_member_context_lifecycle_server_linux_test.go": "1a5abaa0622f858cf9ab5ac5057da8366f51069708927d6147f8df9a0150fcf7",
+    "internal/managed/g02_historical_upgrades_test.go": "a706c5f0f8f2ad98d498bf96bd7dd0d1e84aee4dcd9f9e647178b7dfa190d82d",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "7a214f1bdc25e24883fbb109cf2715b8538e0bb3b2e68cc9a4f7ded58dedb3ee",
+    "scripts/test-historical-upgrades.py": "497186162af33a9f9fc7a460d7aa7b5cf5debf4ae747fcd2bd2344ba6c16f058"
+  },
+  "logs": {
+    "omabit-current-stop-store-compile-failure.log": "721e65295508c0dc371a9960e67005c0d90f14fe2b4215063f84403b06459821",
+    "omabit-current-stop-store-manifest-failure.log": "ef552d64a70e2041e4617fa0ca756b384996926bf78bdb4936d03aa031c5f7f9",
+    "omabit-current-stop-store-compile.log": "982c60e17a3e59ee04cd5384c3b7ff3f567c997a8c74265775ff714478afdda1",
+    "omabit-current-stop-store-historical.log": "622a4a1a111530207de8a00d746ef721c4ee9810f3312df0b97af9353014796b",
+    "omabit-current-stop-original-reader.log": "32bb568de5a9fa660074c5bf131b1e40b43bcb5d093722abff222ec735559a0a",
+    "omabit-current-stop-store-tests.log": "d220d11b04f76f240af414432c02cb54c3a2330c4118a721c0a8b8a89d345a38",
+    "omabit-current-stop-queue-tests.log": "4e809ac093e0877813639efb204d13f959d5d3a371926c828b1288121a60e6bb",
+    "omabit-current-stop-queue-reopen-tests.log": "58b4a202151d384aab24541cf0f1f1200feff55853a77939dd29fc2684a13cf3",
+    "omabit-current-stop-store-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-current-context-lifecycle-store",
+  "limitations": [
+    "Private store/queue only; no public mutation API",
+    "Frozen VM25 is schema36 observation-only; does not qualify these changes"
+  ]
+}

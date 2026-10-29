@@ -1,0 +1,102 @@
+{
+  "memory": "M410",
+  "status": "encoding-defect-reproduced-and-corrected",
+  "audit_requests": {
+    "failed_chain_reads": 0,
+    "max_sequence": 6,
+    "methods": {
+      "eth_blockNumber": 12,
+      "eth_chainId": 12,
+      "eth_getBlockByNumber": 24,
+      "eth_getCode": 12,
+      "omabit_getStartupStatus": 12
+    },
+    "probe_rows": 72,
+    "raw_text_exported": false,
+    "refused_probe_rows": 0,
+    "sequences": {
+      "1": 12,
+      "2": 12,
+      "3": 12,
+      "4": 12,
+      "5": 12,
+      "6": 12
+    },
+    "valid": true
+  },
+  "audit_seconds": 20.786971975991037,
+  "audit_scope_inactive": true,
+  "disk_unchanged": true,
+  "base_unchanged": true,
+  "foundation_sha256": "636e7325e86c6b24cb51e6ce11d3126a894a2325d6dce8cddfa6cd74b9bba6c3",
+  "foundation_changed": false,
+  "public_contract_hash_comparisons": [
+    {
+      "name": "Azimuth",
+      "code_bytes": 15873,
+      "foundation_utf8_sha256": "cf74d4cc51198ed78758e4b2aa28cbed31b2c013720af87df1efa5d7d9d95a1c",
+      "decoded_bytes_sha256": "3df91aefbe1ab7f10c557195b9974457c2b25e9f765905f9ea5d15adc391383d"
+    },
+    {
+      "name": "Censures",
+      "code_bytes": 3337,
+      "foundation_utf8_sha256": "c056be3bd6f95ad62d7b9483dae631fef25d254461fe6ea5280d7ae5e8fb7af6",
+      "decoded_bytes_sha256": "fd3b70e04a6c52bf87548aba8323ceed93ddf441d98efa132fd1cffb463b608b"
+    },
+    {
+      "name": "Claims",
+      "code_bytes": 5046,
+      "foundation_utf8_sha256": "b0faeacb0d583b30a35b21ba24cfe90c6f3fc7bd8f1fe4ecb3c05278e76a43d3",
+      "decoded_bytes_sha256": "4f71b43684225e6ea79ae87b9597e249d5e8fa6e4eaddc3f5aefc31db92e81f5"
+    },
+    {
+      "name": "ConditionalStarRelease",
+      "code_bytes": 10719,
+      "foundation_utf8_sha256": "ae1174863f44f20afabadf713b57e68fd07444a2c5d86d491ea46a098732f195",
+      "decoded_bytes_sha256": "17692038d910ccb6efd57f502a3cccb6997c873ca849b5c44f802c0a1fc0ec49"
+    },
+    {
+      "name": "DelegatedSending",
+      "code_bytes": 5204,
+      "foundation_utf8_sha256": "d183b0d594bff25c989cc1b0974085ab3fb7d5b699853efd19c1de8c28116c1c",
+      "decoded_bytes_sha256": "9cc89b873d123270c598f603d129824704171ad35f0a7eceac8c9130717e02f7"
+    },
+    {
+      "name": "Ecliptic",
+      "code_bytes": 23138,
+      "foundation_utf8_sha256": "22baab9b63a5f2fc76ec56911bb1a02810fbf4d0ac52b1e6c910ffb5cffaa304",
+      "decoded_bytes_sha256": "b48b86f56e659375770d2403a96fac51d094879914fbe739270d7ea12d257447"
+    },
+    {
+      "name": "LinearStarRelease",
+      "code_bytes": 6161,
+      "foundation_utf8_sha256": "4dbdf15e868f66acaca3ff34071e4acf680c68eb712e95a73732ab23e7ac1bd1",
+      "decoded_bytes_sha256": "1002deed336abcbe018772574e0e6eff3f9bb276b815ea66bd650a7e665b5361"
+    },
+    {
+      "name": "Naive",
+      "code_bytes": 103,
+      "foundation_utf8_sha256": "c4b3fc9de7108ef74f8416f4a04e9c34ca682861bcf985ddab500bef6a7823dd",
+      "decoded_bytes_sha256": "3922715e60c96c2a2ee5645aceacb6f89b0117b55dc71c72f03ff856b65e034c"
+    },
+    {
+      "name": "Polls",
+      "code_bytes": 4393,
+      "foundation_utf8_sha256": "dbd0eed1f0dcb5a5da6d155a68c199a21ce388137dd2a4a5e1bc30c9d3859fbf",
+      "decoded_bytes_sha256": "586df44929dfc31ae460d33ec46007cf929da962bbeb163b23ed228091e9fbfa"
+    }
+  ],
+  "source_sha256": {
+    "private_gateway_probe.cjs": "3e74a5a3fb779e140dec2ad078e02fc2751689554f4025154c0ed78db2b01509",
+    "test_private_gateway_probe.cjs": "3911bdfc9fe6025c24ad2386366652f5bf363310fa6bb6deff1d5ddd3205a9fa"
+  },
+  "original_regression_failures": 2,
+  "javascript_checks": 47,
+  "gateway_race_checks": 355,
+  "vet": true,
+  "freshness_or_permissions_changed": false,
+  "schema_changed": false,
+  "runtime_qualified": false,
+  "supersedes": "M409 unknown RPC substage and unfixed source defect only; failed runtime evidence remains valid",
+  "next": "Fresh ordinary-source VM for managed readiness and recovery"
+}

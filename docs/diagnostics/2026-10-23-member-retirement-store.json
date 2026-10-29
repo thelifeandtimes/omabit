@@ -1,0 +1,33 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 31,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-retirement-store",
+  "source_sha256": {
+    "internal/managed/project_member_retirement.go": "b04cf0875f2666f12379da99eb202e6a0b4c1935b5963e446cee0e075168eddb",
+    "internal/managed/project_member_retirement_test.go": "742054d6293b35f153815991072fff5aa2006e72ec4e8b980f375b17e00da503",
+    "internal/managed/schema.go": "0f8b420443cdd9d0c88f604726e2f33872b87fae0c58eccf6a4cde31c5d54dd0",
+    "internal/managed/store.go": "03785109589b558112a7b20177b3530e779f0ea959613d091a722d79a2d4a6e3",
+    "internal/managed/g02_historical_upgrades_test.go": "4c132bef421445626580a15486aef1268303b7a62ca280c9fb83d79817b5d33f",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "2c84bbf1e3bc5347b280e3be6510980af3728ba10f9e98097b69d7640641ff8e",
+    "internal/managed/testdata/historical-upgrades/schema30.json": "cd4953d9bf08b5cf843124779403d8f14657b446bb8778d5cc7e7889c3f16ec4",
+    "internal/managed/testdata/historical-upgrades/schema30-source.tar.gz": "b8aa477ce568abee0c607b3375686b143fa04e69f62a90c389631b383114dea8",
+    "scripts/test-historical-upgrades.py": "ddabdcf7722245a12b59f32a0f828038018114878a9686f4b0423319c0dfe918"
+  },
+  "logs": {
+    "omabit-retirement-store-tests.log": "8c6c6d5b2f3f3b7829bf10d85748546b313a0b4aba6cdeae7bc3dc7b29b4e1d6",
+    "omabit-retirement-store-full-race.log": "723e238024fac67ef6732d164a060e4e503b1c96b7973420594efd7f7ef29e14",
+    "omabit-retirement-store-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-retirement-schema30-generate.log": "9397bff17cfa70dc3442e14e113eddadaae512222cb9dc0ed98df00ed2ccbe49",
+    "omabit-retirement-schema30-reproduce.log": "2e5487ea557fa6f941a021e6d558d9f9da1cf26787f85ccfe8931745af66c807",
+    "omabit-schema30-freeze.log": "8f0816b2e427224c9dacb8b86ac04cf7dd52ea4a9996668e99b8b403e3383c0b"
+  },
+  "original_schema30_archive_sha256": "b8aa477ce568abee0c607b3375686b143fa04e69f62a90c389631b383114dea8",
+  "fixture_bytes": 179499,
+  "full_managed_race_seconds": 224.008,
+  "limits": [
+    "Private persistence/worker only; queue and real retirement unqualified.",
+    "Original interrupted Stop and read-only exit receipts remain unchanged.",
+    "No replacement launch or resume. VM17 stays frozen schema30."
+  ]
+}

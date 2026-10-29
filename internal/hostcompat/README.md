@@ -292,8 +292,10 @@ APT Packages data is streamed through SHA-256 and a one-stanza parser, including
 large Ubuntu universe indexes. It retains only exact installed
 name/version/architecture targets, not every version or description. Each unchanged
 index is decoded once for the required stack, with at most 262,144 stanzas per
-index and 64 target matches. Shared authenticated package tar payloads are also
-reused within one refresh. No repository-sized slice of paragraph maps is built.
+index and 64 target matches. Authenticated package tar members are hashed directly from bounded native output,
+without retaining the expanded archive in memory. Trailing output counts toward
+the aggregate limit, and decoder failure discards partial hashes without buffered
+retry. Shared authenticated payload hashes are reused within one refresh. No repository-sized slice of paragraph maps is built.
 
 Tests exercise real isolated GnuPG signatures, trust, revocation and armor
 conversion; real Pacman archive conversion; source isolation; non-root-equivalent
@@ -326,3 +328,11 @@ signers, invalid-only input, selected-key revocation alongside another good sign
 and bounded nonzero-status handling. These tests bind the current source tree;
 they do not qualify older VM candidate binaries or replace rerunning the native
 Debian/Ubuntu transaction harness against a rebuilt candidate.
+
+Runtime engine probes share a 15-second total read budget for `/version` and
+`/v1.47/info`; a shorter caller deadline takes precedence. Boot-time containerd
+latency must not be mistaken for incompatible engine metadata by a separate
+2-second header limit. Every probe still checks socket ownership/peer credentials,
+API compatibility, rootless/cgroup configuration, data root and engine identity.
+Timeout/cancellation identity is preserved without exposing response bodies or
+arbitrary transport diagnostics. This does not retry a runtime mutation.

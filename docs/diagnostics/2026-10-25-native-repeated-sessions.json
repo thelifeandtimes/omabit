@@ -1,0 +1,36 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-native-repeated-sessions",
+  "verification": {
+    "passed": true,
+    "subsequent_native_sessions": 3,
+    "new_application_instances": 9,
+    "total_application_instances": 12,
+    "repeat_controller_kills": 45,
+    "saved_sessions": 6,
+    "fresh_subscriptions": 15,
+    "final_channels_closed": 10,
+    "checkpoint_formats": [
+      3,
+      3,
+      3,
+      1
+    ],
+    "artifact_format": 7,
+    "unchanged_packages_across_sessions": true,
+    "canonical_history_and_checkpoint_links_verified": true,
+    "artifact_records_verified": 10,
+    "compositors_exit_zero": 5,
+    "expected_shell_display_loss_exit": 255,
+    "scopes_inactive": [
+      "omabit-repeated-sessions-native-20261025-01.scope",
+      "omabit-repeated-sessions-native-20261025-02.scope",
+      "omabit-repeated-sessions-native-20261025-03.scope"
+    ],
+    "actual_copied_plugins": true,
+    "private_keyring": true,
+    "synthetic_eyre": true,
+    "public_installed_profiles": false,
+    "fixture_setup_failures_retained": 2,
+    "production_resources_touched": false
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 31,
+  "queue_and_fence_cases": 7,
+  "retirement_adapter_cases_now": 21,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-retirement-queue",
+  "source_sha256": {
+    "internal/managed/project_member_retirement.go": "504868df85f7abbc9b3e7a8e69c07db45d04b682aac740cf160400e70f27c4bd",
+    "internal/managed/project_member_retirement_server_linux.go": "6294c07c8385bf80ddf50860704982953d17e76152905cd21d0bc0de2c40054d",
+    "internal/managed/project_member_retirement_server_linux_test.go": "b44f47d34ad08c95a07477b31dfab9297abc1b5fd8492f8022a46a1cef3528c7",
+    "internal/managed/project_jobs.go": "4edef61af5de5d0c97a421ef084422205975bed3a564752b47b12451921958e2",
+    "internal/managed/project_anchor_start.go": "a36fb5d642f8f704a7db6fa98ae2d7ce6c00d057adf5aef1a09c266d04bdb8e0",
+    "internal/managed/project_member_storage.go": "514372aaeee733184f82fb814272a61157911c7d33d3a6062e6f1f3f7ee41978",
+    "internal/managed/project_member_launch.go": "07777f9e1016fb97fb2fc863f71f2589a5409df860e866420d6daef5e7c6468b",
+    "internal/managed/project_member_readiness.go": "a4544b474dccc89b4fa925d09e9b905627ca1cb203183b056659f8e259d87ce1",
+    "internal/managed/project_member_stop.go": "8ba158d2b7e2fabf77830b121871903053ea1d17c78b8407865f52d440a575ca",
+    "internal/managed/project_member_stop_exit.go": "10727cfe1d06a70de13372c4850c04972a36053776f738f1076af6af00b65fb7",
+    "internal/managed/project_server_linux.go": "0541ba6d3e472edcf3cf2dbc50ef7295f5c210b952343e1fd6fa718822e2342b",
+    "internal/managed/project_anchor_server_linux.go": "a6884416c73ec59dfd414cd7fb3e7d75609e076c878962071bbbf50f7c9f7c14",
+    "internal/managed/project_member_storage_server_linux.go": "3bfe4daf11b91548d13a0e560e96cf5234c5137224a4a3843a2922dcb5256f4d",
+    "internal/managed/project_member_launch_server_linux.go": "cdff489b905cd174b6a354f30f1e8b474093b3c84bb0c0c37f85102ce13b15b7",
+    "internal/managed/project_member_readiness_server_linux.go": "ae94b28d4f3c7f6900ebfb17cce1a859b25ac710be7f6254c922cd0b9979ea39",
+    "internal/managed/project_member_stop_server_linux.go": "772b1630e7e6405b3d76d1480bb3620e13c635f4d2e9464b73018c8956c0b35b",
+    "internal/managed/project_member_stop_exit_server_linux.go": "84dc2bfcf2ac71a81c09e207708f776bd8ea2ee3721207c7e62d8246cc457588",
+    "internal/runtimequalify/project_member_retirement_linux_test.go": "5fe4aa71ba73a8a3ed586c4a294ad9f0e78b760a38816704541848217af04511"
+  },
+  "logs": {
+    "omabit-retirement-queue-tests.log": "6ceb795fd9073811f63024435d971b276eb0c8dc5a304f5ecfa29d4bc9bd32b1",
+    "omabit-retirement-queue-regression.log": "8cbf67f171117c058b8a3ef4c7df605f634d8f4c0728261a6dd338d5c71162a4",
+    "omabit-retirement-queue-historical.log": "b094cc7673b369b11dbc2c8642b468ea34f91ea06d1e46e72e2e953f90624f41",
+    "omabit-retirement-queue-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "No public route, startup action, actual removal or replacement.",
+    "Unresolved retirement blocks new work in its exact project; historical replay and unrelated projects remain available.",
+    "VM17 predates retirement persistence and queue."
+  ]
+}

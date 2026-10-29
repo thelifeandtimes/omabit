@@ -1,0 +1,23 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "source_sha256": {
+    "internal/projectnetwork/anchor_start.go": "7ee3adb68e71248a4a10e6ec42b541af42ec43239919a3f546166a6c5aa96c94",
+    "internal/projectnetwork/anchor_start_test.go": "55a6d7af8d32dc89290c76bb5402e3a0af7809992fddbb4854c00f5e136a2991",
+    "internal/projectnetwork/membership.go": "a5b012423ab4194f22604691de8ccfbb7752bce161c0781aeb67b3c06caeb963",
+    "internal/projectnetwork/membership_test.go": "528f2f28afbe837fef2a8b2f954f2bf45d2ab64db0e85283b2edac131aa7ec3e"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-model",
+  "logs": {
+    "omabit-anchor-start-source-tests.log": "4bb69188667ac3fc2fe21c4163689c0bf2ac798d3b4da0cc80b169ef10bc2a7a",
+    "omabit-anchor-start-package-tests.log": "1628622f74f5cfea46aaa3190a00dec01486964e508b43fc97af16762228d8c3",
+    "omabit-anchor-start-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-membership-source-tests.log": "3665d54c6f4cb03284180863507388d262ffc537572c27db4d02e490c17d91d8",
+    "omabit-anchor-membership-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "Pure model/controller only; not persisted or exposed.",
+    "No complete Docker inventory collector or real anchor Start adapter yet.",
+    "No member readiness or recovery authorization."
+  ]
+}

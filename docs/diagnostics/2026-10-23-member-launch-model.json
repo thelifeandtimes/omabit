@@ -1,0 +1,21 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "persisted": false,
+  "schema_changed": false,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-launch-model",
+  "source_sha256": {
+    "internal/projectnetwork/member_launch.go": "768d06f104376ccfd0ab6ffaa8b426f47b2fea87b046d04c414ad157928cd384",
+    "internal/projectnetwork/member_launch_test.go": "a71dc365c38cdd01044ef4e72fc212dc225475f3b698194567e73eed4acc1839"
+  },
+  "logs": {
+    "omabit-member-launch-model-tests.log": "8100f8a8464fa9899a306ef10fd0d78507d9c1724706d54f428705eee64ff502",
+    "omabit-member-launch-model-regression.log": "92cbbcc2c5d38ef7044d8e52189cc916363c9f66cbcc46d24c532dbcc8a21679",
+    "omabit-member-launch-model-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "Pure initial-launch controller; durable callback remains a tested fixture rather than SQLite wiring.",
+    "Running establishes container/namespace observation only; no initialized pier or ship readiness claim.",
+    "Concrete workspace/pill, Docker dispatch, persistence, scheduling and private-VM tests remain."
+  ]
+}

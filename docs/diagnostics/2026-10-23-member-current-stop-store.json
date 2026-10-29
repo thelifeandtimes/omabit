@@ -1,0 +1,69 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 34,
+  "persistence_cases": 20,
+  "queue_cases": 6,
+  "full_managed_race_seconds": 432.837,
+  "vet_passed": true,
+  "source_sha256": {
+    "internal/managed/project_member_current_stop.go": "383f0dffe6c2d237d53ce43cf1f3b87091c285351403a23804c5ff3c763d3b81",
+    "internal/managed/project_member_current_stop_test.go": "a72d644777039454e6e0c4bae4c069138b402e562bdd27a2e2fd8a2697866ad9",
+    "internal/managed/project_member_current_stop_server_linux_test.go": "373ce852d01cf939fd56dbdcbf08c6eb509ee21daaa7e0b2bfeee9e002970584",
+    "internal/managed/project_member_stop.go": "4ae0ae45d51317d5b2b7aa0d533e8c8d21e7a7ba2a2e369a899d93784418be36",
+    "internal/managed/project_member_stop_server_linux.go": "26d0018daff02972799cbeabc50e03bb63b59d0ebe191af66432d8c481e9622b",
+    "internal/managed/schema.go": "63923496fe5d9f5853567f8460f0191a1e58ddeb6e3f13b68891225b82faed21",
+    "internal/managed/g02_historical_upgrades_test.go": "8de4f631927cf833290f256fc8e975096dd58d396a5edf80959ed2e0ae3ee632",
+    "scripts/test-historical-upgrades.py": "d5e80698640d30c5aafe5c4531c9b36aba394c94b885f63fa064d711c716ef51",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "9235ddb75dcf20a69dce247b53e284070093d159494471b67f1ff0f7e928c640"
+  },
+  "logs": {
+    "omabit-current-stop-store-initial.log": "65896358f74b5293374aa5a2ee7864000405c5af6e697571be61c723a3c7af41",
+    "omabit-current-stop-store-tests.log": "8230f05712ddfeb4db941e6ed0ba840fd94528be5cc8f44f8518a1dad1125b88",
+    "omabit-current-stop-queue-tests.log": "c47ca2bdb8dce0493087253505c8099870ed336f782cfc5d705ea8707f29610a",
+    "omabit-current-stop-tamper-tests.log": "1f8be2f9b82b5abd6ae2c0accee029211ba53936f52925a5d09cea658d1e5be5",
+    "omabit-current-stop-managed-race.log": "c5ead56c672590771c29d21e48e7884d4f0cbcb542835288f0e4ad4800d09d67",
+    "omabit-current-stop-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-current-stop-vm21-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-schema33-freeze.log": "7a26d993b23ece67fb102e8808fa4a466f7bd2b927bf78016f5136a30b684df5",
+    "omabit-schema33-preview.log": "7a3e9dc2b82f755980cbcdac634ce0f370c24151ea887be86afa6c91a905a3c5",
+    "omabit-schema33-reproduce-and-refuse34.log": "aa7af8a171362f57a168f55eece7ebc0872cfb7c3272ecc135c781216f89d7e0"
+  },
+  "original_schema33_snapshot": {
+    "sha256": "ce58e7e73ec6312b34f68ae09d8348a1edcdbd562b61b420d8a09dd408fff30b",
+    "bytes": 2924724,
+    "files": 1356,
+    "excluded_nested_archives": {
+      "internal/managed/testdata/historical-upgrades/schema22-source.tar.gz": "4f5029ac1469d6cb8b74c99e3fe88eb6932ee2f561460e7a48dd02834b6f8ed5",
+      "internal/managed/testdata/historical-upgrades/schema23-source.tar.gz": "4dcd826f1d3268cfe1eb66abd586cb599266b04aff9b543677cc647db1bfb2dc",
+      "internal/managed/testdata/historical-upgrades/schema24-source.tar.gz": "69b23e268b73cb87db73b825d43c9692feeced18b30e5c8674d0c2b05f5edf54",
+      "internal/managed/testdata/historical-upgrades/schema25-source.tar.gz": "ea439418502436ac149c48d01316135834f762b67e629b84c0b410ef89639dd9",
+      "internal/managed/testdata/historical-upgrades/schema26-source.tar.gz": "a5f0af92d9ab4d504879a732f315e8902d67d0e59312e2b504aaec9c32db5ecd",
+      "internal/managed/testdata/historical-upgrades/schema27-source.tar.gz": "221f4e7ba757c65339759423c8d5f43232b65cd309755e9f4378ceeeca441904",
+      "internal/managed/testdata/historical-upgrades/schema28-source.tar.gz": "8386021e437e4d586b06695d69f3877c65d9cb5a7d81105ae04a61c1e3d13be3",
+      "internal/managed/testdata/historical-upgrades/schema29-source.tar.gz": "8527e8465d3fc2330bc6ba661577b6d3bc776b75da36c301f4557be6550a0331",
+      "internal/managed/testdata/historical-upgrades/schema30-source.tar.gz": "b8aa477ce568abee0c607b3375686b143fa04e69f62a90c389631b383114dea8",
+      "internal/managed/testdata/historical-upgrades/schema31-source.tar.gz": "74dcd3b8847474f3d2772af0177e0c85573f5a231fdab958b9a3f9af4829ebf9",
+      "internal/managed/testdata/historical-upgrades/schema32-source.tar.gz": "3af14bd5559188c9293a23ada1124f246606447935445cd438e6a5fb4305d7eb"
+    }
+  },
+  "original_fixture": {
+    "schema": 33,
+    "fixture_bytes": 310997,
+    "fixture_sha256": "e4b3b223397f152729c9b33181ab0669cecda2b5e615a27e050ef758f872ba9d",
+    "source_archive_sha256": "ce58e7e73ec6312b34f68ae09d8348a1edcdbd562b61b420d8a09dd408fff30b",
+    "reproduced_exactly": true,
+    "successor_tested": false,
+    "limit_used_for_preview": 524288,
+    "generator_script_sha256": "be0dd66e072725a2a06394345dc8839682daaa0b5da37429d28151424c02bcca"
+  },
+  "original33_refused_real34_unchanged": true,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-current-stop-store",
+  "limits": [
+    "no installed database changed",
+    "actual queued replacement Stop remains unqualified",
+    "resume journal/adapter still first replacement only",
+    "readiness after unrelated peer replacement and changed-anchor recovery remain",
+    "full managed run compiled before new VM21 fixture; fixture receives separate guard/vet checks"
+  ]
+}

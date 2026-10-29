@@ -1,0 +1,51 @@
+{
+  "memory": "M361",
+  "status": "fresh-VM11-running",
+  "runtime_passed": false,
+  "prior_attempt2": "quota-refusal-before-output-creation",
+  "prior_available_bytes": 7496564736,
+  "required_storage_bytes": 8589934592,
+  "running_reserve_bytes": 2147483648,
+  "retained_labs": [
+    {
+      "name": "omabit-dms-urbit-transport-20261024-02",
+      "files_and_directories_verified": 77,
+      "freed_bytes": 830918656
+    },
+    {
+      "name": "omabit-dms-urbit-transport-20261024-03",
+      "files_and_directories_verified": 78,
+      "freed_bytes": 830918656
+    },
+    {
+      "name": "omabit-theme-urbit-transport-20261024-01",
+      "files_and_directories_verified": 85,
+      "freed_bytes": 830877696
+    }
+  ],
+  "retention_private_only": true,
+  "source_scopes_inactive": true,
+  "original_paths_preserved": true,
+  "private_data_exported": false,
+  "freed_bytes": 2492715008,
+  "payload": {
+    "added": [
+      "src/docker_gateway_peers.py"
+    ],
+    "removed": [],
+    "changed": [
+      "src/docker_case.py",
+      "src/docker_gateway.cjs",
+      "src/docker_peer.py",
+      "src/docker_resume_case.py",
+      "src/gateway_resume_contract.cjs",
+      "src/guest.py"
+    ],
+    "all_other_inputs_unchanged": true,
+    "files": 12361,
+    "build_sha256": "4612d319b3b511ee04bccc89cc361039d62db3fa6702bec2fe3f70ce334a1a3c"
+  },
+  "run": "/tmp/omabit-import-guest-run-private-chain-20261025-11",
+  "scope": "omabit-import-guest-31ce5af8df1b4caaad1fa23b7586b4f1.scope",
+  "public_runner_lifecycle_enabled": false
+}

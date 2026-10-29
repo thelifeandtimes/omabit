@@ -22,6 +22,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/projectnetwork"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
@@ -30,21 +31,24 @@ import (
 // generator, pinned source commits, source tree IDs and coverage gaps live beside
 // the fixtures; ordinary tests require neither Git nor historical compilation.
 type g02Fixture struct {
-	Format                 int
-	Name                   string
-	Schema                 int
-	Synthetic              bool
-	SourceCommit           string `json:"source_commit"`
-	SourceTree             string `json:"source_tree"`
-	SourceSupplementCommit string `json:"source_supplement_commit"`
-	SourceSupplementTree   string `json:"source_supplement_tree"`
-	SourceBundleSHA256     string `json:"source_bundle_sha256"`
-	WriterSHA256           string `json:"writer_sha256"`
-	RunnerID               string `json:"runner_id"`
-	CommitmentBytes        []byte `json:"commitment_bytes"`
-	Tables                 []g02Table
-	Hashes                 map[string]string
-	Files                  []struct {
+	SourceSnapshotSHA256     string `json:"source_snapshot_sha256"`
+	UnreleasedSourceSnapshot bool   `json:"unreleased_source_snapshot"`
+	SourceBase               string `json:"source_base"`
+	Format                   int
+	Name                     string
+	Schema                   int
+	Synthetic                bool
+	SourceCommit             string `json:"source_commit"`
+	SourceTree               string `json:"source_tree"`
+	SourceSupplementCommit   string `json:"source_supplement_commit"`
+	SourceSupplementTree     string `json:"source_supplement_tree"`
+	SourceBundleSHA256       string `json:"source_bundle_sha256"`
+	WriterSHA256             string `json:"writer_sha256"`
+	RunnerID                 string `json:"runner_id"`
+	CommitmentBytes          []byte `json:"commitment_bytes"`
+	Tables                   []g02Table
+	Hashes                   map[string]string
+	Files                    []struct {
 		Path   string
 		Mode   os.FileMode
 		Body   []byte
@@ -75,6 +79,7 @@ type g02Target struct {
 }
 
 type g02Manifest struct {
+	BaselineFixtures      []string `json:"baseline_fixtures"`
 	Format                int
 	QualificationTarget   g02Target    `json:"qualification_target"`
 	DevelopmentTestTarget g02Target    `json:"development_test_target"`
@@ -109,10 +114,10 @@ func g02ValidateManifest(m g02Manifest, fixtures map[string]g02Fixture) error {
 		return errors.New("preserve historical RC12/schema20 source qualification separately from current development tests")
 	}
 	development := m.DevelopmentTestTarget
-	if currentSchema != 21 || development.StateSchema != currentSchema || development.Release != "unreleased" || development.Channel != "development" || development.Evidence != "source-tests-only" {
+	if currentSchema != 47 || development.StateSchema != currentSchema || development.Release != "unreleased" || development.Channel != "development" || development.Evidence != "source-tests-only" {
 		return errors.New("review the development schema target explicitly; source tests are not release/artifact qualification")
 	}
-	if !slices.Equal(m.AcceptedSchemaWindow, []int{11, 12, 13, 14, 15, 16, 17, 18, 19, 20}) || !slices.Equal(m.PrototypeSchemas, []int{11, 12, 14, 17, 18}) || m.SupportedReleaseScope != "database-reader" {
+	if !slices.Equal(m.AcceptedSchemaWindow, []int{11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45}) || !slices.Equal(m.PrototypeSchemas, []int{11, 12, 14, 17, 18}) || m.SupportedReleaseScope != "database-reader" {
 		return errors.New("reader window, release support and unpublished prototypes must remain distinct")
 	}
 	if !slices.Equal(m.HostUpgrade.InitialSchemas, []int{19}) || m.HostUpgrade.Deployment != "owner-user-linux-amd64" || m.HostUpgrade.Procedure != "docs/management-offline-upgrade.md" || m.HostUpgrade.Evidence != "source-tests-only" {
@@ -172,6 +177,22 @@ func g02ValidateManifest(m g02Manifest, fixtures map[string]g02Fixture) error {
 		}
 		used[name] = true
 	}
+	if !slices.Equal(m.BaselineFixtures, []string{"schema21.json", "schema22.json", "schema23.json", "schema24.json", "schema25.json", "schema26.json", "schema27.json", "schema28.json", "schema29.json", "schema30.json", "schema31.json", "schema32.json", "schema33.json", "schema34.json", "schema35.json", "schema36.json", "schema37.json", "schema38.json", "schema39.json", "schema40.json", "schema41.json", "schema42.json", "schema43.json", "schema44.json", "schema45.json"}) {
+		return errors.New("retain the pinned schema21 development baseline separately from release claims")
+	}
+	baseline := fixtures["schema21.json"]
+	if !listed["schema21.json"] || baseline.Schema != 21 || baseline.SourceCommit != "b23312876c611e1d083bdcc9468469f7e716d749" {
+		return errors.New("schema21 baseline lacks its original writer")
+	}
+	used["schema21.json"] = true
+	for version, digest := range map[int]string{22: "4f5029ac1469d6cb8b74c99e3fe88eb6932ee2f561460e7a48dd02834b6f8ed5", 23: "4dcd826f1d3268cfe1eb66abd586cb599266b04aff9b543677cc647db1bfb2dc", 24: "69b23e268b73cb87db73b825d43c9692feeced18b30e5c8674d0c2b05f5edf54", 25: "ea439418502436ac149c48d01316135834f762b67e629b84c0b410ef89639dd9", 26: "a5f0af92d9ab4d504879a732f315e8902d67d0e59312e2b504aaec9c32db5ecd", 27: "221f4e7ba757c65339759423c8d5f43232b65cd309755e9f4378ceeeca441904", 28: "8386021e437e4d586b06695d69f3877c65d9cb5a7d81105ae04a61c1e3d13be3", 29: "8527e8465d3fc2330bc6ba661577b6d3bc776b75da36c301f4557be6550a0331", 30: "b8aa477ce568abee0c607b3375686b143fa04e69f62a90c389631b383114dea8", 31: "74dcd3b8847474f3d2772af0177e0c85573f5a231fdab958b9a3f9af4829ebf9", 32: "3af14bd5559188c9293a23ada1124f246606447935445cd438e6a5fb4305d7eb", 33: "ce58e7e73ec6312b34f68ae09d8348a1edcdbd562b61b420d8a09dd408fff30b", 34: "0e4893ae8fe8e9fbb486e3a34ccea1a5ec0d6717cfafa2a174331c7a519dceb4", 35: "ea67857247fccc7b175e6bb4c54fc7110604b0f195850475781fca6b54cc3eba", 36: "17340ebdb296525407a95e004b4779935df2e25f3acec3ae47f861b7bd651c2b", 37: "57ed6461b9cd12f595a20139c3643e76cd79bdfd1d336b3d69c8a86547feec04", 38: "8b363b4c25c8f256b017abbeaedb0bb5b9be5e4d85f52d53778b1df90eea692b", 39: "e9afaa95aa2d4ad0531baee741925c4fb8e823ce2644118888bcb7633fb3d356", 40: "052de08d5f4aaec592af98396bf457c3b21bc16847e14d59ae1ae6843e58e14f", 41: "eb4bd69f6ac1bb692a83768d84f58ea00afb4c1ba3096a637f215c200b50beb2", 42: "5f743bba5b7df16e4bbaa6ccb3f96582e357c12c313882c154c959a64947ccf3", 43: "ff7e9860bc98dbb765e4e2f98535a77a4e8b0898d79327494c1d17b912876222", 44: "80e34af6c6569e9c2bd37a0589cb674261524f6dc1eec176f480afca2aece1a6", 45: "b366caf7df4c488816cb69b24fbeefb082d6b2618283ab76fe2d721a06496da9"} {
+		name := fmt.Sprintf("schema%d.json", version)
+		snapshot := fixtures[name]
+		if !listed[name] || snapshot.Schema != version || !snapshot.UnreleasedSourceSnapshot || snapshot.SourceBase != baseline.SourceCommit || snapshot.SourceCommit != "" || snapshot.SourceTree != "" || snapshot.SourceSnapshotSHA256 != digest {
+			return fmt.Errorf("schema%d requires its frozen unreleased source, not a relabeled release", version)
+		}
+		used[name] = true
+	}
 	if len(used) != len(listed) {
 		return errors.New("every fixture must identify a supported release or an unpublished preview")
 	}
@@ -209,15 +230,53 @@ func g02Fixtures(t *testing.T) []g02Fixture {
 		}
 		data, err := os.ReadFile(filepath.Join(dir, name))
 		g02Check(t, err)
-		if len(data) > 96<<10 {
-			t.Fatal("historical fixture exceeds 96 KiB budget", name)
+		limit := 96 << 10
+		if name == "schema37.json" || name == "schema38.json" || name == "schema39.json" || name == "schema40.json" || name == "schema41.json" || name == "schema42.json" || name == "schema43.json" || name == "schema44.json" || name == "schema45.json" {
+			limit = 1536 << 10
+		}
+		if name == "schema36.json" {
+			limit = 1024 << 10
+		}
+		if name == "schema35.json" {
+			limit = 768 << 10
+		} // Repeated replacements and retained earlier mirrors.
+		if name == "schema34.json" {
+			limit = 384 << 10
+		} // Complete current Stop plus original lifecycle mirrors.
+		if name == "schema33.json" {
+			limit = 320 << 10
+		} // Complete replacement readiness and original lifecycle mirrors.
+		if name == "schema32.json" {
+			limit = 320 << 10
+		} // Complete replacement and original retirement/exit/Stop mirrors.
+		if name == "schema31.json" {
+			limit = 224 << 10
+		} // Complete retirement and immutable prior exit/Stop mirrors.
+		if name == "schema30.json" {
+			limit = 192 << 10
+		} // Complete exit proof and immutable original Stop mirrors.
+		if name == "schema29.json" {
+			limit = 160 << 10
+		} // Original uncertain Stop plus complete readiness mirrors.
+		if name == "schema28.json" {
+			limit = 160 << 10 // Original readiness proofs and receipt mirrors.
+		}
+		if len(data) > limit {
+			t.Fatal("historical fixture exceeds its per-schema budget", name)
 		}
 		var f g02Fixture
 		decoder := json.NewDecoder(bytes.NewReader(data))
 		decoder.UseNumber()
 		g02Check(t, decoder.Decode(&f))
-		if f.Format != 1 || !f.Synthetic || len(f.SourceCommit) != 40 || len(f.SourceTree) != 40 || len(f.WriterSHA256) != 64 || f.Schema < 11 || f.Schema >= currentSchema || len(f.Hashes) < 20 {
+		if f.Format != 1 || !f.Synthetic || (!f.UnreleasedSourceSnapshot && (len(f.SourceCommit) != 40 || len(f.SourceTree) != 40)) || len(f.WriterSHA256) != 64 || f.Schema < 11 || f.Schema >= currentSchema || len(f.Hashes) < 20 {
 			t.Fatal("missing provenance/coverage", name)
+		}
+		if f.UnreleasedSourceSnapshot {
+			bundle, err := os.ReadFile(filepath.Join(dir, f.Name+"-source.tar.gz"))
+			g02Check(t, err)
+			if fmt.Sprintf("%x", sha256.Sum256(bundle)) != f.SourceSnapshotSHA256 {
+				t.Fatal("schema22 source snapshot digest mismatch")
+			}
 		}
 		if f.Schema == 14 {
 			// This is an original local pre-release snapshot, not a published
@@ -666,6 +725,322 @@ func TestG02HistoricalExportForOldReaders(t *testing.T) {
 	for _, f := range g02Fixtures(t) {
 		dir := g02Materialize(t, f)
 		s := g02Open(t, dir)
+		if f.Schema >= 22 {
+			// The immediate predecessor must refuse actual project ownership,
+			// not just an empty successor with a different schema marker.
+			s.portAvailable = func(string, uint16) bool { return true } // Synthetic new reservation, no host I/O.
+			port := uint16(28080)
+			if f.Schema >= 25 {
+				port = 29080
+			} // The original schema25/26 fixtures reserve 28080/28081.
+			if f.Schema == 45 {
+				port = 31080
+			} // Leave 29080/29081 for the captured private successor.
+			projectReceipt, _, err := s.registerProject("synthetic-project-actor", projectRequest(t, "project-reservation", "new-project", port))
+			g02Check(t, err)
+			reservations, err := projectReservations(s.db)
+			g02Check(t, err)
+			if len(reservations.Instances) < 2 {
+				t.Fatal("missing successor project reservations")
+			}
+			if f.Schema == 42 {
+				populatePrivateLifecycle43(t, s)
+			}
+			if f.Schema == 45 {
+				populatePrivateCapture46(t, s)
+			}
+			if f.Schema == 44 {
+				populatePrivateBirth45(t, s)
+			}
+			if f.Schema == 43 {
+				populatePrivateMember44(t, s)
+			}
+			if f.Schema == 41 {
+				var project string
+				g02Check(t, s.db.QueryRow("SELECT id FROM private_projects ORDER BY id LIMIT 1").Scan(&project))
+				private, err := loadPrivateProject(s.db, project)
+				g02Check(t, err)
+				digest, err := private.Plan.Digest()
+				g02Check(t, err)
+				op, hit, err := s.acceptPrivateWorkspace("synthetic-workspace-actor", project, privateWorkspaceRequest{RequestID: "workspace-preparation", ExpectedRevision: private.Revision, ReviewDigest: digest}, privateWorkspaceParent())
+				g02Check(t, err)
+				if hit {
+					t.Fatal("successor workspace unexpectedly replayed")
+				}
+				w, err := s.beginPrivateWorkspace(project, op.ID)
+				g02Check(t, err)
+				for _, phase := range []string{"root-dispatched", "root-created", "layout-dispatched"} {
+					root := w.Root
+					if phase == "root-created" {
+						root = privateWorkspaceParent()
+						root.Inode = 10
+					}
+					next, err := w.Advance(private.Plan, w.Phase, phase, root, nil)
+					g02Check(t, err)
+					g02Check(t, s.advancePrivateWorkspace(project, op.ID, w.Phase, next))
+					w = next
+				}
+				g02Check(t, s.interruptPrivateWorkspace(project, op.ID))
+				g02Check(t, validatePrivateWorkspaces(s.db))
+			}
+			if f.Schema == 40 {
+				op, hit, err := s.registerPrivateProject("synthetic-private-chain-actor", privateProjectRequest(t, "private-reservation", "private-project", 30080))
+				g02Check(t, err)
+				if hit || op.ProjectID == "" {
+					t.Fatal("successor private ownership missing")
+				}
+				_, err = projectReservations(s.db)
+				g02Check(t, err)
+			}
+			if f.Schema == 39 {
+				jobs, err := projectAnchorRecoveryJobs(s.db)
+				g02Check(t, err)
+				populated := false
+				for _, parent := range jobs {
+					owner, err := loadOperation(s.db, parent.OperationID)
+					g02Check(t, err)
+					if owner.Status != "interrupted" {
+						continue
+					}
+					p, err := loadProject(s.db, parent.ProjectID)
+					g02Check(t, err)
+					op, hit, err := s.acceptProjectRecoveryContinuation("synthetic-continuation-actor", p.ID, observationRequest(p, parent, "continue-observed-checkpoint"))
+					g02Check(t, err)
+					if hit {
+						t.Fatal("successor continuation unexpectedly replayed")
+					}
+					_, err = s.beginProjectRecoveryContinuation(op.ID)
+					g02Check(t, err)
+					populated = true
+				}
+				if !populated {
+					t.Fatal("original39 lacks observed interrupted recovery")
+				}
+				g02Check(t, validateProjectRecoveryContinuations(s.db))
+			}
+			if f.Schema == 38 {
+				jobs, err := projectAnchorRecoveryJobs(s.db)
+				g02Check(t, err)
+				populated := false
+				for _, parent := range jobs {
+					owner, err := loadOperation(s.db, parent.OperationID)
+					g02Check(t, err)
+					if owner.Status != "interrupted" {
+						continue
+					}
+					p, err := loadProject(s.db, parent.ProjectID)
+					g02Check(t, err)
+					op, hit, err := s.acceptProjectRecoveryObservation("synthetic-observer", p.ID, observationRequest(p, parent, "observe-retained-checkpoint"))
+					g02Check(t, err)
+					if hit {
+						t.Fatal("successor observation unexpectedly replayed")
+					}
+					_, err = s.beginProjectRecoveryObservation(op.ID)
+					g02Check(t, err)
+					populated = true
+				}
+				if !populated {
+					t.Fatal("original schema38 lacks interrupted recovery")
+				}
+				g02Check(t, validateProjectRecoveryObservations(s.db))
+			}
+			if f.Schema == 37 {
+				var stopID string
+				g02Check(t, s.db.QueryRow("SELECT operation_id FROM project_member_stops WHERE json_extract(body,'$.stop.phase')='stopped' ORDER BY operation_id LIMIT 1").Scan(&stopID))
+				stop, err := loadProjectMemberStop(s.db, stopID)
+				g02Check(t, err)
+				request := retireStoppedGenerationFixture(t, s, stop)
+				resumed, _, err := s.acceptProjectMemberResume("actor", stop.ProjectID, stop.InstanceID, request)
+				g02Check(t, err)
+				resumeThroughFixture(t, s, resumed.ID, "running")
+				g02Check(t, s.finishProjectMemberResume(resumed.ID))
+				p, err := loadProject(s.db, stop.ProjectID)
+				g02Check(t, err)
+				h, _, _, err := projectRecoveryHistory(s.db, p.ID, true)
+				g02Check(t, err)
+				digest, err := p.Plan.Digest()
+				g02Check(t, err)
+				op, _, err := s.acceptProjectAnchorRecovery("synthetic-recovery-actor", p.ID, projectAnchorRecoveryRequest{RequestID: "recover-anchor", ExpectedRevision: p.Revision, ReviewDigest: digest, HistoryDigest: recoveryHistoryDigest(h)})
+				g02Check(t, err)
+				j, err := loadProjectAnchorRecovery(s.db, op.ID)
+				g02Check(t, err)
+				for _, phase := range []string{"reviewing", "reviewed", "draining", "stop-dispatched"} {
+					j = advanceRecoveryStoreFixture(t, s, j, phase)
+				}
+				g02Check(t, validateProjectAnchorRecoveries(s.db))
+			}
+			if f.Schema == 36 {
+				var readyID string
+				g02Check(t, s.db.QueryRow("SELECT operation_id FROM project_member_context_readiness WHERE json_extract(body,'$.context.member.generation')=1 ORDER BY operation_id LIMIT 1").Scan(&readyID))
+				j, err := loadProjectMemberContextReadiness(s.db, readyID)
+				g02Check(t, err)
+				p, err := loadProject(s.db, j.ProjectID)
+				g02Check(t, err)
+				digest, err := p.Plan.Digest()
+				g02Check(t, err)
+				op, _, err := s.acceptProjectMemberStop("synthetic-context-stop-actor", p.ID, j.InstanceID, projectMemberStopRequest{ReadinessOperationID: readyID, RequestID: "context-stop", ExpectedRevision: p.Revision, ReviewDigest: digest})
+				g02Check(t, err)
+				_, err = s.beginProjectMemberStop(op.ID)
+				g02Check(t, err)
+			}
+			if f.Schema == 35 {
+				var readyID, projectID, instance string
+				g02Check(t, s.db.QueryRow("SELECT r.operation_id,r.project_id,r.instance_id FROM project_member_readiness r WHERE EXISTS (SELECT 1 FROM project_member_resumes x WHERE x.instance_id=r.instance_id) ORDER BY r.operation_id LIMIT 1").Scan(&readyID, &projectID, &instance))
+				src, err := projectContextReadinessSource(s.db, projectID, instance, readyID, nil)
+				g02Check(t, err)
+				digest, err := src.Project.Plan.Digest()
+				g02Check(t, err)
+				op, _, err := s.acceptProjectMemberContextReadiness("synthetic-current-readiness-actor", projectID, instance, projectMemberContextReadinessRequest{OriginalReadinessOperationID: readyID, CreatorOperationID: src.Context.Member.OperationID, RequestID: "current-readiness", ExpectedRevision: src.Project.Revision, ReviewDigest: digest})
+				g02Check(t, err)
+				_, err = s.beginProjectMemberContextReadiness(op.ID)
+				g02Check(t, err)
+			}
+			if f.Schema == 34 {
+				// Real second replacement after the original schema34 stopped generation2.
+				var stopID string
+				g02Check(t, s.db.QueryRow("SELECT operation_id FROM project_member_stops WHERE json_extract(body,'$.stop.phase')='stopped' ORDER BY operation_id LIMIT 1").Scan(&stopID))
+				stop, err := loadProjectMemberStop(s.db, stopID)
+				g02Check(t, err)
+				req := retireStoppedGenerationFixture(t, s, stop)
+				op, _, err := s.acceptProjectMemberResume("actor", stop.ProjectID, stop.InstanceID, req)
+				g02Check(t, err)
+				resumeThroughFixture(t, s, op.ID, "create-dispatched")
+				var n int
+				g02Check(t, s.db.QueryRow("SELECT count(*) FROM project_member_resumes WHERE instance_id=?", stop.InstanceID).Scan(&n))
+				if n != 2 {
+					t.Fatal("successor lacks two retained replacements")
+				}
+			}
+			if f.Schema == 33 {
+				var project, instance, ready string
+				g02Check(t, s.db.QueryRow("SELECT project_id,instance_id,operation_id FROM project_member_resumed_readiness ORDER BY operation_id LIMIT 1").Scan(&project, &instance, &ready))
+				p, err := loadProject(s.db, project)
+				g02Check(t, err)
+				digest, err := p.Plan.Digest()
+				g02Check(t, err)
+				_, _, err = s.acceptProjectMemberStop("synthetic-current-stop-actor", project, instance, projectMemberStopRequest{RequestID: "stop-resumed-member", ExpectedRevision: p.Revision, ReviewDigest: digest, ReadinessOperationID: ready})
+				g02Check(t, err)
+			}
+			if f.Schema == 32 {
+				var project, instance, resumed string
+				g02Check(t, s.db.QueryRow("SELECT project_id,instance_id,operation_id FROM project_member_resumes ORDER BY operation_id LIMIT 1").Scan(&project, &instance, &resumed))
+				p, err := loadProject(s.db, project)
+				g02Check(t, err)
+				digest, err := p.Plan.Digest()
+				g02Check(t, err)
+				op, _, err := s.acceptProjectMemberResumedReadiness("synthetic-resumed-readiness-actor", project, instance, projectMemberResumedReadinessRequest{RequestID: "observe-resumed-member", ExpectedRevision: 1, ReviewDigest: digest, ResumeOperationID: resumed})
+				g02Check(t, err)
+				_, err = s.beginProjectMemberResumedReadiness(op.ID)
+				g02Check(t, err)
+				g02Check(t, s.completeProjectMemberResumedReadiness(op.ID, resumedReadinessProof(t, s, project, instance, resumed)))
+			}
+			if f.Schema == 31 {
+				var project, instance, retirement string
+				g02Check(t, s.db.QueryRow("SELECT project_id,instance_id,operation_id FROM project_member_retirements ORDER BY operation_id LIMIT 1").Scan(&project, &instance, &retirement))
+				p, err := loadProject(s.db, project)
+				g02Check(t, err)
+				digest, err := p.Plan.Digest()
+				g02Check(t, err)
+				op, _, err := s.acceptProjectMemberResume("synthetic-resume-actor", project, instance, projectMemberResumeRequest{RequestID: "resume-member", ExpectedRevision: 1, ReviewDigest: digest, RetirementOperationID: retirement})
+				g02Check(t, err)
+				_, err = s.beginProjectMemberResume(op.ID, initialResumeFixture(t, s, op.ID))
+				g02Check(t, err)
+			}
+			if f.Schema == 30 {
+				var project, instance, exit string
+				g02Check(t, s.db.QueryRow("SELECT project_id,instance_id,operation_id FROM project_member_stop_exits ORDER BY operation_id LIMIT 1").Scan(&project, &instance, &exit))
+				p, err := loadProject(s.db, project)
+				g02Check(t, err)
+				digest, err := p.Plan.Digest()
+				g02Check(t, err)
+				op, _, err := s.acceptProjectMemberRetirement("synthetic-retirement-actor", project, instance, projectMemberRetirementRequest{RequestID: "retire-member", ExpectedRevision: 1, ReviewDigest: digest, ExitOperationID: exit})
+				g02Check(t, err)
+				_, err = s.beginProjectMemberRetirement(op.ID)
+				g02Check(t, err)
+			}
+			if f.Schema == 29 {
+				var project, instance, stop string
+				g02Check(t, s.db.QueryRow("SELECT project_id,instance_id,operation_id FROM project_member_stops ORDER BY operation_id LIMIT 1").Scan(&project, &instance, &stop))
+				p, err := loadProject(s.db, project)
+				g02Check(t, err)
+				digest, err := p.Plan.Digest()
+				g02Check(t, err)
+				op, _, err := s.acceptProjectMemberStopExit("synthetic-stop-exit-actor", project, instance, projectMemberStopExitRequest{RequestID: "observe-stop-exit", ExpectedRevision: 1, ReviewDigest: digest, StopOperationID: stop})
+				g02Check(t, err)
+				_, err = s.beginProjectMemberStopExit(op.ID)
+				g02Check(t, err)
+			}
+			if f.Schema == 28 {
+				var project, instance, readiness string
+				g02Check(t, s.db.QueryRow("SELECT project_id,instance_id,operation_id FROM project_member_readiness ORDER BY operation_id LIMIT 1").Scan(&project, &instance, &readiness))
+				p, err := loadProject(s.db, project)
+				g02Check(t, err)
+				digest, err := p.Plan.Digest()
+				g02Check(t, err)
+				op, _, err := s.acceptProjectMemberStop("synthetic-stop-actor", project, instance, projectMemberStopRequest{RequestID: "member-stop", ExpectedRevision: 1, ReviewDigest: digest, ReadinessOperationID: readiness})
+				g02Check(t, err)
+				_, err = s.beginProjectMemberStop(op.ID)
+				g02Check(t, err)
+			}
+			if f.Schema == 27 {
+				var project string
+				g02Check(t, s.db.QueryRow("SELECT project_id FROM project_member_launches LIMIT 1").Scan(&project))
+				p, err := loadProject(s.db, project)
+				g02Check(t, err)
+				digest, err := p.Plan.Digest()
+				g02Check(t, err)
+				op, _, err := s.acceptProjectMemberReadiness("synthetic-readiness-actor", project, p.Members[0].InstanceID, projectMemberReadinessRequest{RequestID: "member-readiness", ExpectedRevision: 1, ReviewDigest: digest})
+				g02Check(t, err)
+				_, err = s.beginProjectMemberReadiness(op.ID)
+				g02Check(t, err)
+			}
+			if f.Schema == 26 {
+				var project string
+				g02Check(t, s.db.QueryRow("SELECT project_id FROM project_anchor_starts LIMIT 1").Scan(&project))
+				p, err := loadProject(s.db, project)
+				g02Check(t, err)
+				digest, err := p.Plan.Digest()
+				g02Check(t, err)
+				member := p.Members[0].InstanceID
+				op, _, err := s.acceptProjectMemberLaunch("synthetic-launch-actor", project, member, projectMemberLaunchRequest{RequestID: "member-launch", ExpectedRevision: 1, ReviewDigest: digest})
+				g02Check(t, err)
+				initial := memberLaunchSelection(t, s, op)
+				_, err = s.beginProjectMemberLaunch(member, op.ID, initial)
+				g02Check(t, err)
+				g02Check(t, s.advanceProjectMemberLaunch(member, op.ID, "planned", "workspace-dispatched", projectnetwork.MemberLaunchResult{}))
+			}
+			if f.Schema == 25 {
+				s.validateStorage = func(string) error { return nil } // Synthetic new claim; no filesystem authority.
+				p, err := loadProject(s.db, projectReceipt.ProjectID)
+				g02Check(t, err)
+				digest, err := p.Plan.Digest()
+				g02Check(t, err)
+				op, _, err := s.acceptProjectMemberStorage("synthetic-project-actor", p.ID, "new-project-zod", projectMemberStorageRequest{RequestID: "member-storage", ExpectedRevision: 1, ReviewDigest: digest})
+				g02Check(t, err)
+				_, err = s.beginProjectMemberStorage("new-project-zod", op.ID)
+				g02Check(t, err)
+				g02Check(t, s.advanceProjectMemberStorage("new-project-zod", op.ID, "planned", "dispatched", pierstore.DirectoryIdentity{}))
+			}
+			if f.Schema == 24 {
+				prepared := projectPreparationFixture(t, s, projectReceipt.ProjectID, "pending")
+				op, _, err := s.acceptProjectPreparation("synthetic-project-actor", projectReceipt.ProjectID, projectPrepareRequest{RequestID: "prepare-project", ExpectedRevision: 1, ReviewDigest: prepared.PlanDigest})
+				g02Check(t, err)
+				completeProjectPreparation(t, s, op)
+				start, _, err := s.acceptProjectAnchorStart("synthetic-project-actor", projectReceipt.ProjectID, projectAnchorStartRequest{RequestID: "start-anchor", ExpectedRevision: 1, ReviewDigest: prepared.PlanDigest})
+				g02Check(t, err)
+				_, err = s.beginProjectAnchorStart(projectReceipt.ProjectID, start.ID)
+				g02Check(t, err)
+				g02Check(t, s.advanceProjectAnchorStart(projectReceipt.ProjectID, start.ID, "planned", "dispatched", nil))
+			}
+			if f.Schema == 23 {
+				prepared := projectPreparationFixture(t, s, projectReceipt.ProjectID, "pending")
+				op, _, err := s.acceptProjectPreparation("synthetic-project-actor", projectReceipt.ProjectID, projectPrepareRequest{RequestID: "prepare-project", ExpectedRevision: 1, ReviewDigest: prepared.PlanDigest})
+				g02Check(t, err)
+				prepared.OperationID = op.ID
+				g02Check(t, s.beginProjectPreparation(projectReceipt.ProjectID, op.ID, prepared))
+				g02Check(t, s.advanceProjectPreparation(projectReceipt.ProjectID, op.ID, 0, "bridge", "dispatched", ""))
+			}
+		}
 		g02Check(t, s.close())
 		body, err := os.ReadFile(filepath.Join(dir, "runner.sqlite"))
 		g02Check(t, err)

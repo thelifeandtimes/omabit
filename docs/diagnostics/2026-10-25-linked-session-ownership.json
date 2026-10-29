@@ -1,0 +1,32 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-linked-session-ownership",
+  "verification": {
+    "passed": true,
+    "focused_tests": 24,
+    "full_tests": 454,
+    "native_runs": 1,
+    "new_intent_controller_kills": 3,
+    "total_native_controller_kills": 34,
+    "intent_format": 2,
+    "linked_checkpoint_and_actual_plugin_cohort_verified": true,
+    "canonical_lineage_preserved": true,
+    "original_reader_refuses_new_intent": true,
+    "original_430_test_sources_unchanged": true,
+    "sessions_preserved": 6,
+    "unknown_dm_preserved_without_replay": true,
+    "no_http_or_application_admission_during_claim": true,
+    "new_application_constructions": 0,
+    "all_four_compositors_exit_zero": true,
+    "source_artifacts_metadata_independently_verified": true,
+    "scopes_inactive": [
+      "omabit-session-continuation-native-20261025-01",
+      "omabit-session-continuation-unit-20261025-01",
+      "omabit-session-continuation-unit-20261025-02"
+    ],
+    "authority_and_application_activation_from_checkpoint2_qualified": false,
+    "claimed_successor_loss_qualified": false,
+    "verifier_correction": "Native continuation worker records start with specification; corrected read-only log selector before retention",
+    "public_installed_profiles_qualified": false,
+    "production_resources_touched": false
+  }
+}

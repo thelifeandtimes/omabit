@@ -91,3 +91,36 @@ func TestGeneratedMoonCLIWithAutomaticDefaultsAndSpecificTypoError(t *testing.T)
 		t.Fatal("valid moon registration failed or disclosed a key", code, err)
 	}
 }
+
+func TestBootKeyPasteAndExplicitFilePrivacy(t *testing.T) {
+	key := "0w" + strings.Repeat("a", 128)
+	if got, err := readBootKeyInput(strings.NewReader("  " + key + "\n")); err != nil || got != key {
+		t.Fatal("paste failed", err)
+	}
+	for _, value := range []string{"", "not-a-key", key + strings.Repeat("a", protocol.MaxBootKeyBytes)} {
+		if _, err := readBootKeyInput(strings.NewReader(value)); err == nil || strings.Contains(err.Error(), value) && value != "" {
+			t.Fatal("invalid paste accepted or disclosed")
+		}
+	}
+	path := filepath.Join(t.TempDir(), "owned.key")
+	if err := os.WriteFile(path, []byte(key), 0644); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readBootKeyFile(path, false); err == nil || !strings.Contains(err.Error(), "chmod 600") {
+		t.Fatal("missing permission guidance", err)
+	}
+	if got, err := readBootKeyFile(path, true); err != nil || got != key {
+		t.Fatal("explicit privacy repair failed", err)
+	}
+	info, _ := os.Stat(path)
+	if info.Mode().Perm() != 0600 {
+		t.Fatal("file not private")
+	}
+	link := path + "-link"
+	if err := os.Link(path, link); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readBootKeyFile(path, true); err == nil {
+		t.Fatal("hard-linked key accepted")
+	}
+}

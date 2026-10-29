@@ -1,0 +1,34 @@
+{
+  "source_checks_passed": true,
+  "runtime_executed": false,
+  "regression_race_seconds": 39.285,
+  "new_lifecycle_cases": 12,
+  "vet_passed": true,
+  "persistent_schema_unchanged": 36,
+  "store_queue_integration": false,
+  "source": {
+    "internal/runtimequalify/project_member_current_stop_linux.go": "02bacd082df981623d9047271ddbfd1f5303be9b9788eb06a1bd4498c52b799d",
+    "internal/runtimequalify/project_member_current_lifecycle_linux.go": "d1b01c5bfa6c88e377ef3d76cc027e1e54443c3bad395af2dcf70c0f30b2830c",
+    "internal/runtimequalify/project_member_current_lifecycle_linux_test.go": "3c3d7bf2f85de6155019b8c999195f204865991d57ecee068d1493b4ce0df7a1",
+    "internal/runtimequalify/project_member_resumed_stop_linux.go": "615b6d4557119455f8b84b0020ba473003b7c1c803c2e11fe91d8e009c782369",
+    "internal/runtimequalify/project_member_resume_linux.go": "0ad8779d9b26bc86ee6b7a9435f2c05613c1feb5ecc921438805445becd69b1e"
+  },
+  "logs": {
+    "omabit-current-lifecycle-compile.log": "7f95a136ee91366388457d9f95e1193ebf9c9f613db5afe043372b589c85d4a9",
+    "omabit-current-lifecycle-adapter-tests.log": "af9c8f9137e4026e37b6a9d9fac7261394c04e947e632acb25aae09071e5b66d",
+    "omabit-current-lifecycle-fixture-failure.log": "d1b1d3f184cb6e62e056d7314a8cdb0ad146517342369c318fe09701c2e65b98",
+    "omabit-current-lifecycle-regression.log": "8777078ba2885f2140d72f4494baae21b641c2e90a4eadee3368f1ee73955b68",
+    "omabit-current-lifecycle-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-schema36-freeze.log": "73689103adcf7a13a69571a948bb33305e07d7c21ecbf2ed64a0305f51ffa55a",
+    "omabit-schema36-original-fixture.log": "3c8d94ceeaa359769dad05199eb6939e400875231d6547ceccd45aa00aa5c02f"
+  },
+  "baseline36": {
+    "source_sha256": "17340ebdb296525407a95e004b4779935df2e25f3acec3ae47f861b7bd651c2b",
+    "fixture_sha256": "0cf24d85497567d2bd8effc021532531970ebe55bc5115346191e39f8ff7fc74",
+    "fixture_bytes": 533672,
+    "independent_generations": 2,
+    "source_files": 1450,
+    "successor_tested": false
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-current-context-lifecycle-adapter"
+}

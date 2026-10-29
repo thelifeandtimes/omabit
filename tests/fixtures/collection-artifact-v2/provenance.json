@@ -1,0 +1,99 @@
+{
+  "memory": "M302",
+  "format": 2,
+  "role": "theme",
+  "profile": "qualification-stable",
+  "environment": null,
+  "source": {
+    "Marker.js": {
+      "sha256": "3d5f84c1095d15aeae9e45f17eca7db6db75ad5a05dce75627ff0a343263698b",
+      "bytes": 32,
+      "executable": false
+    },
+    "Service.qml": {
+      "sha256": "ab5045f60d11441f087a181cffe4b0a10847681ee2ee04be352a2f3276e20e1b",
+      "bytes": 693,
+      "executable": false
+    },
+    "helper.py": {
+      "sha256": "cc42155088fca5730758db72b2a5bca33112a941dfaa2d43098ec422ce4ea213",
+      "bytes": 9,
+      "executable": false
+    },
+    "manifest.json": {
+      "sha256": "9d92a47c693f1ac2a14aa4a10673cfc04f8a33dcb2983c39486da19761858349",
+      "bytes": 222,
+      "executable": false
+    }
+  },
+  "admission": {
+    "Host.qml": {
+      "sha256": "be8382edc56f98557c1f1be2afac75095d683b868faeeadee89ebdead5f8d88a",
+      "bytes": 6603,
+      "executable": false
+    },
+    "Registry.qml": {
+      "sha256": "61bb5074f64130646ec504354692eee8d3922c9ec35a3f5fa33e25253eedf493",
+      "bytes": 317,
+      "executable": false
+    },
+    "WidgetHost.qml": {
+      "sha256": "b30baf1618037d6647162fa5b2c84137f459c20c768c4a1a30aa59d6f6c145f5",
+      "bytes": 6384,
+      "executable": false
+    },
+    "admission.py": {
+      "sha256": "13f225164419d74d3c24107d755af03e3cfca503b3c4633551d550ec27c083cc",
+      "bytes": 11555,
+      "executable": false
+    },
+    "admission_guard.py": {
+      "sha256": "4f829db5424f97c7e2f2c253494b24de3423c52f224c93c4b6c4dea3869ad222",
+      "bytes": 2332,
+      "executable": false
+    },
+    "artifacts.py": {
+      "sha256": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+      "bytes": 14147,
+      "executable": false
+    },
+    "journal.py": {
+      "sha256": "d7ff32c615eae8003930172f719f581c214c1c0289c1ce815434a3c25cf898e3",
+      "bytes": 22464,
+      "executable": false
+    }
+  },
+  "artifact_sha256": "9f8b1abdf003c19c5daf26945a6cc6ff4fdba6bd5c86df06a9aeff1f5006a06d",
+  "sha256": {
+    "dependencies/artifacts.py": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+    "dependencies/journal.py": "d7ff32c615eae8003930172f719f581c214c1c0289c1ce815434a3c25cf898e3",
+    "generation/CollectionHost.qml": "1176510ce52610a4c72e86628de0165fe2da2121047263e1b1c70afc9b66d1e7",
+    "generation/CollectionRuntime.qml": "3e3a110d1918a1af6876577c08d1c60a423c2ff614f2d2f66b9a96e93fefd19e",
+    "generation/Marker.js": "3d5f84c1095d15aeae9e45f17eca7db6db75ad5a05dce75627ff0a343263698b",
+    "generation/Service.qml": "ab5045f60d11441f087a181cffe4b0a10847681ee2ee04be352a2f3276e20e1b",
+    "generation/application-profile.json": "4e604a0d02551a77cd8e717e23243a1a9decd195651ef59efd7a74b0ff002d35",
+    "generation/collection/Host.qml": "be8382edc56f98557c1f1be2afac75095d683b868faeeadee89ebdead5f8d88a",
+    "generation/collection/Registry.qml": "61bb5074f64130646ec504354692eee8d3922c9ec35a3f5fa33e25253eedf493",
+    "generation/collection/WidgetHost.qml": "b30baf1618037d6647162fa5b2c84137f459c20c768c4a1a30aa59d6f6c145f5",
+    "generation/collection/admission.py": "13f225164419d74d3c24107d755af03e3cfca503b3c4633551d550ec27c083cc",
+    "generation/collection/admission_guard.py": "4f829db5424f97c7e2f2c253494b24de3423c52f224c93c4b6c4dea3869ad222",
+    "generation/collection/artifacts.py": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+    "generation/collection/journal.py": "d7ff32c615eae8003930172f719f581c214c1c0289c1ce815434a3c25cf898e3",
+    "generation/collection/qmldir": "686345ee15a838b796e9e3429519f5d6e84666607ad85d5f875d2e54cebd3723",
+    "generation/collection-artifact.json": "c1ef7eca21f2d6c03d9468f4b8e7628d9c28cf6584e4adbda92559cf58b4531e",
+    "generation/helper.py": "cc42155088fca5730758db72b2a5bca33112a941dfaa2d43098ec422ce4ea213",
+    "generation/manifest.json": "1246eae81749c631902980c9b3304287cd4ed4c8b8f0f97613bdebd4451fac83",
+    "source/Marker.js": "3d5f84c1095d15aeae9e45f17eca7db6db75ad5a05dce75627ff0a343263698b",
+    "source/Service.qml": "ab5045f60d11441f087a181cffe4b0a10847681ee2ee04be352a2f3276e20e1b",
+    "source/helper.py": "cc42155088fca5730758db72b2a5bca33112a941dfaa2d43098ec422ce4ea213",
+    "source/manifest.json": "9d92a47c693f1ac2a14aa4a10673cfc04f8a33dcb2983c39486da19761858349",
+    "support/Host.qml": "be8382edc56f98557c1f1be2afac75095d683b868faeeadee89ebdead5f8d88a",
+    "support/Registry.qml": "61bb5074f64130646ec504354692eee8d3922c9ec35a3f5fa33e25253eedf493",
+    "support/WidgetHost.qml": "b30baf1618037d6647162fa5b2c84137f459c20c768c4a1a30aa59d6f6c145f5",
+    "support/admission.py": "13f225164419d74d3c24107d755af03e3cfca503b3c4633551d550ec27c083cc",
+    "support/admission_guard.py": "4f829db5424f97c7e2f2c253494b24de3423c52f224c93c4b6c4dea3869ad222",
+    "support/artifacts.py": "449376e114fe9210d5275a840a6370306afb84dedac6f1afdbc7491ecbc2139c",
+    "support/journal.py": "d7ff32c615eae8003930172f719f581c214c1c0289c1ce815434a3c25cf898e3",
+    "writer.py": "b10c297bfb48a049eca0730993f6396d17a63fd509e51c879f7de37d3e859317"
+  }
+}

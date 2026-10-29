@@ -1,0 +1,26 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 29,
+  "model_cases": 22,
+  "adapter_cases": 10,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-stop-exit-source",
+  "source_sha256": {
+    "internal/projectnetwork/member_stop_exit.go": "cff8676ee5a8c80d9a9d17f5466ace744a2b34705f340efefe4c6d31157f4baf",
+    "internal/projectnetwork/member_stop_exit_test.go": "657c6ef28410ac2a47b9d2ae402365a74c951416c8a7cd977f33078652068d53",
+    "internal/runtimequalify/project_member_stop_exit_linux.go": "91395737d1bfda3f5765d86101e29c069f0d2d0fdc930f857b04bd1a35de784e",
+    "internal/runtimequalify/project_member_stop_exit_linux_test.go": "5d034a3e04ad7ccfe7a203b20336922f6ae0700877358bf177a786f5c52d4147"
+  },
+  "logs": {
+    "omabit-member-stop-exit-model-tests.log": "4b28bdb0c6d155da5c0115b018e4818459f825954dc2f9b5ca5800ca75315f94",
+    "omabit-member-stop-exit-adapter-tests.log": "e03b0f9e5560dd88058c53b89f3f80fdf360f48319a359c44a2402302c014b78",
+    "omabit-member-stop-exit-regression.log": "d9795e8437f2a59c432e7c2b543f1f742537187326a31be0bdbb59a2e0fc039b",
+    "omabit-member-stop-exit-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "Pure model and read-only adapter only; persistence/queue/public route remain absent.",
+    "Unstarted Stop lacks a recorded process binding and is outside this exit-observation contract.",
+    "No signal acknowledgement, original-operation success, retry or resume authority is inferred.",
+    "VM16 is frozen before this model and cannot qualify recovery."
+  ]
+}

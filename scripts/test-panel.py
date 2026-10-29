@@ -501,8 +501,8 @@ ShellRoot {
         service.monitorWindow.page="setup";service.monitorWindow.setupPane.mode="apps"
         phase = 9
       } else if (phase === 9) {
-        if (!control(service.monitorWindow.setupPane,"applications-coming-soon").visible || control(service.monitorWindow.setupPane,"shipLoginCode")) throw new Error("Application Connections is not a Coming Soon stub")
-        console.log("PASS: real QML one-click maintenance, immutable pruning review, error/request retention, and Coming Soon application stub")
+        if (!control(service.monitorWindow.setupPane,"apps-approve") || control(service.monitorWindow.setupPane,"apps-approve").enabled) throw new Error("Application Connections must require selection and consent")
+        console.log("PASS: real QML one-click maintenance, immutable pruning review, error/request retention, and explicit application approval controls")
         if (!service.loadImportSources(service.connections[0])) throw new Error("import catalogue request failed")
         phase = 20
       } else if (phase === 20 && service.importCatalogue && !service.busy) {
@@ -1029,7 +1029,7 @@ ShellRoot {
         assert len([c for c in calls if "routine-set" in c]) == 3
         assert all("fixture-only-secret" not in c for c in calls)
         assert not any(any(a.startswith("--native-control") for a in c) for c in calls), "desktop attempted to modify CLI-only native control"
-        assert not any(any(a in c for a in ("ships","ship-login","theme-sync")) for c in calls), "Coming Soon UI started application-session work"
+        assert not any(any(a in c for a in ("ship-login","app-connect","app-disconnect","app-recover","app-reconcile","theme-sync")) for c in calls), "Application pane issued a mutation without explicit approval"
         print("PASS: fixture CLI audit confirms bound maintenance and registration, local duplicate refusal, no automatic retry, and no secret in argv")
 
 

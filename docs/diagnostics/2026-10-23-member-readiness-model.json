@@ -1,0 +1,21 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 27,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-readiness-model",
+  "cases": 45,
+  "source_sha256": {
+    "internal/projectnetwork/member_readiness.go": "327d6a023b67d6bba623f4e3947a98b398b9497fdc597e759f061286fa90aefa",
+    "internal/projectnetwork/member_readiness_test.go": "7b5c9cffbfc70fe13f3a53011b1737c6f1ae7459b87480135408730fa9a4df6a"
+  },
+  "logs": {
+    "omabit-member-readiness-model-tests.log": "e55d4b0d8a4c2a46d2290942b15d343db93dd453bff018a3fd26cce69f52ba0f",
+    "omabit-member-readiness-model-regression.log": "eb0e352f99acfacb463b1d5a9ccc958d8b4fea438529acf749207bc1900703ba",
+    "omabit-member-readiness-model-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "Pure model only; concrete readiness adapter and durable store/queue remain.",
+    "Historical readiness is not current runtime authority or permission to resume/mutate storage.",
+    "The concurrent VM23-12 uses the previously frozen appliance and does not contain this new model."
+  ]
+}

@@ -1,0 +1,233 @@
+{
+  "checkpoint": "pinned native two-peer Gall thread control",
+  "ok": true,
+  "path": "/tmp/omabit-thread-probe-20261022-11",
+  "scope_inactive": true,
+  "scope_admission": {
+    "ActiveState": "active",
+    "CPUQuotaPerSecUSec": "1s",
+    "MemoryMax": "8589934592",
+    "MemorySwapMax": "0",
+    "TasksMax": "128"
+  },
+  "inputs": {
+    "guard": {
+      "unit": "omabit-thread-probe-fc8c3b1404ba4fab9f52d2164cdf37bf",
+      "host_net": "net:[4026531833]",
+      "host_pid": "pid:[4026531836]",
+      "channel": false,
+      "remote_submission": false,
+      "khan_receipt": false,
+      "peer": true
+    },
+    "sha256": {
+      "peer_probe.py": "9d5184c5f0ea1803ba50d1a29f7403453b89e4e53abfabd6ed17504809bfcab1",
+      "network_case.py": "ae306b8bb61467e1c2ee251887121f0a3d2f8726742f6513877a9d8f7bd8d796",
+      "thread_probe.py": "9ef95b878deaaff45f224cd530b2249865cc1f0d6717e60c9a2a3a3534245cc8",
+      "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+      "urbit": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+    }
+  },
+  "probe": {
+    "ok": true,
+    "unit": "omabit-thread-probe-fc8c3b1404ba4fab9f52d2164cdf37bf",
+    "transport": "local-khan-thread",
+    "ships": {
+      "zod": {
+        "port": 18081,
+        "admin": 12321,
+        "pid": 3
+      },
+      "nec": {
+        "port": 18082,
+        "admin": 12322,
+        "pid": 29
+      }
+    },
+    "attempts": [
+      {
+        "sender": "zod",
+        "receiver": "zod",
+        "phase": "local-check",
+        "nonce": "omabit-local-check-8ae7a7841c5a4b82b3f7a2c2",
+        "expected_receipt": "omabit-receipt-237431c0db6940f49c40de75c6981b8b",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-237431c0db6940f49c40de75c6981b8b"
+      },
+      {
+        "sender": "nec",
+        "receiver": "nec",
+        "phase": "local-check",
+        "nonce": "omabit-local-check-722e6bcc0e7740829108af35",
+        "expected_receipt": "omabit-receipt-42c8cd9b1a6b43fcabff36f50ecfe598",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-42c8cd9b1a6b43fcabff36f50ecfe598"
+      },
+      {
+        "sender": "zod",
+        "receiver": "nec",
+        "phase": "first",
+        "nonce": "omabit-first-a1f26855c2a2471a8f65a37d",
+        "expected_receipt": "omabit-receipt-bd95039e7ba84f5ca19cff2944fbecc4",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-bd95039e7ba84f5ca19cff2944fbecc4"
+      },
+      {
+        "sender": "nec",
+        "receiver": "zod",
+        "phase": "first",
+        "nonce": "omabit-first-67c69e9340304caeb8a463c7",
+        "expected_receipt": "omabit-receipt-c8cd9a485093486caea542e5d93d55fd",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-c8cd9a485093486caea542e5d93d55fd"
+      },
+      {
+        "sender": "zod",
+        "receiver": "nec",
+        "phase": "nack",
+        "nonce": "fail",
+        "expected_receipt": "omabit-receipt-d0649a3479c14fd7aec884da5f080918",
+        "state": "rejected",
+        "status": 500,
+        "bytes": 827,
+        "receipt": {
+          "term": "child-failed",
+          "tang": [
+            [
+              "thread-fail"
+            ],
+            [
+              "poke-fail"
+            ],
+            [
+              "poke-ack"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[275 5].[275 7]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[274 5].[275 7]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[273 3].[279 76]>"
+            ],
+            [
+              "poke-hi-fail"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[272 3].[279 76]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[271 15].[279 76]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[655 33].[655 51]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[655 28].[655 60]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[636 3].[673 5]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[632 3].[673 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[132 34].[132 60]>"
+            ],
+            [
+              "/app/hood/hoon:<[132 18].[132 70]>"
+            ],
+            [
+              "/app/hood/hoon:<[121 21].[121 30]>"
+            ],
+            [
+              "/app/hood/hoon:<[121 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[120 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[119 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[118 3].[135 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[117 3].[135 5]>"
+            ],
+            [
+              "/sys/vane/gall/hoon:<[1.863 9].[1.863 37]>"
+            ]
+          ]
+        }
+      },
+      {
+        "sender": "zod",
+        "receiver": "nec",
+        "phase": "after-restart",
+        "nonce": "omabit-after-restart-2184c9bc640f4998a1d09454",
+        "expected_receipt": "omabit-receipt-0d39bf651fee4899ac236f48698c7f18",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-0d39bf651fee4899ac236f48698c7f18"
+      },
+      {
+        "sender": "nec",
+        "receiver": "zod",
+        "phase": "after-restart",
+        "nonce": "omabit-after-restart-74011191e09c4582b9afa232",
+        "expected_receipt": "omabit-receipt-5bc8751ffb274aeaa005e5ceb594daff",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-5bc8751ffb274aeaa005e5ceb594daff"
+      }
+    ],
+    "clean_stops": [
+      "nec",
+      "nec",
+      "zod"
+    ],
+    "cleanup_errors": [],
+    "cross_ship_sessions_refused": true,
+    "transport_passed": true,
+    "restart_same_pier": true,
+    "restart_kept_sessions": true,
+    "log_truncated": false
+  },
+  "evidence_sha256": {
+    "/tmp/omabit-thread-probe-20261022-11/lab/result.json": "efc43df07c150ad48b97d48ba4fb0d625a7ce63522f804576c0882067954f098",
+    "/tmp/omabit-thread-probe-20261022-11/inputs.json": "0245ff5359140f0ca8390210bbf0e1959de8fdd451ea7d68616e30367cdfc8d5",
+    "/tmp/omabit-thread-probe-20261022-11/admission.json": "448aee0a1b626cb1b293cdd49cd3230414cd42753fe5116cd3509384fa4cfdc0",
+    "/tmp/omabit-thread-probe-20261022-11/command.json": "c894032442c5525015149422e647fb927ce677dcb5261ed93d805a4aba379cf5",
+    "/tmp/omabit-thread-probe-20261022-11/exit.json": "5bc232b82de377a5655a39a2af9d7ae0fc868de5b9df957e18905cb914606c88"
+  },
+  "failed_prior_control": {
+    "path": "/tmp/omabit-thread-probe-20261022-10",
+    "scope": {
+      "ActiveState": "failed",
+      "Result": "oom-kill",
+      "MemoryCurrent": "[not set]",
+      "MemoryPeak": "4294967296",
+      "CPUUsageNSec": "108570820000"
+    },
+    "clean_shutdown": false,
+    "transport_qualified": false,
+    "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-native-peers/native10"
+  },
+  "limitations": [
+    "Native control only; revised Docker trial remains pending.",
+    "No persistent application subscriptions or application-specific state recovery tested."
+  ],
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-native-peers/native11"
+}

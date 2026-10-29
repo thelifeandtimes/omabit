@@ -1,0 +1,46 @@
+{
+  "memory": "M383",
+  "status": "integrated-source-qualified",
+  "source_sha256": {
+    "internal/runtimequalify/private_gateway_network_linux.go": "a19fe16376e73b4975496b0e7b92014c37ad3fa9f6a76f0483f5aac64ccacfe9",
+    "internal/runtimequalify/private_gateway_network_linux_test.go": "ec1912ff1a41eef678861bf64e71b3763f6403daf75c2f50b8fd0032d28f2215"
+  },
+  "staged": {
+    "exit": 0,
+    "vet_exit": 0,
+    "seconds": 6.599927421018947,
+    "top": 8,
+    "checks": 76,
+    "failed": []
+  },
+  "integrated": {
+    "exit": 0,
+    "seconds": 1.6033139560022391,
+    "checks": 74,
+    "top": 6,
+    "source_sha256": {
+      "internal/runtimequalify/private_gateway_network_linux.go": "a19fe16376e73b4975496b0e7b92014c37ad3fa9f6a76f0483f5aac64ccacfe9",
+      "internal/runtimequalify/private_gateway_network_linux_test.go": "ec1912ff1a41eef678861bf64e71b3763f6403daf75c2f50b8fd0032d28f2215"
+    }
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-network-contract",
+  "evidence_sha256": {
+    "private_gateway_network_linux.go": "a19fe16376e73b4975496b0e7b92014c37ad3fa9f6a76f0483f5aac64ccacfe9",
+    "private_gateway_network_linux_test.go": "ec1912ff1a41eef678861bf64e71b3763f6403daf75c2f50b8fd0032d28f2215",
+    "check01-result.json": "3cae5e6f42edef14b91d7096231ef858d9ce158925880e84619f09f7401990c7",
+    "check02-result.json": "cba44a7c93be0f8ddd84932b6a13b47e7681461b5ee75c1d4b6e1057359d28f0",
+    "integrated-result.json": "09e7a706af38c736fdafd466174028efb468ad8412b46b8e76c5ff1094976007",
+    "applied.json": "e2a0c45fa75f22e465121e5c2ca9954aca5e9dc7a792d6a42d05051a0049546c",
+    "tests01.jsonl": "830e828711cfea39f968493a4b3bd3e99d0e596c268f6ebd69f770418581dbb5",
+    "tests02.jsonl": "b32d2bc3e305d33f7a5cc65c4dc4809be7164df1ed4656e5339076eada295014",
+    "vet01.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "vet02.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "integrated-tests.jsonl": "b453c28369509c24c5484fc3cebecca2a10cf5623d5638e6e4ffa5c00ecb3679"
+  },
+  "schema": 43,
+  "runtime_effects": false,
+  "public_runtime_dispatch": false,
+  "initial_publication_runtime": "VM15/audit30 session54631 pending",
+  "frozen_vm_sources_unchanged": true,
+  "supersedes": "M382 pending network-adapter contract only; no runtime qualification or concrete gateway backend claimed"
+}

@@ -1,0 +1,36 @@
+{
+  "memory": "M368",
+  "source_passed": true,
+  "runtime_pending": true,
+  "run": "/tmp/omabit-import-guest-run-private-chain-20261025-14",
+  "boot_session": 38211,
+  "queued_audit_session": 58917,
+  "queued_audit": "/tmp/omabit-private-chain-inspection-20261025-27",
+  "scope": "omabit-import-guest-3db7a27fc34f4edabde32e9c2f74fdbe",
+  "build_sha256": "335b961534b6948e16097c6ab39c1a7b3e3e99c0f0772f158dd093081ee4e5f9",
+  "payload_sha256": "540987aa8b0fac09e46100f77839a534c3e67aca6c71c8cbf67003de4f9619a4",
+  "guest_loopback_ports": [
+    18381,
+    18382
+  ],
+  "rpc_and_admin_unpublished": true,
+  "direct_client_without_relogin": true,
+  "checks": {
+    "python_tests": 69,
+    "python_passed": true,
+    "node_checks": 40,
+    "node_passed": true,
+    "go_reader_tests_passed": true,
+    "go_vet_passed": true,
+    "qualification_only": true,
+    "earlier_failures": [
+      "test-only sibling-module import path corrected",
+      "sandbox Go-cache write refusal resolved with narrow escalation",
+      "sandbox Node test child EPERM resolved with narrow escalation",
+      "source review caught retained published ship class mismatch; added actual engine/spec integration check before any VM"
+    ],
+    "runtime_publication_passed": false
+  },
+  "runner_schema": 41,
+  "runtime_input_format": 1
+}

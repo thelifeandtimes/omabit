@@ -1,0 +1,8 @@
+{
+  "source": "M281 original format1 writer and populated private runtime history",
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-24-collection-recovery-cohort/collection",
+  "sha256": {
+    "writer.py": "f61b0015a4343248d9246d6523d887612d2d70c7543d85ca6fd2d8285dc8cfe9",
+    "journal.json": "0fbe344ac75d02e38f59dd85b3dd47c1670ead9a33bc267f4005bf095f88aa7b"
+  }
+}

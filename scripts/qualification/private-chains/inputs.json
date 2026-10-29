@@ -1,0 +1,201 @@
+{
+  "version": 1,
+  "source_commits": {
+    "bridge": "504e47335e0b65e569458a4c1f3732c3ac847d0a",
+    "azimuth": "bcf1d7bcf64cd73a3688434feb786be39a116819"
+  },
+  "sources": {
+    "bridge/DEVELOPMENT.md": {
+      "url": "https://raw.githubusercontent.com/urbit/bridge/504e47335e0b65e569458a4c1f3732c3ac847d0a/DEVELOPMENT.md",
+      "bytes": 7717,
+      "sha256": "e53787099ad9be2d6d8784caa5de700781cc3dd6ca00c0f666c063dcfc6c6ad2"
+    },
+    "bridge/README.md": {
+      "url": "https://raw.githubusercontent.com/urbit/bridge/504e47335e0b65e569458a4c1f3732c3ac847d0a/README.md",
+      "bytes": 2688,
+      "sha256": "f73060579744c36fd2f88bee74e821c30aef66e203fcdc8c11bd0bd392b8e6d8"
+    },
+    "bridge/migrations/1_migration.js": {
+      "url": "https://raw.githubusercontent.com/urbit/bridge/504e47335e0b65e569458a4c1f3732c3ac847d0a/migrations/1_migration.js",
+      "bytes": 6335,
+      "sha256": "3d6d7c863b90b427dc8126d361b377d813f01af95fa4ffa0600147d6936f1abd"
+    },
+    "bridge/package-lock.json": {
+      "url": "https://raw.githubusercontent.com/urbit/bridge/504e47335e0b65e569458a4c1f3732c3ac847d0a/package-lock.json",
+      "bytes": 1997997,
+      "sha256": "336304f7686077065490e39e6b7e6297d012b8a65d3d85994b23ca8e6892b231"
+    },
+    "bridge/package.json": {
+      "url": "https://raw.githubusercontent.com/urbit/bridge/504e47335e0b65e569458a4c1f3732c3ac847d0a/package.json",
+      "bytes": 6464,
+      "sha256": "362f076b8b046606f9c84ef0f223c5de4992a0f628dc8f52fbabf8668cdeb7f2"
+    },
+    "bridge/truffle-config.js": {
+      "url": "https://raw.githubusercontent.com/urbit/bridge/504e47335e0b65e569458a4c1f3732c3ac847d0a/truffle-config.js",
+      "bytes": 514,
+      "sha256": "5cf186170607f8dadf4cff768b53574b93fd1706a15f028ae478c37ceb719bda"
+    },
+    "bridge/contracts/Migrations.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/bridge/504e47335e0b65e569458a4c1f3732c3ac847d0a/contracts/Migrations.sol",
+      "bytes": 346,
+      "sha256": "d131685e5b568f36eb69896f806dd3db51bb7ed94f753e8e445f814359138108"
+    },
+    "bridge/contracts/Naive.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/bridge/504e47335e0b65e569458a4c1f3732c3ac847d0a/contracts/Naive.sol",
+      "bytes": 377,
+      "sha256": "135567e18244f80d46f26e6e9874a8176f099e5c80c211070b86e7669f73a79e"
+    },
+    "azimuth/README.md": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/README.md",
+      "bytes": 4943,
+      "sha256": "b491de0b2c9f7715cd15e88acf639c2e2c7a9a4841af1401f93d9a021dc60958"
+    },
+    "azimuth/migrations/1_initial_migration.js": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/migrations/1_initial_migration.js",
+      "bytes": 125,
+      "sha256": "3dd632b7dc8ab287cade1d948b81ac10a99a55c34460dba78f182f818ce26157"
+    },
+    "azimuth/migrations/2_deploy_contracts.js": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/migrations/2_deploy_contracts.js",
+      "bytes": 3539,
+      "sha256": "4ce9c50179f8130a24542420af739374d1649a9927ecbec3fe35ad292ae686cf"
+    },
+    "azimuth/package-lock.json": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/package-lock.json",
+      "bytes": 571164,
+      "sha256": "cdfd467c6f55e6250e09222f02c3332e2ed7c61b4c5f7c8d0b1e65df31d2c1d0"
+    },
+    "azimuth/package.json": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/package.json",
+      "bytes": 1757,
+      "sha256": "29dbb709c7be59677e37d43e7b55f911a78de82783692ca128d262acde61e6d8"
+    },
+    "azimuth/truffle-config.js": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/truffle-config.js",
+      "bytes": 559,
+      "sha256": "f9900681d0500a7aa4c6f04dcd0609897cb49b476b837554148d594588bbbfc3"
+    },
+    "azimuth/contracts/Azimuth.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/Azimuth.sol",
+      "bytes": 40833,
+      "sha256": "36a918292fd559730789abb81d4dc1745f0c3d59732132e00882cf0bdf6a9757"
+    },
+    "azimuth/contracts/Censures.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/Censures.sol",
+      "bytes": 5232,
+      "sha256": "cff13fc63231ee1565d6472e19c86f1c996b325a0ccfe7057dcc957bfd154c59"
+    },
+    "azimuth/contracts/Claims.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/Claims.sol",
+      "bytes": 5744,
+      "sha256": "6d44f53ad1da044c44bcb3826c952bed403dd2d5bce12a1e913acb10f5c35c2d"
+    },
+    "azimuth/contracts/ConditionalStarRelease.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/ConditionalStarRelease.sol",
+      "bytes": 22450,
+      "sha256": "cfbc8556e7cacae1f3756882ed28a9cc34a3412cfafc4a2e1cc39f889dd8b1d1"
+    },
+    "azimuth/contracts/DelegatedSending.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/DelegatedSending.sol",
+      "bytes": 7174,
+      "sha256": "717ceb5367a7fdb92c53101505895224d28e3fb08fad5407ce48733af7c79d52"
+    },
+    "azimuth/contracts/ENSRegistry.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/ENSRegistry.sol",
+      "bytes": 3042,
+      "sha256": "c67cee014fd5f21c833826090af2fb79d542ea4a51a6d31a05c1dd91605f9d48"
+    },
+    "azimuth/contracts/Ecliptic.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/Ecliptic.sol",
+      "bytes": 33845,
+      "sha256": "b8ba2342df00b89fd96b5af84a3d405d7b25f185b0b65ef7dc829e77a7a604d3"
+    },
+    "azimuth/contracts/EclipticBase.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/EclipticBase.sol",
+      "bytes": 2634,
+      "sha256": "b8acea56467daf28c2d9e65db3f5ef61972413e17fa4707be8f066588c1cade8"
+    },
+    "azimuth/contracts/EclipticResolver.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/EclipticResolver.sol",
+      "bytes": 763,
+      "sha256": "479c4e9022eb286b652e618ed1cf659e583bc6b23d8e4e1a5be7f26bd6431f98"
+    },
+    "azimuth/contracts/LinearStarRelease.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/LinearStarRelease.sol",
+      "bytes": 10215,
+      "sha256": "6896a558f7de2eae8f048d6877df6ed3ed272f6b5993d25e12aba35ad5f7e73a"
+    },
+    "azimuth/contracts/Migrations.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/Migrations.sol",
+      "bytes": 493,
+      "sha256": "d1ba9cc38ae66d7c7b6f2248262205cbe5d76452608f92e0428c2174c7a59376"
+    },
+    "azimuth/contracts/NFTokenReceiverTestMock.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/NFTokenReceiverTestMock.sol",
+      "bytes": 293,
+      "sha256": "246b7fbfb8e03e153b9f19baf252ab62000fcba3f873b686b6a3f9d8a7877c5f"
+    },
+    "azimuth/contracts/Naive.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/Naive.sol",
+      "bytes": 357,
+      "sha256": "355c143fa4567c1990cf77aef5fdc875af58f2d24a0d7f41b1878e61207bf7c9"
+    },
+    "azimuth/contracts/PlanetSale.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/PlanetSale.sol",
+      "bytes": 3679,
+      "sha256": "91036d414f5b41bfc768281e4caec30d4522f593587a6d4223581da235995be5"
+    },
+    "azimuth/contracts/Polls.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/Polls.sol",
+      "bytes": 13705,
+      "sha256": "551764818ba35a393eeb00ab59c1bbbdf23836f47f8486aaa49f554a7ca767c5"
+    },
+    "azimuth/contracts/PublicResolver.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/PublicResolver.sol",
+      "bytes": 8331,
+      "sha256": "04102793cf80e87fe338c330e6a4c58da523960933e55e63db0379a5b2cda057"
+    },
+    "azimuth/contracts/ReadsAzimuth.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/ReadsAzimuth.sol",
+      "bytes": 1712,
+      "sha256": "3d7e53a4845afd3a9e594cf4cb1ae3557a61ce78df09a17491cc3979ce3f6188"
+    },
+    "azimuth/contracts/SafeMath16.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/SafeMath16.sol",
+      "bytes": 798,
+      "sha256": "8c86cab24e9994f84c2606f1650760f77b81a9aee1038c8dc45bae14d68f1f28"
+    },
+    "azimuth/contracts/SafeMath8.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/SafeMath8.sol",
+      "bytes": 780,
+      "sha256": "ff7c18786f2eaae03ed336879d44e619e017a695e048205fb5494582ba2b9103"
+    },
+    "azimuth/contracts/TakesPoints.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/TakesPoints.sol",
+      "bytes": 2582,
+      "sha256": "7f8f69c9cb462c333e2f85238959b934322c85e8dea36eea5bf6308d517d0408"
+    },
+    "azimuth/contracts/interfaces/ENS.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/interfaces/ENS.sol",
+      "bytes": 1067,
+      "sha256": "fcec56ee070320e7242d226d87d615e424473acdd13fe269e98de69ab7e0bbe2"
+    },
+    "azimuth/contracts/interfaces/ITreasuryProxy.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/interfaces/ITreasuryProxy.sol",
+      "bytes": 165,
+      "sha256": "32c57019929e8398efe67d12ed5405adde4c4a59b8ef3584dc197866f67e81ee"
+    },
+    "azimuth/contracts/interfaces/ResolverInterface.sol": {
+      "url": "https://raw.githubusercontent.com/urbit/azimuth/bcf1d7bcf64cd73a3688434feb786be39a116819/contracts/interfaces/ResolverInterface.sol",
+      "bytes": 235,
+      "sha256": "e309c9f14d358e8019628a8a7814479e3517d9c0297eb72fb5f1f3e113a1f6f9"
+    }
+  },
+  "packages": {
+    "ganache": "7.9.2",
+    "solc": "0.4.24",
+    "openzeppelin-solidity": "1.12.0",
+    "ethers": "6.16.0"
+  },
+  "package_lock_sha256": "3775ca05fc44270b64dac13bee82042eb86e6ce16dba3e9698157a9a1b35c3a8"
+}

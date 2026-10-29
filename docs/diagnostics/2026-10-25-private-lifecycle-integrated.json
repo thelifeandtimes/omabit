@@ -1,0 +1,89 @@
+{
+  "memory": "M381",
+  "status": "schema43-full-baseline-and-integrated-queues-passed",
+  "schema": 43,
+  "full_regression": {
+    "exit": 0,
+    "seconds": 2411.219516380981,
+    "command": [
+      "go",
+      "test",
+      "-p=2",
+      "-race",
+      "-count=1",
+      "-timeout=90m",
+      "-json",
+      "./internal/managed",
+      "./internal/privatechain"
+    ],
+    "log_sha256": "1bb62bbc6b3f26b01f06744832a880485dd3dca55fa3a1eadc69f1de7d74216c",
+    "source_manifest_sha256": "68f9f93f3ef9b917b26d7f0e3312da3479021411e6235e494af02049add75342",
+    "source_unchanged": true,
+    "checks": {
+      "git.thechristophgroup.org/thelifeandtimes/omabit/internal/privatechain": {
+        "top_level_passed": 41,
+        "including_subcases_passed": 327,
+        "failed": []
+      },
+      "git.thechristophgroup.org/thelifeandtimes/omabit/internal/managed": {
+        "top_level_passed": 367,
+        "including_subcases_passed": 1512,
+        "failed": []
+      }
+    }
+  },
+  "queue_regression": {
+    "exit": 0,
+    "vet_exit": 0,
+    "seconds": 131.80455247004284,
+    "checks": {
+      "top_level_passed": 27,
+      "including_subcases_passed": 132,
+      "failed": []
+    },
+    "source_sha256": {
+      "internal/managed/private_lifecycle_server_linux.go": "394237cf50818e23f2dc325979f3bf51929b77b66c3bce5304c5d3b0a296f01b",
+      "internal/managed/private_lifecycle_server_linux_test.go": "c54b8863c8a71afd7fbd2c50113fff59bc283dffca57e21465649ef2e6ee6486"
+    },
+    "source_unchanged": true,
+    "log_sha256": "8ebc0e79b6775d50f43d5472a8ff372acb09809b0df7fae3a58d345cd017b557",
+    "full_baseline_result_sha256": "dd1d2ba731a9da815cd7773f4df9010484a6eca53c18de2e9ab2c04e194db510"
+  },
+  "full_baseline_included_queues": false,
+  "queues_installed": true,
+  "public_runtime_dispatch": false,
+  "concrete_gateway_backend": false,
+  "protected_state_accessed": false,
+  "supersedes": [
+    "M378/M379 full43 regression pending",
+    "M379 queue integration pending",
+    "M380 preparation19 running; it refused unsupported output quota before creating an appliance"
+  ],
+  "initial_publication": {
+    "appliance20_build_sha256": "a19fe3ffa6d73fc4069019e1cae0c8a6f43f5b7073aee4ad1a5ba4cf9b3354f2",
+    "input_files": 12361,
+    "expanded_bytes": 642480519,
+    "relocation": {
+      "original": "/tmp/omabit-import-appliance-private-chain-20261025-20",
+      "retained": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/appliance-initial-publication-20261025-20",
+      "files": 23,
+      "bytes": 325478936,
+      "identical": true,
+      "compatibility_link": true,
+      "booted": false,
+      "protected_state_accessed": false
+    },
+    "run": "/tmp/omabit-import-guest-run-private-chain-20261025-15",
+    "scope": "omabit-import-guest-4b5752702e464c6ea17d33a17fb6feee",
+    "session": 54631,
+    "audit_output": "/tmp/omabit-private-chain-inspection-20261025-30",
+    "status": "running-audit-gated-on-clean-stop",
+    "runtime_passed": false
+  },
+  "workspace_queue_followup": {
+    "stage": "/tmp/omabit-private-workspace-queue-parity-20261025-01",
+    "session": 35847,
+    "status": "staged-tests-running",
+    "reason": "older workspace queue checked runtime backend before receipt replay and lacked typed-nil driver refusal"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "kind": "pure aggregate recovery journal and complete history assembly",
+  "schema": 37,
+  "journal_race_seconds": 174.757,
+  "history_assembly_race_seconds": 29.789,
+  "runtime_executed": false,
+  "persistent_authority": false,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-24-recovery-journal-model",
+  "manifest": {
+    "omabit-anchor-recovery-journal-attempt1.log": "0a76a53d29eb7de4eac44f5993356e960680c47ae5dc16c97befd8d167c734e8",
+    "omabit-anchor-recovery-journal-race.log": "4d8376bc085c8b622967f14bf71bbddc971c0422691d31e3463892c10e62fd41",
+    "omabit-anchor-recovery-journal-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-recovery-journal-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovery-record-assembly-attempt1.log": "b36f42e2e4286db6f01b4742bdd8e47bcb13a590dc3cac0dd9247abe1568788b",
+    "omabit-recovery-record-assembly-race.log": "6c01ab2b7b0811b1e7e597406c5fcd5a019a2a0e3d39d6168a34c8e11a414826",
+    "omabit-recovery-record-assembly-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovery-record-assembly-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "anchor_recovery_journal.go": "dd54f33b1adcb6bf93865cb661825c0bdadaac8927614aa91f00dedd5938f3f5",
+    "anchor_recovery_journal_test.go": "88c5069ff22e58f1c3396a427d99e8a267d5139cf58a8c03d155b90f0024643d",
+    "anchor_recovery_history_records.go": "cb030a5aa92cbebf80dbddfa68757044426567411da36d7418c361446091ad64",
+    "anchor_recovery_history_records_test.go": "0c91d4d1a89b29f83ef33757008c954f4db8a8755c17c02e131117c0102c2311"
+  }
+}

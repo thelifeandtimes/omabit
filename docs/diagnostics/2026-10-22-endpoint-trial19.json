@@ -1,0 +1,165 @@
+{
+  "passed": false,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-endpoints19",
+  "independent_verification": {
+    "verified": true,
+    "passed": false,
+    "result_sha256": "0d3ba9787e1acd7d0e100551744dd7204c9e32a3cd345734bf8638ae058862b0",
+    "seconds": 217.38,
+    "scope_inactive": true,
+    "original_artifacts_and_disks_verified": true,
+    "extracted_files_verified": 18,
+    "failure": "unexpected anchor publication at NetworkSettings",
+    "cleanup_errors": [],
+    "no_http_requests": true
+  },
+  "frozen_build": {
+    "exercise_endpoints": true,
+    "endpoint_network": "internal",
+    "exercise_import": false,
+    "exercise_fake_network": false,
+    "network_state": false,
+    "network_isolation": false,
+    "import_mode": "rename",
+    "interrupt_copy": false,
+    "restore_copy": false,
+    "restore_ui": false,
+    "ui_source_sha256": {},
+    "root_disk_gib": 12,
+    "packages_manifest_sha256": "c9736a95de42fda4edcee2a72675449930bcd57cd110ef704a638e07f68c2cc9",
+    "kernel_source": "/usr/lib/modules/7.2.11-arch1-1/vmlinuz",
+    "modules": 29,
+    "artifacts": {
+      "base.raw": "ba62e5d2d5ef10f84e985cf72da92ecec92f5239f7dab775d6b64eb6a083d01c",
+      "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+      "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+      "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+    },
+    "source_sha256": {
+      "scripts/qualification/imports/appliance.py": "2bfc62462ebebd4d2cae4735edc9db3969f7e0b3465b264f798a226c3ed0a3f6",
+      "scripts/qualification/imports/guest.py": "918082c8f28f1e35886b81129cd8a13902b0999ad9a050f4eb90284b69c8c3a7",
+      "scripts/qualification/imports/import_case.py": "27ae2fd0628db1f00aedde980c427c9d76e7ecd6a5cf0fde2c8ae5920ec31e0e",
+      "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+      "scripts/qualification/fake-networks/network_case.py": "4f54fcf1bee1aeadd0c12cd8cea96e1c3093b68f8c4bc836107d74fef1145bea",
+      "scripts/qualification/fake-networks/state_case.py": "58250c80ee6b860ee9988c3397418b8396c0f0f0195465507bf8762ba5451bf6",
+      "scripts/qualification/fake-networks/omabit-state.hoon": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+      "scripts/qualification/fake-networks/project_isolation.py": "9431d5fa9d24581ba8048447f04be613c3667a5a7ea8b1dd26b91df72f2f659a",
+      "scripts/qualification/fake-networks/endpoints_case.py": "8513fa38651d644a086056b9d8a4ab1137ccb528de17a96348ec561db7e6d644",
+      "scripts/qualification/fake-networks/endpoint-probe/main.go": "d5ff552064b211fc433c5143ef3099aee94aed7a2856be29df6dd92a5195a3e0"
+    },
+    "runner_sha256": "d0cbf62febdd1255144efe97708cb37a61b79b9a8361e8379a65f212a1bc016a",
+    "collector_sha256": "ffb13ae68058f27e92ccd3e5511b72d3cd184b074d555790dea52ec320818a30"
+  },
+  "unit": "omabit-import-guest-bb843324b7e2443aab1e7224e5c9f255",
+  "endpoint_result": {
+    "ok": false,
+    "fixture_only": true,
+    "network_mode": "internal",
+    "projects": {
+      "a": {
+        "network": "b9ed9ad5bc7c948e80ecfbefae9f6b68a1ce85d4aa501615df2b4f8d15758af0",
+        "members": {},
+        "ports": {
+          "8081": 18281,
+          "8082": 18282
+        },
+        "anchor": "13415addd5ac3acbca93c19c262458d6f2777347b6e7cd8171cf4924bbfcf491",
+        "namespace": "net:[4026532239]"
+      }
+    },
+    "requests": [],
+    "stop_observations": [
+      {
+        "container": "13415addd5ac3acbca93c19c262458d6f2777347b6e7cd8171cf4924bbfcf491",
+        "state": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 143,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:49:41.109274303Z",
+          "FinishedAt": "2026-10-23T05:49:44.44549159Z"
+        },
+        "entrypoint": [
+          "/bin/sleep"
+        ]
+      }
+    ],
+    "publication_observations": [
+      {
+        "container": "13415addd5ac3acbca93c19c262458d6f2777347b6e7cd8171cf4924bbfcf491",
+        "expected": {
+          "8081": 18281,
+          "8082": 18282
+        },
+        "host_bindings": {
+          "8081/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18281"
+            }
+          ],
+          "8082/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18282"
+            }
+          ]
+        },
+        "active_ports": {
+          "34343/udp": null,
+          "80/tcp": null,
+          "8081/tcp": null,
+          "8082/tcp": null
+        },
+        "networks": {
+          "omabit-endpoint-a": {
+            "IPAMConfig": null,
+            "Links": null,
+            "Aliases": null,
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "NetworkID": "b9ed9ad5bc7c948e80ecfbefae9f6b68a1ce85d4aa501615df2b4f8d15758af0",
+            "EndpointID": "048fa7725b9a3c30456cf44d58abab3d66bfd03dbd4b66c5270c64d6ac3f54f6",
+            "Gateway": "",
+            "IPAddress": "172.18.0.2",
+            "MacAddress": "0e:9c:dc:d7:2d:6a",
+            "IPPrefixLen": 16,
+            "IPv6Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "DNSNames": [
+              "omabit-endpoint-a-anchor",
+              "13415addd5ac"
+            ]
+          }
+        },
+        "state": {
+          "Status": "running",
+          "Running": true,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 2569,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:49:41.109274303Z",
+          "FinishedAt": "0001-01-01T00:00:00Z"
+        }
+      }
+    ],
+    "clean_stops": [
+      {
+        "container": "13415addd5ac3acbca93c19c262458d6f2777347b6e7cd8171cf4924bbfcf491",
+        "exit": 143
+      }
+    ],
+    "cleanup_errors": [],
+    "error": "unexpected anchor publication at NetworkSettings"
+  }
+}

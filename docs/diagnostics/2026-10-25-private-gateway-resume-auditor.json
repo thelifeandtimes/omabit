@@ -1,0 +1,18 @@
+{
+  "memory": "M357",
+  "go_top_level": 12,
+  "go_including_subcases": 69,
+  "python_top_level": 50,
+  "vet_passed": true,
+  "host_refusal": {
+    "exit": 80,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "binary_sha256": "afe3df70945951ff29775f43141f8bd37e95987cd30b17b25733bd6b06739d3c",
+    "host_entry_refused": true
+  },
+  "runtime_audit_executed": false,
+  "input_vm": "/tmp/omabit-import-guest-run-private-chain-20261025-10",
+  "first_python_failure": "random fixture suffix contained underscore outside required run-name grammar; UUID fixture naming corrected",
+  "first_vet_failure": "resolved existing Go cache outside sandbox write roots; scoped static check passed"
+}

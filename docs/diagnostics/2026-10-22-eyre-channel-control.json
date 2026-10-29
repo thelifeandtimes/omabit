@@ -1,0 +1,153 @@
+{
+  "checkpoint": "pinned runtime direct Eyre channel control",
+  "ok": true,
+  "scope": "one new native fake; no Docker peer-network qualification",
+  "path": "/tmp/omabit-thread-probe-20261022-07",
+  "inputs": {
+    "guard": {
+      "unit": "omabit-thread-probe-40311099ee18409c83da1edc24513d96",
+      "host_net": "net:[4026531833]",
+      "host_pid": "pid:[4026531836]",
+      "channel": true
+    },
+    "sha256": {
+      "network_case.py": "54703e540b2c62de8524d1201bcd1bad83819e057f06d3510467fd5817aaef25",
+      "thread_probe.py": "c9ef0bf499700e0d6bd8893c9778d68b3deeed6f7e47a1ca83fe6cfca09b0e2c",
+      "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+      "urbit": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+    }
+  },
+  "admission": {
+    "ActiveState": "active",
+    "CPUQuotaPerSecUSec": "1s",
+    "MemoryMax": "4294967296",
+    "MemorySwapMax": "0",
+    "TasksMax": "128"
+  },
+  "result": {
+    "ok": true,
+    "unit": "omabit-thread-probe-40311099ee18409c83da1edc24513d96",
+    "self_messages": [
+      {
+        "nonce": "omabit-native-be1f176060844361a1406dc9",
+        "ack": {
+          "ok": "ok",
+          "id": 1,
+          "response": "poke"
+        },
+        "event_id": "0"
+      }
+    ],
+    "clean_shutdown": true,
+    "version": "urbit 4.6-5a7614f\ngmp: 6.2.1\nsigsegv: 2.14\nopenssl: OpenSSL 1.1.1w  11 Sep 2023\nlibuv: 1.50.0\nlibh2o: 0.13.6\nlmdb: 0.9.70\ncurl: 8.9.1",
+    "last_http": {
+      "port": 18081,
+      "path": "/~/channel/omabit-probe-82f01756f2024156b467a57cb7d96ebe",
+      "method": "PUT",
+      "phase": "complete",
+      "status": 204,
+      "headers": {
+        "Content-Type": null,
+        "Content-Length": null,
+        "Transfer-Encoding": null
+      },
+      "bytes": 0
+    },
+    "stage": "inventory",
+    "transport": "eyre-channel",
+    "attempt": {
+      "sender": "~zod",
+      "receiver": "~zod",
+      "nonce": "fail",
+      "state": "rejected"
+    },
+    "channel_deleted": true,
+    "application_nack": {
+      "ack": {
+        "id": 1,
+        "err": "/lib/hood/helm/hoon:<[275 5].[275 7]>\n/lib/hood/helm/hoon:<[274 5].[275 7]>\n/lib/hood/helm/hoon:<[273 3].[279 76]>\npoke-hi-fail\n/lib/hood/helm/hoon:<[272 3].[279 76]>\n/lib/hood/helm/hoon:<[271 15].[279 76]>\n/lib/hood/helm/hoon:<[655 33].[655 51]>\n/lib/hood/helm/hoon:<[655 28].[655 60]>\n/lib/hood/helm/hoon:<[636 3].[673 5]>\n/lib/hood/helm/hoon:<[632 3].[673 5]>\n/app/hood/hoon:<[132 34].[132 60]>\n/app/hood/hoon:<[132 18].[132 70]>\n/app/hood/hoon:<[121 21].[121 30]>\n/app/hood/hoon:<[121 3].[130 5]>\n/app/hood/hoon:<[120 3].[130 5]>\n/app/hood/hoon:<[119 3].[130 5]>\n/app/hood/hoon:<[118 3].[135 5]>\n/app/hood/hoon:<[117 3].[135 5]>\n/sys/vane/gall/hoon:<[1.863 9].[1.863 37]>\n",
+        "response": "poke"
+      },
+      "event_id": "0"
+    },
+    "receipt_basis": "matched Gall application acknowledgement and deliberate application rejection",
+    "log_truncated": false
+  },
+  "trial_history": [
+    {
+      "trial": 1,
+      "path": "/tmp/omabit-thread-probe-20261022-01",
+      "exit": 1,
+      "ok": false,
+      "scope_inactive": true,
+      "clean_shutdown": null,
+      "result_sha256": null
+    },
+    {
+      "trial": 2,
+      "path": "/tmp/omabit-thread-probe-20261022-02",
+      "exit": 1,
+      "ok": false,
+      "scope_inactive": true,
+      "clean_shutdown": true,
+      "result_sha256": "a5d420415f1b3178602f478bdede16173d25df6407d6a417c98d6966a6c7c99b"
+    },
+    {
+      "trial": 3,
+      "path": "/tmp/omabit-thread-probe-20261022-03",
+      "exit": 1,
+      "ok": false,
+      "scope_inactive": true,
+      "clean_shutdown": true,
+      "result_sha256": "7a408989f198d01b2b6f579bdb7c20eb69e17e2fe390a528be7c1774afdfefdc"
+    },
+    {
+      "trial": 4,
+      "path": "/tmp/omabit-thread-probe-20261022-04",
+      "exit": 1,
+      "ok": false,
+      "scope_inactive": true,
+      "clean_shutdown": true,
+      "result_sha256": "315798ec8f418786b525b4de818d98b717e2cbc7bc6dde0c2c8bc90d709114ff"
+    },
+    {
+      "trial": 5,
+      "path": "/tmp/omabit-thread-probe-20261022-05",
+      "exit": 1,
+      "ok": false,
+      "scope_inactive": true,
+      "clean_shutdown": true,
+      "result_sha256": "d2eaa6b9bc0c431634b2dd8313b06f2dbec4d47a6baa5697e1b9189afb3d651c"
+    },
+    {
+      "trial": 6,
+      "path": "/tmp/omabit-thread-probe-20261022-06",
+      "exit": 1,
+      "ok": false,
+      "scope_inactive": true,
+      "clean_shutdown": true,
+      "result_sha256": "6836d285882047128dfd666ae12b4a423ad128f28a6e5606b9e6d6151eda31b1"
+    },
+    {
+      "trial": 7,
+      "path": "/tmp/omabit-thread-probe-20261022-07",
+      "exit": 0,
+      "ok": true,
+      "scope_inactive": true,
+      "clean_shutdown": true,
+      "result_sha256": "c7dfda37aaa68bf121510ae9542a7cd1e98c890bf12518e8f3da19865419a67a"
+    }
+  ],
+  "evidence_sha256": {
+    "/tmp/omabit-thread-probe-20261022-07/lab/result.json": "c7dfda37aaa68bf121510ae9542a7cd1e98c890bf12518e8f3da19865419a67a",
+    "/tmp/omabit-thread-probe-20261022-07/inputs.json": "afa26cb58557fd384c7519334167c3ea81a53d2bcf10d5a7057286b3b6a8612d",
+    "/tmp/omabit-thread-probe-20261022-07/admission.json": "b03c6d67f0e323797b3bda459602790bac0aee0566799dae906e2670c84ff11b",
+    "/tmp/omabit-thread-probe-20261022-07/command.json": "68a0e2fccd1bacbddbb19dec61aefa521e6da6f8e3301165814e899622c3c16c"
+  },
+  "next_gate": "two fresh Docker fake galaxies: same-ship controls, bidirectional accepted messages, deliberate remote rejection and restart with same pier/session/namespace",
+  "limitations": [
+    "Generic noun-input Spider hi timed out; a typed-vase mismatch is a source inference, not a verified root cause.",
+    "Batch runtimes do not provide a terminal transcript for the previous receiver-line assertion.",
+    "The revised Docker channel probe has offline receipt tests but has not yet run."
+  ]
+}

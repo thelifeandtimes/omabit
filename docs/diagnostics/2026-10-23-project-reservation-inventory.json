@@ -1,0 +1,144 @@
+{
+  "passed": true,
+  "capability": "project-reservations-v1",
+  "route": "GET /v1/projects",
+  "command": "projects",
+  "schema_changed": false,
+  "runtime_probed": false,
+  "mutations_exposed": false,
+  "client_race_seconds": 2.084,
+  "access_race_seconds": 1.825,
+  "collector_race_seconds": 7.771,
+  "walkthrough": {
+    "passed": true,
+    "namespace": "private user/network/mount/pid/ipc/uts",
+    "fixture_rpc_only": true,
+    "host_home_run_sockets_mounted": false,
+    "binary_sha256": "d5fb851b658f94b7dbebec6009fe378d8b61cd6b35e135131f5f956e9d46d3d9",
+    "cases": [
+      {
+        "case": "enroll-private-fixture",
+        "exit": 0,
+        "stdout": "{\n  \"name\": \"fixture\",\n  \"transport\": \"unix\",\n  \"socket\": \"/lab/rpc.sock\",\n  \"runner_id\": \"runner-fixture\",\n  \"mode\": \"simulation\",\n  \"enrolled_at\": \"2026-10-24T01:50:28.972143453Z\",\n  \"revision\": 1\n}\n",
+        "stderr": ""
+      },
+      {
+        "case": "stored-json",
+        "exit": 0,
+        "stdout": "{\n  \"schema_version\": 1,\n  \"runner_id\": \"runner-fixture\",\n  \"mode\": \"simulation\",\n  \"read_at\": \"2026-10-24T01:00:00Z\",\n  \"basis\": \"stored-reservations\",\n  \"runtime_observation\": \"not-performed\",\n  \"projects\": [\n    {\n      \"id\": \"project-fixture\",\n      \"revision\": 1,\n      \"label\": \"Recovery demo\",\n      \"created_at\": \"2026-10-23T01:00:00Z\",\n      \"review_digest\": \"f74ce6884e4eb732948169dcbdce276f163be00063932a55e10046093df49e22\",\n      \"members\": [\n        {\n          \"instance_id\": \"demo-nec\",\n          \"ship\": \"~nec\",\n          \"http_port\": 18382,\n          \"internal_http_port\": 8080\n        },\n        {\n          \"instance_id\": \"demo-zod\",\n          \"ship\": \"~zod\",\n          \"http_port\": 18381,\n          \"internal_http_port\": 8081\n        }\n      ]\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "case": "stored-text",
+        "exit": 0,
+        "stdout": "Stored project reservations on runner-fixture (simulation)\nRead at: 2026-10-24T01:00:00Z\nPROJECT          LABEL          REVISION  INSTANCE  SHIP  LOOPBACK HTTP PORT  INTERNAL HTTP PORT\nproject-fixture  Recovery demo  1         demo-nec  ~nec  18382               8080\nproject-fixture  Recovery demo  1         demo-zod  ~zod  18381               8081\nSaved reservations only. Runtime observation was not performed; no live readiness or launch authority is implied.\n",
+        "stderr": ""
+      },
+      {
+        "case": "older-runner",
+        "exit": 1,
+        "stdout": "",
+        "stderr": "{\n  \"error\": {\n    \"code\": \"client_error\",\n    \"message\": \"runner does not advertise project-reservations-v1; saved project inventory is unavailable\"\n  }\n}\n"
+      },
+      {
+        "case": "changed-runner",
+        "exit": 1,
+        "stdout": "",
+        "stderr": "{\n  \"error\": {\n    \"code\": \"runner_identity_mismatch\",\n    \"message\": \"runner identity or mode differs from enrollment; review the connection before re-enrolling\"\n  },\n  \"guidance\": {\n    \"kind\": \"resolve_runner_identity\",\n    \"summary\": \"Stop mutations through this selection. Resolve the intended runner before reconnecting; do not overwrite enrollment to suppress the mismatch.\",\n    \"next\": [\n      {\n        \"name\": \"runners\",\n        \"effect\": \"Read the saved identities locally using the same collector registry.\"\n      },\n      {\n        \"name\": \"help runners\",\n        \"effect\": \"Read offline selection and identity guidance.\"\n      }\n    ]\n  }\n}\n"
+      },
+      {
+        "case": "offline-command-help",
+        "exit": 0,
+        "stdout": "Usage: urbit-collector --socket /absolute/path/runner.sock projects\n\nRead saved project identities and port reservations only; no live runtime probe or resource changes. Requires project-reservations-v1.\n\nDevelopment management client; inspect hello.mode/features for server capabilities.\nThis is not a full collector daemon or production runtime manager.\nSelect --socket with an absolute path or --runner with an enrolled name before the subcommand.\nRunner requests check Hello compatibility; listing and forgetting enrollment are local.\nRevisions and request IDs are never inferred; mutations are never automatically retried.\nResults are indented JSON; watch commands emit compact newline-delimited JSON (NDJSON).\n\n",
+        "stderr": ""
+      }
+    ],
+    "requests": [
+      [
+        "GET",
+        "/hello"
+      ],
+      [
+        "GET",
+        "/hello"
+      ],
+      [
+        "GET",
+        "/hello"
+      ],
+      [
+        "GET",
+        "/hello"
+      ],
+      [
+        "GET",
+        "/v1/projects"
+      ],
+      [
+        "GET",
+        "/hello"
+      ],
+      [
+        "GET",
+        "/hello"
+      ],
+      [
+        "GET",
+        "/hello"
+      ],
+      [
+        "GET",
+        "/v1/projects"
+      ],
+      [
+        "GET",
+        "/hello"
+      ],
+      [
+        "GET",
+        "/hello"
+      ],
+      [
+        "GET",
+        "/hello"
+      ],
+      [
+        "GET",
+        "/hello"
+      ]
+    ]
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-project-reservation-inventory",
+  "source_sha256": {
+    "internal/protocol/projects.go": "b533c63945039cb8da2f8c5904ca01bee069992ef01f302c6552f3c92bb21c28",
+    "internal/managed/project_inventory.go": "c072916c22cc1e400cd3136090e7a83c3eec07033557e1dbda6af73d2a2b9d88",
+    "internal/managed/project_inventory_test.go": "5ddb9bf328556aa532d80efbef6e08d55624b51ee5d823b2260fc41c39bf5e47",
+    "internal/managed/server.go": "fbca8d3ab64ffbc2ebe6b6a1f55dc5c6c5da5afd851ce078888180c32f0ff076",
+    "internal/client/projects.go": "6beea3cae82e86890b12f1a8b6ebde005913ba4c68b13fb4ebea541abc0c6dc3",
+    "internal/client/projects_test.go": "17f9fe87923e3f0425567533aff6ed325ecf3f4fdd16f6f71708e7b465da1ec5",
+    "internal/access/keys.go": "b9f77f5fe536e01601b62bc2c2c1d22696bc6d6f2e04ba4d13eabe3eaf67edb6",
+    "internal/access/projects_test.go": "195078781b5dbdcc9afbf3922cd8603a67b29ada617c1b0948293e99faad0673",
+    "backend/cmd/urbit-collector/main.go": "d359c7137afc61126bda86c567bf527e3f9dd3b6a3be0eec8257090a39597039",
+    "backend/cmd/urbit-collector/output.go": "c19f96524105d5c22fc51a7c19f1c0d43ab05e45896839d97a017b3b690058b3",
+    "backend/cmd/urbit-collector/task_help.go": "8e6017b99f57d8b227ed766d2949319e68a177e6b01ba2dba3fbc4272faf0656",
+    "backend/cmd/urbit-collector/projects_test.go": "ca45e8ae83f31d08ee9b6355e7f6b18ae44b391a00c7874ae26eaaae73ab556c",
+    "skills/omabit-operator/references/projects.md": "60f9d4c6a7b1d13399e212875a60410435a669aa60a506d77d516ecf82d5b204"
+  },
+  "evidence_sha256": {
+    "omabit-project-inventory-tests.log": "da546a1958ca812264f5caa250f8311b944d3a979d55a41064797428c2b91e6c",
+    "omabit-project-inventory-tests-corrected.log": "56cae675d97386477b2f0225be27101048b37042ce8b9bcc0852d8c9f24a69ea",
+    "omabit-project-inventory-focused-pass.log": "c1abf8ee0b10e6b82fb17dcad5830d07eee85463b8c92ffc72d6102e7c6a70bd",
+    "omabit-project-inventory-client-cli-race.log": "ce5985efeadbab3b96f7932bdd6d0d7ac776c96865861c0de1f9f66ce11dad4e",
+    "omabit-project-inventory-client-cli-race-pass.log": "6b4a554fdb36b4e5a91ac7e798041e42d5cda1bc19b41c3bb263795956ee18fb",
+    "omabit-project-inventory-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-project-inventory-skill-package.log": "4a160235c0add54f7a5997815d0e01a072210439de4899c702c94dd3cd814662",
+    "omabit-project-inventory-walkthrough.json": "90750adfe362070c0ecc53a9fe9f553211e01b448e90ca7c6a2ee6fdd5141d37",
+    "omabit-project-inventory-walkthrough-errors.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-project-inventory-walkthrough.py": "a1d7d2fadcf68e04da4a7d23528e259d61f3f9d1a195e4ea47f17b8db6bc9730"
+  },
+  "in_appliance23_or24": false,
+  "retained_failed_trials": [
+    "initial CLI test incorrectly combined expected-runner-id with direct socket",
+    "corrected selection used preexisting temp dir without required private mode; nested new registry fixes fixture"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-reusable-checkpoint-envelope",
+  "verification": {
+    "passed": true,
+    "focused_tests": 42,
+    "checkpoint_tests": 23,
+    "ancestry_regression_tests": 19,
+    "initial_harness_selected_zero_tests": true,
+    "zero_test_run_is_acceptance_failure": true,
+    "corrected_harness_asserts_expected_count": true,
+    "scopes_inactive": [
+      "omabit-repeated-checkpoint-unit-20261025-01",
+      "omabit-repeated-checkpoint-unit-20261025-02"
+    ],
+    "new_checkpoint_format": 3,
+    "readable_checkpoint_formats": [
+      1,
+      2,
+      3
+    ],
+    "ancestor_bodies_excluded": 2,
+    "old_checkpoint_writer_unchanged": true,
+    "old_reader_refuses": true,
+    "runtime_retired": true,
+    "pure_export_validation_passed": true,
+    "new_admission": false,
+    "same_format_repeated_runtime_qualified": false,
+    "production_resources_touched": false
+  }
+}

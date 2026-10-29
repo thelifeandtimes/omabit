@@ -1,0 +1,27 @@
+{
+  "memory": "M349",
+  "top_level_regressions": 188,
+  "including_subcases": 1392,
+  "static_checks_passed": true,
+  "built_cli_walkthrough": {
+    "binary_sha256": "111cd698fc7fb78937778a04ba5af3c759060adb3e4374f8a8d60e8b68857f3d",
+    "cases": [
+      {
+        "format": "json",
+        "exit": 0
+      },
+      {
+        "format": "text",
+        "exit": 0
+      }
+    ],
+    "registry_created": false,
+    "foundation_digest": "17a7d5fc3fb8e9314f5d6e806cad3e4ef0654388c87920ff729b48624e846410",
+    "review_digest": "abd556f834bf4d4f7a0d1aeb7c4a764863d6a50f10b93dd1f34475afe8e10cb6"
+  },
+  "pure_review_only": true,
+  "persistent_schema_changed": false,
+  "runtime_authorized": false,
+  "foundation_matches_qualified_public_receipts": true,
+  "private_runtime_launch_status": "source-entry VM09 independently running"
+}

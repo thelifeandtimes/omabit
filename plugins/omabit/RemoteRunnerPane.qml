@@ -18,7 +18,7 @@ Column {
   Label { text: "Add a remote runner"; font.pixelSize: Style.space(22); font.bold: true }
   Label { width: parent.width; secondary: true; text: "Use the SSH alias or hostname you normally sign in to. Omabit will find an existing runner or guide you through installing one, then set up a dedicated key for this desktop." }
   Label { text: "SSH host or alias"; caption: true; secondary: true }
-  SSHHostField { id: host; objectName: "remote-setup-host"; width: parent.width; enabled: !root.blocked; configFile:config.text; onSuggestionSelected:function(value){port.text=value ? String(value) : ""} }
+  SSHHostField { id: host; service: root.service; objectName: "remote-setup-host"; width: parent.width; enabled: !root.blocked; configFile:config.text; onSuggestionSelected:function(value){port.text=value ? String(value) : ""} }
   Label { width:parent.width;caption:true;secondary:true;text:"Choose from your local SSH files, or type any custom host." }
   Label { width:parent.width;caption:true;secondary:true;visible:port.text!==""&&!root.advanced;text:"SSH port "+port.text+" · change in Advanced" }
   ActionButton { objectName: "remote-setup-advanced"; text: root.advanced ? "Advanced −" : "Advanced +"; quiet: true; compact: true; onClicked: root.advanced=!root.advanced }

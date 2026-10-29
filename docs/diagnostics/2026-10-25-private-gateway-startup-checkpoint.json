@@ -1,0 +1,49 @@
+{
+  "memory": "M392",
+  "status": "integrated-source-qualified-runtime-pending",
+  "source_sha256": {
+    "scripts/qualification/private-chains/docker_gateway.cjs": "b3f19ed5bdf468d41349e72c50514beaa140d7a00a694580a6570d90f68040fe",
+    "scripts/qualification/private-chains/test_gateway_checkpoint.cjs": "67e6af072ccbc025eef37119e35647a6444c50d8bed722cdd2fd90628065ab52"
+  },
+  "checks": {
+    "memory": "M392",
+    "exit": 0,
+    "summary": {
+      "tests": 114,
+      "pass": 114,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "seconds": 0.14707901899237186,
+    "source_sha256": {
+      "scripts/qualification/private-chains/docker_gateway.cjs": "b3f19ed5bdf468d41349e72c50514beaa140d7a00a694580a6570d90f68040fe",
+      "scripts/qualification/private-chains/test_gateway_checkpoint.cjs": "67e6af072ccbc025eef37119e35647a6444c50d8bed722cdd2fd90628065ab52"
+    },
+    "diff_check_exit": 0,
+    "generation06_unchanged": true,
+    "runtime_qualified": false,
+    "actual_docker_access": false,
+    "full_initial_gateway_executed": false
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-startup-checkpoint",
+  "evidence_sha256": {
+    "docker_gateway.cjs": "b3f19ed5bdf468d41349e72c50514beaa140d7a00a694580a6570d90f68040fe",
+    "previous-gateway.cjs": "5c1f9da910456ad76c708153380c940b288ab8c0a2334971f9c8b8cc3eb55d66",
+    "test_gateway_checkpoint.cjs": "67e6af072ccbc025eef37119e35647a6444c50d8bed722cdd2fd90628065ab52",
+    "test_gateway_copy.cjs": "9455c477fc3ad527c044e17c59238f35f63c033712515c03a220aa08e16f8252",
+    "test_gateway_initial.cjs": "f99cbe2f39df4bfd1da865e79a00240a5ed3974e3fb827ba0a4e472cc7ea871a",
+    "checkpoint-tests01.tap": "7f8131c8f5f766bfd9dbd29d1135b2939695cafad67282fe4db5b305e4aa05b0",
+    "checkpoint-tests02.tap": "a61547de4a19142b828377bd0b358da6abe35b556f0034e5d40cf66bb3e97354",
+    "checkpoint-tests03.tap": "d9dcb7b63423293ddf336bce0046c1c50b10f2909b19639bdd1bc4a7bd2ad786",
+    "integrated-tests.tap": "0b4bcea5f10050ad83408baf50f93ea6d0cd17bb316e6ffca785658e2b48632f",
+    "integrated-result.json": "d2d96ff48a96880ffb6680c5eebea6548002c35d43bb0f455b8d8475b2725084",
+    "applied.json": "d5b150f350c458a96d5f6fd2bc7bc3870d45a6cef8c0711736ab1a1a23399411",
+    "integrate.py": "e560995bf82eec8b7a7323434f4b6be8cf2ecdc4619df5d04877fed76d9f59b7"
+  },
+  "schema": 43,
+  "new_generation_required": true,
+  "observer_implemented": false,
+  "runtime_durability_proven": false,
+  "supersedes": "M391 pending post-initialization checkpoint source work only; fresh VM durability, external observation and delivery remain open."
+}

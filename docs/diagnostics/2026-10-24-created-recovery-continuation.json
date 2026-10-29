@@ -1,0 +1,32 @@
+{
+  "memory": "M170",
+  "schema": 39,
+  "persistent_format_changed": false,
+  "pure_race_seconds": 93.618,
+  "adapter_race_seconds": 73.741,
+  "related_readiness_second_recovery_race_seconds": 139.211,
+  "qualified": "inert source only",
+  "mutating_continuation_queue": false,
+  "runtime_qualified": false,
+  "frozen_vm31_contains_this_work": false,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-24-created-recovery-continuation",
+  "manifest": {
+    "omabit-recovery-continuation-model-attempt1.log": "8ed67a5ce2da413b0d217d982e49fb62cdcb278c2e3a99b1b463c0ee98fe4680",
+    "omabit-recovery-created-start-model-attempt1.log": "9efc1d1b0992ace07811645bb7ef8f5479d85668ea55f0bee565b5d6f2de4d41",
+    "omabit-recovery-created-start-model-race.log": "d1bc84251d8d1957d16713b666b8a3265ed58fb99663d43eeb3b2f48b09c1fd2",
+    "omabit-recovery-created-start-model-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovery-created-start-adapter-attempt1.log": "59c599c50bfc7b39174cdd8b5c08f2f53a4b2edd53a7d2e8824b430d5c264423",
+    "omabit-recovery-created-start-adapter-race-attempt2.log": "76ae503ba15e8e258bf2de8c2a8198402a272aa3ba39910f5643821c71928a88",
+    "omabit-recovery-created-start-adapter-race-attempt3.log": "fd2c5418ab7797b2a13de07ec34eb741a4f26badb3dff7b3847d69f2df9136be",
+    "omabit-recovery-created-start-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovery-created-start-related-race.log": "e9575f2b67f81cf70bb4b654b42c89ce43c8cfc96c448a7f57cbf6b11636d576",
+    "omabit-recovery-created-start-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sources/internal/projectnetwork/anchor_recovery_continuation.go": "f7dceee4fd2f432941ed1f66812b36faf1d50164523395e295e072b509e22f84",
+    "sources/internal/projectnetwork/anchor_recovery_continuation_test.go": "ac1e7acec6fcdfc652630e682d389e1f819c0c6bc6d35583c07cbf5a666e9e30",
+    "sources/internal/projectnetwork/anchor_replacement.go": "f512580db6b9436f9b9ce40d83949cd24f1a9ebda3d2cde32824a8ad9d4735fe",
+    "sources/internal/projectnetwork/anchor_replacement_created_start.go": "97c80a967633e1de6da5a4e66f77d1cb5e9a73cf7090a8fd71a8c597cb708d90",
+    "sources/internal/projectnetwork/anchor_replacement_created_start_test.go": "f958d4d3dce5a868a0a41a9ca035018a50a694f3bb6e7a2dcf1aed2f1b2eaaef",
+    "sources/internal/runtimequalify/project_anchor_replacement_linux.go": "6215e0472b8316f1ce72d4bba289d37fa79cce2cfc692936f2c7f86e193c3d80",
+    "sources/internal/runtimequalify/project_anchor_created_start_linux_test.go": "0363166f819bded83991a6db9d81d0c29a514718b07f76ec7c57b77f4daa882b"
+  }
+}

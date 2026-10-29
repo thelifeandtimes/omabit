@@ -1,0 +1,230 @@
+{
+  "checkpoint": "guided-source-restoration-ui",
+  "passed": true,
+  "scope": "Actual QML storage pane and restoration controller, with verbatim Service callbacks, inert command dispatch and synthetic receipts. Bubblewrap private user/network/mount/PID/IPC namespace, private HOME/XDG, offscreen Qt. No real runner/ship/desktop/engine/keyring used.",
+  "ui_result": "/tmp/omabit-restore-ui-20261022-03/result.json",
+  "ui_result_sha256": "89412a9fa7ffce541ee1f0485d724762d47b4b821ce0db047691404d64e85d40",
+  "screenshots": {
+    "refusal": "/tmp/omabit-restore-ui-20261022-03/refusal.png",
+    "review": "/tmp/omabit-restore-ui-20261022-03/review.png",
+    "uncertain": "/tmp/omabit-restore-ui-20261022-03/uncertain.png",
+    "restored": "/tmp/omabit-restore-ui-20261022-03/restored.png",
+    "interrupted": "/tmp/omabit-restore-ui-20261022-03/interrupted.png",
+    "continuation": "/tmp/omabit-restore-ui-20261022-03/continuation.png"
+  },
+  "screen_hashes": {
+    "continuation.png": "4c20fe312a229591a6eae87af63cf26f565b375b0b8a443a78a9a3f450eb2f65",
+    "interrupted.png": "4429633109f944ac49b6f846995735c742a7674e8e190082df5739424ec27bc8",
+    "restored.png": "c3a2589fd5a1a71cd5504b882bd948533413145b8c69b730bd76bd589f089c01",
+    "uncertain.png": "ac8097a9c77d4dd5ea2c3212ef3024503c6834f8141fc30870a0f496e926a67b",
+    "review.png": "d339c03ddfc96c91baa97931a108431388d05f91edde1c697504c6e66f148158",
+    "refusal.png": "69a6a56a6eeb1b4bb59ca41775b5159416adca66adfff967e315200ffcd038a0",
+    "qml.log": "19bc4ee1925fbfccd84fcafa724031cbe87e088066aa4d3c27e8f6d32948adc5"
+  },
+  "source_sha256": {
+    "plugins/omabit/ImportRestoration.qml": "e999f2852130ba43e7807c16eb4d0817f3967c1e35a68691a63375acb6f4bcf4",
+    "plugins/omabit/ImportRestorePane.qml": "1853416ba52bd4f43e20325d32b491fd0389047fb424cacf01eee5ea32a2dd9a",
+    "plugins/omabit/StoragePane.qml": "bea3bec64a14caf6595fbaa51c60bcd1cde4b428ed77a27543ee57f098f04067",
+    "plugins/omabit/Service.qml": "b0f55597a8923ac859d6b4499a28c158f7b4b4e82c5732f171aa36362739a0ea",
+    "plugins/omabit/Model.js": "2912e15df4012075fc74190d64a4978f44d9177329f021cd6445f32fe9600d7c",
+    "plugins/omabit/qmldir": "ecaac4ebfc6431bb83171ba578e211f161f566167eb6544378f78dec4899cc69",
+    "internal/collection/inventory.go": "4f4aaf1453a3cb16257d85ce63b30a6e06bb2572685d87f6d19f4645e3a8f936",
+    "internal/collection/watch_transport_test.go": "ecf3e19f6ac9d8955029bedf25c9048346cc550f260ab7c52a9a6540f7d256d6",
+    "backend/cmd/urbit-collector/storage.go": "93f40f91c2c157b3f30d46aac3770708bc9dbdbb888b9283fd0a033f89ec2c05",
+    "backend/cmd/urbit-collector/storage_restore_actor_test.go": "802b4eb0f86fc2aa6d301257629ec94f46dfb866a14531e93db6102eb5ee4a1a",
+    "scripts/test-panel-model.js": "5e244edc8370f07939e55d0edb5c84fcdbf9cd94d8d9c693b6e9c6b188859326",
+    "scripts/test-import-restoration-state.js": "8bb2c030b986308674e534a7f0e4e0ca4cc0e77c72c17acb5fd7b96a720d2705",
+    "scripts/test-import-restoration-offscreen.py": "5db51bfdafb28902cb75deb7c2c31f9e9f58051c6bd270b06726f8368d78bf26",
+    "scripts/test-import-restoration-offscreen.qml": "221640a8eb5370cb732434aec4a70d51171458bb490639a171fbea3bf0df9884",
+    "skills/omabit-operator/references/imports.md": "87d57214a9b962d8b541fbecc730391bec7af5c02c113c2fe2cdad6fb774fecd"
+  },
+  "dispatches": [
+    {
+      "args": [
+        "--runner",
+        "restore-lab",
+        "--expected-runner-id",
+        "runner-restore-lab",
+        "preview-import-restore",
+        "zod",
+        "--revision",
+        "1",
+        "--expected-actor",
+        "local-uid:1000"
+      ],
+      "kind": "preview-import-restore"
+    },
+    {
+      "args": [
+        "--runner",
+        "restore-lab",
+        "--expected-runner-id",
+        "runner-restore-lab",
+        "preview-import-restore",
+        "zod",
+        "--revision",
+        "1",
+        "--expected-actor",
+        "local-uid:1000"
+      ],
+      "kind": "preview-import-restore"
+    },
+    {
+      "args": [
+        "--runner",
+        "restore-lab",
+        "--expected-runner-id",
+        "runner-restore-lab",
+        "preview-import-restore",
+        "zod",
+        "--revision",
+        "2",
+        "--expected-actor",
+        "local-uid:1000"
+      ],
+      "kind": "preview-import-restore"
+    },
+    {
+      "args": [
+        "--runner",
+        "restore-lab",
+        "--expected-runner-id",
+        "runner-restore-lab",
+        "restore-import",
+        "zod",
+        "--revision",
+        "2",
+        "--expected-actor",
+        "local-uid:1000",
+        "--restore-digest",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "--request-id",
+        "ui-1792670213017-987d4482131ea",
+        "--confirm-restore"
+      ],
+      "kind": "restore-import"
+    },
+    {
+      "args": [
+        "--runner",
+        "restore-lab",
+        "--expected-runner-id",
+        "runner-restore-lab",
+        "preview-import-restore",
+        "zod",
+        "--revision",
+        "3",
+        "--expected-actor",
+        "local-uid:1000"
+      ],
+      "kind": "preview-import-restore"
+    },
+    {
+      "args": [
+        "--runner",
+        "restore-lab",
+        "--expected-runner-id",
+        "runner-restore-lab",
+        "restore-import",
+        "zod",
+        "--revision",
+        "3",
+        "--expected-actor",
+        "local-uid:1000",
+        "--restore-digest",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "--request-id",
+        "ui-1792670213290-4ce13b33c49c6",
+        "--confirm-restore"
+      ],
+      "kind": "restore-import"
+    },
+    {
+      "args": [
+        "--runner",
+        "restore-lab",
+        "--expected-runner-id",
+        "runner-restore-lab",
+        "preview-import-restore",
+        "zod",
+        "--revision",
+        "3",
+        "--expected-actor",
+        "local-uid:1000"
+      ],
+      "kind": "preview-import-restore"
+    },
+    {
+      "args": [
+        "--runner",
+        "restore-lab",
+        "--expected-runner-id",
+        "runner-restore-lab",
+        "restore-import",
+        "zod",
+        "--revision",
+        "3",
+        "--expected-actor",
+        "local-uid:1000",
+        "--restore-digest",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "--request-id",
+        "ui-1792670213468-40a4ec7f9a3c5",
+        "--confirm-restore"
+      ],
+      "kind": "restore-import"
+    },
+    {
+      "args": [
+        "--runner",
+        "restore-lab",
+        "--expected-runner-id",
+        "runner-restore-lab",
+        "preview-pier",
+        "--source",
+        "/fixture/source/unclassified-pier",
+        "--storage-root",
+        "default"
+      ],
+      "kind": "preview-pier"
+    }
+  ],
+  "race": {
+    "command": "OMABIT_TEST_FAKE_ZOD=0 go test -race ./internal/collection ./backend/cmd/urbit-collector -count=1",
+    "log": "/tmp/omabit-restore-ui-race-20261022.log",
+    "sha256": "c789fc3accaa3b7b4c7e44d41a9100d16237d0f97d7955ba8a3df37c89332323",
+    "result": "ok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/collection\t8.765s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/backend/cmd/urbit-collector\t7.788s\n"
+  },
+  "model": {
+    "command": "node scripts/test-panel-model.js",
+    "log": "/tmp/omabit-restore-ui-model-final.log",
+    "sha256": "f823367fd13cd21886fcdb3ea745aa5f25a3cdee59ff6bf51db9cdf765faf533"
+  },
+  "qt6_syntax": {
+    "tool": "/usr/lib/qt6/bin/qmlformat --ignore-settings",
+    "report": "/tmp/omabit-restore-qml-syntax-20261022-qt6/result.json",
+    "sha256": "4459143530fd701d18fa87b818c9dab95fa53d016c7ee4a9ef305cc82c291141",
+    "repository_sources_reformatted": false
+  },
+  "vet": {
+    "command": "go vet ./internal/collection ./backend/cmd/urbit-collector",
+    "exit": 0
+  },
+  "operator_skill_valid": true,
+  "late_reply_regression": {
+    "failed_before_fix_log": "/tmp/omabit-restore-ui-late-proof-before.log",
+    "failed_before_fix_sha256": "7b8bf29c525d0a8acca9507f85ed1edf56200d020570eae128334ea5c5fca443",
+    "now_covered_by": "scripts/test-import-restoration-state.js"
+  },
+  "earlier_ui_runs": [
+    "/tmp/omabit-restore-ui-20261022-01",
+    "/tmp/omabit-restore-ui-20261022-02"
+  ],
+  "visual_review": [
+    "review.png",
+    "restored.png"
+  ],
+  "qml_into_real_vm_qualified": false,
+  "production_installation": false,
+  "new_live_jobs": false
+}
