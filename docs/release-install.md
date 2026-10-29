@@ -103,7 +103,7 @@ The bundle includes `docs/cli/` and these skills:
 
 - `skills/omabit-operator/SKILL.md`: runner selection, revisions, request receipts,
   lifecycle, imports, project networks and recovery boundaries.
-- `skills/omabit-plugin-development/SKILL.md`: independent authentication,
+- `skills/omabit-plugin-developer/SKILL.md`: independent authentication,
   standalone login, missing-backend installation, recovery and shared native UI.
 
 Plugin sessions talk directly to the ship. Omabit assists approval and cleanup;
