@@ -1,0 +1,28 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-keyed-docker-image-pin",
+  "inert_tests": 15,
+  "runtime_passed": false,
+  "failed_vm_seconds": 371.99,
+  "gateway_started": false,
+  "ship_boots": 0,
+  "observed_image_identity": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+  "exact_reference": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+  "readonly_inspection_preserved_disks": true,
+  "failed_overlay_archive": {
+    "lossless": true,
+    "source": "/tmp/omabit-import-guest-run-private-chain-20261025-02/lab/root.qcow2",
+    "archive": "/tmp/omabit-import-guest-run-private-chain-20261025-02/lab/root.qcow2.gz",
+    "source_sha256": "748f122ce8e41135b8a4e5f0a43149924712583909c918bf2776ae5cd8ca0ce8",
+    "source_bytes": 1989935104,
+    "archive_sha256": "810c67b4b6aaca1ff9dca653911eb880d89059c3cff6d86c10c64bf53eb1df7b",
+    "archive_bytes": 777396840,
+    "independent_decompression_sha256": "748f122ce8e41135b8a4e5f0a43149924712583909c918bf2776ae5cd8ca0ce8",
+    "original_run_inactive": true,
+    "inspector_inactive": true,
+    "gateway_never_started": true,
+    "restore": "gzip -dc archive > fresh original-path; compare source_sha256 before any read-only reinspection",
+    "original_file_removed": true
+  },
+  "raw_state_credentials_piers_exported": false,
+  "cache_relocation_receipt": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-docker-code-cache/relocation.json"
+}

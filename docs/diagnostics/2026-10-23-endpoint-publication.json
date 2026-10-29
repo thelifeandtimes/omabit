@@ -1,0 +1,924 @@
+{
+  "passed": true,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-endpoints20",
+  "independent_verification": {
+    "verified": true,
+    "passed": true,
+    "result_sha256": "5f72c7958a470d24eec33f89398c1f90307b2e521e83fec58bd850953439f4c9",
+    "seconds": 269.16,
+    "requests_verified": 28,
+    "exact_loopback_publications": 4,
+    "ipv6_refusals": 4,
+    "cross_bridge_refusals": 4,
+    "anchor_restart": {
+      "exit": 0,
+      "old_namespace": "net:[4026532239]",
+      "new_namespace": "net:[4026532298]",
+      "published_reachable": [
+        false,
+        false
+      ],
+      "outcome": "namespace-replaced"
+    },
+    "coordinated_recovery": true,
+    "clean_stops": 9,
+    "scope_inactive": true,
+    "original_artifacts_and_disks_verified": true,
+    "extracted_files_verified": 16
+  },
+  "frozen_build": {
+    "exercise_login_code": false,
+    "exercise_endpoints": true,
+    "endpoint_network": "egress",
+    "exercise_import": false,
+    "exercise_fake_network": false,
+    "network_state": false,
+    "network_isolation": false,
+    "import_mode": "rename",
+    "interrupt_copy": false,
+    "restore_copy": false,
+    "restore_ui": false,
+    "ui_source_sha256": {},
+    "root_disk_gib": 12,
+    "packages_manifest_sha256": "c9736a95de42fda4edcee2a72675449930bcd57cd110ef704a638e07f68c2cc9",
+    "kernel_source": "/usr/lib/modules/7.2.11-arch1-1/vmlinuz",
+    "modules": 29,
+    "artifacts": {
+      "base.raw": "2baffe9881fc03d00a00b4e5b1505957a0c372bd1d39849d8b5063e9c2710a58",
+      "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+      "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+      "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+    },
+    "source_sha256": {
+      "scripts/qualification/imports/appliance.py": "a3c1ebd692bfa80d904169c5f720695f24de93fe2b1582a915a722ac7cfc5c39",
+      "scripts/qualification/imports/guest.py": "918082c8f28f1e35886b81129cd8a13902b0999ad9a050f4eb90284b69c8c3a7",
+      "scripts/qualification/imports/import_case.py": "732af3ed264cdb6f71abf111e383ef5bd5846ea989b00f3c727b7438f0ac3dda",
+      "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+      "scripts/qualification/fake-networks/network_case.py": "4f54fcf1bee1aeadd0c12cd8cea96e1c3093b68f8c4bc836107d74fef1145bea",
+      "scripts/qualification/fake-networks/state_case.py": "58250c80ee6b860ee9988c3397418b8396c0f0f0195465507bf8762ba5451bf6",
+      "scripts/qualification/fake-networks/omabit-state.hoon": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+      "scripts/qualification/fake-networks/project_isolation.py": "9431d5fa9d24581ba8048447f04be613c3667a5a7ea8b1dd26b91df72f2f659a",
+      "scripts/qualification/fake-networks/endpoints_case.py": "8513fa38651d644a086056b9d8a4ab1137ccb528de17a96348ec561db7e6d644",
+      "scripts/qualification/fake-networks/endpoint-probe/main.go": "d5ff552064b211fc433c5143ef3099aee94aed7a2856be29df6dd92a5195a3e0"
+    },
+    "runner_sha256": "d0cbf62febdd1255144efe97708cb37a61b79b9a8361e8379a65f212a1bc016a",
+    "collector_sha256": "ffb13ae68058f27e92ccd3e5511b72d3cd184b074d555790dea52ec320818a30"
+  },
+  "endpoint_result": {
+    "ok": true,
+    "fixture_only": true,
+    "network_mode": "egress",
+    "projects": {
+      "a": {
+        "network": "3fb71725f28178ebaf4fd3495a35db55cdcd1c552d50e7167a7a522d3190fa46",
+        "members": {
+          "one": {
+            "container": "9d10b1b6bcef7d92862381860154da557d5ec363507957cfa9b4168a071ffe9a",
+            "port": 8081,
+            "fixture": "a-one-recovered"
+          },
+          "two": {
+            "container": "e285d9eebd51eccd5934611f326805952272813a03253f1463d754c46b402342",
+            "port": 8082,
+            "fixture": "a-two-recovered"
+          }
+        },
+        "ports": {
+          "8081": 18281,
+          "8082": 18282
+        },
+        "anchor": "1e6a8d0978f7c7b2ebab038b58b89f53f26b5f6f12b3db6c9da70f449a37e578",
+        "namespace": "net:[4026532298]",
+        "ip": "172.18.0.2",
+        "routes": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \neth0\t00000000\t010012AC\t0003\t0\t0\t0\t00000000\t0\t0\t0                                                                               \neth0\t000012AC\t00000000\t0001\t0\t0\t0\t0000FFFF\t0\t0\t0                                                                               \n",
+        "retired_members": [
+          {
+            "container": "25f72953c236a3a2c14fe6eabf2b5e74e9d5973a46fbd120213f5d0cce1578e3",
+            "port": 8081,
+            "fixture": "a-one-initial"
+          },
+          {
+            "container": "e7f9ae7c2dc659c2d06b212a28d9437d841cb7d568445459a50d0eaeabea136f",
+            "port": 8082,
+            "fixture": "a-two-initial"
+          }
+        ]
+      },
+      "b": {
+        "network": "f724cce3d93bdf6f6feadec02f886b4136e9c9f0095ae7ae94eba4b64e780d6e",
+        "members": {
+          "one": {
+            "container": "be44462d1f00ea8ed88a7c54b9b759029a6a21cf34cf4de84b90fb0835fcb885",
+            "port": 8081,
+            "fixture": "b-one-initial"
+          },
+          "two": {
+            "container": "4c54978ecacd4799ca60667b813340d3115ef9bba964b8e74ebfad1c6d668013",
+            "port": 8082,
+            "fixture": "b-two-initial"
+          }
+        },
+        "ports": {
+          "8081": 18283,
+          "8082": 18284
+        },
+        "anchor": "ea07eae07fc2a4940e736a7c609dd3022cb78ccc011bb052f48fc0409008c82a",
+        "namespace": "net:[4026532319]",
+        "ip": "172.19.0.2",
+        "routes": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \neth0\t00000000\t010013AC\t0003\t0\t0\t0\t00000000\t0\t0\t0                                                                               \neth0\t000013AC\t00000000\t0001\t0\t0\t0\t0000FFFF\t0\t0\t0                                                                               \n"
+      }
+    },
+    "requests": [
+      {
+        "host": "127.0.0.1",
+        "port": 8081,
+        "from_container": "25f72953c236a3a2c14fe6eabf2b5e74e9d5973a46fbd120213f5d0cce1578e3",
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "a-one-initial",
+          "port": 8081
+        }
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 8082,
+        "from_container": "e7f9ae7c2dc659c2d06b212a28d9437d841cb7d568445459a50d0eaeabea136f",
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "a-two-initial",
+          "port": 8082
+        }
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 18281,
+        "from_container": null,
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "a-one-initial",
+          "port": 8081
+        }
+      },
+      {
+        "host": "::1",
+        "port": 18281,
+        "from_container": null,
+        "exit": 7,
+        "status": "000",
+        "value": null
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 18282,
+        "from_container": null,
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "a-two-initial",
+          "port": 8082
+        }
+      },
+      {
+        "host": "::1",
+        "port": 18282,
+        "from_container": null,
+        "exit": 7,
+        "status": "000",
+        "value": null
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 8081,
+        "from_container": "be44462d1f00ea8ed88a7c54b9b759029a6a21cf34cf4de84b90fb0835fcb885",
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "b-one-initial",
+          "port": 8081
+        }
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 8082,
+        "from_container": "4c54978ecacd4799ca60667b813340d3115ef9bba964b8e74ebfad1c6d668013",
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "b-two-initial",
+          "port": 8082
+        }
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 18283,
+        "from_container": null,
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "b-one-initial",
+          "port": 8081
+        }
+      },
+      {
+        "host": "::1",
+        "port": 18283,
+        "from_container": null,
+        "exit": 7,
+        "status": "000",
+        "value": null
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 18284,
+        "from_container": null,
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "b-two-initial",
+          "port": 8082
+        }
+      },
+      {
+        "host": "::1",
+        "port": 18284,
+        "from_container": null,
+        "exit": 7,
+        "status": "000",
+        "value": null
+      },
+      {
+        "host": "172.19.0.2",
+        "port": 8081,
+        "from_container": "1e6a8d0978f7c7b2ebab038b58b89f53f26b5f6f12b3db6c9da70f449a37e578",
+        "exit": 28,
+        "status": "000",
+        "value": null
+      },
+      {
+        "host": "172.19.0.2",
+        "port": 8082,
+        "from_container": "1e6a8d0978f7c7b2ebab038b58b89f53f26b5f6f12b3db6c9da70f449a37e578",
+        "exit": 28,
+        "status": "000",
+        "value": null
+      },
+      {
+        "host": "172.18.0.2",
+        "port": 8081,
+        "from_container": "ea07eae07fc2a4940e736a7c609dd3022cb78ccc011bb052f48fc0409008c82a",
+        "exit": 28,
+        "status": "000",
+        "value": null
+      },
+      {
+        "host": "172.18.0.2",
+        "port": 8082,
+        "from_container": "ea07eae07fc2a4940e736a7c609dd3022cb78ccc011bb052f48fc0409008c82a",
+        "exit": 28,
+        "status": "000",
+        "value": null
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 8081,
+        "from_container": "25f72953c236a3a2c14fe6eabf2b5e74e9d5973a46fbd120213f5d0cce1578e3",
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "a-one-initial",
+          "port": 8081
+        }
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 8082,
+        "from_container": "e7f9ae7c2dc659c2d06b212a28d9437d841cb7d568445459a50d0eaeabea136f",
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "a-two-initial",
+          "port": 8082
+        }
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 18281,
+        "from_container": null,
+        "exit": 7,
+        "status": "000",
+        "value": null
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 18282,
+        "from_container": null,
+        "exit": 7,
+        "status": "000",
+        "value": null
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 18281,
+        "from_container": null,
+        "exit": 52,
+        "status": "000",
+        "value": null
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 18282,
+        "from_container": null,
+        "exit": 52,
+        "status": "000",
+        "value": null
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 8081,
+        "from_container": "9d10b1b6bcef7d92862381860154da557d5ec363507957cfa9b4168a071ffe9a",
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "a-one-recovered",
+          "port": 8081
+        }
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 8082,
+        "from_container": "e285d9eebd51eccd5934611f326805952272813a03253f1463d754c46b402342",
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "a-two-recovered",
+          "port": 8082
+        }
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 18281,
+        "from_container": null,
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "a-one-recovered",
+          "port": 8081
+        }
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 18282,
+        "from_container": null,
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "a-two-recovered",
+          "port": 8082
+        }
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 18283,
+        "from_container": null,
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "b-one-initial",
+          "port": 8081
+        }
+      },
+      {
+        "host": "127.0.0.1",
+        "port": 18284,
+        "from_container": null,
+        "exit": 0,
+        "status": "200",
+        "value": {
+          "fixture": "b-two-initial",
+          "port": 8082
+        }
+      }
+    ],
+    "stop_observations": [
+      {
+        "container": "1e6a8d0978f7c7b2ebab038b58b89f53f26b5f6f12b3db6c9da70f449a37e578",
+        "state": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 143,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:57:59.418654241Z",
+          "FinishedAt": "2026-10-23T05:58:34.324733819Z"
+        },
+        "entrypoint": [
+          "/bin/sleep"
+        ]
+      },
+      {
+        "container": "25f72953c236a3a2c14fe6eabf2b5e74e9d5973a46fbd120213f5d0cce1578e3",
+        "state": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:58:03.59557683Z",
+          "FinishedAt": "2026-10-23T05:58:42.92850888Z"
+        },
+        "entrypoint": [
+          "/endpoint-probe"
+        ]
+      },
+      {
+        "container": "e7f9ae7c2dc659c2d06b212a28d9437d841cb7d568445459a50d0eaeabea136f",
+        "state": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:58:07.186436612Z",
+          "FinishedAt": "2026-10-23T05:58:43.75937818Z"
+        },
+        "entrypoint": [
+          "/endpoint-probe"
+        ]
+      },
+      {
+        "container": "e285d9eebd51eccd5934611f326805952272813a03253f1463d754c46b402342",
+        "state": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:58:49.661377904Z",
+          "FinishedAt": "2026-10-23T05:58:53.698633677Z"
+        },
+        "entrypoint": [
+          "/endpoint-probe"
+        ]
+      },
+      {
+        "container": "9d10b1b6bcef7d92862381860154da557d5ec363507957cfa9b4168a071ffe9a",
+        "state": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:58:46.382465541Z",
+          "FinishedAt": "2026-10-23T05:58:54.817981469Z"
+        },
+        "entrypoint": [
+          "/endpoint-probe"
+        ]
+      },
+      {
+        "container": "4c54978ecacd4799ca60667b813340d3115ef9bba964b8e74ebfad1c6d668013",
+        "state": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:58:19.483782531Z",
+          "FinishedAt": "2026-10-23T05:58:55.95405739Z"
+        },
+        "entrypoint": [
+          "/endpoint-probe"
+        ]
+      },
+      {
+        "container": "be44462d1f00ea8ed88a7c54b9b759029a6a21cf34cf4de84b90fb0835fcb885",
+        "state": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:58:15.751287698Z",
+          "FinishedAt": "2026-10-23T05:58:57.054084818Z"
+        },
+        "entrypoint": [
+          "/endpoint-probe"
+        ]
+      },
+      {
+        "container": "ea07eae07fc2a4940e736a7c609dd3022cb78ccc011bb052f48fc0409008c82a",
+        "state": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 143,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:58:11.497434391Z",
+          "FinishedAt": "2026-10-23T05:58:58.15576082Z"
+        },
+        "entrypoint": [
+          "/bin/sleep"
+        ]
+      },
+      {
+        "container": "1e6a8d0978f7c7b2ebab038b58b89f53f26b5f6f12b3db6c9da70f449a37e578",
+        "state": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 143,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:58:39.658682949Z",
+          "FinishedAt": "2026-10-23T05:59:00.086062312Z"
+        },
+        "entrypoint": [
+          "/bin/sleep"
+        ]
+      }
+    ],
+    "publication_observations": [
+      {
+        "container": "1e6a8d0978f7c7b2ebab038b58b89f53f26b5f6f12b3db6c9da70f449a37e578",
+        "expected": {
+          "8081": 18281,
+          "8082": 18282
+        },
+        "host_bindings": {
+          "8081/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18281"
+            }
+          ],
+          "8082/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18282"
+            }
+          ]
+        },
+        "active_ports": {
+          "34343/udp": null,
+          "80/tcp": null,
+          "8081/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18281"
+            }
+          ],
+          "8082/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18282"
+            }
+          ]
+        },
+        "networks": {
+          "omabit-endpoint-a": {
+            "IPAMConfig": null,
+            "Links": null,
+            "Aliases": null,
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "NetworkID": "3fb71725f28178ebaf4fd3495a35db55cdcd1c552d50e7167a7a522d3190fa46",
+            "EndpointID": "e34d25fa3645a923d8d9eff7cc4548989d8f3093926f262b53ea542b77ccfd93",
+            "Gateway": "172.18.0.1",
+            "IPAddress": "172.18.0.2",
+            "MacAddress": "b2:f7:80:72:17:1c",
+            "IPPrefixLen": 16,
+            "IPv6Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "DNSNames": [
+              "omabit-endpoint-a-anchor",
+              "1e6a8d0978f7"
+            ]
+          }
+        },
+        "state": {
+          "Status": "running",
+          "Running": true,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 2577,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:57:59.418654241Z",
+          "FinishedAt": "0001-01-01T00:00:00Z"
+        }
+      },
+      {
+        "container": "ea07eae07fc2a4940e736a7c609dd3022cb78ccc011bb052f48fc0409008c82a",
+        "expected": {
+          "8081": 18283,
+          "8082": 18284
+        },
+        "host_bindings": {
+          "8081/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18283"
+            }
+          ],
+          "8082/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18284"
+            }
+          ]
+        },
+        "active_ports": {
+          "34343/udp": null,
+          "80/tcp": null,
+          "8081/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18283"
+            }
+          ],
+          "8082/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18284"
+            }
+          ]
+        },
+        "networks": {
+          "omabit-endpoint-b": {
+            "IPAMConfig": null,
+            "Links": null,
+            "Aliases": null,
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "NetworkID": "f724cce3d93bdf6f6feadec02f886b4136e9c9f0095ae7ae94eba4b64e780d6e",
+            "EndpointID": "f5c41441d0ae6ad1bce48e16ee75b66b6f1e2dc441403c5cfac22e15a3e2b2ed",
+            "Gateway": "172.19.0.1",
+            "IPAddress": "172.19.0.2",
+            "MacAddress": "b6:da:cf:87:e4:39",
+            "IPPrefixLen": 16,
+            "IPv6Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "DNSNames": [
+              "omabit-endpoint-b-anchor",
+              "ea07eae07fc2"
+            ]
+          }
+        },
+        "state": {
+          "Status": "running",
+          "Running": true,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 3063,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:58:11.497434391Z",
+          "FinishedAt": "0001-01-01T00:00:00Z"
+        }
+      },
+      {
+        "container": "1e6a8d0978f7c7b2ebab038b58b89f53f26b5f6f12b3db6c9da70f449a37e578",
+        "expected": {
+          "8081": 18281,
+          "8082": 18282
+        },
+        "host_bindings": {
+          "8081/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18281"
+            }
+          ],
+          "8082/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18282"
+            }
+          ]
+        },
+        "active_ports": {
+          "34343/udp": null,
+          "80/tcp": null,
+          "8081/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18281"
+            }
+          ],
+          "8082/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18282"
+            }
+          ]
+        },
+        "networks": {
+          "omabit-endpoint-a": {
+            "IPAMConfig": null,
+            "Links": null,
+            "Aliases": null,
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "NetworkID": "3fb71725f28178ebaf4fd3495a35db55cdcd1c552d50e7167a7a522d3190fa46",
+            "EndpointID": "bad75627858b84810f692a7649ff3c7c100b658e63a29e15c2a8bfc899e35285",
+            "Gateway": "172.18.0.1",
+            "IPAddress": "172.18.0.2",
+            "MacAddress": "56:89:5f:c7:c0:0e",
+            "IPPrefixLen": 16,
+            "IPv6Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "DNSNames": [
+              "omabit-endpoint-a-anchor",
+              "1e6a8d0978f7"
+            ]
+          }
+        },
+        "state": {
+          "Status": "running",
+          "Running": true,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 3819,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:58:39.658682949Z",
+          "FinishedAt": "2026-10-23T05:58:34.324733819Z"
+        }
+      },
+      {
+        "container": "1e6a8d0978f7c7b2ebab038b58b89f53f26b5f6f12b3db6c9da70f449a37e578",
+        "expected": {
+          "8081": 18281,
+          "8082": 18282
+        },
+        "host_bindings": {
+          "8081/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18281"
+            }
+          ],
+          "8082/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18282"
+            }
+          ]
+        },
+        "active_ports": {
+          "34343/udp": null,
+          "80/tcp": null,
+          "8081/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18281"
+            }
+          ],
+          "8082/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "18282"
+            }
+          ]
+        },
+        "networks": {
+          "omabit-endpoint-a": {
+            "IPAMConfig": null,
+            "Links": null,
+            "Aliases": null,
+            "DriverOpts": null,
+            "GwPriority": 0,
+            "NetworkID": "3fb71725f28178ebaf4fd3495a35db55cdcd1c552d50e7167a7a522d3190fa46",
+            "EndpointID": "bad75627858b84810f692a7649ff3c7c100b658e63a29e15c2a8bfc899e35285",
+            "Gateway": "172.18.0.1",
+            "IPAddress": "172.18.0.2",
+            "MacAddress": "56:89:5f:c7:c0:0e",
+            "IPPrefixLen": 16,
+            "IPv6Gateway": "",
+            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,
+            "DNSNames": [
+              "omabit-endpoint-a-anchor",
+              "1e6a8d0978f7"
+            ]
+          }
+        },
+        "state": {
+          "Status": "running",
+          "Running": true,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 3819,
+          "ExitCode": 0,
+          "Error": "",
+          "StartedAt": "2026-10-23T05:58:39.658682949Z",
+          "FinishedAt": "2026-10-23T05:58:34.324733819Z"
+        }
+      }
+    ],
+    "clean_stops": [
+      {
+        "container": "1e6a8d0978f7c7b2ebab038b58b89f53f26b5f6f12b3db6c9da70f449a37e578",
+        "exit": 143
+      },
+      {
+        "container": "25f72953c236a3a2c14fe6eabf2b5e74e9d5973a46fbd120213f5d0cce1578e3",
+        "exit": 0
+      },
+      {
+        "container": "e7f9ae7c2dc659c2d06b212a28d9437d841cb7d568445459a50d0eaeabea136f",
+        "exit": 0
+      },
+      {
+        "container": "e285d9eebd51eccd5934611f326805952272813a03253f1463d754c46b402342",
+        "exit": 0
+      },
+      {
+        "container": "9d10b1b6bcef7d92862381860154da557d5ec363507957cfa9b4168a071ffe9a",
+        "exit": 0
+      },
+      {
+        "container": "4c54978ecacd4799ca60667b813340d3115ef9bba964b8e74ebfad1c6d668013",
+        "exit": 0
+      },
+      {
+        "container": "be44462d1f00ea8ed88a7c54b9b759029a6a21cf34cf4de84b90fb0835fcb885",
+        "exit": 0
+      },
+      {
+        "container": "ea07eae07fc2a4940e736a7c609dd3022cb78ccc011bb052f48fc0409008c82a",
+        "exit": 143
+      },
+      {
+        "container": "1e6a8d0978f7c7b2ebab038b58b89f53f26b5f6f12b3db6c9da70f449a37e578",
+        "exit": 143
+      }
+    ],
+    "cleanup_errors": [],
+    "initial_publication_passed": true,
+    "anchor_stopped_publication": [
+      null,
+      null
+    ],
+    "anchor_restart": {
+      "exit": 0,
+      "old_namespace": "net:[4026532239]",
+      "new_namespace": "net:[4026532298]",
+      "published_reachable": [
+        false,
+        false
+      ],
+      "outcome": "namespace-replaced"
+    },
+    "coordinated_recovery_passed": true
+  }
+}

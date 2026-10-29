@@ -1,0 +1,178 @@
+{
+  "checkpoint": "private fake-network local-control trial 02",
+  "ok": false,
+  "seconds": 1400.05,
+  "run": "/tmp/omabit-import-guest-run-20261022-13",
+  "appliance": "/tmp/omabit-import-appliance-20261022-12",
+  "inspection": "/tmp/omabit-import-inspection-20261022-13",
+  "clean_shutdown": true,
+  "scope_admission": {
+    "LoadState": "loaded",
+    "ActiveState": "active",
+    "CPUQuotaPerSecUSec": "1s",
+    "MemoryMax": "12884901888",
+    "MemorySwapMax": "0",
+    "TasksMax": "128"
+  },
+  "probe": {
+    "ok": false,
+    "project": "omabit-network-a",
+    "ships": {
+      "zod": {
+        "container": "80674114d28680fb74be2eea231a1a0e4bb77cdae9856369ed838b1d99783d9f",
+        "pier": "/home/lab/fake-network/zod/zod",
+        "http_port": 8081,
+        "port_inventory": [
+          [
+            "12321",
+            "insecure",
+            "loopback"
+          ],
+          [
+            "8081",
+            "insecure",
+            "public"
+          ]
+        ],
+        "loopback_port": 12321,
+        "authenticated_inventory": true
+      },
+      "nec": {
+        "container": "e0722f4bfd8adaedd320d78437ce44f0563747a3a13e0aa75f8bf4da81d1a67f",
+        "pier": "/home/lab/fake-network/nec/nec",
+        "http_port": 8082,
+        "port_inventory": [
+          [
+            "12322",
+            "insecure",
+            "loopback"
+          ],
+          [
+            "8082",
+            "insecure",
+            "public"
+          ]
+        ],
+        "loopback_port": 12322,
+        "authenticated_inventory": true
+      }
+    },
+    "messages": [],
+    "attempts": [
+      {
+        "phase": "local-check",
+        "sender": "~zod",
+        "receiver": "~zod",
+        "nonce": "omabit-local-check-8c94803f097856c1194e4771",
+        "state": "pending"
+      }
+    ],
+    "local_checks": [],
+    "clean_stops": [
+      "nec",
+      "zod"
+    ],
+    "anchor": "117089c58bd8b89b7a086f6e0543d1789b3ec45334e8de8f08e68579d1ddef94",
+    "network_namespace": "net:[4026532247]",
+    "ipv4_routes": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+    "network_devices": "Inter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:   39035     539    0    0    0     0          0         0    39035     539    0    0    0     0       0          0\n",
+    "cross_ship_sessions_refused": true,
+    "http_failure": {
+      "port": 8081,
+      "path": "/spider/base/noun/hi/noun",
+      "method": "POST",
+      "deadline_seconds": 90,
+      "failure": {
+        "command": "exec",
+        "exit": 28,
+        "stdout_bytes": 4,
+        "stderr_bytes": 78
+      }
+    },
+    "error": "private Docker command failed: exec (exit 28)",
+    "diagnostic_snapshot": {
+      "ships": {
+        "zod": {
+          "state": {
+            "Running": true,
+            "ExitCode": 0,
+            "OOMKilled": false
+          },
+          "transport_lines": [
+            "mesa: live on 31337 (localhost only)"
+          ],
+          "spider_tree": {
+            "status": 404,
+            "bytes": 192
+          }
+        },
+        "nec": {
+          "state": {
+            "Running": true,
+            "ExitCode": 0,
+            "OOMKilled": false
+          },
+          "transport_lines": [
+            "mesa: live on 31338 (localhost only)"
+          ],
+          "spider_tree": {
+            "status": 404,
+            "bytes": 192
+          }
+        }
+      },
+      "errors": [],
+      "udp": "   sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode ref pointer drops            \n 1194: 0100007F:7A69 00000000:0000 07 00000000:00000000 00:00000000 00000000     0        0 25133 2 000000007f420d9f 0         \n 1195: 0100007F:7A6A 00000000:0000 07 00000000:00000000 00:00000000 00000000     0        0 45602 2 0000000048cb730b 0         \n",
+      "tcp": "  sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode                                                     \n   0: 0100007F:1F91 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 25176 1 000000002af7de3b 100 0 0 10 0                     \n   1: 0100007F:1F92 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 46368 1 000000003618d468 100 0 0 10 0                     \n   2: 0100007F:3021 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 25177 1 0000000066de7442 100 0 0 10 0                     \n   3: 0100007F:3022 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 46369 1 00000000729b31a0 100 0 0 10 0                     \n   4: 0100007F:A258 0100007F:1F91 05 00000000:00000000 03:000016B7 00000000     0        0 0 3 00000000010a05a8                                      \n   5: 0100007F:1F91 0100007F:A258 08 00000000:00000001 00:00000000 00000000     0        0 48202 1 00000000f81a11b1 20 4 28 10 -1                    \n",
+      "snmp": "Ip: Forwarding DefaultTTL InReceives InHdrErrors InAddrErrors ForwDatagrams InUnknownProtos InDiscards InDelivers OutRequests OutDiscards OutNoRoutes ReasmTimeout ReasmReqds ReasmOKs ReasmFails FragOKs FragFails FragCreates OutTransmits\nIp: 2 64 615 0 0 0 0 0 615 615 0 240 0 0 0 0 0 0 0 615\nIcmp: InMsgs InErrors InCsumErrors InDestUnreachs InTimeExcds InParmProbs InSrcQuenchs InRedirects InEchos InEchoReps InTimestamps InTimestampReps InAddrMasks InAddrMaskReps OutMsgs OutErrors OutRateLimitGlobal OutRateLimitHost OutDestUnreachs OutTimeExcds OutParmProbs OutSrcQuenchs OutRedirects OutEchos OutEchoReps OutTimestamps OutTimestampReps OutAddrMasks OutAddrMaskReps\nIcmp: 72 0 0 72 0 0 0 0 0 0 0 0 0 0 72 0 0 0 72 0 0 0 0 0 0 0 0 0 0\nIcmpMsg: InType3 OutType3\nIcmpMsg: 72 72\nTcp: RtoAlgorithm RtoMin RtoMax MaxConn ActiveOpens PassiveOpens AttemptFails EstabResets CurrEstab InSegs OutSegs RetransSegs InErrs OutRsts InCsumErrors\nTcp: 1 200 120000 -1 169 13 156 0 1 441 441 0 0 156 0\nUdp: InDatagrams NoPorts InErrors OutDatagrams RcvbufErrors SndbufErrors InCsumErrors IgnoredMulti MemErrors\nUdp: 30 72 0 102 0 0 0 0 0\n",
+      "dev": "Inter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:   46655     615    0    0    0     0          0         0    46655     615    0    0    0     0       0          0\n",
+      "route": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n"
+    },
+    "cleanup_errors": []
+  },
+  "source_sha256": {
+    "scripts/qualification/imports/appliance.py": "823419a50ae3e27f1a9434c3a607b39928d944e4dfcb705465fe57393990d2f4",
+    "scripts/qualification/imports/guest.py": "c80b76bd2ac0e99fba114de878145338ac8e548684d8a1cd88a15c28e5390ce6",
+    "scripts/qualification/imports/import_case.py": "27ae2fd0628db1f00aedde980c427c9d76e7ecd6a5cf0fde2c8ae5920ec31e0e",
+    "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+    "scripts/qualification/fake-networks/network_case.py": "f535c9b82c25797af491793246c8c0d3806761bcc29e56c05bef9f9340303275"
+  },
+  "artifacts": {
+    "base.raw": "99086ec565642f1b184c1f0c94e8dc7d74f6b7fe38d5b3023a76fb1fe89477e1",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "all_disk_sha256": {
+    "root.qcow2": "83e56cf5cee34c9cff35d889cf092a32303a8709201c1234f1b56c9e650adaf9"
+  },
+  "evidence_sha256": {
+    "/tmp/omabit-import-guest-run-20261022-13/result.json": "e56bf69f17ce06c6fa3a181a9c1a932692c273d28fb75f954a94a562c70e21ec",
+    "/tmp/omabit-import-inspection-20261022-13/extraction.json": "4289d5249209b27284b7a2d043c5e055769f6a7aa62b234328e6130f03136882",
+    "/tmp/omabit-import-inspection-20261022-13/results/fake-network.json": "fe4f215e7b5a30a6bed0f83c170b14242274829ef1ce1cbe43843f5ae894de39"
+  },
+  "extracted_file_count": 18,
+  "extracted_bytes": 72711,
+  "instrumentation_limit": "The optional Spider diagnostic used /tree/noun.json in this frozen appliance. Source inspection corrected subsequent probes to /tree.noun; its optional failure does not establish a Spider defect.",
+  "source_validation": {
+    "checks": [
+      "Python parsing",
+      "known jam vectors and atom responses",
+      "credential-free command exceptions",
+      "host guest-admission refusal before subprocess",
+      "existing offline task-help tests",
+      "operator skill validation",
+      "git diff --check"
+    ],
+    "source_sha256": {
+      "scripts/qualification/fake-networks/network_case.py": "54703e540b2c62de8524d1201bcd1bad83819e057f06d3510467fd5817aaef25",
+      "scripts/qualification/imports/appliance.py": "823419a50ae3e27f1a9434c3a607b39928d944e4dfcb705465fe57393990d2f4",
+      "scripts/qualification/imports/guest.py": "c80b76bd2ac0e99fba114de878145338ac8e548684d8a1cd88a15c28e5390ce6",
+      "backend/cmd/urbit-collector/task_help.go": "db1b7f2363be18f9903c863b890266f796d9c9f63fc552a2b8e94b39b7894b88",
+      "skills/omabit-operator/SKILL.md": "bcfa3b468966868d27fc8583dc194d951a976a3396befd2ae0c453078da39e74"
+    },
+    "active_trial": "/tmp/omabit-import-guest-run-20261022-13",
+    "active_trial_source_is_frozen": true,
+    "later_source_change": "Optional Spider diagnostic corrected to /~/scry/spider/tree.noun after source inspection. The active appliance retains the older optional path; record this limitation in its result."
+  }
+}

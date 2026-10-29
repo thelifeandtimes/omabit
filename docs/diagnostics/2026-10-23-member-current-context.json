@@ -1,0 +1,31 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "persistent_format_changed": false,
+  "race_seconds": 4.316,
+  "vet_passed": true,
+  "focused_readiness_cases": 43,
+  "sources": {
+    "internal/projectnetwork/member_context.go": "76829a8b6484b48ab043da66da34353d6827ec84c2bf34899c6c26e027cedc10",
+    "internal/projectnetwork/member_context_test.go": "09087354b5f777d0ea1dd4704a71becdc0beab88ceff02bb306e18ba94d3143e",
+    "internal/projectnetwork/member_current_readiness.go": "bd1d66d0df93f08b3be218878323fb9821d536368c549f8c4abdecb358261342",
+    "internal/projectnetwork/member_current_readiness_test.go": "81979c13c1131542bdbadad1fdf9a24b21ac505025d3fa2b4221bcecc946960d"
+  },
+  "logs": {
+    "omabit-member-context-tests-fixture-failure.log": "4266fa56002b88ae4c6a0c768fc9734ca31ba23d90eb200488626ad4d1b81dd2",
+    "omabit-member-context-project-race.log": "909a6c20e997d14ca1acf6bd09922a47d890fdb224cb2926f43cd42d06a7da48",
+    "omabit-member-context-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-current-readiness-focused.log": "8f4712d405c82d1bf61e762dc69aeb9f8fd4e0509fedf0fcae6a29bd0686e679",
+    "omabit-current-readiness-project-race.log": "934283e791f06d3780b9d5619af081a1c12fcd2ce759600e47f0f76a9e171401",
+    "omabit-current-readiness-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-current-context",
+  "retained_failure": "Initial test fixture used port18080 for nec instead of its plan port18082; the fixture now derives the endpoint from the plan. Product validation was not relaxed.",
+  "limits": [
+    "No concrete runtime adapter, persistence, queued mutation or public capability for this new context.",
+    "Initial receipts omit process StartedAt; zero denotes unknown. Fresh observations establish continuity only across the bracket.",
+    "The caller must validate operation journals, exclude unresolved work and reconcile any prior target Stop before a future mutation.",
+    "Changed namespace/anchor recovery remains separate.",
+    "Frozen appliances23/24 predate these changes."
+  ]
+}

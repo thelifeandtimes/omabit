@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"regexp"
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
@@ -15,8 +16,12 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/shipaccess"
 )
 
+var fleetEnrollmentName = regexp.MustCompile(`^fleet-[0-9a-f]{20}$`)
+
 type shipInfo struct {
+	Managed     bool   `json:"managed,omitempty"`
 	ID          string `json:"id,omitempty"`
+	Revision    uint64 `json:"revision"`
 	Name        string `json:"name"`
 	Origin      string `json:"origin"`
 	Ship        string `json:"ship"`
@@ -36,7 +41,7 @@ type shipEvent struct {
 }
 
 func info(s collection.Ship, status string) shipInfo {
-	return shipInfo{ID: s.ID, Name: s.Name, Origin: s.Origin, Ship: s.Ship, Credentials: s.Credentials, Status: status}
+	return shipInfo{Managed: fleetEnrollmentName.MatchString(s.Name), ID: s.ID, Revision: s.Revision, Name: s.Name, Origin: s.Origin, Ship: s.Ship, Credentials: s.Credentials, Status: status}
 }
 func storeFor(r *collection.Registry, s collection.Ship) (credentials.Store, error) {
 	return shipaccess.Store(r, s)
@@ -179,12 +184,13 @@ func runShips(ctx context.Context, command string, args []string, dir, socket, r
 	if command != "ships" && command != "ship-enroll" {
 		flags.StringVar(&expectedID, "expected-ship-id", "", "optional immutable enrollment ID from UI selection")
 	}
-	var codeStdin bool
+	var codeStdin, uniqueShip bool
 	var events uint
 	var duration time.Duration
 	usage := command
 	switch command {
 	case "ship-enroll":
+		flags.BoolVar(&uniqueShip, "unique-ship", false, "refuse another enrollment for this hosted identity")
 		usage += " NAME --url ORIGIN --ship ~SHIP [--credentials secret-service|file]"
 		flags.StringVar(&origin, "url", "", "HTTPS origin or literal loopback HTTP origin")
 		flags.StringVar(&ship, "ship", "", "expected public ship identity, including ~")
@@ -264,7 +270,13 @@ func runShips(ctx context.Context, command string, args []string, dir, socket, r
 		}
 		result = views
 	} else if command == "ship-enroll" {
-		s, e := r.EnrollShip(ctx, name, origin, ship, adapter)
+		var s collection.Ship
+		var e error
+		if uniqueShip {
+			s, e = r.EnrollHostedShip(ctx, name, origin, ship, adapter)
+		} else {
+			s, e = r.EnrollShip(ctx, name, origin, ship, adapter)
+		}
 		err = e
 		state := "login_required"
 		if s.SessionRef != "" {

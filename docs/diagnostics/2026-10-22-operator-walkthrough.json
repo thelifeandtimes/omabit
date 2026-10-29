@@ -1,0 +1,535 @@
+{
+  "work": "/tmp/omabit-operator-walkthrough-20261022-03",
+  "inputs": {
+    "source_sha256": "7eb95680a6d8b3091965bf794031ba52dc4d240ed47ca8169dfb90a56de3879a",
+    "collector_sha256": "c057550cdce06d4ea1aa1d55a2b62543f7f238593aa63e36f3c3ba7384fed046",
+    "runner_sha256": "194cd1ae76fc30abf91437eef8ccce9465c46945c266952ec77f918bcf208abc"
+  },
+  "result": {
+    "passed": true,
+    "scope": "in-memory simulator only; no real runtime, import, engine, desktop or ship",
+    "tasks": [
+      "select intended runner",
+      "review stale revision before action",
+      "follow exact asynchronous receipt",
+      "distinguish unavailable from stopped",
+      "refuse replacement runner identity"
+    ],
+    "runner_id": "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+    "operation_id": "op-RPWS36VE4CBUWYH65E3LOPZ5NE",
+    "records": [
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "help"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"schema_version\": 1,\n  \"notice\": \"Offline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\",\n  \"topics\": [\n    {\n      \"name\": \"runners\",\n      \"summary\": \"Select a runner and inspect its identity, authority and fleet.\"\n    },\n    {\n      \"name\": \"ships\",\n      \"summary\": \"Observe and operate ships managed by a selected runner.\"\n    },\n    {\n      \"name\": \"imports\",\n      \"summary\": \"Review a stopped pier, import it and resolve retained recovery state.\"\n    },\n    {\n      \"name\": \"connections\",\n      \"summary\": \"Sign in to an Eyre ship or approve an independent plugin session.\"\n    },\n    {\n      \"name\": \"hosting\",\n      \"summary\": \"Inspect runner hosting evidence and separate repair from observation.\"\n    }\n  ],\n  \"next\": [\n    \"urbit-collector --format text help TOPIC\",\n    \"urbit-collector help TOPIC\",\n    \"urbit-collector COMMAND --help\",\n    \"urbit-collector --help\"\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "help",
+          "ships"
+        ],
+        "exit": 0,
+        "stdout": "Usage: urbit-collector [--format json|text] help [TOPIC]\n\nOffline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\n\nships: Observe and operate ships managed by a selected runner.\n\n  snapshot          Read desired/observed state, revisions, recovery status and operation receipts.\n  watch             Poll snapshots until canceled; JSON output is NDJSON.\n  logs              Read a bounded runtime log tail with operator authority.\n  operate           Submit an explicit start, stop, maintenance or import-recovery operation.\n  configure         Change requested runtime settings at an expected revision.\n  create-fake       Register a fresh fake; boot occurs on explicit Start.\n  create-ship       Stage a keyed identity and boot material; boot occurs on explicit Start.\n  create-comet      Register a new comet configuration; mining/networking occurs on explicit Start.\n\nPin --runner NAME --expected-runner-id ID and inspect hello/snapshot. Bind actions to instance ID and current config_revision; the instance name need not be the Urbit identity.\n\n\nRead operate --help, then use operate INSTANCE start|stop --revision N --request-id ID for the authorized action. Submission success is not completion: follow that exact operation in snapshot until terminal, then check resulting state.\n\n\nAfter a revision conflict, refresh and review the intended effect. After a lost acknowledgement, retain the original request ID and reconcile its receipt; do not guess by retrying with a new ID.\n\n\nLogs may contain sensitive data. Ordinary status does not require login-code or credentials. For hosted Eyre sessions, see help connections.\n\n\nNext:\n  urbit-collector COMMAND --help\n  urbit-collector help\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "enroll",
+          "lab",
+          "--socket",
+          "/lab/run/runner.sock"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"name\": \"lab\",\n  \"transport\": \"unix\",\n  \"socket\": \"/lab/run/runner.sock\",\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"enrolled_at\": \"2026-10-22T09:23:57.005683219Z\",\n  \"revision\": 1\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "runners"
+        ],
+        "exit": 0,
+        "stdout": "[\n  {\n    \"name\": \"lab\",\n    \"transport\": \"unix\",\n    \"socket\": \"/lab/run/runner.sock\",\n    \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n    \"mode\": \"simulation\",\n    \"enrolled_at\": \"2026-10-22T09:23:57.005683219Z\",\n    \"revision\": 1\n  }\n]\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "runners"
+        ],
+        "exit": 0,
+        "stdout": "NAME  TRANSPORT  RUNNER                           MODE        ADDRESS\nlab   unix       demo-2ZRBPLDDDP235RB47A7EBMZNIG  simulation  /lab/run/runner.sock\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "hello"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"protocol_version\": 1,\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"features\": [\n    \"snapshot\",\n    \"configuration-revisions\",\n    \"idempotent-operations\",\n    \"incidents\"\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "hello"
+        ],
+        "exit": 0,
+        "stdout": "Runner: demo-2ZRBPLDDDP235RB47A7EBMZNIG\nMode: simulation\nProtocol: 1\nFeatures: snapshot, configuration-revisions, idempotent-operations, incidents\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"failed\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "configure",
+          "alpha",
+          "--revision",
+          "1",
+          "--http-port",
+          "8080",
+          "--ames-port",
+          "34343",
+          "--loom",
+          "32"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"id\": \"alpha\",\n  \"label\": \"Simulated ship alpha\",\n  \"config\": {\n    \"http_port\": 8080,\n    \"ames_port\": 34343,\n    \"loom\": 32\n  },\n  \"config_revision\": 2,\n  \"applied_revision\": 1,\n  \"desired_state\": \"running\",\n  \"observed_state\": \"failed\"\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "operate",
+          "alpha",
+          "start",
+          "--revision",
+          "1",
+          "--request-id",
+          "rejected-stale-json"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "{\n  \"error\": {\n    \"code\": \"revision_conflict\",\n    \"message\": \"configuration changed; inspect a fresh snapshot before acting\",\n    \"current_revision\": 2\n  }\n}\n"
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "operate",
+          "alpha",
+          "start",
+          "--revision",
+          "1",
+          "--request-id",
+          "rejected-stale-text"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "Error revision_conflict: configuration changed; inspect a fresh snapshot before acting\nCurrent revision: 2\n"
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"failed\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "operate",
+          "alpha",
+          "start",
+          "--revision",
+          "2",
+          "--request-id",
+          "reviewed-start"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n  \"request_id\": \"reviewed-start\",\n  \"instance_id\": \"alpha\",\n  \"kind\": \"start\",\n  \"actor\": \"local-uid:1000\",\n  \"status\": \"running\",\n  \"config_revision\": 2,\n  \"created_at\": \"2026-10-22T09:23:57.027357996Z\"\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "Runner: demo-2ZRBPLDDDP235RB47A7EBMZNIG (simulation)\nINSTANCE  DESIRED  OBSERVED  HEALTH  REV / APPLIED  ENDPOINT\nalpha     running  starting          2 / 1          \n  Requested loom: 32 (4 GiB) address space\n  Requested native control: disabled\n  Loom is address space, not resident memory or the container memory limit.\n  Active operation: op-RPWS36VE4CBUWYH65E3LOPZ5NE\nbravo  stopped  stopped    1 / 1  \n  Requested loom: 31 (2 GiB) address space\n  Requested native control: disabled\n  Loom is address space, not resident memory or the container memory limit.\n\nOPERATION                      INSTANCE  KIND   STATUS   ACTOR           REQUEST\nop-RPWS36VE4CBUWYH65E3LOPZ5NE  alpha     start  running  local-uid:1000  reviewed-start\nIncident unexpected_exit (active=true): Simulated unexpected exit; no real ship is involved.\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-22T09:23:57.027357996Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-22T09:23:57.027357996Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-22T09:23:57.027357996Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-22T09:23:57.027357996Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-22T09:23:57.027357996Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-22T09:23:57.027357996Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-22T09:23:57.027357996Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-22T09:23:57.027357996Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-22T09:23:57.027357996Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-22T09:23:57.027357996Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"running\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-22T09:23:57.027357996Z\",\n      \"finished_at\": \"2026-10-22T09:23:59.02823095Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-22T09:23:56.981047705Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "Runner: demo-2ZRBPLDDDP235RB47A7EBMZNIG (simulation)\nINSTANCE  DESIRED  OBSERVED  HEALTH  REV / APPLIED  ENDPOINT\nalpha     running  running           2 / 2          \n  Requested loom: 32 (4 GiB) address space\n  Requested native control: disabled\n  Loom is address space, not resident memory or the container memory limit.\nbravo  stopped  stopped    1 / 1  \n  Requested loom: 31 (2 GiB) address space\n  Requested native control: disabled\n  Loom is address space, not resident memory or the container memory limit.\n\nOPERATION                      INSTANCE  KIND   STATUS     ACTOR           REQUEST\nop-RPWS36VE4CBUWYH65E3LOPZ5NE  alpha     start  succeeded  local-uid:1000  reviewed-start\nIncident unexpected_exit (active=false): Simulated unexpected exit; no real ship is involved.\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "operate",
+          "alpha",
+          "start",
+          "--revision",
+          "2",
+          "--request-id",
+          "reviewed-start"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"id\": \"op-RPWS36VE4CBUWYH65E3LOPZ5NE\",\n  \"request_id\": \"reviewed-start\",\n  \"instance_id\": \"alpha\",\n  \"kind\": \"start\",\n  \"actor\": \"local-uid:1000\",\n  \"status\": \"succeeded\",\n  \"config_revision\": 2,\n  \"created_at\": \"2026-10-22T09:23:57.027357996Z\",\n  \"finished_at\": \"2026-10-22T09:23:59.02823095Z\"\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "inventory"
+        ],
+        "exit": 1,
+        "stdout": "{\n  \"connections\": [\n    {\n      \"name\": \"lab\",\n      \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n      \"mode\": \"simulation\",\n      \"status\": \"unavailable\",\n      \"checked_at\": \"2026-10-22T09:23:59.075342785Z\",\n      \"error\": {\n        \"code\": \"connection_unavailable\",\n        \"message\": \"runner could not be observed; ship state is unknown\"\n      }\n    }\n  ],\n  \"complete\": false\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "inventory"
+        ],
+        "exit": 1,
+        "stdout": "Inventory complete: false (1 connections)\n\nlab \u2014 unavailable (demo-2ZRBPLDDDP235RB47A7EBMZNIG), checked 2026-10-22T09:23:59Z\n  connection_unavailable: runner could not be observed; ship state is unknown\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-2ZRBPLDDDP235RB47A7EBMZNIG",
+          "hello"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "{\n  \"error\": {\n    \"code\": \"runner_identity_mismatch\",\n    \"message\": \"runner identity or mode differs from enrollment; review the connection before re-enrolling\"\n  }\n}\n"
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "runners"
+        ],
+        "exit": 0,
+        "stdout": "[\n  {\n    \"name\": \"lab\",\n    \"transport\": \"unix\",\n    \"socket\": \"/lab/run/runner.sock\",\n    \"runner_id\": \"demo-2ZRBPLDDDP235RB47A7EBMZNIG\",\n    \"mode\": \"simulation\",\n    \"enrolled_at\": \"2026-10-22T09:23:57.005683219Z\",\n    \"revision\": 1\n  }\n]\n",
+        "stderr": ""
+      }
+    ]
+  },
+  "evidence_sha256": {
+    "inputs.json": "3c46f2aa9840c26c16608b0fe5878a6aa9b32b7975a59af09848400f306f5e19",
+    "result.json": "8eb1a4fb13c5ba9bdcb729e2f03d4f11277bcda6976e384c570e657fbabcb091",
+    "transcript.json": "587173a07aa02c0d74902a6a51e015a6c2e462d5cc61d0f323cc9336374503d8",
+    "driver.log": "a2ac175f50485e0853a4139806ad282a92bbc6cfa36c812cf6df3a7276b7c0ee",
+    "simulator.log": "3a3df1f46eba7095c9c591b47069225290a062523febf183f794e7d40a9ddded"
+  },
+  "operator_reference_sha256": {
+    "skills/omabit-operator/references/operations.md": "be60c346a65173d3795ed709ee5dfbc6934702053fdacaa71c3702d94cb56664",
+    "skills/omabit-operator/references/imports.md": "9f16a438b248d250aba9001b1cb066c2121fa7ac6282cff66cb80b26fe70c320"
+  }
+}

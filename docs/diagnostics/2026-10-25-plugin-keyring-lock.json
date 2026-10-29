@@ -1,0 +1,32 @@
+{
+  "memory": "M365",
+  "passed": true,
+  "boundary": "credential-store-lock-and-private-daemon-restart",
+  "source_entry": "scripts/qualification/app-connections/keyring_lock.py",
+  "profiles": [
+    "keyring-stable",
+    "keyring-dev"
+  ],
+  "roles": [
+    "theme",
+    "dms"
+  ],
+  "synthetic_sessions": 4,
+  "helpers": 16,
+  "locked_read_refusals": 4,
+  "locked_save_refusals": 4,
+  "recovered_original_sessions": 4,
+  "metadata_unchanged": true,
+  "plugin_helpers_unchanged": true,
+  "all_scopes_inactive": true,
+  "private_data_exported": false,
+  "ui_unlock_qualified": false,
+  "host_reboot_qualified": false,
+  "actual_eyre_qualified": false,
+  "initial_failures": "command-line unlock returned0 but collection remained locked; no plugin read/save was accepted",
+  "guards": {
+    "host_guard_before_reads_or_processes": true,
+    "existing_and_unowned_output_refusals": 3,
+    "source_entry_passed": true
+  }
+}

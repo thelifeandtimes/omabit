@@ -1,5 +1,18 @@
 # Omabit unified desktop plugin — 0.2.0 development
 
+## Project network history (unreleased)
+
+Setup → Project networks reads the selected runner’s saved project reservations
+and operation history. The view pins the runner identity, supports observer
+access, and requires the advertised project inventory/history capabilities.
+It shows interrupted receipts and whether older operations are omitted. Saved
+completion is not a current ship-health observation.
+
+This view sends only `projects` and `project-status` reads. It clears data and
+cancels pending reads on runner/profile changes, loss of availability or closing
+the pane; late replies cannot fill a different profile. Creating networks and
+member lifecycle actions remain CLI workflows while their UI is developed.
+
 ## Shared card presentation
 
 Card headings use one uppercase monospace caption style. Urbit Logs keeps its

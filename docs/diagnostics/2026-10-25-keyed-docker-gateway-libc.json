@@ -1,0 +1,19 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-keyed-docker-gateway-libc",
+  "full_docker_qualification_passed": false,
+  "failed_vm_seconds": 370.74,
+  "fresh_package_verification_passed": true,
+  "explicit_gateway_mount_passed": true,
+  "gateway_started_then_exited": true,
+  "gateway_exit": 1,
+  "oom": false,
+  "keys_generated": false,
+  "ships_started": 0,
+  "cause": "Alpine marker selects a musl LevelDB addon for the explicitly supplied glibc Node runtime.",
+  "fix_staged": "LIBC=glibc and PREBUILDS_ONLY=1 with actual glibc runtime, selected addon path and pinned hash assertions.",
+  "glibc_addon_sha256": "35164284059b66d0de99a33674d99ff2fafeb27b928e9014adb6a06838d7c05a",
+  "native_module_and_database_reopen_probe_passed": true,
+  "diagnostic_helper_tests": 17,
+  "diagnostic_helper_applied": true,
+  "production_untouched": true
+}

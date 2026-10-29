@@ -1,0 +1,66 @@
+{
+  "scope": "unreleased installed declarations, approval CLI and offscreen QML checkpoint",
+  "date": "2026-10-21",
+  "base_commits": {
+    "omabit": "b233128",
+    "theme": "1719e9f",
+    "dms": "cf236fd"
+  },
+  "uncommitted": true,
+  "source_sha256": {
+    "internal/applicationauth/installed.go": "5e445b4e64940e344638832d27084c04b8481419d313c8e0878fc2c73533f5da",
+    "internal/applicationauth/installed_test.go": "61c9b71e4007724c1e2b26565d4b378d527160efb7712898986040ff93f3dd9f",
+    "internal/applicationauth/engine.go": "d340da9cf8fe484fd4524a86545bff22c0baa23fefc98e8285ef0666eaf0decb",
+    "internal/applicationauth/reconcile.go": "f6c514d2f31ed4b43dbd4b52192ece15e319ce7361fa43f7f296424133022be1",
+    "internal/collection/applications.go": "adcb11da532e4a8bcb9ac917c963af500b3530de94259212a42339eefb744be6",
+    "internal/eyre/independent_session.go": "9aa5cc97a543ac9a92a7dc0a13306a76de2a63c48ec03b78a5a3317cc074237f",
+    "backend/cmd/urbit-collector/applications.go": "9c3e4d36cb77b6c90a459bf27a33ab9c46aad2657d7e2d931591f2d2ebd09c06",
+    "backend/cmd/urbit-collector/applications_test.go": "2d2545a41e949966ba5d6f7b3e4696f08d5297b1776f992f74cae415558ec564",
+    "backend/cmd/urbit-collector/main.go": "f3ff52ab337d55afb38a02b698816044f696c0fd3ab600cf60e66be2cfdbc2a2",
+    "backend/cmd/urbit-collector/ships.go": "b25e15cd4154f8b6d5f103b2b9f488921f9318cd68a0ea74b23aabae3ed2ff79",
+    "backend/cmd/urbit-collector/output.go": "b99298549ea2ccc3e373413b4282b8c1a9d0ded5cc93b3838bd3dde43e650582",
+    "plugins/omabit/ApplicationConnections.qml": "0a75cf1b1de3050028d5e64fc6ab3c88b7c0e671bbeefcfd193bb82cb3e3fe5c",
+    "plugins/omabit/ApplicationsPane.qml": "1a2427284115e018f2c4a40e35873cbec856afe8cd0e2ed6a65dda530009c181",
+    "plugins/omabit/Design.qml": "f74d2e85434db73620dd7522519c0eee38f0b080c38f83475781971617c5fda9",
+    "plugins/omabit/Service.qml": "08559ea7d9af45d199d5e856f9a7e4e6fa189ef148469eb131cae045d8d2421d",
+    "plugins/omabit/SetupPane.qml": "72c3b6d3c0ebf80a37cfd08abac47414b2c7cf1a2d70727d2ae297722da5b247",
+    "plugins/omabit/qmldir": "b00998ef18eb6b9c2f1e88133670d719449f57e3cefd35feb9bf9ade455a8238",
+    "scripts/test-app-connections-offscreen.py": "a7aabf8d372c03332e001a15fc184ffd027b04adc6f15a3e35efb509668ecb6c",
+    "scripts/test-app-connections-offscreen.qml": "a6967337d48f35b9f57749b216604cf07925a31442100cf52a7971eb551b4c6a",
+    "scripts/test-application-declarations.py": "5e81ba05f4610ecde860b2bbe2e6212a6609e5a3fad3390210b33a62b4e98a49"
+  },
+  "plugin_declarations": {
+    "omarchy-urbit-theme-auth": "6738fe25055b54d90e9dd4f0b0fbd2153999b64d6280d8754fa0b543e4c979f6",
+    "omarchy-urbit-dms-auth": "a364a1c525649dd66c35d44178cdf7595005f3636a25865259eece20e6a7f0c8"
+  },
+  "ui_run": "/tmp/omabit-app-ui-20261021-04",
+  "ui_sha256": {
+    "calls.jsonl": "f83f5a497beb47cda95518c26dfd952fd5b0f9bfbdb44d1c148561c27a223560",
+    "qml.log": "2a82fa8531342001f5aae20a8747f2c878efa461196a0d0ad72befe7b65f9acf",
+    "approval.png": "d70cdf470f4b67f4e68573b59d84f04d3f01d87062086bf0d3b3a90e923d01ab"
+  },
+  "boundary": {
+    "ui": "offscreen Quickshell; cleared environment; private HOME/XDG; inert fixture backend; no inherited display/DBus/Hyprland/socket variables",
+    "cli": "httptest loopback with temporary file credential adapter and synthetic Python receiver",
+    "declarations": "copied exact declared inventories; separate auth-lab IDs; invalid input only; private HOME/XDG"
+  },
+  "results": {
+    "go_race": [
+      "internal/applicationauth",
+      "internal/collection",
+      "internal/eyre",
+      "backend/cmd/urbit-collector"
+    ],
+    "theme_recovery_and_install": 26,
+    "ui": "passed",
+    "actual_declared_inventory_imports": "passed"
+  },
+  "not_demonstrated": [
+    "complete public CLI/UI with real receivers and fresh fake",
+    "full loaded plugin desktop behavior",
+    "retention",
+    "reconnect/data writes",
+    "hosted compatibility",
+    "stable/dev/edge switching"
+  ]
+}

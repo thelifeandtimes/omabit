@@ -1,0 +1,56 @@
+{
+  "memory": "M382",
+  "status": "integrated-replay-and-driver-consistency-fix",
+  "schema": 43,
+  "staged_suite": {
+    "passed": true,
+    "exit_codes": [
+      1,
+      0,
+      0
+    ],
+    "negative_failed_for_expected_reason": true,
+    "seconds": 42.74169081996661,
+    "checks": {
+      "top_level_passed": 13,
+      "including_subcases_passed": 91,
+      "failed": []
+    },
+    "source_sha256": {
+      "private_workspace_server_linux.go": "654b820d506be3bbcdfb149671f6a642bb825d81551cba1808af6aea84449349",
+      "private_workspace_server_linux_test.go": "ea9181f5d7ea9b5a1643ca13eb103a3d8b044fbfcffd48d186f4cc7b6a6ad102"
+    },
+    "log_sha256": {
+      "negative01.jsonl": "9fc10fd55d8c699fb9d8d3480ae764cc2073ebee3cd8c9c1af12a7227b89a850",
+      "tests01.jsonl": "fd78082a54efc8f92b69d7439e36794198046804b64c1ce1f6406c6b07b0e628",
+      "vet01.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "staged_only": true
+  },
+  "integrated_checks": {
+    "exit": 0,
+    "seconds": 6.317740524013061,
+    "checks": {
+      "top_level": 7,
+      "including_subcases": 28,
+      "failed": []
+    },
+    "source_sha256": {
+      "internal/managed/private_workspace_server_linux.go": "654b820d506be3bbcdfb149671f6a642bb825d81551cba1808af6aea84449349",
+      "internal/managed/private_workspace_server_linux_test.go": "ea9181f5d7ea9b5a1643ca13eb103a3d8b044fbfcffd48d186f4cc7b6a6ad102"
+    },
+    "comment_only_gateway_sha256": "9c4008cbe82bd3628c808b92ea837e0161179c52f399ca3015385c91f8fa94a3",
+    "log_sha256": "159f57ae0fc75167036781cf9d1d3ca1cbbc21800b650c8b77b8397581c4f703",
+    "negative_control_failed_for_original_bug": true,
+    "runtime_executed": false
+  },
+  "supersedes": "M374 workspace queue backend-before-replay and incomplete typed-nil handling; M381 staged follow-up pending",
+  "runtime_authority_changed": false,
+  "public_routes_changed": false,
+  "protected_state_accessed": false,
+  "vm15": {
+    "session": 54631,
+    "status": "running-audit30-gated",
+    "first_publication_passed": false
+  }
+}

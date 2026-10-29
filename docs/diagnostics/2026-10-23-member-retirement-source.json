@@ -1,0 +1,26 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 30,
+  "model_cases": 34,
+  "adapter_cases": 19,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-retirement-source",
+  "source_sha256": {
+    "internal/projectnetwork/member_retirement.go": "60e127594adc1109e66437198205a42eb5d1e6e9050e8573e768cadb0cc55b72",
+    "internal/projectnetwork/member_retirement_test.go": "03d6d3c279021fb4ac046b61ac2535722838b631399b7cebe983756c4da8f9d5",
+    "internal/runtimequalify/project_member_retirement_linux.go": "4d46fe53d88d156073fca4ec2624748799b43c1551657ba2b9e0819575dd56f4",
+    "internal/runtimequalify/project_member_retirement_linux_test.go": "79558b9d026ba844dcb4abe56a1b018638284206c297a3c589018e71e59b9df4"
+  },
+  "logs": {
+    "omabit-member-retirement-model-tests.log": "742915e56d41250ac02d9099b5c635a2700fb20b987889266d9257573e0e7183",
+    "omabit-member-retirement-adapter-tests.log": "093553d9f28544dba759749a083b3c3f5690dfd1d197c65a8d98c02280c5e7aa",
+    "omabit-member-retirement-regression.log": "ab6b5fd1060f003309bb881b114ab498106eeb7791be6f62d571bf0216595c27",
+    "omabit-member-retirement-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "Separate explicit clean-exit retirement model/adapter only; no persistence, scheduling or public route.",
+    "No running container, force, volume, pier, anchor or bridge removal.",
+    "No replacement launch or resume is implemented.",
+    "VM17 predates this code and tests read-only Stop exit recovery only."
+  ]
+}

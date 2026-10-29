@@ -210,7 +210,11 @@ func (c *Client) LoginCode(ctx context.Context, runner, id string, req protocol.
 	if validateID(id) != nil || req.ExpectedRevision == 0 {
 		return result, errors.New("login-code selection is invalid")
 	}
-	if err := c.do(ctx, http.MethodPost, "/v1/instances/"+id+"/login-code", req, &result, true); err != nil {
+	httpClient := *c.httpClient
+	httpClient.Timeout = protocol.LoginCodeReplyTimeout
+	scoped := *c
+	scoped.httpClient = &httpClient
+	if err := scoped.do(ctx, http.MethodPost, "/v1/instances/"+id+"/login-code", req, &result, true); err != nil {
 		// Even malformed or hostile secret responses must not enter diagnostics.
 		return protocol.LoginCode{}, errors.New("login-code request failed; verify operator access and the selected live runtime")
 	}
@@ -281,7 +285,9 @@ func (c *Client) do(ctx context.Context, method, path string, payload, result an
 	if versioned {
 		req.Header.Set(protocol.Header, strconv.Itoa(protocol.Version))
 	}
-	if replay, _ := ctx.Value(creationReplayKey{}).(bool); replay && method == http.MethodPost && (path == "/v1/instances" || path == "/v1/comets" || path == "/v1/ships") {
+	_, projectAction := protocol.ProjectActionID(path)
+	_, _, _, projectRecoveryAction := protocol.ProjectRecoveryActionIDs(path)
+	if replay, _ := ctx.Value(creationReplayKey{}).(bool); replay && method == http.MethodPost && (path == "/v1/instances" || path == "/v1/comets" || path == "/v1/ships" || path == protocol.ProjectInventoryPath || path == protocol.PrivateChainProjectsPath || projectAction || projectRecoveryAction) {
 		req.Header.Set(protocol.CreationReplayHeader, "true")
 	}
 	if method == http.MethodPut || method == http.MethodPost {
@@ -290,7 +296,7 @@ func (c *Client) do(ctx context.Context, method, path string, payload, result an
 		defer func() {
 			if err != nil {
 				if _, remote := err.(*RemoteError); !remote {
-					err = fmt.Errorf("%s %s outcome uncertain; the runner may have accepted the request: %w", method, path, err)
+					err = &OutcomeUncertainError{Method: method, Path: path, Err: err}
 				}
 			}
 		}()

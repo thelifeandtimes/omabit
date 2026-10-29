@@ -1,0 +1,238 @@
+{
+  "memory": "M404",
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-26-managed-gateway-readiness-timing",
+  "runtime_qualified": false,
+  "initializer_ready_file_present": true,
+  "recovery_attempted": false,
+  "audit": {
+    "ok": false,
+    "scope_admitted": true,
+    "scope_inactive": true,
+    "exit": 0,
+    "timed_out": false,
+    "seconds": 63.20657021302031,
+    "overlay_unchanged": true,
+    "overlay_after_sha256": "245f01112dd39495f3e4598065005f6b282726acdf72a5b3b02ec50fe4225cef",
+    "base_unchanged": true,
+    "audit": {
+      "chain_contents_read": false,
+      "key_contents_read": false,
+      "logs": {
+        "initialize": {
+          "bytes": 283,
+          "failure_stages": [],
+          "known_failures": [
+            "private operation deadline expired"
+          ],
+          "passed": false,
+          "present": true,
+          "raw_log_exported": false,
+          "sha256": "af5b58c33a1379f8c67c2bb0c9a0e5ba608fe428d5b89bd5f3a07bd5f863f8b4"
+        },
+        "recover": {
+          "present": false
+        },
+        "verify": {
+          "present": false
+        }
+      },
+      "managed_private_gateway": true,
+      "ok": false,
+      "raw_state_exported": false,
+      "read_only_disk": true,
+      "rows": {
+        "instances": 0,
+        "operations": 3,
+        "private_gateway_observations": 0,
+        "private_project_gateways": 1,
+        "private_project_workspaces": 1,
+        "private_projects": 1,
+        "projects": 0
+      },
+      "runtime_diagnostic": {
+        "container": {
+          "dead": false,
+          "exit": 0,
+          "metadata_sha256": "c1e7765f40c1305b4d8c7c809a1e9cd4121cbc622f70d1cf59d5c0674967d977",
+          "oom_killed": false,
+          "running": false
+        },
+        "container_lifetime_ms": 600096,
+        "evaluator-failure.json": {
+          "present": false
+        },
+        "failure.txt": {
+          "present": false
+        },
+        "gateway-ready.json": {
+          "bytes": 3265,
+          "codes": [],
+          "known_stages": [],
+          "present": true,
+          "raw_text_exported": false,
+          "sha256": "e5232c4b6eb6ccca56f4e49e21ab654a81688ca44b8c648151ea4016398b3b25",
+          "source_locations": null
+        },
+        "local_container_log": {
+          "bytes": 1134,
+          "codes": [],
+          "known_stages": [
+            "canonical Hoon hex regression passed",
+            "fresh-keys-generated",
+            "keys-configured-on-private-chain",
+            "both-key-verdicts-checked",
+            "galaxy-chain-reads-complete",
+            "GATEWAY_READY"
+          ],
+          "raw_text_exported": false,
+          "sha256": "05398675cc16d962fee19fa3c1dd1de79b7c7ccac71412c0d0d6c50b54b6ecfb",
+          "source_locations": null
+        },
+        "stored_mount_count": 8,
+        "stored_mounts": [
+          {
+            "bind": true,
+            "destination_matches": true,
+            "present": true,
+            "rprivate": true,
+            "source_empty": false,
+            "target": "/lab",
+            "tmpfs": false,
+            "writable": true
+          },
+          {
+            "bind": true,
+            "destination_matches": true,
+            "present": true,
+            "rprivate": true,
+            "source_empty": false,
+            "target": "/node",
+            "tmpfs": false,
+            "writable": false
+          },
+          {
+            "bind": true,
+            "destination_matches": true,
+            "present": true,
+            "rprivate": true,
+            "source_empty": false,
+            "target": "/tools",
+            "tmpfs": false,
+            "writable": false
+          },
+          {
+            "bind": true,
+            "destination_matches": true,
+            "present": true,
+            "rprivate": true,
+            "source_empty": false,
+            "target": "/source",
+            "tmpfs": false,
+            "writable": false
+          },
+          {
+            "bind": true,
+            "destination_matches": true,
+            "present": true,
+            "rprivate": true,
+            "source_empty": false,
+            "target": "/compiled",
+            "tmpfs": false,
+            "writable": false
+          },
+          {
+            "bind": true,
+            "destination_matches": true,
+            "present": true,
+            "rprivate": true,
+            "source_empty": false,
+            "target": "/deployment",
+            "tmpfs": false,
+            "writable": false
+          },
+          {
+            "bind": true,
+            "destination_matches": true,
+            "present": true,
+            "rprivate": true,
+            "source_empty": false,
+            "target": "/vere",
+            "tmpfs": false,
+            "writable": false
+          },
+          {
+            "bind": true,
+            "destination_matches": true,
+            "present": true,
+            "rprivate": true,
+            "source_empty": false,
+            "target": "/gateway.cjs",
+            "tmpfs": false,
+            "writable": false
+          },
+          {
+            "present": false,
+            "target": "/tmp"
+          },
+          {
+            "present": false,
+            "target": "/urbit"
+          }
+        ]
+      },
+      "schema": 1,
+      "source_phase": "started"
+    },
+    "clean_shutdown": true,
+    "console_sha256": "9388d89afbed6302aef6a4a3cb741d0149e13820a7a80f6e76f34d4e0c9ab2c7",
+    "runtime_guest_ok": false,
+    "input_verifier_timing": {
+      "bytes": 834044028,
+      "durations_ms": [
+        40977,
+        10953
+      ],
+      "files": 12352,
+      "input_programs_executed": false,
+      "ok": true
+    }
+  },
+  "retention": {
+    "source": "/tmp/omabit-import-guest-run-managed-private-20261025-03/lab",
+    "destination": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/managed-gateway-disk-20261025-03",
+    "bytes": 3194814464,
+    "sha256": "245f01112dd39495f3e4598065005f6b282726acdf72a5b3b02ec50fe4225cef",
+    "disk_unchanged": true,
+    "all_scopes_inactive": true,
+    "compatibility_symlink": true,
+    "temporary_available": {
+      "filesystem_available_bytes": 22145409024,
+      "quota": {
+        "hard_blocks": 52485328,
+        "soft_blocks": 52485328,
+        "used_bytes": 45035810816,
+        "hard_inodes": 0,
+        "soft_inodes": 0,
+        "used_inodes": 322440,
+        "block_time": 0,
+        "inode_time": 0,
+        "valid": 63
+      },
+      "quota_available_bytes": 8709165056,
+      "available_bytes": 8709165056
+    },
+    "admission_floor_changed": false
+  },
+  "artifact_sha256": {
+    "boot02-result.json": "9d4ed6a09ac519b3584954f7a9935f790f29dd03e0431e0c9265bbcc3d56008e",
+    "prepared-result.json": "037159de5de897712741d199431f5b1217b934247fda091fc0e58c53c5d4916f",
+    "supervised03-attempt.json": "46452650c1d589981864c0a2e97f1d22fc91d942bc9b43b836df20659f362c47",
+    "supervised03-admission.json": "1d80ef97dba6444248111625b28eaed758dedb3282df83f25b493dec8393cd7b",
+    "audit-compile04-result.json": "19db0c892dff71cfa6340e019b5ba367e5163e801b5e94c3716454b3453317d4",
+    "disk-retention03-result.json": "ae5e369001e4db710431eae00722173d83980fa75a2c2bf1760b26290db0a5ab",
+    "main.go": "f2c236a580b34104f47da955357a067d9b5666db0640fc87e3f119b488e2e72f",
+    "inspect.go": "1c6b463af4964960a72923e1fcf1af15417deb1db78e46fb9c1b6c2b4a59a411",
+    "audit05.json": "3fc19ecfdee2acad151a1a17e227d597a9b2f1ce6aad43d7d39ee367012b4ca1",
+    "audit06.json": "674e00ec5adb82d18813ee088e93205e0c854a49701bbd9dc1b104f87e099f51"
+  }
+}

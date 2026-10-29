@@ -1,0 +1,29 @@
+{
+  "build": "20261026-onboarding",
+  "sections": {
+    "s1": {
+      "status": "Passed",
+      "notes": "This worked as expected."
+    },
+    "s2": {
+      "status": "Passed",
+      "notes": "lgtm"
+    },
+    "s3": {
+      "status": "Issue found",
+      "notes": "fakeships in the same project should be able to network with one another, "
+    },
+    "s4": {
+      "status": "Issue found",
+      "notes": "Technically worked, just some small ui/ux fixes that I will provide feedback on separately. "
+    },
+    "s5": {
+      "status": "Issue found",
+      "notes": "the 'remove plugin signin' button doesn't seem to be successfully removing the ~zod fakezod from the urbit-theme.review plugin connection? I can neither do it in the omabit application connections pane, nor in the theme plugin interface. "
+    },
+    "s6": {
+      "status": "Not tested",
+      "notes": "the current VM wasn't provisioned with sufficient resources so I got runtime action failed errors trying to reboot given the runtime work requirement. "
+    }
+  }
+}

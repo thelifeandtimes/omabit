@@ -320,6 +320,17 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 				t.Fatal(err)
 			}
 		}
+		if c.kind == "comet-boot" {
+			cmd := mapAt(c.doc, "Config")["Cmd"].([]string)
+			for _, arg := range cmd {
+				if arg == "-k" {
+					path := filepath.Join(fakeMountRoot(c), strings.TrimPrefix(cmd[len(cmd)-1], "/urbit/"), ".http.ports")
+					if err := os.WriteFile(path, []byte("8080 insecure public\n12321 insecure loopback\n"), 0600); err != nil {
+						t.Fatal(err)
+					}
+				}
+			}
+		}
 		if isNetworkedKind(c.kind) {
 			f.publishHTTP(c)
 		}
@@ -341,6 +352,29 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 			f.events = append(f.events, "version")
 			return f.version, nil
 		case "/usr/bin/curl":
+			joined := strings.Join(args, " ")
+			if strings.Contains(joined, "--data-binary") {
+				cmd := mapAt(c.doc, "Config")["Cmd"].([]string)
+				ship := ""
+				for i, arg := range cmd {
+					if arg == "-w" && i+1 < len(cmd) {
+						ship = cmd[i+1]
+					}
+				}
+				if ship == "" {
+					t.Fatal("private shutdown read on non-keyed fixture")
+				}
+				if strings.Contains(joined, `"dojo":"our"`) {
+					b, _ := json.Marshal(ship)
+					return string(b), nil
+				}
+				if strings.Contains(joined, `"dojo":"+hood/exit"`) && strings.Contains(joined, `"app":"hood"`) {
+					f.events = append(f.events, "stop-"+c.kind)
+					state["Running"], state["ExitCode"], state["OOMKilled"] = false, f.stopExit, f.oom
+					return "null", nil
+				}
+				t.Fatal("unrecognized private shutdown payload")
+			}
 			if !reflect.DeepEqual(args[3:], []string{"/usr/bin/curl", "--noproxy", "*", "--silent", "--show-error", "--max-time", "5", "--output", "/dev/null", "--write-out", "%{http_code}", "http://127.0.0.1:8080/~/host"}) {
 				t.Fatal("unsafe HTTP probe")
 			}
@@ -349,7 +383,10 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 		default:
 			t.Fatalf("unexpected exec: %q", args)
 		}
-	case "stop":
+	case "kill", "stop":
+		if verb == "kill" && !reflect.DeepEqual(args[3:], []string{"--signal", "SIGTERM"}) {
+			t.Fatal("unsafe signal", args)
+		}
 		f.events = append(f.events, "stop-"+c.kind)
 		if c.kind == "probe" && state["Running"] == true && mapAt(c.doc, "HostConfig")["Init"] != true {
 			// A PID-1 sleep ignores default-action SIGTERM. Do not model the

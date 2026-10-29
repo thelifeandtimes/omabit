@@ -1,0 +1,42 @@
+{
+  "memory": "M364",
+  "overall_passed": false,
+  "original_peer_subgate_passed": false,
+  "gateway_ready_observed": true,
+  "read_only_rpc_probe_passed": true,
+  "peer_recovery_passed": false,
+  "peer_creations_recorded": 0,
+  "failure": "historical-namespace-number-equality",
+  "namespace_observed_before_and_after": "net:[4026532247]",
+  "error_sha256": "03d6d29c9c1f3c730e8df336ffa2e0626d9cb3f897ab01c1b1a8859521b736cd",
+  "run": {
+    "exit": 0,
+    "seconds": 2159.52,
+    "clean_shutdown": true,
+    "timed_out": false,
+    "scope_admitted": true
+  },
+  "boot_wrapper_exit": 143,
+  "boot_wrapper_result_missing": true,
+  "wrapper_termination_cause": "unresolved; guest and read-only audits independently completed",
+  "retention": {
+    "complete": true,
+    "source": "/tmp/omabit-import-guest-run-private-chain-20261025-11/lab",
+    "destination": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/runtime-20261025-11",
+    "disk_sha256": "4ffba535f51739c2e3ece6d89239e74df4d07755f05e3cb52ae6b3ec5d3e7749",
+    "bytes": 3809476608,
+    "allocated_before": 3809415168,
+    "preserves_private_keys_and_chain": true,
+    "evidence_export": false,
+    "source_scopes_inactive": true
+  },
+  "go_tests": {
+    "top_level": 21,
+    "including_subcases": 117,
+    "vet": true
+  },
+  "python_tests": 54,
+  "python_initial_command_failure": "incorrect test_gateway_resume Python module name; corrected command passes",
+  "runtime_source_fix_tested": false,
+  "raw_state_exported": false
+}

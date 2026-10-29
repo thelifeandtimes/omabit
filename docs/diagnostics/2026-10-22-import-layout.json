@@ -1,0 +1,32 @@
+{
+  "recorded_at_utc": "2026-10-22T07:10:03.587770+00:00",
+  "unreleased": true,
+  "uncommitted": true,
+  "command": "OMABIT_TEST_FAKE_ZOD=0 GOCACHE=/tmp/omabit-go-build GOMODCACHE=/tmp/omabit-go-mod go test -race ./internal/managed ./internal/runtimequalify -run '^(TestGuidedImport|TestGuidedDestination|TestExternalImportMovesAndEnrolls|TestImportChangedSource|TestCustomStorageMount|TestRecoverGuidedInPlace)' -count=1 -v",
+  "exit": 0,
+  "log": "/tmp/omabit-import-layout-20261022.log",
+  "log_sha256": "356a007682488d9bf45e6f7107dd82458d07dc8929710a8ce5a5fbad8cb789b7",
+  "source_sha256": {
+    "internal/managed/import_layout_preview_test.go": "0b34019c7e0d9a5e3491972b1f130c15b7f29f77493ed7ffed63a087abe23c47",
+    "internal/managed/import_preview.go": "651d10db1f2f344a42be9017ff823f6fe73e9dab1f8f7ed5444b64f8363a3b64",
+    "internal/managed/import_preview_test.go": "2f41c21740cc5a907d9385dbd8090bea65b36f9f83b6d2b48f0c1478c37b3fff",
+    "internal/runtimequalify/storage_actions_linux_test.go": "b18e975c0f4d458046070bcc5ac1982c6923106d2fe2d6952f7ffbfb86f889c9",
+    "internal/runtimequalify/import_recovery_linux_test.go": "d8fc5f07360e21a3f44290fb23525c691fac007fca009ee382a7fe83c19278c9",
+    "internal/pierstore/layout.go": "afdf9b0b5e251a2d0cf9a5a94c635f15175514ee9d0011efafe3971f638be5f0"
+  },
+  "tests": [
+    "TestGuidedImportPreviewIdentityLayoutMatrix",
+    "TestGuidedImportReturnsEntryDiagnosticWithoutMovingSource",
+    "TestGuidedImportDerivesPlanAndRefusesChangedIdentity",
+    "TestRecoverGuidedInPlaceNamedPier",
+    "TestExternalImportMovesAndEnrollsWithSameAndCrossDevicePaths",
+    "TestImportChangedSourceDoesNotMoveAndInterruptedCopyStaysFenced",
+    "TestCustomStorageMountAndDiskAdmission",
+    "TestGuidedDestinationAndNamedImportInPlaceOrRename"
+  ],
+  "limits": [
+    "Fixture identity detection and engine; private temporary source trees and runner stores only.",
+    "Cross-device copy uses injected EXDEV, not a mounted filesystem.",
+    "No live ship, Docker engine, guided desktop UI or actual power-loss test."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "source_qualified": true,
+  "new_conversion_executed": false,
+  "tests": 3,
+  "actual_completed_overlay_virtual_bytes": 12884901888,
+  "required_with_verification_reserve": 15032385536,
+  "actual_quota_refusal_before_output_creation": "insufficient private-lab storage headroom: {'filesystem_available_bytes': 23710326784, 'quota': {'hard_blocks': 52485328, 'soft_blocks': 52485328, 'used_bytes': 43470893056, 'hard_inodes': 0, 'soft_inodes': 0, 'used_inodes': 80908, 'block_time': 0, 'inode_time': 0, 'valid': 63}, 'quota_available_bytes': 10274082816, 'available_bytes': 10274082816, 'required_bytes': 15032385536}",
+  "files": {
+    "extract_results.py": "4b9ae31195db892f42c6963b58e6c31dcce96f199348088d9b05ed6cd20a157b",
+    "test_extraction_storage.py": "29d72388c942a340d8a0b8aedfc9ac73da4bbff96aa82bd7c48d6d9b14061928",
+    "tests.log": "921b60a7fd52e978fbb551cacd29df2d6708879400278e1fcc70fceeb0c6f8e0",
+    "geometry.json": "aedd5b0e9e6ad5928e4d1243563ad9e466d8c856f605afd2cc3c1ca15aaf558a"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-extraction-storage",
+  "prior_failures_retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-current-stop21-storage-relief"
+}

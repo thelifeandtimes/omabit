@@ -1,0 +1,31 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-reusable-runtime-core",
+  "verification": {
+    "passed": true,
+    "focused_tests": 14,
+    "full_tests": 608,
+    "first_runtime_runs_passed": true,
+    "scopes_inactive": [
+      "omabit-repeated-runtime-unit-20261025-01",
+      "omabit-repeated-runtime-unit-20261025-02"
+    ],
+    "successive_sessions_same_formats": 3,
+    "authority_format": 4,
+    "intent_format": 3,
+    "checkpoint_format": 3,
+    "cleanup_format": 4,
+    "real_guard_admissions": 9,
+    "same_synthetic_artifact_identifiers": true,
+    "new_application_instances": 0,
+    "direct_checkpoint_imports": [
+      1,
+      2,
+      3
+    ],
+    "canonical_journal_and_six_checkpoints_independently_validated": true,
+    "unchanged_synthetic_application_credential_pending_cohorts": true,
+    "native_plugins_qualified": false,
+    "packaged_runtime_qualified": false,
+    "production_resources_touched": false
+  }
+}

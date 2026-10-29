@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "kind": "pure coordinated container retirement source gate",
+  "full_projectnetwork_race_seconds": 52.778,
+  "vet_passed": true,
+  "diff_check_passed": true,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-retirement-model",
+  "manifest": {
+    "omabit-anchor-retirement-compile.log": "1588c8e84f0e823ed3e65944e078572d56e83f309346170697d53d3c6b8eb0cc",
+    "omabit-anchor-retirement-tests-attempt1.log": "1beffae2e80a0180a1b001ecec1ef4c1999d29c9212e468b426cffb1b03569f1",
+    "omabit-anchor-retirement-full-race.log": "b48f532da2c6879aabc9dc052c5cd8a8522b312ac3894a5f1b5edf782812ae03",
+    "omabit-anchor-retirement-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-retirement-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/projectnetwork/anchor_retirement.go": "2136df0b7a471a478d4fda7dd14c45cdfc6ba0444d1e2f40bf22898f8dc515f0",
+    "source/internal/projectnetwork/anchor_retirement_test.go": "48ce42335af75cd8dc46d1a031a2a70a49bc9916f568196f8ac48c364594b1f8"
+  }
+}

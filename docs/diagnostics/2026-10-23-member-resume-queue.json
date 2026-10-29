@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "runtime_executed": false,
+  "cases": 6,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-resume-queue",
+  "source_sha256": {
+    "internal/managed/project_member_resume_server_linux.go": "efe593e835807ceb6c600098a3e4f19faf5b798b31459bda80ffd55f023c6fbf",
+    "internal/managed/project_member_resume_server_linux_test.go": "e58597b265dbb609b664e6b5747487bfef0381616ec4ec0b3000b99ce474f53c"
+  },
+  "logs": {
+    "omabit-resume-queue-tests.log": "833992c57a5630e6d2b8acca21bc86ab0ce379e3ad2109c91f44d5c1dc3d9410",
+    "omabit-resume-queue-tests2.log": "8ddbcb54d0afe0039969c7d04980b66a4f22a9ce03acc8afbe10b9b741d62d02",
+    "omabit-resume-queue-tests3.log": "54a8aa727e74ec75dd0bdb59e50835d20319b4be0965852e17907850be5c815a",
+    "omabit-resume-queue-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "initial_compile_failure": "test fixture return types corrected before execution"
+}

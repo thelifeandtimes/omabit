@@ -1,0 +1,21 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 28,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-stop-model",
+  "source_sha256": {
+    "internal/projectnetwork/member_stop.go": "10e7e493903fccd6a89e346c0fdb4c35348b9212de705c22136a6a28b0c06b51",
+    "internal/projectnetwork/member_stop_test.go": "36478579eccab8ee6f45289fd01cae27a13383b852376b139048393c0d2a5052"
+  },
+  "logs": {
+    "omabit-member-stop-model-tests.log": "e345c244c95efa9ceb5d062a920e440d7e4c0a673a4f708dc705e9796900c17f",
+    "omabit-member-stop-model-regression.log": "29cb1039119a8725fc40b1d6cf8484df689e2f756fa0ea8e884208f1af44684d",
+    "omabit-member-stop-model-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "Pure state/controller with inert drivers only; no persistent Stop journal, runtime adapter, queue or public route.",
+    "Initial Stop requires complete original initialized-member readiness; uncertain launch recovery is separate.",
+    "No current-runtime permission follows from a clean historical exit alone.",
+    "VM15 uses the earlier frozen readiness binary and cannot qualify this Stop model."
+  ]
+}

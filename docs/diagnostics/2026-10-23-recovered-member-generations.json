@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "kind": "pure ordinary member generation selection after one recovery",
+  "focused_race_seconds": 6.995,
+  "full_pure_race_seconds": 132.662,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-recovered-member-generations",
+  "manifest": {
+    "omabit-recovered-member-generations-compile.log": "e67489a59b2c2cfbb618f850cdb29f9eb5cb2c6a7a3e6ef084e1a66431899a08",
+    "omabit-recovered-member-generations-tests-attempt1.log": "cac7b669c0b462390fa32f8d0fb7fa9aad03708ace346518564bc4e7e702374a",
+    "omabit-recovered-member-generations-full-race.log": "8fbf94fcb6c002aeaa591471943d6c94d7bbc57620c73f0bc754bf8df68ded55",
+    "omabit-recovered-member-generations-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovered-member-generations-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/projectnetwork/recovered_member_generations.go": "27e4e106cc329bc761ee3ef2d9642fe276dc827148e6ee90f74ad212bdb7e9c0",
+    "source/internal/projectnetwork/recovered_member_generations_test.go": "f2c327c33a3aeb2f0b5c22397f27d1c7bd812dc166fe7bf7aed6cb2c6bacd7b0"
+  }
+}

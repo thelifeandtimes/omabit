@@ -1,0 +1,20 @@
+{
+  "source_qualified": true,
+  "runtime_pass_claimed": false,
+  "schema": 28,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-readiness-preparation",
+  "source_files_verified": 108,
+  "embedded_test_sha256": "032e966cec68980d5a40005dcdc13bebeb83d3e4259565a9c066536ee57cec56",
+  "appliance": "/tmp/omabit-import-appliance-20261023-15",
+  "logs": {
+    "omabit-member-warmup-tests.log": "65f54bcd5368da7f95e76a8609d222fabd985a774dd3e9bc2a48495a3d0de71e",
+    "omabit-member-warmup-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-member-readiness23-15-prepare.log": "307f4a09c7fdca655a98b33a8d0ce81e4ebe2daff248553d3825668810a60d29",
+    "omabit-member-readiness23-15-preparation-verification.log": "9695d6e6bd667041f02c6ee8391fb7d0d88deb72b1ac393af188d58363e778f5"
+  },
+  "limits": [
+    "Serial fixture identity warmup is not the durable readiness proof; the queue collects a separate proof afterward.",
+    "Runtime/preflight freshness remains 30 seconds.",
+    "No real schema28 readiness result claimed."
+  ]
+}

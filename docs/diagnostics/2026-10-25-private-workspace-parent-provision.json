@@ -1,0 +1,151 @@
+{
+  "memory": "M400",
+  "source_sha256": {
+    "internal/managed/private_workspace_parent_server_linux_test.go": "daec8fdeda2138c323c28c148564d7e1081b6e44568c56b163c8f40a8773b022",
+    "internal/privatechain/workspace_provision_linux_test.go": "1ae4910655acc3db5ecf378f84d75b3eff50c81f050df30d4e72e7d3402be381",
+    "internal/managed/private_workspace_server_linux.go": "14749f125b99df26c568668cfa8951ae27ff5e071d4c8f61b5f5cec2018c8d72",
+    "internal/managed/private_workspace.go": "142051bd0a5515b0eca2c097cf6bed688f2f8e2111a95b8c90722d2856c54c45",
+    "internal/managed/private_workspace_parent_server_linux.go": "b870551a748dd3b8ab02145c6b9bcf8d54dbf4363f3f3933c9ea83d1d133e513",
+    "internal/privatechain/workspace_provision_linux.go": "0f09f0dc0975d3cb35f03c45ef228b02aa4352e97b35bda5fb6f5a98577eab55"
+  },
+  "focused": {
+    "source_sha256": {
+      "private_workspace.go": "142051bd0a5515b0eca2c097cf6bed688f2f8e2111a95b8c90722d2856c54c45",
+      "private_workspace_parent_server_linux.go": "b870551a748dd3b8ab02145c6b9bcf8d54dbf4363f3f3933c9ea83d1d133e513",
+      "private_workspace_parent_server_linux_test.go": "daec8fdeda2138c323c28c148564d7e1081b6e44568c56b163c8f40a8773b022",
+      "private_workspace_server_linux.go": "14749f125b99df26c568668cfa8951ae27ff5e071d4c8f61b5f5cec2018c8d72",
+      "workspace_provision_linux.go": "0f09f0dc0975d3cb35f03c45ef228b02aa4352e97b35bda5fb6f5a98577eab55",
+      "workspace_provision_linux_test.go": "1ae4910655acc3db5ecf378f84d75b3eff50c81f050df30d4e72e7d3402be381"
+    },
+    "actual_docker_access": false,
+    "private_home": "/tmp/omabit-private-parent-provision-20261025-01/check03-home",
+    "results": {
+      "filesystem": {
+        "exit": 0,
+        "checks": 27,
+        "top": 6,
+        "failed": [],
+        "command": [
+          "go",
+          "test",
+          "-overlay=/tmp/omabit-private-parent-provision-20261025-01/overlay.json",
+          "-p=2",
+          "-race",
+          "-count=1",
+          "-timeout=5m",
+          "-json",
+          "./internal/privatechain",
+          "-run",
+          "^TestWorkspace(Provision|Parent)"
+        ]
+      },
+      "managed": {
+        "exit": 0,
+        "checks": 50,
+        "top": 14,
+        "failed": [],
+        "command": [
+          "go",
+          "test",
+          "-overlay=/tmp/omabit-private-parent-provision-20261025-01/overlay.json",
+          "-p=2",
+          "-race",
+          "-count=1",
+          "-timeout=5m",
+          "-json",
+          "./internal/managed",
+          "-run",
+          "^TestPrivateWorkspace(Provision|Queue|Worker|RealBackend)"
+        ]
+      }
+    },
+    "vet_exit": 0,
+    "seconds": 16.00631412799703
+  },
+  "integrated": {
+    "source_sha256": {
+      "internal/managed/private_workspace_parent_server_linux_test.go": "daec8fdeda2138c323c28c148564d7e1081b6e44568c56b163c8f40a8773b022",
+      "internal/privatechain/workspace_provision_linux_test.go": "1ae4910655acc3db5ecf378f84d75b3eff50c81f050df30d4e72e7d3402be381",
+      "internal/managed/private_workspace_server_linux.go": "14749f125b99df26c568668cfa8951ae27ff5e071d4c8f61b5f5cec2018c8d72",
+      "internal/managed/private_workspace.go": "142051bd0a5515b0eca2c097cf6bed688f2f8e2111a95b8c90722d2856c54c45",
+      "internal/managed/private_workspace_parent_server_linux.go": "b870551a748dd3b8ab02145c6b9bcf8d54dbf4363f3f3933c9ea83d1d133e513",
+      "internal/privatechain/workspace_provision_linux.go": "0f09f0dc0975d3cb35f03c45ef228b02aa4352e97b35bda5fb6f5a98577eab55"
+    },
+    "results": {
+      "privatechain": {
+        "exit": 0,
+        "checks": 452,
+        "top": 68,
+        "failed": [],
+        "command": [
+          "go",
+          "test",
+          "-p=2",
+          "-race",
+          "-count=1",
+          "-timeout=15m",
+          "-json",
+          "./internal/privatechain",
+          "-run",
+          "."
+        ]
+      },
+      "workspaces": {
+        "exit": 0,
+        "checks": 95,
+        "top": 28,
+        "failed": [],
+        "command": [
+          "go",
+          "test",
+          "-p=2",
+          "-race",
+          "-count=1",
+          "-timeout=15m",
+          "-json",
+          "./internal/managed",
+          "-run",
+          "^TestPrivateWorkspace"
+        ]
+      }
+    },
+    "actual_docker_access": false,
+    "schema_changed": false,
+    "diff_check_exit": 0,
+    "seconds": 35.94220064103138
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-workspace-parent-provision",
+  "artifact_sha256": {
+    "private_workspace_parent_server_linux_test.go": "daec8fdeda2138c323c28c148564d7e1081b6e44568c56b163c8f40a8773b022",
+    "workspace_provision_linux_test.go": "1ae4910655acc3db5ecf378f84d75b3eff50c81f050df30d4e72e7d3402be381",
+    "private_workspace_server_linux.go": "14749f125b99df26c568668cfa8951ae27ff5e071d4c8f61b5f5cec2018c8d72",
+    "private_workspace.go": "142051bd0a5515b0eca2c097cf6bed688f2f8e2111a95b8c90722d2856c54c45",
+    "private_workspace_parent_server_linux.go": "b870551a748dd3b8ab02145c6b9bcf8d54dbf4363f3f3933c9ea83d1d133e513",
+    "workspace_provision_linux.go": "0f09f0dc0975d3cb35f03c45ef228b02aa4352e97b35bda5fb6f5a98577eab55",
+    "baseline.json": "951b280311b950964ff3998c701463394136929f252e46493fe58461769ef177",
+    "overlay.json": "dae16099bff2babfaee6c845c740c8a16cce28eb49029559e7d5698ef073fa95",
+    "check.py": "f72fb9fa4108d5b5c3c5369d737432976f0e8787aaf5df8187af431e8dbb7b05",
+    "check-result.json": "373effc010a9849b5a8b7cd6641eaa027e34fb9f86a434864204c4a61014c8a1",
+    "filesystem-tests.jsonl": "96a4c3016cfb0e973a1c6bc22dfcddd3ab60d4e75fcf9754ab02f52943d86b3d",
+    "previous-workspace-provision-test.go.txt": "a2afe1ba4e4f5318adaecf72765e38a1dd940829945891a6adf83fc0e433a799",
+    "check02.py": "781cc3b5768522d0cb7f88bc1790b2db98421a68c68a42e1fc9a51d69037be8e",
+    "check02-result.json": "08761e4753c18fe02dff6d6e160120e320d98d248c7fcff0113925bf103bcf03",
+    "filesystem-tests02.jsonl": "48c99dd4bd528faac1a8a3660dbb55ba94a54ba94182768a6cc57733e9306927",
+    "managed-tests02.jsonl": "77469d1b7ee54391c70368f4917bb52e6ac2b97fc0ff0178e5b605220ebd0bf2",
+    "vet02.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "check03.py": "2dfce741250eea66e4fcb70375b6846845fc1866f0391328863cc4bdea1b9066",
+    "check03-result.json": "4fda7431faf2811afbed8a466ce5bce3eb4c4758b5c87df1d1b985a65880f1cf",
+    "filesystem-tests03.jsonl": "ca00db43439f8ce296c901382c62eab85e4d3294ff0573f09a0a07da016275b6",
+    "managed-tests03.jsonl": "e1db8a2098153fa665e926acbe795e508aa6ca3887350d73d46116123a1c9717",
+    "vet03.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "integrate.py": "0587ae3dba9656ae36b5b6c9b495bd784e1fbf03d3db95900be3e89b4d3989b2",
+    "integrated-result.json": "9b5e8ca425a81e90d45c79b9228466deb6669f80d85a64e1c8556e29aa8661fb",
+    "privatechain-integrated.jsonl": "e2271ee164bf85997402840c4ffbff7e2c349a88b2f2bb399769baff98471e5f",
+    "workspaces-integrated.jsonl": "fa4a49be775a30e73d489c79293fbfdd9ee41c28f12653c70b42c776d06928dd",
+    "diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "runtime_qualified": false,
+  "schema_changed": false,
+  "public_route_added": false,
+  "production_operations": false
+}

@@ -1,0 +1,589 @@
+{
+  "ok": true,
+  "scope": "native private two-fake control; Docker not yet qualified",
+  "original_path": "/tmp/omabit-thread-probe-20261022-18",
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-state-recovery/native18",
+  "result_sha256": "9226e485b5cc34e343f69a97a0a19c0ff478cae13201ea4e2e62034d694891d6",
+  "source_sha256": {
+    "scripts/qualification/fake-networks/network_case.py": "e94598baa305334eb909c71445ee61a32b13d0837f80b382677cf866cda5d0db",
+    "scripts/qualification/fake-networks/peer_probe.py": "777fbe2ba273256bbe0b9b44f33501c75c2050a124f61854a8ca75baa4550d32",
+    "scripts/qualification/fake-networks/thread_probe.py": "4f8819952c19df68bcd0f82e0f3e93ac237af38e558083b19d81c8741f29a7cd",
+    "scripts/qualification/fake-networks/state_case.py": "58250c80ee6b860ee9988c3397418b8396c0f0f0195465507bf8762ba5451bf6",
+    "scripts/qualification/fake-networks/omabit-state.hoon": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f"
+  },
+  "inputs": {
+    "guard": {
+      "unit": "omabit-thread-probe-2f81d28fb6fb42c093e4b28830202b20",
+      "host_net": "net:[4026531833]",
+      "host_pid": "pid:[4026531836]",
+      "channel": false,
+      "remote_submission": false,
+      "khan_receipt": false,
+      "peer": true,
+      "application_state": true
+    },
+    "sha256": {
+      "omabit-state.hoon": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+      "state_case.py": "58250c80ee6b860ee9988c3397418b8396c0f0f0195465507bf8762ba5451bf6",
+      "peer_probe.py": "777fbe2ba273256bbe0b9b44f33501c75c2050a124f61854a8ca75baa4550d32",
+      "network_case.py": "e94598baa305334eb909c71445ee61a32b13d0837f80b382677cf866cda5d0db",
+      "thread_probe.py": "4f8819952c19df68bcd0f82e0f3e93ac237af38e558083b19d81c8741f29a7cd",
+      "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+      "urbit": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+    }
+  },
+  "result": {
+    "ok": true,
+    "unit": "omabit-thread-probe-2f81d28fb6fb42c093e4b28830202b20",
+    "transport": "local-khan-thread",
+    "ships": {
+      "zod": {
+        "port": 18081,
+        "admin": 12321,
+        "pid": 3
+      },
+      "nec": {
+        "port": 18082,
+        "admin": 12322,
+        "pid": 29
+      }
+    },
+    "attempts": [
+      {
+        "sender": "zod",
+        "receiver": "zod",
+        "phase": "local-check",
+        "nonce": "omabit-local-check-c90a580642b1478287b16e92",
+        "expected_receipt": "omabit-receipt-6e46eb57018841219becbfa23d5ba3d9",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-6e46eb57018841219becbfa23d5ba3d9"
+      },
+      {
+        "sender": "nec",
+        "receiver": "nec",
+        "phase": "local-check",
+        "nonce": "omabit-local-check-09899914e5f044739e998892",
+        "expected_receipt": "omabit-receipt-02e9a7e96f584774abfaf16ef6960b3b",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-02e9a7e96f584774abfaf16ef6960b3b"
+      },
+      {
+        "sender": "zod",
+        "receiver": "nec",
+        "phase": "first",
+        "nonce": "omabit-first-281c467b2905472ba9f47a54",
+        "expected_receipt": "omabit-receipt-c3c556aa979b4db0828a75b3097f0267",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-c3c556aa979b4db0828a75b3097f0267"
+      },
+      {
+        "sender": "nec",
+        "receiver": "zod",
+        "phase": "first",
+        "nonce": "omabit-first-4b4cb7eb97ef41d1a89f004e",
+        "expected_receipt": "omabit-receipt-ff6466f2a40a4428a58279c498dd3066",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-ff6466f2a40a4428a58279c498dd3066"
+      },
+      {
+        "sender": "zod",
+        "receiver": "nec",
+        "phase": "nack",
+        "nonce": "fail",
+        "expected_receipt": "omabit-receipt-e797f2956f1342cb928e099389246b54",
+        "state": "rejected",
+        "status": 500,
+        "bytes": 827,
+        "receipt": {
+          "term": "child-failed",
+          "tang": [
+            [
+              "thread-fail"
+            ],
+            [
+              "poke-fail"
+            ],
+            [
+              "poke-ack"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[275 5].[275 7]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[274 5].[275 7]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[273 3].[279 76]>"
+            ],
+            [
+              "poke-hi-fail"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[272 3].[279 76]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[271 15].[279 76]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[655 33].[655 51]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[655 28].[655 60]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[636 3].[673 5]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[632 3].[673 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[132 34].[132 60]>"
+            ],
+            [
+              "/app/hood/hoon:<[132 18].[132 70]>"
+            ],
+            [
+              "/app/hood/hoon:<[121 21].[121 30]>"
+            ],
+            [
+              "/app/hood/hoon:<[121 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[120 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[119 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[118 3].[135 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[117 3].[135 5]>"
+            ],
+            [
+              "/sys/vane/gall/hoon:<[1.863 9].[1.863 37]>"
+            ]
+          ]
+        }
+      },
+      {
+        "sender": "zod",
+        "receiver": "nec",
+        "phase": "after-restart",
+        "nonce": "omabit-after-restart-5cb7f4312eb24ae9b00e2ef0",
+        "expected_receipt": "omabit-receipt-8bf5f16d03a648ec91881c1d2036737e",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-8bf5f16d03a648ec91881c1d2036737e"
+      },
+      {
+        "sender": "nec",
+        "receiver": "zod",
+        "phase": "after-restart",
+        "nonce": "omabit-after-restart-555fb543147d4e9a8a983de7",
+        "expected_receipt": "omabit-receipt-8ba8ff0e74044778803225ae2c5ba7f7",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-8ba8ff0e74044778803225ae2c5ba7f7"
+      }
+    ],
+    "clean_stops": [
+      "nec",
+      "nec",
+      "zod"
+    ],
+    "cleanup_errors": [],
+    "cross_ship_sessions_refused": true,
+    "application_state": {
+      "ok": true,
+      "writes": [
+        {
+          "phase": "connected",
+          "entry": "omabit-state-4a4a5947fec1953e41541ee0",
+          "receipt": "omabit-receipt-b2048b00e557ebf08e85bce8fb82acf3",
+          "state": "acknowledged",
+          "http_status": 200,
+          "response_bytes": 50,
+          "response_sha256": "e364d8a6ab5363afeaae94912039ce39a8ba7f9b9b7769f05ce8f6664cdf53cd"
+        },
+        {
+          "phase": "disconnected-before-restart",
+          "entry": "omabit-state-a91008965a00f9b3434d1f08",
+          "receipt": "omabit-receipt-51a9706674bb621a919881929288a61e",
+          "state": "acknowledged",
+          "http_status": 200,
+          "response_bytes": 50,
+          "response_sha256": "989d602a70ac72ae854d37ca53e354357592dc6fc2eb29775afd66539c7ce745"
+        },
+        {
+          "phase": "existing-subscription-after-restart",
+          "entry": "omabit-state-6560cc916a2a116191823f24",
+          "receipt": "omabit-receipt-74f07f60dd6b6b924e947131b80c5f40",
+          "state": "acknowledged",
+          "http_status": 200,
+          "response_bytes": 50,
+          "response_sha256": "12456a5ff04cc210ced840b976abc09f6513c1c4087383c55faedbf216e2c7d6"
+        },
+        {
+          "phase": "fresh-subscription-after-restart",
+          "entry": "omabit-state-323ccd40e18b62b3bf940917",
+          "receipt": "omabit-receipt-3ae4d8012f42838a09129fe3b3f5c691",
+          "state": "acknowledged",
+          "http_status": 200,
+          "response_bytes": 50,
+          "response_sha256": "1b819311ce8513861ccddcbbcdeee7683dc72a84b7d59fe5dd52abb3ba2f5374"
+        }
+      ],
+      "observations": [
+        {
+          "via": "scry",
+          "state": {
+            "revision": 0,
+            "entries": []
+          }
+        },
+        {
+          "via": "subscription",
+          "channel": "/~/channel/omabit-state-b6c52f354bce37127d3b9bd7c5f0bf49",
+          "events": [
+            [
+              0,
+              {
+                "ok": "ok",
+                "id": 1,
+                "response": "subscribe"
+              }
+            ],
+            [
+              1,
+              {
+                "json": {
+                  "revision": 0,
+                  "entries": []
+                },
+                "id": 1,
+                "response": "diff"
+              }
+            ]
+          ],
+          "cursor": 1,
+          "state": {
+            "revision": 0,
+            "entries": []
+          }
+        },
+        {
+          "via": "scry",
+          "state": {
+            "revision": 1,
+            "entries": [
+              "omabit-state-4a4a5947fec1953e41541ee0"
+            ]
+          }
+        },
+        {
+          "via": "subscription",
+          "channel": "/~/channel/omabit-state-b6c52f354bce37127d3b9bd7c5f0bf49",
+          "events": [
+            [
+              2,
+              {
+                "json": {
+                  "revision": 1,
+                  "entries": [
+                    "omabit-state-4a4a5947fec1953e41541ee0"
+                  ]
+                },
+                "id": 1,
+                "response": "diff"
+              }
+            ]
+          ],
+          "cursor": 2,
+          "state": {
+            "revision": 1,
+            "entries": [
+              "omabit-state-4a4a5947fec1953e41541ee0"
+            ]
+          }
+        },
+        {
+          "via": "scry",
+          "state": {
+            "revision": 2,
+            "entries": [
+              "omabit-state-4a4a5947fec1953e41541ee0",
+              "omabit-state-a91008965a00f9b3434d1f08"
+            ]
+          }
+        },
+        {
+          "via": "scry",
+          "state": {
+            "revision": 2,
+            "entries": [
+              "omabit-state-4a4a5947fec1953e41541ee0",
+              "omabit-state-a91008965a00f9b3434d1f08"
+            ]
+          }
+        },
+        {
+          "via": "subscription",
+          "channel": "/~/channel/omabit-state-b6c52f354bce37127d3b9bd7c5f0bf49",
+          "events": [
+            [
+              3,
+              {
+                "json": {
+                  "revision": 2,
+                  "entries": [
+                    "omabit-state-4a4a5947fec1953e41541ee0",
+                    "omabit-state-a91008965a00f9b3434d1f08"
+                  ]
+                },
+                "id": 1,
+                "response": "diff"
+              }
+            ]
+          ],
+          "cursor": 3,
+          "state": {
+            "revision": 2,
+            "entries": [
+              "omabit-state-4a4a5947fec1953e41541ee0",
+              "omabit-state-a91008965a00f9b3434d1f08"
+            ]
+          }
+        },
+        {
+          "via": "scry",
+          "state": {
+            "revision": 3,
+            "entries": [
+              "omabit-state-4a4a5947fec1953e41541ee0",
+              "omabit-state-a91008965a00f9b3434d1f08",
+              "omabit-state-6560cc916a2a116191823f24"
+            ]
+          }
+        },
+        {
+          "via": "subscription",
+          "channel": "/~/channel/omabit-state-b6c52f354bce37127d3b9bd7c5f0bf49",
+          "events": [
+            [
+              4,
+              {
+                "json": {
+                  "revision": 3,
+                  "entries": [
+                    "omabit-state-4a4a5947fec1953e41541ee0",
+                    "omabit-state-a91008965a00f9b3434d1f08",
+                    "omabit-state-6560cc916a2a116191823f24"
+                  ]
+                },
+                "id": 1,
+                "response": "diff"
+              }
+            ]
+          ],
+          "cursor": 4,
+          "state": {
+            "revision": 3,
+            "entries": [
+              "omabit-state-4a4a5947fec1953e41541ee0",
+              "omabit-state-a91008965a00f9b3434d1f08",
+              "omabit-state-6560cc916a2a116191823f24"
+            ]
+          }
+        },
+        {
+          "via": "subscription",
+          "channel": "/~/channel/omabit-state-26da13cfc66ede1313435bbf242c5dbd",
+          "events": [
+            [
+              0,
+              {
+                "ok": "ok",
+                "id": 1,
+                "response": "subscribe"
+              }
+            ],
+            [
+              1,
+              {
+                "json": {
+                  "revision": 3,
+                  "entries": [
+                    "omabit-state-4a4a5947fec1953e41541ee0",
+                    "omabit-state-a91008965a00f9b3434d1f08",
+                    "omabit-state-6560cc916a2a116191823f24"
+                  ]
+                },
+                "id": 1,
+                "response": "diff"
+              }
+            ]
+          ],
+          "cursor": 1,
+          "state": {
+            "revision": 3,
+            "entries": [
+              "omabit-state-4a4a5947fec1953e41541ee0",
+              "omabit-state-a91008965a00f9b3434d1f08",
+              "omabit-state-6560cc916a2a116191823f24"
+            ]
+          }
+        },
+        {
+          "via": "scry",
+          "state": {
+            "revision": 4,
+            "entries": [
+              "omabit-state-4a4a5947fec1953e41541ee0",
+              "omabit-state-a91008965a00f9b3434d1f08",
+              "omabit-state-6560cc916a2a116191823f24",
+              "omabit-state-323ccd40e18b62b3bf940917"
+            ]
+          }
+        },
+        {
+          "via": "subscription",
+          "channel": "/~/channel/omabit-state-26da13cfc66ede1313435bbf242c5dbd",
+          "events": [
+            [
+              2,
+              {
+                "json": {
+                  "revision": 4,
+                  "entries": [
+                    "omabit-state-4a4a5947fec1953e41541ee0",
+                    "omabit-state-a91008965a00f9b3434d1f08",
+                    "omabit-state-6560cc916a2a116191823f24",
+                    "omabit-state-323ccd40e18b62b3bf940917"
+                  ]
+                },
+                "id": 1,
+                "response": "diff"
+              }
+            ]
+          ],
+          "cursor": 2,
+          "state": {
+            "revision": 4,
+            "entries": [
+              "omabit-state-4a4a5947fec1953e41541ee0",
+              "omabit-state-a91008965a00f9b3434d1f08",
+              "omabit-state-6560cc916a2a116191823f24",
+              "omabit-state-323ccd40e18b62b3bf940917"
+            ]
+          }
+        },
+        {
+          "via": "scry",
+          "state": {
+            "revision": 4,
+            "entries": [
+              "omabit-state-4a4a5947fec1953e41541ee0",
+              "omabit-state-a91008965a00f9b3434d1f08",
+              "omabit-state-6560cc916a2a116191823f24",
+              "omabit-state-323ccd40e18b62b3bf940917"
+            ]
+          }
+        }
+      ],
+      "channels_deleted": [
+        "/~/channel/omabit-state-b6c52f354bce37127d3b9bd7c5f0bf49",
+        "/~/channel/omabit-state-26da13cfc66ede1313435bbf242c5dbd"
+      ],
+      "stage": "complete",
+      "installation": [
+        {
+          "action": "mount",
+          "state": "acknowledged",
+          "status": 200,
+          "bytes": 49,
+          "response": "omabit-receipt-b13b89f23e5cb5eb8362c4d4c22216da",
+          "receipt": "omabit-receipt-b13b89f23e5cb5eb8362c4d4c22216da"
+        },
+        {
+          "action": "commit",
+          "state": "acknowledged",
+          "status": 200,
+          "bytes": 49,
+          "response": "omabit-receipt-99dc7efcde1e4b50509312e005c287ff",
+          "receipt": "omabit-receipt-99dc7efcde1e4b50509312e005c287ff"
+        },
+        {
+          "action": "start",
+          "state": "acknowledged",
+          "status": 200,
+          "bytes": 49,
+          "response": "omabit-receipt-06e12ae18672dcabff87be32e334e189",
+          "receipt": "omabit-receipt-06e12ae18672dcabff87be32e334e189"
+        }
+      ],
+      "fixture_sha256": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+      "start_diagnostics": [
+        {
+          "label": "lens-domes",
+          "status": 200,
+          "body": "\"%.n\\n\""
+        },
+        {
+          "label": "lens-rein",
+          "status": 200,
+          "body": "\"~\\n\""
+        }
+      ],
+      "channels": [
+        "/~/channel/omabit-state-b6c52f354bce37127d3b9bd7c5f0bf49",
+        "/~/channel/omabit-state-26da13cfc66ede1313435bbf242c5dbd"
+      ],
+      "resume_cursor": 2,
+      "resume_channel": "/~/channel/omabit-state-b6c52f354bce37127d3b9bd7c5f0bf49",
+      "state_survived": true,
+      "queued_update_survived": true,
+      "existing_subscription_survived": true,
+      "fresh_subscription_reconciled": true,
+      "writes_replayed": false
+    },
+    "transport_passed": true,
+    "restart_same_pier": true,
+    "restart_kept_sessions": true,
+    "log_truncated": false
+  },
+  "independent_checks": {
+    "write_count": 4,
+    "subscription_revisions": [
+      0,
+      1,
+      2,
+      3,
+      3,
+      4
+    ],
+    "observations": 13,
+    "original_channel_for_first_four_snapshots": true,
+    "fresh_channel_for_last_two_snapshots": true,
+    "both_channels_deleted": true,
+    "clean_stops": [
+      "nec",
+      "nec",
+      "zod"
+    ]
+  },
+  "offline_checks": {
+    "receipt_tests": 6,
+    "state_tests": 5
+  }
+}

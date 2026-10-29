@@ -1,0 +1,24 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "positive_histories": 4,
+  "negative_histories": 10,
+  "race_seconds": 2.51,
+  "vet_passed": true,
+  "sources": {
+    "internal/projectnetwork/member_generations.go": "5782394fbc9bfc7e29a319b9722095547322fcaa0019583f4c9903fc3a242193",
+    "internal/projectnetwork/member_generations_test.go": "322c9752b7078bbc5b4eb909af55facfe5b02fc76332f8d4203604372dddc4fc"
+  },
+  "logs": {
+    "omabit-member-generation-selection-tests.log": "5a110cae14d74327e592e9df511cde0e7b04094d333748d12271055b30b1ec23",
+    "omabit-member-generation-selection-regression.log": "773e358d10c3644769b408d3e4fd2b0f9c3461ce6688f25586702375c6dee5d8",
+    "omabit-member-generation-selection-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-generation-selection",
+  "limits": [
+    "pure historical selector only",
+    "concrete adapters and store still implement first replacement only",
+    "no mutation authority from selected history",
+    "changed project/anchor generations require a separate recovery contract"
+  ]
+}

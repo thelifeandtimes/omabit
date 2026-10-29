@@ -1,0 +1,21 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema_changed": false,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-observation",
+  "source_sha256": {
+    "internal/runtimequalify/project_member_observation_linux.go": "9228d2dd6ede79c0590f66fed9e9832c5c8a10691334183976050f32a1f36f22",
+    "internal/runtimequalify/project_member_observation_linux_test.go": "37e2f5a868886e4558d03946e89b3f1cf7a1fdb773025c62800b9199bde11693",
+    "internal/runtimequalify/project_anchor_linux.go": "191ff8d964b8d1cf04b172bd7f2c2c195aaafdc306a45398c0660a11a1b6f74f"
+  },
+  "logs": {
+    "omabit-member-observation-tests.log": "b761c44056b74b6540046b4fc97f0865e1b245cc0682ed6c19ed7536f6dde2a0",
+    "omabit-member-observation-regression.log": "23362a00f55686422e04ace6319015e186a7ef4f4d79a22def3cef6e6f0fbf44",
+    "omabit-member-observation-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "Read-only private observation helper; no member dispatch or persistence.",
+    "Complete concerns namespace/container inventory only, not ship readiness, storage use or pier identity.",
+    "Only never-started created and running containers accepted; stopped/recovery evidence remains separate."
+  ]
+}

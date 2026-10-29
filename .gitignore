@@ -4,3 +4,6 @@
 *.pill
 __pycache__/
 *.pyc
+
+/.review-probe/
+/.review-launch-probe/

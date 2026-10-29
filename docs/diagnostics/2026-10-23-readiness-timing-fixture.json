@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "kind": "fixture source gate",
+  "guard_race_seconds": 3.004,
+  "host_refusal_before_effects": true,
+  "vet_passed": true,
+  "diff_passed": true,
+  "schema": 37,
+  "runtime_executed": false,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-readiness-timing-fixture",
+  "manifest": {
+    "omabit-readiness-timing-entry.log": "58ade93217d9f272b6d857e6677225d0a240a895e1292e633d55957f03534fe6",
+    "omabit-readiness-timing-guard-race.log": "1854b2b85db5219bc5362f25946b0d4f0883570baa24f02868058642a2590a82",
+    "omabit-readiness-timing-host-refusal.log": "40edaef651459b193a9752e4ff0dea90ec9952c47ceacb57149b9ab8b3707c59",
+    "omabit-readiness-timing-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-readiness-timing-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/managed/project_member_resumed_readiness_vm_test.go": "fb38178dc7930b319628032f0aa7140dec3251d95f756fe731dff2f527108762"
+  }
+}

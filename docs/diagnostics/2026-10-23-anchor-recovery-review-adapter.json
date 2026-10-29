@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "inert_cases": 33,
+  "focused_race_seconds": 9.525,
+  "related_race_seconds": 42.027,
+  "vet_passed": true,
+  "runtime_executed": false,
+  "schema_unchanged": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-recovery-review-adapter",
+  "manifest": {
+    "source/internal/runtimequalify/project_anchor_recovery_review_linux.go": "d90b79e1323b162d9093f2f4d8c00c83a00b5efacf0fc1040bf2686defafcda8",
+    "source/internal/runtimequalify/project_anchor_recovery_review_linux_test.go": "386a03e6e0ee03d58705301c03d50fdb94dd4c3a11cf745ee727ceebc05b3c2c",
+    "source/internal/runtimequalify/project_resource_contract_linux.go": "4ec66020650659e6340c33d9543f60f30df0de74199f622bcca27394cad745fb",
+    "source/internal/runtimequalify/project_member_observation_linux.go": "05dfcacc5c556a228a12c797e80d927ae418e95816417976092d3950fffaa40f",
+    "omabit-anchor-review-existing-readiness.log": "f6a4faaebbe2957483b51cbd53923a59265dc1c516a0c49ebe62d7a209bd7761",
+    "omabit-anchor-review-adapter-tests.log": "92cf2d47ac945ee39fd903ac456b13564158ee4c1716c66651a841496b6a5cad",
+    "omabit-anchor-review-adapter-regression.log": "f7356523910cf0bf8eddd4083e86a0842e32d9f69b61743343d819a0ed13fdbb",
+    "omabit-anchor-review-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-review-adapter-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -1,4 +1,51 @@
+# 0.3.0 release checkpoint — October 29
+
+Frozen candidate source: `ffb3f7c036af3d62220cd2610d77548900568c15`.
+The [qualification record](releases/0.3.0/qualification.json) binds the actual
+published-binary upgrade rehearsal, artifact/CLI/native startup checks and their
+limits. Protected PR checks still gate publication. Theme0.4.0 and DMs0.2.0 have
+merged, passing companion changes and unpublished release drafts.
+
+The active review uses the main desktop's separately labeled DEV plugins;
+[manual checks](native-dev-review.md) describe current state. The core candidate
+is0.3.0 with DEV presentation label0.3.0-dev.review1. Production remains unchanged.
+Expanded project recovery, private-devnet delivery, collection switching UI and
+the broader security/privacy audit remain open; see the release scope and roadmap.
+
+---
+
 # Project status
+
+**0.3.0 is being prepared on release/0.3.0.** See the [current release notes](release-0.3.0.md), [CLI reference](cli/README.md), [upgrade guide](releases-0.3-upgrade.md), and [native DEV review](native-dev-review.md). Earlier dated sections below are historical evidence, not the current feature inventory.
+
+**2026-10-21 development work (unreleased):** the
+[platform roadmap](platform-roadmap.md) records the three product pillars and
+small acceptance gates. The first [import diagnostic change](diagnostics/2026-10-21-import-diagnostics.md)
+identifies rejected tree entries while retaining the existing admission rules.
+The subsequent [guided import layout fixtures](diagnostics/2026-10-22-import-layout.md) pass identity-based naming, custom roots, collision handling and exclusive mount-parent checks. The [guided UI and minimal private VM boundary](diagnostics/2026-10-22-import-ui.md) also pass; real disposable-engine import remains. These checks do not establish the cause of the user's reported failure, and no
+existing ship or installed service was changed. Future wallet and application
+authority questions are recorded in [security notes](platform-security-notes.md).
+
+The updated plan starts shared authentication with Theme and DMs, with direct
+plugin-to-ship traffic and standalone login. The
+[independent-session experiment](application-auth-checkpoint.md) adds an internal
+Eyre primitive and synthetic HTTP coverage. The subsequent [application connection flow](application-connections.md)
+now exposes it through an explicit approval CLI/panel in development. The
+[real Theme/DMs helper checkpoint](diagnostics/2026-10-21-plugin-handoff.md) passed
+private handoff, isolated Secret Service, direct reads/SSE, independent logout and
+standalone login on a fresh fake. The internal [durable issuer/recovery fixture gate](diagnostics/2026-10-21-durable-issuer.md)
+now passes, including actual process interruption. The subsequent
+[verified receiver and real-pair recovery run](diagnostics/2026-10-21-receiver-recovery.md)
+also passed on final frozen headless artifacts. The [installed declarations,
+approval commands and offscreen panel gate](diagnostics/2026-10-21-approval-flow.md)
+now pass. The subsequent [real CLI/panel and running-consumer gate](diagnostics/2026-10-21-public-auth-flow.md)
+also passes, including a fix for DMs adopting a later-approved account on open/refresh.
+The [completed history checkpoint](diagnostics/2026-10-22-application-history.md) now passes archival, replay refusal, interruption/retry and old-helper cleanup compatibility. Retained-helper pruning, data writes/reconnect, hosted compatibility and full desktop integration remain. Omart owns marketplace discovery; private local Ethereum chains and isolated stable/dev/edge
+plugin collections are separate later checkpoints.
+
+The user set completion of the roadmap as the active goal, with
+[strict production exclusions](experiment-isolation.md). Track remaining gates
+and separate development worktrees in [goal progress](goal-progress.md).
 
 ## Where we are
 

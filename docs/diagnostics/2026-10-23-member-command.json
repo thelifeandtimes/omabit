@@ -1,0 +1,13 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "source_sha256": {
+    "internal/runtimequalify/project_member_command_linux.go": "c6f4795ecd54ec8d970b3ba664184a23a49f54adbb6995f0f6371f6ba51c2a4d",
+    "internal/runtimequalify/project_member_command_linux_test.go": "9321067d9dd058cce3f63faecc2dc49b0ace325c9adb1a32ba9db54135419834"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-command",
+  "limits": [
+    "Command builder only; no member storage, creation, readiness, cleanup, or public route.",
+    "Current standalone driver retains its original behavior."
+  ]
+}

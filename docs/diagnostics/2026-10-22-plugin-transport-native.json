@@ -1,0 +1,1628 @@
+{
+  "passed": true,
+  "scope": "native fake pair; actual plugin transport; in-memory credential adapter and disabled desktop application",
+  "original_path": "/tmp/omabit-thread-probe-plugins-20261022-01",
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-plugin-transport/native01",
+  "inputs": {
+    "guard": {
+      "unit": "omabit-thread-probe-630881fccf42478eb7e0881932340e65",
+      "host_net": "net:[4026531833]",
+      "host_pid": "pid:[4026531836]",
+      "channel": false,
+      "remote_submission": false,
+      "khan_receipt": false,
+      "peer": true,
+      "application_state": false,
+      "plugin_transport": true
+    },
+    "plugins": {
+      "theme": {
+        "source": "/home/thelifeandtimes/repos/omarchy-urbit-theme-auth",
+        "source_sha256": {
+          "manifest.json": "c043871d7f98384f25fdadc921a7ffe603a551265609b5e5faf0b0e54f678d0e",
+          "application-connection.json": "6738fe25055b54d90e9dd4f0b0fbd2153999b64d6280d8754fa0b543e4c979f6",
+          "Service.qml": "03795615746b23b089a3019a4e922d32e495c34c938661ee27ec1f95b3d8363a",
+          "Model.js": "9cde5240927a358f40aae9a77e54c5bbe44cd9e3e223ae3ed8556398dc978059",
+          "client/application_connection.py": "c0a6ec7de04bdf22c49ad31f6ec0ff35b59f959a7fc0a84a62085407ddab7a7f",
+          "client/connection_journal.py": "05e46c63b8067852fce6b3dadfaca5a7a604d66567b5df9fba15005f6f27e13b",
+          "client/connection_offer.py": "ff3e33681271cc4f481f5b0a7e9d6f0e39d11ddff3639c10244b7d1eb6104961",
+          "client/eyre.py": "faa41fa0fabbbe9e545d5e875d4d7c1e2983a2ba6d49b6a2735f689bbfa6a778",
+          "client/instance.py": "127511e78115b906972bd92d9ffeaa4415336703d9c8602ebcaacc16171456e7",
+          "client/main.py": "22430816181980a8cdbfade3c23811689d49f5c4b1178261a8da1a83350c84c0",
+          "client/native.py": "c4a624c697ba9f82b04f9209b647c6c9c78b2097605b8d03e0f5fba617f088fb",
+          "client/profile.py": "c76f45593a9d4209c30568a785080c5fca6bc44b08703a89045663411280cf68",
+          "client/support.py": "108b797eff2793164fdcd42180e858838ce547fedd7f94269ff56c64b40db06c",
+          "client/sync.py": "5b0f5095dbb406015c0e648e811a1aeace85594dc730f70e0a0972ac708a3d43"
+        },
+        "plugin_id": "thelifeandtimes.urbit-theme.auth-lab",
+        "staged_ui": [
+          "Service.qml",
+          "Model.js"
+        ],
+        "desktop_adapter_enabled": false
+      },
+      "dms": {
+        "source": "/home/thelifeandtimes/repos/omarchy-urbit-dms-auth",
+        "source_sha256": {
+          "manifest.json": "e9c355d8db66f77bf5ad8b70344bc8884c79bc358acd52a51f4305972d32a23e",
+          "application-connection.json": "a364a1c525649dd66c35d44178cdf7595005f3636a25865259eece20e6a7f0c8",
+          "application_connection.py": "746c22b89cf004f328a200a590409347b55cbfc97f702ae346d23f5d64dc0240",
+          "bridge.py": "6962debeaa185467c9c2b00cd6d95a9ec4dd13cafc4830a83bd80b9babaae190",
+          "browser_session.py": "e142b38b11a4cb0be77bcf7204aa94126227808cddc4a57f43ea40381e7c8516",
+          "connection_journal.py": "05e46c63b8067852fce6b3dadfaca5a7a604d66567b5df9fba15005f6f27e13b",
+          "connection_offer.py": "ff3e33681271cc4f481f5b0a7e9d6f0e39d11ddff3639c10244b7d1eb6104961",
+          "external_apps.py": "316dcde031e25b8e10a5d614893ba6823b00e03af7cccd3b5efc1321adddb048",
+          "eyre_session.py": "97c065eb44f447526e9b59fe978c17b8bf5bf27b3636d59b5cebfa73dd5934f5",
+          "instance.py": "f7c739b991ffd274226e587316e6464fed59d14dffcb2d20a5dc953ceb5fd1bd",
+          "launcher_entry.py": "204b46e1fbc0df7a6bc91571529f5cc8cbb594b3f6c7c4de2e9d2925fc166396",
+          "open_web.py": "dfa4892ba56b029f7919855bf2125ba3ad6b70f1ae66911d6f79a7b97d626c61",
+          "session_store.py": "c8a6a7cf0c3781c64a5d7f0bf4a5aadb650a731747bcb6e97ee414dcd4f5b6e2"
+        },
+        "plugin_id": "urbit.dms.auth-lab",
+        "staged_ui": [],
+        "desktop_adapter_enabled": false
+      },
+      "stager_sha256": "e525b22b8cff733eac4d219e01a01d3cef7932ff1a7430029987c2bbf56edf0d"
+    },
+    "plugin_admission": {
+      "memory_available_bytes": 55700332544,
+      "storage": {
+        "filesystem_available_bytes": 24635449344,
+        "quota": {
+          "hard_blocks": 52485328,
+          "soft_blocks": 52485328,
+          "used_bytes": 42545770496,
+          "hard_inodes": 0,
+          "soft_inodes": 0,
+          "used_inodes": 63372,
+          "block_time": 0,
+          "inode_time": 0,
+          "valid": 63
+        },
+        "quota_available_bytes": 11199205376,
+        "available_bytes": 11199205376,
+        "required_bytes": 8589934592
+      }
+    },
+    "sha256": {
+      "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+      "network_case.py": "4f54fcf1bee1aeadd0c12cd8cea96e1c3093b68f8c4bc836107d74fef1145bea",
+      "omabit-state.hoon": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+      "peer_probe.py": "c5b3e2315272029b96d8e7fb882f5656d767a9ce1927928ba387b64a29cdef1d",
+      "plugin_case.py": "b8deea53f48bdf9632a28d58fb61c1c6177a07ba560791b8e7cc750ba695247f",
+      "plugins/dms/application-connection.json": "a364a1c525649dd66c35d44178cdf7595005f3636a25865259eece20e6a7f0c8",
+      "plugins/dms/application-profile.json": "6f562d153857927d78eff7dcbc6d2f49adc473abb8325b11a068bca4ff503d02",
+      "plugins/dms/application_connection.py": "746c22b89cf004f328a200a590409347b55cbfc97f702ae346d23f5d64dc0240",
+      "plugins/dms/bridge.py": "6962debeaa185467c9c2b00cd6d95a9ec4dd13cafc4830a83bd80b9babaae190",
+      "plugins/dms/browser_session.py": "e142b38b11a4cb0be77bcf7204aa94126227808cddc4a57f43ea40381e7c8516",
+      "plugins/dms/connection_journal.py": "05e46c63b8067852fce6b3dadfaca5a7a604d66567b5df9fba15005f6f27e13b",
+      "plugins/dms/connection_offer.py": "ff3e33681271cc4f481f5b0a7e9d6f0e39d11ddff3639c10244b7d1eb6104961",
+      "plugins/dms/external_apps.py": "316dcde031e25b8e10a5d614893ba6823b00e03af7cccd3b5efc1321adddb048",
+      "plugins/dms/eyre_session.py": "97c065eb44f447526e9b59fe978c17b8bf5bf27b3636d59b5cebfa73dd5934f5",
+      "plugins/dms/instance.py": "f7c739b991ffd274226e587316e6464fed59d14dffcb2d20a5dc953ceb5fd1bd",
+      "plugins/dms/launcher_entry.py": "204b46e1fbc0df7a6bc91571529f5cc8cbb594b3f6c7c4de2e9d2925fc166396",
+      "plugins/dms/manifest.json": "8aff4177983702bda3927aa94c1076c0704f211565ddc4772ef884055b40ff45",
+      "plugins/dms/open_web.py": "dfa4892ba56b029f7919855bf2125ba3ad6b70f1ae66911d6f79a7b97d626c61",
+      "plugins/dms/session_store.py": "c8a6a7cf0c3781c64a5d7f0bf4a5aadb650a731747bcb6e97ee414dcd4f5b6e2",
+      "plugins/theme/Model.js": "9cde5240927a358f40aae9a77e54c5bbe44cd9e3e223ae3ed8556398dc978059",
+      "plugins/theme/Service.qml": "03795615746b23b089a3019a4e922d32e495c34c938661ee27ec1f95b3d8363a",
+      "plugins/theme/application-connection.json": "6738fe25055b54d90e9dd4f0b0fbd2153999b64d6280d8754fa0b543e4c979f6",
+      "plugins/theme/application-profile.json": "6f562d153857927d78eff7dcbc6d2f49adc473abb8325b11a068bca4ff503d02",
+      "plugins/theme/client/application_connection.py": "c0a6ec7de04bdf22c49ad31f6ec0ff35b59f959a7fc0a84a62085407ddab7a7f",
+      "plugins/theme/client/connection_journal.py": "05e46c63b8067852fce6b3dadfaca5a7a604d66567b5df9fba15005f6f27e13b",
+      "plugins/theme/client/connection_offer.py": "ff3e33681271cc4f481f5b0a7e9d6f0e39d11ddff3639c10244b7d1eb6104961",
+      "plugins/theme/client/eyre.py": "faa41fa0fabbbe9e545d5e875d4d7c1e2983a2ba6d49b6a2735f689bbfa6a778",
+      "plugins/theme/client/instance.py": "127511e78115b906972bd92d9ffeaa4415336703d9c8602ebcaacc16171456e7",
+      "plugins/theme/client/main.py": "22430816181980a8cdbfade3c23811689d49f5c4b1178261a8da1a83350c84c0",
+      "plugins/theme/client/native.py": "c4a624c697ba9f82b04f9209b647c6c9c78b2097605b8d03e0f5fba617f088fb",
+      "plugins/theme/client/profile.py": "c76f45593a9d4209c30568a785080c5fca6bc44b08703a89045663411280cf68",
+      "plugins/theme/client/support.py": "108b797eff2793164fdcd42180e858838ce547fedd7f94269ff56c64b40db06c",
+      "plugins/theme/client/sync.py": "5b0f5095dbb406015c0e648e811a1aeace85594dc730f70e0a0972ac708a3d43",
+      "plugins/theme/manifest.json": "eee7faecb3b62602cc38159371108501cd9c20f4abbc1fa67d9305b1f1c9322b",
+      "state_case.py": "58250c80ee6b860ee9988c3397418b8396c0f0f0195465507bf8762ba5451bf6",
+      "thread_probe.py": "2c7afba892d2f964a0fcde1590f1204afa10610433cb727c957918712d519625",
+      "urbit": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+    }
+  },
+  "result": {
+    "ok": true,
+    "unit": "omabit-thread-probe-630881fccf42478eb7e0881932340e65",
+    "transport": "local-khan-thread",
+    "ships": {
+      "zod": {
+        "port": 18081,
+        "admin": 12321,
+        "pid": 3
+      },
+      "nec": {
+        "port": 18082,
+        "admin": 12322,
+        "pid": 51
+      }
+    },
+    "attempts": [
+      {
+        "sender": "zod",
+        "receiver": "zod",
+        "phase": "local-check",
+        "nonce": "omabit-local-check-763a044fb2194c78b23a2959",
+        "expected_receipt": "omabit-receipt-3aa3fbf5572d45c88667eddf356a84fe",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-3aa3fbf5572d45c88667eddf356a84fe"
+      },
+      {
+        "sender": "nec",
+        "receiver": "nec",
+        "phase": "local-check",
+        "nonce": "omabit-local-check-c817b79478744a46bdb5aa72",
+        "expected_receipt": "omabit-receipt-9646901bc63a46698d3183bd0e33d20b",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-9646901bc63a46698d3183bd0e33d20b"
+      },
+      {
+        "sender": "zod",
+        "receiver": "nec",
+        "phase": "first",
+        "nonce": "omabit-first-81bc0b0c2c714ee59bc54fc1",
+        "expected_receipt": "omabit-receipt-0b02d07391104f58b9ccc4078512faed",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-0b02d07391104f58b9ccc4078512faed"
+      },
+      {
+        "sender": "nec",
+        "receiver": "zod",
+        "phase": "first",
+        "nonce": "omabit-first-9c5904972cd5426db63a06b6",
+        "expected_receipt": "omabit-receipt-fa8a2e8515094a73b3a5ff0b1c34c7eb",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-fa8a2e8515094a73b3a5ff0b1c34c7eb"
+      },
+      {
+        "sender": "zod",
+        "receiver": "nec",
+        "phase": "nack",
+        "nonce": "fail",
+        "expected_receipt": "omabit-receipt-6edd1134d13d4652a6688c1934d63c64",
+        "state": "rejected",
+        "status": 500,
+        "bytes": 827,
+        "receipt": {
+          "term": "child-failed",
+          "tang": [
+            [
+              "thread-fail"
+            ],
+            [
+              "poke-fail"
+            ],
+            [
+              "poke-ack"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[275 5].[275 7]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[274 5].[275 7]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[273 3].[279 76]>"
+            ],
+            [
+              "poke-hi-fail"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[272 3].[279 76]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[271 15].[279 76]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[655 33].[655 51]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[655 28].[655 60]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[636 3].[673 5]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[632 3].[673 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[132 34].[132 60]>"
+            ],
+            [
+              "/app/hood/hoon:<[132 18].[132 70]>"
+            ],
+            [
+              "/app/hood/hoon:<[121 21].[121 30]>"
+            ],
+            [
+              "/app/hood/hoon:<[121 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[120 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[119 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[118 3].[135 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[117 3].[135 5]>"
+            ],
+            [
+              "/sys/vane/gall/hoon:<[1.863 9].[1.863 37]>"
+            ]
+          ]
+        }
+      },
+      {
+        "sender": "zod",
+        "receiver": "nec",
+        "phase": "after-restart",
+        "nonce": "omabit-after-restart-91ac052e33e24158b0e0a932",
+        "expected_receipt": "omabit-receipt-c0ecdc5325f24f1c854a4eb6313dd65b",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-c0ecdc5325f24f1c854a4eb6313dd65b"
+      },
+      {
+        "sender": "nec",
+        "receiver": "zod",
+        "phase": "after-restart",
+        "nonce": "omabit-after-restart-c22748a39bcb4a6a9da3d6f5",
+        "expected_receipt": "omabit-receipt-9b5fd4a3c1754275a968f9ce1b292b70",
+        "state": "acknowledged",
+        "status": 200,
+        "bytes": 50,
+        "receipt": "omabit-receipt-9b5fd4a3c1754275a968f9ce1b292b70"
+      }
+    ],
+    "clean_stops": [
+      "nec",
+      "nec",
+      "zod"
+    ],
+    "cleanup_errors": [],
+    "cross_ship_sessions_refused": true,
+    "plugins": {
+      "ok": true,
+      "desktop_adapter": "disabled",
+      "credential_store": "in-memory fixture",
+      "plugin_ids": [
+        "thelifeandtimes.urbit-theme.auth-lab",
+        "urbit.dms.auth-lab"
+      ],
+      "theme": {
+        "actions": [
+          {
+            "channel": "/~/channel/2bcd3c12b9af49469a66565b22b0a8d0",
+            "id": 1,
+            "action": "subscribe",
+            "app": "settings",
+            "path": "/desk/omarchy-urbit-theme"
+          },
+          {
+            "channel": "/~/channel/2bcd3c12b9af49469a66565b22b0a8d0",
+            "id": 2,
+            "action": "ack"
+          },
+          {
+            "channel": "/~/channel/030277ab4dd24a5a96de8daa1b11b8ba",
+            "id": 1,
+            "action": "poke",
+            "app": "settings"
+          },
+          {
+            "channel": "/~/channel/2bcd3c12b9af49469a66565b22b0a8d0",
+            "id": 3,
+            "action": "ack"
+          },
+          {
+            "channel": "/~/channel/030277ab4dd24a5a96de8daa1b11b8ba",
+            "id": 2,
+            "action": "ack"
+          },
+          {
+            "channel": "/~/channel/030277ab4dd24a5a96de8daa1b11b8ba",
+            "id": 3,
+            "action": "delete"
+          },
+          {
+            "channel": "/~/channel/98d64ecb670d4541a9fc9de3fc8be9fe",
+            "id": 1,
+            "action": "subscribe",
+            "app": "settings",
+            "path": "/desk/omarchy-urbit-theme"
+          },
+          {
+            "channel": "/~/channel/98d64ecb670d4541a9fc9de3fc8be9fe",
+            "id": 2,
+            "action": "ack"
+          },
+          {
+            "channel": "/~/channel/abb5cb8bd926486ca5fc8e7fd0d87a3c",
+            "id": 1,
+            "action": "poke",
+            "app": "settings"
+          },
+          {
+            "channel": "/~/channel/98d64ecb670d4541a9fc9de3fc8be9fe",
+            "id": 3,
+            "action": "ack"
+          },
+          {
+            "channel": "/~/channel/abb5cb8bd926486ca5fc8e7fd0d87a3c",
+            "id": 2,
+            "action": "ack"
+          },
+          {
+            "channel": "/~/channel/abb5cb8bd926486ca5fc8e7fd0d87a3c",
+            "id": 3,
+            "action": "delete"
+          },
+          {
+            "channel": "/~/channel/98d64ecb670d4541a9fc9de3fc8be9fe",
+            "id": 4,
+            "action": "delete"
+          }
+        ],
+        "frames": [
+          {
+            "channel": "/~/channel/2bcd3c12b9af49469a66565b22b0a8d0",
+            "event_id": "0",
+            "event": {
+              "ok": "ok",
+              "id": 1,
+              "response": "subscribe"
+            }
+          },
+          {
+            "channel": "/~/channel/2bcd3c12b9af49469a66565b22b0a8d0",
+            "event_id": "1",
+            "event": {
+              "json": {
+                "settings-event": {
+                  "put-entry": {
+                    "bucket-key": "appearance",
+                    "desk": "omarchy-urbit-theme",
+                    "entry-key": "current",
+                    "value": "{\"schemaVersion\":1,\"updateId\":\"b983554658ce486b80b990fcfe4595eb\",\"deviceId\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"theme\":\"omabit-transport-before\",\"font\":\"Fixture Mono\",\"colors\":{\"mode\":\"dark\",\"background\":\"#112233\",\"foreground\":\"#EEEEEE\",\"blue\":\"#123ABC\"},\"shell\":{},\"windows\":{},\"animations\":{\"curves\":[],\"rules\":[]},\"files\":{}}"
+                  }
+                }
+              },
+              "id": 1,
+              "mark": "settings-event",
+              "response": "diff"
+            }
+          },
+          {
+            "channel": "/~/channel/030277ab4dd24a5a96de8daa1b11b8ba",
+            "event_id": "0",
+            "event": {
+              "ok": "ok",
+              "id": 1,
+              "response": "poke"
+            }
+          },
+          {
+            "channel": "/~/channel/98d64ecb670d4541a9fc9de3fc8be9fe",
+            "event_id": "0",
+            "event": {
+              "ok": "ok",
+              "id": 1,
+              "response": "subscribe"
+            }
+          },
+          {
+            "channel": "/~/channel/98d64ecb670d4541a9fc9de3fc8be9fe",
+            "event_id": "1",
+            "event": {
+              "json": {
+                "settings-event": {
+                  "put-entry": {
+                    "bucket-key": "appearance",
+                    "desk": "omarchy-urbit-theme",
+                    "entry-key": "current",
+                    "value": "{\"schemaVersion\":1,\"updateId\":\"126e1203698a492e970fc9eb3897b10b\",\"deviceId\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"theme\":\"omabit-transport-after\",\"font\":\"Fixture Mono\",\"colors\":{\"mode\":\"dark\",\"background\":\"#112233\",\"foreground\":\"#EEEEEE\",\"blue\":\"#123ABC\"},\"shell\":{},\"windows\":{},\"animations\":{\"curves\":[],\"rules\":[]},\"files\":{}}"
+                  }
+                }
+              },
+              "id": 1,
+              "mark": "settings-event",
+              "response": "diff"
+            }
+          },
+          {
+            "channel": "/~/channel/abb5cb8bd926486ca5fc8e7fd0d87a3c",
+            "event_id": "0",
+            "event": {
+              "ok": "ok",
+              "id": 1,
+              "response": "poke"
+            }
+          }
+        ],
+        "writes": [
+          {
+            "phase": "before",
+            "profile": {
+              "schemaVersion": 1,
+              "updateId": "b983554658ce486b80b990fcfe4595eb",
+              "deviceId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "theme": "omabit-transport-before",
+              "font": "Fixture Mono",
+              "colors": {
+                "mode": "dark",
+                "background": "#112233",
+                "foreground": "#EEEEEE",
+                "blue": "#123ABC"
+              },
+              "shell": {},
+              "windows": {},
+              "animations": {
+                "curves": [],
+                "rules": []
+              },
+              "files": {}
+            },
+            "state": "verified",
+            "live_invalidation": true
+          },
+          {
+            "phase": "after",
+            "profile": {
+              "schemaVersion": 1,
+              "updateId": "126e1203698a492e970fc9eb3897b10b",
+              "deviceId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "theme": "omabit-transport-after",
+              "font": "Fixture Mono",
+              "colors": {
+                "mode": "dark",
+                "background": "#112233",
+                "foreground": "#EEEEEE",
+                "blue": "#123ABC"
+              },
+              "shell": {},
+              "windows": {},
+              "animations": {
+                "curves": [],
+                "rules": []
+              },
+              "files": {}
+            },
+            "state": "verified",
+            "live_invalidation": true
+          }
+        ]
+      },
+      "dms": {
+        "zod": {
+          "actions": [
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 1,
+              "action": "subscribe",
+              "app": "chat",
+              "path": "/v4"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 2,
+              "action": "subscribe",
+              "app": "contacts",
+              "path": "/v1/news"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 3,
+              "action": "subscribe",
+              "app": "activity",
+              "path": "/v5"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 4,
+              "action": "subscribe",
+              "app": "chat",
+              "path": "/dm/invited"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 6,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 7,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 8,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 9,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 10,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 11,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 12,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 13,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 14,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 16,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 17,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 18,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 19,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 20,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "id": 21,
+              "action": "ack"
+            }
+          ],
+          "frames": [
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "0",
+              "id": 1,
+              "response": "subscribe",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "1",
+              "id": 2,
+              "response": "subscribe",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "2",
+              "id": 3,
+              "response": "subscribe",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "3",
+              "id": 4,
+              "response": "subscribe",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "4",
+              "id": 5,
+              "response": "poke",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "5",
+              "id": 2,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "6",
+              "id": 1,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "7",
+              "id": 2,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "8",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "9",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "10",
+              "id": 1,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "11",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "12",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "13",
+              "id": 1,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "14",
+              "id": 15,
+              "response": "poke",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "15",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "16",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "17",
+              "id": 1,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "18",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "19",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-8ee5eab23edf347a3a43cd7b",
+              "event_id": "20",
+              "id": 1,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            }
+          ],
+          "events": [
+            {
+              "event": "sent",
+              "request": "528bf926918648d5bc6e1952d1cb3a77",
+              "ship": "~nec",
+              "message": {
+                "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583",
+                "author": "~zod",
+                "sent": 1792732637459,
+                "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2"
+              }
+            },
+            {
+              "event": "message",
+              "ship": "~nec",
+              "message": {
+                "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583",
+                "author": "~zod",
+                "sent": 1792732637459,
+                "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+                "kind": "/chat",
+                "acceptedShip": ""
+              }
+            },
+            {
+              "event": "message",
+              "ship": "~nec",
+              "message": {
+                "id": "~zod/170.141.184.508.222.248.130.113.976.094.041.309.184",
+                "author": "~zod",
+                "sent": 1792732638371,
+                "text": "~nec joined the chat",
+                "kind": "/chat/notice",
+                "acceptedShip": "~nec"
+              }
+            },
+            {
+              "event": "message",
+              "ship": "~nec",
+              "message": {
+                "id": "~nec/170.141.184.508.222.248.128.827.730.026.065.786.044",
+                "author": "~nec",
+                "sent": 1792732638301,
+                "text": "omabit-plugin-reply-d6e27fab5b0f44fbbbbc9f3bcc4828bb",
+                "kind": "/chat",
+                "acceptedShip": ""
+              }
+            },
+            {
+              "event": "sent",
+              "request": "636c068d7355442a81701c6a52e300a3",
+              "ship": "~nec",
+              "message": {
+                "id": "~zod/170.141.184.508.222.248.185.293.213.635.690.723.540",
+                "author": "~zod",
+                "sent": 1792732641362,
+                "text": "omabit-plugin-after-16d69f07f6e4429198514501ea96f9b2"
+              }
+            },
+            {
+              "event": "message",
+              "ship": "~nec",
+              "message": {
+                "id": "~zod/170.141.184.508.222.248.185.293.213.635.690.723.540",
+                "author": "~zod",
+                "sent": 1792732641362,
+                "text": "omabit-plugin-after-16d69f07f6e4429198514501ea96f9b2",
+                "kind": "/chat",
+                "acceptedShip": ""
+              }
+            },
+            {
+              "event": "message",
+              "ship": "~nec",
+              "message": {
+                "id": "~nec/170.141.184.508.222.248.191.417.532.668.162.294.677",
+                "author": "~nec",
+                "sent": 1792732641694,
+                "text": "omabit-plugin-after-reply-35550f5d231f44a08da1824a632995fb",
+                "kind": "/chat",
+                "acceptedShip": ""
+              }
+            }
+          ]
+        },
+        "nec": {
+          "actions": [
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 1,
+              "action": "subscribe",
+              "app": "chat",
+              "path": "/v4"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 2,
+              "action": "subscribe",
+              "app": "contacts",
+              "path": "/v1/news"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 3,
+              "action": "subscribe",
+              "app": "activity",
+              "path": "/v5"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 4,
+              "action": "subscribe",
+              "app": "chat",
+              "path": "/dm/invited"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 5,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 7,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 8,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 9,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 10,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 11,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 12,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 13,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 14,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 15,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 17,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 18,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 19,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "id": 20,
+              "action": "delete"
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "id": 21,
+              "action": "subscribe",
+              "app": "chat",
+              "path": "/v4"
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "id": 22,
+              "action": "subscribe",
+              "app": "contacts",
+              "path": "/v1/news"
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "id": 23,
+              "action": "subscribe",
+              "app": "activity",
+              "path": "/v5"
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "id": 24,
+              "action": "subscribe",
+              "app": "chat",
+              "path": "/dm/invited"
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "id": 25,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "id": 26,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "id": 27,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "id": 29,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "id": 30,
+              "action": "ack"
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "id": 31,
+              "action": "ack"
+            }
+          ],
+          "frames": [
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "0",
+              "id": 1,
+              "response": "subscribe",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "1",
+              "id": 2,
+              "response": "subscribe",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "2",
+              "id": 3,
+              "response": "subscribe",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "3",
+              "id": 4,
+              "response": "subscribe",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "4",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "5",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "6",
+              "id": 2,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "7",
+              "id": 4,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "8",
+              "id": 1,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "9",
+              "id": 6,
+              "response": "poke",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "10",
+              "id": 4,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "11",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "12",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "13",
+              "id": 1,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "14",
+              "id": 2,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "15",
+              "id": 16,
+              "response": "poke",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "16",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "17",
+              "id": 3,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-413ed168c42ac21da9008ecc",
+              "event_id": "18",
+              "id": 1,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "event_id": "0",
+              "id": 21,
+              "response": "subscribe",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "event_id": "1",
+              "id": 22,
+              "response": "subscribe",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "event_id": "2",
+              "id": 23,
+              "response": "subscribe",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "event_id": "3",
+              "id": 24,
+              "response": "subscribe",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "event_id": "4",
+              "id": 23,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "event_id": "5",
+              "id": 23,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "event_id": "6",
+              "id": 21,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "event_id": "7",
+              "id": 28,
+              "response": "poke",
+              "ok": "ok",
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "event_id": "8",
+              "id": 23,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "event_id": "9",
+              "id": 23,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            },
+            {
+              "channel": "urbit-dms-91da0ac7023876c164132699",
+              "event_id": "10",
+              "id": 21,
+              "response": "diff",
+              "ok": null,
+              "error": false
+            }
+          ],
+          "events": [
+            {
+              "event": "message",
+              "ship": "~zod",
+              "message": {
+                "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583",
+                "author": "~zod",
+                "sent": 1792732637459,
+                "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+                "kind": "/chat",
+                "acceptedShip": ""
+              }
+            },
+            {
+              "event": "accepted",
+              "ship": "~zod"
+            },
+            {
+              "event": "message",
+              "ship": "~zod",
+              "message": {
+                "id": "~nec/170.141.184.508.222.248.120.934.514.153.553.395.712",
+                "author": "~nec",
+                "sent": 1792732637873,
+                "text": "~nec joined the chat",
+                "kind": "/chat/notice",
+                "acceptedShip": "~nec"
+              }
+            },
+            {
+              "event": "sent",
+              "request": "752fc7a585594320b881b86d5fe75cb0",
+              "ship": "~zod",
+              "message": {
+                "id": "~nec/170.141.184.508.222.248.128.827.730.026.065.786.044",
+                "author": "~nec",
+                "sent": 1792732638301,
+                "text": "omabit-plugin-reply-d6e27fab5b0f44fbbbbc9f3bcc4828bb"
+              }
+            },
+            {
+              "event": "message",
+              "ship": "~zod",
+              "message": {
+                "id": "~nec/170.141.184.508.222.248.128.827.730.026.065.786.044",
+                "author": "~nec",
+                "sent": 1792732638301,
+                "text": "omabit-plugin-reply-d6e27fab5b0f44fbbbbc9f3bcc4828bb",
+                "kind": "/chat",
+                "acceptedShip": ""
+              }
+            },
+            {
+              "event": "message",
+              "ship": "~zod",
+              "message": {
+                "id": "~zod/170.141.184.508.222.248.185.293.213.635.690.723.540",
+                "author": "~zod",
+                "sent": 1792732641362,
+                "text": "omabit-plugin-after-16d69f07f6e4429198514501ea96f9b2",
+                "kind": "/chat",
+                "acceptedShip": ""
+              }
+            },
+            {
+              "event": "sent",
+              "request": "9281c79963ad4996bd4a1a5be241c2ab",
+              "ship": "~zod",
+              "message": {
+                "id": "~nec/170.141.184.508.222.248.191.417.532.668.162.294.677",
+                "author": "~nec",
+                "sent": 1792732641694,
+                "text": "omabit-plugin-after-reply-35550f5d231f44a08da1824a632995fb"
+              }
+            },
+            {
+              "event": "message",
+              "ship": "~zod",
+              "message": {
+                "id": "~nec/170.141.184.508.222.248.191.417.532.668.162.294.677",
+                "author": "~nec",
+                "sent": 1792732641694,
+                "text": "omabit-plugin-after-reply-35550f5d231f44a08da1824a632995fb",
+                "kind": "/chat",
+                "acceptedShip": ""
+              }
+            }
+          ]
+        }
+      },
+      "history": [
+        {
+          "phase": "first",
+          "ship": "zod",
+          "messages": [
+            {
+              "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583"
+            }
+          ]
+        },
+        {
+          "phase": "first",
+          "ship": "nec",
+          "messages": [
+            {
+              "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583"
+            }
+          ]
+        },
+        {
+          "phase": "reply",
+          "ship": "zod",
+          "messages": [
+            {
+              "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583"
+            },
+            {
+              "text": "omabit-plugin-reply-d6e27fab5b0f44fbbbbc9f3bcc4828bb",
+              "author": "~nec",
+              "id": "~nec/170.141.184.508.222.248.128.827.730.026.065.786.044"
+            }
+          ]
+        },
+        {
+          "phase": "reply",
+          "ship": "nec",
+          "messages": [
+            {
+              "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583"
+            },
+            {
+              "text": "omabit-plugin-reply-d6e27fab5b0f44fbbbbc9f3bcc4828bb",
+              "author": "~nec",
+              "id": "~nec/170.141.184.508.222.248.128.827.730.026.065.786.044"
+            }
+          ]
+        },
+        {
+          "phase": "after-restart-before-writes",
+          "ship": "zod",
+          "messages": [
+            {
+              "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583"
+            },
+            {
+              "text": "omabit-plugin-reply-d6e27fab5b0f44fbbbbc9f3bcc4828bb",
+              "author": "~nec",
+              "id": "~nec/170.141.184.508.222.248.128.827.730.026.065.786.044"
+            }
+          ]
+        },
+        {
+          "phase": "after-restart-before-writes",
+          "ship": "nec",
+          "messages": [
+            {
+              "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583"
+            },
+            {
+              "text": "omabit-plugin-reply-d6e27fab5b0f44fbbbbc9f3bcc4828bb",
+              "author": "~nec",
+              "id": "~nec/170.141.184.508.222.248.128.827.730.026.065.786.044"
+            }
+          ]
+        },
+        {
+          "phase": "after",
+          "ship": "zod",
+          "messages": [
+            {
+              "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583"
+            },
+            {
+              "text": "omabit-plugin-reply-d6e27fab5b0f44fbbbbc9f3bcc4828bb",
+              "author": "~nec",
+              "id": "~nec/170.141.184.508.222.248.128.827.730.026.065.786.044"
+            },
+            {
+              "text": "omabit-plugin-after-16d69f07f6e4429198514501ea96f9b2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.185.293.213.635.690.723.540"
+            }
+          ]
+        },
+        {
+          "phase": "after",
+          "ship": "nec",
+          "messages": [
+            {
+              "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583"
+            },
+            {
+              "text": "omabit-plugin-reply-d6e27fab5b0f44fbbbbc9f3bcc4828bb",
+              "author": "~nec",
+              "id": "~nec/170.141.184.508.222.248.128.827.730.026.065.786.044"
+            },
+            {
+              "text": "omabit-plugin-after-16d69f07f6e4429198514501ea96f9b2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.185.293.213.635.690.723.540"
+            }
+          ]
+        },
+        {
+          "phase": "after-reply",
+          "ship": "zod",
+          "messages": [
+            {
+              "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583"
+            },
+            {
+              "text": "omabit-plugin-reply-d6e27fab5b0f44fbbbbc9f3bcc4828bb",
+              "author": "~nec",
+              "id": "~nec/170.141.184.508.222.248.128.827.730.026.065.786.044"
+            },
+            {
+              "text": "omabit-plugin-after-16d69f07f6e4429198514501ea96f9b2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.185.293.213.635.690.723.540"
+            },
+            {
+              "text": "omabit-plugin-after-reply-35550f5d231f44a08da1824a632995fb",
+              "author": "~nec",
+              "id": "~nec/170.141.184.508.222.248.191.417.532.668.162.294.677"
+            }
+          ]
+        },
+        {
+          "phase": "after-reply",
+          "ship": "nec",
+          "messages": [
+            {
+              "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583"
+            },
+            {
+              "text": "omabit-plugin-reply-d6e27fab5b0f44fbbbbc9f3bcc4828bb",
+              "author": "~nec",
+              "id": "~nec/170.141.184.508.222.248.128.827.730.026.065.786.044"
+            },
+            {
+              "text": "omabit-plugin-after-16d69f07f6e4429198514501ea96f9b2",
+              "author": "~zod",
+              "id": "~zod/170.141.184.508.222.248.185.293.213.635.690.723.540"
+            },
+            {
+              "text": "omabit-plugin-after-reply-35550f5d231f44a08da1824a632995fb",
+              "author": "~nec",
+              "id": "~nec/170.141.184.508.222.248.191.417.532.668.162.294.677"
+            }
+          ]
+        }
+      ],
+      "cleanup": [
+        "theme-watch-stopped",
+        {
+          "dms_logout": "nec",
+          "outcome": "revoked"
+        },
+        {
+          "dms_logout": "zod",
+          "outcome": "revoked"
+        },
+        "theme-session-logout"
+      ],
+      "independent_sessions": true,
+      "writes": [
+        {
+          "sender": "zod",
+          "receiver": "nec",
+          "phase": "first",
+          "text": "omabit-plugin-first-d899d42d791248f293053ad0f3101ae2",
+          "request": "528bf926918648d5bc6e1952d1cb3a77",
+          "state": "delivered",
+          "message_id": "~zod/170.141.184.508.222.248.113.295.571.516.002.343.583",
+          "invitation_accepted": true,
+          "receiver_events": 1
+        },
+        {
+          "sender": "nec",
+          "receiver": "zod",
+          "phase": "reply",
+          "text": "omabit-plugin-reply-d6e27fab5b0f44fbbbbc9f3bcc4828bb",
+          "request": "752fc7a585594320b881b86d5fe75cb0",
+          "state": "delivered",
+          "message_id": "~nec/170.141.184.508.222.248.128.827.730.026.065.786.044",
+          "receiver_events": 1
+        },
+        {
+          "sender": "zod",
+          "receiver": "nec",
+          "phase": "after",
+          "text": "omabit-plugin-after-16d69f07f6e4429198514501ea96f9b2",
+          "request": "636c068d7355442a81701c6a52e300a3",
+          "state": "delivered",
+          "message_id": "~zod/170.141.184.508.222.248.185.293.213.635.690.723.540",
+          "receiver_events": 1
+        },
+        {
+          "sender": "nec",
+          "receiver": "zod",
+          "phase": "after-reply",
+          "text": "omabit-plugin-after-reply-35550f5d231f44a08da1824a632995fb",
+          "request": "9281c79963ad4996bd4a1a5be241c2ab",
+          "state": "delivered",
+          "message_id": "~nec/170.141.184.508.222.248.191.417.532.668.162.294.677",
+          "receiver_events": 1
+        }
+      ],
+      "old_dm_channel": "urbit-dms-413ed168c42ac21da9008ecc",
+      "old_theme_channel": "/~/channel/2bcd3c12b9af49469a66565b22b0a8d0",
+      "original_sessions_retained": true,
+      "new_dm_channel": "urbit-dms-91da0ac7023876c164132699",
+      "new_theme_channel": "/~/channel/98d64ecb670d4541a9fc9de3fc8be9fe",
+      "independent_logout": true
+    },
+    "transport_passed": true,
+    "restart_same_pier": true,
+    "restart_kept_sessions": true,
+    "log_truncated": false
+  },
+  "independent_checks": {
+    "passed": true,
+    "result_sha256": "86b3c741859b3fd68631c78822e3a18b2aa93524f30730a1e07511e149cf99ed",
+    "frozen_files": 37,
+    "dm_writes": 4,
+    "dm_history_observations": 10,
+    "theme_writes": 2,
+    "fresh_subscription_channels": true,
+    "independent_logout": true,
+    "clean_stops": [
+      "nec",
+      "nec",
+      "zod"
+    ]
+  }
+}

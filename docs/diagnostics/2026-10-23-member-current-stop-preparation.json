@@ -1,0 +1,45 @@
+{
+  "verified": true,
+  "runtime_executed": false,
+  "source_files_verified": 164,
+  "artifacts": {
+    "base.raw": "9b00fd5bedb78257d8783d86e997d6c06b8942bdf687ec52f87823bc2f7fd0fc",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "embedded_test_sha256": "dffe0e29b8a19d0e210f324a760f26c04ddee38a043af0bc7627a06fbfdc24ed",
+  "staging_removed": true,
+  "case": {
+    "exercise_project_member_launch": true,
+    "exercise_project_member_storage": false,
+    "exercise_project_anchor_start": false,
+    "exercise_project_preparation": false,
+    "network_anchor_recovery": false,
+    "network_published": false,
+    "exercise_login_code": false,
+    "exercise_endpoints": false,
+    "endpoint_network": "internal",
+    "exercise_import": false,
+    "exercise_fake_network": false,
+    "network_state": false,
+    "network_isolation": false,
+    "import_mode": "rename",
+    "interrupt_copy": false,
+    "restore_copy": false,
+    "restore_ui": false
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-current-stop-preparation",
+  "logs": {
+    "omabit-current-stop-vm21-final-guards.log": "81fd276ffbd3526b693cb5de3b16f2b3d46c108f1923f4129396f6711fee3e19",
+    "omabit-current-stop-vm21-explicit-host-guard.log": "0cc81d3bcab6a5a7943b7ab03f39dc59c72d76baec1b4c4fa4336e8b41c00a2a",
+    "omabit-current-stop-vm21-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-current-stop-vm21-transport-tests.log": "40ed98a9f51434f9e3be82d2e2e850fe2435eca594ead70703b751f031be7d98",
+    "omabit-current-stop-vm21-prepare.log": "274fc04f4d9e8ab30f4a2263d876e9ad95a0d8486218c74c9c9d35d36d6491aa",
+    "omabit-current-stop-vm21-preparation-verification.log": "66587fa88a4ce69fa30cacf6ba8152d065ca8aa6a2acd718a55a9883b0ed2f16",
+    "omabit-verify-current-stop23-21.py": "874e5bce2c8859914ecb44d3e20d362e9be766f4f43b534aeaf376996e3940b3",
+    "omabit-verify-current-stop-appliance21.py": "ed020df188710b44acf230361be28f84cb8d354bfe0ea884a140149c6a5ecdc8"
+  },
+  "transport": "bounded serial reference to complete immutable disk receipt; byte count and SHA256 verified after extraction",
+  "corrected_request_id": "observe-replacement-vm-zod"
+}

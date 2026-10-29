@@ -30,6 +30,7 @@ ApplicationWindow {
     property double now: Date.parse(test.fixtures.pending.checked_at)
     property bool busy: false
     property bool activationEnabled: true
+    property bool transportStopping: false
     property bool localSetupAllowed: true
     property bool observing: true
     property bool settingUp: false
@@ -106,6 +107,10 @@ ApplicationWindow {
         if(control(setup,"local-setup-primary").text!=="Add a ship →")throw new Error("Package drift lost connected setup")
         if(!control(setup,"setup-progress-checklist").visible || control(setup,"setup-progress-state-5").text!=="✓")throw new Error("Completed setup lost its completed checklist")
         if(control(runtimeDetails,"host-compatibility-summary").text.indexOf("Update this runner")<0 || Model.instances(connection).length!==1)throw new Error("Older runner lost inventory or technical upgrade hint")
+        root.transportStopping=true
+        root.refresh()
+        if(localStatus.running || root.registrationChecks!==0)throw new Error("Draining service restarted host readers")
+        root.transportStopping=false
         root.refresh()
         if(!localStatus.running || localStatus.command.join(" ")!=="fixture-omabit --format json setup-status" || root.setupCheckRequested)throw new Error("Refresh did not use read-only existing helper")
         if(root.registrationChecks!==1)throw new Error("Existing refresh flow lost")

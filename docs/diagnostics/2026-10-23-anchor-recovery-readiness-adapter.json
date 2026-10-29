@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "kind": "inert complete successor readiness adapter source gate",
+  "focused_race_seconds": 89.024,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-recovery-readiness-adapter",
+  "manifest": {
+    "omabit-anchor-recovery-readiness-adapter-compile.log": "8c44547b3abb50bd537e72706b64aac3a77d2150d9b7a0d72e701a29390fe501",
+    "omabit-anchor-recovery-readiness-adapter-tests-attempt1.log": "80902de24f5538475cda315bae5cad9aaf44aa8b8c663d8324b429ae42c4241c",
+    "omabit-anchor-recovery-readiness-adapter-tests-attempt2.log": "1461da8839ab25f70afe8e31e6ea836b93b459e73378079aa7df44f8898bc0a6",
+    "omabit-anchor-recovery-readiness-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-recovery-readiness-adapter-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/runtimequalify/project_anchor_recovery_readiness_linux.go": "46513235a77d0dbac0350acd760232ef59771394cf361058e14f5328b643ce58",
+    "source/internal/runtimequalify/project_anchor_recovery_readiness_linux_test.go": "413bb6518b0ffc7ada6c7cba828698426b763901c6652c98a10cf30fd1e56e8c",
+    "source/internal/projectnetwork/anchor_recovery_readiness.go": "7f051b62321dc14f7ed216ba1e3786daac2c5b3c241a3b752f0e6f0a67cca285"
+  }
+}

@@ -185,6 +185,72 @@ def archive(source, destination, epoch):
                     tar.addfile(info)
 
 
+
+
+def package_documentation(source, package):
+    """Include installed operator/developer guidance, without agent config hooks."""
+    for relative in ("skills", "docs/cli"):
+        folder = source / relative
+        if not folder.exists() and not folder.is_symlink():
+            continue  # Preserve exports of historical sources.
+        if folder.is_symlink() or not folder.is_dir():
+            raise ValueError("unsafe documentation root")
+        for path in folder.rglob("*"):
+            if path.is_symlink() or not (path.is_file() or path.is_dir()):
+                raise ValueError("unsafe documentation resource")
+            if path.is_file() and (path.suffix != ".md" or path.stat().st_mode & 0o111 or path.stat().st_size > 262144):
+                raise ValueError("unsupported documentation resource")
+        shutil.copytree(folder, package / relative)
+
+
+def package_skills(source, stage, assets, metadata, epoch):
+    """Ship source-bound documentation without installing into an agent's config.
+
+    Historical source exports without skills keep their existing asset set.
+    New exports must carry the complete, self-contained pair, with no links or
+    executable resources. This is packaging validation, not YAML/skill validation.
+    """
+    skills = source / "skills"
+    if not skills.exists() and not skills.is_symlink():
+        return None
+    names = ("omabit-operator", "omabit-plugin-developer")
+    if skills.is_symlink() or not skills.is_dir() or sorted(p.name for p in skills.iterdir()) != sorted(names):
+        raise ValueError("unexpected skill package inventory")
+    entries, total = [], 0
+    for name in names:
+        directory = skills / name
+        if directory.is_symlink() or not directory.is_dir() or not (directory / "SKILL.md").is_file():
+            raise ValueError("incomplete skill: " + name)
+        for path in sorted(directory.rglob("*")):
+            if path.is_symlink() or not (path.is_file() or path.is_dir()):
+                raise ValueError("skill resource must be an ordinary file/directory")
+            if path.is_dir():
+                continue
+            size = path.stat().st_size
+            total += size
+            if path.suffix != ".md" or path.stat().st_mode & 0o111 or size > 65536 or total > 1048576 or len(entries) >= 64:
+                raise ValueError("unsupported or oversized skill resource")
+            entries.append((path.relative_to(skills), path, sha256(path)))
+    package = stage / ("omabit-skills-" + metadata["version"])
+    package.mkdir()
+    for relative, path, expected in entries:
+        target = package / "skills" / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(path, target)
+        if sha256(target) != expected:
+            raise ValueError("skill changed during packaging")
+    provenance = {key: metadata[key] for key in ("version", "source_commit")}
+    if "development" in metadata:
+        provenance["development"] = metadata["development"]
+    provenance.update(format=1, skills=list(names),
+                      files={"skills/" + rel.as_posix(): digest for rel, _, digest in entries})
+    (package / "SKILLS.json").write_text(json.dumps(provenance, indent=2) + "\n")
+    checksums(package)
+    output = assets / (package.name + ".tar.gz")
+    archive(package, output, epoch)
+    return artifact(output)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--version", required=True)
@@ -262,6 +328,7 @@ def main():
         (package / "internal/rootless/assets").mkdir(parents=True)
         shutil.copy2(source / "internal/rootless/assets/daemon.json", package / "internal/rootless/assets/daemon.json")
         shutil.copy2(source / "docs/release-install.md", package / "README.md")
+        package_documentation(source, package)
         installer = package / "install.sh"
         installer.write_text('#!/usr/bin/env bash\nset -euo pipefail\nROOT="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"\nexec python3 -B "$ROOT/scripts/install-panel.py" "$@"\n')
         installer.chmod(0o755)
@@ -288,6 +355,7 @@ def main():
         if sha256(pill) != args.pill_sha256:
             raise RuntimeError("pill changed during packaging")
         metadata["pill"].update(artifact(pill))
+        package_skills(source, stage, assets, metadata, epoch)
         metadata["assets"] = [artifact(p) for p in sorted(assets.iterdir())]
         (assets / "release.json").write_text(json.dumps(metadata, indent=2) + "\n")
         checksums(assets)

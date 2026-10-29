@@ -1,0 +1,991 @@
+{
+  "lab": "/tmp/omabit-operator-walkthrough-20261022-guidance01",
+  "inputs": {
+    "source_sha256": "2b7239e73c83ff235dcf17b786a254a4e759295ffa6e7c5f1933b49ab8ab1b8a",
+    "collector_sha256": "5bf8851f9abf49984035bf368755cebf04d172ae1ac55c291cffce3687d967e0",
+    "runner_sha256": "0052ae68eef7f28d509c165e455c29cdfd929225de6898618d754beb49130833"
+  },
+  "result": {
+    "passed": true,
+    "scope": "in-memory simulator only; no real runtime, import, engine, desktop or ship",
+    "tasks": [
+      "select intended runner",
+      "review stale revision before action",
+      "follow exact asynchronous receipt",
+      "reconcile a lost operation reply without duplicate work",
+      "distinguish unavailable from stopped",
+      "refuse replacement runner identity"
+    ],
+    "runner_id": "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+    "operation_id": "op-KNLEV47WRR6FYBZIKM5KVX2ZPS",
+    "lost_reply": {
+      "operation_id": "op-AV6GV4SWXZWAW3AZMDNFFUPVP5",
+      "request_id": "lost-stop-reply",
+      "forwarded_requests": 2,
+      "one_terminal_operation": true
+    },
+    "records": [
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "help"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"schema_version\": 1,\n  \"notice\": \"Offline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\",\n  \"topics\": [\n    {\n      \"name\": \"runners\",\n      \"summary\": \"Select a runner and inspect its identity, authority and fleet.\"\n    },\n    {\n      \"name\": \"ships\",\n      \"summary\": \"Observe and operate ships managed by a selected runner.\"\n    },\n    {\n      \"name\": \"imports\",\n      \"summary\": \"Review a stopped pier, import it and resolve retained recovery state.\"\n    },\n    {\n      \"name\": \"connections\",\n      \"summary\": \"Sign in to an Eyre ship or approve an independent plugin session.\"\n    },\n    {\n      \"name\": \"hosting\",\n      \"summary\": \"Inspect runner hosting evidence and separate repair from observation.\"\n    }\n  ],\n  \"next\": [\n    \"urbit-collector --format text help TOPIC\",\n    \"urbit-collector help TOPIC\",\n    \"urbit-collector COMMAND --help\",\n    \"urbit-collector --help\"\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "help",
+          "ships"
+        ],
+        "exit": 0,
+        "stdout": "Usage: urbit-collector [--format json|text] help [TOPIC]\n\nOffline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.\n\nships: Observe and operate ships managed by a selected runner.\n\n  snapshot          Read desired/observed state, revisions, recovery status and operation receipts.\n  watch             Poll snapshots until canceled; JSON output is NDJSON.\n  logs              Read a bounded runtime log tail with operator authority.\n  operate           Submit an explicit start, stop, maintenance or import-recovery operation.\n  configure         Change requested runtime settings at an expected revision.\n  create-fake       Register a fresh fake; boot occurs on explicit Start.\n  create-ship       Stage a keyed identity and boot material; boot occurs on explicit Start.\n  create-comet      Register a new comet configuration; mining/networking occurs on explicit Start.\n\nPin --runner NAME --expected-runner-id ID and inspect hello/snapshot. Bind actions to instance ID and current config_revision; the instance name need not be the Urbit identity.\n\n\nRead operate --help, then use operate INSTANCE start|stop --revision N --request-id ID for the authorized action. Submission success is not completion: follow that exact operation in snapshot until terminal, then check resulting state.\n\n\nAfter a revision conflict, refresh and review the intended effect. After a lost acknowledgement, retain the original request ID and reconcile its receipt; do not guess by retrying with a new ID.\n\n\nCurrent managed fakes have container-local Ames. A common project directory does not connect them; project networking remains experimental until the runner exposes that capability.\n\n\nLogs may contain sensitive data. Ordinary status does not require login-code or credentials. For hosted Eyre sessions, see help connections.\n\n\nNext:\n  urbit-collector COMMAND --help\n  urbit-collector help\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "enroll",
+          "lab",
+          "--socket",
+          "/lab/run/collector.sock"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"name\": \"lab\",\n  \"transport\": \"unix\",\n  \"socket\": \"/lab/run/collector.sock\",\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"enrolled_at\": \"2026-10-23T04:40:18.902845256Z\",\n  \"revision\": 1\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "runners"
+        ],
+        "exit": 0,
+        "stdout": "[\n  {\n    \"name\": \"lab\",\n    \"transport\": \"unix\",\n    \"socket\": \"/lab/run/collector.sock\",\n    \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n    \"mode\": \"simulation\",\n    \"enrolled_at\": \"2026-10-23T04:40:18.902845256Z\",\n    \"revision\": 1\n  }\n]\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "runners"
+        ],
+        "exit": 0,
+        "stdout": "NAME  TRANSPORT  RUNNER                           MODE        ADDRESS\nlab   unix       demo-YP6AGZEX5A5XGNHVAIFFVALTB7  simulation  /lab/run/collector.sock\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "hello"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"protocol_version\": 1,\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"features\": [\n    \"snapshot\",\n    \"configuration-revisions\",\n    \"idempotent-operations\",\n    \"incidents\"\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "hello"
+        ],
+        "exit": 0,
+        "stdout": "Runner: demo-YP6AGZEX5A5XGNHVAIFFVALTB7\nMode: simulation\nProtocol: 1\nFeatures: snapshot, configuration-revisions, idempotent-operations, incidents\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"failed\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "configure",
+          "alpha",
+          "--revision",
+          "1",
+          "--http-port",
+          "8080",
+          "--ames-port",
+          "34343",
+          "--loom",
+          "32"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"id\": \"alpha\",\n  \"label\": \"Simulated ship alpha\",\n  \"config\": {\n    \"http_port\": 8080,\n    \"ames_port\": 34343,\n    \"loom\": 32\n  },\n  \"config_revision\": 2,\n  \"applied_revision\": 1,\n  \"desired_state\": \"running\",\n  \"observed_state\": \"failed\"\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "operate",
+          "alpha",
+          "start",
+          "--revision",
+          "1",
+          "--request-id",
+          "rejected-stale-json"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "{\n  \"error\": {\n    \"code\": \"revision_conflict\",\n    \"message\": \"configuration changed; inspect a fresh snapshot before acting\",\n    \"current_revision\": 2\n  },\n  \"guidance\": {\n    \"kind\": \"review_current_revision\",\n    \"summary\": \"Read the current state and review the intended effect before acting. Do not blindly replace the revision or retry.\",\n    \"next\": [\n      {\n        \"name\": \"snapshot\",\n        \"effect\": \"Read current state and operation receipts from the same pinned runner.\"\n      },\n      {\n        \"name\": \"help ships\",\n        \"effect\": \"Read offline revision and operation guidance.\"\n      }\n    ]\n  }\n}\n"
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "operate",
+          "alpha",
+          "start",
+          "--revision",
+          "1",
+          "--request-id",
+          "rejected-stale-text"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "Error revision_conflict: configuration changed; inspect a fresh snapshot before acting\nCurrent revision: 2\nNext (review_current_revision): Read the current state and review the intended effect before acting. Do not blindly replace the revision or retry.\n  snapshot: Read current state and operation receipts from the same pinned runner.\n  help ships: Read offline revision and operation guidance.\n"
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"failed\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "operate",
+          "alpha",
+          "start",
+          "--revision",
+          "2",
+          "--request-id",
+          "reviewed-start"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n  \"request_id\": \"reviewed-start\",\n  \"instance_id\": \"alpha\",\n  \"kind\": \"start\",\n  \"actor\": \"local-uid:1000\",\n  \"status\": \"running\",\n  \"config_revision\": 2,\n  \"created_at\": \"2026-10-23T04:40:18.929214739Z\"\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "Runner: demo-YP6AGZEX5A5XGNHVAIFFVALTB7 (simulation)\nINSTANCE  DESIRED  OBSERVED  HEALTH  REV / APPLIED  ENDPOINT\nalpha     running  starting          2 / 1          \n  Requested loom: 32 (4 GiB) address space\n  Requested native control: disabled\n  Loom is address space, not resident memory or the container memory limit.\n  Active operation: op-KNLEV47WRR6FYBZIKM5KVX2ZPS\nbravo  stopped  stopped    1 / 1  \n  Requested loom: 31 (2 GiB) address space\n  Requested native control: disabled\n  Loom is address space, not resident memory or the container memory limit.\n\nOPERATION                      INSTANCE  KIND   STATUS   ACTOR           REQUEST\nop-KNLEV47WRR6FYBZIKM5KVX2ZPS  alpha     start  running  local-uid:1000  reviewed-start\nIncident unexpected_exit (active=true): Simulated unexpected exit; no real ship is involved.\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 1,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": true,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"running\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "Runner: demo-YP6AGZEX5A5XGNHVAIFFVALTB7 (simulation)\nINSTANCE  DESIRED  OBSERVED  HEALTH  REV / APPLIED  ENDPOINT\nalpha     running  running           2 / 2          \n  Requested loom: 32 (4 GiB) address space\n  Requested native control: disabled\n  Loom is address space, not resident memory or the container memory limit.\nbravo  stopped  stopped    1 / 1  \n  Requested loom: 31 (2 GiB) address space\n  Requested native control: disabled\n  Loom is address space, not resident memory or the container memory limit.\n\nOPERATION                      INSTANCE  KIND   STATUS     ACTOR           REQUEST\nop-KNLEV47WRR6FYBZIKM5KVX2ZPS  alpha     start  succeeded  local-uid:1000  reviewed-start\nIncident unexpected_exit (active=false): Simulated unexpected exit; no real ship is involved.\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "operate",
+          "alpha",
+          "start",
+          "--revision",
+          "2",
+          "--request-id",
+          "reviewed-start"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n  \"request_id\": \"reviewed-start\",\n  \"instance_id\": \"alpha\",\n  \"kind\": \"start\",\n  \"actor\": \"local-uid:1000\",\n  \"status\": \"succeeded\",\n  \"config_revision\": 2,\n  \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n  \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "operate",
+          "alpha",
+          "stop",
+          "--revision",
+          "2",
+          "--request-id",
+          "lost-stop-reply"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "{\n  \"error\": {\n    \"code\": \"client_error\",\n    \"message\": \"POST /v1/instances/alpha/operations outcome uncertain; the runner may have accepted the request: send runner request: Post \\\"http://runner/v1/instances/alpha/operations\\\": EOF\"\n  },\n  \"guidance\": {\n    \"kind\": \"reconcile_uncertain_request\",\n    \"summary\": \"The mutation outcome is unknown. Preserve the original request ID, actor, target and effect. Do not retry with a new ID or submit an inverse action. An absent receipt during an outage does not prove rejection.\",\n    \"next\": [\n      {\n        \"name\": \"snapshot\",\n        \"effect\": \"When the same pinned runner is reachable, read its state and receipts; match the original request and actor before deciding any continuation.\"\n      },\n      {\n        \"name\": \"help ships\",\n        \"effect\": \"Read offline receipt and interruption guidance. Other mutation families have their own state/recovery rules.\"\n      }\n    ]\n  }\n}\n"
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopping\",\n      \"active_operation_id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopping\",\n      \"active_operation_id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopping\",\n      \"active_operation_id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopping\",\n      \"active_operation_id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopping\",\n      \"active_operation_id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopping\",\n      \"active_operation_id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopping\",\n      \"active_operation_id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopping\",\n      \"active_operation_id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopping\",\n      \"active_operation_id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopping\",\n      \"active_operation_id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "operate",
+          "alpha",
+          "stop",
+          "--revision",
+          "2",
+          "--request-id",
+          "lost-stop-reply"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n  \"request_id\": \"lost-stop-reply\",\n  \"instance_id\": \"alpha\",\n  \"kind\": \"stop\",\n  \"actor\": \"local-uid:1000\",\n  \"status\": \"succeeded\",\n  \"config_revision\": 2,\n  \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n  \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "operate",
+          "alpha",
+          "start",
+          "--revision",
+          "2",
+          "--request-id",
+          "resume-after-transport-test"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\",\n  \"request_id\": \"resume-after-transport-test\",\n  \"instance_id\": \"alpha\",\n  \"kind\": \"start\",\n  \"actor\": \"local-uid:1000\",\n  \"status\": \"running\",\n  \"config_revision\": 2,\n  \"created_at\": \"2026-10-23T04:40:23.049998585Z\"\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    },\n    {\n      \"id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\",\n      \"request_id\": \"resume-after-transport-test\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:23.049998585Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    },\n    {\n      \"id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\",\n      \"request_id\": \"resume-after-transport-test\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:23.049998585Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    },\n    {\n      \"id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\",\n      \"request_id\": \"resume-after-transport-test\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:23.049998585Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    },\n    {\n      \"id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\",\n      \"request_id\": \"resume-after-transport-test\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:23.049998585Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    },\n    {\n      \"id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\",\n      \"request_id\": \"resume-after-transport-test\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:23.049998585Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    },\n    {\n      \"id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\",\n      \"request_id\": \"resume-after-transport-test\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:23.049998585Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    },\n    {\n      \"id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\",\n      \"request_id\": \"resume-after-transport-test\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:23.049998585Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    },\n    {\n      \"id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\",\n      \"request_id\": \"resume-after-transport-test\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:23.049998585Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    },\n    {\n      \"id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\",\n      \"request_id\": \"resume-after-transport-test\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:23.049998585Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"starting\",\n      \"active_operation_id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    },\n    {\n      \"id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\",\n      \"request_id\": \"resume-after-transport-test\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"running\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:23.049998585Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "snapshot"
+        ],
+        "exit": 0,
+        "stdout": "{\n  \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n  \"mode\": \"simulation\",\n  \"instances\": [\n    {\n      \"id\": \"alpha\",\n      \"label\": \"Simulated ship alpha\",\n      \"config\": {\n        \"http_port\": 8080,\n        \"ames_port\": 34343,\n        \"loom\": 32\n      },\n      \"config_revision\": 2,\n      \"applied_revision\": 2,\n      \"desired_state\": \"running\",\n      \"observed_state\": \"running\"\n    },\n    {\n      \"id\": \"bravo\",\n      \"label\": \"Simulated ship bravo\",\n      \"config\": {\n        \"http_port\": 8081,\n        \"ames_port\": 34344,\n        \"loom\": 31\n      },\n      \"config_revision\": 1,\n      \"applied_revision\": 1,\n      \"desired_state\": \"stopped\",\n      \"observed_state\": \"stopped\"\n    }\n  ],\n  \"operations\": [\n    {\n      \"id\": \"op-KNLEV47WRR6FYBZIKM5KVX2ZPS\",\n      \"request_id\": \"reviewed-start\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:18.929214739Z\",\n      \"finished_at\": \"2026-10-23T04:40:20.929725865Z\"\n    },\n    {\n      \"id\": \"op-AV6GV4SWXZWAW3AZMDNFFUPVP5\",\n      \"request_id\": \"lost-stop-reply\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"stop\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:20.999492522Z\",\n      \"finished_at\": \"2026-10-23T04:40:23.000510151Z\"\n    },\n    {\n      \"id\": \"op-ROF4Q6CSKOTTRIZ7JYLS75YK7A\",\n      \"request_id\": \"resume-after-transport-test\",\n      \"instance_id\": \"alpha\",\n      \"kind\": \"start\",\n      \"actor\": \"local-uid:1000\",\n      \"status\": \"succeeded\",\n      \"config_revision\": 2,\n      \"created_at\": \"2026-10-23T04:40:23.049998585Z\",\n      \"finished_at\": \"2026-10-23T04:40:25.050750286Z\"\n    }\n  ],\n  \"incidents\": [\n    {\n      \"id\": \"demo-alpha-exit\",\n      \"instance_id\": \"alpha\",\n      \"code\": \"unexpected_exit\",\n      \"message\": \"Simulated unexpected exit; no real ship is involved.\",\n      \"active\": false,\n      \"observed_at\": \"2026-10-23T04:40:18.877320661Z\"\n    }\n  ]\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "inventory"
+        ],
+        "exit": 1,
+        "stdout": "{\n  \"connections\": [\n    {\n      \"name\": \"lab\",\n      \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n      \"mode\": \"simulation\",\n      \"status\": \"unavailable\",\n      \"checked_at\": \"2026-10-23T04:40:25.097392044Z\",\n      \"error\": {\n        \"code\": \"connection_unavailable\",\n        \"message\": \"runner could not be observed; ship state is unknown\"\n      }\n    }\n  ],\n  \"complete\": false\n}\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "text",
+          "inventory"
+        ],
+        "exit": 1,
+        "stdout": "Inventory complete: false (1 connections)\n\nlab \u2014 unavailable (demo-YP6AGZEX5A5XGNHVAIFFVALTB7), checked 2026-10-23T04:40:25Z\n  connection_unavailable: runner could not be observed; ship state is unknown\n",
+        "stderr": ""
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "--runner",
+          "lab",
+          "--expected-runner-id",
+          "demo-YP6AGZEX5A5XGNHVAIFFVALTB7",
+          "hello"
+        ],
+        "exit": 1,
+        "stdout": "",
+        "stderr": "{\n  \"error\": {\n    \"code\": \"runner_identity_mismatch\",\n    \"message\": \"runner identity or mode differs from enrollment; review the connection before re-enrolling\"\n  },\n  \"guidance\": {\n    \"kind\": \"resolve_runner_identity\",\n    \"summary\": \"Stop mutations through this selection. Resolve the intended runner before reconnecting; do not overwrite enrollment to suppress the mismatch.\",\n    \"next\": [\n      {\n        \"name\": \"runners\",\n        \"effect\": \"Read the saved identities locally using the same collector registry.\"\n      },\n      {\n        \"name\": \"help runners\",\n        \"effect\": \"Read offline selection and identity guidance.\"\n      }\n    ]\n  }\n}\n"
+      },
+      {
+        "args": [
+          "--config-dir",
+          "/lab/registry",
+          "--format",
+          "json",
+          "runners"
+        ],
+        "exit": 0,
+        "stdout": "[\n  {\n    \"name\": \"lab\",\n    \"transport\": \"unix\",\n    \"socket\": \"/lab/run/collector.sock\",\n    \"runner_id\": \"demo-YP6AGZEX5A5XGNHVAIFFVALTB7\",\n    \"mode\": \"simulation\",\n    \"enrolled_at\": \"2026-10-23T04:40:18.902845256Z\",\n    \"revision\": 1\n  }\n]\n",
+        "stderr": ""
+      }
+    ]
+  },
+  "checks": [
+    "client and collector race suites passed",
+    "affected go vet passed",
+    "git diff --check passed",
+    "typed uncertainty preserves errors.Is deadline cause",
+    "unknown response never triggers automatic recovery requests",
+    "identity refusal takes precedence over wrapped uncertainty"
+  ],
+  "source_sha256": {
+    "internal/client/outcome.go": "2e4318f5b9854b540bb935fc263cd33202a128be5029c276e8dacb9fb64669e1",
+    "internal/client/client.go": "acae376d4af0dab662b1576440f1fc823f3277eae3cc43deba82d22d267014ff",
+    "internal/client/client_test.go": "2a0b5754034bab2ecafefd58ba6268e04c66824527b19dff007a14249d234120",
+    "backend/cmd/urbit-collector/error_guidance.go": "9339ecdc45a6621d35699a7ab8a2305b17eb65e9dcf0c556fa8a6ba9fabdcd3b",
+    "backend/cmd/urbit-collector/error_guidance_test.go": "cb60a98c0e90ba73c79aa0e6c5da1fb37890a57cfba321c9dbd6639968e0da0a",
+    "backend/cmd/urbit-collector/main.go": "f329f8558827688cf17ae70072e3ee0cb755335c3856d01af02d47f1658687d6",
+    "backend/cmd/urbit-collector/output.go": "3511335923028186bc4008347dd08a5aad4b143329b3ea581fa6c931f5ccc8ae",
+    "scripts/test-operator-walkthrough.py": "2b7239e73c83ff235dcf17b786a254a4e759295ffa6e7c5f1933b49ab8ab1b8a",
+    "skills/omabit-operator/references/operations.md": "5b05c7456ba3c82bcbea0edf53ae431a07a45d91e714f31b26e28bec56d966bb"
+  },
+  "evidence_sha256": {
+    "result.json": "c80e2ca626375af31aeea5b45c33cd7b2fe5e95bb468fd2c62df6e66a66a7fb1",
+    "inputs.json": "8cb3a5c81adda3323280cfabbbf30cb813762050c47b465e3586b69224c5ba49",
+    "transcript.json": "0e89da629e52e18a878b85d41621300f309182845ac50f9b5f22794521a7d07a",
+    "driver.log": "87ecee9122d2287d7b5a9886ba473392748f5fb27f57e75a4bd72b617d47ea8a",
+    "simulator.log": "3a3df1f46eba7095c9c591b47069225290a062523febf183f794e7d40a9ddded"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "kind": "ordinary current lifecycle after completed recovery",
+  "pure_race_seconds": 272.389,
+  "related_adapter_race_seconds": 188.132,
+  "pure_nonrace_seconds": 6.17,
+  "adapter_nonrace_seconds": 11.168,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-recovered-current-lifecycle",
+  "manifest": {
+    "omabit-recovered-current-pure-attempt1.log": "7326a89a9f1b023a1f5205859448633981689abf3c9db62a5b8ce44e2f68e334",
+    "omabit-recovered-current-adapter-attempt1.log": "9fae5282532cb36f6ff57aa08e555b9d5ef184e42e1b4e49ef4ab5260ac3a8f4",
+    "omabit-recovered-current-pure-race.log": "34a77acc52575cdf590f8d2ea9c2519b0e7de53879d8b12285a0c3b9e33b8e60",
+    "omabit-recovered-current-adapter-race.log": "f8e171366cda4fb4280112ff741c1016e671ca0b84b49e8b52d45946713cb9d6",
+    "omabit-recovered-current-vm-entry.log": "f9105f74df86455377f734c3870c2a254f985a264d28a8ab8cd78944bb51c15e",
+    "omabit-recovered-current-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovered-current-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/projectnetwork/member_recovered_current.go": "d84bd0a6eb1b5563caa0dc54843454391fef83e42c414dcf2ae64389d705d315",
+    "source/internal/projectnetwork/member_recovered_current_test.go": "9ccdc19d0e3c9f684f70b10049d38f007315431554d8b5f83b2b66a45b1e6e02",
+    "source/internal/projectnetwork/member_current_readiness.go": "026d301677627ae6c264ad39b5f566aa2c444f5cf29703af935edf2040f21315",
+    "source/internal/projectnetwork/member_current_stop.go": "d0a3332b001178bba9a5067397efccaebd133a367f46d217e279da48361de67e",
+    "source/internal/runtimequalify/project_member_recovered_current_linux.go": "0675d29a7a6b72867b813573408805514923532880a63c8e74b91629378f2d75",
+    "source/internal/runtimequalify/project_member_recovered_current_linux_test.go": "edbcf514a0374c4754b21abd0a23a07b76f8367ca6f7be3a85e77d9294784f03",
+    "source/internal/runtimequalify/project_member_current_readiness_linux.go": "ecd5cff21fce06906b47786a4f247126d7e54a1e17724b5ab748bd06b0b78c1f",
+    "source/internal/runtimequalify/project_member_current_stop_linux.go": "9045cbd409d476f2c56867d51f00dc12d7be53129494f75fcb3191721ccb5e4b",
+    "source/internal/runtimequalify/project_member_current_lifecycle_linux.go": "c98c4589b4f117fbda0d5acfec58e7b6d1aa81584b02e760e2b484cf7626e534",
+    "source/internal/runtimequalify/project_member_current_lifecycle_linux_test.go": "1bffa9a418f4d5951079b658bf65fa9a4b10b01a69d397e654586d710e839d41",
+    "source/internal/runtimequalify/project_member_stop_linux.go": "8db7efc9bfe459762473eeccd3961a500bfaf5e5b9ddc5f99a75abcd2d242efb",
+    "source/internal/runtimequalify/project_member_retirement_linux.go": "668571776fa272e1ad301e4f5985882a6b44a1c01cfd51854b108728b4ebb490",
+    "source/internal/runtimequalify/project_member_resume_linux.go": "b91d86fe48c67f938b919d49635ebb4f0a5bbc2da5524b4829f573dac95ffb69"
+  }
+}

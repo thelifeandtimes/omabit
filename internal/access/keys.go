@@ -15,6 +15,7 @@ import (
 	"syscall"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
 const Header = "Urbit-Runner-SSH-Grant"
@@ -109,5 +110,8 @@ func Load(path, id string) (Grant, error) {
 }
 
 func (g Grant) Allows(method, path string) bool {
-	return g.Role == "operator" || (g.Role == "observer" && method == "GET" && (path == "/hello" || path == "/v1/snapshot" || path == "/v1/host-compatibility"))
+	_, projectStatus := protocol.ProjectStatusID(path)
+	_, _, projectRecovery := protocol.ProjectRecoveryCheckpointIDs(path)
+	_, projectRecoverySource := protocol.ProjectRecoverySourceID(path)
+	return g.Role == "operator" || (g.Role == "observer" && method == "GET" && (path == "/hello" || path == "/v1/snapshot" || path == "/v1/host-compatibility" || path == "/v1/projects" || path == protocol.PrivateChainProjectsPath || projectStatus || projectRecovery || projectRecoverySource))
 }

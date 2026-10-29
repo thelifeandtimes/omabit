@@ -1,0 +1,36 @@
+{
+  "memory": "M370",
+  "passed": true,
+  "source": {
+    "internal/privatechain/workspace.go": {
+      "sha256": "1b5f44b45488a468aed0a9343c1e340e4526df3b40080f8eef5eb106b76e964a",
+      "bytes": 10678
+    },
+    "internal/privatechain/workspace_test.go": {
+      "sha256": "17ddbc8647c98b6c642a98384f158d289310fa6b0d571dac2f166560144c31a1",
+      "bytes": 13476
+    },
+    "internal/privatechain/workspace_linux.go": {
+      "sha256": "d6944aea7496ff501b771b930cc6ae67488b2f7fb7df019a0ee1803e3b41bda5",
+      "bytes": 11466
+    },
+    "internal/privatechain/workspace_linux_test.go": {
+      "sha256": "16c8949ad8d66f9a8c62a31db5b7bc2ee3c711e5f6e5e6b9c7097f64a585b0d9",
+      "bytes": 11992
+    }
+  },
+  "package_top_level_tests": 31,
+  "package_tests_with_subcases": 216,
+  "workspace_top_level_tests": 17,
+  "workspace_tests_with_subcases": 85,
+  "race": true,
+  "seconds": 1.154,
+  "vet": true,
+  "filesystem_fixtures": "new temporary directories only",
+  "schema": 41,
+  "schema_changed": false,
+  "runner_dispatch_wired": false,
+  "keys_piers_engines_created": false,
+  "production_accessed": false,
+  "publication_VM14_pending": true
+}

@@ -1,0 +1,55 @@
+{
+  "memory": "M354",
+  "scope": "development source API/CLI and synthetic stores only",
+  "store_full": {
+    "top_level": 330,
+    "including_subcases": 1367
+  },
+  "api_cli_packages": {
+    "top_level": 157,
+    "including_subcases": 765
+  },
+  "managed_api_race": {
+    "top_level": 14,
+    "including_subcases": 67
+  },
+  "vet": "passed",
+  "skills": "both validated",
+  "walkthrough": {
+    "commands": [
+      [
+        "private-chain-register",
+        "--help"
+      ],
+      [
+        "private-chain-projects",
+        "--help"
+      ],
+      [
+        "--format",
+        "text",
+        "help",
+        "projects"
+      ],
+      [
+        "private-chain-plan",
+        "--label",
+        "offline-check",
+        "--foundation",
+        "/home/thelifeandtimes/repos/omabit-platform-overhaul/internal/privatechain/testdata/qualified-foundation.json",
+        "--member",
+        "dev-zod:~zod:18381",
+        "--member",
+        "dev-nec:~nec:18382",
+        "--shared-administration"
+      ]
+    ],
+    "all_exit_zero": true,
+    "registry_not_created": true,
+    "collector_sha256": "e1b749a781a9841f799ccb94548645b759c3dabc465e6008d0f8ac01988d1400"
+  },
+  "preserved_initial_failure": "new route omitted replay-only header; fixed in common transport, existing creation-replay tests pass",
+  "runtime_capability": false,
+  "installed_changes": false,
+  "schema": 41
+}

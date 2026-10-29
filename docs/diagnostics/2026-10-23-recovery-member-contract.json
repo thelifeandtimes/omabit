@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "kind": "side-effect-free successor member creation contract source gate",
+  "checks": {
+    "creation-tests": "3.909s",
+    "contract-tests": "4.543s",
+    "creation-full-race": "56.377s",
+    "contract-related-race": "50.161s"
+  },
+  "vet_passed": true,
+  "diff_check_passed": true,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-recovery-member-contract",
+  "manifest": {
+    "omabit-recovery-member-creation-tests.log": "4a2c7f2e7f575d391964ec0c1c48358f2bb3f98bd3d11ce7301ff92c5a7b6c81",
+    "omabit-recovery-member-contract-tests.log": "e9f03b1fcb45d18de6456137f63385d19cfd4fe3a4c67dd085003a8913156b07",
+    "omabit-recovery-member-creation-full-race.log": "8b280e976d86a6a241f4b246878cee626d569fe1ad1c930a3fa9bdf4c80923f8",
+    "omabit-recovery-member-contract-related-race.log": "8d5653bb8fbe43faeceba4fb6dbbfece35a6080962a6ef99ccef5f9044957245",
+    "omabit-recovery-member-contract-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-recovery-member-contract-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/projectnetwork/recovery_member_creation.go": "4bec489bdb31831dc11349c8eba5ecffe6ab100d5ced1d9db5a99f972f4380ea",
+    "source/internal/projectnetwork/recovery_member_creation_test.go": "1ee58c2dd86c83594cc012d91c2fa4533d70dd4871216eed3f876285bcbd7cae",
+    "source/internal/runtimequalify/project_recovery_member_contract_linux.go": "bf3dda04b4296c6c741ac751f12d3137a4ee6b73053b61db8591a6eb451fc870",
+    "source/internal/runtimequalify/project_recovery_member_contract_linux_test.go": "9fb39164c84d4e7e245972bb668d2e295a2f040b4e205511d98ad8c7e3d66a2a",
+    "source/internal/runtimequalify/project_member_contract_linux.go": "be57f65aabe87962d3eb4dc20ffd7dc19f870d30dd703a85839bfc90cf4d87b6"
+  }
+}

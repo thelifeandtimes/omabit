@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "kind": "concrete adapter source gate",
+  "inert_cases": 57,
+  "focused_race_seconds": 34.994,
+  "projectnetwork_race_seconds": 13.787,
+  "related_runtimequalify_race_seconds": 31.115,
+  "vet_passed": true,
+  "diff_check_passed": true,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-drain-adapter",
+  "manifest": {
+    "omabit-anchor-drain-adapter-tests-attempt1.log": "460c0c001320bcd683397b8a56bef1b8d952aa8eb4e26667c51992d73560d5d0",
+    "omabit-anchor-drain-adapter-tests-attempt2.log": "dc4c7bb137496523a2924721f05bb4ae825b0fe07aa3e99d4ad8c75e18d54974",
+    "omabit-anchor-drain-adapter-focused-race.log": "d1f19f27ca422edd6b9d6457bd9e7074fddf70d6918bae05c5a80b4b761a1e52",
+    "omabit-anchor-drain-copy-full-race.log": "c37880ae96c4507b468d1dcbcdc90e271cbffc61ee2d2eb9353496ad6f9f6298",
+    "omabit-anchor-drain-related-race.log": "ed5dd4501ed1289328ab5fc1d1d55f82dd6590fe4f5e4f7a2508add2ca2dcc85",
+    "omabit-anchor-drain-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-drain-adapter-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/runtimequalify/project_anchor_drain_linux.go": "c3cb658a7a3dddb91d9129eaf5024981c591dd78086997a4adbdb5b38161958d",
+    "source/internal/runtimequalify/project_anchor_drain_linux_test.go": "bde1ce7d8e63cb7c69cca061c43c8fe660e1ccc90db164e89c9dced13cde0261",
+    "source/internal/runtimequalify/project_member_observation_linux.go": "b4bb763b4fb0570312cacd1ed292c75f8935cdf9c4a6c87d114a8d242b19b925",
+    "source/internal/projectnetwork/anchor_drain_copy.go": "dda899a831e112b5c4feb159669c052e5ddce91ce882632c4f5675689f715b37",
+    "source/internal/projectnetwork/anchor_drain.go": "c4187034b1b95cc88bc947c2794c89f335a7aced8fb0b88fd93ab4c576b1526a",
+    "source/internal/projectnetwork/anchor_drain_test.go": "aaaea63ce12428d4e9026d1e9ebff5edf34c66e3175931a246ecaa1170e80f12"
+  }
+}

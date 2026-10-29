@@ -1,0 +1,80 @@
+{
+  "memory": "M388",
+  "status": "integrated-source-and-real-input-tree-qualified",
+  "source_sha256": {
+    "internal/privatechain/runtime_input_verifier_linux.go": "3003ae198c51958c6c5f999682c6cae359ee419bbcdbac5687aaa0cda451dee5",
+    "internal/privatechain/runtime_input_verifier_linux_test.go": "2017d4031ef712dedc3957592819ce4732bb38a0498a69877f2c477be7aedf0b",
+    "internal/privatechain/runtime_inputs_linux.go": "87026a372fddcd775dc9205fd9ce79643b8a7a4d3d59eff9aa0ce38a530e7d6b"
+  },
+  "focused": {
+    "exit": 0,
+    "vet_exit": 0,
+    "seconds": 2.0472379930433817,
+    "top": 11,
+    "checks": 65,
+    "failed": []
+  },
+  "integrated": {
+    "full-privatechain": {
+      "exit": 0,
+      "seconds": 1.9146427620435134,
+      "top": 51,
+      "checks": 364,
+      "failed": []
+    },
+    "collector-inputs": {
+      "exit": 0,
+      "seconds": 3.5429222710081376,
+      "top": 3,
+      "checks": 3,
+      "failed": []
+    }
+  },
+  "qualified_generation": {
+    "exit": 0,
+    "seconds": 6.153854519012384,
+    "checks": 1,
+    "failed": [],
+    "files_per_scan": 12352,
+    "bytes_per_scan": 834036904,
+    "scans": 2,
+    "runtime_authorized": false,
+    "private_home": "/tmp/omabit-private-input-verifier-20261025-01/qualification-home",
+    "command": [
+      "go",
+      "test",
+      "-overlay=/tmp/omabit-private-input-verifier-20261025-01/qualified-overlay.json",
+      "-p=2",
+      "-race",
+      "-count=1",
+      "-timeout=5m",
+      "-json",
+      "./internal/privatechain",
+      "-run",
+      "^TestQualifiedRuntimeInputVerifierGeneration06$"
+    ]
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-input-verifier",
+  "evidence_sha256": {
+    "runtime_inputs_linux.go": "87026a372fddcd775dc9205fd9ce79643b8a7a4d3d59eff9aa0ce38a530e7d6b",
+    "previous-runtime-inputs.go": "96b69cf26f01038c4a2f504b81f631847b0161270497da4cdc3741c0bb8339db",
+    "runtime_input_verifier_linux.go": "3003ae198c51958c6c5f999682c6cae359ee419bbcdbac5687aaa0cda451dee5",
+    "runtime_input_verifier_linux_test.go": "2017d4031ef712dedc3957592819ce4732bb38a0498a69877f2c477be7aedf0b",
+    "qualified_generation_linux_test.go": "a1bedf923afd2036fe1e850f6bc6f9f53841f5ee55aaf2fff528d64997815920",
+    "check01-result.json": "23caed1678327079123cc2e7eea296f2c3b34ff4da442529e1e594ed04e7b10e",
+    "check02-result.json": "d7d57282f1194c8c89df0c498c9d8e751c5b67b38a5ef265b6f54bbf6f9eb8c0",
+    "tests01.jsonl": "fd0808fe404f2652df07a78d45141a9c22f9f8a7e1a023610d463c306f553f5a",
+    "tests02.jsonl": "b79dc6094bf448a2b5156763bd69b1b8e9af1753f628c9ec2aa86c95d0e767f4",
+    "vet02.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qualification-result.json": "8f49a12352a1e92d1f3cd3bd566c505419504e9389e7fad4f02e2b43f4ee137b",
+    "qualification-tests.jsonl": "dacc8dc017c6bdb09b5a86718041edf050ee7e5010271c74892648b6a65bb16f",
+    "integrated-result.json": "a49b22c75558d23d652941bda9ac03c9ca41200ad4b338912fabbff94fcbfc2a",
+    "full-privatechain-tests.jsonl": "1b8b5359ac2f9165f303141282a6e7967e675695c0666c5b41ec60713bd5a63e",
+    "collector-inputs-tests.jsonl": "e2da769b720efc231898eee6745a4bae8e4184161ae5c9f0785845469c310d84",
+    "applied.json": "6e21117911414631f8df7927eae67ea157257bf79a82fc455d1b43a0e1bdc77d"
+  },
+  "schema": 43,
+  "docker_or_ship_access": false,
+  "public_runtime_dispatch": false,
+  "supersedes": "M386 snapshot-only input binding and M387 pending held input verifier only"
+}

@@ -1,0 +1,26 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "source_sha256": {
+    "internal/runtimequalify/docker_linux.go": "5ae12fc254d27a7be4f95ff5ec73b62888b66d69be7a6fcea51ad7563bdc85a6",
+    "internal/runtimequalify/project_engine_linux.go": "5cfb6ad341528c847e322cd86b337f5dffed96109b34d41856ccedb62410c973",
+    "internal/runtimequalify/project_engine_linux_test.go": "be9934ff89c427a017d6e9d7361dedc1d259147bc82f179c535c27ab1c5709df",
+    "internal/runtimequalify/project_resource_contract_linux.go": "2db8852f5619f4cdcce14e5c8cd7ded325050f5f97ecc73e6c25b394778b8c7f",
+    "internal/runtimequalify/project_resource_contract_linux_test.go": "db4820c7fc8d82711b8e6408d428794baaa74b3731794f5c877eb54015a4cc74",
+    "internal/runtimequalify/project_recorded_linux_test.go": "d72d5b8e2e2b4047ad5ecaccd98f9b3973d19a5477b267ece98b370b84ff9fc2"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-project-refinement",
+  "logs": {
+    "omabit-project-create-id-tests.log": "ffba570897d0f480181f342fe29a9ca835d9a17b2d574783841502e54b09a58a",
+    "omabit-project-refinement-tests.log": "b50f38c92fc3d991c52d08fd9399050a81e78ce3a691386f278505f264d8897f",
+    "omabit-project-refinement-final.log": "807986e33acd7f11e184b4ad981a609412bad871dca8f12b9d6836f93df557bd",
+    "omabit-project-refinement-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-project-recorded-compile.log": "35741130a2c346e3d7d269f67e46bd01ade345332a7f2f48031d8b8091ae231b"
+  },
+  "prepared_appliance": "/tmp/omabit-import-appliance-20261023-07",
+  "limits": [
+    "Appliance07 predates these refinements; use its original source hashes and separately revalidate retained inspection against current pure checks.",
+    "No new public API, member lifecycle or release.",
+    "Ordinary Docker command errors continue discarding output."
+  ]
+}

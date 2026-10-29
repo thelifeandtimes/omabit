@@ -1,0 +1,40 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "temporary_filesystem_driver_tested": true,
+  "schema": 26,
+  "source_sha256": {
+    "internal/projectnetwork/member_storage.go": "35d7da53bd2550c107d76d24d2d70480d3df48f04bffeeda221f1189136e7c06",
+    "internal/managed/project_member_storage.go": "30e9da91698746c515942c9c5b83302bcf15d0d7e17bdca4721757bf74222b63",
+    "internal/managed/project_member_storage_test.go": "2e309b61fb32767905ff2610cb2cde42da9dd36d2120217d5a4999a853842a7c",
+    "internal/runtimequalify/project_member_storage_linux.go": "b227a80d37117c24f38e8ec7b12be5aa6516c82f65c03187af4011f8b025307d",
+    "internal/runtimequalify/project_member_storage_linux_test.go": "c5125ee5ca83d093952161b9515a3d7f7ca4ed78d488f6a546a0930e114335d8",
+    "internal/managed/schema.go": "e86fac6e772958e24c30a0295f3552e14ac6bee915e9dab881ef29b96fa0fde9",
+    "internal/managed/store.go": "b0d75d54d30c71cdbb56129344a3d286945821156a3353ce4a6fe2453ab56210",
+    "internal/managed/storage.go": "f90869c1dff83a3c6d21ea8cfffa241a3f860c2e4eefe50227dc3e473d4258b5",
+    "internal/managed/storage_actions.go": "dcf4bd1e7e205961dc84b2015fc5db20292695ed6f20330e1c527562e3929bd8",
+    "internal/managed/projects.go": "cc706cbbacabe0d12a72c399b23b644eb3d750480a58d50fde860d28e0775d90",
+    "internal/managed/g02_historical_upgrades_test.go": "c88cb1c250e32c7082197aa887a297d1ab2cfe89614dc72d593851bebf3572b3",
+    "internal/managed/testdata/historical-upgrades/schema25.json": "7d6c6b15591e63295a160c0fd46b25b4cd7d9344d1c58afef236f3d1ece40be3",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "04507bcdedb1a480e7dc3087fc3205b040d3189f59416180b7be8e9a07c752f8",
+    "scripts/test-historical-upgrades.py": "90261c06fc9c3ad38ba8b4e49115cb2a3d29d667677dc25ddef8d916cd70dd44"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-storage",
+  "original_schema25_snapshot_sha256": "ea439418502436ac149c48d01316135834f762b67e629b84c0b410ef89639dd9",
+  "logs": {
+    "omabit-member-storage-compile.log": "9e371252176d955376e37c7f8fbc99b2b2fc014c94b7b53c887c22b6f4072fe3",
+    "omabit-member-storage-tests.log": "5c7b4a22fb094a365f34023e971f6740150008f28672c991d515a32e915f8d26",
+    "omabit-member-storage-project-regression.log": "20be0aa3cb80738bdfc1ec7dce8c8dbbfba112a3371cad69122112b02ea3815a",
+    "omabit-member-storage-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-schema25-generate26.log": "48fa067af11e2dd85e52cb1d836f86c02d6ea93c20f83fc14bd47529cf488255",
+    "omabit-schema25-reproduce26.log": "e37b90d964166937e5a4b7a52fce23dd2e118c1560abc82f34455bec2eaf0ce2",
+    "omabit-schema25-reproduce26-retry.log": "d3b5a94071a8fdbf06d7c2bba3a63e9b3798567022794371822751cd52b2bfdc",
+    "omabit-schema26-managed-full-race.log": "106e5d639eab8b8e4210b870d9ca896c58b7a9571b6c6d1654a8c27b495e9cf0",
+    "omabit-freeze-schema25.log": "cdfe63922e0d7ca2b8a9eb4ed30d23b57cae4c8360c2b17ebfc6774246227ce8"
+  },
+  "limits": [
+    "Private storage-only worker; no server scheduling or public endpoint yet.",
+    "No member process, pier or engine resource creation.",
+    "Installed databases untouched; actual owner-user/private VM integration remains."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "source_qualified": true,
+  "runtime_pass_claimed": false,
+  "schema": 27,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-launch-vm-preparation",
+  "appliance": "/tmp/omabit-import-appliance-20261023-12",
+  "source_files_verified": 96,
+  "project_test_sha256": "d366b37881d5118c1f8e974c087f450439dfb8c0ce79854c4ec391e1f036c4d6",
+  "artifacts": {
+    "base.raw": "fd5b79e3cdc80964f4b2139a45f67873d66458bd3a3c76b4f58e868e69a75d02",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "logs": {
+    "omabit-member-launch-vm-guard.log": "4c09dbe38d81edbcdf5d3433080115a7fec2281b62ef598131523a2ccfa56b44",
+    "omabit-member-launch-vm-regression.log": "9c6061d9dcb2854389e207168e8c4c5a1485f1698ae30d2fe920064eaf213cc9",
+    "omabit-member-launch-vm-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-member-launch23-12-prepare.log": "f341ee8df07416734c263ac4ca990c29cec711866afbfa3d60ff714b83411699",
+    "omabit-member-launch23-12-preparation-verification.log": "64d99c5ef4d307290748d0d2a2d3412f78f82586509f36ff39dfd3a7273b17b7"
+  },
+  "limits": [
+    "No real member-launch pass claimed by preparation.",
+    "Running-container receipt is not durable ship readiness.",
+    "Stop is exact-ID fixture cleanup, not the production lifecycle implementation."
+  ]
+}

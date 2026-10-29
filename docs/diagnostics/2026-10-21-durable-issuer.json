@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "checkpoint": "durable application issuer synthetic/process-crash qualification",
+  "date": "2026-10-21",
+  "base_commit": "b233128",
+  "branch": "codex/platform-overhaul-plan",
+  "committed": false,
+  "live_runtime_exercised": false,
+  "production_resources_accessed": false,
+  "commands": [
+    "OMABIT_TEST_FAKE_ZOD=0 GOCACHE=/tmp/omabit-go-build GOMODCACHE=/tmp/omabit-go-mod go test -race ./internal/applicationauth ./internal/collection ./internal/eyre ./internal/shipaccess ./backend/cmd/urbit-collector",
+    "OMABIT_TEST_FAKE_ZOD=0 GOCACHE=/tmp/omabit-go-build GOMODCACHE=/tmp/omabit-go-mod go vet ./internal/applicationauth ./internal/collection ./internal/eyre ./internal/shipaccess ./backend/cmd/urbit-collector"
+  ],
+  "results": {
+    "race_tests": "passed",
+    "vet": "passed"
+  },
+  "source_sha256": {
+    "internal/applicationauth/engine.go": "3abaa48b1cc2cacde8add946eac47212ce2fb560352b7eff2b3550da60faf4de",
+    "internal/applicationauth/engine_test.go": "35fe393b9c6ea81a9df41116288a30295055f9cb54230fc6fd6948b4d159e084",
+    "internal/applicationauth/failure_test.go": "d3ef4e95043e5f94d874d64a4d27cfdf42810d7295e444fe4c5ee3c4336daf09",
+    "internal/collection/applications.go": "878813f81a3d4ed95aab949f6ef3d58868843abdc701e5dd86139a77d2abcbe1",
+    "internal/collection/applications_test.go": "b2ef8d8fbe68def0b45d17ae2c77c723ad34037b2ee89d55af932f8f1462b6ef",
+    "internal/eyre/client.go": "164179dc18750ebfb0ee20e07e10280cf9b3de54b7bd804d28072013a3dbd898",
+    "internal/eyre/revoke_session.go": "4bc369ff46e68ddc2090e9654ea443ac09da5872250cad0d25be92c13d3b7b1e",
+    "internal/eyre/revoke_session_test.go": "0aea1880dad1e7ddca4bc74c479c49ce664dd3f743f99764098cf77512699021",
+    "internal/eyre/independent_session.go": "8865bc5b9cd74d8780ff54e8b39cec53351459c1505325fd97d57d951c95f2ab",
+    "internal/credentials/store.go": "336d9446a18164be0d73bb0045dba323384a1607526f3c5e83b929b06eb011d3",
+    "internal/collection/registry.go": "926524ebd1bb4e0053e5351a1e185eba8019c078393c216ff033138b838d594d",
+    "internal/collection/ships.go": "5aa7b63ce1516de039f945bcb371c94682415f8094038f18de2fe2d37d886d0d",
+    "internal/shipaccess/session.go": "f47134ec3cf82bb8463147ff0dc8751662b9cf7552a5ffff0b38480cf4d55718"
+  },
+  "remaining": [
+    "verified immutable receiver resolver and launcher",
+    "attempt-specific receiver reconciliation",
+    "durable issuer integration with both real Python receivers in private lab",
+    "approval UI",
+    "hosted-ship compatibility",
+    "full collection profile isolation and switching"
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "memory": "M387",
+  "status": "integrated-source-and-filesystem-qualified",
+  "source_sha256": {
+    "internal/privatechain/workspace_verifier_linux.go": "3192f5c37fad9f28b40fce6f8dfac6133d2d966c58bca14b73ff1193d9b3123c",
+    "internal/privatechain/workspace_verifier_linux_test.go": "ec6a56374c72e1126d6669d1c93c5a89d3ec2e8914bed49a11203aed1bc55fb5"
+  },
+  "focused": {
+    "exit": 0,
+    "vet_exit": 0,
+    "seconds": 2.4620229590218514,
+    "top": 16,
+    "checks": 62,
+    "failed": []
+  },
+  "full_privatechain_package": {
+    "exit": 0,
+    "seconds": 1.8713747870060615,
+    "top": 46,
+    "checks": 354,
+    "failed": [],
+    "source_sha256": {
+      "internal/privatechain/workspace_verifier_linux.go": "3192f5c37fad9f28b40fce6f8dfac6133d2d966c58bca14b73ff1193d9b3123c",
+      "internal/privatechain/workspace_verifier_linux_test.go": "ec6a56374c72e1126d6669d1c93c5a89d3ec2e8914bed49a11203aed1bc55fb5"
+    }
+  },
+  "negative_control": {
+    "exit": 1,
+    "failed": [
+      "TestWorkspaceVerifierRejectsReplacementWithIdenticalLayout/piers",
+      "TestWorkspaceVerifierRejectsReplacementWithIdenticalLayout/member",
+      "TestWorkspaceVerifierRejectsReplacementWithIdenticalLayout"
+    ],
+    "missing_identity_guard_detected": true
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-workspace-verifier",
+  "evidence_sha256": {
+    "workspace_verifier_linux.go": "3192f5c37fad9f28b40fce6f8dfac6133d2d966c58bca14b73ff1193d9b3123c",
+    "workspace_verifier_linux_test.go": "ec6a56374c72e1126d6669d1c93c5a89d3ec2e8914bed49a11203aed1bc55fb5",
+    "workspace_verifier_negative.go": "0f9f3810bfc2ea4b0bca2fce2034b2bb36c8d2565380b412c3b532a089faf264",
+    "check01-result.json": "06552816e4879f8c07cd7ebfeb6178ad294fb9625d5a077b615fc5a739297f0f",
+    "integrated-result.json": "c59a0a250d9e1d8455b105d9a71de31dd527f6d326066db608edc56606a76175",
+    "negative-result.json": "de3e7b8eefd80ee5fb5a01b32196195288ce51f65ffd280f87d4d59bb45aa5aa",
+    "applied.json": "1081d11b8e1f66c9ab9566cf584c5dfa023befafe2f36b12dbef86cdd7f5fdd4",
+    "tests01.jsonl": "5f20a10507bb0facca55bb82a21872b2211213cb82f37832ade7a0b20a0f6b38",
+    "vet01.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "negative-tests.jsonl": "986a0050efec49ea32258da61bc83aaa9ebbdf97fa9a122cab1fb405c5d3d996",
+    "full-package-tests.jsonl": "6ecd519f0112e9f9aee0d47be0570b6c10867584edc18fe9892915f8e126b758"
+  },
+  "schema": 43,
+  "docker_or_ship_access": false,
+  "public_runtime_dispatch": false,
+  "supersedes": "M386 pending ready-workspace verification only"
+}

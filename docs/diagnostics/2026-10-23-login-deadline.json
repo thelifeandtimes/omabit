@@ -1,0 +1,31 @@
+{
+  "passed": false,
+  "verified": true,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-login04",
+  "seconds": 761.94,
+  "verified_extracted_files": 44,
+  "retained_metadata_files": 66,
+  "audit": {
+    "kind": "login-code",
+    "status": "failed",
+    "config_revision": 1,
+    "message": "login-code access failed (stage=identity-after, deadline_expired=true)"
+  },
+  "diagnosis": "The original four-second outer deadline expired during the final identity read. The runtime had not completed all binding checks and correctly discarded the code.",
+  "source_fix": {
+    "backend_seconds": 12,
+    "reply_client_seconds": 15,
+    "ordinary_rpc_seconds": 5,
+    "per_command_seconds": 3,
+    "curl_seconds": 2,
+    "checks_preserved": true,
+    "no_replay": true
+  },
+  "qualification": [
+    "affected login/port/client-default race checks passed",
+    "real Unix HTTP server with ordinary five-second deadlines accepts a 5.5-second fixture read through the public client",
+    "short caller cancellation interrupts backend promptly; no request replay",
+    "10 offline login-case checks and affected vet passed"
+  ],
+  "runtime_fix_qualified": false
+}

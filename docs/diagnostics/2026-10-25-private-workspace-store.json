@@ -1,0 +1,75 @@
+{
+  "memory": "M371",
+  "schema": 42,
+  "scope": "synthetic store/source qualification",
+  "source": {
+    "internal/managed/private_workspace.go": {
+      "sha256": "94a0cbb1afa61c009a68d3a08e3a172481e0a96932fab3ab1d6022125a0357db",
+      "bytes": 13904
+    },
+    "internal/managed/private_workspace_test.go": {
+      "sha256": "1a1bbcd637f8593bd957cfeb9bff0e8fedb316d77fbacb969152e15c9f7ad260",
+      "bytes": 12705
+    },
+    "internal/managed/private_projects.go": {
+      "sha256": "0475142632f7f6224e39d2c4a46972eaf5b67079b5f639c46c1b9d4fb11ed6b1",
+      "bytes": 11883
+    },
+    "internal/managed/store.go": {
+      "sha256": "f80fc43f71a7ebd1b1ef6428b5dfb70fb2e848057d205e7196c7c5f99c52e62a",
+      "bytes": 57233
+    },
+    "internal/managed/schema.go": {
+      "sha256": "29104336d353c619fc5284b6465f091b170dbb41485407e77a802d2578b04f73",
+      "bytes": 1677
+    },
+    "internal/managed/g02_historical_upgrades_test.go": {
+      "sha256": "1cc54f2f0af68ec3649af8b59ff5884955666e33228181b380a736fee1eaa556",
+      "bytes": 52347
+    },
+    "internal/managed/testdata/historical-upgrades/manifest.json": {
+      "sha256": "0791e68ae20aeab4888bf3e0f9ee628c711917ce1430d1174633a9c6ceb54ec7",
+      "bytes": 5695
+    },
+    "scripts/test-historical-upgrades.py": {
+      "sha256": "7bcff22e3a3c61793eab7caddc7b18e15cc98391f9158dc52eed57c240f8f080",
+      "bytes": 42251
+    },
+    "internal/privatechain/workspace.go": {
+      "sha256": "d7f0c221cf5b652990f30121b0f3b56505fc50609ceb57e3d5c29df0171dc221",
+      "bytes": 10688
+    },
+    "internal/privatechain/workspace_linux.go": {
+      "sha256": "454059a2b924eceb62d782e3a74f9b52f7e05346c2d77d3154cd9bf2914885be",
+      "bytes": 11464
+    },
+    "internal/privatechain/workspace_test.go": {
+      "sha256": "7fed7de9b7d23f190f9a51c6bb8e6c8a26824124af9007ec5799ea6229f0cd70",
+      "bytes": 13460
+    }
+  },
+  "focused_workspace_race_passed": true,
+  "affected_managed_top_level": 16,
+  "affected_managed_with_subcases": 89,
+  "race": true,
+  "vet": true,
+  "original41": {
+    "original_schema": 41,
+    "successor_schema": 42,
+    "passed": true,
+    "generator_sha256": "7bcff22e3a3c61793eab7caddc7b18e15cc98391f9158dc52eed57c240f8f080",
+    "reproduced_fixture_sha256": "5da8b5eb7aa65ddf8bca03eb8233cd5bacfc541b97e86693e55b9337942c7ac3",
+    "successor_export_exit": 0,
+    "original_reader_refused_without_changes": true,
+    "populated_interrupted_workspace": true,
+    "seconds": 32.101533308043145
+  },
+  "full_managed_race": {
+    "status": "running",
+    "session": 24625,
+    "log": "/tmp/omabit-private-workspace-store-20261025-01/full-managed-race.jsonl"
+  },
+  "public_route_added": false,
+  "startup_creation": false,
+  "production_effects": false
+}

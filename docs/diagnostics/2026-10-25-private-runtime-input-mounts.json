@@ -1,0 +1,60 @@
+{
+  "memory": "M363",
+  "passed": true,
+  "cases": [
+    {
+      "scope": "omabit-runtime-inputs-mount-20261025-01.scope",
+      "scope_inactive": true,
+      "admission": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "MemoryMax": "536870912",
+        "MemorySwapMax": "0",
+        "TasksMax": "64"
+      },
+      "same_filesystem_file_bind": false,
+      "expected_refusal": false,
+      "exit": 0,
+      "seconds": 1.0711824199534021,
+      "runtime_authorized": false
+    },
+    {
+      "scope": "omabit-runtime-inputs-mount-20261025-02.scope",
+      "scope_inactive": true,
+      "admission": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "MemoryMax": "536870912",
+        "MemorySwapMax": "0",
+        "TasksMax": "64"
+      },
+      "same_filesystem_file_bind": true,
+      "expected_refusal": true,
+      "exit": 1,
+      "seconds": 0.21345194504829124,
+      "runtime_authorized": false
+    },
+    {
+      "scope": "omabit-runtime-inputs-mount-20261025-03.scope",
+      "scope_inactive": true,
+      "admission": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "MemoryMax": "536870912",
+        "MemorySwapMax": "0",
+        "TasksMax": "64"
+      },
+      "same_filesystem_file_bind": false,
+      "expected_refusal": false,
+      "exit": 0,
+      "seconds": 0.814721816976089,
+      "runtime_authorized": false
+    }
+  ],
+  "original_manifest_unchanged": true,
+  "dependency_inputs_executed": false,
+  "runtime_authorized": false,
+  "format_changed": false,
+  "raw_private_data_exported": false,
+  "whole_gateway_runtime_pending": true
+}

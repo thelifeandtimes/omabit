@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "kind": "inert coordinated same-pier replacement adapter source gate",
+  "focused_race_seconds": 69.22,
+  "vet_passed": true,
+  "diff_check_passed": true,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-replacement-adapter",
+  "manifest": {
+    "omabit-anchor-replacement-adapter-compile.log": "4a61416330be147835fb768422a7f7e3b6ea3927ebe2539becc8e5c38640d84e",
+    "omabit-anchor-replacement-adapter-tests-attempt1.log": "6546013563f9c03f3d69638030324c44193516be60d34417438be08c754681ae",
+    "omabit-anchor-replacement-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-replacement-adapter-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/runtimequalify/project_anchor_replacement_linux.go": "127150f476cc259ec23c91690bec3e06c735fc59aa795a09cbb0f2cc16ab5bd4",
+    "source/internal/runtimequalify/project_anchor_replacement_linux_test.go": "9173753a22288bd2ac807aae4355ef1728186314d989ad54a34438f8131a2e8f",
+    "source/internal/runtimequalify/project_recovery_member_contract_linux.go": "bf3dda04b4296c6c741ac751f12d3137a4ee6b73053b61db8591a6eb451fc870",
+    "source/internal/projectnetwork/anchor_replacement.go": "a76e42d927d895b3b2199acf45f29fafb6be489ef0e5332e7f6ead6a562bea9e"
+  }
+}

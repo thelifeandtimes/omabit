@@ -92,6 +92,20 @@ func executeDocker(ctx context.Context, args, env []string) (string, error) {
 }
 
 func (q *qualifier) docker(ctx context.Context, timeout time.Duration, args ...string) (string, error) {
+	return q.dockerResult(ctx, timeout, false, args...)
+}
+
+// dockerCreateID preserves only a complete exact creation ID when the client
+// also reports failure/cancellation. It is evidence to journal, never permission
+// to retry, inspect or adopt. Ordinary Docker calls continue discarding error output.
+func (q *qualifier) dockerCreateID(ctx context.Context, timeout time.Duration, args ...string) (string, error) {
+	if len(args) < 2 || (args[0] != "network" && args[0] != "container") || args[1] != "create" {
+		return "", errors.New("creation ID capture requires a fixed create command")
+	}
+	return q.dockerResult(ctx, timeout, true, args...)
+}
+
+func (q *qualifier) dockerResult(ctx context.Context, timeout time.Duration, retainCreationID bool, args ...string) (string, error) {
 	if err := ctx.Err(); err != nil {
 		return "", err
 	}
@@ -119,7 +133,11 @@ func (q *qualifier) docker(ctx context.Context, timeout time.Duration, args ...s
 		if len(out) > outputLimit {
 			status = "output limit exceeded"
 		}
-		return "", fmt.Errorf("%s: docker command failed (%s)", q.phase, status)
+		retained := ""
+		if retainCreationID && len(out) <= outputLimit && containerIDPattern.MatchString(strings.TrimSpace(out)) {
+			retained = strings.TrimSpace(out)
+		}
+		return retained, fmt.Errorf("%s: docker command failed (%s)", q.phase, status)
 	}
 	return out, nil
 }
@@ -134,12 +152,19 @@ type container struct {
 	Name, Image string
 	Config      struct {
 		Image, User, StopSignal string
+		WorkingDir              string
+		Env                     []string
+		Healthcheck             struct{ Test []string }
 		StopTimeout             int
 		Entrypoint, Cmd         []string
 		Labels                  map[string]string
 		Tty, OpenStdin          bool
 	}
 	HostConfig struct {
+		ReadonlyRootfs                                                   bool
+		Mounts                                                           []json.RawMessage
+		Tmpfs, Sysctls                                                   map[string]string
+		ExtraHosts, Dns, DnsSearch                                       []string
 		Init                                                             *bool
 		NetworkMode, PidMode, IpcMode, UTSMode, UsernsMode, CgroupnsMode string
 		Privileged, PublishAllPorts, AutoRemove                          bool
@@ -163,10 +188,12 @@ type container struct {
 		Ports    map[string]json.RawMessage
 	}
 	State *struct {
-		Error                    string
-		Running, OOMKilled       *bool
-		ExitCode                 *int
-		Paused, Restarting, Dead bool
+		Status, StartedAt, FinishedAt string
+		Pid                           int
+		Error                         string
+		Running, OOMKilled            *bool
+		ExitCode                      *int
+		Paused, Restarting, Dead      bool
 	}
 }
 
@@ -569,7 +596,13 @@ func (q *qualifier) remove(ctx context.Context, index int) error {
 }
 
 func (q *qualifier) stop(ctx context.Context, index int, requireZero bool) error {
-	if _, err := q.control(ctx, index, q.d.times.stop, "stop"); err != nil {
+	var stopErr error
+	if q.d.managed && isNetworkedKind(q.r.Containers[index].Kind) {
+		stopErr = q.stopManagedRuntime(ctx, index)
+	} else {
+		_, stopErr = q.control(ctx, index, q.d.times.stop, "stop")
+	}
+	if err := stopErr; err != nil {
 		return err
 	}
 	c, err := q.inspect(ctx, index)

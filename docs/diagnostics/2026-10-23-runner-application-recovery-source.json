@@ -1,0 +1,42 @@
+{
+  "source_qualified": true,
+  "runtime_qualified": false,
+  "tests": {
+    "app_probe_and_phase": 11,
+    "state_routing_and_existing": 8,
+    "ordinary_vm_entries_skip": 5,
+    "explicit_go_host_refusal": true,
+    "explicit_python_host_refusal": true,
+    "app_flag_requires_member_fixture": true,
+    "vet_passed": true
+  },
+  "source_sha256": {
+    "scripts/qualification/imports/runner_app_probe.py": "b798bf9d6d48ad893c2a2922e0028be248c861f22dbff2b96fc6c4281cef5b96",
+    "scripts/qualification/imports/runner_app_state.py": "60baf4ce7caa691a3856721208d2b6968baee643e6a9f1520cdce65837e4e3a6",
+    "scripts/qualification/imports/test_runner_app_probe.py": "9439d259c89043ab4f7bee859a902e6562068fa4e9316fca02263e54fbea455e",
+    "scripts/qualification/imports/test_runner_app_state.py": "b988f1952a1dd0c2a3f3ae90a45220b2c46f1d66572adadeb7c2d6693e50208c",
+    "scripts/qualification/imports/appliance.py": "f4bacb5a52da0ed4f1d94633ba7b6b35a5a9ff86064a0b7d3d7ececc24ea4327",
+    "scripts/qualification/imports/guest.py": "a08dc31e49a95debdfae1e6b3bd7a6c139566bb439c0f76592997b1b6f973718",
+    "scripts/qualification/fake-networks/state_case.py": "b47f10843a16168c001d6e510782b5aeafd96eede50d17072fe089b9c7d54737",
+    "scripts/qualification/fake-networks/test_state_targets.py": "c2f5c7e81a8f7e25dce90497f7bcbe23629d3497f34d78e6e11419e56d793327",
+    "internal/managed/project_application_vm_test.go": "234413930c9efdb439171206eb35ae43e88942908d684f693adc5d5479da7507",
+    "internal/managed/project_vm_test.go": "4c5340fb41ce7e52dc1d9d76588319d473334ef6b62d13b5c911b4d2b926956b",
+    "internal/managed/project_member_launch_vm_test.go": "98fa0948bd8adb55edc37f987207206e5ad1d7f5aaaee623d42dfe099d9ccff6",
+    "internal/managed/project_member_resume_vm_test.go": "d8e1f8b33db80905bdf10093bf538c2072efeb6162d34e59943fe8318d1bd594",
+    "internal/managed/project_anchor_vm_test.go": "33b26be4c9e9c21f80140a6a0ea9549bc7ab969de16f2bcfed28e4769d7185cc",
+    "internal/managed/project_member_storage_vm_test.go": "950ab5a2f8c44c315e858c446be18afa12cc7ad64ead542e013d3e3931f4dd53"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-runner-application-recovery-source",
+  "evidence_sha256": {
+    "omabit-runner-app-combined-tests.log": "ce895947b8ffcb2e77addf8382970fd1c07ecab9486fbbfca209319a47c37f4f",
+    "omabit-runner-app-target-tests.log": "c6352adff70a6982c739a1cd77bbb43d2425eefd2dc2112b92b0ceebf2a6ca31",
+    "omabit-runner-app-vm23-guards-initial.log": "770423c353211412041b656bfcf4effc73d060736d1309f017dfb319459f48ea",
+    "omabit-runner-app-vm23-guards.log": "d05223722edb8f95ee9d1f342c88462f4b09c281eeb0a7493543adb17caa77f7",
+    "omabit-runner-app-vm23-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-runner-app-vm23-explicit-host-guard.log": "f011221b51d1c2cb6d8578bdf7c35a351c18cd585c7086818ac576f3e55cee05",
+    "omabit-runner-app-python-host-guard.log": "2942ff5f696fc829a0c74a2dca6cd0500eb9853be792b3079f79431d60751f70",
+    "omabit-runner-app-appliance-guard.log": "2b35037e674cd097af80b3cadced4fb4b172da4e0993298b8e01b471a4bfb80f"
+  },
+  "failed_compilation_retained": "optional namespace pointer compared to value; corrected without changing guards",
+  "running_vm22_includes_this": false
+}

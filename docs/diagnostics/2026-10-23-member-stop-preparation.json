@@ -1,0 +1,33 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 29,
+  "adapter_cases": 30,
+  "queue_cases": 6,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-stop-preparation",
+  "source_files_verified": 118,
+  "embedded_test_sha256": "b6ba112e1a2bdd70f84e79bccfa6fd19f5e0fe2bacf80c027ef58750e25c4fc7",
+  "appliance": "/tmp/omabit-import-appliance-20261023-16",
+  "logs": {
+    "omabit-member-exit-contract-tests.log": "a92cc92d7c3ac36b82b5fde81453f1230da46a41f2a33ec5693e1b11dfd4722e",
+    "omabit-member-exit-observation-tests.log": "b9d3ffba178f988381d825498adb20776777a7c95986361eae80557a7af15623",
+    "omabit-member-exit-observation-regression.log": "debe044a8baa74864e76554c4889741bdd64826b28897d567a0e789a6fd89612",
+    "omabit-member-exit-observation-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-member-stop-adapter-tests.log": "216a57444aabcaa07a454124ac99d8b96d69dac9874518ff94a6cb2a10dccc7a",
+    "omabit-member-stop-adapter-regression.log": "cbf6cc75f9cd6cb603592fa118d98addd2e24d5aa34b5506f35cef51a7698d7b",
+    "omabit-member-stop-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-member-stop-queue-tests.log": "314ae35b2a7bd582e6c8119fa0a68b93b3447fa57a91e493f0e6828fb7ab91ae",
+    "omabit-member-stop-final-regression.log": "69fda6decae78776987549c7a9fc12f85aad012704da7a29a786e17b6f71e89e",
+    "omabit-member-stop-final-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-stop-vm-guards.log": "4c09dbe38d81edbcdf5d3433080115a7fec2281b62ef598131523a2ccfa56b44",
+    "omabit-stop-vm-host-refusal.log": "0cc81d3bcab6a5a7943b7ab03f39dc59c72d76baec1b4c4fa4336e8b41c00a2a",
+    "omabit-member-stop23-16-prepare.log": "b8a25e9d966b6a8b4e89f22de7f44d9f0aa10923c55c0b5d7c0a109a2d06c44b",
+    "omabit-member-stop23-16-preparation-verification.log": "9aa0332ed8aba397c4f503506de938e40a0d7b14e72eec68f3bd5fd7d8e5e1fd"
+  },
+  "limits": [
+    "Private queue/adapter only; no public API or startup dispatch.",
+    "No real durable Stop or recovery qualification yet; VM15 qualified earlier readiness and fixture cleanup only.",
+    "Historical exit/readiness receipts do not authorize a later resume.",
+    "No force escalation/removal by the Stop adapter; disposable fixture cleanup remains separately bounded."
+  ]
+}

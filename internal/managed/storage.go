@@ -23,6 +23,19 @@ func (realBackend) PierSources(ctx context.Context) ([]pierstore.Candidate, erro
 }
 
 func reservePierPath(q querier, id, path string) error {
+	claims, err := projectStorageLocations(q)
+	if err != nil {
+		return err
+	}
+	for member, location := range claims {
+		if pierstore.Overlap(pierstore.MountPath(path), pierstore.MountPath(location.Path)) {
+			return conflict("pier_path_conflict", "pier path is reserved by project member "+member)
+		}
+	}
+	return reserveStandalonePierPath(q, id, path)
+}
+
+func reserveStandalonePierPath(q querier, id, path string) error {
 	path = pierstore.MountPath(path)
 	all, err := instances(q)
 	if err != nil {
@@ -90,6 +103,21 @@ func (r *Server) pierCatalogue(ctx context.Context) *pierstore.Catalogue {
 					if s.Identity.Inode != 0 && !s.Identity.SameObject(sources[i].Identity) {
 						sources[i].Problem = "A different directory replaced this registered pier. Review it before management can resume."
 					}
+				}
+			}
+		}
+	}
+	projects, err := projectStorageLocations(r.s.db)
+	if err != nil {
+		c.Error = "Project storage inventory needs review."
+		return c
+	}
+	for i := range sources {
+		for id, loc := range projects {
+			if loc.Path == sources[i].Path {
+				sources[i].EnrolledBy = id
+				if !loc.MountIdentity.SameObject(sources[i].MountIdentity) || loc.Identity.Inode != 0 && !loc.Identity.SameObject(sources[i].Identity) {
+					sources[i].Problem = "Project pier identity changed; review its storage."
 				}
 			}
 		}

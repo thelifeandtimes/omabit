@@ -1,0 +1,62 @@
+{
+  "verified": true,
+  "passed": true,
+  "member_storage_verified": [
+    {
+      "instance": "vm-nec",
+      "mount": "/srv/urbit/piers/fakeships/vm-nec",
+      "inode": 133440,
+      "birth": "1792781419:789619388",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "empty": true
+    },
+    {
+      "instance": "vm-zod",
+      "mount": "/srv/urbit/piers/fakeships/vm-zod",
+      "inode": 133453,
+      "birth": "1792781419:832619393",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "empty": true
+    }
+  ],
+  "ship_operations": false,
+  "anchor_started": true,
+  "namespace": {
+    "boot_id": "6554d3b1-2441-45ea-8134-e1a59349ed15",
+    "device": 5,
+    "inode": 4026532239
+  },
+  "anchor_operation": "op-ce7272e34e5aa1f666e2f5c7109481a8",
+  "three_start_phases_verified": true,
+  "clean_anchor_stop": true,
+  "returned_ids_journaled": true,
+  "sequence": 6,
+  "volume_inventory_unchanged": true,
+  "database_receipts_match": true,
+  "repeat_dispatch_refused": true,
+  "reopen_unchanged": true,
+  "scope_inactive": true,
+  "seconds": 217.13,
+  "result_sha256": "faeb472f8c4d8e471c1213187f066a93deffb7aed3f8651cd05add4f9ed6acf0",
+  "database_sha256": "8eb3caedf8501db3f2c86de84509fb74e68b8a651157b7806fa8a71bc7b84fb1",
+  "bridge": "a42ccf458ed29f9f100431f08d360fc9406b6d102e8d375ee2bf257b1b27d792",
+  "anchor": "3e452dc7806f422b0823b713fcc513d60ac2013f6932426dd3d981fde5c00b31",
+  "engine": "ba26f0b3-ff2d-4de9-b821-41d0bfe8771e",
+  "extracted_files_verified": 17,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-storage11",
+  "schema": 26,
+  "logs": {
+    "omabit-member-storage23-11-extract.log": "2bec9fe1fd984fabd5210001ec11d13244448bd3a1ee8daaa504cf9c9084422e",
+    "omabit-member-storage23-11-verification.log": "b09eada736538de277dfa54a47039c825d4faaabfc4a3a5b68259d0fedf7f568",
+    "omabit-member-storage23-11-retention.log": "b7289bdf1f4ce86c0c93217e88a5eef21b8dc9df648e08ea11d966a9da8e087c"
+  },
+  "limits": [
+    "Empty member parents only; no member container/pier/ship launched.",
+    "The initial anchor Start is completed and cleaned up before storage preparation.",
+    "Member Create/Start, live namespace/mount inventories, readiness, Stop/resume/recovery and public interfaces remain."
+  ]
+}

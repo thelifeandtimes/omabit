@@ -78,6 +78,30 @@ Logout revokes only this enrollment's current/retired sessions and clears its
 credentials, not other browser sessions. If the server is unavailable or the local
 session expired, output distinguishes local clearing from confirmed remote logout.
 
+## Application-session experiment (unreleased)
+
+`internal/eyre.Client.NewIndependentSession` is an internal experiment for issuing
+a separate ordinary owner session from an authenticated connection. It obtains
+the login code transiently through a fixed `%base` thread and uses a new client
+without the parent cookie for login. No code is persisted. The caller must supply
+approval, private handoff, credential storage and cleanup; this method supplies
+none of those interfaces itself. The unreleased
+[application approval flow](application-connections.md) now supplies them.
+
+The intended consumers are Theme and DMs, each retaining its own direct transport
+and standalone URL + `+code` login. Sessions remain broadly authorized; this is
+independent lifecycle, not desk isolation. Synthetic HTTP tests and a fresh fake
+inside a namespace sandbox have passed. The real Theme/DMs helper handoff and
+the [internal durable issuer fixtures](diagnostics/2026-10-21-durable-issuer.md)
+also pass. The [verified launch and receiver recovery gate](diagnostics/2026-10-21-receiver-recovery.md)
+is now qualified in the private runtime lab. Installed-plugin declarations and
+approval UI/CLI have a separate [fixture/offscreen gate](diagnostics/2026-10-21-approval-flow.md);
+the [real public-flow and running-consumer gate](diagnostics/2026-10-21-public-auth-flow.md) now passes. The new
+private `applications.json` keeps approval/lifecycle evidence and opaque references
+independent of the ship enrollment, so removing the parent cannot lose application
+cleanup. It contains no credentials and does not change the existing ship CLI.
+See the [checkpoint](application-auth-checkpoint.md) for source evidence and limits.
+
 ## Subscription delivery and reconciliation
 
 Each watch owns a cryptographically random Eyre channel and one subscription. It
@@ -123,3 +147,9 @@ Sources consulted September 24:
 - [Eyre HTTP API guide](https://docs.urbit.org/build-on-urbit/tools/js-libs/http-api-guide.md)
 - [Eyre source](https://github.com/urbit/urbit/blob/5a187fededc4582a34fcd6055c67bb63e0917b94/pkg/arvo/sys/vane/eyre.hoon)
 - [Hood/Kiln source](https://github.com/urbit/urbit/blob/5a187fededc4582a34fcd6055c67bb63e0917b94/pkg/arvo/lib/hood/kiln.hoon)
+
+The unreleased [Application Connections flow](application-connections.md) adds
+installed helper discovery and explicit approval/disconnect/recovery commands.
+Its [CLI/offscreen checkpoint](diagnostics/2026-10-21-approval-flow.md) is separate
+from earlier headless real-receiver evidence. `ships` now includes the enrollment
+revision required to bind an application approval.

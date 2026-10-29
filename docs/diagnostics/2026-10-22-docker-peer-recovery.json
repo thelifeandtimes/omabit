@@ -1,0 +1,393 @@
+{
+  "checkpoint": "private Docker fake-network Gall thread and restart trial 04",
+  "ok": true,
+  "seconds": 1389.05,
+  "run": "/tmp/omabit-import-guest-run-20261022-15",
+  "appliance": "/tmp/omabit-import-appliance-20261022-14",
+  "inspection": "/tmp/omabit-import-inspection-20261022-15",
+  "clean_shutdown": true,
+  "scope_inactive": true,
+  "scope_admission": {
+    "LoadState": "loaded",
+    "ActiveState": "active",
+    "CPUQuotaPerSecUSec": "1s",
+    "MemoryMax": "12884901888",
+    "MemorySwapMax": "0",
+    "TasksMax": "128"
+  },
+  "probe": {
+    "ok": true,
+    "project": "omabit-network-a",
+    "ships": {
+      "zod": {
+        "container": "fd5dcb6107d74b9a417940f670b4e750e885fc8b443b76dca93a29b2053ce757",
+        "pier": "/home/lab/fake-network/zod/zod",
+        "http_port": 8081,
+        "port_inventory": [
+          [
+            "12321",
+            "insecure",
+            "loopback"
+          ],
+          [
+            "8081",
+            "insecure",
+            "public"
+          ]
+        ],
+        "loopback_port": 12321,
+        "authenticated_inventory": true
+      },
+      "nec": {
+        "container": "fcc969192fed1adb16d7ddf11300091f4dd90f18f5373c9033f0e05582d60872",
+        "pier": "/home/lab/fake-network/nec/nec",
+        "http_port": 8082,
+        "port_inventory": [
+          [
+            "12322",
+            "insecure",
+            "loopback"
+          ],
+          [
+            "8082",
+            "insecure",
+            "public"
+          ]
+        ],
+        "loopback_port": 12322,
+        "authenticated_inventory": true
+      }
+    },
+    "messages": [
+      {
+        "phase": "first",
+        "sender": "~zod",
+        "receiver": "~nec",
+        "nonce": "omabit-first-8ceef13ee8bbac4433e22b84",
+        "receipt": "omabit-receipt-de385c9eb9d20e0a186dc05db504e373"
+      },
+      {
+        "phase": "first",
+        "sender": "~nec",
+        "receiver": "~zod",
+        "nonce": "omabit-first-89f2b3c13c0edb772a5bb46f",
+        "receipt": "omabit-receipt-43024c324f2b7ba44194ed15181f54fb"
+      },
+      {
+        "phase": "after-restart",
+        "sender": "~zod",
+        "receiver": "~nec",
+        "nonce": "omabit-after-restart-4d9363beb22b76eb703b3493",
+        "receipt": "omabit-receipt-17a5790f6fb66c63cd67a9f256c175ad"
+      },
+      {
+        "phase": "after-restart",
+        "sender": "~nec",
+        "receiver": "~zod",
+        "nonce": "omabit-after-restart-deb3fe8bdb2cc8d97e975b81",
+        "receipt": "omabit-receipt-bbd338530004c515f87a6a5522bf3a84"
+      }
+    ],
+    "attempts": [
+      {
+        "phase": "local-check",
+        "sender": "~zod",
+        "receiver": "~zod",
+        "nonce": "omabit-local-check-8021028a2c76e969c4971b58",
+        "expected_receipt": "omabit-receipt-62389319379b4c25c76af8c66a680109",
+        "state": "acknowledged",
+        "transport": "local-khan-thread",
+        "http_status": 200,
+        "response_bytes": 50,
+        "response_sha256": "7522043ce07e6057399772aba01abd8cfe6fcfe6918d0e68ad06f83db6ea39b9",
+        "receipt": "omabit-receipt-62389319379b4c25c76af8c66a680109"
+      },
+      {
+        "phase": "local-check",
+        "sender": "~nec",
+        "receiver": "~nec",
+        "nonce": "omabit-local-check-7310a2eab2627664a124ed71",
+        "expected_receipt": "omabit-receipt-2ac29ef0e39d07e5ca41564f2b4e9e2a",
+        "state": "acknowledged",
+        "transport": "local-khan-thread",
+        "http_status": 200,
+        "response_bytes": 50,
+        "response_sha256": "b802f76c431f5b783b1b5545b68dd912b96c21d2b169f34a319ebbeac0344709",
+        "receipt": "omabit-receipt-2ac29ef0e39d07e5ca41564f2b4e9e2a"
+      },
+      {
+        "phase": "first",
+        "sender": "~zod",
+        "receiver": "~nec",
+        "nonce": "omabit-first-8ceef13ee8bbac4433e22b84",
+        "expected_receipt": "omabit-receipt-de385c9eb9d20e0a186dc05db504e373",
+        "state": "acknowledged",
+        "transport": "local-khan-thread",
+        "http_status": 200,
+        "response_bytes": 50,
+        "response_sha256": "e432a226648c5dbcf80b299ffc619b6c6787e4382ec21cae12b0b535eb79e17b",
+        "receipt": "omabit-receipt-de385c9eb9d20e0a186dc05db504e373"
+      },
+      {
+        "phase": "first",
+        "sender": "~nec",
+        "receiver": "~zod",
+        "nonce": "omabit-first-89f2b3c13c0edb772a5bb46f",
+        "expected_receipt": "omabit-receipt-43024c324f2b7ba44194ed15181f54fb",
+        "state": "acknowledged",
+        "transport": "local-khan-thread",
+        "http_status": 200,
+        "response_bytes": 50,
+        "response_sha256": "606486ac05eae681b0ecb6bfba2fd0be48b5037087ef7ca24b68ea3d7a50d229",
+        "receipt": "omabit-receipt-43024c324f2b7ba44194ed15181f54fb"
+      },
+      {
+        "phase": "nack",
+        "sender": "~zod",
+        "receiver": "~nec",
+        "nonce": "fail",
+        "expected_receipt": "omabit-receipt-5154dc977378d05960d09e3387cdaf04",
+        "state": "rejected",
+        "transport": "local-khan-thread",
+        "http_status": 500,
+        "response_bytes": 827,
+        "response_sha256": "f7556a8cd58c6b8eaa95a59add66a47ea1518058ae5f9e1f297739c4ce9fd289",
+        "receipt": {
+          "term": "child-failed",
+          "tang": [
+            [
+              "thread-fail"
+            ],
+            [
+              "poke-fail"
+            ],
+            [
+              "poke-ack"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[275 5].[275 7]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[274 5].[275 7]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[273 3].[279 76]>"
+            ],
+            [
+              "poke-hi-fail"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[272 3].[279 76]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[271 15].[279 76]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[655 33].[655 51]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[655 28].[655 60]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[636 3].[673 5]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[632 3].[673 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[132 34].[132 60]>"
+            ],
+            [
+              "/app/hood/hoon:<[132 18].[132 70]>"
+            ],
+            [
+              "/app/hood/hoon:<[121 21].[121 30]>"
+            ],
+            [
+              "/app/hood/hoon:<[121 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[120 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[119 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[118 3].[135 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[117 3].[135 5]>"
+            ],
+            [
+              "/sys/vane/gall/hoon:<[1.863 9].[1.863 37]>"
+            ]
+          ]
+        }
+      },
+      {
+        "phase": "after-restart",
+        "sender": "~zod",
+        "receiver": "~nec",
+        "nonce": "omabit-after-restart-4d9363beb22b76eb703b3493",
+        "expected_receipt": "omabit-receipt-17a5790f6fb66c63cd67a9f256c175ad",
+        "state": "acknowledged",
+        "transport": "local-khan-thread",
+        "http_status": 200,
+        "response_bytes": 50,
+        "response_sha256": "978d7ffb7a0b2f0af2ef9789961c7cc9ec21bfbc7881511c0eb8eca415adb575",
+        "receipt": "omabit-receipt-17a5790f6fb66c63cd67a9f256c175ad"
+      },
+      {
+        "phase": "after-restart",
+        "sender": "~nec",
+        "receiver": "~zod",
+        "nonce": "omabit-after-restart-deb3fe8bdb2cc8d97e975b81",
+        "expected_receipt": "omabit-receipt-bbd338530004c515f87a6a5522bf3a84",
+        "state": "acknowledged",
+        "transport": "local-khan-thread",
+        "http_status": 200,
+        "response_bytes": 50,
+        "response_sha256": "383972e5f5472d96390ae38a90ae576271a0678899413e9f0277151fd286666a",
+        "receipt": "omabit-receipt-bbd338530004c515f87a6a5522bf3a84"
+      }
+    ],
+    "local_checks": [
+      {
+        "phase": "local-check",
+        "sender": "~zod",
+        "receiver": "~zod",
+        "nonce": "omabit-local-check-8021028a2c76e969c4971b58",
+        "receipt": "omabit-receipt-62389319379b4c25c76af8c66a680109"
+      },
+      {
+        "phase": "local-check",
+        "sender": "~nec",
+        "receiver": "~nec",
+        "nonce": "omabit-local-check-7310a2eab2627664a124ed71",
+        "receipt": "omabit-receipt-2ac29ef0e39d07e5ca41564f2b4e9e2a"
+      }
+    ],
+    "clean_stops": [
+      "nec",
+      "nec",
+      "zod"
+    ],
+    "anchor": "dc39ea3f3bbd0d8873014d79d3e9de71982456fe3b13a2b568c19263919e63be",
+    "network_namespace": "net:[4026532247]",
+    "ipv4_routes": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+    "network_devices": "Inter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:   39027     539    0    0    0     0          0         0    39027     539    0    0    0     0       0          0\n",
+    "cross_ship_sessions_refused": true,
+    "remote_nack_propagated": true,
+    "restart": {
+      "stopped_boot_container": "090cf1b723006f786af43cb702ce7d9423231d4aff150ffde3bd05a188214656",
+      "resume_container": "fcc969192fed1adb16d7ddf11300091f4dd90f18f5373c9033f0e05582d60872",
+      "pier_device": 65024,
+      "pier_inode": 133524,
+      "namespace": "net:[4026532247]"
+    },
+    "restart_same_pier_and_namespace": true,
+    "restart_kept_sessions": true,
+    "transport_passed": true,
+    "cleanup_errors": []
+  },
+  "source_sha256": {
+    "scripts/qualification/imports/appliance.py": "647c2cc503fdcf89561817fe989804bda0db2a4dccdf872e12b09ca25e07d0da",
+    "scripts/qualification/imports/guest.py": "c80b76bd2ac0e99fba114de878145338ac8e548684d8a1cd88a15c28e5390ce6",
+    "scripts/qualification/imports/import_case.py": "27ae2fd0628db1f00aedde980c427c9d76e7ecd6a5cf0fde2c8ae5920ec31e0e",
+    "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+    "scripts/qualification/fake-networks/network_case.py": "ae306b8bb61467e1c2ee251887121f0a3d2f8726742f6513877a9d8f7bd8d796"
+  },
+  "artifacts": {
+    "base.raw": "64ca1c45fdcadee29c35fe343f43ac0ab269a70ecdfc8e95a14349798ffe9c73",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "all_disk_sha256": {
+    "root.qcow2": "e331c3d15063131bd7c54446ab7812b49a989186df0ce053f840441a45d6b6c7"
+  },
+  "evidence_sha256": {
+    "/tmp/omabit-import-guest-run-20261022-15/result.json": "5a14baec97ddf3216d3d07a2820586812c823166f123893ae122bcc8c9bd4477",
+    "/tmp/omabit-import-inspection-20261022-15/extraction.json": "1fcd460ad151c73d354c6c3d58758d42c2910d99665a3cae77395ee8e81df958",
+    "/tmp/omabit-import-inspection-20261022-15/results/fake-network.json": "df29810b16f4269af43bf12fca4294122994cd584a3f41c85e99ede005835d73"
+  },
+  "extracted_file_count": 16,
+  "extracted_bytes": 51661,
+  "verification_script_sha256": "f91bf44326601208e33d40a005142bd68a864bc25bf637def375f5fffc87b6da",
+  "runtime": {
+    "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+    "id": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+    "version": "urbit 4.6-5a7614f\ngmp: 6.2.1\nsigsegv: 2.14\nopenssl: OpenSSL 1.1.1w  11 Sep 2023\nlibuv: 1.50.0\nlibh2o: 0.13.6\nlmdb: 0.9.70\ncurl: 8.9.1"
+  },
+  "engine": {
+    "ServerVersion": "29.9.1",
+    "CgroupVersion": "2",
+    "CgroupDriver": "systemd",
+    "DockerRootDir": "/home/lab/.local/share/urbit-runner/docker",
+    "SecurityOptions": [
+      "name=seccomp,profile=builtin",
+      "name=rootless",
+      "name=cgroupns"
+    ]
+  },
+  "offline_tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python scripts/qualification/fake-networks/test_receipts.py",
+    "tests": 6,
+    "passed": true
+  },
+  "limitations": [
+    "One private project only; duplicate identities across projects remain untested.",
+    "Clean stop and resume in a replacement container with the same pier, namespace and sessions; no power-cut or anchor-loss recovery claim.",
+    "Persistent application data, watches/subscriptions and client reconnect still need dedicated tests.",
+    "Runner project ownership, endpoint allocation/publication and two-runner networks are not implemented by this probe.",
+    "Private Ethereum dev chains remain a separate gate."
+  ],
+  "persistent_evidence": {
+    "root": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-network04-passed",
+    "original_disks": [
+      {
+        "original_path": "/tmp/omabit-import-appliance-20261022-14/artifacts",
+        "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-network04-passed/appliance14-artifacts",
+        "files": {
+          "base.raw": {
+            "sha256": "64ca1c45fdcadee29c35fe343f43ac0ab269a70ecdfc8e95a14349798ffe9c73",
+            "bytes": 12884901888,
+            "mode": 420
+          },
+          "initramfs.cpio": {
+            "sha256": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+            "bytes": 7039184,
+            "mode": 420
+          },
+          "vmlinuz": {
+            "sha256": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+            "bytes": 17244672,
+            "mode": 420
+          },
+          "init": {
+            "sha256": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3",
+            "bytes": 2706286,
+            "mode": 493
+          }
+        },
+        "scope_inactive": true,
+        "copies_hash_verified": true
+      },
+      {
+        "original_path": "/tmp/omabit-import-guest-run-20261022-15/lab",
+        "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-network04-passed/run15-lab",
+        "files": {
+          "root.qcow2": {
+            "sha256": "e331c3d15063131bd7c54446ab7812b49a989186df0ce053f840441a45d6b6c7",
+            "bytes": 2992177152,
+            "mode": 420
+          }
+        },
+        "scope_inactive": true,
+        "copies_hash_verified": true
+      }
+    ],
+    "metadata_manifest_sha256": "8b0fc90491dca4af590749b56fc38ea084823cd5368d9d2e7d90a0ce1b6fe6de",
+    "metadata_files": 36
+  }
+}

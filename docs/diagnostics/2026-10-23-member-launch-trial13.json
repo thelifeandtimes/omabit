@@ -1,0 +1,38 @@
+{
+  "verified": true,
+  "passed": false,
+  "schema": 27,
+  "seconds": 725.41,
+  "scope_inactive": true,
+  "clean_vm_shutdown": true,
+  "clean_anchor_stop": true,
+  "quota_and_deadline_clear": true,
+  "first_member_running_receipt_verified": true,
+  "second_member_start_refused_before_effect": true,
+  "second_phase": "start-dispatched",
+  "first_member_cleanup_exit": 137,
+  "oom": false,
+  "init": true,
+  "container_ids": [
+    "aa10ccb1230af4447c90197e4a4c1876cd9e50e87b8ddab085685b8214fcb0ab",
+    "ee38fedd1be3267dce34d54d14546308419ca3f724c11b95530aac866d3d4bee",
+    "93b567636b7acf2ca78d701754bd53e22ef3e3dc8e32e9cf331bae3c624f4b91"
+  ],
+  "second_container_never_started": true,
+  "database_receipts_match": true,
+  "files_verified": 19,
+  "result_sha256": "0f1e20e672ec75a52ca69b551cb7dc17cce41869479accd76c69b01ff759bcf7",
+  "database_sha256": "71c25cfbfab689db2ea2a312b070d7f3acddabb476b34ee15b4930c49ecae4b0",
+  "private_member_log_sha256": "8ad0044bb2d819753bbee8368d9d8aeeec7d20022751752e6ee8aa6627818332",
+  "findings": [
+    "Second member was created, then Start refused stale preflight; start-dispatched retained with exact ID and never-started state.",
+    "First member cleanup exhausted its 300-second limit and exited 137 without OOM; cause not yet isolated.",
+    "Both members require --init and zod was first; these changes did not resolve early-stop timeout."
+  ],
+  "next": [
+    "Batch exact known-container inspections to reduce sequential Docker overhead without weakening freshness or ownership.",
+    "Expose bounded freshness ages and preserve the unresolved early-boot shutdown failure."
+  ],
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-launch13",
+  "sources_retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-launch-refinement/source"
+}

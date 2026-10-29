@@ -122,3 +122,36 @@ func (v *verifier) aptIndex(ctx context.Context, name string, index releaseEntry
 	v.indexes[key] = verifiedIndex{targets, packages}
 	return packages, proof, nil
 }
+
+// packagePayload hashes authenticated tar members as the native decoder emits
+// them. Do not retain the entire expanded archive or retry a failed stream using
+// the buffered path. The latter remains for existing injected command fixtures.
+func (v *verifier) packagePayload(ctx context.Context, provider, artifact string, wanted []string) (map[string]string, error) {
+	tool := "/usr/bin/bsdtar"
+	args := []string{"-cf", "-", "--format=pax", "--", "@/" + artifact}
+	if provider == "deb" {
+		tool = "/usr/bin/dpkg-deb"
+		args = []string{"--fsys-tarfile", "/" + artifact}
+	}
+	if v.stream != nil {
+		var payload map[string]string
+		err := v.stream(ctx, tool, args, maxArtifact, func(input io.Reader) error {
+			var err error
+			payload, err = hashTarReader(input, wanted)
+			if err == nil {
+				// Count trailing tar padding/output inside the aggregate stream budget.
+				_, err = io.Copy(io.Discard, input)
+			}
+			return err
+		})
+		if err != nil {
+			return nil, err
+		}
+		return payload, nil
+	}
+	b, err := v.run(ctx, tool, args, maxArtifact)
+	if err != nil {
+		return nil, err
+	}
+	return hashTar(b, wanted)
+}

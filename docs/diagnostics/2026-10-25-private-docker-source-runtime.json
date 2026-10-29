@@ -1,0 +1,26 @@
+{
+  "memory": "M352",
+  "source_preparation_launch_audit_passed": true,
+  "runtime_seconds": 1946.4,
+  "inspection_seconds": 11.193251118005719,
+  "messages": {
+    "acknowledged": 6,
+    "intentional_nack": 1
+  },
+  "persistent_writes": 4,
+  "scries": 7,
+  "snapshots": 6,
+  "deleted_channels": 2,
+  "clean_ship_stops": 3,
+  "independent_keys_from_M346": true,
+  "same_original_unkeyed_foundation": true,
+  "base_unchanged": true,
+  "overlay_unchanged": true,
+  "overlay_sha256": "305668ffde66ae139366dac3b4d6fd2c97aec4100d23fa32ab3a67d97a5ac0e0",
+  "scopes_inactive": [
+    "omabit-import-guest-db44f13d1b9e4198840f9b2b288e6e18",
+    "omabit-private-inspect-b24ba267d20e4b66a82c758acaec5a09"
+  ],
+  "raw_state_exported": false,
+  "runner_private_chain_lifecycle_implemented": false
+}

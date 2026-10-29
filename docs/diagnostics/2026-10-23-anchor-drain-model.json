@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "kind": "pure source gate",
+  "full_projectnetwork_race_seconds": 13.805,
+  "vet_passed": true,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-drain-model",
+  "manifest": {
+    "omabit-anchor-drain-tests-attempt1.log": "659e1f8edce7a24b5047af0258723f95e7edaa4b20083ab059d16fbd157c0054",
+    "omabit-anchor-drain-tests.log": "687d9661d2f083c0963226eed6d4a587b2b4e95664a4935cc5e78f17e35de482",
+    "omabit-anchor-drain-full-race.log": "cc3a45172caca4fac354cdc19715127a99196c17c1a634da4d9b803ddbbbbf64",
+    "omabit-anchor-drain-full-race-final.log": "43dd045bd72d268e35a2e3d181df94206fa475620e3483dc893271e3af233be9",
+    "omabit-anchor-drain-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source/internal/projectnetwork/anchor_drain.go": "c4187034b1b95cc88bc947c2794c89f335a7aced8fb0b88fd93ab4c576b1526a",
+    "source/internal/projectnetwork/anchor_drain_test.go": "aaaea63ce12428d4e9026d1e9ebff5edf34c66e3175931a246ecaa1170e80f12"
+  }
+}

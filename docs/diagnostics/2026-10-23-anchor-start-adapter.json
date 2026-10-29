@@ -1,0 +1,37 @@
+{
+  "source_qualified": true,
+  "runtime_pass": false,
+  "source_sha256": {
+    "internal/runtimequalify/project_anchor_linux.go": "363333300536b38faccb2c5c5e71b9162cd4db155ab30d77e66012c4d6ea3800",
+    "internal/runtimequalify/project_anchor_linux_test.go": "152bec5eee24e3d74c8df1ba0c0ecc4f64f392d329aca4324a4f0e618231fdf4",
+    "internal/runtimequalify/project_resource_contract_linux.go": "260d9480a9cc83cf3bc8d3025b2c87c5bb95bc61fa21312785e43f86cbc98bb7",
+    "internal/managed/project_anchor_server_linux.go": "15f417f348d8dcf17401dfb173db5d0dca0c27915f02eb098792d953f7fa66d3",
+    "internal/managed/project_anchor_server_linux_test.go": "c47986c434054b127eeb2e9757e14e06cb4f61fb65d5efbc48f4325fa67c2a4f",
+    "internal/managed/project_anchor_start.go": "9dd4b794a82c8dbaec0fb06fa98ac08b98dd432ba09d5dc4e6e63d44d26b02c4",
+    "internal/managed/project_server_linux.go": "cf783354ac53e42073a8489e0d1c9c8a13e04816de039f8e1b21e8fd4349997b",
+    "internal/managed/project_vm_test.go": "9c06bb2c24d273b1ee5f963cde68ca913aa58eaf9ff6769e68e6cbf8d8f3eed3",
+    "internal/managed/project_anchor_vm_test.go": "bc4d19bbfceb5f5502c0619e4dc9cf816683c804f6e3db7d4c12db0f6b99c4d6",
+    "scripts/qualification/imports/appliance.py": "dcf6f07b77347c7b47d1cf61543ef3edba73d206c54cabb7c29ea34826a8c6e7",
+    "scripts/qualification/imports/guest.py": "8babcdd971e4805034beece44501402e7da85946ec3ffc647d9e625e86892a65",
+    "scripts/qualification/imports/extract_results.py": "380cb51e84d564c52711b92d2a29edf7c330b05e9d91b3717e94c3594cbfc7d5"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-adapter",
+  "logs": {
+    "omabit-anchor-adapter-tests.log": "82e1d2164e084ca5e5ad088867082139be8cf9945b59c58fdff7b821df7d4ff4",
+    "omabit-anchor-queue-tests.log": "7a6404cd1e08314898d1cefdcbc03354c99154e5a00a5e98d6e0fbe10830fc7a",
+    "omabit-anchor-integration-regression.log": "ad2590ee4f295c63fff40df968098aad5066192e6e8bcc9d68eb6a77497b7b66",
+    "omabit-anchor-adapter-final-tests.log": "5bea7052824ba1aa138012d9a12726a517836f921bad21bc57041b64e64bdf41",
+    "omabit-anchor-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-appliance-tests.log": "2f7b850c977121d8774a5cdcc47ed550746f0edb17a5b087b7ace1ccd82a6307",
+    "omabit-anchor-vm-source-check.log": "b4b0ee2d9a765ead127427411768342c5636e07918b4b4d01ad90688eb94867e",
+    "omabit-anchor-start-appliance23-09-prepare.log": "5ac6efd652a87482cf75358b69d4e18f94e2a61067c5131b349fb9c4735ba3ae",
+    "omabit-anchor-start-appliance23-09-prepare-retry.log": "2ba9743b205de702db4436049fbcffb7cbba970646e70266e273e04648b73163",
+    "omabit-anchor-start-appliance23-09-verification.log": "10402d4a3220015f2344ddf67e112cd838c822e6c929054166f150585ae6c8f1"
+  },
+  "running_appliance": "/tmp/omabit-import-appliance-20261023-09",
+  "limits": [
+    "Actual adapter Start remains pending its separate VM result.",
+    "No public route, member lifecycle or automatic recovery.",
+    "Fixture accepts only fresh no-NIC guest; host test skips."
+  ]
+}

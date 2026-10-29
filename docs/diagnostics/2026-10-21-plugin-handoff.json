@@ -1,0 +1,101 @@
+{
+  "inputs": {
+    "run_id": "omabit-auth-640ce4096d3c4088a962b86e33449b47",
+    "host_network_namespace": "net:[4026531833]",
+    "host_pid_namespace": "pid:[4026531836]",
+    "artifact_sha256": {
+      "eyre.test": "45fcdb3bc02f2f0da38249e74d586d280096263e7abcf2cb4fdd7fef9a4d40fa",
+      "group": "841565523f78d3d2b78ff3116ce6eb681c77b4cfad0ea32a6853cb0c2f1767e1",
+      "passwd": "49ea2cfe30db35ed8a39bf9282762de1af9dadb58c6fa443be0df2f6ad5ee52d",
+      "plugin_probe.py": "d061d1244466a15015f2f0c806a84c275b2579c9a9f579bbf9a8f5343aa39168",
+      "qualify.py": "e7c1e0230718407344adf0299f78d0b371f04de4b7575b57f464c1d276be9ca5",
+      "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+      "urbit": "47ad302e8934271dfc00dcdab1d553c6d6460b105e3099ff47e0e4e4231bb26d",
+      "plugins/dms/application-profile.json": "6f562d153857927d78eff7dcbc6d2f49adc473abb8325b11a068bca4ff503d02",
+      "plugins/dms/session_store.py": "00c58c959b0cf4c54611e69b91221ef332c591f3ac3550081287b12b070bebe7",
+      "plugins/dms/open_web.py": "dfa4892ba56b029f7919855bf2125ba3ad6b70f1ae66911d6f79a7b97d626c61",
+      "plugins/dms/launcher_entry.py": "204b46e1fbc0df7a6bc91571529f5cc8cbb594b3f6c7c4de2e9d2925fc166396",
+      "plugins/dms/instance.py": "f7c739b991ffd274226e587316e6464fed59d14dffcb2d20a5dc953ceb5fd1bd",
+      "plugins/dms/eyre_session.py": "97c065eb44f447526e9b59fe978c17b8bf5bf27b3636d59b5cebfa73dd5934f5",
+      "plugins/dms/external_apps.py": "316dcde031e25b8e10a5d614893ba6823b00e03af7cccd3b5efc1321adddb048",
+      "plugins/dms/connection_offer.py": "ff3e33681271cc4f481f5b0a7e9d6f0e39d11ddff3639c10244b7d1eb6104961",
+      "plugins/dms/browser_session.py": "e142b38b11a4cb0be77bcf7204aa94126227808cddc4a57f43ea40381e7c8516",
+      "plugins/dms/bridge.py": "42a6cfa8ac9c672c12853cf146dc7bab67a05433276b804a0f93d1a91b0328ce",
+      "plugins/dms/application_connection.py": "199165861f70fa4ab073428acf8c7fd581260ea32e71f7123110bcc68641c53c",
+      "plugins/dms/manifest.json": "8aff4177983702bda3927aa94c1076c0704f211565ddc4772ef884055b40ff45",
+      "plugins/theme/application-profile.json": "6f562d153857927d78eff7dcbc6d2f49adc473abb8325b11a068bca4ff503d02",
+      "plugins/theme/manifest.json": "eee7faecb3b62602cc38159371108501cd9c20f4abbc1fa67d9305b1f1c9322b",
+      "plugins/theme/client/sync.py": "5b0f5095dbb406015c0e648e811a1aeace85594dc730f70e0a0972ac708a3d43",
+      "plugins/theme/client/support.py": "7028f229bd94abacc4e6acdd0faa0d3c5bb9253a8baece1d83abdace791ad1f9",
+      "plugins/theme/client/profile.py": "c76f45593a9d4209c30568a785080c5fca6bc44b08703a89045663411280cf68",
+      "plugins/theme/client/native.py": "c4a624c697ba9f82b04f9209b647c6c9c78b2097605b8d03e0f5fba617f088fb",
+      "plugins/theme/client/main.py": "22430816181980a8cdbfade3c23811689d49f5c4b1178261a8da1a83350c84c0",
+      "plugins/theme/client/instance.py": "127511e78115b906972bd92d9ffeaa4415336703d9c8602ebcaacc16171456e7",
+      "plugins/theme/client/eyre.py": "faa41fa0fabbbe9e545d5e875d4d7c1e2983a2ba6d49b6a2735f689bbfa6a778",
+      "plugins/theme/client/connection_offer.py": "ff3e33681271cc4f481f5b0a7e9d6f0e39d11ddff3639c10244b7d1eb6104961",
+      "plugins/theme/client/application_connection.py": "bc49346a226f788c5756f4bcc12a25efb556f2ba643448642cb01c691d02154b"
+    },
+    "source_sha256": {
+      "internal/eyre/channel.go": "40873c3ca573ac1024e9b07e0bfee1d99cfcdbedb2eab334eb706c82427e5a34",
+      "internal/eyre/channel_test.go": "c23b92a69ad1cdabcd0a1709453d3b3114f7b56eff76f464d5e68bc93f6407dc",
+      "internal/eyre/client.go": "caa5f7f86a11691f438b175801c550e51023a99e6a83e7fa82b8a3a8ba2f2951",
+      "internal/eyre/client_test.go": "3fff6b4b8f2a070020d7906e276180c2cb0c4388f4b7f8576e9dc4d0e553e6b8",
+      "internal/eyre/independent_session.go": "8865bc5b9cd74d8780ff54e8b39cec53351459c1505325fd97d57d951c95f2ab",
+      "internal/eyre/independent_session_test.go": "4510023237a5fa968d7edeb9da7e3df216e9b91ec18793a346a13d967c05cf19",
+      "internal/eyre/isolated_live_test.go": "770b0b28535e86d295c1535d0fb6f0f63aaad5fcedc2b79188a14ca9950ca6b7",
+      "internal/eyre/plugin_handoff_live_test.go": "2ff456f15e3e0902333bf5acd956f859ad8906f7f474366fbbdef08121ce694a",
+      "internal/eyre/poke.go": "c8d38e665304dfd3879392afdcebd9da6829e72034f92140846087528a756c28",
+      "internal/eyre/poke_test.go": "548421427156b6599ae0fd4be065dd869fb6de3d27fd0beb4a9a2eff0a9a2b17",
+      "go.mod": "c137cc24f1e193c57f5f608d81ad437bfab0b490b9211b4b382a8771124f8b7d",
+      "go.sum": "a52d37317a0824cf7a43ebab8c40f876246bf7c5bd2004fc6a252cf7b97c06da",
+      "scripts/qualification/app-connections/qualify.py": "e7c1e0230718407344adf0299f78d0b371f04de4b7575b57f464c1d276be9ca5",
+      "scripts/qualification/app-connections/plugin_probe.py": "d061d1244466a15015f2f0c806a84c275b2579c9a9f579bbf9a8f5343aa39168"
+    },
+    "plugin_sources": {
+      "theme": {
+        "source": "/home/thelifeandtimes/repos/omarchy-urbit-theme-auth",
+        "source_sha256": {
+          "manifest.json": "c043871d7f98384f25fdadc921a7ffe603a551265609b5e5faf0b0e54f678d0e",
+          "client/application_connection.py": "bc49346a226f788c5756f4bcc12a25efb556f2ba643448642cb01c691d02154b",
+          "client/connection_offer.py": "ff3e33681271cc4f481f5b0a7e9d6f0e39d11ddff3639c10244b7d1eb6104961",
+          "client/eyre.py": "faa41fa0fabbbe9e545d5e875d4d7c1e2983a2ba6d49b6a2735f689bbfa6a778",
+          "client/instance.py": "127511e78115b906972bd92d9ffeaa4415336703d9c8602ebcaacc16171456e7",
+          "client/main.py": "22430816181980a8cdbfade3c23811689d49f5c4b1178261a8da1a83350c84c0",
+          "client/native.py": "c4a624c697ba9f82b04f9209b647c6c9c78b2097605b8d03e0f5fba617f088fb",
+          "client/profile.py": "c76f45593a9d4209c30568a785080c5fca6bc44b08703a89045663411280cf68",
+          "client/support.py": "7028f229bd94abacc4e6acdd0faa0d3c5bb9253a8baece1d83abdace791ad1f9",
+          "client/sync.py": "5b0f5095dbb406015c0e648e811a1aeace85594dc730f70e0a0972ac708a3d43"
+        },
+        "plugin_id": "thelifeandtimes.urbit-theme.auth-lab",
+        "headless_only": true
+      },
+      "dms": {
+        "source": "/home/thelifeandtimes/repos/omarchy-urbit-dms-auth",
+        "source_sha256": {
+          "manifest.json": "e9c355d8db66f77bf5ad8b70344bc8884c79bc358acd52a51f4305972d32a23e",
+          "application_connection.py": "199165861f70fa4ab073428acf8c7fd581260ea32e71f7123110bcc68641c53c",
+          "bridge.py": "42a6cfa8ac9c672c12853cf146dc7bab67a05433276b804a0f93d1a91b0328ce",
+          "browser_session.py": "e142b38b11a4cb0be77bcf7204aa94126227808cddc4a57f43ea40381e7c8516",
+          "connection_offer.py": "ff3e33681271cc4f481f5b0a7e9d6f0e39d11ddff3639c10244b7d1eb6104961",
+          "external_apps.py": "316dcde031e25b8e10a5d614893ba6823b00e03af7cccd3b5efc1321adddb048",
+          "eyre_session.py": "97c065eb44f447526e9b59fe978c17b8bf5bf27b3636d59b5cebfa73dd5934f5",
+          "instance.py": "f7c739b991ffd274226e587316e6464fed59d14dffcb2d20a5dc953ceb5fd1bd",
+          "launcher_entry.py": "204b46e1fbc0df7a6bc91571529f5cc8cbb594b3f6c7c4de2e9d2925fc166396",
+          "open_web.py": "dfa4892ba56b029f7919855bf2125ba3ad6b70f1ae66911d6f79a7b97d626c61",
+          "session_store.py": "00c58c959b0cf4c54611e69b91221ef332c591f3ac3550081287b12b070bebe7"
+        },
+        "plugin_id": "urbit.dms.auth-lab",
+        "headless_only": true
+      }
+    }
+  },
+  "result": {
+    "run_id": "omabit-auth-640ce4096d3c4088a962b86e33449b47",
+    "boot_ready": true,
+    "test_exit": 0,
+    "clean_shutdown": true,
+    "log_truncated": false,
+    "plugin_handoff": true
+  },
+  "test_log": "=== RUN   TestIndependentSessionsIsolatedLive\n    isolated_live_test.go:119: PASS: fresh isolated fake; two independent sessions; direct desk reads; remote revocation affects only the selected session; credentials omitted\n--- PASS: TestIndependentSessionsIsolatedLive (0.31s)\n=== RUN   TestApplicationPluginHandoffIsolatedLive\n    plugin_handoff_live_test.go:158: PASS: real Python receivers and isolated Secret Service; direct plugin reads/SSE after issuer closure; duplicate refusal; independent logout; standalone login without Omabit\n--- PASS: TestApplicationPluginHandoffIsolatedLive (16.25s)\nPASS\n"
+}

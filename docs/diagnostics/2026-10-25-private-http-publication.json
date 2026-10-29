@@ -1,0 +1,54 @@
+{
+  "memory": "M372",
+  "passed": true,
+  "runtime_seconds": 2000.18,
+  "final_audit_seconds": 11.286313225980848,
+  "run": "/tmp/omabit-import-guest-run-private-chain-20261025-14",
+  "inspection": "/tmp/omabit-private-chain-inspection-20261025-29",
+  "appliance_build_sha256": "335b961534b6948e16097c6ab39c1a7b3e3e99c0f0772f158dd093081ee4e5f9",
+  "publication": {
+    "channel_puts": 7,
+    "direct_client": true,
+    "gateway": "859e4cbdb0fa99ce8d3416bacd83430e7fb7cf410173f925c68da8c28ccbc48a",
+    "network": "326625a3bcce724598c9aec28509bd8755241caaa5739717ba2e65bf33b683c8",
+    "ok": true,
+    "peer_writes": 2,
+    "peers_sha256": "0c775a0bd53154050bc4ec35eebb5d6c143af6e91b0f9b87bddf2ae78c614ccf",
+    "ports": {
+      "18081": 18381,
+      "18082": 18382
+    },
+    "project": "9fa32b771c174767b390192ec7128941",
+    "raw_state_exported": false,
+    "relogin_performed": false,
+    "requests": 23,
+    "resume_sha256": "7c11a011dc9140c78eb62dd807e2da4ed6a5c10cc7283abc13c1d797ffec5f5e",
+    "state_scries": 4,
+    "stream_reads": 4,
+    "unpublished_refusals": 5
+  },
+  "original_sessions_survived": true,
+  "writes_replayed": false,
+  "state_revisions": [
+    4,
+    5,
+    6,
+    6,
+    7
+  ],
+  "original_chain_head_retained": true,
+  "initialization_performed_on_resume": false,
+  "audit_correction": "count four SSE acknowledgements plus subscribe and two deletes: seven PUTs",
+  "earlier_audits_preserved": [
+    27,
+    28
+  ],
+  "reader_tests_with_subcases": 146,
+  "reader_vet_passed": true,
+  "all_scopes_inactive": true,
+  "private_disk_sha256": "afb95762635721ae0f310475f310a0e228cf3167146735a087761e609255138c",
+  "private_disk_bytes": 3814850560,
+  "raw_state_exported": false,
+  "public_runner_dispatch_qualified": false,
+  "simultaneous_private_projects_qualified": false
+}

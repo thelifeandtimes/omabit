@@ -1,0 +1,83 @@
+{
+  "memory": "M390",
+  "status": "integrated-resource-adapter-source-qualified",
+  "source_sha256": {
+    "internal/runtimequalify/private_gateway_resources_linux.go": "96d5dff4fe964af26ac5bc6e5c97cbdcba617de29f21865f2115b7732a1e6823",
+    "internal/runtimequalify/private_gateway_mounts_linux.go": "2af282b49d1302483e3835b46badb6a2393cd896d073f0cc99b0f1953448e9e5",
+    "internal/runtimequalify/private_gateway_resources_linux_test.go": "96c36f92b2a56438aec96091808a7f0b8976550a289dca719067ef8da5bc31e2"
+  },
+  "focused": {
+    "exit": 0,
+    "vet_exit": 0,
+    "seconds": 7.057713310990948,
+    "top": 6,
+    "checks": 45,
+    "failed": []
+  },
+  "integrated_private_gateway_checks": {
+    "exit": 0,
+    "seconds": 2.3416809649788775,
+    "top": 18,
+    "checks": 211,
+    "failed": [],
+    "source_sha256": {
+      "internal/runtimequalify/private_gateway_resources_linux.go": "96d5dff4fe964af26ac5bc6e5c97cbdcba617de29f21865f2115b7732a1e6823",
+      "internal/runtimequalify/private_gateway_mounts_linux.go": "2af282b49d1302483e3835b46badb6a2393cd896d073f0cc99b0f1953448e9e5",
+      "internal/runtimequalify/private_gateway_resources_linux_test.go": "96c36f92b2a56438aec96091808a7f0b8976550a289dca719067ef8da5bc31e2"
+    }
+  },
+  "qualified_generation_constructor": {
+    "exit": 0,
+    "seconds": 9.40419812098844,
+    "checks": 1,
+    "failed": [],
+    "files_per_scan": 12352,
+    "bytes_per_scan": 834036904,
+    "runtime_authorized": false,
+    "private_home": "/tmp/omabit-private-gateway-resources-20261025-01/qualification02-home",
+    "command": [
+      "go",
+      "test",
+      "-overlay=/tmp/omabit-private-gateway-resources-20261025-01/qualified-overlay.json",
+      "-p=2",
+      "-race",
+      "-count=1",
+      "-timeout=5m",
+      "-json",
+      "./internal/runtimequalify",
+      "-run",
+      "^TestQualifiedPrivateGatewayResourcesGeneration06$"
+    ],
+    "actual_docker_access": false,
+    "source_sha256": {
+      "private_gateway_resources_linux.go": "96d5dff4fe964af26ac5bc6e5c97cbdcba617de29f21865f2115b7732a1e6823",
+      "private_gateway_mounts_linux.go": "2af282b49d1302483e3835b46badb6a2393cd896d073f0cc99b0f1953448e9e5",
+      "private_gateway_resources_linux_test.go": "96c36f92b2a56438aec96091808a7f0b8976550a289dca719067ef8da5bc31e2",
+      "qualified_resources_linux_test.go": "e5a58f0235f30b568a3cd37b3d5d8d3afebf46e2840bb86d123ed00bfb656239"
+    }
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-resources",
+  "evidence_sha256": {
+    "private_gateway_resources_linux.go": "96d5dff4fe964af26ac5bc6e5c97cbdcba617de29f21865f2115b7732a1e6823",
+    "private_gateway_mounts_linux.go": "2af282b49d1302483e3835b46badb6a2393cd896d073f0cc99b0f1953448e9e5",
+    "private_gateway_resources_linux_test.go": "96c36f92b2a56438aec96091808a7f0b8976550a289dca719067ef8da5bc31e2",
+    "qualified_resources_linux_test.go": "e5a58f0235f30b568a3cd37b3d5d8d3afebf46e2840bb86d123ed00bfb656239",
+    "check01-result.json": "d8b461e028fe39b8212b44d6d38f3bc2ed9d0e17c19efc65347d8cd505671810",
+    "check02-result.json": "729a0c5aaa1df5344543f0731bfb5ec9c59c235b271aca1f08ce420d52bcc2d6",
+    "check03-result.json": "c3c4d3520a1262ef45c9f796aa0f7f28c89d64a9e2283a7061049356de59994a",
+    "tests01.jsonl": "eda451be343ad83ff257a60432a66b4dcb4f4498ca9fd2cb68f7aad8caf0f7d9",
+    "tests02.jsonl": "7b1e9eda698ab68bd8339e27d0bf2cdf0800ce75045a7b4768694c879be0cb77",
+    "tests03.jsonl": "bd09bf8ae613bda2b25263dc3dafb00292c9b10f703fd55acc47012af7a5fb5d",
+    "vet02.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "vet03.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qualification02-result.json": "98504f18e8ff35763d8e97b9d489525acc9d419d5bde081a1beceecc8879cd28",
+    "qualification02-tests.jsonl": "07af40ea727dcbefb593197d21c3012bfe4d54c6f75de8b5935e421e24d14057",
+    "integrated-result.json": "f4f47202aa001d0ba785bd891c1e8a01683659d6abc2d5f1c836389b3ce07ee7",
+    "integrated-tests.jsonl": "1e8dfeb39983468bdb42cb1120c935e0d8c24e865d11142f88a7fedd52efd41e",
+    "applied.json": "3ad62271c85b0b65c67087fee2fd5d7259361d296335f79bf1a2d4c7c0979098"
+  },
+  "schema": 43,
+  "actual_docker_or_ship_access": false,
+  "public_runtime_dispatch": false,
+  "supersedes": "M389 missing concrete create/inspect/Start resource adapter only; fresh readiness, backend wiring and VM acceptance remain"
+}

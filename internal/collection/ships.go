@@ -112,6 +112,12 @@ func (r *Registry) Ship(ctx context.Context, name string) (Ship, error) {
 }
 
 func (r *Registry) EnrollShip(ctx context.Context, name, rawOrigin, ship, credentials string) (Ship, error) {
+	return r.enrollShip(ctx, name, rawOrigin, ship, credentials, false)
+}
+func (r *Registry) EnrollHostedShip(ctx context.Context, name, rawOrigin, ship, credentials string) (Ship, error) {
+	return r.enrollShip(ctx, name, rawOrigin, ship, credentials, true)
+}
+func (r *Registry) enrollShip(ctx context.Context, name, rawOrigin, ship, credentials string, uniqueShip bool) (Ship, error) {
 	if !protocol.ValidID(name) || (credentials != "secret-service" && credentials != "file") {
 		return Ship{}, errors.New("invalid ship name or credential adapter")
 	}
@@ -138,7 +144,7 @@ func (r *Registry) EnrollShip(ctx context.Context, name, rawOrigin, ship, creden
 				entry = old
 				return nil
 			}
-			if old.Name == name || old.Origin == origin {
+			if old.Name == name || old.Origin == origin || uniqueShip && old.Ship == ship {
 				return ErrShipConflict
 			}
 		}

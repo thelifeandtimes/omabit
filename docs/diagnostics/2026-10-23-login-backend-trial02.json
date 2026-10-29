@@ -1,0 +1,38 @@
+{
+  "passed": false,
+  "verified": true,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-login02",
+  "seconds": 761.96,
+  "verified_extracted_files": 44,
+  "retained_metadata_files": 66,
+  "selection_attempts": [
+    {
+      "state": "running",
+      "resource_status": "unavailable",
+      "container_selected": false,
+      "fresh_observation": true,
+      "ready": false
+    },
+    {
+      "state": "running",
+      "resource_status": "fresh",
+      "container_selected": true,
+      "fresh_observation": true,
+      "ready": true
+    }
+  ],
+  "backend_audits": [
+    {
+      "kind": "login-code",
+      "status": "failed",
+      "config_revision": 1,
+      "message": "login-code access failed"
+    }
+  ],
+  "diagnosis": "Fresh-selection admission succeeded; backend code retrieval failed. Existing audit does not identify stage or timeout. Timeout remains a hypothesis, not a confirmed diagnosis.",
+  "limits": [
+    "No successful code/login, explicit final Stop or same-pier login restart in this trial",
+    "Guest shutdown was clean; original disks are retained"
+  ],
+  "successor": "Fixed-stage/deadline-only diagnostics, with existing 4-second outer bound and all admission checks unchanged; source race and vet checks passed, actual diagnostic trial pending"
+}

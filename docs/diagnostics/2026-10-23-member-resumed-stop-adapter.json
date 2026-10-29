@@ -1,0 +1,25 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "execution_cases": 24,
+  "refusal_cases": 9,
+  "race_seconds": 92.603,
+  "vet_passed": true,
+  "sources": {
+    "internal/runtimequalify/project_member_resumed_stop_linux.go": "d0893209dd58cd4e16a9393dfb8ea96566bb2a0555831839cdf3c0df9bbdf071",
+    "internal/runtimequalify/project_member_resumed_stop_linux_test.go": "a560d2a8fc65230fac2798584aada44d3d2a2556ba84bfac526db904f1c044a0",
+    "internal/runtimequalify/project_member_readiness_linux.go": "3d453f85f7c23d1c48dcad6b1662b91d1dd6aa8ac6e3229706d2fdeff48c4a88"
+  },
+  "logs": {
+    "omabit-resumed-stop-adapter-tests.log": "62d94d166176e0b64b9c36e48d82439aa1b6efc1cea54e8dfc227bf1d293560e",
+    "omabit-resumed-stop-adapter-regression.log": "d1421249130ff129525b8ee50d5aa885d9e1c9f2a3a8fc1760ee1a03de6cd18a",
+    "omabit-resumed-stop-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-resumed-stop-adapter",
+  "limits": [
+    "inert engine and temporary filesystem only",
+    "private driver; store and queue not integrated",
+    "repeated target generations2/3; readiness still binds full historical project membership",
+    "no changed-anchor recovery or adoption"
+  ]
+}

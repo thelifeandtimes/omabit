@@ -1,0 +1,71 @@
+{
+  "memory": "M397",
+  "sealed": {
+    "exit": 0,
+    "seconds": 321.9021776840091,
+    "directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/runtime-inputs-20261025-07",
+    "generation06_unchanged": true,
+    "manifest_sha256": "fd4c0739be071ef2ad88fb10bcd17cbc93c712e6dc7544ca8a2c9f0232f7832a",
+    "foundation_digest": "17a7d5fc3fb8e9314f5d6e806cad3e4ef0654388c87920ff729b48624e846410",
+    "files": 12352,
+    "bytes": 834044028,
+    "runtime_authorized": false,
+    "requires_independent_inspection": true,
+    "raw_inputs_private": true
+  },
+  "inspection": {
+    "build_exit": 0,
+    "inspect_exit": 0,
+    "collector_sha256": "0d4036e4eb9189d51025efdfcb9531a1f1b2a3d4e8345f7db73c932adcd29930",
+    "inspection": {
+      "format": "private-chain-runtime-inputs-v1",
+      "manifest_sha256": "fd4c0739be071ef2ad88fb10bcd17cbc93c712e6dc7544ca8a2c9f0232f7832a",
+      "foundation_digest": "17a7d5fc3fb8e9314f5d6e806cad3e4ef0654388c87920ff729b48624e846410",
+      "files": 12352,
+      "bytes": 834044028,
+      "runtime_authorized": false
+    },
+    "seconds": 1.9461384019814432,
+    "generation06_unchanged": true
+  },
+  "appliance": {
+    "exit": 0,
+    "seconds": 22.145043279975653,
+    "appliance": "/tmp/omabit-import-appliance-private-chain-20261025-23",
+    "source_sha256": {
+      "docker_appliance.py": "3dd2d536128482c49aa40e084c2fc691d16d26d42af28a448e7ba6811e52f221",
+      "docker_gateway.cjs": "b3f19ed5bdf468d41349e72c50514beaa140d7a00a694580a6570d90f68040fe",
+      "docker_gateway_resume.cjs": "4b002814f283ebab61ce717488f7410cfa9556fc7558622962f81476185baf1d",
+      "gateway_resume_contract.cjs": "38fc7cc8fb8a6cb8d35322202ae18840199fd0e4bb3ddb8247d101dfda53f902",
+      "docker_resume_case.py": "e2864387f807043d099ea8842106951d4a1246d31091b1e75177d4cc9f983783",
+      "docker_case.py": "8c99a873e027110813637d69a6b1d72101445984bad76c4aa9d1b37da594cacf",
+      "docker_peer.py": "007c928f3295699caeaaad8bf0468caf01cd4a4372ca7f4a92a157a3f7356659",
+      "prepare_runtime_inputs.py": "1a753d1a0ad6c7db647f24a52b060e1647ade322eeb05b3ccd00ac7faa424476"
+    },
+    "log_sha256": "65189a4514fcbe49ec3768a9d589969787828a70c738c57c58465e960f63adb1",
+    "booted": false,
+    "generation06_unchanged": true,
+    "build_sha256": "a6043cbb8d549e17179ee541c17f28bd7b6f087a2a30b481ed1eecd853f55f1e"
+  },
+  "runtime_qualified": false,
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-input-generation-07",
+  "artifact_sha256": {
+    "prepare.py": "ead1a90dfa28cfc08887082c6499dd802f0f79c482f7de6218d0fdc3d778d104",
+    "prepared.json": "188421fcd39c621f8f9b18d447ded8b81e0f2a9f5662ec0ef774637ec0c058ae",
+    "prepare02.py": "941c1529e84c4195151cca3f02e0edfce859a95f73ef2a68171f968bf344f0b4",
+    "prepared02.json": "53e8d63c8e0138a0c5832c718aecca41b3b717a9fe1857df6dc53bf861e6afd4",
+    "retain21.py": "71448818338722b8a65c33a5460a0f01097ca0d348cba9b305743cf951d1d3ae",
+    "retention01-refusal.json": "029a984716468027c7a8c062890ba7323045efcb413a1ac1f3c9fd4db51bc401",
+    "retain21-02.py": "5ddc6fea1164618b119fc90094d7c2f536a63ada2cf60ac5ad9c400de50197a5",
+    "retention02-result.json": "cb00b67babda5f9fba261c84b2d941aca3418efb7de856df4c2c1eca7f029f4b",
+    "seal.py": "24c1c032fd9f9129d0836d4acd539dcbf0a9540293f929e5661fac961b39a865",
+    "seal-command.json": "854637f37309b7ffbcc38e98766cb5f8c8ad0018342fc511b9b9b3750e4770fc",
+    "sealed.json": "63b24f3a21ba890a02c64667193fd98ac3936bf88afce7ce6185f9b7a1cb28a1",
+    "inspect.py": "19ee35cb9cc8d441c93bc363265b7f8a1eebfdde09cdc1932dc016f06921ddfc",
+    "inspection-command.json": "cb60e19e3e3871acb0cb2239b669813a8e36bd8a959cbb1fe503320b16789971",
+    "inspection-output.json": "86bc5facdfaa3896cace1c22bc82a3ef860aece1b7d3332d818b34c5873193a1",
+    "inspected.json": "39d0793819adb01918f17b77bb41d0f4c55d8859977c9aa5556f181ebf1f17c3",
+    "retain23.py": "4136295e11cbdcdbd9caf7da42fb6b13dace0f0b0fdc8926ffb9431e990f5bd8",
+    "retention23-result.json": "a4baabebd2166530820fdf37f6f938ed4d76a246f461885c170e8520344dcbca"
+  }
+}

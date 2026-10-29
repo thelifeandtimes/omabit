@@ -1,0 +1,451 @@
+[
+  {
+    "ok": true,
+    "project": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "container": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "publication": {
+      "network": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "name": "omabit-private-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "ports": {
+        "18081": 18381,
+        "18082": 18382
+      },
+      "loopback_only": true,
+      "first_observation": {
+        "network": {
+          "Id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "Name": "omabit-private-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "Driver": "bridge",
+          "Scope": "local",
+          "Internal": false,
+          "EnableIPv4": true,
+          "EnableIPv6": false,
+          "Ingress": false,
+          "Labels": {
+            "org.omabit.qualification.private-chain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "Options": {
+            "com.docker.network.bridge.host_binding_ipv4": "127.0.0.1",
+            "com.docker.network.bridge.gateway_mode_ipv4": "nat"
+          },
+          "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+              {
+                "Subnet": "172.30.0.0/16",
+                "Gateway": "172.30.0.1"
+              }
+            ]
+          },
+          "Containers": {
+            "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc": {}
+          }
+        },
+        "gateway": {
+          "Id": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "Image": "sha256:d6cc5107ed7fa92174e336af9c7f25ee433073bd9961e1c3ed23a225b866b245",
+          "Config": {
+            "Image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+            "Labels": {
+              "org.omabit.qualification.private-chain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          },
+          "HostConfig": {
+            "NetworkMode": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "PortBindings": {
+              "18081/tcp": [
+                {
+                  "HostIp": "127.0.0.1",
+                  "HostPort": "18381"
+                }
+              ],
+              "18082/tcp": [
+                {
+                  "HostIp": "127.0.0.1",
+                  "HostPort": "18382"
+                }
+              ]
+            }
+          },
+          "NetworkSettings": {
+            "Ports": {
+              "18081/tcp": [
+                {
+                  "HostIp": "127.0.0.1",
+                  "HostPort": "18381"
+                }
+              ],
+              "18082/tcp": [
+                {
+                  "HostIp": "127.0.0.1",
+                  "HostPort": "18382"
+                }
+              ]
+            },
+            "Networks": {
+              "omabit-private-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+                "NetworkID": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            }
+          },
+          "State": {
+            "Running": true,
+            "OOMKilled": false,
+            "Status": "running"
+          }
+        }
+      },
+      "last_observation": {
+        "network": {
+          "Id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "Name": "omabit-private-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "Driver": "bridge",
+          "Scope": "local",
+          "Internal": false,
+          "EnableIPv4": true,
+          "EnableIPv6": false,
+          "Ingress": false,
+          "Labels": {
+            "org.omabit.qualification.private-chain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "Options": {
+            "com.docker.network.bridge.host_binding_ipv4": "127.0.0.1",
+            "com.docker.network.bridge.gateway_mode_ipv4": "nat"
+          },
+          "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+              {
+                "Subnet": "172.30.0.0/16",
+                "Gateway": "172.30.0.1"
+              }
+            ]
+          },
+          "Containers": {
+            "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc": {}
+          }
+        },
+        "gateway": {
+          "Id": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "Image": "sha256:d6cc5107ed7fa92174e336af9c7f25ee433073bd9961e1c3ed23a225b866b245",
+          "Config": {
+            "Image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+            "Labels": {
+              "org.omabit.qualification.private-chain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          },
+          "HostConfig": {
+            "NetworkMode": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "PortBindings": {
+              "18081/tcp": [
+                {
+                  "HostIp": "127.0.0.1",
+                  "HostPort": "18381"
+                }
+              ],
+              "18082/tcp": [
+                {
+                  "HostIp": "127.0.0.1",
+                  "HostPort": "18382"
+                }
+              ]
+            }
+          },
+          "NetworkSettings": {
+            "Ports": {
+              "18081/tcp": [
+                {
+                  "HostIp": "127.0.0.1",
+                  "HostPort": "18381"
+                }
+              ],
+              "18082/tcp": [
+                {
+                  "HostIp": "127.0.0.1",
+                  "HostPort": "18382"
+                }
+              ]
+            },
+            "Networks": {
+              "omabit-private-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+                "NetworkID": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+              }
+            }
+          },
+          "State": {
+            "Running": true,
+            "OOMKilled": false,
+            "Status": "running"
+          }
+        }
+      }
+    }
+  },
+  {
+    "ok": true,
+    "publication": {
+      "network": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "ports": {
+        "18081": 18381,
+        "18082": 18382
+      },
+      "direct_client": true,
+      "requests": [
+        {
+          "ship": "zod",
+          "port": 18381,
+          "path": "/~/host",
+          "method": "GET",
+          "stream": false,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "zod",
+          "port": 18381,
+          "path": "/~/scry/hood/kiln/pikes.json",
+          "method": "GET",
+          "stream": false,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "zod",
+          "port": 18381,
+          "path": "/~/scry/hood/kiln/pikes.json",
+          "method": "GET",
+          "stream": false,
+          "crossed_session": true,
+          "status": 403,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/host",
+          "method": "GET",
+          "stream": false,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/scry/hood/kiln/pikes.json",
+          "method": "GET",
+          "stream": false,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/scry/hood/kiln/pikes.json",
+          "method": "GET",
+          "stream": false,
+          "crossed_session": true,
+          "status": 403,
+          "response_bytes": 1
+        },
+        {
+          "ship": "zod",
+          "port": 18381,
+          "path": "/spider/base/ted-eval/khan-eval/noun",
+          "method": "POST",
+          "stream": false,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "zod",
+          "port": 18381,
+          "path": "/spider/base/ted-eval/khan-eval/noun",
+          "method": "POST",
+          "stream": false,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/channel/omabit-state-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "method": "GET",
+          "stream": true,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/channel/omabit-state-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "method": "GET",
+          "stream": true,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/channel/omabit-state-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "method": "GET",
+          "stream": true,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/channel/omabit-state-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "method": "GET",
+          "stream": true,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/channel/omabit-state-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "method": "PUT",
+          "stream": false,
+          "crossed_session": false,
+          "status": 204,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/scry/omabit-state/state.json",
+          "method": "GET",
+          "stream": false,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/channel/omabit-state-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "method": "PUT",
+          "stream": false,
+          "crossed_session": false,
+          "status": 204,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/scry/omabit-state/state.json",
+          "method": "GET",
+          "stream": false,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/channel/omabit-state-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "method": "PUT",
+          "stream": false,
+          "crossed_session": false,
+          "status": 204,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/scry/omabit-state/state.json",
+          "method": "GET",
+          "stream": false,
+          "crossed_session": false,
+          "status": 200,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/channel/omabit-state-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "method": "PUT",
+          "stream": false,
+          "crossed_session": false,
+          "status": 204,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/channel/omabit-state-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "method": "PUT",
+          "stream": false,
+          "crossed_session": false,
+          "status": 204,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/channel/omabit-state-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "method": "PUT",
+          "stream": false,
+          "crossed_session": false,
+          "status": 204,
+          "response_bytes": 1
+        },
+        {
+          "ship": "nec",
+          "port": 18382,
+          "path": "/~/channel/omabit-state-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "method": "PUT",
+          "stream": false,
+          "crossed_session": false,
+          "status": 204,
+          "response_bytes": 1
+        }
+      ],
+      "refusals": [
+        {
+          "kind": "rpc",
+          "host": "127.0.0.1",
+          "port": 25432,
+          "refused": true
+        },
+        {
+          "kind": "admin-zod",
+          "host": "127.0.0.1",
+          "port": 19001,
+          "refused": true
+        },
+        {
+          "kind": "admin-nec",
+          "host": "127.0.0.1",
+          "port": 19002,
+          "refused": true
+        },
+        {
+          "kind": "ipv6-zod",
+          "host": "::1",
+          "port": 18381,
+          "refused": true
+        },
+        {
+          "kind": "ipv6-nec",
+          "host": "::1",
+          "port": 18382,
+          "refused": true
+        }
+      ]
+    }
+  }
+]

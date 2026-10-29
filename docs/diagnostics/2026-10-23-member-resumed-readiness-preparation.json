@@ -1,0 +1,41 @@
+{
+  "verified": true,
+  "runtime_executed": false,
+  "source_files_verified": 156,
+  "artifacts": {
+    "base.raw": "2b425fbf14d93d4eced1ad99178972854b37a1875a5064ca27c38c5335817f08",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "embedded_test_sha256": "24c0ba252ec3fc9337bb3f45bfe1dab3fe37234039e2d3a63d4d74ecb198a515",
+  "staging_removed": true,
+  "case": {
+    "exercise_project_member_launch": true,
+    "exercise_project_member_storage": false,
+    "exercise_project_anchor_start": false,
+    "exercise_project_preparation": false,
+    "network_anchor_recovery": false,
+    "network_published": false,
+    "exercise_login_code": false,
+    "exercise_endpoints": false,
+    "endpoint_network": "internal",
+    "exercise_import": false,
+    "exercise_fake_network": false,
+    "network_state": false,
+    "network_isolation": false,
+    "import_mode": "rename",
+    "interrupt_copy": false,
+    "restore_copy": false,
+    "restore_ui": false
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-resumed-readiness-preparation",
+  "logs": {
+    "omabit-resumed-readiness-vm20-guards.log": "4c09dbe38d81edbcdf5d3433080115a7fec2281b62ef598131523a2ccfa56b44",
+    "omabit-resumed-readiness-vm20-explicit-host-guard.log": "0cc81d3bcab6a5a7943b7ab03f39dc59c72d76baec1b4c4fa4336e8b41c00a2a",
+    "omabit-resumed-readiness-vm20-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-resumed-readiness-vm20-prepare.log": "513deb910af37bc641eac0a5f9f183f605891aac451c4cecf1b9e70140ce9c66",
+    "omabit-resumed-readiness-vm20-preparation-verification.log": "c215126548dff9f502d17b86ada3563248b281f9edb4d2b0d654783d2c82cfa3",
+    "omabit-verify-member-resumed-readiness23-20.py": "c7de66a232d6de139e76af5946936b2905f276e2316babacd4015d31326a86a4"
+  }
+}

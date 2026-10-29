@@ -1,0 +1,96 @@
+{
+  "memory": "M380",
+  "status": "integrated-source-qualified-runtime-pending",
+  "schema": 43,
+  "checks": {
+    "javascript": 4,
+    "python": 74,
+    "go_top_level": 33,
+    "go_including_subcases": 198,
+    "race": true,
+    "vet": true,
+    "host_reader_refusal_exit": 80,
+    "seconds": 2.313749222026672,
+    "log_sha256": "766747d69eba9f0c8299163dee0aecd15ea55e90fb6e6980c2764831744b7174"
+  },
+  "source_sha256": {
+    "scripts/qualification/private-chains/docker_gateway.cjs": "8375dc51db1bee3d6301c9d31db75a4cf5e1941694eeb50c5d26f5aba6e4d207",
+    "scripts/qualification/private-chains/docker_case.py": "8c99a873e027110813637d69a6b1d72101445984bad76c4aa9d1b37da594cacf",
+    "scripts/qualification/private-chains/docker_peer.py": "007c928f3295699caeaaad8bf0468caf01cd4a4372ca7f4a92a157a3f7356659",
+    "scripts/qualification/private-chains/docker_initial_publication.py": "757e39b5ae2b9b88c5aa0f75b6eae96bcca4420a5eb65a5ef55ccb7a0316b5dd",
+    "scripts/qualification/private-chains/docker_initial_publication_guest.py": "e851fa729c6aef24cc89b6b92f5f9432bfd77841ea5c8210af9eeaf575bd937e",
+    "scripts/qualification/private-chains/test_initial_publication.py": "308771eab36da852a7585e4905c251c44f79b0bb53d4f08f7f8621b3d9e15ad5",
+    "scripts/qualification/private-chains/test_initial_publication_modes.py": "087bdf7679b87e04bee9eb52086ff74f574064c04b1ff5c71e39dad891c27f49",
+    "scripts/qualification/private-chains/test_gateway_initial.cjs": "f99cbe2f39df4bfd1da865e79a00240a5ed3974e3fb827ba0a4e472cc7ea871a",
+    "scripts/qualification/private-chains/docker_appliance.py": "3dd2d536128482c49aa40e084c2fc691d16d26d42af28a448e7ba6811e52f221",
+    "scripts/qualification/private-chains/docker_inspect.py": "1b05508c94c267f1f6d2a4feb9382d2f9218a27c7bf9678f909890aa790ccef9",
+    "scripts/qualification/private-chains/inspect-init/initial_publication_audit_test.go": "dbc526a8b4498faa80adbb71a482d57725df59381d9081cf3781712b0ed29cb0",
+    "scripts/qualification/private-chains/inspect-init/initial_publication_audit.go": "ef9f5231892113b0920b73dce4426c94c9a7598aae84973f58f186c9f68a4994",
+    "scripts/qualification/private-chains/inspect-init/inspect.go": "77e93e9de3f6ea94c8fd4604a4a8415a6c4ad1130e74f23b416436bce6b0726a",
+    "scripts/qualification/private-chains/inspect-init/main.go": "83d4cdafc60ad44549f996e06fe0b255cfe34f67b481211afff7f3cd735524ae",
+    "scripts/qualification/private-chains/inspect-init/publication_audit.go": "87dadd7affd716ac60b255ffc907e216f05e9c675ceaef90379ef8d6a5df6936",
+    "scripts/qualification/imports/appliance.py": "cea1d72dbf1faa68aa2d5c872550592d7c94e07c047d72c019de8cb2f24fd5d7",
+    "scripts/qualification/imports/test_private_chain_boot.py": "28158aae654464a50a9585844aa832ff7440f00856bb1af6af054b443348a2a1"
+  },
+  "contract": [
+    "explicit first-start mode excludes replacement and concurrent-project modes",
+    "only two IPv4 guest-loopback Eyre publications; RPC/admin/IPv6 remain unpublished",
+    "bridge route observation bound to exact owned private subnet and gateway",
+    "fresh and resumed member commands retain image, mounts and resource limits",
+    "readiness binds supported block and nonzero head hash before final stop proof",
+    "original sessions copied only inside disposable guest; direct HTTP does not relogin",
+    "four-write original recovery transcript preserved; separate two-write/four-subscription extension",
+    "eight channel mutations for two new subscriptions; replacement audit keeps seven",
+    "independent reader requires initial audit marker from frozen build and validates both channels, cursors, receipts and state",
+    "only fixed metadata and hashes leave private disk"
+  ],
+  "trials": [
+    {
+      "trial": 2,
+      "outcome": "staging loader rejected shallow __file__ before unit tests; no source/runtime failure"
+    },
+    {
+      "trial": 3,
+      "outcome": "source tests passed; review then found peer loopback-only route check incompatible with bridge mode"
+    },
+    {
+      "trial": 4,
+      "outcome": "exact bridge-route checks added and complete source checks passed"
+    }
+  ],
+  "runtime_passed": false,
+  "preparation17": {
+    "exit": 1,
+    "output": "/tmp/omabit-import-appliance-private-chain-20261025-17",
+    "seconds": 8.00307805405464
+  },
+  "preparation18": {
+    "exit": 1,
+    "wrapper_only": true,
+    "output_created": false,
+    "reason": "wrapper renamed historical input command path while assigning fresh evidence names; missing input refused before builder invocation",
+    "script_sha256": "0131cfb04c9677d7c57056258aa645430847db948471495398c162c04f6897e8"
+  },
+  "appliance16_relocation": {
+    "original": "/tmp/omabit-import-appliance-private-chain-20261025-16",
+    "retained": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/appliance-isolation-20261025-16",
+    "files": 20,
+    "bytes": 325434805,
+    "identical": true,
+    "compatibility_link": true,
+    "booted": false,
+    "protected_state_accessed": false
+  },
+  "preparation19": {
+    "status": "running",
+    "session": 56615,
+    "output": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/appliance-initial-publication-20261025-19"
+  },
+  "full_schema43_regression": {
+    "status": "running",
+    "session": 13388
+  },
+  "protected_or_installed_state_accessed": false,
+  "public_dispatch_enabled": false,
+  "supersedes": "M375/M379 pending first-start fixture and independent audit source only. M372 replacement runtime evidence is unchanged; initial runtime and simultaneous projects remain unqualified."
+}

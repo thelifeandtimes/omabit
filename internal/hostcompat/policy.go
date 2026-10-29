@@ -45,6 +45,7 @@ type Package struct {
 }
 
 type Engine struct {
+	ID            string `json:"id,omitempty"` // Exact daemon identity; omitted in historical reports.
 	Version       string `json:"version"`
 	APIVersion    string `json:"api_version"`
 	MinAPIVersion string `json:"min_api_version"`

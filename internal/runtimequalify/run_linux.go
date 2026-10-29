@@ -18,6 +18,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/resourcepolicy"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
@@ -41,6 +42,7 @@ type dependencies struct {
 	identity         func() (identity, error)
 	stat             func(string) (node, error)
 	admission        func(string) (uint64, uint64, error)
+	resourcePolicy   func() (resourcepolicy.Policy, error)
 	execute          func(context.Context, []string, []string) (string, error)
 	ProbeEngine      func(context.Context, string, string) (hostcompat.Engine, error)
 	InspectHost      func() hostcompat.Report
@@ -154,8 +156,9 @@ func defaults() dependencies {
 	}
 	return dependencies{
 		profile: ProfileLifecycle, hostProbe: probeHostHTTP, hostIdentity: readHostIdentity,
-		home: home, identity: currentIdentity, stat: statNode,
-		admission: available, execute: executeDocker, download: candidate.DownloadPill,
+		home: home, runtimeDir: ownerhost.RuntimeDirectory(), identity: currentIdentity, stat: statNode,
+		resourcePolicy: func() (resourcepolicy.Policy, error) { return resourcepolicy.Load(home) },
+		admission:      available, execute: executeDocker, download: candidate.DownloadPill,
 		ProbeEngine: hostcompat.ProbeEngine, InspectHost: hostcompat.InspectCurrent,
 		stats:         readDockerStats,
 		logs:          readDockerLogs,

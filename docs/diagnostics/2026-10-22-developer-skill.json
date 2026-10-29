@@ -1,0 +1,22 @@
+{
+  "skill_source_sha256": {
+    "skills/omabit-plugin-developer/SKILL.md": "10fea048636bc7306f5163172986e7231791aec4e11814201dcd3d29279add0d",
+    "skills/omabit-plugin-developer/references/application.md": "b55067c0f78aab405c7ac7957318574e32d0887299aa30b35d44cf15c8d0544f",
+    "skills/omabit-plugin-developer/references/development.md": "28d7d5fb5ece01a0d490721aedc77beb0483fe2f9fa1f04cdf920d01db0b1ba5"
+  },
+  "reference_source_sha256": {
+    "/home/thelifeandtimes/repos/omabit-platform-overhaul/plugins/omabit/Design.qml": "f74d2e85434db73620dd7522519c0eee38f0b080c38f83475781971617c5fda9",
+    "/home/thelifeandtimes/repos/omabit-platform-overhaul/docs/application-connections.md": "5edcf4d61486198d33584d8079cbf5cf97c7cbed1ea9d00b230c98a3990bdbe1",
+    "/home/thelifeandtimes/repos/omabit-platform-overhaul/docs/application-handoff-v1.md": "3df0c41495c37c6303477fbbd683a99d055bfe7722994a977526ae418768f81b",
+    "/home/thelifeandtimes/repos/talon/composeApp/src/commonMain/kotlin/io/nisfeb/talon/urbit/ReconnectPolicy.kt": "7293cb3efde1298bc4d675b80af63b001aee44178dfca017325da9f774cdf5ca",
+    "/home/thelifeandtimes/repos/lattice/README.md": "e3a90fc0c38a6ca2e125fa1694bee0628f563b4a12885ed0fa7cfa988aadec76",
+    "/home/thelifeandtimes/repos/lattice/docs/grubbery-ops.md": "54c58b85664a21dc34699b03fced19c2861d09392bab963b2d409a57fea66669",
+    "/home/thelifeandtimes/repos/omart-desk/ui/src/components/pals-setup.tsx": "942d7c44d9a52192e3d611a7533341f6211c3c3468c616904905b6285a206d59"
+  },
+  "checks": [
+    "skill-creator quick_validate passed",
+    "local skill reference links resolve",
+    "git diff --check passed"
+  ],
+  "scope": "source guidance only; no global installation, published packaging or new-application runtime qualification"
+}

@@ -1,0 +1,59 @@
+{
+  "memory": "M374",
+  "status": "workspace-queue-integrated-and-focused-race-passed",
+  "schema": 42,
+  "schema_changed": false,
+  "full_pre_queue_managed_regression": {
+    "source_log_sha256": "7cf5f5a79a35a31d5fc9a568146420d299f475e2d473367554550e705603e8a9",
+    "top_level": 340,
+    "including_subcases": 1416,
+    "failed": [],
+    "packages": [
+      {
+        "Action": "pass",
+        "Package": "git.thechristophgroup.org/thelifeandtimes/omabit/internal/managed",
+        "Elapsed": 2083.39
+      }
+    ]
+  },
+  "applied_workspace_checks": {
+    "source_log_sha256": "eb9b2b2b417e02c95f466f86c0ed3fc94fee02fcc6c8278d1c7f1d5c90daa808",
+    "top_level": 31,
+    "including_subcases": 139,
+    "failed": [],
+    "packages": [
+      {
+        "Action": "pass",
+        "Package": "git.thechristophgroup.org/thelifeandtimes/omabit/internal/privatechain",
+        "Elapsed": 1.113
+      },
+      {
+        "Action": "pass",
+        "Package": "git.thechristophgroup.org/thelifeandtimes/omabit/internal/managed",
+        "Elapsed": 15.625
+      }
+    ]
+  },
+  "vet_passed": true,
+  "typed_nil_negative_control": {
+    "expected_failure_observed": true,
+    "source_log_sha256": "b52378eff1a768660497768b2be693ba99b6bbe28f8875d50f11031212e8ea94"
+  },
+  "source_sha256": {
+    "internal/managed/private_workspace_server_linux.go": "1f12d438769178bd68da7125224ab97b897db6c6852b1b8b014afa80534df65f",
+    "internal/managed/private_workspace_server_linux_test.go": "92047e64c07bb99ba70b4badfbb82e344f4f92bdc4c4f378e532e6cb1aaf0a2f",
+    "internal/privatechain/workspace_parent_linux.go": "e83adce84cad389fde1359b42dd8086f5ac336d496da6c67d16e6cf3107a3eb7",
+    "internal/privatechain/workspace_parent_linux_test.go": "f75a4c5a5381d569d47b1e06fbef9c5a92ee55498ed451c20800a558f3c66aa4"
+  },
+  "effects": "new test-owned directories only; no engine, chain, key or ship calls",
+  "public_route_enabled": false,
+  "startup_dispatch_enabled": false,
+  "existing_storage_parent_required": true,
+  "supersedes": "M371\u2013M373 pending full schema42 managed regression; queue is covered by subsequent focused checks, not by that earlier full run",
+  "remaining": [
+    "explicit private storage provisioning",
+    "durable interrupted-workspace observation receipts",
+    "private chain initialization/resume lifecycle and public runner integration",
+    "concurrent private-project VM runtime and audit after memory admission"
+  ]
+}

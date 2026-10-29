@@ -1,0 +1,73 @@
+{
+  "memory": "M391",
+  "status": "integrated-source-and-actual-foundation-copy-qualified",
+  "source_sha256": {
+    "scripts/qualification/private-chains/docker_gateway.cjs": "5c1f9da910456ad76c708153380c940b288ab8c0a2334971f9c8b8cc3eb55d66",
+    "scripts/qualification/private-chains/test_gateway_copy.cjs": "9455c477fc3ad527c044e17c59238f35f63c033712515c03a220aa08e16f8252"
+  },
+  "regression": {
+    "exit": 0,
+    "seconds": 0.07862457499140874,
+    "summary": {
+      "tests": 58,
+      "suites": 0,
+      "pass": 58,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "source_sha256": {
+      "scripts/qualification/private-chains/docker_gateway.cjs": "5c1f9da910456ad76c708153380c940b288ab8c0a2334971f9c8b8cc3eb55d66",
+      "scripts/qualification/private-chains/test_gateway_copy.cjs": "9455c477fc3ad527c044e17c59238f35f63c033712515c03a220aa08e16f8252"
+    },
+    "generation06_unchanged": true,
+    "new_generation_required": true,
+    "gateway_entrypoint_executed": false,
+    "actual_docker_access": false
+  },
+  "synthetic_reproduction": {
+    "uid": 1000,
+    "source_mode": 256,
+    "copy_mode": 256,
+    "copy_writable": false,
+    "write_open_error": "EACCES",
+    "synthetic": true
+  },
+  "real_unkeyed_foundation_copy": {
+    "passed": true,
+    "files": 7,
+    "bytes": 291373,
+    "elapsed_ms": 5,
+    "source_unchanged": true,
+    "destination_private_and_writable": true,
+    "retry_refused": true,
+    "source_sha256": "5c1f9da910456ad76c708153380c940b288ab8c0a2334971f9c8b8cc3eb55d66",
+    "inventory_sha256": "bc152c4cf91154e30132ea9e14ce911e1bf1cb5de95642b4103796f88ebb98ea",
+    "database_library_opened": false,
+    "gateway_entrypoint_executed": false
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-fresh-copy-02",
+  "evidence_sha256": {
+    "docker_gateway.cjs": "5c1f9da910456ad76c708153380c940b288ab8c0a2334971f9c8b8cc3eb55d66",
+    "previous-gateway.cjs": "8375dc51db1bee3d6301c9d31db75a4cf5e1941694eeb50c5d26f5aba6e4d207",
+    "test_gateway_copy.cjs": "9455c477fc3ad527c044e17c59238f35f63c033712515c03a220aa08e16f8252",
+    "copy-mode-reproduction.json": "d1fd47dc529b4c034fad239c7ccb7e97fdadb5869de66d0b03648bcf4c57c78d",
+    "record01-refusal.json": "3f37d4b3b45ef3a87cbd97558f064e5a9d05434ca6a2553bb690d8f9278654f0",
+    "qualified-copy-result.json": "14828112e3a641608582bdc3fd56896ddc6a51302f0e3929ca9abdb3dfd0a278",
+    "qualify-copy.cjs": "48fe4afaf6ccedc5a8daac276696c9054dd83eebc07a86c84afaef742de76138",
+    "tests01.tap": "26c65b991ad873afd588b06774f4b67c084a56f9dc6abd0201e116faa7f6b77c",
+    "tests02.tap": "b15d4e15df2fc7b5c173a2bc550b0313abf145c670e00bfec1d9263d4f5770fd",
+    "tests03.tap": "671d2a7edfe725ab9053307506de556c2e5963bf5431ceb90c8829c159acdc42",
+    "runner-sentinel.cjs": "e175842dece59c2f9dfe643c4b731be51e24409c1edd923eee73c99a5fbeaabe",
+    "sentinel01.tap": "9c264c614e410773bc4f519bc140116f79f51eac962a8a8bf41d9ca058997cd5",
+    "integration01-refusal.json": "3cd4580187f94e53f73c0306397d2d0c865cc66832d2aca83df3aa4cbeaf11b8",
+    "integrated-result.json": "c73d924e97c1d11406a5ace655b2177ef02f860ab1ef8917038f82550f140f56",
+    "integrated-tests.tap": "1c5e78039c14ca38532de4d341259a00e2112ac2bea1144b8e44021bc6cea8fe",
+    "applied.json": "5cef22d7ba4706b6787c3436db940b4628aa5820c8f9682ce2dc4f759bc4b444"
+  },
+  "schema": 43,
+  "generation06_unchanged": true,
+  "new_generation_required": true,
+  "actual_gateway_or_docker_access": false,
+  "supersedes": "M386 generation06 suitability for future sealed-bundle gateway startup only; its inspection result and historical VM evidence remain valid"
+}

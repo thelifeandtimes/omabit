@@ -1,0 +1,33 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 30,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-stop-exit-store",
+  "source_sha256": {
+    "internal/managed/project_member_stop_exit.go": "b310766769674e11d422e807ae29f08fe23fd73fce67bc17a1b38d796c09c432",
+    "internal/managed/project_member_stop_exit_test.go": "0f723febe46f450baf04ff3f9c59aa2abbdf2acf290954b8ae45c4a122d5a165",
+    "internal/managed/schema.go": "6dbd9097b1838cc852677bf1c73a835d73dc852dc4ffd155225306de34239a87",
+    "internal/managed/store.go": "3eaffabc38c378115bf010190b6d9f69d64043a91c23a8a7cef41350e94608bb",
+    "internal/managed/g02_historical_upgrades_test.go": "057e15fce12832456ac1793b9f854818dc5cb80406eb21d6e04e32f597e67b74",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "22a864a56ebf0fbf1132317875bd51e36a18f0fce934c520f367f8b66708540c",
+    "internal/managed/testdata/historical-upgrades/schema29.json": "1de84f7291b045f92e97a3ae68194bcd45c7ed3bf5e97652569307fe4584557f",
+    "internal/managed/testdata/historical-upgrades/schema29-source.tar.gz": "8527e8465d3fc2330bc6ba661577b6d3bc776b75da36c301f4557be6550a0331",
+    "scripts/test-historical-upgrades.py": "dc07932113da1f0bdd35e85847c5fd18d7281d561f215f945e076c351cc86a35"
+  },
+  "logs": {
+    "omabit-stop-exit-store-tests.log": "2fbaf7763889a3e36ddce93ace934c18ab1f7122667d6e782cc112edf4fb9bbb",
+    "omabit-stop-exit-store-full-race.log": "1ae4332efb1d681b03e79fd8331f1a587e16fda713d68473f7daa683d7296205",
+    "omabit-stop-exit-store-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-stop-exit-schema29-generate.log": "73086a3ddc6470cc055d3a31a86c47b2d468fd3c33f3e4f0ea61d2006bb3914c",
+    "omabit-stop-exit-schema29-reproduce.log": "93e86ac178e76d4ed384bab90ee20e295fd76a8314156af103540ab13b8b64e9",
+    "omabit-schema29-freeze.log": "ec8a39f98ff4ed67916eeda44dfdb2d562ab4571c9ed81bf42e1061f5f456874"
+  },
+  "original_schema29_archive_sha256": "8527e8465d3fc2330bc6ba661577b6d3bc776b75da36c301f4557be6550a0331",
+  "fixture_bytes": 149090,
+  "full_managed_race_seconds": 173.156,
+  "limits": [
+    "Private persistence and worker only; queue/public/runtime recovery are not qualified here.",
+    "Original uncertain Stop and its admission fence remain unchanged.",
+    "VM16 remains the frozen schema29 initial Stop trial."
+  ]
+}

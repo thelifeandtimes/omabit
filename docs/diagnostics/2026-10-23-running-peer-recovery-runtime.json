@@ -1,0 +1,268 @@
+{
+  "verified": true,
+  "passed": true,
+  "schema": 35,
+  "member_launches": [
+    {
+      "instance_id": "vm-zod",
+      "container": "0070df798ef25ab134c73a98d1da514c8c9ac4050fe7dc0a42155cb35c554f86",
+      "namespace": {
+        "boot_id": "c49b8246-87b7-469e-8c4a-e0610d33b2b6",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 133460,
+      "workspace_birth": "1792807986:362676848",
+      "clean_stop": true,
+      "identity_http_status": 200
+    },
+    {
+      "instance_id": "vm-nec",
+      "container": "4ce31c9b03d7bfa22d784475688e5bc76d7a1a86f7b5c3376a7c67841115b435",
+      "namespace": {
+        "boot_id": "c49b8246-87b7-469e-8c4a-e0610d33b2b6",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 262146,
+      "workspace_birth": "1792808397:997694321",
+      "clean_stop": true,
+      "identity_http_status": 200
+    }
+  ],
+  "readiness": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-23cb349ff614638632a4b8783a771b57",
+      "ship": "~zod",
+      "captured_at": "2026-10-24T02:30:06.987097405Z",
+      "pier_inode": 133482,
+      "urb_inode": 133494,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-26bba443706f28ff18822258b1cb7dd5",
+      "ship": "~nec",
+      "captured_at": "2026-10-24T02:30:24.498760084Z",
+      "pier_inode": 262168,
+      "urb_inode": 262180,
+      "reopen_unchanged": true
+    }
+  ],
+  "stops": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-32ecb6d7582f4d2a86a081015c6b7f90",
+      "container_id": "0070df798ef25ab134c73a98d1da514c8c9ac4050fe7dc0a42155cb35c554f86",
+      "started_at": "2026-10-24T02:13:31.863903096Z",
+      "finished_at": "2026-10-24T02:31:52.575443021Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "peer_exits": 0,
+      "original_status": "interrupted",
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "recoveries": [
+    {
+      "instance_id": "vm-zod",
+      "stop_operation_id": "op-32ecb6d7582f4d2a86a081015c6b7f90",
+      "operation_id": "op-6ea4e7f0771b0b7a048fe8c759998ed9",
+      "original_status": "interrupted",
+      "original_phase": "stop-dispatched",
+      "original_unchanged": true,
+      "clean_exit": true,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-zod",
+      "stop_operation_id": "op-42c41600353f541848f2bf333e0f5e9e",
+      "operation_id": "op-d7e19f9cc20c0d5813ef7b443aff100b",
+      "original_status": "succeeded",
+      "original_phase": "stopped",
+      "original_unchanged": true,
+      "clean_exit": true,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "retirements": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-f1fbe643d8434ac52b89702805535116",
+      "container_id": "0070df798ef25ab134c73a98d1da514c8c9ac4050fe7dc0a42155cb35c554f86",
+      "original_receipts_unchanged": true,
+      "historical_retirement_files": 7,
+      "historical_retirement_bytes": 1016860684,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-1a49cc390cbbfbb7cdbc8c5bbfe8c580",
+      "container_id": "b87406c9c66d04915edc5ff61b329934332c0229d8844a1d0a7155afbb0781c7",
+      "original_receipts_unchanged": true,
+      "historical_retirement_files": 7,
+      "historical_retirement_bytes": 1016872972,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "resumes": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-b52844b70981fc75cc154369c314fa82",
+      "container_id": "b87406c9c66d04915edc5ff61b329934332c0229d8844a1d0a7155afbb0781c7",
+      "generation": 2,
+      "ship": "~zod",
+      "original_retirement_unchanged": true,
+      "post_stop_state_files_verified": 0,
+      "post_stop_state_bytes_verified": 0,
+      "replay_unchanged": true,
+      "reopen_unchanged": true,
+      "clean_stop": true
+    },
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-af9e74a4b3f9ca7699088c498dc91ebf",
+      "container_id": "7ffb554a82fc8ea737cfac4f915831c639e52e50c4cbe9c96c456c1a9a095b07",
+      "generation": 3,
+      "ship": "~zod",
+      "original_retirement_unchanged": true,
+      "post_stop_state_files_verified": 7,
+      "post_stop_state_bytes_verified": 1016881164,
+      "replay_unchanged": true,
+      "reopen_unchanged": true,
+      "clean_stop": true
+    }
+  ],
+  "resumed_readiness": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-ab949a79e3c27695f3631bdc8af82f5e",
+      "resume_operation_id": "op-b52844b70981fc75cc154369c314fa82",
+      "container_id": "b87406c9c66d04915edc5ff61b329934332c0229d8844a1d0a7155afbb0781c7",
+      "generation": 2,
+      "ship": "~zod",
+      "replay_unchanged": true,
+      "reopen_unchanged": true,
+      "original_resume_unchanged": true
+    },
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-9e97fb1de16380bf7466936e98bf429a",
+      "resume_operation_id": "op-af9e74a4b3f9ca7699088c498dc91ebf",
+      "container_id": "7ffb554a82fc8ea737cfac4f915831c639e52e50c4cbe9c96c456c1a9a095b07",
+      "generation": 3,
+      "ship": "~zod",
+      "replay_unchanged": true,
+      "reopen_unchanged": true,
+      "original_resume_unchanged": true
+    }
+  ],
+  "current_stops": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-42c41600353f541848f2bf333e0f5e9e",
+      "container_id": "b87406c9c66d04915edc5ff61b329934332c0229d8844a1d0a7155afbb0781c7",
+      "generation": 2,
+      "clean_exit": true,
+      "replay_unchanged": true,
+      "reopen_unchanged": true,
+      "original_history_unchanged": true
+    },
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-b90b062c089b1bd75285b1c914c816b2",
+      "container_id": "7ffb554a82fc8ea737cfac4f915831c639e52e50c4cbe9c96c456c1a9a095b07",
+      "generation": 3,
+      "clean_exit": true,
+      "replay_unchanged": true,
+      "reopen_unchanged": true,
+      "original_history_unchanged": true
+    }
+  ],
+  "member_storage_verified": [
+    {
+      "instance": "vm-nec",
+      "mount": "/srv/urbit/piers/fakeships/vm-nec",
+      "inode": 133440,
+      "birth": "1792807972:168676245",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "nec"
+    },
+    {
+      "instance": "vm-zod",
+      "mount": "/srv/urbit/piers/fakeships/vm-zod",
+      "inode": 133456,
+      "birth": "1792807972:234676248",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "zod"
+    }
+  ],
+  "ship_operations": true,
+  "namespace": {
+    "boot_id": "c49b8246-87b7-469e-8c4a-e0610d33b2b6",
+    "device": 5,
+    "inode": 4026532248
+  },
+  "clean_anchor_stop": true,
+  "returned_ids_journaled": true,
+  "volume_inventory_unchanged": true,
+  "database_receipts_match": true,
+  "repeat_dispatch_refused": true,
+  "reopen_unchanged": true,
+  "scope_inactive": true,
+  "seconds": 1757.56,
+  "result_sha256": "19267f5b08ef43afce86c39639ecec8af01a956784332a20e86a6f9caf6be4be",
+  "database_sha256": "9d065c62f6d7557c3ad5048b81cf153ce0f80b07b1ab197c8045c650764333af",
+  "bridge": "8185bfcf2abd813250f48433c1f6947bd577d58226bfc07133b768d2edbe7a1a",
+  "anchor": "711e77ff43d0a16265816f41bd7ea1946db36d3596d0709f913c0dbbf7450d0b",
+  "engine": "e36ca6f8-4f12-4587-9a64-12aaee1bc94e",
+  "extracted_files_verified": 17,
+  "limits": [
+    "The original peer remains running and sends all eight writes; its final shutdown is fixture cleanup, not a queued Stop after peer changes.",
+    "Both-member restart after unrelated peer changes, namespace replacement through runner, public lifecycle APIs and desktop integration remain."
+  ],
+  "application_recovery": {
+    "passed": true,
+    "target": "~zod",
+    "initial_sender": "~nec",
+    "later_sender": "~nec",
+    "replacements": 2,
+    "writes": 8,
+    "subscriptions": 4,
+    "subscription_snapshots": 12,
+    "initial_logins": 2,
+    "later_logins": 0,
+    "uncertain_writes_replayed": false,
+    "same_original_sessions": true,
+    "queued_updates_survived_twice": true,
+    "private_state_sha256": "a9134abea099cd6f858c9eebe3f8ad1d2e2bd0c1b8b2435bbf9fe1d2ed267dcd",
+    "private_spec_sha256": "a05d56c38321b4ff562fb1bca162a18e00bc5f4025bd136b82a912cc45c28ce7",
+    "fixture_sha256": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f"
+  },
+  "running_peer": {
+    "instance_id": "vm-nec",
+    "container_id": "4ce31c9b03d7bfa22d784475688e5bc76d7a1a86f7b5c3376a7c67841115b435",
+    "pid": 5864,
+    "started_at": "2026-10-24T02:20:26.64289547Z",
+    "phase_snapshots": 4,
+    "unchanged_through_final_receiver_stop": true,
+    "queued_stop_count": 0,
+    "clean_fixture_shutdown": true
+  },
+  "outer_exit": 0,
+  "clean_shutdown": true,
+  "retained_metadata_files": 46,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-running-peer-recovery24",
+  "frozen_source_files": 175,
+  "runtime_seconds": 1757.56
+}

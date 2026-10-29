@@ -1,0 +1,33 @@
+{
+  "memory": "M375",
+  "status": "first-gateway-model-source-qualified",
+  "schema": 42,
+  "schema_changed": false,
+  "checks": {
+    "top_level": 41,
+    "including_subcases": 327,
+    "gateway_including_subcases": 102,
+    "race": true,
+    "vet": true,
+    "log_sha256": "17278405a87ca291edc1ad1e6f823cf385c4a6a8cdddcfa97711ddb993afe4eb"
+  },
+  "source_sha256": {
+    "internal/privatechain/gateway.go": "483bf7d9cfff3dc18a39132ccdf0cc9a92207a443e0e99f6aa7073c60fbe2150",
+    "internal/privatechain/gateway_controller.go": "e236f76bde7661a38aea6b464a7331c35e9a631166e8061137cfa9b74cab7dea",
+    "internal/privatechain/gateway_test.go": "68fa4a2dee40b705064d1c5b78c0f7dd865e4860f5ed0fddc7a6d7c49ef172eb"
+  },
+  "runtime_effects": false,
+  "driver": "inert tests only; concrete runtime adapter not implemented",
+  "persistence": "not yet integrated; future schema migration must retain original42 writer",
+  "public_dispatch_enabled": false,
+  "recovery": "readiness observation only; original attempt remains unchanged and a separate attributed receipt is required",
+  "publication": "model requires exactly the two reviewed IPv4-loopback Eyre ports; M372 runtime evidence covers a replacement gateway only",
+  "supersedes": "M374 pending initializer-model work only; no new runtime or database qualification",
+  "remaining": [
+    "original42 fixture and combined persistence migration",
+    "shared private storage parent provisioning and workspace observation receipt",
+    "concrete first-gateway adapter, including first-start HTTP publication",
+    "retained gateway/member orchestration and public runner integration",
+    "concurrent-project appliance16 runtime after unchanged memory admission"
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "passed": true,
+  "schema": 37,
+  "scope_inactive": true,
+  "seconds": 2123.97,
+  "extracted_files_verified": 17,
+  "result_sha256": "246ac370f9006444aedd3ad2bda13b404a883b6f9cce0159f229374a45cae808",
+  "database_sha256": "5baabf9e35a3157e0de28f5bd41268f10846a5979e3e98f74d2d2051e4d71246",
+  "stops": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-dc13088a5748d805f16f14a475d0214c",
+      "container_id": "17a75dc4e748a4bbf8c8312322bf1690cc873d0a9e930868c2bad9582f246500",
+      "generation": 3,
+      "clean_exit": true,
+      "interrupted_reply": false,
+      "peer_exits": 0
+    },
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-3851894d7830fb29eda2b85fdd02367e",
+      "container_id": "8a23ccc74165dd149d46e9cacd77117cad8ece96a81b358f081b863bc69214f9",
+      "generation": 2,
+      "clean_exit": true,
+      "interrupted_reply": false,
+      "peer_exits": 0
+    },
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-5f43e9cbb9eb29de5535ff0046447b2f",
+      "container_id": "a3d5863d1e81f0fa009106ffa6ba49bcae4ad0486165e939bde17394febbd985",
+      "generation": 1,
+      "clean_exit": true,
+      "interrupted_reply": true,
+      "peer_exits": 0
+    },
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-b8b4195ff1e06ec703e2bb73bce14210",
+      "container_id": "0576cf669a0629d374f4e93f55cf0e29c989ae3da83ddadf197d1450d0ca40b5",
+      "generation": 2,
+      "clean_exit": true,
+      "interrupted_reply": false,
+      "peer_exits": 1
+    },
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-014f8e9e0510f7e115990e0fa3ffa921",
+      "container_id": "2778b9ae76e0e144ffe1c176795a96c5e8068d4c6fe289a3e898ce7e49a46e60",
+      "generation": 1,
+      "clean_exit": true,
+      "interrupted_reply": false,
+      "peer_exits": 0
+    }
+  ],
+  "retirements": 3,
+  "resumes": 3,
+  "current_context_lifecycle": true,
+  "both_final_pier_states_verified": true,
+  "database_mirrors_match": true,
+  "original_history_preserved": true,
+  "application_recovery": {
+    "passed": true,
+    "target": "~zod",
+    "initial_sender": "~nec",
+    "later_sender": "~nec",
+    "receiver_replacements": 2,
+    "sender_replacements": 1,
+    "writes": 12,
+    "subscriptions": 6,
+    "subscription_snapshots": 18,
+    "initial_logins": 2,
+    "later_logins": 0,
+    "uncertain_writes_replayed": false,
+    "same_original_sessions": true,
+    "queued_updates_survived_three_cycles": true,
+    "private_state_sha256": "6d31d4a889b4e5827854c4d367d76a0526489f6de2dcc2b61de630d97eb10278",
+    "private_spec_sha256": "ddb85dbd871c006738aa80bcf2d72f8ba9d9b583719365b550100a4cdb40df9e",
+    "fixture_sha256": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f"
+  },
+  "current_context_readiness": {
+    "passed": true,
+    "members": [
+      {
+        "instance_id": "vm-nec",
+        "operation_id": "op-9d955f64bf5a571eecda0f10c20c6569",
+        "creator_operation_id": "op-8017ff03071e77bc394c070a8bb1499d",
+        "generation": 1,
+        "started_at": "2026-10-24T03:42:57.422550683Z",
+        "original_evidence_unchanged": true
+      },
+      {
+        "instance_id": "vm-zod",
+        "operation_id": "op-e57a2ebb054c1a02b2a2a17deeb08d9d",
+        "creator_operation_id": "op-f6acbb1f3da2555f565385511205ea19",
+        "generation": 3,
+        "started_at": "2026-10-24T03:58:36.39886719Z",
+        "original_evidence_unchanged": true
+      },
+      {
+        "instance_id": "vm-nec",
+        "operation_id": "op-efca98cdb6fa511c96ae3f3288496bf0",
+        "creator_operation_id": "op-796de70e38a4d2670d99984acabe2749",
+        "generation": 2,
+        "started_at": "2026-10-24T04:02:32.446542758Z",
+        "original_evidence_unchanged": true
+      },
+      {
+        "instance_id": "vm-zod",
+        "operation_id": "op-eabbfd7cfa6f3b9dddb60f5fdb27b6d8",
+        "creator_operation_id": "op-f6acbb1f3da2555f565385511205ea19",
+        "generation": 3,
+        "started_at": "2026-10-24T03:58:36.39886719Z",
+        "original_evidence_unchanged": true
+      }
+    ],
+    "database_mirrors_match": true
+  },
+  "receiver_continuity": {
+    "container_id": "17a75dc4e748a4bbf8c8312322bf1690cc873d0a9e930868c2bad9582f246500",
+    "pid": 16719,
+    "started_at": "2026-10-24T03:58:36.39886719Z",
+    "unchanged_through_sender_replacement": true
+  },
+  "limits": [
+    "Fresh disposable fakes in a no-NIC VM only.",
+    "Public lifecycle APIs, anchor recovery and desktop integration remain separate."
+  ],
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-current-context-lifecycle26"
+}

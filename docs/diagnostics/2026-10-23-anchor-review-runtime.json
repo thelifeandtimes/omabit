@@ -1,0 +1,155 @@
+{
+  "passed": true,
+  "schema": 37,
+  "scope_inactive": true,
+  "seconds": 2022.2,
+  "extracted_files_verified": 17,
+  "result_sha256": "cc50470170f84a388a5ebabe7d6c930b8a5d89c3ccf491b2708a1509f77865bf",
+  "database_sha256": "b08c50f932a3b84613b41c1e08297695d007355670c6bd5116724865c59b432e",
+  "stops": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-538ffbcee3f9b4b9346837a5ebd14d24",
+      "container_id": "3eb10c54f7cfe080ebe74d8fe3735e653714a8567024e42dfa6585de353b466e",
+      "generation": 2,
+      "clean_exit": true,
+      "interrupted_reply": false,
+      "peer_exits": 0
+    },
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-98adf9ded4e672df2709776d4fb7ed6a",
+      "container_id": "d5af19984971c5bd5227b46f6afefb2eb294e3b772dabec220753987af47c2cb",
+      "generation": 1,
+      "clean_exit": true,
+      "interrupted_reply": true,
+      "peer_exits": 0
+    },
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-b654315666ea17631e88a4ede082323b",
+      "container_id": "4806b4b894fbd075b1567d6d8f632f63a61ae9f5d932c24a6a775979c8c2fe8d",
+      "generation": 1,
+      "clean_exit": true,
+      "interrupted_reply": false,
+      "peer_exits": 0
+    }
+  ],
+  "retirements": 3,
+  "resumes": 3,
+  "current_context_sender_replacement": true,
+  "final_stops_fixture_only": true,
+  "both_final_pier_states_verified": true,
+  "database_mirrors_match": true,
+  "original_history_preserved": true,
+  "application_recovery": {
+    "passed": true,
+    "target": "~zod",
+    "initial_sender": "~nec",
+    "later_sender": "~nec",
+    "receiver_replacements": 2,
+    "sender_replacements": 1,
+    "writes": 12,
+    "subscriptions": 6,
+    "subscription_snapshots": 18,
+    "initial_logins": 2,
+    "later_logins": 0,
+    "uncertain_writes_replayed": false,
+    "same_original_sessions": true,
+    "queued_updates_survived_three_cycles": true,
+    "private_state_sha256": "5e34ad67121c73f093427089fb5b4460887271286333c60267429e3892f8dccb",
+    "private_spec_sha256": "c56a4461e25bfc795e83e2696ac4cd2c69f1289564011909fbb80dcee0b9b572",
+    "fixture_sha256": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+    "transport": "published-loopback"
+  },
+  "current_context_readiness": {
+    "passed": true,
+    "members": [
+      {
+        "instance_id": "vm-nec",
+        "operation_id": "op-0c0057acd974906f82967d4ad1dd66ed",
+        "creator_operation_id": "op-241724ab55d32fddc4b0d1ab4c2b5cdd",
+        "generation": 1,
+        "started_at": "2026-10-24T06:01:50.565790007Z",
+        "original_evidence_unchanged": true
+      },
+      {
+        "instance_id": "vm-zod",
+        "operation_id": "op-0bb39255d3e6f3d4f5cfaafc1207067c",
+        "creator_operation_id": "op-4daea49e1473cdfd0970302f18bdc00f",
+        "generation": 3,
+        "started_at": "2026-10-24T06:17:22.271553498Z",
+        "original_evidence_unchanged": true
+      },
+      {
+        "instance_id": "vm-nec",
+        "operation_id": "op-1f7afdb6b81e1635ce9a2401eedd256c",
+        "creator_operation_id": "op-51f4da8959f9dd06aece8b3305d5ca7a",
+        "generation": 2,
+        "started_at": "2026-10-24T06:21:01.209849438Z",
+        "original_evidence_unchanged": true
+      },
+      {
+        "instance_id": "vm-zod",
+        "operation_id": "op-490516bd55e8b46ce94bb75f1a0b754c",
+        "creator_operation_id": "op-4daea49e1473cdfd0970302f18bdc00f",
+        "generation": 3,
+        "started_at": "2026-10-24T06:17:22.271553498Z",
+        "original_evidence_unchanged": true
+      }
+    ],
+    "database_mirrors_match": true
+  },
+  "receiver_continuity": {
+    "container_id": "48a1f705ac1a46e1b912e9cba7bc5f9350df2a33d54cc4fc1b2a8301f8cc9c39",
+    "pid": 15708,
+    "started_at": "2026-10-24T06:17:22.271553498Z",
+    "unchanged_through_sender_replacement": true
+  },
+  "anchor_recovery_review": {
+    "passed": true,
+    "states": [
+      "anchor-unavailable",
+      "namespace-changed"
+    ],
+    "old_namespace": {
+      "boot_id": "d61ee6ab-1ed1-49aa-8d1e-bbc19330512f",
+      "device": 5,
+      "inode": 4026532248
+    },
+    "observed_namespace": {
+      "boot_id": "d61ee6ab-1ed1-49aa-8d1e-bbc19330512f",
+      "device": 5,
+      "inode": 4026532307
+    },
+    "members_and_piers_unchanged": true,
+    "original_history_unchanged": true,
+    "mutation_authority": false,
+    "coordinated_recovery_qualified": false
+  },
+  "limits": [
+    "Fresh disposable fakes in a no-NIC VM only.",
+    "Final member shutdown is exact-ID fixture cleanup.",
+    "Coordinated anchor recovery and public lifecycle APIs remain separate."
+  ],
+  "restarted_anchor_timestamps": {
+    "retained_finished_at": "2026-10-24T06:22:55.772827635Z",
+    "current_started_at": "2026-10-24T06:23:09.119423566Z"
+  },
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-review29",
+  "metadata_files_retained": 46,
+  "resumed_readiness_durations": [
+    {
+      "ship": "~zod",
+      "seconds": 14.395435
+    },
+    {
+      "ship": "~zod",
+      "seconds": 14.262969
+    },
+    {
+      "ship": "~nec",
+      "seconds": 15.239114
+    }
+  ]
+}

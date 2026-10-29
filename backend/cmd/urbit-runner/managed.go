@@ -16,6 +16,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/localrpc"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/managed"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
@@ -101,11 +102,15 @@ Interrupted work is recorded for reconciliation, never blindly re-executed.
 	if err := os.Chmod(host.Socket, os.ModeSticky|0600); err != nil {
 		return fail(err, 1)
 	}
+	keys := access.DefaultKeys
+	if ownerhost.Development() {
+		keys = ""
+	} // No production SSH grants in the dev runner.
 	var runner *managed.Server
 	if comets {
-		runner, err = managed.NewDevelopmentService(host.Directory, access.DefaultKeys, resume)
+		runner, err = managed.NewDevelopmentService(host.Directory, keys, resume)
 	} else {
-		runner, err = managed.NewWithAccess(host.Directory, access.DefaultKeys)
+		runner, err = managed.NewWithAccess(host.Directory, keys)
 	}
 	if err != nil {
 		return fail(err, 1)

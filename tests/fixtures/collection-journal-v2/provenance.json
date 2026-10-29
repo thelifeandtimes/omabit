@@ -1,0 +1,10 @@
+{
+  "memory": "M303",
+  "format": 2,
+  "source": "original unchanged writer and actual connected recovery journal",
+  "sha256": {
+    "writer.py": "d7ff32c615eae8003930172f719f581c214c1c0289c1ce815434a3c25cf898e3",
+    "coordinator.py": "d4705c9d796d1158812e76295c320a54b0a257feb461f5928109074345eafa9d",
+    "journal.json": "6b0a0250204267cd880e4c53bef49bd5cc9a4f7588c6f0cc1973607fc8c2749f"
+  }
+}

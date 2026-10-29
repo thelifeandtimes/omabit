@@ -70,3 +70,21 @@ func TestShipEnrollmentAndSessionCAS(t *testing.T) {
 		t.Fatal("enrollment contains secret fields")
 	}
 }
+
+func TestHostedIdentityIsUniqueButManagedFakesRemainIndependent(t *testing.T) {
+	a := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, "~zod") }))
+	defer a.Close()
+	b := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { fmt.Fprint(w, "~zod") }))
+	defer b.Close()
+	r := registry(t)
+	ctx := context.Background()
+	if _, err := r.EnrollHostedShip(ctx, "zod", a.URL, "~zod", "file"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := r.EnrollHostedShip(ctx, "alias", b.URL, "~zod", "file"); !errors.Is(err, ErrShipConflict) {
+		t.Fatal("duplicate hosted identity", err)
+	}
+	if _, err := r.EnrollShip(ctx, "fleet-fixture", b.URL, "~zod", "file"); err != nil {
+		t.Fatal("managed fake identity incorrectly global", err)
+	}
+}

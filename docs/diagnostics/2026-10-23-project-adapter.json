@@ -1,0 +1,27 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-project-adapter",
+  "source_sha256": {
+    "internal/runtimequalify/project_resource_contract_linux.go": "5947a032999635468ab4bb34674da5af951820449932ab0a74504971908f5563",
+    "internal/runtimequalify/project_resource_contract_linux_test.go": "e11db94712c6604668a2fa0eca607f9f8bfbf964e5ff48f51da517f57415a38b",
+    "internal/runtimequalify/project_engine_linux.go": "77faf4e9d1215afcdb8a126b55e31cf110e74261e41720a2bce6a48c59f41a2e",
+    "internal/runtimequalify/project_engine_linux_test.go": "26b0b014d15ffee09ca79e1b590b4efdfbb9f01c039cf08146984c302185a3f2",
+    "internal/runtimequalify/project_session_linux.go": "c2695ec84041aeb127bd1c09456263679b1f052eced5bf127d3f6c9553630da1",
+    "internal/runtimequalify/project_session_linux_test.go": "0d0f9dba8989897504f61773cc82d793a88081cda939b81b040ad51e53a90a3d",
+    "internal/runtimequalify/docker_linux.go": "1771e227c87cd867077585e8d20c58c2dc39d98b523b3756d1e6a3fbbb01b75c"
+  },
+  "logs": {
+    "omabit-project-contract-tests.log": "62092fac351e17b1488e518cf2d8cef2b472390c24f9aee698f5c606b7d55625",
+    "omabit-project-docker-adapter-tests.log": "31b409492ae4a3ba8cd5e2a220e413864b05095640a2f4a9128d2f2a9cd4e5a1",
+    "omabit-project-session-tests.log": "7cdf381d11070dee38c09e09970269eb03f3a4ada8dbf390a91359e4038291e7",
+    "omabit-project-adapter-regression.log": "6b425ecf76e9175647062fa9265bc013fb2d6f51f4845fc8706ca532302340ff",
+    "omabit-project-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "No server scheduling or RPC capability.",
+    "Private-engine fresh metadata setup and fixed bridge/stopped-anchor adapter tested with inert Docker only.",
+    "Actual Docker tmpfs/image-volume behavior requires VM qualification.",
+    "Member launch, readiness and recovery remain unfinished."
+  ]
+}

@@ -1,0 +1,243 @@
+{
+  "guest_evidence": {
+    "pass-20261027-managed-auth.json": [
+      {
+        "plugin": "thelifeandtimes.urbit-theme.review",
+        "phase": "connected",
+        "code": "ok"
+      },
+      {
+        "plugin": "urbit.dms.review",
+        "phase": "connected",
+        "code": "ok"
+      }
+    ],
+    "pass-20261027-resource-restart.json": {
+      "ship": "~zod",
+      "existing_restart": "passed",
+      "new_minimum_ram_mib": 16384,
+      "existing_minimum_ram_mib": 1024,
+      "existing_recommended_ram_mib": 16384,
+      "guest_ram_gib": 10,
+      "recommendation_did_not_gate": true
+    },
+    "pass-20261027-pair-readiness-recheck.json": [
+      {
+        "args": [
+          "project-operate",
+          "project-b63ef016b61ef21e998197f8b9e1b794",
+          "observe",
+          "--member",
+          "review-pair-nec",
+          "--revision",
+          "1",
+          "--review-digest",
+          "fc10a27c024ed40ea9703d4de01ce5303f494ac3d5c87d5fc3206784e177209f",
+          "--request-id",
+          "review-readiness-recheck-review-pair-nec",
+          "--confirm-action"
+        ],
+        "exit": 0,
+        "result": {
+          "schema_version": 1,
+          "runner_id": "runner-da6d34e3b8a2175531838e6b90dfe759",
+          "mode": "development-managed",
+          "review_digest": "fc10a27c024ed40ea9703d4de01ce5303f494ac3d5c87d5fc3206784e177209f",
+          "operation": {
+            "project_id": "project-b63ef016b61ef21e998197f8b9e1b794",
+            "id": "op-aba861830d41d7e45b07937a6cc4816e",
+            "request_id": "review-readiness-recheck-review-pair-nec",
+            "instance_id": "review-pair-nec",
+            "kind": "observe-project-member",
+            "actor": "local-uid:1000",
+            "status": "queued",
+            "config_revision": 1,
+            "created_at": "2026-10-28T05:21:33.142786995Z"
+          }
+        }
+      },
+      {
+        "args": [
+          "project-operate",
+          "project-b63ef016b61ef21e998197f8b9e1b794",
+          "observe",
+          "--member",
+          "review-pair-zod",
+          "--revision",
+          "1",
+          "--review-digest",
+          "fc10a27c024ed40ea9703d4de01ce5303f494ac3d5c87d5fc3206784e177209f",
+          "--request-id",
+          "review-readiness-recheck-review-pair-zod",
+          "--confirm-action"
+        ],
+        "exit": 0,
+        "result": {
+          "schema_version": 1,
+          "runner_id": "runner-da6d34e3b8a2175531838e6b90dfe759",
+          "mode": "development-managed",
+          "review_digest": "fc10a27c024ed40ea9703d4de01ce5303f494ac3d5c87d5fc3206784e177209f",
+          "operation": {
+            "project_id": "project-b63ef016b61ef21e998197f8b9e1b794",
+            "id": "op-be86bbe25082e7b9a0dd495c32da95bd",
+            "request_id": "review-readiness-recheck-review-pair-zod",
+            "instance_id": "review-pair-zod",
+            "kind": "observe-project-member",
+            "actor": "local-uid:1000",
+            "status": "queued",
+            "config_revision": 1,
+            "created_at": "2026-10-28T05:21:33.808785255Z"
+          }
+        }
+      }
+    ],
+    "source-inputs.json": {
+      "omabit": {
+        "source": "/home/thelifeandtimes/repos/omabit-platform-overhaul/plugins/omabit",
+        "files": {
+          "ActionButton.qml": "1fe619647db47a3f26f357abd6d2f51361fcdaa157d2671e4b56f9c9c6bd46a2",
+          "ActivityPane.qml": "1f267209c5db858e00e60de20592d345db91ff9707b83c58d443b7404eb96cd4",
+          "ApplicationsPane.qml": "527b24275532d8d9b0d57cf905148d7c44bbe4d53376938a0d38d40f6824be21",
+          "BootstrapSelector.qml": "5eccc75a377785faab20a904cb515c6fe5acad63d06943f7470f189d1ebd90c4",
+          "Card.qml": "3a769d746ec65ee8ed782a5775bcb83dbc8e88d8d923ab1bc2345e091324122f",
+          "CardTitle.qml": "b36a47d231f30d4d1067acb9a751dba5894d2262bd10d5e8d33f19fe98719211",
+          "CheckField.qml": "5c19c38957a14a5c9e29e539249da786724331ec1895951511901e4039e45005",
+          "ConnectivityStatus.qml": "7ca834f95ed8898a2ceaa7e00cf8f854b55a4f5bc3186c1f95e36bf5c2c8f982",
+          "CopyCodeButton.qml": "6185d2cee610e3dce022446eddbaf8407d5cfa243b160f6d5bdc80bc2048abe8",
+          "DESKTOP.json": "09f13dbbfe8735fd8e15d156fa4be176a29d25e257f38caf0911dc0c68d930dd",
+          "DeletePierPane.qml": "48360f25a69237858a49e4adb86709780c78cc0a9c66d8bbf67dba7da8e9a9e2",
+          "Design.qml": "f74d2e85434db73620dd7522519c0eee38f0b080c38f83475781971617c5fda9",
+          "DesktopDiagnostics.qml": "3de24dbc388b5d54ed79350f824889b9d93125e833f5af512251f437ab263b2e",
+          "EditableSelectField.qml": "a08ca998509e249c8b4a7bf5d16993304ab521956313626b6f97b7a44a33f5a9",
+          "Field.qml": "041fc91abab79fc20bbefa32eba2d76335bca719075268edc79283289d0cb173",
+          "Hint.qml": "ab6bd48806bd1de1a041c96b15e22ca74553c88885a409469f9c6b789e69863a",
+          "HostCompatibility.qml": "f70c2a0903612182f8f29f21bbe71e867ac320d0d0041571df6f78c20cf23e43",
+          "HostMovePane.qml": "fa7b76fa58c647aa65e089298e77a77c48e1fbbd8e0732835aaff823436c9caf",
+          "HostSetupPane.qml": "921f1877e04237896e0d3c796e98358ef3d57b1b60c6421dd11ce94ae1171079",
+          "ImportPane.qml": "abdf55aebe02e71e5c5038bd87bfaa3195fbbefa06348014c171fd61fe006381",
+          "ImportRecoveryPane.qml": "782bdee1263ca5895d0814df1b5e8e8a43037532a3be797b11c1e9075b95a48a",
+          "KeyBootPane.qml": "b399519d5d51a65f474231fa53641b30e37714ce532e0738792fefdf337e472a",
+          "Label.qml": "369379e01b4adf9fa132c21a65089aca983a7918875f321387fd276c170db46f",
+          "MachineUsePane.qml": "d6c5da7e2cdc5cab654263d6fe77d63608f740fd7cd12a4f3aedd8d3c6eb1392",
+          "MaintenancePane.qml": "757f0a167e04d112d7c36d82f167a3f1f1ef43f1153ef0a6ab9123070a12587c",
+          "Model.js": "5b1eed084552d796c2f0a2047e20e00c32f11434f5b8182dc584c1d6bf8bc91d",
+          "MonitorWindow.qml": "b61926b7168d532fd9d99412352de4bfe5e9e02a44d96bcfd75f67934e259a19",
+          "Panel.qml": "ca99dc5b69450359b9a0c72e8e6d5ecf0f5960b7df9b0b26cdffb517f14c2849",
+          "PierImportPane.qml": "c5f0cff36e005d95faac9dacf87881a8990e05c1ddb96c91a39a2e491c89ea0e",
+          "README.md": "9770c33a0c1786c399267b3b88c95194ed88f5ffba97ada0d5c1be3c6d33f56c",
+          "RegistrationPane.qml": "59c0e8c688d7ca0731e4019202a65e966edb824a834b4f8ae7a2da5f1a5d404e",
+          "RemoteRunnerPane.qml": "ea4f92660c77bf67e404fe8c72e93acdec017311d9b07e1f2ee95b3b064ffdc1",
+          "ResourceChart.qml": "75759099074de422e4266b56faddb92e582e993a2fc66bef7192b0f7a542c888",
+          "RoutineCard.qml": "f2e9f3dbcc1b5fd0b145bbd74ca832d329730608ab6f668252419651edeb6430",
+          "RoutinePane.qml": "8b00d7b0da0e82b1cd51629bcb0c9de0ec58d0e7cd0ef87b13b2ba6077d1729a",
+          "RuntimeDetails.qml": "a70fe9daadccb7456cfa4c059cd72d873c138ae6d6b91257707228affa37fb90",
+          "RuntimePane.qml": "ff805565cc22dfec5bb1c2192b6f93177c2a4f2482ba453352e8d2a1b4d56e7a",
+          "RuntimeSettingsFields.qml": "d0cddae06b1e6b00284b66df0afccefe546c662dda0dff352e6fc7bc40f9d50f",
+          "SSHHostField.qml": "f9105ae93e152a3ed95871e13243ee3e4a080b81bd36d305cd92b26a79aedd66",
+          "SelectField.qml": "245b62fa5831d44c27145180cb2760a106aa37098e7aca1449e8f321b796f71b",
+          "Service.qml": "1f87677e41d0ec8dfb44391e4d8498666aac42d98a5ac4ca124d06ce885d3cda",
+          "SetupPane.qml": "e0862102847e5b9b197f6d594a21bd67461e526bd4e06f21fbfe5c04a40c4ab2",
+          "ShipContext.qml": "6b8667bb638fb0f61e1fb6a0e0572df6a641a2516f571684e00df5e2b81dc5de",
+          "ShipName.qml": "d4a5d05375d27d54b20a8f10f8c966f5b853b15372749b60add6293c88924aee",
+          "ShipPortsPane.qml": "409de9891247f83339f0e40c07630145f28bca0907d15982cbd9dd2733ec1052",
+          "StatusBadge.qml": "d650a37844caf11dd76358b200b7ebce1a76e6a0d121ed337c48786b0ee44191",
+          "StorageLocationSelector.qml": "f99a7935cfefe61754089667a24b52ac15e362cfc731168ffe64c324d78e4bb2",
+          "StoragePane.qml": "bea3bec64a14caf6595fbaa51c60bcd1cde4b428ed77a27543ee57f098f04067",
+          "StorageRootsPane.qml": "06eb3a3ac85d466d632291f2c65c92963133b6a8aa69faa1dae099a26e18e60c",
+          "SwitchField.qml": "f5f1d5bdf91fa586d31b8e360453ee5ef09a157d7e0b77fd6e9cff14f87a62f0",
+          "Toast.qml": "3dedc1962ccafa3719069b63eff335262c1ac253e838948e849642214a71d9ae",
+          "WindowActivation.qml": "e1172963ddff4fede991201c9e1b88a2bccd04e2f2caa24fb83e7e6bac141daf",
+          "manifest.json": "0258120ac4e08dcf73af9b02d92b11e47589a2e19e0429a2522c000b4bbfbe4e",
+          "omabit.svg": "05bfb1449ec8194d7ccb6ab63b1799b927f5e64a272791fb09c34555078b9b99",
+          "qmldir": "f4b50c2c336e164b078ac77a5ebc7e1f53caa9389aba8eef1713e3559c22f206",
+          "ssh-hosts.py": "7aaef16b50a35ec717a8f9cfcffbdf13f04228b7b549391119008f2b2c877222",
+          "ApplicationConnections.qml": "0a55a6584360753206fdc11e4696ec95226f7477fd699809c8f3e8ad6a67640b",
+          "ImportRestoration.qml": "e999f2852130ba43e7807c16eb4d0817f3967c1e35a68691a63375acb6f4bcf4",
+          "ImportRestorePane.qml": "1853416ba52bd4f43e20325d32b491fd0389047fb424cacf01eee5ea32a2dd9a",
+          "ProjectNetworks.qml": "73d7454df25a1e8f48968044c867e3faa846762db7462d4f4678cc859116a782",
+          "ProjectNetworksPane.qml": "70ee27935073d377b825488a30c1d877dd885203ec3aa02c2073639ce1188439",
+          "ReaderLifecycle.qml": "e70434cd90ba394d39ce67860ba996a573bac04e6d26efdf6ddd175ec9a79f3e",
+          "HostedUrbitsPane.qml": "1a18edcc3258d2b2933fdf6b4259788677e6d51ba65c8947166df8c6fde8ddfd",
+          "ProjectCreation.qml": "fd50a894ac908dc6671ccaf18a5e5d86394e059b1d28c1ce6c3e624ce139d7fc",
+          "ProjectCreatePane.qml": "7fe5c6b4d5ad8502e5f38f5ff26a86278f39591e57e14b11b6a23694f34e2079"
+        },
+        "guest_plugin_id": "thelifeandtimes.omabit.review"
+      },
+      "theme": {
+        "source": "/home/thelifeandtimes/repos/omarchy-urbit-theme-auth",
+        "files": {
+          "CONTRACT.md": "10aadb4edf0abd5875a6ec8b3024592f94cde6b775fcf6f03aec890b01bc48f0",
+          "LICENSE": "94661480f13e336442f3a2a2a0895f391d31def0565af803528bc3f23fc09869",
+          "Model.js": "c7baeaee6af8b4cc6264939eb9b7f18757b4ac650d9d43ae9a91488cc94a9ff0",
+          "PROFILE.md": "f64c3867be74dfc25d05468dec423a9d1590687a01aed27907ca08ab0a1ea1bb",
+          "Panel.qml": "a4719dc764eb5b5a1ea26e7cc310b9e2d309d49361dd2dced8914229d0089413",
+          "README.md": "30debc0da889b7292ac97826375a43619786539af3fa8ce307e5ef4420c03c30",
+          "Service.qml": "e8ec65bec84d387349e0a21b5cc44dfa2d34f9f30a1a013e213b803605c25096",
+          "ThemeIcon.qml": "4e6c0f7dce3613d4b5319c0f5703871c1e9e24f9aa25a8429f72c79313e0a2e6",
+          "manifest.json": "c043871d7f98384f25fdadc921a7ffe603a551265609b5e5faf0b0e54f678d0e",
+          "APPLICATION_CONNECTIONS.md": "a03d8202c8a55d121398139486454d9218b071569f00c3c58417607443ebe509",
+          "application-connection.json": "fa5aee6b8c55d0bb069ee472391e2e9d9ebb4cdfdc0ee5f6a837c00528a1444a",
+          "client/eyre.py": "95c8e677258e152014538f371ad1da81a4ff3bd1a2e235da6c70e63603802a00",
+          "client/main.py": "8fd5ac9d92965254226ae27320c461d6bc5dcf051a499634bab00af84276bdcc",
+          "client/native.py": "ca240086e8220cd38134c6d2a2ec1ab7f05096f209e96925bc0f13174e419e60",
+          "client/profile.py": "2a3e0de6fb65e4d9517c21b6e20b1495deedf9774b2c021354ea1dbf3ae8c977",
+          "client/support.py": "74d155fab628a9e4239e4002df21eae7f8e3c591159ab1d6b6e49c6046062cd0",
+          "client/sync.py": "8a0fdb2b6bab03d451ec2c125096e298e5b0ca66ed493ecba695fb6f43aebd71",
+          "client/instance.py": "127511e78115b906972bd92d9ffeaa4415336703d9c8602ebcaacc16171456e7",
+          "client/connection_offer.py": "2906a76e455b66ea6655d01f5ba4d2d48d8d99825f76b7a30534bad5b0080299",
+          "client/application_connection.py": "29566bd2b14de465a73e41d0c8d55f17c8ebcc02c89963bc54fb34a7de71c688",
+          "client/connection_journal.py": "05e46c63b8067852fce6b3dadfaca5a7a604d66567b5df9fba15005f6f27e13b",
+          "client/appearance.py": "b503707ae09d14660aa5f1e94e44b4ac45764addb218cf531b9b6cbbe6f4cde7",
+          "client/checkpoints.py": "a27fd84bdd765ea24b9d27a135859fed77c88dd12fcc13230f96abcb30f5a9b6",
+          "client/transport_journal.py": "540c52b136be24f5c57c81e5513858500c605fabfd0a5f760408093fb868d82c",
+          "hooks/omarchy-urbit-font": "0eb703b597f3d2de67e6682f072bc5186aec67eb83743bbc1271cd96c01cf0aa",
+          "hooks/omarchy-urbit-theme": "7cbc3872beeeeae25e76e6d4284e28bec1ca032c9009709630bd0a4e396d0d2a",
+          "scripts/check-desktop.py": "37ad47ff505b8873010170aee378544a0a2c6c3d140b299c083a7e0aefd19a5c",
+          "scripts/install.py": "e7c12f9b9d8686f42d7693178b9ba728e1666859f1c9165520eaa08f3681096c",
+          "scripts/package.py": "9e5c5b85c28e32267dd3eb98806dc98a6b53197c5282f96d2d3d0fdc04cfcf50"
+        },
+        "guest_plugin_id": "thelifeandtimes.urbit-theme.review"
+      },
+      "dms": {
+        "source": "/home/thelifeandtimes/repos/omarchy-urbit-dms-auth",
+        "files": {
+          "BarWidget.qml": "904f8717a5abec92683bb494c5c3c5cad0061eb6c8edd036facf33b7931dc4b8",
+          "ChatMark.qml": "bfb0627b1e68abe36d503231699e807976ceae836efcffe89a4ab5c865f2bef9",
+          "Dms.qml": "9bba3646374b044edfc5461a3c00da3b7085da91745d3b99ca2a69f0e0a1b561",
+          "Identity.qml": "5b9301fa2e662bf4de6b9f04d59317fa93148475969ca3029d7a44cdc2161b15",
+          "NameModeSwitch.qml": "48d35e7ef5e13495c2e625a864c412728bae16b61fc16df08c3b46791aeaad77",
+          "README.md": "da4f18cf300950185eed50b442d446d927c649863e6890b5b11ad0e72221123c",
+          "RecentPanel.qml": "52ff6bd5037e93e8e87fb9595f2c473a054adfc6136d3f2f837aec5a6cc2582f",
+          "Search.js": "267a146c3e78d04cab921be3b706fc71ea9541a52612b7ba084777f59fe4388d",
+          "State.qml": "ed2bfc65e10ac74464bed2ada7807a90975d711b8e8ea1ba4cd89c7f3ecfb8b2",
+          "Time.js": "4eee08463d6d20bdd80b7c6a4d1a38b1c080764f24b1be3b8b1bc5ed12da27df",
+          "bridge.py": "c8afe9c7f5bd0bfff1d9ed5e8fd3c1694757e700b7c02c107504ef214fdfb9c8",
+          "browser_session.py": "e142b38b11a4cb0be77bcf7204aa94126227808cddc4a57f43ea40381e7c8516",
+          "external_apps.py": "316dcde031e25b8e10a5d614893ba6823b00e03af7cccd3b5efc1321adddb048",
+          "launcher_entry.py": "b9b86f1f9d9a6494dead98ceefba4276187e6f0af49216a9464ea0e46d898105",
+          "manifest.json": "e9c355d8db66f77bf5ad8b70344bc8884c79bc358acd52a51f4305972d32a23e",
+          "open_web.py": "dfa4892ba56b029f7919855bf2125ba3ad6b70f1ae66911d6f79a7b97d626c61",
+          "qmldir": "a63e3838fb2aa7de61984a11173807b4c28fdfb155a7bae639f38fbaaa4743a1",
+          "session_store.py": "c8a6a7cf0c3781c64a5d7f0bf4a5aadb650a731747bcb6e97ee414dcd4f5b6e2",
+          "instance.py": "f7c739b991ffd274226e587316e6464fed59d14dffcb2d20a5dc953ceb5fd1bd",
+          "connection_offer.py": "2906a76e455b66ea6655d01f5ba4d2d48d8d99825f76b7a30534bad5b0080299",
+          "application_connection.py": "746c22b89cf004f328a200a590409347b55cbfc97f702ae346d23f5d64dc0240",
+          "eyre_session.py": "97c065eb44f447526e9b59fe978c17b8bf5bf27b3636d59b5cebfa73dd5934f5",
+          "APPLICATION_CONNECTIONS.md": "79931e3cb7a8b0e4e2d47a4a4d8d793159448a7db9f24f7e14b98fba4c7b43b4",
+          "connection_journal.py": "05e46c63b8067852fce6b3dadfaca5a7a604d66567b5df9fba15005f6f27e13b",
+          "application-connection.json": "a364a1c525649dd66c35d44178cdf7595005f3636a25865259eece20e6a7f0c8",
+          "Instance.js": "94099b4ec3ea6a254953443e84b32f83868f7bfb6856ad3d4d77bb79bb72f9c2",
+          "outbound_journal.py": "bc25ef329b421e4160c4df228d55fa753e6532927573cdc6acd779c820bf46a6",
+          "effects_journal.py": "ebd59b819664bad96d0aebcf88cde929691c5750e519501e2cbb01a4cf7cf942",
+          "transport_journal.py": "901b2596c723b1f6d8031f2a74ede007ab113132ae7abb616a856b3010ed5406",
+          "testdata/connection_journal_v1.py": "dee78b8b48808e6d74b5c4f2c9edf5af17da466f749ea073261e45921ece3820"
+        },
+        "guest_plugin_id": "urbit.dms.review"
+      }
+    }
+  },
+  "installed_binaries": {
+    "urbit-runner": "feae153cf766477fbb8feaabfe4bd51a84d8bacf4b4024976280c265355bd3d6",
+    "urbit-collector": "7ff44c93d617df5b0a9195f048b70b4f3cee239d37d74ba8ce5a202e24977e6f"
+  }
+}

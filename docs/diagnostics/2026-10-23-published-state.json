@@ -1,0 +1,49 @@
+{
+  "verified": true,
+  "direct_published_eyre_requests": 50,
+  "ipv6_refusals": 2,
+  "administrative_bridge_refusals": 2,
+  "independent_sessions_revoked": 2,
+  "passed": true,
+  "result_sha256": "41f06c700401cb2715d87263ecb91c504f03ec0dac899229702371102c1bc1cd",
+  "seconds": 1310.48,
+  "subscription_revisions": [
+    0,
+    1,
+    2,
+    3,
+    3,
+    4
+  ],
+  "subscription_cursors": [
+    1,
+    2,
+    3,
+    4,
+    1,
+    2
+  ],
+  "writes": 4,
+  "observations": 13,
+  "same_pier_container_replacement": true,
+  "sessions_retained": true,
+  "both_channels_deleted": true,
+  "clean_stops": [
+    "nec",
+    "nec",
+    "zod"
+  ],
+  "scope_inactive": true,
+  "original_artifacts_and_disks_verified": true,
+  "extracted_files_verified": 16,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-published01",
+  "run": "/tmp/omabit-import-guest-run-20261023-01",
+  "appliance": "/tmp/omabit-import-appliance-20261023-01",
+  "isolation": "no-NIC QEMU, private rootless Docker; no host publications",
+  "limitations": [
+    "Single project on ordinary bridge; no published duplicate-project gate yet",
+    "Same-pier member replacement, not anchor replacement",
+    "Qualification harness, not runner-managed project lifecycle",
+    "No external reachability, hostile-member isolation or power-loss claim"
+  ]
+}

@@ -40,7 +40,10 @@ func TreeReview(ctx context.Context, path string, ownerMode ...bool) (string, in
 	count, files := 0, 0
 	var bytes int64
 	type linkKey struct{ device, inode uint64 }
-	type links struct{ expected, seen uint64 }
+	type links struct {
+		expected, seen uint64
+		firstPath      string
+	}
 	docked := map[linkKey]links{}
 	err = filepath.WalkDir(path, func(p string, e os.DirEntry, err error) error {
 		if err != nil {
@@ -53,6 +56,11 @@ func TreeReview(ctx context.Context, path string, ownerMode ...bool) (string, in
 		if err != nil {
 			return err
 		}
+		refuse := func(reason string) error {
+			// Quote an untrusted filename, and keep the source's absolute path and
+			// file contents out of diagnostics returned to collectors.
+			return fmt.Errorf("pier entry %q: %s", rel, reason)
+		}
 		count++
 		if count > 8192 || len(strings.Split(rel, "/")) > 32 {
 			return errors.New("pier tree exceeds entry/depth limit")
@@ -64,23 +72,39 @@ func TreeReview(ctx context.Context, path string, ownerMode ...bool) (string, in
 		st, ok := i.Sys().(*syscall.Stat_t)
 		var mounted unix.Statx_t
 		if err := unix.Statx(unix.AT_FDCWD, p, unix.AT_SYMLINK_NOFOLLOW, unix.STATX_MNT_ID, &mounted); err != nil || mounted.Mask&unix.STATX_MNT_ID == 0 || mounted.Mnt_id != baseMount.Mnt_id {
-			return errors.New("nested mount in pier tree")
+			return refuse("nested mount or unavailable filesystem mount identity")
 		}
 		badWrite := i.Mode().Perm()&0022 != 0
 		if workspace && !statePath(p) {
 			badWrite = i.Mode().Perm()&0002 != 0
 		}
-		if !ok || st.Uid != uint32(os.Geteuid()) || st.Dev != device || badWrite || !i.IsDir() && (!i.Mode().IsRegular() || st.Nlink != 1 && !InertDockedFile(rel)) {
-			return errors.New("pier contains foreign, linked, mounted, special or unsupported writable files; review its ownership and permissions")
+		switch {
+		case !ok:
+			return refuse("filesystem ownership metadata is unavailable")
+		case st.Uid != uint32(os.Geteuid()):
+			return refuse(fmt.Sprintf("owned by UID %d; runner UID is %d", st.Uid, os.Geteuid()))
+		case st.Dev != device:
+			return refuse("entry is on a different filesystem from the pier")
+		case i.Mode()&os.ModeSymlink != 0:
+			return refuse("symbolic link is not supported")
+		case !i.IsDir() && !i.Mode().IsRegular():
+			return refuse("special file is not supported; only directories and regular files are accepted")
+		case badWrite:
+			return refuse(fmt.Sprintf("mode %04o permits unsupported group or world writes; only non-state owner-workspace files may be group writable", i.Mode().Perm()))
+		case !i.IsDir() && st.Nlink != 1 && !InertDockedFile(rel):
+			return refuse(fmt.Sprintf("regular file has %d hard links; only self-contained .run/.bin executable links are supported", st.Nlink))
 		}
 		if !i.IsDir() {
 			if st.Nlink > 1 {
 				key := linkKey{st.Dev, st.Ino}
 				old := docked[key]
 				if old.expected != 0 && old.expected != st.Nlink {
-					return errors.New("docked executable links changed during review")
+					return refuse("docked executable links changed during review")
 				}
-				docked[key] = links{st.Nlink, old.seen + 1}
+				if old.firstPath == "" {
+					old.firstPath = rel
+				}
+				docked[key] = links{st.Nlink, old.seen + 1, old.firstPath}
 			}
 			files++
 			if i.Size() < 0 || i.Size() > 100_000_000_000-bytes {
@@ -93,11 +117,14 @@ func TreeReview(ctx context.Context, path string, ownerMode ...bool) (string, in
 		return nil
 	})
 	if err == nil {
+		var outside string
 		for _, links := range docked {
-			if links.seen != links.expected {
-				err = errors.New("docked executable shares links outside the reviewed pier")
-				break
+			if links.seen != links.expected && (outside == "" || links.firstPath < outside) {
+				outside = links.firstPath
 			}
+		}
+		if outside != "" {
+			err = fmt.Errorf("pier entry %q: docked executable shares links outside the reviewed pier", outside)
 		}
 	}
 	return fmt.Sprintf("%x", h.Sum(nil)), files, bytes, err

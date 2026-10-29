@@ -1,0 +1,32 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 24,
+  "source_sha256": {
+    "internal/managed/project_jobs.go": "1488b1781057acfbe31b948eb410d98f13b07aba5472cc36fab24785c88cb841",
+    "internal/managed/project_jobs_test.go": "e17dd133d0629ef6143b4daddea5f40535f7460112c3f9518f4f6cba1016fed7",
+    "internal/managed/schema.go": "34a21716a10ace2beeb9413f4522fd8ca428a0156fce4ddf3d6c9703c6813881",
+    "internal/managed/store.go": "247183737cb654a5b5aae419f9c6f7d76ed41160cb791f785cb3a081bd3c7499",
+    "internal/projectnetwork/journal.go": "b17fb8bb73bbb46729aae92799dbf8bea81ba9430fa4c2d012afa430e4b94136",
+    "internal/projectnetwork/runtime.go": "75cebcb0c3e54959055d1172cb3a753e45026004fb4516286350402b8ba034d3",
+    "internal/managed/g02_historical_upgrades_test.go": "05f6c93c4ef05faa33cc618ff4b84faf381cdea68bfd89d3d17663c4b2d10bba",
+    "scripts/test-historical-upgrades.py": "778a9b38c87579bbe5696eb470d542775ab571a115e5d256d995912aaf297f40",
+    "internal/managed/testdata/historical-upgrades/schema23-source.tar.gz": "4dcd826f1d3268cfe1eb66abd586cb599266b04aff9b543677cc647db1bfb2dc",
+    "internal/managed/testdata/historical-upgrades/schema23.json": "fa291deea4fdd9ae2d9acc730bcd8be7ef53a2b85a456fd3a737e11b4820c313",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "e09e9208fb912a93278f87c42006672bc92d2e796b94bea83f2237d03b017602"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-project-journal",
+  "qualification": [
+    "Final focused race tests pass eight restart boundaries including retained returned IDs.",
+    "Full managed race suite passes in 74.374 seconds with private test socket access; projectnetwork/protocol race suites pass.",
+    "Initial sandbox full-suite attempt failed at private socket/owner-profile operations; retained as limited execution evidence.",
+    "Original schema23 writer reproduces its populated project fixture; its reader refuses actual schema24 pending dispatch unchanged.",
+    "Affected vet and git diff --check pass."
+  ],
+  "limits": [
+    "Private store API only; no engine adapter, worker dispatch, capability or RPC.",
+    "Initial preparation creates intent for bridge/anchor only, no member instances or piers.",
+    "Later generation/recovery/member-start paths remain implementation work.",
+    "Full older writer regeneration remains limited by the previously documented missing preview18 object; checked-in migrations pass."
+  ]
+}

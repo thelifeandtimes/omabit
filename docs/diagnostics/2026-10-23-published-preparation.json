@@ -1,0 +1,12 @@
+{
+  "runtime_executed": false,
+  "offline_checks": 32,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-published-preparation",
+  "appliance": "/tmp/omabit-import-appliance-20261023-01",
+  "source_sha256": {
+    "scripts/qualification/fake-networks/published_client.py": "6d300302bf9f9be5fa2af977b89acc202d0039e5cfae78b6c9ba073a1ae8439f",
+    "scripts/qualification/fake-networks/test_published.py": "e45c3d9daddf08b7633f83a98880465b27dc84dc6e1f9533912219f4a9d2bf45",
+    "scripts/qualification/fake-networks/network_case.py": "a21fe0053d35b153d7ad26d5727a48ce634fdd460dbe65c9455d8892ec34c247",
+    "scripts/qualification/imports/appliance.py": "8b71c601afcfbadf9a50341b50ab7696a5905bb875100a268d4e90be4fb19076"
+  }
+}

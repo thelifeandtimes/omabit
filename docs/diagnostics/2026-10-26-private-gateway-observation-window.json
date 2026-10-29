@@ -1,0 +1,31 @@
+{
+  "source_sha256": {
+    "internal/runtimequalify/private_gateway_observer_linux.go": "2b0b7f02a12e68753983becbc90840ca1b4335da7c1d0546b656cf5e21943752",
+    "internal/runtimequalify/private_gateway_observer_linux_test.go": "56aebea30cb54f12a8b1127eab9e86b14804fc27fc4ff6c5f29a9531a9af349d"
+  },
+  "checks": {
+    "gateway": 0,
+    "vet": 0,
+    "diff": 0
+  },
+  "gateway_checks": 355,
+  "schema_changed": false,
+  "runtime_qualified": false,
+  "memory": "M405",
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-26-private-gateway-observation-window",
+  "artifact_sha256": {
+    "baseline.json": "4f072cc3558113d1ee64f1cda3983595c40ab0589b0f37cb7418f3dc43d837e3",
+    "baseline-overlay.json": "255d7a5eb7b8875c172d84b0dc21499cc39c37f3a63301bdc688f903821ff1b2",
+    "overlay.json": "9f4eff1026ab1a1b55aa1f1d3fb8b82c8e34b7ddb1325612e004cea05e908284",
+    "baseline-tests.jsonl": "2d7218cc5222ec90ef10ff38d792e417028bcf30618cd110ee53cf35778016bb",
+    "gateway-tests.jsonl": "3b6bb0f2e782a2022ab0d6aa36cdfd4e334e9cf809fefa132f75294ece5f70c1",
+    "gateway-integrated.log": "8780547bd60dd7fc3417acfc2b71d244186c6434f45aead627b43dbce7e48e57",
+    "vet-integrated.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diff-integrated.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "integrated-result.json": "e95cc5354529a579c63042acac64de8084f2d11ef1d3f447e11bdd92c16f5089",
+    "private_gateway_observer_linux.go": "2b0b7f02a12e68753983becbc90840ca1b4335da7c1d0546b656cf5e21943752",
+    "private_gateway_observer_linux_test.go": "56aebea30cb54f12a8b1127eab9e86b14804fc27fc4ff6c5f29a9531a9af349d",
+    "original-private_gateway_observer_linux.go": "6b1675797992ad4c7ae731658e57ee75a3c6eb97ed297ffdbb9c4878d1e7d407",
+    "original-private_gateway_observer_linux_test.go": "4dffcf1da78658fdbb71f7e85fa9a12110d90590cfef9324a7fbaedf5dab1f6f"
+  }
+}

@@ -1,0 +1,201 @@
+{
+  "verified": true,
+  "passed": true,
+  "schema": 34,
+  "member_launches": [
+    {
+      "instance_id": "vm-zod",
+      "container": "3500e1bd6869f177792f5de94055ffd7dc25cbdf762a526b61ebd174495928be",
+      "namespace": {
+        "boot_id": "996a219f-ea2b-4817-b163-79637bfc5b41",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 133460,
+      "workspace_birth": "1792800784:66913651",
+      "clean_stop": true,
+      "identity_http_status": 200
+    },
+    {
+      "instance_id": "vm-nec",
+      "container": "6b23a88b6326663a6ffd0f0d89e1dc8f7e5688bcde82b641efc7b5b41771d5ca",
+      "namespace": {
+        "boot_id": "996a219f-ea2b-4817-b163-79637bfc5b41",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 262146,
+      "workspace_birth": "1792801197:616868417",
+      "clean_stop": true,
+      "identity_http_status": 200
+    }
+  ],
+  "readiness": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-56ae9685addbaa3712534d5c67d04b0c",
+      "ship": "~zod",
+      "captured_at": "2026-10-24T00:29:53.161693216Z",
+      "pier_inode": 133482,
+      "urb_inode": 133494,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-7c4ad5f5d0b86ed83c09eabcbcadd36e",
+      "ship": "~nec",
+      "captured_at": "2026-10-24T00:30:10.901892108Z",
+      "pier_inode": 262168,
+      "urb_inode": 262180,
+      "reopen_unchanged": true
+    }
+  ],
+  "stops": [
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-0d45bca992096a38619d4d93d7db7b6f",
+      "container_id": "6b23a88b6326663a6ffd0f0d89e1dc8f7e5688bcde82b641efc7b5b41771d5ca",
+      "started_at": "2026-10-24T00:20:25.865435334Z",
+      "finished_at": "2026-10-24T00:30:33.585517326Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "peer_exits": 0,
+      "original_status": "succeeded",
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-e1c103e829b05a925061015ecac5ed01",
+      "container_id": "3500e1bd6869f177792f5de94055ffd7dc25cbdf762a526b61ebd174495928be",
+      "started_at": "2026-10-24T00:13:28.428194173Z",
+      "finished_at": "2026-10-24T00:30:56.431764769Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "peer_exits": 1,
+      "original_status": "interrupted",
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "recoveries": [
+    {
+      "instance_id": "vm-zod",
+      "stop_operation_id": "op-e1c103e829b05a925061015ecac5ed01",
+      "operation_id": "op-31eca2e77ccedd27d7a6dd718cc48873",
+      "original_status": "interrupted",
+      "original_phase": "stop-dispatched",
+      "original_unchanged": true,
+      "clean_exit": true,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "retirements": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-00c619a1d5fdd30d126310c43d7c4d72",
+      "container_id": "3500e1bd6869f177792f5de94055ffd7dc25cbdf762a526b61ebd174495928be",
+      "original_receipts_unchanged": true,
+      "historical_retirement_files": 7,
+      "historical_retirement_bytes": 1016848396,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "resumes": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-40d53e0103b07419ec0e733703b3f0d8",
+      "container_id": "55d4cfc9773e365cc7ea56dcbd2dd556ac56325820f135ffb27da5fda77297bc",
+      "generation": 2,
+      "ship": "~zod",
+      "original_retirement_unchanged": true,
+      "post_stop_state_files_verified": 7,
+      "post_stop_state_bytes_verified": 1016852492,
+      "replay_unchanged": true,
+      "reopen_unchanged": true,
+      "clean_stop": true
+    }
+  ],
+  "resumed_readiness": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-ab4ea45b281f67d13c53233f60c1b959",
+      "resume_operation_id": "op-40d53e0103b07419ec0e733703b3f0d8",
+      "container_id": "55d4cfc9773e365cc7ea56dcbd2dd556ac56325820f135ffb27da5fda77297bc",
+      "generation": 2,
+      "ship": "~zod",
+      "replay_unchanged": true,
+      "reopen_unchanged": true,
+      "original_resume_unchanged": true
+    }
+  ],
+  "current_stops": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-d10d3ffd1ed94c356b879857be345f90",
+      "container_id": "55d4cfc9773e365cc7ea56dcbd2dd556ac56325820f135ffb27da5fda77297bc",
+      "generation": 2,
+      "clean_exit": true,
+      "replay_unchanged": true,
+      "reopen_unchanged": true,
+      "original_history_unchanged": true
+    }
+  ],
+  "member_storage_verified": [
+    {
+      "instance": "vm-nec",
+      "mount": "/srv/urbit/piers/fakeships/vm-nec",
+      "inode": 133440,
+      "birth": "1792800770:820915100",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "nec"
+    },
+    {
+      "instance": "vm-zod",
+      "mount": "/srv/urbit/piers/fakeships/vm-zod",
+      "inode": 133456,
+      "birth": "1792800770:876915094",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "zod"
+    }
+  ],
+  "ship_operations": true,
+  "namespace": {
+    "boot_id": "996a219f-ea2b-4817-b163-79637bfc5b41",
+    "device": 5,
+    "inode": 4026532248
+  },
+  "clean_anchor_stop": true,
+  "returned_ids_journaled": true,
+  "volume_inventory_unchanged": true,
+  "database_receipts_match": true,
+  "repeat_dispatch_refused": true,
+  "reopen_unchanged": true,
+  "scope_inactive": true,
+  "seconds": 1449.61,
+  "result_sha256": "580a157655e5cdaf2ba68c63f0bb39c4cb04fb18d6ec62a14808cc416c8b5cd4",
+  "database_sha256": "50cac6f5886c0c744253a5bdd8846d77a773a2f6f4221f744481c11a6499592a",
+  "bridge": "7a2a5584d8ccd9c74070278e20174d6b016b069ff9b158227fdc474db7804111",
+  "anchor": "4f7e50f2821a4fa8dbb969fb29ef71511eed4bee603d6889f20d30e98a75d768",
+  "engine": "3feaffa6-8ef2-48c4-99fb-2b54f68986ec",
+  "extracted_files_verified": 17,
+  "limits": [
+    "Readiness is historical identity/storage evidence, not current runtime authority.",
+    "First queued replacement, durable post-resume readiness and queued replacement Stop qualified; later generations, application recovery through runner, changed-peer/namespace recovery and public API remain."
+  ],
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-current-stop21",
+  "outer_exec_exit": 0,
+  "metadata_files": 44,
+  "frozen_source_files": 164,
+  "quota_interrupted_verifier": {
+    "exit": 120,
+    "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-current-stop21-storage-relief/failed-verifier",
+    "unchanged_verifier_retry_passed": true
+  }
+}

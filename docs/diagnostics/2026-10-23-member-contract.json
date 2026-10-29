@@ -1,0 +1,22 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema_changed": false,
+  "source_sha256": {
+    "internal/runtimequalify/project_member_contract_linux.go": "77b053f5f9485219b0a5957c0c9d5eb1afcc23a262f4e37df7c16c1a8e4a5ab4",
+    "internal/runtimequalify/project_member_contract_linux_test.go": "f50c0dee7380764bba3e7908f9f943004106cf3f8891e5ac3b2a8fc54b8cd147",
+    "internal/runtimequalify/project_member_command_linux.go": "c6f4795ecd54ec8d970b3ba664184a23a49f54adbb6995f0f6371f6ba51c2a4d"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-contract",
+  "logs": {
+    "omabit-project-member-contract-tests.log": "d7e5d53c86f51d7eaaf5c6fd226d9d8ce7cbae0b9261dfa458c6b5e35f5a3223",
+    "omabit-project-member-contract-tests-retry.log": "f6aead1dad6d76a277bc1847029a2937d6418545bc1f720c6feed0e37212a89d",
+    "omabit-project-member-contract-regression.log": "fc2b23d9a5b51375f7f7f00f5f6eea2140e7b601eeef24a4f037b9abee0966a8",
+    "omabit-project-member-contract-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "Private contract and read-only temporary-filesystem checks; no member driver dispatch or persistence.",
+    "Fresh namespace and complete mount inventory, pill verification, durable member ownership and server wiring remain.",
+    "Pinned-image member create/inspect behavior still needs a private VM."
+  ]
+}

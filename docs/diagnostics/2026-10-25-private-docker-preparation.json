@@ -1,0 +1,19 @@
+{
+  "memory": "M348",
+  "python_tests": 32,
+  "go_payload_tests_and_subcases": 18,
+  "preparation_passed": true,
+  "same_expanded_inputs_as_M346": true,
+  "files": 12357,
+  "bytes": 642437372,
+  "build_sha256": "2d44e5f41271e627a550ed7e61718a72c94203e6803aa7402519209a14b45144",
+  "artifact_hashes_verified": true,
+  "precreation_refusals": [
+    "temporary quota below 8GiB",
+    "output filesystem quota query unavailable"
+  ],
+  "prior_code_appliances_preserved": 4,
+  "raw_runtime_data_exported": false,
+  "source_runtime_run": "/tmp/omabit-import-guest-run-private-chain-20261025-09",
+  "source_runtime_status": "running; not qualified by this record"
+}

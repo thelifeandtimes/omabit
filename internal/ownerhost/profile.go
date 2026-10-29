@@ -88,12 +88,12 @@ func Read(path string) (*Profile, error) {
 	return &p, nil
 }
 
-func Load() (*Profile, error) {
-	p, err := Read(Path)
+func loadProfile(path string) (*Profile, error) {
+	p, err := Read(path)
 	if err != nil || p == nil {
 		return p, err
 	}
-	for dir := filepath.Dir(Path); ; dir = filepath.Dir(dir) {
+	for dir := filepath.Dir(path); ; dir = filepath.Dir(dir) {
 		i, err := os.Lstat(dir)
 		if err != nil {
 			return nil, err
@@ -109,8 +109,16 @@ func Load() (*Profile, error) {
 	return p, nil
 }
 
+func Load() (*Profile, error) {
+	p, err := loadProfile(selectedProfilePath())
+	if err != nil || p == nil {
+		return p, err
+	}
+	return runtimeProfile(p), nil
+}
+
 func Current() (*Profile, error) {
-	p, err := Load()
+	p, err := loadProfile(selectedProfilePath())
 	if err != nil || p == nil {
 		return p, err
 	}
@@ -118,7 +126,7 @@ func Current() (*Profile, error) {
 	if err != nil || u.UID != p.UID || u.GID != p.GID || u.Home != p.Home || uint32(os.Geteuid()) != p.UID {
 		return nil, errors.New("runtime must run as the installed pier owner")
 	}
-	return p, nil
+	return runtimeProfile(p), nil
 }
 
 func OwnsHome(home string) bool {

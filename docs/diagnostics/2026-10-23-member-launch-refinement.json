@@ -1,0 +1,27 @@
+{
+  "source_qualified": true,
+  "runtime_pass_claimed": false,
+  "schema": 27,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-launch-refinement",
+  "appliance": "/tmp/omabit-import-appliance-20261023-13",
+  "source_files_verified": 100,
+  "embedded_test_sha256": "6a0f3cf99f8add06ba050926f134a0ddc5b5384f288add7e8b60fea65cfcccb1",
+  "artifact_sha256": {
+    "base.raw": "9244d0ad0190c38a2efc2b5b63db1b9df94b69eec93d62ae0adc9ca09780bc05",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "logs": {
+    "omabit-member-launch-refinement-tests.log": "64a1cb1e13c2140f4d0ad79c9503fef31454e282e6fea2cf75edd2b3996a4c32",
+    "omabit-member-launch-refinement-regression.log": "f48a3d6843f7c74d2af0627b361bb9dc0a35d90787df7290dbbceb40256d0ab7",
+    "omabit-member-launch-refinement-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-member-launch23-13-prepare.log": "44e6aeb695cee809ab5bf8b4df8868926fc491a8efe57abb272daceadb3094a2",
+    "omabit-member-launch23-13-preparation-verification.log": "5539f7f322f1d28030f1ab19f83bd4824e79bb476df04eb79558e1599af2cbaf"
+  },
+  "limits": [
+    "No trial13 runtime result claimed by this source/preparation record.",
+    "Metadata snapshot is in-memory and tied to a full hash during this operation; it is not a persistent cache or a sandbox against same-user plugins.",
+    "Known-working init and zod-first fixture ordering restored; trial12 shutdown cause remains unisolated."
+  ]
+}

@@ -72,6 +72,10 @@ func TestRC11StartReadmitsAfterPreparationAndRemainsRetryable(t *testing.T) {
 					}
 					originalID, originalLocation, originalKey := state.ID, *state.Storage, state.NativeKeyDigest
 					initialized := state.Initialized
+					minimumRAM, minimumDisk := uint64(5<<30), uint64(8<<30)
+					if initialized {
+						minimumRAM, minimumDisk = 1<<30, 2<<30
+					}
 					exhausted, late := false, false
 					f.d.admission = func(path string) (uint64, uint64, error) {
 						if !exhausted || storageRoot != "" && path != storageRoot {
@@ -80,9 +84,9 @@ func TestRC11StartReadmitsAfterPreparationAndRemainsRetryable(t *testing.T) {
 						late = true
 						switch fault {
 						case "RAM":
-							return 5<<30 - 1, 8 << 30, nil
+							return minimumRAM - 1, 8 << 30, nil
 						case "disk":
-							return 5 << 30, 8<<30 - 1, nil
+							return 5 << 30, minimumDisk - 1, nil
 						default:
 							return 5 << 30, 8 << 30, errors.New("capacity read failed")
 						}

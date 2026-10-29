@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"reflect"
+	"regexp"
 	"slices"
 	"strings"
 	"syscall"
@@ -319,7 +320,13 @@ func TestInspectionIsRedactedAndLeavesFixtureUnchanged(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, secret := range []string{"Private GECOS", "Private Desktop", "/home/desktop", "100000", "200000", "942", "secret-token", "private.example", "secret-context-name", "shadow-secret", "config-secret", "private-error", "private-path"} {
-		if bytes.Contains(output, []byte(secret)) {
+		// Numeric IDs can occur by chance inside SHA256 evidence digests.
+		// Match complete numeric tokens; still catch IDs in paths or prose.
+		leaked := bytes.Contains(output, []byte(secret))
+		if secret == "942" || secret == "100000" || secret == "200000" {
+			leaked = regexp.MustCompile(`(^|[^a-zA-Z0-9])` + secret + `([^a-zA-Z0-9]|$)`).Match(output)
+		}
+		if leaked {
 			t.Fatalf("private fixture data leaked: %q", secret)
 		}
 	}

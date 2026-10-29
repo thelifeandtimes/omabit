@@ -1,0 +1,10 @@
+{
+  "memory": "M275",
+  "kind": "source-inspection-only",
+  "source_root": "/home/thelifeandtimes/repos/omarchy-urbit-theme-auth",
+  "sha256": {
+    "client/eyre.py": "5b0215395b957622fd038898e698a19af0ef256ba085ddf37a74600a7db52292",
+    "client/sync.py": "8a0fdb2b6bab03d451ec2c125096e298e5b0ca66ed493ecba695fb6f43aebd71"
+  },
+  "next": "Theme durable watch/poke cleanup with concurrent Eyre instances and standalone CLI; then independent coordinator recovery"
+}

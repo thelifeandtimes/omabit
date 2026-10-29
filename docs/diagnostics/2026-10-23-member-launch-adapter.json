@@ -1,0 +1,24 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 27,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-launch-adapter",
+  "source_sha256": {
+    "internal/runtimequalify/project_member_launch_linux.go": "8d18b9431cdd1f83a28b850a9b3a35fb95a003f9dcdd6bdd61314d031e097e59",
+    "internal/runtimequalify/project_member_launch_linux_test.go": "2c9c9481841348096adb987c5b699ac2f353609f4683cfda03bd8a0a534d1047",
+    "internal/managed/project_member_launch_server_linux.go": "96c41aa5a36d698434372b753825d34d526c826ac7dadbf9cc1759dd329fc402",
+    "internal/managed/project_member_launch_server_linux_test.go": "9afc829fb1d95c3bb702d0b0381811ef140adc70cf042a448b3a52fdc7ac9fce"
+  },
+  "logs": {
+    "omabit-member-launch-adapter-tests.log": "727ddb444f7e3fd99ef1c6b7675c632f5eace7e63d581768db4a9af39e84d7e8",
+    "omabit-member-launch-queue-tests.log": "0ca820c0da3e2b6f2bb1ba20e8f0d75b8997f312850c14ecb923803851e7fad8",
+    "omabit-member-launch-adapter-regression.log": "b2bd2e0828ac94c8966488881f740262b2580f66cd67f561e2e4108749642a9b",
+    "omabit-member-launch-adapter-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "limits": [
+    "Concrete adapter tested with injected engine and fresh temporary filesystem only; pinned real-image behavior remains a VM gate.",
+    "Initial launch only, ending in running-container evidence; no initialized-pier, HTTP/admin or application-readiness claim.",
+    "Pill must already be separately staged with the pinned hash/size; driver performs no download/pull/cache mutation.",
+    "Private queue only; no public route, automatic restart or advertised capability."
+  ]
+}

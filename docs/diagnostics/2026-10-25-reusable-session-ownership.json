@@ -1,0 +1,26 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-reusable-session-ownership",
+  "verification": {
+    "passed": true,
+    "focused_tests": 20,
+    "scopes_inactive": [
+      "omabit-repeated-intent-unit-20261025-01",
+      "omabit-repeated-intent-unit-20261025-02"
+    ],
+    "checkpoint_imports": [
+      1,
+      2,
+      3
+    ],
+    "intent_format": 3,
+    "legacy_writers_unchanged": true,
+    "both_legacy_readers_refuse_fences": true,
+    "lost_publication_replies": 4,
+    "legacy_winner_between_fences_refused": true,
+    "same_format_repeated_runtime_qualified": false,
+    "new_application_instances": 0,
+    "initial_count_assertion_failed_before_tests": true,
+    "corrected_count": 20,
+    "production_resources_touched": false
+  }
+}

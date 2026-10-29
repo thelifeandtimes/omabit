@@ -1,0 +1,106 @@
+{
+  "source_receipt_sha256": "726eb114f57ae44347a1b76884c7525923b5839faee87e97e80e5a6138f0b8d8",
+  "runner_id": "runner-034a5a349ea916bbf0718ae9c8b429ff",
+  "cases": [
+    {
+      "creation": {
+        "instance_id": "vm-nec",
+        "runtime_id": "8a7336d348929b0f6000f5380be0c169",
+        "operation_id": "op-dd5ca2aadfd0ccf8519e31f31a7d8f5a",
+        "generation": 3,
+        "namespace_operation_id": "op-8aab3500b4bd32d4d0fff2cfc6319485",
+        "retirement_operation_id": "op-b3816e75492ba080c80dddb0a451b000",
+        "original_anchor": {
+          "prepared": {
+            "project_id": "project-64dc0183be4971d9cf809f8e478861f1",
+            "generation": 1
+          }
+        }
+      },
+      "container_id": "18d2458cae5c637d03b46fed6604c7dd1bcbf72ecc7940989d4c0ff5813f3a66",
+      "inspection": [
+        {
+          "Id": "18d2458cae5c637d03b46fed6604c7dd1bcbf72ecc7940989d4c0ff5813f3a66",
+          "Name": "/urbit-project-member-8a7336d348929b0f6000f5380be0c169-g3",
+          "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 30452,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-10-24T08:47:06.314062869Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          },
+          "Config": {
+            "Labels": {
+              "org.urbit-runner.project": "true",
+              "org.urbit-runner.project.container-generation": "3",
+              "org.urbit-runner.project.generation": "1",
+              "org.urbit-runner.project.instance": "vm-nec",
+              "org.urbit-runner.project.namespace-operation": "op-8aab3500b4bd32d4d0fff2cfc6319485",
+              "org.urbit-runner.project.operation": "op-dd5ca2aadfd0ccf8519e31f31a7d8f5a",
+              "org.urbit-runner.project.project": "project-64dc0183be4971d9cf809f8e478861f1",
+              "org.urbit-runner.project.retirement-operation": "op-b3816e75492ba080c80dddb0a451b000",
+              "org.urbit-runner.project.runner": "runner-034a5a349ea916bbf0718ae9c8b429ff",
+              "org.urbit-runner.project.runtime": "8a7336d348929b0f6000f5380be0c169"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "creation": {
+        "instance_id": "vm-zod",
+        "runtime_id": "d82555353fc1ead25736471e83d9c078",
+        "operation_id": "op-8602f75453fe1ec4f3d71fd5a7022ff0",
+        "generation": 4,
+        "namespace_operation_id": "op-8aab3500b4bd32d4d0fff2cfc6319485",
+        "retirement_operation_id": "op-b3816e75492ba080c80dddb0a451b000",
+        "original_anchor": {
+          "prepared": {
+            "project_id": "project-64dc0183be4971d9cf809f8e478861f1",
+            "generation": 1
+          }
+        }
+      },
+      "container_id": "d5e53d829e60933ec18151b22d62ef78c8d7d03ff721efe08e3f7e257f2ac29d",
+      "inspection": [
+        {
+          "Id": "d5e53d829e60933ec18151b22d62ef78c8d7d03ff721efe08e3f7e257f2ac29d",
+          "Name": "/urbit-project-member-d82555353fc1ead25736471e83d9c078-g4",
+          "State": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 32103,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-10-24T08:48:07.397095826Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          },
+          "Config": {
+            "Labels": {
+              "org.urbit-runner.project": "true",
+              "org.urbit-runner.project.container-generation": "4",
+              "org.urbit-runner.project.generation": "1",
+              "org.urbit-runner.project.instance": "vm-zod",
+              "org.urbit-runner.project.namespace-operation": "op-8aab3500b4bd32d4d0fff2cfc6319485",
+              "org.urbit-runner.project.operation": "op-8602f75453fe1ec4f3d71fd5a7022ff0",
+              "org.urbit-runner.project.project": "project-64dc0183be4971d9cf809f8e478861f1",
+              "org.urbit-runner.project.retirement-operation": "op-b3816e75492ba080c80dddb0a451b000",
+              "org.urbit-runner.project.runner": "runner-034a5a349ea916bbf0718ae9c8b429ff",
+              "org.urbit-runner.project.runtime": "d82555353fc1ead25736471e83d9c078"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -4,13 +4,14 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell.Io
 import qs.Commons
+import qs.Commons as Commons
 import qs.Ui as Ui
 import "Model.js" as Model
 
 Ui.Panel {
   id: root
   moduleName: "thelifeandtimes.omabit"
-  ipcTarget: "thelifeandtimes.omabit"
+  ipcTarget: root.moduleName
   property var service: bar && bar.shell && typeof bar.shell.serviceFor === "function" ? bar.shell.serviceFor(moduleName) : null
   property string pane: "fleet"
   readonly property var connections: service ? service.connections : []
@@ -26,14 +27,15 @@ Ui.Panel {
   function remoteSetup() { var s=service;root.close();if(s)Qt.callLater(function(){s.openSetup("remote")}) }
   IpcHandler {
     enabled: root.manageIpc
-    target: "thelifeandtimes.omabit.setup"
+    target: root.moduleName + ".setup"
     function open(): void { root.pane = "setup"; root.open() }
+    function addShip(): void { root.pane="setup"; setup.addShip(); root.open() }
   }
 
   Ui.BarIconButton {
     id: button
     anchors.fill: parent; bar: root.bar; text: ""; active: root.opened
-    activeColor: Qt.tint(foreground, Design.fade(Color.background, 0.25))
+    activeColor: Qt.tint(foreground, Design.fade(Commons.Color.background, 0.25))
     iconComponent: Component {
       Item {
         anchors.centerIn: parent; width: Math.min(parent.width,parent.height); height: width
@@ -69,7 +71,7 @@ Ui.Panel {
             width: parent.width
             Column {
               Layout.fillWidth: true; spacing: Style.space(2)
-              Label { text: "omabit"; font.pixelSize: Style.space(23); font.bold: true; font.letterSpacing: -1 }
+              Label { text: "omabit"+(root.service && root.service.profileName!=="default" ? " · "+root.service.profileName.toUpperCase() : ""); font.pixelSize: Style.space(23); font.bold: true; font.letterSpacing: -1 }
               Label { text: root.pane === "fleet" ? "YOUR FLEET, AT A GLANCE" : "CONNECTIONS & PROVISIONING"; caption: true; secondary: true; font.letterSpacing: 1 }
             }
             ActionButton { compact: true; quiet: true; text: "↻"; hint: "Refresh runner observations"; enabled: root.service && !root.service.busy; onClicked: root.service.refresh() }
@@ -79,11 +81,12 @@ Ui.Panel {
           Column {
             width: parent.width; spacing: Style.space(12); visible: root.pane === "fleet"
             Repeater {
-              model: root.connections
+              model: root.connections.map(function(c){return {connection:c,groups:Model.shipGroups(c)}})
               Card {
                 id: runner
                 required property var modelData
-                readonly property bool online: root.service && root.service.observing && Model.available(modelData, root.service.now)
+                readonly property var connection: modelData.connection
+                readonly property bool online: root.service && root.service.observing && Model.available(connection, root.service.now)
                 width: parent.width; implicitHeight: runnerBody.implicitHeight + Style.space(24)
                 Column {
                   id: runnerBody
@@ -91,13 +94,13 @@ Ui.Panel {
                   anchors.margins: Style.space(12); spacing: Style.space(10)
                   RowLayout {
                     width: parent.width; spacing: Style.space(8)
-                    StatusBadge { dotOnly: true; tone: runner.online ? "good" : "warn"; text: runner.online ? "Connected" : "Unavailable"; hint: runner.modelData.runner_id }
-                    CardTitle { text: Model.runnerTitle(runner.modelData, root.service.runnerPreferences); Layout.maximumWidth: runner.width * 0.4; elide: Text.ElideRight; wrapMode: Text.NoWrap }
-                    Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; caption: true; secondary: true; elide: Text.ElideMiddle; wrapMode: Text.NoWrap; text: Model.runnerAddress(runner.modelData, root.service.registrations, root.service.runnerPreferences) }
+                    StatusBadge { dotOnly: true; tone: runner.online ? "good" : "warn"; text: runner.online ? "Connected" : "Unavailable"; hint: runner.connection.runner_id }
+                    CardTitle { text: Model.runnerTitle(runner.connection, root.service.runnerPreferences); Layout.maximumWidth: runner.width * 0.4; elide: Text.ElideRight; wrapMode: Text.NoWrap }
+                    Label { Layout.fillWidth: true; horizontalAlignment: Text.AlignRight; caption: true; secondary: true; elide: Text.ElideMiddle; wrapMode: Text.NoWrap; text: Model.runnerAddress(runner.connection, root.service.registrations, root.service.runnerPreferences) }
                   }
                   Rectangle { width: parent.width; height: 1; color: Design.line }
                   Repeater {
-                    model: Model.shipGroups(runner.modelData)
+                    model: runner.modelData.groups
                     Column {
                       id: shipGroup
                       required property var modelData
@@ -108,7 +111,7 @@ Ui.Panel {
                     RowLayout {
                       id: ship
                       required property var modelData
-                      readonly property var status: Model.shipStatus(runner.modelData, modelData, root.service.now, root.service.observing)
+                      readonly property var status: Model.shipStatus(runner.connection, modelData, root.service.now, root.service.observing)
                       width: runnerBody.width; spacing: Style.space(8)
                       StatusBadge { dotOnly: true; text: ship.status.label; tone: ship.status.tone; hint: ship.status.detail }
                       Column {
@@ -117,19 +120,20 @@ Ui.Panel {
                         Label { width: parent.width; text: ship.modelData.id + " · " + ship.status.label; secondary: true; caption: true; elide: Text.ElideRight; wrapMode: Text.NoWrap }
                       }
                       Label { objectName: "fleet-http-port-"+ship.modelData.id; text: "HTTP\n" + ship.modelData.config.http_port; caption: true; secondary: true; horizontalAlignment: Text.AlignRight }
-                      CopyCodeButton { objectName: "fleet-copy-code-"+ship.modelData.id; compact: true; service: root.service; runnerID: runner.modelData.runner_id; connectionName: runner.modelData.name; instanceID: ship.modelData.id }
-                      ActionButton { objectName: "fleet-open-ship-"+ship.modelData.id; compact: true; text: "Open →"; hint: "Open this ship when startup and health checks complete"; enabled: runner.online && Model.shipLive(runner.modelData,ship.modelData,root.service.now) && !!Model.shipURL(runner.modelData, ship.modelData, root.service.registrations, root.service.runnerPreferences); onClicked: root.service.openShip(runner.modelData, ship.modelData) }
-                      ActionButton { objectName: "start-" + ship.modelData.id; compact: true; quiet: true; text: "▶"; hint: "Start " + ship.modelData.id; enabled: runner.online && !root.service.busy && Model.canOperate(runner.modelData, ship.modelData, "start", root.service.now); onClicked: root.service.operate(runner.modelData, ship.modelData, "start") }
-                      ActionButton { objectName: "stop-" + ship.modelData.id; compact: true; quiet: true; text: "■"; hint: "Stop " + ship.modelData.id; enabled: runner.online && !root.service.busy && Model.canOperate(runner.modelData, ship.modelData, "stop", root.service.now); onClicked: root.service.operate(runner.modelData, ship.modelData, "stop") }
-                      ActionButton { objectName: "fleet-monitor-"+ship.modelData.id; compact: true; quiet: true; text: "›"; hint: "Monitor & maintain " + ship.modelData.id; onClicked: root.monitor(runner.modelData, ship.modelData) }
+                      CopyCodeButton { objectName: "fleet-copy-code-"+ship.modelData.id; compact: true; service: root.service; runnerID: runner.connection.runner_id; connectionName: runner.connection.name; instanceID: ship.modelData.id }
+                      ActionButton { objectName: "fleet-open-ship-"+ship.modelData.id; compact: true; text: "Open →"; hint: "Open this ship when startup and health checks complete"; enabled: runner.online && Model.shipLive(runner.connection,ship.modelData,root.service.now) && !!Model.shipURL(runner.connection, ship.modelData, root.service.registrations, root.service.runnerPreferences); onClicked: root.service.openShip(runner.connection, ship.modelData) }
+                      ActionButton { objectName: "start-" + ship.modelData.id; compact: true; quiet: true; text: "▶"; hint: "Start " + ship.modelData.id; enabled: runner.online && !root.service.busy && Model.canOperate(runner.connection, ship.modelData, "start", root.service.now); onClicked: root.service.operate(runner.connection, ship.modelData, "start") }
+                      ActionButton { objectName: "stop-" + ship.modelData.id; compact: true; quiet: true; text: "■"; hint: "Stop " + ship.modelData.id; enabled: runner.online && !root.service.busy && Model.canOperate(runner.connection, ship.modelData, "stop", root.service.now); onClicked: root.service.operate(runner.connection, ship.modelData, "stop") }
+                      ActionButton { objectName: "fleet-monitor-"+ship.modelData.id; compact: true; quiet: true; text: "›"; hint: "Monitor & maintain " + ship.modelData.id; onClicked: root.monitor(runner.connection, ship.modelData) }
                     }
                       }
                     }
                   }
-                  Label { visible: Model.instances(runner.modelData).length === 0; text: runner.online ? "No ships yet. Add your first ship in Setup." : "No cached ship inventory."; secondary: true; caption: true }
+                  Label { visible: Model.fleetInstances(runner.connection).length === 0; text: runner.online ? "No ships yet. Add your first ship in Setup." : "No cached ship inventory."; secondary: true; caption: true }
                 }
               }
             }
+            ActionButton { objectName: "empty-fleet-add-ship"; visible: !!root.service && Model.fleet(root.connections).length === 0; text: "Add a ship →"; primary: true; onClicked: { root.pane="setup"; setup.mode=setup.readyRunners.length ? "ship" : "home"; scroll.contentY=0 } }
             Label { objectName: "fleet-welcome"; width: parent.width; visible: !!root.service && root.service.firstRun; text: 'An "urbit ship" is a peer-to-peer node for running distributed applications across an end-to-end encrypted network. Omabit helps you run these nodes either on your local machine, or remote servers to which you have SSH access. Click "Start Setup" to get started.'; secondary: true }
             Label { width: parent.width; visible: !!root.service && root.service.machineUse==="laptop"; text: "Manage remote Urbit runners on a VPS, workstation, or other always-on machine from your laptop."; secondary: true; caption: true }
             RowLayout {
@@ -139,7 +143,7 @@ Ui.Panel {
               ActionButton { objectName: "open-monitor"; primary: true; text: root.service && root.service.firstRun ? "Start Setup →" : "Monitor & maintenance  ↗"; enabled: !!root.service; onClicked: { if(root.service.firstRun){root.pane="setup";setup.mode="home";scroll.contentY=0}else root.monitor(null,null) } }
             }
           }
-          SetupPane { id: setup; width: parent.width; visible: root.pane === "setup"; service: root.service; active: root.opened && visible; onShowFleet: { root.pane="fleet";scroll.contentY=0 } }
+          SetupPane { id: setup; compact: true; width: parent.width; visible: root.pane === "setup"; service: root.service; active: root.opened && visible; onShowFleet: { root.pane="fleet";scroll.contentY=0 } }
         }
       }
     }

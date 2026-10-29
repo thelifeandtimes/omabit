@@ -11,7 +11,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 COMPONENTS = (
-    "Model.js", "HostCompatibility.qml", "HostSetupPane.qml", "RuntimePane.qml", "RuntimeDetails.qml", "ConnectivityStatus.qml", "CardTitle.qml",
+    "ReaderLifecycle.qml", "Model.js", "HostCompatibility.qml", "HostSetupPane.qml", "RuntimePane.qml", "RuntimeDetails.qml", "ConnectivityStatus.qml", "CardTitle.qml",
     "MachineUsePane.qml", "SwitchField.qml", "CheckField.qml", "Label.qml",
     "Design.qml", "ActionButton.qml", "Hint.qml", "StatusBadge.qml", "Card.qml",
 )
@@ -50,7 +50,7 @@ def main():
         io = directory / "Quickshell/Io"
         io.mkdir(parents=True)
         (io / "qmldir").write_text("module Quickshell.Io\nProcess 1.0 Process.qml\nSplitParser 1.0 SplitParser.qml\n")
-        (io / "Process.qml").write_text('import QtQuick\nQtObject { property bool running:false;property var command:[];property var stdout;property var stderr;signal exited(int code,int status);function signal(n) { running=false } onRunningChanged: if(running) throw new Error("Fixture must not launch any runtime process") }\n')
+        (io / "Process.qml").write_text('import QtQuick\nQtObject { property bool running:false;property var command:[];property var stdout;property var stderr;signal started();signal exited(int code,int status);function signal(n) { running=false } onRunningChanged: if(running) throw new Error("Fixture must not launch any runtime process") }\n')
         (io / "SplitParser.qml").write_text('import QtQuick\nQtObject { property string splitMarker:"\\n";signal read(string data) }\n')
         qml = (ROOT / "scripts/test-host-compatibility-offscreen.qml").read_text()
         qml = qml.replace("@@SERVICE_METHODS@@", methods).replace("@@HOST_FIXTURES@@", fixtures.strip())

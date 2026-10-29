@@ -146,6 +146,26 @@ func (b *boundedOutput) Write(p []byte) (int, error) {
 	return b.buffer.Write(p)
 }
 
+// A successful process exit is distinct from complete captured output. Keep
+// this an error for every ordinary command/probe; only the explicit management
+// service start sites may acknowledge it before independently verifying the
+// running generation. Never infer this distinction from an error string.
+type successfulCommandOutputDrain struct{}
+
+func (*successfulCommandOutputDrain) Error() string { return exec.ErrWaitDelay.Error() }
+func (*successfulCommandOutputDrain) Unwrap() error { return exec.ErrWaitDelay }
+
+func acknowledgedManagementStart(ctx context.Context, err error) error {
+	if err == nil {
+		return nil
+	}
+	var drained *successfulCommandOutputDrain
+	if ctx.Err() == nil && !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) && errors.As(err, &drained) {
+		return nil
+	}
+	return err
+}
+
 func runCommand(ctx context.Context, path string, args, env []string) ([]byte, error) {
 	cmd := exec.CommandContext(ctx, path, args...)
 	cmd.Env, cmd.Dir = env, "/"
@@ -163,6 +183,9 @@ func runCommand(ctx context.Context, path string, args, env []string) ([]byte, e
 	var stdout, stderr boundedOutput
 	cmd.Stdout, cmd.Stderr = &stdout, &stderr
 	err := cmd.Run()
+	if err == exec.ErrWaitDelay && ctx.Err() == nil && cmd.ProcessState != nil && cmd.ProcessState.Success() && !stdout.exceeded && !stderr.exceeded {
+		err = &successfulCommandOutputDrain{}
+	}
 	if stdout.exceeded || stderr.exceeded {
 		err = errors.Join(err, fmt.Errorf("command output exceeded 1 MiB"))
 	}

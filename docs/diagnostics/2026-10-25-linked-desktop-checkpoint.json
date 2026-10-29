@@ -1,0 +1,30 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-linked-desktop-checkpoint",
+  "verification": {
+    "passed": true,
+    "focused_tests": 20,
+    "full_tests": 430,
+    "native_runs": 1,
+    "new_checkpoint_controller_kills": 2,
+    "total_controller_kills": 31,
+    "linked_checkpoint_format": 2,
+    "ancestor_checkpoint_referenced_not_embedded": true,
+    "current_source_bytes": 53079,
+    "runtime_retired_and_replaced_by_empty_directory": true,
+    "lost_reply_and_completed_retry_preserve_inode_and_bytes": true,
+    "canonical_ancestry_and_current_cleanup_required": true,
+    "original_reader_refuses_new_checkpoint": true,
+    "original_410_test_sources_unchanged": true,
+    "source_artifacts_metadata_independently_verified": true,
+    "scopes_inactive": [
+      "omabit-successor-checkpoint-native-20261025-01",
+      "omabit-successor-checkpoint-unit-20261025-01",
+      "omabit-successor-checkpoint-unit-20261025-02"
+    ],
+    "same_sessions_and_unknown_dm_preserved_before_retirement": true,
+    "no_new_admission": true,
+    "repeated_successor_admission_qualified": false,
+    "public_installed_profiles_qualified": false,
+    "production_resources_touched": false
+  }
+}

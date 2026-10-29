@@ -1,0 +1,23 @@
+{
+  "memory": "M406",
+  "source_sha256": {
+    "internal/runtimequalify/private_member_command_linux.go": "475834ddd0cda9a3a46f2e2d0d39ac29a410118b9c6387e4f8e80bfc61a647c1",
+    "internal/runtimequalify/private_member_command_linux_test.go": "11ac81f6b954c7a0eb01ee8f6b6bcb8a9034ba76a7110d0f8459adfe1813678e"
+  },
+  "checks": {
+    "commands": 0,
+    "vet": 0
+  },
+  "race_test_passes": 21,
+  "fixture_source_sha256": {
+    "docker_runtime.py": "f5fe78cf2ae3b64151827f038a0a4db571cb42b54179b161c3222a8c67650ea4",
+    "docker_publication.py": "397cb708acf1821e8e6a37c13947993fca0ba3b6036f081e523e65626179c94f"
+  },
+  "integration": "identical hashes to tested overlay; no source changes during integration",
+  "diff_check": 0,
+  "runtime_qualified": false,
+  "public_dispatch": false,
+  "schema_changed": false,
+  "protected_state_accessed": false,
+  "current_vm_uses_frozen_M405_binaries": true
+}

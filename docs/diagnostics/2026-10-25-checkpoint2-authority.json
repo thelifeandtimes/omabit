@@ -1,0 +1,33 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-checkpoint2-authority",
+  "verification": {
+    "passed": true,
+    "focused_tests": 21,
+    "full_tests": 475,
+    "publication_controller_kills_per_passing_run": 4,
+    "actual_owned_guards_per_admission": 3,
+    "new_authority_format": 3,
+    "new_reader_authority_formats": [
+      1,
+      2,
+      3
+    ],
+    "old_writers_unchanged_and_descriptor2_reader_refuses3": true,
+    "both_checkpoint_ancestry_levels_verified_by_runtime_tests": true,
+    "current_atomic_journal_appends_preserve_guards": 48,
+    "missing_parent_or_grandparent_fences_guards_without_reconstruction": true,
+    "source_hashes_and_exported_metadata_verified": true,
+    "scopes_inactive": [
+      "omabit-continuation-authority-unit-20261025-01",
+      "omabit-continuation-authority-unit-20261025-02",
+      "omabit-continuation-authority-unit-20261025-03"
+    ],
+    "fixture_corrections": "Run01 included newly published files in predecessor preservation; run02 distinguishes those and preserves the previous binding at its original path. Final run03 additionally uses distinct third-generation hashes.",
+    "passing_focused_same_generation": true,
+    "passing_full_distinct_generation": true,
+    "application_observations": "synthetic",
+    "native_application_activation_qualified": false,
+    "compatible_immutable_bundle_qualified": false,
+    "production_resources_touched": false
+  }
+}

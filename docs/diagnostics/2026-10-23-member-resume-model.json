@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "scope": "pure model only",
+  "runtime_executed": false,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-resume-model",
+  "source_sha256": {
+    "internal/projectnetwork/member_resume.go": "8e2bb29ff920f92259cec671bd3824901a6accf169c5fad9d0cbc619fe9df548",
+    "internal/projectnetwork/member_resume_test.go": "cb85c1f9cf57abe9f575fb287ca009c9a7ee89f59236cd3a72290b924a74a224"
+  },
+  "logs": {
+    "omabit-member-resume-model-tests.log": "b719731b0f37ae9e3fc2e843dc06481bee484c2458d38aad0396044165ca740f",
+    "omabit-member-resume-model-regression.log": "0f0c92423663a83f2dd98083e2acd764b9a7482cb062e3769e1a4894806396be",
+    "omabit-member-resume-model-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

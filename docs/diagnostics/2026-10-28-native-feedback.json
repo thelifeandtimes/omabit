@@ -1,0 +1,71 @@
+{
+  "recorded_at": "2026-10-29T03:35:39.580795+00:00",
+  "scope": "native DEV only",
+  "build_label": "0.2.0-dev.20261028.2",
+  "binaries": {
+    "omabit": "a7cb0efcec3644ab83ebbb56e41b7db68aabc6fe73b71c31d35396d385e82eaa",
+    "urbit-collector": "0e379620ded269547fd1ebd82e421f784cca0fa3daa13fe34a31cd078a1eb9a6",
+    "urbit-runner": "a96f40c3d3c1ae0baaa555e3f2772da6e78ead5268640b78b1f4fa783275337f"
+  },
+  "original_runtime_unchanged": [
+    {
+      "id": "dedf3b3071dc724210722651aa6453a070a15bdb1409f9e79fb94a198f80eb58",
+      "name": "/urbit-project-member-cb3c5ab2bc120149ef7f10285a8c7ab3-g1",
+      "pid": 3972363,
+      "started": "2026-10-29T00:55:16.079102629Z",
+      "running": true
+    },
+    {
+      "id": "8ecb5fcf703302bf1daaa425288e12efd7b4abd98b49ef6750ab8f79be7c0bc9",
+      "name": "/urbit-project-21d85195f9b673f0ed1d079c0a4ca170-g1-anchor",
+      "pid": 3968954,
+      "started": "2026-10-29T00:55:06.127426762Z",
+      "running": true
+    }
+  ],
+  "fleet": [
+    {
+      "instance": "demo-zod",
+      "ship": "~zod",
+      "health": "healthy",
+      "endpoint": "http://127.0.0.1:18080",
+      "container": "dedf3b3071dc724210722651aa6453a070a15bdb1409f9e79fb94a198f80eb58"
+    },
+    {
+      "instance": "demo-nec",
+      "ship": "~nec",
+      "health": "healthy",
+      "endpoint": "http://127.0.0.1:18082",
+      "container": "fcf9447e3952e2c66e9ae8948bf7674e54b6ce45d0e84b4c75d78ab8cbf6035e"
+    }
+  ],
+  "pair_acknowledgements": [
+    "~zod \u2192 ~nec matching remote Gall acknowledgement received",
+    "~zod temporary test session logged out",
+    "~nec \u2192 ~zod matching remote Gall acknowledgement received",
+    "~nec temporary test session logged out"
+  ],
+  "allocated": [
+    {
+      "path": "/srv/dev/urbit",
+      "allocated_bytes": 2008862720,
+      "unreadable_subdirectories": true
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs",
+      "allocated_bytes": 29997461504,
+      "unreadable_subdirectories": false
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence",
+      "allocated_bytes": 8295919616,
+      "unreadable_subdirectories": false
+    }
+  ],
+  "limits": [
+    "expanded engine/anchor recovery pending",
+    "project metrics and maintenance pending",
+    "no permanent key boot attempted",
+    "no original shell core for picker diagnosis"
+  ]
+}

@@ -23,20 +23,31 @@ func runStorage(ctx context.Context, command string, args []string, dir, socket,
 	var confirm bool
 	var port uint
 	var storageRoot string
+	var restoreDigest string
+	var expectedActor string
+	var confirmRestore bool
 	if command == "preview-pier" {
 		f.StringVar(&storageRoot, "storage-root", "", "configured destination location; enables automatic identity and layout review")
 	}
-	if command != "preview-pier" && len(args) > 0 && args[0] != "--help" {
+	if command != "preview-pier" && len(args) > 0 && args[0] != "--help" && args[0] != "-h" {
 		req.ID, args = args[0], args[1:]
 	}
 	if command == "preview-pier" || command == "import-pier" {
 		f.StringVar(&req.Source, "source", "", "absolute existing pier path on the selected runner host")
 	}
-	if command != "preview-pier" {
+	if command != "preview-pier" && command != "preview-import-restore" {
 		f.StringVar(&req.RequestID, "request-id", "", "actor-scoped request ID; no automatic retries")
 	}
 	if command == "storage-root-add" || command == "import-pier" {
 		f.StringVar(&req.Path, "path", "", "host storage root (add) or convention-relative destination (import)")
+	}
+	if command == "preview-import-restore" || command == "restore-import" {
+		f.StringVar(&expectedActor, "expected-actor", "", "require the reviewed management actor before reading or restoring")
+		f.Uint64Var(&req.ExpectedRevision, "revision", 0, "selected stopped instance configuration revision")
+	}
+	if command == "restore-import" {
+		f.StringVar(&restoreDigest, "restore-digest", "", "exact review_digest from preview-import-restore")
+		f.BoolVar(&confirmRestore, "confirm-restore", false, "restore the held source, retain the partial destination in archive and retire this failed registration; never start or delete a pier")
 	}
 	if command == "delete-pier" {
 		f.Uint64Var(&req.ExpectedRevision, "revision", 0, "selected configuration revision")
@@ -61,7 +72,7 @@ func runStorage(ctx context.Context, command string, args []string, dir, socket,
 	if f.NArg() != 0 || socket != "" || !validID(runner) || !validID(expected) {
 		return fail(errors.New("storage commands require a pinned enrolled runner"), 2)
 	}
-	if command != "preview-pier" && (!validID(req.ID) || !validID(req.RequestID)) {
+	if command != "preview-pier" && (!validID(req.ID) || command != "preview-import-restore" && !validID(req.RequestID)) {
 		return fail(errors.New("valid name and request ID required"), 2)
 	}
 	if (command == "preview-pier" || command == "import-pier") && (!filepath.IsAbs(req.Source) || filepath.Clean(req.Source) != req.Source) {
@@ -82,6 +93,12 @@ func runStorage(ctx context.Context, command string, args []string, dir, socket,
 	if command == "delete-pier" && (!confirm || req.ExpectedRevision == 0) {
 		return fail(errors.New("deletion requires --revision and --confirm-delete"), 2)
 	}
+	if (command == "preview-import-restore" || command == "restore-import") && req.ExpectedRevision == 0 {
+		return fail(errors.New("restoration requires --revision"), 2)
+	}
+	if command == "restore-import" && (!epochs.ValidDigest(restoreDigest) || !confirmRestore) {
+		return fail(errors.New("restore-import requires --restore-digest and --confirm-restore after reviewing both retained paths"), 2)
+	}
 	r, err := openRegistry(dir)
 	if err != nil {
 		return fail(err, 1)
@@ -101,6 +118,9 @@ func runStorage(ctx context.Context, command string, args []string, dir, socket,
 	if err != nil {
 		return fail(err, 1)
 	}
+	if expectedActor != "" && h.Actor != expectedActor {
+		return fail(errors.New("management actor changed; refresh the selected connection and review again"), 2)
+	}
 	feature := "import-pier"
 	if storageRoot != "" || req.Identify {
 		feature = "guided-pier-import"
@@ -110,6 +130,9 @@ func runStorage(ctx context.Context, command string, args []string, dir, socket,
 	}
 	if command == "delete-pier" {
 		feature = command
+	}
+	if command == "preview-import-restore" || command == "restore-import" {
+		feature = protocol.ImportRestoreFeature
 	}
 	if h.AccessRole != "operator" || !slices.Contains(h.Features, feature) {
 		return fail(errors.New("update this runner and use operator access for storage changes"), 1)
@@ -126,6 +149,15 @@ func runStorage(ctx context.Context, command string, args []string, dir, socket,
 		}
 	case "import-pier":
 		result, err = c.ImportPier(ctx, req)
+	case "preview-import-restore":
+		var preview protocol.ImportRestorePreview
+		preview, err = c.PreviewImportRestore(ctx, expected, req.ID, req.ExpectedRevision)
+		result = struct {
+			protocol.ImportRestorePreview
+			Actor string `json:"actor"`
+		}{preview, h.Actor}
+	case "restore-import":
+		result, err = c.RestoreImport(ctx, expected, req.ID, protocol.OperationRequest{Kind: protocol.ImportRestoreFeature, RequestID: req.RequestID, ExpectedRevision: req.ExpectedRevision, RestoreDigest: restoreDigest, ConfirmRestore: confirmRestore})
 	case "delete-pier":
 		result, err = c.Operate(ctx, req.ID, protocol.OperationRequest{Kind: command, RequestID: req.RequestID, ExpectedRevision: req.ExpectedRevision, ConfirmDelete: true})
 	}

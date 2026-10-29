@@ -1,0 +1,93 @@
+{
+  "version": "0.3.0-preparation",
+  "source_branch": "release/0.3.0",
+  "published": false,
+  "live_maintenance": [
+    {
+      "id": "op-0f014adfd039d44c569be6959a8ccdcb",
+      "request_id": "release030-inspect-epochs-0-20261028",
+      "kind": "inspect-epochs",
+      "status": "succeeded",
+      "error": null,
+      "created_at": "2026-10-29T06:20:39.648773623Z",
+      "finished_at": "2026-10-29T06:20:39.711488737Z"
+    },
+    {
+      "id": "op-2f8809dbecb46ff447e6157ca6d2c8e7",
+      "request_id": "release030-pack-1-20261028",
+      "kind": "pack",
+      "status": "succeeded",
+      "error": null,
+      "created_at": "2026-10-29T06:20:46.947578732Z",
+      "finished_at": "2026-10-29T06:20:56.8049783Z"
+    },
+    {
+      "id": "op-a16214e34fa5f69b97dc8f62033424b0",
+      "request_id": "release030-meld-2-20261028",
+      "kind": "meld",
+      "status": "succeeded",
+      "error": null,
+      "created_at": "2026-10-29T06:21:03.343671398Z",
+      "finished_at": "2026-10-29T06:21:20.643423102Z"
+    },
+    {
+      "id": "op-e735e6b2ca041ca249f54c7576631778",
+      "request_id": "release030-roll-3-20261028",
+      "kind": "roll",
+      "status": "succeeded",
+      "error": null,
+      "created_at": "2026-10-29T06:21:25.706811273Z",
+      "finished_at": "2026-10-29T06:21:33.243558609Z"
+    },
+    {
+      "id": "op-5c846c97e3d2bca123238a96bd43631b",
+      "request_id": "release030-inspect-epochs-4-20261028",
+      "kind": "inspect-epochs",
+      "status": "succeeded",
+      "error": null,
+      "created_at": "2026-10-29T06:21:38.988354111Z",
+      "finished_at": "2026-10-29T06:21:39.055770353Z"
+    },
+    {
+      "id": "op-31bc18d4c60e7d425eeda27cb740344a",
+      "request_id": "release030-start-5-20261028",
+      "kind": "start",
+      "status": "succeeded",
+      "error": null,
+      "created_at": "2026-10-29T06:21:46.182349449Z",
+      "finished_at": "2026-10-29T06:21:55.897585032Z"
+    },
+    {
+      "id": "op-de6fb06375f77d7bc72e2c844934e8a3",
+      "request_id": "release030-stop-6-20261028",
+      "kind": "stop",
+      "status": "succeeded",
+      "error": null,
+      "created_at": "2026-10-29T06:22:02.515695612Z",
+      "finished_at": "2026-10-29T06:22:08.094910141Z"
+    }
+  ],
+  "cli": {
+    "offline_help_entries": 130,
+    "simulated_commands": 57,
+    "simulated_tasks": 6
+  },
+  "tests": {
+    "full_go_suite": "passed",
+    "go_vet": "passed",
+    "theme_qml": "20 UI + 5 profile + real isolated IPC passed",
+    "dms_qml": "7 passed before final presentational text change",
+    "skill_package": "5 passed",
+    "skills_frontmatter": "both valid using /usr/bin/python3",
+    "ci_desktop_installer": "all passed; native manifest assertion fixed by literal 0.3.0 loaded-QML version and retested 8/8",
+    "race_suite": "running"
+  },
+  "visual_fixture": "scripts/test-plugin-cohesion.py",
+  "visual_evidence": "/tmp/omabit-plugin-cohesion-030c",
+  "retention": "2026-10-28-release-retention.json",
+  "limits": [
+    "Not yet frozen, published, or qualified as stable",
+    "Actual stable artifact upgrade and cold startup remain release gates",
+    "Native DEV styling installation pending"
+  ]
+}

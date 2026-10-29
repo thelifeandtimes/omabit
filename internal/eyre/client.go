@@ -38,7 +38,8 @@ var codePattern = regexp.MustCompile(`^[a-z]{6}(-[a-z]{6}){3}$`)
 func ValidShip(s string) bool { return len(s) >= 4 && len(s) <= 128 && shipPattern.MatchString(s) }
 
 // Origin never contains a path, userinfo, query, or fragment. Plain HTTP is
-// supported only for literal loopback addresses; all other origins require TLS.
+// supported for explicitly selected local, LAN/VPN and public endpoints. HTTP
+// provides no transport encryption; redirects and ambient proxies remain disabled.
 func Origin(raw string) (string, error) {
 	if len(raw) > 2048 || strings.ContainsAny(raw, "\r\n\t ") {
 		return "", errors.New("invalid ship origin")
@@ -48,7 +49,7 @@ func Origin(raw string) (string, error) {
 		return "", errors.New("ship URL must be an origin without credentials, path, query, or fragment")
 	}
 	if u.Scheme != "https" && u.Scheme != "http" {
-		return "", errors.New("ship origin requires HTTPS, or HTTP on a literal loopback address")
+		return "", errors.New("ship origin requires HTTPS or HTTP")
 	}
 	host := strings.ToLower(u.Hostname())
 	if strings.ContainsAny(host, "%\\") || host == "" {
@@ -59,11 +60,23 @@ func Origin(raw string) (string, error) {
 			return "", errors.New("use an ASCII or punycode ship host")
 		}
 	}
-	if u.Scheme == "http" {
-		ip, err := netip.ParseAddr(host)
-		if err != nil || !ip.IsLoopback() {
-			return "", errors.New("plain HTTP is restricted to literal loopback addresses")
+	if ip, err := netip.ParseAddr(host); err == nil {
+		ip = ip.Unmap()
+		if ip.IsUnspecified() || ip.IsMulticast() {
+			return "", errors.New("ship host must be a unicast address")
 		}
+	} else {
+		if len(host) > 253 || regexp.MustCompile(`^[0-9.]+$`).MatchString(host) {
+			return "", errors.New("invalid ship hostname")
+		}
+		for _, label := range strings.Split(host, ".") {
+			if !regexp.MustCompile(`^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$`).MatchString(label) {
+				return "", errors.New("invalid ship hostname")
+			}
+		}
+	}
+	if strings.HasSuffix(u.Host, ":") {
+		return "", errors.New("invalid ship port")
 	}
 	port := u.Port()
 	if port != "" {
@@ -126,10 +139,18 @@ func New(origin, ship string) (*Client, error) {
 func (c *Client) Close() { c.http.CloseIdleConnections(); c.session = session{} }
 
 func (c *Client) request(ctx context.Context, method, p string, body []byte, auth bool, headers http.Header) (*http.Response, error) {
+	return c.requestWithSession(ctx, method, p, body, auth, headers, false)
+}
+
+// allowExpired is restricted to exact-session cleanup, never data requests.
+func (c *Client) requestWithSession(ctx context.Context, method, p string, body []byte, auth bool, headers http.Header, allowExpired bool) (*http.Response, error) {
 	if !ValidPath(p) {
 		return nil, errors.New("invalid Eyre path")
 	}
-	if auth && (c.session.Value == "" || !time.Now().Before(c.session.Expires)) {
+	if allowExpired && (method != "POST" || p != "/~/logout" || !auth || len(body) != 0) {
+		return nil, ErrProtocol
+	}
+	if auth && (c.session.Value == "" || !allowExpired && !time.Now().Before(c.session.Expires)) {
 		return nil, ErrAuth
 	}
 	req, err := http.NewRequestWithContext(ctx, method, c.origin+p, bytes.NewReader(body))
@@ -287,12 +308,16 @@ func (c *Client) ExportSession() ([]byte, error) {
 }
 
 func (c *Client) RestoreSession(data []byte) error {
+	return c.restoreSession(data, false)
+}
+
+func (c *Client) restoreSession(data []byte, allowExpired bool) error {
 	defer clear(data)
 	var s session
 	if len(data) > 16384 || json.Unmarshal(data, &s) != nil || s.Origin != c.origin || s.Ship != c.ship || s.Name != "urbauth-"+c.ship || s.Value == "" || (&http.Cookie{Name: s.Name, Value: s.Value}).Valid() != nil {
 		return errors.New("stored ship session is invalid or belongs to another origin")
 	}
-	if !time.Now().Before(s.Expires) {
+	if s.Expires.IsZero() || !allowExpired && !time.Now().Before(s.Expires) {
 		return ErrAuth
 	}
 	c.session = s

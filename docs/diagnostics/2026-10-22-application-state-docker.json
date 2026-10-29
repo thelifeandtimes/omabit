@@ -1,0 +1,1821 @@
+{
+  "passed": true,
+  "scope": "private no-NIC QEMU guest with its own rootless Docker; clean receiver container replacement, persistent application and channel recovery",
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-docker-state16",
+  "independent_verification": {
+    "passed": true,
+    "result_sha256": "6c88e46f3e2d63fa599413371ed294c73f07415c17b58ec8789bd2d92d46733a",
+    "seconds": 1450.33,
+    "subscription_revisions": [
+      0,
+      1,
+      2,
+      3,
+      3,
+      4
+    ],
+    "subscription_cursors": [
+      1,
+      2,
+      3,
+      4,
+      1,
+      2
+    ],
+    "writes": 4,
+    "observations": 13,
+    "same_pier_container_replacement": true,
+    "sessions_retained": true,
+    "both_channels_deleted": true,
+    "clean_stops": [
+      "nec",
+      "nec",
+      "zod"
+    ],
+    "scope_inactive": true,
+    "original_artifacts_and_disks_verified": true,
+    "extracted_files_verified": 16
+  },
+  "inputs": {
+    "appliance": "/tmp/omabit-import-appliance-20261022-15",
+    "build": {
+      "exercise_import": false,
+      "exercise_fake_network": true,
+      "network_state": true,
+      "import_mode": "rename",
+      "interrupt_copy": false,
+      "restore_copy": false,
+      "restore_ui": false,
+      "ui_source_sha256": {},
+      "root_disk_gib": 12,
+      "packages_manifest_sha256": "c9736a95de42fda4edcee2a72675449930bcd57cd110ef704a638e07f68c2cc9",
+      "kernel_source": "/usr/lib/modules/7.2.11-arch1-1/vmlinuz",
+      "modules": 29,
+      "artifacts": {
+        "base.raw": "720efd4dbb44e4ee95535e5a95dcd3a56ac24b47b9ffe5084932827e97be3150",
+        "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+        "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+        "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+      },
+      "source_sha256": {
+        "scripts/qualification/imports/appliance.py": "997f9850388eedc1ac6e2cdf506958413f6ed0cfec595e87bc95eaf8d263bafe",
+        "scripts/qualification/imports/guest.py": "c80b76bd2ac0e99fba114de878145338ac8e548684d8a1cd88a15c28e5390ce6",
+        "scripts/qualification/imports/import_case.py": "27ae2fd0628db1f00aedde980c427c9d76e7ecd6a5cf0fde2c8ae5920ec31e0e",
+        "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+        "scripts/qualification/fake-networks/network_case.py": "e94598baa305334eb909c71445ee61a32b13d0837f80b382677cf866cda5d0db",
+        "scripts/qualification/fake-networks/state_case.py": "58250c80ee6b860ee9988c3397418b8396c0f0f0195465507bf8762ba5451bf6",
+        "scripts/qualification/fake-networks/omabit-state.hoon": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f"
+      },
+      "runner_sha256": "324dac52a969b3d5fd8828dafce25ab6c9012da923dcbf4656d9750b4c8fc4c4",
+      "collector_sha256": "72b8b2c0b40d81367a3a44f56fb08fd85b7252eb4d992b647f7c97c875bc3901"
+    },
+    "qemu": {
+      "version": "QEMU emulator version 11.1.2\nCopyright (c) 2003-2026 Fabrice Bellard and the QEMU Project developers",
+      "executable": "/tmp/omabit-import-vm-tools-20261022/tools/usr/bin/qemu-system-x86_64",
+      "environment": {
+        "LD_LIBRARY_PATH": "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib",
+        "QEMU_MODULE_DIR": "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/qemu"
+      },
+      "dependencies": "linux-vdso.so.1\n\tlibcapstone.so.5 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libcapstone.so.5\n\tlibgnutls.so.30 => /usr/lib/libgnutls.so.30\n\tlibpng16.so.16 => /usr/lib/libpng16.so.16\n\tlibpixman-1.so.0 => /usr/lib/libpixman-1.so.0\n\tlibz.so.1 => /usr/lib/libz.so.1\n\tlibjpeg.so.8 => /usr/lib/libjpeg.so.8\n\tlibsasl2.so.3 => /usr/lib/libsasl2.so.3\n\tlibsnappy.so.1 => /usr/lib/libsnappy.so.1\n\tliblzo2.so.2 => /usr/lib/liblzo2.so.2\n\tlibnuma.so.1 => /usr/lib/libnuma.so.1\n\tlibkeyutils.so.1 => /usr/lib/libkeyutils.so.1\n\tlibgio-2.0.so.0 => /usr/lib/libgio-2.0.so.0\n\tlibgobject-2.0.so.0 => /usr/lib/libgobject-2.0.so.0\n\tlibglib-2.0.so.0 => /usr/lib/libglib-2.0.so.0\n\tlibrdmacm.so.1 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/librdmacm.so.1\n\tlibibverbs.so.1 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libibverbs.so.1\n\tlibzstd.so.1 => /usr/lib/libzstd.so.1\n\tlibslirp.so.0 => /usr/lib/libslirp.so.0\n\tlibvdeplug.so.3 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libvdeplug.so.3\n\tlibxdp.so.1 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libxdp.so.1\n\tlibbpf.so.1 => /usr/lib/libbpf.so.1\n\tlibdw.so.1 => /usr/lib/libdw.so.1\n\tlibcbor.so.0.14 => /usr/lib/libcbor.so.0.14\n\tlibudev.so.1 => /usr/lib/libudev.so.1\n\tlibdaxctl.so.1 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libdaxctl.so.1\n\tlibseccomp.so.2 => /usr/lib/libseccomp.so.2\n\tlibfdt.so.1 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libfdt.so.1\n\tlibpam.so.0 => /usr/lib/libpam.so.0\n\tlibfuse3.so.4 => /usr/lib/libfuse3.so.4\n\tlibaio.so.1 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libaio.so.1\n\tliburing.so.2 => /usr/lib/liburing.so.2\n\tlibgmodule-2.0.so.0 => /usr/lib/libgmodule-2.0.so.0\n\tlibm.so.6 => /usr/lib/libm.so.6\n\tlibgcc_s.so.1 => /usr/lib/libgcc_s.so.1\n\tlibc.so.6 => /usr/lib/libc.so.6\n\tlibleancrypto.so.1.9 => /usr/lib/libleancrypto.so.1.9\n\tlibp11-kit.so.0 => /usr/lib/libp11-kit.so.0\n\tlibidn2.so.0 => /usr/lib/libidn2.so.0\n\tlibunistring.so.5 => /usr/lib/libunistring.so.5\n\tlibtasn1.so.6 => /usr/lib/libtasn1.so.6\n\tlibhogweed.so.7 => /usr/lib/libhogweed.so.7\n\tlibnettle.so.9 => /usr/lib/libnettle.so.9\n\tlibgmp.so.10 => /usr/lib/libgmp.so.10\n\t/lib64/ld-linux-x86-64.so.2 => /usr/lib64/ld-linux-x86-64.so.2\n\tlibstdc++.so.6 => /usr/lib/libstdc++.so.6\n\tlibmount.so.1 => /usr/lib/libmount.so.1\n\tlibffi.so.8 => /usr/lib/libffi.so.8\n\tlibpcre2-8.so.0 => /usr/lib/libpcre2-8.so.0\n\tlibnl-3.so.200 => /usr/lib/libnl-3.so.200\n\tlibnl-route-3.so.200 => /usr/lib/libnl-route-3.so.200\n\tlibelf.so.1 => /usr/lib/libelf.so.1\n\tliblzma.so.5 => /usr/lib/liblzma.so.5\n\tlibbz2.so.1.0 => /usr/lib/libbz2.so.1.0\n\tlibuuid.so.1 => /usr/lib/libuuid.so.1\n\tlibkmod.so.2 => /usr/lib/libkmod.so.2\n\tlibaudit.so.1 => /usr/lib/libaudit.so.1\n\tlibblkid.so.1 => /usr/lib/libblkid.so.1\n\tlibsystemd.so.0 => /usr/lib/libsystemd.so.0\n\tlibcrypto.so.3 => /usr/lib/libcrypto.so.3\n\tlibcap-ng.so.0 => /usr/lib/libcap-ng.so.0\n\tlibbrotlienc.so.1 => /usr/lib/libbrotlienc.so.1\n\tlibbrotlidec.so.1 => /usr/lib/libbrotlidec.so.1\n\tlibbrotlicommon.so.1 => /usr/lib/libbrotlicommon.so.1",
+      "files": {
+        "/lib64/ld-linux-x86-64.so.2": "f5e11cc62f8f2c24dff532982559f4303dba3b17e7450551372a88c8e7ea8757",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/bin/qemu-img": "3a57bce6765bfb73a75591dba2ac40d985cccde97d371e95537ecbf16d949d30",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/bin/qemu-system-x86_64": "a2250f5e2b3b07c754473c0817df1cccf6c3c2443fc616dc474c4c311fa6ef1c",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libaio.so.1": "15cfed3ce7e472de5b87849812d4fc91271a81a0bc64c99e0971d02b11343685",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libcapstone.so.5": "682d8f1d8dbad76b2748ca55f2e5ddbbdf23ab61f5c5933aecfbbf07a3e546b9",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libdaxctl.so.1": "9332658f61c2e7adc3cae33a4d58270ec0600297a8b685d031752e9753e200d0",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libfdt.so.1": "a3ecad741b53e3c86322ad993a772292485d9f0004d0c904a3d93f091bf980c1",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libibverbs.so.1": "22f7c3d8fc7dc0830fdf527927506687f72f73abb3a2effbe13c67e8a59ceeb5",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/librdmacm.so.1": "dc41c7107282441217f26637e734bb1aadcd93a82368046240bc1ce502e37b8b",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libvdeplug.so.3": "a08ae4bb52776d7fd472b62fda292537c0f3420db5d1b6dc5b921779935d2953",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libxdp.so.1": "6bbe9878994a920d70bc706a850800ad7ba49a90c427a030b30bdc62c9fbefd0",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/qemu/qemu-bridge-helper": "d2b96992829d9ce79e95946894610aa075299a27a1221b3a193527d3b2c947cb",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/bios-256k.bin": "b7dea28b1ab93d43f427232f5f6ab07c828fd97765d9b1daaf1b1712b39946e2",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/bios-coreboot.bin": "7288ec3bab594a0296678f83ee63e77987e76ad540ac258c03d989cbe467c631",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/bios-csm.bin": "050061626f94392ff8e07c350f6a7e2391f9f629c19c55154ca60b122f00d95d",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/bios-microvm.bin": "e6d486087552ce84a49236c559bbf4572dde404824f82804209739c4f7db8ec6",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/bios.bin": "02ea00f4d3ee2e849641da2602fff7f34c4855115d9ddcb20ad549334983ec6d",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-e1000.rom": "f37222fcdf0481bfbaf7a16d9aaf740aeb41d3d24c187801eb6e9a628cec0fc8",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-e1000e.rom": "102c20348be2d0ebe45a77b076b31848182c2f7b4364775b6bc2ece6e97b4024",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-eepro100.rom": "2b5b55ba8afae7b5ef7116606babf60e6ceaa531c345d54542857cc3fbe3912e",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-ne2k_pci.rom": "9925e0a34547118110479d8fc4e01092a0a73e0a236416e9ff862655b46751f7",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-pcnet.rom": "71c494fde94efa9871cf43868d7e3c8f4190e406d47a5102a2a21b36ded8a162",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-rtl8139.rom": "4cdd69a7f5c6ce7aec3a3f20a034dc80e1d22aa37a739c364378952d997a32c7",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-virtio.rom": "26be36901db7f8181c306cc62bd74891d8646528965a78e40cceadba5dd7c8e7",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-vmxnet3.rom": "33e833123ad9831df94b2d623a17f91e4c779e3cb799baa97058f5972676a32a",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/firmware/50-edk2-ovmf-x86_64-secure-4m.json": "f8639d4989f8fa075f0b7e3034a42e6d3d7222843a36d6b71bf436b7667fed67",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/firmware/60-edk2-ovmf-microvm-4m.json": "07ca936a85204fa36b2bc99a997f286b324e5027437870a4ac14030a3e1e4cdd",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/firmware/60-edk2-ovmf-x86_64-4m.json": "3f7c88ac4fb8c88a37a110f257e95c1ea8cff9599df174c6d251b48873d9b62a",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/firmware/80-edk2-ovmf-ia32-on-x86_64-secure-4m.json": "547d70d01253154ae56f3a7772b34677b45bdf8ced3af59d999cfd6e17e458b5",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/firmware/81-edk2-ovmf-ia32-on-x86_64-4m.json": "06ff2d15c5c8c4c30917a26004a8c35f6abfda07949a77434c83bcc5ed1cf987",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/ar": "d42b5028288dec48a49be18ba88f3bc181ddb85478eb22cde02c0e257078783f",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/bepo": "48b53e6390600d2003c063c16973d62fc2e4f231e71ad76995ba48a668b2c1eb",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/cz": "6bd3123cd0612a8efd9ebf84a9ab3c0bfb88ec80ad9997dd47fc351e4bf99875",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/da": "8e4a853e563c6f843e8bf030744128e1e413795a7284c83fe3bd95bf8650e36d",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/de": "a112bc0d16d70e15b7ea8723a62ee4fea7b81b84ba41974e51c644748dfc9798",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/de-ch": "1c0ee8f79a8b33b8139d40ffb8dc58afcb647bb0844dc4710327e58d60522365",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/en-gb": "9c986b5cee6eda68ac876c9e850b7a4bb699bab41eea647db9c868153bda952f",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/en-us": "3a881394ad70802c5ceee8ba8e69e21252aa81b6873930f4abaf5362c035b267",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/es": "a5a2064c1ff359c3f65db6be2774cc3c4bccaefdb5800cfc4a16855e01ac0534",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/et": "6d67da27db0955fa8024fcabfb726ec0ee158475579b2e62ce2cac90bf570ea0",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/fi": "cbf540f202d3705cf8f931e94fbdb66b8b0c4b43b264e72996656ad952c34495",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/fo": "849d6cbf7091adbb499faa9a8b58e07ca360ea601c1c6415dbecfbf084bdf420",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/fr": "b4cb72b5e3262b116d48dba60370f8c2d247550f4a29b01a8a40a131352ea1ca",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/fr-be": "b3eb892ac5009c34d2e203fed7c283be92316ff6a5230d0d43e738c93af0fa72",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/fr-ca": "416f6c418215bb3c1d6fae417001d7a3fec9c334a5f40732e7c00ca8ca16f3c1",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/fr-ch": "ca441498da98c61ee4bc0ac44d3b400d7e6d74dc3d82e7d6e63ebe703bf6a7db",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/hr": "d1a341b48e6bb13b5e71d61170bd939528f1b1afa6db6e72b1008b2139d2da03",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/hu": "c59f2b2a43d846ee56eceee4aa6f58c236a9030fb1f43e52130636f05b916e56",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/is": "21bda355bddaa2f119736325096a43de5827b81c9ce85e75183a238328a8a892",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/it": "14c3743e50dc86a36ea580ef1c783c425efa68efca7bd03691fa000f328609ae",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/ja": "770fff58b972d99e1d98afdcc842c703307530825213f76875153b0f87494af3",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/lt": "f8f2058ce59ec4c87b9c2be6823027a47fd27c73af55c50760d6b7f342ea101d",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/lv": "6a48d8ef57b65ac6aff6d4ca3d1634ae972a7102c7789d0869f18b51ae3bace4",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/mk": "cd23e96400f0b35c0f0b8a61a6a815403141f6865da783136bdc77305795f5f1",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/nl": "28b84d4a28f691f6cce6a036aa70f998cdb31a67da826e6ac75a7825372dcd50",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/no": "4e1161a038b0859f4857cbf300439b78b9084ac49f149a80fafc962f6663a2ec",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/pl": "1d7e2eceb3aa8b82eab734710fed1c18521b3bf98dcdc0dba5a28e5cb8517381",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/pt": "003410ccbae910562a1d0196c601d2d90a67b19b3ff3bbddb369de4e55c96635",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/pt-br": "bd6338ac247115572db729449a4804068cd6b11fe6540f71118519f2964ccb56",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/ru": "aa9bc12417288ec264814fccd4a8594445d5bb76a85bc97f6db533f4b707c081",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/sl": "bea8fe8ac0ca281038ac0e1788c39f090507ff0646bd4f57cc18f6873b030147",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/sv": "97731fbe91f254d81c005ffc232180a8dd7baeb6d699f0f0fc15e341672f96b3",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/th": "fe9a65e15b015788715d24415ad6cf55ad21a354c60a925bb736ee1d45f929de",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/tr": "7819c4afbcd507db0b68fd7f8855f90710c64d54c29d2328742121093d3fbe82",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/kvmvapic.bin": "cdf057a71b07e3b52b19cbe210bdefa59250d01a9810b960f7fe1f98eed95a27",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/linuxboot_dma.bin": "9c49e255340c78fc12e54ed043462bca02fb7fca29b7cfab62ff88a5344b6950",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/multiboot_dma.bin": "46def003b1c413cc4a5880d858ca54456ad6978d5fdb6e1b7d086b2905a66df0",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pvh.bin": "918ff03a118615c2f4611a5df2d9496aabe099b5cfaaf69e544ebf973305d59d",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pxe-e1000.rom": "981a728f95b7a01645645e9b753cfb764c9eb59266fa888ac58d7008fbb48c10",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pxe-eepro100.rom": "07b89a742e0f6d0e92dafe57b0f28c493436d0e1e07b7b77e728490c1f7b45dd",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pxe-ne2k_pci.rom": "bb9c0eaad36b9b4ce26c5f348bd05a832c8bf83ef38391db0ce9b51de8523ac7",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pxe-pcnet.rom": "92358396c05b3346c6bfd52bbf2a47978d0a8c6ddea932ee091a24faefbd489e",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pxe-rtl8139.rom": "d491351e37a50eb5a40e98a9f6b4d85010ee60fb9e64129d65ea10839287f138",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pxe-virtio.rom": "6994337fe07783a6233072e33771dc4f58260edc3269debe677a5227b264bfdc",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/qboot.rom": "9b9dfc6c25740d6225625570d71cab6805cc9216e68c8932e343266daaeb8c4b",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/qemu-nsis.bmp": "93f79a2b6e0f97bc7b7c75ded89a3c4c7657af37c087cf067470771e0affda9c",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-ati.bin": "6f8cd4ee029c871563012a8437e0e20de411e85b0d74974211e3319cf7125cb0",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-bochs-display.bin": "2d9cb6d353c3bb40caa8a0154408992051feeda5ab6d4dd311e41875bcca5f9c",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-cirrus.bin": "895134681e126a0a06197e3ec6827e9582377a6f925aed20e8bbf3f70e79a818",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-isavga.bin": "21c17d970b84b7e2d6e43edf3ed22c449be8d805470fbebcd1933171cca86752",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-qxl.bin": "ea0ee86b96fdb21c71b307682f59060b1f1f2aaa5edda6e1c0584c76be3d4f5c",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-ramfb.bin": "7973e917c076474d41c8ced24d35b5b13a9e3b367cc5fbcd06db6e05977cc95d",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-stdvga.bin": "7c2d15feadfcaf35bd8b9d20983f32c4dd9895a6045a4c9e67a28727bc9b629c",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-virtio.bin": "7df20e162f7f97904676822f0b45b34f7aa97350b40188abf7cc9afa3216c924",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-vmware.bin": "d27e4a8031b448a5a242c2d5c95e6c2f14c337e9409046040d68394b52933514",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vof-nvram.bin": "cf97201f9403212ab75287bf209bfb7710cb5f253e8fe80723cf43760a9e8a12",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vof.bin": "8c88070f252075111468e7b2a8043209e7798c3fb136326227390ea50f168f13",
+        "/usr/lib/libaudit.so.1": "16813308197ab091526836d4d9ee79b7780a49e63a0ee1d7e01da2b662d057c3",
+        "/usr/lib/libblkid.so.1": "aeaf48e3e206ee795262b7d83be9ba37803f1ee1391bb1ac48359ace60a9d2dd",
+        "/usr/lib/libbpf.so.1": "6fccb9cb5bd2c5e479e737c7bb5ac267a6da0c4b2bf1a5fc2063d89099043cea",
+        "/usr/lib/libbrotlicommon.so.1": "4f895094b7b6ff9c82909e6516bc9cf212e2ec5af451d39bf1bcbc5e5fa225b2",
+        "/usr/lib/libbrotlidec.so.1": "0883fb05fa42aa6a883722098530ab08551ed317e38a2311f5c96e94dd460979",
+        "/usr/lib/libbrotlienc.so.1": "8dbc539197d276310ce2750dcb73de5465a1259d46a5d1894e6138fd354bf5c7",
+        "/usr/lib/libbz2.so.1.0": "3265f0647d9157aaa820c5094eba03c5be0f101c49e9ffd21289978b8e1875af",
+        "/usr/lib/libc.so.6": "02c8c3d06180beee9c7d0392aa85736c7d19f274a81e7f8f0b3d9e28e0641524",
+        "/usr/lib/libcap-ng.so.0": "bc91f6b0794de524f4e155cf04a40470e9e53cb2a38fb0d84aaea05e09c61d11",
+        "/usr/lib/libcbor.so.0.14": "0126c6aac3405a9d184b281189a3e30f11bf668bd118bc94108bd96041bf5679",
+        "/usr/lib/libcrypto.so.3": "a75a864dcda6ef9e4dc29fad4b7988ca832b904c3915a63c920062c40763dae1",
+        "/usr/lib/libdw.so.1": "14a4563f6fce1ce85c449ee79f0d877984ecb16c71b18103b72b2b4f57dc8786",
+        "/usr/lib/libelf.so.1": "13d3e3cb54d6120d87a0569ac67be05c029f8cd2e4bf44e75936b2721c8e08af",
+        "/usr/lib/libffi.so.8": "b38bb3a55ba04dfbb5be68e881a72385d6c30010afffb1cf1dfc373b72c2278c",
+        "/usr/lib/libfuse3.so.4": "1a83f355838fd3815a5a9b1ba8eb1c0c978da1fb894193bde88ff32e5ce95b65",
+        "/usr/lib/libgcc_s.so.1": "e618cb9c90c2eb3a1dad1cfea5b6c1eebcf2e799ad805976f4ae47bdd61c716a",
+        "/usr/lib/libgio-2.0.so.0": "b38001cca69b2890a22fd3f6590bea7392bf489009de7ddfb6dbf296a133685e",
+        "/usr/lib/libglib-2.0.so.0": "1e8739af791b1a2f1f01fc7c6f3b9158888387d5a816195475e406438d41b688",
+        "/usr/lib/libgmodule-2.0.so.0": "b259a089b405eaa747fa15b62800301dfc948523f547dec84ec5ea679cd51a4b",
+        "/usr/lib/libgmp.so.10": "0e263305fd34434c80b9af2ea34fc6131887418d8301e913b3220953dc9a6e49",
+        "/usr/lib/libgnutls.so.30": "34fb5f09418585343efa342a2a4b57904544d6f562d7179a5eeaca60b0abd0c6",
+        "/usr/lib/libgobject-2.0.so.0": "ec51ca8b317565beecf3b370743491a9da108f885ddb0a01976c3eac1711dd67",
+        "/usr/lib/libhogweed.so.7": "93c5553921f308f65488a9877a3dce1284adeff729a011f7b4522ea6b4181a87",
+        "/usr/lib/libidn2.so.0": "9a36fa67dc82ce0e5dc38ef190c76231f532676f7ba13e363fc1df16a9c50a15",
+        "/usr/lib/libjpeg.so.8": "d6cd94abf2b7a9aa59a0e056c83bbfdf8900fbf7101bfba8ea0ee1ca45958665",
+        "/usr/lib/libkeyutils.so.1": "a82e692581b6215475c03538fa4b25681b5c71e8554c67afa7e34074b968b0d7",
+        "/usr/lib/libkmod.so.2": "9cfb555f09802059ce19876d93fc2fbae9e7ec560e6f089cade31383831d0356",
+        "/usr/lib/libleancrypto.so.1.9": "6f7c44d5854ca7af86556bb300efdda8346f316e652d3f7e7ee0bf5cf55b41c4",
+        "/usr/lib/liblzma.so.5": "6e4dae5b099ec0e40a56beead2e51f858535aa794b5a8574a6723dfc1da8a3c1",
+        "/usr/lib/liblzo2.so.2": "b314f7eabdd5d8adcf0498d5908f1454c5bbf5d719b3f67ba2bdc032fdb93773",
+        "/usr/lib/libm.so.6": "965106704753eefe8c31ae7da6daba3ead3d18c52b19b5fcc41178bcc4aa999d",
+        "/usr/lib/libmount.so.1": "967882491416426236028ba5290b3c88ed9b108d69f3a272a317341146fb2c09",
+        "/usr/lib/libnettle.so.9": "5cfa2daa591d62161d2f26aa4b8347e3704da1b830e9aba0a312ed1b5f0c7a38",
+        "/usr/lib/libnl-3.so.200": "71ef8ddfe4b010d836715447b2bad98466c6ca4890777bc945bf968a0a18b146",
+        "/usr/lib/libnl-route-3.so.200": "80cc3c0f3015a5b2ca085ca300b2b9e679f2287aa8a996feca9ed85316c3b3de",
+        "/usr/lib/libnuma.so.1": "847c5f5afbe586c2a7592c344080caf3268846af1f3be90175447e12791fad51",
+        "/usr/lib/libp11-kit.so.0": "1b87739328f0b11906554145ab4e506281644d94a5b6195cd11594aad5e310b8",
+        "/usr/lib/libpam.so.0": "a5f547ec7c5c6e5ec814f2596b47f68d5948e7be18c6254b0b2e5cd55cbda7eb",
+        "/usr/lib/libpcre2-8.so.0": "bfe4fd9948f4ad1e907ec22525515f578eb9eeb181a44741948d99746d0f8e58",
+        "/usr/lib/libpixman-1.so.0": "97d04f1a534e26e26cf993a350b13ddc33fa4f9741444b08c27bc04582c70fd8",
+        "/usr/lib/libpng16.so.16": "36579634fdc89d6b7b567f1a890c13194bce0ba95e65ada1f775af1e7452b398",
+        "/usr/lib/libsasl2.so.3": "e934ae380941bbc7ea038ba7a7d6ed604c15fe9fdbcf6e6d64412c66e33ed5c5",
+        "/usr/lib/libseccomp.so.2": "7cb971c30c6e854dedffe8b74f7548ed8f7b0f2e03233cd00f61f76a334dc5c3",
+        "/usr/lib/libslirp.so.0": "91ebce3a6429ccb3bf5331fdb06360ad2229d28c59cf0d43ae48e251535b4068",
+        "/usr/lib/libsnappy.so.1": "7d0662e63f33826af6d28c5712cbe2432c8ec3ab10cefe9a763f2befd5b9d781",
+        "/usr/lib/libstdc++.so.6": "f5fc7380f2ae46fa4053a64be04e7b98109f1066a4bbfff3c37042488aa0be0e",
+        "/usr/lib/libsystemd.so.0": "3c155e06e7b765417184c3b93a23735742c8f9be4f7e32a670fce0da2ba46540",
+        "/usr/lib/libtasn1.so.6": "37c55560d3f3a76a039e78e3394e4ab0e17b1d0f68d8a9b9c5916f9842aa4ca1",
+        "/usr/lib/libudev.so.1": "5e41a27ff6a9c8016b16f4b69b41a1d63d51973d0df2c6a895ab51ba006b880c",
+        "/usr/lib/libunistring.so.5": "ba7a4afb4b6f823d64ebe324416e182cd42a981dba049e3ddcfa1c9af03cb7f3",
+        "/usr/lib/liburing.so.2": "b01799e8295bc119d614bf061baad1f2a2a494a0787a057f49997244daf110c5",
+        "/usr/lib/libuuid.so.1": "7881e0279d5ce79b0d8ace923e94df9b543bc8dd8152df0894358b862e1725be",
+        "/usr/lib/libz.so.1": "6c78c5e58c3bb49a1cd151a95cdf1a17fe07a91a57a59e0279b984c533075ca9",
+        "/usr/lib/libzstd.so.1": "f023d49e85fb22057bfdd21857263d2638b73356c06f3b342f678a75212379f8",
+        "/usr/lib64/ld-linux-x86-64.so.2": "f5e11cc62f8f2c24dff532982559f4303dba3b17e7450551372a88c8e7ea8757"
+      }
+    },
+    "unit": "omabit-import-guest-da006b2620e04200b7395b4742290665",
+    "deadline_seconds": 3600,
+    "memory_max": "12G",
+    "guest_ram": "7168M",
+    "vcpus": 2,
+    "import_mode": "rename",
+    "source_disk_gib": null,
+    "storage_admission": {
+      "filesystem_available_bytes": 24969027584,
+      "quota": {
+        "hard_blocks": 52485328,
+        "soft_blocks": 52485328,
+        "used_bytes": 42212192256,
+        "hard_inodes": 0,
+        "soft_inodes": 0,
+        "used_inodes": 63004,
+        "block_time": 0,
+        "inode_time": 0,
+        "valid": 63
+      },
+      "quota_available_bytes": 11532783616,
+      "available_bytes": 11532783616,
+      "required_bytes": 8589934592
+    },
+    "storage_driver_sha256": "5752ff1b1b47f0c6eeb981b662bef8a192dc234fb50466518b15e7e9bc90ccd3",
+    "boot_driver_sha256": "997f9850388eedc1ac6e2cdf506958413f6ed0cfec595e87bc95eaf8d263bafe"
+  },
+  "result": {
+    "ok": true,
+    "project": "omabit-network-a",
+    "ships": {
+      "zod": {
+        "container": "a2e6ca471b5310dc6a77086bcee2b253d9ad029678b7b82eb334c359abcde91d",
+        "pier": "/home/lab/fake-network/zod/zod",
+        "http_port": 8081,
+        "port_inventory": [
+          [
+            "12321",
+            "insecure",
+            "loopback"
+          ],
+          [
+            "8081",
+            "insecure",
+            "public"
+          ]
+        ],
+        "loopback_port": 12321,
+        "authenticated_inventory": true
+      },
+      "nec": {
+        "container": "39a2dec63b4351ad14805ba242e2737543732af23536bb0d2a4a982d0a659e1b",
+        "pier": "/home/lab/fake-network/nec/nec",
+        "http_port": 8082,
+        "port_inventory": [
+          [
+            "12322",
+            "insecure",
+            "loopback"
+          ],
+          [
+            "8082",
+            "insecure",
+            "public"
+          ]
+        ],
+        "loopback_port": 12322,
+        "authenticated_inventory": true
+      }
+    },
+    "messages": [
+      {
+        "phase": "first",
+        "sender": "~zod",
+        "receiver": "~nec",
+        "nonce": "omabit-first-9f4748e82c990f55fd52a3f5",
+        "receipt": "omabit-receipt-16849801131fd9d471439466a03683cc"
+      },
+      {
+        "phase": "first",
+        "sender": "~nec",
+        "receiver": "~zod",
+        "nonce": "omabit-first-a9da5d6831ed35cfd0017cbb",
+        "receipt": "omabit-receipt-485ef95dc0514e0b29e3e4b3bd6139f3"
+      },
+      {
+        "phase": "after-restart",
+        "sender": "~zod",
+        "receiver": "~nec",
+        "nonce": "omabit-after-restart-b4d936d7aa9c12dfd01b8433",
+        "receipt": "omabit-receipt-919cc70143906c182c77e4e67fd799a9"
+      },
+      {
+        "phase": "after-restart",
+        "sender": "~nec",
+        "receiver": "~zod",
+        "nonce": "omabit-after-restart-0ace90ccb5d7b99c64bb51a6",
+        "receipt": "omabit-receipt-fd808ec60b80e4a6076d2605fbbf0ef2"
+      }
+    ],
+    "attempts": [
+      {
+        "phase": "local-check",
+        "sender": "~zod",
+        "receiver": "~zod",
+        "nonce": "omabit-local-check-6d0a206e5bcccd3fe1b178ff",
+        "expected_receipt": "omabit-receipt-9685b3500b009cd3983cd88a1c555a0b",
+        "state": "acknowledged",
+        "transport": "local-khan-thread",
+        "http_status": 200,
+        "response_bytes": 50,
+        "response_sha256": "a71d7094ae636b6aaa18030329915c7938007f4450205b33d7a1b401232a699b",
+        "receipt": "omabit-receipt-9685b3500b009cd3983cd88a1c555a0b"
+      },
+      {
+        "phase": "local-check",
+        "sender": "~nec",
+        "receiver": "~nec",
+        "nonce": "omabit-local-check-731ee3570107516cd63603e2",
+        "expected_receipt": "omabit-receipt-7471e7dd82fb4dd270c848ba84e6e16f",
+        "state": "acknowledged",
+        "transport": "local-khan-thread",
+        "http_status": 200,
+        "response_bytes": 50,
+        "response_sha256": "7c71f961ab766ae62a92b891e589fc21d67eee1d31801fbcb7993d8c024399bb",
+        "receipt": "omabit-receipt-7471e7dd82fb4dd270c848ba84e6e16f"
+      },
+      {
+        "phase": "first",
+        "sender": "~zod",
+        "receiver": "~nec",
+        "nonce": "omabit-first-9f4748e82c990f55fd52a3f5",
+        "expected_receipt": "omabit-receipt-16849801131fd9d471439466a03683cc",
+        "state": "acknowledged",
+        "transport": "local-khan-thread",
+        "http_status": 200,
+        "response_bytes": 50,
+        "response_sha256": "62d162c1ecf646a57805915098854b6ebbed94496d621f2ceadac57192a601ad",
+        "receipt": "omabit-receipt-16849801131fd9d471439466a03683cc"
+      },
+      {
+        "phase": "first",
+        "sender": "~nec",
+        "receiver": "~zod",
+        "nonce": "omabit-first-a9da5d6831ed35cfd0017cbb",
+        "expected_receipt": "omabit-receipt-485ef95dc0514e0b29e3e4b3bd6139f3",
+        "state": "acknowledged",
+        "transport": "local-khan-thread",
+        "http_status": 200,
+        "response_bytes": 50,
+        "response_sha256": "c221448ec6976f0a9b66f7c529bba3f1254b0a138f5fb59b377695eb8410266b",
+        "receipt": "omabit-receipt-485ef95dc0514e0b29e3e4b3bd6139f3"
+      },
+      {
+        "phase": "nack",
+        "sender": "~zod",
+        "receiver": "~nec",
+        "nonce": "fail",
+        "expected_receipt": "omabit-receipt-abaac6050393136d31d6ea2d8e07ecfc",
+        "state": "rejected",
+        "transport": "local-khan-thread",
+        "http_status": 500,
+        "response_bytes": 827,
+        "response_sha256": "f7556a8cd58c6b8eaa95a59add66a47ea1518058ae5f9e1f297739c4ce9fd289",
+        "receipt": {
+          "term": "child-failed",
+          "tang": [
+            [
+              "thread-fail"
+            ],
+            [
+              "poke-fail"
+            ],
+            [
+              "poke-ack"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[275 5].[275 7]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[274 5].[275 7]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[273 3].[279 76]>"
+            ],
+            [
+              "poke-hi-fail"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[272 3].[279 76]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[271 15].[279 76]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[655 33].[655 51]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[655 28].[655 60]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[636 3].[673 5]>"
+            ],
+            [
+              "/lib/hood/helm/hoon:<[632 3].[673 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[132 34].[132 60]>"
+            ],
+            [
+              "/app/hood/hoon:<[132 18].[132 70]>"
+            ],
+            [
+              "/app/hood/hoon:<[121 21].[121 30]>"
+            ],
+            [
+              "/app/hood/hoon:<[121 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[120 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[119 3].[130 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[118 3].[135 5]>"
+            ],
+            [
+              "/app/hood/hoon:<[117 3].[135 5]>"
+            ],
+            [
+              "/sys/vane/gall/hoon:<[1.863 9].[1.863 37]>"
+            ]
+          ]
+        }
+      },
+      {
+        "phase": "after-restart",
+        "sender": "~zod",
+        "receiver": "~nec",
+        "nonce": "omabit-after-restart-b4d936d7aa9c12dfd01b8433",
+        "expected_receipt": "omabit-receipt-919cc70143906c182c77e4e67fd799a9",
+        "state": "acknowledged",
+        "transport": "local-khan-thread",
+        "http_status": 200,
+        "response_bytes": 50,
+        "response_sha256": "8594d997f2c34a990db51a906873ef977167f7e99d0ec24d78dae01d993e4d06",
+        "receipt": "omabit-receipt-919cc70143906c182c77e4e67fd799a9"
+      },
+      {
+        "phase": "after-restart",
+        "sender": "~nec",
+        "receiver": "~zod",
+        "nonce": "omabit-after-restart-0ace90ccb5d7b99c64bb51a6",
+        "expected_receipt": "omabit-receipt-fd808ec60b80e4a6076d2605fbbf0ef2",
+        "state": "acknowledged",
+        "transport": "local-khan-thread",
+        "http_status": 200,
+        "response_bytes": 50,
+        "response_sha256": "47a27f92443bf1d54ad05de8a6edc23eae75abf5ace8371d8c8f893511bf09a1",
+        "receipt": "omabit-receipt-fd808ec60b80e4a6076d2605fbbf0ef2"
+      }
+    ],
+    "local_checks": [
+      {
+        "phase": "local-check",
+        "sender": "~zod",
+        "receiver": "~zod",
+        "nonce": "omabit-local-check-6d0a206e5bcccd3fe1b178ff",
+        "receipt": "omabit-receipt-9685b3500b009cd3983cd88a1c555a0b"
+      },
+      {
+        "phase": "local-check",
+        "sender": "~nec",
+        "receiver": "~nec",
+        "nonce": "omabit-local-check-731ee3570107516cd63603e2",
+        "receipt": "omabit-receipt-7471e7dd82fb4dd270c848ba84e6e16f"
+      }
+    ],
+    "clean_stops": [
+      "nec",
+      "nec",
+      "zod"
+    ],
+    "anchor": "ea9f5b083bb09aa393a3f4f801467bd3fd42d81fc8b4a4da4788c9095722407d",
+    "network_namespace": "net:[4026532247]",
+    "ipv4_routes": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+    "network_devices": "Inter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:   39235     543    0    0    0     0          0         0    39235     543    0    0    0     0       0          0\n",
+    "cross_ship_sessions_refused": true,
+    "remote_nack_propagated": true,
+    "application_state": {
+      "ok": true,
+      "writes": [
+        {
+          "phase": "connected",
+          "entry": "omabit-state-718b0c010b3e1eb3fcbee9e3",
+          "receipt": "omabit-receipt-057e432c4b3d4c0df58c4a28da240a9e",
+          "state": "acknowledged",
+          "http_status": 200,
+          "response_bytes": 50,
+          "response_sha256": "d1d76c467e9f494abc47672efac2b1328ef06fbf35f3bda8d75de4510a901be1"
+        },
+        {
+          "phase": "disconnected-before-restart",
+          "entry": "omabit-state-5d106ab94f2ac1e8d1a279b0",
+          "receipt": "omabit-receipt-8592595ffd9d337cfc75f12135247ebf",
+          "state": "acknowledged",
+          "http_status": 200,
+          "response_bytes": 50,
+          "response_sha256": "8af24a43a73758904d00e89794363c148fc2d86b29118672f7b0ba9660e62ceb"
+        },
+        {
+          "phase": "existing-subscription-after-restart",
+          "entry": "omabit-state-5c1efc5e8b291245f67c5b0c",
+          "receipt": "omabit-receipt-2e9939a62f0fd161209321180c6336b7",
+          "state": "acknowledged",
+          "http_status": 200,
+          "response_bytes": 50,
+          "response_sha256": "6efe5c73aae5b619ec0b84eeed35d3bd04e8f9b83c8b2c26341157180a47707a"
+        },
+        {
+          "phase": "fresh-subscription-after-restart",
+          "entry": "omabit-state-cb46340bd798c6a8e3d621ad",
+          "receipt": "omabit-receipt-1343eade6d9179462fa310f2b2d65c2b",
+          "state": "acknowledged",
+          "http_status": 200,
+          "response_bytes": 50,
+          "response_sha256": "4038e019dcb645e24f30c8390316beb3315b20397ac714d96a150c73880f9ccf"
+        }
+      ],
+      "observations": [
+        {
+          "via": "scry",
+          "state": {
+            "revision": 0,
+            "entries": []
+          }
+        },
+        {
+          "via": "subscription",
+          "channel": "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+          "events": [
+            [
+              0,
+              {
+                "ok": "ok",
+                "id": 1,
+                "response": "subscribe"
+              }
+            ],
+            [
+              1,
+              {
+                "json": {
+                  "revision": 0,
+                  "entries": []
+                },
+                "id": 1,
+                "response": "diff"
+              }
+            ]
+          ],
+          "cursor": 1,
+          "state": {
+            "revision": 0,
+            "entries": []
+          }
+        },
+        {
+          "via": "scry",
+          "state": {
+            "revision": 1,
+            "entries": [
+              "omabit-state-718b0c010b3e1eb3fcbee9e3"
+            ]
+          }
+        },
+        {
+          "via": "subscription",
+          "channel": "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+          "events": [
+            [
+              2,
+              {
+                "json": {
+                  "revision": 1,
+                  "entries": [
+                    "omabit-state-718b0c010b3e1eb3fcbee9e3"
+                  ]
+                },
+                "id": 1,
+                "response": "diff"
+              }
+            ]
+          ],
+          "cursor": 2,
+          "state": {
+            "revision": 1,
+            "entries": [
+              "omabit-state-718b0c010b3e1eb3fcbee9e3"
+            ]
+          }
+        },
+        {
+          "via": "scry",
+          "state": {
+            "revision": 2,
+            "entries": [
+              "omabit-state-718b0c010b3e1eb3fcbee9e3",
+              "omabit-state-5d106ab94f2ac1e8d1a279b0"
+            ]
+          }
+        },
+        {
+          "via": "scry",
+          "state": {
+            "revision": 2,
+            "entries": [
+              "omabit-state-718b0c010b3e1eb3fcbee9e3",
+              "omabit-state-5d106ab94f2ac1e8d1a279b0"
+            ]
+          }
+        },
+        {
+          "via": "subscription",
+          "channel": "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+          "events": [
+            [
+              3,
+              {
+                "json": {
+                  "revision": 2,
+                  "entries": [
+                    "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                    "omabit-state-5d106ab94f2ac1e8d1a279b0"
+                  ]
+                },
+                "id": 1,
+                "response": "diff"
+              }
+            ]
+          ],
+          "cursor": 3,
+          "state": {
+            "revision": 2,
+            "entries": [
+              "omabit-state-718b0c010b3e1eb3fcbee9e3",
+              "omabit-state-5d106ab94f2ac1e8d1a279b0"
+            ]
+          }
+        },
+        {
+          "via": "scry",
+          "state": {
+            "revision": 3,
+            "entries": [
+              "omabit-state-718b0c010b3e1eb3fcbee9e3",
+              "omabit-state-5d106ab94f2ac1e8d1a279b0",
+              "omabit-state-5c1efc5e8b291245f67c5b0c"
+            ]
+          }
+        },
+        {
+          "via": "subscription",
+          "channel": "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+          "events": [
+            [
+              4,
+              {
+                "json": {
+                  "revision": 3,
+                  "entries": [
+                    "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                    "omabit-state-5d106ab94f2ac1e8d1a279b0",
+                    "omabit-state-5c1efc5e8b291245f67c5b0c"
+                  ]
+                },
+                "id": 1,
+                "response": "diff"
+              }
+            ]
+          ],
+          "cursor": 4,
+          "state": {
+            "revision": 3,
+            "entries": [
+              "omabit-state-718b0c010b3e1eb3fcbee9e3",
+              "omabit-state-5d106ab94f2ac1e8d1a279b0",
+              "omabit-state-5c1efc5e8b291245f67c5b0c"
+            ]
+          }
+        },
+        {
+          "via": "subscription",
+          "channel": "/~/channel/omabit-state-eb57b06cece994115e67339077136f56",
+          "events": [
+            [
+              0,
+              {
+                "ok": "ok",
+                "id": 1,
+                "response": "subscribe"
+              }
+            ],
+            [
+              1,
+              {
+                "json": {
+                  "revision": 3,
+                  "entries": [
+                    "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                    "omabit-state-5d106ab94f2ac1e8d1a279b0",
+                    "omabit-state-5c1efc5e8b291245f67c5b0c"
+                  ]
+                },
+                "id": 1,
+                "response": "diff"
+              }
+            ]
+          ],
+          "cursor": 1,
+          "state": {
+            "revision": 3,
+            "entries": [
+              "omabit-state-718b0c010b3e1eb3fcbee9e3",
+              "omabit-state-5d106ab94f2ac1e8d1a279b0",
+              "omabit-state-5c1efc5e8b291245f67c5b0c"
+            ]
+          }
+        },
+        {
+          "via": "scry",
+          "state": {
+            "revision": 4,
+            "entries": [
+              "omabit-state-718b0c010b3e1eb3fcbee9e3",
+              "omabit-state-5d106ab94f2ac1e8d1a279b0",
+              "omabit-state-5c1efc5e8b291245f67c5b0c",
+              "omabit-state-cb46340bd798c6a8e3d621ad"
+            ]
+          }
+        },
+        {
+          "via": "subscription",
+          "channel": "/~/channel/omabit-state-eb57b06cece994115e67339077136f56",
+          "events": [
+            [
+              2,
+              {
+                "json": {
+                  "revision": 4,
+                  "entries": [
+                    "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                    "omabit-state-5d106ab94f2ac1e8d1a279b0",
+                    "omabit-state-5c1efc5e8b291245f67c5b0c",
+                    "omabit-state-cb46340bd798c6a8e3d621ad"
+                  ]
+                },
+                "id": 1,
+                "response": "diff"
+              }
+            ]
+          ],
+          "cursor": 2,
+          "state": {
+            "revision": 4,
+            "entries": [
+              "omabit-state-718b0c010b3e1eb3fcbee9e3",
+              "omabit-state-5d106ab94f2ac1e8d1a279b0",
+              "omabit-state-5c1efc5e8b291245f67c5b0c",
+              "omabit-state-cb46340bd798c6a8e3d621ad"
+            ]
+          }
+        },
+        {
+          "via": "scry",
+          "state": {
+            "revision": 4,
+            "entries": [
+              "omabit-state-718b0c010b3e1eb3fcbee9e3",
+              "omabit-state-5d106ab94f2ac1e8d1a279b0",
+              "omabit-state-5c1efc5e8b291245f67c5b0c",
+              "omabit-state-cb46340bd798c6a8e3d621ad"
+            ]
+          }
+        }
+      ],
+      "channels_deleted": [
+        "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+        "/~/channel/omabit-state-eb57b06cece994115e67339077136f56"
+      ],
+      "stage": "complete",
+      "installation": [
+        {
+          "action": "mount",
+          "state": "acknowledged",
+          "status": 200,
+          "bytes": 49,
+          "response": "omabit-receipt-01158aab2a216697b014c722102b6bf6",
+          "receipt": "omabit-receipt-01158aab2a216697b014c722102b6bf6"
+        },
+        {
+          "action": "commit",
+          "state": "acknowledged",
+          "status": 200,
+          "bytes": 49,
+          "response": "omabit-receipt-0551935d908eeb789780e679f9c09cdb",
+          "receipt": "omabit-receipt-0551935d908eeb789780e679f9c09cdb"
+        },
+        {
+          "action": "start",
+          "state": "acknowledged",
+          "status": 200,
+          "bytes": 49,
+          "response": "omabit-receipt-7cf651606fe4e706d59c023e1e3f828d",
+          "receipt": "omabit-receipt-7cf651606fe4e706d59c023e1e3f828d"
+        }
+      ],
+      "fixture_sha256": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+      "start_diagnostics": [
+        {
+          "label": "lens-domes",
+          "status": 200,
+          "body": "\"%.n\\n\""
+        },
+        {
+          "label": "lens-rein",
+          "status": 200,
+          "body": "\"~\\n\""
+        }
+      ],
+      "channels": [
+        "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+        "/~/channel/omabit-state-eb57b06cece994115e67339077136f56"
+      ],
+      "resume_cursor": 2,
+      "resume_channel": "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+      "state_survived": true,
+      "queued_update_survived": true,
+      "existing_subscription_survived": true,
+      "fresh_subscription_reconciled": true,
+      "writes_replayed": false
+    },
+    "restart": {
+      "stopped_boot_container": "17b7e6beb8503d8e7f83eb48053fbec51bcfd0803f4aacf9a8c217c0ebd63588",
+      "resume_container": "39a2dec63b4351ad14805ba242e2737543732af23536bb0d2a4a982d0a659e1b",
+      "pier_device": 65024,
+      "pier_inode": 133524,
+      "namespace": "net:[4026532247]"
+    },
+    "restart_same_pier_and_namespace": true,
+    "restart_kept_sessions": true,
+    "transport_passed": true,
+    "cleanup_errors": []
+  },
+  "outer_result": {
+    "exit": 0,
+    "scope_admitted": true,
+    "scope_admission": {
+      "LoadState": "loaded",
+      "ActiveState": "active",
+      "CPUQuotaPerSecUSec": "1s",
+      "MemoryMax": "12884901888",
+      "MemorySwapMax": "0",
+      "TasksMax": "128"
+    },
+    "timed_out": false,
+    "log_limit": false,
+    "storage_problem": null,
+    "seconds": 1450.33,
+    "clean_shutdown": true,
+    "console_sha256": "b2cca6695703327a5096fa658ca00e5798a066ce934816f493be9d76b982f4e0"
+  },
+  "extraction": {
+    "run": "/tmp/omabit-import-guest-run-20261022-16",
+    "storage_admission": {
+      "filesystem_available_bytes": 21727899648,
+      "quota": {
+        "hard_blocks": 52485328,
+        "soft_blocks": 52485328,
+        "used_bytes": 45453320192,
+        "hard_inodes": 0,
+        "soft_inodes": 0,
+        "used_inodes": 63182,
+        "block_time": 0,
+        "inode_time": 0,
+        "valid": 63
+      },
+      "quota_available_bytes": 8291655680,
+      "available_bytes": 8291655680,
+      "required_bytes": 4294967296
+    },
+    "converted_disk_sha256": "db42412dc2de0df47ec0435b5595d95260d113904ddf9257e6231df47a0f933f",
+    "guest_result": {
+      "stage": "result",
+      "ok": true,
+      "ship_operations": true,
+      "engine": {
+        "ServerVersion": "29.9.1",
+        "CgroupVersion": "2",
+        "CgroupDriver": "systemd",
+        "DockerRootDir": "/home/lab/.local/share/urbit-runner/docker",
+        "SecurityOptions": [
+          "name=seccomp,profile=builtin",
+          "name=rootless",
+          "name=cgroupns"
+        ]
+      },
+      "compatibility": {
+        "compatibility": "compatible",
+        "provenance": "verified",
+        "can_mutate": true,
+        "qualification": "unqualified"
+      },
+      "runtime": {
+        "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+        "id": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+        "version": "urbit 4.6-5a7614f\ngmp: 6.2.1\nsigsegv: 2.14\nopenssl: OpenSSL 1.1.1w  11 Sep 2023\nlibuv: 1.50.0\nlibh2o: 0.13.6\nlmdb: 0.9.70\ncurl: 8.9.1"
+      },
+      "fake_network": {
+        "ok": true,
+        "project": "omabit-network-a",
+        "ships": {
+          "zod": {
+            "container": "a2e6ca471b5310dc6a77086bcee2b253d9ad029678b7b82eb334c359abcde91d",
+            "pier": "/home/lab/fake-network/zod/zod",
+            "http_port": 8081,
+            "port_inventory": [
+              [
+                "12321",
+                "insecure",
+                "loopback"
+              ],
+              [
+                "8081",
+                "insecure",
+                "public"
+              ]
+            ],
+            "loopback_port": 12321,
+            "authenticated_inventory": true
+          },
+          "nec": {
+            "container": "39a2dec63b4351ad14805ba242e2737543732af23536bb0d2a4a982d0a659e1b",
+            "pier": "/home/lab/fake-network/nec/nec",
+            "http_port": 8082,
+            "port_inventory": [
+              [
+                "12322",
+                "insecure",
+                "loopback"
+              ],
+              [
+                "8082",
+                "insecure",
+                "public"
+              ]
+            ],
+            "loopback_port": 12322,
+            "authenticated_inventory": true
+          }
+        },
+        "messages": [
+          {
+            "phase": "first",
+            "sender": "~zod",
+            "receiver": "~nec",
+            "nonce": "omabit-first-9f4748e82c990f55fd52a3f5",
+            "receipt": "omabit-receipt-16849801131fd9d471439466a03683cc"
+          },
+          {
+            "phase": "first",
+            "sender": "~nec",
+            "receiver": "~zod",
+            "nonce": "omabit-first-a9da5d6831ed35cfd0017cbb",
+            "receipt": "omabit-receipt-485ef95dc0514e0b29e3e4b3bd6139f3"
+          },
+          {
+            "phase": "after-restart",
+            "sender": "~zod",
+            "receiver": "~nec",
+            "nonce": "omabit-after-restart-b4d936d7aa9c12dfd01b8433",
+            "receipt": "omabit-receipt-919cc70143906c182c77e4e67fd799a9"
+          },
+          {
+            "phase": "after-restart",
+            "sender": "~nec",
+            "receiver": "~zod",
+            "nonce": "omabit-after-restart-0ace90ccb5d7b99c64bb51a6",
+            "receipt": "omabit-receipt-fd808ec60b80e4a6076d2605fbbf0ef2"
+          }
+        ],
+        "attempts": [
+          {
+            "phase": "local-check",
+            "sender": "~zod",
+            "receiver": "~zod",
+            "nonce": "omabit-local-check-6d0a206e5bcccd3fe1b178ff",
+            "expected_receipt": "omabit-receipt-9685b3500b009cd3983cd88a1c555a0b",
+            "state": "acknowledged",
+            "transport": "local-khan-thread",
+            "http_status": 200,
+            "response_bytes": 50,
+            "response_sha256": "a71d7094ae636b6aaa18030329915c7938007f4450205b33d7a1b401232a699b",
+            "receipt": "omabit-receipt-9685b3500b009cd3983cd88a1c555a0b"
+          },
+          {
+            "phase": "local-check",
+            "sender": "~nec",
+            "receiver": "~nec",
+            "nonce": "omabit-local-check-731ee3570107516cd63603e2",
+            "expected_receipt": "omabit-receipt-7471e7dd82fb4dd270c848ba84e6e16f",
+            "state": "acknowledged",
+            "transport": "local-khan-thread",
+            "http_status": 200,
+            "response_bytes": 50,
+            "response_sha256": "7c71f961ab766ae62a92b891e589fc21d67eee1d31801fbcb7993d8c024399bb",
+            "receipt": "omabit-receipt-7471e7dd82fb4dd270c848ba84e6e16f"
+          },
+          {
+            "phase": "first",
+            "sender": "~zod",
+            "receiver": "~nec",
+            "nonce": "omabit-first-9f4748e82c990f55fd52a3f5",
+            "expected_receipt": "omabit-receipt-16849801131fd9d471439466a03683cc",
+            "state": "acknowledged",
+            "transport": "local-khan-thread",
+            "http_status": 200,
+            "response_bytes": 50,
+            "response_sha256": "62d162c1ecf646a57805915098854b6ebbed94496d621f2ceadac57192a601ad",
+            "receipt": "omabit-receipt-16849801131fd9d471439466a03683cc"
+          },
+          {
+            "phase": "first",
+            "sender": "~nec",
+            "receiver": "~zod",
+            "nonce": "omabit-first-a9da5d6831ed35cfd0017cbb",
+            "expected_receipt": "omabit-receipt-485ef95dc0514e0b29e3e4b3bd6139f3",
+            "state": "acknowledged",
+            "transport": "local-khan-thread",
+            "http_status": 200,
+            "response_bytes": 50,
+            "response_sha256": "c221448ec6976f0a9b66f7c529bba3f1254b0a138f5fb59b377695eb8410266b",
+            "receipt": "omabit-receipt-485ef95dc0514e0b29e3e4b3bd6139f3"
+          },
+          {
+            "phase": "nack",
+            "sender": "~zod",
+            "receiver": "~nec",
+            "nonce": "fail",
+            "expected_receipt": "omabit-receipt-abaac6050393136d31d6ea2d8e07ecfc",
+            "state": "rejected",
+            "transport": "local-khan-thread",
+            "http_status": 500,
+            "response_bytes": 827,
+            "response_sha256": "f7556a8cd58c6b8eaa95a59add66a47ea1518058ae5f9e1f297739c4ce9fd289",
+            "receipt": {
+              "term": "child-failed",
+              "tang": [
+                [
+                  "thread-fail"
+                ],
+                [
+                  "poke-fail"
+                ],
+                [
+                  "poke-ack"
+                ],
+                [
+                  "/lib/hood/helm/hoon:<[275 5].[275 7]>"
+                ],
+                [
+                  "/lib/hood/helm/hoon:<[274 5].[275 7]>"
+                ],
+                [
+                  "/lib/hood/helm/hoon:<[273 3].[279 76]>"
+                ],
+                [
+                  "poke-hi-fail"
+                ],
+                [
+                  "/lib/hood/helm/hoon:<[272 3].[279 76]>"
+                ],
+                [
+                  "/lib/hood/helm/hoon:<[271 15].[279 76]>"
+                ],
+                [
+                  "/lib/hood/helm/hoon:<[655 33].[655 51]>"
+                ],
+                [
+                  "/lib/hood/helm/hoon:<[655 28].[655 60]>"
+                ],
+                [
+                  "/lib/hood/helm/hoon:<[636 3].[673 5]>"
+                ],
+                [
+                  "/lib/hood/helm/hoon:<[632 3].[673 5]>"
+                ],
+                [
+                  "/app/hood/hoon:<[132 34].[132 60]>"
+                ],
+                [
+                  "/app/hood/hoon:<[132 18].[132 70]>"
+                ],
+                [
+                  "/app/hood/hoon:<[121 21].[121 30]>"
+                ],
+                [
+                  "/app/hood/hoon:<[121 3].[130 5]>"
+                ],
+                [
+                  "/app/hood/hoon:<[120 3].[130 5]>"
+                ],
+                [
+                  "/app/hood/hoon:<[119 3].[130 5]>"
+                ],
+                [
+                  "/app/hood/hoon:<[118 3].[135 5]>"
+                ],
+                [
+                  "/app/hood/hoon:<[117 3].[135 5]>"
+                ],
+                [
+                  "/sys/vane/gall/hoon:<[1.863 9].[1.863 37]>"
+                ]
+              ]
+            }
+          },
+          {
+            "phase": "after-restart",
+            "sender": "~zod",
+            "receiver": "~nec",
+            "nonce": "omabit-after-restart-b4d936d7aa9c12dfd01b8433",
+            "expected_receipt": "omabit-receipt-919cc70143906c182c77e4e67fd799a9",
+            "state": "acknowledged",
+            "transport": "local-khan-thread",
+            "http_status": 200,
+            "response_bytes": 50,
+            "response_sha256": "8594d997f2c34a990db51a906873ef977167f7e99d0ec24d78dae01d993e4d06",
+            "receipt": "omabit-receipt-919cc70143906c182c77e4e67fd799a9"
+          },
+          {
+            "phase": "after-restart",
+            "sender": "~nec",
+            "receiver": "~zod",
+            "nonce": "omabit-after-restart-0ace90ccb5d7b99c64bb51a6",
+            "expected_receipt": "omabit-receipt-fd808ec60b80e4a6076d2605fbbf0ef2",
+            "state": "acknowledged",
+            "transport": "local-khan-thread",
+            "http_status": 200,
+            "response_bytes": 50,
+            "response_sha256": "47a27f92443bf1d54ad05de8a6edc23eae75abf5ace8371d8c8f893511bf09a1",
+            "receipt": "omabit-receipt-fd808ec60b80e4a6076d2605fbbf0ef2"
+          }
+        ],
+        "local_checks": [
+          {
+            "phase": "local-check",
+            "sender": "~zod",
+            "receiver": "~zod",
+            "nonce": "omabit-local-check-6d0a206e5bcccd3fe1b178ff",
+            "receipt": "omabit-receipt-9685b3500b009cd3983cd88a1c555a0b"
+          },
+          {
+            "phase": "local-check",
+            "sender": "~nec",
+            "receiver": "~nec",
+            "nonce": "omabit-local-check-731ee3570107516cd63603e2",
+            "receipt": "omabit-receipt-7471e7dd82fb4dd270c848ba84e6e16f"
+          }
+        ],
+        "clean_stops": [
+          "nec",
+          "nec",
+          "zod"
+        ],
+        "anchor": "ea9f5b083bb09aa393a3f4f801467bd3fd42d81fc8b4a4da4788c9095722407d",
+        "network_namespace": "net:[4026532247]",
+        "ipv4_routes": "Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask\t\tMTU\tWindow\tIRTT                                                       \n",
+        "network_devices": "Inter-|   Receive                                                |  Transmit\n face |bytes    packets errs drop fifo frame compressed multicast|bytes    packets errs drop fifo colls carrier compressed\n    lo:   39235     543    0    0    0     0          0         0    39235     543    0    0    0     0       0          0\n",
+        "cross_ship_sessions_refused": true,
+        "remote_nack_propagated": true,
+        "application_state": {
+          "ok": true,
+          "writes": [
+            {
+              "phase": "connected",
+              "entry": "omabit-state-718b0c010b3e1eb3fcbee9e3",
+              "receipt": "omabit-receipt-057e432c4b3d4c0df58c4a28da240a9e",
+              "state": "acknowledged",
+              "http_status": 200,
+              "response_bytes": 50,
+              "response_sha256": "d1d76c467e9f494abc47672efac2b1328ef06fbf35f3bda8d75de4510a901be1"
+            },
+            {
+              "phase": "disconnected-before-restart",
+              "entry": "omabit-state-5d106ab94f2ac1e8d1a279b0",
+              "receipt": "omabit-receipt-8592595ffd9d337cfc75f12135247ebf",
+              "state": "acknowledged",
+              "http_status": 200,
+              "response_bytes": 50,
+              "response_sha256": "8af24a43a73758904d00e89794363c148fc2d86b29118672f7b0ba9660e62ceb"
+            },
+            {
+              "phase": "existing-subscription-after-restart",
+              "entry": "omabit-state-5c1efc5e8b291245f67c5b0c",
+              "receipt": "omabit-receipt-2e9939a62f0fd161209321180c6336b7",
+              "state": "acknowledged",
+              "http_status": 200,
+              "response_bytes": 50,
+              "response_sha256": "6efe5c73aae5b619ec0b84eeed35d3bd04e8f9b83c8b2c26341157180a47707a"
+            },
+            {
+              "phase": "fresh-subscription-after-restart",
+              "entry": "omabit-state-cb46340bd798c6a8e3d621ad",
+              "receipt": "omabit-receipt-1343eade6d9179462fa310f2b2d65c2b",
+              "state": "acknowledged",
+              "http_status": 200,
+              "response_bytes": 50,
+              "response_sha256": "4038e019dcb645e24f30c8390316beb3315b20397ac714d96a150c73880f9ccf"
+            }
+          ],
+          "observations": [
+            {
+              "via": "scry",
+              "state": {
+                "revision": 0,
+                "entries": []
+              }
+            },
+            {
+              "via": "subscription",
+              "channel": "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+              "events": [
+                [
+                  0,
+                  {
+                    "ok": "ok",
+                    "id": 1,
+                    "response": "subscribe"
+                  }
+                ],
+                [
+                  1,
+                  {
+                    "json": {
+                      "revision": 0,
+                      "entries": []
+                    },
+                    "id": 1,
+                    "response": "diff"
+                  }
+                ]
+              ],
+              "cursor": 1,
+              "state": {
+                "revision": 0,
+                "entries": []
+              }
+            },
+            {
+              "via": "scry",
+              "state": {
+                "revision": 1,
+                "entries": [
+                  "omabit-state-718b0c010b3e1eb3fcbee9e3"
+                ]
+              }
+            },
+            {
+              "via": "subscription",
+              "channel": "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+              "events": [
+                [
+                  2,
+                  {
+                    "json": {
+                      "revision": 1,
+                      "entries": [
+                        "omabit-state-718b0c010b3e1eb3fcbee9e3"
+                      ]
+                    },
+                    "id": 1,
+                    "response": "diff"
+                  }
+                ]
+              ],
+              "cursor": 2,
+              "state": {
+                "revision": 1,
+                "entries": [
+                  "omabit-state-718b0c010b3e1eb3fcbee9e3"
+                ]
+              }
+            },
+            {
+              "via": "scry",
+              "state": {
+                "revision": 2,
+                "entries": [
+                  "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                  "omabit-state-5d106ab94f2ac1e8d1a279b0"
+                ]
+              }
+            },
+            {
+              "via": "scry",
+              "state": {
+                "revision": 2,
+                "entries": [
+                  "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                  "omabit-state-5d106ab94f2ac1e8d1a279b0"
+                ]
+              }
+            },
+            {
+              "via": "subscription",
+              "channel": "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+              "events": [
+                [
+                  3,
+                  {
+                    "json": {
+                      "revision": 2,
+                      "entries": [
+                        "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                        "omabit-state-5d106ab94f2ac1e8d1a279b0"
+                      ]
+                    },
+                    "id": 1,
+                    "response": "diff"
+                  }
+                ]
+              ],
+              "cursor": 3,
+              "state": {
+                "revision": 2,
+                "entries": [
+                  "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                  "omabit-state-5d106ab94f2ac1e8d1a279b0"
+                ]
+              }
+            },
+            {
+              "via": "scry",
+              "state": {
+                "revision": 3,
+                "entries": [
+                  "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                  "omabit-state-5d106ab94f2ac1e8d1a279b0",
+                  "omabit-state-5c1efc5e8b291245f67c5b0c"
+                ]
+              }
+            },
+            {
+              "via": "subscription",
+              "channel": "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+              "events": [
+                [
+                  4,
+                  {
+                    "json": {
+                      "revision": 3,
+                      "entries": [
+                        "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                        "omabit-state-5d106ab94f2ac1e8d1a279b0",
+                        "omabit-state-5c1efc5e8b291245f67c5b0c"
+                      ]
+                    },
+                    "id": 1,
+                    "response": "diff"
+                  }
+                ]
+              ],
+              "cursor": 4,
+              "state": {
+                "revision": 3,
+                "entries": [
+                  "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                  "omabit-state-5d106ab94f2ac1e8d1a279b0",
+                  "omabit-state-5c1efc5e8b291245f67c5b0c"
+                ]
+              }
+            },
+            {
+              "via": "subscription",
+              "channel": "/~/channel/omabit-state-eb57b06cece994115e67339077136f56",
+              "events": [
+                [
+                  0,
+                  {
+                    "ok": "ok",
+                    "id": 1,
+                    "response": "subscribe"
+                  }
+                ],
+                [
+                  1,
+                  {
+                    "json": {
+                      "revision": 3,
+                      "entries": [
+                        "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                        "omabit-state-5d106ab94f2ac1e8d1a279b0",
+                        "omabit-state-5c1efc5e8b291245f67c5b0c"
+                      ]
+                    },
+                    "id": 1,
+                    "response": "diff"
+                  }
+                ]
+              ],
+              "cursor": 1,
+              "state": {
+                "revision": 3,
+                "entries": [
+                  "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                  "omabit-state-5d106ab94f2ac1e8d1a279b0",
+                  "omabit-state-5c1efc5e8b291245f67c5b0c"
+                ]
+              }
+            },
+            {
+              "via": "scry",
+              "state": {
+                "revision": 4,
+                "entries": [
+                  "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                  "omabit-state-5d106ab94f2ac1e8d1a279b0",
+                  "omabit-state-5c1efc5e8b291245f67c5b0c",
+                  "omabit-state-cb46340bd798c6a8e3d621ad"
+                ]
+              }
+            },
+            {
+              "via": "subscription",
+              "channel": "/~/channel/omabit-state-eb57b06cece994115e67339077136f56",
+              "events": [
+                [
+                  2,
+                  {
+                    "json": {
+                      "revision": 4,
+                      "entries": [
+                        "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                        "omabit-state-5d106ab94f2ac1e8d1a279b0",
+                        "omabit-state-5c1efc5e8b291245f67c5b0c",
+                        "omabit-state-cb46340bd798c6a8e3d621ad"
+                      ]
+                    },
+                    "id": 1,
+                    "response": "diff"
+                  }
+                ]
+              ],
+              "cursor": 2,
+              "state": {
+                "revision": 4,
+                "entries": [
+                  "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                  "omabit-state-5d106ab94f2ac1e8d1a279b0",
+                  "omabit-state-5c1efc5e8b291245f67c5b0c",
+                  "omabit-state-cb46340bd798c6a8e3d621ad"
+                ]
+              }
+            },
+            {
+              "via": "scry",
+              "state": {
+                "revision": 4,
+                "entries": [
+                  "omabit-state-718b0c010b3e1eb3fcbee9e3",
+                  "omabit-state-5d106ab94f2ac1e8d1a279b0",
+                  "omabit-state-5c1efc5e8b291245f67c5b0c",
+                  "omabit-state-cb46340bd798c6a8e3d621ad"
+                ]
+              }
+            }
+          ],
+          "channels_deleted": [
+            "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+            "/~/channel/omabit-state-eb57b06cece994115e67339077136f56"
+          ],
+          "stage": "complete",
+          "installation": [
+            {
+              "action": "mount",
+              "state": "acknowledged",
+              "status": 200,
+              "bytes": 49,
+              "response": "omabit-receipt-01158aab2a216697b014c722102b6bf6",
+              "receipt": "omabit-receipt-01158aab2a216697b014c722102b6bf6"
+            },
+            {
+              "action": "commit",
+              "state": "acknowledged",
+              "status": 200,
+              "bytes": 49,
+              "response": "omabit-receipt-0551935d908eeb789780e679f9c09cdb",
+              "receipt": "omabit-receipt-0551935d908eeb789780e679f9c09cdb"
+            },
+            {
+              "action": "start",
+              "state": "acknowledged",
+              "status": 200,
+              "bytes": 49,
+              "response": "omabit-receipt-7cf651606fe4e706d59c023e1e3f828d",
+              "receipt": "omabit-receipt-7cf651606fe4e706d59c023e1e3f828d"
+            }
+          ],
+          "fixture_sha256": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+          "start_diagnostics": [
+            {
+              "label": "lens-domes",
+              "status": 200,
+              "body": "\"%.n\\n\""
+            },
+            {
+              "label": "lens-rein",
+              "status": 200,
+              "body": "\"~\\n\""
+            }
+          ],
+          "channels": [
+            "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+            "/~/channel/omabit-state-eb57b06cece994115e67339077136f56"
+          ],
+          "resume_cursor": 2,
+          "resume_channel": "/~/channel/omabit-state-fb80231f7276fb1dbb491771391df032",
+          "state_survived": true,
+          "queued_update_survived": true,
+          "existing_subscription_survived": true,
+          "fresh_subscription_reconciled": true,
+          "writes_replayed": false
+        },
+        "restart": {
+          "stopped_boot_container": "17b7e6beb8503d8e7f83eb48053fbec51bcfd0803f4aacf9a8c217c0ebd63588",
+          "resume_container": "39a2dec63b4351ad14805ba242e2737543732af23536bb0d2a4a982d0a659e1b",
+          "pier_device": 65024,
+          "pier_inode": 133524,
+          "namespace": "net:[4026532247]"
+        },
+        "restart_same_pier_and_namespace": true,
+        "restart_kept_sessions": true,
+        "transport_passed": true,
+        "cleanup_errors": []
+      }
+    },
+    "source_overlay_sha256": "6735b7b63a76bdb3a2651c73d70ddbe5a7a3957a34841c0a869c510697661b42",
+    "all_disk_sha256": {
+      "root.qcow2": "6735b7b63a76bdb3a2651c73d70ddbe5a7a3957a34841c0a869c510697661b42"
+    },
+    "tools": {
+      "version": "QEMU emulator version 11.1.2\nCopyright (c) 2003-2026 Fabrice Bellard and the QEMU Project developers",
+      "executable": "/tmp/omabit-import-vm-tools-20261022/tools/usr/bin/qemu-system-x86_64",
+      "environment": {
+        "LD_LIBRARY_PATH": "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib",
+        "QEMU_MODULE_DIR": "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/qemu"
+      },
+      "dependencies": "linux-vdso.so.1\n\tlibcapstone.so.5 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libcapstone.so.5\n\tlibgnutls.so.30 => /usr/lib/libgnutls.so.30\n\tlibpng16.so.16 => /usr/lib/libpng16.so.16\n\tlibpixman-1.so.0 => /usr/lib/libpixman-1.so.0\n\tlibz.so.1 => /usr/lib/libz.so.1\n\tlibjpeg.so.8 => /usr/lib/libjpeg.so.8\n\tlibsasl2.so.3 => /usr/lib/libsasl2.so.3\n\tlibsnappy.so.1 => /usr/lib/libsnappy.so.1\n\tliblzo2.so.2 => /usr/lib/liblzo2.so.2\n\tlibnuma.so.1 => /usr/lib/libnuma.so.1\n\tlibkeyutils.so.1 => /usr/lib/libkeyutils.so.1\n\tlibgio-2.0.so.0 => /usr/lib/libgio-2.0.so.0\n\tlibgobject-2.0.so.0 => /usr/lib/libgobject-2.0.so.0\n\tlibglib-2.0.so.0 => /usr/lib/libglib-2.0.so.0\n\tlibrdmacm.so.1 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/librdmacm.so.1\n\tlibibverbs.so.1 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libibverbs.so.1\n\tlibzstd.so.1 => /usr/lib/libzstd.so.1\n\tlibslirp.so.0 => /usr/lib/libslirp.so.0\n\tlibvdeplug.so.3 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libvdeplug.so.3\n\tlibxdp.so.1 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libxdp.so.1\n\tlibbpf.so.1 => /usr/lib/libbpf.so.1\n\tlibdw.so.1 => /usr/lib/libdw.so.1\n\tlibcbor.so.0.14 => /usr/lib/libcbor.so.0.14\n\tlibudev.so.1 => /usr/lib/libudev.so.1\n\tlibdaxctl.so.1 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libdaxctl.so.1\n\tlibseccomp.so.2 => /usr/lib/libseccomp.so.2\n\tlibfdt.so.1 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libfdt.so.1\n\tlibpam.so.0 => /usr/lib/libpam.so.0\n\tlibfuse3.so.4 => /usr/lib/libfuse3.so.4\n\tlibaio.so.1 => /tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libaio.so.1\n\tliburing.so.2 => /usr/lib/liburing.so.2\n\tlibgmodule-2.0.so.0 => /usr/lib/libgmodule-2.0.so.0\n\tlibm.so.6 => /usr/lib/libm.so.6\n\tlibgcc_s.so.1 => /usr/lib/libgcc_s.so.1\n\tlibc.so.6 => /usr/lib/libc.so.6\n\tlibleancrypto.so.1.9 => /usr/lib/libleancrypto.so.1.9\n\tlibp11-kit.so.0 => /usr/lib/libp11-kit.so.0\n\tlibidn2.so.0 => /usr/lib/libidn2.so.0\n\tlibunistring.so.5 => /usr/lib/libunistring.so.5\n\tlibtasn1.so.6 => /usr/lib/libtasn1.so.6\n\tlibhogweed.so.7 => /usr/lib/libhogweed.so.7\n\tlibnettle.so.9 => /usr/lib/libnettle.so.9\n\tlibgmp.so.10 => /usr/lib/libgmp.so.10\n\t/lib64/ld-linux-x86-64.so.2 => /usr/lib64/ld-linux-x86-64.so.2\n\tlibstdc++.so.6 => /usr/lib/libstdc++.so.6\n\tlibmount.so.1 => /usr/lib/libmount.so.1\n\tlibffi.so.8 => /usr/lib/libffi.so.8\n\tlibpcre2-8.so.0 => /usr/lib/libpcre2-8.so.0\n\tlibnl-3.so.200 => /usr/lib/libnl-3.so.200\n\tlibnl-route-3.so.200 => /usr/lib/libnl-route-3.so.200\n\tlibelf.so.1 => /usr/lib/libelf.so.1\n\tliblzma.so.5 => /usr/lib/liblzma.so.5\n\tlibbz2.so.1.0 => /usr/lib/libbz2.so.1.0\n\tlibuuid.so.1 => /usr/lib/libuuid.so.1\n\tlibkmod.so.2 => /usr/lib/libkmod.so.2\n\tlibaudit.so.1 => /usr/lib/libaudit.so.1\n\tlibblkid.so.1 => /usr/lib/libblkid.so.1\n\tlibsystemd.so.0 => /usr/lib/libsystemd.so.0\n\tlibcrypto.so.3 => /usr/lib/libcrypto.so.3\n\tlibcap-ng.so.0 => /usr/lib/libcap-ng.so.0\n\tlibbrotlienc.so.1 => /usr/lib/libbrotlienc.so.1\n\tlibbrotlidec.so.1 => /usr/lib/libbrotlidec.so.1\n\tlibbrotlicommon.so.1 => /usr/lib/libbrotlicommon.so.1",
+      "files": {
+        "/lib64/ld-linux-x86-64.so.2": "f5e11cc62f8f2c24dff532982559f4303dba3b17e7450551372a88c8e7ea8757",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/bin/qemu-img": "3a57bce6765bfb73a75591dba2ac40d985cccde97d371e95537ecbf16d949d30",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/bin/qemu-system-x86_64": "a2250f5e2b3b07c754473c0817df1cccf6c3c2443fc616dc474c4c311fa6ef1c",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libaio.so.1": "15cfed3ce7e472de5b87849812d4fc91271a81a0bc64c99e0971d02b11343685",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libcapstone.so.5": "682d8f1d8dbad76b2748ca55f2e5ddbbdf23ab61f5c5933aecfbbf07a3e546b9",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libdaxctl.so.1": "9332658f61c2e7adc3cae33a4d58270ec0600297a8b685d031752e9753e200d0",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libfdt.so.1": "a3ecad741b53e3c86322ad993a772292485d9f0004d0c904a3d93f091bf980c1",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libibverbs.so.1": "22f7c3d8fc7dc0830fdf527927506687f72f73abb3a2effbe13c67e8a59ceeb5",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/librdmacm.so.1": "dc41c7107282441217f26637e734bb1aadcd93a82368046240bc1ce502e37b8b",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libvdeplug.so.3": "a08ae4bb52776d7fd472b62fda292537c0f3420db5d1b6dc5b921779935d2953",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/libxdp.so.1": "6bbe9878994a920d70bc706a850800ad7ba49a90c427a030b30bdc62c9fbefd0",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/lib/qemu/qemu-bridge-helper": "d2b96992829d9ce79e95946894610aa075299a27a1221b3a193527d3b2c947cb",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/bios-256k.bin": "b7dea28b1ab93d43f427232f5f6ab07c828fd97765d9b1daaf1b1712b39946e2",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/bios-coreboot.bin": "7288ec3bab594a0296678f83ee63e77987e76ad540ac258c03d989cbe467c631",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/bios-csm.bin": "050061626f94392ff8e07c350f6a7e2391f9f629c19c55154ca60b122f00d95d",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/bios-microvm.bin": "e6d486087552ce84a49236c559bbf4572dde404824f82804209739c4f7db8ec6",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/bios.bin": "02ea00f4d3ee2e849641da2602fff7f34c4855115d9ddcb20ad549334983ec6d",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-e1000.rom": "f37222fcdf0481bfbaf7a16d9aaf740aeb41d3d24c187801eb6e9a628cec0fc8",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-e1000e.rom": "102c20348be2d0ebe45a77b076b31848182c2f7b4364775b6bc2ece6e97b4024",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-eepro100.rom": "2b5b55ba8afae7b5ef7116606babf60e6ceaa531c345d54542857cc3fbe3912e",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-ne2k_pci.rom": "9925e0a34547118110479d8fc4e01092a0a73e0a236416e9ff862655b46751f7",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-pcnet.rom": "71c494fde94efa9871cf43868d7e3c8f4190e406d47a5102a2a21b36ded8a162",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-rtl8139.rom": "4cdd69a7f5c6ce7aec3a3f20a034dc80e1d22aa37a739c364378952d997a32c7",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-virtio.rom": "26be36901db7f8181c306cc62bd74891d8646528965a78e40cceadba5dd7c8e7",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/efi-vmxnet3.rom": "33e833123ad9831df94b2d623a17f91e4c779e3cb799baa97058f5972676a32a",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/firmware/50-edk2-ovmf-x86_64-secure-4m.json": "f8639d4989f8fa075f0b7e3034a42e6d3d7222843a36d6b71bf436b7667fed67",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/firmware/60-edk2-ovmf-microvm-4m.json": "07ca936a85204fa36b2bc99a997f286b324e5027437870a4ac14030a3e1e4cdd",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/firmware/60-edk2-ovmf-x86_64-4m.json": "3f7c88ac4fb8c88a37a110f257e95c1ea8cff9599df174c6d251b48873d9b62a",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/firmware/80-edk2-ovmf-ia32-on-x86_64-secure-4m.json": "547d70d01253154ae56f3a7772b34677b45bdf8ced3af59d999cfd6e17e458b5",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/firmware/81-edk2-ovmf-ia32-on-x86_64-4m.json": "06ff2d15c5c8c4c30917a26004a8c35f6abfda07949a77434c83bcc5ed1cf987",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/ar": "d42b5028288dec48a49be18ba88f3bc181ddb85478eb22cde02c0e257078783f",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/bepo": "48b53e6390600d2003c063c16973d62fc2e4f231e71ad76995ba48a668b2c1eb",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/cz": "6bd3123cd0612a8efd9ebf84a9ab3c0bfb88ec80ad9997dd47fc351e4bf99875",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/da": "8e4a853e563c6f843e8bf030744128e1e413795a7284c83fe3bd95bf8650e36d",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/de": "a112bc0d16d70e15b7ea8723a62ee4fea7b81b84ba41974e51c644748dfc9798",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/de-ch": "1c0ee8f79a8b33b8139d40ffb8dc58afcb647bb0844dc4710327e58d60522365",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/en-gb": "9c986b5cee6eda68ac876c9e850b7a4bb699bab41eea647db9c868153bda952f",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/en-us": "3a881394ad70802c5ceee8ba8e69e21252aa81b6873930f4abaf5362c035b267",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/es": "a5a2064c1ff359c3f65db6be2774cc3c4bccaefdb5800cfc4a16855e01ac0534",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/et": "6d67da27db0955fa8024fcabfb726ec0ee158475579b2e62ce2cac90bf570ea0",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/fi": "cbf540f202d3705cf8f931e94fbdb66b8b0c4b43b264e72996656ad952c34495",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/fo": "849d6cbf7091adbb499faa9a8b58e07ca360ea601c1c6415dbecfbf084bdf420",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/fr": "b4cb72b5e3262b116d48dba60370f8c2d247550f4a29b01a8a40a131352ea1ca",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/fr-be": "b3eb892ac5009c34d2e203fed7c283be92316ff6a5230d0d43e738c93af0fa72",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/fr-ca": "416f6c418215bb3c1d6fae417001d7a3fec9c334a5f40732e7c00ca8ca16f3c1",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/fr-ch": "ca441498da98c61ee4bc0ac44d3b400d7e6d74dc3d82e7d6e63ebe703bf6a7db",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/hr": "d1a341b48e6bb13b5e71d61170bd939528f1b1afa6db6e72b1008b2139d2da03",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/hu": "c59f2b2a43d846ee56eceee4aa6f58c236a9030fb1f43e52130636f05b916e56",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/is": "21bda355bddaa2f119736325096a43de5827b81c9ce85e75183a238328a8a892",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/it": "14c3743e50dc86a36ea580ef1c783c425efa68efca7bd03691fa000f328609ae",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/ja": "770fff58b972d99e1d98afdcc842c703307530825213f76875153b0f87494af3",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/lt": "f8f2058ce59ec4c87b9c2be6823027a47fd27c73af55c50760d6b7f342ea101d",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/lv": "6a48d8ef57b65ac6aff6d4ca3d1634ae972a7102c7789d0869f18b51ae3bace4",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/mk": "cd23e96400f0b35c0f0b8a61a6a815403141f6865da783136bdc77305795f5f1",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/nl": "28b84d4a28f691f6cce6a036aa70f998cdb31a67da826e6ac75a7825372dcd50",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/no": "4e1161a038b0859f4857cbf300439b78b9084ac49f149a80fafc962f6663a2ec",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/pl": "1d7e2eceb3aa8b82eab734710fed1c18521b3bf98dcdc0dba5a28e5cb8517381",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/pt": "003410ccbae910562a1d0196c601d2d90a67b19b3ff3bbddb369de4e55c96635",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/pt-br": "bd6338ac247115572db729449a4804068cd6b11fe6540f71118519f2964ccb56",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/ru": "aa9bc12417288ec264814fccd4a8594445d5bb76a85bc97f6db533f4b707c081",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/sl": "bea8fe8ac0ca281038ac0e1788c39f090507ff0646bd4f57cc18f6873b030147",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/sv": "97731fbe91f254d81c005ffc232180a8dd7baeb6d699f0f0fc15e341672f96b3",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/th": "fe9a65e15b015788715d24415ad6cf55ad21a354c60a925bb736ee1d45f929de",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/keymaps/tr": "7819c4afbcd507db0b68fd7f8855f90710c64d54c29d2328742121093d3fbe82",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/kvmvapic.bin": "cdf057a71b07e3b52b19cbe210bdefa59250d01a9810b960f7fe1f98eed95a27",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/linuxboot_dma.bin": "9c49e255340c78fc12e54ed043462bca02fb7fca29b7cfab62ff88a5344b6950",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/multiboot_dma.bin": "46def003b1c413cc4a5880d858ca54456ad6978d5fdb6e1b7d086b2905a66df0",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pvh.bin": "918ff03a118615c2f4611a5df2d9496aabe099b5cfaaf69e544ebf973305d59d",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pxe-e1000.rom": "981a728f95b7a01645645e9b753cfb764c9eb59266fa888ac58d7008fbb48c10",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pxe-eepro100.rom": "07b89a742e0f6d0e92dafe57b0f28c493436d0e1e07b7b77e728490c1f7b45dd",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pxe-ne2k_pci.rom": "bb9c0eaad36b9b4ce26c5f348bd05a832c8bf83ef38391db0ce9b51de8523ac7",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pxe-pcnet.rom": "92358396c05b3346c6bfd52bbf2a47978d0a8c6ddea932ee091a24faefbd489e",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pxe-rtl8139.rom": "d491351e37a50eb5a40e98a9f6b4d85010ee60fb9e64129d65ea10839287f138",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/pxe-virtio.rom": "6994337fe07783a6233072e33771dc4f58260edc3269debe677a5227b264bfdc",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/qboot.rom": "9b9dfc6c25740d6225625570d71cab6805cc9216e68c8932e343266daaeb8c4b",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/qemu-nsis.bmp": "93f79a2b6e0f97bc7b7c75ded89a3c4c7657af37c087cf067470771e0affda9c",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-ati.bin": "6f8cd4ee029c871563012a8437e0e20de411e85b0d74974211e3319cf7125cb0",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-bochs-display.bin": "2d9cb6d353c3bb40caa8a0154408992051feeda5ab6d4dd311e41875bcca5f9c",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-cirrus.bin": "895134681e126a0a06197e3ec6827e9582377a6f925aed20e8bbf3f70e79a818",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-isavga.bin": "21c17d970b84b7e2d6e43edf3ed22c449be8d805470fbebcd1933171cca86752",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-qxl.bin": "ea0ee86b96fdb21c71b307682f59060b1f1f2aaa5edda6e1c0584c76be3d4f5c",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-ramfb.bin": "7973e917c076474d41c8ced24d35b5b13a9e3b367cc5fbcd06db6e05977cc95d",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-stdvga.bin": "7c2d15feadfcaf35bd8b9d20983f32c4dd9895a6045a4c9e67a28727bc9b629c",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-virtio.bin": "7df20e162f7f97904676822f0b45b34f7aa97350b40188abf7cc9afa3216c924",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vgabios-vmware.bin": "d27e4a8031b448a5a242c2d5c95e6c2f14c337e9409046040d68394b52933514",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vof-nvram.bin": "cf97201f9403212ab75287bf209bfb7710cb5f253e8fe80723cf43760a9e8a12",
+        "/tmp/omabit-import-vm-tools-20261022/tools/usr/share/qemu/vof.bin": "8c88070f252075111468e7b2a8043209e7798c3fb136326227390ea50f168f13",
+        "/usr/lib/libaudit.so.1": "16813308197ab091526836d4d9ee79b7780a49e63a0ee1d7e01da2b662d057c3",
+        "/usr/lib/libblkid.so.1": "aeaf48e3e206ee795262b7d83be9ba37803f1ee1391bb1ac48359ace60a9d2dd",
+        "/usr/lib/libbpf.so.1": "6fccb9cb5bd2c5e479e737c7bb5ac267a6da0c4b2bf1a5fc2063d89099043cea",
+        "/usr/lib/libbrotlicommon.so.1": "4f895094b7b6ff9c82909e6516bc9cf212e2ec5af451d39bf1bcbc5e5fa225b2",
+        "/usr/lib/libbrotlidec.so.1": "0883fb05fa42aa6a883722098530ab08551ed317e38a2311f5c96e94dd460979",
+        "/usr/lib/libbrotlienc.so.1": "8dbc539197d276310ce2750dcb73de5465a1259d46a5d1894e6138fd354bf5c7",
+        "/usr/lib/libbz2.so.1.0": "3265f0647d9157aaa820c5094eba03c5be0f101c49e9ffd21289978b8e1875af",
+        "/usr/lib/libc.so.6": "02c8c3d06180beee9c7d0392aa85736c7d19f274a81e7f8f0b3d9e28e0641524",
+        "/usr/lib/libcap-ng.so.0": "bc91f6b0794de524f4e155cf04a40470e9e53cb2a38fb0d84aaea05e09c61d11",
+        "/usr/lib/libcbor.so.0.14": "0126c6aac3405a9d184b281189a3e30f11bf668bd118bc94108bd96041bf5679",
+        "/usr/lib/libcrypto.so.3": "a75a864dcda6ef9e4dc29fad4b7988ca832b904c3915a63c920062c40763dae1",
+        "/usr/lib/libdw.so.1": "14a4563f6fce1ce85c449ee79f0d877984ecb16c71b18103b72b2b4f57dc8786",
+        "/usr/lib/libelf.so.1": "13d3e3cb54d6120d87a0569ac67be05c029f8cd2e4bf44e75936b2721c8e08af",
+        "/usr/lib/libffi.so.8": "b38bb3a55ba04dfbb5be68e881a72385d6c30010afffb1cf1dfc373b72c2278c",
+        "/usr/lib/libfuse3.so.4": "1a83f355838fd3815a5a9b1ba8eb1c0c978da1fb894193bde88ff32e5ce95b65",
+        "/usr/lib/libgcc_s.so.1": "e618cb9c90c2eb3a1dad1cfea5b6c1eebcf2e799ad805976f4ae47bdd61c716a",
+        "/usr/lib/libgio-2.0.so.0": "b38001cca69b2890a22fd3f6590bea7392bf489009de7ddfb6dbf296a133685e",
+        "/usr/lib/libglib-2.0.so.0": "1e8739af791b1a2f1f01fc7c6f3b9158888387d5a816195475e406438d41b688",
+        "/usr/lib/libgmodule-2.0.so.0": "b259a089b405eaa747fa15b62800301dfc948523f547dec84ec5ea679cd51a4b",
+        "/usr/lib/libgmp.so.10": "0e263305fd34434c80b9af2ea34fc6131887418d8301e913b3220953dc9a6e49",
+        "/usr/lib/libgnutls.so.30": "34fb5f09418585343efa342a2a4b57904544d6f562d7179a5eeaca60b0abd0c6",
+        "/usr/lib/libgobject-2.0.so.0": "ec51ca8b317565beecf3b370743491a9da108f885ddb0a01976c3eac1711dd67",
+        "/usr/lib/libhogweed.so.7": "93c5553921f308f65488a9877a3dce1284adeff729a011f7b4522ea6b4181a87",
+        "/usr/lib/libidn2.so.0": "9a36fa67dc82ce0e5dc38ef190c76231f532676f7ba13e363fc1df16a9c50a15",
+        "/usr/lib/libjpeg.so.8": "d6cd94abf2b7a9aa59a0e056c83bbfdf8900fbf7101bfba8ea0ee1ca45958665",
+        "/usr/lib/libkeyutils.so.1": "a82e692581b6215475c03538fa4b25681b5c71e8554c67afa7e34074b968b0d7",
+        "/usr/lib/libkmod.so.2": "9cfb555f09802059ce19876d93fc2fbae9e7ec560e6f089cade31383831d0356",
+        "/usr/lib/libleancrypto.so.1.9": "6f7c44d5854ca7af86556bb300efdda8346f316e652d3f7e7ee0bf5cf55b41c4",
+        "/usr/lib/liblzma.so.5": "6e4dae5b099ec0e40a56beead2e51f858535aa794b5a8574a6723dfc1da8a3c1",
+        "/usr/lib/liblzo2.so.2": "b314f7eabdd5d8adcf0498d5908f1454c5bbf5d719b3f67ba2bdc032fdb93773",
+        "/usr/lib/libm.so.6": "965106704753eefe8c31ae7da6daba3ead3d18c52b19b5fcc41178bcc4aa999d",
+        "/usr/lib/libmount.so.1": "967882491416426236028ba5290b3c88ed9b108d69f3a272a317341146fb2c09",
+        "/usr/lib/libnettle.so.9": "5cfa2daa591d62161d2f26aa4b8347e3704da1b830e9aba0a312ed1b5f0c7a38",
+        "/usr/lib/libnl-3.so.200": "71ef8ddfe4b010d836715447b2bad98466c6ca4890777bc945bf968a0a18b146",
+        "/usr/lib/libnl-route-3.so.200": "80cc3c0f3015a5b2ca085ca300b2b9e679f2287aa8a996feca9ed85316c3b3de",
+        "/usr/lib/libnuma.so.1": "847c5f5afbe586c2a7592c344080caf3268846af1f3be90175447e12791fad51",
+        "/usr/lib/libp11-kit.so.0": "1b87739328f0b11906554145ab4e506281644d94a5b6195cd11594aad5e310b8",
+        "/usr/lib/libpam.so.0": "a5f547ec7c5c6e5ec814f2596b47f68d5948e7be18c6254b0b2e5cd55cbda7eb",
+        "/usr/lib/libpcre2-8.so.0": "bfe4fd9948f4ad1e907ec22525515f578eb9eeb181a44741948d99746d0f8e58",
+        "/usr/lib/libpixman-1.so.0": "97d04f1a534e26e26cf993a350b13ddc33fa4f9741444b08c27bc04582c70fd8",
+        "/usr/lib/libpng16.so.16": "36579634fdc89d6b7b567f1a890c13194bce0ba95e65ada1f775af1e7452b398",
+        "/usr/lib/libsasl2.so.3": "e934ae380941bbc7ea038ba7a7d6ed604c15fe9fdbcf6e6d64412c66e33ed5c5",
+        "/usr/lib/libseccomp.so.2": "7cb971c30c6e854dedffe8b74f7548ed8f7b0f2e03233cd00f61f76a334dc5c3",
+        "/usr/lib/libslirp.so.0": "91ebce3a6429ccb3bf5331fdb06360ad2229d28c59cf0d43ae48e251535b4068",
+        "/usr/lib/libsnappy.so.1": "7d0662e63f33826af6d28c5712cbe2432c8ec3ab10cefe9a763f2befd5b9d781",
+        "/usr/lib/libstdc++.so.6": "f5fc7380f2ae46fa4053a64be04e7b98109f1066a4bbfff3c37042488aa0be0e",
+        "/usr/lib/libsystemd.so.0": "3c155e06e7b765417184c3b93a23735742c8f9be4f7e32a670fce0da2ba46540",
+        "/usr/lib/libtasn1.so.6": "37c55560d3f3a76a039e78e3394e4ab0e17b1d0f68d8a9b9c5916f9842aa4ca1",
+        "/usr/lib/libudev.so.1": "5e41a27ff6a9c8016b16f4b69b41a1d63d51973d0df2c6a895ab51ba006b880c",
+        "/usr/lib/libunistring.so.5": "ba7a4afb4b6f823d64ebe324416e182cd42a981dba049e3ddcfa1c9af03cb7f3",
+        "/usr/lib/liburing.so.2": "b01799e8295bc119d614bf061baad1f2a2a494a0787a057f49997244daf110c5",
+        "/usr/lib/libuuid.so.1": "7881e0279d5ce79b0d8ace923e94df9b543bc8dd8152df0894358b862e1725be",
+        "/usr/lib/libz.so.1": "6c78c5e58c3bb49a1cd151a95cdf1a17fe07a91a57a59e0279b984c533075ca9",
+        "/usr/lib/libzstd.so.1": "f023d49e85fb22057bfdd21857263d2638b73356c06f3b342f678a75212379f8",
+        "/usr/lib64/ld-linux-x86-64.so.2": "f5e11cc62f8f2c24dff532982559f4303dba3b17e7450551372a88c8e7ea8757"
+      }
+    },
+    "files": {
+      "results/result.json": {
+        "bytes": 20683,
+        "sha256": "0a78be91fdf775676694143dbbf8bce359af36fbfd80e01c6623e8cb9e62dd09"
+      },
+      "results/fake-network.json": {
+        "bytes": 18553,
+        "sha256": "6c88e46f3e2d63fa599413371ed294c73f07415c17b58ec8789bd2d92d46733a"
+      },
+      "results/runtime-version.log": {
+        "bytes": 134,
+        "sha256": "71cc6101d5980f1591aa77178d90272abf3fe994a53a2e905ddb0e52c68aeb30"
+      },
+      "results/image-identity.log": {
+        "bytes": 2402,
+        "sha256": "d5c418501d58e5a83f4931d80cc308240af67df8814517b2764ed55356a4249e"
+      },
+      "results/load-image.log": {
+        "bytes": 100,
+        "sha256": "b9ef6d59bb87431e8accc54a6d81f7ccd2df30cba91163f0d72b7d2954051b22"
+      },
+      "results/host-check.log": {
+        "bytes": 4442,
+        "sha256": "60905c4854ce1b8decbf73330a54a5a657932a9d4e7e896a0909c36e3ed83012"
+      },
+      "results/engine.log": {
+        "bytes": 10409,
+        "sha256": "1496281a3266075eb0c9703377086bf4474bf28c50ab76b1d4b8383b40fdaf59"
+      },
+      "results/host-install.log": {
+        "bytes": 557,
+        "sha256": "ea794307a42d3dfbd5bd84db925e0a9e1a3a5bd5e7b58b6d1dd56a7f61291709"
+      },
+      "results/key.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "results/user-manager.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "results/linger.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "results/owner.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "results/reload.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "results/native-packages.log": {
+        "bytes": 13239,
+        "sha256": "8bde3e9be39321a29770a8d5ca5f2b963c1a2e2d7b791b31a82f7f60df38b247"
+      },
+      "results/keyring-populate.log": {
+        "bytes": 915,
+        "sha256": "52802d065268dc3e3f93956a123df142c318f551fcfb0c0349bd40e87f5fe93d"
+      },
+      "results/keyring-init.log": {
+        "bytes": 709,
+        "sha256": "bc775cd0265c1c4ddcd39553fc0a000fa7669b870ae1d6d04427132449b9f642"
+      }
+    },
+    "driver_sha256": "ad2b441f1eadd3159ac689105caa18a08cde71ff5349595ddee068e6f7cf1a8a"
+  },
+  "originals": [
+    {
+      "original_path": "/tmp/omabit-import-appliance-20261022-15/artifacts",
+      "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-docker-state16/appliance15-artifacts",
+      "sha256": {
+        "base.raw": "720efd4dbb44e4ee95535e5a95dcd3a56ac24b47b9ffe5084932827e97be3150",
+        "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+        "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+        "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+      },
+      "scope_inactive": true
+    },
+    {
+      "original_path": "/tmp/omabit-import-guest-run-20261022-16/lab",
+      "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-docker-state16/run16-lab",
+      "sha256": {
+        "root.qcow2": "6735b7b63a76bdb3a2651c73d70ddbe5a7a3957a34841c0a869c510697661b42"
+      },
+      "scope_inactive": true
+    }
+  ],
+  "metadata_manifest_sha256": "5049d121eb0905811387a158ffbe21d34e6ce6bef4ce3ef32a7205ed6193e711",
+  "metadata_files": 35
+}

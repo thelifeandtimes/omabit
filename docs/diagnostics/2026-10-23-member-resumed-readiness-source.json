@@ -1,0 +1,37 @@
+{
+  "runtime_executed": false,
+  "model_cases": 29,
+  "adapter_cases": 22,
+  "replacement_regression_cases": 24,
+  "model_race_seconds": 2.244,
+  "adapter_race_seconds": 83.473,
+  "vet_passed": true,
+  "source_sha256": {
+    "internal/projectnetwork/member_resumed_readiness.go": "c684055adaf1ebf0273d144c7f44ebd0324a68b98796f2c7968dc778ed89e0e4",
+    "internal/projectnetwork/member_resumed_readiness_test.go": "4976e537766b2417093ca4bb000e9eae03f4ec4d786cb9487821455b90d66ae6",
+    "internal/runtimequalify/project_member_resumed_readiness_linux.go": "eb2db3c4b7d7b3060bc8d4f3b01550d67510751afd1cc96f4b53487d7ac10f82",
+    "internal/runtimequalify/project_member_resumed_readiness_linux_test.go": "5f2d917aa66cb4201dfb12fa5938d1affc32843c1d68a30239787ee0aac760d2",
+    "internal/runtimequalify/project_member_resume_linux.go": "458c0995b646c66b8c4b0a3f087818ffd2ed1002d92871d06662931f0ce53124"
+  },
+  "logs": {
+    "omabit-resumed-readiness-model-tests.log": "487bacea8aec4f51f92f197c9b0174f396b2b68048c19109952366040edefbfc",
+    "omabit-resumed-readiness-model-tests2.log": "2292975b53a74d69c73ba83def274d67812646a11e4cfb063f1c807802c53984",
+    "omabit-resumed-readiness-model-regression.log": "acb7cb80ee87588dbe461b6731a8789e17d3d9314f8a26a98d88959437a56bac",
+    "omabit-resumed-readiness-adapter-tests.log": "4c26d330819427d2105c07fa2c5cbbc2118d2ba093ff7d1059598a403c947120",
+    "omabit-resumed-readiness-adapter-tests2.log": "21ac3907efc2317c94794170213a569f6f4c40573382c7597cdd4f9a20599528",
+    "omabit-resumed-readiness-adapter-tests3.log": "664f6da83c1e4c84a6a476760fde55cc6b1176a68cc4eef26258dc064362e7eb",
+    "omabit-resumed-readiness-adapter-regression.log": "3d676bd9ad3a68d71a5edbe67f37006dee23409e38d9a42c741a808372a697dd",
+    "omabit-resumed-readiness-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-resumed-readiness-source",
+  "limitations": [
+    "first generation-one to generation-two replacement only",
+    "read-only model and adapter; persistence and scheduling pending",
+    "no public route or installed deployment"
+  ],
+  "fixture_corrections": [
+    "expected port changed to original model fixture port",
+    "guard allows exact known-container namespace stat",
+    "namespace fault now changes stat response rather than an unused fixture field"
+  ]
+}

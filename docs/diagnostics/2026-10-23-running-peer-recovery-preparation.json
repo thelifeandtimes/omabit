@@ -1,0 +1,42 @@
+{
+  "verified": true,
+  "runtime_executed": false,
+  "source_files_verified": 175,
+  "artifacts": {
+    "base.raw": "fb0758316a5dbead70c5177756caf1521a5ef7c2cc3e2027f8a0bd2873bbf0c5",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "embedded_test_sha256": "688a484b7ef600efeaa3bd3d9d0c1d28dbe460ff68b4458b3076fdd348f6aebc",
+  "staging_removed": true,
+  "case": {
+    "exercise_project_live_peer": true,
+    "exercise_project_app_state": true,
+    "exercise_project_member_launch": true,
+    "exercise_project_member_storage": false,
+    "exercise_project_anchor_start": false,
+    "exercise_project_preparation": false,
+    "network_anchor_recovery": false,
+    "network_published": false,
+    "exercise_login_code": false,
+    "exercise_endpoints": false,
+    "endpoint_network": "internal",
+    "exercise_import": false,
+    "exercise_fake_network": false,
+    "network_state": false,
+    "network_isolation": false,
+    "import_mode": "rename",
+    "interrupt_copy": false,
+    "restore_copy": false,
+    "restore_ui": false
+  },
+  "expected_runner_schema": 35,
+  "expected_final_member_generation": 3,
+  "application_probe_wired": true,
+  "running_peer_mode": true,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-running-peer-recovery-preparation",
+  "appliance": "/tmp/omabit-import-appliance-20261023-24",
+  "booted": false,
+  "source_changes_after_freeze": "project reservation inventory RPC/CLI are outside this frozen appliance"
+}

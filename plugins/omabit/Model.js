@@ -196,9 +196,27 @@ function observation(text) {
 function merge(rows, next) {
   var previous = rows.filter(function(row) { return row.name === next.name && row.runner_id === next.runner_id })[0]
   if (previous && next.status !== "available") next.last_snapshot = previous.snapshot || previous.last_snapshot
+  if (previous && (next.status==="unavailable" || next.project_inventory_status==="unavailable") && next.status!=="identity_mismatch") next.last_project_inventory=previous.project_inventory || previous.last_project_inventory
   return rows.filter(function(row) { return row.name !== next.name }).concat([next])
     .sort(function(a, b) { return a.name.localeCompare(b.name) })
 }
+
+function projectMembers(connection) {
+  var v=connection && (connection.project_inventory || connection.last_project_inventory)
+  if (!v || v.schema_version!==1 || v.runner_id!==connection.runner_id || v.mode!==connection.mode || v.basis!=="stored-reservations" || v.runtime_observation!=="not-performed" || !isFinite(Date.parse(v.read_at)) || !Array.isArray(v.projects)) return []
+  var rows=[],ids={}
+  for (var p of v.projects) {
+    if (!p || !validId(p.id) || p.revision!==1 || typeof p.label!=="string" || !Array.isArray(p.members) || !validDigest(p.review_digest)) return []
+    for (var m of p.members.concat(p.additional_members || [])) {
+      if (!m || !validId(m.instance_id) || ids[m.instance_id] || typeof m.ship!=="string" || !/^~[a-z]{3}$/.test(m.ship) || !Number.isInteger(m.http_port) || m.http_port<1024 || m.http_port>65535) return []
+      ids[m.instance_id]=true
+      rows.push({id:m.instance_id,ship:m.ship,label:m.instance_id,mode:"fake",project_id:p.id,project_label:p.label,config_revision:p.revision,applied_revision:0,
+        config:{http_port:m.http_port,ames_port:0,loom:31},endpoint:"http://127.0.0.1:"+m.http_port,observed_state:"unknown",health:"unknown"})
+    }
+  }
+  return rows
+}
+function fleetInstances(connection) { var live=instances(connection); return live.concat(projectMembers(connection).filter(function(m){return !live.some(function(i){return i.id===m.id})})) }
 
 function instances(connection) { return ((connection && (connection.snapshot || connection.last_snapshot)) || {}).instances || [] }
 
@@ -343,7 +361,7 @@ function currentPierSource(connection,source,now) {
     && Array.isArray(catalogue.candidates) && catalogue.candidates.some(function(p){return p.path===source.path && p.fingerprint===source.fingerprint && !p.busy && !p.problem && p.enrolled_by===source.enrolled_by && p.moved===source.moved})
 }
 function httpPortOwner(connection, port) {
-  return instances(connection).filter(function(i) {
+  return fleetInstances(connection).filter(function(i) {
     var observed = String(i.endpoint || "").match(/:([0-9]+)\/?$/)
     return i.config.http_port === Number(port) || observed && Number(observed[1]) === Number(port)
   })[0] || null
@@ -351,14 +369,14 @@ function httpPortOwner(connection, port) {
 function registrationProblem(connection, name, port, kind, now) {
   if (!writable(connection,now) || connection.access_role !== "operator" || !hasFeature(connection,kind === "comet" ? "create-comet" : "create-fake")) return "Select an available operator runner."
   if (!validId(name)) return "Use 1–64 letters, numbers, hyphens or underscores for the instance name."
-  if (instances(connection).some(function(i){return i.id === name})) return "Instance “"+name+"” already exists on this runner. Choose another name or open it in the fleet."
+  if (fleetInstances(connection).some(function(i){return i.id === name})) return "Instance “"+name+"” already exists on this runner. Choose another name or open it in the fleet."
   if (!Number.isInteger(Number(port)) || Number(port)<1024 || Number(port)>65535) return "Choose a host HTTP port from 1024 to 65535."
   var owner=httpPortOwner(connection,port)
   return owner ? "HTTP port "+port+" is already reserved by “"+owner.id+"”." : ""
 }
 function suggestInstance(connection, kind) {
   var base=kind === "comet" ? "comet" : "development", n=1, name=base+"-"+n
-  while(instances(connection).some(function(i){return i.id === name})) name=base+"-"+(++n)
+  while(fleetInstances(connection).some(function(i){return i.id === name})) name=base+"-"+(++n)
   return name
 }
 function suggestHTTPPort(connection) {
@@ -380,11 +398,15 @@ function shipType(instance) {
 }
 function shipGroups(connection) {
   return ["Galaxies","Stars","Planets","Moons","Comets","Fakeships","Unassigned"].map(function(type) {
-    return {type:type,ships:instances(connection).filter(function(i){return shipType(i) === type}).slice().sort(function(a,b) {
+    return {type:type,ships:instances(connection).filter(function(i){return !i.project_id && shipType(i) === type}).slice().sort(function(a,b) {
       return Number(b.observed_state === "running")-Number(a.observed_state === "running")
         || String(a.ship || "").localeCompare(String(b.ship || "")) || a.id.localeCompare(b.id)
     })}
-  }).filter(function(group){return group.ships.length > 0})
+  }).filter(function(group){return group.ships.length > 0}).concat(fleetInstances(connection).filter(function(i){return !!i.project_id}).reduce(function(groups,i){
+    var group=groups.filter(function(g){return g.project===i.project_id})[0]
+    if(!group){group={type:"Project · "+i.project_label,project:i.project_id,ships:[]};groups.push(group)}
+    group.ships.push(i);return groups
+  },[]))
 }
 function registrationFailure(text) {
   var code=errorCode(text)
@@ -423,7 +445,7 @@ function shipStatus(connection, instance, now, observing) {
 
 function fleet(connections) {
   var out = []
-  connections.forEach(function(c) { instances(c).forEach(function(i) {
+  connections.forEach(function(c) { fleetInstances(c).forEach(function(i) {
     out.push({key: c.runner_id + "/" + i.id, connection: c, instance: i})
   }) })
   return out
@@ -503,6 +525,14 @@ function shipURL(connection, instance, registrations, preferences) {
   return url
 }
 
+function importRestorationDetail(operation) {
+  var r=operation && operation.kind==="restore-import" && operation.status==="succeeded" && operation.import_restoration
+  if (!r || !validImportRestorationResult(r)) return ""
+  return "\nRestored source: "+r.restore_to+"\nRetained partial copy: "+r.retain_at+"\nFailed registration removed; restoration finished with the ship stopped."
+}
+function validImportRestorationResult(r) {
+  return validDigest(r.review_digest) && [r.source,r.restore_to,r.destination,r.retain_at].every(hostPath)
+}
 function activity(connections, runner, ship, filter, preferences) {
   var out = []
   connections.forEach(function(c) {
@@ -516,7 +546,7 @@ function activity(connections, runner, ship, filter, preferences) {
       out.push({key: c.runner_id + "/" + o.id, runner: runnerTitle(c,preferences), instance: o.instance_id, subject:subject(o.instance_id),
         kind: o.kind, status: o.status, time: o.finished_at || o.created_at, message: o.message || "",
         tone: o.status === "succeeded" ? "good" : o.status === "skipped" ? "muted" : ["failed", "interrupted"].indexOf(o.status) >= 0 ? "bad" : "accent",
-        detail: "Runner: " + c.runner_id + "\nOperation: " + o.id + "\nRequest: " + o.request_id + "\nActor: " + o.actor + "\nCreated: " + o.created_at + (o.finished_at ? "\nFinished: " + o.finished_at : "")})
+        detail: "Runner: " + c.runner_id + "\nOperation: " + o.id + "\nRequest: " + o.request_id + "\nActor: " + o.actor + "\nCreated: " + o.created_at + (o.finished_at ? "\nFinished: " + o.finished_at : "") + importRestorationDetail(o)})
     })
     ;(snapshot.incidents || []).forEach(function(i) {
       if (ship && c.runner_id + "/" + i.instance_id !== ship) return
@@ -659,7 +689,7 @@ function humanTime(value, now) {
 function operationTitle(kind) {
   return {"inspect-epochs":"Inspect epochs","prune-epochs":"Prune old epochs","roll":"Roll epoch","pack":"Pack","meld":"Meld",
     "start":"Start","stop":"Stop","startup-resume":"Resume after host startup","register-fake":"Register fake ship","register-comet":"Register comet",
-    "configure-routine":"Update maintenance policy","routine-pack":"Scheduled pack","routine-meld":"Scheduled meld","login-code":"Get +code"}[kind] || String(kind || "Event").replace(/-/g," ")
+    "configure-routine":"Update maintenance policy","routine-pack":"Scheduled pack","routine-meld":"Scheduled meld","login-code":"Get +code","restore-import":"Restore original source","recover-import":"Finish pier enrollment"}[kind] || String(kind || "Event").replace(/-/g," ")
 }
 
 function runtimeActionKey(connection,instance) { return connection && instance ? JSON.stringify([connection.runner_id,connection.name,instance.id,instance.config_revision]) : "" }
@@ -777,6 +807,7 @@ function writable(connection, now) {
 
 function canOperate(connection, instance, kind, now) {
   if (!available(connection, now) || connection.access_role === "observer" || !instance || instance.active_operation_id || instance.delete_pending || handoffFenced(instance)) return false
+  if(instance.project_id) return hasFeature(connection,"project-add-member-v1") && fresh(instance.observed_at,now,30000) && !!instance.resources && /^[0-9a-f]{64}$/.test(instance.resources.container_id || "") && (kind==="stop" && instance.observed_state==="running" || kind==="start" && instance.observed_state==="stopped" && writable(connection,now))
   // Unsupported/uncertain engine versions may still permit identity-verified
   // Stop. Never route Stop through the new-runtime-work gate.
   var report=liveHostCompatibility(connection,now)
@@ -1124,4 +1155,23 @@ function notices(previous, next) {
       out.push({title: "Runner incident", body: next.name + ": " + i.code + ". Inspect the panel."})
   })
   return out.slice(0, 8)
+}
+
+// Fleet entries are derived from the current runner observation, never from a
+// guessed remote loopback URL. Authentication revalidates these pins in Go.
+function applicationShips(service, saved) {
+  var result=[], seen={}
+  if (!service) return saved || []
+  fleet(service.connections || []).forEach(function(row) {
+    var c=row.connection, i=row.instance
+    var url=shipURL(c,i,service.registrations||[],service.runnerPreferences||{})
+    if (!url || !i.ship || i.identity_pending || i.observed_state!=="running" || !i.resources || !i.resources.container_id || i.recovery_required || i.active_operation_id) return
+    if (service.observing===false || !available(c,service.now||Date.now())) return
+    var old=(saved||[]).filter(function(s){return s.origin===url&&s.ship===i.ship})[0]
+    result.push(Object.assign({},old||{name:i.id,origin:url,ship:i.ship,status:"managed"},{label:i.label||i.id,
+      managed:{runner:c.name,runner_id:c.runner_id,instance:i.id,revision:i.config_revision,container_id:i.resources.container_id}}))
+    seen[url+"|"+i.ship]=true
+  })
+  ;(saved||[]).forEach(function(s){if(!seen[s.origin+"|"+s.ship])result.push(s)})
+  return result
 }

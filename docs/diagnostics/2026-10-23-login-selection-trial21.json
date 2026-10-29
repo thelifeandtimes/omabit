@@ -1,0 +1,32 @@
+{
+  "passed": false,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-login21",
+  "independent_verification": {
+    "verified": true,
+    "passed": false,
+    "result_sha256": "3f66180f41d6e9b63c54de664ec00aa6369f13f138fb47e80c9a9e0be1acd72b",
+    "seconds": 733.17,
+    "scope_inactive": true,
+    "original_artifacts_and_disks_verified": true,
+    "extracted_files_verified": 43,
+    "failure": "selected runtime code unavailable (output redacted)",
+    "completed_login_checks": []
+  },
+  "selection_at_start": {
+    "id": "zod",
+    "ship": "~zod",
+    "config_revision": 1,
+    "observed_state": "running",
+    "health": "healthy",
+    "observed_at": "2026-10-23T14:43:11.504883593Z",
+    "resources": {
+      "status": "unavailable",
+      "source": "docker-stats-v1.47"
+    },
+    "active_operation_id": null,
+    "recovery_required": null
+  },
+  "login_code_audits": 0,
+  "diagnosis": "Existing login-code admission requires the resource observation container identity; it was not available in the first completed Start snapshot. The endpoint/code backend was not reached.",
+  "corrected_fixture_offline_tests": 10
+}

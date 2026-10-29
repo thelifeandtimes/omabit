@@ -7,22 +7,78 @@ import "Model.js" as Model
 Item {
   id: root
   readonly property int bootstrapAPI: 1
-  readonly property string applicationVersion: "0.2.0"
+  readonly property string applicationVersion: "0.3.0"
   readonly property string distributionChannel: bootstrap && bootstrap.manifest && bootstrap.manifest.releaseChannel || manifest && manifest.releaseChannel || "stable"
   readonly property string releaseLabel: bootstrap && bootstrap.active && bootstrap.active.development ? "DEVELOPMENT" : distributionChannel === "develop" ? "UNQUALIFIED DEVELOPMENT" : distributionChannel === "edge" || applicationVersion.indexOf("-edge.") >= 0 ? "EDGE · NOT STABLE" : applicationVersion.indexOf("-") >= 0 ? "PRERELEASE" : "STABLE"
   property var shell: null
   property var manifest: null
+  readonly property string moduleName: manifest && manifest.id ? manifest.id : ""
   property var settings: ({})
   property var bootstrap: null
   property string profileName: "default"
   property var profileEnvironment: ({})
   property bool localSetupAllowed: true
   property bool activationEnabled: true
+  property bool uiAdmissionOpen: true
+  onUiAdmissionOpenChanged: if (!uiAdmissionOpen) Qt.callLater(function() { if (!root.uiAdmissionOpen) monitor.visible = false })
+  property bool transportStopping: false
+  property bool inventoryExitPending: false
+  property var auxiliaryReaders: []
+  property bool auxiliaryReaderLost: false
+  property var unconfirmedHelperExits: []
+  function recordHelperExit(kind, status) {
+    // A signal-killed owner cannot confirm cleanup of its descendants. Normal
+    // nonzero exits still use the helper's own cleanup/recovery contract.
+    if (status !== 0 && unconfirmedHelperExits.indexOf(kind) < 0)
+      unconfirmedHelperExits = unconfirmedHelperExits.concat([kind])
+  }
+  readonly property var pendingAuxiliaryReaders: auxiliaryReaders.filter(function(reader) {
+    return reader && reader.pending
+  }).map(function(reader) { return reader.kind })
+  function registerAuxiliaryReader(reader) {
+    if (reader && auxiliaryReaders.indexOf(reader) < 0)
+      auxiliaryReaders = auxiliaryReaders.concat([reader])
+  }
+  function unregisterAuxiliaryReader(reader) {
+    // Losing the UI object is not proof that its process exited. Retain this
+    // uncertainty until an external coordinator verifies the whole old service.
+    if (reader && reader.pending) auxiliaryReaderLost = true
+    auxiliaryReaders = auxiliaryReaders.filter(function(entry) { return entry !== reader })
+  }
+  readonly property bool transportChildrenRunning: inventoryExitPending || pendingAuxiliaryReaders.length > 0 || feed.running || action.running
+    || remoteStatus.running || localStatus.running || localSetup.running || themeInfo.running
+    || paletteInfo.running || themeSync.running || notification.running || codeCopy.running
+    || registrationList.running || shipList.running || appConnections.busy || projectCreator.busy
+  readonly property var transportState: ({closed:transportStopping && !transportChildrenRunning && !auxiliaryReaderLost && unconfirmedHelperExits.length === 0,
+    reason:!transportStopping ? "not-requested" : auxiliaryReaderLost ? "reader-owner-lost" : unconfirmedHelperExits.length ? "helper-descendants-unconfirmed" : transportChildrenRunning ? "helpers-still-running" : "",
+    auxiliaryReadersTracked:true, pendingReaders:pendingAuxiliaryReaders, readerOwnerLost:auxiliaryReaderLost,
+    helperExitsTracked:true, unconfirmedHelpers:unconfirmedHelperExits, collectionReady:false})
+
+  // Internal transport-only prerequisite. Auxiliary reader exits are included;
+  // durable operation reconciliation and full activation remain separate.
+  function stopTransport() {
+    if (transportStopping) return "requested"
+    if (!reloadSafe) return "busy"
+    transportStopping=true
+    activationEnabled=false
+    reconnect.stop()
+    refreshPending=false
+    refreshing=false
+    if (feed.running) {
+      inventoryExitPending=true
+      feed.running=false
+    }
+    return "requested"
+  }
   readonly property bool reloadSafe: !busy && !remoteSetupBusy && !copyingCode && !checkingSetup && !themeSync.running && !pendingFirstBoot
   property int reconnectAttempts: 0
   property bool desktopViewLoaded: false
   property var connections: []
   property var ships: []
+  readonly property alias applicationConnections: appConnections
+  ApplicationConnections { id: appConnections; service: root }
+  readonly property alias projectCreation: projectCreator
+  ProjectCreation {id:projectCreator;service:root}
   property var registrations: []
   property bool registrationsLoaded: false
   readonly property bool firstRun: registrationsLoaded && registrations.length===0 && connections.length===0
@@ -78,6 +134,7 @@ Item {
   property var externalImportPreview: null
   property var pendingExternalPreview: null
   property var importRecoveryReview: null
+  readonly property ImportRestoration importRestoration: ImportRestoration { service: root }
   property var hostMoveOutcome: null
   property var routineOutcome: null
   property var epochInspection: null
@@ -85,7 +142,7 @@ Item {
   property double now: Date.now()
   property bool refreshing: false
   property bool refreshPending: false
-  readonly property bool busy: !activationEnabled || action.running || currentAction !== "" || settingUp
+  readonly property bool busy: !activationEnabled || action.running || currentAction !== "" || settingUp || appConnections.busy || projectCreator.busy
   readonly property bool observing: feed.running && !feedError
   property string feedError: ""
   onFeedErrorChanged: if(feedError && !firstRun)showToast(feedError,"warn")
@@ -141,6 +198,7 @@ Item {
   }
 
   function checkLocalSetup(manual) {
+    if (transportStopping) return
     if (!localSetupAllowed) { localSetupError="Local host setup is disabled in test profile “"+profileName+"”. Enable it explicitly only on the intended test host.";return }
     if (checkingSetup || settingUp) return
     if (manual===true) setupCheckRequested=true
@@ -172,6 +230,7 @@ Item {
     if (!value.busy && ["connected","revoked"].indexOf(value.phase)>=0 && (!previous || previous.id!==value.id || previous.phase!==value.phase || previous.busy)) Qt.callLater(refresh)
   }
   function checkRemoteSetup() {
+    if (transportStopping) return
     if (remoteStatus.running || currentAction==="remote-setup-start") return
     remoteSetupOutput="";remoteSetupErrors="";remoteStatusGeneration=remoteSetupGeneration
     var args=["remote-setup-status"]
@@ -200,6 +259,7 @@ Item {
   }
 
   function refresh() {
+    if (transportStopping) return
     if (activationEnabled && busy) { refreshPending = true; return }
     checkLocalSetup()
     clearEpochPreview()
@@ -212,6 +272,7 @@ Item {
   }
 
   function loadRegistrations() {
+    if (transportStopping) return
     if (registrationList.running) return
     registrationOutput = ""; registrationList.command = command(["runners"]); registrationList.running = true
   }
@@ -225,12 +286,18 @@ Item {
       return true
     } catch (e) { lastError = e.message; return false }
   }
+  function openProject(connection, projectId) {
+    if (!uiAdmissionOpen || transportStopping) return
+    openMonitor(null,null,"setup")
+    monitor.setupPane.openProject(connection,projectId)
+  }
   function openMonitor(connection, instance, tab) {
+    if (!uiAdmissionOpen || transportStopping) return
     if (connection && instance) monitor.selectedKey = connection.runner_id + "/" + instance.id
     monitor.page = tab || "overview"
     monitor.present()
   }
-  function openSetup(mode) { monitor.page="setup";monitor.setupPane.mode=mode || "home";monitor.present() }
+  function openSetup(mode) { if (!uiAdmissionOpen || transportStopping) return; monitor.page="setup";monitor.setupPane.mode=mode || "home";monitor.present() }
   function openShip(connection, instance) {
     if (!observing || !Model.shipLive(connection, instance, now)) return false
     var url = Model.shipURL(connection, instance, registrations, runnerPreferences)
@@ -244,6 +311,7 @@ Item {
     return profileCommand(prefix.concat(args))
   }
   function loadTheme() {
+    if (transportStopping) return
     if (!themeInfo.running) { themeOutput = ""; themeInfo.command = themeCommand(["theme-status"]); themeInfo.running = true }
     if (!paletteInfo.running) { paletteOutput = ""; paletteInfo.command = themeCommand(["theme-preview"]); paletteInfo.running = true }
   }
@@ -257,6 +325,7 @@ Item {
   function publishTheme(row) { return submit(["theme-publish", row.name, "--expected-ship-id", row.id], "theme-publish", "", true) }
 
   function startFeed() {
+    if (transportStopping) return
     if (feed.running) return
     if (!registrationsLoaded) return
     // Retain observations across reconnects; observing=false keeps actions gated.
@@ -270,6 +339,7 @@ Item {
   }
 
   function loadShips() {
+    if (transportStopping) return
     if (shipList.running) return
     shipOutput = ""
     shipList.command = command(["ships"])
@@ -277,6 +347,7 @@ Item {
   }
 
   function pumpNotifications() {
+    if (transportStopping) return
     if (notification.running || notificationQueue.length === 0) return
     var item = notificationQueue[0]
     notificationQueue = notificationQueue.slice(1)
@@ -295,7 +366,7 @@ Item {
     pendingInput = input || ""
     action.stdinEnabled = pendingInput !== ""
     action.command = useThemeHelper ? themeCommand(args) : command(args)
-    timeout.interval = name === "move-host" ? 120*60*1000 : ["register-ship","register-comet","register"].indexOf(name)>=0 ? 20*60*1000 : ["preview-pier","import-pier"].indexOf(name)>=0 ? 60000 : useThemeHelper ? 60000 : 25000
+    timeout.interval = name === "move-host" ? 120*60*1000 : ["register-ship","register-comet","register"].indexOf(name)>=0 ? 20*60*1000 : ["preview-pier","import-pier","preview-import-restore","restore-import"].indexOf(name)>=0 ? 60000 : useThemeHelper ? 60000 : 25000
     timeout.restart()
     action.running = true
     var current = generation
@@ -333,6 +404,7 @@ Item {
     })
     if (!selected) { lastError = "The selected runtime changed; inspect a fresh observation."; return false }
     requestIdentity = Model.requestId()
+    if(instance.project_id){var p=(connection.project_inventory.projects||[]).filter(function(p){return p.id===instance.project_id})[0];if(!p)return false;return submit(Model.selection(connection).concat(["project-operate",p.id,"member-"+kind,"--member",instance.id,"--container-id",instance.resources.container_id,"--revision",String(p.revision),"--review-digest",p.review_digest,"--request-id",requestIdentity,"--confirm-action"]),"project-action")}
     if (kind === "inspect-epochs") rememberInspection({connection:connection.name,runner:connection.runner_id,instance:instance.id,revision:instance.config_revision,request:requestIdentity,status:"submitting",message:"Requesting an inspection of the stopped pier…"})
     return submit(Model.operate(connection, instance, kind, requestIdentity), kind)
   }
@@ -602,7 +674,7 @@ Item {
     hostMoveOutcome={runner:target.runner,instance:target.instance,destination:destination.runner,name:name,status:"moving",message:"Moving the stopped pier. Both hosts retain durable phase receipts."}
     return submit(Model.hostMoveArgs(target,destination,name,httpPort,amesPort,requestIdentity),"move-host")
   }
-  function createFromKey(connection,ship,keyFile,httpPort,amesPort,pill,bootstrap,storageRoot,customPath,loom) {
+  function createFromKey(connection,ship,keyFile,httpPort,amesPort,pill,bootstrap,storageRoot,customPath,loom,pastedKey) {
     bootstrap=bootstrap || (pill ? "recommended" : "bare")
     var bootProblem=Model.bootstrapProblem(bootstrap,pill || "")
     if (bootProblem) {lastError=bootProblem;return false}
@@ -610,19 +682,19 @@ Item {
     var name=ship.slice(1),path=Model.ownedPierPath(ship)
     if (path) path=Model.storagePath(storageRoot,path)
     if (customPath) path=customPath
-    if (busy || !observing || !Model.available(connection,now) || connection.access_role!=="operator" || !Model.hasFeature(connection,"key-boot-options") || !Model.validId(name) || !path || !keyFile || !Model.optionalPort(httpPort) || !Model.optionalPort(amesPort)) {lastError="Choose an owned Urbit ID, private key file and valid optional ports on an updated operator runner.";return false}
+    if (busy || !observing || !Model.available(connection,now) || connection.access_role!=="operator" || !Model.hasFeature(connection,"key-boot-options") || !Model.validId(name) || !path || !(keyFile || pastedKey) || !Model.optionalPort(httpPort) || !Model.optionalPort(amesPort)) {lastError="Choose an owned Urbit ID, private key file and valid optional ports on an updated operator runner.";return false}
     if (Model.instances(connection).some(function(i){return i.id===name || i.mode!=="fake"&&i.ship===ship})) {lastError="This Urbit identity or instance is already registered.";return false}
     loom=loom===undefined ? 31 : Number(loom)
     var runtimeArgs=[]
     try {runtimeArgs=Model.runtimeSettingsArgs(connection,loom)} catch(e) {lastError=e.message;return false}
     requestIdentity=Model.requestId()
     registrationOutcome={runner:connection.runner_id,connection:connection.name,instance:name,kind:"owned",ship:ship,pier:path,loom:loom,nativeControl:false,request:requestIdentity,status:"submitting",message:"Preparing boot files and registering the ship…"}
-    var args=Model.selection(connection).concat(["create-ship","--ship",ship,"--key-file",keyFile,"--request-id",requestIdentity,"--confirm-network"])
+    var args=Model.selection(connection).concat(["create-ship","--ship",ship,"--request-id",requestIdentity,"--confirm-network"]).concat(pastedKey ? ["--key-stdin"] : ["--key-file",keyFile,"--secure-key-file"])
     if (String(httpPort).trim()) args=args.concat(["--http-port",String(httpPort)])
     if (String(amesPort).trim()) args=args.concat(["--ames-port",String(amesPort)])
     if (customPath || storageRoot && storageRoot!=="default") args=args.concat(["--pier-path",path])
     args=args.concat(Model.bootstrapArgs(bootstrap,pill || ""),runtimeArgs)
-    return submit(args,"register-ship")
+    return submit(args,"register-ship",pastedKey ? pastedKey.trim()+"\n" : "")
   }
   function acceptDevelopmentMode(connection) {
     var entry = registrations.filter(function(r) { return r.name === connection.name && r.runner_id === connection.runner_id })[0]
@@ -649,7 +721,8 @@ Item {
     if (kind === "ship-status" && !outputFailed && output) {
       try { var statusResult = JSON.parse(output); if (statusResult.id) { var statuses = Object.assign({}, shipStatus); statuses[statusResult.id] = statusResult; shipStatus = statuses; lastResult = statusResult.name + ": " + statusResult.status } } catch (_) {}
     }
-    if (code !== 0 || outputFailed) lastError = outputFailed ? "Collector output exceeded its limit." : Model.errorMessage(errors)
+    if (kind==="preview-import-restore" || kind==="restore-import") {importRestoration.finish(kind,code,output,errors,outputFailed);lastError=""}
+    else if (code !== 0 || outputFailed) lastError = outputFailed ? "Collector output exceeded its limit." : Model.errorMessage(errors)
     else {
       try {
         var result = JSON.parse(output)
@@ -806,12 +879,14 @@ Item {
       }
     }
     stderr: SplitParser { onRead: function(line) { if (!root.firstRun && line.length < 8192) root.feedError = "Collector inventory is unavailable. Check enrollment and SSH access." } }
-    onExited: function(code, status) {
+    onExited: function(code, status) { root.recordHelperExit("inventory",status);
+      root.inventoryExitPending=false
+      if (root.transportStopping) return
       if (root.refreshing) Qt.callLater(root.startFeed)
       else if (!root.firstRun) { if (!root.feedError) root.feedError = "Inventory polling stopped. Reconnecting…"; reconnect.restart() }
     }
     onRunningChanged: if (!running) Qt.callLater(function() {
-      if (!feed.running && !root.firstRun && !root.refreshing && !root.feedError) root.feedError = "Inventory process is unavailable. Check the collector executable and refresh."
+      if (!root.transportStopping && !feed.running && !root.firstRun && !root.refreshing && !root.feedError) root.feedError = "Inventory process is unavailable. Check the collector executable and refresh."
     })
   }
   Timer {
@@ -825,7 +900,7 @@ Item {
     onStarted: { if (root.pendingInput) write(root.pendingInput); root.pendingInput = ""; stdinEnabled = false }
     stdout: SplitParser { splitMarker: ""; onRead: function(data) { if (root.output.length + data.length > 2 * 1024 * 1024) { root.outputFailed = true; action.signal(9) } else root.output += data } }
     stderr: SplitParser { splitMarker: ""; onRead: function(data) { if (root.errors.length + data.length < 16384) root.errors += data } }
-    onExited: function(code, status) { root.finish(status === 0 ? code : -1) }
+    onExited: function(code, status) { root.recordHelperExit("collector-action",status); root.finish(status === 0 ? code : -1) }
     onRunningChanged: if (!running && root.currentAction) {
       root.pendingInput = ""
       var current = root.generation
@@ -836,7 +911,7 @@ Item {
     id: remoteStatus
     stdout: SplitParser { splitMarker:"";onRead:function(data){if(root.remoteSetupOutput.length+data.length>65536){remoteStatus.signal(9);return}root.remoteSetupOutput+=data} }
     stderr: SplitParser { splitMarker:"";onRead:function(data){if(root.remoteSetupErrors.length+data.length<8192)root.remoteSetupErrors+=data} }
-    onExited:function(code,status) {
+    onExited:function(code,status) { root.recordHelperExit("remote-status",status);
       if(root.remoteStatusGeneration===root.remoteSetupGeneration) {
         if(code===0&&status===0){try{root.acceptRemoteSetup(JSON.parse(root.remoteSetupOutput))}catch(e){root.remoteSetupError=e.message}}
         else root.remoteSetupError=Model.errorMessage(root.remoteSetupErrors)
@@ -850,7 +925,7 @@ Item {
     objectName: "localSetupStatus"
     stdout: SplitParser { splitMarker: ""; onRead: function(data) { if (root.localStatusOutput.length + data.length > 131072) { localStatus.signal(9); return } root.localStatusOutput += data } }
     stderr: SplitParser { onRead: function(line) {} }
-    onExited: function(code,status) {
+    onExited: function(code,status) { root.recordHelperExit("local-status",status);
       if (code === 0 && status === 0) {
         try { root.acceptLocalSetup(JSON.parse(root.localStatusOutput)) }
         catch (_) { root.localSetupError = "Local setup status could not be read. Check that the bundled helpers are installed." }
@@ -872,32 +947,32 @@ Item {
       } catch (_) { root.localSetupError = "Unexpected setup response. Inspect setup status before retrying."; localSetup.signal(9) }
     } }
     stderr: SplitParser { onRead: function(line) {} }
-    onExited: function(code,status) { root.finishLocalSetup(status === 0 ? code : -1) }
+    onExited: function(code,status) { root.recordHelperExit("local-setup",status); root.finishLocalSetup(status === 0 ? code : -1) }
     onRunningChanged: if (!running && root.localSetupPending) Qt.callLater(function(){ if (!localSetup.running && root.localSetupPending) root.finishLocalSetup(-1) })
   }
   Process {
     id: themeInfo
     stdout: SplitParser { splitMarker: ""; onRead: function(data) { if (root.themeOutput.length + data.length < 262144) root.themeOutput += data } }
     stderr: SplitParser { splitMarker: ""; onRead: function(data) {} }
-    onExited: function(code, status) { if (code === 0 && status === 0) { try { var state = JSON.parse(root.themeOutput); if (state.version === 1 && state.ships) root.themeState = state } catch (_) {} } root.themeOutput = "" }
+    onExited: function(code, status) { root.recordHelperExit("theme-status",status); if (code === 0 && status === 0) { try { var state = JSON.parse(root.themeOutput); if (state.version === 1 && state.ships) root.themeState = state } catch (_) {} } root.themeOutput = "" }
   }
   Process {
     id: paletteInfo
     stdout: SplitParser { splitMarker: ""; onRead: function(data) { if (root.paletteOutput.length + data.length < 16384) root.paletteOutput += data } }
     stderr: SplitParser { splitMarker: ""; onRead: function(data) {} }
-    onExited: function(code, status) { if (code === 0 && status === 0) { try { var value = JSON.parse(root.paletteOutput); if (value.id === "omarchy-urbit-theme") root.palette = value } catch (_) {} } root.paletteOutput = "" }
+    onExited: function(code, status) { root.recordHelperExit("theme-preview",status); if (code === 0 && status === 0) { try { var value = JSON.parse(root.paletteOutput); if (value.id === "omarchy-urbit-theme") root.palette = value } catch (_) {} } root.paletteOutput = "" }
   }
   Process {
     id: themeSync
     stdout: SplitParser { splitMarker: ""; onRead: function(data) { if (root.themeSyncOutput.length + data.length < 65536) root.themeSyncOutput += data } }
     stderr: SplitParser { splitMarker: ""; onRead: function(data) {} }
-    onExited: { root.themeSyncOutput = ""; Qt.callLater(root.loadTheme) }
+    onExited: function(code,status) { root.recordHelperExit("theme-sync",status); root.themeSyncOutput = ""; Qt.callLater(root.loadTheme) }
   }
   Process {
     id: notification
     stdout: SplitParser { splitMarker: ""; onRead: function(data) {} }
     stderr: SplitParser { splitMarker: ""; onRead: function(data) {} }
-    onExited: Qt.callLater(root.pumpNotifications)
+    onExited: function(code,status) { root.recordHelperExit("notification",status); Qt.callLater(root.pumpNotifications) }
   }
   Process {
     id: codeCopy
@@ -907,14 +982,14 @@ Item {
        try { if (JSON.parse(root.codeOutput).status === "clipboard_handoff_started") {root.codeNotice="Copied to sensitive clipboard for 30s";root.showToast(root.codeNotice)} } catch (_) {}
     } }
     stderr: SplitParser { splitMarker: ""; onRead: function(data) {} }
-    onExited: function(code,status) { root.codeOutput = ""; if (code!==0 || status!==0) root.showToast("Could not copy +code. Refresh and check operator access."); root.codeNotice="" }
+    onExited: function(code,status) { root.recordHelperExit("clipboard",status); root.codeOutput = ""; if (code!==0 || status!==0) root.showToast("Could not copy +code. Refresh and check operator access."); root.codeNotice="" }
   }
   Timer { id: toastExpiry; interval: 4500; onTriggered: root.toastText="" }
   Process {
     id: registrationList
     stdout: SplitParser { splitMarker: ""; onRead: function(data) { if (root.registrationOutput.length + data.length < 262144) root.registrationOutput += data } }
     stderr: SplitParser { onRead: function(line) {} }
-    onExited: function(code, status) {
+    onExited: function(code, status) { root.recordHelperExit("registrations",status);
       if (code === 0 && status === 0) {
         try {
           var rows = JSON.parse(root.registrationOutput)
@@ -937,14 +1012,21 @@ Item {
     property string desktopSelection: ""
   }
   MonitorWindow { id: monitor; service: root }
+  function openApplications(pluginId) {
+    if (typeof pluginId!=="string" || pluginId.length>128 || !/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(pluginId)) return
+    openMonitor(null,null,"setup")
+    monitor.setupPane.openApplications(pluginId)
+  }
   IpcHandler {
-    target: "thelifeandtimes.omabit.monitor"
+    enabled: root.moduleName !== ""
+    target: root.moduleName + ".monitor"
     function open(): void { root.openMonitor(null, null, "overview") }
+    function applications(pluginId: string): void { root.openApplications(pluginId) }
     function activity(): void { root.openMonitor(null, null, "activity") }
     function maintenance(): void { root.openMonitor(null, null, "maintenance") }
     function setup(): void { root.openMonitor(null, null, "setup") }
     function refresh(): void { root.refresh() }
-    function status(): string { return JSON.stringify({version:root.applicationVersion,channel:root.distributionChannel,release_label:root.releaseLabel,visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
+    function status(): string { return JSON.stringify({module:root.moduleName,profile:root.profileName,version:root.applicationVersion,channel:root.distributionChannel,release_label:root.releaseLabel,visible:monitor.visible,page:monitor.page,fullscreen:monitor.fullscreen,busy:root.busy,first_run:root.firstRun,recommended_pill_default:root.recommendedPillUrl==="https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill"}) }
     function close(): void { monitor.visible = false }
   }
   Process {
@@ -952,7 +1034,7 @@ Item {
     objectName: "shipList"
     stdout: SplitParser { splitMarker: ""; onRead: function(data) { if (root.shipOutput.length + data.length < 262144) root.shipOutput += data } }
     stderr: SplitParser { splitMarker: ""; onRead: function(data) {} }
-    onExited: function(code, status) {
+    onExited: function(code, status) { root.recordHelperExit("ships",status);
       if (code === 0 && status === 0) {
         try { var list = JSON.parse(root.shipOutput); if (Array.isArray(list)) root.ships = list }
         catch (_) { root.lastError = "Ship enrollment list could not be read." }

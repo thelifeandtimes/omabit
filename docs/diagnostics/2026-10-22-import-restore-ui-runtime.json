@@ -1,0 +1,598 @@
+{
+  "ok": true,
+  "checkpoint": "guided restoration through real collector/runner and re-import",
+  "run": "/tmp/omabit-import-guest-run-20261022-11",
+  "appliance": "/tmp/omabit-import-appliance-20261022-10",
+  "extraction": "/tmp/omabit-import-inspection-20261022-11",
+  "seconds": 865.45,
+  "clean_shutdown": true,
+  "scope": "omabit-import-guest-d5b9837ad1ba45ddbeaff3ebb1344148",
+  "scope_state_after_completion": "inactive",
+  "scope_admission": {
+    "LoadState": "loaded",
+    "ActiveState": "active",
+    "CPUQuotaPerSecUSec": "1s",
+    "MemoryMax": "12884901888",
+    "MemorySwapMax": "0",
+    "TasksMax": "128"
+  },
+  "case": {
+    "passed": true,
+    "ship": "~zod",
+    "source": "/home/lab/import-source/unclassified-pier",
+    "destination": "/srv/urbit/piers/fakeships/zod/zod",
+    "import_operation": "op-a6d7d85fa2630447e0b8a6c06494f429",
+    "start_operation": "op-7bf2a48fa729d3d93ca9eb91fb2dca69",
+    "stop_operation": "op-4785001b49abb3209ead4900a651db1e",
+    "preview_source_unchanged": true,
+    "mode": "copy",
+    "same_filesystem_rename": false,
+    "cross_filesystem_copy": true,
+    "parent_mount": "/srv/urbit/piers/fakeships/zod",
+    "identity_verified": true,
+    "final_state": "stopped",
+    "checkpoint": "partial-copy-restore-reimport",
+    "restoration": {
+      "restore_operation": "op-6b78ff738be7fa906a7bef0f9bcddb87",
+      "failed_import_operation": "op-8042457678bdd30826d157e9f81933bf",
+      "failed_revision": 1,
+      "restored_source_same_inode": true,
+      "retained_partial_same_inode": true,
+      "archive": "/srv/urbit/piers/archive/import-9c191c208b70f8b61a07829ef4e7434a",
+      "empty_holding": "/home/lab/import-source/.omabit-import-9c191c208b70f8b61a07829ef4e7434a",
+      "terminal_replays_unchanged": true,
+      "guided_ui": true
+    },
+    "old_replays_preserved_new_registration": true,
+    "retained_archive_unchanged": true
+  },
+  "review": {
+    "target": {
+      "runner": "runner-676d576efc5657c9a4f4228ce0bbd0cd",
+      "connection": "guest",
+      "actor": "local-uid:1000",
+      "instance": "zod",
+      "revision": 1,
+      "ship": "~zod",
+      "path": "fakeships/zod/zod",
+      "source": "/home/lab/import-source/unclassified-pier",
+      "holding": "/home/lab/import-source/.omabit-import-9c191c208b70f8b61a07829ef4e7434a/pier",
+      "destination": "/srv/urbit/piers/fakeships/zod",
+      "retainAt": "/srv/urbit/piers/archive/import-9c191c208b70f8b61a07829ef4e7434a",
+      "stage": "review"
+    },
+    "plan": {
+      "source": "/home/lab/import-source/.omabit-import-9c191c208b70f8b61a07829ef4e7434a/pier",
+      "restore_to": "/home/lab/import-source/unclassified-pier",
+      "destination": "/srv/urbit/piers/fakeships/zod",
+      "retain_at": "/srv/urbit/piers/archive/import-9c191c208b70f8b61a07829ef4e7434a",
+      "review_digest": "aaeefe09dc629b447fd2cf0fba0b2209dcae32ffbc0bc58d896bd7c29fc6d65f",
+      "runner_id": "runner-676d576efc5657c9a4f4228ce0bbd0cd",
+      "instance_id": "zod",
+      "config_revision": 1,
+      "source_files": 7,
+      "source_bytes": 1016823820,
+      "destination_files": 1,
+      "destination_bytes": 34078720,
+      "stage": "review",
+      "continuation": false,
+      "actor": "local-uid:1000"
+    },
+    "loadedAt": 1792672024016
+  },
+  "receipt": {
+    "import_restoration": {
+      "source": "/home/lab/import-source/.omabit-import-9c191c208b70f8b61a07829ef4e7434a/pier",
+      "restore_to": "/home/lab/import-source/unclassified-pier",
+      "destination": "/srv/urbit/piers/fakeships/zod",
+      "retain_at": "/srv/urbit/piers/archive/import-9c191c208b70f8b61a07829ef4e7434a",
+      "review_digest": "aaeefe09dc629b447fd2cf0fba0b2209dcae32ffbc0bc58d896bd7c29fc6d65f"
+    },
+    "id": "op-6b78ff738be7fa906a7bef0f9bcddb87",
+    "request_id": "ui-1792672024278-fdcd99269ca9d",
+    "instance_id": "zod",
+    "kind": "restore-import",
+    "actor": "local-uid:1000",
+    "status": "succeeded",
+    "config_revision": 1,
+    "created_at": "2026-10-22T12:27:04.352816493Z",
+    "finished_at": "2026-10-22T12:27:04.585770164Z",
+    "message": "source restored; partial destination retained; failed registration retired"
+  },
+  "ui_calls": [
+    {
+      "args": [
+        "--runner",
+        "guest",
+        "--expected-runner-id",
+        "runner-676d576efc5657c9a4f4228ce0bbd0cd",
+        "preview-import-restore",
+        "zod",
+        "--revision",
+        "1",
+        "--expected-actor",
+        "local-uid:1000"
+      ],
+      "kind": "preview-import-restore"
+    },
+    {
+      "args": [
+        "--runner",
+        "guest",
+        "--expected-runner-id",
+        "runner-676d576efc5657c9a4f4228ce0bbd0cd",
+        "restore-import",
+        "zod",
+        "--revision",
+        "1",
+        "--expected-actor",
+        "local-uid:1000",
+        "--restore-digest",
+        "aaeefe09dc629b447fd2cf0fba0b2209dcae32ffbc0bc58d896bd7c29fc6d65f",
+        "--request-id",
+        "ui-1792672024278-fdcd99269ca9d",
+        "--confirm-restore"
+      ],
+      "kind": "restore-import"
+    }
+  ],
+  "ui_processes": [
+    {
+      "kind": "inventory",
+      "exit": 0,
+      "normal_exit": true
+    },
+    {
+      "kind": "preview-import-restore",
+      "exit": 0,
+      "normal_exit": true
+    },
+    {
+      "kind": "restore-import",
+      "exit": 0,
+      "normal_exit": true
+    },
+    {
+      "kind": "inventory",
+      "exit": 0,
+      "normal_exit": true
+    }
+  ],
+  "ui_inventory_count": 2,
+  "ui_retirement_visible": true,
+  "explicit_consent": true,
+  "duplicate_click_suppressed": true,
+  "qml_log_empty": true,
+  "sqlite": {
+    "quick_check": "ok",
+    "schema": 22,
+    "instance_count": 1,
+    "final_revision": 2,
+    "final_desired_state": "stopped",
+    "operations": [
+      {
+        "id": "op-8042457678bdd30826d157e9f81933bf",
+        "kind": "import-pier",
+        "status": "interrupted",
+        "revision": 1
+      },
+      {
+        "id": "op-6b78ff738be7fa906a7bef0f9bcddb87",
+        "kind": "restore-import",
+        "status": "succeeded",
+        "revision": 1
+      },
+      {
+        "id": "op-a6d7d85fa2630447e0b8a6c06494f429",
+        "kind": "import-pier",
+        "status": "succeeded",
+        "revision": 2
+      },
+      {
+        "id": "op-7bf2a48fa729d3d93ca9eb91fb2dca69",
+        "kind": "start",
+        "status": "succeeded",
+        "revision": 2
+      },
+      {
+        "id": "op-4785001b49abb3209ead4900a651db1e",
+        "kind": "stop",
+        "status": "succeeded",
+        "revision": 2
+      }
+    ],
+    "tombstones": [
+      [
+        "zod",
+        "op-6b78ff738be7fa906a7bef0f9bcddb87",
+        1
+      ]
+    ]
+  },
+  "artifact_sha256": {
+    "base.raw": "7668a28650783bb72a79320202691f9fbc046a0ed54305babe6435b1c4376093",
+    "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+    "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+    "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+  },
+  "runner_sha256": "324dac52a969b3d5fd8828dafce25ab6c9012da923dcbf4656d9750b4c8fc4c4",
+  "collector_sha256": "b97c86a0fa32150bd409c8c961f82f4993dd4e7c88efdc5e06d93281c20517a9",
+  "source_sha256": {
+    "scripts/qualification/imports/appliance.py": "3cb561c80fdeaebb601b203a6f038f5657f0902025ada310f8811b4615f3ecd6",
+    "scripts/qualification/imports/guest.py": "9473ac499f28b085df6db5af79590748a4abc13fb23ba50283e9250ef10c2335",
+    "scripts/qualification/imports/import_case.py": "27ae2fd0628db1f00aedde980c427c9d76e7ecd6a5cf0fde2c8ae5920ec31e0e",
+    "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+    "plugins/omabit/ActionButton.qml": "1fe619647db47a3f26f357abd6d2f51361fcdaa157d2671e4b56f9c9c6bd46a2",
+    "plugins/omabit/ActivityPane.qml": "1f267209c5db858e00e60de20592d345db91ff9707b83c58d443b7404eb96cd4",
+    "plugins/omabit/ApplicationConnections.qml": "1e4bb12000d8e333450d974356b2eab723a28eb46870c9b6f16955f211027603",
+    "plugins/omabit/ApplicationsPane.qml": "912797fa527d31ce7326802a335df67fbe5f4068a22e4ace660d41d3d78c4ce7",
+    "plugins/omabit/BootstrapSelector.qml": "5eccc75a377785faab20a904cb515c6fe5acad63d06943f7470f189d1ebd90c4",
+    "plugins/omabit/Card.qml": "3a769d746ec65ee8ed782a5775bcb83dbc8e88d8d923ab1bc2345e091324122f",
+    "plugins/omabit/CardTitle.qml": "b36a47d231f30d4d1067acb9a751dba5894d2262bd10d5e8d33f19fe98719211",
+    "plugins/omabit/CheckField.qml": "5c19c38957a14a5c9e29e539249da786724331ec1895951511901e4039e45005",
+    "plugins/omabit/ConnectivityStatus.qml": "7ca834f95ed8898a2ceaa7e00cf8f854b55a4f5bc3186c1f95e36bf5c2c8f982",
+    "plugins/omabit/CopyCodeButton.qml": "6185d2cee610e3dce022446eddbaf8407d5cfa243b160f6d5bdc80bc2048abe8",
+    "plugins/omabit/DeletePierPane.qml": "48360f25a69237858a49e4adb86709780c78cc0a9c66d8bbf67dba7da8e9a9e2",
+    "plugins/omabit/Design.qml": "f74d2e85434db73620dd7522519c0eee38f0b080c38f83475781971617c5fda9",
+    "plugins/omabit/DesktopDiagnostics.qml": "3de24dbc388b5d54ed79350f824889b9d93125e833f5af512251f437ab263b2e",
+    "plugins/omabit/EditableSelectField.qml": "a08ca998509e249c8b4a7bf5d16993304ab521956313626b6f97b7a44a33f5a9",
+    "plugins/omabit/Field.qml": "041fc91abab79fc20bbefa32eba2d76335bca719075268edc79283289d0cb173",
+    "plugins/omabit/Hint.qml": "ab6bd48806bd1de1a041c96b15e22ca74553c88885a409469f9c6b789e69863a",
+    "plugins/omabit/HostCompatibility.qml": "f70c2a0903612182f8f29f21bbe71e867ac320d0d0041571df6f78c20cf23e43",
+    "plugins/omabit/HostMovePane.qml": "fa7b76fa58c647aa65e089298e77a77c48e1fbbd8e0732835aaff823436c9caf",
+    "plugins/omabit/HostSetupPane.qml": "921f1877e04237896e0d3c796e98358ef3d57b1b60c6421dd11ce94ae1171079",
+    "plugins/omabit/ImportPane.qml": "abdf55aebe02e71e5c5038bd87bfaa3195fbbefa06348014c171fd61fe006381",
+    "plugins/omabit/ImportRecoveryPane.qml": "782bdee1263ca5895d0814df1b5e8e8a43037532a3be797b11c1e9075b95a48a",
+    "plugins/omabit/ImportRestoration.qml": "e999f2852130ba43e7807c16eb4d0817f3967c1e35a68691a63375acb6f4bcf4",
+    "plugins/omabit/ImportRestorePane.qml": "1853416ba52bd4f43e20325d32b491fd0389047fb424cacf01eee5ea32a2dd9a",
+    "plugins/omabit/KeyBootPane.qml": "b399519d5d51a65f474231fa53641b30e37714ce532e0738792fefdf337e472a",
+    "plugins/omabit/Label.qml": "369379e01b4adf9fa132c21a65089aca983a7918875f321387fd276c170db46f",
+    "plugins/omabit/MachineUsePane.qml": "d6c5da7e2cdc5cab654263d6fe77d63608f740fd7cd12a4f3aedd8d3c6eb1392",
+    "plugins/omabit/MaintenancePane.qml": "757f0a167e04d112d7c36d82f167a3f1f1ef43f1153ef0a6ab9123070a12587c",
+    "plugins/omabit/Model.js": "2912e15df4012075fc74190d64a4978f44d9177329f021cd6445f32fe9600d7c",
+    "plugins/omabit/MonitorWindow.qml": "b61926b7168d532fd9d99412352de4bfe5e9e02a44d96bcfd75f67934e259a19",
+    "plugins/omabit/Panel.qml": "5e46c2dba05a79bac0123ef9d4bbf220be6a1ae560183418edcdaa799fe5623b",
+    "plugins/omabit/PierImportPane.qml": "c5f0cff36e005d95faac9dacf87881a8990e05c1ddb96c91a39a2e491c89ea0e",
+    "plugins/omabit/RegistrationPane.qml": "b2e0bb0678f9b256a3e8ad24b018846ca3c882a9fdae7d3e0a68810fee7ffafa",
+    "plugins/omabit/RemoteRunnerPane.qml": "a4bc7cef895448d614ec52933204f0c821879ed317ad9e2f44ffb0088f8b94c3",
+    "plugins/omabit/ResourceChart.qml": "75759099074de422e4266b56faddb92e582e993a2fc66bef7192b0f7a542c888",
+    "plugins/omabit/RoutineCard.qml": "f2e9f3dbcc1b5fd0b145bbd74ca832d329730608ab6f668252419651edeb6430",
+    "plugins/omabit/RoutinePane.qml": "8b00d7b0da0e82b1cd51629bcb0c9de0ec58d0e7cd0ef87b13b2ba6077d1729a",
+    "plugins/omabit/RuntimeDetails.qml": "a70fe9daadccb7456cfa4c059cd72d873c138ae6d6b91257707228affa37fb90",
+    "plugins/omabit/RuntimePane.qml": "58270241911f1892933bd3eeab50234a24dabd503f376c3f6b7d987dc829f0e0",
+    "plugins/omabit/RuntimeSettingsFields.qml": "d0cddae06b1e6b00284b66df0afccefe546c662dda0dff352e6fc7bc40f9d50f",
+    "plugins/omabit/SSHHostField.qml": "b767237776c5078f8c2a5626d7782ef1af305840dbee2d42fd5edfaa6ba7d06c",
+    "plugins/omabit/SelectField.qml": "245b62fa5831d44c27145180cb2760a106aa37098e7aca1449e8f321b796f71b",
+    "plugins/omabit/Service.qml": "b0f55597a8923ac859d6b4499a28c158f7b4b4e82c5732f171aa36362739a0ea",
+    "plugins/omabit/SetupPane.qml": "72c3b6d3c0ebf80a37cfd08abac47414b2c7cf1a2d70727d2ae297722da5b247",
+    "plugins/omabit/ShipContext.qml": "6b8667bb638fb0f61e1fb6a0e0572df6a641a2516f571684e00df5e2b81dc5de",
+    "plugins/omabit/ShipName.qml": "d4a5d05375d27d54b20a8f10f8c966f5b853b15372749b60add6293c88924aee",
+    "plugins/omabit/ShipPortsPane.qml": "409de9891247f83339f0e40c07630145f28bca0907d15982cbd9dd2733ec1052",
+    "plugins/omabit/StatusBadge.qml": "d650a37844caf11dd76358b200b7ebce1a76e6a0d121ed337c48786b0ee44191",
+    "plugins/omabit/StorageLocationSelector.qml": "f99a7935cfefe61754089667a24b52ac15e362cfc731168ffe64c324d78e4bb2",
+    "plugins/omabit/StoragePane.qml": "bea3bec64a14caf6595fbaa51c60bcd1cde4b428ed77a27543ee57f098f04067",
+    "plugins/omabit/StorageRootsPane.qml": "06eb3a3ac85d466d632291f2c65c92963133b6a8aa69faa1dae099a26e18e60c",
+    "plugins/omabit/SwitchField.qml": "f5f1d5bdf91fa586d31b8e360453ee5ef09a157d7e0b77fd6e9cff14f87a62f0",
+    "plugins/omabit/Toast.qml": "3dedc1962ccafa3719069b63eff335262c1ac253e838948e849642214a71d9ae",
+    "plugins/omabit/WindowActivation.qml": "e1172963ddff4fede991201c9e1b88a2bccd04e2f2caa24fb83e7e6bac141daf",
+    "scripts/test-import-ui-offscreen.py": "dad763d48f7c17c687770b53d1147292b3f78693c7b0e915f193570eeee8d171",
+    "scripts/test-rc11-panel-offscreen.qml": "cf84cf6f6d6f4d5abe20307034c84fede152956e9b9b07355ea403bd43458862",
+    "scripts/qualification/imports/restore_ui.qml": "f9588b9b73ee2b727c445517cb9a1767b221ccf1905e60b01d54d19d1cc36c8e",
+    "scripts/qualification/imports/restore_ui_guest.py": "e0fb4d1c801df5746e5402d17a1eecd4d2459f23ae33881ca734a1fc31f40303",
+    "scripts/qualification/imports/restore_ui_bundle.py": "feac5d9f769c5e8a2eb6cbbb1f374fda02a719189f7485d6485fd0343ae20125"
+  },
+  "packages_manifest_sha256": "766ee03360fbc3a2aebbc00da362727299de3b0c6a904b64379e887bed9e7adc",
+  "evidence_files": {
+    "results/result.json": {
+      "bytes": 2167,
+      "sha256": "63d723f4b1868d94a6c915baf57a0381f3ceba06df50cbc3e6280dbf3f1c1f41"
+    },
+    "results/import-case.json": {
+      "bytes": 1205,
+      "sha256": "cfde6728607fd42df32c79b0889d794a93500c710935989c62dc9d49e6bafa16"
+    },
+    "results/stop-snapshot.json": {
+      "bytes": 5809,
+      "sha256": "a91c3d16627fd502b29d5f221158585102e91a49de1b5e580fc7a6c3a83c6560"
+    },
+    "results/explicit-stop.log": {
+      "bytes": 249,
+      "sha256": "47e6f3b3410b6ecaca83d4d10ca1b44310b6d4e204866ddb36c32a6e0aaf9c75"
+    },
+    "results/runtime-mounts.log": {
+      "bytes": 9544,
+      "sha256": "5ed8b5df3e9d4b61fe9bf0da8a3f55acc9e8b49bd2674670339b35c50c29dd5d"
+    },
+    "results/running-containers.log": {
+      "bytes": 65,
+      "sha256": "416823c59885d7866b80d2b2c797f42346fb1dafde6a668895bc41596f5ce019"
+    },
+    "results/start-snapshot.json": {
+      "bytes": 5605,
+      "sha256": "deaf4384434c0a180fc383e85c5b7256d8e61e6437c74b1b8215fa04d01187f6"
+    },
+    "results/explicit-start.log": {
+      "bytes": 251,
+      "sha256": "93698575aca32d8bd54578dacebfbcc752d26c0a539f13cb18ffe30ee7488552"
+    },
+    "results/before-explicit-start.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/import-replay.log": {
+      "bytes": 323,
+      "sha256": "7eac753e3387e163999e82a5dc8de3a2aeffc59613b521f42238ec99290bcb47"
+    },
+    "results/reimport-after-old-replays.log": {
+      "bytes": 5454,
+      "sha256": "1ddd6b20ae2eaa9a0b9be4826e24778eff4d49e1ee25924b85c1193d49851347"
+    },
+    "results/failed-import-replay-after-reimport.log": {
+      "bytes": 370,
+      "sha256": "2dc34d0b99955f5728b1a840a7c033164153a11ec8c6a6548555fce90b20d335"
+    },
+    "results/restore-replay-after-reimport.log": {
+      "bytes": 836,
+      "sha256": "a94ce9931909c06ae60762381def0a91a2d5fbc1b43e208375cd17fb64c8c0fe"
+    },
+    "results/destination-tree-before-start.json": {
+      "bytes": 2595,
+      "sha256": "22170220140f1fe89436efddaa6a84b1ed0b9f6f4f17eb3516c91806c728697b"
+    },
+    "results/import-pier-snapshot.json": {
+      "bytes": 5454,
+      "sha256": "6932d0fb2ed8bdf31f7cfbf905e4a1f4f3e8bfe1c5187d5a97800eb3732395e3"
+    },
+    "results/source-restoration.json": {
+      "bytes": 468,
+      "sha256": "76f813e9d49335e2658324595052ba00a12a3427fb67bd982dec403a086b6b4a"
+    },
+    "results/reimport-submit.log": {
+      "bytes": 269,
+      "sha256": "2c05c0123244908eab1e2fa1bf9ecb9f1e27c7645affb03392db8c8e672f8468"
+    },
+    "results/reimport-guided-preview.log": {
+      "bytes": 664,
+      "sha256": "7ca7d959fe5a5b9758758e2082f7cb6a070768cd305bb7eb3ef7acb6d9ac7dce"
+    },
+    "results/after-restoration-replays.log": {
+      "bytes": 1868,
+      "sha256": "478dd5266f053f558d074b5a455bd96b08d2be9267428852cee7937f87f19682"
+    },
+    "results/failed-import-terminal-replay.log": {
+      "bytes": 370,
+      "sha256": "2dc34d0b99955f5728b1a840a7c033164153a11ec8c6a6548555fce90b20d335"
+    },
+    "results/restore-terminal-replay.log": {
+      "bytes": 836,
+      "sha256": "a94ce9931909c06ae60762381def0a91a2d5fbc1b43e208375cd17fb64c8c0fe"
+    },
+    "results/after-restoration-runtime-count.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/restore-import-snapshot.json": {
+      "bytes": 1868,
+      "sha256": "78166592bd90d32eb8a0ed4381a089a48b25046d5fee8445a20d77c88f6682c7"
+    },
+    "results/restore-submit.json": {
+      "bytes": 277,
+      "sha256": "3b3b60f6c6987a5e49b1819aa4cbdcf1428325e0117903e6f914a43b6cf54c3e"
+    },
+    "results/restore-ui.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/restore-preview.log": {
+      "bytes": 668,
+      "sha256": "4ab2cf8c7b55ba5aa52a905c8dbe1fd7c93ecf5256c9292b6dd76ed04df30373"
+    },
+    "results/copy-interruption.json": {
+      "bytes": 689,
+      "sha256": "00c4c974b4bfe2389b54a90a5a441783effaca785e0fb2b6da58e274f574c41d"
+    },
+    "results/final-runtime-count.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/partial-recovery-response.json": {
+      "bytes": 223,
+      "sha256": "807e1d64b647784ed7a45b8ba888e26fa1b5a1aa1dca024015776056ea43250f"
+    },
+    "results/after-interruption-runtime-count.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/copy-after-restart.json": {
+      "bytes": 3206,
+      "sha256": "d80d852decd6795c7222c9718a05239c25ad30d21ab7b5269c124d5c056c7750"
+    },
+    "results/restart-runner.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/interrupted-destination-tree.json": {
+      "bytes": 509,
+      "sha256": "c7cdb29433ae11645324e2276063c4e2247497eb429c5aca31ed9c0629c7e15f"
+    },
+    "results/interrupt-runner-stop.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/copy-before-interruption.json": {
+      "bytes": 2874,
+      "sha256": "d03776927b050f7260112e19fbd010b73e0afddaa658252f1ae1f5931ea395af"
+    },
+    "results/import-submit.log": {
+      "bytes": 258,
+      "sha256": "3e8ecd06e88599f2f1f42a6dda2f10cb83aa57b0078a5c87969f6d9012dd8dc2"
+    },
+    "results/guided-preview.log": {
+      "bytes": 664,
+      "sha256": "9f97c06cace3fa1dc765fb3b0c47e2e44b3320382a412e1ed756d1980d68c6af"
+    },
+    "results/source-tree.json": {
+      "bytes": 2595,
+      "sha256": "861f645f3b70d3b28c3f890fa7c79ff2bc42f39636aa81fe9ff8a7be02dd5b4d"
+    },
+    "results/source-container-remove.log": {
+      "bytes": 65,
+      "sha256": "eaf8dbcced3aa193a32b4dec219170380ac6c4f54ebc49f167885b78170dfcba"
+    },
+    "results/source-stopped.log": {
+      "bytes": 9120,
+      "sha256": "faf62985c539bc6fc6a3ab4f09340d557d928001d035def1dc1881e0c025c430"
+    },
+    "results/source-stop.log": {
+      "bytes": 65,
+      "sha256": "eaf8dbcced3aa193a32b4dec219170380ac6c4f54ebc49f167885b78170dfcba"
+    },
+    "results/source-start.log": {
+      "bytes": 65,
+      "sha256": "eaf8dbcced3aa193a32b4dec219170380ac6c4f54ebc49f167885b78170dfcba"
+    },
+    "results/source-create.log": {
+      "bytes": 65,
+      "sha256": "eaf8dbcced3aa193a32b4dec219170380ac6c4f54ebc49f167885b78170dfcba"
+    },
+    "results/collector-empty.log": {
+      "bytes": 534,
+      "sha256": "a31ed07f422a51d4c29cc801e95e1ba54fb479a9e6c0ff0b7e03bc1747a3e31f"
+    },
+    "results/collector-enroll.log": {
+      "bytes": 259,
+      "sha256": "055a95b413453a3b7124cf9922c8b352a95f1eb86693b681df9aa790560f3463"
+    },
+    "results/network-preflight-network-remove.log": {
+      "bytes": 65,
+      "sha256": "72e311a6ca1c146a24827144aa350d27bd26b963e29a86649eb23837936f7c36"
+    },
+    "results/network-preflight-remove.log": {
+      "bytes": 65,
+      "sha256": "2461af93a6ea8cfdc97f4b04fc1e70a3381da3d8e9a9121bba553f9f85f7c8f0"
+    },
+    "results/network-preflight-stop.log": {
+      "bytes": 65,
+      "sha256": "2461af93a6ea8cfdc97f4b04fc1e70a3381da3d8e9a9121bba553f9f85f7c8f0"
+    },
+    "results/network-preflight-inspect.log": {
+      "bytes": 8727,
+      "sha256": "5ba276543e24dc7f18608e3ea70c18a5e4771c2f729d95d66008833d20b55041"
+    },
+    "results/network-preflight-start.log": {
+      "bytes": 65,
+      "sha256": "2461af93a6ea8cfdc97f4b04fc1e70a3381da3d8e9a9121bba553f9f85f7c8f0"
+    },
+    "results/network-preflight-container.log": {
+      "bytes": 65,
+      "sha256": "2461af93a6ea8cfdc97f4b04fc1e70a3381da3d8e9a9121bba553f9f85f7c8f0"
+    },
+    "results/network-preflight-create.log": {
+      "bytes": 65,
+      "sha256": "72e311a6ca1c146a24827144aa350d27bd26b963e29a86649eb23837936f7c36"
+    },
+    "results/runtime-version.log": {
+      "bytes": 134,
+      "sha256": "71cc6101d5980f1591aa77178d90272abf3fe994a53a2e905ddb0e52c68aeb30"
+    },
+    "results/image-identity.log": {
+      "bytes": 2402,
+      "sha256": "2ef311736565115e7d316839265993fcfd1b3c320f8e2d78da8baf6f20f7a592"
+    },
+    "results/load-image.log": {
+      "bytes": 100,
+      "sha256": "b9ef6d59bb87431e8accc54a6d81f7ccd2df30cba91163f0d72b7d2954051b22"
+    },
+    "results/host-check.log": {
+      "bytes": 4441,
+      "sha256": "e25f4cbda078f11d5c2d041f06c6292985544cacda37250c53c0950353e70de4"
+    },
+    "results/engine.log": {
+      "bytes": 10409,
+      "sha256": "41639e41f4b440f909d092238d4f31c9c5c741c054d69ea56c817b0e4f76acf3"
+    },
+    "results/host-install.log": {
+      "bytes": 557,
+      "sha256": "a0207642829da66b15feec2454903fca61bd3efdd272f0273ba5f3e0263c6f5e"
+    },
+    "results/key.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/user-manager.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/linger.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/source-disk.json": {
+      "bytes": 181,
+      "sha256": "6bd339b9143ea06f51702d137d100cc25034af92365bbebb95e58e8b56061457"
+    },
+    "results/source-disk-mount.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/source-disk-format.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/source-disk-size.log": {
+      "bytes": 11,
+      "sha256": "3cc45f6daaf2b588a75a515785fe5815d135630d4cccbe7c923bbcb6bc2b87cb"
+    },
+    "results/owner.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/reload.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "results/native-packages.log": {
+      "bytes": 19167,
+      "sha256": "4bbc31300e569c6e23722e3db0dc76efa9eb173e803b2cde5dffe7dd67100fb7"
+    },
+    "results/keyring-populate.log": {
+      "bytes": 915,
+      "sha256": "52802d065268dc3e3f93956a123df142c318f551fcfb0c0349bd40e87f5fe93d"
+    },
+    "results/keyring-init.log": {
+      "bytes": 709,
+      "sha256": "fc07012aa223514827a8ae3f80277d05c169497b70754b6809b8ca288c2a0601"
+    },
+    "results/ui-restore/result.json": {
+      "bytes": 55461,
+      "sha256": "a4c3fc15a5265151ad5a53b016a637b0115a2b61490028d9cb71bc4cefc5b693"
+    },
+    "results/ui-restore/restored.png": {
+      "bytes": 64560,
+      "sha256": "7268d1d4b9bd51827ac2381fa401c23b062d9a05b1340540d8416653fc62e04d"
+    },
+    "results/ui-restore/review.png": {
+      "bytes": 132413,
+      "sha256": "24ec328fd840277b660cab97c68b6737380585a52cd0d6e981093574bb9a7035"
+    },
+    "results/ui-restore/input.json": {
+      "bytes": 636,
+      "sha256": "040f7dd071c7f8f61015297cc50e006954e6a03ec281ad38aa71e750fa4c05cf"
+    }
+  },
+  "original_disks_sha256": {
+    "root.qcow2": "352ce00d27fd871c91aeb62e5b5019f4ae29bffea8e88d312f2a2e3a658521a3",
+    "source.qcow2": "6b23f0b84f15044e168c87e8977c1657dc96648a9150142aaf1287da5fef96d9"
+  },
+  "record_sha256": {
+    "/tmp/omabit-import-guest-run-20261022-11/result.json": "626c57effa3d8baeba833f8b4c4070ca51e6525473b17e88e0e81f14830740cb",
+    "/tmp/omabit-import-guest-run-20261022-11/inputs.json": "e74a883841c54f7577a1514e782350824eb2aa1d86cf7a4165694c39d83ad455",
+    "/tmp/omabit-import-inspection-20261022-11/extraction.json": "c27cda728beee8f5dc313071385453133b1f1b9f185c7cf2306078b6913f7921",
+    "/tmp/omabit-import-inspection-20261022-11/runner.sqlite": "ea14ac6e1db0de73a51025d427c489be246f9967b0af2ee3d4f502797009bf99"
+  },
+  "limits": [
+    "Actual offscreen StoragePane/restoration QML and verbatim Service callbacks, with inert style values and guest-only QProcess adapter; production Quickshell transport/lifecycle and desktop hooks are not exercised.",
+    "A programmatically emitted disabled-button click tests refusal before consent; its expected validation message appears in the review screenshot.",
+    "Power loss, additional filesystem failure modes, device renumbering and full release qualification remain open."
+  ]
+}

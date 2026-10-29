@@ -1,0 +1,42 @@
+{
+  "verified": true,
+  "passed": true,
+  "ship_operations": false,
+  "anchor_started": true,
+  "namespace": {
+    "boot_id": "6ac5d59c-9379-4070-851f-db6d12fb6030",
+    "device": 5,
+    "inode": 4026532239
+  },
+  "anchor_operation": "op-b107331d1deec5552991c4d90cf94fc1",
+  "three_start_phases_verified": true,
+  "clean_anchor_stop": true,
+  "returned_ids_journaled": true,
+  "sequence": 6,
+  "volume_inventory_unchanged": true,
+  "database_receipts_match": true,
+  "repeat_dispatch_refused": true,
+  "reopen_unchanged": true,
+  "scope_inactive": true,
+  "seconds": 230.38,
+  "result_sha256": "91ce5f96e845618d7af09936a94fd00712e94259f1746e9caf799cad6d63d549",
+  "database_sha256": "06fc1567a43a58a987bada56c00e9be9ebe1bd8dfa573345760c94fbdc61a098",
+  "bridge": "c9a29a1c1bac16ede3c822bafcb69f6382c55c0f20598aef3f020d45693704ee",
+  "anchor": "a3a260a6c0bc7489b74e37c40a497398bcaa8cb252693ae8af12bdeb743e1520",
+  "engine": "53895a70-c538-44c0-b90f-8809d1201998",
+  "extracted_files_verified": 17,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-start10",
+  "logs": {
+    "omabit-anchor-start23-10-extract.log": "fe455d4f83dc30e3318e434842a0ef4da5fb1803a1f9e053ed3bf0f5b9222252",
+    "omabit-anchor-start23-10-verification.log": "6407cd8027114760efe916109bfad06b8d2f817f3733ca822f2a0e163a4a2c52",
+    "omabit-anchor-start23-10-retention.log": "188f28ba07b03571c128454bf58336c6705f0c443015cc4aa065b84e285ed995",
+    "omabit-anchor-start-appliance23-10-prepare.log": "ac86c219a7aecaeaf6b2cd3036d0445487fb876c066f8f960cc462a729fb343f",
+    "omabit-anchor-start-appliance23-10-verification.log": "53ebdf187ea9169d627541c42e74cf4230737f621605b22a51909b6c9001c179",
+    "omabit-schema25-managed-full-race.log": "0fa33b6630273e1a7526ef4330dc2053e792cbef4ddea4a2139eba27a6629532"
+  },
+  "limits": [
+    "Initial private anchor Start only; no member process or pier.",
+    "No public RPC, CLI, or automatic recovery.",
+    "Trial09 remains failed evidence; this is a separate fresh retry."
+  ]
+}

@@ -449,7 +449,7 @@ func (i *installer) ensureGenerationRunning(ctx context.Context, socket string, 
 			return errors.New("installed generation changed before management recovery")
 		}
 		i.mutated = true
-		if err := manager("start", "urbit-runner.service"); err != nil {
+		if err := acknowledgedManagementStart(ctx, manager("start", "urbit-runner.service")); err != nil {
 			return err
 		}
 	}
@@ -500,7 +500,7 @@ func (i *installer) activateManagement(ctx context.Context, socket string, j *ac
 	if err := i.saveActivation(ctx, j, "starting"); err != nil {
 		return protocol.ManagementUpdateStatus{}, err
 	}
-	err = manager("enable", "--now", "urbit-runner.service")
+	err = acknowledgedManagementStart(ctx, manager("enable", "--now", "urbit-runner.service"))
 	if err == nil {
 		status, finishErr := i.finishActivation(ctx, socket, j, j.Target, "complete")
 		if finishErr == nil {
@@ -549,7 +549,7 @@ func (i *installer) rollbackManagement(ctx context.Context, socket string, j *ac
 	if err := i.installFile(ctx, access.ShellPath, data, 0755, true); err != nil {
 		return protocol.ManagementUpdateStatus{}, err
 	}
-	if err := manager("enable", "--now", "urbit-runner.service"); err != nil {
+	if err := acknowledgedManagementStart(ctx, manager("enable", "--now", "urbit-runner.service")); err != nil {
 		return protocol.ManagementUpdateStatus{}, err
 	}
 	return i.finishActivation(ctx, socket, j, *j.Previous, "rolled-back")

@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "kind": "pure source gate",
+  "full_projectnetwork_race_seconds": 6.752,
+  "vet_passed": true,
+  "runtime_executed": false,
+  "schema": 37,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-recovery-review-model",
+  "manifest": {
+    "source/internal/projectnetwork/anchor_recovery_review.go": "e5d06d574a761237074b9b363b74efdc14045eb657e2e9f115d2f77d913dfb3f",
+    "source/internal/projectnetwork/anchor_recovery_review_test.go": "cbcc4856d76e6505abe98f448ce6e6dea7c976b973acd31794e4da7650a02294",
+    "omabit-anchor-recovery-review-tests.log": "b6190997f9207c175b7278253a303ff16897123ca57cc6701685dedd62f44cb3",
+    "omabit-anchor-recovery-review-context-tests.log": "5371a8be2bfa94a107e45392a667081b600a3ba1fcf05cf1b35251a9582820d7",
+    "omabit-anchor-recovery-review-full-race.log": "6122019ef42c674da58aaacf7f926f515a6837a44b7aeff30a873c9e9b292163",
+    "omabit-anchor-recovery-review-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-review-edit-failure.log": "6d941a70bbe4ecfaa9e5b2dbe7f42a19ba8df20237db14ff854c8479723bef4d"
+  }
+}

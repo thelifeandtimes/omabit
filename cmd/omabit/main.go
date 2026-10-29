@@ -53,6 +53,13 @@ func run(ctx context.Context, args []string) int {
 	}
 	command := args[0]
 	args = args[1:]
+	// Help must work offline, before opening any registry or preference store.
+	if len(args) == 1 && (args[0] == "--help" || args[0] == "-h") {
+		if help, ok := desktopCommandHelp[command]; ok {
+			fmt.Fprintln(os.Stdout, help)
+			return 0
+		}
+	}
 	if command == "setup" || command == "setup-status" {
 		return localSetup(ctx, command, args, *config, format)
 	}

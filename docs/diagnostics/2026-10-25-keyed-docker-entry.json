@@ -1,0 +1,12 @@
+{
+  "memory": "M345",
+  "entry_lifecycle_tests": 21,
+  "auditor_top_level_tests": 4,
+  "auditor_negative_subcases": 10,
+  "frozen_appliance": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/appliance-20261025-07",
+  "sources_match_active_vm": true,
+  "runtime_result": "pending",
+  "host_engine_used": false,
+  "installed_plugins_changed": false,
+  "raw_state_exported": false
+}

@@ -81,7 +81,7 @@ Column {
     width: parent.width; spacing: Style.space(7); visible: !!root.status && !root.status.can_setup && !root.ready && !root.running
     Label { text: "A few prerequisites need attention"; font.bold: true }
     Repeater {
-      model: root.status ? root.status.checks.filter(function(c,index,checks){ return c.status !== "pass" && !checks.slice(0,index).some(function(previous){return previous.status!=="pass" && previous.detail===c.detail}) }) : []
+      model: root.status && Array.isArray(root.status.checks) ? root.status.checks.filter(function(c,index,checks){ return c.status !== "pass" && !checks.slice(0,index).some(function(previous){return previous.status!=="pass" && previous.detail===c.detail}) }) : []
       Label { required property var modelData; width: root.width; text: modelData.detail; caption: true; color: Design.warning }
     }
     Label { width: parent.width; secondary: true; caption: true; text: "Resolve the listed prerequisites, then Check again. Additional diagnostics are available in View details." }

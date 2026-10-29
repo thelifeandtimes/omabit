@@ -43,3 +43,20 @@ Stable 0.1.0 must ship with a tested, non-destructive upgrade path to later
 versions. Read `docs/upgrade-policy.md` before changing persistent formats,
 install/update behavior or runtime contracts. Fresh-install resets are development
 exercises, not an acceptable upgrade procedure for users.
+
+## Active platform experiments (2026-10-21)
+
+Read `docs/experiment-isolation.md` before any experimental runtime or desktop
+operation. The user's current constraints supersede historical deployment/reset
+permissions: protect managed `~lismyl-lismyl`; do not inspect or operate on ships
+in tmux or anything under `~/temp-ur`. Preserve current installed plugins and
+services. Use fresh disposable ships and separate experimental plugin IDs,
+labels, state, credentials, IPC, hooks and desktop environments.
+
+## Development memory
+
+Read `docs/development-memory.md` alongside the current roadmap/progress record.
+The user requested durable development memories with explicit supersession. Keep
+stable decision IDs, date, evidence and status; link replacement decisions rather
+than silently rewriting history. Distinguish hypotheses, failed experiments and
+qualified behavior. Never store credentials in these notes.

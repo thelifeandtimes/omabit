@@ -1,0 +1,18 @@
+{
+  "memory": "M344",
+  "run07_seconds": 466.04,
+  "run07_failed_at": "public 256-galaxy evaluator",
+  "exact_original_evaluator_exit_not_recorded": true,
+  "reproduced_30s_timeout": true,
+  "public_batch_expression_bytes": 417055,
+  "extended_parse_ms": 71452,
+  "public_parse_result_correct": true,
+  "runtime_libraries_loaded_in_actual_gateway": true,
+  "ships_started": 0,
+  "fresh_keys_preserved_privately": true,
+  "raw_state_exported": false,
+  "all_scopes_inactive": true,
+  "private_disk_sha256": "63ac47ae8c6c933c53e2f55fec640a0ce0557faf0efa72821d34a91acdb361b8",
+  "fixture_checks": 5,
+  "next": "Fresh appliance07/run08; actual keyed Docker messaging remains unqualified"
+}

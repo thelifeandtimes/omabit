@@ -25,6 +25,14 @@ Examples include `~dister-dozzod-sarlev`, `~master-dozzod-sarlev`,
 test moon is not an exception merely because it matches a familiar test pattern;
 its exact identity and disposition need explicit review.
 
+## Current platform goal exclusions (2026-10-21)
+
+For this goal, `~lismyl-lismyl` is currently managed by Omabit and must remain
+untouched. All user's ships running in tmux and all contents of `~/temp-ur` are
+excluded from inspection and operations. The historical relocation/reset note
+below is not current authorization. See [experiment isolation](experiment-isolation.md)
+for the disposable-runtime and separate-plugin requirements.
+
 ## Operational requirements
 
 1. Check this list before any operation that could delete or replace pier data.

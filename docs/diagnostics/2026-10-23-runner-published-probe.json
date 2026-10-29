@@ -1,0 +1,22 @@
+{
+  "source_checks_passed": true,
+  "probe_tests": 20,
+  "compile_skip_passed": true,
+  "vet_passed": true,
+  "runtime_executed": false,
+  "schema_unchanged": 37,
+  "frozen_vm26_unchanged": true,
+  "source": {
+    "scripts/qualification/imports/runner_app_probe.py": "23f36ed15807492a101b60f48a4e007cdf38c79a543977d02f8dbdb2e8e5efa4",
+    "scripts/qualification/imports/test_runner_app_probe.py": "adb0700bf9a6d0cbb43bc924b01e6a513324db5cc0a2b0c1d196d29d19d092cb",
+    "internal/managed/project_application_vm_test.go": "f759b36db70c389f14be40d82ab9e3aff3f080ea41aaf22296bf89749c4ce946"
+  },
+  "logs": {
+    "omabit-runner-published-probe-initial.log": "9de1c48376774e752efbf4cfdba88f380b8d86a013a4ed3094ea523d2cad267d",
+    "omabit-runner-published-probe-tests.log": "9633761589734536484646afcf0620bfe2822e7939db6c6f12e6cc78f5b0aa96",
+    "omabit-runner-published-probe-entry.log": "72d2e74ebb225ac81d599bb1d9a675c97294c0453941188069df09845e882a0e",
+    "omabit-runner-published-probe-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-runner-published-probe-diff.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-runner-published-probe"
+}

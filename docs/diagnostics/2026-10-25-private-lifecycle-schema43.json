@@ -1,0 +1,74 @@
+{
+  "memory": "M378",
+  "status": "schema43-integrated-focused-and-original-reader-passed-full-regression-running",
+  "schema": 43,
+  "checks": {
+    "top_level": 51,
+    "including_subcases": 280,
+    "race": true,
+    "vet": true,
+    "managed_top_level": 43,
+    "managed_including_subcases": 178,
+    "privatechain_top_level": 8,
+    "privatechain_including_subcases": 102
+  },
+  "original42": {
+    "original_schema": 42,
+    "successor_schema": 43,
+    "passed": true,
+    "generator_sha256": "1ab174cf39abe5ad48d830d45437532b137e0a0647b5425449de1ba38052e724",
+    "reproduced_fixture_sha256": "470bcb0c37df88ca40e45dbb6d06bffb57915455e291b4e13e0be0359ee711d5",
+    "successor_export_exit": 0,
+    "populated_tables": {
+      "private_project_workspaces": 2,
+      "private_workspace_observations": 2,
+      "private_project_gateways": 2,
+      "private_gateway_observations": 2
+    },
+    "original_reader_refused_without_changes": true,
+    "populated_completed_interrupted_and_observed_lifecycle": true,
+    "seconds": 33.11367251200136
+  },
+  "negative_control": {
+    "preservation_exit": 0,
+    "negative_exit": 1,
+    "negative_expected_failure": true,
+    "seconds": 35.024309674976394,
+    "passed": true
+  },
+  "first_test_failure": "New test reused exact-table-size historical assertion after adding six expected receipts. Corrected to compare every original operation by primary key and all original fields, and assert exactly six new receipts. No runtime code change was needed.",
+  "migration": [
+    "adds three empty tables in one transaction",
+    "preserves original42 rows and sidecars",
+    "startup interrupts unfinished operations without changing resource journals",
+    "global reservation validation rejects conflicting workspace/gateway directory claims",
+    "corrupt lifecycle source/mirror refuses open unchanged",
+    "failed migration rolls back schema marker and all three tables"
+  ],
+  "source_sha256": {
+    "internal/privatechain/gateway.go": "701d1984a4a9c9e1e10d7e7f3c1a725a0273bfd5ac6ed1983124f2685c2f9e6c",
+    "internal/managed/private_gateway.go": "05194310495110543b8b5be57ea5ad04a1b0405a24148596e94fbec416b52d2c",
+    "internal/managed/private_gateway_test.go": "3ce2e4fe76bc97c51b4d407a77ed629c2fe924420708ba19d25e6d66f854dfe5",
+    "internal/managed/private_workspace_observation.go": "627b9259987f6205de59dd639e04b1df2b6c0e82ad868c0c39f8dec94bd7f645",
+    "internal/managed/private_workspace_observation_test.go": "325d29db1e342e0768fe9402508b0a6bed1d44143bdddd32866298149d24a9fc",
+    "internal/managed/private_gateway_observation.go": "c541ecb438fb5ebf8cccad21b43b2bacd1f942220a6a34ae93c8b7f8ae6b0e32",
+    "internal/managed/private_gateway_observation_test.go": "88f1a9b6a47f2cd3d9f35760b2af898dc5e4e98ded6a2c46de44a2123526dec1",
+    "internal/managed/schema.go": "72e1d2793ed4d63fdb61de031ebcd398ba231ddfc0a980ac81ca55ae73f8ae1a",
+    "internal/managed/store.go": "c399fd72befc782a57ce86676ce1946091483d04d47f13e4951b715be79b59ef",
+    "internal/managed/private_projects.go": "6cb39a99ccf93ab68ba05528f92f1d6ab4c65d1debd62c0cede0dac3ddae93df",
+    "internal/managed/private_workspace.go": "726efa901bd9c07aa9859301e6d013c35dd59c0eb7de843ea1d15a380e3398f1",
+    "internal/managed/g02_historical_upgrades_test.go": "e0a4f9ba70701cdefd7f0c5b6d09e634952c85b17b1acb17484fa227eaf7d97c",
+    "scripts/test-historical-upgrades.py": "1ab174cf39abe5ad48d830d45437532b137e0a0647b5425449de1ba38052e724",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "5ff96505f9b2d823a9082f57c531755a0c7cd482e07df6ea4e67aba6da2612d0",
+    "internal/managed/private_lifecycle_schema43_test.go": "57b32f7969b341d65487cd8ed8417338f66612ee26d8ad5c8c0ecf0f292b81dc"
+  },
+  "full_regression": {
+    "status": "running",
+    "session": 13388,
+    "source_manifest_sha256": "68f9f93f3ef9b917b26d7f0e3312da3479021411e6235e494af02049add75342"
+  },
+  "runtime_dispatch_added": false,
+  "production_or_installed_state_accessed": false,
+  "supersedes": "M377 staged-only status and pending schema43/global startup integration; M376 pending successor qualification. M374 prior full42 regression remains historical and does not cover43.",
+  "next": "Complete full43 regression; add internal lifecycle scheduling and concrete initial gateway adapter, first-start publication, concurrent private-project runtime and public orchestration."
+}

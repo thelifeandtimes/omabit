@@ -1,0 +1,64 @@
+{
+  "source_qualified": true,
+  "runtime_qualification_pending": true,
+  "schema": 26,
+  "source_sha256": {
+    "internal/managed/project_member_storage.go": "89454f42360a03fdd7e6cd297ef776b180103db810afadd852913a8a6a6169e6",
+    "internal/managed/project_member_storage_server_linux.go": "da42818ef32eca5e42cfa01f848450c93c8239320fa50567fcec22b0c2de248d",
+    "internal/managed/project_member_storage_server_linux_test.go": "ea92fbb3bd7aa4f3450afda22bcc5c91eb1f1bc9c54afd268bcdd2811635f38a",
+    "internal/managed/project_member_storage_vm_test.go": "1519f4006bf17f471239caa9e101024afb3f391284537fc9f3e1da94838b0dfe",
+    "internal/managed/project_vm_test.go": "fd4e0faba2e4523a464ba92ae8f719f229c28814f32c4233a60b0ee57f2a03fc",
+    "internal/managed/project_anchor_vm_test.go": "39daf3d7ebe54d654a86261db557bf7b40d369c6534b2f942fbc78b5d33fb045",
+    "scripts/qualification/imports/appliance.py": "67924bd4cdf48d1cfc77c2e8fceac5f6ee12aa601319c0478d4eff81e2d5b8c7",
+    "scripts/qualification/imports/guest.py": "3507035025ddae795b83d6d57f5222bbaaa3a507516be7507f11af6f2548f73a",
+    "scripts/qualification/imports/extract_results.py": "83cba4b12a390d1a2b121edbbf5051a43f1a174f6dfa746583d4c0014c701eb8"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-storage-queue",
+  "appliance": "/tmp/omabit-import-appliance-20261023-11",
+  "prepared": {
+    "verified": true,
+    "runtime_executed": false,
+    "source_files_verified": 61,
+    "artifacts": {
+      "base.raw": "8e62eb81cc5a92fc40efa5404b76547be5cc7f9604087012c13e0c80cc3080bd",
+      "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+      "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+      "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+    },
+    "embedded_test_sha256": "a75babc52325cefa0c75290dba003f55f08bc0dd0c920eccb374342c4b393f75",
+    "staging_removed": true,
+    "case": {
+      "exercise_project_member_storage": true,
+      "exercise_project_anchor_start": false,
+      "exercise_project_preparation": false,
+      "network_anchor_recovery": false,
+      "network_published": false,
+      "exercise_login_code": false,
+      "exercise_endpoints": false,
+      "endpoint_network": "internal",
+      "exercise_import": false,
+      "exercise_fake_network": false,
+      "network_state": false,
+      "network_isolation": false,
+      "import_mode": "rename",
+      "interrupt_copy": false,
+      "restore_copy": false,
+      "restore_ui": false
+    }
+  },
+  "logs": {
+    "omabit-member-storage-queue-tests.log": "7bf1bb85ed80b4e3a1a83633d1704e4545ba168ac829d0e4993d7eeb1e8d0001",
+    "omabit-member-storage-queue-regression.log": "e4bb7dd738180c3ad78543e4a468a67c982913fab649fe140a63d2ad52ee41fe",
+    "omabit-member-storage-queue-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-member-storage-vm-host-guard.log": "456ebc4060b7f57debb83ba598103f3bc32940ce406dbf75da75bf039c42bfb4",
+    "omabit-member-storage-appliance-tests.log": "2f7b850c977121d8774a5cdcc47ed550746f0edb17a5b087b7ace1ccd82a6307",
+    "omabit-member-storage-appliance23-11-prepare.log": "9a772cb24693dd29dc571f0b88d2163aa9aa50dbebb893247330667cf84196af",
+    "omabit-member-storage-appliance23-11-verification.log": "8ab75e70c0b9235df83ce3c2c5ff630c60f9094c81510b4d49268ca91a3e4487"
+  },
+  "limits": [
+    "Private queue only, no public RPC/capability.",
+    "VM11 is running; no completed runtime result yet.",
+    "Empty member mount preparation only; no ship container/pier launch.",
+    "Full managed race pass in M062 predates the queue; these source changes have focused project race regressions and vet."
+  ]
+}

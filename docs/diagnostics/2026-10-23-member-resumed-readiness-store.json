@@ -1,0 +1,44 @@
+{
+  "schema": 33,
+  "source_qualified": true,
+  "runtime_executed": false,
+  "store_cases": 17,
+  "queue_cases": 6,
+  "focused_and_historical_race_seconds": 80.403,
+  "queue_race_seconds": 10.046,
+  "full_managed_race_seconds": 351.63,
+  "vet_passed": true,
+  "original32_archive_sha256": "3af14bd5559188c9293a23ada1124f246606447935445cd438e6a5fb4305d7eb",
+  "original32_fixture_sha256": "37078e3084fc65be1fa4f48089aeca32ac53b42d3a59e042401d817b47daf266",
+  "original32_fixture_bytes": 288542,
+  "original_writer_reproduced_exactly": true,
+  "original_reader_refused_actual33_unchanged": true,
+  "fixture_bound_bytes": 327680,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-resumed-readiness-store",
+  "sources": {
+    "internal/managed/project_member_resumed_readiness.go": "759223370b6899fde18eda3ffa6266d523e55cca7581fdbcfd79d3cb130adeab",
+    "internal/managed/project_member_resumed_readiness_test.go": "c9ac86464ae44b8af664698a67e8221edeeef472c673ae87a43f89a1313b1339",
+    "internal/managed/project_member_resumed_readiness_server_linux.go": "609b1cc33e4c92a6fc3a857bdfdde57709978e3eb0f0e45e70576b5ed2cfc186",
+    "internal/managed/project_member_resumed_readiness_server_linux_test.go": "75097d8482218be155dba06db99dac07b56324f493c07adf7ddce114eb95a1eb",
+    "internal/managed/schema.go": "0554eb8d0af7c2a747653a4ebc3490b677ccb55e52009ad2c13ac80e9cdf5be8",
+    "internal/managed/store.go": "e20a9391c0b0c2750fdb9787cbf1c30d07bf8ca0224cd3c22b1fc39dd37c0959",
+    "internal/managed/g02_historical_upgrades_test.go": "df767b3ce52387c6b3e3f91f9e85f2a8d46c2b0eeccbe95f84f46b9f830f7810",
+    "scripts/test-historical-upgrades.py": "bbf087a903a34d9908f8f714dcd22fff362074c804f651776d7b00e0ec65111e",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "99dbe8f02455416f528c18767f495a1d9c1b3a2fb36b4441c7394a170b52e2c8"
+  },
+  "logs": {
+    "omabit-resumed-readiness-store-initial-tests.log": "77fed7e3c52633208fbcf7fb9da50295bb9328f07a15b54a8e781355e60bd8c3",
+    "omabit-resumed-readiness-queue-tests.log": "df1e936ef71dfb4d2e56c8e313731ce57aab6d6cd9057b0950b127303a54726d",
+    "omabit-resumed-readiness-managed-race.log": "18094ca77ff6f41e0e6436b31d16e4221bb34f63e7d84f37e6038a2ba8410a1a",
+    "omabit-resumed-readiness-managed-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-schema32-freeze.log": "b6c4baa47b38adb0fa59c90e753e99a5e8e64449f7b39693d8e52dd7df2972f5",
+    "omabit-schema32-preview.log": "6efe5942a0b48b618c196b78ee48ecce329439bc0957c7220305308fe7f24d75",
+    "omabit-schema32-reproduce-and-refuse33.log": "a09efeebf41e917cf28d2f33663bd477e866612cd7cde200a6c26f729d36d981"
+  },
+  "limits": [
+    "first replacement only",
+    "no public project route",
+    "guarded VM fixture added after full-suite compilation and checked separately",
+    "real readiness and release upgrades remain unqualified"
+  ]
+}

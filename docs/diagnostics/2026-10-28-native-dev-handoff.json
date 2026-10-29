@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-28",
+  "source": "/home/thelifeandtimes/repos/omabit-platform-overhaul",
+  "branch": "codex/platform-overhaul-plan",
+  "ui_generation": "ui-20261028-native-3",
+  "runner_id": "runner-9e2f22fd9358d0d36391f8153436afb7",
+  "engine_id": "9b77f0d1-ec7a-455f-9910-c7a1e732f613",
+  "sha256": {
+    "/srv/dev/urbit/bin/omabit": "cd9509082a2f218f0cf81d4e71360d5ffba2de0170a6acb2ba2f06d063fc924d",
+    "/srv/dev/urbit/bin/urbit-collector": "26f15a5b1065c0256195498af430941e51a04ebab477ffa620a69c1435d0f477",
+    "/srv/dev/urbit/bin/urbit-runner": "a4a5abc36b86a290ff568ee5bccf7746725da240d1e46659d67f268849fbd08a",
+    "/home/thelifeandtimes/.config/omarchy/plugins/thelifeandtimes.omabit.dev/manifest.json": "bee2b63dd935a8cac04d02c46a8f458cce54e936f0522f913faf2e1e0c26cf05",
+    "/home/thelifeandtimes/.config/omarchy/plugins/thelifeandtimes.urbit-theme.dev/manifest.json": "60db917ab1bc2477bd7f688b754c2f186788e4f5c24fee577b6248dd1ce97bb4",
+    "/home/thelifeandtimes/.config/omarchy/plugins/urbit.dms.dev/manifest.json": "c4ddd82b8f811f9a8c298f6c2e874382d5f8f54c52e82ed9166ea8e0f2e9f87d"
+  },
+  "checks": [
+    "ownerhost/runtimequalify/runner tests passed",
+    "managed host compatibility tests passed",
+    "single-member project coordinator passed",
+    "compact comet and project QML callbacks passed",
+    "actual service/panel/monitor offscreen lifecycle passed",
+    "native popup visually checked without scroll",
+    "native inventory empty, engine path separate",
+    "production service PIDs/start times unchanged",
+    "review VM cleanly stopped; disk retained"
+  ],
+  "limitations": [
+    "No new live ship booted during native setup",
+    "Existing-project incremental membership not implemented",
+    "Native services do not automatically resume ships",
+    "Same-user namespace, not a malicious-code sandbox"
+  ],
+  "allocated_bytes": {
+    "native_dev": 57298944,
+    "evidence": 8295919616,
+    "labs": 29997461504,
+    "total": 38350680064
+  }
+}

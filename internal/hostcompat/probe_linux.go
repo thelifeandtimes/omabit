@@ -83,9 +83,12 @@ func ProbeEngine(ctx context.Context, socket, expectedDataRoot string) (Engine, 
 	if _, err := privatePath(expectedDataRoot, uid, false); err != nil {
 		return Engine{}, errProbe
 	}
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	// Booting a ship can briefly delay containerd, which /version also queries.
+	// Keep one bounded read budget instead of a two-second header cutoff that
+	// can interrupt an otherwise healthy launch. Shorter caller deadlines win.
+	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
-	transport := &http.Transport{Proxy: nil, DisableKeepAlives: true, MaxResponseHeaderBytes: 16 << 10, ResponseHeaderTimeout: 2 * time.Second}
+	transport := &http.Transport{Proxy: nil, DisableKeepAlives: true, MaxResponseHeaderBytes: 16 << 10}
 	defer transport.CloseIdleConnections()
 	transport.DialContext = func(ctx context.Context, network, address string) (net.Conn, error) {
 		before, err := privatePath(socket, uid, true)
@@ -119,31 +122,40 @@ func ProbeEngine(ctx context.Context, socket, expectedDataRoot string) (Engine, 
 		req, _ := http.NewRequestWithContext(ctx, http.MethodGet, "http://engine"+path, nil)
 		res, err := client.Do(req)
 		if err != nil {
-			return errProbe
+			return probeReadError(ctx, err)
 		}
 		defer res.Body.Close()
 		if res.StatusCode != http.StatusOK {
 			return errProbe
 		}
 		b, err := io.ReadAll(io.LimitReader(res.Body, (1<<20)+1))
-		if err != nil || len(b) > 1<<20 || json.Unmarshal(b, target) != nil {
+		if err != nil {
+			return probeReadError(ctx, err)
+		}
+		if len(b) > 1<<20 || json.Unmarshal(b, target) != nil {
 			return errProbe
 		}
 		return nil
 	}
 	var version struct{ Version, APIVersion, MinAPIVersion string }
-	if get("/version", &version) != nil || !token(version.Version) || !supportsAPI(version.MinAPIVersion, version.APIVersion) {
+	if err := get("/version", &version); err != nil {
+		return Engine{}, err
+	}
+	if !token(version.Version) || !supportsAPI(version.MinAPIVersion, version.APIVersion) {
 		return Engine{}, errProbe
 	}
 	var data struct {
-		ServerVersion                              string
+		ID, ServerVersion                          string
 		SecurityOptions                            []string
 		CgroupDriver, CgroupVersion, DockerRootDir string
 	}
-	if get("/v"+APIVersion+"/info", &data) != nil || data.ServerVersion != version.Version {
+	if err := get("/v"+APIVersion+"/info", &data); err != nil {
+		return Engine{}, err
+	}
+	if data.ServerVersion != version.Version || data.ID != "" && !ValidEngineIdentity(data.ID) {
 		return Engine{}, errProbe
 	}
-	e := Engine{Version: version.Version, APIVersion: version.APIVersion, MinAPIVersion: version.MinAPIVersion, CgroupDriver: data.CgroupDriver, CgroupVersion: data.CgroupVersion, DataRoot: data.DockerRootDir}
+	e := Engine{ID: data.ID, Version: version.Version, APIVersion: version.APIVersion, MinAPIVersion: version.MinAPIVersion, CgroupDriver: data.CgroupDriver, CgroupVersion: data.CgroupVersion, DataRoot: data.DockerRootDir}
 	for _, option := range data.SecurityOptions {
 		if option == "name=rootless" {
 			e.Rootless = true
@@ -153,4 +165,17 @@ func ProbeEngine(ctx context.Context, socket, expectedDataRoot string) (Engine, 
 		return Engine{}, errProbe
 	}
 	return e, nil
+}
+
+// Preserve cancellation/timeout identity without leaking daemon bodies, socket
+// paths or arbitrary transport errors into runtime diagnostics.
+func probeReadError(ctx context.Context, cause error) error {
+	if err := ctx.Err(); err != nil {
+		return errors.Join(errProbe, err)
+	}
+	var timeout net.Error
+	if errors.As(cause, &timeout) && timeout.Timeout() {
+		return errors.Join(errProbe, context.DeadlineExceeded)
+	}
+	return errProbe
 }

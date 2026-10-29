@@ -1,0 +1,30 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-bounded-checkpoint-ancestry",
+  "verification": {
+    "passed": true,
+    "focused_tests": 19,
+    "first_run_passed": true,
+    "scope_inactive": "omabit-checkpoint-lineage-unit-20261025-01",
+    "previous_source_files_unchanged": 316,
+    "new_source_files": [
+      "native/collections/checkpoint_lineage.py",
+      "scripts/test-collection-checkpoint-lineage.py"
+    ],
+    "legacy_formats": [
+      1,
+      2
+    ],
+    "limits": {
+      "nodes": 64,
+      "files_including_journal": 4096,
+      "bytes_including_journal_reserve": 67108864
+    },
+    "actual_retained_legacy_records": true,
+    "retired_runtime_not_opened": true,
+    "second_lease_not_acquired": true,
+    "journal_appends_accepted": true,
+    "read_only": true,
+    "reusable_runtime_family_qualified": false,
+    "production_resources_touched": false
+  }
+}

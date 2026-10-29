@@ -1,0 +1,161 @@
+{
+  "verified": true,
+  "passed": true,
+  "schema": 31,
+  "member_launches": [
+    {
+      "instance_id": "vm-zod",
+      "container": "b5b9726b782276172459ad6db9669a027dc0459331d41d5d79be2353911e25f5",
+      "namespace": {
+        "boot_id": "0743715c-c88a-412c-8715-9b66e3613216",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 133460,
+      "workspace_birth": "1792795274:248972513",
+      "clean_stop": true,
+      "identity_http_status": 200
+    },
+    {
+      "instance_id": "vm-nec",
+      "container": "241dc8b8d39f31e7d43456131bfb98e1944483dd88eb6206c1ed239506d1d34a",
+      "namespace": {
+        "boot_id": "0743715c-c88a-412c-8715-9b66e3613216",
+        "device": 5,
+        "inode": 4026532248
+      },
+      "workspace_inode": 133511,
+      "workspace_birth": "1792795683:764927720",
+      "clean_stop": true,
+      "identity_http_status": 200
+    }
+  ],
+  "readiness": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-66261e7810c345d8eaabb79089486775",
+      "ship": "~zod",
+      "captured_at": "2026-10-23T22:57:44.250580514Z",
+      "pier_inode": 133482,
+      "urb_inode": 133494,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-865f74d75a9556d4f6bf99f02659e026",
+      "ship": "~nec",
+      "captured_at": "2026-10-23T22:58:01.90785027Z",
+      "pier_inode": 133533,
+      "urb_inode": 133545,
+      "reopen_unchanged": true
+    }
+  ],
+  "stops": [
+    {
+      "instance_id": "vm-nec",
+      "operation_id": "op-f79d9cbba86b98fd576dde97a089621d",
+      "container_id": "241dc8b8d39f31e7d43456131bfb98e1944483dd88eb6206c1ed239506d1d34a",
+      "started_at": "2026-10-23T22:48:30.954840414Z",
+      "finished_at": "2026-10-23T22:58:20.407816068Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "peer_exits": 0,
+      "original_status": "succeeded",
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    },
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-0d42c4ce03824e618272a78ef97a31c6",
+      "container_id": "b5b9726b782276172459ad6db9669a027dc0459331d41d5d79be2353911e25f5",
+      "started_at": "2026-10-23T22:41:39.988333728Z",
+      "finished_at": "2026-10-23T22:58:44.737940864Z",
+      "exit_code": 0,
+      "oom_killed": false,
+      "peer_exits": 1,
+      "original_status": "interrupted",
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "recoveries": [
+    {
+      "instance_id": "vm-zod",
+      "stop_operation_id": "op-0d42c4ce03824e618272a78ef97a31c6",
+      "operation_id": "op-9619f0c98e62ce452830c0730fd19f55",
+      "original_status": "interrupted",
+      "original_phase": "stop-dispatched",
+      "original_unchanged": true,
+      "clean_exit": true,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "retirements": [
+    {
+      "instance_id": "vm-zod",
+      "operation_id": "op-866b6afc6bf7fee5555c66ceac0dc32f",
+      "container_id": "b5b9726b782276172459ad6db9669a027dc0459331d41d5d79be2353911e25f5",
+      "original_receipts_unchanged": true,
+      "pier_files_verified": 7,
+      "pier_bytes_verified": 1016848396,
+      "replay_unchanged": true,
+      "reopen_unchanged": true
+    }
+  ],
+  "member_storage_verified": [
+    {
+      "instance": "vm-nec",
+      "mount": "/srv/urbit/piers/fakeships/vm-nec",
+      "inode": 133440,
+      "birth": "1792795261:856973868",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "nec"
+    },
+    {
+      "instance": "vm-zod",
+      "mount": "/srv/urbit/piers/fakeships/vm-zod",
+      "inode": 133456,
+      "birth": "1792795261:916973861",
+      "uid": 1000,
+      "gid": 1000,
+      "mode": 448,
+      "named_pier_child": "zod"
+    }
+  ],
+  "ship_operations": true,
+  "namespace": {
+    "boot_id": "0743715c-c88a-412c-8715-9b66e3613216",
+    "device": 5,
+    "inode": 4026532248
+  },
+  "clean_anchor_stop": true,
+  "returned_ids_journaled": true,
+  "volume_inventory_unchanged": true,
+  "database_receipts_match": true,
+  "repeat_dispatch_refused": true,
+  "reopen_unchanged": true,
+  "scope_inactive": true,
+  "seconds": 1325.26,
+  "result_sha256": "f87805578bb4d8183d8b84176bbee839e4d6c05f43e0b6315cdfcba49b79b43b",
+  "database_sha256": "1daffd6b658b844c4c0e53b1cc8a7452cf94e49562fdc31e00928f420d265a18",
+  "bridge": "e0e3fc6935a237202f2816ca393af1a24b6d2610ceb7082a040f876f61bd74ec",
+  "anchor": "ee2e2fe416f9179fe679a589d98ec626811ba1dcb1373ac50089fe5dc76a91a8",
+  "engine": "e8122d35-29b4-4d31-a6a9-a838748d3299",
+  "extracted_files_verified": 17,
+  "limits": [
+    "Readiness is historical identity/storage evidence, not current runtime authority.",
+    "Read-only recovery and explicit stopped-container retirement preserve the pier; no replacement, changed-peer/namespace recovery or public API qualified."
+  ],
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-retirement18",
+  "outer_exec_exit": 0,
+  "source_preparation": "2026-10-23-member-retirement-preparation.json",
+  "embedded_test_sha256": "2610e6222e954051253e124882b95d9d40bdf7bed0e93ee4d3dfee25fd722a30",
+  "logs": {
+    "omabit-member-retirement23-18-extract.log": "81c33b90f18c679431630deac93a3fa6ddd6c4822e64c32573162ae982c96dee",
+    "omabit-member-retirement23-18-independent.log": "c4ada5bdea7657c8b5da13c098defedfa1205e3e4029455cc23ecc95af66e7cd",
+    "omabit-member-retirement23-18-retain.log": "319315894da14fb9be5e3f6614e4bbf47de57b076230626929d96ed743b40027"
+  }
+}

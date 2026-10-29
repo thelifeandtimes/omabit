@@ -1,0 +1,28 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "execution_cases": 6,
+  "stale_selection_cases": 7,
+  "historical_validation_test": true,
+  "historical_prefix_test": true,
+  "race_seconds": 2.889,
+  "vet_passed": true,
+  "sources": {
+    "internal/projectnetwork/member_resumed_stop.go": "c181f52f4cd816c8a261fc93888ce11158a182ca087f4d142df62f43be858230",
+    "internal/projectnetwork/member_resumed_stop_test.go": "e72807d2863bba7bffa48c6d08fea2d85c257ddb646051b8f74063124aac85d7",
+    "internal/projectnetwork/member_generations.go": "4a81f3bfa6b5dd67f13154c7e75f6d06b2bcf49509aa1cb8491ac7f88030bbfe",
+    "internal/projectnetwork/member_generations_test.go": "edef95fa936c209f9c4e339647f38807841b7739ad40a19dfa4d35dae329e1cd"
+  },
+  "logs": {
+    "omabit-resumed-stop-model-tests.log": "03f2707039b7ea13194347ca6c7ad17321cd4644982eb04fce4346a3290c235b",
+    "omabit-resumed-stop-model-regression.log": "5b6fdd5224eb88351a314b4ec0a3e53fa117578e35e1abc3260551e6831028b9",
+    "omabit-resumed-stop-model-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-resumed-stop-model",
+  "limits": [
+    "pure selection only; no new persistence or Docker execution",
+    "current readiness must match full latest binding",
+    "old historical receipts cannot authorize a current action",
+    "changed anchor/project generations remain separate recovery work"
+  ]
+}

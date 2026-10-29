@@ -14,7 +14,11 @@ func (s *store) suggestHTTPPort(ctx context.Context) (uint16, error) {
 	if err != nil {
 		return 0, err
 	}
-	reserved := map[uint16]bool{}
+	projects, err := projectReservations(s.db)
+	if err != nil {
+		return 0, err
+	}
+	reserved := projects.HTTPPorts
 	for _, v := range all {
 		reserved[v.Public.Config.HTTPPort] = true
 		if v.Runtime.Prepared {
@@ -75,6 +79,9 @@ func (s *store) choosePort(q querier, id, kind string, wanted uint16) (uint16, e
 	reserved := func(port uint16) error {
 		if kind == "udp" {
 			return reserveAmes(q, id, port)
+		}
+		if err := reserveProjectPort(q, port); err != nil {
+			return err
 		}
 		all, err := instances(q)
 		if err != nil {

@@ -1,0 +1,115 @@
+{
+  "original_boot_driver_summary_passed": false,
+  "summary_failure": "journald split the final JSON across two same-process records",
+  "console_disk_receipt_equality": true,
+  "guest_result_sha256": "a86edccc8c4390956d8a69ff9e9c3eb9c0eacbcdd1ae2f97f983b48a5eca1319",
+  "verified": true,
+  "passed": true,
+  "direct_published_requests": 114,
+  "result_sha256": "8d8584298cc83d64dd09202dfe8fcd84b64d63242cf2f4371e750d7f37a978a4",
+  "second_project_sha256": "19a399caf87afc68f4e05c6263e2785f2c95a138835821f7bb4b082892500aa3",
+  "seconds": 2427.62,
+  "projects": [
+    {
+      "project": "omabit-network-a",
+      "writes": 5,
+      "observations": 17,
+      "direct_published_requests": 57,
+      "publications": {
+        "8081": 18281,
+        "8082": 18282
+      },
+      "subscription_revisions": [
+        0,
+        1,
+        2,
+        3,
+        3,
+        4
+      ],
+      "subscription_cursors": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2
+      ],
+      "both_channels_deleted": true,
+      "clean_stops": [
+        "nec",
+        "nec",
+        "zod"
+      ]
+    },
+    {
+      "project": "omabit-network-b",
+      "writes": 5,
+      "observations": 17,
+      "direct_published_requests": 57,
+      "publications": {
+        "8081": 18291,
+        "8082": 18292
+      },
+      "subscription_revisions": [
+        0,
+        1,
+        2,
+        3,
+        3,
+        4
+      ],
+      "subscription_cursors": [
+        1,
+        2,
+        3,
+        4,
+        1,
+        2
+      ],
+      "both_channels_deleted": true,
+      "clean_stops": [
+        "nec",
+        "nec",
+        "zod"
+      ]
+    }
+  ],
+  "cross_cookie_checks": [
+    {
+      "from": "omabit-network-a",
+      "to": "omabit-network-b",
+      "ship": "zod",
+      "status": 401
+    },
+    {
+      "from": "omabit-network-a",
+      "to": "omabit-network-b",
+      "ship": "nec",
+      "status": 401
+    },
+    {
+      "from": "omabit-network-b",
+      "to": "omabit-network-a",
+      "ship": "zod",
+      "status": 401
+    },
+    {
+      "from": "omabit-network-b",
+      "to": "omabit-network-a",
+      "ship": "nec",
+      "status": 401
+    }
+  ],
+  "independent_state": true,
+  "scope_inactive": true,
+  "original_artifacts_and_disks_verified": true,
+  "extracted_files_verified": 17,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-published-pairs03",
+  "parser_fix_sha256": {
+    "console_events.py": "dd54325b399abb66fa410fd53713121203830ce733722d36f03ac477f3481143",
+    "test_console_events.py": "a9fee8d3a5e8f833bbc6ed11add6302f274185f23617117744af7f8dbf2b5a06",
+    "appliance.py": "b333c9b0930c725e1805205246136de0ab5b3cadbab2ce0ef2bdd72a40fb40a1",
+    "omabit-console-events-tests.log": "258b648809ae1252ae43a38439ccc3d7bd3aedff5adb746432382b189dd2dee4"
+  }
+}

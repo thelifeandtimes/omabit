@@ -16,6 +16,19 @@ import (
 )
 
 func readBootKey(path string) (string, error) {
+	return readBootKeyFile(path, false)
+}
+
+func readBootKeyInput(r io.Reader) (string, error) {
+	b, err := io.ReadAll(io.LimitReader(r, protocol.MaxBootKeyBytes+1))
+	key := strings.TrimSpace(string(b))
+	if err != nil || len(b) > protocol.MaxBootKeyBytes || !protocol.ValidBootKey(key) {
+		return "", errors.New("boot key must be a bounded 0w key; contents are never included in errors")
+	}
+	return key, nil
+}
+
+func readBootKeyFile(path string, secure bool) (string, error) {
 	bad := errors.New("boot key must be an owned private regular file containing a bounded 0w key")
 	f, err := os.OpenFile(path, os.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, 0)
 	if err != nil {
@@ -27,15 +40,20 @@ func readBootKey(path string) (string, error) {
 		return "", bad
 	}
 	st, ok := i.Sys().(*syscall.Stat_t)
-	if !ok || !i.Mode().IsRegular() || i.Mode().Perm()&0077 != 0 || st.Uid != uint32(os.Geteuid()) || st.Nlink != 1 || i.Size() > protocol.MaxBootKeyBytes {
+	if !ok || !i.Mode().IsRegular() || st.Uid != uint32(os.Geteuid()) || st.Nlink != 1 || i.Size() > protocol.MaxBootKeyBytes {
 		return "", bad
 	}
-	b, err := io.ReadAll(io.LimitReader(f, protocol.MaxBootKeyBytes+1))
-	key := strings.TrimSpace(string(b))
-	if err != nil || !protocol.ValidBootKey(key) {
-		return "", bad
+	if i.Mode().Perm()&0077 != 0 {
+		if !secure {
+			return "", errors.New("key file is readable by other users; run chmod 600 on the file, or use --secure-key-file to make this owned file private")
+		}
+		// Change the already checked descriptor, never reopen a path that may
+		// have been replaced. Symlinks, foreign owners and hard links fail above.
+		if err := f.Chmod(0600); err != nil {
+			return "", errors.New("could not make the owned key file private")
+		}
 	}
-	return key, nil
+	return readBootKeyInput(f)
 }
 
 func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expected, format string, out io.Writer, fail func(error, int) int) int {
@@ -44,7 +62,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	var pillSHA string
 	var pillSize int64
 	var port, ames, loom uint
-	var native, runtimeSettings bool
+	var native, runtimeSettings, keyStdin, secureKeyFile bool
 	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
 		req.ID, args = args[0], args[1:]
 	}
@@ -55,6 +73,8 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	f.StringVar(&req.RequestID, "request-id", "", "actor-scoped request identity")
 	f.StringVar(&req.Label, "label", "", "instance label")
 	f.StringVar(&file, "key-file", "", "private local boot key file; contents never enter command arguments")
+	f.BoolVar(&keyStdin, "key-stdin", false, "read a pasted boot key privately from standard input")
+	f.BoolVar(&secureKeyFile, "secure-key-file", false, "make the selected owned regular key file private before reading it")
 	f.UintVar(&port, "http-port", 0, "host loopback HTTP port")
 	f.UintVar(&ames, "ames-port", 0, "host Ames UDP port; zero/omitted chooses automatically")
 	f.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
@@ -66,7 +86,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	f.BoolVar(&req.ConfirmNetwork, "confirm-network", false, "boot a real networked identity on explicit Start")
 	if err := f.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
-			fmt.Fprintln(out, "Usage: urbit-collector --runner NAME --expected-runner-id ID create-ship --ship ~SHIP --key-file FILE --request-id ID --confirm-network [--http-port PORT --ames-port PORT --bootstrap bare|recommended --pill URL_OR_FILE]\nInstance name and tier path are derived; omitted ports are allocated atomically. Bare uses Vere's canonical default; recommended requires a selected pill.")
+			fmt.Fprintln(out, "Usage: urbit-collector --runner NAME --expected-runner-id ID create-ship --ship ~SHIP (--key-file FILE [--secure-key-file] | --key-stdin) --request-id ID --confirm-network [--http-port PORT --ames-port PORT --bootstrap bare|recommended --pill URL_OR_FILE]\nInstance name and tier path are derived; omitted ports are allocated atomically. Bare uses Vere's canonical default; recommended requires a selected pill.")
 			f.SetOutput(out)
 			f.PrintDefaults()
 			return 0
@@ -95,6 +115,9 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	}
 	if req.PierPath == "" {
 		req.PierPath = "livenet/" + map[string]string{"galaxy": "galaxies", "star": "stars", "planet": "planets", "moon": "moons"}[class] + "/" + derived + "/" + derived
+	}
+	if (file == "") == !keyStdin || keyStdin && secureKeyFile {
+		return fail(errors.New("choose exactly one of --key-file or --key-stdin; --secure-key-file applies only to a file"), 2)
 	}
 	if f.NArg() != 0 {
 		return fail(errors.New("unexpected trailing key-boot arguments"), 2)
@@ -157,7 +180,11 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	if native && !slices.Contains(h.Features, protocol.NativeControlAllShipsFeature) {
 		return fail(errors.New("update this runner for native-control-all-ships capability before enabling native control"), 1)
 	}
-	req.Key, err = readBootKey(file)
+	if keyStdin {
+		req.Key, err = readBootKeyInput(os.Stdin)
+	} else {
+		req.Key, err = readBootKeyFile(file, secureKeyFile)
+	}
 	if err != nil {
 		return fail(err, 2)
 	}

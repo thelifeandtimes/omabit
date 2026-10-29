@@ -1,0 +1,56 @@
+{
+  "scope": "fixture-only restoration prototype; no runner persistence, public operation or live restoration yet",
+  "source_sha256": {
+    "internal/runtimequalify/import_restore_moves_linux.go": "7593af04158034975e949d5e2c17ba42fe1bd1dad88cc7551d53f7006095c273",
+    "internal/runtimequalify/import_restore_moves_linux_test.go": "0c3db31b8ff68072f1ae10ec739ca7c4d7b1df7807fd0cf6551ef3d413bf1cce",
+    "internal/runtimequalify/import_restore_review_linux.go": "99ca64731953258b12ecc2450915504b58260cda6ea70be0a9e417130ac5ee84",
+    "internal/runtimequalify/import_restore_review_linux_test.go": "08ad52922515a227549fe3a0d8cf550f1fb6e0042ef25cb1122868945e5daa47",
+    "internal/pierstore/rename_bound_linux.go": "81738b4929f8f30d92d98da1d04e13f3b18c3124d2c83f278a849c8ac26a6ea1",
+    "internal/pierstore/rename_bound_linux_test.go": "8c1b5a73f3d7c7012638245fce3c6b5683e43819fca1f1433040346a0efe755e"
+  },
+  "checks": [
+    {
+      "command": "OMABIT_TEST_FAKE_ZOD=0 go test ./internal/runtimequalify ./internal/pierstore -run TestImportRestore|TestBoundRename -count=1",
+      "result": "passed"
+    },
+    {
+      "command": "OMABIT_TEST_FAKE_ZOD=0 go test -race -json ./internal/runtimequalify ./internal/pierstore",
+      "log": "/tmp/omabit-import-restore-race-20261022.jsonl",
+      "log_sha256": "a8919ace32fcfb15ae35ade780f8ee3ab4d2e9366d94d3661dc6cffcc53bc9a5",
+      "packages": [
+        {
+          "Time": "2026-10-22T03:31:53.562476532-07:00",
+          "Action": "pass",
+          "Package": "git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore",
+          "Elapsed": 1.092
+        },
+        {
+          "Time": "2026-10-22T03:33:00.702601955-07:00",
+          "Action": "pass",
+          "Package": "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify",
+          "Elapsed": 68.232
+        }
+      ],
+      "restoration_subcases_passed": 103
+    },
+    {
+      "command": "go vet ./internal/runtimequalify ./internal/pierstore",
+      "result": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "public_operation_available": false,
+  "runner_schema_changed": false,
+  "runtime_started_by_prototype": false,
+  "real_partial_copy_preservation": "2026-10-22-import-interruption.json",
+  "remaining": [
+    "runner preview/operation authority and revision/digest binding",
+    "new persistent schema with downgrade refusal and resume tests",
+    "transactional failed-registration retirement and permanent request replay",
+    "real VM restore/re-import and UI integration",
+    "empty destination, full disks, crash/power loss and device renumbering"
+  ]
+}

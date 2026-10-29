@@ -33,7 +33,7 @@ Window {
   readonly property var epochs: Model.epochDisplay(instance,service ? service.now : Date.now())
   readonly property var roll: Model.lastRoll(instance)
   readonly property bool shipPage: page === "overview" || page === "maintenance"
-  title: "Omabit · Monitor & maintenance"
+  title: "Omabit"+(service && service.profileName!=="default" ? " · "+service.profileName.toUpperCase() : "")+" · Monitor & maintenance"
   color: Design.background
   width: Style.space(1100)
   height: Style.space(770)
@@ -47,9 +47,13 @@ Window {
     targetWindow: root
     onFailed: if (root.service) root.service.lastError = "Could not focus the monitor window. Try opening it again."
   }
-  onVisibleChanged: if (!visible) maintenance.clearReview()
+  function routeProjectSelection() {
+
+  }
+  onInstanceChanged: Qt.callLater(routeProjectSelection)
+  onVisibleChanged: {if (!visible) maintenance.clearReview();else Qt.callLater(routeProjectSelection)}
   onSelectedKeyChanged: { technical = false; bodyScroll.contentY = 0; revealTimer.stop(); revealTarget=null;if(service && typeof service.saveDesktopView==="function")service.saveDesktopView() }
-  onPageChanged: { bodyScroll.contentY = 0; revealTimer.stop(); revealTarget=null;if(service && typeof service.saveDesktopView==="function")service.saveDesktopView() }
+  onPageChanged: { Qt.callLater(routeProjectSelection); bodyScroll.contentY = 0; revealTimer.stop(); revealTarget=null;if(service && typeof service.saveDesktopView==="function")service.saveDesktopView() }
   function revealItem(item) {
     revealTarget=item; revealTimer.restart()
   }
@@ -75,7 +79,7 @@ Window {
         RowLayout {
           anchors.fill: parent; anchors.leftMargin: Style.space(24); anchors.rightMargin: Style.space(24); spacing: Style.space(18)
           Column { spacing: Style.space(2)
-            Label { text: "omabit"; font.pixelSize: Style.space(27); font.bold: true; font.letterSpacing: -1 }
+            Label { text: "omabit"+(root.service && root.service.profileName!=="default" ? " · "+root.service.profileName.toUpperCase() : ""); font.pixelSize: Style.space(27); font.bold: true; font.letterSpacing: -1 }
             Label { objectName: "monitor-version"; text: root.service ? root.service.applicationVersion+" / "+root.service.releaseLabel : "Loading"; caption: true; secondary: true }
           }
           Rectangle { width: 1; height: Style.space(28); color: Design.line }
@@ -101,14 +105,18 @@ Window {
               Column {
                 width: parent.width; spacing: Style.space(16)
                 Repeater {
-                  model: root.service.connections
+                  // Compute groups before QML converts delegate data into model roles. A
+                  // later-added project inventory must invalidate the group list too.
+                  model: root.service.connections.map(function(c){return {connection:c,groups:Model.shipGroups(c)}})
                   Column {
                     id: navRunner
                     required property var modelData
+                    readonly property var connection: modelData.connection
                     width: Style.space(203); spacing: Style.space(6)
-                    Label { width: parent.width; text: Model.runnerTitle(navRunner.modelData,root.service.runnerPreferences).toUpperCase(); secondary: true; caption: true; elide: Text.ElideRight; wrapMode: Text.NoWrap }
+                    Label { width: parent.width; text: Model.runnerTitle(navRunner.connection,root.service.runnerPreferences).toUpperCase(); secondary: true; caption: true; elide: Text.ElideRight; wrapMode: Text.NoWrap }
                     Repeater {
-                      model: Model.shipGroups(navRunner.modelData)
+                      objectName: "nav-groups-"+navRunner.connection.runner_id
+                      model: navRunner.modelData.groups
                       Column {
                         id: navGroup
                         required property var modelData
@@ -119,8 +127,8 @@ Window {
                       ActionButton {
                         id: navShip
                         required property var modelData
-                        readonly property string key: navRunner.modelData.runner_id + "/" + modelData.id
-                        readonly property var state: Model.shipStatus(navRunner.modelData,modelData,root.service.now,root.service.observing)
+                        readonly property string key: navRunner.connection.runner_id + "/" + modelData.id
+                        readonly property var state: Model.shipStatus(navRunner.connection,modelData,root.service.now,root.service.observing)
                         readonly property bool selectedInView: root.shipPage && !!root.selected && root.selected.key === key
                         width: parent.width; text: Model.instanceTitle(modelData); quiet: true
                         implicitHeight: navLabels.implicitHeight + topPadding + bottomPadding
@@ -300,7 +308,12 @@ Window {
               }
               MaintenancePane { id: maintenance; width: parent.width; service: root.service; connection: root.connection; instance: root.instance; visible: root.page === "maintenance"; onRevealRequested: function(item) { root.revealItem(item) } }
             }
-            Label { width: parent.width; visible: root.page !== "activity" && root.page !== "setup" && !root.instance; text: "Select a ship from the fleet to inspect its runtime. Your selection will not silently switch to a replacement runner."; secondary: true }
+            Column { width: parent.width; spacing: Style.space(12); visible: root.page !== "activity" && root.page !== "setup" && Model.fleet(root.service.connections).length === 0
+              Label { width: parent.width; text: "No ships yet. Add your first ship to this fleet."; secondary: true }
+              ActionButton { objectName: "empty-fleet-add-ship"; text: "Add a ship →"; primary: true; onClicked: {root.page="setup";windowSetup.mode=windowSetup.readyRunners.length ? "ship" : "home"} }
+            }
+            Controls.BusyIndicator { running: root.shipPage && !root.instance && !!root.selectedKey; visible:running; anchors.horizontalCenter:parent.horizontalCenter }
+            Label { width: parent.width; visible: root.page !== "activity" && root.page !== "setup" && !root.instance && (!!root.selectedKey || Model.fleet(root.service.connections).length > 0); text: root.selectedKey ? "Loading the selected ship…" : "Select a ship from the fleet to inspect its runtime."; secondary: true }
             Label { width:parent.width;visible:!root.instance&&text!=="";text:root.service.feedError;color:Design.warning }
             ActivityPane { id: activity; width: parent.width; service: root.service; visible: root.page === "activity" }
             Column {

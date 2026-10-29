@@ -1,0 +1,80 @@
+{
+  "passed": false,
+  "retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-22-endpoints18",
+  "independent_verification": {
+    "verified": true,
+    "passed": false,
+    "result_sha256": "7b13c8f1618612f95db760f6f2658539b82afacb4c4a719b10ae4a6317e76f39",
+    "seconds": 219.14,
+    "scope_inactive": true,
+    "original_artifacts_and_disks_verified": true,
+    "extracted_files_verified": 18,
+    "failure": "unexpected anchor publication",
+    "cleanup_errors": [
+      "endpoint fixture did not stop cleanly"
+    ],
+    "no_http_requests": true
+  },
+  "frozen_build": {
+    "exercise_endpoints": true,
+    "endpoint_network": "internal",
+    "exercise_import": false,
+    "exercise_fake_network": false,
+    "network_state": false,
+    "network_isolation": false,
+    "import_mode": "rename",
+    "interrupt_copy": false,
+    "restore_copy": false,
+    "restore_ui": false,
+    "ui_source_sha256": {},
+    "root_disk_gib": 12,
+    "packages_manifest_sha256": "c9736a95de42fda4edcee2a72675449930bcd57cd110ef704a638e07f68c2cc9",
+    "kernel_source": "/usr/lib/modules/7.2.11-arch1-1/vmlinuz",
+    "modules": 29,
+    "artifacts": {
+      "base.raw": "afa087930524e71d5c267c2b0d96b8610242e3b2250282fa6a6c34921a92b480",
+      "initramfs.cpio": "4ab8dc56d7cc3e24c7c5d5b3c7530353ac9c17677777b233933d6930f2651e1f",
+      "vmlinuz": "7ca8265d776950dd3cdfb8eab7ee33978d139125e09bcf2a3a4ff482b7d5728c",
+      "init": "ec6b301fc16e96c888d21edb474f201ac1322ae7fb3751dc4d6b6705170611a3"
+    },
+    "source_sha256": {
+      "scripts/qualification/imports/appliance.py": "2bfc62462ebebd4d2cae4735edc9db3969f7e0b3465b264f798a226c3ed0a3f6",
+      "scripts/qualification/imports/guest.py": "918082c8f28f1e35886b81129cd8a13902b0999ad9a050f4eb90284b69c8c3a7",
+      "scripts/qualification/imports/import_case.py": "27ae2fd0628db1f00aedde980c427c9d76e7ecd6a5cf0fde2c8ae5920ec31e0e",
+      "scripts/qualification/imports/guest-init/main.go": "55a4ee4ab77d5b0e10ee832e74821e5b96698030bab22acd019a0bb8be123118",
+      "scripts/qualification/fake-networks/network_case.py": "4f54fcf1bee1aeadd0c12cd8cea96e1c3093b68f8c4bc836107d74fef1145bea",
+      "scripts/qualification/fake-networks/state_case.py": "58250c80ee6b860ee9988c3397418b8396c0f0f0195465507bf8762ba5451bf6",
+      "scripts/qualification/fake-networks/omabit-state.hoon": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+      "scripts/qualification/fake-networks/project_isolation.py": "9431d5fa9d24581ba8048447f04be613c3667a5a7ea8b1dd26b91df72f2f659a",
+      "scripts/qualification/fake-networks/endpoints_case.py": "245c5c95b92a14841eb8ef9f828b47df5bb6eb4e127c854b1353d780c0868ed5",
+      "scripts/qualification/fake-networks/endpoint-probe/main.go": "d5ff552064b211fc433c5143ef3099aee94aed7a2856be29df6dd92a5195a3e0"
+    },
+    "runner_sha256": "f8daaf25dbfcf01f89c94331f05dbca2a88150fba11d8d0aa2a5e0b997dca922",
+    "collector_sha256": "3e0e67056352e8e67d6bcd14cae0f06cf43caae53ecfc7bff62d27cd358e2593"
+  },
+  "unit": "omabit-import-guest-753562e5d49049ac85efdff30a1630a5",
+  "endpoint_result": {
+    "ok": false,
+    "fixture_only": true,
+    "network_mode": "internal",
+    "projects": {
+      "a": {
+        "network": "a1dad3825f95772604da5fc5b06912f9e33fba25553017b6983a84d72e1c214a",
+        "members": {},
+        "ports": {
+          "8081": 18281,
+          "8082": 18282
+        },
+        "anchor": "d9fbb10a5c1b822dc22ae19b3247ac6278c41326a0b856e74cfe74021ccada51",
+        "namespace": "net:[4026532239]"
+      }
+    },
+    "requests": [],
+    "clean_stops": [],
+    "cleanup_errors": [
+      "endpoint fixture did not stop cleanly"
+    ],
+    "error": "unexpected anchor publication"
+  },
+  "diagnosis": "Stopped before HTTP requests; raw inspect mapping/state were not retained by this fixture, so the exact failed observation is not established."
+}

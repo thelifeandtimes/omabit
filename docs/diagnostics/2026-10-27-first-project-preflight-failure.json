@@ -1,0 +1,238 @@
+{
+  "case": "project-first-onboarding-2",
+  "before": {
+    "runner": "runner-a7dc3582cc9ef46db533582aff8434ec",
+    "ordinary_instances": 0,
+    "projects": 0,
+    "docker_images": 0,
+    "build": {
+      "build": "20261027-feedback-pass-1",
+      "state": "not-onboarded",
+      "plugins": [
+        "thelifeandtimes.omabit.review",
+        "thelifeandtimes.urbit-theme.review",
+        "urbit.dms.review"
+      ],
+      "binary_sha256": {
+        "urbit-runner": "6349062fcc6577bf43fda45823cc7b874c1e0fa57d6310c50d0236dbd4c8feed",
+        "urbit-collector": "719a0970444c089fefe21d44115be7edee495866dc498ae618d0b291b6a55f4a"
+      },
+      "guide_sha256": "b2bbb427ca25f9310fef439ce151452928bbe0e18df9cc2a9cb64a0592c63cf6",
+      "source_sha256": "c40a1cadf45a095b973d7b65ee1c77d1aab0f514f2add84f79a8ca4e2aedd917",
+      "production_credentials": false,
+      "launch_diagnostics": true
+    },
+    "binary_sha256": {
+      "urbit-runner": "6349062fcc6577bf43fda45823cc7b874c1e0fa57d6310c50d0236dbd4c8feed",
+      "urbit-collector": "719a0970444c089fefe21d44115be7edee495866dc498ae618d0b291b6a55f4a"
+    }
+  },
+  "progress": [
+    {
+      "phase": "working",
+      "step": "reserve"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "download-runtime"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "download-runtime"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "prepare"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "prepare",
+      "operation_id": "op-ab1f6d45f2b2a979ea2abdbd49b84c9c"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "start-anchor"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "start-anchor",
+      "operation_id": "op-a4057b52b8b037c899b08617785d30e4"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "prepare-storage",
+      "instance_id": "first-project-nec"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "prepare-storage",
+      "instance_id": "first-project-nec",
+      "operation_id": "op-23e2c993d121f229327af053ddd8d0da"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "launch",
+      "instance_id": "first-project-nec"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "launch",
+      "instance_id": "first-project-nec",
+      "operation_id": "op-4b63c8623b1be3add8b226f221c5afbf"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "prepare-storage",
+      "instance_id": "first-project-zod"
+    },
+    {
+      "phase": "completed",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "prepare-storage",
+      "instance_id": "first-project-zod",
+      "operation_id": "op-bd1613e5baef848b47943a6aa7c31921"
+    },
+    {
+      "phase": "working",
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "step": "launch",
+      "instance_id": "first-project-zod"
+    }
+  ],
+  "completion": {
+    "exit_code": 1,
+    "elapsed_seconds": 78.4581687450409
+  },
+  "error": {
+    "error": {
+      "code": "client_error",
+      "message": "project project-d67af17ec93324611f03750c62c73e0b stopped at launch first-project-zod (interrupted, operation op-4b1f83b40aa2097634995a901c5d6650); no further actions submitted"
+    }
+  },
+  "cause": "storage/artifact preflight failed before container creation; underlying driver detail was hidden by the controller",
+  "commands_retried": false,
+  "operations": [
+    {
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "id": "op-e4ead47964e33d9b735e53284ee3dbf9",
+      "request_id": "first-project-20261027-1",
+      "instance_id": "",
+      "kind": "register-project",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:14:22.034850218Z",
+      "finished_at": "2026-10-28T06:14:22.034850218Z"
+    },
+    {
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "id": "op-ab1f6d45f2b2a979ea2abdbd49b84c9c",
+      "request_id": "create-8e4597008e98e1670de064317180bc8d7056e056",
+      "instance_id": "",
+      "kind": "prepare-project",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:14:39.28334523Z",
+      "finished_at": "2026-10-28T06:14:41.80309882Z",
+      "message": "project resources prepared; no member was started"
+    },
+    {
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "id": "op-a4057b52b8b037c899b08617785d30e4",
+      "request_id": "create-cf97ab7c86155f8285c3626051d89a8136164608",
+      "instance_id": "",
+      "kind": "start-project-anchor",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:14:42.553964514Z",
+      "finished_at": "2026-10-28T06:14:56.100611034Z",
+      "message": "project anchor started and observed; no member was started"
+    },
+    {
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "id": "op-23e2c993d121f229327af053ddd8d0da",
+      "request_id": "create-80c1dbb411f140a2f8078175ee75e025ceec6667",
+      "instance_id": "first-project-nec",
+      "kind": "prepare-project-member-storage",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:14:56.232554354Z",
+      "finished_at": "2026-10-28T06:14:56.50947925Z",
+      "message": "member mount prepared; no pier or ship was created"
+    },
+    {
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "id": "op-4b63c8623b1be3add8b226f221c5afbf",
+      "request_id": "create-3fb99ccfa336564af775e03d8854b9e6264e4395",
+      "instance_id": "first-project-nec",
+      "kind": "launch-project-member",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:14:57.291701244Z",
+      "finished_at": "2026-10-28T06:15:13.113246959Z",
+      "message": "member container running in its recorded namespace; ship readiness is not yet established"
+    },
+    {
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "id": "op-bd1613e5baef848b47943a6aa7c31921",
+      "request_id": "create-6d83fcb0659e2aa87ba10e3f09c32c05b6c052a1",
+      "instance_id": "first-project-zod",
+      "kind": "prepare-project-member-storage",
+      "actor": "local-uid:1000",
+      "status": "succeeded",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:15:15.721592712Z",
+      "finished_at": "2026-10-28T06:15:15.981577679Z",
+      "message": "member mount prepared; no pier or ship was created"
+    },
+    {
+      "project_id": "project-d67af17ec93324611f03750c62c73e0b",
+      "id": "op-4b1f83b40aa2097634995a901c5d6650",
+      "request_id": "create-fac22ab0b7899470b78e9573619942da2827892f",
+      "instance_id": "first-project-zod",
+      "kind": "launch-project-member",
+      "actor": "local-uid:1000",
+      "status": "interrupted",
+      "config_revision": 1,
+      "created_at": "2026-10-28T06:15:17.587998323Z",
+      "finished_at": "2026-10-28T06:15:40.282654609Z",
+      "message": "member launch did not finish; retain original receipt, workspace, container and any pier data before recovery"
+    }
+  ],
+  "launches": [
+    {
+      "instance": "first-project-nec",
+      "phase": "running",
+      "container": {
+        "id": "c38903ae9dbed663ae6e68c7c44cafb487899bc1b81c8069869c47a24de3ce33",
+        "contract_digest": "b416592da8fc9d4fff87d1f8cae4dffe93d9798cfa61b0a4cd8fb952ce197354"
+      },
+      "no_launch_journal": false
+    },
+    {
+      "instance": "first-project-zod",
+      "phase": "workspace-created",
+      "container": {
+        "id": "",
+        "contract_digest": "7c60f423425b8f0f078c62e13a44c8fc6362196ca2453a952cd20c8d8636c307"
+      },
+      "no_launch_journal": false
+    }
+  ],
+  "runner_log": "Oct 27 23:13:16 omabit-review env[1854]: {\"mode\":\"development-managed\",\"socket\":\"/run/user/1000/urbit-runner/runner.sock\",\"state_directory\":\"/home/review/.local/share/urbit-runner/managed\"}\nOct 27 23:15:40 omabit-review env[1854]: 2026/10/27 23:15:40 project-member-launch project=project-d67af17ec93324611f03750c62c73e0b instance=first-project-zod operation=op-4b1f83b40aa2097634995a901c5d6650 failed=\"member launch storage or artifact preflight failed\"\n"
+}

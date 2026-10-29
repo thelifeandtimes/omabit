@@ -1,0 +1,45 @@
+{
+  "memory": "M389",
+  "status": "integrated-source-and-synthetic-filesystem-qualified",
+  "source_sha256": {
+    "internal/privatechain/gateway_bootstrap_linux.go": "c928e557135a31c2407a630f23596358dba5700e26b5bc99846b52d870f45557",
+    "internal/privatechain/gateway_bootstrap_linux_test.go": "dd2b15794466c209b9fddc8a230447a4e31b12e5981fa6eb09af017c802223ad"
+  },
+  "focused": {
+    "exit": 0,
+    "vet_exit": 0,
+    "seconds": 2.179538377036806,
+    "top": 6,
+    "checks": 31,
+    "failed": []
+  },
+  "integrated": {
+    "exit": 0,
+    "seconds": 2.0902150770416483,
+    "top": 57,
+    "checks": 395,
+    "failed": [],
+    "source_sha256": {
+      "internal/privatechain/gateway_bootstrap_linux.go": "c928e557135a31c2407a630f23596358dba5700e26b5bc99846b52d870f45557",
+      "internal/privatechain/gateway_bootstrap_linux_test.go": "dd2b15794466c209b9fddc8a230447a4e31b12e5981fa6eb09af017c802223ad"
+    }
+  },
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-private-gateway-bootstrap",
+  "evidence_sha256": {
+    "gateway_bootstrap_linux.go": "c928e557135a31c2407a630f23596358dba5700e26b5bc99846b52d870f45557",
+    "gateway_bootstrap_linux_test.go": "dd2b15794466c209b9fddc8a230447a4e31b12e5981fa6eb09af017c802223ad",
+    "check01-result.json": "71b5719f75e10e5dbcbefbcc252fb9861d58080057b63656be6daf3bc8fcea9c",
+    "check02-result.json": "0140500fc75d4df19b8e2253f7ee8c1f06a0c7f3a45ed4788896b7a16d1b87e7",
+    "tests01.jsonl": "8c62657b0e4f37e42b40df70158a878f8b85b8d345dbefd381f6c105433ec2a3",
+    "tests02.jsonl": "6cae9a84c6638eba2639e080795a8c5956dc92239c2ecc0e46843096ce239106",
+    "vet01.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "vet02.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "integrated-result.json": "b659a8e90013f9b09138df6febcc65c734cff2411b0d8eb9547cdf0630bb1b0a",
+    "full-privatechain-tests.jsonl": "ab93a31684b24507b01dd967b79c2798bc9d197bba6e72619cbb2647d5a1b5f2",
+    "applied.json": "d49f68b0be7d04f22121cf00bcaece39a47ebef10fc1d34bee4c2e231be4dcd9"
+  },
+  "schema": 43,
+  "docker_or_ship_access": false,
+  "public_runtime_dispatch": false,
+  "supersedes": "M387-M388 missing journal-gated startup metadata helper only; concrete adapter remains unwired"
+}

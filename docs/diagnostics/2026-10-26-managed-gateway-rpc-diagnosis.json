@@ -1,0 +1,111 @@
+{
+  "memory": "M409",
+  "boot": {
+    "exit": 1,
+    "output": "/tmp/omabit-import-guest-run-managed-private-20261026-02",
+    "seconds": 1416.079040173965,
+    "scope_admitted": true,
+    "clean_shutdown": true,
+    "timed_out": false,
+    "storage_problem": null,
+    "guest_ok": false,
+    "guest_error": "managed-gateway-initialize failed",
+    "independent_audit_pending": true
+  },
+  "diagnostic_only": true,
+  "audit_seconds": 116.04919352399884,
+  "initializer_published_ready": true,
+  "container_lifetime_ms": 592601,
+  "container_exit": 0,
+  "recovery_attempted": false,
+  "runtime_qualified": false,
+  "overlay_unchanged": true,
+  "base_unchanged": true,
+  "retained_disk_sha256": "0f65e4229ba213f7bcb177590bcd59cdfbbdc605924389e317504ff59ce7b4dc",
+  "input_verifier_timing": {
+    "bytes": 834044028,
+    "durations_ms": [
+      77038,
+      11858
+    ],
+    "files": 12352,
+    "input_programs_executed": false,
+    "ok": true
+  },
+  "terminal_units": {
+    "omabit-private-supervisor-e8070e253c3e475c9a62cd271bf2b3b6.service": "failed",
+    "omabit-import-guest-6dbaf48e2d394cb9923402370507849f.scope": "inactive",
+    "omabit-private-inspect-f5817e1202fb45f0b2323cec64c0e726.scope": "inactive"
+  },
+  "retained_trace_summary": {
+    "observe-rpc": {
+      "ends": 8,
+      "failures": 8,
+      "expired": 0,
+      "min_ms": 1399,
+      "max_ms": 1679
+    },
+    "observe-preparation": {
+      "ends": 7,
+      "failures": 0,
+      "expired": 0,
+      "min_ms": 9962,
+      "max_ms": 10988
+    },
+    "observe-engine-before": {
+      "ends": 7,
+      "failures": 0,
+      "expired": 0,
+      "min_ms": 269,
+      "max_ms": 401
+    },
+    "observe-image-before": {
+      "ends": 7,
+      "failures": 0,
+      "expired": 0,
+      "min_ms": 228,
+      "max_ms": 385
+    },
+    "observe-running-before": {
+      "ends": 7,
+      "failures": 0,
+      "expired": 0,
+      "min_ms": 355,
+      "max_ms": 408
+    },
+    "observe-host-before": {
+      "ends": 7,
+      "failures": 0,
+      "expired": 0,
+      "min_ms": 0,
+      "max_ms": 0
+    },
+    "observe-namespace-before": {
+      "ends": 7,
+      "failures": 0,
+      "expired": 0,
+      "min_ms": 320,
+      "max_ms": 366
+    },
+    "observe-state-before": {
+      "ends": 7,
+      "failures": 0,
+      "expired": 0,
+      "min_ms": 3,
+      "max_ms": 8
+    },
+    "observe-mounts-before": {
+      "ends": 7,
+      "failures": 0,
+      "expired": 0,
+      "min_ms": 1503,
+      "max_ms": 1923
+    }
+  },
+  "total_trace_events": 300,
+  "retained_trace_events": 128,
+  "failed_stage": "observe-rpc",
+  "rpc_substage_known": false,
+  "protected_state_accessed": false,
+  "supersedes": "M407 pending diagnostic runtime only; M405 source regression and M408 baseline remain valid"
+}

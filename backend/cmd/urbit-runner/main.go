@@ -15,10 +15,16 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/demo"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/localrpc"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/managed"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
 
 const usage = `Usage: urbit-runner COMMAND
+       urbit-runner --development-root /srv/dev/urbit COMMAND
+
+The separate development root requires its own root-owned owner.json. Only
+serve-development, resource-policy and state-schema are allowed in that mode.
+It never uses the installed host's state, Docker socket or SSH grants.
 
 Commands:
   state-schema               Print this binary's persistent state schema version.
@@ -45,6 +51,7 @@ Commands:
   setup-plan                 Show the rootless installation review plan as JSON.
   prepare-rootless --output /absolute/new/directory
                              Fetch pinned, inert rootless setup review artifacts.
+  resource-policy show|set    View/tune new and existing ship resource thresholds.
   runtime-plan               Describe the pinned disposable-runtime checkpoint.
   qualify-runtime --acknowledge-disposable-run
                              Run it as the installed pier owner (never as root).
@@ -116,8 +123,27 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
+	if len(args) > 0 && args[0] == "--development-root" {
+		if len(args) < 3 || (args[2] != "serve-development" && args[2] != "resource-policy" && args[2] != "state-schema") {
+			fmt.Fprintln(stderr, "Usage: urbit-runner --development-root /srv/dev/urbit {serve-development|resource-policy|state-schema}; host installation and production management commands are unavailable in this namespace")
+			return 2
+		}
+		if err := ownerhost.ConfigureDevelopment(args[1]); err != nil {
+			fmt.Fprintln(stderr, err)
+			return 1
+		}
+		args = args[2:]
+	}
+
+	if len(args) > 0 && args[0] == "resource-policy" {
+		return runResourcePolicy(args[1:], stdout, stderr)
+	}
 	if len(args) == 1 && args[0] == "management-offline-state" {
 		return runOfflineState(ctx, os.Stdin, stdout, stderr)
+	}
+	if len(args) == 2 && args[0] == "state-schema" && (args[1] == "--help" || args[1] == "-h") {
+		fmt.Fprintln(stdout, "Usage: urbit-runner state-schema\nPrint the persistent schema version compiled into this binary; no state is opened.")
+		return 0
 	}
 	if len(args) == 1 && args[0] == "state-schema" {
 		fmt.Fprintln(stdout, managed.StateSchemaVersion)

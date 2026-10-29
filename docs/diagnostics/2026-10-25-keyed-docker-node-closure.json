@@ -1,0 +1,21 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-keyed-docker-node-closure",
+  "docker_qualification_passed": false,
+  "failed_vm_seconds": 387.5,
+  "fresh_bootstrap_passed": true,
+  "glibc_addon_selection_passed": true,
+  "missing_addon_library": "libpthread.so.0",
+  "missing_library_bytes": 14360,
+  "missing_library_sha256": "839b91403f89fa4c6888d50deb2b59cd0612f8cfe3d57dd9d6314832b4cb31ab",
+  "native_addons_checked": 14,
+  "minimal_runtime_baseline_refused": true,
+  "minimal_runtime_corrected_passed": true,
+  "host_libraries_inaccessible": true,
+  "module_load_and_database_reopen_passed": true,
+  "audit_top_level_tests": 3,
+  "audit_negative_subcases": 4,
+  "raw_post_key_errors_redacted": true,
+  "ships_started": 0,
+  "keys_generated": false,
+  "next": "Package the tested complete runtime in private appliance06; run fresh Docker qualification."
+}

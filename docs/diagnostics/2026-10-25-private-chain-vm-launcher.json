@@ -1,0 +1,16 @@
+{
+  "memory": "M347",
+  "source_tests": 11,
+  "vm_processes_started_by_tests": 0,
+  "matches_M346_driver_after_documented_guards_and_legacy_reserve_preservation": true,
+  "existing_case_reserve_gib": 1,
+  "private_case_reserve_gib": 2,
+  "private_case_memory_available_floor_gib": 16,
+  "private_case_scope_gib": 12,
+  "private_case_guest_gib": 7,
+  "private_case_deadline_seconds": 3600,
+  "preparation_command_complete": false,
+  "private_disk_preserved": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/runtime-20261025-08",
+  "private_disk_sha256": "ab362efea839f5121dcf73494fa2cb783ced077851e470e7c09150061a5aedb3",
+  "raw_state_exported": false
+}

@@ -1,0 +1,31 @@
+{
+  "source_qualified": true,
+  "runtime_executed": false,
+  "schema": 29,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-stop-store",
+  "original_schema28_sha256": "8386021e437e4d586b06695d69f3877c65d9cb5a7d81105ae04a61c1e3d13be3",
+  "source_sha256": {
+    "internal/managed/project_member_stop.go": "edc770d188b2865d527ffc0f3a00c4ad87415f66085ed6dc1463b122c13aa993",
+    "internal/managed/project_member_stop_test.go": "c0bd66031f98bdb9d2f7320937fa83338be6edb311d5eb6c2549b8d73681b3a1",
+    "internal/managed/schema.go": "8cf01fdf2d423f6b51ac24f48bddab70c48ff8bf9b4b57b9417da7191bc5932d",
+    "internal/managed/store.go": "571a727f10c0f4934eaea73b381772010782db4e818c04a0387a979f3abedb08",
+    "internal/managed/g02_historical_upgrades_test.go": "54c2b1f1e90a76a8e5fe3f9a40feae4b6bab3c91e2153223237cfb2cec2dc0cd",
+    "scripts/test-historical-upgrades.py": "923a72c0f97394a088605e8687a21568d7a10e00af9bac58933079f378e1464c",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "c524ace38d0d5a2202a5f22cb549a66f5fc9198cbaa72e0a3338ebaea653995f",
+    "internal/managed/testdata/historical-upgrades/schema28.json": "b3c9a6baad0106eff9a4e4d8931a1fa21e4304a7c3c45b7227286bdc2ab8956c",
+    "internal/managed/testdata/historical-upgrades/schema28-source.tar.gz": "8386021e437e4d586b06695d69f3877c65d9cb5a7d81105ae04a61c1e3d13be3"
+  },
+  "logs": {
+    "omabit-member-stop-store-tests.log": "3d3966ccb1085ae99fc553f3981fbd7c8c6ca64437168cd3a823fc2bcb8caef5",
+    "omabit-member-stop-store-full-race.log": "c17a038c4a5fe698bc46d1230d53f1265bb6c9a0fec2212abf410ac90d61288e",
+    "omabit-member-stop-store-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-stop-schema28-generate.log": "0f16eae463c08b06bae4d2b2cc7843d8335f03bb9cbbc7f0d4081687299db71f",
+    "omabit-stop-schema28-reproduce.log": "cd6f5faabec60cf829db22d2ceabf6aadde0018c1e5f5bd9410ce8201b20c3cd",
+    "omabit-schema28-freeze.log": "d391015569773cfeef149ac3d4cadb98709043335a910b9fbd379300d60c2635"
+  },
+  "limits": [
+    "Private store/worker with inert drivers only; no concrete Stop adapter, queue or public route.",
+    "A new request cannot re-signal an unresolved Stop for the same container; explicit recovery remains unimplemented.",
+    "VM15 is the older frozen schema28 readiness case and cannot qualify schema29 Stop persistence."
+  ]
+}

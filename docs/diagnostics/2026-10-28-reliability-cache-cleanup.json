@@ -1,0 +1,32 @@
+{
+  "reason": "Keep native DEV plus retained evidence below 40 GiB after review-moon replay; remove regenerable historical compiler/download caches only.",
+  "preserved_sha256": {
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-24-vere-signal-fix-build/out/x86_64-linux-musl/urbit-omabit-signal-probe": "1b4b5c6a3c3ad8fd06570d0d21a696ce46c37f8a454d00341327bc3038e9680d",
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-24-vere-signal-fix-build/source.tar": "120ce8cc709de02deb41bc9d00c929752b371ecf7715a619fff939cbabfd3365",
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-24-private-chain-foundation/tools/package-lock.json": "3775ca05fc44270b64dac13bee82042eb86e6ce16dba3e9698157a9a1b35c3a8"
+  },
+  "removed": [
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-24-vere-signal-fix-build/cache",
+      "allocated_bytes": 322756608,
+      "class": "historical build/download cache"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-24-vere-signal-fix-build/localcache",
+      "allocated_bytes": 318050304,
+      "class": "historical build/download cache"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-24-private-chain-foundation/tools/cache/_cacache",
+      "allocated_bytes": 116133888,
+      "class": "historical build/download cache"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-24-private-chain-foundation/tools/node_modules",
+      "allocated_bytes": 381550592,
+      "class": "inactive historical npm dependencies; regenerate with npm ci from retained package-lock.json"
+    }
+  ],
+  "status": "completed",
+  "removed_allocated_bytes": 1138491392
+}

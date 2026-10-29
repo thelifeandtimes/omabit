@@ -1,0 +1,40 @@
+{
+  "verified": true,
+  "passed": true,
+  "result_sha256": "9e515d41654a9a8e74c0febb0593402d9a2e8067cf33a3fd4d098d6894a23135",
+  "seconds": 806.97,
+  "scope_inactive": true,
+  "original_artifacts_and_disks_verified": true,
+  "extracted_files_verified": 51,
+  "login_code_checks": [
+    {
+      "container_id": "47a110601224b8b6bd2915a8e0351bb8694c271d513b8a6ebf5944d855fcc326",
+      "instance_id": "zod",
+      "config_revision": 1,
+      "code_returned_for_exact_selection": true,
+      "authenticated_scry": true,
+      "session_revoked": true,
+      "no_secret_recorded": true
+    },
+    {
+      "container_id": "73770cac895b26108a1e242e7862e4fc9e95debf1f4f7e84c3a603078172dc8f",
+      "instance_id": "zod",
+      "config_revision": 1,
+      "code_returned_for_exact_selection": true,
+      "authenticated_scry": true,
+      "session_revoked": true,
+      "no_secret_recorded": true
+    }
+  ],
+  "same_pier_replacement": true,
+  "final_stopped": true,
+  "source_tree_preserved_before_start": true,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-login06",
+  "retained_metadata_files": 73,
+  "qualification": "Actual runner/collector login before and after same-pier container replacement on one freshly created fake galaxy in a no-NIC VM.",
+  "limits": [
+    "Shared-project runner integration remains pending.",
+    "This case uses the ordinary administrative endpoint; source tests cover relocated ports.",
+    "No production deployment, external network or installed-desktop qualification."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "memory": "M359",
+  "js_top_level": 5,
+  "js_including_subcases": 39,
+  "go_top_level": 16,
+  "go_including_subcases": 110,
+  "vet_passed": true,
+  "runtime_qualified": false,
+  "active_VM10_changed": false,
+  "original_head_hash_required_for_next_peer_case": true,
+  "legacy_VM10_coverage": "original head height; before/after hash within reopened service; no original final-head hash supplied"
+}

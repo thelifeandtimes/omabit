@@ -44,6 +44,21 @@ connection, not on a locally managed Docker ship.
 Use Go for core services/CLI, QML for Omarchy interfaces, and Hoon for ship-side
 functionality. Share libraries without conflating process privileges.
 
+## Application authentication boundary (2026-10-21)
+
+Omabit assists with approval and creation of a separate Eyre session for each
+plugin/profile. After private handoff, the plugin owns its credentials and talks
+directly to the ship. Application data and reconnects do not pass through Omabit
+or the collector. Plugins retain ordinary URL + `+code` login and remain usable
+without Omabit, including against hosted ships. The collector's existing generic
+scry/watch CLI remains available for its own callers; plugins need not use it.
+
+Theme and DMs are the first integration pair. These are ordinary broadly
+authorized Eyre sessions, with independent logout rather than desk isolation.
+Per-desk capabilities/Gall 2026 are deferred. Marketplace discovery belongs with
+Omart; plugins own missing-backend installation UX. See the updated
+[roadmap](platform-roadmap.md) and [auth checkpoint](application-auth-checkpoint.md).
+
 ## Collection model
 
 - Host: a machine running a runner, identified independently of its address.
@@ -201,14 +216,17 @@ Prove rootless mode and cgroup limits before using the engine for ship operation
 Current owner-user locations:
 
 ```text
-/srv/urbit/piers/{fakeships,livenet/<tier>}/[group/]<ship-directory>/pier/
+/srv/urbit/piers/{fakeships,livenet/<tier>}/[group/]<instance>/<ship-name>/
 ~/.local/share/urbit-runner/managed/runner.sqlite
 ~/.local/share/urbit-runner/managed/<private-id>/
 /run/user/UID/urbit-runner/runner.sock
 ```
 
-The exclusive ship parent mounts at `/urbit`; Vere always uses `/urbit/pier`.
-First boot creates that child in place and keeps the same container running.
+The exclusive instance parent mounts at `/urbit`; Vere uses the recorded child
+at `/urbit/<ship-name>`. Imported and known-identity piers use the verified `@p`
+without `~`; a newly mined comet initially uses `pier` because its identity is
+unknown. Legacy `pier` children remain recognized. See [pier storage](pier-storage.md).
+First boot creates its child in place and keeps the same container running.
 The SQLite journal is transactional; a simulator may be memory-only if clearly marked.
 Keep collector configuration/state separate. Plugin checkout directories never
 contain piers, credentials, or authoritative runner state. Uninstall does not

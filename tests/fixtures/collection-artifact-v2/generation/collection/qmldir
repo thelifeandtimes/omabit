@@ -1,0 +1,3 @@
+singleton Registry 1.0 Registry.qml
+Host 1.0 Host.qml
+WidgetHost 1.0 WidgetHost.qml

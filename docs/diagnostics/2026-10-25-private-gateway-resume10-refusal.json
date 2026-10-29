@@ -1,0 +1,30 @@
+{
+  "memory": "M360",
+  "overall": "failed-before-retained-gateway-creation",
+  "seconds": 2042.95,
+  "peer_subgate": "passed-independent-audit",
+  "messages": {
+    "acknowledged": 6,
+    "intentional_nack": 1
+  },
+  "state_scries": 7,
+  "snapshots": 6,
+  "writes": 4,
+  "clean_stops": 3,
+  "directory_cause": {
+    "project_mode": "0700",
+    "chain_mode": "0755",
+    "owner": 1000,
+    "canonical": true
+  },
+  "read_only_audits_unchanged": true,
+  "all_three_scopes_inactive": true,
+  "retained_disk_sha256": "4521b618dcec47ac07c6804d8d715dfb4f4f0206b4e9e4da9cd960897dc18757",
+  "raw_state_exported": false,
+  "corrected_fresh_only_initialization": "refuse existing destination, copy, set only new chain directory to0700 before open",
+  "retained_guard_weakened": false,
+  "runtime_correction_qualified": false,
+  "go_checks_including_subcases": 111,
+  "python_checks": 55,
+  "vet_passed": true
+}

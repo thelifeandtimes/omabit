@@ -1,0 +1,40 @@
+{
+  "verified": true,
+  "passed": false,
+  "schema": 27,
+  "seconds": 1218.44,
+  "scope_inactive": true,
+  "clean_vm_shutdown": true,
+  "clean_anchor_stop": true,
+  "quota_and_deadline_clear": true,
+  "both_running_launch_receipts_verified": true,
+  "no_stale_dispatch_recurrence": true,
+  "http_wait_failed": true,
+  "member_cleanup_exits": {
+    "zod": 0,
+    "nec": 137
+  },
+  "oom": false,
+  "container_ids": [
+    "9e76f24329129b8a90922d1ee8c96d5b11b864e95d08b9a06e90aba9cfe33bb4",
+    "dd52c68f6b4af33bf9e0fd0f7224b1c8e5b2ecd1270b07a862dcb8187e667eff",
+    "f4528ef0f336901024bcdc08fb4484a16cb6b1169b9110acddfcf1e82f3b00b0"
+  ],
+  "database_receipts_match": true,
+  "files_verified": 19,
+  "result_sha256": "db2d3dc196141ed7e68e1c022569f65d4ed569a4aef64e1819df3fb14b55c9f4",
+  "database_sha256": "a7286ea532a81f903a5cc96853dd9a3931c76509a13cc077b5fdc9a08dd8ca74",
+  "failure_log_sha256": "c6f4d17cc3abbce2a0fbecbed839910eecc4aefec99caf7b63c19f082bc76376",
+  "findings": [
+    "Both launches reached running with committed exact IDs and unchanged namespace; no adapter errors.",
+    "The fixture HTTP wait expired before any HTTP success was retained.",
+    "Nec cleanup exited 137 without OOM; zod, anchor and VM stopped cleanly.",
+    "Earlier passing VM08 booted zod in about 405 seconds and nec in 585 seconds, serially; this fixture used 480 seconds for a final pair wait and 900 for all setup/launch work."
+  ],
+  "next": [
+    "Use exact public identity warmup after each member, with the established bounded per-ship cold-boot allowance.",
+    "Run schema28 queued readiness with independent disk/database verification; keep all 30-second ownership freshness checks."
+  ],
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-launch14",
+  "sources_retained_at": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-member-observation-batch/source"
+}

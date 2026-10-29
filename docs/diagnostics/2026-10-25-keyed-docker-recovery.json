@@ -1,0 +1,27 @@
+{
+  "memory": "M346",
+  "passed": true,
+  "vm_seconds": 1918.39,
+  "messages": {
+    "acknowledged": 6,
+    "intentional_nack": 1
+  },
+  "persistent_writes": 4,
+  "scry_observations": 7,
+  "subscription_snapshots": 6,
+  "channels_deleted": 2,
+  "owned_clean_ship_stops": 3,
+  "original_sessions_and_cursor_retained": true,
+  "same_pier_new_container": true,
+  "writes_replayed": false,
+  "chain_id": "0x539",
+  "chain_head": "0x50",
+  "readonly_audit_disk_unchanged": true,
+  "raw_state_exported": false,
+  "all_scopes_inactive": true,
+  "private_disk": "/tmp/omabit-import-guest-run-private-chain-20261025-08/lab/root.qcow2",
+  "private_disk_sha256": "ab362efea839f5121dcf73494fa2cb783ced077851e470e7c09150061a5aedb3",
+  "auditor_top_level_tests": 5,
+  "auditor_negative_subcases": 10,
+  "limits": "Private qualification only; reusable VM launcher, runner classification/lifecycle, project isolation, UI and release integration remain"
+}

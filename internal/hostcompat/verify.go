@@ -89,21 +89,7 @@ func (v *verifier) verifyPackage(ctx context.Context, provider string, p Package
 		if len(wanted) > 32 {
 			return receipt{}, errEvidence
 		}
-		if provider == "deb" {
-			b, e := v.run(ctx, "/usr/bin/dpkg-deb", []string{"--fsys-tarfile", "/" + artifact}, maxArtifact)
-			if e != nil {
-				return receipt{}, errEvidence
-			}
-			payload, err = hashTar(b, wanted)
-		} else {
-			// Re-archive to stdout, never to a filesystem directory. Retaining tar
-			// headers lets hashTar reject duplicate members and payload links.
-			b, e := v.run(ctx, "/usr/bin/bsdtar", []string{"-cf", "-", "--format=pax", "--", "@/" + artifact}, maxArtifact)
-			if e != nil {
-				return receipt{}, errEvidence
-			}
-			payload, err = hashTar(b, wanted)
-		}
+		payload, err = v.packagePayload(ctx, provider, artifact, wanted)
 		if err != nil {
 			return receipt{}, err
 		}
@@ -134,12 +120,16 @@ func (v *verifier) verifyPackage(ctx context.Context, provider string, p Package
 // hashTar does not extract files. Only regular payload entries can authenticate an
 // executable; links, duplicate members and traversal are rejected.
 func hashTar(b []byte, names []string) (map[string]string, error) {
+	return hashTarReader(bytes.NewReader(b), names)
+}
+
+func hashTarReader(input io.Reader, names []string) (map[string]string, error) {
 	wanted := make(map[string]bool)
 	for _, name := range names {
 		wanted[name] = true
 	}
 	result := make(map[string]string)
-	r := tar.NewReader(bytes.NewReader(b))
+	r := tar.NewReader(input)
 	for count := 0; ; count++ {
 		if count > maxEntries {
 			return nil, errEvidence

@@ -1,0 +1,69 @@
+{
+  "evidence": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-25-checkpoint2-cleanup",
+  "verification": {
+    "passed": true,
+    "native_runs": 2,
+    "controller_kills": 43,
+    "new_publication_kills": 4,
+    "new_activation_kills": 3,
+    "new_authority_format": 3,
+    "artifact_upgrade": {
+      "from": 5,
+      "to": 6
+    },
+    "new_application_instances": 3,
+    "total_application_instances": 9,
+    "sessions_preserved": 6,
+    "fresh_subscriptions": 5,
+    "unknown_dm_preserved_without_replay": true,
+    "final_channels_closed": 8,
+    "original_checkpoint_chain_and_canonical_history_verified": true,
+    "artifact_records_verified": 28,
+    "all_four_compositors_exit_zero": true,
+    "guardian_closed_after_expected_display_loss_exit": 255,
+    "scope_inactive": "omabit-continuation-cleanup-native-20261025-02",
+    "actual_copied_plugins": true,
+    "private_unlocked_keyring": true,
+    "synthetic_eyre": true,
+    "public_installed_profiles_qualified": false,
+    "application_data_format_migration_qualified": false,
+    "production_resources_touched": false,
+    "focused_tests": 20,
+    "full_tests": 532,
+    "native_readonly_observations": [
+      "published-empty",
+      "committed-live",
+      "guards-closed",
+      "compositor-closed",
+      "ancestors-runtime-retired"
+    ],
+    "inspector_format": 3,
+    "authority_readers": [
+      1,
+      2,
+      3
+    ],
+    "original_inspectors_unchanged": true,
+    "scopes_inactive": [
+      "omabit-continuation-cleanup-native-20261025-02",
+      "omabit-continuation-cleanup-unit-20261025-01",
+      "omabit-continuation-cleanup-unit-20261025-02",
+      "omabit-continuation-cleanup-native-20261025-01",
+      "omabit-http-idle-reset-unit-20261025-01"
+    ],
+    "first_runtime_runs_passed": false,
+    "cleanup_format": 3,
+    "record_prefix": "desktop-chain-cleanup-",
+    "new_cleanup_controller_kills": 2,
+    "failed_delete_preserves_intent": true,
+    "verified_retry_dispatches_no_http": true,
+    "current_gate_claim_states": {
+      "dms": "admitted",
+      "omabit": "ended",
+      "theme": "admitted"
+    },
+    "http_reset_regression_tests": 4,
+    "failed_trial": "First native trial stopped before current cleanup: synthetic HTTP worker treated a reset while awaiting the next request line as an application error.",
+    "fixture_correction": "Only pre-parse ConnectionResetError closes quietly and is recorded; parsed-request resets and other failures still propagate."
+  }
+}

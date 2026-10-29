@@ -381,6 +381,10 @@ func TestClientTimeouts(t *testing.T) {
 				if got := strings.Contains(err.Error(), "uncertain"); got != (method != http.MethodGet) {
 					t.Errorf("uncertainty for %s: %v", method, err)
 				}
+				var uncertain *OutcomeUncertainError
+				if errors.As(err, &uncertain) != (method != http.MethodGet) {
+					t.Errorf("typed uncertainty for %s: %v", method, err)
+				}
 				if calls.Load() != 1 {
 					t.Errorf("requests = %d; want 1 without retries", calls.Load())
 				}

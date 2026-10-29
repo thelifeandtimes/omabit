@@ -1,0 +1,84 @@
+{
+  "verified": true,
+  "passed": false,
+  "ship_operations": false,
+  "failure": "post-Start namespace probe used missing /usr/bin/stat",
+  "anchor_started": true,
+  "phase_retained": "started",
+  "operation_interrupted": true,
+  "running_mount_and_publications_observed": true,
+  "clean_anchor_stop": true,
+  "scope_inactive": true,
+  "seconds": 229.64,
+  "result_sha256": "a8f22845a36302191edb96f79f9e0c57e1f20d37a90dfadfc185f226966e5f99",
+  "database_sha256": "5aebd9c775d3dc53999e02996c4ddef052f6c6245ce9dabb7a95115fb73baefb",
+  "bridge": "122949f2e3b181474b8dc25e3df40474d9103bdbfd5fb0c19feff71d2073e8ce",
+  "anchor": "d0872ac1ee8687c87d57018e7f57bc470553a61ee47bfd22072f1b26f2613435",
+  "engine": "7282e79f-2dba-47ac-b4fa-65bec4435a33",
+  "extracted_files_verified": 19,
+  "evidence_directory": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/2026-10-23-anchor-start09",
+  "corrected_source_sha256": {
+    "internal/runtimequalify/project_anchor_linux.go": "b0eed68626372459cfde6f624a9b237e263bf94fa82bdbbc1671767c906b0ca0",
+    "internal/runtimequalify/project_anchor_linux_test.go": "d30ad0b2a7040ae232c69623c496260ae390e943aee3706f2c999e540bba4fee",
+    "internal/runtimequalify/project_recorded_linux_test.go": "0e8291aad42553ddcdfca86a714db294a687849eedb3b3bd52b9798beb4c1404",
+    "internal/managed/project_anchor_vm_test.go": "2ae6f27702d4a4a69bda273112c81796a1fbe0cb32fb6f7910ab89664bf3489c"
+  },
+  "stat_probe": {
+    "verified": true,
+    "archive_sha256": "25d86c8984acdc031380a897ccbf7dd2289fc1e19c10f81ba8cbe216009938ec",
+    "image": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+    "files": {
+      "bin/busybox": "36d96947f81bee3a5e1d436a333a52209f051bb3556028352d4273a748e2d136",
+      "lib/ld-musl-x86_64.so.1": "a0e80898190e34005a4d0598fa71e2e0b0ab2726a3cd73c3ad147770ca371173"
+    },
+    "stat_link": {
+      "type": "2",
+      "link": "/bin/busybox",
+      "layer": "sha256:8921db27df2831fa6eaa85321205a2470c669b855f3ec95d5a3c2b46de0442c9"
+    },
+    "command": [
+      "bwrap",
+      "--unshare-all",
+      "--die-with-parent",
+      "--clearenv",
+      "--ro-bind",
+      "/tmp/omabit-anchor-stat-probe-20261023",
+      "/image",
+      "--symlink",
+      "/image/lib",
+      "/lib",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--tmpfs",
+      "/tmp",
+      "--chdir",
+      "/",
+      "--",
+      "/image/bin/busybox",
+      "stat",
+      "-L",
+      "-c",
+      "%d:%i",
+      "/proc/self/ns/net"
+    ],
+    "result": "5:4026535600",
+    "private_namespaces": true,
+    "network_used": false
+  },
+  "logs": {
+    "omabit-anchor-start23-09-failure-verification.log": "91cca1b1752a28a7533e4b8f7dff7f30a1aa5711a7439a624e1adc049be94083",
+    "omabit-anchor-start23-09-retention.log": "614d1d3a9e3eccaaa3d61bd48e2cf85d0abd7bd962d23b3df333dc779d286075",
+    "omabit-anchor-start23-09-retention-retry.log": "d1effc0284f489c442f5d007e960573673efeec081e50265a629f9f60afe2ae2",
+    "omabit-pinned-stat-probe.log": "72bf176a755f9e64e1ecbaa9cfd2220475796b0261c3b4a72d373acd160e3934",
+    "omabit-anchor-stat-fix-tests.log": "259e72148fd215d20f2a61530df1a9e0995b4a3f49ba8916b020256e37a58243",
+    "omabit-anchor-stat-fix-vet.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "omabit-anchor-stat-fixture-compile.log": "b4b0ee2d9a765ead127427411768342c5636e07918b4b4d01ad90688eb94867e"
+  },
+  "limits": [
+    "Trial09 remains failed; corrected adapter needs a fresh VM.",
+    "Offline running contract replay does not establish namespace completion.",
+    "Docker normalized OomKillDisable false to null and OomScoreAdj 0 to 200; verifier explicitly permits only those observed deltas."
+  ]
+}

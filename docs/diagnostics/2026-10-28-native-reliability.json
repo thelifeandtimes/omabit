@@ -1,0 +1,125 @@
+{
+  "review_version": "0.2.0-dev.20261028.3",
+  "generated_at_utc": "2026-10-29T05:56:18.857812+00:00",
+  "runner_id": "runner-9e2f22fd9358d0d36391f8153436afb7",
+  "operations": [
+    {
+      "id": "op-71b4105d224a1b19e7040ce0a0468aee",
+      "instance_id": "lagbet-bisful-dozzod-sarlev",
+      "kind": "stop",
+      "status": "succeeded",
+      "error": null
+    },
+    {
+      "id": "op-6ec9af648e4d356f29a370909015738b",
+      "instance_id": "lagbet-bisful-dozzod-sarlev",
+      "kind": "start",
+      "status": "succeeded",
+      "error": null
+    },
+    {
+      "id": "op-bfae017e82572329b31bb23fc5e962be",
+      "instance_id": "lagbet-bisful-dozzod-sarlev",
+      "kind": "stop",
+      "status": "succeeded",
+      "error": null
+    },
+    {
+      "id": "op-85296ca574df6052e84072bccbe71012",
+      "instance_id": "marrun-dalmeg-dozzod-sarlev",
+      "kind": "stop",
+      "status": "succeeded",
+      "error": null
+    },
+    {
+      "id": "op-bd4fe86ace5f29d560c20773e0244807",
+      "instance_id": "marrun-dalmeg-dozzod-sarlev",
+      "kind": "start",
+      "status": "succeeded",
+      "error": null
+    },
+    {
+      "id": "op-2d997d17af08bd67ffa7f9b7dbea19d1",
+      "instance_id": "marrun-dalmeg-dozzod-sarlev",
+      "kind": "stop",
+      "status": "succeeded",
+      "error": null
+    },
+    {
+      "id": "op-bfd46669b7cb335452fd7432d59b50ed",
+      "instance_id": "demo-nec",
+      "kind": "stop-project-ship",
+      "status": "succeeded",
+      "error": null
+    },
+    {
+      "id": "op-c1f345255fa04b25ba2dd9c0a4072c03",
+      "instance_id": "demo-nec",
+      "kind": "start-project-ship",
+      "status": "succeeded",
+      "error": null
+    },
+    {
+      "id": "op-a9bcd2c17832d0bec0a97613ce98ef6c",
+      "instance_id": "demo-zod",
+      "kind": "stop-project-ship",
+      "status": "succeeded",
+      "error": null
+    },
+    {
+      "id": "op-8d84bf9e2191589a135640781e400abc",
+      "instance_id": "demo-zod",
+      "kind": "start-project-ship",
+      "status": "succeeded",
+      "error": null
+    },
+    {
+      "id": "op-339ac2df0528a1a9e652eb6f47a77512",
+      "instance_id": "empty-zod",
+      "kind": "stop-project-ship",
+      "status": "succeeded",
+      "error": null
+    },
+    {
+      "id": "op-44895080223cbdff10665e3265ea8a26",
+      "instance_id": "empty-zod",
+      "kind": "start-project-ship",
+      "status": "succeeded",
+      "error": null
+    }
+  ],
+  "messages": [
+    "demo-zod -> demo-nec matching remote Gall acknowledgement",
+    "demo-nec -> demo-zod matching remote Gall acknowledgement",
+    "temporary test sessions logged out"
+  ],
+  "auth": [
+    "independent fake sessions for Theme DEV and DMs DEV",
+    "pending revocation recovered after fake restart",
+    "DMs exact channel invalidated and visible state cleared",
+    "Theme remained connected until separately revoked",
+    "both temporary attempts reconciled and archived",
+    "personal outbound journal unchanged"
+  ],
+  "tests": {
+    "runtimequalify_full": "pass",
+    "managed_full": "pass",
+    "fleet_mutation_lock_race": "pass",
+    "dms_python": 152,
+    "dms_qml": 7,
+    "theme_qml_helper_checks": 20,
+    "omabit_actual_qml": "pass"
+  },
+  "storage_allocated_bytes": {
+    "/srv/dev/urbit": 5350776832,
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence": 7157444608,
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs": 29997461504
+  },
+  "storage_combined_gib": 39.58650207519531,
+  "production_process_baseline_unchanged": [
+    2166,
+    3050
+  ],
+  "no_tmux_or_temp_ur_access": true,
+  "no_vm_or_full_evidence_bundle_created": true
+}

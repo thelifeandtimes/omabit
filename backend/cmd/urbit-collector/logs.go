@@ -16,13 +16,25 @@ func runLogs(ctx context.Context, args []string, dir, socket, runner, expected, 
 	if len(args) == 0 {
 		return fail(errors.New("logs requires INSTANCE --revision N and an identity-pinned runner"), 2)
 	}
-	id := args[0]
+	id := ""
+	if args[0] != "--help" && args[0] != "-h" {
+		id, args = args[0], args[1:]
+	}
 	f := flag.NewFlagSet("logs", flag.ContinueOnError)
 	f.SetOutput(io.Discard)
 	rev := f.Uint64("revision", 0, "selected configuration revision")
 	watch := f.Bool("watch", false, "reuse one pinned connection and emit bounded NDJSON updates until canceled")
 	interval := f.Duration("interval", 3*time.Second, "log watch interval, at least 1s")
-	if f.Parse(args[1:]) != nil || f.NArg() != 0 || *rev == 0 || socket != "" || !protocol.ValidID(id) || !protocol.ValidID(runner) || !protocol.ValidID(expected) {
+	if err := f.Parse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			fmt.Fprintln(out, "Usage: urbit-collector --runner NAME --expected-runner-id ID logs INSTANCE --revision N [--watch --interval 3s]\n\nRead a bounded operator-only runtime log tail. Watch emits NDJSON using one pinned connection.\nLogs can contain secrets; review and redact before sharing. Help does not contact a runner.")
+			f.SetOutput(out)
+			f.PrintDefaults()
+			return 0
+		}
+		return fail(err, 2)
+	}
+	if f.NArg() != 0 || *rev == 0 || socket != "" || !protocol.ValidID(id) || !protocol.ValidID(runner) || !protocol.ValidID(expected) {
 		return fail(errors.New("logs requires --runner, --expected-runner-id, INSTANCE and --revision"), 2)
 	}
 	if *interval < time.Second || *watch && format != "json" {
