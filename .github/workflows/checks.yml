@@ -28,10 +28,10 @@ jobs:
           sudo apt-get install -y --no-install-recommends gnupg libarchive-tools
       - name: Go tests and vet
         run: |
-          go test ./...
+          python3 -B scripts/ci-go-tests.py ./...
           go vet ./...
       - name: Stateful transport and runtime race checks
-        run: go test -race -timeout=60m ./internal/managed ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy ./internal/pierstore ./internal/piermeta ./internal/hostinstall ./internal/hostsetup ./internal/onboarding ./internal/remotesetup ./internal/omabittheme ./backend/cmd/urbit-collector ./backend/cmd/urbit-runner
+        run: python3 -B scripts/ci-go-tests.py -race -timeout=60m ./internal/managed ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy ./internal/pierstore ./internal/piermeta ./internal/hostinstall ./internal/hostsetup ./internal/onboarding ./internal/remotesetup ./internal/omabittheme ./backend/cmd/urbit-collector ./backend/cmd/urbit-runner
       - name: Offline application recovery fixture checks
         run: |
           python3 -B -m unittest discover -s scripts/qualification/imports -p 'test_runner_app_*.py'
