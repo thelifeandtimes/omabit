@@ -28,12 +28,12 @@ See [binary bundle installation](docs/release-install.md),
 [0.2.0/0.3.0 upgrade guidance](docs/guided-service-upgrades.md),
 and [Recommended Apps pill provenance](docs/pill-release.md).
 
-**Channels:** `master` is protected, PR-only and reserved for stable minor/major
+**Channels:** `master` is protected, PR-only and reserved for qualified stable
 releases. `edge` is opt-in bleeding-edge work, explicitly not stable. `develop` has
 no stability guarantee. See the [development/versioning policy](docs/development-policy.md)
 and [contributor guide](CONTRIBUTING.md), including explicit edge installation/update
-commands. Backend changes normally require a new minor or major release line;
-0.3.1 is an explicitly requested one-time exception.
+commands. Patch releases are allowed; each stable release must work as a native
+plugin and include a tested upgrade path from the previous stable version.
 
 ## Historical release milestones
 

@@ -6673,3 +6673,26 @@ requirements. The trusted-base minor-only check still needs a narrow explicit
 transition before the release PR can merge. No host update is part of publishing;
 production ships, tmux and temp-ur remain outside this task. M468's privacy/security
 and wallet work remains open.
+
+
+## M487 — Qualification replaces minor-only release numbering (2026-10-29)
+
+Status: user requirement; supersedes the version restrictions in M483/M484 and
+the narrow exception/approval wait in M485/M486. The user clarified that master
+should remain a working native Omarchy plugin, with tested non-destructive upgrade
+paths between releases, possibly via intermediate versions. Patch releases and
+backend fixes are allowed when qualified. Version digits do not certify safety.
+
+The amended gate retains exact frozen artifacts, UI/tool version agreement, source
+identity, passing source/race/QML tests and upgrade evidence. It additionally
+checks a declared path from the previous stable version and hashes the committed
+successful rehearsal evidence bound to the target. Specific governance files may
+follow the freeze without rebuilding runtime artifacts; packaging/bootstrap/CI
+implementation changes still require a new freeze. The original0.3.1 CI source
+failure was the same minor-only rule rejecting reproducibility packaging after
+version pins advanced, not a Go or QML test failure. No test is waived.
+
+The user authorized changing the merge requirement after the legacy gate's
+bootstrap problem was explained. Apply the documented one-time transition only
+after all other checks pass and immediately restore full protection. Publication
+authorization remains active; production ships are untouched.

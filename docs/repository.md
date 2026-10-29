@@ -47,9 +47,10 @@ separate work; it is not implemented by this repository cutover.
 ## Source publication versus release assets
 
 `master`, `edge` and `develop` follow the [user's development policy](development-policy.md).
-Master is protected and accepts stable minor/major releases by PR only. Small
-UI/QoL changes accumulate on edge; backend-affecting changes require a new minor
-or major release line. Develop is explicitly unqualified.
+Master is protected and accepts qualified stable releases, including patches,
+by PR only. Every release needs a tested non-destructive upgrade path; backend
+changes require coordinated binaries and migration/recovery evidence. Edge is
+opt-in; develop is explicitly unqualified.
 
 The authoritative source and native Omarchy installation repository are both
 <https://github.com/thelifeandtimes/omabit>. Its root manifest loads small wrappers

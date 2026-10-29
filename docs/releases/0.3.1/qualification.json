@@ -67,7 +67,27 @@
       "owner, access keys and collector enrollment"
     ],
     "from_schema": 21,
-    "to_schema": 47
+    "to_schema": 47,
+    "paths": [
+      {
+        "versions": [
+          "0.2.0",
+          "0.3.1"
+        ],
+        "evidence": "docs/releases/0.3.1/from-0.2.0-result.json",
+        "evidence_sha256": "578ced61baa765f2e472d6cb66ddf8009da0524e8df23880c2e0bdcfd2f27aee",
+        "starting_services": "0.2.0"
+      },
+      {
+        "versions": [
+          "0.3.0",
+          "0.3.1"
+        ],
+        "evidence": "docs/releases/0.3.1/from-0.3.0-result.json",
+        "evidence_sha256": "5cc8feb2d41a7694bf2f56295e93d2b81c3455f5d24da62c28cb471fa2903287",
+        "starting_services": "0.2.0"
+      }
+    ]
   },
   "validation": {
     "passed": true,
@@ -126,10 +146,10 @@
         "sha256": "1db979295b8a6c5782cc6ede2b105522357dbc8424ead4f3b9349478d4cba939"
       }
     ],
-    "policy": "Reuse the exact rehearsed binaries and archive. No runtime or UI inputs change in the distribution commit."
+    "policy": "Reuse the exact rehearsed binaries and archive. Post-freeze changes are documentation, native pins and explicitly listed release-governance files only; no shipped runtime, UI, installer, package implementation or CI workflow changes."
   },
   "ci": {
-    "policy": "All source and QML gates must pass on the release PR before merge. The trusted-base patch-version exception requires the owner's separate explicit authorization; it cannot be supplied by a head change alone."
+    "policy": "Require passing source, all managed race shards, QML, and stable-release qualification. The user replaced minor-only numbering with tested, non-destructive upgrade paths on2026-10-29. A single transition of the old trusted-base gate installs this policy; all other protections remain required."
   },
   "scope_limits": [
     "Guest-only polkit denial/grant exercises real pkexec, not human password entry.",
