@@ -1,0 +1,130 @@
+{
+  "version": "0.3.2",
+  "platform": "linux/amd64",
+  "source_commit": "742e56ba968c4eb4544fae52c7eb41f31998d6df",
+  "source_tree": "fdc4e27a6df8f227c93f3893621950c977aa21fa",
+  "backend_source_sha256": "6ac4486c0e1b4e66d8ab5b8a7b79713d7e87f18ad0997f51a1ddaec1ee2f0588",
+  "channel": "stable",
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "runner_schema": 47,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "evidence": "docs/releases/0.3.2/desktop-upgrade.json",
+    "evidence_sha256": "4a2371c4b644de46bb350b49651dfdd0888de639f5dafe18ee06a5a32d58a766",
+    "paths": [
+      {
+        "versions": [
+          "0.3.0",
+          "0.3.2"
+        ],
+        "evidence": "docs/releases/0.3.2/desktop-upgrade.json",
+        "evidence_sha256": "4a2371c4b644de46bb350b49651dfdd0888de639f5dafe18ee06a5a32d58a766",
+        "scope": "actual desktop bundle activation, preferences, failure recovery and restart; runtime implementation unchanged"
+      },
+      {
+        "versions": [
+          "0.3.1",
+          "0.3.2"
+        ],
+        "evidence": "docs/releases/0.3.2/desktop-upgrade.json",
+        "evidence_sha256": "4a2371c4b644de46bb350b49651dfdd0888de639f5dafe18ee06a5a32d58a766",
+        "scope": "actual desktop bundle activation, preferences, failure recovery and restart; runtime implementation unchanged"
+      }
+    ]
+  },
+  "validation": {
+    "passed": true,
+    "native_plugin_tests": 9,
+    "bootstrap_state_tests": 12,
+    "service_update_qt_cases": 4,
+    "archive_and_executables": true,
+    "qml_regressions": true,
+    "actual_upgrade_paths": 2,
+    "synthetic_failure_recovery_paths": 2,
+    "logs": {
+      "native-tests": {
+        "name": "omabit-032-native-tests.log",
+        "sha256": "3432966ad85d2d232c082c465b86a36c9fadf3e8a0a3756b2b50efe91dcd78e1"
+      },
+      "bootstrap-tests": {
+        "name": "omabit-032-bootstrap-tests.log",
+        "sha256": "8be1aaaf4022ca497145585817ea8afb1355c036c6e07ecc5c76e638e24dfb64"
+      },
+      "panel-tests": {
+        "name": "omabit-032-panel-tests.log",
+        "sha256": "58a6dd72757d51cd5dc744b80f690e61110fd06af0537f498437662c7b83f3e6"
+      },
+      "host-tests": {
+        "name": "omabit-032-host-tests.log",
+        "sha256": "94b6c004e0e305d039f2a5be6d3a2cdcc0026da6d080c87f3cf1f96d5a3038f3"
+      },
+      "menubar-final": {
+        "name": "omabit-032-menubar-final.log",
+        "sha256": "41a85872561a7b413c54e158ddae4beecd8ebe0e6704b854057540add3526207"
+      },
+      "policy-tests": {
+        "name": "omabit-032-policy-tests.log",
+        "sha256": "2a44c7350f818059f7218fb373744929eb4a7017d3b3fc28e89ce3ff9f63f7b2"
+      },
+      "archive": {
+        "name": "omabit-032-archive.log",
+        "sha256": "ae8996ddb7f01d2b95c414f87c4918d1d43019921521f21ca964beb47a5849fb"
+      },
+      "preservation030-final": {
+        "name": "omabit-032-preservation030-final.log",
+        "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+      },
+      "preservation031-final": {
+        "name": "omabit-032-preservation031-final.log",
+        "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+      }
+    },
+    "ci": "Required source/race/QML/policy checks must pass before merge/publication."
+  },
+  "frozen_artifacts": {
+    "assets": [
+      {
+        "name": "omabit-0.3.2-linux-amd64.tar.gz",
+        "bytes": 31528081,
+        "sha256": "64c9e4e701efb131ccd73177c962f904901f164500accafab91c900f1cdbd03b"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 18076863,
+        "sha256": "5680d3d30856c7acfac23b1895ee2ca2e13125191f6c7d40018d2a005b517df7"
+      },
+      {
+        "name": "omabit-recommended-apps-0.3.2.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.3.2.tar.gz",
+        "bytes": 23282,
+        "sha256": "5932084d70ece7ad9ed5d02727a4f8f739500b8e588c9cf1b6a8258a36b3325d"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 12504414,
+        "sha256": "eff157a5c361331dd37982c94cae20fc87d79907492ea291c6eac54aded0bb35"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 26568120,
+        "sha256": "7ab550ca504000098d132ab2e35623d768f2b6eda66ac11ae029ce3e760ceb2a"
+      }
+    ],
+    "go_version": "go version go1.27.3 linux/amd64"
+  },
+  "scope_limits": [
+    "The host-specific long-lived-shell type resolution failure is not reproduced; the explicit missing registry entries are corrected and registration completeness is tested.",
+    "Real application profiles contain no runners or credentials. Enrollment preservation is covered by unchanged backend/bootstrap source and previous rehearsal, not a new live fleet migration.",
+    "Offscreen button tests use inert helper process fixtures; no new OS authorization or service installation is performed for this QML-only patch.",
+    "Qt may flush unchanged default preference fields on object destruction; assertions preserve every preexisting key/value rather than requiring identical INI bytes."
+  ],
+  "prior_qualification": "docs/releases/0.3.1/qualification.json",
+  "policy": "No schema, Go runtime, installer or authorization changes. Public artifacts remain immutable. All required protection checks must pass normally; no bypass."
+}
