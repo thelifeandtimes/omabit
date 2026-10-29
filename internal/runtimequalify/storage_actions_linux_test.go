@@ -295,3 +295,38 @@ func TestGuidedDestinationAndNamedImportInPlaceOrRename(t *testing.T) {
 		})
 	}
 }
+
+func TestExternalImportLargeSparsePierMovesWithoutRuntime(t *testing.T) {
+	f, s, persist, source := externalFixture(t)
+	name := filepath.Join(source, "synthetic-large-file")
+	file, err := os.OpenFile(name, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = file.Truncate(512 << 30); err != nil {
+		file.Close()
+		t.Fatal(err)
+	}
+	file.Close()
+	before, err := os.Stat(name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	reviewed, err := pierstore.InspectExternal(context.Background(), f.d.home, source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	s.ExternalImport.Source = reviewed
+	s.Adoption.Fingerprint = reviewed.Fingerprint
+	s, obs, err := applyManaged(context.Background(), "import-pier", s, persist, f.d)
+	if err != nil || obs.State != "stopped" || s.ExternalImport.Stage != "complete" {
+		t.Fatal(obs, err)
+	}
+	after, err := os.Stat(filepath.Join(managedPier(f, s), "synthetic-large-file"))
+	if err != nil || !os.SameFile(before, after) || after.Size() != 512<<30 {
+		t.Fatal("same-device import copied or truncated data", err)
+	}
+	if len(f.calls) != 0 {
+		t.Fatal("import dispatched runtime work")
+	}
+}

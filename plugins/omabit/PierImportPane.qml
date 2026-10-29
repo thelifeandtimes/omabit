@@ -13,6 +13,23 @@ Column {
   property var submission: null
   readonly property bool submitted: !!submission
   property alias sourcePath: source.text
+  signal imported()
+  onProgressChanged: Qt.callLater(finishImport)
+  onVisibleChanged: if (visible) Qt.callLater(finishImport)
+  Connections {
+    target: root.service
+    function onConnectionsChanged() { Qt.callLater(root.finishImport) }
+    function onBusyChanged() { if (!root.service.busy) Qt.callLater(root.finishImport) }
+  }
+  function finishImport() {
+    if (!visible || !submission || !service || service.busy) return false
+    var done=Model.completedImportTarget(service.connections,submission,service.now)
+    if (!done) return false
+    submission=null;source.text="";clearReview();location.selectRoot("default")
+    imported()
+    service.openMonitor(done.connection,done.instance,"overview")
+    return true
+  }
   readonly property string selection: connection ? connection.runner_id+"/"+connection.name : ""
   readonly property var review: service ? service.externalImportPreview : null
   readonly property bool supported: !!connection && Model.hasFeature(connection,"guided-pier-import")
@@ -48,7 +65,7 @@ Column {
   Label { width:parent.width;caption:true;secondary:true;visible:!root.localHost;text:"Enter the source path on the selected remote runner host." }
   StorageLocationSelector { id:location;width:parent.width;connection:root.connection;enabled:!root.submitted&&!root.service.busy;onEdited:root.clearReview() }
   ActionButton { objectName:"import-pier-review";text:root.inspecting ? "Inspecting pier…" : "Inspect pier";enabled:root.supported&&!root.service.busy&&!root.submitted&&Model.hostPath(source.text.trim());onClicked:root.inspect() }
-  Controls.ProgressBar { width:parent.width;visible:root.inspecting;indeterminate:true }
+  ProgressMeter { width:parent.width;visible:root.inspecting;indeterminate:true }
   Label { objectName:"import-pier-plan";width:parent.width;visible:root.current;text:root.plan ? root.plan.ship+" · "+(root.plan.network==="fakenet" ? "Fakenet" : "Livenet (Vere live mode)")+"\nInstance: "+root.plan.instance_id+" · HTTP "+root.plan.http_port+"\nDestination: "+Model.absolutePierPath(root.connection,root.plan.destination)+"\n"+root.plan.source.files+" files · "+Model.bytesText(root.plan.source.bytes)+(root.plan.in_place ? " · already in place" : "") : "" }
   Label { width:parent.width;caption:true;secondary:true;text:"Private Ethereum devnets are not available yet. This import detects fake/live mode, but does not verify a live pier's chain configuration." }
   CheckField { id:consent;objectName:"import-pier-consent";width:parent.width;text:root.plan && root.plan.in_place ? "This pier is stopped everywhere. Enroll it at this location." : "This pier is stopped everywhere. Move it to the reviewed location.";enabled:root.current&&!root.submitted&&!root.service.busy }
@@ -56,10 +73,10 @@ Column {
   Column {
     width:parent.width;spacing:Style.space(8);visible:root.submitted && !!root.outcome
     Label { objectName:"import-pier-progress-detail";width:parent.width;text:root.progress.detail }
-    Controls.ProgressBar { objectName:"import-pier-progress";width:parent.width;from:0;to:1;value:root.progress.value;indeterminate:root.progress.indeterminate }
+    ProgressMeter { objectName:"import-pier-progress";width:parent.width;value:root.progress.value;indeterminate:root.progress.indeterminate }
     Controls.ScrollView {
       width:parent.width;height:Style.space(140);visible:root.progress.log!==""
-      Controls.TextArea { objectName:"import-pier-steps";text:root.progress.log;textFormat:TextEdit.PlainText;readOnly:true;selectByMouse:true;wrapMode:TextEdit.Wrap;color:Design.ink;font.pixelSize:Style.space(13);background:Rectangle {color:Design.background;radius:Style.space(5)} }
+      Controls.TextArea { objectName:"import-pier-steps";text:root.progress.log;textFormat:TextEdit.PlainText;readOnly:true;selectByMouse:true;wrapMode:TextEdit.Wrap;color:Design.muted;font.family:Style.font.family;font.pixelSize:Style.font.caption;selectionColor:Design.accent;selectedTextColor:Design.background;padding:Style.space(10);background:Rectangle {color:Design.background;radius:Style.space(5)} }
     }
   }
   ActionButton { text:"Review another pier";quiet:true;visible:root.submitted;enabled:!root.service.busy&&!root.progress.active;onClicked:root.reviewAnother() }

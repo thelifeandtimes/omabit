@@ -21,11 +21,10 @@ import (
 	"unicode/utf8"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
-	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
 const MaxEntries = 8192
-const MaxBytes int64 = protocol.MaxPierBytes
+const MaxBytes int64 = pierstore.MaxLocalPierBytes
 const MaxDepth = 32
 
 type Summary struct {

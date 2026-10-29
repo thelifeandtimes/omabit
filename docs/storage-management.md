@@ -75,13 +75,20 @@ Open **Setup → Import a pier & storage locations → Import an existing pier�
    Review these read-only details; no identity/path/port transcription is required.
 5. Confirm the source is stopped everywhere and choose **Move and import pier**
    (or **Enroll stopped pier** if it is already in place).
-6. Follow the loading bar, copied-byte totals and durable step log. The imported pier remains
-   stopped. Choose Start explicitly; existing identity verification applies.
+6. Follow the themed loading bar, copied-byte totals and durable step log. On a
+   verified successful receipt, the form clears and opens that exact ship's
+   monitoring page. The imported pier remains stopped. Choose Start explicitly;
+   existing identity verification applies. Failed or uncertain attempts retain
+   their form and recovery details.
 
 There is no need to manually relocate the pier and then separately enroll it.
 The review is bound to the selected runner, source and destination. Source changes,
 duplicate claims, changed identities/networks, links, nested mounts, foreign/shared files and occupied targets
-are rejected. The current content bound is 100 GB / 8192 entries / depth 32.
+are rejected. Current source raises the local import content bound to **8 TiB
+(8,796,093,022,208 bytes)**; 8192 entries and depth 32 remain. This requires the
+updated runner and desktop; published0.3.2 still has the 100 GB local limit.
+No database/protocol migration is needed. Cross-host handoff remains limited to
+100 GB; a path on a remotely managed runner is still a local import on that host.
 
 Identity is read without booting Vere or opening a writable LMDB environment: a
 bounded reader follows only public `META` keys in the supported 64-bit little-endian
@@ -104,6 +111,14 @@ and destination content, then removes the held source. Same-filesystem moves req
 first by renaming the source into a private `.omabit-import-<id>/pier` holding
 directory alongside it. This avoids leaving the ordinary source path runnable
 while a target is being prepared.
+
+The transfer deadline is 30 minutes plus a size-derived allowance for five full
+reads and one write at an aggregate 20 MiB/s. Parent cancellation still applies.
+Copying uses bounded buffers, not pier-sized memory. Free-space admission counts
+logical bytes, so a sparse source can require more destination space than `du`
+reports. A 512 GiB sparse same-filesystem import is covered by the synthetic
+coordinator test; small real cross-filesystem copies cover verification/recovery.
+A full transfer above 100 GB has not been exercised.
 
 Progress is carried by the existing inventory connection. Phase receipts survive
 fast renames, and large-file copy updates are throttled rather than spawning new

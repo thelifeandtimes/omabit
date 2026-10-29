@@ -9,7 +9,7 @@ import shutil
 import subprocess
 
 ROOT=Path(__file__).resolve().parents[1]
-COMPONENTS=('Model.js','StorageLocationSelector.qml','SelectField.qml','Label.qml','Design.qml','PierImportPane.qml','ActionButton.qml','Field.qml','CheckField.qml','Hint.qml','ImportRecoveryPane.qml')
+COMPONENTS=('Model.js','StorageLocationSelector.qml','SelectField.qml','Label.qml','Design.qml','PierImportPane.qml','ProgressMeter.qml','ActionButton.qml','Field.qml','CheckField.qml','Hint.qml','ImportRecoveryPane.qml')
 METHODS=('previewExternalPier','rememberInspection','reconcileInspection','rememberImport','reconcileImports','storageConnection','importExternalPier','recoverImport','finish','clearEpochPreview','canMaintain','canSaveRoutine','canReviewTarget','invalidateEpochPreview','invalidateImportCatalogue')
 
 def method(source,name):
@@ -41,7 +41,8 @@ def main():
     fixture=prior[prior.index('  QtObject {\n    id: svc'):prior.index('  function check(')]
     fixture=fixture.replace('    property var externalImportPreview: null','    property var pendingExternalPreview: null\n    property var externalImportPreview: null')
     service=(ROOT/'plugins/omabit/Service.qml').read_text()
-    fixture=fixture.replace('@@SERVICE_METHODS@@','\n'.join(method(service,name) for name in METHODS))
+    fixture=fixture.replace('    id: svc','    id: svc\n    property var navigations: []\n    function openMonitor(c,i,page) { navigations=navigations.concat([{runner:c.runner_id,instance:i.id,page:page}]) }')
+    fixture=fixture.replace('@@SERVICE_METHODS@@' ,'\n'.join(method(service,name) for name in METHODS))
     fixture=fixture.replace('@@CONNECTIONS_CHANGED@@',re.search(r'^  onConnectionsChanged: .*$',service,re.M)[0])
     qml=(ROOT/'scripts/test-import-ui-offscreen.qml').read_text().replace('@@SERVICE_FIXTURE@@',fixture).replace('@@OUTPUT@@',json.dumps(str(directory)))
     (directory/'main.qml').write_text(qml)

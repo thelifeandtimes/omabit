@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENTS = ('HostedUrbitsPane.qml','Card.qml','Model.js','ApplicationConnections.qml','ApplicationsPane.qml','ActionButton.qml','SelectField.qml','Field.qml','CheckField.qml','Label.qml','Hint.qml','Design.qml')
+COMPONENTS = ('HostedUrbitsPane.qml','Card.qml','Model.js','ApplicationConnections.qml','ApplicationsPane.qml','ActionButton.qml','SelectField.qml','Field.qml','CheckField.qml','SwitchField.qml','Label.qml','Hint.qml','Design.qml')
 
 HELPER = r'''
 import json,sys

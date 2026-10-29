@@ -50,9 +50,11 @@ ShellRoot {
           test.check(!connections.connect(connections.plugins[0],connections.ships[0],false),"missing consent accepted")
           pane.showHosted();test.phase=10
         }else if(test.phase===10&&connections.fresh&&!service.busy){
-          control(hosted,"shipLoginCode").text="fixture-only-secret"
-          control(hosted,"hosted-login").clicked()
-          test.check(control(hosted,"shipLoginCode").text==="","code retained in field")
+          var shipId=connections.ships[0].id
+          control(hosted,"hosted-renew-"+shipId).clicked()
+          control(hosted,"hosted-code-"+shipId).text="fixture-only-secret"
+          control(hosted,"hosted-login-"+shipId).clicked()
+          test.check(control(hosted,"hosted-code-"+shipId).text==="","code retained in field")
           test.phase=11
         }else if(test.phase===11&&connections.fresh&&!service.busy){hosted.showApplications();test.phase=2
         }else if(test.phase===2&&connections.fresh&&!service.busy){
@@ -62,6 +64,12 @@ ShellRoot {
         }else if(test.phase===19&&connections.fresh&&!service.busy){
           test.check(!consent.checked&&!connect.enabled,"approval survived leaving the pane")
           pane.requestedPlugin="fixture.theme.auth-lab"
+          var title=control(pane,"apps-title-fixture.theme.auth-lab")
+          var titlePosition=title.mapToItem(pane,0,title.height/2)
+          var togglePosition=consent.mapToItem(pane,0,consent.height/2)
+          var buttonPosition=connect.mapToItem(pane,0,connect.height/2)
+          test.check(Math.abs(titlePosition.y-togglePosition.y)<2 && Math.abs(titlePosition.y-buttonPosition.y)<2,"title, toggle and button are not inline")
+          test.check(titlePosition.x+title.width<=togglePosition.x && togglePosition.x+consent.width<=buttonPosition.x && buttonPosition.x+connect.width<=pane.width,"application row overlaps or overflows")
           pane.grabToImage(function(result){test.captured=result.saveToFile(@@SNAPSHOT@@)})
           test.phase=20
         }else if(test.phase===20&&test.captured){

@@ -107,8 +107,8 @@ func TreeReview(ctx context.Context, path string, ownerMode ...bool) (string, in
 				docked[key] = links{st.Nlink, old.seen + 1, old.firstPath}
 			}
 			files++
-			if i.Size() < 0 || i.Size() > 100_000_000_000-bytes {
-				return errors.New("pier exceeds 100 GB")
+			if i.Size() < 0 || i.Size() > MaxLocalPierBytes-bytes {
+				return errors.New("pier exceeds the 8 TiB local import limit")
 			}
 			bytes += i.Size()
 		}

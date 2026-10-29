@@ -73,7 +73,7 @@ Column {
   Label { objectName: "storage-root-summary"; width: parent.width; visible: !root.provisioning; text: root.catalogue ? "Root: "+root.catalogue.root : "Select an updated runner."; caption: true; secondary: true }
   Label { width: parent.width; visible: !!root.connection && !Model.hasFeature(root.connection,"storage-locations"); text: "Update this runner to enable configurable locations, host-path import and pier deletion."; color: Design.warning }
   ActionButton { objectName: "open-pier-import"; visible: !root.provisioning; text: root.showImport ? "Close import form" : "+ Import an existing pier…"; primary: !root.showImport; onClicked: root.showImport=!root.showImport }
-  PierImportPane { id:importer;width: parent.width; service: root.service; connection: root.connection; visible: root.provisioning || root.showImport }
+  PierImportPane { id:importer;width: parent.width; service: root.service; connection: root.connection; visible: root.provisioning || root.showImport;onImported:root.showImport=false }
   ImportRestorePane { width:parent.width;service:root.service;connection:root.connection;onInspectRequested:function(path){if(importer.reviewAnother()){root.showImport=true;importer.sourcePath=path;importer.inspect()}} }
   ActionButton { objectName:"manage-storage-locations";text:root.showStorageLocations ? "Hide storage locations ▾" : "Manage storage locations ›";quiet:true;onClicked:root.showStorageLocations=!root.showStorageLocations }
   StorageRootsPane { width: parent.width; service: root.service; connection: root.connection;visible:root.showStorageLocations }

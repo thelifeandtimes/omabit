@@ -193,3 +193,12 @@ ignore it. Historical operation records remain evidence.
 
 Each pier's actual Urbit state remains in its own `.urb` directory. A management
 database backup is not a backup of those event logs/checkpoints.
+
+## Local import limit correction (current source)
+
+The polishing branch separates local import from the cross-host archive limit:
+local imports permit up to 8 TiB, with unchanged ownership, stopped-source,
+free-space and content-verification checks. Cross-host handoff remains 100 GB.
+Published0.3.2 still requires an update for this correction. See
+[storage management](storage-management.md#import-an-existing-pier-from-its-current-host-path)
+for progress, completion navigation, deadlines and qualification limits.

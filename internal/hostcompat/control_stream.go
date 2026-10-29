@@ -11,7 +11,10 @@ import (
 // slice of maps. Duplicate fields/oversized records still fail closed.
 func scanControl(r io.Reader, maxRecords int, fields map[string]bool, visit func(map[string]string) error) error {
 	s := bufio.NewScanner(r)
-	s.Buffer(make([]byte, 8192), 65538)
+	// Ubuntu Jammy includes unrelated Provides lines above 64 KiB. Match the
+	// existing 1 MiB field budget without retaining those fields. Security-
+	// relevant selected identity/hash/path values remain capped at 4096 bytes.
+	s.Buffer(make([]byte, 8192), (1<<20)+2)
 	values := map[string]string{}
 	seen := map[string]bool{}
 	key := ""
@@ -36,7 +39,7 @@ func scanControl(r io.Reader, maxRecords int, fields map[string]bool, visit func
 	}
 	for s.Scan() {
 		line := s.Text()
-		if len(line) > 65536 {
+		if len(line) > 1<<20 {
 			return errEvidence
 		}
 		if line == "" {

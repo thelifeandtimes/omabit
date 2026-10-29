@@ -114,6 +114,8 @@ ApplicationWindow {
         check(Object.keys(svc.importOutcomes).length===2,"new review discarded previous request")
         capture("complete");phase=8
       }else if(phase===8 && captured){
+        check(!form.submitted && form.sourcePath==="" && !consent.checked && svc.externalImportPreview===null,"successful import retained form or approval")
+        check(svc.navigations.length===1 && svc.navigations[0].runner==="runner-import-lab" && svc.navigations[0].instance==="friendly" && svc.navigations[0].page==="overview","successful import did not open its own monitor exactly once")
         console.log("CALLS "+JSON.stringify(svc.calls));console.log("PASS: guided import and recovery UI");Qt.quit()
       }
     }catch(error){console.error("FAIL: phase "+phase+" "+error.message+" "+error.stack);Qt.exit(1)}}

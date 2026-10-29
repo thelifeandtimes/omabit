@@ -130,3 +130,32 @@ replacement, daemon restart, pier operation or runner-database migration.
 The tested scope and private VM evidence are recorded in
 [the development verification report](diagnostics/2026-10-20-remote-onboarding.md).
 This is a 0.2.0 development feature, not a stable0.1.0 patch release.
+
+## Ubuntu source compatibility correction (current source)
+
+The2026-10-29 polishing pass fixes two verification failures observed on Ubuntu
+22.04 x86_64 (`rooftop`): standard separate main/restricted, universe and multiverse
+entries for one signed Release, and a valid 70 KB `Provides` field in the universe
+index. Component scopes merge only when URI, suite, architectures and signing-key
+authority agree. Unselected index fields permit up to 1 MiB; selected package
+identity/hash/path fields retain their 4096-byte bound. Signature, exact archive
+hash and installed executable checks remain required.
+
+Missing dependencies are listed for approval in the setup terminal before the
+native package manager runs. Installed-but-unverified packages are a different
+failure; the corrected error names them instead of implying they are missing.
+No repository/key additions or blanket system upgrade is performed.
+
+A retained **Resume setup** attempt intentionally keeps its original helper
+version. Installing a corrected desktop does not replace that helper. After a
+release containing these fixes, start **Connect another runner** with the same
+host/owner and a new Advanced connection name to create a new attempt. It still
+inspects installed management and requires the normal OS authorization; an
+existing runner is paired, never reset. Preserve the old attempt/key/journals.
+If installation had already created management state that cannot be inspected,
+review that state rather than deleting it to force a fresh install.
+
+On rooftop, the fixed verifier was exercised read-only against native cached APT
+indexes, signatures, archives and installed payloads. No package installation,
+receipt publication, runner installation or ship operation is implied by that
+check. See the [polishing report](diagnostics/2026-10-29-production-import-polish.md).

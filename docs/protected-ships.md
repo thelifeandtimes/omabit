@@ -25,6 +25,16 @@ Examples include `~dister-dozzod-sarlev`, `~master-dozzod-sarlev`,
 test moon is not an exception merely because it matches a familiar test pattern;
 its exact identity and disposition need explicit review.
 
+## Production import constraint — 2026-10-29
+
+The user is now importing production ships manually. `~lismyl-lismyl`, `~sarlev`,
+`~sarlev-sarsen`, `~tocwex` and **all of their moons** are protected, regardless of
+name prefixes or whether they look like test identities. Preserve the earlier
+`~pondeg` protection too. Do not import any user's ship on their behalf. Diagnose
+and qualify import changes with synthetic disposable fixtures only; no production
+pier reads, copies, moves, starts, stops or repairs. The tmux and `~/temp-ur`
+exclusions remain in force. This supersedes any historical reset/import permission.
+
 ## Current platform goal exclusions (2026-10-21)
 
 For this goal, `~lismyl-lismyl` is currently managed by Omabit and must remain

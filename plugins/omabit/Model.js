@@ -316,7 +316,7 @@ function currentImportRecovery(connection,instance,target,now) {
   return ["runner","connection","instance","revision","path","ship","source","holding"].every(function(key){return target[key]===current[key]})
 }
 function validatePierImportPreview(v,runner,path,root) {
-  if (!v || v.runner_id!==runner || !v.source || v.source.path!==path || !validDigest(v.source.fingerprint) || !Number.isSafeInteger(v.source.bytes) || v.source.bytes<0 || !Number.isInteger(v.source.files) || v.source.files<0 || v.source.files>8192 || v.storage_root!==root || !validId(v.instance_id) || !validPierPath(v.destination) || typeof v.ship!=="string" || !/^~[a-z-]+$/.test(v.ship) || ["livenet","fakenet"].indexOf(v.network)<0 || !Number.isInteger(v.http_port) || v.http_port<1024 || v.http_port>65535 || typeof v.in_place!=="boolean") throw new Error("Import review does not match the selected source, host and storage location.")
+  if (!v || v.runner_id!==runner || !v.source || v.source.path!==path || !validDigest(v.source.fingerprint) || !Number.isSafeInteger(v.source.bytes) || v.source.bytes<0 || v.source.bytes>8796093022208 || !Number.isInteger(v.source.files) || v.source.files<0 || v.source.files>8192 || v.storage_root!==root || !validId(v.instance_id) || !validPierPath(v.destination) || typeof v.ship!=="string" || !/^~[a-z-]+$/.test(v.ship) || ["livenet","fakenet"].indexOf(v.network)<0 || !Number.isInteger(v.http_port) || v.http_port<1024 || v.http_port>65535 || typeof v.in_place!=="boolean") throw new Error("Import review does not match the selected source, host and storage location.")
   var parts=v.destination.split("/"),location=parts[0][0]==="@" ? parts.shift().slice(1) : "default"
   if (location!==root || parts[parts.length-1]!==v.ship.slice(1) || parts[parts.length-2]!==v.instance_id || (v.network==="fakenet" ? v.kind!=="fake" || parts[0]!=="fakeships" : parts[0]!=="livenet" || parts[1]!==({galaxy:"galaxies",star:"stars",planet:"planets",moon:"moons",comet:"comets"})[v.kind])) throw new Error("Import identity and destination classification disagree.")
   return v
@@ -344,6 +344,15 @@ function importProgress(connections,target,now) {
   var log=events.map(function(e){return (e.at ? humanTime(e.at,now)+" · " : "")+importStage(e.stage)}).join("\n")
   if(failed)log+="\nImport stopped: "+String(op.message || "Inspect the recorded source and destination before retrying.").slice(0,512)
   return {active:!done&&!failed,indeterminate:!done&&!failed&&s.stage!=="copying",value:done ? 1 : ratio,detail:failed ? "Import needs review. Its recorded data has been retained." : done ? importStage("complete") : importStage(s.stage)+(s.stage==="copying" ? " · "+bytesText(s.copied_bytes || 0)+" / "+bytesText(s.total_bytes || 0) : ""),log:log}
+}
+function completedImportTarget(connections,target,now) {
+  if (!target || target.kind!=="import-pier") return null
+  var c=connections.filter(function(c){return c.runner_id===target.runner && c.name===target.connection})[0]
+  if (!available(c,now)) return null
+  var op=(c.snapshot.operations || []).filter(function(o){return o.kind==="import-pier" && o.status==="succeeded" && o.instance_id===target.instance && o.request_id===target.request && (!target.operation || o.id===target.operation) && (!target.revision || o.config_revision===target.revision)})[0]
+  if (!op) return null
+  var i=instances(c).filter(function(i){return i.id===target.instance && i.config_revision===op.config_revision && i.pier_path===target.path && i.ship===target.ship && i.external_import && i.external_import.source===target.source && i.external_import.stage==="complete"})[0]
+  return i ? {connection:c,instance:i} : null
 }
 function pierPath(kind,name,ship,input) {
   input=String(input || "").trim()
@@ -496,7 +505,7 @@ function importAvailable(connections, target, now) {
 function validImportSource(source) {
   return !!source && /^[0-9a-f]{32}$/.test(source.run_id || "") && validDigest(source.content_digest)
     && source.ship === "~zod" && Number.isInteger(source.files) && source.files > 0 && source.files <= 8192
-    && byteCount(source.bytes) && source.bytes <= 100000000000 && isFinite(Date.parse(source.qualified_at))
+    && byteCount(source.bytes) && source.bytes <= 8796093022208 && isFinite(Date.parse(source.qualified_at))
 }
 function importTarget(catalogue, source, name, port, now) {
   if (!catalogue || now-catalogue.loadedAt > 300000 || now < catalogue.loadedAt-5000 || !validImportSource(source) || source.claimed_by

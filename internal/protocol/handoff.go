@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-// MaxPierBytes is the logical content limit shared by stopped-pier copies and
-// host handoffs: 100 GB in decimal bytes. Framing has its own overhead allowance.
+// MaxPierBytes is the network host-handoff content limit: 100 GB in decimal
+// bytes. Local imports have a separate limit; framing has its own allowance.
 const MaxPierBytes int64 = 100_000_000_000
 const MaxHandoffBytes int64 = MaxPierBytes + (32 << 20)
 const HandoffHashHeader = "Urbit-Runner-Handoff-SHA256"

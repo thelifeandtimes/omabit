@@ -6746,3 +6746,47 @@ receipts remain evidence for that unchanged implementation; no new live-host
 migration or human password entry is claimed. The original production runner and
 engine PID/invocation pairs remain unchanged. Measured combined storage is about
 30.4GiB with the same18 unreadable overlay work entries, under the40GiB budget.
+
+
+## M490 — Production imports remain manual (2026-10-29)
+
+Status: current user constraint. The user is importing their live fleet into
+Omabit. Protect `~lismyl-lismyl`, `~sarlev`, `~sarlev-sarsen`, `~tocwex` and all
+of their moons, in addition to the prior protected identities. No agent-run live
+imports; qualify changes with synthetic fixtures. Existing tmux/temp-ur and DEV
+review-state exclusions remain. This supersedes historical live-import/reset
+permissions, not the user's ability to import manually through the product.
+
+The current polishing pass covers rooftop dependency verification, large local
+pier imports, themed progress, post-import navigation and compact application
+connection rows. Rooftop diagnostics are read-only and limited to OS/packages;
+no production runtime or package changes are implied.
+
+## M491 — Ubuntu verification and large local import correction (2026-10-29)
+
+Status: tested source on `codex/production-import-polish`; not published or
+installed. Extends M490, whose production/manual-import constraints remain current.
+See [the report](diagnostics/2026-10-29-production-import-polish.md).
+
+Rooftop's package error was not missing Docker dependencies: Ubuntu's separate
+component lines and an unrelated70,841-byte Provides field exceeded assumptions
+in our verifier. Merge only equivalent source/key/architecture authority and allow
+bounded1 MiB unselected fields; retain selected4096-byte fields and all signature,
+archive and executable checks. The fixed read-only native verifier passes all
+eight roles on rooftop. Missing-package installation retains its explicit terminal
+approval. This is not evidence of a completed remote installation or a native
+package transaction. Never replace an unfinished attempt's pinned helper silently.
+
+The old100 GB local import bound was inherited from cross-host handoff. Current
+source allows8 TiB locally, including a size-derived copy/verification deadline;
+the100 GB network handoff limit remains. No persistent format changed. A synthetic
+512 GiB same-filesystem import passes with no runtime call. Large full payload
+transfers remain unqualified; do not treat sparse tests as transfer throughput
+measurements. This supersedes the local100 GB statements in earlier source plans,
+not the behavior of already published0.3.2 or the handoff contract.
+
+Use explicit themed QML components for progress and one-row connection controls.
+Post-import navigation requires both the original successful operation and the
+fresh exact runner/connection/instance revision/path/ship/source. Keep failures
+and uncertain receipts available for recovery. Offscreen UI tests cover these
+bindings and narrow-width geometry without accessing production desktop controls.
