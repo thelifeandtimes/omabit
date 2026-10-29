@@ -1,3 +1,13 @@
+# 0.3.1 distribution checkpoint — October 29
+
+The [guided service update](guided-service-upgrades.md) uses frozen source
+`a13ca6787735f155ca2a9abf58c54098e010ac53`. Both requested upgrade rehearsals
+passed; [qualification](releases/0.3.1/qualification.json) records exact artifacts
+and limits. Publication is authorized; source/QML checks and the trusted-base
+policy transition gate release. Existing roadmap limits below remain.
+
+---
+
 # 0.3.0 release checkpoint — October 29
 
 Frozen candidate source: `ffb3f7c036af3d62220cd2610d77548900568c15`.
@@ -5,7 +15,7 @@ The [qualification record](releases/0.3.0/qualification.json) binds the actual
 published-binary upgrade rehearsal, artifact/CLI/native startup checks and their
 limits. Omabit0.3.0, Theme0.4.0 and DMs0.2.0 are published stable releases.
 The subsequent [guided service-update controls](guided-service-upgrades.md) are
-unreleased source work for the next minor release.
+included in the explicitly requested0.3.1 release.
 
 The active review uses the main desktop's separately labeled DEV plugins;
 [manual checks](native-dev-review.md) describe current state. The core candidate

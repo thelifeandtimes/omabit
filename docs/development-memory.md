@@ -6587,3 +6587,89 @@ retained. Final new-artifact disposable-host upgrade qualification remains open;
 installer changes belong in the next minor release. See
 [the workflow and validation limits](guided-service-upgrades.md). Security/privacy
 review remains open as recorded in M468; no wallet-grade assurance is claimed.
+
+
+## M484 — Requested 0.3.1 and first guided upgrade rehearsal (2026-10-29)
+
+Status: first exact-artifact guest passed; second mixed-desktop scenario pending.
+The user's explicit request for 0.3.1 supersedes M483's next-minor expectation
+for this one release. Protected PRs and review remain required; no publication
+is authorized before the rehearsal review. The trusted-base policy still needs
+a reviewed path for the exception before publication; changing head code alone
+cannot make that CI gate accept it.
+
+Candidate source `a13ca6787735f155ca2a9abf58c54098e010ac53` includes hash-checked
+reuse of the installed upstream launcher/legal bytes, with verified HTTPS fallback
+and newly rendered templates. It introduces no cache of untrusted executable
+content and does not execute installed scripts during preparation. Six local
+reuse/fallback cases, focused race/vet checks, 132 exact-binary offline help entries,
+archive/provenance/install checks, cold HTTPS preparation and real Qt/bootstrap
+regressions pass.
+
+The fresh offline `guided-upgrade-031-from020-01` guest used published0.2.0
+installer/collector and the genuine desktop archive. Its setup receipt was
+reconstructed from actual installer evidence and real old-collector SSH enrollment;
+the original desktop verified readiness. Actual QML buttons launched the sealed
+0.3.1 helper and real pkexec. Guest-only polkit denied once, then granted the exact
+retained installer. Retry, schema21→47, unchanged identity/settings/history/access,
+running engine/container continuity, stopped intent, current-version no-op, old
+reader refusal and final clean Stop passed. Whole-shell activation acknowledgements
+are driven by the harness; password entry and Omarchy rescan remain human checks.
+
+Generated disks were retired after poweroff, recovering 2,247,204,864 allocated
+bytes. Host/result/serial receipts and exact guest harness inputs remain. No host
+production or human DEV ships were used. M468's security/privacy follow-up remains
+open. This evidence supersedes M483's lack of live qualification for this first
+scenario only; it does not announce a released0.3.1.
+
+
+## M485 — Both guided upgrade paths passed; review pending (2026-10-29)
+
+Status: rehearsal complete, unpublished candidate. Supersedes M484's pending
+second scenario. The separate `guided-upgrade-031-from030-01` guest starts with
+published0.3.0 desktop and0.2.0 collector/runner. It passes the same real QML,
+pkexec denial/retry, schema21→47, process continuity, stopped intent, preserved
+access/settings/history, no-op recheck, old-reader refusal and final clean Stop
+assertions. Both cases used frozen source `a13ca6787735f155ca2a9abf58c54098e010ac53`.
+
+A test-only screenshot export read the retry PNG before Qt finished writing it.
+The guest's original result was successful; host screenshot postprocessing failed.
+The original serial result and offer/completion images were recovered without
+rerunning any ship action. The harness now waits for saveToFile acknowledgement
+and records upgrade results independently from optional screenshots. A separate
+networkless real-Qt capture check passes with zero helper dispatches. This is not
+a product upgrade failure and the missing retry image is not invented.
+
+The second guest's generated files were retired after poweroff (2,168,168,448
+allocated bytes); receipts, small logs and harness inputs remain. Measured shared
+usage after retirement is30.251GiB, with the same18 unreadable Docker overlay work
+entries excluded by ordinary-user du. Production service PID/invocation pairs
+remain3050/ad17500e2d604ec7841d9f352420739c and2166/b2932cedfac141648ae88a69e8c4c2b3.
+No production or human-review ship was used.
+
+Review artifacts: `docs/releases/0.3.1/rehearsal.json` and the compact local
+`release-0.3.1/rehearsal-01/REVIEW.html`. Real password entry and stock Omarchy
+update/rescan remain manual checks. Remote-runner GUI updates and arbitrary copied
+CLI binaries are outside this button. The GitHub master protection still requires
+source, qml-offscreen and release-policy, with admin enforcement. Its trusted-base
+minor-only code blocks a0.3.1 PR even though the head includes the requested narrow
+exception. This needs a separately reviewed policy transition before publication;
+no protection was changed and no release was created.
+
+
+## M486 — Authorized0.3.1 publication from rehearsed artifacts (2026-10-29)
+
+Status: distribution prepared; GitHub checks and policy transition pending.
+The user explicitly authorized publishing and chose live rehearsal afterward,
+superseding M485's publication-review wait. The release branch starts from the
+exact frozen source a13ca6787735f155ca2a9abf58c54098e010ac53; only documentation
+and native release pins follow it. The later test-harness improvements remain on
+codex/guided-service-upgrades and are not represented as tested runtime changes.
+Both small guest results are included with qualification. Existing binaries,
+archive and pill remain unchanged; metadata may attach qualification.
+
+This authorization does not itself remove the documented protected-master
+requirements. The trusted-base minor-only check still needs a narrow explicit
+transition before the release PR can merge. No host update is part of publishing;
+production ships, tmux and temp-ur remain outside this task. M468's privacy/security
+and wallet work remains open.

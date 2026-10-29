@@ -1,5 +1,8 @@
 # Upgrade to Omabit 0.3.0
 
+**For 0.3.1, use the [button-based local upgrade](guided-service-upgrades.md).**
+The command procedure below describes the older0.3.0 release.
+
 The [published qualification record](releases/0.3.0/qualification.json) identifies
 the frozen binaries and the completed non-destructive upgrade rehearsal.
 

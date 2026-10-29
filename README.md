@@ -1,6 +1,9 @@
 # Omabit
 
-**New in 0.3.0:** isolated fakeship project networks, independent application
+**New in 0.3.1:** update local services from **Setup → Local services & updates**,
+with OS authorization and retained retry. See the [button-based upgrade guide](docs/guided-service-upgrades.md).
+
+**Included from 0.3.0:** isolated fakeship project networks, independent application
 connections, simpler ship onboarding and lifecycle recovery improvements. Theme
 and DMs share the same native sign-in conventions. The verified bundle includes
 [CLI references](docs/cli/README.md), an [operator skill](skills/omabit-operator/SKILL.md)
@@ -18,23 +21,24 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Stable release:** [**0.3.0**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.3.0), a Linux/AMD64 release
+**Stable release:** [**0.3.1**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.3.1), a Linux/AMD64 release
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and support scope](docs/release-0.3.0.md),
-[0.1.0/0.2.0 upgrade guidance](docs/releases-0.3-upgrade.md),
+[release notes and support scope](docs/release-0.3.1.md),
+[0.2.0/0.3.0 upgrade guidance](docs/guided-service-upgrades.md),
 and [Recommended Apps pill provenance](docs/pill-release.md).
 
 **Channels:** `master` is protected, PR-only and reserved for stable minor/major
 releases. `edge` is opt-in bleeding-edge work, explicitly not stable. `develop` has
 no stability guarantee. See the [development/versioning policy](docs/development-policy.md)
 and [contributor guide](CONTRIBUTING.md), including explicit edge installation/update
-commands. Backend changes require a new minor or major release line.
+commands. Backend changes normally require a new minor or major release line;
+0.3.1 is an explicitly requested one-time exception.
 
 ## Historical release milestones
 
-The notes below describe earlier milestones; the0.3.0 release notes define current
-behavior and limits.
+The notes below describe earlier milestones; the0.3.1 and0.3.0 release notes
+define current behavior and limits.
 
 **RC.15** fixes first-time host setup on stock Omarchy by reusing existing
 OS-assigned user-namespace IDs without requiring a prior Omabit installation.
@@ -228,7 +232,6 @@ enrollment records and adds explicit recovery rather than requiring a fresh inst
 Historical development walkthroughs are under `docs/checkpoints/`; new installations
 should use the installation guide above.
 
-Unreleased platform work now includes [Application Connections](docs/application-connections.md):
-local helper discovery, explicit approval/recovery commands, and a tested offscreen
-panel. It is not installed or enabled in existing plugin installations. See the
-[checkpoint and remaining gates](docs/diagnostics/2026-10-21-approval-flow.md).
+Released [Application Connections](docs/application-connections.md) provides
+explicit plugin approval and recovery while each plugin talks directly to its ship.
+The dated development checkpoints record earlier experiments and their limits.

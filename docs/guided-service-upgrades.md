@@ -1,8 +1,8 @@
-# Guided local service updates (unreleased)
+# Guided local service updates — 0.3.1
 
-This workflow is implemented on `codex/guided-service-upgrades`, after the
-published 0.3.0 release. It requires the new matching desktop and runner bundle;
-updating only QML against the published 0.3.0 helpers does not enable it. The user has explicitly requested 0.3.1 for this installer change.
+Available in the matching **0.3.1** desktop and runner bundle. Updating only QML
+against older helpers does not enable this flow. Use the ordinary native plugin
+update, then the service-update button described below.
 
 ## Desktop flow
 
@@ -51,6 +51,26 @@ Both expose offline `--help`; the status command has no installation effects.
 `urbit-runner install-host --expected-runner-id ID` fences the existing host and
 accepts an unavailable manager only for a matching retained activation attempt.
 
+## Optional live rehearsal
+
+After the matching 0.3.1 plugin is installed on an owner-user host:
+
+1. Open **Setup → Local services & updates** and select **Check services**.
+   Confirm an update is offered for the existing local runner.
+2. Select **Update services** and cancel the OS password dialog once. The error
+   should leave the fleet available. Check again: the action should read
+   **Retry service update**.
+3. Retry, approve the OS prompt, and watch progress until verified completion.
+   Confirm the running ship is still usable and a stopped ship stays stopped.
+4. Check again. The panel should say the local services match this desktop bundle
+   and hide the update action. Reopen Omabit and confirm the same fleet appears.
+
+The native plugin supplies the matching Omabit/collector executables; the explicit
+button updates the local host runner. Separately copied command-line binaries and
+remote runners are not silently overwritten. Docker/OS package changes are outside
+this button. Review the real authentication dialog and Omarchy update/rescan on a
+disposable machine; automated guest authorization does not exercise human input.
+
 ## Validation and limits
 
 Fixture tests cover read-only status, verified no-op, cancellation, lost replies,
@@ -58,6 +78,10 @@ new desktop generations during retry, changed owner/access/target refusal, missi
 keys, readiness failure and the privileged identity fence. Real offscreen Qt tests
 exercise the buttons, progress, busy controls, error display, retry and DEV guard.
 The existing owner-installer and setup regressions pass, including race checks.
-These are source-level checks. A fresh disposable host upgrade with the final new
-release artifacts remains required before publishing 0.3.1;
-production ships are not upgrade-test fixtures.
+The frozen review candidate additionally passes both requested disposable-host
+paths: published0.2.0 desktop/services → 0.3.1, and published0.3.0 desktop with
+0.2.0 services → 0.3.1. Both preserve running engine/container processes and
+stopped intent through actual QML-button authorization denial and retained retry.
+See [the rehearsal evidence](releases/0.3.1/rehearsal.json) and memories M484/M485
+for fixture boundaries and the test-only screenshot-export correction. This does not claim coverage of remote upgrades, arbitrary copied CLI
+binaries, human password entry, power cuts or other OS/package stacks.
