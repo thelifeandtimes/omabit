@@ -1,5 +1,15 @@
 # Omabit release pill
 
+## 0.3.0 distribution
+
+0.3.0 retains and republishes the59,351,751-byte Recommended Apps pill pinned
+since RC.11 (hash below). It introduces no new app composition. The217,421,172-byte
+Vere4.6 standard bootstrap used in isolated project tests is a different artifact,
+not the Recommended Apps pill. New compact comet setup selects Recommended Apps
+by default; initialized ships never reapply a pill. The historical builder
+deadlines and initial selector behavior below are historical, not current scope.
+
+
 ## 0.1.0: choose an existing pill
 
 The automated pill builder is deferred to **0.2.0**. For 0.1.0 the user provides

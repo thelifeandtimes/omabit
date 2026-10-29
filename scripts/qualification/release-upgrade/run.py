@@ -52,8 +52,10 @@ def main():
   shutil.copytree(bundle,dest/'rootless-bundle')
  runtime=evidence/'2026-10-25-private-docker-code-cache/omabit-import-runtime-20261022-01'
  pill_hash=json.loads((a.candidate/'release.json').read_text())['pill']['sha256']
- assert digest(runtime/'boot.pill')==pill_hash
- for n in ('boot.pill','runtime.oci.tar'):os.link(runtime/n,payload/n)
+ pill=a.candidate/json.loads((a.candidate/'release.json').read_text())['pill']['name']
+ assert digest(pill)==pill_hash
+ os.link(pill,payload/'boot.pill')
+ os.link(runtime/'runtime.oci.tar',payload/'runtime.oci.tar')
  shutil.copy2(Path(__file__).parent/'guest.py',payload/'guest.py')
  disk=work/'payload.ext4'
  with disk.open('xb') as f:f.truncate(768*1024**2)

@@ -6329,3 +6329,16 @@ retained SHA2563942f405aea57d3879c6583d38681894e753f97ff418f23a34b1a521983edb6a.
 Companion PRs are Theme#1 (0.4.0) and DMs#1 (0.2.0); they remain unpublished.
 Retained test roots measured33.52GiB including the completed upgrade guest, below
 the40GiB ceiling.
+
+## M473 — Correct release pill identity before publication (2026-10-29)
+
+Status: active; supersedes any preparation claim that the217MB test pill is
+Recommended Apps. That file is the pinned standard Vere4.6 bootstrap. Current
+collector Recommended Apps pins still intentionally resolve the59,351,751-byte
+RC.11 asset, also published unchanged in0.1.0/0.2.0, SHA25685635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62.
+Candidate01/02 packaging mistakenly attached the standard pill under the
+Recommended Apps name. Neither was published. Replace them with a new frozen
+source/package that retains the existing Recommended Apps bytes and corrects
+the bundled installation guide. The upgrade harness now takes its pill from
+the exact candidate asset, avoiding this implicit lab-default mismatch. The
+previous passing upgrade result remains standard-bootstrap evidence only.
