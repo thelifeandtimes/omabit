@@ -1,6 +1,6 @@
-# Guided local service updates — 0.3.1
+# Guided local service updates
 
-Available in the matching **0.3.1** desktop and runner bundle. Updating only QML
+Available in matching **0.3.1 or later** desktop and runner bundles. Updating only QML
 against older helpers does not enable this flow. Use the ordinary native plugin
 update, then the service-update button described below.
 
@@ -8,7 +8,14 @@ update, then the service-update button described below.
 
 1. Update the Omabit plugin through Omarchy. Its verified bundle activates matching
    Omabit and collector tools together.
-2. Open **Omabit → Setup → Local services & updates**.
+2. In **0.3.2 or later**, open the Omabit menubar widget. It checks local service
+   versions and offers **Update Dependencies** when an update is needed. Select it
+   to open progress and begin the verified update; approve the OS prompt when shown.
+   A cancelled attempt remains visible for checking and retry. The notice clears
+   when installed services match.
+
+   The same controls are available under **Setup → Local services & updates**.
+   For this alternate route, continue below.
 3. In **Service updates**, choose **Check services**. This reads the existing
    local enrollment and executable metadata without downloading or installing.
 4. Choose **Update services** if offered. The panel shows progress while it
@@ -85,3 +92,15 @@ stopped intent through actual QML-button authorization denial and retained retry
 See [the rehearsal evidence](releases/0.3.1/rehearsal.json) and memories M484/M485
 for fixture boundaries and the test-only screenshot-export correction. This does not claim coverage of remote upgrades, arbitrary copied CLI
 binaries, human password entry, power cuts or other OS/package stacks.
+
+## Desktop activation recovery in0.3.2
+
+If0.3.1 reports “Candidate UI could not load; previous release retained,” update
+the plugin to0.3.2 through Omarchy. The new bundle explicitly registers the service
+update QML components. Normal activation retains enrollment and preferences; no
+ship reset or service reinstallation is needed to recover the desktop. A running
+old UI is a retained fallback, not evidence that underlying services were upgraded.
+
+The dependency notice handles the local Omabit runner, using the matching bundled
+CLI and collector. It does not update remote hosts, manually copied CLI binaries,
+OS packages or Vere. Opening the menubar only checks; it never installs automatically.

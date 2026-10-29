@@ -57,7 +57,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--require-quickshell", action="store_true")
     parser.add_argument("--application-assets", type=Path, help="also load the actual UI and binaries from a built development/release bundle")
+    parser.add_argument("--previous-application-assets", type=Path, help="activate this actual bundle first, then hot-upgrade in the same shell")
     args = parser.parse_args()
+    if args.previous_application_assets and not args.application_assets:
+        parser.error("previous application assets require target application assets")
     qs = shutil.which("quickshell")
     if not qs:
         if args.require_quickshell:
@@ -81,26 +84,32 @@ def main():
                 parser.error("actual Omarchy PanelWindow loading requires a Wayland session")
             env["WAYLAND_DISPLAY"] = display if display.startswith("/") else str(Path(os.environ["XDG_RUNTIME_DIR"]) / display)
             env["QT_QPA_PLATFORM"] = "wayland"
-        shutil.copytree(ROOT / "native", root / "native")
+        # Production's release cache is outside the shell configuration tree.
+        # Match that boundary here instead of relying on implicit discovery of
+        # QML types from the configuration tree. Registry completeness is checked
+        # separately; a cold fixture does not reproduce every live-shell cache.
+        configuration = root / "shell-config"
+        configuration.mkdir()
+        shutil.copytree(ROOT / "native", configuration / "native")
         for name in ("Commons", "Ui", "services"):
             stock = Path("/usr/share/omarchy/shell") / name
             if stock.exists():
-                (root / name).symlink_to(stock)
-        if not (root / "Commons").exists():
+                (configuration / name).symlink_to(stock)
+        if not (configuration / "Commons").exists():
             if args.application_assets:
                 parser.error("actual application qualification requires the installed stock Omarchy QML modules")
-            commons = root / "Commons"
+            commons = configuration / "Commons"
             commons.mkdir()
             (commons / "qmldir").write_text("singleton Style 1.0 Style.qml\nsingleton Color 1.0 Color.qml\n")
             (commons / "Style.qml").write_text('pragma Singleton\nimport QtQuick\nQtObject {function space(n){return n} property var font: ({family:"sans-serif"})}\n')
             (commons / "Color.qml").write_text('pragma Singleton\nimport QtQuick\nQtObject {property color foreground:"white"}\n')
         first_metadata, first_archive, pins = fixtures.bundle(root / "one", qml=APPLICATION)
-        pins_path = root / "native/bootstrap/release.json"
+        pins_path = configuration / "native/bootstrap/release.json"
         pins_path.write_text(json.dumps(pins))
         with patch.dict(os.environ, env, clear=True):
             desktop = fixtures.desktop.Desktop(pins_path)
             first = desktop.import_release(first_metadata, first_archive)["release"]
-        shell = root / "shell.qml"
+        shell = configuration / "shell.qml"
         shell.write_text('''import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -192,14 +201,20 @@ ShellRoot {
                 assert restarted["diagnostic"]["loaded_release"] == second
                 print("PASS: isolated fresh profile and selected release survive a real bootstrap process restart")
                 if args.application_assets:
-                    metadata = args.application_assets / "release.json"
-                    document = json.loads(metadata.read_text())
-                    archive = args.application_assets / ("omabit-" + document["version"] + "-linux-amd64.tar.gz")
                     with patch.dict(os.environ, env, clear=True):
-                        actual = desktop.import_release(metadata, archive)["release"]
                         desktop.create_profile("application")
-                        desktop.select("application", actual)
-                    loaded = wait(lambda r: r["diagnostic"]["profile"] == "application" and r["diagnostic"]["loaded_release"] == actual and r["widget_ready"])
+                    sequence = ([args.previous_application_assets] if args.previous_application_assets else []) + [args.application_assets]
+                    for assets in sequence:
+                        metadata = assets / "release.json"
+                        document = json.loads(metadata.read_text())
+                        archive = assets / ("omabit-" + document["version"] + "-linux-amd64.tar.gz")
+                        with patch.dict(os.environ, env, clear=True):
+                            actual = desktop.import_release(metadata, archive)["release"]
+                            desktop.select("application", actual)
+                        loaded = wait(lambda r: r["diagnostic"]["profile"] == "application" and r["diagnostic"]["loaded_release"] == actual and r["widget_ready"])
+                        assert loaded["diagnostic"]["loaded_version"] == document["version"]
+                    if args.previous_application_assets:
+                        print("PASS: actual previous-to-target bundle hot activation in the same shell process")
                     assert loaded["diagnostic"]["runners"] == 0 and loaded["environment"]["XDG_CONFIG_HOME"] != env["XDG_CONFIG_HOME"]
                     ipc("view", "setup", "runner-isolated/ship-test")
                     preference = Path(loaded["environment"]["XDG_STATE_HOME"]) / "omabit/panel.ini"

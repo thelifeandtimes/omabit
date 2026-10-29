@@ -1,0 +1,101 @@
+{
+  "version": "0.3.2",
+  "source_commit": "742e56ba968c4eb4544fae52c7eb41f31998d6df",
+  "passed": true,
+  "non_destructive": true,
+  "kind": "desktop-bundle-upgrade",
+  "previous_versions": [
+    "0.3.0",
+    "0.3.1"
+  ],
+  "target_bundle_sha256": "64c9e4e701efb131ccd73177c962f904901f164500accafab91c900f1cdbd03b",
+  "checks": [
+    "Actual packaged previous desktop and helpers load in private HOME/XDG roots using stock Omarchy QML modules.",
+    "Synthetic missing-type candidate retains the previous real desktop and existing preference values.",
+    "Actual target bundle hot-activates in the same process, clears failure and preserves every previously written preference value.",
+    "Actual target survives process restart and retains selected page and ship key.",
+    "No host enrollment, service or ship action is used."
+  ],
+  "harness": "docs/releases/0.3.2/desktop-upgrade-harness.py",
+  "harness_sha256": "13cf7903e3c23c60c37eb99a73beca431bc9ddbd17d69fffff905884df49eccf",
+  "logs": {
+    "native-tests": {
+      "name": "omabit-032-native-tests.log",
+      "sha256": "3432966ad85d2d232c082c465b86a36c9fadf3e8a0a3756b2b50efe91dcd78e1"
+    },
+    "bootstrap-tests": {
+      "name": "omabit-032-bootstrap-tests.log",
+      "sha256": "8be1aaaf4022ca497145585817ea8afb1355c036c6e07ecc5c76e638e24dfb64"
+    },
+    "panel-tests": {
+      "name": "omabit-032-panel-tests.log",
+      "sha256": "58a6dd72757d51cd5dc744b80f690e61110fd06af0537f498437662c7b83f3e6"
+    },
+    "host-tests": {
+      "name": "omabit-032-host-tests.log",
+      "sha256": "94b6c004e0e305d039f2a5be6d3a2cdcc0026da6d080c87f3cf1f96d5a3038f3"
+    },
+    "menubar-final": {
+      "name": "omabit-032-menubar-final.log",
+      "sha256": "41a85872561a7b413c54e158ddae4beecd8ebe0e6704b854057540add3526207"
+    },
+    "policy-tests": {
+      "name": "omabit-032-policy-tests.log",
+      "sha256": "2a44c7350f818059f7218fb373744929eb4a7017d3b3fc28e89ce3ff9f63f7b2"
+    },
+    "archive": {
+      "name": "omabit-032-archive.log",
+      "sha256": "ae8996ddb7f01d2b95c414f87c4918d1d43019921521f21ca964beb47a5849fb"
+    },
+    "preservation030-final": {
+      "name": "omabit-032-preservation030-final.log",
+      "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+    },
+    "preservation031-final": {
+      "name": "omabit-032-preservation031-final.log",
+      "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+    }
+  },
+  "unchanged_runtime": {
+    "compared_to": "a13ca6787735f155ca2a9abf58c54098e010ac53",
+    "paths": [
+      "cmd",
+      "backend",
+      "internal",
+      "deploy",
+      "go.mod",
+      "go.sum",
+      "scripts/install-panel.py",
+      "scripts/install-services.sh",
+      "native"
+    ],
+    "only_difference": "native/bootstrap/release.json (distribution pins)",
+    "schema": 47,
+    "prior_live_service_rehearsal": "docs/releases/0.3.1/rehearsal.json"
+  },
+  "limits": [
+    "The host-specific long-lived-shell type resolution failure is not reproduced; the explicit missing registry entries are corrected and registration completeness is tested.",
+    "Real application profiles contain no runners or credentials. Enrollment preservation is covered by unchanged backend/bootstrap source and previous rehearsal, not a new live fleet migration.",
+    "Offscreen button tests use inert helper process fixtures; no new OS authorization or service installation is performed for this QML-only patch.",
+    "Qt may flush unchanged default preference fields on object destruction; assertions preserve every preexisting key/value rather than requiring identical INI bytes."
+  ],
+  "production_baseline": {
+    "urbit-runner.service": {
+      "pid": 3050,
+      "invocation": "ad17500e2d604ec7841d9f352420739c"
+    },
+    "urbit-docker.service": {
+      "pid": 2166,
+      "invocation": "b2932cedfac141648ae88a69e8c4c2b3"
+    }
+  },
+  "storage": {
+    "measured_allocated_bytes": 32631836672,
+    "budget_bytes": 42949672960,
+    "unreadable_overlay_entries": 18,
+    "generated_candidates_retired": [
+      "candidate-01",
+      "candidate-02"
+    ]
+  }
+}

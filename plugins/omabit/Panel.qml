@@ -77,6 +77,11 @@ Ui.Panel {
             ActionButton { compact: true; quiet: true; text: "↻"; hint: "Refresh runner observations"; enabled: root.service && !root.service.busy; onClicked: root.service.refresh() }
             ActionButton { compact: true; text: root.pane === "fleet" ? "Setup" : "← Fleet"; onClicked: { root.pane = root.pane === "fleet" ? "setup" : "fleet"; scroll.contentY = 0 } }
           }
+          DependencyUpdateNotice {
+            objectName: "menubar-dependency-update"
+            width:parent.width;service:root.service;active:root.opened
+            onOpenRequested: { var s=root.service;root.close();if(s)Qt.callLater(function(){s.openSetup("local")}) }
+          }
           ActionButton { width: parent.width; visible: Model.discoveredPiers(root.connections).length>0; text: Model.discoveredPiers(root.connections).length+" discovered piers need enrollment or location review →"; onClicked: {root.pane="setup";setup.mode="storage";scroll.contentY=0} }
           Column {
             width: parent.width; spacing: Style.space(12); visible: root.pane === "fleet"

@@ -23,13 +23,16 @@ ApplicationWindow {
   property bool checkingSetup:false
   property bool remoteSetupBusy:false
   property int refreshes:0
+  property var localSetupStatus:({host_present:true,ready:true})
+  property var serviceUpgrade:controller
   function refresh(){refreshes++}
   function checkLocalSetup(){}
   function recordHelperExit(kind,status){test.check(status===0,"unexpected descendant outcome")}
   function themeCommand(args){return ["inert-helper","--format","json"].concat(args)}
  }
  Plugin.ServiceUpgrade {id:controller;service:hostService}
- Plugin.ServiceUpgradePane {id:pane;width:parent.width;updater:controller}
+ Plugin.ServiceUpgradePane {id:pane;width:parent.width;updater:controller;visible:test.phase<5}
+ Plugin.DependencyUpdateNotice {id:notice;width:parent.width;service:hostService;property int opens:0;onOpenRequested:opens++}
  Timer {
   interval:50;running:true;repeat:true
   onTriggered:{try {
@@ -66,6 +69,34 @@ ApplicationWindow {
      test.check(worker.running && controller.busy,"invalid output drains privileged child instead of killing reader")
      test.exit(0);test.check(!controller.status && !!controller.error,"malformed response cannot claim success")
      console.log("PASS: isolation and invalid-output recovery")
+     hostService.localSetupAllowed=false;notice.active=true
+     test.check(!notice.visible && !worker.running,"isolated profile has no dependency action")
+     hostService.activationEnabled=false;hostService.localSetupAllowed=true
+     test.check(!worker.running,"activation wait must not dispatch")
+     hostService.activationEnabled=true;break
+    case 5:
+     test.check(worker.running && worker.command[3]==="service-upgrade-status","menubar checks after activation becomes available")
+     test.line(test.offered);test.exit(0);break
+    case 6:
+     var button=find(notice,"menubar-update-dependencies")
+     test.check(notice.visible && button.enabled && button.text==="Update Dependencies","update is obvious in widget")
+     button.clicked();test.check(notice.opens===1 && worker.running && worker.command[3]==="service-upgrade","single widget action opens progress and updates")
+     test.check(!button.enabled && !controller.upgrade(),"widget cannot dispatch twice")
+     test.line({step:"upgrade",status:"failed",message:"Authorization cancelled"});test.exit(1);break
+    case 7:
+     test.check(notice.visible && !!controller.error,"widget retains cancelled update indication")
+     find(notice,"menubar-update-dependencies").clicked()
+     test.check(notice.opens===2 && worker.command[3]==="service-upgrade-status","failure action rechecks before retry")
+     test.line(Object.assign({},test.offered,{pending:true}));test.exit(0);break
+    case 8:
+     find(notice,"menubar-update-dependencies").clicked()
+     test.check(worker.command.indexOf(test.offered.target_sha256)>0,"widget retry binds original target")
+     test.line({step:"upgrade",status:"complete",message:"Ready",result:Object.assign({},test.offered,{available:false,pending:false})});test.exit(0);break
+    case 9:
+     test.check(!notice.visible && hostService.refreshes===2,"completed dependencies clear widget notice")
+     notice.active=false;hostService.localSetupStatus=({host_present:false,ready:false});notice.active=true
+     test.check(!notice.visible && !worker.running,"fresh host uses onboarding instead of update")
+     console.log("PASS: menubar status discovery, one-click update, retained retry and completion")
      Qt.quit();break
    }
   } catch(e){console.error(e);Qt.exit(1)}}

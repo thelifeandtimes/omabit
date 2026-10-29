@@ -57,3 +57,6 @@ ReaderLifecycle 1.0 ReaderLifecycle.qml
 ProjectCreation 1.0 ProjectCreation.qml
 ProjectCreatePane 1.0 ProjectCreatePane.qml
 ProjectCreationStatus 1.0 ProjectCreationStatus.qml
+ServiceUpgrade 1.0 ServiceUpgrade.qml
+ServiceUpgradePane 1.0 ServiceUpgradePane.qml
+DependencyUpdateNotice 1.0 DependencyUpdateNotice.qml

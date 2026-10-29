@@ -6696,3 +6696,53 @@ The user authorized changing the merge requirement after the legacy gate's
 bootstrap problem was explained. Apply the documented one-time transition only
 after all other checks pass and immediately restore full protection. Publication
 authorization remains active; production ships are untouched.
+
+
+## M488 — Explicit QML types and visible dependency updates (2026-10-29)
+
+Status: source fix; exact candidate qualification follows. The user's stock-shell
+0.3.0→0.3.1 update retained0.3.0 with `ServiceUpgradePane is not a type`. The
+published archive contains ServiceUpgrade.qml and ServiceUpgradePane.qml but
+omits both from qmldir. Register every shipped component explicitly and enforce
+registry completeness in CI. This supersedes any implication in M485–M487 that
+the isolated successful load covered every long-lived Omarchy shell update.
+Fresh and simple previous→new isolated loads of the old bundle still pass; the
+full host-specific resolution failure is not reproduced by that fixture.
+
+The new menubar notice performs a read-only local version check when opened and
+offers Update Dependencies. A verified offer starts the existing bound upgrade
+and opens local-service progress with OS authorization. Errors require a new
+check before retained retry; success hides the notice. Disabled host-setup
+profiles and fresh hosts do not offer a production update. No installer, Go,
+runner schema or authorization contract changes. Published0.3.1 stays immutable;
+the correction is prepared as0.3.2. No production service or ship was operated.
+
+## M489 —0.3.2 candidate desktop recovery qualification (2026-10-29)
+
+Status: frozen candidate742e56ba968c4eb4544fae52c7eb41f31998d6df; publication gates
+pending. Extends M488 with exact0.3.0→0.3.2 and0.3.1→0.3.2 packaged desktop tests,
+saved-value preservation after a synthetic missing-type failure, hot activation,
+cleared failure and restart. See releases/0.3.2/desktop-upgrade.json. The original
+host-only resolution failure remains unreplicated by cold/simple hot fixtures.
+The published0.3.1 payload is unchanged.
+
+The new menubar readiness check initially triggered a Qt binding loop during
+canStart notification; deferring it to the next event turn fixes it. Four button
+scenarios pass, including activation becoming available, denial/recheck/retained
+retry, double-dispatch protection and hiding after completion. Superseded payloads
+were removed; only small build diagnostics remain. The final bounded build peaked
+at867540992 allocated bytes. No new VM or ship was created.
+
+A preservation harness initially required identical INI bytes. Qt added unchanged
+empty machineUse/runners defaults on object destruction; all prior values were
+preserved. The corrected harness checks every old key/value and the actual loaded
+selection. Both paths pass. This test-only assertion correction is not a product
+migration failure and does not weaken preservation of any existing value.
+
+Go/runtime/installer/bootstrap implementation is identical to the0.3.1 frozen
+source; native release pins differ. The broader backend digest differs because
+release-governance code changed after that freeze. Earlier live service-upgrade
+receipts remain evidence for that unchanged implementation; no new live-host
+migration or human password entry is claimed. The original production runner and
+engine PID/invocation pairs remain unchanged. Measured combined storage is about
+30.4GiB with the same18 unreadable overlay work entries, under the40GiB budget.
