@@ -45,11 +45,12 @@ def validate_publication(target, previous, backend_changed, channel="stable"):
         raise ValueError("edge artifacts must use immutable -edge.N prerelease versions")
     if channel == "stable" and kind == "edge":
         raise ValueError("edge artifacts cannot be published as the stable channel")
-    if kind is None and new[2] != 0:
+    guided_exception = previous == "0.3.0" and target == "0.3.1" and channel == "stable"
+    if kind is None and new[2] != 0 and not guided_exception:
         raise ValueError("stable releases must be full minor/major versions X.Y.0")
     if new < old:
         raise ValueError("release version regressed")
-    if backend_changed and new[:2] <= old[:2]:
+    if backend_changed and new[:2] <= old[:2] and not guided_exception:
         # A new minor's RC/edge iterations may converge on that same upcoming
         # line. A UI patch line (nonzero patch) never grants this exception.
         if not (old_kind and old[2] == 0 and new == old):
@@ -59,9 +60,10 @@ def validate_publication(target, previous, backend_changed, channel="stable"):
 def validate_master_promotion(previous, target, head_branch):
     old, old_kind, _ = version(previous)
     new, kind, _ = version(target)
-    if kind is not None or new[2] != 0:
+    guided_exception = previous == "0.3.0" and target == "0.3.1"
+    if kind is not None or new[2] != 0 and not guided_exception:
         raise ValueError("master accepts only stable minor/major releases X.Y.0")
     if head_branch != "release/" + target:
         raise ValueError("master changes must come through the matching release/X.Y.0 PR")
-    if not (new[:2] > old[:2] or old_kind == "rc" and new == old):
+    if not (guided_exception or new[:2] > old[:2] or old_kind == "rc" and new == old):
         raise ValueError("master cannot receive a same-version or patch-only update")

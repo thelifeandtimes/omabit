@@ -102,3 +102,12 @@ stable guarantee. Explicit profile pins remain explicit across channel changes.
 To return to stable, use `omabit-channel.py switch stable`. Returning to a stable
 desktop does not downgrade an installed runner database. Use isolated profiles and
 disposable guests for experiments involving incompatible state.
+
+## Explicit 0.3.1 exception (2026-10-29)
+
+The user explicitly requested 0.3.1 for guided service upgrades, including its
+installer changes. This supersedes the minor-only rule for 0.3.0 → 0.3.1 only.
+Protected PR review, frozen artifacts, migration qualification and no direct
+master pushes remain required. Publication waits for the user's rehearsal review.
+The trusted-base CI policy must receive this reviewed exception before the final
+release PR can pass; do not bypass or weaken that workflow.

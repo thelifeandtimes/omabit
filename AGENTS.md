@@ -60,3 +60,12 @@ The user requested durable development memories with explicit supersession. Keep
 stable decision IDs, date, evidence and status; link replacement decisions rather
 than silently rewriting history. Distinguish hypotheses, failed experiments and
 qualified behavior. Never store credentials in these notes.
+
+## Explicit 0.3.1 exception (2026-10-29)
+
+The user explicitly requested 0.3.1 for guided service upgrades, including its
+installer changes. This supersedes the minor-only rule for 0.3.0 → 0.3.1 only.
+Protected PR review, frozen artifacts, migration qualification and no direct
+master pushes remain required. Publication waits for the user's rehearsal review.
+The trusted-base CI policy must receive this reviewed exception before the final
+release PR can pass; do not bypass or weaken that workflow.

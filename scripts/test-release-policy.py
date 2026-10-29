@@ -26,6 +26,17 @@ class ReleasePolicyTests(unittest.TestCase):
         validate_publication("0.2.0-edge.2", "0.2.0-edge.1", True, "edge")
         validate_publication("0.2.0", "0.2.0-edge.2", True, "stable")
 
+    def test_explicit_guided_upgrade_exception_is_narrow(self):
+        validate_publication("0.3.1", "0.3.0", True, "stable")
+        validate_master_promotion("0.3.0", "0.3.1", "release/0.3.1")
+        for previous, target in (("0.2.0", "0.3.1"), ("0.3.1", "0.3.2"), ("0.3.0", "0.3.2")):
+            with self.assertRaises(ValueError):
+                validate_publication(target, previous, True, "stable")
+            with self.assertRaises(ValueError):
+                validate_master_promotion(previous, target, "release/" + target)
+        with self.assertRaises(ValueError):
+            validate_master_promotion("0.3.0", "0.3.1", "codex/topic")
+
     def test_channels_and_stable_patch_zero_are_enforced(self):
         for target, channel in (("0.1.1", "stable"), ("0.2.0", "edge"), ("0.2.0-edge.1", "stable"), ("0.2.0-edge.1", "develop")):
             with self.subTest(target=target, channel=channel), self.assertRaises(ValueError):

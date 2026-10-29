@@ -585,3 +585,57 @@ func TestRenderedAssetsAndShellSyntax(t *testing.T) {
 		t.Fatalf("daemon config: %q, %v", data, err)
 	}
 }
+
+func TestPreparationReusesOnlyPinnedInstalledUpstream(t *testing.T) {
+	requireNonRoot(t)
+	for _, kind := range []string{"valid", "changed", "missing", "symlink", "oversize", "directory"} {
+		t.Run(kind, func(t *testing.T) {
+			parent := t.TempDir()
+			installed := filepath.Join(parent, "installed")
+			os.Mkdir(installed, 0700)
+			for _, name := range []string{"dockerd-rootless.sh", "LICENSE", "NOTICE"} {
+				data, _ := upstreamFixtures.ReadFile("assets/upstream/" + name)
+				if err := os.WriteFile(filepath.Join(installed, name), data, 0600); err != nil {
+					t.Fatal(err)
+				}
+			}
+			launcher := filepath.Join(installed, "dockerd-rootless.sh")
+			switch kind {
+			case "changed":
+				os.WriteFile(launcher, []byte("changed"), 0600)
+			case "missing":
+				os.Remove(launcher)
+			case "symlink":
+				os.Rename(launcher, launcher+".real")
+				os.Symlink(launcher+".real", launcher)
+			case "oversize":
+				os.WriteFile(launcher, make([]byte, maxDownloadBytes+1), 0600)
+			case "directory":
+				os.Remove(launcher)
+				os.Mkdir(launcher, 0700)
+			}
+			requests := 0
+			client := fixtureClient(t, func(req *http.Request, resp *http.Response) (*http.Response, error) {
+				requests++
+				if req.URL.String() != launcherURL {
+					t.Errorf("unexpected cache miss: %s", req.URL)
+				}
+				return resp, nil
+			})
+			output := filepath.Join(parent, "bundle")
+			if _, err := prepareFrom(context.Background(), output, client, installed); err != nil {
+				t.Fatal(err)
+			}
+			want := 1
+			if kind == "valid" {
+				want = 0
+			}
+			if requests != want {
+				t.Fatalf("requests=%d want=%d", requests, want)
+			}
+			if _, err := VerifiedFiles(output); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}

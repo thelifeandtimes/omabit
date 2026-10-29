@@ -2,8 +2,7 @@
 
 This workflow is implemented on `codex/guided-service-upgrades`, after the
 published 0.3.0 release. It requires the new matching desktop and runner bundle;
-updating only QML against the published 0.3.0 helpers does not enable it. Installer
-changes target the next minor release under the repository's release policy.
+updating only QML against the published 0.3.0 helpers does not enable it. The user has explicitly requested 0.3.1 for this installer change.
 
 ## Desktop flow
 
@@ -13,7 +12,8 @@ changes target the next minor release under the repository's release policy.
 3. In **Service updates**, choose **Check services**. This reads the existing
    local enrollment and executable metadata without downloading or installing.
 4. Choose **Update services** if offered. The panel shows progress while it
-   downloads and verifies the pinned rootless launcher dependencies, then asks for
+   verifies the pinned rootless launcher dependencies (reusing matching installed
+   upstream files, or downloading them when missing/changed), then asks for
    OS authorization to update the existing owner installation.
 5. Wait for verified completion and the refreshed fleet. A cancelled or interrupted
    attempt offers **Retry service update** after **Check services**. Retrying keeps
@@ -59,5 +59,5 @@ keys, readiness failure and the privileged identity fence. Real offscreen Qt tes
 exercise the buttons, progress, busy controls, error display, retry and DEV guard.
 The existing owner-installer and setup regressions pass, including race checks.
 These are source-level checks. A fresh disposable host upgrade with the final new
-release artifacts remains required before publishing the next minor release;
+release artifacts remains required before publishing 0.3.1;
 production ships are not upgrade-test fixtures.
