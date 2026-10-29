@@ -19,7 +19,7 @@ import (
 // Project fleet observations reuse retained creation contracts. They are read-only
 // and ephemeral: polling does not append a journal or confer lifecycle authority.
 func ReadProjectFleet(ctx context.Context, s ProjectCurrentReadinessSelection) ([]protocol.Instance, error) {
-	e, snap, err := projectFleetSnapshot(ctx, s)
+	e, snap, err := projectFleetSnapshotWithDependencies(ctx, s, fleetObservationDependencies(defaults()))
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,11 @@ func projectFleetRows(ctx context.Context, s ProjectCurrentReadinessSelection, e
 }
 
 func projectFleetSnapshot(ctx context.Context, s ProjectCurrentReadinessSelection) (*projectCurrentReadinessEngine, projectMemberSnapshot, error) {
-	raw, err := OpenCurrentProjectReadiness(ctx, s)
+	return projectFleetSnapshotWithDependencies(ctx, s, defaults())
+}
+
+func projectFleetSnapshotWithDependencies(ctx context.Context, s ProjectCurrentReadinessSelection, d dependencies) (*projectCurrentReadinessEngine, projectMemberSnapshot, error) {
+	raw, err := openCurrentProjectReadiness(ctx, s, d)
 	if err != nil {
 		return nil, projectMemberSnapshot{}, err
 	}

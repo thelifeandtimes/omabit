@@ -6502,3 +6502,23 @@ binding, with unchanged production implementation. UI stays0.3.0-dev.review1;
 Theme/DMs use the matching cohesion generation. Production and personal-message
 baselines remain unchanged. Broader security/privacy and wallet work remain open
 under M468; functional sessions are not malicious same-UID plugin isolation.
+
+## M480 — Bound native package evidence to a fleet display response (2026-10-29)
+
+Status: active; supersedes M479's candidate06 release-readiness claim. No release
+has been published. Final idle-CPU observation found the DEV manager consuming
+about80–90% of one core. A read-only profile of the two existing DEV project
+fleets attributed70% of samples to repeated native-package inspection. Copied
+SQLite metadata reads took milliseconds; neither pier copying nor history growth
+caused this issue.
+
+Fleet display now shares one native-package inspection within each project
+response. It retains every engine identity, namespace, container, HTTP identity,
+storage and containment check. No report survives a response; login-code and
+mutation entry points keep independent admission. Tests cover concurrent reads,
+changed engine evidence, new-response invalidation and unchanged mutation refusal.
+The same read-only DEV observation fell from2.36 to0.54 sampled CPU seconds
+(3.04 to2.41 seconds elapsed, including telemetry waits). This is a bounded
+measurement, not a general performance guarantee. Candidate07 must rebuild and
+repeat exact-artifact and upgrade gates before publication. Production services,
+DEV container processes and personal message history were not changed by diagnosis.

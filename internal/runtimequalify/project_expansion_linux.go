@@ -60,11 +60,11 @@ func SeedProjectExpansion(s ProjectCurrentReadinessSelection) (ProjectExpansion,
 	return out, nil
 }
 
-func expansionEngine(ctx context.Context, s ProjectExpansion) (*projectCurrentReadinessEngine, error) {
+func expansionEngineWithDependencies(ctx context.Context, s ProjectExpansion, d dependencies) (*projectCurrentReadinessEngine, error) {
 	if s.Version != 1 || s.Anchor.Validate(s.Project.Plan) != nil || s.Anchor.Phase != "observed" {
 		return nil, errors.New("invalid project expansion anchor")
 	}
-	raw, err := openProjectAnchorStart(ctx, s.Project, s.Anchor.Prepared, defaults())
+	raw, err := openProjectAnchorStart(ctx, s.Project, s.Anchor.Prepared, d)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +115,11 @@ func expansionContract(a *projectAnchorEngine, s ProjectExpansion, m ProjectExpa
 	return newProjectMemberContract(selection, a.base.q.d.home, filepath.Dir(path), a.base.contract.ImageID)
 }
 func expansionSnapshot(ctx context.Context, s ProjectExpansion) (*projectCurrentReadinessEngine, projectMemberSnapshot, error) {
-	e, err := expansionEngine(ctx, s)
+	return expansionSnapshotWithDependencies(ctx, s, defaults())
+}
+
+func expansionSnapshotWithDependencies(ctx context.Context, s ProjectExpansion, d dependencies) (*projectCurrentReadinessEngine, projectMemberSnapshot, error) {
+	e, err := expansionEngineWithDependencies(ctx, s, d)
 	if err != nil {
 		return nil, projectMemberSnapshot{}, err
 	}
@@ -126,7 +130,7 @@ func expansionSnapshot(ctx context.Context, s ProjectExpansion) (*projectCurrent
 	return e, snap, err
 }
 func ReadExpandedProjectFleet(ctx context.Context, s ProjectExpansion) ([]protocol.Instance, error) {
-	e, before, err := expansionSnapshot(ctx, s)
+	e, before, err := expansionSnapshotWithDependencies(ctx, s, fleetObservationDependencies(defaults()))
 	if err != nil {
 		return nil, err
 	}
