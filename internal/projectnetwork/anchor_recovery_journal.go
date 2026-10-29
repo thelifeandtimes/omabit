@@ -2,7 +2,6 @@ package projectnetwork
 
 import (
 	"errors"
-	"reflect"
 	"slices"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
@@ -217,7 +216,7 @@ func (j AnchorRecoveryJournal) Advance(h AnchorRecoveryHistory, expected uint64,
 		return fail()
 	}
 	// Update carries a payload only; it has no authority to change header fields.
-	if !reflect.DeepEqual(update.IDs, RecoveryJournalIDs{}) || update.Phase != "" || update.Sequence != 0 || update.payloads() > 1 {
+	if !equalEvidence(update.IDs, RecoveryJournalIDs{}) || update.Phase != "" || update.Sequence != 0 || update.payloads() > 1 {
 		return fail()
 	}
 	next := AnchorRecoveryJournal{IDs: j.IDs, Phase: phase, Sequence: j.Sequence + 1}
@@ -277,7 +276,7 @@ func (j AnchorRecoveryJournal) Advance(h AnchorRecoveryHistory, expected uint64,
 		}
 		v, e := NewAnchorReplacement(h, *j.Retirement, j.IDs.Replacement, update.Replacement.Members)
 		err = e
-		if !reflect.DeepEqual(v, *update.Replacement) {
+		if !equalEvidence(v, *update.Replacement) {
 			return fail()
 		}
 		next.Replacement = &v
@@ -288,7 +287,7 @@ func (j AnchorRecoveryJournal) Advance(h AnchorRecoveryHistory, expected uint64,
 		err = exactRecoveryReplacementTransition(h, *j.Replacement, *update.Replacement)
 		next.Replacement = update.Replacement
 	case j.Phase == "replacing" && phase == "complete":
-		if update.Readiness == nil || !reflect.DeepEqual(update.Readiness.Replacement, *j.Replacement) {
+		if update.Readiness == nil || !equalEvidence(update.Readiness.Replacement, *j.Replacement) {
 			return fail()
 		}
 		next.Readiness = update.Readiness
@@ -318,7 +317,7 @@ func exactRecoveryDrainTransition(h AnchorRecoveryHistory, old, next AnchorDrain
 		o = m.After
 	}
 	want, err := old.Advance(h, i, old.Sequence, m.Phase, o)
-	if err != nil || !reflect.DeepEqual(want, next) {
+	if err != nil || !equalEvidence(want, next) {
 		return bad
 	}
 	return nil
@@ -331,7 +330,7 @@ func exactRecoveryNamespaceTransition(h AnchorRecoveryHistory, old, next AnchorN
 		o = next.After
 	}
 	want, err := old.Advance(h, old.Sequence, next.Phase, o)
-	if err != nil || !reflect.DeepEqual(want, next) {
+	if err != nil || !equalEvidence(want, next) {
 		return errors.New("namespace journal transition differs from retained intent")
 	}
 	return nil
@@ -350,7 +349,7 @@ func exactRecoveryRetirementTransition(h AnchorRecoveryHistory, old, next Anchor
 		o = m.After
 	}
 	want, err := old.Advance(h, i, old.Sequence, m.Phase, o)
-	if err != nil || !reflect.DeepEqual(want, next) {
+	if err != nil || !equalEvidence(want, next) {
 		return bad
 	}
 	return nil
@@ -374,7 +373,7 @@ func exactRecoveryReplacementTransition(h AnchorRecoveryHistory, old, next Ancho
 		result.Observation = m.After
 	}
 	want, err := old.Advance(h, i, old.Sequence, m.Phase, result)
-	if err != nil || !reflect.DeepEqual(want, next) {
+	if err != nil || !equalEvidence(want, next) {
 		return bad
 	}
 	return nil

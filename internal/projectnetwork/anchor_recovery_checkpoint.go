@@ -1,7 +1,5 @@
 package projectnetwork
 
-import "reflect"
-
 type recoveryCheckpointParts struct {
 	review      *AnchorRecoveryReview
 	drain       *AnchorDrain
@@ -55,18 +53,18 @@ func checkpointStepBefore(old, current string, phases []string) bool {
 // pier, immutable contract, dispatch and acknowledgement must still be present.
 // It never changes the head or infers an acknowledgement omitted by either record.
 func RecoveryJournalContainsCheckpoint(h AnchorRecoveryHistory, head, old AnchorRecoveryJournal) bool {
-	if head.Validate(h) != nil || old.Validate(h) != nil || !reflect.DeepEqual(head.IDs, old.IDs) || old.Sequence > head.Sequence || recoveryPhaseRank(old.Phase) > recoveryPhaseRank(head.Phase) {
+	if head.Validate(h) != nil || old.Validate(h) != nil || !equalEvidence(head.IDs, old.IDs) || old.Sequence > head.Sequence || recoveryPhaseRank(old.Phase) > recoveryPhaseRank(head.Phase) {
 		return false
 	}
 	if old.Sequence == head.Sequence {
-		return reflect.DeepEqual(head, old)
+		return equalEvidence(head, old)
 	}
 	p := recoveryParts(head)
 	switch old.Phase {
 	case "review-planned", "reviewing":
 		return true
 	case "reviewed":
-		return p.review != nil && reflect.DeepEqual(*p.review, *old.Review)
+		return p.review != nil && equalEvidence(*p.review, *old.Review)
 	case "draining":
 		return p.drain != nil && drainContainsCheckpoint(*p.drain, *old.Drain)
 	case "namespace":
@@ -99,11 +97,11 @@ func drainContainsCheckpoint(head, old AnchorDrain) bool {
 			c.After = nil
 		}
 	}
-	return reflect.DeepEqual(head, old)
+	return equalEvidence(head, old)
 }
 func namespaceContainsCheckpoint(head, old AnchorNamespace) bool {
 	if old.Phase == "observed" {
-		return reflect.DeepEqual(head, old)
+		return equalEvidence(head, old)
 	}
 	if head.Phase == "planned" && old.Phase != "planned" || old.StartAcknowledged && !head.StartAcknowledged {
 		return false
@@ -118,7 +116,7 @@ func namespaceContainsCheckpoint(head, old AnchorNamespace) bool {
 	if old.After == nil {
 		head.After = nil
 	}
-	return reflect.DeepEqual(head, old)
+	return equalEvidence(head, old)
 }
 func retirementContainsCheckpoint(head, old AnchorRetirement) bool {
 	if len(head.Members) != len(old.Members) {
@@ -140,7 +138,7 @@ func retirementContainsCheckpoint(head, old AnchorRetirement) bool {
 			c.After = nil
 		}
 	}
-	return reflect.DeepEqual(head, old)
+	return equalEvidence(head, old)
 }
 func replacementContainsCheckpoint(head, old AnchorReplacement) bool {
 	if len(head.Members) != len(old.Members) {
@@ -168,5 +166,5 @@ func replacementContainsCheckpoint(head, old AnchorReplacement) bool {
 			c.After = nil
 		}
 	}
-	return reflect.DeepEqual(head, old)
+	return equalEvidence(head, old)
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"reflect"
 	"slices"
 	"time"
 
@@ -60,7 +59,7 @@ func (r CurrentMemberReadiness) Validate(plan Plan, launches []MemberLaunch, res
 }
 func (r CurrentMemberReadiness) validateContext(plan Plan, c MemberContext) error {
 	fail := func() error { return errors.New("invalid current member readiness evidence") }
-	if r.CapturedAt.IsZero() || r.InstanceID != c.Member.InstanceID || r.CreatorOperationID != c.Member.OperationID || r.ContainerGeneration != c.Member.Generation || !reflect.DeepEqual(r.Binding, c.Binding) || r.Storage != c.Storage {
+	if r.CapturedAt.IsZero() || r.InstanceID != c.Member.InstanceID || r.CreatorOperationID != c.Member.OperationID || r.ContainerGeneration != c.Member.Generation || !equalEvidence(r.Binding, c.Binding) || r.Storage != c.Storage {
 		return fail()
 	}
 
@@ -78,7 +77,7 @@ func (r CurrentMemberReadiness) validateContext(plan Plan, c MemberContext) erro
 	}
 	before := cloneMemberStopObservation(r.Before)
 	before.CapturedAt, before.Runtime.ObservedAt = r.After.CapturedAt, r.After.Runtime.ObservedAt
-	if !reflect.DeepEqual(before, r.After) {
+	if !equalEvidence(before, r.After) {
 		return fail()
 	}
 	return nil

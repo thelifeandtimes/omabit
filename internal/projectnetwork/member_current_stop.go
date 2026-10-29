@@ -2,7 +2,6 @@ package projectnetwork
 
 import (
 	"errors"
-	"reflect"
 	"slices"
 )
 
@@ -51,7 +50,7 @@ func ValidateCurrentMemberStop(plan Plan, launches []MemberLaunch, resumes []Mem
 	baseline.Phase = "planned"
 	baseline.Before = nil
 	baseline.After = nil
-	if err != nil || !reflect.DeepEqual(expected, baseline) {
+	if err != nil || !equalEvidence(expected, baseline) {
 		return fail()
 	}
 	if retained.Before != nil && (!retained.Before.StartedAt.Equal(ready.After.StartedAt) || retained.Before.CapturedAt.Before(ready.After.CapturedAt) || retained.Before.Runtime.ObservedAt.Before(ready.After.Runtime.ObservedAt)) {

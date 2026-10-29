@@ -133,7 +133,7 @@ func (s MemberStop) checkObservation(plan Plan, o MemberStopObservation, stopped
 		}
 		return nil
 	}
-	if s.Before == nil || o.StartedAt != s.Before.StartedAt || o.FinishedAt.IsZero() || o.FinishedAt.Before(o.StartedAt) || o.FinishedAt.Before(s.Before.CapturedAt.Add(-5*time.Second)) || o.FinishedAt.After(o.CapturedAt.Add(5*time.Second)) || o.ExitCode < 0 || o.ExitCode > 255 || o.CapturedAt.Before(s.Before.CapturedAt) || o.Runtime.ObservedAt.Before(s.Before.Runtime.ObservedAt) {
+	if s.Before == nil || !o.StartedAt.Equal(s.Before.StartedAt) || o.FinishedAt.IsZero() || o.FinishedAt.Before(o.StartedAt) || o.FinishedAt.Before(s.Before.CapturedAt.Add(-5*time.Second)) || o.FinishedAt.After(o.CapturedAt.Add(5*time.Second)) || o.ExitCode < 0 || o.ExitCode > 255 || o.CapturedAt.Before(s.Before.CapturedAt) || o.Runtime.ObservedAt.Before(s.Before.Runtime.ObservedAt) {
 		return fail()
 	}
 	expected := cloneReadinessObservation(s.Before.Runtime)

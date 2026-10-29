@@ -2,7 +2,6 @@ package projectnetwork
 
 import (
 	"errors"
-	"reflect"
 )
 
 type RecoveryObservationTarget struct {
@@ -99,7 +98,7 @@ func RecoveryJournalObservedTransition(h AnchorRecoveryHistory, before, after An
 		return fail()
 	}
 	expected, err := before.Advance(h, before.Sequence, after.Phase, update)
-	if err != nil || !reflect.DeepEqual(expected, after) {
+	if err != nil || !equalEvidence(expected, after) {
 		return fail()
 	}
 	return nil

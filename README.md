@@ -1,9 +1,10 @@
 # Omabit
 
-**New in 0.2.0:** [guided remote-runner setup](docs/remote-runner-setup.md)
-uses an existing SSH login, provisions a dedicated restricted management key, and
-verifies unattended access before enrollment. It supports pairing existing runners
-and approved fresh-host installation through the same workflow.
+**New in 0.3.0:** isolated fakeship project networks, independent application
+connections, simpler ship onboarding and lifecycle recovery improvements. Theme
+and DMs share the same native sign-in conventions. The verified bundle includes
+[CLI references](docs/cli/README.md), an [operator skill](skills/omabit-operator/SKILL.md)
+and a [plugin-development skill](skills/omabit-plugin-developer/SKILL.md).
 
 A local Urbit fleet for Omarchy: run ships with the official Vere runtime, monitor
 them from the desktop, and manage maintenance without keeping terminal sessions open.
@@ -17,10 +18,11 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Stable release:** [**0.2.0**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.2.0), a Linux/AMD64 release
+**Stable release:** [**0.3.0**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.3.0), a Linux/AMD64 release
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and support scope](docs/release-0.2.0.md),
+[release notes and support scope](docs/release-0.3.0.md),
+[0.1.0/0.2.0 upgrade guidance](docs/releases-0.3-upgrade.md),
 and [Recommended Apps pill provenance](docs/pill-release.md).
 
 **Channels:** `master` is protected, PR-only and reserved for stable minor/major
@@ -28,6 +30,11 @@ releases. `edge` is opt-in bleeding-edge work, explicitly not stable. `develop` 
 no stability guarantee. See the [development/versioning policy](docs/development-policy.md)
 and [contributor guide](CONTRIBUTING.md), including explicit edge installation/update
 commands. Backend changes require a new minor or major release line.
+
+## Historical release milestones
+
+The notes below describe earlier milestones; the0.3.0 release notes define current
+behavior and limits.
 
 **RC.15** fixes first-time host setup on stock Omarchy by reusing existing
 OS-assigned user-namespace IDs without requiring a prior Omabit installation.

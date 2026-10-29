@@ -6342,3 +6342,33 @@ source/package that retains the existing Recommended Apps bytes and corrects
 the bundled installation guide. The upgrade harness now takes its pill from
 the exact candidate asset, avoiding this implicit lab-default mismatch. The
 previous passing upgrade result remains standard-bootstrap evidence only.
+
+## M474 — UTC recovery portability and bounded complete race gates (2026-10-29)
+
+Status: active release qualification; supersedes M472's single45-minute managed
+race plan. That run completed276 top-level tests without a reported assertion or
+race, then hit its cumulative deadline. It is not a passing complete gate. CI now
+partitions the executable managed test inventory by stable name hash into four
+non-overlapping groups; the required source check depends on every group and the
+other source checks. Every discovered test is assigned exactly once. Normal tests
+explicitly run in UTC with a30-minute package budget.
+
+Public CI identified recovery journal failures that local Pacific-time tests did
+not show. `TZ=UTC` reproduced them. Structural time.Time equality incorrectly gave
+Go timezone/monotonic metadata authority over persisted timestamps. The project
+recovery comparisons now compare instants while preserving exact other fields,
+including nil/empty distinctions. Direct process start comparisons use time.Equal.
+Regression tests cover UTC/east/west JSON reopen, exact historical checkpoints,
+nanosecond changes, ownership, acknowledgement and slice differences. No stored
+bytes, schema or journals are rewritten. A source-archive CLI replay fixture also
+stops requiring Git VCS stamping; release provenance remains separately checked.
+
+Candidate03/source49ada1 passed the actual Recommended Apps upgrade guest with
+published0.1.0/0.2.0 tools, schema21→47, running/stopped intent and runtime process
+continuity. It remains unpublished and is superseded for release by these fixes;
+new frozen artifacts must pass the final gates. The older standard-pill overlays
+were retired only after success, inactive scope and open-file checks, retaining
+compact results/hash receipts. User review disks, DEV piers and production remain
+untouched. Theme/DMs PRs merged after passing CI; release drafts remain unpublished.
+Authentication functionality is qualified separately from the still-open broader
+security/privacy audit and wallet key custody work (M468).

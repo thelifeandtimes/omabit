@@ -3,7 +3,6 @@ package projectnetwork
 import (
 	"context"
 	"errors"
-	"reflect"
 	"slices"
 	"time"
 
@@ -64,7 +63,7 @@ func SelectAnchorRecoveryContext(plan Plan, launches []MemberLaunch, resumes []M
 	prefixes := make([]prefix, len(ready))
 	current, err := resolveMemberGenerations(plan, launches, resumes, func(g MemberGenerationSet, through []MemberResume) {
 		for i, r := range ready {
-			if reflect.DeepEqual(g.Binding, r.Binding) {
+			if equalEvidence(g.Binding, r.Binding) {
 				v := g
 				v.Binding.Members = slices.Clone(g.Binding.Members)
 				v.Members = slices.Clone(g.Members)
@@ -198,7 +197,7 @@ func (r AnchorRecoveryReview) Validate(plan Plan, launches []MemberLaunch, resum
 }
 func (r AnchorRecoveryReview) validateContext(plan Plan, c AnchorRecoveryContext) error {
 	fail := func() error { return errors.New("invalid anchor recovery review") }
-	if !reflect.DeepEqual(c, r.Context) {
+	if !equalEvidence(c, r.Context) {
 		return fail()
 	}
 
@@ -207,7 +206,7 @@ func (r AnchorRecoveryReview) validateContext(plan Plan, c AnchorRecoveryContext
 		return fail()
 	}
 	after, err := checkAnchorRecoveryObservation(plan, c, r.After, r.CapturedAt)
-	if err != nil || !reflect.DeepEqual(before, after) || !reflect.DeepEqual(after, r.Assessment) {
+	if err != nil || !equalEvidence(before, after) || !equalEvidence(after, r.Assessment) {
 		return fail()
 	}
 	if r.After.CapturedAt.Before(r.Before.CapturedAt) || r.After.Runtime.ObservedAt.Before(r.Before.Runtime.ObservedAt) {
@@ -240,7 +239,7 @@ func (r AnchorRecoveryReview) validateContext(plan Plan, c AnchorRecoveryContext
 	}
 	sortObservation(&expected)
 	sortObservation(&actual)
-	if !reflect.DeepEqual(expected, actual) {
+	if !equalEvidence(expected, actual) {
 		return fail()
 	}
 	return nil

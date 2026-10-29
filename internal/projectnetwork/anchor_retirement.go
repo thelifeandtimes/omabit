@@ -3,7 +3,6 @@ package projectnetwork
 import (
 	"context"
 	"errors"
-	"reflect"
 	"slices"
 	"time"
 
@@ -134,7 +133,7 @@ func (s AnchorRetirement) checkObservation(index int, o AnchorRetirementObservat
 			expected.Processes = slices.DeleteFunc(expected.Processes, func(v AnchorDrainProcess) bool { return v.InstanceID == m.InstanceID })
 		}
 	}
-	if !reflect.DeepEqual(sortedRetirementObservation(expected), sortedRetirementObservation(o)) {
+	if !equalEvidence(sortedRetirementObservation(expected), sortedRetirementObservation(o)) {
 		return fail()
 	}
 	if index > 0 {

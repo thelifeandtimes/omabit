@@ -3,7 +3,6 @@ package projectnetwork
 import (
 	"context"
 	"errors"
-	"reflect"
 	"slices"
 	"time"
 
@@ -109,7 +108,7 @@ func (s AnchorReplacement) checkObservation(index int, o AnchorRetirementObserva
 		expected.Runtime.Members = append(expected.Runtime.Members, member)
 		expected.Processes = append(expected.Processes, AnchorDrainProcess{InstanceID: m.Creation.InstanceID, Storage: m.Creation.Storage, Process: state})
 	}
-	if !reflect.DeepEqual(sortedRetirementObservation(expected), sortedRetirementObservation(o)) {
+	if !equalEvidence(sortedRetirementObservation(expected), sortedRetirementObservation(o)) {
 		return fail()
 	}
 	return nil
@@ -129,7 +128,7 @@ func (s AnchorReplacement) Validate(h AnchorRecoveryHistory) error {
 	var sequence uint64
 	for i, m := range s.Members {
 		expected, err := recoveryMemberCreationFromValidatedRetirement(h, r, m.Creation.InstanceID, m.Creation.OperationID)
-		if m.Creation.InstanceID != r.Members[i].InstanceID || err != nil || !reflect.DeepEqual(m.Creation, expected) || usedOps[m.Creation.OperationID] || !digestPattern.MatchString(m.Container.ContractDigest) {
+		if m.Creation.InstanceID != r.Members[i].InstanceID || err != nil || !equalEvidence(m.Creation, expected) || usedOps[m.Creation.OperationID] || !digestPattern.MatchString(m.Container.ContractDigest) {
 			return fail()
 		}
 		usedOps[m.Creation.OperationID] = true

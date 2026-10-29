@@ -3,7 +3,6 @@ package projectnetwork
 import (
 	"context"
 	"errors"
-	"reflect"
 	"slices"
 	"time"
 )
@@ -67,7 +66,7 @@ func checkRecoveryReadinessObservation(s AnchorReplacement, o AnchorRetirementOb
 	expected.Runtime.ObservedAt = o.Runtime.ObservedAt
 	// Compare every process, including the last replacement. Creation's running
 	// transition deliberately permits that member's first start; readiness must not.
-	if !reflect.DeepEqual(sortedRetirementObservation(expected), sortedRetirementObservation(o)) {
+	if !equalEvidence(sortedRetirementObservation(expected), sortedRetirementObservation(o)) {
 		return fail()
 	}
 	return nil
@@ -81,7 +80,7 @@ func ValidateRecoveryReadinessObservation(h AnchorRecoveryHistory, s AnchorRepla
 func (r AnchorRecoveryReadiness) Validate(h AnchorRecoveryHistory) error {
 	fail := func() error { return errors.New("invalid complete recovery readiness evidence") }
 	b, err := RecoveredRuntimeBinding(h, r.Replacement)
-	if err != nil || !reflect.DeepEqual(b, r.Binding) || len(r.Members) != len(r.Replacement.Members) || r.CapturedAt.IsZero() {
+	if err != nil || !equalEvidence(b, r.Binding) || len(r.Members) != len(r.Replacement.Members) || r.CapturedAt.IsZero() {
 		return fail()
 	}
 	for _, o := range []AnchorRetirementObservation{r.Before, r.After} {

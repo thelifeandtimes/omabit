@@ -3,7 +3,6 @@ package projectnetwork
 import (
 	"context"
 	"errors"
-	"reflect"
 	"slices"
 	"time"
 
@@ -61,7 +60,7 @@ func sameNamespaceObservation(expected, actual AnchorDrainObservation) bool {
 	}
 	slices.SortFunc(expected.Processes, less)
 	slices.SortFunc(actual.Processes, less)
-	return reflect.DeepEqual(expected, actual)
+	return equalEvidence(expected, actual)
 }
 func (s AnchorNamespace) checkBefore(o AnchorDrainObservation, now time.Time) error {
 	last := s.Drain.Members[len(s.Drain.Members)-1].After

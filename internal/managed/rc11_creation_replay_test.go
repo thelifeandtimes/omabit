@@ -371,7 +371,9 @@ func TestRC11CreationReplaySchema19UpgradeAndCollectorCLI(t *testing.T) {
 	bin := filepath.Join(t.TempDir(), "collector")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-	build := exec.CommandContext(ctx, "go", "build", "-o", bin, "../../backend/cmd/urbit-collector")
+	// This fixture tests CLI replay, including from an exported source archive.
+	// Release provenance is checked separately by the artifact packaging tests.
+	build := exec.CommandContext(ctx, "go", "build", "-buildvcs=false", "-o", bin, "../../backend/cmd/urbit-collector")
 	if out, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("collector build: %v %s", err, out)
 	}

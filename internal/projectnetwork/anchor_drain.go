@@ -3,7 +3,6 @@ package projectnetwork
 import (
 	"context"
 	"errors"
-	"reflect"
 	"slices"
 	"time"
 
@@ -209,10 +208,10 @@ func (s AnchorDrain) checkObservation(h AnchorRecoveryHistory, index int, o Anch
 	actual := cloneReadinessObservation(o.Runtime)
 	sortRecoveryMembers(&expected)
 	sortRecoveryMembers(&actual)
-	if !reflect.DeepEqual(expected, actual) || !recoveryAnchorProcessValid(o.AnchorProcess, o.Runtime.Anchor.Running, o.CapturedAt) {
+	if !equalEvidence(expected, actual) || !recoveryAnchorProcessValid(o.AnchorProcess, o.Runtime.Anchor.Running, o.CapturedAt) {
 		return fail()
 	}
-	if s.Members[0].Before != nil && o.AnchorProcess != s.Members[0].Before.AnchorProcess {
+	if s.Members[0].Before != nil && !equalEvidence(o.AnchorProcess, s.Members[0].Before.AnchorProcess) {
 		return fail()
 	}
 	if index > 0 && (s.Members[index-1].After == nil || o.CapturedAt.Before(s.Members[index-1].After.CapturedAt) || o.Runtime.ObservedAt.Before(s.Members[index-1].After.Runtime.ObservedAt)) {
@@ -229,7 +228,7 @@ func (s AnchorDrain) checkObservation(h AnchorRecoveryHistory, index int, o Anch
 				original = p
 			}
 		}
-		if original.InstanceID == "" || got.Storage != original.Storage || got.Process.StartedAt != original.StartedAt {
+		if original.InstanceID == "" || got.Storage != original.Storage || !got.Process.StartedAt.Equal(original.StartedAt) {
 			return fail()
 		}
 		switch {
@@ -238,7 +237,7 @@ func (s AnchorDrain) checkObservation(h AnchorRecoveryHistory, index int, o Anch
 				return fail()
 			}
 			old, ok := drainProcess(*m.After, m.InstanceID)
-			if !ok || got != old || !recoveryProcessValid(got.Process, false, o.CapturedAt) {
+			if !ok || !equalEvidence(got, old) || !recoveryProcessValid(got.Process, false, o.CapturedAt) {
 				return fail()
 			}
 		case i == index && exited:

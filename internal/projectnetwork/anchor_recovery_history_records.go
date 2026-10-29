@@ -2,7 +2,6 @@ package projectnetwork
 
 import (
 	"errors"
-	"reflect"
 	"slices"
 	"strings"
 )
@@ -53,12 +52,12 @@ func AssembleRecoveryHistory(root AnchorRecoveryHistory, resumes []MemberResume,
 	h := root
 	for i, r := range ordered {
 		source := r.Source
-		if len(source.Epochs) != i || !reflect.DeepEqual(source.Plan, root.Plan) || !reflect.DeepEqual(source.Launches, root.Launches) || !reflect.DeepEqual(source.Originals, root.Originals) || !reflect.DeepEqual(source.Epochs, h.Epochs) {
+		if len(source.Epochs) != i || !equalEvidence(source.Plan, root.Plan) || !equalEvidence(source.Launches, root.Launches) || !equalEvidence(source.Originals, root.Originals) || !equalEvidence(source.Epochs, h.Epochs) {
 			return fail()
 		}
 		for _, s := range source.Resumes {
 			actual, ok := remaining[s.OperationID]
-			if !ok || !reflect.DeepEqual(actual, s) {
+			if !ok || !equalEvidence(actual, s) {
 				return fail()
 			}
 			delete(remaining, s.OperationID)
