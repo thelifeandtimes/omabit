@@ -55,8 +55,9 @@ observation, schema47 downgrade refusal and manager restart. Native startup and
 activation recovery, package checks, all130 offline CLI help entries and the
 five skill-package checks passed. UTC recovery regressions and the complete Go
 suite pass; the source gate also requires all four managed-state race groups.
-Earlier development evidence includes57 simulated CLI workflow commands, paired
-native UI renders, and DEV lifecycle, maintenance and direct transport checks.
+The final binaries also pass57 simulated CLI workflow commands. Paired native
+UI renders and DEV lifecycle, maintenance and direct transport checks are retained
+with their exact source identities.
 
 A final UTC portability fix preserves timestamp instants across journal JSON
 reopen without accepting changed ownership or acknowledgements. The qualification

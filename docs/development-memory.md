@@ -6423,3 +6423,33 @@ all groups remain required. Generated completed upgrade disks were retired with
 hashes/results; retained visible allocation is30.78GiB (rootless work directories
 have restricted ordinary-user visibility), below the40GiB ceiling with ample
 headroom. Production, user review disks and all DEV piers remain preserved.
+
+## M477 — Final0.3.0 artifacts and exact upgrade evidence (2026-10-29)
+
+Status: final distribution prepared; protected PR checks still gate publication.
+Supersedes M476's pending rebuild and M475's artifact source. Frozen source
+`d859ebfa33116b753eb4e1d103221e60b09c4597` produced candidate05. Its correct
+Recommended Apps pill, package/provenance/install checks, actual native startup
+and recovery,130 offline help entries,57 workflow commands across six simulated
+tasks and all three govulncheck scans pass. Eight unpublished draft downloads
+match exactly. Final runtimequalify race passed476.425seconds; repeated deadline
+fixtures passed. All four managed race groups passed on the preceding runtime
+source; the corrected source and distribution must still pass every required gate.
+
+The final isolated guest passes the actual published0.1.0→0.2.0→0.3.0 path,
+schema21→47, repeat activation, old-client observation, old-reader refusal,
+manager restart, running process continuity and stopped intent. Its ships stopped
+cleanly and the guest powered off. Host receipt records31.91GiB visible retained
+allocation after the run, below40GiB; the run stayed inside its4GiB scratch cap.
+Compact evidence and hashes are retained; completed generated disks are eligible
+for retirement after final publication. User review disks and DEV piers remain.
+
+Only DEV managers received final binaries. All6 existing container process
+identities survived activation. Candidate04's lifecycle/metrics/identity evidence
+remains explicitly bound to its source; production implementation is identical
+to candidate05 (only a deadline test and documentation differ). UI remains
+0.3.0-dev.review1 with the cohesive Theme/DMs DEV generation. Production manager
+and engine retain October21 start times, and the personal outbound journal digest
+is unchanged. Broader security/privacy qualification remains open under M468;
+functional authentication tests do not establish wallet custody or malicious
+same-UID plugin isolation.

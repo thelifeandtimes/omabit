@@ -1,5 +1,17 @@
 # Stable-release upgrade requirement
 
+## Qualified0.3.0 support window
+
+The0.3.0 [qualification](releases/0.3.0/qualification.json) and
+[upgrade guide](releases-0.3-upgrade.md) supersede the historical unreleased
+qualification status in the dated sections below. The actual published-binary
+0.1.0→0.2.0→0.3.0 path is qualified on the documented Linux/AMD64 owner-user
+stack. Users on0.1.0 should take0.2.0 first. Schema21→47 preserves existing
+state and refuses older writers. Expanded project recovery and other explicitly
+listed experimental capabilities remain outside this release guarantee.
+
+## Original stable upgrade contract
+
 The user requires seamless upgrades from the proper **0.1.0 stable release** to
 future supported versions. Treat this as a release gate, not a post-release task.
 The current repeated fresh-install exercises are development qualification only.
