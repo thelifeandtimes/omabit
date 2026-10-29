@@ -11,6 +11,8 @@ created=False
 def run(args,owner=False,timeout=90,ok=True):
  args=[str(a) for a in args]
  if owner:args=['runuser','-u','review','--','env','HOME=/home/review','XDG_RUNTIME_DIR=/run/user/1000','DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus','PATH=/usr/bin:/bin',*args]
+ if 'snapshot' not in args and 'hello' not in args:
+  print('UPGRADE_STEP '+json.dumps(args),flush=True)
  r=subprocess.run(args,capture_output=True,text=True,timeout=timeout)
  with (O/'commands.jsonl').open('a') as f:f.write(json.dumps({'args':args,'exit':r.returncode,'out':r.stdout[-16000:],'err':r.stderr[-16000:]})+'\n')
  if ok and r.returncode:raise RuntimeError('Command failed: '+' '.join(args)+'\n'+r.stderr[-1000:])
@@ -94,6 +96,7 @@ def main():
   assert before==after, 'identity, settings, intended state or operation history changed'
   assert runtime_before==runtime(version), 'engine or running ship restarted'
   report['steps'].append({'version':version,'preserved':True,'schema':db_projection()['schema']})
+  print('UPGRADE_PRESERVED '+version,flush=True)
   # Old clients must still read compatible observation endpoints.
   assert collector('0.1.0','snapshot')['runner_id']==before['runner_id']
   assert collector('0.2.0','snapshot')['runner_id']==before['runner_id']
@@ -118,7 +121,11 @@ if __name__=='__main__':
  if os.geteuid()!=0 or not Path('/sys/class/dmi/id/sys_vendor').exists() or Path('/sys/class/dmi/id/sys_vendor').read_text().strip()!='QEMU' or 'omabit.disposable-guest=release-upgrade-v1' not in Path('/proc/cmdline').read_text().split():
   raise SystemExit('Refused: requires the explicitly provisioned offline release guest')
  try:main()
- except Exception as exc:report['error']=str(exc)[:3000]
+ except Exception as exc:
+  report['error']=str(exc)[:3000]
+  if created:
+   diagnostic=subprocess.run(['journalctl','--no-pager','-n','30','-u','user@1000.service'],capture_output=True,text=True,timeout=15)
+   print('UPGRADE_DIAGNOSTIC '+diagnostic.stdout[-8000:],flush=True)
  finally:
   if created:(O/'report.json').write_text(json.dumps(report,indent=2)+'\n')
   print('OMABIT_RELEASE_UPGRADE_RESULT '+json.dumps(report),flush=True)

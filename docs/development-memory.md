@@ -6297,3 +6297,35 @@ mounts and a4GiB scratch cap. This is a release-machine test, not a return to VM
 manual UX review. Protected ships, personal outbound journals and production
 services remain excluded. The new stable upgrade guide separates desktop update
 from explicit management activation and refuses incompatible downgrade shortcuts.
+
+## M472 — Published-binary upgrade rehearsal and final release freeze (2026-10-29)
+
+Status: active release qualification; publication remains gated. Supersedes the
+preparation guides’ mistaken schema46 reference: the shipped target is schema47.
+M471’s functional and privacy limits remain unchanged.
+
+The offline release-upgrade-030-02 guest used genuine published0.1.0/0.2.0 tools
+and candidate source7ea77ba. It created two fresh fakes, kept one running and one
+stopped, and passed sequential upgrade, identical-target reinstall, old-client
+observation and old-runner refusal. Identity/config/history and the engine plus
+running container process were preserved. No user review disk, host service or
+network interface was exposed. The initial harness attempt failed before boot
+because an unmapped backing path needed an explicit virtual size; its generated
+staging was classified and retired with a receipt. The correction and compact
+phase reporting are included before the next source freeze. Final-source artifact
+qualification remains required.
+
+The managed race suite’s20-minute package timeout expired during an active test
+that had run for one second, with no preceding assertion or race failure. This is
+a cumulative suite-budget failure, not a passed result. A45-minute diagnostic run
+with JSON progress is running; CI allows60minutes for this suite and90 for the
+whole source job. Other race packages passed. Do not relabel timeouts as success.
+
+Theme’s290 strict Python tests (ResourceWarning as error), DMs’152 Python tests,
+Node model/search/time and paired real-Qt layout checks passed. Both DEV plugins
+now use ui-20261029-cohesion-8; only a normal plugin rescan was requested. Protected
+production PIDs2166/3050 retained their Oct21 start times. The personal DMs journal
+retained SHA2563942f405aea57d3879c6583d38681894e753f97ff418f23a34b1a521983edb6a.
+Companion PRs are Theme#1 (0.4.0) and DMs#1 (0.2.0); they remain unpublished.
+Retained test roots measured33.52GiB including the completed upgrade guest, below
+the40GiB ceiling.

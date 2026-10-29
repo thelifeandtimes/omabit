@@ -4,11 +4,11 @@ Release preparation: this guide becomes a supported release procedure only when
 0.3.0's published qualification record reports the upgrade gate passed.
 
 The supported stable sources are **0.1.0 and 0.2.0**, both owner-user installations
-with schema21. The target uses **runner schema46**, management protocol1 and
+with schema21. The target uses **runner schema47**, management protocol1 and
 desktop/bootstrap state1. The new project journals migrate transactionally;
 opening a database does not start ships or alter existing settings, ports,
 identities, grants, storage roots or operation receipts. Older runners refuse
-schema46. Returning the desktop to an older version cannot downgrade that state.
+schema47. Returning the desktop to an older version cannot downgrade that state.
 
 ## Desktop and host are separate updates
 

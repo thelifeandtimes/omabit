@@ -28,7 +28,7 @@ will be recorded under docs/releases/0.3.0 before stable publication.
 
 ## Scope and limits
 
-Stable owner-user0.1.0/0.2.0 is the intended in-place upgrade window. Runner schema46
+Stable owner-user0.1.0/0.2.0 is the intended in-place upgrade window. Runner schema47
 fences older writers; desktop/bootstrap state1 and management protocol1 remain.
 Read the [upgrade guide](releases-0.3-upgrade.md). A desktop update is separate from
 an explicitly authorized runner management update. Running and stopped intent,
