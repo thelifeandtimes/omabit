@@ -2,22 +2,22 @@
   "version": "0.3.0",
   "channel": "stable",
   "platform": "linux/amd64",
-  "source_commit": "d859ebfa33116b753eb4e1d103221e60b09c4597",
-  "source_tree": "8a7d237a009997b7505932a145c2d81eaac16d68",
+  "source_commit": "8cce14b9afaa1ce45dd98c31b679f76a6017fc03",
+  "source_tree": "bd7b5e036f344e45d67ba6d52eb67f4558db8e29",
   "backend_source_sha256": "17e74ed3a10b563654ad5c2d4ee60c99e52a0646bdec9de4ccde02fabab9cb79",
   "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
   "runner_schema": 47,
   "desktop_state_format": 1,
   "bootstrap_api": 1,
   "ci": {
-    "frozen_source_run": "https://github.com/thelifeandtimes/omabit/actions/runs/40844309141",
+    "frozen_source_run": "https://github.com/thelifeandtimes/omabit/actions/runs/40848426282",
     "policy": "All required source (including all four managed race groups), QML and release-policy checks must pass before normal protected-branch merge. Consult the linked checks for their completed result."
   },
   "stable_upgrade": {
     "passed": true,
     "non_destructive": true,
-    "source_commit": "d859ebfa33116b753eb4e1d103221e60b09c4597",
-    "evidence_sha256": "4abc1b31c963daac20758a8ba8eb07484da79d5281e4f0abdcac45fce65ba508",
+    "source_commit": "8cce14b9afaa1ce45dd98c31b679f76a6017fc03",
+    "evidence_sha256": "2917ae59ac1cc8a9c365f1e42ca04c46f7958685ace26e96df8f5a4076afe3d6",
     "tested_path": [
       "0.1.0",
       "0.2.0",
@@ -42,7 +42,8 @@
       "owner and filesystem permissions",
       "access and enrollment state"
     ],
-    "disposition": "All guest ships stopped; guest powered off. Generated disks eligible for retirement; compact evidence retained."
+    "disposition": "All guest ships stopped; guest powered off. Generated disks eligible for retirement; compact evidence retained.",
+    "baseline_install_recovery": "Published0.1.0 initially reported WaitDelay after service start; the identical installer resumed its preserved fence/state in the same guest, then the full upgrade path passed. Original failed result retained separately."
   },
   "source_validation": {
     "go_tests": "All36 test-bearing packages pass in UTC; final-source CI also requires the complete suite.",
@@ -55,7 +56,7 @@
       "state_untouched": true,
       "simulated_workflow_commands": 57,
       "simulated_tasks": 6,
-      "evidence_sha256": "8571e913b59921fa140ce90fc76ca3a8ed3d4f793d55863dd58788804c8c0e8c"
+      "evidence_sha256": "9847f77cef3d7e48763f9ec9985239f3318aae516807ad57161b32c15bbf2fb5"
     },
     "skill_package_tests": 5,
     "timezone_regressions": [
@@ -63,7 +64,8 @@
       "exact historical checkpoint preservation",
       "changed nanosecond, owner, acknowledgement and nil/empty evidence refusal"
     ],
-    "runtime_race": "Final corrected runtimequalify package passed locally with race detector,476.425seconds;50 repetitions each of the driver group and explicit deadline boundary also passed."
+    "runtime_race": "Final corrected runtimequalify package passed locally with race detector,476.425seconds;50 repetitions each of the driver group and explicit deadline boundary also passed.",
+    "offline_fixture_portability": "25 probe tests pass with UID1000/1001, plus all15 offline fixture groups in a networkless UID1001 namespace; production guest ownership checks remain unchanged."
   },
   "desktop": {
     "frozen_bundle": "Actual native Qt/Quickshell startup, busy deferral, failed activation rollback, mismatched version refusal and profile restart passed in isolated HOME/XDG.",
@@ -85,7 +87,7 @@
   },
   "native_dev": {
     "passed": true,
-    "evidence_sha256": "12eb22eaa9ec9d5746b1c25bbc65a5e3c5a848e68c550a4aadacfb56810b5e23",
+    "evidence_sha256": "6f4b3784a8d01d7eacc03cb32332406f62632c439c1b57331cc1aba737cf8fac",
     "checks": [
       "Candidate manager activation preserved all6 DEV container processes",
       "Clean project member Stop/Start and exact receipt replay",
@@ -93,28 +95,28 @@
       "Both review moons retained stopped intent"
     ],
     "production": "Production manager/engine unchanged; tmux and ~/temp-ur excluded; personal message journal hash unchanged.",
-    "activation_source_commit": "d859ebfa33116b753eb4e1d103221e60b09c4597",
+    "activation_source_commit": "8cce14b9afaa1ce45dd98c31b679f76a6017fc03",
     "lifecycle_source_commit": "dc420f133277abc6108477dd8f0b5ddca35e44b2",
-    "source_note": "Final activation preserves all6 container processes. Earlier clean Stop/Start, exact replay, HTTP identities and metrics use identical production code; only a test fixture and documentation changed afterward."
+    "source_note": "Final activation preserves all6 container processes. Earlier clean Stop/Start, exact replay, HTTP identities and metrics use identical production code; only test fixtures and documentation changed afterward."
   },
   "frozen_artifacts": {
     "go_version": "go version go1.27.3 linux/amd64",
     "checks": [
       "Package smoke and per-asset checksums",
-      "All8 unpublished draft downloads byte-verified before qualification attachment; attachment and public downloads must also match before completion",
+      "All8 unpublished draft downloads byte-verified before qualification attachment; attachment and public downloads must also match before completion before qualification attachment; attachment and public downloads must also match before completion",
       "130 CLI entries checked against actual binaries",
       "govulncheck1.9.0: no known vulnerabilities in all3 binaries"
     ],
     "assets": [
       {
         "name": "omabit-0.3.0-linux-amd64.tar.gz",
-        "bytes": 31212148,
-        "sha256": "baab9718a4163f85e66ac5b152225ceb524498ec684bee8a129f378b81b2b9ef"
+        "bytes": 31212117,
+        "sha256": "99199afce1674511a403b1ffb1e64f5b364e1e214318f4d57ebb7d4cfc6078e6"
       },
       {
         "name": "omabit-linux-amd64",
         "bytes": 17500785,
-        "sha256": "beb5c369de5e684a9e206b4712218b5c3815216e0b90ed73c1597baca6bb914f"
+        "sha256": "7c1ecc118d297eec811327b941f96d0fcfa39083e72f81d42b577573b4e87378"
       },
       {
         "name": "omabit-recommended-apps-0.3.0.pill",
@@ -123,18 +125,18 @@
       },
       {
         "name": "omabit-skills-0.3.0.tar.gz",
-        "bytes": 23287,
-        "sha256": "d05d135c67d9542b747ffd131eef81b9ddba799670aa1d20e90fa34ef08a4044"
+        "bytes": 23284,
+        "sha256": "a259013097b6be3e507496c077f62945a111384b53dc7647c4a7546b78551362"
       },
       {
         "name": "urbit-collector-linux-amd64",
         "bytes": 12504414,
-        "sha256": "b833fe96b14198cd5cc59e54d77cddbdccf7897a35ee9209d2ba40e5c82ab4b5"
+        "sha256": "445e3de1d8f5d343a8d74d36867fc1908155b377378fe5714efb5411bdf4f648"
       },
       {
         "name": "urbit-runner-linux-amd64",
         "bytes": 26549460,
-        "sha256": "5972fe479e61ba78ea4daa8efe455c4d92abdf4c9892bfdeb95b73e5ab91a51c"
+        "sha256": "c5db09d04e6a2c5df8874e0a275c2d556a7e9d390d6b8617f876bb3b1db748e0"
       }
     ]
   },

@@ -6471,3 +6471,34 @@ handling locally. All15 remaining offline CI fixture groups also pass in a
 networkless UID1001 namespace. No production runtime implementation changed.
 Rebuild from the corrected clean source and preserve exact-source qualification;
 do not relabel candidate05, and do not bypass the final protected checks.
+
+## M479 — Corrected-source0.3.0 qualification and baseline installer recovery (2026-10-29)
+
+Status: final distribution prepared; protected PR checks still gate publication.
+Supersedes M478's pending rebuild and M477's artifact source. Frozen source
+`8cce14b9afaa1ce45dd98c31b679f76a6017fc03` produced candidate06. Its package/provenance checks, reproducible
+builds, actual native startup/recovery,130 offline help entries,57 workflow
+commands across six simulated tasks and all three govulncheck scans pass.
+Eight unpublished draft downloads match exactly. All25 probe tests pass under
+UID1000/1001 and all15 offline fixture groups pass in a networkless UID1001
+namespace. Full Go/race coverage passed on the preceding production-identical
+source; every required gate remains mandatory on the final distribution.
+
+The first candidate06 guest stopped during published0.1.0 baseline installation,
+before0.3.0 ran. Read-only inspection found exec.WaitDelay after systemd had
+started the service. The0.3.0 command-drain fix already covers this case. The
+original failure and installer receipt remain recorded. Repeating the identical
+0.1.0 installer in that same guest resumed its fence/state, then the full
+0.1.0→0.2.0→0.3.0 upgrade, repeat activation, old-client observation, schema47
+old-writer refusal, manager restart and running/stopped preservation passed.
+Both fresh ships stopped cleanly and the guest powered off. No failed result
+was relabeled as a clean first attempt. The small resume driver is hash-bound
+in the qualification evidence and never touched host services or user piers.
+
+Visible retained allocation after this run was34.09GiB
+against40GiB. All6 DEV container process identities survived exact final binary
+activation. Earlier lifecycle/metrics/HTTP evidence retains its original source
+binding, with unchanged production implementation. UI stays0.3.0-dev.review1;
+Theme/DMs use the matching cohesion generation. Production and personal-message
+baselines remain unchanged. Broader security/privacy and wallet work remain open
+under M468; functional sessions are not malicious same-UID plugin isolation.
