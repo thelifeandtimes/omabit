@@ -6400,3 +6400,26 @@ inventory uses no runner selector and checks its sole returned runner ID. These
 were test-script corrections, not product defects. Theme/DMs retain cohesion-8.
 Production and personal-message baselines remain protected. Broader security/privacy
 qualification stays open as recorded in M468; this is not wallet custody assurance.
+
+## M476 — Deadline fixture accounts for handles actually opened (2026-10-29)
+
+Status: release source reopened for a test-only correction; supersedes M475's
+final-distribution status, not its completed runtime evidence. CI's runtime race
+stage reported TestPrivateGatewayDriverDeadlineAndFailedObservationPreserveState.
+Its15ms budget can expire during invariant inspection before any observer opens;
+the fixture incorrectly required one Close even then. Cleanup now balances the
+actual number of opened handles, including partial-open errors. Error-only cases
+retain a normal budget and must exercise their selected failure. A deterministic
+before-open deadline case proves the zero-handle path; real caller-deadline coverage
+is retained. Fifty race repetitions of the driver group and fifty of the explicit
+boundary pass. No production runtime behavior changes in this correction.
+
+Candidate04's real guest and native DEV results remain true for its exact source.
+Do not publish it under a newer source label. Restore preparation pins while the
+corrected source passes CI, then rebuild/verify and attach fresh qualification to
+the final immutable artifacts. The private draft and release PR remain unpublished
+and unmerged. Three of four managed race groups have passed at this checkpoint;
+all groups remain required. Generated completed upgrade disks were retired with
+hashes/results; retained visible allocation is30.78GiB (rootless work directories
+have restricted ordinary-user visibility), below the40GiB ceiling with ample
+headroom. Production, user review disks and all DEV piers remain preserved.

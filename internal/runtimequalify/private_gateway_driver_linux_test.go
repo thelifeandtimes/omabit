@@ -170,10 +170,14 @@ func TestPrivateGatewayDriverWaitRefusesChangedRuntime(t *testing.T) {
 }
 
 func TestPrivateGatewayDriverDeadlineAndFailedObservationPreserveState(t *testing.T) {
-	for _, mode := range []string{"opening", "observing", "close-failure", "nil-open", "handle-and-error"} {
+	for _, mode := range []string{"opening", "observing", "before-open-deadline", "close-failure", "nil-open", "handle-and-error"} {
 		t.Run(mode, func(t *testing.T) {
-			x, d, o, _ := waitingDriverFixture(t)
-			d.readyTimeout = 15 * time.Millisecond
+			x, d, o, opens := waitingDriverFixture(t)
+			// Only deadline cases need a short budget. Error/cleanup cases must
+			// reach their selected hook, independent of race-detector overhead.
+			if mode == "opening" || mode == "observing" || mode == "before-open-deadline" {
+				d.readyTimeout = 15 * time.Millisecond
+			}
 			ctx := context.Background()
 			switch mode {
 			case "opening":
@@ -182,29 +186,48 @@ func TestPrivateGatewayDriverDeadlineAndFailedObservationPreserveState(t *testin
 				}
 			case "observing":
 				o.failures = 10000
+			case "before-open-deadline":
+				execute := x.e.q.d.execute
+				x.e.q.d.execute = func(ctx context.Context, args, env []string) (string, error) {
+					if x.saved.Phase == "started" {
+						<-ctx.Done()
+						return "", ctx.Err()
+					}
+					return execute(ctx, args, env)
+				}
 			case "close-failure":
 				o.closeErr = errors.New("SECRET close failure")
 			case "nil-open":
 				d.openObserver = func(context.Context, privatechain.Gateway) (privateGatewayReadinessHandle, error) { return nil, nil }
 			case "handle-and-error":
 				d.openObserver = func(context.Context, privatechain.Gateway) (privateGatewayReadinessHandle, error) {
+					*opens++
 					return o, errors.New("partial open")
 				}
 			}
 			at := time.Now()
 			got, err := privatechain.ExecuteGateway(ctx, x.p, x.w, x.g, d, x.commit, time.Now)
-			if err == nil || got.Phase != "started" || got.Observation != nil || time.Since(at) > time.Second || x.startCalls != 1 || x.boot.calls != 1 {
+			if err == nil || got.Phase != "started" || got.Observation != nil || time.Since(at) > 5*time.Second || x.startCalls != 1 || x.boot.calls != 1 {
 				t.Fatal(got.Phase, err, x.events)
 			}
-			if mode == "opening" || mode == "observing" {
+			if mode == "opening" || mode == "observing" || mode == "before-open-deadline" {
 				// ExecuteGateway intentionally reports unresolved rather than exposing
 				// an internal deadline; it retains the committed started receipt.
 				if !errors.Is(err, privatechain.ErrGatewayUnresolved) {
 					t.Fatal(err)
 				}
 			}
-			if mode != "opening" && mode != "nil-open" && o.closes != 1 {
-				t.Fatal("observer leaked", o.closes)
+			// The budget may expire during invariant inspection, before a handle
+			// is opened. A nonexistent handle is not a leak. Every actual handle
+			// must close exactly once, including an open that returns an error.
+			if o.closes != *opens || *opens > 1 {
+				t.Fatal("observer handle accounting differs", *opens, o.closes)
+			}
+			if mode == "before-open-deadline" && *opens != 0 {
+				t.Fatal("deadline-before-open unexpectedly created a handle")
+			}
+			if (mode == "close-failure" || mode == "handle-and-error") && *opens != 1 {
+				t.Fatal("selected cleanup failure was not exercised")
 			}
 		})
 	}
