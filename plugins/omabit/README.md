@@ -135,7 +135,7 @@ Version 0.22.1 removes the fixed registration-count cap throughout the runner,
 collector and UI. That release capped stopped-pier copy/handoff contents at
 **100 GB (100,000,000,000 bytes)**, with a separate 32 MiB archive allowance.
 Current polishing source raises local import/copy to 8 TiB while retaining the
-100 GB cross-host handoff cap. Published0.3.2 needs an update for the local fix.
+100 GB cross-host handoff cap. Update both desktop and runner to0.3.3 for the local fix.
 Size boundaries and a 512 GiB same-filesystem import are tested using sparse
 fixtures; a full transfer above 100 GB has not been qualified.
 

@@ -19,7 +19,8 @@ filesystem review. Use its `source.fingerprint`, `ship`, `instance_id`,
 ship or network from a directory label or guess a free port.
 
 Current source permits local imports up to 8 TiB / 8192 entries / depth 32;
-published0.3.2 retains the former 100 GB bound until upgraded. Cross-host handoff
+0.3.2 and earlier retain the former 100 GB local bound; update both desktop and
+runner to0.3.3. Cross-host handoff
 is separately capped at 100 GB. A remote host-path import runs locally on that
 runner. Cross-filesystem imports need the source's logical size plus 8 GiB free;
 same-filesystem renames need 8 GiB headroom. Do not bypass these checks or infer
