@@ -4,7 +4,7 @@
   "steps": [],
   "sources": {
     "0.3.2": "742e56ba968c4eb4544fae52c7eb41f31998d6df",
-    "0.3.3": "2e59eca006c6e457d64086ff6df4d069f69806a9"
+    "0.3.3": "bcc68e16f8d1100ee0e564972213f6193999a656"
   },
   "starting_versions": {
     "desktop": "0.3.2",
@@ -13,7 +13,7 @@
   },
   "receipt_fixture": "published format reconstructed from genuine 0.3.2 installer result and 0.3.2 SSH enrollment; old desktop setup-status verified ready",
   "baseline": {
-    "runner_id": "runner-49d68e8e33c6e9b473a0b399c96e8eec",
+    "runner_id": "runner-ce2c6dd763fc35f236ab200e6fea2af2",
     "instances": [
       {
         "id": "upgrade-nec",
@@ -62,65 +62,65 @@
     ],
     "operations": [
       {
-        "id": "op-2cc07b435d016e87c29940a9ce8881f4",
+        "id": "op-b23d670755d4ba9627d7a3552dc25f3b",
         "request_id": "upgrade-nec-stop",
         "instance_id": "upgrade-nec",
         "kind": "stop",
         "actor": "local-uid:1000",
         "status": "succeeded",
         "config_revision": 1,
-        "created_at": "2026-10-30T23:18:05.886350939Z",
-        "finished_at": "2026-10-30T23:18:11.418967398Z"
+        "created_at": "2026-10-30T23:37:15.191415253Z",
+        "finished_at": "2026-10-30T23:37:21.238068465Z"
       },
       {
-        "id": "op-a4795096d9732ac9f285ca01656d04d2",
+        "id": "op-3451679fdbf2be3827872159ae4f3e0c",
         "request_id": "upgrade-nec-start",
         "instance_id": "upgrade-nec",
         "kind": "start",
         "actor": "local-uid:1000",
         "status": "succeeded",
         "config_revision": 1,
-        "created_at": "2026-10-30T23:13:35.216350371Z",
-        "finished_at": "2026-10-30T23:18:04.718312717Z"
+        "created_at": "2026-10-30T23:32:53.745060844Z",
+        "finished_at": "2026-10-30T23:37:14.227717365Z"
       },
       {
-        "id": "op-b5fe0777ffe06579462d8f032100fc66",
+        "id": "op-80f7b867f938c8b566febaa848a7cb77",
         "request_id": "upgrade-nec-create",
         "instance_id": "upgrade-nec",
         "kind": "register-fake",
         "actor": "local-uid:1000",
         "status": "succeeded",
         "config_revision": 1,
-        "created_at": "2026-10-30T23:13:34.639484343Z",
-        "finished_at": "2026-10-30T23:13:34.639484343Z"
+        "created_at": "2026-10-30T23:32:52.363573643Z",
+        "finished_at": "2026-10-30T23:32:52.363573643Z"
       },
       {
-        "id": "op-c5d202c7fe01fb16874c058df10d396f",
+        "id": "op-2f1d202d8ea2d731946a7cda9ab1ea72",
         "request_id": "upgrade-zod-start",
         "instance_id": "upgrade-zod",
         "kind": "start",
         "actor": "local-uid:1000",
         "status": "succeeded",
         "config_revision": 1,
-        "created_at": "2026-10-30T23:08:31.604175699Z",
-        "finished_at": "2026-10-30T23:13:33.08011486Z"
+        "created_at": "2026-10-30T23:26:50.867745413Z",
+        "finished_at": "2026-10-30T23:32:50.74035242Z"
       },
       {
-        "id": "op-ea21abcc39dacb2e0a80ea2114d31593",
+        "id": "op-88e5c91ad8f6e4a2bf249e56fd19cc07",
         "request_id": "upgrade-zod-create",
         "instance_id": "upgrade-zod",
         "kind": "register-fake",
         "actor": "local-uid:1000",
         "status": "succeeded",
         "config_revision": 1,
-        "created_at": "2026-10-30T23:08:31.103085683Z",
-        "finished_at": "2026-10-30T23:08:31.103085683Z"
+        "created_at": "2026-10-30T23:26:50.236988473Z",
+        "finished_at": "2026-10-30T23:26:50.236988473Z"
       }
     ]
   },
   "runtime_before": {
-    "engine": "InvocationID=f0ab6d4ed0ba4ecb94fed63e3ce4c85c\nMainPID=495\n",
-    "containers": "64af2f906e93848d68544569cef07aa880300943432d9ed90224d8b5ee52e8df 1885 2026-10-30T23:08:43.803289976Z\n"
+    "engine": "InvocationID=78a7c47643904d14a90aba4009645ff8\nMainPID=492\n",
+    "containers": "638d73a4809bc476f115d5f6c4ae11205b0d247ed04ffc613aa8afbfb761b4e0 1947 2026-10-30T23:26:59.881624727Z\n"
   },
   "schema_before": 47,
   "desktop_transition": {
@@ -132,19 +132,19 @@
       },
       {
         "version": "0.3.3",
-        "release": "4a50498df3a780252ffec5ca6a8129a6582a1b8d465f8a31c5cace1f72553b63",
-        "source_commit": "2e59eca006c6e457d64086ff6df4d069f69806a9"
+        "release": "9d7f07e2155488ba64f3c6d5fd2d5d94e3295b5581ff815056510f83c111c97a",
+        "source_commit": "bcc68e16f8d1100ee0e564972213f6193999a656"
       }
     ],
-    "directory": "/home/review/.cache/omabit/releases/4a50498df3a780252ffec5ca6a8129a6582a1b8d465f8a31c5cace1f72553b63",
+    "directory": "/home/review/.cache/omabit/releases/9d7f07e2155488ba64f3c6d5fd2d5d94e3295b5581ff815056510f83c111c97a",
     "loader": "actual native sealed archive importer; activation acknowledgements driven by guest harness"
   },
   "offered": {
     "version": 1,
-    "runner_id": "runner-49d68e8e33c6e9b473a0b399c96e8eec",
-    "target_sha256": "8c44169aaea7c5850fc3daebee22a9424c811cdd073cf5300d83404e2ab266ba",
+    "runner_id": "runner-ce2c6dd763fc35f236ab200e6fea2af2",
+    "target_sha256": "c292cd37c87fd030dc4172a20500fc829244c460218bc6515ad13877a0d1c596",
     "installed_sha256": "7ab550ca504000098d132ab2e35623d768f2b6eda66ac11ae029ce3e760ceb2a",
-    "target_build": "2e59eca006c6",
+    "target_build": "bcc68e16f8d1",
     "installed_build": "742e56ba968c",
     "available": true,
     "pending": false,
@@ -159,11 +159,11 @@
       "busy": false,
       "status": {
         "version": 1,
-        "runner_id": "runner-49d68e8e33c6e9b473a0b399c96e8eec",
-        "target_sha256": "8c44169aaea7c5850fc3daebee22a9424c811cdd073cf5300d83404e2ab266ba",
-        "installed_sha256": "8c44169aaea7c5850fc3daebee22a9424c811cdd073cf5300d83404e2ab266ba",
-        "target_build": "2e59eca006c6",
-        "installed_build": "2e59eca006c6",
+        "runner_id": "runner-ce2c6dd763fc35f236ab200e6fea2af2",
+        "target_sha256": "c292cd37c87fd030dc4172a20500fc829244c460218bc6515ad13877a0d1c596",
+        "installed_sha256": "c292cd37c87fd030dc4172a20500fc829244c460218bc6515ad13877a0d1c596",
+        "target_build": "bcc68e16f8d1",
+        "installed_build": "bcc68e16f8d1",
         "available": false,
         "pending": false,
         "message": "Local services match this desktop bundle."

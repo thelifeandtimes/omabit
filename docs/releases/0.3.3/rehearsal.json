@@ -1,13 +1,13 @@
 {
   "version": "0.3.3",
-  "source_commit": "2e59eca006c6e457d64086ff6df4d069f69806a9",
+  "source_commit": "bcc68e16f8d1100ee0e564972213f6193999a656",
   "passed": true,
   "non_destructive": true,
   "previous_version": "0.3.2",
   "runner_schema_before": 47,
   "runner_schema_after": 47,
   "service_result": "docs/releases/0.3.3/from-0.3.2-result.json",
-  "service_result_sha256": "8e23a337c20e7af4cff02f58c5ccdaf82f12e03065b5a3f083285bbc1b52cba5",
+  "service_result_sha256": "599433961d87c1a18f6fb5c068b250c22dd5d2e052084be66877689a0e0fa020",
   "harness": "scripts/qualification/patch-upgrade",
   "harness_sha256": {
     "run.py": "1fc65858fed97498386323423e7fbad4ab6244c4defb6733744bae6c73074002",
@@ -35,8 +35,8 @@
     "synthetic candidate failure retains prior working desktop"
   ],
   "storage": {
-    "used_before": 32817295360,
-    "used_after": 34934718464,
+    "used_before": 32966512640,
+    "used_after": 35356884992,
     "scratch_limit": 4294967296,
     "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
     "network": "none",

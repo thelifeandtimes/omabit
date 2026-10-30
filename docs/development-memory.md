@@ -6827,3 +6827,24 @@ compact failed-candidate evidence and retire only its generated artifacts. The
 new freeze also refreshes the archived installation guide's stale release title,
 support-path links and local-size limit. Published0.3.2 and production remain
 untouched; only our unpublished0.3.3 draft is replaced after qualification.
+
+
+## M494 — Corrected0.3.3 candidate qualification and publication (2026-10-30)
+
+Status: qualified candidate; protected PR checks and publication pending.
+The user explicitly requested “build and publish.” Frozen source
+`bcc68e16f8d1100ee0e564972213f6193999a656` contains M491's fixes.
+This supersedes M492/M493's first candidate after the fixture correction; it never
+authorizes a production service update. M490's manual-import and protected-ship
+constraints remain active.
+
+Actual0.3.2 desktop/services →0.3.3 passes a fresh offline guest with one running
+fake and one stopped fake, real QML button denial/retry, exact target identity,
+unchanged runtime processes, fleet/history/access, repeat no-op and manager
+restart. Schema47 stays47. Native QML separately proves failed-candidate recovery,
+preferences and hot/cold activation. All132 offline CLI help entries match the
+shipped references. See [qualification](releases/0.3.3/qualification.json).
+
+The guest reuses the immutable base with a4 GiB scratch cap under the combined
+40 GiB budget. No production service, profile, pier or manual-review state changes.
+Do not expand cross-host handoff's100 GB cap: the user accepted it for now.

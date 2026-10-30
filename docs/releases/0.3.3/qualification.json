@@ -1,8 +1,8 @@
 {
   "version": "0.3.3",
   "platform": "linux/amd64",
-  "source_commit": "2e59eca006c6e457d64086ff6df4d069f69806a9",
-  "source_tree": "902b2205aa9871418fd6699516f45ac4eb0edd4e",
+  "source_commit": "bcc68e16f8d1100ee0e564972213f6193999a656",
+  "source_tree": "a37e7785b4a94cbe3d70059c99d3d24b11466ac3",
   "backend_source_sha256": "bdbeb4e0ed817424e460ec781691f100fdc58c5870138259318608856d38991a",
   "channel": "stable",
   "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
@@ -13,7 +13,7 @@
     "passed": true,
     "non_destructive": true,
     "evidence": "docs/releases/0.3.3/rehearsal.json",
-    "evidence_sha256": "eb876bca438de57f67dab27aaab96262ca27a528e577b81d8e87935e5109d81d",
+    "evidence_sha256": "54cb94318b8530b29d7636b3171f6f7d95450ae31d8fb49e9c0e433a9d87e806",
     "paths": [
       {
         "versions": [
@@ -21,7 +21,7 @@
           "0.3.3"
         ],
         "evidence": "docs/releases/0.3.3/rehearsal.json",
-        "evidence_sha256": "eb876bca438de57f67dab27aaab96262ca27a528e577b81d8e87935e5109d81d",
+        "evidence_sha256": "54cb94318b8530b29d7636b3171f6f7d95450ae31d8fb49e9c0e433a9d87e806",
         "scope": "Exact binary service upgrade via QML buttons, running/stopped ship preservation, desktop recovery, preferences and restart"
       }
     ]
@@ -37,9 +37,13 @@
     "archive_checksums_and_provenance": true,
     "source_regressions": "Full changed-package tests and targeted race tests recorded at 5741b3a; runtime inputs unchanged by release version/harness commit. Protected CI must pass on the complete release PR before publication.",
     "logs": {
-      "omabit-033-package": {
-        "name": "omabit-033-package.log",
-        "sha256": "4153d0aba0288ad8cb16c6e7b247860bf9ba3bd0b61b0ad360661d1d3c7e4712"
+      "omabit-033-package-02": {
+        "name": "omabit-033-package-02.log",
+        "sha256": "ce7daf297e7037f9ba50d54b9fe5d2da345b76e360c42b6e2d478d580f0e1d66"
+      },
+      "omabit-033-ci-qml-fixed": {
+        "name": "omabit-033-ci-qml-fixed.log",
+        "sha256": "6a27b368bd8d670f17959acbaf244de60aac3fe680953de995de4f42945c181e"
       },
       "omabit-033-native": {
         "name": "omabit-033-native.log",
@@ -107,13 +111,13 @@
     "assets": [
       {
         "name": "omabit-0.3.3-linux-amd64.tar.gz",
-        "bytes": 31532874,
-        "sha256": "4d97cdb76de8111d658b71baed2c64989868f4f84263657c31ff64b701d95418"
+        "bytes": 31532954,
+        "sha256": "412108abe8b7b59b5fe88ef88379fa7b3f4d5fc9fe9e770302039c05062aca5f"
       },
       {
         "name": "omabit-linux-amd64",
         "bytes": 18077839,
-        "sha256": "26ea2f8759533e054a34060bfe92d5fb0658119bdb8b7313717d32d1299ec2c2"
+        "sha256": "138d423d07cc720b211916ae75e8564d950af349a16cb8fbe91317769c51d9fc"
       },
       {
         "name": "omabit-recommended-apps-0.3.3.pill",
@@ -122,18 +126,18 @@
       },
       {
         "name": "omabit-skills-0.3.3.tar.gz",
-        "bytes": 23508,
-        "sha256": "8a7fe6235042989c94d14cff91f2cbd437564abce43f378c676e3ffe51a7829a"
+        "bytes": 23503,
+        "sha256": "700bc652f147f6bb56aba83347dc87a8c55417b95e3f2fc8f63cd00fbfa5ed74"
       },
       {
         "name": "urbit-collector-linux-amd64",
         "bytes": 12504366,
-        "sha256": "7466f7868defdae67f776af0ac97078519581a302741d80349743dfadb326a35"
+        "sha256": "56f5437cbda823999ecf538b547563adbe9d6f9feaf44c6e7a8c67ae282c0905"
       },
       {
         "name": "urbit-runner-linux-amd64",
         "bytes": 26574094,
-        "sha256": "8c44169aaea7c5850fc3daebee22a9424c811cdd073cf5300d83404e2ab266ba"
+        "sha256": "c292cd37c87fd030dc4172a20500fc829244c460218bc6515ad13877a0d1c596"
       }
     ],
     "go_version": "go version go1.27.3 linux/amd64"
