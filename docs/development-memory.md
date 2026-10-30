@@ -6811,3 +6811,19 @@ shipped references. See [qualification](releases/0.3.3/qualification.json).
 The guest reuses the immutable base with a4 GiB scratch cap under the combined
 40 GiB budget. No production service, profile, pier or manual-review state changes.
 Do not expand cross-host handoff's100 GB cap: the user accepted it for now.
+
+
+## M493 — QML fixture correction before0.3.3 publication (2026-10-30)
+
+Status: candidate01 not published; supersedes M492's readiness for promotion.
+The actual packaged desktop and exact-binary guest passed, but protected CI
+found the older RC11 offscreen fixture copied PierImportPane without its new
+ProgressMeter dependency. Add the component to that fixture; all three required
+QML checks pass locally. No application/runtime change is needed.
+
+Refreeze and rebuild instead of exempting test changes from the release freeze
+policy. Repeat exact-artifact qualification for the new source identity; retain
+compact failed-candidate evidence and retire only its generated artifacts. The
+new freeze also refreshes the archived installation guide's stale release title,
+support-path links and local-size limit. Published0.3.2 and production remain
+untouched; only our unpublished0.3.3 draft is replaced after qualification.
