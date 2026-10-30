@@ -37,7 +37,8 @@ prior stable path is0.3.2 → 0.3.3. Earlier published installations can use the
 Omabit/collector tools activate as one verified bundle; the explicit service button
 updates the owner-user runner while preserving running ships and stopped intent.
 
-The release qualification record will link exact artifact and rehearsal evidence.
+The [qualification record](releases/0.3.3/qualification.json) links the exact
+artifacts, passed [upgrade rehearsal](releases/0.3.3/rehearsal.json) and limits.
 Source tests cover large sparse fixtures, same-filesystem512 GiB moves, real small
 cross-filesystem copies, interruption/recovery and stale completion rejection.
 No full >100 GB physical transfer or new Ubuntu runtime installation is claimed.

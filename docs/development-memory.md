@@ -6790,3 +6790,24 @@ Post-import navigation requires both the original successful operation and the
 fresh exact runner/connection/instance revision/path/ship/source. Keep failures
 and uncertain receipts available for recovery. Offscreen UI tests cover these
 bindings and narrow-width geometry without accessing production desktop controls.
+
+
+## M492 — Frozen0.3.3 qualification and authorized publication (2026-10-30)
+
+Status: qualified candidate; protected PR checks and publication pending.
+The user explicitly requested “build and publish.” Frozen source
+`2e59eca006c6e457d64086ff6df4d069f69806a9` contains M491's fixes.
+This supersedes M491's source-only status when publication completes; it never
+authorizes a production service update. M490's manual-import and protected-ship
+constraints remain active.
+
+Actual0.3.2 desktop/services →0.3.3 passes a fresh offline guest with one running
+fake and one stopped fake, real QML button denial/retry, exact target identity,
+unchanged runtime processes, fleet/history/access, repeat no-op and manager
+restart. Schema47 stays47. Native QML separately proves failed-candidate recovery,
+preferences and hot/cold activation. All132 offline CLI help entries match the
+shipped references. See [qualification](releases/0.3.3/qualification.json).
+
+The guest reuses the immutable base with a4 GiB scratch cap under the combined
+40 GiB budget. No production service, profile, pier or manual-review state changes.
+Do not expand cross-host handoff's100 GB cap: the user accepted it for now.

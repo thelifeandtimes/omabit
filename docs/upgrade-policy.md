@@ -1,5 +1,13 @@
 # Stable-release upgrade requirement
 
+## 0.3.3 maintenance release
+
+The [0.3.3 qualification](releases/0.3.3/qualification.json) adds the tested
+0.3.2 → 0.3.3 desktop and local service path. Runner schema47, desktop state1 and
+bootstrap API1 are unchanged. The existing earlier paths below compose through
+0.3.2; no reset or automatic remote upgrade is implied. See the
+[release instructions](release-0.3.3.md).
+
 ## Qualified0.3.0 support window
 
 The0.3.0 [qualification](releases/0.3.0/qualification.json) and
