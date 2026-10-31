@@ -6848,3 +6848,30 @@ shipped references. See [qualification](releases/0.3.3/qualification.json).
 The guest reuses the immutable base with a4 GiB scratch cap under the combined
 40 GiB budget. No production service, profile, pier or manual-review state changes.
 Do not expand cross-host handoff's100 GB cap: the user accepted it for now.
+
+
+## M495 — 0.3.3 publication completed (2026-10-30)
+
+Status: published; supersedes M494's pending CI/publication status only. PR #10
+merged normally as `8f5fbfd` after all source/race/QML/policy checks passed.
+Frozen source `bcc68e16f8d1100ee0e564972213f6193999a656` is tagged v0.3.3.
+Public asset bytes and private cold native bootstrap passed, with master
+protection preserved. No production service or ship was upgraded by the agent.
+Compact publication records are retained in release-0.3.3/candidate-02 evidence.
+
+## M496 — macOS metadata import compatibility (2026-10-30)
+
+Status: source fix and synthetic regression qualification; not yet released.
+The user authorized a one-time filenames/types listing that found regular
+`._0i391592`, `._data.mdb` and `._lock.mdb` companions. Their names match macOS
+AppleDouble conventions; no content or whole-pier health inspection was performed.
+The old log-root allowlist rejected these before import. Recognize bounded
+regular companions and `.DS_Store`, retain their bytes and metadata fingerprints,
+and keep actual epoch/state and filesystem guards. Unexpected names are quoted.
+Source tests cover copies/moves, interrupted-copy retention, enrollment recovery,
+changed metadata, limits and unsafe files. This is an uncovered compatibility
+case in 0.3.3; it does not invalidate that release's stated tested scope.
+
+The user's latest instruction expressly forbids touching `~sarlev`, which will
+run elsewhere. This supersedes the one-time listing permission; no further reads
+or operations are allowed. Preserve all other production and storage constraints.
