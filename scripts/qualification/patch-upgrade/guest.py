@@ -113,17 +113,17 @@ def main():
  # A stopped fake created only by this offline guest supplies real Vere state.
  # Its separate test copy receives synthetic macOS metadata, never user data.
  nec=next(x for x in collector('0.3.3','snapshot')['instances'] if x['id']=='upgrade-nec')
- source=Path('/home/review/macos-import-source');assert not source.exists()
- run(['cp','-a','--reflink=auto',Path('/srv/urbit/piers')/nec['pier_path'],source],True,timeout=180)
- epoch=next(x.name for x in (source/'.urb/log').iterdir() if x.is_dir() and x.name.startswith('0i'))
+ import_source=Path('/home/review/macos-import-source');assert not import_source.exists()
+ run(['cp','-a','--reflink=auto',Path('/srv/urbit/piers')/nec['pier_path'],import_source],True,timeout=180)
+ epoch=next(x.name for x in (import_source/'.urb/log').iterdir() if x.is_dir() and x.name.startswith('0i'))
  companions={}
  for name in ['.urb/log/._0i391592','.urb/log/._data.mdb','.urb/log/._lock.mdb','.urb/log/.DS_Store','.urb/log/'+epoch+'/._data.mdb','.urb/log/'+epoch+'/.DS_Store','.urb/chk/.DS_Store']:
   data=b'\x00\x05\x16\x07\x00\x02\x00\x00synthetic metadata: '+name.encode()
-  path=source/name;path.write_bytes(data);path.chmod(0o600);os.chown(path,1000,1000)
+  path=import_source/name;path.write_bytes(data);path.chmod(0o600);os.chown(path,1000,1000)
   companions[name]=hashlib.sha256(data).hexdigest()
  def storage(v,*args,ok=True):
   return run([tool(v,'urbit-collector'),'--runner','local','--expected-runner-id',host['runner_id'],*args],True,ok=ok)
- old=storage('0.3.3','preview-pier','--source',source,'--storage-root','default',ok=False)
+ old=storage('0.3.3','preview-pier','--source',import_source,'--storage-root','default',ok=False)
  assert old.returncode and 'unrecognized epoch-log entry' in old.stderr,old.stderr
  report['macos_import']={'previous_refused_metadata':True,'synthetic_companion_sha256':companions}
  before=project('0.3.3'); runtime_before=runtime('0.3.3')
@@ -203,10 +203,10 @@ def main():
  wait(lambda:collector('0.3.4','hello'))
  assert before==project('0.3.4') and runtime_before==runtime('0.3.4')
  report['manager_restart_preserved_runtime']=True
- preview=json.loads(storage('0.3.4','preview-pier','--source',source,'--storage-root','default').stdout)
+ preview=json.loads(storage('0.3.4','preview-pier','--source',import_source,'--storage-root','default').stdout)
  assert preview['ship']=='~nec' and preview['network']=='fakenet',preview
  request='macos-import-nec'
- storage('0.3.4','import-pier',preview['instance_id'],'--source',source,'--path',preview['destination'],'--ship',preview['ship'],'--fingerprint',preview['source']['fingerprint'],'--http-port',str(preview['http_port']),'--request-id',request,'--confirm-stopped','--identify')
+ storage('0.3.4','import-pier',preview['instance_id'],'--source',import_source,'--path',preview['destination'],'--ship',preview['ship'],'--fingerprint',preview['source']['fingerprint'],'--http-port',str(preview['http_port']),'--request-id',request,'--confirm-stopped','--identify')
  def imported():
   snapshot=collector('0.3.4','snapshot')
   op=next((x for x in snapshot['operations'] if x['request_id']==request),None)
@@ -216,7 +216,7 @@ def main():
   return row if row['observed_state']=='stopped' and not row.get('active_operation_id') else None
  imported_row=wait(imported,180)
  target=Path('/srv/urbit/piers')/imported_row['pier_path']
- assert not source.exists()
+ assert not import_source.exists()
  for name,digest in companions.items():assert hashlib.sha256((target/name).read_bytes()).hexdigest()==digest,name
  assert runtime_before==runtime('0.3.4'),'import interrupted the unrelated running fake'
  assert ready('0.3.4','upgrade-nec','stopped')

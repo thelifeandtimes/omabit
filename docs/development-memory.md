@@ -6875,3 +6875,16 @@ case in 0.3.3; it does not invalidate that release's stated tested scope.
 The user's latest instruction expressly forbids touching `~sarlev`, which will
 run elsewhere. This supersedes the one-time listing permission; no further reads
 or operations are allowed. Preserve all other production and storage constraints.
+
+
+## M497 — Superseded 0.3.4 rehearsal fixture (2026-10-30)
+
+Status: unpublished candidate superseded, not release-qualified. Source
+`065475cd36da9406fa4e6cf86e7e23afec499e9f` passed synthetic source and desktop
+tests and the real QML-button service upgrade with fleet/access preservation.
+The final import rehearsal failed because its local `source` path variable was
+reused for shell QML text. This is a harness error, not evidence of an import
+product failure or a passed full rehearsal. Give the disposable pier its own
+`import_source` variable, freeze/rebuild, then repeat in a fresh offline guest.
+Retain compact failed-run evidence and retire only that powered-off generated
+guest's disks. M496's no-touch production constraints remain unchanged.
