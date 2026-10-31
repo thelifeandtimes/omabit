@@ -1,0 +1,64 @@
+{
+  "version": "0.3.4",
+  "source_commit": "bdfe47516bf2c0482cc8450c8c31e2f2db53612e",
+  "passed": true,
+  "non_destructive": true,
+  "previous_version": "0.3.3",
+  "runner_schema_before": 47,
+  "runner_schema_after": 47,
+  "service_result": "docs/releases/0.3.4/from-0.3.3-result.json",
+  "service_result_sha256": "798494167426c483d0cfa20efdb565a375a6952348f82e0a021668ea3ce76b4c",
+  "harness": "scripts/qualification/patch-upgrade",
+  "harness_sha256": {
+    "run.py": "3eb77112a9df225d3eb0d21b32b9d1d3127df517382be0e7683a620545280bc9",
+    "guest.py": "c3f44a12299a00db480c048e10bf65508a99d0366475240ba899d7ba80efa73a",
+    "desktop.py": "4d63a74fd525d4ee11815e47f5d152d257ebcab0d6882885095b66e8593e162e",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46"
+  },
+  "desktop_harness": "docs/releases/0.3.2/desktop-upgrade-harness.py",
+  "desktop_harness_sha256": "13cf7903e3c23c60c37eb99a73beca431bc9ddbd17d69fffff905884df49eccf",
+  "desktop_log": {
+    "name": "omabit-034-desktop-upgrade-02.log",
+    "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+  },
+  "checks": [
+    "authorization denial preserves fleet and access",
+    "retry binds and installs the exact target",
+    "running container and engine process identity unchanged",
+    "stopped intent, fleet settings, revisions, history and runner identity preserved",
+    "access keys, host pins and collector enrollment preserved",
+    "completed update is a no-op",
+    "manager restart preserves runtime",
+    "actual packaged desktop hot activation and cold restart",
+    "saved page and ship selection preserved",
+    "synthetic candidate failure retains prior working desktop",
+    "previous binary refuses synthetic macOS companions",
+    "new binary identifies and imports the disposable fake stopped",
+    "every synthetic companion hash preserved",
+    "unrelated running and stopped fakes remain unchanged"
+  ],
+  "storage": {
+    "used_before": 37416214528,
+    "used_after": 39610757120,
+    "scratch_limit": 4294967296,
+    "measurement_limits": {
+      "/srv/dev/urbit": {
+        "visible_bytes": 5809524736,
+        "unreadable_work_directories": 18,
+        "unmeasured_reserve": 4294967296
+      }
+    },
+    "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+    "network": "none",
+    "host_mounts": "OS files, QEMU, immutable base and fresh lab only"
+  },
+  "limits": [
+    "Only synthetic metadata and freshly created disposable fakes were tested. No protected production pier was read, copied, imported or operated on; whole-pier health and other historical formats are not asserted.",
+    "The service rehearsal covers 0.3.3 to 0.3.4 on the pristine Arch/Omarchy Linux/AMD64 owner-user stack, not remote upgrades, other distro runtime installations or power cuts. Earlier releases follow the documented intermediate paths to 0.3.3.",
+    "Real QML upgrade buttons use an exact-program guest-only polkit rule, not human password entry. The initial setup receipt is reconstructed from genuine previous-version installer and SSH-enrollment evidence.",
+    "The guest loads real sealed desktop archives with harness activation acknowledgements. A separate private native QML test covers hot activation, failed-candidate recovery, preferences and restart; stock Omarchy updater interaction remains manual.",
+    "Ordinary-owner storage accounting cannot descend into rootless overlay work directories. Charged usage includes an extra 4 GiB reserve for those unmeasured directories, separately from the 4 GiB guest scratch cap; this is not a complete physical measurement.",
+    "Import copies/moves preserve metadata as opaque files; no AppleDouble contents are interpreted and metadata does not substitute for required real state. Existing filesystem, ownership, source-change, stopped-source and epoch-format safeguards remain.",
+    "Cross-host handoff remains at 100 GB. Existing experimental capability and broader security/privacy review limits remain."
+  ]
+}

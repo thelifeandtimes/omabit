@@ -24,8 +24,9 @@ this release does not import or start existing ships automatically.
 
 The supported patch path is 0.3.3 → 0.3.4. Runner schema 47, desktop state 1 and
 bootstrap API 1 are unchanged. Earlier versions use the documented upgrade paths
-to 0.3.3 first. Qualification will record exact artifacts and the bounded
-disposable upgrade/import rehearsal before publication.
+to 0.3.3 first. The [qualification record](releases/0.3.4/qualification.json) records exact
+artifacts and the passed [upgrade/import rehearsal](releases/0.3.4/rehearsal.json),
+including its isolation and validation limits.
 
 Synthetic tests cover same-filesystem moves, cross-filesystem copying, interrupted
 copy preservation, enrollment recovery, metadata-change detection, epoch limits,

@@ -6888,3 +6888,22 @@ product failure or a passed full rehearsal. Give the disposable pier its own
 `import_source` variable, freeze/rebuild, then repeat in a fresh offline guest.
 Retain compact failed-run evidence and retire only that powered-off generated
 guest's disks. M496's no-touch production constraints remain unchanged.
+
+
+## M498 — 0.3.4 qualified macOS import patch (2026-10-30)
+
+Status: qualified frozen candidate; protected CI and publication pending.
+Supersedes M497's failed rehearsal and M496's source-only status, preserving its explicit no-touch rule for
+`~sarlev` and all other production exclusions. Frozen source is
+`bdfe47516bf2c0482cc8450c8c31e2f2db53612e`.
+The actual 0.3.3 → 0.3.4 QML-button upgrade preserves running container/engine
+processes, stopped intent, fleet history and access; denial/retry, no-op and
+manager restart pass. An independently copied guest-only stopped fake reproduces
+the old metadata rejection, then identifies and imports stopped with every
+synthetic metadata hash retained under the new runner. Native desktop recovery,
+preferences, hot/cold activation, archive provenance and all 132 CLI help entries
+pass. See [qualification](releases/0.3.4/qualification.json) for exact scope.
+Schema 47 remains 47. No installed host service/plugin or protected pier changes.
+The guest stays within its 4 GiB scratch allowance; storage accounting adds a
+separate 4 GiB reserve for unreadable DEV overlay work directories and records
+that limitation rather than claiming a complete measurement.
