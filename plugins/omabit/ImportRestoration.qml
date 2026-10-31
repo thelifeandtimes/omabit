@@ -43,7 +43,7 @@ QtObject {
   }
   function planValid(p,t) {
     if (!p || !t || p.runner_id!==t.runner || p.actor!==t.actor || p.instance_id!==t.instance || p.config_revision!==t.revision || p.source!==t.holding || p.restore_to!==t.source || p.destination!==t.destination || p.retain_at!==t.retainAt || !Model.validDigest(p.review_digest) || p.stage!==t.stage || ["review","retaining-destination","restoring-source","complete"].indexOf(p.stage)<0 || p.continuation!==(p.stage!=="review")) return false
-    if (![p.source_files,p.destination_files].every(function(n){return Number.isInteger(n)&&n>=0&&n<=8192}) || ![p.source_bytes,p.destination_bytes].every(function(n){return Number.isSafeInteger(n)&&n>=0&&n<=100000000000})) return false
+    if (![p.source_files,p.destination_files].every(function(n){return Number.isInteger(n)&&n>=0&&n<=8192}) || ![p.source_bytes,p.destination_bytes].every(function(n){return Number.isSafeInteger(n)&&n>=0&&n<=8796093022208})) return false
     var paths=[p.source,p.restore_to,p.destination,p.retain_at]
     return paths.every(function(path,index){return Model.hostPath(path) && paths.slice(0,index).every(function(other){return path!==other && path.indexOf(other+"/")!==0 && other.indexOf(path+"/")!==0})})
   }

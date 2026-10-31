@@ -104,3 +104,11 @@ old UI is a retained fallback, not evidence that underlying services were upgrad
 The dependency notice handles the local Omabit runner, using the matching bundled
 CLI and collector. It does not update remote hosts, manually copied CLI binaries,
 OS packages or Vere. Opening the menubar only checks; it never installs automatically.
+
+## 0.3.3 patch upgrade
+
+The exact0.3.2 desktop and services →0.3.3 path passes the same real QML-button
+authorization-denial/retry checks, with running container/engine continuity,
+stopped intent and access preserved. Schema47 remains47. A separate native
+desktop test preserves preferences through failed-candidate recovery, hot
+activation and restart. See [evidence and limits](releases/0.3.3/rehearsal.json).

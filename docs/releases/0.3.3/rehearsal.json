@@ -1,0 +1,53 @@
+{
+  "version": "0.3.3",
+  "source_commit": "bcc68e16f8d1100ee0e564972213f6193999a656",
+  "passed": true,
+  "non_destructive": true,
+  "previous_version": "0.3.2",
+  "runner_schema_before": 47,
+  "runner_schema_after": 47,
+  "service_result": "docs/releases/0.3.3/from-0.3.2-result.json",
+  "service_result_sha256": "599433961d87c1a18f6fb5c068b250c22dd5d2e052084be66877689a0e0fa020",
+  "harness": "scripts/qualification/patch-upgrade",
+  "harness_sha256": {
+    "run.py": "1fc65858fed97498386323423e7fbad4ab6244c4defb6733744bae6c73074002",
+    "guest.py": "ecd21e1fe4fb0b3275652a05f0d09d0e0c6520051ca13a922b25c1e4aa2e53a6",
+    "desktop.py": "8cf1a971c5ca4c7577476a3273d73bdeab305ef63691f206087105fdc0046389",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46"
+  },
+  "desktop_harness": "docs/releases/0.3.2/desktop-upgrade-harness.py",
+  "desktop_harness_sha256": "13cf7903e3c23c60c37eb99a73beca431bc9ddbd17d69fffff905884df49eccf",
+  "desktop_log": {
+    "name": "omabit-033-desktop-upgrade.log",
+    "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+  },
+  "checks": [
+    "authorization denial leaves fleet and keys intact",
+    "retry binds the original exact target and succeeds",
+    "running container and engine process identity unchanged",
+    "stopped ship remains stopped",
+    "fleet settings, revisions, history, ports and runner identity preserved",
+    "access keys, host pins and collector enrollment preserved",
+    "completed update is a no-op",
+    "manager restart preserves live runtime",
+    "actual packaged desktop hot activation and cold restart",
+    "saved page and ship selection preserved",
+    "synthetic candidate failure retains prior working desktop"
+  ],
+  "storage": {
+    "used_before": 32966512640,
+    "used_after": 35356884992,
+    "scratch_limit": 4294967296,
+    "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+    "network": "none",
+    "host_mounts": "OS files, QEMU, immutable base and fresh lab only"
+  },
+  "limits": [
+    "Real QML buttons use an exact-program guest-only polkit rule, not human password entry. The initial setup receipt is reconstructed from genuine 0.3.2 installer and SSH-enrollment evidence.",
+    "The service guest imports real sealed desktop archives with harness activation acknowledgements. A separate private native QML test covers hot activation, failed-candidate recovery, preferences and restart; stock Omarchy updater interaction remains manual.",
+    "The service rehearsal covers 0.3.2 to 0.3.3 on the pristine Arch/Omarchy Linux/AMD64 owner-user stack, not remote upgrades, other distro runtime installations or power cuts. Older releases use the documented prior paths to 0.3.2.",
+    "Large import tests use sparse logical-size fixtures and a 512 GiB same-filesystem move plus small physical cross-filesystem copies. No full physical transfer above 100 GB or throughput claim.",
+    "Ubuntu Jammy authenticated installed-package verification passed read-only on rooftop; no new remote installation, package transaction, production import or service change was performed.",
+    "Cross-host handoff remains at 100 GB. Existing experimental capability and broader security/privacy review limits remain."
+  ]
+}

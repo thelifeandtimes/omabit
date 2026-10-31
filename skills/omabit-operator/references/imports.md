@@ -18,6 +18,14 @@ filesystem review. Use its `source.fingerprint`, `ship`, `instance_id`,
 `destination`, `http_port`, `storage_root` and `in_place` values. Do not infer the
 ship or network from a directory label or guess a free port.
 
+Current source permits local imports up to 8 TiB / 8192 entries / depth 32;
+0.3.2 and earlier retain the former 100 GB local bound; update both desktop and
+runner to0.3.3. Cross-host handoff
+is separately capped at 100 GB. A remote host-path import runs locally on that
+runner. Cross-filesystem imports need the source's logical size plus 8 GiB free;
+same-filesystem renames need 8 GiB headroom. Do not bypass these checks or infer
+free space from allocated sparse-file blocks. Transfer deadlines scale with size.
+
 New import destinations use `<instance>/<patp-without-tilde>`; `zod/zod` is valid.
 Only that exclusive instance parent is mounted into Docker. Existing legacy
 `pier` children can be imported through the guided path; do not rename a registered

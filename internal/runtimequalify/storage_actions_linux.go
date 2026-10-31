@@ -290,12 +290,12 @@ func deletionTreeBoundary(ctx context.Context, state *ManagedState, mount, leaf 
 
 func applyExternalImport(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies, destinationSync ...func(string) error) (ManagedState, ManagedObservation, error) {
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Minute)
-	defer cancel()
 	intent := state.ExternalImport
 	if persist == nil || intent == nil || intent.Stage != "reviewed" || state.Prepared || state.Storage == nil || state.Adoption == nil {
 		return state, unknown, errors.New("import requires its reviewed, unstarted source intent")
 	}
+	ctx, cancel := context.WithTimeout(ctx, localImportTimeout(intent.Source.Bytes))
+	defer cancel()
 	q, err := managedSession(&state, persist, d)
 	if err != nil {
 		return state, unknown, err

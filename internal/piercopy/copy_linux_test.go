@@ -151,16 +151,16 @@ func TestCopyPreservesInertDockedBinaryBytesAndRejectsExternalLinks(t *testing.T
 	}
 }
 
-func TestInventoryAccepts100GBAndRejectsAggregateOverflow(t *testing.T) {
+func TestInventoryAcceptsLargeLocalPierAndRejectsAggregateOverflow(t *testing.T) {
 	s, _, source, _ := tree(t)
-	const limit int64 = 100_000_000_000
-	// Only metadata is traversed here: the sparse file allocates no 100 GB payload.
+	const limit int64 = MaxBytes
+	// Only metadata is traversed here: the sparse file allocates no multi-terabyte payload.
 	if err := os.Truncate(filepath.Join(s, ".urb/chk/image.bin"), limit); err != nil {
 		t.Fatal(err)
 	}
 	entries, err := inventory(context.Background(), source)
 	if err != nil {
-		t.Fatal("100 GB tree refused", err)
+		t.Fatal("large local tree refused", err)
 	}
 	if got := digest(entries).Bytes; got != limit {
 		t.Fatalf("truncated logical size: %d", got)
@@ -169,7 +169,7 @@ func TestInventoryAccepts100GBAndRejectsAggregateOverflow(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, err := inventory(context.Background(), source); err == nil {
-		t.Fatal("tree larger than 100 GB accepted")
+		t.Fatal("tree larger than local bound accepted")
 	}
 }
 

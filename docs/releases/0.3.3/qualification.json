@@ -1,0 +1,154 @@
+{
+  "version": "0.3.3",
+  "platform": "linux/amd64",
+  "source_commit": "bcc68e16f8d1100ee0e564972213f6193999a656",
+  "source_tree": "a37e7785b4a94cbe3d70059c99d3d24b11466ac3",
+  "backend_source_sha256": "bdbeb4e0ed817424e460ec781691f100fdc58c5870138259318608856d38991a",
+  "channel": "stable",
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "runner_schema": 47,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "evidence": "docs/releases/0.3.3/rehearsal.json",
+    "evidence_sha256": "54cb94318b8530b29d7636b3171f6f7d95450ae31d8fb49e9c0e433a9d87e806",
+    "paths": [
+      {
+        "versions": [
+          "0.3.2",
+          "0.3.3"
+        ],
+        "evidence": "docs/releases/0.3.3/rehearsal.json",
+        "evidence_sha256": "54cb94318b8530b29d7636b3171f6f7d95450ae31d8fb49e9c0e433a9d87e806",
+        "scope": "Exact binary service upgrade via QML buttons, running/stopped ship preservation, desktop recovery, preferences and restart"
+      }
+    ]
+  },
+  "validation": {
+    "passed": true,
+    "offline_help_entries": 132,
+    "native_plugin_tests": 9,
+    "bootstrap_state_tests": 12,
+    "skill_package_tests": 5,
+    "release_policy_tests": 15,
+    "service_upgrade_qt_cases": 4,
+    "archive_checksums_and_provenance": true,
+    "source_regressions": "Full changed-package tests and targeted race tests recorded at 5741b3a; runtime inputs unchanged by release version/harness commit. Protected CI must pass on the complete release PR before publication.",
+    "logs": {
+      "omabit-033-package-02": {
+        "name": "omabit-033-package-02.log",
+        "sha256": "ce7daf297e7037f9ba50d54b9fe5d2da345b76e360c42b6e2d478d580f0e1d66"
+      },
+      "omabit-033-ci-qml-fixed": {
+        "name": "omabit-033-ci-qml-fixed.log",
+        "sha256": "6a27b368bd8d670f17959acbaf244de60aac3fe680953de995de4f42945c181e"
+      },
+      "omabit-033-native": {
+        "name": "omabit-033-native.log",
+        "sha256": "3432966ad85d2d232c082c465b86a36c9fadf3e8a0a3756b2b50efe91dcd78e1"
+      },
+      "omabit-033-policy": {
+        "name": "omabit-033-policy.log",
+        "sha256": "dc9db165f273dc5358abfb3435d2896b668dff9af9ae42e556fb49eb1f9d4e71"
+      },
+      "omabit-033-bootstrap": {
+        "name": "omabit-033-bootstrap.log",
+        "sha256": "839d61c526ddca237ba335e8989bd150862bcf8b87abab6bc4fcb2370549ef3e"
+      },
+      "omabit-033-upgrade-ui": {
+        "name": "omabit-033-upgrade-ui.log",
+        "sha256": "41a85872561a7b413c54e158ddae4beecd8ebe0e6704b854057540add3526207"
+      },
+      "omabit-033-archive": {
+        "name": "omabit-033-archive.log",
+        "sha256": "ae8996ddb7f01d2b95c414f87c4918d1d43019921521f21ca964beb47a5849fb"
+      },
+      "omabit-033-desktop-upgrade": {
+        "name": "omabit-033-desktop-upgrade.log",
+        "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+      },
+      "omabit-033-cli": {
+        "name": "omabit-033-cli.log",
+        "sha256": "f2f0ac00b5398b09c937e71387b71885ec979c613a85dd34c6d4752556c138c3"
+      },
+      "omabit-033-skills": {
+        "name": "omabit-033-skills.log",
+        "sha256": "f5b0975bbc76eebbbbfbd9ff17140ccc843d8aa8dd46d365fb85c9b5f5446e84"
+      },
+      "omabit-polish-runtime-full": {
+        "name": "omabit-polish-runtime-full.log",
+        "sha256": "5dca0500db7232b6e06576c42b7a779966610a5778e6019b301b1518493642d0"
+      },
+      "omabit-polish-hostcompat-final": {
+        "name": "omabit-polish-hostcompat-final.log",
+        "sha256": "200e9ac604ea79bfbf669c590f5e9f832898877df434dd7e2dec5bcffd055462"
+      },
+      "omabit-polish-hostcompat-race-final": {
+        "name": "omabit-polish-hostcompat-race-final.log",
+        "sha256": "792b5ed20c54fc74624b684cf0e34659ef993399b0f800cf088105cb9a24da62"
+      },
+      "omabit-polish-packages": {
+        "name": "omabit-polish-packages.log",
+        "sha256": "cd5c78a9f000995459a04e43fa6bbe80a63b7bd599aa2cbdd8f9c43d717e04c3"
+      },
+      "omabit-polish-race": {
+        "name": "omabit-polish-race.log",
+        "sha256": "e3c8c1b3435eeb10d85e0a669181e71f9dd934321ceedbbe7df8ecc63ccd8aa6"
+      },
+      "omabit-polish-model": {
+        "name": "omabit-polish-model.log",
+        "sha256": "57948e06390f306bd02e0bfc7f0261a5f91c5b54dfad536d09b1fab532b5c4d2"
+      },
+      "omabit-polish-native": {
+        "name": "omabit-polish-native.log",
+        "sha256": "21be27d09b1113d9e8f3ff9725d5887ca0aa7f868b6618806b0b1f28b2a39e25"
+      }
+    }
+  },
+  "frozen_artifacts": {
+    "assets": [
+      {
+        "name": "omabit-0.3.3-linux-amd64.tar.gz",
+        "bytes": 31532954,
+        "sha256": "412108abe8b7b59b5fe88ef88379fa7b3f4d5fc9fe9e770302039c05062aca5f"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 18077839,
+        "sha256": "138d423d07cc720b211916ae75e8564d950af349a16cb8fbe91317769c51d9fc"
+      },
+      {
+        "name": "omabit-recommended-apps-0.3.3.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.3.3.tar.gz",
+        "bytes": 23503,
+        "sha256": "700bc652f147f6bb56aba83347dc87a8c55417b95e3f2fc8f63cd00fbfa5ed74"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 12504366,
+        "sha256": "56f5437cbda823999ecf538b547563adbe9d6f9feaf44c6e7a8c67ae282c0905"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 26574094,
+        "sha256": "c292cd37c87fd030dc4172a20500fc829244c460218bc6515ad13877a0d1c596"
+      }
+    ],
+    "go_version": "go version go1.27.3 linux/amd64"
+  },
+  "scope_limits": [
+    "Real QML buttons use an exact-program guest-only polkit rule, not human password entry. The initial setup receipt is reconstructed from genuine 0.3.2 installer and SSH-enrollment evidence.",
+    "The service guest imports real sealed desktop archives with harness activation acknowledgements. A separate private native QML test covers hot activation, failed-candidate recovery, preferences and restart; stock Omarchy updater interaction remains manual.",
+    "The service rehearsal covers 0.3.2 to 0.3.3 on the pristine Arch/Omarchy Linux/AMD64 owner-user stack, not remote upgrades, other distro runtime installations or power cuts. Older releases use the documented prior paths to 0.3.2.",
+    "Large import tests use sparse logical-size fixtures and a 512 GiB same-filesystem move plus small physical cross-filesystem copies. No full physical transfer above 100 GB or throughput claim.",
+    "Ubuntu Jammy authenticated installed-package verification passed read-only on rooftop; no new remote installation, package transaction, production import or service change was performed.",
+    "Cross-host handoff remains at 100 GB. Existing experimental capability and broader security/privacy review limits remain."
+  ],
+  "policy": "Frozen artifacts remain immutable. All protected source/race/QML/release-policy checks must pass before merge and publication; no bypass."
+}

@@ -12,6 +12,8 @@ import (
 	"strings"
 	"syscall"
 	"unicode/utf8"
+
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
 // WriteArchive is an internal stopped-handoff stream, not a historical backup API.
@@ -19,6 +21,11 @@ func WriteArchive(ctx context.Context, root *os.Root, to io.Writer) (Summary, er
 	entries, err := inventory(ctx, root)
 	if err != nil {
 		return Summary{}, err
+	}
+	// Refuse before emitting any stream bytes; local copy's larger bound must
+	// not silently change the existing cross-host transfer protocol.
+	if digest(entries).Bytes > protocol.MaxPierBytes {
+		return Summary{}, errors.New("pier exceeds the 100 GB host-handoff limit")
 	}
 	w := tar.NewWriter(to)
 	for i, e := range entries {
@@ -84,7 +91,7 @@ func ReadArchive(ctx context.Context, from io.Reader, root *os.Root) (Summary, e
 			}
 			continue
 		}
-		if h.Typeflag != tar.TypeReg || name == "." || h.Size < 0 || h.Size > MaxBytes-total {
+		if h.Typeflag != tar.TypeReg || name == "." || h.Size < 0 || h.Size > protocol.MaxPierBytes-total {
 			return Summary{}, errors.New("unsupported handoff entry or byte limit")
 		}
 		f, e := root.OpenFile(name, os.O_CREATE|os.O_EXCL|os.O_WRONLY|syscall.O_NOFOLLOW, 0600)

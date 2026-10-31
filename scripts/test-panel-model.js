@@ -150,9 +150,9 @@ const settingsMoveSource={...moveSource,features:["host-handoff","runtime-settin
 const settingsMoveDest={...moveDest,features:["host-handoff","runtime-settings-handoff"]};
 assert.match(model.hostMoveProblem([settingsMoveSource,moveDest],moveTarget,moveDestination,"arrived","","",now),/runtime-settings-handoff/);
 assert.equal(model.hostMoveProblem([settingsMoveSource,settingsMoveDest],moveTarget,moveDestination,"arrived","","",now),"");
-const largeImportSource={run_id:"a".repeat(32),content_digest:"b".repeat(64),ship:"~zod",files:7,bytes:100000000000,qualified_at:new Date(now).toISOString()};
+const largeImportSource={run_id:"a".repeat(32),content_digest:"b".repeat(64),ship:"~zod",files:7,bytes:8796093022208,qualified_at:new Date(now).toISOString()};
 assert.equal(model.validImportSource(largeImportSource),true);
-assert.equal(model.validImportSource({...largeImportSource,bytes:100000000001}),false);
+assert.equal(model.validImportSource({...largeImportSource,bytes:8796093022209}),false);
 assert.notEqual(model.hostMoveProblem([moveSource,{...moveDest,runner_id:"replacement"}],moveTarget,moveDestination,"arrived","","",now),"");
 assert.notEqual(model.hostMoveProblem([moveSource,moveDest],moveTarget,moveDestination,"arrived","22","",now),"");
 assert.notEqual(model.hostMoveProblem([moveSource,moveDest],{...moveTarget,revision:0},moveDestination,"arrived","","",now),"");
@@ -529,3 +529,17 @@ require("./test-rc11-panel-state.js");
 
 // Restoration proof must survive fleet refresh, retirement and late callbacks.
 require("./test-import-restoration-state.js");
+
+const navRequest={...importTarget,path:"fakeships/zod/zod",ship:"~zod"};
+const navConnection=clone(importConnection);
+navConnection.snapshot.operations[0].status="succeeded";
+Object.assign(navConnection.snapshot.instances[0],{pier_path:navRequest.path,ship:navRequest.ship});
+navConnection.snapshot.instances[0].external_import.stage="complete";
+assert.equal(model.completedImportTarget([navConnection],navRequest,now).instance.id,"zod");
+for(const field of ["runner","connection","instance","source","path","ship","request","operation"])
+  assert.equal(model.completedImportTarget([navConnection],{...navRequest,[field]:"unrelated"},now),null,field);
+for(const change of [c=>c.status="unavailable",c=>c.snapshot.instances[0].config_revision++,c=>c.snapshot.instances=[],c=>c.snapshot.operations[0].status="failed",c=>c.snapshot.instances[0].external_import.stage="copying"]){
+  const altered=clone(navConnection);change(altered);assert.equal(model.completedImportTarget([altered],navRequest,now),null);
+}
+assert.equal(model.completedImportTarget([navConnection],navRequest,now+3600000),null);
+console.log("PASS: import navigation requires the exact successful receipt and current matching ship; no stale, failed or reused-name redirection");

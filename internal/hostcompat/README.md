@@ -292,7 +292,11 @@ APT Packages data is streamed through SHA-256 and a one-stanza parser, including
 large Ubuntu universe indexes. It retains only exact installed
 name/version/architecture targets, not every version or description. Each unchanged
 index is decoded once for the required stack, with at most 262,144 stanzas per
-index and 64 target matches. Authenticated package tar members are hashed directly from bounded native output,
+index and 64 target matches. Unselected lines/folded fields are bounded at 1 MiB
+(to handle Ubuntu's large `Provides` entries); selected fields remain single-line
+and at most 4096 bytes. Duplicate/malformed fields are still refused. Separate
+component entries can share a Release only with identical source/key/architecture
+authority. Authenticated package tar members are hashed directly from bounded native output,
 without retaining the expanded archive in memory. Trailing output counts toward
 the aggregate limit, and decoder failure discards partial hashes without buffered
 retry. Shared authenticated payload hashes are reused within one refresh. No repository-sized slice of paragraph maps is built.
@@ -336,3 +340,9 @@ latency must not be mistaken for incompatible engine metadata by a separate
 API compatibility, rootless/cgroup configuration, data root and engine identity.
 Timeout/cancellation identity is preserved without exposing response bodies or
 arbitrary transport diagnostics. This does not retry a runtime mutation.
+
+The2026-10-29 rooftop diagnostic adds native Ubuntu22.04 read-only signature,
+archive and installed-payload verification. It does not qualify a native APT
+transaction or publication of privileged receipts on that host; those remain
+separate installation/upgrade checks. See
+[the report](../../docs/diagnostics/2026-10-29-production-import-polish.md).

@@ -208,7 +208,7 @@ func VerifyCurrentWithOptions(ctx context.Context, options VerificationOptions) 
 		if activeFetcher != nil && activeFetcher.lastError == errAPTSandboxUnavailable {
 			return report, errAPTSandboxUnavailable
 		}
-		return report, errors.New("some required packages lack authenticated matching local payload evidence")
+		return report, packageVerificationError(report)
 	}
 	return report, nil
 }

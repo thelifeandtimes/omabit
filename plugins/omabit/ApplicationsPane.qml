@@ -62,10 +62,16 @@ Column {
       border.color:requested?Design.accent:Design.line
       Column {
         id:content;anchors.left:parent.left;anchors.right:parent.right;anchors.top:parent.top;anchors.margins:Style.space(10);spacing:Style.space(6)
-        Label { width:parent.width;text:(row.modelData.name||row.modelData.target.plugin_id)+(row.requested?" · requested":"");font.bold:true }
         RowLayout {
           width:parent.width;spacing:Style.space(8)
-          Item { Layout.fillWidth:true }
+          Label {
+            objectName:"apps-title-"+row.modelData.target.plugin_id
+            Layout.fillWidth:true;Layout.minimumWidth:0
+            text:(row.modelData.name||row.modelData.target.plugin_id)+(row.requested?" · requested":"")
+            font.bold:true;wrapMode:Text.NoWrap;elide:Text.ElideRight
+            HoverHandler { id:titleHover }
+            Hint { text:parent.text;visible:titleHover.hovered }
+          }
           SwitchField {
             id:approval
             objectName:"apps-consent-"+row.modelData.target.plugin_id

@@ -1,0 +1,183 @@
+{
+  "format": 1,
+  "passed": true,
+  "steps": [],
+  "sources": {
+    "0.3.2": "742e56ba968c4eb4544fae52c7eb41f31998d6df",
+    "0.3.3": "bcc68e16f8d1100ee0e564972213f6193999a656"
+  },
+  "starting_versions": {
+    "desktop": "0.3.2",
+    "collector": "0.3.2",
+    "runner": "0.3.2"
+  },
+  "receipt_fixture": "published format reconstructed from genuine 0.3.2 installer result and 0.3.2 SSH enrollment; old desktop setup-status verified ready",
+  "baseline": {
+    "runner_id": "runner-ce2c6dd763fc35f236ab200e6fea2af2",
+    "instances": [
+      {
+        "id": "upgrade-nec",
+        "ship": "~nec",
+        "mode": "fake",
+        "label": "upgrade-nec",
+        "config": {
+          "http_port": 19181,
+          "ames_port": 34343,
+          "loom": 31
+        },
+        "config_revision": 1,
+        "applied_revision": 1,
+        "desired_state": "stopped",
+        "pier_path": "fakeships/upgrade-nec/nec",
+        "bootstrap": {
+          "kind": "recommended",
+          "pill": {
+            "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+            "bytes": 59351751
+          }
+        }
+      },
+      {
+        "id": "upgrade-zod",
+        "ship": "~zod",
+        "mode": "fake",
+        "label": "upgrade-zod",
+        "config": {
+          "http_port": 19180,
+          "ames_port": 34343,
+          "loom": 31
+        },
+        "config_revision": 1,
+        "applied_revision": 1,
+        "desired_state": "running",
+        "pier_path": "fakeships/upgrade-zod/zod",
+        "bootstrap": {
+          "kind": "recommended",
+          "pill": {
+            "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+            "bytes": 59351751
+          }
+        }
+      }
+    ],
+    "operations": [
+      {
+        "id": "op-b23d670755d4ba9627d7a3552dc25f3b",
+        "request_id": "upgrade-nec-stop",
+        "instance_id": "upgrade-nec",
+        "kind": "stop",
+        "actor": "local-uid:1000",
+        "status": "succeeded",
+        "config_revision": 1,
+        "created_at": "2026-10-30T23:37:15.191415253Z",
+        "finished_at": "2026-10-30T23:37:21.238068465Z"
+      },
+      {
+        "id": "op-3451679fdbf2be3827872159ae4f3e0c",
+        "request_id": "upgrade-nec-start",
+        "instance_id": "upgrade-nec",
+        "kind": "start",
+        "actor": "local-uid:1000",
+        "status": "succeeded",
+        "config_revision": 1,
+        "created_at": "2026-10-30T23:32:53.745060844Z",
+        "finished_at": "2026-10-30T23:37:14.227717365Z"
+      },
+      {
+        "id": "op-80f7b867f938c8b566febaa848a7cb77",
+        "request_id": "upgrade-nec-create",
+        "instance_id": "upgrade-nec",
+        "kind": "register-fake",
+        "actor": "local-uid:1000",
+        "status": "succeeded",
+        "config_revision": 1,
+        "created_at": "2026-10-30T23:32:52.363573643Z",
+        "finished_at": "2026-10-30T23:32:52.363573643Z"
+      },
+      {
+        "id": "op-2f1d202d8ea2d731946a7cda9ab1ea72",
+        "request_id": "upgrade-zod-start",
+        "instance_id": "upgrade-zod",
+        "kind": "start",
+        "actor": "local-uid:1000",
+        "status": "succeeded",
+        "config_revision": 1,
+        "created_at": "2026-10-30T23:26:50.867745413Z",
+        "finished_at": "2026-10-30T23:32:50.74035242Z"
+      },
+      {
+        "id": "op-88e5c91ad8f6e4a2bf249e56fd19cc07",
+        "request_id": "upgrade-zod-create",
+        "instance_id": "upgrade-zod",
+        "kind": "register-fake",
+        "actor": "local-uid:1000",
+        "status": "succeeded",
+        "config_revision": 1,
+        "created_at": "2026-10-30T23:26:50.236988473Z",
+        "finished_at": "2026-10-30T23:26:50.236988473Z"
+      }
+    ]
+  },
+  "runtime_before": {
+    "engine": "InvocationID=78a7c47643904d14a90aba4009645ff8\nMainPID=492\n",
+    "containers": "638d73a4809bc476f115d5f6c4ae11205b0d247ed04ffc613aa8afbfb761b4e0 1947 2026-10-30T23:26:59.881624727Z\n"
+  },
+  "schema_before": 47,
+  "desktop_transition": {
+    "records": [
+      {
+        "version": "0.3.2",
+        "release": "4b193f770ed1b002265c91a4e91d3e43710110612134268f02c1b8dbbd8cbef2",
+        "source_commit": "742e56ba968c4eb4544fae52c7eb41f31998d6df"
+      },
+      {
+        "version": "0.3.3",
+        "release": "9d7f07e2155488ba64f3c6d5fd2d5d94e3295b5581ff815056510f83c111c97a",
+        "source_commit": "bcc68e16f8d1100ee0e564972213f6193999a656"
+      }
+    ],
+    "directory": "/home/review/.cache/omabit/releases/9d7f07e2155488ba64f3c6d5fd2d5d94e3295b5581ff815056510f83c111c97a",
+    "loader": "actual native sealed archive importer; activation acknowledgements driven by guest harness"
+  },
+  "offered": {
+    "version": 1,
+    "runner_id": "runner-ce2c6dd763fc35f236ab200e6fea2af2",
+    "target_sha256": "c292cd37c87fd030dc4172a20500fc829244c460218bc6515ad13877a0d1c596",
+    "installed_sha256": "7ab550ca504000098d132ab2e35623d768f2b6eda66ac11ae029ce3e760ceb2a",
+    "target_build": "bcc68e16f8d1",
+    "installed_build": "742e56ba968c",
+    "available": true,
+    "pending": false,
+    "message": "Update the local runner to match this desktop bundle. OS authorization is required."
+  },
+  "denied_authorization": {
+    "error": "Host setup was not authorized. Your existing installation was preserved; try again when ready.",
+    "preserved": true
+  },
+  "upgraded": {
+    "state": {
+      "busy": false,
+      "status": {
+        "version": 1,
+        "runner_id": "runner-ce2c6dd763fc35f236ab200e6fea2af2",
+        "target_sha256": "c292cd37c87fd030dc4172a20500fc829244c460218bc6515ad13877a0d1c596",
+        "installed_sha256": "c292cd37c87fd030dc4172a20500fc829244c460218bc6515ad13877a0d1c596",
+        "target_build": "bcc68e16f8d1",
+        "installed_build": "bcc68e16f8d1",
+        "available": false,
+        "pending": false,
+        "message": "Local services match this desktop bundle."
+      },
+      "error": "",
+      "message": "Service update completed. Your fleet is ready.",
+      "commands": 4,
+      "refreshes": 1,
+      "apply_text": "Update services"
+    },
+    "schema_after": 47,
+    "ship_continuity": true,
+    "access_preserved": true
+  },
+  "recheck_noop": true,
+  "manager_restart_preserved_runtime": true
+}

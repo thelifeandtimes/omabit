@@ -1,4 +1,4 @@
-# Omabit 0.3.1 binary bundle
+# Omabit 0.3.3 binary bundle
 
 This Linux x86-64 bundle contains prebuilt `omabit`, `urbit-collector`,
 `urbit-runner`, the Omarchy plugin, service templates, CLI references and agent
@@ -46,12 +46,14 @@ OS packages. Guided setup explains any missing dependencies before installation.
 
 ## Install or update a runner
 
-For an existing local Omabit Setup installation, use **Setup → Local services &
-updates → Check services → Update services**, then authorize the OS prompt.
-See the [guided upgrade](guided-service-upgrades.md). The commands below remain
+For an existing local Omabit Setup installation, choose **Update Dependencies**
+in the menubar widget, or **Setup → Local services & updates → Check services →
+Update services**, then authorize the OS prompt.
+See the [guided upgrade](https://github.com/thelifeandtimes/omabit/blob/master/docs/guided-service-upgrades.md). The commands below remain
 for standalone/headless installations.
 
-The supported stable upgrade sources are owner-user0.1.0 and0.2.0 (schema21).
+The qualified previous-stable path is owner-user0.3.2 →0.3.3. Earlier stable
+installations use the documented intermediate paths to0.3.2 first.
 The target uses **schema47**, management protocol1 and desktop/bootstrap state1.
 Finish pending management work first. Prepare a new launcher bundle with the
 new executable, reuse the existing owner and public operator key, then install:
@@ -78,8 +80,8 @@ refuse the newer schema; do not lower its marker, erase journals or re-enroll
 piers to downgrade. Older RC19 hosts require the separately documented offline
 bridge. This bundle does not provide an OS-account or pier-location migration.
 
-Read the [0.3.0 upgrade guide](https://github.com/thelifeandtimes/omabit/blob/v0.3.0/docs/releases-0.3-upgrade.md)
-and [qualification record](https://github.com/thelifeandtimes/omabit/blob/master/docs/releases/0.3.0/qualification.json)
+Read the [0.3.3 upgrade guide](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-0.3.3.md)
+and [qualification record](https://github.com/thelifeandtimes/omabit/blob/master/docs/releases/0.3.3/qualification.json)
 for verified behavior and limits. The qualification record may live in the
 protected master distribution commit when the tag identifies frozen source.
 
@@ -88,7 +90,7 @@ protected master distribution commit when the tag identifies frozen source.
 New-ship forms offer Bare and Recommended Apps. Recommended Apps uses the existing
 stable pill: **59,351,751 bytes**, SHA-256
 `85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62`.
-0.3.1 republishes those unchanged bytes. The configured compatibility alias
+0.3.3 republishes those unchanged bytes. The configured compatibility alias
 `https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill` resolves to the
 immutable RC.11 asset and compiled hash/size; changed content fails verification.
 No new application composition or OTA inventory is claimed.
@@ -97,8 +99,8 @@ Bare uses Vere's standard bootstrap selection. The pinned Vere4.6 bootstrap
 used in project/runtime qualification is a different217,421,172-byte artifact;
 it is not the Recommended Apps asset. Explicit custom HTTPS/local pill inputs
 remain available, optionally with `--pill-sha256` and `--pill-size`. Initialized
-piers resume without reapplying a pill. Pill uploads permit4GB; stopped-pier moves
-permit100GB logical contents. Resource and identity/port/storage checks still apply.
+piers resume without reapplying a pill. Pill uploads permit4GB; local stopped-pier
+imports permit8 TiB, while cross-host handoff remains capped at100GB logical contents. Resource and identity/port/storage checks still apply.
 
 ## CLI and agent guidance
 
@@ -124,6 +126,6 @@ remain incomplete. Interrupted or uncertain operations retain their records for
 review. Production and development profiles need separate runners/storage when
 runtime isolation is required; a desktop profile alone does not isolate a ship.
 
-[Release notes](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-0.3.0.md)
+[Release notes](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-0.3.3.md)
 cover the support scope. Tend is maintained separately at
 [thelifeandtimes/tend](https://github.com/thelifeandtimes/tend).

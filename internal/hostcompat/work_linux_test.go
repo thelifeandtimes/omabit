@@ -169,7 +169,8 @@ func TestTargetedStreamingUbuntuSizedPackageIndexAndSharedLookup(t *testing.T) {
 	piece := []byte("Package: unrelated\nVersion: 1\nArchitecture: amd64\nDescription: " + strings.Repeat("d", 1024) + "\n\n")
 	target := []byte("Package: target\nVersion: 29.9.1-1\nArchitecture: amd64\nSize: 1\nSHA256: " + strings.Repeat("a", 64) + "\nFilename: pool/target.deb\n\n")
 	reader := func() io.Reader {
-		return io.MultiReader(&repeatedReader{piece: piece, remaining: 40000}, bytes.NewReader(target))
+		unrelated := strings.NewReader("Package: large-provides\nVersion: 1\nArchitecture: amd64\nProvides: " + strings.Repeat("p", 70841) + "\n\n")
+		return io.MultiReader(&repeatedReader{piece: piece, remaining: 40000}, unrelated, bytes.NewReader(target))
 	}
 	h := sha256.New()
 	size, err := io.Copy(h, reader())
@@ -191,7 +192,7 @@ func TestTargetedStreamingUbuntuSizedPackageIndexAndSharedLookup(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(packages) != 1 || packages[0]["Package"] != "target" || w.records != 40001 {
+	if len(packages) != 1 || packages[0]["Package"] != "target" || w.records != 40002 {
 		t.Fatal("unrelated repository paragraphs retained or records unbounded")
 	}
 	if _, _, err := v.aptIndex(context.Background(), "var/lib/apt/lists/fixture_Packages.lz4", index, nativePackage{name: "also-needed", version: "1", arch: "amd64"}); err != nil {

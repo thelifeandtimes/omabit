@@ -9,6 +9,7 @@ import (
 	"io/fs"
 	"net/url"
 	"path"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -138,17 +139,28 @@ func aptSources(fsys fs.FS) ([]aptSource, []string, error) {
 	if len(result) == 0 {
 		return nil, nil, errEvidence
 	}
-	seen := map[string]string{}
+	seen := map[string]int{}
 	var unique []aptSource
 	for _, s := range result {
 		key := s.releasePath()
-		if prior, ok := seen[key]; ok {
-			if prior != s.id() {
+		if index, ok := seen[key]; ok {
+			prior := &unique[index]
+			// Ubuntu's default sources.list lists main/restricted, universe and
+			// multiverse separately for the same signed Release. Combine only
+			// component scopes with identical URI, architecture and key authority.
+			// Never let a second source broaden another source's signing keys.
+			if prior.URI != s.URI || prior.Suite != s.Suite || !slices.Equal(prior.Architectures, s.Architectures) || !slices.Equal(prior.Keyrings, s.Keyrings) {
+				return nil, nil, errEvidence
+			}
+			prior.Components = append(prior.Components, s.Components...)
+			sort.Strings(prior.Components)
+			prior.Components = uniqueStrings(prior.Components)
+			if len(prior.Components) > 32 {
 				return nil, nil, errEvidence
 			}
 			continue
 		}
-		seen[key] = s.id()
+		seen[key] = len(unique)
 		unique = append(unique, s)
 	}
 	sort.Slice(unique, func(i, j int) bool { return unique[i].id() < unique[j].id() })

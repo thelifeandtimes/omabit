@@ -132,9 +132,12 @@ The confirmed 0.1.0 desk/publisher composition and deferred `%omachan` work
 are recorded in the [pill release plan](../../docs/pill-release.md).
 
 Version 0.22.1 removes the fixed registration-count cap throughout the runner,
-collector and UI. Stopped-pier copy/handoff contents can total **100 GB
-(100,000,000,000 bytes)**, with a separate 32 MiB archive allowance. The size boundary
-is tested using sparse metadata; a real 100 GB transfer has not been qualified.
+collector and UI. That release capped stopped-pier copy/handoff contents at
+**100 GB (100,000,000,000 bytes)**, with a separate 32 MiB archive allowance.
+Current polishing source raises local import/copy to 8 TiB while retaining the
+100 GB cross-host handoff cap. Update both desktop and runner to0.3.3 for the local fix.
+Size boundaries and a 512 GiB same-filesystem import are tested using sparse
+fixtures; a full transfer above 100 GB has not been qualified.
 
 Version 0.22 adds **Move to another host** on a ship's Overview page. Stop first,
 select a second pinned operator runner, and explicitly move its current pier.

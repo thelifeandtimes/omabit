@@ -6746,3 +6746,105 @@ receipts remain evidence for that unchanged implementation; no new live-host
 migration or human password entry is claimed. The original production runner and
 engine PID/invocation pairs remain unchanged. Measured combined storage is about
 30.4GiB with the same18 unreadable overlay work entries, under the40GiB budget.
+
+
+## M490 — Production imports remain manual (2026-10-29)
+
+Status: current user constraint. The user is importing their live fleet into
+Omabit. Protect `~lismyl-lismyl`, `~sarlev`, `~sarlev-sarsen`, `~tocwex` and all
+of their moons, in addition to the prior protected identities. No agent-run live
+imports; qualify changes with synthetic fixtures. Existing tmux/temp-ur and DEV
+review-state exclusions remain. This supersedes historical live-import/reset
+permissions, not the user's ability to import manually through the product.
+
+The current polishing pass covers rooftop dependency verification, large local
+pier imports, themed progress, post-import navigation and compact application
+connection rows. Rooftop diagnostics are read-only and limited to OS/packages;
+no production runtime or package changes are implied.
+
+## M491 — Ubuntu verification and large local import correction (2026-10-29)
+
+Status: tested source on `codex/production-import-polish`; not published or
+installed. Extends M490, whose production/manual-import constraints remain current.
+See [the report](diagnostics/2026-10-29-production-import-polish.md).
+
+Rooftop's package error was not missing Docker dependencies: Ubuntu's separate
+component lines and an unrelated70,841-byte Provides field exceeded assumptions
+in our verifier. Merge only equivalent source/key/architecture authority and allow
+bounded1 MiB unselected fields; retain selected4096-byte fields and all signature,
+archive and executable checks. The fixed read-only native verifier passes all
+eight roles on rooftop. Missing-package installation retains its explicit terminal
+approval. This is not evidence of a completed remote installation or a native
+package transaction. Never replace an unfinished attempt's pinned helper silently.
+
+The old100 GB local import bound was inherited from cross-host handoff. Current
+source allows8 TiB locally, including a size-derived copy/verification deadline;
+the100 GB network handoff limit remains. No persistent format changed. A synthetic
+512 GiB same-filesystem import passes with no runtime call. Large full payload
+transfers remain unqualified; do not treat sparse tests as transfer throughput
+measurements. This supersedes the local100 GB statements in earlier source plans,
+not the behavior of already published0.3.2 or the handoff contract.
+
+Use explicit themed QML components for progress and one-row connection controls.
+Post-import navigation requires both the original successful operation and the
+fresh exact runner/connection/instance revision/path/ship/source. Keep failures
+and uncertain receipts available for recovery. Offscreen UI tests cover these
+bindings and narrow-width geometry without accessing production desktop controls.
+
+
+## M492 — Frozen0.3.3 qualification and authorized publication (2026-10-30)
+
+Status: qualified candidate; protected PR checks and publication pending.
+The user explicitly requested “build and publish.” Frozen source
+`2e59eca006c6e457d64086ff6df4d069f69806a9` contains M491's fixes.
+This supersedes M491's source-only status when publication completes; it never
+authorizes a production service update. M490's manual-import and protected-ship
+constraints remain active.
+
+Actual0.3.2 desktop/services →0.3.3 passes a fresh offline guest with one running
+fake and one stopped fake, real QML button denial/retry, exact target identity,
+unchanged runtime processes, fleet/history/access, repeat no-op and manager
+restart. Schema47 stays47. Native QML separately proves failed-candidate recovery,
+preferences and hot/cold activation. All132 offline CLI help entries match the
+shipped references. See [qualification](releases/0.3.3/qualification.json).
+
+The guest reuses the immutable base with a4 GiB scratch cap under the combined
+40 GiB budget. No production service, profile, pier or manual-review state changes.
+Do not expand cross-host handoff's100 GB cap: the user accepted it for now.
+
+
+## M493 — QML fixture correction before0.3.3 publication (2026-10-30)
+
+Status: candidate01 not published; supersedes M492's readiness for promotion.
+The actual packaged desktop and exact-binary guest passed, but protected CI
+found the older RC11 offscreen fixture copied PierImportPane without its new
+ProgressMeter dependency. Add the component to that fixture; all three required
+QML checks pass locally. No application/runtime change is needed.
+
+Refreeze and rebuild instead of exempting test changes from the release freeze
+policy. Repeat exact-artifact qualification for the new source identity; retain
+compact failed-candidate evidence and retire only its generated artifacts. The
+new freeze also refreshes the archived installation guide's stale release title,
+support-path links and local-size limit. Published0.3.2 and production remain
+untouched; only our unpublished0.3.3 draft is replaced after qualification.
+
+
+## M494 — Corrected0.3.3 candidate qualification and publication (2026-10-30)
+
+Status: qualified candidate; protected PR checks and publication pending.
+The user explicitly requested “build and publish.” Frozen source
+`bcc68e16f8d1100ee0e564972213f6193999a656` contains M491's fixes.
+This supersedes M492/M493's first candidate after the fixture correction; it never
+authorizes a production service update. M490's manual-import and protected-ship
+constraints remain active.
+
+Actual0.3.2 desktop/services →0.3.3 passes a fresh offline guest with one running
+fake and one stopped fake, real QML button denial/retry, exact target identity,
+unchanged runtime processes, fleet/history/access, repeat no-op and manager
+restart. Schema47 stays47. Native QML separately proves failed-candidate recovery,
+preferences and hot/cold activation. All132 offline CLI help entries match the
+shipped references. See [qualification](releases/0.3.3/qualification.json).
+
+The guest reuses the immutable base with a4 GiB scratch cap under the combined
+40 GiB budget. No production service, profile, pier or manual-review state changes.
+Do not expand cross-host handoff's100 GB cap: the user accepted it for now.
