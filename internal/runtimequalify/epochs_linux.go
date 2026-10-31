@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"math"
 	"os"
@@ -182,13 +183,15 @@ func scanPierEpochs(ctx context.Context, root *os.Root, pier, id string, owned f
 		return nil, err
 	}
 	manifest = append(manifest, rootFP)
-	entries, err := boundedEntries(root, epochs.MaxEpochs+2)
+	// Allow one macOS companion per normal log entry and Finder metadata.
+	// Keep the independent epoch count bound unchanged.
+	entries, err := boundedEntries(root, 2*(epochs.MaxEpochs+2)+1)
 	if err != nil {
 		return nil, err
 	}
 	for _, entry := range entries {
 		name := entry.Name()
-		if name == "data.mdb" || name == "lock.mdb" {
+		if name == "data.mdb" || name == "lock.mdb" || macEpochLogMetadata(name) {
 			fp, err := fingerprint(root, name, name, false)
 			if err != nil {
 				return nil, err
@@ -197,7 +200,7 @@ func scanPierEpochs(ctx context.Context, root *os.Root, pier, id string, owned f
 			continue
 		}
 		if _, err := epochs.Number(name); err != nil {
-			return nil, errors.New("unrecognized epoch-log entry; review the format")
+			return nil, fmt.Errorf("unrecognized entry %q in .urb/log; expected an epoch directory (0i followed by its decimal number), data.mdb, lock.mdb, or macOS metadata", name)
 		}
 		if len(inv.Entries) >= epochs.MaxEpochs {
 			return nil, errors.New("epoch count limit exceeded")
@@ -250,6 +253,26 @@ func scanPierEpochs(ctx context.Context, root *os.Root, pier, id string, owned f
 	hash := sha256.Sum256(data)
 	inv.Digest = hex.EncodeToString(hash[:])
 	return inv, nil
+}
+
+// macEpochLogMetadata recognizes inert macOS companion names, not their contents.
+// They must pass the same owned regular-file checks and remain fingerprinted and
+// preserved by import. Never interpret them as epochs or exclude them from copy
+// verification. Orphaned companions are allowed: deleting an old epoch need not
+// remove its Finder metadata. Other unexpected root entries still refuse.
+func macEpochLogMetadata(name string) bool {
+	if name == ".DS_Store" {
+		return true
+	}
+	companion, ok := strings.CutPrefix(name, "._")
+	if !ok {
+		return false
+	}
+	if companion == "data.mdb" || companion == "lock.mdb" {
+		return true
+	}
+	_, err := epochs.Number(companion)
+	return err == nil
 }
 
 func scanEpochDirectory(ctx context.Context, root *os.Root, name string, expected epochFingerprint, fingerprint func(*os.Root, string, string, bool) (epochFingerprint, error), history ...bool) (epochs.Entry, []epochFingerprint, error) {

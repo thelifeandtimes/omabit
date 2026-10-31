@@ -6848,3 +6848,62 @@ shipped references. See [qualification](releases/0.3.3/qualification.json).
 The guest reuses the immutable base with a4 GiB scratch cap under the combined
 40 GiB budget. No production service, profile, pier or manual-review state changes.
 Do not expand cross-host handoff's100 GB cap: the user accepted it for now.
+
+
+## M495 — 0.3.3 publication completed (2026-10-30)
+
+Status: published; supersedes M494's pending CI/publication status only. PR #10
+merged normally as `8f5fbfd` after all source/race/QML/policy checks passed.
+Frozen source `bcc68e16f8d1100ee0e564972213f6193999a656` is tagged v0.3.3.
+Public asset bytes and private cold native bootstrap passed, with master
+protection preserved. No production service or ship was upgraded by the agent.
+Compact publication records are retained in release-0.3.3/candidate-02 evidence.
+
+## M496 — macOS metadata import compatibility (2026-10-30)
+
+Status: source fix and synthetic regression qualification; not yet released.
+The user authorized a one-time filenames/types listing that found regular
+`._0i391592`, `._data.mdb` and `._lock.mdb` companions. Their names match macOS
+AppleDouble conventions; no content or whole-pier health inspection was performed.
+The old log-root allowlist rejected these before import. Recognize bounded
+regular companions and `.DS_Store`, retain their bytes and metadata fingerprints,
+and keep actual epoch/state and filesystem guards. Unexpected names are quoted.
+Source tests cover copies/moves, interrupted-copy retention, enrollment recovery,
+changed metadata, limits and unsafe files. This is an uncovered compatibility
+case in 0.3.3; it does not invalidate that release's stated tested scope.
+
+The user's latest instruction expressly forbids touching `~sarlev`, which will
+run elsewhere. This supersedes the one-time listing permission; no further reads
+or operations are allowed. Preserve all other production and storage constraints.
+
+
+## M497 — Superseded 0.3.4 rehearsal fixture (2026-10-30)
+
+Status: unpublished candidate superseded, not release-qualified. Source
+`065475cd36da9406fa4e6cf86e7e23afec499e9f` passed synthetic source and desktop
+tests and the real QML-button service upgrade with fleet/access preservation.
+The final import rehearsal failed because its local `source` path variable was
+reused for shell QML text. This is a harness error, not evidence of an import
+product failure or a passed full rehearsal. Give the disposable pier its own
+`import_source` variable, freeze/rebuild, then repeat in a fresh offline guest.
+Retain compact failed-run evidence and retire only that powered-off generated
+guest's disks. M496's no-touch production constraints remain unchanged.
+
+
+## M498 — 0.3.4 qualified macOS import patch (2026-10-30)
+
+Status: qualified frozen candidate; protected CI and publication pending.
+Supersedes M497's failed rehearsal and M496's source-only status, preserving its explicit no-touch rule for
+`~sarlev` and all other production exclusions. Frozen source is
+`bdfe47516bf2c0482cc8450c8c31e2f2db53612e`.
+The actual 0.3.3 → 0.3.4 QML-button upgrade preserves running container/engine
+processes, stopped intent, fleet history and access; denial/retry, no-op and
+manager restart pass. An independently copied guest-only stopped fake reproduces
+the old metadata rejection, then identifies and imports stopped with every
+synthetic metadata hash retained under the new runner. Native desktop recovery,
+preferences, hot/cold activation, archive provenance and all 132 CLI help entries
+pass. See [qualification](releases/0.3.4/qualification.json) for exact scope.
+Schema 47 remains 47. No installed host service/plugin or protected pier changes.
+The guest stays within its 4 GiB scratch allowance; storage accounting adds a
+separate 4 GiB reserve for unreadable DEV overlay work directories and records
+that limitation rather than claiming a complete measurement.

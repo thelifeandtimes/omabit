@@ -55,6 +55,15 @@ its provisional `pier` child. Importing an existing comet uses its detected name
 Changing a registered path requires a stopped, reviewed move/relink; installation
 does not rename existing live piers.
 
+## Piers previously used on macOS
+
+From 0.3.4, regular `.DS_Store` files and `._` companions for known epoch-log
+entries are preserved during import. They remain part of source-change and copy
+verification, but do not count as epochs or satisfy required state files. Update
+the runner as well as the desktop; no metadata cleanup is needed for these names.
+Other unknown log-root entries report their exact quoted filename. Existing
+ownership, link, format and stopped-source checks still apply.
+
 ## Discover and enroll
 
 **Setup → Pier storage & livenet import** shows the runner's root, discovered piers,

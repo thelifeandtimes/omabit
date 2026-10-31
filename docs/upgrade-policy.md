@@ -1,5 +1,14 @@
 # Stable-release upgrade requirement
 
+## 0.3.4 macOS metadata compatibility release
+
+The [0.3.4 qualification](releases/0.3.4/qualification.json) adds the tested
+0.3.3 → 0.3.4 desktop and local service path. Runner schema 47, desktop state 1
+and bootstrap API 1 are unchanged. Upgrade the runner to obtain the import fix.
+The fresh offline rehearsal preserves existing running/stopped fakes and imports
+a separate stopped fake with synthetic macOS companions, retaining every byte.
+Earlier paths compose through 0.3.3. See [release instructions](release-0.3.4.md).
+
 ## 0.3.3 maintenance release
 
 The [0.3.3 qualification](releases/0.3.3/qualification.json) adds the tested

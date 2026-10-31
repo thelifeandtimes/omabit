@@ -4,7 +4,7 @@ import hashlib,json,os,sqlite3,subprocess,sys,time,shutil,base64
 from pathlib import Path
 I=Path('/opt/omabit-release-input'); O=Path('/opt/omabit-release-results')
 SOCK='/run/user/1000/urbit-runner/runner.sock'
-VERSIONS=('0.3.2','0.3.3')
+VERSIONS=('0.3.3','0.3.4')
 report={'format':1,'passed':False,'steps':[]}
 created=False
 
@@ -87,7 +87,7 @@ def main():
  run(['chown','-R','review:review','/home/review/.config'])
  run(['ssh-keygen','-q','-t','ed25519','-N','','-f',setup/'id_ed25519'],True)
  shutil.copy2(setup/'id_ed25519.pub',Path('/home/review/release-operator.pub'))
- host=install('0.3.2')
+ host=install('0.3.3')
  # Reproduce the published setup receipt format from actual installer evidence.
  # Initial setup/download itself is outside this upgrade rehearsal.
  contents={
@@ -97,25 +97,41 @@ def main():
   'ready.json':json.dumps({'runner_id':host['runner_id'],'connection':'local','host_public_key':host['host_public_key']})}
  for name,data in contents.items():
   path=setup/name;path.write_text(data);path.chmod(0o600);os.chown(path,1000,1000)
- run([tool('0.3.2','urbit-collector'),'enroll','local','--ssh','omabit-local','--ssh-config',setup/'ssh_config'],True)
+ run([tool('0.3.3','urbit-collector'),'enroll','local','--ssh','omabit-local','--ssh-config',setup/'ssh_config'],True)
  old_status=json.loads(run([tool(scenario['desktop'],'omabit'),'setup-status'],True).stdout)
  assert old_status['ready'] and old_status['connection']['runner_id']==host['runner_id']
- report['receipt_fixture']='published format reconstructed from genuine 0.3.2 installer result and 0.3.2 SSH enrollment; old desktop setup-status verified ready'
+ report['receipt_fixture']='published format reconstructed from genuine 0.3.3 installer result and 0.3.3 SSH enrollment; old desktop setup-status verified ready'
  def access_hashes():
   return {name:hashlib.sha256((setup/name).read_bytes()).hexdigest() for name in contents.keys()|{'id_ed25519'}}
  original_access=access_hashes()
  run(['docker','--host','unix:///run/user/1000/urbit-docker.sock','load','--input',I/'runtime.oci.tar'],True)
  for name,ship,port in (('upgrade-zod','~zod',19180),('upgrade-nec','~nec',19181)):
-  collector('0.3.2','create-fake',name,'--ship',ship,'--http-port',str(port),'--request-id',name+'-create','--bootstrap','recommended','--pill',str(I/'boot.pill'))
-  operation('0.3.2',name,'start',name+'-start')
-  wait(lambda:ready('0.3.2',name,'running'),600)
-  if name=='upgrade-nec':operation('0.3.2',name,'stop',name+'-stop');wait(lambda:ready('0.3.2',name,'stopped'))
- before=project('0.3.2'); runtime_before=runtime('0.3.2')
+  collector('0.3.3','create-fake',name,'--ship',ship,'--http-port',str(port),'--request-id',name+'-create','--bootstrap','recommended','--pill',str(I/'boot.pill'))
+  operation('0.3.3',name,'start',name+'-start')
+  wait(lambda:ready('0.3.3',name,'running'),600)
+  if name=='upgrade-nec':operation('0.3.3',name,'stop',name+'-stop');wait(lambda:ready('0.3.3',name,'stopped'))
+ # A stopped fake created only by this offline guest supplies real Vere state.
+ # Its separate test copy receives synthetic macOS metadata, never user data.
+ nec=next(x for x in collector('0.3.3','snapshot')['instances'] if x['id']=='upgrade-nec')
+ import_source=Path('/home/review/macos-import-source');assert not import_source.exists()
+ run(['cp','-a','--reflink=auto',Path('/srv/urbit/piers')/nec['pier_path'],import_source],True,timeout=180)
+ epoch=next(x.name for x in (import_source/'.urb/log').iterdir() if x.is_dir() and x.name.startswith('0i'))
+ companions={}
+ for name in ['.urb/log/._0i391592','.urb/log/._data.mdb','.urb/log/._lock.mdb','.urb/log/.DS_Store','.urb/log/'+epoch+'/._data.mdb','.urb/log/'+epoch+'/.DS_Store','.urb/chk/.DS_Store']:
+  data=b'\x00\x05\x16\x07\x00\x02\x00\x00synthetic metadata: '+name.encode()
+  path=import_source/name;path.write_bytes(data);path.chmod(0o600);os.chown(path,1000,1000)
+  companions[name]=hashlib.sha256(data).hexdigest()
+ def storage(v,*args,ok=True):
+  return run([tool(v,'urbit-collector'),'--runner','local','--expected-runner-id',host['runner_id'],*args],True,ok=ok)
+ old=storage('0.3.3','preview-pier','--source',import_source,'--storage-root','default',ok=False)
+ assert old.returncode and 'unrecognized epoch-log entry' in old.stderr,old.stderr
+ report['macos_import']={'previous_refused_metadata':True,'synthetic_companion_sha256':companions}
+ before=project('0.3.3'); runtime_before=runtime('0.3.3')
  report['baseline']=before;report['runtime_before']=runtime_before;report['schema_before']=db_projection()['schema']
  # Import and verify actual release bundles with the native desktop loader.
  staged=json.loads(run(['python3','-B',I/'desktop.py',scenario['desktop']],True).stdout)
  report['desktop_transition']=staged
- assert before==project('0.3.2') and runtime_before==runtime('0.3.2'),'desktop activation changed ships'
+ assert before==project('0.3.3') and runtime_before==runtime('0.3.3'),'desktop activation changed ships'
  candidate=Path(staged['directory']);ui=Path('/home/review/upgrade-ui');ui.mkdir(mode=0o700)
  shutil.copytree(candidate/'ui',ui/'Plugin')
  shutil.copy2(I/'shell.qml',ui/'shell.qml')
@@ -153,7 +169,7 @@ def main():
   assert state['status']['available'] and not state['status']['pending']
   target=state['status']['target_sha256'];report['offered']=state['status'];capture('offer')
   control('pressUpdate');state=wait(lambda:settled('error'))
-  assert before==project('0.3.2') and runtime_before==runtime('0.3.2') and original_access==access_hashes()
+  assert before==project('0.3.3') and runtime_before==runtime('0.3.3') and original_access==access_hashes()
   report['denied_authorization']={'error':state['error'],'preserved':True}
   attempt=json.loads((setup/'service-upgrade.json').read_text());assert not attempt['complete'] and attempt['target_sha256']==target
   control('pressCheck');state=wait(lambda:settled())
@@ -165,8 +181,8 @@ def main():
   if state['error']:raise AssertionError('Actual upgrade button failed: '+state['error'])
   assert state['status'] and not state['status']['available'] and not state['status']['pending'] and state['refreshes']==1,state
   assert json.loads((setup/'service-upgrade.json').read_text())['complete']
-  assert before==project('0.3.3'),'fleet configuration/history changed'
-  assert runtime_before==runtime('0.3.3'),'engine or live ship restarted'
+  assert before==project('0.3.4'),'fleet configuration/history changed'
+  assert runtime_before==runtime('0.3.4'),'engine or live ship restarted'
   assert original_access==access_hashes(),'desktop access changed'
   report['upgraded']={'state':state,'schema_after':db_projection()['schema'],'ship_continuity':True,'access_preserved':True}
   control('pressCheck');state=wait(lambda:settled())
@@ -180,15 +196,34 @@ def main():
   proc.wait(timeout=15);qlog.close()
   text=(O/'qml.log').read_text();print('UPGRADE_QML_LOG '+text[-12000:],flush=True)
   rule.unlink(missing_ok=True)
- assert collector('0.3.2','snapshot')['runner_id']==before['runner_id']
+ assert collector('0.3.3','snapshot')['runner_id']==before['runner_id']
  run(['systemctl','--user','stop','urbit-runner.service'],True)
  assert db_projection()['schema']==report['schema_before']==47
  run(['systemctl','--user','start','urbit-runner.service'],True)
- wait(lambda:collector('0.3.3','hello'))
- assert before==project('0.3.3') and runtime_before==runtime('0.3.3')
+ wait(lambda:collector('0.3.4','hello'))
+ assert before==project('0.3.4') and runtime_before==runtime('0.3.4')
  report['manager_restart_preserved_runtime']=True
- operation('0.3.3','upgrade-zod','stop','release-final-stop')
- wait(lambda:ready('0.3.3','upgrade-zod','stopped'))
+ preview=json.loads(storage('0.3.4','preview-pier','--source',import_source,'--storage-root','default').stdout)
+ assert preview['ship']=='~nec' and preview['network']=='fakenet',preview
+ request='macos-import-nec'
+ storage('0.3.4','import-pier',preview['instance_id'],'--source',import_source,'--path',preview['destination'],'--ship',preview['ship'],'--fingerprint',preview['source']['fingerprint'],'--http-port',str(preview['http_port']),'--request-id',request,'--confirm-stopped','--identify')
+ def imported():
+  snapshot=collector('0.3.4','snapshot')
+  op=next((x for x in snapshot['operations'] if x['request_id']==request),None)
+  if not op or op['status'] in ('queued','pending','running'):return None
+  assert op['status']=='succeeded',op
+  row=next(x for x in snapshot['instances'] if x['id']==preview['instance_id'])
+  return row if row['observed_state']=='stopped' and not row.get('active_operation_id') else None
+ imported_row=wait(imported,180)
+ target=Path('/srv/urbit/piers')/imported_row['pier_path']
+ assert not import_source.exists()
+ for name,digest in companions.items():assert hashlib.sha256((target/name).read_bytes()).hexdigest()==digest,name
+ assert runtime_before==runtime('0.3.4'),'import interrupted the unrelated running fake'
+ assert ready('0.3.4','upgrade-nec','stopped')
+ report['macos_import'].update(passed=True,identity=preview['ship'],stayed_stopped=True,metadata_preserved=True,unrelated_runtime_preserved=True)
+
+ operation('0.3.4','upgrade-zod','stop','release-final-stop')
+ wait(lambda:ready('0.3.4','upgrade-zod','stopped'))
  report['passed']=True
 
 if __name__=='__main__':

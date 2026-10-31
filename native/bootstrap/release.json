@@ -1,28 +1,28 @@
 {
-  "version": "0.3.3",
-  "source_commit": "bcc68e16f8d1100ee0e564972213f6193999a656",
-  "backend_source_sha256": "bdbeb4e0ed817424e460ec781691f100fdc58c5870138259318608856d38991a",
+  "version": "0.3.4",
+  "source_commit": "bdfe47516bf2c0482cc8450c8c31e2f2db53612e",
+  "backend_source_sha256": "ea5b65dfec0a7ffe173d73a01e663ec508f1f6b73313ee85b4aed25bca039d8d",
   "platform": "linux/amd64",
   "bundle": {
-    "name": "omabit-0.3.3-linux-amd64.tar.gz",
-    "bytes": 31532954,
-    "sha256": "412108abe8b7b59b5fe88ef88379fa7b3f4d5fc9fe9e770302039c05062aca5f"
+    "name": "omabit-0.3.4-linux-amd64.tar.gz",
+    "bytes": 31534943,
+    "sha256": "9d7d439ce7cf4703a69cab58bbc3456775f5a2868876d89b9026e2a66b2f27fb"
   },
   "binaries": {
     "omabit": {
       "name": "omabit-linux-amd64",
       "bytes": 18077839,
-      "sha256": "138d423d07cc720b211916ae75e8564d950af349a16cb8fbe91317769c51d9fc"
+      "sha256": "0215fa7f30ea3b3c8f7a93f9ab9f219cf13dc7cf0d03bb161f5e7290e7726f6b"
     },
     "urbit-collector": {
       "name": "urbit-collector-linux-amd64",
       "bytes": 12504366,
-      "sha256": "56f5437cbda823999ecf538b547563adbe9d6f9feaf44c6e7a8c67ae282c0905"
+      "sha256": "7ef9b474ddea599f24c3cee5adba1c31c9fbb20559fa413fb16f85f0f4e4b0e8"
     },
     "urbit-runner": {
       "name": "urbit-runner-linux-amd64",
-      "bytes": 26574094,
-      "sha256": "c292cd37c87fd030dc4172a20500fc829244c460218bc6515ad13877a0d1c596"
+      "bytes": 26574603,
+      "sha256": "2f5fee6a0b36aca80cb903c2c7c546306387ce8eeb306939ed15d8045d7e9682"
     }
   }
 }

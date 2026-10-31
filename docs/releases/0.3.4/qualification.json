@@ -1,0 +1,137 @@
+{
+  "version": "0.3.4",
+  "platform": "linux/amd64",
+  "source_commit": "bdfe47516bf2c0482cc8450c8c31e2f2db53612e",
+  "source_tree": "9b8019153ffe0bb1b5153b87989d689b3eb005f9",
+  "backend_source_sha256": "ea5b65dfec0a7ffe173d73a01e663ec508f1f6b73313ee85b4aed25bca039d8d",
+  "channel": "stable",
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "runner_schema": 47,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "evidence": "docs/releases/0.3.4/rehearsal.json",
+    "evidence_sha256": "0a6f63b409247c65f1bba43745af197d4cc0b73b6814156a4cc917ec435e1cc5",
+    "paths": [
+      {
+        "versions": [
+          "0.3.3",
+          "0.3.4"
+        ],
+        "evidence": "docs/releases/0.3.4/rehearsal.json",
+        "evidence_sha256": "0a6f63b409247c65f1bba43745af197d4cc0b73b6814156a4cc917ec435e1cc5",
+        "scope": "Exact service upgrade via QML buttons, running/stopped fleet preservation, real stopped fake import with synthetic macOS metadata, desktop recovery and restart"
+      }
+    ]
+  },
+  "validation": {
+    "passed": true,
+    "offline_help_entries": 132,
+    "native_plugin_tests": 9,
+    "bootstrap_state_tests": 12,
+    "skill_package_tests": 5,
+    "release_policy_tests": 15,
+    "service_upgrade_qt_cases": 4,
+    "archive_checksums_and_provenance": true,
+    "source_tests_commit": "065475cd36da9406fa4e6cf86e7e23afec499e9f",
+    "runtime_inputs_unchanged_after_source_tests": true,
+    "source_regressions": "Full runtimequalify, epochs, pierstore and piercopy tests; focused import/epoch race tests; changed-package vet. Protected full source/race/QML CI must pass on the distribution head before publication.",
+    "logs": {
+      "source": {
+        "name": "omabit-034-source.log",
+        "sha256": "36291a408839b78e28077c64c6a859e86eba1583179a5fdfe57c4fbddf9e2a73"
+      },
+      "race": {
+        "name": "omabit-034-race.log",
+        "sha256": "03d5ebc514c14642df11b31f39bc03079422405f2afaca1d207d2f5551ec1162"
+      },
+      "vet": {
+        "name": "omabit-034-vet.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "package": {
+        "name": "omabit-034-package-02.log",
+        "sha256": "24e0c6b9b776794bf36f741d63fbf40f1793d56ec9a0ff6b6e739a5d903670d5"
+      },
+      "native": {
+        "name": "omabit-034-native.log",
+        "sha256": "a20bece7b6654e0613ef107be798e0749fe5b4c62149982f2b90a2f19b953096"
+      },
+      "bootstrap": {
+        "name": "omabit-034-bootstrap.log",
+        "sha256": "829439cc03efe8f4ab0421bc01a974018e85e313f2f24480d710be1993f8bd71"
+      },
+      "skills": {
+        "name": "omabit-034-skills.log",
+        "sha256": "d1aaab86fa02d87997171aeb3220b40f5e28046ec4d1674848f9ec5f589f297c"
+      },
+      "policy": {
+        "name": "omabit-034-policy.log",
+        "sha256": "86a3486ae44aeed6f1ccc0b175fb47a72660d7e830c91f620f83638adaadcd9d"
+      },
+      "upgrade-ui": {
+        "name": "omabit-034-upgrade-ui.log",
+        "sha256": "41a85872561a7b413c54e158ddae4beecd8ebe0e6704b854057540add3526207"
+      },
+      "archive": {
+        "name": "omabit-034-archive-02.log",
+        "sha256": "ae8996ddb7f01d2b95c414f87c4918d1d43019921521f21ca964beb47a5849fb"
+      },
+      "desktop-upgrade": {
+        "name": "omabit-034-desktop-upgrade-02.log",
+        "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+      },
+      "cli": {
+        "name": "omabit-034-cli-02.log",
+        "sha256": "f2f0ac00b5398b09c937e71387b71885ec979c613a85dd34c6d4752556c138c3"
+      }
+    }
+  },
+  "frozen_artifacts": {
+    "assets": [
+      {
+        "name": "omabit-0.3.4-linux-amd64.tar.gz",
+        "bytes": 31534943,
+        "sha256": "9d7d439ce7cf4703a69cab58bbc3456775f5a2868876d89b9026e2a66b2f27fb"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 18077839,
+        "sha256": "0215fa7f30ea3b3c8f7a93f9ab9f219cf13dc7cf0d03bb161f5e7290e7726f6b"
+      },
+      {
+        "name": "omabit-recommended-apps-0.3.4.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.3.4.tar.gz",
+        "bytes": 23501,
+        "sha256": "3dc445e65d3aee450e69e3fd967278e9b5b142d5d8e27d4a10dd982481e29b33"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 12504366,
+        "sha256": "7ef9b474ddea599f24c3cee5adba1c31c9fbb20559fa413fb16f85f0f4e4b0e8"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 26574603,
+        "sha256": "2f5fee6a0b36aca80cb903c2c7c546306387ce8eeb306939ed15d8045d7e9682"
+      }
+    ],
+    "go_version": "go version go1.27.3 linux/amd64"
+  },
+  "scope_limits": [
+    "Only synthetic metadata and freshly created disposable fakes were tested. No protected production pier was read, copied, imported or operated on; whole-pier health and other historical formats are not asserted.",
+    "The service rehearsal covers 0.3.3 to 0.3.4 on the pristine Arch/Omarchy Linux/AMD64 owner-user stack, not remote upgrades, other distro runtime installations or power cuts. Earlier releases follow the documented intermediate paths to 0.3.3.",
+    "Real QML upgrade buttons use an exact-program guest-only polkit rule, not human password entry. The initial setup receipt is reconstructed from genuine previous-version installer and SSH-enrollment evidence.",
+    "The guest loads real sealed desktop archives with harness activation acknowledgements. A separate private native QML test covers hot activation, failed-candidate recovery, preferences and restart; stock Omarchy updater interaction remains manual.",
+    "Ordinary-owner storage accounting cannot descend into rootless overlay work directories. Charged usage includes an extra 4 GiB reserve for those unmeasured directories, separately from the 4 GiB guest scratch cap; this is not a complete physical measurement.",
+    "Import copies/moves preserve metadata as opaque files; no AppleDouble contents are interpreted and metadata does not substitute for required real state. Existing filesystem, ownership, source-change, stopped-source and epoch-format safeguards remain.",
+    "Cross-host handoff remains at 100 GB. Existing experimental capability and broader security/privacy review limits remain."
+  ],
+  "policy": "Frozen artifacts remain immutable. All protected source/race/QML/release-policy checks must pass before merge and publication; no bypass."
+}

@@ -25,6 +25,14 @@ Examples include `~dister-dozzod-sarlev`, `~master-dozzod-sarlev`,
 test moon is not an exception merely because it matches a familiar test pattern;
 its exact identity and disposition need explicit review.
 
+## Explicit exclusion renewed — 2026-10-30
+
+The user is running `~sarlev` elsewhere while the macOS import fix is developed.
+Do not inspect or modify it, anywhere. The earlier one-time permission to list
+direct filenames/types in its `.urb/log` has ended; it authorizes no further
+reads, content checks, copies, imports, starts, stops or repairs. Use only
+synthetic fixtures and new disposable fake ships for this patch.
+
 ## Production import constraint — 2026-10-29
 
 The user is now importing production ships manually. `~lismyl-lismyl`, `~sarlev`,
