@@ -125,23 +125,26 @@ and the final run remain. No production state changed.
 
 ### Remaining investigations / next pass
 
-- Target 7: consider a per-watch host-report cache using the report's existing
-  expiry, never extending evidence age. Fresh Hello and response identity checks
-  must remain; discard on reconnect, role/actor/capability change or failure.
-  Qualify freshness/revocation/error cases before keeping this change.
+- Target 7: retain existing runner-side caching. Native metadata is cached for
+  up to 30 s and live engine evidence for 5 s, with single-flight work and bounded
+  failures. An extra collector cache would skip no hidden 30 s observations;
+  its small visible-poll saving does not currently justify more reconnect,
+  actor/role/capability and expiry state. No freshness limits were extended.
 - Target 8: sample-map work is improved. Measure actual hidden Qt binding/paint
   work before adding other visibility gates; avoid destroying view state.
-- Target 9: profile synthetic empty/stopped/running runner snapshots and scheduler
-  work. Current runner polling persists observation timestamps/revisions, so do
-  not simply cache/drop observations or skip runtime safety checks.
+- Target 9: snapshot journal scans improved (third pass below). Profile scheduler
+  work separately if justified; current runner polling persists observation
+  timestamps/revisions, so do not cache/drop observations or skip runtime safety
+  checks. Full managed regression at the next artifact checkpoint must include
+  the final row-ID-only query refinement.
 - Target 10: log readers are already visibility-owned and upgrade drain tests
   verify shutdown. Inspect idle helpers/retries and use a bounded soak/leak test.
   Keep current SSH liveness deadlines unless measurement justifies changing them.
   A separate battery signal may add little beyond the 30 s hidden cadence; do not
   add a dependency or policy change without evidence.
-- Verify negative SSH cases (revocation/reconnect/identity changes) in the private
-  lab with retained connections, then prepare an isolated review bundle from a
-  clean exact source commit and qualify the paired UI/collector upgrade.
+- Negative SSH cases passed in a private offline namespace (details below).
+  Prepare an isolated review bundle from a clean exact source commit and qualify
+  the paired UI/collector upgrade after the remaining bounded checks.
 - There are no active test processes at this checkpoint. Built tools are in
   `/tmp/omabit-performance-build-01`; the final SSH evidence is run `04` and the
   actual UI drain/cadence evidence is `/tmp/omabit-service-drain-performance-02`.
@@ -154,3 +157,51 @@ ownership. Check time at every pass, stop new implementation before the deadline
 finish evidence/review notes, then pause the heartbeat. Do not resume the older
 paused platform goal or deploy/publish this candidate.
 
+
+### Third pass — 2026-11-01 21:44 UTC
+
+Actual OpenSSH negative regressions passed in a fresh offline user/network/PID/
+mount namespace. The managed server used its fake runtime backend; no engine or
+ship was accessed. Two operator keys, observer restrictions, actor-scoped replay,
+reconnect, host/runner identity mismatches, forwarding/arbitrary command refusal
+and live revocation of a retained session all passed. Harness:
+`scripts/performance/test-openssh-isolated.py`; evidence:
+`/tmp/omabit-ssh-regression-01/result.json` and `test.log`.
+
+The snapshot profile found one full epoch-journal scan per fleet member. The
+reader now ranks operation row IDs in batches within the existing transaction,
+then reads only selected runtime payloads. It retains per-instance 128-record
+limits, newest-first ordering, current-runtime binding, validation and immutable
+stored state. One-ship fleets retain the original query. No schema, observation
+persistence or authorization changes were made.
+
+Three-run median synthetic snapshot times with 2,048 non-roll journal records:
+32 ships, 44.77 -> 3.82 ms; 128 ships, 171.91 -> 11.13 ms. With 2,048 completed
+rolls: 32 ships, 66.70 -> 25.05 ms; 128 ships, 215.56 -> 30.20 ms. The larger
+32-ship/8,192-record retained-log fixture improved from 144.92 -> 74.35 ms. Empty
+and one-ship fleets were effectively unchanged; small differences are not claimed
+as improvements. Roll-heavy cases allocate somewhat more (for example about
+4.73 -> 4.80 MB at 128 ships), so this is primarily a query-time improvement.
+Exact measurements, limitations and final source hashes are in
+[the snapshot evidence](2026-11-01-snapshot-performance.json). These are Go
+benchmark elapsed times, not full-runner CPU or laptop battery measurements.
+
+Regression coverage compares batched and independent reads, replaced runtimes,
+duplicated/invalid/stale evidence, per-instance limits before validation,
+malformed selected runtime rejection, excluded malformed runtime preservation,
+513-member batch boundaries, empty histories and non-persistence of decoration.
+The full managed suite passed (261.496 s) before the final row-ID-only query
+refinement. Focused epoch/roll/snapshot tests under the race detector passed on
+that final query (103.873 s), as did go vet. The next full-suite/artifact checkpoint
+must use the final source; this is not a released or deployed runner.
+
+This pass's explicitly named retained `/tmp` fixtures/builds total 221,984 KiB
+(216.8 MiB), below the 512 MiB scratch allowance; database benchmark temp files
+were removed by the test framework. No VM, production plugin/service or human DEV
+state was created or changed.
+
+Checkpoint state: no test or runtime experiment remains active. Current source
+changes are ready for the third performance commit. Continue with the bounded
+watcher/Qt soak and actual idle Qt measurement, then exact-source paired artifact
+qualification; no deployment or publication. A separate battery signal is still
+unjustified after hidden 30 s polling and would add another dependency/observer.

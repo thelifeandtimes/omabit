@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "actual_openssh": true,
+  "actual_managed_server_fake_backend": true,
+  "namespaces": [
+    "user",
+    "net",
+    "pid",
+    "mnt"
+  ],
+  "cases": [
+    "two independent operator keys",
+    "observer restrictions",
+    "actor-scoped replay",
+    "client disconnect/reconnect",
+    "host-key mismatch",
+    "runner-ID mismatch",
+    "forwarding and arbitrary command refusal",
+    "live revocation on retained sessions"
+  ],
+  "source_checkpoint": "9694785",
+  "binary_sha256": {
+    "managed.test": "c3b992ead5fa61454e2b6018712cbf2108b991dcc7c172f9a25cdd1ec1a97eb5",
+    "urbit-collector": "2d29dc71ede5ba4fa096a6eafcc9cede53f19e3bd4f299414c57465ca4224e76",
+    "urbit-runner": "5727ab3fb25cae2fda4d583ed6612499f66578b0cbbbbb48d0da9efe386d21f4"
+  },
+  "harness_sha256": "099df4b1fadaf63076766ef65b0dd948edccd73a92baeae47ded76d11decee34",
+  "scope": "Actual OpenSSH/managed server with fake backend, generated keys and offline namespaces; no production services, real runtime or piers",
+  "log_sha256": "128b212f70727d55dc194425cfcaff7a5565659a5e4b8357bc65efee322a7027"
+}

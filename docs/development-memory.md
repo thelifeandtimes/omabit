@@ -6923,3 +6923,27 @@ end. See diagnostics/2026-11-01-idle-performance.md for ten ranked targets,
 measurements, deadline and storage accounting. The earlier broad platform goal
 remains paused; this separate task does not authorize production deployment or
 publication. Preserve all protected-ship and manual-review-state exclusions.
+
+
+## M500 — Measured idle-observation candidate, not deployed (2026-11-01)
+
+Status: ongoing performance pass through M499's Monday 06:00 Pacific deadline.
+Topic branch `perf/idle-observation-20261101` in `omabit-platform-overhaul`.
+First checkpoints 0ba2f58 and 9694785 retain three private authenticated transports,
+add 2 s visible/pending-work versus 30 s hidden observation with immediate wakeup,
+remove repeated bootstrap interpreter launches and no-op sample-map updates.
+Real isolated OpenSSH measurement: 47 -> 3 sessions per 30 s at visible cadence,
+with retained-session revocation/identity/role/replay regressions passing.
+
+The third pass batches snapshot epoch-history reads without schema or stored-state
+changes; 128 synthetic ships with 2,048 ordinary journal records measured
+171.91 -> 11.13 ms per snapshot. See diagnostics/2026-11-01-idle-performance.md
+and adjacent JSON evidence for exact scope, CPU/time distinctions, tests and
+remaining qualification. The full managed suite passed before the final row-ID
+query refinement; final-query focused race checks and vet passed. Complete final
+full-suite/paired-artifact qualification before a review installation is proposed.
+
+Production services/plugins, protected ships (especially the express no-touch
+~sarlev rule), ~/temp-ur, and human DEV review state remain untouched. The broader
+platform goal remains paused. No publication or deployment is authorized by this
+performance task. This supplements M499; it does not supersede its constraints.

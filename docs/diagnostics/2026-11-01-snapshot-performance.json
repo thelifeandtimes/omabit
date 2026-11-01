@@ -1,0 +1,545 @@
+{
+  "date": "2026-11-01",
+  "scope": "Synthetic SQLite snapshot only; stopped instances, no engine or pier reads. Go benchmark elapsed ns/op; not measured laptop power or full runner CPU.",
+  "baseline_commit": "969478548f543927238eb8d6708609db03e4ef1f",
+  "candidate_source_sha256": {
+    "internal/managed/store.go": "b622593ed043a79225de869043c8d099704b7e92380745ea2238f521796d72bf",
+    "internal/managed/epoch_history.go": "0a36980a90953ad0d80de3258673a5e429cb59dfa5b932ccebba64fdb2a680c0",
+    "internal/managed/observation_performance_test.go": "802b9e96acd56c874b5e57e8d929d84d7c455424e6c7124aa1e1294464da2f6e"
+  },
+  "command": "GOMAXPROCS=2 go test [-overlay /tmp/omabit-snapshot-overlay-01/overlay.json] -run ^$ -bench ^BenchmarkObservation -benchtime=500ms -count=3 ./internal/managed",
+  "runtime_schema_changed": false,
+  "raw_logs": {
+    "snapshot-baseline-02": {
+      "path": "/tmp/omabit-performance-snapshot-baseline-02.log",
+      "sha256": "80d3722d5f763c22483498418d51e04cc0d62f00d776f9104db52aa1c4244887"
+    },
+    "snapshot-baseline-payload-03": {
+      "path": "/tmp/omabit-performance-snapshot-baseline-payload-03.log",
+      "sha256": "f8c291e0194e45e22178c8e8440d4b6ca79fee39d913733562fb85ae52749869"
+    },
+    "snapshot-candidate-03": {
+      "path": "/tmp/omabit-performance-snapshot-candidate-03.log",
+      "sha256": "0fd8a94edd64daf6ee415048ef999bc035c3c542d656781b4a6f95cbb1ba771e"
+    }
+  },
+  "benchmarks": {
+    "BenchmarkObservationSnapshot/ships-0/history-0-2": {
+      "baseline": [
+        {
+          "ns_per_op": 9350.0,
+          "bytes_per_op": 1692.0,
+          "allocs_per_op": 43.0
+        },
+        {
+          "ns_per_op": 9152.0,
+          "bytes_per_op": 1692.0,
+          "allocs_per_op": 43.0
+        },
+        {
+          "ns_per_op": 8935.0,
+          "bytes_per_op": 1692.0,
+          "allocs_per_op": 43.0
+        }
+      ],
+      "candidate": [
+        {
+          "ns_per_op": 9043.0,
+          "bytes_per_op": 1691.0,
+          "allocs_per_op": 43.0
+        },
+        {
+          "ns_per_op": 9005.0,
+          "bytes_per_op": 1692.0,
+          "allocs_per_op": 43.0
+        },
+        {
+          "ns_per_op": 9053.0,
+          "bytes_per_op": 1691.0,
+          "allocs_per_op": 43.0
+        }
+      ],
+      "baseline_median": {
+        "ns_per_op": 9152.0,
+        "bytes_per_op": 1692.0,
+        "allocs_per_op": 43.0
+      },
+      "candidate_median": {
+        "ns_per_op": 9043.0,
+        "bytes_per_op": 1691.0,
+        "allocs_per_op": 43.0
+      },
+      "time_reduction_percent": 1.19
+    },
+    "BenchmarkObservationSnapshot/ships-1/history-0-2": {
+      "baseline": [
+        {
+          "ns_per_op": 42302.0,
+          "bytes_per_op": 9038.0,
+          "allocs_per_op": 128.0
+        },
+        {
+          "ns_per_op": 45284.0,
+          "bytes_per_op": 9050.0,
+          "allocs_per_op": 128.0
+        },
+        {
+          "ns_per_op": 40877.0,
+          "bytes_per_op": 9038.0,
+          "allocs_per_op": 128.0
+        }
+      ],
+      "candidate": [
+        {
+          "ns_per_op": 41482.0,
+          "bytes_per_op": 9037.0,
+          "allocs_per_op": 128.0
+        },
+        {
+          "ns_per_op": 41718.0,
+          "bytes_per_op": 9038.0,
+          "allocs_per_op": 128.0
+        },
+        {
+          "ns_per_op": 42748.0,
+          "bytes_per_op": 9038.0,
+          "allocs_per_op": 128.0
+        }
+      ],
+      "baseline_median": {
+        "ns_per_op": 42302.0,
+        "bytes_per_op": 9038.0,
+        "allocs_per_op": 128.0
+      },
+      "candidate_median": {
+        "ns_per_op": 41718.0,
+        "bytes_per_op": 9038.0,
+        "allocs_per_op": 128.0
+      },
+      "time_reduction_percent": 1.38
+    },
+    "BenchmarkObservationSnapshot/ships-32/history-0-2": {
+      "baseline": [
+        {
+          "ns_per_op": 1063418.0,
+          "bytes_per_op": 291287.0,
+          "allocs_per_op": 2714.0
+        },
+        {
+          "ns_per_op": 1176038.0,
+          "bytes_per_op": 291314.0,
+          "allocs_per_op": 2714.0
+        },
+        {
+          "ns_per_op": 1066487.0,
+          "bytes_per_op": 291241.0,
+          "allocs_per_op": 2714.0
+        }
+      ],
+      "candidate": [
+        {
+          "ns_per_op": 622886.0,
+          "bytes_per_op": 270907.0,
+          "allocs_per_op": 2048.0
+        },
+        {
+          "ns_per_op": 620788.0,
+          "bytes_per_op": 270875.0,
+          "allocs_per_op": 2047.0
+        },
+        {
+          "ns_per_op": 604164.0,
+          "bytes_per_op": 270849.0,
+          "allocs_per_op": 2048.0
+        }
+      ],
+      "baseline_median": {
+        "ns_per_op": 1066487.0,
+        "bytes_per_op": 291287.0,
+        "allocs_per_op": 2714.0
+      },
+      "candidate_median": {
+        "ns_per_op": 620788.0,
+        "bytes_per_op": 270875.0,
+        "allocs_per_op": 2048.0
+      },
+      "time_reduction_percent": 41.79
+    },
+    "BenchmarkObservationSnapshot/ships-1/history-2048-2": {
+      "baseline": [
+        {
+          "ns_per_op": 2384548.0,
+          "bytes_per_op": 160480.0,
+          "allocs_per_op": 1174.0
+        },
+        {
+          "ns_per_op": 2686796.0,
+          "bytes_per_op": 160442.0,
+          "allocs_per_op": 1174.0
+        },
+        {
+          "ns_per_op": 2607587.0,
+          "bytes_per_op": 160432.0,
+          "allocs_per_op": 1174.0
+        }
+      ],
+      "candidate": [
+        {
+          "ns_per_op": 2671389.0,
+          "bytes_per_op": 160466.0,
+          "allocs_per_op": 1174.0
+        },
+        {
+          "ns_per_op": 2571772.0,
+          "bytes_per_op": 160444.0,
+          "allocs_per_op": 1174.0
+        },
+        {
+          "ns_per_op": 2455632.0,
+          "bytes_per_op": 160491.0,
+          "allocs_per_op": 1174.0
+        }
+      ],
+      "baseline_median": {
+        "ns_per_op": 2607587.0,
+        "bytes_per_op": 160442.0,
+        "allocs_per_op": 1174.0
+      },
+      "candidate_median": {
+        "ns_per_op": 2571772.0,
+        "bytes_per_op": 160466.0,
+        "allocs_per_op": 1174.0
+      },
+      "time_reduction_percent": 1.37
+    },
+    "BenchmarkObservationSnapshot/ships-32/history-2048-2": {
+      "baseline": [
+        {
+          "ns_per_op": 46012111.0,
+          "bytes_per_op": 468890.0,
+          "allocs_per_op": 4114.0
+        },
+        {
+          "ns_per_op": 40772363.0,
+          "bytes_per_op": 468889.0,
+          "allocs_per_op": 4114.0
+        },
+        {
+          "ns_per_op": 44767584.0,
+          "bytes_per_op": 468512.0,
+          "allocs_per_op": 4113.0
+        }
+      ],
+      "candidate": [
+        {
+          "ns_per_op": 3820681.0,
+          "bytes_per_op": 448337.0,
+          "allocs_per_op": 3445.0
+        },
+        {
+          "ns_per_op": 3771226.0,
+          "bytes_per_op": 448216.0,
+          "allocs_per_op": 3445.0
+        },
+        {
+          "ns_per_op": 3955612.0,
+          "bytes_per_op": 448368.0,
+          "allocs_per_op": 3446.0
+        }
+      ],
+      "baseline_median": {
+        "ns_per_op": 44767584.0,
+        "bytes_per_op": 468889.0,
+        "allocs_per_op": 4114.0
+      },
+      "candidate_median": {
+        "ns_per_op": 3820681.0,
+        "bytes_per_op": 448337.0,
+        "allocs_per_op": 3445.0
+      },
+      "time_reduction_percent": 91.47
+    },
+    "BenchmarkObservationSnapshot/ships-128/history-2048-2": {
+      "baseline": [
+        {
+          "ns_per_op": 175648217.0,
+          "bytes_per_op": 1434909.0,
+          "allocs_per_op": 12861.0
+        },
+        {
+          "ns_per_op": 171914047.0,
+          "bytes_per_op": 1433170.0,
+          "allocs_per_op": 12855.0
+        },
+        {
+          "ns_per_op": 171317440.0,
+          "bytes_per_op": 1434749.0,
+          "allocs_per_op": 12845.0
+        }
+      ],
+      "candidate": [
+        {
+          "ns_per_op": 10787209.0,
+          "bytes_per_op": 1343676.0,
+          "allocs_per_op": 10054.0
+        },
+        {
+          "ns_per_op": 11125172.0,
+          "bytes_per_op": 1344093.0,
+          "allocs_per_op": 10056.0
+        },
+        {
+          "ns_per_op": 11276701.0,
+          "bytes_per_op": 1343851.0,
+          "allocs_per_op": 10057.0
+        }
+      ],
+      "baseline_median": {
+        "ns_per_op": 171914047.0,
+        "bytes_per_op": 1434749.0,
+        "allocs_per_op": 12855.0
+      },
+      "candidate_median": {
+        "ns_per_op": 11125172.0,
+        "bytes_per_op": 1343851.0,
+        "allocs_per_op": 10056.0
+      },
+      "time_reduction_percent": 93.53
+    },
+    "BenchmarkObservationRollHistory/ships-1/history-2048-2": {
+      "baseline": [
+        {
+          "ns_per_op": 1259846.0,
+          "bytes_per_op": 370351.0,
+          "allocs_per_op": 3637.0
+        },
+        {
+          "ns_per_op": 1206649.0,
+          "bytes_per_op": 370329.0,
+          "allocs_per_op": 3637.0
+        },
+        {
+          "ns_per_op": 1150429.0,
+          "bytes_per_op": 370281.0,
+          "allocs_per_op": 3637.0
+        }
+      ],
+      "candidate": [
+        {
+          "ns_per_op": 1123120.0,
+          "bytes_per_op": 370311.0,
+          "allocs_per_op": 3637.0
+        },
+        {
+          "ns_per_op": 1145336.0,
+          "bytes_per_op": 370307.0,
+          "allocs_per_op": 3637.0
+        },
+        {
+          "ns_per_op": 1193790.0,
+          "bytes_per_op": 370290.0,
+          "allocs_per_op": 3637.0
+        }
+      ],
+      "baseline_median": {
+        "ns_per_op": 1206649.0,
+        "bytes_per_op": 370329.0,
+        "allocs_per_op": 3637.0
+      },
+      "candidate_median": {
+        "ns_per_op": 1145336.0,
+        "bytes_per_op": 370307.0,
+        "allocs_per_op": 3637.0
+      },
+      "time_reduction_percent": 5.08
+    },
+    "BenchmarkObservationRollHistory/ships-32/history-2048-2": {
+      "baseline": [
+        {
+          "ns_per_op": 66702133.0,
+          "bytes_per_op": 3813921.0,
+          "allocs_per_op": 43508.0
+        },
+        {
+          "ns_per_op": 63087512.0,
+          "bytes_per_op": 3811970.0,
+          "allocs_per_op": 43503.0
+        },
+        {
+          "ns_per_op": 69092880.0,
+          "bytes_per_op": 3812661.0,
+          "allocs_per_op": 43504.0
+        }
+      ],
+      "candidate": [
+        {
+          "ns_per_op": 25733618.0,
+          "bytes_per_op": 3939807.0,
+          "allocs_per_op": 46945.0
+        },
+        {
+          "ns_per_op": 25046257.0,
+          "bytes_per_op": 3938883.0,
+          "allocs_per_op": 46946.0
+        },
+        {
+          "ns_per_op": 24356309.0,
+          "bytes_per_op": 3938511.0,
+          "allocs_per_op": 46944.0
+        }
+      ],
+      "baseline_median": {
+        "ns_per_op": 66702133.0,
+        "bytes_per_op": 3812661.0,
+        "allocs_per_op": 43504.0
+      },
+      "candidate_median": {
+        "ns_per_op": 25046257.0,
+        "bytes_per_op": 3938883.0,
+        "allocs_per_op": 46945.0
+      },
+      "time_reduction_percent": 62.45
+    },
+    "BenchmarkObservationRollHistory/ships-128/history-2048-2": {
+      "baseline": [
+        {
+          "ns_per_op": 214047043.0,
+          "bytes_per_op": 4731384.0,
+          "allocs_per_op": 52945.0
+        },
+        {
+          "ns_per_op": 218772119.0,
+          "bytes_per_op": 4731496.0,
+          "allocs_per_op": 52942.0
+        },
+        {
+          "ns_per_op": 215560054.0,
+          "bytes_per_op": 4729669.0,
+          "allocs_per_op": 52937.0
+        }
+      ],
+      "candidate": [
+        {
+          "ns_per_op": 30241538.0,
+          "bytes_per_op": 4800174.0,
+          "allocs_per_op": 54422.0
+        },
+        {
+          "ns_per_op": 30196887.0,
+          "bytes_per_op": 4800145.0,
+          "allocs_per_op": 54421.0
+        },
+        {
+          "ns_per_op": 30185047.0,
+          "bytes_per_op": 4799276.0,
+          "allocs_per_op": 54416.0
+        }
+      ],
+      "baseline_median": {
+        "ns_per_op": 215560054.0,
+        "bytes_per_op": 4731384.0,
+        "allocs_per_op": 52942.0
+      },
+      "candidate_median": {
+        "ns_per_op": 30196887.0,
+        "bytes_per_op": 4800145.0,
+        "allocs_per_op": 54421.0
+      },
+      "time_reduction_percent": 85.99
+    },
+    "BenchmarkObservationRollHistory/ships-32/history-16384-2": {
+      "baseline": [
+        {
+          "ns_per_op": 136544244.0,
+          "bytes_per_op": 7314723.0,
+          "allocs_per_op": 82740.0
+        },
+        {
+          "ns_per_op": 134300755.0,
+          "bytes_per_op": 7314819.0,
+          "allocs_per_op": 82744.0
+        },
+        {
+          "ns_per_op": 132173200.0,
+          "bytes_per_op": 7313714.0,
+          "allocs_per_op": 82740.0
+        }
+      ],
+      "candidate": [
+        {
+          "ns_per_op": 105681162.0,
+          "bytes_per_op": 7462742.0,
+          "allocs_per_op": 90240.0
+        },
+        {
+          "ns_per_op": 106343773.0,
+          "bytes_per_op": 7593350.0,
+          "allocs_per_op": 90240.0
+        },
+        {
+          "ns_per_op": 110152430.0,
+          "bytes_per_op": 7591190.0,
+          "allocs_per_op": 90236.0
+        }
+      ],
+      "baseline_median": {
+        "ns_per_op": 134300755.0,
+        "bytes_per_op": 7314723.0,
+        "allocs_per_op": 82740.0
+      },
+      "candidate_median": {
+        "ns_per_op": 106343773.0,
+        "bytes_per_op": 7591190.0,
+        "allocs_per_op": 90240.0
+      },
+      "time_reduction_percent": 20.82
+    },
+    "BenchmarkObservationRetainedLogs-2": {
+      "baseline": [
+        {
+          "ns_per_op": 144916692.0,
+          "bytes_per_op": 7181140.0,
+          "allocs_per_op": 82799.0
+        },
+        {
+          "ns_per_op": 140679148.0,
+          "bytes_per_op": 7181120.0,
+          "allocs_per_op": 82799.0
+        },
+        {
+          "ns_per_op": 146095923.0,
+          "bytes_per_op": 7182282.0,
+          "allocs_per_op": 82797.0
+        }
+      ],
+      "candidate": [
+        {
+          "ns_per_op": 72423098.0,
+          "bytes_per_op": 7462086.0,
+          "allocs_per_op": 90311.0
+        },
+        {
+          "ns_per_op": 74347087.0,
+          "bytes_per_op": 7464649.0,
+          "allocs_per_op": 90316.0
+        },
+        {
+          "ns_per_op": 76113464.0,
+          "bytes_per_op": 7457097.0,
+          "allocs_per_op": 90301.0
+        }
+      ],
+      "baseline_median": {
+        "ns_per_op": 144916692.0,
+        "bytes_per_op": 7181140.0,
+        "allocs_per_op": 82799.0
+      },
+      "candidate_median": {
+        "ns_per_op": 74347087.0,
+        "bytes_per_op": 7462086.0,
+        "allocs_per_op": 90311.0
+      },
+      "time_reduction_percent": 48.7
+    }
+  }
+}
