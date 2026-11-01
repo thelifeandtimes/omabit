@@ -205,3 +205,66 @@ changes are ready for the third performance commit. Continue with the bounded
 watcher/Qt soak and actual idle Qt measurement, then exact-source paired artifact
 qualification; no deployment or publication. A separate battery signal is still
 unjustified after hidden 30 s polling and would add another dependency/observer.
+
+
+### Fourth checkpoint — final measurement and review stop (2026-11-01)
+
+Product source is `4584453`. The final full `TZ=UTC go test -timeout=30m ./...`
+suite passed, including managed tests in 262.616 s. This supersedes the third
+pass's pending final-query full-suite check. No product changes followed it.
+
+The actual Service/Panel/Monitor QML was measured offscreen in a private offline
+namespace, with an inert collector and zero or 32 stopped synthetic ships. One
+paired run measured main-thread CPU via schedstat over 32 hidden seconds:
+
+| Fleet | Baseline CPU seconds | Candidate CPU seconds |
+| --- | ---: | ---: |
+| Empty | 0.04598 | 0.00349 |
+| 32 stopped ships | 1.00338 | 0.06070 |
+
+Hidden clock changes fell from 32 to 1 and observations from 16 to 1. Unchanged
+sample-map notifications fell from 16 to zero. Across eight visible seconds,
+both variants observed four times: empty-fleet CPU 0.01019 -> 0.01049 s;
+32-ship CPU 0.25778 -> 0.24328 s. No material visible CPU improvement is claimed.
+These are component results, not whole-shell CPU or battery-life improvements.
+
+Fifty panel/monitor open-close cycles retained one collector PID, returned panel
+owners to zero, kept 31 file descriptors, and drained cleanly. RSS changed from
+178,212 to 179,456 KiB; this bounded run is not proof against long-duration leaks.
+The reproducible harness is `scripts/performance/qt-idle.py`; compact evidence is
+[Qt idle results](2026-11-01-qt-idle.json). The first smoke fixture lacked its font
+mountpoint; it was fixed before the passing smoke and final measurements.
+
+The user now permits stopping when a further loop produces less than 10%
+improvement, and requests a mobile HTML review over their tailnet. This
+supersedes the earlier requirement to keep iterating until Monday morning.
+The final loop added measurements, not another optimization, and the remaining
+cache/battery-observer ideas have no demonstrated additional >=10% gain. Stop
+new implementation here; do not misrepresent cumulative gains as a new loop's
+improvement. Target 7 keeps existing caches; target 10 retains liveness and
+authorization checks. Targets 8/10 now have actual QML measurement/churn evidence.
+
+Retained named scratch grows by 14,200 KiB for Qt fixtures/baseline copies to
+236,184 KiB (230.7 MiB), under the 512 MiB allowance. Combined charged usage is
+approximately 35.0 GiB including the 4 GiB unreadable-DEV reserve, under 40 GiB.
+The starting combined audit is an accounting baseline, not a new traversal of
+protected directories. Report assets add only a small amount of static text.
+
+Review scope: source candidate and isolated evidence only. A new paired
+UI/collector/runner release build, actual installer upgrade rehearsal and
+real-laptop CPU/power measurements remain open. Schema 47, desktop schema 1 and
+bootstrap API 1 are unchanged. Do not install, deploy or publish this candidate.
+Production services/plugins, protected ships, ~/temp-ur and human DEV review
+state remain untouched. The older platform goal remains paused. Tailnet serving
+of the sanitized report is specifically authorized by the latest user message.
+
+
+Review hosting verified at 22:04 UTC: mobile page
+`2026-11-01-performance-review.html`, served through a new private Tailscale
+path to a loopback-only single-file process. Existing Serve routes remain
+identical; no Funnel enabled. HTTPS bytes match the report; supporting files
+return 404. Browser validation at 390 x 844, including the expanded table,
+has no document overflow. Hosting metadata is local qualification evidence,
+performance-2026-11-01/mobile-review/verification.json. The performance heartbeat
+was deleted to stop further scheduled work under the new stopping instruction.
+No active test remains; only the explicitly requested static report server runs.

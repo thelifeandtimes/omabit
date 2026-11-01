@@ -6947,3 +6947,41 @@ Production services/plugins, protected ships (especially the express no-touch
 ~sarlev rule), ~/temp-ur, and human DEV review state remain untouched. The broader
 platform goal remains paused. No publication or deployment is authorized by this
 performance task. This supplements M499; it does not supersede its constraints.
+
+
+## M501 — Performance review ready; optimization loop stopped (2026-11-01)
+
+Supersedes M500's ongoing/deadline status. The user permits stopping below 10%
+additional improvement per loop and requested a mobile HTML review on the
+tailnet. Product source is `4584453`; the final loop added measurement, not a
+fourth product optimization. Remaining ideas have no demonstrated additional
+>=10% gain. Do not resume optimization or the older paused platform goal.
+The heartbeat `omabit-performance-passes-through-monday-review` was deleted
+after the private review page was live, stopping further scheduled passes.
+
+Final full Go suite passed on that product source (managed 262.616 s), resolving
+M500's final-query full-suite limitation. Actual offscreen QML with an inert
+collector measured hidden main-thread CPU over 32 s: empty fleet 0.04598 ->
+0.00349 s; 32 stopped ships 1.00338 -> 0.06070 s. Visible observations remained
+two-second cadence; visible CPU was effectively unchanged. Fifty open/close
+cycles retained one collector and 31 descriptors, returned owners to zero and
+drained cleanly; RSS grew about 1.2 MiB. This is not laptop power measurement or
+long-duration leak qualification. See diagnostics/2026-11-01-qt-idle.json and
+the performance diagnostic for all ten target dispositions and evidence.
+
+The static mobile report is diagnostics/2026-11-01-performance-review.html.
+A dedicated copy and hosting verification are in qualification evidence under
+performance-2026-11-01/mobile-review. A new private Tailscale path proxies a
+loopback-only single-file server; existing routes were compared and preserved.
+No Funnel/public exposure, repository directory, keys or fixture logs are served.
+Direct static-file serving needed root; noninteractive sudo was unavailable,
+so the ordinary-user proxy was used instead. Browser validation at 390 x 844
+passed without document overflow, including expanded results. The link is for
+review while this machine/report process stays running; it is not an installer.
+
+No product changes followed the final source tests. Fresh paired release builds,
+actual installer upgrade rehearsal and real-laptop CPU/battery measurement remain
+open before deployment. No release was published or product installed. Protected
+ships (especially ~sarlev), ~/temp-ur, production services/plugins and human DEV
+review state remain untouched. Storage remains below 40 GiB with the recorded
+4 GiB unreadable-DEV reserve; task fixtures use about 231 MiB of 512 MiB.
