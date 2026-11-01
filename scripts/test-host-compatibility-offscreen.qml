@@ -44,6 +44,7 @@ ApplicationWindow {
     property string machineUse: "always-on"
     property string collector: "fixture-collector"
     property var registrations: [{name:"fixture",runner_id:"runner-fixture"}]
+    Plugin.ObservationSchedule { id: observationSchedule; monitorOpen: true }
     property bool registrationsLoaded: true
     property var connections: []
     property string feedError: ""
@@ -117,7 +118,7 @@ ApplicationWindow {
         test.connection=Model.observation(JSON.stringify(fixtures.metadata))
         phase=2
       } else {
-        if(!feed.running || feed.command.join(" ")!=="fixture-collector --format json inventory --watch --interval 2s")throw new Error("Default collector polling requires an opt-in or stopped refreshing")
+        if(!feed.running || feed.command.join(" ")!=="fixture-collector --format json inventory --watch --interval 2s --control-stdin")throw new Error("Default collector polling requires an opt-in or stopped refreshing")
         if(control(runtimeDetails,"host-compatibility-summary").text.indexOf("permissions are unresolved")<0 || !Model.canOperate(connection,ship,"stop",root.now) || !Model.canOperate(connection,Object.assign({},ship,{observed_state:"stopped"}),"start",root.now))throw new Error("Metadata-only report disabled existing controls")
         console.log("PASS: older runners stay observable and existing refresh rechecks local metadata")
         console.log("PASS: default collector polling revalidates hosts; unresolved metadata remains diagnostic")

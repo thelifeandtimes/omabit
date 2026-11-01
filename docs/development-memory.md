@@ -6907,3 +6907,19 @@ Schema 47 remains 47. No installed host service/plugin or protected pier changes
 The guest stays within its 4 GiB scratch allowance; storage accounting adds a
 separate 4 GiB reserve for unreadable DEV overlay work directories and records
 that limitation rather than claiming a complete measurement.
+
+
+## M499 — 0.3.4 publication and bounded performance pass (2026-11-01)
+
+0.3.4 was published after normal PR #11 merge (31bdea8), with frozen source
+bdfe47516bf2c0482cc8450c8c31e2f2db53612e and distribution 0744fe6. This supersedes
+M498's pending publication status; public bytes/cold startup/protection evidence
+is retained in release-0.3.4/candidate-02/publication-memory.json. No production
+service or ship was upgraded by the agent.
+
+The user now requests CPU/battery optimization through Monday November 2 at
+06:00 Pacific (14:00 UTC), with no UI/UX changes and a review candidate at the
+end. See diagnostics/2026-11-01-idle-performance.md for ten ranked targets,
+measurements, deadline and storage accounting. The earlier broad platform goal
+remains paused; this separate task does not authorize production deployment or
+publication. Preserve all protected-ship and manual-review-state exclusions.

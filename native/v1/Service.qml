@@ -120,6 +120,31 @@ Item {
     if (previous) load(previous,true)
     else { published=false; application.active=false; phase="error" }
   }
+  function acceptPlan(result) {
+    plan=result
+    if (result.request===acceptedRequest) {if(!result.blocked)error="";return}
+    if (result.request===failedRequest) return
+    if (!active && result.active) {run("restore",["prepare","--release",result.active,"--profile",result.profile]);return}
+    if (result.blocked) {
+      failedRequest=result.request; error=result.failure.message
+      if (!published && result.active) run("restore",["prepare","--release",result.active,"--profile",result.profile])
+      return
+    }
+    if (phase==="waiting" && candidate && candidate.request===result.request) return
+    candidate=result
+    error=""; phase="preparing"
+    run("prepare",["prepare","--request",result.request])
+  }
+  function acceptLease(value) {
+    if (!value || typeof value.session!=="string") return
+    root.session=value.session
+    if (!value.plan && !value.error) {root.resolve();return}
+    // Match the previous resolve timer's admission rules. A busy helper or an
+    // activation owns its state until completion; the next observation retries.
+    if (worker.running || ["starting","ready","error","preparing","waiting"].indexOf(phase)<0) return
+    if (value.error) {error=String(value.error).slice(0,1024);phase=published ? "ready" : "error";return}
+    acceptPlan(value.plan)
+  }
   function finished(code) {
     var kind=job; job=""
     var result=null
@@ -133,19 +158,7 @@ Item {
       return
     }
     if (kind==="resolve") {
-      plan=result
-      if (result.request===acceptedRequest) {if(!result.blocked)error="";return}
-      if (result.request===failedRequest) return
-      if (!active && result.active) {run("restore",["prepare","--release",result.active,"--profile",result.profile]);return}
-      if (result.blocked) {
-        failedRequest=result.request; error=result.failure.message
-        if (!published && result.active) run("restore",["prepare","--release",result.active,"--profile",result.profile])
-        return
-      }
-      if (phase==="waiting" && candidate && candidate.request===result.request) return
-      candidate=result
-      error=""; phase="preparing"
-      run("prepare",["prepare","--request",result.request])
+      acceptPlan(result)
     } else if (kind==="prepare") {
       candidate=result; phase="waiting"
     } else if (kind==="begin") {
@@ -171,9 +184,9 @@ Item {
   Component.onCompleted: lease.running=true
   Process {
     id: lease
-    command: root.controlPrefix.concat(["lease"])
+    command: root.controlPrefix.concat(["lease","--watch"])
     stdinEnabled: true
-    stdout: SplitParser { onRead: function(line) { try { root.session=JSON.parse(line).session; root.resolve() } catch(e) {root.error=String(e)} } }
+    stdout: SplitParser { onRead: function(line) { try { if(line.length>1048576)throw new Error("Bootstrap observation exceeds its limit");root.acceptLease(JSON.parse(line)) } catch(e) {root.error=String(e)} } }
     stderr: SplitParser { onRead: function(line) { root.error=line } }
     onExited: { root.session=""; root.published=false; application.active=false; root.phase="error" }
   }
@@ -199,7 +212,7 @@ Item {
     onStatusChanged: if(status===Loader.Error)root.failed("Candidate widget could not load; previous release retained.")
   }
   Timer {
-    interval:250; running:true; repeat:true
+    interval:250; running:root.phase==="waiting" || root.phase==="activating" || root.phase==="restoring"; repeat:true
     onTriggered: {
       if (root.phase==="waiting" && root.safeToSwitch && !worker.running) {root.freeze();root.phase="starting-activation";root.intent("begin","")}
       else if ((root.phase==="activating" || root.phase==="restoring") && root.ready() && !worker.running) {
@@ -209,7 +222,7 @@ Item {
     }
   }
   Timer { id: readinessTimeout; interval:30000; onTriggered:root.failed("Candidate did not finish enrollment/collector startup; previous release retained.") }
-  Timer { interval:3000; running:true; repeat:true; onTriggered: {if (!lease.running) lease.running=true; else root.resolve()} }
+  Timer { interval:3000; running:!lease.running; repeat:true; onTriggered: {if (!lease.running) lease.running=true} }
   IpcHandler {
     target:"thelifeandtimes.omabit.bootstrap"
     function status(): string { return JSON.stringify(root.diagnostic()) }

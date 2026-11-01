@@ -61,3 +61,4 @@ ProjectCreationStatus 1.0 ProjectCreationStatus.qml
 ServiceUpgrade 1.0 ServiceUpgrade.qml
 ServiceUpgradePane 1.0 ServiceUpgradePane.qml
 DependencyUpdateNotice 1.0 DependencyUpdateNotice.qml
+ObservationSchedule 1.0 ObservationSchedule.qml

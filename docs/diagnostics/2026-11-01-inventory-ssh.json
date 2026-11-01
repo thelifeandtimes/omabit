@@ -1,0 +1,108 @@
+{
+  "passed": true,
+  "isolated_namespaces": [
+    "user",
+    "net",
+    "pid",
+    "mnt"
+  ],
+  "synthetic_read_only_rpc": true,
+  "real_openssh": true,
+  "real_forced_command_bridge": true,
+  "cases": [
+    {
+      "label": "baseline-visible",
+      "watch_seconds": 30.097,
+      "interval": "2s",
+      "observation_seconds": [
+        0.161,
+        2.185,
+        4.21,
+        6.234,
+        8.259,
+        10.283,
+        12.306,
+        14.33,
+        16.355,
+        18.378,
+        20.402,
+        22.426,
+        24.451,
+        26.476,
+        28.5
+      ],
+      "watch_ssh_sessions": 47,
+      "watch_rpc_requests": {
+        "/hello": 229,
+        "/v1/snapshot": 15,
+        "/v1/projects": 15,
+        "/v1/host-compatibility": 15
+      },
+      "watch_local_connections_including_wake": 137,
+      "hidden_to_visible_refresh_seconds": null,
+      "children_cpu_seconds_including_enrollment_teardown": 0.906081,
+      "synthetic_server_driver_cpu_seconds": 0.093628
+    },
+    {
+      "label": "candidate-visible",
+      "watch_seconds": 30.341,
+      "interval": "2s",
+      "observation_seconds": [
+        0.151,
+        2.168,
+        4.182,
+        6.195,
+        8.209,
+        10.223,
+        12.237,
+        14.251,
+        16.266,
+        18.28,
+        20.295,
+        22.308,
+        24.322,
+        26.337,
+        28.351
+      ],
+      "watch_ssh_sessions": 3,
+      "watch_rpc_requests": {
+        "/hello": 81,
+        "/v1/snapshot": 15,
+        "/v1/host-compatibility": 15,
+        "/v1/projects": 15
+      },
+      "watch_local_connections_including_wake": 63,
+      "hidden_to_visible_refresh_seconds": null,
+      "children_cpu_seconds_including_enrollment_teardown": 0.118449,
+      "synthetic_server_driver_cpu_seconds": 0.055544
+    },
+    {
+      "label": "candidate-hidden",
+      "watch_seconds": 35.576,
+      "interval": "30s",
+      "observation_seconds": [
+        0.153,
+        30.166
+      ],
+      "watch_ssh_sessions": 3,
+      "watch_rpc_requests": {
+        "/hello": 16,
+        "/v1/snapshot": 2,
+        "/v1/projects": 2,
+        "/v1/host-compatibility": 2
+      },
+      "watch_local_connections_including_wake": 15,
+      "hidden_to_visible_refresh_seconds": 0.01294,
+      "children_cpu_seconds_including_enrollment_teardown": 0.105692,
+      "synthetic_server_driver_cpu_seconds": 0.028587
+    }
+  ],
+  "artifacts_sha256": {
+    "runner": "5727ab3fb25cae2fda4d583ed6612499f66578b0cbbbbb48d0da9efe386d21f4",
+    "candidate-collector": "2d29dc71ede5ba4fa096a6eafcc9cede53f19e3bd4f299414c57465ca4224e76",
+    "baseline-collector": "7ef9b474ddea599f24c3cee5adba1c31c9fbb20559fa413fb16f85f0f4e4b0e8"
+  },
+  "baseline": "Published 0.3.4 collector; synthetic RPC fixture with real current SSH forced-command bridge",
+  "candidate": "First performance pass; matching hashes identify measured binaries",
+  "measurement_limits": "CPU includes child enrollment and teardown; excludes the real runner engine, desktop compositor and laptop power usage. Private loopback responses have 10 ms report overlap."
+}

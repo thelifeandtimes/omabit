@@ -49,6 +49,13 @@ func newTransport(dial func(context.Context) (net.Conn, error), identity *Identi
 	lifetime, cancel := context.WithCancel(context.Background())
 	transport := &http.Transport{
 		Proxy: nil,
+		// Inventory reads snapshot, project reservations and host evidence in
+		// parallel. net/http's default retains only two idle connections; the
+		// third stream then repeatedly launches SSH/identity handshakes. Keep
+		// this bounded pool private to the client's enrollment and lifetime.
+		MaxIdleConns:        3,
+		MaxIdleConnsPerHost: 3,
+		MaxConnsPerHost:     3,
 		DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
 			// net/http can detach a dial from its initiating request. Closing this
 			// client must also cancel any unfinished identity handshake.

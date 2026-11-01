@@ -68,7 +68,7 @@ func inspectClient(ctx context.Context, entry Connection, c *client.Client) Obse
 				return
 			}
 			result.ProjectInventoryStatus = "unavailable"
-			inventory, e := c.Projects(ctx, entry.Identity())
+			inventory, e := c.ProjectsWithHello(ctx, entry.Identity(), hello)
 			if e == nil {
 				result.ProjectInventory = &inventory
 				result.ProjectInventoryStatus = "available"
@@ -81,7 +81,7 @@ func inspectClient(ctx context.Context, entry Connection, c *client.Client) Obse
 				result.HostCompatibilityError = &protocol.APIError{Code: "host_report_unsupported", Message: client.ErrHostCompatibilityUnsupported.Error()}
 				return
 			}
-			report, reportErr := c.HostCompatibility(ctx, entry.Identity())
+			report, reportErr := c.HostCompatibilityWithHello(ctx, entry.Identity(), hello)
 			if reportErr == nil {
 				result.HostCompatibility, result.HostCompatibilityStatus = &report, "available"
 				if time.Now().After(report.ExpiresAt) {
@@ -150,8 +150,18 @@ func Collect(ctx context.Context, entries []Connection) Inventory {
 // loop, so an unavailable/slow runner cannot delay healthy runners' next poll.
 // Entries are fixed for this invocation; restarting picks up enrollment changes.
 func Watch(ctx context.Context, entries []Connection, interval time.Duration, emit func(Observation) error) error {
-	if interval < 100*time.Millisecond {
-		return errors.New("inventory interval must be at least 100ms")
+	cadence, err := NewWatchCadence(interval)
+	if err != nil {
+		return err
+	}
+	return WatchWithCadence(ctx, entries, cadence, emit)
+}
+
+// WatchWithCadence preserves a runner's transports while its caller adjusts the
+// polling cadence. The initial observation is immediate, including in idle mode.
+func WatchWithCadence(ctx context.Context, entries []Connection, cadence *WatchCadence, emit func(Observation) error) error {
+	if cadence == nil {
+		return errors.New("inventory cadence is required")
 	}
 	if len(entries) == 0 {
 		return errors.New("no enrolled runners to watch")
@@ -172,19 +182,20 @@ func Watch(ctx context.Context, entries []Connection, interval time.Duration, em
 					c.Close()
 				}
 			}()
-			delay := interval
+			var failures uint
 			for ctx.Err() == nil {
 				if c == nil {
 					c = entry.Client(true)
 				}
+				_, refresh, _ := cadence.read()
 				observation := inspectClient(ctx, entry, c)
 				if observation.Status == "available" {
-					delay = interval
+					failures = 0
 				} else {
 					c.Close()
 					c = nil
-					if delay < 30*time.Second {
-						delay = min(30*time.Second, delay*2)
+					if failures < 9 {
+						failures++
 					}
 				}
 				select {
@@ -192,12 +203,8 @@ func Watch(ctx context.Context, entries []Connection, interval time.Duration, em
 				case <-ctx.Done():
 					return
 				}
-				timer := time.NewTimer(delay)
-				select {
-				case <-ctx.Done():
-					timer.Stop()
+				if cadence.wait(ctx, time.Now(), refresh, failures) != nil {
 					return
-				case <-timer.C:
 				}
 			}
 		}()

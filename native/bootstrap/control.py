@@ -3,6 +3,8 @@
 import argparse
 import json
 import os
+import select
+import time
 from pathlib import Path
 import subprocess
 import sys
@@ -12,13 +14,36 @@ from desktop import Desktop
 import runtime
 
 
+def watch_selection(desktop, session, input, output, interval=3):
+    """Reuse the lease's interpreter; re-read/validate state at the old cadence.
+
+    No payload verification is cached or skipped. Preparation/activation remain
+    separate commands with their original locks, intent and archive checks.
+    Stdin retains its existing ownership contract: EOF releases the lease.
+    """
+    deadline = time.monotonic() + interval
+    while True:
+        ready, _, _ = select.select([input], [], [], max(0, deadline - time.monotonic()))
+        if ready and not os.read(input.fileno(), 4096):
+            return
+        if time.monotonic() < deadline:
+            continue
+        try:
+            result = {"session": session, "plan": desktop.resolve()}
+        except (OSError, ValueError, KeyError, TypeError, runtime.BootstrapError) as error:
+            result = {"session": session, "error": str(error)[:1024]}
+        print(json.dumps(result, sort_keys=True), file=output, flush=True)
+        deadline = time.monotonic() + interval
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, epilog="Build a local candidate with: python3 -B scripts/omabit-dev.py build --help")
     parser.add_argument("--pins", type=Path, help="explicit release descriptor for isolated qualification")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("status")
     commands.add_parser("resolve")
-    commands.add_parser("lease")
+    lease = commands.add_parser("lease")
+    lease.add_argument("--watch", action="store_true", help="resolve desktop selection every three seconds using the retained lease process")
     create = commands.add_parser("profile-create")
     create.add_argument("name")
     create.add_argument("--host-setup", action="store_true", help="allow explicit local host setup, e.g. inside a disposable guest")
@@ -63,8 +88,11 @@ def main(argv=None):
     elif args.command == "lease":
         with desktop.lease() as session:
             print(json.dumps({"session": session}), flush=True)
-            for _ in sys.stdin:
-                pass
+            if args.watch:
+                watch_selection(desktop, session, sys.stdin, sys.stdout)
+            else:
+                for _ in sys.stdin:
+                    pass
         return 0
     elif args.command in ("begin", "commit", "fail"):
         desktop.activation(args.command, args.session, args.request, args.message)

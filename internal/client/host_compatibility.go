@@ -24,6 +24,19 @@ func (c *Client) HostCompatibility(ctx context.Context, expected Identity) (prot
 	if err != nil {
 		return result, hostCompatibilityError(err)
 	}
+	return c.HostCompatibilityWithHello(ctx, expected, hello)
+}
+
+// HostCompatibilityWithHello avoids a duplicate Hello within one inventory
+// observation. It does not cache authority: transport pins, body identity and
+// validity checks, request deadlines and server-side grant checks still apply.
+func (c *Client) HostCompatibilityWithHello(ctx context.Context, expected Identity, hello protocol.Hello) (protocol.HostCompatibilityReport, error) {
+	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	defer cancel()
+	var result protocol.HostCompatibilityReport
+	if hello.ProtocolVersion != protocol.Version {
+		return result, ErrHostCompatibilityUnsupported
+	}
 	if err := expected.Check(hello.RunnerID, hello.Mode); err != nil {
 		return result, err
 	}

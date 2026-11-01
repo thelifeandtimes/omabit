@@ -102,7 +102,7 @@ Commands:
               Explicitly accept mixed development mode at the same pinned endpoint.
   forget NAME --runner-id ID
               Remove only local enrollment, requiring its expected runner ID.
-  inventory [--watch] [--interval 1s]
+  inventory [--watch] [--interval 1s] [--control-stdin]
               Observe all enrolled runners; watch emits independent NDJSON updates.
   hello       Verify compatibility and show runner capabilities.
   host-check [--format json|text]
