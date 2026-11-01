@@ -7002,3 +7002,53 @@ Current combined visible-root accounting is 31511 MiB plus the recorded 4 GiB
 unreadable-DEV reserve; the launcher remeasures exact bytes and refuses over
 40 GiB. Build staging must finish and clean up before the guest starts.
 No production mounts/network, protected ships, ~/temp-ur or human DEV state.
+
+
+## M503 — 0.3.5-rc.1 built and qualified for local review (2026-11-01)
+
+Supersedes M501/M502's pending build and installer qualification. Frozen product
+source is `cce7cd017bf33b08594a82f0dd8286caed6d8811` on the same performance branch.
+Matched UI, omabit, collector, runner, skills and the unchanged pinned pill are
+under qualification evidence `release-0.3.5-rc.1/candidate-01/0.3.5-rc.1`.
+Qualification was attached without rebuilding the immutable product assets;
+final checksums verified. No release publication, push, installed plugin change
+or in-place service/DEV upgrade occurred.
+
+Passed native registry (9), bootstrap (12), release policy (15), upgrade-control
+QML (4), archive/provenance/install checks, native hot/cold activation and recovery
+(9 cases), exact-binary offline CLI reference (132 help entries), and skills (5).
+The final product's full Go/race/SSH tests remain as recorded in M501; only version
+strings and the version-parameterized qualification harness followed those tests.
+
+Actual offline `patch-upgrade-035-rc1-01` rehearsal passed from published 0.3.4:
+new disposable running/stopped fakes, exact QML update button, denied polkit/retry,
+access and history preservation, unchanged running container/PID and engine,
+completed-update no-op, manager restart and macOS metadata stopped-fake import.
+Schema remains47, desktop format1, bootstrap API1. See release-specific rehearsal,
+host and qualification JSON. Its powered-off generated disks/boot fixtures were
+retired with a manifest (2,506,858,496 bytes recovered); shared base preserved.
+Initial setup receipt is reconstructed from genuine installer evidence; human
+password input, stock updater, remote upgrade and other distros remain untested.
+
+A separate native preview launcher in candidate-01 opens the real RC with private
+HOME/XDG/profile `review035`, no inherited credentials/enrollment and host setup
+false. `preview.py --check` passed exact version/source, ready and zero runners/
+ships. The first launcher check exposed AF_UNIX path length under the evidence
+root; only the wrapper was fixed to use a private temporary /tmp runtime cleaned
+on exit. Frozen product artifacts were unchanged. One existing native placeholder
+QColor warning is nonfatal; manual appearance review remains appropriate.
+The launcher is not installed into Omarchy and does not inherit human DEV state.
+
+The existing private tailnet HTML was updated with results, the one-command
+launcher and review steps. Only its owned loopback server was replaced at the
+same port; all Tailscale routes compare equal. HTTP/TLS bytes, CSP and refusal to
+serve supporting paths verified. Browser review at390x844 has no document
+horizontal overflow; viewport restored and tab kept as a deliverable. Report
+availability requires this machine and its report process to remain running.
+
+Final charged storage is35.2208GiB/40GiB including4GiB unreadable-DEV reserve and
+about231MiB retained performance scratch; RC plus preview cache uses227.3MiB.
+No protected ship, especially ~sarlev, ~/temp-ur, production service/plugin or
+human DEV review state was used. Original platform goal stays paused; performance
+loop stays stopped and heartbeat stays deleted. Do not publish or deploy without
+a new user instruction. Local RC readiness is not battery-life qualification.
