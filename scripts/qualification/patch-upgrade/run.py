@@ -40,14 +40,17 @@ def main():
  if any(x is None for x in (a.portable,a.previous,a.candidate,a.rootless,a.output)):p.error('all paths required')
  a.portable=a.portable.resolve();a.previous=a.previous.resolve();a.rootless=a.rootless.resolve();a.candidate=a.candidate.resolve()
  labs=Path.home()/'Documents/ChatGPT/omabit-private-docker-labs';evidence=labs.parent/'omabit-qualification-evidence'
- if a.output.parent.resolve()!=labs.resolve() or a.output.exists() or not re.fullmatch(r'patch-upgrade-034-[a-z0-9-]+',a.output.name):p.error('fresh patch-upgrade-034-NAME in the existing labs root required')
+ if a.output.parent.resolve()!=labs.resolve() or a.output.exists() or not re.fullmatch(r'patch-upgrade-[0-9]{3}-[a-z0-9-]+',a.output.name):p.error('fresh patch-upgrade-NNN-NAME in the existing labs root required')
+ previous=json.loads((a.previous/'release.json').read_text())['version']
+ target=json.loads((a.candidate/'release.json').read_text())['version']
+ if not all(re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+(?:-rc\.[0-9]+)?',v) for v in (previous,target)) or previous==target:p.error('distinct release versions required')
  roots=[Path('/srv/dev/urbit'),labs,evidence]
  used=sum(allocated(x) for x in roots);budget=4*GIB
  if used+budget>40*GIB:raise RuntimeError('Insufficient headroom for declared 4 GiB scratch cap')
  meta=json.loads((a.portable/'bundle.json').read_text())
  for n in ('base.qcow2','boot/vmlinuz','boot/initramfs.cpio'):
   if (a.portable/n).is_symlink() or digest(a.portable/n)!=meta['sha256'][n]:raise RuntimeError('Pristine input hash differs: '+n)
- for v,path in [('0.3.3',a.previous),('0.3.4',a.candidate)]:
+ for v,path in [(previous,a.previous),(target,a.candidate)]:
   release=json.loads((path/'release.json').read_text());assert release['version']==v
   hashes={line.split('  ',1)[1]:line.split('  ',1)[0] for line in (path/'SHA256SUMS').read_text().splitlines()}
   for tool in ('omabit','urbit-collector','urbit-runner'):
@@ -56,10 +59,10 @@ def main():
  # No copies of live state. The payload consists only of verified public tools,
  # a fresh test script, one pinned OCI image and one pinned bootstrap pill.
  payload=work/'payload';payload.mkdir()
- for v,path in [('0.3.3',a.previous),('0.3.4',a.candidate)]:
+ for v,path in [(previous,a.previous),(target,a.candidate)]:
   dest=payload/v;dest.mkdir()
   for n in ('release.json','SHA256SUMS','omabit-linux-amd64','urbit-collector-linux-amd64','urbit-runner-linux-amd64'):shutil.copy2(path/n,dest/n)
-  if v=='0.3.3':shutil.copytree(a.rootless,dest/'rootless-bundle')
+  if v==previous:shutil.copytree(a.rootless,dest/'rootless-bundle')
   archive=path/('omabit-'+v+'-linux-amd64.tar.gz')
   asset=next(x for x in json.loads((path/'release.json').read_text())['assets'] if x['name']==archive.name)
   assert digest(archive)==asset['sha256'] and archive.stat().st_size==asset['bytes']
@@ -72,7 +75,7 @@ def main():
  os.link(runtime/'runtime.oci.tar',payload/'runtime.oci.tar')
  for n in ('guest.py','shell.qml','desktop.py'):shutil.copy2(Path(__file__).parent/n,payload/n)
  shutil.copytree(ROOT/'native/bootstrap',payload/'bootstrap',ignore=shutil.ignore_patterns('__pycache__'))
- (payload/'scenario.json').write_text(json.dumps({'desktop':'0.3.3','collector':'0.3.3','runner':'0.3.3'}))
+ (payload/'scenario.json').write_text(json.dumps({'desktop':previous,'collector':previous,'runner':previous,'target':target}))
  disk=work/'payload.ext4'
  with disk.open('xb') as f:f.truncate(768*1024**2)
  run(['mkfs.ext4','-q','-F','-d',payload,disk],stdout=subprocess.DEVNULL)
@@ -94,9 +97,9 @@ def main():
  base_info=json.loads(subprocess.check_output([tools/'usr/bin/qemu-img','info','--output=json',a.portable/'base.qcow2'],env=tenv,text=True))
  assert base_info['format']=='qcow2' and not base_info.get('backing-filename')
  run([tools/'usr/bin/qemu-img','create','-q','-u','-f','qcow2','-F','qcow2','-b','/base.qcow2',work/'root.qcow2',str(base_info['virtual-size'])],env=tenv)
- cmd=['systemd-run','--user','--scope','--unit=omabit-patch-upgrade-034','-p','MemoryMax=10G','-p','MemorySwapMax=0','-p','CPUQuota=300%','--',
+ cmd=['systemd-run','--user','--scope','--unit=omabit-'+work.name,'-p','MemoryMax=10G','-p','MemorySwapMax=0','-p','CPUQuota=300%','--',
  'bwrap','--unshare-all','--die-with-parent','--clearenv','--ro-bind','/usr','/usr','--symlink','usr/bin','/bin','--symlink','usr/lib','/lib','--symlink','usr/lib','/lib64','--proc','/proc','--dev','/dev','--dev-bind','/dev/kvm','/dev/kvm','--tmpfs','/tmp','--dir','/run','--ro-bind',str(tools),'/tools','--ro-bind',str(a.portable/'base.qcow2'),'/base.qcow2','--ro-bind',str(a.portable/'boot/vmlinuz'),'/vmlinuz','--bind',str(work),'/lab','--chdir','/lab','--setenv','HOME','/lab','--setenv','PATH','/usr/bin:/bin','--setenv','LD_LIBRARY_PATH','/tools/usr/lib','--setenv','QEMU_MODULE_DIR','/tools/usr/lib/qemu','--','/tools/usr/bin/qemu-system-x86_64','-accel','kvm','-cpu','host','-machine','q35','-m','8G','-smp','3','-nodefaults','-no-user-config','-display','none','-monitor','none','-nic','none','-no-reboot','-L','/tools/usr/share/qemu','-bios','/tools/usr/share/qemu/bios-256k.bin','-kernel','/vmlinuz','-initrd','/lab/initramfs.cpio','-append','console=ttyS0 panic=-1 quiet rdinit=/init omabit.disposable-guest=release-upgrade-v1 systemd.unit=multi-user.target','-drive','file=/lab/root.qcow2,format=qcow2,if=none,id=rootdisk','-device','virtio-blk-pci,drive=rootdisk','-drive','file=/lab/payload.ext4,format=raw,if=none,id=payload,readonly=on','-device','virtio-blk-pci,drive=payload','-qmp','unix:/lab/control/qmp.sock,server=on,wait=off','-serial','stdio']
- receipt={'measurement_limits':MEASUREMENT_LIMITS,'harness_sha256':{n:digest(Path(__file__).parent/n) for n in ('run.py','guest.py','desktop.py','shell.qml')},'scenario':'0.3.3 desktop and services to 0.3.4','source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'used_before':used,'scratch_limit':budget,'base_sha256':meta['sha256']['base.qcow2'],'base_path':str(a.portable/'base.qcow2'),'network':'none','host_mounts':'OS files, QEMU, immutable base and fresh lab only'}
+ receipt={'measurement_limits':MEASUREMENT_LIMITS,'harness_sha256':{n:digest(Path(__file__).parent/n) for n in ('run.py','guest.py','desktop.py','shell.qml')},'scenario':previous+' desktop and services to '+target,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'used_before':used,'scratch_limit':budget,'base_sha256':meta['sha256']['base.qcow2'],'base_path':str(a.portable/'base.qcow2'),'network':'none','host_mounts':'OS files, QEMU, immutable base and fresh lab only'}
  (work/'host.json').write_text(json.dumps(receipt,indent=2)+'\n')
  with (work/'serial.log').open('wb') as log:
   proc=subprocess.Popen(cmd,stdout=log,stderr=subprocess.STDOUT)
@@ -104,7 +107,7 @@ def main():
   while proc.poll() is None:
    time.sleep(10)
    if allocated(work)>budget or sum(allocated(x) for x in roots)>40*GIB or (work/'serial.log').stat().st_size>32*1024**2 or time.monotonic()-started>2700:
-    subprocess.run(['systemctl','--user','kill','--signal=TERM','omabit-patch-upgrade-034.scope'],check=True);proc.wait(timeout=15);raise RuntimeError('Guest budget/deadline exceeded; retained bounded failure evidence')
+    subprocess.run(['systemctl','--user','kill','--signal=TERM','omabit-'+work.name+'.scope'],check=True);proc.wait(timeout=15);raise RuntimeError('Guest budget/deadline exceeded; retained bounded failure evidence')
   receipt['exit']=proc.returncode
  receipt['used_after']=sum(allocated(x) for x in roots)
  (work/'host.json').write_text(json.dumps(receipt,indent=2)+'\n')

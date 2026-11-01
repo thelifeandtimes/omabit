@@ -6985,3 +6985,20 @@ open before deployment. No release was published or product installed. Protected
 ships (especially ~sarlev), ~/temp-ur, production services/plugins and human DEV
 review state remain untouched. Storage remains below 40 GiB with the recorded
 4 GiB unreadable-DEV reserve; task fixtures use about 231 MiB of 512 MiB.
+
+
+## M502 — 0.3.5-rc.1 review preparation (2026-11-01)
+
+The user now requests the next version for review. This authorizes frozen local
+review artifacts and isolated upgrade qualification; it does not resume the
+optimization loop or authorize publishing or upgrading existing services/plugins.
+Prepare 0.3.5-rc.1 on the performance branch. The only product change after the
+final performance tests is the review version in manifests and Service.qml.
+
+Use exact published 0.3.4 assets and the prior pristine offline guest base, with
+a new patch-upgrade-035-rc1-01 overlay. Declared guest scratch cap is 4 GiB, plus
+256 MiB retained release assets; previous performance scratch is about 231 MiB.
+Current combined visible-root accounting is 31511 MiB plus the recorded 4 GiB
+unreadable-DEV reserve; the launcher remeasures exact bytes and refuses over
+40 GiB. Build staging must finish and clean up before the guest starts.
+No production mounts/network, protected ships, ~/temp-ur or human DEV state.

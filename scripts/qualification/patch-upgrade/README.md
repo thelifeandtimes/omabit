@@ -1,10 +1,11 @@
-# 0.3.3 → 0.3.4 guided patch upgrade
+# Guided patch and review-candidate upgrades
 
 Explicit `--portable`, `--previous`, `--candidate`, `--rootless`, `--output` and
 `--run` are required. The previous and candidate paths contain exact published
-and frozen release assets, respectively. `--rootless` supplies the verified
+and frozen release assets, respectively. Their verified manifests supply the
+versions, including immutable `-rc.N` review candidates. `--rootless` supplies the verified
 launcher bundle used by the previous installer. The new output must be a direct
-`patch-upgrade-034-NAME` child of the existing private labs root.
+`patch-upgrade-NNN-NAME` child of the existing private labs root.
 
 This specializes the retained0.3.1 QML-button rehearsal for schema47 →47. It uses
 actual sealed bundles, a pristine immutable base, offline fresh fakes, actual
@@ -19,8 +20,8 @@ off run; classify and record generated disks before retirement. This fixture doe
 not test human password input, the stock plugin updater, remote upgrades or power
 cuts. Desktop preferences and cold/hot QML activation have a separate native test.
 
-The 0.3.4 rehearsal also makes a separate copy of its own stopped fake, adds
-synthetic macOS metadata, reproduces the old validator's refusal, then verifies
+The rehearsal also makes a separate copy of its own stopped fake, adds
+synthetic macOS metadata, checks the previous validator (0.3.3 refuses; 0.3.4 accepts), then verifies
 guided identity discovery and a complete stopped import with the new runner.
 All companion bytes survive and the unrelated running fake retains its process.
 No production pier or prior manual review state is used.
