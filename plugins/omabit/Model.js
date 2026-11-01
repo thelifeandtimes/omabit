@@ -593,19 +593,27 @@ function cpuView(connection,instance,now,observing) {
 }
 
 function recordSamples(history, connection, now, metric) {
-  var next = Object.assign({}, history)
+  // Keep the map identity when an observation contains no new samples. QML then
+  // avoids notifying every chart binding for empty/stopped/unchanged fleets.
+  var original = history || {}, next = original
+  function write(key, points) {
+    if (next === original) next = Object.assign({}, original)
+    next[key] = points
+  }
   instances(connection).forEach(function(i) {
-    var key = connection.runner_id + "/" + i.id, points = next[key] || []
-    var last = points.filter(function(p) { return p !== null }).slice(-1)[0]
+    var key = connection.runner_id + "/" + i.id, points = next[key] || [], last = null
+    for (var n = points.length-1; n >= 0; n--) { if (points[n] !== null) { last=points[n]; break } }
     var currentContainer=i.resources && i.resources.container_id
-    if (last && currentContainer && currentContainer !== last.container) { points=[]; next[key]=[]; last=null }
+    if (last && currentContainer && currentContainer !== last.container) { points=[]; write(key,points); last=null }
     var sample = available(connection, now) && i.observed_state === "running" ? (metric === "cpu" ? cpuSample(i,now) : memorySample(i, now)) : null
-    if (!sample) { if (points.length && points[points.length - 1] !== null) next[key] = points.concat([null]).slice(-120); return }
+    if (!sample) { if (points.length && points[points.length - 1] !== null) write(key,points.concat([null]).slice(-120)); return }
     if (last && last.container !== sample.container) points = []
     else if (last && sample.time <= last.time) return
-    next[key] = points.concat([sample]).slice(-120)
+    write(key,points.concat([sample]).slice(-120))
   })
-  Object.keys(next).slice(0,Math.max(0,Object.keys(next).length-256)).forEach(function(key) { delete next[key] })
+  var keys=Object.keys(next), excess=Math.max(0,keys.length-256)
+  if (excess && next === original) next=Object.assign({},original)
+  keys.slice(0,excess).forEach(function(key) { delete next[key] })
   return next
 }
 

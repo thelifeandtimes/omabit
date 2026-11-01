@@ -292,7 +292,17 @@ const key = connection.runner_id + "/alpha";
 const history = model.recordSamples({},sampling,now);
 assert.equal(history[key].length, 1);
 assert.equal(model.recordSamples(history,sampling,now)[key].length, 1);
+assert.equal(model.recordSamples(history,sampling,now),history,"duplicate sample must not invalidate chart maps");
 assert.equal(model.recordSamples(history,{...sampling,status:"unavailable"},now)[key][1], null);
+const gapHistory=model.recordSamples(history,{...sampling,status:"unavailable"},now);
+assert.notEqual(gapHistory,history);assert.equal(history[key].length,1,"adding a gap must not mutate the previous sample map");
+assert.equal(model.recordSamples(gapHistory,{...sampling,status:"unavailable"},now),gapHistory);
+assert.equal(model.recordSamples(history,{...sampling,snapshot:{instances:[]}},now),history);
+const oversizedHistory=Object.fromEntries(Array.from({length:257},(_,n)=>["runner/"+n,[]]));
+const boundedHistory=model.recordSamples(oversizedHistory,{...sampling,snapshot:{instances:[]}},now);
+assert.equal(Object.keys(boundedHistory).length,256);assert.equal(Object.keys(oversizedHistory).length,257);
+assert.equal(boundedHistory["runner/0"],undefined);
+
 sampling.snapshot.instances[0].resources = {...resource,container_id:"a".repeat(64),observed_at:new Date(now+1).toISOString()};
 assert.equal(model.recordSamples(history,sampling,now)[key].length, 1);
 assert.equal(model.memorySample({...instance,resources:resource},now+31000), null);

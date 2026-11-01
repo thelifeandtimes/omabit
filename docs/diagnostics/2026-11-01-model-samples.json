@@ -1,0 +1,51 @@
+{
+  "scope": "Node sample-model microbenchmark; not a desktop CPU measurement",
+  "results": [
+    {
+      "file": "0.3.4 Model.js",
+      "cases": [
+        {
+          "case": "empty",
+          "loops": 20000,
+          "map_replacements": 20000,
+          "cpu_ms": 9.96
+        },
+        {
+          "case": "stopped",
+          "loops": 2000,
+          "map_replacements": 2000,
+          "cpu_ms": 97.345
+        },
+        {
+          "case": "unchanged-history",
+          "loops": 2000,
+          "map_replacements": 2000,
+          "cpu_ms": 509.681
+        }
+      ]
+    },
+    {
+      "file": "second performance pass Model.js",
+      "cases": [
+        {
+          "case": "empty",
+          "loops": 20000,
+          "map_replacements": 0,
+          "cpu_ms": 5.748
+        },
+        {
+          "case": "stopped",
+          "loops": 2000,
+          "map_replacements": 0,
+          "cpu_ms": 101.337
+        },
+        {
+          "case": "unchanged-history",
+          "loops": 2000,
+          "map_replacements": 0,
+          "cpu_ms": 246.655
+        }
+      ]
+    }
+  ]
+}

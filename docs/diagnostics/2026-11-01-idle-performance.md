@@ -100,6 +100,52 @@ production network or credentials were mounted.
 No laptop CPU percentage or battery improvement is claimed. Remaining
 host/report/model/runner profiling and upgrade/review packaging are pending.
 
+### Second pass — 2026-11-01 21:23 UTC
+
+Unchanged sample histories now retain their map identity, avoiding QML binding
+notifications for empty/stopped/duplicate observations. The last sample is found
+by a backwards scan instead of allocating a filtered array on every poll. Changes
+still create a fresh map; container replacement, unavailable-data gaps and the
+120-sample/256-instance limits retain their previous behavior.
+
+`node scripts/test-panel-model.js` and the actual RC11 offscreen QML checks pass.
+`node scripts/performance/model-samples.js BASELINE CURRENT` measured 2,000
+unchanged-history iterations over 128 synthetic ships: 509.681 -> 246.655 ms CPU,
+and 2,000 -> 0 map replacements. Empty fleets: 9.960 -> 5.748 ms for 20,000
+iterations, 20,000 -> 0 replacements. Stopped fleets: 97.345 -> 101.337 ms (no
+CPU improvement claimed), 2,000 -> 0 replacements. This is a Node microbenchmark,
+not a shell/frame-rate measurement. Full data is in the adjacent JSON evidence.
+
+First source checkpoint: `0ba2f58`. Full Go tests and the SSH benchmark preceded
+this JS-only second pass. The final SSH run also proved a hidden-to-visible
+refresh in 12.94 ms without an additional handshake. Failed/short-run binary
+copies in `/tmp/omabit-ssh-performance-01`, `02`, `03` were removed only after
+recording hashes and paths in each `removed-artifacts.json`; compact logs/results
+and the final run remain. No production state changed.
+
+### Remaining investigations / next pass
+
+- Target 7: consider a per-watch host-report cache using the report's existing
+  expiry, never extending evidence age. Fresh Hello and response identity checks
+  must remain; discard on reconnect, role/actor/capability change or failure.
+  Qualify freshness/revocation/error cases before keeping this change.
+- Target 8: sample-map work is improved. Measure actual hidden Qt binding/paint
+  work before adding other visibility gates; avoid destroying view state.
+- Target 9: profile synthetic empty/stopped/running runner snapshots and scheduler
+  work. Current runner polling persists observation timestamps/revisions, so do
+  not simply cache/drop observations or skip runtime safety checks.
+- Target 10: log readers are already visibility-owned and upgrade drain tests
+  verify shutdown. Inspect idle helpers/retries and use a bounded soak/leak test.
+  Keep current SSH liveness deadlines unless measurement justifies changing them.
+  A separate battery signal may add little beyond the 30 s hidden cadence; do not
+  add a dependency or policy change without evidence.
+- Verify negative SSH cases (revocation/reconnect/identity changes) in the private
+  lab with retained connections, then prepare an isolated review bundle from a
+  clean exact source commit and qualify the paired UI/collector upgrade.
+- There are no active test processes at this checkpoint. Built tools are in
+  `/tmp/omabit-performance-build-01`; the final SSH evidence is run `04` and the
+  actual UI drain/cadence evidence is `/tmp/omabit-service-drain-performance-02`.
+
 ### Continuation
 
 Same-thread heartbeat `omabit-performance-passes-through-monday-review` runs at
