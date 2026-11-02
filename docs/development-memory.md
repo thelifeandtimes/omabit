@@ -7052,3 +7052,21 @@ No protected ship, especially ~sarlev, ~/temp-ur, production service/plugin or
 human DEV review state was used. Original platform goal stays paused; performance
 loop stays stopped and heartbeat stays deleted. Do not publish or deploy without
 a new user instruction. Local RC readiness is not battery-life qualification.
+
+
+## M504 — Publish the performance update through the normal updater (2026-11-02)
+
+The user completed the previously instructed stable update step and requests the
+next performance-update step. In that context, prepare and publish the complete
+0.3.5 stable release so the stock plugin updater and Update Dependencies can
+install matching bootstrap/UI/collector/runner artifacts. This supersedes
+M503's publication restriction only; no workstation service/plugin upgrade,
+production ship operation, human DEV mutation or optimization restart is implied.
+
+Promote the qualified RC product with only its three version strings changed.
+Freeze clean source, rebuild stable-version assets, repeat exact 0.3.4 → 0.3.5
+rehearsal, and pass protected PR checks before merge/publishing. Initial charged
+storage is35.2544GiB including the4GiB unreadable-DEV reserve and231MiB retained
+performance scratch. New assets reserve160MiB; disposable guest scratch4GiB:
+projected39.4106GiB under40GiB. Finish/clean build and native-test staging before
+the single offline guest. Retire only that guest's classified generated disks.
