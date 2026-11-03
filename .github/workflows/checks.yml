@@ -51,6 +51,7 @@ jobs:
           python3 -B scripts/test-skill-package.py
           python3 -B scripts/test-channels.py
           python3 -B scripts/test-desktop-bootstrap.py
+          python3 -B scripts/test-bootstrap-observation.py
           python3 -B -m unittest discover -s scripts/qualification/desktop -p 'test_*.py'
           python3 -B scripts/test-desktop-qualification.py
           python3 -B scripts/test-import-recovery.py --static
@@ -104,6 +105,7 @@ jobs:
         env:
           QT_QML_EXECUTABLE: /usr/lib/qt6/bin/qml
         run: |
+          python3 -B scripts/test-observation-schedule.py
           python3 -B scripts/test-rc11-panel-offscreen.py --require-qt
           python3 -B scripts/test-host-compatibility-offscreen.py --require-qt
           python3 -B scripts/test-service-upgrade-offscreen.py --require-qt

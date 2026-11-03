@@ -39,6 +39,7 @@ Window {
   height: Style.space(770)
   minimumWidth: Style.space(780)
   minimumHeight: Style.space(540)
+  readonly property bool watching: visible && visibility !== Window.Minimized
   readonly property bool fullscreen: visibility === Window.FullScreen
   visible: false
   function present() { activation.activate() }

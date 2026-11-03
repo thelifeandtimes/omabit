@@ -15,6 +15,27 @@ opening a database does not start ships or alter existing settings, ports,
 identities, grants, storage roots or operation receipts. Older runners refuse
 schema47. Returning the desktop to an older version cannot downgrade that state.
 
+## Performance update: 0.3.4 to 0.3.5
+
+First bring the desktop and local services to 0.3.4 through the earlier supported
+upgrade steps. Then run:
+
+```sh
+omarchy plugin update thelifeandtimes.omabit
+```
+
+Open Omabit's menubar widget, select **Update Dependencies**, review the offered
+service update and approve the operating-system authorization prompt. The same
+flow is available under **Setup → Local services & updates**. Wait for
+**Local services match this desktop bundle**, and confirm the desktop shows
+0.3.5. No fleet reset, re-enrollment or pier import is needed. Remote runners
+require their own explicit upgrade.
+
+The bootstrap, UI and collector arrive with the plugin's verified release bundle;
+the dependency button updates the local runner. Schema 47 is unchanged. Review
+[0.3.5 notes and scope](release-0.3.5.md) before updating.
+
+
 ## Desktop and host are separate updates
 
 Update the native plugin through Omarchy's usual plugin updater. Omabit's retained

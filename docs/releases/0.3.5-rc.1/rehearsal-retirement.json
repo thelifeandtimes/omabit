@@ -1,0 +1,38 @@
+{
+  "source_commit": "cce7cd017bf33b08594a82f0dd8286caed6d8811",
+  "guest_powered_off": true,
+  "result_passed": true,
+  "base_preserved": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261027-01/portable/base.qcow2",
+  "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+  "removed": [
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-035-rc1-01/root.qcow2",
+      "kind": "generated disposable guest disk or boot fixture",
+      "allocated_bytes": 2216169472,
+      "sha256": "c69dd0614701b0db7f3527d9a5f78e5ffab5de649a99b032b29a9e6018f41e6c"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-035-rc1-01/payload.ext4",
+      "kind": "generated disposable guest disk or boot fixture",
+      "allocated_bytes": 272420864,
+      "sha256": "e4a7e02304ec3f071bc6731b29dab4e47e85f533c58cb1bce60ef24e1f1e5eb4"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-035-rc1-01/init",
+      "kind": "generated disposable guest disk or boot fixture",
+      "allocated_bytes": 4091904,
+      "sha256": "6d41134e5ad48843045ca374469901e001ddb80d4e78043f181650e42f81b1c5"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-035-rc1-01/initramfs.cpio",
+      "kind": "generated disposable guest disk or boot fixture",
+      "allocated_bytes": 9101312,
+      "sha256": "3a2b80e6d02532f229c723127b079502f1346a1b3a4f958262e902a59c66bb41"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-035-rc1-01/boot",
+      "kind": "generated disposable guest disk or boot fixture",
+      "allocated_bytes": 5074944
+    }
+  ]
+}

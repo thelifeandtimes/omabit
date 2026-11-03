@@ -1,0 +1,460 @@
+{
+  "date": "2026-11-01",
+  "baseline_commit": "0744fe670acb82a742d35521473d7260a5c34cba",
+  "candidate_product_commit": "4584453be258b8758a0cf7ef3fe519d610f16e66",
+  "scope": "One paired offscreen Quickshell run with actual Service/Panel/Monitor QML and an inert collector. No compositor, live runner, protected ship, production plugin or laptop power measurement. CPU uses main-thread schedstat; process CPU ticks have 10 ms resolution.",
+  "command": "python3 -B scripts/performance/qt-idle.py --baseline /tmp/omabit-qt-baseline-source-01 --candidate . --ui-fixture /tmp/omabit-service-drain-performance-02 --output /tmp/omabit-qt-performance-01 --seconds 32 --visible-seconds 8 --ships 0 32 --churn 50",
+  "raw_sha256": "8972bdc13e544cc1994ee484afd224eecd1cfeacca5814fa2643257d4872e560",
+  "harness_sha256": "738924fe4c7431b36882d69455a3a1148bd211a3124905de2ed4a5e324de69bb",
+  "passed": true,
+  "cases": [
+    {
+      "variant": "baseline",
+      "ships": 0,
+      "feed_pid": 18,
+      "measurements": [
+        {
+          "view": "hidden",
+          "seconds": 32.00034467794467,
+          "shell_cpu_seconds": 0.04999999999999993,
+          "shell_cpu_resolution_seconds": 0.01,
+          "main_thread_cpu_seconds": 0.04597759800000001,
+          "before": {
+            "pid": 4,
+            "start": "94931835",
+            "cpu_seconds": 0.56,
+            "main_thread_cpu_seconds": 0.465040586,
+            "rss_kib": 131600,
+            "fds": 25,
+            "children": [
+              18
+            ]
+          },
+          "after": {
+            "pid": 4,
+            "start": "94931835",
+            "cpu_seconds": 0.61,
+            "main_thread_cpu_seconds": 0.511018184,
+            "rss_kib": 125812,
+            "fds": 23,
+            "children": [
+              18
+            ]
+          },
+          "qml": {
+            "loaded": true,
+            "observing": true,
+            "registered": true,
+            "error": "",
+            "connections": 1,
+            "clockChanges": 32,
+            "observations": 16,
+            "memoryChanges": 16,
+            "cpuChanges": 16,
+            "panelOpen": false,
+            "monitorOpen": false,
+            "owners": null,
+            "interval": "2s",
+            "churnSteps": 0,
+            "closed": false
+          }
+        },
+        {
+          "view": "panel",
+          "seconds": 8.000408170977607,
+          "shell_cpu_seconds": 0.010000000000000009,
+          "shell_cpu_resolution_seconds": 0.01,
+          "main_thread_cpu_seconds": 0.010194095999999986,
+          "before": {
+            "pid": 4,
+            "start": "94931835",
+            "cpu_seconds": 0.61,
+            "main_thread_cpu_seconds": 0.52163165,
+            "rss_kib": 125912,
+            "fds": 23,
+            "children": [
+              18
+            ]
+          },
+          "after": {
+            "pid": 4,
+            "start": "94931835",
+            "cpu_seconds": 0.62,
+            "main_thread_cpu_seconds": 0.531825746,
+            "rss_kib": 125932,
+            "fds": 23,
+            "children": [
+              18
+            ]
+          },
+          "qml": {
+            "loaded": true,
+            "observing": true,
+            "registered": true,
+            "error": "",
+            "connections": 1,
+            "clockChanges": 8,
+            "observations": 4,
+            "memoryChanges": 4,
+            "cpuChanges": 4,
+            "panelOpen": true,
+            "monitorOpen": false,
+            "owners": null,
+            "interval": "2s",
+            "churnSteps": 0,
+            "closed": false
+          }
+        }
+      ],
+      "panel_wake_seconds": 2.0266350799938664
+    },
+    {
+      "variant": "candidate",
+      "ships": 0,
+      "feed_pid": 77,
+      "measurements": [
+        {
+          "view": "hidden",
+          "seconds": 32.000384576036595,
+          "shell_cpu_seconds": 0.0,
+          "shell_cpu_resolution_seconds": 0.01,
+          "main_thread_cpu_seconds": 0.0034935249999999973,
+          "before": {
+            "pid": 63,
+            "start": "94936348",
+            "cpu_seconds": 0.25,
+            "main_thread_cpu_seconds": 0.148811163,
+            "rss_kib": 123372,
+            "fds": 25,
+            "children": [
+              77
+            ]
+          },
+          "after": {
+            "pid": 63,
+            "start": "94936348",
+            "cpu_seconds": 0.25,
+            "main_thread_cpu_seconds": 0.152304688,
+            "rss_kib": 123660,
+            "fds": 23,
+            "children": [
+              77
+            ]
+          },
+          "qml": {
+            "loaded": true,
+            "observing": true,
+            "registered": true,
+            "error": "",
+            "connections": 1,
+            "clockChanges": 1,
+            "observations": 1,
+            "memoryChanges": 0,
+            "cpuChanges": 0,
+            "panelOpen": false,
+            "monitorOpen": false,
+            "owners": 0,
+            "interval": "30s",
+            "churnSteps": 0,
+            "closed": false
+          }
+        },
+        {
+          "view": "panel",
+          "seconds": 8.000346863991581,
+          "shell_cpu_seconds": 0.010000000000000009,
+          "shell_cpu_resolution_seconds": 0.01,
+          "main_thread_cpu_seconds": 0.010493135999999986,
+          "before": {
+            "pid": 63,
+            "start": "94936348",
+            "cpu_seconds": 0.26,
+            "main_thread_cpu_seconds": 0.15579227,
+            "rss_kib": 123712,
+            "fds": 23,
+            "children": [
+              77
+            ]
+          },
+          "after": {
+            "pid": 63,
+            "start": "94936348",
+            "cpu_seconds": 0.27,
+            "main_thread_cpu_seconds": 0.166285406,
+            "rss_kib": 123760,
+            "fds": 23,
+            "children": [
+              77
+            ]
+          },
+          "qml": {
+            "loaded": true,
+            "observing": true,
+            "registered": true,
+            "error": "",
+            "connections": 1,
+            "clockChanges": 12,
+            "observations": 4,
+            "memoryChanges": 0,
+            "cpuChanges": 0,
+            "panelOpen": true,
+            "monitorOpen": false,
+            "owners": 1,
+            "interval": "2s",
+            "churnSteps": 0,
+            "closed": false
+          }
+        }
+      ],
+      "panel_wake_seconds": 0.035304407007060945
+    },
+    {
+      "variant": "baseline",
+      "ships": 32,
+      "feed_pid": 108,
+      "measurements": [
+        {
+          "view": "hidden",
+          "seconds": 32.00040056405123,
+          "shell_cpu_seconds": 1.0,
+          "shell_cpu_resolution_seconds": 0.01,
+          "main_thread_cpu_seconds": 1.003380516,
+          "before": {
+            "pid": 94,
+            "start": "94940640",
+            "cpu_seconds": 0.34,
+            "main_thread_cpu_seconds": 0.254574297,
+            "rss_kib": 164452,
+            "fds": 25,
+            "children": [
+              108
+            ]
+          },
+          "after": {
+            "pid": 94,
+            "start": "94940640",
+            "cpu_seconds": 1.34,
+            "main_thread_cpu_seconds": 1.257954813,
+            "rss_kib": 165992,
+            "fds": 23,
+            "children": [
+              108
+            ]
+          },
+          "qml": {
+            "loaded": true,
+            "observing": true,
+            "registered": true,
+            "error": "",
+            "connections": 1,
+            "clockChanges": 32,
+            "observations": 16,
+            "memoryChanges": 16,
+            "cpuChanges": 16,
+            "panelOpen": false,
+            "monitorOpen": false,
+            "owners": null,
+            "interval": "2s",
+            "churnSteps": 0,
+            "closed": false
+          }
+        },
+        {
+          "view": "panel",
+          "seconds": 8.000356639036909,
+          "shell_cpu_seconds": 0.26,
+          "shell_cpu_resolution_seconds": 0.01,
+          "main_thread_cpu_seconds": 0.2577772629999999,
+          "before": {
+            "pid": 94,
+            "start": "94940640",
+            "cpu_seconds": 1.42,
+            "main_thread_cpu_seconds": 1.327584871,
+            "rss_kib": 166004,
+            "fds": 23,
+            "children": [
+              108
+            ]
+          },
+          "after": {
+            "pid": 94,
+            "start": "94940640",
+            "cpu_seconds": 1.68,
+            "main_thread_cpu_seconds": 1.585362134,
+            "rss_kib": 166072,
+            "fds": 23,
+            "children": [
+              108
+            ]
+          },
+          "qml": {
+            "loaded": true,
+            "observing": true,
+            "registered": true,
+            "error": "",
+            "connections": 1,
+            "clockChanges": 8,
+            "observations": 4,
+            "memoryChanges": 4,
+            "cpuChanges": 4,
+            "panelOpen": true,
+            "monitorOpen": false,
+            "owners": null,
+            "interval": "2s",
+            "churnSteps": 0,
+            "closed": false
+          }
+        }
+      ],
+      "panel_wake_seconds": 1.9645345750031993
+    },
+    {
+      "variant": "candidate",
+      "ships": 32,
+      "feed_pid": 164,
+      "measurements": [
+        {
+          "view": "hidden",
+          "seconds": 32.00034431100357,
+          "shell_cpu_seconds": 0.06,
+          "shell_cpu_resolution_seconds": 0.01,
+          "main_thread_cpu_seconds": 0.060698809999999964,
+          "before": {
+            "pid": 151,
+            "start": "94945122",
+            "cpu_seconds": 0.3,
+            "main_thread_cpu_seconds": 0.204268833,
+            "rss_kib": 143756,
+            "fds": 25,
+            "children": [
+              164
+            ]
+          },
+          "after": {
+            "pid": 151,
+            "start": "94945122",
+            "cpu_seconds": 0.36,
+            "main_thread_cpu_seconds": 0.264967643,
+            "rss_kib": 164536,
+            "fds": 23,
+            "children": [
+              164
+            ]
+          },
+          "qml": {
+            "loaded": true,
+            "observing": true,
+            "registered": true,
+            "error": "",
+            "connections": 1,
+            "clockChanges": 1,
+            "observations": 1,
+            "memoryChanges": 0,
+            "cpuChanges": 0,
+            "panelOpen": false,
+            "monitorOpen": false,
+            "owners": 0,
+            "interval": "30s",
+            "churnSteps": 0,
+            "closed": false
+          }
+        },
+        {
+          "view": "panel",
+          "seconds": 8.000342080020346,
+          "shell_cpu_seconds": 0.25000000000000006,
+          "shell_cpu_resolution_seconds": 0.01,
+          "main_thread_cpu_seconds": 0.243282691,
+          "before": {
+            "pid": 151,
+            "start": "94945122",
+            "cpu_seconds": 0.41,
+            "main_thread_cpu_seconds": 0.320979781,
+            "rss_kib": 166660,
+            "fds": 23,
+            "children": [
+              164
+            ]
+          },
+          "after": {
+            "pid": 151,
+            "start": "94945122",
+            "cpu_seconds": 0.66,
+            "main_thread_cpu_seconds": 0.564262472,
+            "rss_kib": 167068,
+            "fds": 23,
+            "children": [
+              164
+            ]
+          },
+          "qml": {
+            "loaded": true,
+            "observing": true,
+            "registered": true,
+            "error": "",
+            "connections": 1,
+            "clockChanges": 12,
+            "observations": 4,
+            "memoryChanges": 0,
+            "cpuChanges": 0,
+            "panelOpen": true,
+            "monitorOpen": false,
+            "owners": 1,
+            "interval": "2s",
+            "churnSteps": 0,
+            "closed": false
+          }
+        }
+      ],
+      "panel_wake_seconds": 0.07221518293954432,
+      "churn": {
+        "cycles": 50,
+        "before": {
+          "pid": 151,
+          "start": "94945122",
+          "cpu_seconds": 0.74,
+          "main_thread_cpu_seconds": 0.649392954,
+          "rss_kib": 178212,
+          "fds": 31,
+          "children": [
+            164
+          ]
+        },
+        "after": {
+          "pid": 151,
+          "start": "94945122",
+          "cpu_seconds": 7.61,
+          "main_thread_cpu_seconds": 7.47950802,
+          "rss_kib": 179456,
+          "fds": 31,
+          "children": [
+            164
+          ]
+        },
+        "qml": {
+          "loaded": true,
+          "observing": true,
+          "registered": true,
+          "error": "",
+          "connections": 1,
+          "clockChanges": 214,
+          "observations": 105,
+          "memoryChanges": 0,
+          "cpuChanges": 0,
+          "panelOpen": false,
+          "monitorOpen": false,
+          "owners": 0,
+          "interval": "30s",
+          "churnSteps": 0,
+          "closed": false
+        }
+      }
+    }
+  ],
+  "full_go_suite": {
+    "command": "TZ=UTC nice -n10 go test -timeout=30m ./...",
+    "passed": true,
+    "managed_seconds": 262.616,
+    "log_sha256": "1a863df56007994ebc8b958a91dafbc744b3ec2471f92a1245ef9a6e62284bcc"
+  }
+}

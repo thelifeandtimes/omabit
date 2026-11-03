@@ -123,7 +123,7 @@ if args[2:]==['runners']:
   Path('/lab/late-read-started').write_text(str(os.getpid()))
   while not Path('/lab/release-read').exists():time.sleep(.05)
  print(json.dumps([{'name':'fixture','runner_id':'fixture-runner'}]))
-elif args[2:]==['inventory','--watch','--interval','2s']:
+elif len(args)==7 and args[2:5]==['inventory','--watch','--interval'] and args[5] in ('2s','30s') and args[6]=='--control-stdin':
  def stop(*_):
   record('term');time.sleep(.75);record('exit');raise SystemExit(0)
  signal.signal(signal.SIGTERM,stop)

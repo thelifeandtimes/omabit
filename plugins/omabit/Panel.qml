@@ -17,11 +17,18 @@ Ui.Panel {
   readonly property var connections: service ? service.connections : []
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
-  onOpenedChanged: if (opened && service && !service.observing) service.refresh()
+  property var observationService: null
+  function syncObservation() {
+    if (observationService && observationService !== service && typeof observationService.setPanelOpen === "function") observationService.setPanelOpen(root, false)
+    observationService = service
+    if (service && typeof service.setPanelOpen === "function") service.setPanelOpen(root, opened)
+  }
+  onOpenedChanged: { syncObservation(); if (opened && service && !service.observing) service.refresh() }
+  Component.onDestruction: if (observationService && typeof observationService.setPanelOpen === "function") observationService.setPanelOpen(root, false)
   function syncSettings() {
     if (service && service.settings !== settings) { service.settings = settings; service.refresh() }
   }
-  onServiceChanged: Qt.callLater(syncSettings)
+  onServiceChanged: { Qt.callLater(syncSettings); Qt.callLater(syncObservation) }
   onSettingsChanged: Qt.callLater(syncSettings)
   function monitor(connection, instance) { var s=service; root.close(); if(s) Qt.callLater(function(){s.openMonitor(connection, instance, "overview")}) }
   function remoteSetup() { var s=service;root.close();if(s)Qt.callLater(function(){s.openSetup("remote")}) }

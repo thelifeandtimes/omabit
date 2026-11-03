@@ -6907,3 +6907,209 @@ Schema 47 remains 47. No installed host service/plugin or protected pier changes
 The guest stays within its 4 GiB scratch allowance; storage accounting adds a
 separate 4 GiB reserve for unreadable DEV overlay work directories and records
 that limitation rather than claiming a complete measurement.
+
+
+## M499 — 0.3.4 publication and bounded performance pass (2026-11-01)
+
+0.3.4 was published after normal PR #11 merge (31bdea8), with frozen source
+bdfe47516bf2c0482cc8450c8c31e2f2db53612e and distribution 0744fe6. This supersedes
+M498's pending publication status; public bytes/cold startup/protection evidence
+is retained in release-0.3.4/candidate-02/publication-memory.json. No production
+service or ship was upgraded by the agent.
+
+The user now requests CPU/battery optimization through Monday November 2 at
+06:00 Pacific (14:00 UTC), with no UI/UX changes and a review candidate at the
+end. See diagnostics/2026-11-01-idle-performance.md for ten ranked targets,
+measurements, deadline and storage accounting. The earlier broad platform goal
+remains paused; this separate task does not authorize production deployment or
+publication. Preserve all protected-ship and manual-review-state exclusions.
+
+
+## M500 — Measured idle-observation candidate, not deployed (2026-11-01)
+
+Status: ongoing performance pass through M499's Monday 06:00 Pacific deadline.
+Topic branch `perf/idle-observation-20261101` in `omabit-platform-overhaul`.
+First checkpoints 0ba2f58 and 9694785 retain three private authenticated transports,
+add 2 s visible/pending-work versus 30 s hidden observation with immediate wakeup,
+remove repeated bootstrap interpreter launches and no-op sample-map updates.
+Real isolated OpenSSH measurement: 47 -> 3 sessions per 30 s at visible cadence,
+with retained-session revocation/identity/role/replay regressions passing.
+
+The third pass batches snapshot epoch-history reads without schema or stored-state
+changes; 128 synthetic ships with 2,048 ordinary journal records measured
+171.91 -> 11.13 ms per snapshot. See diagnostics/2026-11-01-idle-performance.md
+and adjacent JSON evidence for exact scope, CPU/time distinctions, tests and
+remaining qualification. The full managed suite passed before the final row-ID
+query refinement; final-query focused race checks and vet passed. Complete final
+full-suite/paired-artifact qualification before a review installation is proposed.
+
+Production services/plugins, protected ships (especially the express no-touch
+~sarlev rule), ~/temp-ur, and human DEV review state remain untouched. The broader
+platform goal remains paused. No publication or deployment is authorized by this
+performance task. This supplements M499; it does not supersede its constraints.
+
+
+## M501 — Performance review ready; optimization loop stopped (2026-11-01)
+
+Supersedes M500's ongoing/deadline status. The user permits stopping below 10%
+additional improvement per loop and requested a mobile HTML review on the
+tailnet. Product source is `4584453`; the final loop added measurement, not a
+fourth product optimization. Remaining ideas have no demonstrated additional
+>=10% gain. Do not resume optimization or the older paused platform goal.
+The heartbeat `omabit-performance-passes-through-monday-review` was deleted
+after the private review page was live, stopping further scheduled passes.
+
+Final full Go suite passed on that product source (managed 262.616 s), resolving
+M500's final-query full-suite limitation. Actual offscreen QML with an inert
+collector measured hidden main-thread CPU over 32 s: empty fleet 0.04598 ->
+0.00349 s; 32 stopped ships 1.00338 -> 0.06070 s. Visible observations remained
+two-second cadence; visible CPU was effectively unchanged. Fifty open/close
+cycles retained one collector and 31 descriptors, returned owners to zero and
+drained cleanly; RSS grew about 1.2 MiB. This is not laptop power measurement or
+long-duration leak qualification. See diagnostics/2026-11-01-qt-idle.json and
+the performance diagnostic for all ten target dispositions and evidence.
+
+The static mobile report is diagnostics/2026-11-01-performance-review.html.
+A dedicated copy and hosting verification are in qualification evidence under
+performance-2026-11-01/mobile-review. A new private Tailscale path proxies a
+loopback-only single-file server; existing routes were compared and preserved.
+No Funnel/public exposure, repository directory, keys or fixture logs are served.
+Direct static-file serving needed root; noninteractive sudo was unavailable,
+so the ordinary-user proxy was used instead. Browser validation at 390 x 844
+passed without document overflow, including expanded results. The link is for
+review while this machine/report process stays running; it is not an installer.
+
+No product changes followed the final source tests. Fresh paired release builds,
+actual installer upgrade rehearsal and real-laptop CPU/battery measurement remain
+open before deployment. No release was published or product installed. Protected
+ships (especially ~sarlev), ~/temp-ur, production services/plugins and human DEV
+review state remain untouched. Storage remains below 40 GiB with the recorded
+4 GiB unreadable-DEV reserve; task fixtures use about 231 MiB of 512 MiB.
+
+
+## M502 — 0.3.5-rc.1 review preparation (2026-11-01)
+
+The user now requests the next version for review. This authorizes frozen local
+review artifacts and isolated upgrade qualification; it does not resume the
+optimization loop or authorize publishing or upgrading existing services/plugins.
+Prepare 0.3.5-rc.1 on the performance branch. The only product change after the
+final performance tests is the review version in manifests and Service.qml.
+
+Use exact published 0.3.4 assets and the prior pristine offline guest base, with
+a new patch-upgrade-035-rc1-01 overlay. Declared guest scratch cap is 4 GiB, plus
+256 MiB retained release assets; previous performance scratch is about 231 MiB.
+Current combined visible-root accounting is 31511 MiB plus the recorded 4 GiB
+unreadable-DEV reserve; the launcher remeasures exact bytes and refuses over
+40 GiB. Build staging must finish and clean up before the guest starts.
+No production mounts/network, protected ships, ~/temp-ur or human DEV state.
+
+
+## M503 — 0.3.5-rc.1 built and qualified for local review (2026-11-01)
+
+Supersedes M501/M502's pending build and installer qualification. Frozen product
+source is `cce7cd017bf33b08594a82f0dd8286caed6d8811` on the same performance branch.
+Matched UI, omabit, collector, runner, skills and the unchanged pinned pill are
+under qualification evidence `release-0.3.5-rc.1/candidate-01/0.3.5-rc.1`.
+Qualification was attached without rebuilding the immutable product assets;
+final checksums verified. No release publication, push, installed plugin change
+or in-place service/DEV upgrade occurred.
+
+Passed native registry (9), bootstrap (12), release policy (15), upgrade-control
+QML (4), archive/provenance/install checks, native hot/cold activation and recovery
+(9 cases), exact-binary offline CLI reference (132 help entries), and skills (5).
+The final product's full Go/race/SSH tests remain as recorded in M501; only version
+strings and the version-parameterized qualification harness followed those tests.
+
+Actual offline `patch-upgrade-035-rc1-01` rehearsal passed from published 0.3.4:
+new disposable running/stopped fakes, exact QML update button, denied polkit/retry,
+access and history preservation, unchanged running container/PID and engine,
+completed-update no-op, manager restart and macOS metadata stopped-fake import.
+Schema remains47, desktop format1, bootstrap API1. See release-specific rehearsal,
+host and qualification JSON. Its powered-off generated disks/boot fixtures were
+retired with a manifest (2,506,858,496 bytes recovered); shared base preserved.
+Initial setup receipt is reconstructed from genuine installer evidence; human
+password input, stock updater, remote upgrade and other distros remain untested.
+
+A separate native preview launcher in candidate-01 opens the real RC with private
+HOME/XDG/profile `review035`, no inherited credentials/enrollment and host setup
+false. `preview.py --check` passed exact version/source, ready and zero runners/
+ships. The first launcher check exposed AF_UNIX path length under the evidence
+root; only the wrapper was fixed to use a private temporary /tmp runtime cleaned
+on exit. Frozen product artifacts were unchanged. One existing native placeholder
+QColor warning is nonfatal; manual appearance review remains appropriate.
+The launcher is not installed into Omarchy and does not inherit human DEV state.
+
+The existing private tailnet HTML was updated with results, the one-command
+launcher and review steps. Only its owned loopback server was replaced at the
+same port; all Tailscale routes compare equal. HTTP/TLS bytes, CSP and refusal to
+serve supporting paths verified. Browser review at390x844 has no document
+horizontal overflow; viewport restored and tab kept as a deliverable. Report
+availability requires this machine and its report process to remain running.
+
+Final charged storage is35.2208GiB/40GiB including4GiB unreadable-DEV reserve and
+about231MiB retained performance scratch; RC plus preview cache uses227.3MiB.
+No protected ship, especially ~sarlev, ~/temp-ur, production service/plugin or
+human DEV review state was used. Original platform goal stays paused; performance
+loop stays stopped and heartbeat stays deleted. Do not publish or deploy without
+a new user instruction. Local RC readiness is not battery-life qualification.
+
+
+## M504 — Publish the performance update through the normal updater (2026-11-02)
+
+The user completed the previously instructed stable update step and requests the
+next performance-update step. In that context, prepare and publish the complete
+0.3.5 stable release so the stock plugin updater and Update Dependencies can
+install matching bootstrap/UI/collector/runner artifacts. This supersedes
+M503's publication restriction only; no workstation service/plugin upgrade,
+production ship operation, human DEV mutation or optimization restart is implied.
+
+Promote the qualified RC product with only its three version strings changed.
+Freeze clean source, rebuild stable-version assets, repeat exact 0.3.4 → 0.3.5
+rehearsal, and pass protected PR checks before merge/publishing. Initial charged
+storage is35.2544GiB including the4GiB unreadable-DEV reserve and231MiB retained
+performance scratch. New assets reserve160MiB; disposable guest scratch4GiB:
+projected39.4106GiB under40GiB. Finish/clean build and native-test staging before
+the single offline guest. Retire only that guest's classified generated disks.
+
+
+## M505 — Resume stable qualification after workstation reboot (2026-11-02)
+
+The user requests continuation after reboot. Stable 0.3.5 source d3979db and its
+immutable built artifacts survive, as do completed archive/native hot-cold/
+recovery/CLI checks. The first offline stable rehearsal was interrupted during
+its second disposable ship's first boot, before the service-upgrade step; no
+result was completed and no successful power-cut behavior is claimed. Its scope
+is inactive. Retired only its generated VM disks/boot fixtures with a recorded
+manifest, preserving compact logs and the verified immutable base.
+
+The static tailnet review server was restored on the same loopback port and path;
+HTTPS bytes match. No production services/plugins or ships were changed. The
+user's installed plugin pins and runner were read-only verified at 0.3.4 before
+reboot. The next installer review remains 0.3.4 → 0.3.5 through normal update UI.
+
+Resume in fresh patch-upgrade-035-stable-02 with the same frozen assets and 4 GiB
+scratch cap. Current charged usage is35.1675GiB including the4GiB unreadable-DEV
+reserve; the previous temporary performance scratch was removed by reboot, while
+its durable results/logs remain. Projected with guest cap39.1675GiB under40GiB.
+No rebuild, protected-state access, deployment or optimization restart is needed.
+
+
+## M506 — Stable 0.3.5 exact-artifact rehearsal passed (2026-11-02)
+
+Frozen source d3979dbb30efc344ac35687ba2782662981ee478 and its freshly built stable
+assets passed the repeated offline 0.3.4 → 0.3.5 QML-button upgrade. Denied
+authorization/retry, running container/PID and engine continuity, stopped intent,
+access/enrollment/history, repeated no-op, manager restart and synthetic macOS
+metadata import all passed. The guest powered off. Its generated disks were
+retired with a manifest, recovering2,482,544,640 allocated bytes; the immutable
+base remains verified. The interrupted first attempt remains separately recorded.
+
+Native activation/recovery (9 cases), archive/provenance checks,132 CLI entries,
+bootstrap (12), native registry (9), skills (5), policy (15), upgrade controls and
+observation schedule passed on the stable candidate. Qualification was attached
+without rebuilding immutable assets. Schema47, desktop format1 and bootstrap
+API1 remain unchanged. See releases/0.3.5/qualification.json and linked records.
+
+Next gate is reviewed protected release PR, matching draft download verification,
+merge commit and stable publication. No production or DEV installation is implied.
+This supersedes M505's pending-rehearsal status, not its exclusion constraints.

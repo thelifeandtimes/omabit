@@ -1,0 +1,21 @@
+{
+  "url": "https://sourcebox.tail709ccc.ts.net/omabit-performance-review",
+  "version": "0.3.5-rc.1",
+  "served_sha256": "0b8ed0b099cb20316feda349204df55a2f622afff5ff075965e308d8d807d843",
+  "status": 200,
+  "single_page_only": true,
+  "private_tailnet": true,
+  "existing_routes_unchanged": true,
+  "new_server_pid": 3336259,
+  "port": 45383,
+  "mobile_browser": {
+    "viewport": [
+      390,
+      844
+    ],
+    "document_width": 375,
+    "horizontal_overflow": false,
+    "launch_instructions_visually_checked": true,
+    "viewport_restored": true
+  }
+}

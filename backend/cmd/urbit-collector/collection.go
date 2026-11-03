@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -32,7 +33,7 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 	var sshHost, sshConfig string
 	var newName string
 	var revision uint64
-	var watch bool
+	var watch, controlStdin bool
 	interval := time.Second
 	usage := command
 	switch command {
@@ -56,9 +57,10 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 		flags.Uint64Var(&revision, "revision", 0, "original connection revision")
 		flags.StringVar(&newName, "mode", "", "explicit new mode: development-managed")
 	case "inventory":
-		usage += " [--watch] [--interval 1s]"
+		usage += " [--watch] [--interval 1s] [--control-stdin]"
 		flags.BoolVar(&watch, "watch", false, "emit per-runner NDJSON observations; Ctrl+C exits successfully")
 		flags.DurationVar(&interval, "interval", time.Second, "per-runner delay after each poll, at least 100ms")
+		flags.BoolVar(&controlStdin, "control-stdin", false, "with --watch, read NDJSON interval/refresh updates from stdin; EOF stops watching")
 	}
 	if (command == "enroll" || command == "runner-edit" || command == "forget" || command == "runner-accept-mode") && len(args) > 0 && args[0] != "--help" && args[0] != "-h" {
 		name, args = args[0], args[1:]
@@ -103,8 +105,8 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 	if command == "inventory" {
 		intervalSet := false
 		flags.Visit(func(f *flag.Flag) { intervalSet = intervalSet || f.Name == "interval" })
-		if interval < 100*time.Millisecond || (intervalSet && !watch) {
-			return fail(errors.New("--interval requires --watch and must be at least 100ms"), 2)
+		if interval < 100*time.Millisecond || ((intervalSet || controlStdin) && !watch) {
+			return fail(errors.New("--interval/--control-stdin require --watch; interval must be at least 100ms"), 2)
 		}
 	}
 	registry, err := openRegistry(dir)
@@ -147,7 +149,13 @@ func runCollection(ctx context.Context, command string, args []string, dir, sock
 			return fail(listErr, 1)
 		}
 		if watch {
-			err := collection.Watch(ctx, entries, interval, func(v collection.Observation) error { return encoder.Encode(v) })
+			emit := func(v collection.Observation) error { return encoder.Encode(v) }
+			var err error
+			if controlStdin {
+				err = controlledInventory(ctx, entries, interval, os.Stdin, emit)
+			} else {
+				err = collection.Watch(ctx, entries, interval, emit)
+			}
 			if ctx.Err() != nil && errors.Is(err, ctx.Err()) {
 				return 0
 			}

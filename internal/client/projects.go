@@ -21,16 +21,27 @@ func (c *Client) Projects(ctx context.Context, expected Identity) (protocol.Proj
 	if err != nil {
 		return result, err
 	}
-	if err = expected.Check(h.RunnerID, h.Mode); err != nil {
+	return c.ProjectsWithHello(ctx, expected, h)
+}
+
+// ProjectsWithHello shares the Hello already obtained for this observation.
+// Do not pass historical/cached capability evidence. The transport must remain
+// identity-pinned; every response is still bound and the runner authorizes RPCs.
+func (c *Client) ProjectsWithHello(ctx context.Context, expected Identity, h protocol.Hello) (protocol.ProjectInventory, error) {
+	var result protocol.ProjectInventory
+	if h.ProtocolVersion != protocol.Version {
+		return result, ErrProjectInventoryUnsupported
+	}
+	if err := expected.Check(h.RunnerID, h.Mode); err != nil {
 		return result, err
 	}
 	if !slices.Contains(h.Features, protocol.ProjectInventoryFeature) {
 		return result, ErrProjectInventoryUnsupported
 	}
-	if err = c.do(ctx, http.MethodGet, protocol.ProjectInventoryPath, nil, &result, true); err != nil {
+	if err := c.do(ctx, http.MethodGet, protocol.ProjectInventoryPath, nil, &result, true); err != nil {
 		return protocol.ProjectInventory{}, err
 	}
-	if err = expected.Check(result.RunnerID, result.Mode); err != nil {
+	if err := expected.Check(result.RunnerID, result.Mode); err != nil {
 		return protocol.ProjectInventory{}, err
 	}
 	if !validProjectInventory(result) {

@@ -1,0 +1,143 @@
+{
+  "version": "0.3.5",
+  "platform": "linux/amd64",
+  "source_commit": "d3979dbb30efc344ac35687ba2782662981ee478",
+  "source_tree": "bbaa0cb6898e387d85018774854d27e11d364495",
+  "backend_source_sha256": "750f3e27a51acb979a5b781cdf7fe381396667edf94479351b66b0a159b2e905",
+  "channel": "stable",
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "runner_schema": 47,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "evidence": "docs/releases/0.3.5/rehearsal.json",
+    "evidence_sha256": "4191bbf772c856cd1e8f88902219f1e9c106321a25f1264dd43d145ae04f66e7",
+    "paths": [
+      {
+        "versions": [
+          "0.3.4",
+          "0.3.5"
+        ],
+        "evidence": "docs/releases/0.3.5/rehearsal.json",
+        "evidence_sha256": "4191bbf772c856cd1e8f88902219f1e9c106321a25f1264dd43d145ae04f66e7",
+        "scope": "Exact QML-button service upgrade, denial/retry, runtime/access/history continuity, manager restart, native desktop activation/recovery and metadata import regression"
+      }
+    ]
+  },
+  "validation": {
+    "passed": true,
+    "native_plugin_tests": 9,
+    "bootstrap_state_tests": 12,
+    "release_policy_tests": 15,
+    "service_upgrade_qt_cases": 4,
+    "archive_checksums_and_provenance": true,
+    "native_activation_cases": 9,
+    "offline_help_entries": 132,
+    "skill_package_tests": 5,
+    "source_tests_commit": "4584453",
+    "logs": {
+      "archive": {
+        "name": "archive.log",
+        "sha256": "ae8996ddb7f01d2b95c414f87c4918d1d43019921521f21ca964beb47a5849fb"
+      },
+      "bootstrap-observation": {
+        "name": "bootstrap-observation.log",
+        "sha256": "dada9a669a08fb1e5271a2a076c6b6b2bf59c5ccbc584adcbc84c32f8a68287a"
+      },
+      "bootstrap": {
+        "name": "bootstrap.log",
+        "sha256": "45b0ef7cf74129cedaad21035f3d72c2a04bffc15185fd61bc4c970a5677d74d"
+      },
+      "cli": {
+        "name": "cli.log",
+        "sha256": "f2f0ac00b5398b09c937e71387b71885ec979c613a85dd34c6d4752556c138c3"
+      },
+      "desktop-upgrade": {
+        "name": "desktop-upgrade.log",
+        "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+      },
+      "native": {
+        "name": "native.log",
+        "sha256": "12f20a2c92f773d673f1a1a05fc92cbe40896449f123025728d3b8b7f9194c00"
+      },
+      "observation": {
+        "name": "observation.log",
+        "sha256": "ec197b75b2639a3d03a92d9fa5cdbedc14822bac369f9f140ca5dcfb71241521"
+      },
+      "package": {
+        "name": "package.log",
+        "sha256": "2d1142d472292cf9c662f0c442623961dd608c15c3c0a5d5088caaf4a86fbba7"
+      },
+      "performance-full-go": {
+        "name": "performance-full-go.log",
+        "sha256": "1a863df56007994ebc8b958a91dafbc744b3ec2471f92a1245ef9a6e62284bcc"
+      },
+      "policy": {
+        "name": "policy.log",
+        "sha256": "27012b658209cacd33425aadae7e94b14878f1237179c1f6aa133df611475b52"
+      },
+      "rehearsal-02": {
+        "name": "rehearsal-02.log",
+        "sha256": "29d5efd488c17959aec8c8ed137c5fc379b6a3ddc1735960bcd5519f90dec701"
+      },
+      "skills": {
+        "name": "skills.log",
+        "sha256": "6d024d30205e269c3848bc234f2d070697fe5a86ac5cc9f4004ee91571f6f353"
+      },
+      "upgrade-ui": {
+        "name": "upgrade-ui.log",
+        "sha256": "41a85872561a7b413c54e158ddae4beecd8ebe0e6704b854057540add3526207"
+      }
+    },
+    "runtime_inputs_unchanged_after_source_tests": true,
+    "source_regressions": "Full Go suite on final performance product code; focused race/vet and real isolated OpenSSH authorization/revocation/non-replay. Stable version strings differ from RC; backend source digest is identical. Protected full source/race/QML CI must pass on the distribution head before publication."
+  },
+  "frozen_artifacts": {
+    "assets": [
+      {
+        "name": "omabit-0.3.5-linux-amd64.tar.gz",
+        "bytes": 31549203,
+        "sha256": "e2ed61839571996a443ece9280e97a268faba52ccc6e64db656d3d609ed95a26"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 18077743,
+        "sha256": "b56ce18116ee967c42e26fbbf0dccb44a41b8e8ff8f35e2ca0f25aae596a4023"
+      },
+      {
+        "name": "omabit-recommended-apps-0.3.5.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.3.5.tar.gz",
+        "bytes": 23498,
+        "sha256": "1b1b2398d1eeeb35dc9913b4a9c444a3633c315009cfdc2d23316414997784bb"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 12517682,
+        "sha256": "a4955cbe71cbe1737dd77858f25a45e185a75d6ea521ec16ca0c269421532f09"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 26585656,
+        "sha256": "0e4646c7396e4bad61743a587837350591cccbab53190b9b3a042f18e1df024d"
+      }
+    ],
+    "go_version": "go version go1.27.3 linux/amd64"
+  },
+  "scope_limits": [
+    "The service rehearsal covers 0.3.4 to 0.3.5 on an offline pristine Arch/Omarchy Linux/AMD64 owner-user stack. Earlier releases require documented intermediate upgrades to 0.3.4. Remote upgrades, other distro runtime installations and power cuts were not qualified in this pass.",
+    "Real QML buttons use an exact-program guest-only polkit rule, not human password entry. The initial setup receipt is reconstructed from genuine previous-version installer and SSH enrollment evidence.",
+    "The guest uses real sealed desktop archives with harness activation acknowledgements. A separate private native QML test covers actual hot/cold activation, failed-candidate recovery, preferences and restart. Stock updater interaction remains a manual review step.",
+    "Performance measurements are controlled component fixtures, not total compositor CPU, GPU load or laptop battery/watt-hours. Fifty view cycles are not long-duration leak qualification; visible CPU gains are not claimed.",
+    "Owner storage accounting cannot read 18 DEV overlay work directories. An additional 4 GiB reserve is charged separately from the 4 GiB guest scratch cap under the combined 40 GiB budget. Prior temporary performance scratch was removed by the workstation reboot; durable compact evidence remains.",
+    "Only newly created disposable fake ships and synthetic metadata were tested. No protected production pier, ~/temp-ur, installed production plugin/service or human DEV review state was used or changed.",
+    "Schema 47, desktop format 1 and bootstrap API 1 are unchanged. Identity, authorization, revocation and mutation non-replay safeguards remain. Cross-host handoff and existing experimental-feature/security-review limits remain.",
+    "The first stable rehearsal was interrupted by a workstation reboot before its upgrade step. Its incomplete result is not qualification or a successful power-cut test. A new offline guest repeated the complete scenario using the same immutable artifacts."
+  ],
+  "policy": "Immutable frozen stable artifacts. Protected source/race/QML/release-policy checks and reviewed merge commit required before publication; no bypass. Publication does not upgrade installed services or plugins."
+}

@@ -933,10 +933,10 @@ func (s *store) snapshot() (protocol.Snapshot, error) {
 		return protocol.Snapshot{}, err
 	}
 	result := protocol.Snapshot{RunnerID: s.runnerID, Mode: s.mode, Instances: []protocol.Instance{}, Operations: []protocol.Operation{}, Incidents: []protocol.Incident{}}
+	if err := loadEpochHistories(tx, all); err != nil {
+		return result, err
+	}
 	for _, v := range all {
-		if err := loadEpochHistory(tx, &v); err != nil {
-			return result, err
-		}
 		if err := attachRuntimeStatus(tx, &v); err != nil {
 			return result, err
 		}

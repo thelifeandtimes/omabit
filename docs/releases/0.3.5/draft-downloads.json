@@ -1,0 +1,55 @@
+{
+  "tag": "v0.3.5",
+  "release_id": 432123001,
+  "draft": true,
+  "public": false,
+  "passed": true,
+  "assets": [
+    {
+      "name": "omabit-0.3.5-linux-amd64.tar.gz",
+      "bytes": 31549203,
+      "sha256": "e2ed61839571996a443ece9280e97a268faba52ccc6e64db656d3d609ed95a26"
+    },
+    {
+      "name": "omabit-linux-amd64",
+      "bytes": 18077743,
+      "sha256": "b56ce18116ee967c42e26fbbf0dccb44a41b8e8ff8f35e2ca0f25aae596a4023"
+    },
+    {
+      "name": "omabit-recommended-apps-0.3.5.pill",
+      "bytes": 59351751,
+      "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+    },
+    {
+      "name": "omabit-skills-0.3.5.tar.gz",
+      "bytes": 23498,
+      "sha256": "1b1b2398d1eeeb35dc9913b4a9c444a3633c315009cfdc2d23316414997784bb"
+    },
+    {
+      "name": "qualification.json",
+      "bytes": 7224,
+      "sha256": "ce40bb06816c62ff13494a54338b6f085fc60ccaa5247058bb8fb09ec013bb2b"
+    },
+    {
+      "name": "release.json",
+      "bytes": 2525,
+      "sha256": "90ad44dcf9c9b4461879d82eda14c8575f0127cc6aa667dccf5575caa4b65d3a"
+    },
+    {
+      "name": "SHA256SUMS",
+      "bytes": 726,
+      "sha256": "493b6b49b710f87c33ab3b11b45c8e9923c873c680ccef9d2d3dfd06c80bab39"
+    },
+    {
+      "name": "urbit-collector-linux-amd64",
+      "bytes": 12517682,
+      "sha256": "a4955cbe71cbe1737dd77858f25a45e185a75d6ea521ec16ca0c269421532f09"
+    },
+    {
+      "name": "urbit-runner-linux-amd64",
+      "bytes": 26585656,
+      "sha256": "0e4646c7396e4bad61743a587837350591cccbab53190b9b3a042f18e1df024d"
+    }
+  ],
+  "streamed_without_retaining_duplicate_assets": true
+}

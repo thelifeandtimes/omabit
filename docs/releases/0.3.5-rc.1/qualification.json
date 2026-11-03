@@ -1,0 +1,130 @@
+{
+  "version": "0.3.5-rc.1",
+  "platform": "linux/amd64",
+  "source_commit": "cce7cd017bf33b08594a82f0dd8286caed6d8811",
+  "source_tree": "2bc5953dc2611348082f89a70b6e6aa5a9251827",
+  "backend_source_sha256": "750f3e27a51acb979a5b781cdf7fe381396667edf94479351b66b0a159b2e905",
+  "channel": "stable",
+  "review_only": true,
+  "published": false,
+  "installed": false,
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "runner_schema": 47,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "evidence": "docs/releases/0.3.5-rc.1/rehearsal.json",
+    "evidence_sha256": "ccd11ea02b0ab5d954e305af7a7c6fe68f10a8e7753525ee42f28725079994c5",
+    "paths": [
+      {
+        "versions": [
+          "0.3.4",
+          "0.3.5-rc.1"
+        ],
+        "evidence": "docs/releases/0.3.5-rc.1/rehearsal.json",
+        "evidence_sha256": "ccd11ea02b0ab5d954e305af7a7c6fe68f10a8e7753525ee42f28725079994c5",
+        "scope": "Exact real-service QML update, denied authorization and retry, running/stopped fake preservation, manager restart, and macOS metadata import regression in a new offline guest."
+      }
+    ]
+  },
+  "validation": {
+    "passed": true,
+    "native_plugin_tests": 9,
+    "bootstrap_state_tests": 12,
+    "release_policy_tests": 15,
+    "service_upgrade_qt_cases": 4,
+    "archive_checksums_and_provenance": true,
+    "native_activation_cases": 9,
+    "offline_help_entries": 132,
+    "skill_package_tests": 5,
+    "source_tests_commit": "4584453",
+    "logs": {
+      "native": {
+        "name": "omabit-035-native.log",
+        "sha256": "4fe065b1f6bc8ec5fd86bea02c847bd82f4bfe78cde7ea64bdb6699e139a36e5"
+      },
+      "policy": {
+        "name": "omabit-035-policy.log",
+        "sha256": "05b309c258d0ab51b423be3bcd122e1775fb8b44f54159d0068f651a4e1d5309"
+      },
+      "bootstrap": {
+        "name": "omabit-035-bootstrap.log",
+        "sha256": "2b476216acf9c44e42950855476f470b41a9b80dff2ad6da8e6c0ec8bd45c46e"
+      },
+      "upgrade-ui": {
+        "name": "omabit-035-upgrade-ui.log",
+        "sha256": "41a85872561a7b413c54e158ddae4beecd8ebe0e6704b854057540add3526207"
+      },
+      "archive": {
+        "name": "omabit-035-archive.log",
+        "sha256": "ae8996ddb7f01d2b95c414f87c4918d1d43019921521f21ca964beb47a5849fb"
+      },
+      "desktop-upgrade": {
+        "name": "omabit-035-desktop-upgrade.log",
+        "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+      },
+      "cli": {
+        "name": "omabit-035-cli.log",
+        "sha256": "f2f0ac00b5398b09c937e71387b71885ec979c613a85dd34c6d4752556c138c3"
+      },
+      "skills": {
+        "name": "omabit-035-skills.log",
+        "sha256": "b29b03a2697317e5be70cdf9183e300a501a69cf666f2c048f47e1af086d26ee"
+      },
+      "omabit-performance-all-tests-04.log": {
+        "name": "omabit-performance-all-tests-04.log",
+        "sha256": "1a863df56007994ebc8b958a91dafbc744b3ec2471f92a1245ef9a6e62284bcc"
+      }
+    },
+    "runtime_inputs_unchanged_after_source_tests": true,
+    "native_preview_ready": true,
+    "source_regressions": "Full Go suite on final performance code; focused race and vet; real isolated OpenSSH identity, authorization, revocation and mutation non-replay regressions. Only version strings changed before the frozen RC build."
+  },
+  "frozen_artifacts": {
+    "assets": [
+      {
+        "name": "omabit-0.3.5-rc.1-linux-amd64.tar.gz",
+        "bytes": 31549166,
+        "sha256": "343a0cc3b7c21508e1f48bc311048eede4e76e7b2badc7f31c4df6df4e0c8f47"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 18077743,
+        "sha256": "c50baaaea7db508f37896d184763c2db9fceebaa4992abd4b108f6a35b1ebf8e"
+      },
+      {
+        "name": "omabit-recommended-apps-0.3.5-rc.1.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.3.5-rc.1.tar.gz",
+        "bytes": 23503,
+        "sha256": "d90e9f9e33d68bc419cea0a319537ac6d4bd7c22f58dfc1bb6a5e52426831116"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 12517682,
+        "sha256": "3d3e42e5121a13f08e43f6f5daa729ef9606721ef894604bf483649fbdd90c1f"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 26585656,
+        "sha256": "04c8818d387f150d102219273aa33522688a1f3c5b085ba02b58fe568c2ce967"
+      }
+    ],
+    "go_version": "go version go1.27.3 linux/amd64"
+  },
+  "scope_limits": [
+    "Local review candidate only. No publication, production or DEV installation, live imports or protected-ship access. The older platform goal and optimization loop remain stopped.",
+    "Actual 0.3.4 to RC service upgrade on an offline pristine Arch/Omarchy Linux/AMD64 owner-user stack. Older versions require previously documented intermediate upgrades to 0.3.4; no remote installation, other distro or power-cut rehearsal in this pass.",
+    "Real QML buttons use a guest-only exact-program polkit rule, not human password entry. Initial setup receipt is reconstructed from actual prior installer and SSH enrollment evidence. Guest archive activation acknowledgements are supplemented by separate real native QML hot/cold activation, failure recovery, preference and restart tests.",
+    "The separate native review profile has zero enrolled runners and no inherited credentials; it demonstrates desktop loading and visibility behavior, not real-ship performance. Stock updater interaction remains manual.",
+    "Performance measurements are component fixtures, not total compositor CPU, GPU load or laptop battery/watt-hours. Fifty open/close cycles are not long-duration leak qualification. Visible CPU gains are not claimed.",
+    "Storage accounting reserves 4 GiB for unreadable DEV directories and separately bounds guest scratch at 4 GiB under the combined 40 GiB budget. Protected piers, ~/temp-ur and human DEV review state remain excluded.",
+    "Schema 47, desktop format 1 and bootstrap API 1 unchanged. Identity, per-connection authorization, revocation and mutation non-replay checks retained. Existing cross-host handoff and experimental-feature limits remain."
+  ],
+  "policy": "Frozen local RC artifacts. No publication or in-place service/plugin change authorized. Stable promotion must follow protected source/race/QML/release-policy checks."
+}

@@ -1,0 +1,40 @@
+{
+  "source_commit": "d3979dbb30efc344ac35687ba2782662981ee478",
+  "outcome": "interrupted by workstation reboot; no completed qualification result",
+  "passed": false,
+  "scope_inactive": true,
+  "clean_guest_shutdown": false,
+  "base_preserved": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261027-01/portable/base.qcow2",
+  "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+  "removed": [
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-035-stable-01/root.qcow2",
+      "classification": "generated interrupted disposable rehearsal disk or boot fixture",
+      "allocated_bytes": 1855852544,
+      "sha256": "c7d566a7f68f86063f525dfdc502d9323566547a2904f207ac6f0a13cdb95c3e"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-035-stable-01/payload.ext4",
+      "classification": "generated interrupted disposable rehearsal disk or boot fixture",
+      "allocated_bytes": 272420864,
+      "sha256": "e1fc57f9f2add78e1b9ed6893f7d6410568583dfb4a22ce66ea14c75bcb96c38"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-035-stable-01/init",
+      "classification": "generated interrupted disposable rehearsal disk or boot fixture",
+      "allocated_bytes": 4091904,
+      "sha256": "2052948c4bd9c7f7b8dc530a1484911dda506212c8fe4b30ffbaf04fe2f64dee"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-035-stable-01/initramfs.cpio",
+      "classification": "generated interrupted disposable rehearsal disk or boot fixture",
+      "allocated_bytes": 9101312,
+      "sha256": "a2db4e0290c292aaa1e20da047b014831301e1b33427233d40f64d870a983af3"
+    },
+    {
+      "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-035-stable-01/boot",
+      "classification": "generated interrupted disposable rehearsal disk or boot fixture",
+      "allocated_bytes": 5074944
+    }
+  ]
+}

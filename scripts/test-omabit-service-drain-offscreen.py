@@ -7,13 +7,14 @@ The baseline retains its minimal monitor stub. Neither mode contacts a real runn
 """
 import argparse,hashlib,json,os,re,shutil,signal,socket,subprocess,time
 from pathlib import Path
-COMPONENTS=('Service.qml','Model.js','ApplicationConnections.qml','ImportRestoration.qml')
+COMPONENTS=('Service.qml','Model.js','ApplicationConnections.qml','ImportRestoration.qml','ObservationSchedule.qml')
 MONITOR='''import QtQuick
 Item {
  property var service
  property string page: "overview"
  property string selectedKey: ""
  property bool fullscreen: false
+ readonly property bool watching: visible
  property var contentItem: Item {}
  property var setupPane: QtObject {property string mode:"home"}
  function present() {visible=true}
@@ -85,8 +86,8 @@ import json,os,signal,subprocess,sys,time
 from pathlib import Path
 args=sys.argv[1:];profile=Path(os.environ['XDG_STATE_HOME']).name
 assert profile in ('stable','dev','edge')
-def record(event):
- with Path('/lab/calls.jsonl').open('a') as f:f.write(json.dumps({'event':event,'profile':profile,'pid':os.getpid(),'args':args})+'\\n')
+def record(event, **data):
+ with Path('/lab/calls.jsonl').open('a') as f:f.write(json.dumps({'event':event,'profile':profile,'pid':os.getpid(),'args':args,**data})+'\\n')
 record('start')
 assert args[:2]==['--format','json']
 if args[2:]==['runners']:
@@ -94,12 +95,14 @@ if args[2:]==['runners']:
   Path('/lab/late-read-started').write_text(str(os.getpid()))
   while not Path('/lab/release-read').exists():time.sleep(.05)
  print(json.dumps([{'name':'fixture','runner_id':'fixture-runner','transport':'unix'}]))
-elif args[2:]==['inventory','--watch','--interval','2s']:
+elif len(args)==7 and args[2:5]==['inventory','--watch','--interval'] and args[5] in ('2s','30s') and args[6]=='--control-stdin':
  def stop(*_):
   record('term');time.sleep(.75);record('exit');raise SystemExit(0)
  signal.signal(signal.SIGTERM,stop)
  Path('/lab/'+profile+'-feed-ready').write_text(str(os.getpid()))
- while True:time.sleep(.05)
+ for line in sys.stdin:
+  control=json.loads(line);assert set(control)=={'interval','refresh'} and control['interval'] in ('2s','30s')
+  record('cadence',control=control)
 elif args[2:]==['remote-setup-status']:
  print('{}')
 elif args[2:6]==['--runner','fixture','--expected-runner-id','fixture-runner']:
@@ -221,6 +224,10 @@ def inside():
   def exited(old):
    now=ident(old['pid']);return not now or now['start']!=old['start'] or now['state']=='Z'
   def state():return json.loads(call('state'))
+  def cadence(feed):
+   events=[json.loads(line) for line in (root/'calls.jsonl').read_text().splitlines()]
+   controls=[e['control'] for e in events if e['pid']==feed['pid'] and e['event']=='cadence']
+   return controls[-1] if controls else None
   try:
    wait(lambda:call('state',check=False).startswith('{'))
    for profile in ('stable','dev','stable','edge','stable'):
@@ -241,13 +248,22 @@ def inside():
     report.setdefault('scoped_ipc',[]).append({'module':module,'profile':profile,'native_status':native_status,'canonical_absent':True})
     if panel_mode:
      wait(lambda:json.loads(call('panelState'))['loaded'])
+     wait(lambda:cadence(feed)=={'interval':'30s','refresh':False})
      for target in (module,module+'.setup'):
       assert target in targets,('missing profile widget IPC',target,shown.stdout)
      assert 'thelifeandtimes.omabit' not in targets and 'thelifeandtimes.omabit.setup' not in targets
      assert ipc(module+'.setup','open').stdout.strip()==''
      wait(lambda:json.loads(call('panelState'))=={'loaded':True,'module':module,'target':module,'pane':'setup','opened':True})
+     wait(lambda:cadence(feed)=={'interval':'2s','refresh':True})
      assert ipc(module,'close').stdout.strip()==''
      wait(lambda:not json.loads(call('panelState'))['opened'])
+     wait(lambda:cadence(feed)=={'interval':'30s','refresh':False})
+     assert ipc(module+'.monitor','open').returncode==0
+     wait(lambda:cadence(feed)=={'interval':'2s','refresh':True})
+     assert ipc(module+'.monitor','close').returncode==0
+     wait(lambda:cadence(feed)=={'interval':'30s','refresh':False})
+     assert not exited(feed) and int(ready_file.read_text())==feed['pid']
+     report.setdefault('cadence_checks',[]).append({'profile':profile,'hidden':'30s','panel':'2s','monitor':'2s','same_collector_process':True})
      report.setdefault('scoped_panel_ipc',[]).append({'module':module,'setup_opened':True,'close_verified':True,'canonical_absent':True})
 
 

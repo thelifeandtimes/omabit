@@ -7,7 +7,7 @@ import "Model.js" as Model
 Item {
   id: root
   readonly property int bootstrapAPI: 1
-  readonly property string applicationVersion: "0.3.4"
+  readonly property string applicationVersion: "0.3.5"
   readonly property string distributionChannel: bootstrap && bootstrap.manifest && bootstrap.manifest.releaseChannel || manifest && manifest.releaseChannel || "stable"
   readonly property string releaseLabel: bootstrap && bootstrap.active && bootstrap.active.development ? "DEVELOPMENT" : distributionChannel === "develop" ? "UNQUALIFIED DEVELOPMENT" : distributionChannel === "edge" || applicationVersion.indexOf("-edge.") >= 0 ? "EDGE · NOT STABLE" : applicationVersion.indexOf("-") >= 0 ? "PRERELEASE" : "STABLE"
   property var shell: null
@@ -73,6 +73,22 @@ Item {
   readonly property bool reloadSafe: !busy && !remoteSetupBusy && !copyingCode && !checkingSetup && !themeSync.running && !pendingFirstBoot
   property int reconnectAttempts: 0
   property bool desktopViewLoaded: false
+  readonly property alias observationSchedule: observationSchedule
+  ObservationSchedule {
+    id: observationSchedule
+    monitorOpen: monitor.watching
+    workPending: root.busy || root.remoteSetupBusy || !!root.pendingFirstBoot || root.connections.some(function(c) {
+      return c.snapshot && (c.snapshot.operations || []).some(function(op) { return op.status === "queued" || op.status === "running" })
+        || Model.fleetInstances(c).some(function(i) { return !!i.active_operation_id })
+    })
+    onChanged: function(refresh) { root.updateObservationSchedule(refresh) }
+    onForegroundChanged: if (foreground) root.now = Date.now()
+  }
+  function setPanelOpen(panel, opened) { observationSchedule.setPanelOpen(panel, opened) }
+  function updateObservationSchedule(refresh) {
+    if (transportStopping || !feed || !feed.running) return
+    feed.write(JSON.stringify({interval:observationSchedule.interval,refresh:refresh === true})+"\n")
+  }
   property var connections: []
   property var ships: []
   readonly property alias serviceUpgrade: serviceUpdater
@@ -336,7 +352,7 @@ Item {
     feedError = ""
     refreshing = false
     if (registrations.length===0) return
-    feed.command = command(["inventory", "--watch", "--interval", "2s"])
+    feed.command = command(["inventory", "--watch", "--interval", observationSchedule.interval, "--control-stdin"])
     feed.running = true
   }
 
@@ -854,7 +870,7 @@ Item {
     Qt.callLater(refresh)
   }
   Component.onDestruction: pendingInput = ""
-  Timer { interval: 1000; repeat: true; running: true; onTriggered: root.now = Date.now() }
+  Timer { interval: 1000; repeat: true; running: observationSchedule.foreground; onTriggered: root.now = Date.now() }
   Timer {
     id: timeout
     interval: 25000
@@ -863,10 +879,13 @@ Item {
   Process {
     id: feed
     objectName: "inventoryFeed"
+    stdinEnabled: true
+    onStarted: root.updateObservationSchedule(false)
     stdout: SplitParser {
       onRead: function(line) {
         if (!line.trim()) return
         try {
+          root.now = Date.now()
           var next = Model.observation(line)
           var previous = root.connections.filter(function(c) { return c.name === next.name })[0]
           if (root.settings.notifications !== false && !root.settingUp) {

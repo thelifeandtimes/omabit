@@ -48,7 +48,7 @@ Commands:
               Explicitly accept mixed development mode at the same pinned endpoint.
   forget NAME --runner-id ID
               Remove only local enrollment, requiring its expected runner ID.
-  inventory [--watch] [--interval 1s]
+  inventory [--watch] [--interval 1s] [--control-stdin]
               Observe all enrolled runners; watch emits independent NDJSON updates.
   hello       Verify compatibility and show runner capabilities.
   host-check [--format json|text]
@@ -888,7 +888,7 @@ Only completed pinned disposable-fake qualification sources are eligible; no ext
 ## inventory
 
 ```text
-Usage: urbit-collector [--config-dir /private/directory] inventory [--watch] [--interval 1s]
+Usage: urbit-collector [--config-dir /private/directory] inventory [--watch] [--interval 1s] [--control-stdin]
 
 Omabit fleet management client; inspect hello.mode/features for server capabilities.
 The collector selects runners; the runner owns runtime operations and persistent state.
@@ -897,6 +897,8 @@ Runner requests check Hello compatibility; listing and forgetting enrollment are
 Revisions and request IDs are never inferred; mutations are never automatically retried.
 Results are indented JSON; watch commands emit compact newline-delimited JSON (NDJSON).
 
+  -control-stdin
+        with --watch, read NDJSON interval/refresh updates from stdin; EOF stops watching
   -interval duration
         per-runner delay after each poll, at least 100ms (default 1s)
   -watch
