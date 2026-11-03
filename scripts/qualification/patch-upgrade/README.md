@@ -30,3 +30,10 @@ If owner-only accounting cannot descend into rootless overlay work directories,
 the launcher records that limitation and reserves an additional 4 GiB. Any other
 measurement failure refuses the run. Reported charged usage includes this reserve;
 it is not a claim that inaccessible directories were fully measured.
+
+For targets starting at 0.3.6, the guest adds a sparse file of 100 GB + 1 byte
+to that disposable stopped source. It demonstrates the 0.3.5 collector rejection,
+acceptance by the target collector with the previous and target runners, and no
+source or enrollment mutation from preview. Only that generated sparse file is
+removed before the normal small import. This qualifies large logical previews,
+not a full 100 GB copy or its duration/disk requirements.

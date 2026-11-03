@@ -7152,3 +7152,24 @@ and release-progress.json. These handoff documentation updates are a local topic
 commit, not a second same-version product publication. The performance loop stays
 stopped, heartbeat stays deleted, and the older platform goal remains paused.
 Protected ships, especially ~sarlev, ~/temp-ur and human DEV state remain excluded.
+
+
+## M508 — 2026-11-02 — Local import preview bound correction (in progress)
+
+The user authorized implementing and publishing a narrow patch after review of
+an Inspect pier rejection. Collector guided import and restoration preview used
+the 100 GB cross-host bound although the local runner/copy layer permits 8 TiB.
+Synthetic RPC tests reproduce rejection above 100 GB in both paths. Align the
+client to the existing local bound and distinguish size, identity and destination
+diagnostics. Retain every authority, fingerprint, path, stage and entry guard;
+cross-host streams remain capped at 100 GB. No schema/runtime migration.
+
+Qualification uses synthetic sparse metadata through the real client/server and
+one offline disposable guest, never the user's pier. Exact prior/candidate tools
+will demonstrate old rejection and new acceptance above 100 GB, then remove only
+the generated sparse fixture before a normal small stopped-fake import. This is
+not a claim of a full 100 GB copy rehearsal. ~sarlev remains expressly no-touch,
+including reads; ~/temp-ur, production services/plugins and human DEV are excluded.
+Publication is authorized; workstation upgrade/import is left to the user.
+Declare at most 4 GiB guest scratch plus approximately 160 MiB release assets;
+recheck the combined 40 GiB budget including the unreadable-DEV reserve.

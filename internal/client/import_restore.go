@@ -51,9 +51,22 @@ func (c *Client) PreviewImportRestore(ctx context.Context, runner, id string, re
 		return out, err
 	}
 	err := c.storageRequest(ctx, "/v1/instances/"+id+"/restore-import-preview", protocol.ImportRestorePreviewRequest{ExpectedRevision: revision}, &out)
-	if err == nil && (out.RunnerID != runner || out.InstanceID != id || out.ConfigRevision != revision || !validRestoreResult(out.ImportRestoreResult) || out.SourceBytes < 0 || out.SourceBytes > protocol.MaxPierBytes || out.DestinationBytes < 0 || out.DestinationBytes > protocol.MaxPierBytes || out.SourceFiles < 0 || out.SourceFiles > 8192 || out.DestinationFiles < 0 || out.DestinationFiles > 8192 || !slices.Contains([]string{"review", "retaining-destination", "restoring-source", "complete"}, out.Stage) || out.Continuation != (out.Stage != "review")) {
-		err = errors.New("restoration preview does not match the selected runner, instance, revision or bounded move plan")
+	if err != nil {
+		return out, err
 	}
+	if out.RunnerID != runner || out.InstanceID != id || out.ConfigRevision != revision {
+		return out, errors.New("restoration preview does not match the selected runner, instance or revision; review restoration again")
+	}
+	if !validRestoreResult(out.ImportRestoreResult) {
+		return out, errors.New("restoration preview has an invalid source, destination or review digest; review restoration again")
+	}
+	if !slices.Contains([]string{"review", "retaining-destination", "restoring-source", "complete"}, out.Stage) || out.Continuation != (out.Stage != "review") {
+		return out, errors.New("restoration preview has an invalid recovery stage; review restoration again")
+	}
+	if err = validateLocalImportBounds("restoration source", out.SourceBytes, out.SourceFiles); err != nil {
+		return out, err
+	}
+	err = validateLocalImportBounds("restoration destination", out.DestinationBytes, out.DestinationFiles)
 	return out, err
 }
 func (c *Client) RestoreImport(ctx context.Context, runner, id string, req protocol.OperationRequest) (protocol.Operation, error) {
