@@ -1,3 +1,8 @@
+> Historical planning log. This records the earlier platform undertaking and its
+> evidence; it is not the current release/install guide or the destination for
+> new personal session notes. Use [release status](project-status.md),
+> [the roadmap](platform-roadmap.md) and [documentation policy](documentation-policy.md).
+
 # Platform goal — paused
 
 Complete the [platform roadmap](platform-roadmap.md) through staged acceptance

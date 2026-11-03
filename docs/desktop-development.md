@@ -90,7 +90,7 @@ python3 -B scripts/omabit-dev.py check --scope desktop
 # Packaging, cache, channel and release-policy feedback
 python3 -B scripts/omabit-dev.py check --scope tooling
 # Exact Go package/test feedback; omit --run to exercise the whole package
-python3 -B scripts/omabit-dev.py check --scope go --package ./internal/client --run TestGuided --race
+python3 -B scripts/omabit-dev.py check --scope go --package ./internal/client --run TestLocalImportPreviewByteBoundaries --race
 # Actual Qt binding checks; requires the documented Qt dependencies
 python3 -B scripts/omabit-dev.py check --scope qml
 ```

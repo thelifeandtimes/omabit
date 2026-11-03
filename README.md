@@ -221,7 +221,7 @@ enrollment records and adds explicit recovery rather than requiring a fresh inst
 - [Agent operator skill](skills/omabit-operator/SKILL.md) (source development; fleet observation, operations and imports)
 - [Plugin developer skill](skills/omabit-plugin-developer/SKILL.md) (source guidance; standalone apps, optional authentication, backend readiness and isolation)
 - [Fresh installation and first ship](docs/install.md)
-- [Sourcebox fresh native installation](docs/sourcebox-clean-install.md)
+- [Contributor development loop](docs/desktop-development.md#daily-development)
 - [Owner-user runtime and desk editing](docs/owner-user-runtime.md)
 - [Storage locations, import and deletion](docs/storage-management.md)
 - [Services, shutdown and reboot behavior](docs/services.md)

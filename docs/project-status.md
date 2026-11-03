@@ -1,3 +1,16 @@
+# Current release
+
+[Omabit 0.3.6](release-0.3.6.md) is the current stable release. See its supported
+upgrade path and qualification limits. For contributor iteration, use
+[the development loop](desktop-development.md#daily-development).
+
+The dated checkpoints below are historical evidence, not current deployment
+instructions. Personal DEV inventories and review receipts are maintained in
+private operator notes; [native DEV review](native-dev-review.md) describes the
+public isolation and review contract.
+
+---
+
 # 0.3.1 distribution checkpoint — October 29
 
 The [guided service update](guided-service-upgrades.md) uses frozen source
@@ -17,9 +30,9 @@ limits. Omabit0.3.0, Theme0.4.0 and DMs0.2.0 are published stable releases.
 The subsequent [guided service-update controls](guided-service-upgrades.md) are
 included in the explicitly requested0.3.1 release.
 
-The active review uses the main desktop's separately labeled DEV plugins;
-[manual checks](native-dev-review.md) describe current state. The core candidate
-is0.3.0 with DEV presentation label0.3.0-dev.review1. Production remains unchanged.
+At this historical checkpoint, review used separately labelled DEV plugins with
+a 0.3.0 candidate. This is not a current installed-version inventory. The public
+[review guide](native-dev-review.md) describes the reusable review boundaries.
 Expanded project recovery, private-devnet delivery, collection switching UI and
 the broader security/privacy audit remain open; see the release scope and roadmap.
 

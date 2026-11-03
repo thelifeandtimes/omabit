@@ -9,8 +9,8 @@ with API1.47 and [native package authentication](host-compatibility.md), the off
 Vere4.6 runtime, new comets/fakes, owned-key boot and stopped in-tree pier enrollment.
 The local moon has passed key boot/recovery; broader owned import/network and clean
 remote-host acceptance remain. This page describes source installation; published
-release binaries have a separate [bundle guide](release-install.md). For the disposable
-sourcebox reset, use the [clean-reinstall walkthrough](sourcebox-clean-install.md).
+release binaries have a separate [bundle guide](release-install.md). Use the
+[current release notes](release-0.3.6.md) for the supported in-place upgrade path.
 See also the [remote trial plan](remote-runner-acceptance.md).
 
 ## 1. Install the desktop component
