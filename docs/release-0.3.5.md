@@ -19,6 +19,11 @@ approve its OS authorization prompt. If needed, use **Setup → Local services &
 updates → Check services → Update services**. Remote runners need their own
 explicit update. No ship import or fleet reset is part of this upgrade.
 
+After the service update reports **Local services match this desktop bundle**,
+run `omarchy restart shell`. Stock plugin rescans retain Omabit's `keepLoaded`
+service, so this reloads the new native bootstrap too. The bar briefly disappears
+and returns; ship containers are not restarted by this shell command.
+
 The supported patch path is 0.3.4 → 0.3.5. Earlier versions should follow the
 documented intermediate upgrade paths to 0.3.4 first. Runner schema 47, desktop
 state format 1 and bootstrap API 1 are unchanged. The desktop carries its matching

@@ -7113,3 +7113,42 @@ API1 remain unchanged. See releases/0.3.5/qualification.json and linked records.
 Next gate is reviewed protected release PR, matching draft download verification,
 merge commit and stable publication. No production or DEV installation is implied.
 This supersedes M505's pending-rehearsal status, not its exclusion constraints.
+
+
+## M507 — 0.3.5 published and verified; manual workstation upgrade remains (2026-11-02)
+
+Supersedes M506's pending-publication state. PR12 passed protected source/full
+race/QML/release-policy checks and merged normally as63072b2, preserving frozen
+source d3979db and exact qualified product tree. Published v0.3.5 as latest stable
+at2026-11-03T01:50:04Z. All nine public downloads match the rehearsed assets;
+post-publication isolated native startup/recovery and saved-view restart pass.
+Branch protection is unchanged. No workstation plugin/service upgrade or protected
+ship operation was performed. The user remains on the manual0.3.4→0.3.5 path.
+
+Stock Omarchy retains keepLoaded service objects across plugin rescans. The
+application bundle can activate, but the new bootstrap code needs a shell restart.
+After normal plugin update and Update Dependencies finish with local services
+matching the bundle, run `omarchy restart shell`. Do not interrupt an active
+service update. This is a shell reload, not a ship-container restart. Published
+release notes and the private mobile review include this additional step.
+
+Operational correction: cancelling the duplicate current-head push CI left failed
+required contexts even after PR merge-ref checks passed. Normal merge refused.
+Reran the branch workflow successfully without weakening protection, then merged.
+Do not repeat that cancellation pattern; superseded-head runs are different.
+Passing runs:41554655173(PR),41554649760 attempt2(branch),41554652642(policy).
+
+The existing tailnet page is refreshed at
+https://sourcebox.tail709ccc.ts.net/omabit-performance-review#review. Verified TLS
+bytes, CSP, supporting-path404s, unchanged Tailscale routes and390x844 browser
+layout without horizontal overflow; viewport restored. It is an ordinary-user
+loopback report process and requires the machine/process to stay running.
+Final charged storage35.1713GiB/40GiB includes the4GiB unreadable-DEV reserve.
+Temporary native test state was removed; no VM is running for this task.
+
+Full publication/check/download/browser/storage evidence and the CI correction
+are in qualification evidence release-0.3.5/candidate-01/publication-memory.json
+and release-progress.json. These handoff documentation updates are a local topic
+commit, not a second same-version product publication. The performance loop stays
+stopped, heartbeat stays deleted, and the older platform goal remains paused.
+Protected ships, especially ~sarlev, ~/temp-ur and human DEV state remain excluded.
