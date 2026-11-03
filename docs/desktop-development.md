@@ -81,55 +81,76 @@ and migration contracts. Selecting an old desktop never downgrades a runner data
 
 ## Daily development
 
-Build an immutable snapshot of the current tracked/unignored source, including
-local changes, with a controlled Go environment:
+Use a topic branch/worktree. A local iteration does not need a public version,
+release PR or the entire release suite. Start with the narrowest useful check:
 
 ```sh
-python3 -B scripts/omabit-dev.py build \
-  --output build/dev-upgrade-1 --label upgrade-1
+# UI/model/bootstrap feedback (no runner operations)
+python3 -B scripts/omabit-dev.py check --scope desktop
+# Packaging, cache, channel and release-policy feedback
+python3 -B scripts/omabit-dev.py check --scope tooling
+# Exact Go package/test feedback; omit --run to exercise the whole package
+python3 -B scripts/omabit-dev.py check --scope go --package ./internal/client --run TestGuided --race
+# Actual Qt binding checks; requires the documented Qt dependencies
+python3 -B scripts/omabit-dev.py check --scope qml
 ```
 
-The output directory must be new. The build records the actual base commit,
+Plain `check` runs desktop and tooling checks. `--plan` prints commands. These
+are feedback lanes, not a claim of full Go, race or live upgrade qualification.
+Before promotion, run the complete CI and upgrade gates below. Check dependent
+Go packages too when changing a shared interface; `--scope go` without `--package`
+runs all packages and vet.
+
+Build an immutable snapshot of tracked/unignored source, including local changes:
+
+```sh
+mkdir -p build
+python3 -B scripts/omabit-dev.py build --output build/dev-01 --label review-01
+python3 -B scripts/omabit-dev.py stage build/dev-01 --profile development
+```
+
+The output directory must be new. Builds record the actual base commit,
 source-file hashes, snapshot digest, toolchain and truthful modified-source flag.
-It produces a complete UI/tool archive and `release.json`, without needing pill
-bytes or installing anything. It refuses source drift during the build. These are
-explicit development artifacts, not clean published-release certification.
+They produce complete paired UI/tools and refuse source drift during the build.
+These development artifacts retain the base version with a visible development
+label; they must never be uploaded as replacement stable artifacts.
 
-Import the result (the command also prints its release digest):
+Development builds reuse private Go module/compiler caches under
+`$XDG_CACHE_HOME/omabit/development/go` (normally `~/.cache/omabit/development/go`).
+Use `--cache-dir /absolute/private/path` to choose another cache or `--no-cache`
+to diagnose a clean build. Symlinked/shared cache directories are refused. Module
+contents are verified before publishing each snapshot. HOME, Go configuration,
+telemetry, workspace and compiler flags remain controlled. Public release
+packaging still uses fresh caches and its independent reproducibility gate.
+Caches consume disk; inspect them with `du -sh` and remove only this generated
+cache when no build is using it if space is needed. No automatic pruning occurs.
 
-```sh
-python3 -B scripts/omabit-dev.py import-release \
-  build/dev-upgrade-1/release.json \
-  build/dev-upgrade-1/omabit-0.1.0-linux-amd64.tar.gz
-python3 -B scripts/omabit-dev.py profile-create development
-python3 -B scripts/omabit-dev.py select development --release RELEASE_DIGEST
-```
+`stage` verifies/imports the complete archive, creates the named profile if
+needed, and prepares it **without changing the active selection**. Repeating it
+preserves the profile's enrollment, credentials and preferences. It refuses the
+default profile and profiles with local host setup enabled. It prints the exact
+`select ... --release DIGEST` command for manual activation; run that command
+when ready. The retained bootstrap notices the selection and activates when safe.
 
-Use the archive name printed by the build if the source version has advanced.
-The running bootstrap notices selection changes and activates when safe. The
-profile's empty collector starts a fresh desktop flow; enroll only the test runners
-you intend to use. A pinned test profile stays pinned across native plugin updates.
-
-Run a matching tool in that profile without changing the active selection:
-
-```sh
-python3 -B scripts/omabit-dev.py exec --profile development urbit-collector runners
-python3 -B scripts/omabit-dev.py exec --profile development urbit-collector \
-  --runner test-runner snapshot
-```
-
-Inspect or retry activation, and return to the normal published desktop:
+A profile isolates desktop state, not runner hosts. Enroll only the intended test
+runner. Older separately namespaced DEV installations using static wrappers do
+not consume these bootstrap selections; see [native DEV review](native-dev-review.md).
+A profile pin survives native plugin updates. Selection is a request: verify the
+actually loaded generation in Setup and with the bootstrap's status command.
 
 ```sh
 python3 -B scripts/omabit-dev.py status
 omarchy shell thelifeandtimes.omabit.bootstrap status
+python3 -B scripts/omabit-dev.py exec --profile development urbit-collector runners
+# Retry a failed activation, or return to the published desktop:
 python3 -B scripts/omabit-dev.py retry
 python3 -B scripts/omabit-dev.py select default --release follow
 ```
 
-**Setup** includes desktop diagnostics: current/requested version, profile, release
-digest, source/development identity, collector readiness and activation errors.
-The bootstrap IPC remains available even if a candidate cannot load its own UI.
+**Setup** reports loaded/requested version, profile, digest, source/development
+identity, collector readiness and activation errors. Failed activation retains the
+last working generation. Returning to a desktop bundle does not undo runner schema
+migrations. Upgrade host services separately and only through supported paths.
 
 ## Verification layers
 
@@ -148,7 +169,7 @@ The bootstrap IPC remains available even if a candidate cannot load its own UI.
 python3 -B scripts/test-desktop-bootstrap.py
 python3 -B scripts/test-desktop-bootstrap-qml.py --require-quickshell
 python3 -B scripts/test-desktop-bootstrap-qml.py --require-quickshell \
-  --application-assets build/dev-upgrade-1
+  --application-assets build/dev-01
 python3 -B -m unittest discover -s scripts/qualification/desktop -p 'test_*.py'
 python3 -B scripts/qualification/desktop/qualify.py plan
 ```

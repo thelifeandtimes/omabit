@@ -7,11 +7,13 @@ import json
 import os
 from pathlib import Path
 import re
+import shlex
 import shutil
 import stat
 import subprocess
 import sys
 import tempfile
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.dont_write_bytecode = True
@@ -42,11 +44,57 @@ def inputs():
     return result
 
 
+def development_environment(stage, go, packager, cache):
+    env = packager.go_environment(stage, go)
+    if cache is not None:
+        # Only these two caches survive. HOME, telemetry, GOENV, GOWORK and
+        # compiler flags remain controlled exactly as in a release build.
+        control.runtime.private_directory(cache)
+        for name, leaf in (("GOMODCACHE", "modules"), ("GOCACHE", "build")):
+            path = cache / leaf
+            control.runtime.private_directory(path)
+            env[name] = str(path)
+    return env
+
+
+def stage_candidate(argv):
+    parser = argparse.ArgumentParser(description="Verify/import a candidate and prepare an inactive desktop profile. Does not select it or update any runner.")
+    parser.add_argument("assets", type=Path)
+    parser.add_argument("--profile", required=True)
+    args = parser.parse_args(argv)
+    # Validate before opening desktop state, even for the reserved default name.
+    from desktop import NAME
+    if not NAME.fullmatch(args.profile) or args.profile == "default":
+        parser.error("choose a named development profile, not default")
+    assets = args.assets.absolute()
+    metadata = assets / "release.json"
+    from desktop import descriptor_from_release, read_json
+    descriptor = descriptor_from_release(read_json(metadata))
+    desktop = control.Desktop()
+    existing = desktop.status()["profiles"].get(args.profile)
+    if existing and existing["host_setup"]:
+        raise ValueError("candidate staging requires a profile with local host setup disabled")
+    imported = desktop.import_release(metadata, assets / descriptor["bundle"]["name"])
+    if existing is None:
+        desktop.create_profile(args.profile)
+    prepared = desktop.prepare(release_id=imported["release"], name=args.profile)
+    command = ["python3", "-B", str(ROOT / "scripts/omabit-dev.py"), "select", args.profile, "--release", imported["release"]]
+    print(json.dumps(dict(imported, profile=args.profile, directory=prepared["directory"],
+                         activate=shlex.join(command), selected=desktop.status()["selected"],
+                         note="Prepared only. Profiles isolate desktop state, not runner hosts."), indent=2))
+    return 0
+
+
 def build(argv):
     parser = argparse.ArgumentParser(description="Snapshot current source, build isolated tools and UI; does not select or install them.")
     parser.add_argument("--output", type=Path, required=True, help="new output directory")
     parser.add_argument("--label", required=True, help="explicit development label")
+    cache_options = parser.add_mutually_exclusive_group()
+    cache_options.add_argument("--cache-dir", type=Path, help="private reusable Go cache (default: XDG_CACHE_HOME/omabit/development/go)")
+    cache_options.add_argument("--no-cache", action="store_true", help="fresh per-build caches for diagnosis; public release packaging always remains isolated")
     args = parser.parse_args(argv)
+    started = time.monotonic()
+    cache = None if args.no_cache else (args.cache_dir or Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "omabit/development/go").absolute()
     if not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}", args.label):
         parser.error("use a short alphanumeric development label")
     output = args.output.absolute()
@@ -79,10 +127,12 @@ def build(argv):
             raise ValueError("application version must match the source manifest before building")
         package = stage / ("omabit-" + version + "-linux-amd64")
         (package / "build").mkdir(parents=True)
-        env = packager.go_environment(stage, go)
+        env = development_environment(stage, go, packager, cache)
         packager.check_modules(source, env, go)
         subprocess.run([go, "build", "-mod=readonly", "-buildvcs=true", "-trimpath", "-o", str(package / "build") + "/",
                         "./cmd/omabit", "./backend/cmd/urbit-collector", "./backend/cmd/urbit-runner"], cwd=source, env=env, check=True)
+        # Verify downloaded/reused module contents before publishing this snapshot.
+        subprocess.run([go, "mod", "verify"], cwd=source, env=env, check=True, stdout=sys.stderr)
         shutil.copytree(source / "plugins/omabit", package / "plugins/omabit")
         schema = int(subprocess.check_output([package / "build/urbit-runner", "state-schema"], env=env, text=True))
         metadata = {"version": version, "platform": "linux/amd64", "source_commit": commit, "schema": schema,
@@ -110,13 +160,24 @@ def build(argv):
             raise ValueError("source changed during build; candidate was not published")
         assets.rename(output)
     print(json.dumps({"directory": str(output), "version": version, "development": metadata["development"],
+                      "elapsed_seconds": round(time.monotonic() - started, 2), "cache": str(cache) if cache else None,
+                      "stage": ["python3", "-B", "scripts/omabit-dev.py", "stage", str(output), "--profile", "development"],
                       "import": ["python3", "-B", "scripts/omabit-dev.py", "import-release", str(output / "release.json"), str(output / archive.name)]}, indent=2))
     return 0
 
 
 if __name__ == "__main__":
     try:
-        sys.exit(build(sys.argv[2:]) if sys.argv[1:2] == ["build"] else control.main())
-    except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
+        command = sys.argv[1:2]
+        if command in (["--help"], ["-h"]):
+            print("Development commands: build, stage, check (use COMMAND --help).\n"
+                  "Build and stage prepare candidates; select explicitly activates one.\n")
+        if command == ["check"]:
+            sys.path.insert(0, str(ROOT / "scripts"))
+            from dev_checks import main
+            sys.exit(main(sys.argv[2:]))
+        sys.exit(build(sys.argv[2:]) if command == ["build"] else
+                 stage_candidate(sys.argv[2:]) if command == ["stage"] else control.main())
+    except (OSError, ValueError, KeyError, TypeError, RuntimeError, control.runtime.BootstrapError, subprocess.SubprocessError) as error:
         print(json.dumps({"error": str(error)}), file=sys.stderr)
         sys.exit(1)

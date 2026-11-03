@@ -18,3 +18,13 @@ Read [development and release policy](docs/development-policy.md),
 For candidate builds and isolated profiles, see
 [desktop development](docs/desktop-development.md). The release policy describes
 the exact PR, artifact, pinning and channel-installation workflow.
+
+For the shortest local loop, use the named `omabit-dev.py check` lanes and cached
+snapshot/staging commands in [daily development](docs/desktop-development.md#daily-development).
+Local candidates do not require a version bump or public release. Public promotion
+follows manual fleet acceptance and full qualification.
+
+See [documentation boundaries](docs/documentation-policy.md) before adding notes.
+
+The [CI guide](docs/development-ci.md) explains full gates, measured sharding and
+manual branch validation.

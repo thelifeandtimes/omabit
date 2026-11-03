@@ -53,6 +53,22 @@ contributor instructions and release-policy checks/tests, not packaging code,
 bootstrap, CI workflows, skills, QML, Go, installer or runtime inputs. The frozen
 source identity and rehearsed assets remain authoritative.
 
+## Personal candidates before public releases
+
+Local snapshots and pinned personal candidates are the normal iteration path.
+Build and exercise them without cutting a public release. The operator manually
+chooses when to install a candidate on the operational fleet; successful automated
+tests never authorize an automatic fleet deployment. Before public promotion,
+record the exact candidate digest, supported starting versions, observed upgrade
+results and explicit fleet acceptance. Acceptance belongs to those bytes; rebuilds
+need new evidence. A fleet failure returns the candidate to development.
+
+A public RC is a deliberate later milestone, followed by stable publication only
+after acceptance and the full gates. Agents may prepare candidates, release notes,
+qualification evidence and draft promotions. Public publication remains an explicit
+maintainer decision. Never relabel or overwrite a published version to include
+later tooling improvements.
+
 ## Stable publication: one reviewed release PR
 
 1. Prepare a release branch with its version, support window, notes and required

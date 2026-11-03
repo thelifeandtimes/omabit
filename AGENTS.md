@@ -52,13 +52,20 @@ in tmux or anything under `~/temp-ur`. Preserve current installed plugins and
 services. Use fresh disposable ships and separate experimental plugin IDs,
 labels, state, credentials, IPC, hooks and desktop environments.
 
-## Development memory
+## Documentation and development memory
 
-Read `docs/development-memory.md` alongside the current roadmap/progress record.
-The user requested durable development memories with explicit supersession. Keep
-stable decision IDs, date, evidence and status; link replacement decisions rather
-than silently rewriting history. Distinguish hypotheses, failed experiments and
-qualified behavior. Never store credentials in these notes.
+Read `docs/documentation-policy.md` and the nearest current subsystem guide.
+Public docs describe supported behavior, interfaces, reproducible contributor
+steps and qualification limits. Put personal environment details, debugging
+journals, ideas and session handoffs in the operator's private knowledge store
+(Lattice in the maintainer's environment), with dated evidence and supersession.
+Do not require access to that private store to build or understand this project.
+
+The historical `docs/development-memory.md` is an archive pending classified
+migration, not a required whole-file read or the destination for new session logs.
+Read relevant referenced decisions when working on their subsystem. Preserve
+public technical decisions and qualification fixtures; verify private archival
+copies before removing historical notes. Never record credentials in either place.
 
 ## Release qualification policy clarification (2026-10-29)
 

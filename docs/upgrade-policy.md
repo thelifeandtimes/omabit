@@ -70,6 +70,21 @@ The current repeated fresh-install exercises are development qualification only.
 - Preserve the Unix owner, ordinary filesystem access, unrelated ships/services
   and preexisting host settings. The protected-ship policy applies throughout.
 
+## Management upgrades versus runtime maintenance
+
+A desktop/collector/runner management upgrade preserves the engine and existing
+Vere container processes, pier mounts, identities and running/stopped intent.
+A brief management disconnect is acceptable. Qualification must check the same
+container and process identity before/after; merely finding a running ship later
+is insufficient. Management upgrades do not imply runtime image replacement,
+Docker restart or a host reboot. Those are separate maintenance operations.
+
+Pier backups, restores and initial adoption are separate operator-controlled
+procedures. Do not add automatic pier snapshots/copies or mandatory backup downtime
+to the ordinary management-upgrade path. Never boot a copied identity as an upgrade
+check or allow two runtimes to own the same ship. A new ship adoption must prove
+that the prior runtime has relinquished ownership before Omabit starts it.
+
 ## Required qualification before stable 0.1.0
 
 1. Maintain fixtures from every supported prior schema/release, with populated
