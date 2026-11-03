@@ -1,5 +1,15 @@
 # Stable-release upgrade requirement
 
+## 0.3.5 performance release
+
+The [0.3.5 qualification](releases/0.3.5/qualification.json) records the exact
+0.3.4 → 0.3.5 desktop and local service upgrade path. Runner schema 47, desktop
+state 1, bootstrap API 1 and the runtime image/pill are unchanged. Update the
+plugin for bootstrap/UI/collector improvements, then **Update Dependencies** for
+the runner's snapshot improvements. Earlier supported paths compose through
+0.3.4. See [instructions and measurement limits](release-0.3.5.md).
+
+
 ## 0.3.4 macOS metadata compatibility release
 
 The [0.3.4 qualification](releases/0.3.4/qualification.json) adds the tested

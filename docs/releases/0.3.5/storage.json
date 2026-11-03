@@ -1,0 +1,19 @@
+{
+  "charged_roots_bytes": {
+    "/srv/dev/urbit": 10210594816,
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs": 19072724992,
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence": 8479035392
+  },
+  "measurement_limits": {
+    "/srv/dev/urbit": {
+      "visible_bytes": 5915627520,
+      "unreadable_work_directories": 18,
+      "unmeasured_reserve": 4294967296
+    }
+  },
+  "retained_performance_tmp_bytes": 0,
+  "prior_temporary_scratch_removed_by_workstation_reboot": true,
+  "combined_charged_bytes": 37762355200,
+  "budget_bytes": 42949672960,
+  "rehearsal_disks_retired": true
+}

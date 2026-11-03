@@ -1,0 +1,63 @@
+{
+  "version": "0.3.5",
+  "source_commit": "d3979dbb30efc344ac35687ba2782662981ee478",
+  "passed": true,
+  "non_destructive": true,
+  "previous_version": "0.3.4",
+  "runner_schema_before": 47,
+  "runner_schema_after": 47,
+  "service_result": "docs/releases/0.3.5/from-0.3.4-result.json",
+  "service_result_sha256": "679e4c5c468bc857fb0d156926b14e8c99685c6c42db9c478ce0add2027c1be9",
+  "harness": "scripts/qualification/patch-upgrade",
+  "harness_sha256": {
+    "run.py": "8d9a666401baddcf84d92f325c4e45c1d541412a1aa70e4aec59838a10b7133f",
+    "guest.py": "7b052dedfd1a23ae1d625a41c079dc6b4ae0df7db2cf5188e1993b98b79a15a7",
+    "desktop.py": "59cbce196ca5eb17d3af9f8a1a92913dda809a22182e52c2337011f8ac5a8b21",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46"
+  },
+  "desktop_harness": "docs/releases/0.3.2/desktop-upgrade-harness.py",
+  "desktop_harness_sha256": "13cf7903e3c23c60c37eb99a73beca431bc9ddbd17d69fffff905884df49eccf",
+  "desktop_log": {
+    "name": "desktop-upgrade.log",
+    "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+  },
+  "checks": [
+    "authorization denial preserves fleet and access",
+    "retry installs exact target",
+    "running container/PID and engine unchanged",
+    "stopped intent, settings, revisions, operation history and runner identity preserved",
+    "SSH grants, host pins and collector enrollment preserved",
+    "completed update is a no-op",
+    "manager restart preserves runtime",
+    "actual packaged desktop hot activation and cold restart",
+    "saved page and ship selection preserved",
+    "synthetic broken candidate retains working desktop",
+    "stopped disposable fake imported with every macOS metadata companion preserved",
+    "unrelated running and stopped fakes unchanged"
+  ],
+  "storage": {
+    "used_before": 37760806912,
+    "used_after": 40244510720,
+    "scratch_limit": 4294967296,
+    "measurement_limits": {
+      "/srv/dev/urbit": {
+        "visible_bytes": 5915480064,
+        "unreadable_work_directories": 18,
+        "unmeasured_reserve": 4294967296
+      }
+    },
+    "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+    "network": "none",
+    "host_mounts": "OS files, QEMU, immutable base and fresh lab only"
+  },
+  "limits": [
+    "The service rehearsal covers 0.3.4 to 0.3.5 on an offline pristine Arch/Omarchy Linux/AMD64 owner-user stack. Earlier releases require documented intermediate upgrades to 0.3.4. Remote upgrades, other distro runtime installations and power cuts were not qualified in this pass.",
+    "Real QML buttons use an exact-program guest-only polkit rule, not human password entry. The initial setup receipt is reconstructed from genuine previous-version installer and SSH enrollment evidence.",
+    "The guest uses real sealed desktop archives with harness activation acknowledgements. A separate private native QML test covers actual hot/cold activation, failed-candidate recovery, preferences and restart. Stock updater interaction remains a manual review step.",
+    "Performance measurements are controlled component fixtures, not total compositor CPU, GPU load or laptop battery/watt-hours. Fifty view cycles are not long-duration leak qualification; visible CPU gains are not claimed.",
+    "Owner storage accounting cannot read 18 DEV overlay work directories. An additional 4 GiB reserve is charged separately from the 4 GiB guest scratch cap under the combined 40 GiB budget. Prior temporary performance scratch was removed by the workstation reboot; durable compact evidence remains.",
+    "Only newly created disposable fake ships and synthetic metadata were tested. No protected production pier, ~/temp-ur, installed production plugin/service or human DEV review state was used or changed.",
+    "Schema 47, desktop format 1 and bootstrap API 1 are unchanged. Identity, authorization, revocation and mutation non-replay safeguards remain. Cross-host handoff and existing experimental-feature/security-review limits remain.",
+    "The first stable rehearsal was interrupted by a workstation reboot before its upgrade step. Its incomplete result is not qualification or a successful power-cut test. A new offline guest repeated the complete scenario using the same immutable artifacts."
+  ]
+}

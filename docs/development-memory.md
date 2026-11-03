@@ -7070,3 +7070,46 @@ storage is35.2544GiB including the4GiB unreadable-DEV reserve and231MiB retained
 performance scratch. New assets reserve160MiB; disposable guest scratch4GiB:
 projected39.4106GiB under40GiB. Finish/clean build and native-test staging before
 the single offline guest. Retire only that guest's classified generated disks.
+
+
+## M505 — Resume stable qualification after workstation reboot (2026-11-02)
+
+The user requests continuation after reboot. Stable 0.3.5 source d3979db and its
+immutable built artifacts survive, as do completed archive/native hot-cold/
+recovery/CLI checks. The first offline stable rehearsal was interrupted during
+its second disposable ship's first boot, before the service-upgrade step; no
+result was completed and no successful power-cut behavior is claimed. Its scope
+is inactive. Retired only its generated VM disks/boot fixtures with a recorded
+manifest, preserving compact logs and the verified immutable base.
+
+The static tailnet review server was restored on the same loopback port and path;
+HTTPS bytes match. No production services/plugins or ships were changed. The
+user's installed plugin pins and runner were read-only verified at 0.3.4 before
+reboot. The next installer review remains 0.3.4 → 0.3.5 through normal update UI.
+
+Resume in fresh patch-upgrade-035-stable-02 with the same frozen assets and 4 GiB
+scratch cap. Current charged usage is35.1675GiB including the4GiB unreadable-DEV
+reserve; the previous temporary performance scratch was removed by reboot, while
+its durable results/logs remain. Projected with guest cap39.1675GiB under40GiB.
+No rebuild, protected-state access, deployment or optimization restart is needed.
+
+
+## M506 — Stable 0.3.5 exact-artifact rehearsal passed (2026-11-02)
+
+Frozen source d3979dbb30efc344ac35687ba2782662981ee478 and its freshly built stable
+assets passed the repeated offline 0.3.4 → 0.3.5 QML-button upgrade. Denied
+authorization/retry, running container/PID and engine continuity, stopped intent,
+access/enrollment/history, repeated no-op, manager restart and synthetic macOS
+metadata import all passed. The guest powered off. Its generated disks were
+retired with a manifest, recovering2,482,544,640 allocated bytes; the immutable
+base remains verified. The interrupted first attempt remains separately recorded.
+
+Native activation/recovery (9 cases), archive/provenance checks,132 CLI entries,
+bootstrap (12), native registry (9), skills (5), policy (15), upgrade controls and
+observation schedule passed on the stable candidate. Qualification was attached
+without rebuilding immutable assets. Schema47, desktop format1 and bootstrap
+API1 remain unchanged. See releases/0.3.5/qualification.json and linked records.
+
+Next gate is reviewed protected release PR, matching draft download verification,
+merge commit and stable publication. No production or DEV installation is implied.
+This supersedes M505's pending-rehearsal status, not its exclusion constraints.

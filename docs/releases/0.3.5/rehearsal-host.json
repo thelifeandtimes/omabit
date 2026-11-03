@@ -1,0 +1,25 @@
+{
+  "measurement_limits": {
+    "/srv/dev/urbit": {
+      "visible_bytes": 5915480064,
+      "unreadable_work_directories": 18,
+      "unmeasured_reserve": 4294967296
+    }
+  },
+  "harness_sha256": {
+    "run.py": "8d9a666401baddcf84d92f325c4e45c1d541412a1aa70e4aec59838a10b7133f",
+    "guest.py": "7b052dedfd1a23ae1d625a41c079dc6b4ae0df7db2cf5188e1993b98b79a15a7",
+    "desktop.py": "59cbce196ca5eb17d3af9f8a1a92913dda809a22182e52c2337011f8ac5a8b21",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46"
+  },
+  "scenario": "0.3.4 desktop and services to 0.3.5",
+  "source_commit": "d3979dbb30efc344ac35687ba2782662981ee478",
+  "used_before": 37760806912,
+  "scratch_limit": 4294967296,
+  "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+  "base_path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/manual-review-20261027-01/portable/base.qcow2",
+  "network": "none",
+  "host_mounts": "OS files, QEMU, immutable base and fresh lab only",
+  "exit": 0,
+  "used_after": 40244510720
+}

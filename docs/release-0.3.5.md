@@ -20,21 +20,21 @@ updates → Check services → Update services**. Remote runners need their own
 explicit update. No ship import or fleet reset is part of this upgrade.
 
 The supported patch path is 0.3.4 → 0.3.5. Earlier versions should follow the
-documented intermediate upgrade paths to 0.3.4 first. Runner schema47, desktop
-state format1 and bootstrap API1 are unchanged. The desktop carries its matching
+documented intermediate upgrade paths to 0.3.4 first. Runner schema 47, desktop
+state format 1 and bootstrap API 1 are unchanged. The desktop carries its matching
 collector; updating the runner enables the snapshot improvements as well.
 
 ## Evidence and review
 
 The performance pass measured 47 → 3 SSH sessions in a thirty-second isolated
-OpenSSH fixture. Actual offscreen QML hidden main-thread CPU fell from1.00338 to
-0.06070 seconds over32 seconds with32 stopped fixture ships. Visible polling
+OpenSSH fixture. Actual offscreen QML hidden main-thread CPU fell from 1.00338 to
+0.06070 seconds over 32 seconds with 32 stopped fixture ships. Visible polling
 stayed at two seconds. These are controlled CPU measurements, not battery-life
 or full desktop compositor measurements. See the [performance report](diagnostics/2026-11-01-idle-performance.md).
 
-The exact stable artifacts require the isolated 0.3.4 → 0.3.5 QML-button upgrade,
-native hot/cold activation and recovery, package/provenance/CLI checks, and
-protected source/race/QML/release-policy CI before publication. Final evidence is
+The exact stable artifacts passed the isolated 0.3.4 → 0.3.5 QML-button upgrade,
+native hot/cold activation and recovery, and package/provenance/CLI checks.
+Protected source/race/QML/release-policy CI gates publication. Final evidence is
 recorded in `docs/releases/0.3.5/qualification.json` and its linked rehearsal.
 The service rehearsal uses fresh fake ships in an offline disposable guest;
 production ships, installed services/plugins and human DEV state are excluded.
