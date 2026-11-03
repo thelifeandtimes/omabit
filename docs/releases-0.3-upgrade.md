@@ -15,6 +15,14 @@ opening a database does not start ships or alter existing settings, ports,
 identities, grants, storage roots or operation receipts. Older runners refuse
 schema47. Returning the desktop to an older version cannot downgrade that state.
 
+## Local import patch: 0.3.5 to 0.3.6
+
+Use the normal `omarchy plugin update thelifeandtimes.omabit`, allow the 0.3.6
+bundle to load, then complete **Update Dependencies** if offered. See the
+[0.3.6 steps](release-0.3.6.md). This corrects preview validation above 100 GB;
+imports remain manual. The older command examples below are historical paths,
+not instructions to downgrade from the current stable release.
+
 ## Performance update: 0.3.4 to 0.3.5
 
 First bring the desktop and local services to 0.3.4 through the earlier supported

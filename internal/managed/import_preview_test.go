@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -101,5 +102,46 @@ func TestGuidedImportDerivesPlanAndRefusesChangedIdentity(t *testing.T) {
 	v, err := loadInstance(r.s.db, preview.InstanceID)
 	if err != nil || !v.Runtime.ExternalImport.Identify {
 		t.Fatal("worker lost identity revalidation", err)
+	}
+}
+
+func TestGuidedImportLargeSparseSourceThroughClient(t *testing.T) {
+	b := &guidedFixture{storageActionBackend: storageActionBackend{home: privateDir(t)}, identity: protocol.PierIdentity{Ship: "~zod", Network: "fakenet", Kind: "fake"}}
+	if err := pierstore.Init(b.home); err != nil {
+		t.Fatal(err)
+	}
+	r, c, _ := testEndpoint(t, privateDir(t), b)
+	source := filepath.Join(privateDir(t), "synthetic-source")
+	for _, dir := range []string{".urb/chk", ".urb/log"} {
+		if err := os.MkdirAll(filepath.Join(source, dir), 0700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	file := filepath.Join(source, "sparse-preview-fixture")
+	if err := os.WriteFile(file, nil, 0600); err != nil {
+		t.Fatal(err)
+	}
+	for _, size := range []int64{protocol.MaxPierBytes + 1, 512 << 30, pierstore.MaxLocalPierBytes, pierstore.MaxLocalPierBytes + 1} {
+		t.Run(strconv.FormatInt(size, 10), func(t *testing.T) {
+			if err := os.Truncate(file, size); err != nil {
+				t.Fatal(err)
+			}
+			preview, err := c.PreviewGuidedPierImport(context.Background(), r.s.runnerID, source, "default")
+			if size > pierstore.MaxLocalPierBytes {
+				if err == nil || !strings.Contains(err.Error(), "8 TiB") {
+					t.Fatal("missing size rejection", err)
+				}
+			} else if err != nil || preview.Source.Bytes != size || preview.Ship != "~zod" {
+				t.Fatal(preview, err)
+			}
+			info, err := os.Stat(file)
+			if err != nil || info.Size() != size {
+				t.Fatal("preview changed source", err)
+			}
+			rows, err := instances(r.s.db)
+			if err != nil || len(rows) != 0 {
+				t.Fatal("preview enrolled a ship", rows, err)
+			}
+		})
 	}
 }

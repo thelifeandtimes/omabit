@@ -133,6 +133,22 @@ def main():
  else:
   assert old.returncode==0 and json.loads(old.stdout)['ship']=='~nec',old.stderr
  report['macos_import']={'previous_refused_metadata':bool(old.returncode),'synthetic_companion_sha256':companions}
+ large_preview_test=tuple(map(int,TARGET.split('-')[0].split('.'))) >= (0,3,6)
+ if large_preview_test:
+  # A sparse file exercises real collector/runner preview validation without
+  # allocating or copying 100 GB. It is removed before the actual small import.
+  large_inventory_before=project(PREVIOUS)
+  large_fixture=import_source/'large-preview-fixture.bin'
+  with large_fixture.open('xb') as f:f.truncate(100_000_000_001)
+  large_fixture.chmod(0o600);os.chown(large_fixture,1000,1000)
+  large_size=large_fixture.stat().st_size
+  large_old=storage(PREVIOUS,'preview-pier','--source',import_source,'--storage-root','default',ok=False)
+  if PREVIOUS in ('0.3.4','0.3.5'):
+   assert large_old.returncode and 'guided import identity, bounds or destination changed' in large_old.stderr,large_old.stderr
+  large_new=json.loads(storage(TARGET,'preview-pier','--source',import_source,'--storage-root','default').stdout)
+  assert large_new['source']['bytes']>=large_size and large_new['ship']=='~nec',large_new
+  assert project(PREVIOUS)==large_inventory_before,'preview enrolled or changed a ship'
+  report['large_local_preview']={'previous_rejected':bool(large_old.returncode),'target_collector_with_previous_runner_passed':True,'fixture_logical_bytes':large_size,'fixture_allocated_bytes':large_fixture.stat().st_blocks*512,'source_logical_bytes':large_new['source']['bytes'],'full_large_copy_tested':False}
  before=project(PREVIOUS); runtime_before=runtime(PREVIOUS)
  report['baseline']=before;report['runtime_before']=runtime_before;report['schema_before']=db_projection()['schema']
  # Import and verify actual release bundles with the native desktop loader.
@@ -210,6 +226,12 @@ def main():
  wait(lambda:collector(TARGET,'hello'))
  assert before==project(TARGET) and runtime_before==runtime(TARGET)
  report['manager_restart_preserved_runtime']=True
+ if large_preview_test:
+  large_upgraded=json.loads(storage(TARGET,'preview-pier','--source',import_source,'--storage-root','default').stdout)
+  assert large_upgraded['source']['bytes']==large_new['source']['bytes'] and large_upgraded['ship']=='~nec'
+  assert large_fixture.stat().st_size==large_size
+  report['large_local_preview'].update(target_collector_with_target_runner_passed=True,preview_preserved_source=True,preview_did_not_enroll=True,passed=True)
+  large_fixture.unlink() # Only the synthetic fixture created above, never pier data.
  preview=json.loads(storage(TARGET,'preview-pier','--source',import_source,'--storage-root','default').stdout)
  assert preview['ship']=='~nec' and preview['network']=='fakenet',preview
  request='macos-import-nec'

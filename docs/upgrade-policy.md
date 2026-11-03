@@ -1,5 +1,15 @@
 # Stable-release upgrade requirement
 
+## 0.3.6 local import preview patch
+
+The [0.3.6 qualification](releases/0.3.6/qualification.json) records the exact
+0.3.5 → 0.3.6 desktop/local service path and large logical preview regression.
+The collector uses the existing 8 TiB local bound instead of the cross-host
+100 GB bound for guided import and restoration previews. Schema 47, desktop
+state 1, bootstrap API 1, runtime and pill are unchanged. No automatic import,
+service restart or remote upgrade is implied by plugin publication. See the
+[install steps and test limits](release-0.3.6.md).
+
 ## 0.3.5 performance release
 
 The [0.3.5 qualification](releases/0.3.5/qualification.json) records the exact
