@@ -1,0 +1,147 @@
+{
+  "version": "0.3.6",
+  "source_commit": "b9eb33f2c555a3865c120779a30d3ef4e33672b9",
+  "source_tree": "384fe5c71742feefe6bdb64874f59f7a425f1708",
+  "backend_source_sha256": "65693ebe695f34496451e8137c3bc8fc3dc26bca413df7e1a4227faf1cd0d519",
+  "platform": "linux/amd64",
+  "channel": "stable",
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "runner_schema": 47,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "evidence": "docs/releases/0.3.6/rehearsal.json",
+    "evidence_sha256": "15b69cccac415b2beda1c336f90c8c6ae94b54d93091dfd89780c7eef8dcdca4",
+    "paths": [
+      {
+        "versions": [
+          "0.3.5",
+          "0.3.6"
+        ],
+        "evidence": "docs/releases/0.3.6/rehearsal.json",
+        "evidence_sha256": "15b69cccac415b2beda1c336f90c8c6ae94b54d93091dfd89780c7eef8dcdca4",
+        "scope": "Exact desktop and QML-button service upgrade, preservation, large local preview and small import regression"
+      }
+    ]
+  },
+  "validation": {
+    "passed": true,
+    "native_plugin_tests": 9,
+    "bootstrap_state_tests": 12,
+    "release_policy_tests": 15,
+    "service_upgrade_qt_cases": 4,
+    "archive_checksums_and_provenance": true,
+    "offline_help_entries": 132,
+    "skill_package_tests": 5,
+    "source_tests_commit": "b9eb33f2c555a3865c120779a30d3ef4e33672b9",
+    "source_regressions": "Full Go suite, focused client/managed race and vet, exact preview boundary and identity/path guards. Protected complete source/race/QML CI must pass on the distribution head before publication.",
+    "logs": {
+      "archive": {
+        "name": "archive.log",
+        "sha256": "ae8996ddb7f01d2b95c414f87c4918d1d43019921521f21ca964beb47a5849fb"
+      },
+      "bootstrap-observation": {
+        "name": "bootstrap-observation.log",
+        "sha256": "ff947b313cbc3ee56e9c31b95b230f5af8a78e35b4c511877dcb246b8af6a486"
+      },
+      "bootstrap": {
+        "name": "bootstrap.log",
+        "sha256": "6078804e11ba7041d26b2ca3f696bb5f9afc53a91a18b15da39cf9a307fb73f0"
+      },
+      "cli": {
+        "name": "cli.log",
+        "sha256": "f2f0ac00b5398b09c937e71387b71885ec979c613a85dd34c6d4752556c138c3"
+      },
+      "desktop-upgrade": {
+        "name": "desktop-upgrade.log",
+        "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+      },
+      "focused-race": {
+        "name": "focused-race.log",
+        "sha256": "bf0a2c9151e826e76712b434138370e6ff90b1980697ce6388ad2b79613d392e"
+      },
+      "focused-vet": {
+        "name": "focused-vet.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "full-go": {
+        "name": "full-go.log",
+        "sha256": "b09d7458b98578e4ee2858a93b92169edcfbc4ae1eeb17ddd1ebd6a0598db5a9"
+      },
+      "native": {
+        "name": "native.log",
+        "sha256": "a844b73805e4a68169636f76af1b9a237a23f63f2836342b0f10f4a9b0a46da3"
+      },
+      "observation": {
+        "name": "observation.log",
+        "sha256": "ec197b75b2639a3d03a92d9fa5cdbedc14822bac369f9f140ca5dcfb71241521"
+      },
+      "package": {
+        "name": "package.log",
+        "sha256": "b490de0046370ab37eddf61d68b5b5a033d8c9105b9e6bcacee3e64523e86b77"
+      },
+      "policy": {
+        "name": "policy.log",
+        "sha256": "eb18d57e2e47f9564ed9def8144dca7dcaff9f05aa6576cda5f139efdc113536"
+      },
+      "rehearsal": {
+        "name": "rehearsal.log",
+        "sha256": "526dae25b7779fb3a65328f11be6b4d76791d7cf17b56c9af56dc36b5881e7df"
+      },
+      "skills": {
+        "name": "skills.log",
+        "sha256": "3507612a5e67de7f909c5daf665e72ae48703638023e5a20bbbf698936a10064"
+      },
+      "upgrade-ui": {
+        "name": "upgrade-ui.log",
+        "sha256": "41a85872561a7b413c54e158ddae4beecd8ebe0e6704b854057540add3526207"
+      }
+    }
+  },
+  "frozen_artifacts": {
+    "assets": [
+      {
+        "name": "omabit-0.3.6-linux-amd64.tar.gz",
+        "bytes": 31551193,
+        "sha256": "5946740af13a5e1c4e71fe037edf6eaa4d89006f83e8b6ad88b9481cd5e2279d"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 18077783,
+        "sha256": "8542a7b7a987b854ed254c194f8b1b79b83d9bef2a80d80e9e4e9a74cf51fb7d"
+      },
+      {
+        "name": "omabit-recommended-apps-0.3.6.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.3.6.tar.gz",
+        "bytes": 23500,
+        "sha256": "1ed9b976942fed4429557ab03303bd7a1eac2cbb174693227e85415377774d75"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 12526669,
+        "sha256": "18105f1d0334584305af5bf0e679eb523e4d8e3a600104c4ec1a2de323ba3914"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 26585696,
+        "sha256": "584491205461f8c54683200081056650d90ce548cc0be11ec208f91e44e1863a"
+      }
+    ],
+    "go_version": "go version go1.27.3 linux/amd64"
+  },
+  "scope_limits": [
+    "Exact 0.3.5 to 0.3.6 local service and desktop upgrade on an offline pristine Arch/Omarchy Linux/AMD64 owner-user stack. Earlier releases use documented intermediate upgrades. Remote installation, other distro runtime stacks and power cuts were not qualified here.",
+    "Real QML update buttons use an exact-program guest-only polkit fixture, not human password entry. Setup receipts are reconstructed from genuine previous installer and SSH enrollment evidence.",
+    "Guest bundle activation uses harness acknowledgements; separate private native QML tests cover actual hot/cold activation, failed-candidate recovery, preferences and restart. Stock updater interaction remains manual.",
+    "Large logical preview checks use sparse fixtures, through the real client/server up to 8 TiB and exact published/candidate binaries above 100 GB in the guest. Only a small stopped fake is fully imported after removing the generated sparse fixture. No full 100 GB copy or throughput claim.",
+    "No production pier, protected ship, ~/temp-ur, installed service/plugin or human DEV review state was used or changed. Storage accounting includes a 4 GiB reserve for 18 unreadable DEV directories, separately from the 4 GiB guest scratch allowance.",
+    "Schema 47, desktop format 1, bootstrap API 1, runtime image and pill are unchanged. Identity, stopped-state, authorization, path, entry-count and full-content verification remain. Cross-host handoff stays capped at 100 GB."
+  ],
+  "policy": "Immutable frozen source and assets; protected source/race/QML/release-policy checks and merge commit required. No protection bypass or workstation upgrade."
+}

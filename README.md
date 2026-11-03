@@ -1,10 +1,12 @@
 # Omabit
 
-**New in 0.3.5:** lower idle CPU and SSH overhead, with immediate refresh when
-opening Omabit. Update the plugin, then use **Update Dependencies** for the
-matching runner. The visual interface and persistent schemas are unchanged.
-See the [release notes](docs/release-0.3.5.md) and
-[measured performance results](docs/diagnostics/2026-11-01-idle-performance.md).
+**New in 0.3.6:** local import and restoration previews now consistently accept
+up to 8 TiB of logical contents. This fixes the misleading “identity, bounds or
+destination changed” rejection above 100 GB. Cross-host transfers stay at 100 GB.
+See the [release notes and upgrade steps](docs/release-0.3.6.md).
+
+The [0.3.5 performance improvements](docs/release-0.3.5.md) remain included,
+with [measurement details](docs/diagnostics/2026-11-01-idle-performance.md).
 
 **Included from 0.3.0:** isolated fakeship project networks, independent application
 connections, simpler ship onboarding and lifecycle recovery improvements. Theme
@@ -24,10 +26,10 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Stable release:** [**0.3.5**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.3.5), a Linux/AMD64 release
+**Stable release:** [**0.3.6**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.3.6), a Linux/AMD64 release
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and support scope](docs/release-0.3.5.md),
+[release notes and support scope](docs/release-0.3.6.md),
 [0.2.0/0.3.0 upgrade guidance](docs/guided-service-upgrades.md),
 and [Recommended Apps pill provenance](docs/pill-release.md).
 
@@ -40,7 +42,7 @@ plugin and include a tested upgrade path from the previous stable version.
 
 ## Historical release milestones
 
-The notes below describe earlier milestones; the 0.3.5, 0.3.4, 0.3.3, 0.3.2, 0.3.1 and 0.3.0 release notes
+The notes below describe earlier milestones; the 0.3.6, 0.3.5, 0.3.4, 0.3.3, 0.3.2, 0.3.1 and 0.3.0 release notes
 define current behavior and limits.
 
 **RC.15** fixes first-time host setup on stock Omarchy by reusing existing

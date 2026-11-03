@@ -7173,3 +7173,31 @@ including reads; ~/temp-ur, production services/plugins and human DEV are exclud
 Publication is authorized; workstation upgrade/import is left to the user.
 Declare at most 4 GiB guest scratch plus approximately 160 MiB release assets;
 recheck the combined 40 GiB budget including the unreadable-DEV reserve.
+
+
+## M509 — 2026-11-02 — 0.3.6 frozen and qualified; publication pending
+
+Supersedes M508's in-progress status. Product source is frozen at
+b9eb33f2c555a3865c120779a30d3ef4e33672b9. Full Go tests, focused client/managed
+race and vet, archive/provenance/install checks, native bootstrap, isolated
+QML desktop 0.3.5→0.3.6 activation/recovery and all132 CLI help entries pass.
+The real client/server tests admit 100 GB+1,512 GiB and8 TiB logical previews;
+negative/over-limit sizes and changed identity/destination plans remain rejected.
+Source and destination restoration bounds are tested separately.
+
+The offline patch-upgrade-036-stable-01 guest passes on exact published0.3.5 and
+frozen0.3.6 tools. A100,000,000,001-byte sparse fixture uses zero allocated file
+blocks; total source logical size is100,399,700,315bytes. The0.3.5 collector
+reproduces the generic rejection;0.3.6 accepts with both0.3.5 and0.3.6 runners,
+without source/enrollment mutation. Removing only this generated fixture permits
+the separate small stopped-fake import, preserving all synthetic macOS companion
+bytes. This is not a full100GB copy qualification.
+
+QML upgrade denial/retry, exact target installation, running container/PID/engine,
+stopped intent, identity, history, access, no-op repeat and manager restart pass.
+Schema47, desktop1, bootstrapAPI1, runtime and pill are unchanged. Guest shutdown
+is clean; generated disk/payload/boot scratch is retired with a manifest and the
+immutable base verified. Compact results and limits live in docs/releases/0.3.6.
+Source, race, QML and release-policy checks must still pass on the protected PR
+before merge/publication. No production deployment or protected-pier operation
+is authorized by publication; the user installs and imports manually.

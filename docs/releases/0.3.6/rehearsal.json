@@ -1,0 +1,62 @@
+{
+  "version": "0.3.6",
+  "source_commit": "b9eb33f2c555a3865c120779a30d3ef4e33672b9",
+  "passed": true,
+  "non_destructive": true,
+  "previous_version": "0.3.5",
+  "runner_schema_before": 47,
+  "runner_schema_after": 47,
+  "service_result": "docs/releases/0.3.6/from-0.3.5-result.json",
+  "service_result_sha256": "75fb7a64887e3ce7f8d2a8c98319fc74adf6c270a22b26c2b1dd9dbb7fd5f7c6",
+  "harness": "scripts/qualification/patch-upgrade",
+  "harness_sha256": {
+    "run.py": "8d9a666401baddcf84d92f325c4e45c1d541412a1aa70e4aec59838a10b7133f",
+    "guest.py": "f3834fc79fbb02ea0bb589d082764650aba66040fca3d328d86223797ea510f1",
+    "desktop.py": "59cbce196ca5eb17d3af9f8a1a92913dda809a22182e52c2337011f8ac5a8b21",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46"
+  },
+  "desktop_harness": "docs/releases/0.3.2/desktop-upgrade-harness.py",
+  "desktop_harness_sha256": "13cf7903e3c23c60c37eb99a73beca431bc9ddbd17d69fffff905884df49eccf",
+  "desktop_log": {
+    "name": "desktop-upgrade.log",
+    "sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+  },
+  "checks": [
+    "authorization denial and retry",
+    "exact target binaries installed",
+    "running container/PID and engine unchanged",
+    "stopped intent, settings, revisions, operation history and runner identity preserved",
+    "SSH grants, host pins and collector enrollment preserved",
+    "completed update is a no-op",
+    "manager restart preserves runtime",
+    "actual packaged desktop hot activation and cold restart",
+    "saved page and ship selection preserved",
+    "broken candidate retains usable desktop",
+    "old large-preview rejection reproduced",
+    "new collector accepts large preview with previous and target runners without source or enrollment mutation",
+    "small stopped-fake import retains every macOS companion byte"
+  ],
+  "storage": {
+    "used_before": 37913055232,
+    "used_after": 40131080192,
+    "scratch_limit": 4294967296,
+    "measurement_limits": {
+      "/srv/dev/urbit": {
+        "visible_bytes": 5917949952,
+        "unreadable_work_directories": 18,
+        "unmeasured_reserve": 4294967296
+      }
+    },
+    "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+    "network": "none",
+    "host_mounts": "OS files, QEMU, immutable base and fresh lab only"
+  },
+  "limits": [
+    "Exact 0.3.5 to 0.3.6 local service and desktop upgrade on an offline pristine Arch/Omarchy Linux/AMD64 owner-user stack. Earlier releases use documented intermediate upgrades. Remote installation, other distro runtime stacks and power cuts were not qualified here.",
+    "Real QML update buttons use an exact-program guest-only polkit fixture, not human password entry. Setup receipts are reconstructed from genuine previous installer and SSH enrollment evidence.",
+    "Guest bundle activation uses harness acknowledgements; separate private native QML tests cover actual hot/cold activation, failed-candidate recovery, preferences and restart. Stock updater interaction remains manual.",
+    "Large logical preview checks use sparse fixtures, through the real client/server up to 8 TiB and exact published/candidate binaries above 100 GB in the guest. Only a small stopped fake is fully imported after removing the generated sparse fixture. No full 100 GB copy or throughput claim.",
+    "No production pier, protected ship, ~/temp-ur, installed service/plugin or human DEV review state was used or changed. Storage accounting includes a 4 GiB reserve for 18 unreadable DEV directories, separately from the 4 GiB guest scratch allowance.",
+    "Schema 47, desktop format 1, bootstrap API 1, runtime image and pill are unchanged. Identity, stopped-state, authorization, path, entry-count and full-content verification remain. Cross-host handoff stays capped at 100 GB."
+  ]
+}
