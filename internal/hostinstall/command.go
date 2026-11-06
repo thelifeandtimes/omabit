@@ -26,6 +26,7 @@ const (
 var helpers = strings.Fields("dockerd docker rootlesskit slirp4netns newuidmap newgidmap useradd getsubids systemctl loginctl runuser id getent env nologin test iptables")
 var hostHelpers = strings.Fields("sshd ssh-keygen usermod")
 var packageHookHelpers = strings.Fields("stat timeout pacman-conf apt-config")
+var packageInstallHelpers = []string{"pacman"}
 
 func (i *installer) helper(ctx context.Context, path string) error {
 	_, err := i.resolveHelper(ctx, path)
@@ -35,7 +36,7 @@ func (i *installer) helper(ctx context.Context, path string) error {
 func (i *installer) resolveHelper(ctx context.Context, path string) (string, error) {
 	name := filepath.Base(path)
 	aliases := rootless.ExecutablePaths(name)
-	if !slices.Contains(aliases, path) || (!slices.Contains(helpers, name) && !slices.Contains(hostHelpers, name) && !slices.Contains(packageHookHelpers, name)) {
+	if !slices.Contains(aliases, path) || (!slices.Contains(helpers, name) && !slices.Contains(hostHelpers, name) && !slices.Contains(packageHookHelpers, name) && !slices.Contains(packageInstallHelpers, name)) {
 		return "", fmt.Errorf("command is not an approved native helper: %s", path)
 	}
 	for _, candidate := range aliases {
@@ -90,11 +91,15 @@ func (i *installer) resolveHelper(ctx context.Context, path string) (string, err
 }
 
 func (i *installer) command(ctx context.Context, path string, args ...string) ([]byte, error) {
+	return i.commandWithTimeout(ctx, commandTimeout, path, args...)
+}
+
+func (i *installer) commandWithTimeout(ctx context.Context, timeout time.Duration, path string, args ...string) ([]byte, error) {
 	resolved, err := i.resolveHelper(ctx, path)
 	if err != nil {
 		return nil, err
 	}
-	ctx, cancel := context.WithTimeout(ctx, commandTimeout)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	if err := ctx.Err(); err != nil {
 		return nil, err

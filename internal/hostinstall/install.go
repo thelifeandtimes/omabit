@@ -86,6 +86,7 @@ type installer struct {
 	chown                          func(*os.File) error
 	run                            func(context.Context, string, []string, []string) ([]byte, error)
 	mutated                        bool
+	installPrerequisites           bool
 	publishFile                    func(string, string) error
 	syncDirectory                  func(string) error
 	activationEvidence             func(context.Context, string) (serviceEvidence, error)

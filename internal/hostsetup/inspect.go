@@ -134,7 +134,7 @@ func (p probe) inspect() Report {
 		}
 		r.add(item.id, status, detail)
 	}
-	for _, name := range strings.Fields("docker dockerd rootlesskit slirp4netns newuidmap newgidmap systemctl loginctl runuser useradd getsubids iptables") {
+	for _, name := range strings.Fields("docker dockerd containerd runc rootlesskit slirp4netns newuidmap newgidmap systemctl loginctl runuser useradd getsubids iptables ssh ssh-keygen sshd") {
 		// Follow package-managed executable symlinks; ownership/setuid/capability
 		// decisions require a separate authorized verification, not this probe.
 		var info fs.FileInfo
@@ -148,8 +148,9 @@ func (p probe) inspect() Report {
 		status, detail := "pass", "Regular executable metadata present; package integrity and effective privileges unverified."
 		if err != nil {
 			status, detail = unavailable(err)
+			detail = name + ": " + detail
 		} else if !info.Mode().IsRegular() || info.Mode().Perm()&0111 == 0 {
-			status, detail = "blocked", "Path is not a regular executable."
+			status, detail = "blocked", name+": path is not a regular executable."
 		}
 		r.add("binary-"+name, status, detail)
 	}

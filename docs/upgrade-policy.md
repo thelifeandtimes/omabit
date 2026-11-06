@@ -1,5 +1,37 @@
 # Stable-release upgrade requirement
 
+## 0.3.7 one-click setup and identity recovery
+
+The [0.3.7 qualification](releases/0.3.7/qualification.json) covers the published
+0.3.6 desktop and local runner upgrading to 0.3.7 on Linux/AMD64, schema 47.
+The guided update preserves running ship and engine processes, stopped intent,
+access and operation history across retry and a manager restart. See the
+[release notes](release-0.3.7.md) for commands and support limits.
+
+## Development: keyed first-boot identity correction
+
+The local owner-only [identity repair](boot-identity-repair.md) preserves schema47,
+existing instance/storage IDs, ports and operation history. A version1 opaque meta
+journal supports interrupted correction; completed correction uses existing
+initialized-runtime fields, so the currently installed manager can resume the same
+pier. Synthetic commit-failure/replay/reopen and normal-resume tests cover this
+targeted recovery, not a new release-wide upgrade claim. Its support window is the
+current schema47/pinned keyed-runtime contract; older/future schemas are refused.
+
+## Development: one-click native prerequisites
+
+The `0.3.7-dev.20261105.1` local candidate adds explicitly authorized missing-package
+installation to initial owner setup on Arch/Omarchy. Metadata inspection remains
+read-only. The installer recomputes its package plan locally, rechecks the result,
+then performs the existing native payload authentication and owner setup. It does
+not add package installation to guided management upgrades or the offline bridge.
+Runner schema 47, desktop state 1 and bootstrap API 1 are unchanged. Existing
+OpenSSH-format Ed25519 desktop keys are read in place and reused; key generation
+now uses the bundled SSH library. Source builds require Go 1.26 or later.
+
+The earlier development candidate exercised fresh installation on the operator’s fleet.
+The stable qualification above covers the subsequent exact-artifact upgrade.
+
 ## 0.3.6 local import preview patch
 
 The [0.3.6 qualification](releases/0.3.6/qualification.json) records the exact

@@ -1,5 +1,10 @@
 # Omabit
 
+**New in 0.3.7** — Set up an Arch/Omarchy host with missing native prerequisites
+in one authorized step. The desktop also supports key-file selection on the
+panel and verified recovery from a mistyped first-boot identity.
+See the [0.3.7 release notes and upgrade steps](docs/release-0.3.7.md).
+
 **New in 0.3.6:** local import and restoration previews now consistently accept
 up to 8 TiB of logical contents. This fixes the misleading “identity, bounds or
 destination changed” rejection above 100 GB. Cross-host transfers stay at 100 GB.
@@ -26,10 +31,10 @@ This repository is the ship-running and orchestration project at
 [Tend](https://github.com/thelifeandtimes/tend), the Urbit reminders application,
 has its own repository, CLI, and release lifecycle.
 
-**Stable release:** [**0.3.6**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.3.6), a Linux/AMD64 release
+**Stable release:** [**0.3.7**](https://github.com/thelifeandtimes/omabit/releases/tag/v0.3.7), a Linux/AMD64 release
 using the existing pier-owning Unix user for the runner and its rootless engine.
 See [binary bundle installation](docs/release-install.md),
-[release notes and support scope](docs/release-0.3.6.md),
+[release notes and support scope](docs/release-0.3.7.md),
 [0.2.0/0.3.0 upgrade guidance](docs/guided-service-upgrades.md),
 and [Recommended Apps pill provenance](docs/pill-release.md).
 
@@ -42,7 +47,7 @@ plugin and include a tested upgrade path from the previous stable version.
 
 ## Historical release milestones
 
-The notes below describe earlier milestones; the 0.3.6, 0.3.5, 0.3.4, 0.3.3, 0.3.2, 0.3.1 and 0.3.0 release notes
+The notes below describe earlier milestones; the 0.3.7, 0.3.6, 0.3.5, 0.3.4, 0.3.3, 0.3.2, 0.3.1 and 0.3.0 release notes
 define current behavior and limits.
 
 **RC.15** fixes first-time host setup on stock Omarchy by reusing existing
@@ -135,7 +140,7 @@ go build -o ./build/ ./cmd/... ./backend/cmd/...
 
 See the [fresh installation guide](docs/install.md) for prerequisites, reruns and
 troubleshooting, or [binary bundle installation](docs/release-install.md) for the
-published release assets. Source builds need Go 1.25+. Hosting targets Linux x86-64
+published release assets. Source builds need Go 1.26+. Hosting targets Linux x86-64
 and systemd/cgroup v2. Published RC.12 requires Docker 29.7.2; RC.13
 accepts stable Docker 27.2.0–29.x subject to API 1.47 and the documented
 [host compatibility and package-authentication checks](docs/host-compatibility.md).

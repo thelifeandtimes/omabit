@@ -7201,3 +7201,259 @@ immutable base verified. Compact results and limits live in docs/releases/0.3.6.
 Source, race, QML and release-policy checks must still pass on the protected PR
 before merge/publication. No production deployment or protected-pier operation
 is authorized by publication; the user installs and imports manually.
+
+## M510 — One-click fresh Omarchy onboarding (2026-11-05, ready for manual trial)
+
+The user confirmed that sourceport's rootlesskit/slirp4netns removal was intentional
+fresh-install testing. They require an installed Omabit plugin to take a stock
+Omarchy machine to a connected local runner with one setup click and OS password
+authorization, including downloading/configuring native prerequisites. This
+supersedes the manual-package-preparation UX for Arch/Omarchy, not other host
+providers or management-upgrade policy. The user explicitly authorized removing
+sourceport's current Omabit plugin for the next manual fresh-install trial; the
+stock plugin removal command completed. This does not authorize pier resets.
+
+The `feature/one-click-host-setup` topic branch is based on published 0.3.6 and
+labels its candidate `0.3.7-dev.20261105.1`. Root-authorized setup derives a fixed
+native package plan, installs missing packages, rechecks prerequisites, authenticates
+payloads, then continues owner services and SSH enrollment in the same operation.
+The primary button is the installation consent; a second checkbox is removed.
+Missing checks retain their names instead of being collapsed into one anonymous
+message. Bundled OpenSSH key generation removes the ssh-keygen bootstrap dependency
+and preserves existing private keys on retry. The current maintained SSH library
+raises the source-only Go minimum to 1.26. No runtime schema change is involved.
+
+Focused Go race/vet, model, offscreen QML and snapshot installation/recovery checks
+pass. All three static tools build; the actual sourceport preflight now permits
+setup and lists exactly the two intentionally absent packages. Omarchy 4.5.0
+validates the staged plugin. The development [trial guide](one-click-setup-trial.md)
+records commands and limits. Actual native package download and end-to-end host
+installation are the next manual trial; no live success or stable publication is
+claimed by these isolated results.
+
+## M511 — First-run navigation and plain-language setup (2026-11-05, ready for repeat trial)
+
+Supersedes M510's UI presentation and pending-first-trial status, not its backend
+scope. The user exercised `.1`: read-only inspection on sourceport confirmed both
+missing packages were installed, the dedicated user runner/engine and system SSH
+service were running, and enrollment matched runner
+`runner-8bcf34e969832654f5a2bf9fa3ccd440`. Inventory, operations, incidents and
+containers were empty; the standard pier layout directories contained no piers.
+
+The user requested no Add a ship action on the initial frame, direct navigation
+from Set up this computer into local device setup, and package names only in
+View details. Candidate `0.3.7-dev.20261105.2` implements this in both popup and
+monitor entry points. The main setup description explains installing/configuring
+software to run Urbit on Omarchy. The local distribution commit is `fcbde29` at
+`~/.local/share/omabit-review/one-click-setup`; source changes remain on
+`feature/one-click-host-setup` and uncommitted.
+
+The actual host-compatibility/setup QML fixture passes. The existing onboarding
+fixture also passes with its real Panel, SetupPane, MonitorWindow and Service in
+a networkless Bubblewrap/offscreen run, private HOME/XDG and inert compositor/IPC
+adapters. Assertions cover initial hidden ship creation, direct local navigation,
+hidden overview cards, setup consent and the existing provisioning checks. The
+adapter is `/tmp/opencode/run-onboarding-offscreen.py`; this is not mapped-desktop
+visual evidence. Omarchy plugin validation passes.
+
+The user explicitly authorized cleaning up the current trial for another fresh
+installation. The clean Git-managed plugin has been removed. The authorized reset
+completed after rechecking the exact empty runner. Management files were retired
+with same-parent renames; only rootlesskit/slirp4netns were removed from Pacman.
+The manifest is `~/.local/share/omabit-review/reset-20261105T191545Z.json`. All
+retired inode/device bindings were verified. Pier directories and shared host
+settings were preserved. Post-reset preflight reports `can_setup: true`,
+`host_present: false`, `ready: false` and exactly those two missing packages. All
+three services are inactive with PID 0; active enrollment, setup receipt/key and
+panel preferences are absent. Reinstall with the standard command in the trial
+guide. This is a manual development reset, not a supported user upgrade path.
+
+## M512 — Explain the three software groups (2026-11-05, ready for review)
+
+Refines M511's details copy at the user's request. Candidate
+`0.3.7-dev.20261105.3` describes system dependencies (Docker, RootlessKit,
+slirp4netns and OpenSSH), the three Omabit tools and their roles, and Vere as
+the Urbit runtime inside Docker containers. This replaces the dense installation
+path/version explanation. The existing setup/details QML check and Omarchy plugin
+validation pass. Local distribution commit: `3534ac8`; the user can apply it with
+`omarchy plugin update thelifeandtimes.omabit`.
+
+## M513 — Key-file Browse on a fresh desktop (2026-11-05, ready for review)
+
+Supersedes M465's external Zenity chooser implementation. Sourceport's Browse
+button launched `zenity`, which was absent; missing-executable startup did not
+reach the exit-error handler. Candidate `0.3.7-dev.20261105.4` uses the existing
+QtQuick.Dialogs FileDialog with explicit DontUseNativeDialog, avoiding both the
+extra executable dependency and the historical native GTK/GVFS chooser path.
+Accepted selection uses the existing URL-to-local-path conversion; cancellation
+preserves the prior filename, and changing it resets boot consent.
+
+The real Qt chooser passed opening, duplicate-click gating, cancellation,
+reopening and selection of a synthetic filename containing spaces, Unicode and
+`#` in `scripts/test-compact-registration.py`. The fixture is networkless with
+private HOME/XDG; it verifies no boot submission. The existing onboarding fixture
+also passed in the isolated offscreen adapter, and plugin validation passed.
+No actual user keyfile was read. Local distribution commit: `06d7f6a`; apply with
+`omarchy plugin update thelifeandtimes.omabit` for manual desktop verification.
+
+## M514 — Key chooser must share the overlay surface (2026-11-05, ready for review)
+
+Supersedes M513's readiness claim: the user's mapped-desktop trial showed the
+chooser behind the Omabit menu with blocked interaction. The offscreen test
+exercised dialog methods but could not validate compositor stacking or input.
+Omarchy's real `Ui.KeyboardPanel` uses the overlay layer; Qt's default non-native
+FileDialog uses a separate ordinary window underneath it.
+
+Candidate `.5` explicitly binds the chooser's parent window and selects
+`Controls.Popup.Item`, drawing it inside the owning surface. The offscreen check
+passes these properties and the prior cancel/reopen/path/no-submission checks.
+The new `scripts/test-key-picker-wayland.py` runs the actual KeyboardPanel and
+KeyBootPane under privately extracted headless Sway, with Bubblewrap-isolated
+HOME/XDG, no host desktop sockets, synthetic files and virtual Wayland input.
+The old chooser reproduces as a separate window hidden under the menu, with
+pointer selection blocked. The corrected chooser passes actual pointer Browse,
+Escape cancellation while retaining the menu and prior path, pointer double-click
+selection of a synthetic space/Unicode/`#` filename, reopening/canceling, and
+restored keyboard input in the background window. No boot request occurs.
+Evidence: `/tmp/opencode/omabit-picker-layer-baseline-10` and
+`/tmp/opencode/omabit-picker-layer-fixed-2` (results, screenshots, compositor tree,
+source hashes). Sway allows Escape to reach the baseline chooser; this reproduces
+its stacking/pointer defect, not every Hyprland keyboard symptom.
+
+Earlier harness runs failed before exercising the chooser: a headless seat needed
+both virtual pointer and persistent keyboard capabilities, and its reveal helper
+needed bounded scroll positioning. These were harness failures, not product
+results. The corrected fixture uses real Wayland input; IPC supplies observations
+and menu setup, never programmatic chooser acceptance. Host desktop, user keys,
+plugins and services are excluded from the fixture. Actual user Hyprland review
+remains the next step through the standard local-candidate update command.
+The local distribution is committed as `12fd415`, version
+`0.3.7-dev.20261105.5`. Its picker, service and manifest match the tested source
+byte-for-byte, and standard Omarchy plugin validation passes. Source changes
+remain uncommitted on `feature/one-click-host-setup`; nothing was pushed.
+
+## M515 — Picker confirmed; repeat fresh-install trial requested (2026-11-05)
+
+The user confirmed that candidate `.5` fixed the picker on their actual desktop,
+superseding M514's pending-Hyprland-review status. They then explicitly requested
+uninstalling Omabit and its dependencies for another end-to-end fresh-install
+trial. Current read-only checks bind sourceport's local runner to
+`runner-d27c88350efe4c8d298e27c08600cc51`: instances, operations, incidents,
+discovered piers, dedicated-engine containers and images are all empty. The known
+pier layout contains only its empty standard directories. Pacman history shows
+only rootlesskit/slirp4netns were installed by this repeat trial.
+
+The clean installed plugin at distribution commit `12fd415` was removed with
+`omarchy plugin remove thelifeandtimes.omabit --yes`. Privileged management-state
+retirement and package cleanup are in progress; completion evidence follows.
+The first authorization attempt timed out before the script began (no new reset
+manifest, services still active, both packages still installed). It was retried
+with a ten-minute authorization window.
+
+The retry completed. Recovery manifest:
+`~/.local/share/omabit-review/reset-20261106T002120Z.json` (UTC filename; local
+date 2026-11-05). All three dedicated services are now inactive/not-found with
+PID 0. Management files, enrollment, setup credentials and panel preferences were
+retired via same-parent renames; original device/inode bindings were verified.
+The pier layout retained its original device/inode bindings. Rootlesskit and
+slirp4netns are absent. Read-only setup status reports `can_setup: true`,
+`host_present: false`, `ready: false`, and exactly those two packages to install.
+The `.5` local distribution remains available for the user's next standard
+`omarchy plugin install ~/.local/share/omabit-review/one-click-setup --enable`.
+
+## M516 — First moon boot quarantined by a name mismatch (2026-11-05, diagnosed)
+
+Supersedes M515's empty/reset host status: the user reinstalled `.5`, connected a
+new runner and booted a moon with Recommended Apps. CLI snapshot/logs and the exact
+running container's public identity endpoint confirm registration
+`~somrep-mitfyl-dozzod-sarlev` versus actual `~somryp-mitfyl-dozzod-sarlev`.
+Bootstrap completed, but Start failed identity verification and retained durable
+provisioning uncertainty. Stop requests are admitted but the graceful keyed-boot
+shutdown independently refuses the same name mismatch. Refresh cannot clear it.
+The shared network-runtime error incorrectly says "comet" for this owned moon.
+
+No live correction was made. Existing CLI relink/import recovery cannot correct
+this first-boot identity. Confirm the intended identity, then qualify an explicit
+identity-bound registration correction preserving the existing runtime/pier;
+never reset or clear the uncertainty flag blindly. See
+[diagnosis and proposed recovery](diagnostics/2026-11-05-moon-identity-mismatch.md)
+for exact evidence, code paths and limits.
+
+## M517 — Verified moon identity correction and same-pier resume (2026-11-05, complete)
+
+Supersedes M516's pending-repair status. The user confirmed the intended identity
+`~somryp-mitfyl-dozzod-sarlev` and approved a graceful stop/correction/restart.
+The new local-owner `repair-boot-identity` CLI binds runner, revision, old/new
+identities, exact boot container/process generation, public/private identity and
+filesystem objects. A version1 opaque meta journal preserves old launch containment
+through shutdown/removal and supports interrupted continuation; final correction
+and its audited receipt commit atomically without a schema migration.
+
+Focused and bounded affected-lifecycle race tests pass, including same-pier resume,
+refusals, interruption/removal-ack loss, failed final commit, history preservation,
+replay and current-manager reopen. Vet and133 network-isolated help entries pass.
+The first whole-package race run timed out at ten minutes in unrelated project
+recovery/historical-upgrade cases; both tests active at timeout pass in isolation
+within the bounded run. Do not describe that aggregate run as passing.
+
+Live repair succeeded at2026-11-06 01:56:16UTC, revision1→2; normal collector Start
+succeeded at01:56:31UTC. The existing installed manager now reports the corrected
+moon running/healthy, initialized, recovery cleared, applied revision2 and fresh
+resources. Exact public identity independently agrees. The pier, its mount and
+`.urb` filesystem objects, runtime image, ports, Recommended Apps pill and nine
+prior receipts are preserved. The stable instance ID/path keep the original typo;
+the displayed label and managed ship identity are corrected. Dedicated engine
+PID404613 stayed running throughout. No plugin/runner deployment was needed.
+
+See [repair procedure](boot-identity-repair.md),
+[live evidence](diagnostics/2026-11-05-moon-identity-mismatch.md), and compact records
+under `~/.local/share/omabit-review/identity-repair-20261106/`. The `.5` local
+distribution remains at12fd415. Repair and onboarding sources are uncommitted and
+unpushed on `feature/one-click-host-setup`.
+
+## M518 — 0.3.7 release requested; lab unavailable (2026-11-05, preparing)
+
+The user confirmed normal moon operation after M517 and requested a proper stable
+release including the one-click setup work. Published0.3.6 remains the baseline.
+Preparation moves to `release/0.3.7` with matching root/component/service versions;
+master requires reviewed PR, passing source/race/QML/release-policy checks, frozen
+artifacts and exact non-destructive previous-stable upgrade evidence.
+
+Sourceport has no retained qualification VM/base. Sourcebox accepts the configured
+SSH public key, but this session has no unlocked agent. When asked for lab access,
+the user selected **Sourcebox unavailable**, directing source/check preparation
+and a report of the remaining qualification blocker. Do not invent successful
+upgrade evidence, publish stable or bypass protection. Prepare the release source
+and local artifact/desktop checks; finish the VM rehearsal when lab access returns.
+
+## M519 — 0.3.7 frozen local checks pass; service rehearsal blocked (2026-11-05)
+
+Supersedes M518's source/artifact preparation status; its sourcebox blocker still
+applies. Source is committed and pushed as
+`076f97280960961fc21c88d45fef529185b4fbe2` on `release/0.3.7`, with draft GitHub
+PR#14 against protected master. Local matching assets pass checksums, provenance,
+isolated installer/replacement checks and all133 networkless CLI help entries.
+
+Local model/native/bootstrap/policy/skill/offscreen/onboarding checks pass. Real
+Wayland picker input passes with the corrected extracted-tool path. The exact
+published0.3.6 → frozen0.3.7 desktop harness passes hot activation, cold restart,
+synthetic failed-candidate recovery and preference preservation inside private
+headless Sway/Bubblewrap. Initial tool-path and mountpoint fixture failures happened
+before application execution; logs are retained and product source is unchanged.
+
+Evidence and artifact identities: [preparation record](releases/0.3.7/preparation.md),
+and sourceport `~/.local/share/omabit-review/release-0.3.7/`. Full source/race CI
+run42153140057 is pending. Release-policy correctly rejects the still0.3.6 pins.
+Final qualification, exact service-upgrade rehearsal, pins, merge and stable
+publication remain pending. The installed personal trial and running moon have
+not been upgraded as part of release preparation.
+
+
+## M520 — 0.3.7 service and desktop upgrade qualified (2026-11-05)
+
+Supersedes the outstanding rehearsal in M518–M519. All six frozen payloads
+matched the preparation hashes. Published 0.3.6 upgraded to those artifacts in
+the isolated guest, preserving engine and ship processes, stopped intent, runner
+identity, enrollment, storage and history through denial, retry and manager
+restart. The private Wayland desktop test covered preference retention, failed
+candidate recovery and cold restart. See the [release qualification](releases/0.3.7/qualification.json).

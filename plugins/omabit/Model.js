@@ -33,6 +33,8 @@ function validateSetupStatus(v) {
     throw new Error("Invalid local setup status")
   if (!v.checks.every(function(c) { return c && typeof c.id === "string" && typeof c.detail === "string" && c.detail.length <= 8192 && ["pass","missing","blocked","unknown","info"].indexOf(c.status) >= 0 }))
     throw new Error("Invalid prerequisite checks")
+  if (v.packages_to_install !== undefined && (!Array.isArray(v.packages_to_install) || v.packages_to_install.length > 16 || !v.packages_to_install.every(function(p){return typeof p === "string" && /^[a-z0-9][a-z0-9+._-]{0,63}$/.test(p)})))
+    throw new Error("Invalid native package plan")
   if (v.ready && (!v.connection || !validId(v.connection.name) || !validId(v.connection.runner_id) || v.connection.mode !== "development-managed" || v.browser_base !== "http://127.0.0.1"))
     throw new Error("Invalid local runner identity")
   v.compatibility_problem = ""
@@ -145,11 +147,11 @@ function hostCompatibilityHint(connection, now) {
   return ""
 }
 function setupStepIndex(step) {
-  var groups = {check:0,key:1,download:2,authorize:3,engine:3,access:3,services:3,verify:3,host:3,connect:4,ready:5}
+  var groups = {check:0,key:1,download:2,authorize:3,packages:3,"package-verify":3,engine:4,access:4,services:4,verify:4,host:4,connect:5,ready:6}
   return groups[step] === undefined ? -1 : groups[step]
 }
 function setupStepLabel(step) {
-  return {check:"Checking this computer",key:"Preparing desktop access",download:"Verifying host helper",authorize:"Waiting for OS authorization",engine:"Preparing the dedicated engine",access:"Configuring private SSH access",services:"Installing background services",verify:"Checking runner readiness",host:"Host setup complete",connect:"Connecting your desktop",ready:"Ready to add a ship"}[step] || "Local setup"
+  return {check:"Checking this computer",key:"Preparing desktop access",download:"Verifying host helper",authorize:"Waiting for OS authorization",packages:"Installing native packages","package-verify":"Verifying native packages",engine:"Preparing the dedicated engine",access:"Configuring private SSH access",services:"Installing background services",verify:"Checking runner readiness",host:"Host setup complete",connect:"Connecting your desktop",ready:"Ready to add a ship"}[step] || "Local setup"
 }
 function setupEvent(text) {
   if (text.length > 131072) throw new Error("Setup response exceeds limit")

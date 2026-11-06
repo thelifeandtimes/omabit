@@ -156,7 +156,7 @@ Window {
             }
             Rectangle { Layout.fillWidth: true; height: 1; color: Design.line }
             ActionButton { Layout.fillWidth: true; text: "Activity feed"; primary: root.page === "activity"; onClicked: { root.page = "activity"; activity.runnerFilter = ""; activity.shipFilter = "" } }
-            ActionButton { objectName: "monitor-setup"; Layout.fillWidth: true; text: "Setup"; primary: root.page === "setup"; onClicked: root.page = "setup" }
+            ActionButton { objectName: "monitor-setup"; Layout.fillWidth: true; text: "Setup"; primary: root.page === "setup"; onClicked: { root.page = "setup"; if(root.service.firstRun) windowSetup.mode="local" } }
             Label { text: root.fleet.length + " ships · " + root.service.connections.length + " runners"; secondary: true; caption: true }
           }
         }
@@ -310,8 +310,9 @@ Window {
               MaintenancePane { id: maintenance; width: parent.width; service: root.service; connection: root.connection; instance: root.instance; visible: root.page === "maintenance"; onRevealRequested: function(item) { root.revealItem(item) } }
             }
             Column { width: parent.width; spacing: Style.space(12); visible: root.page !== "activity" && root.page !== "setup" && Model.fleet(root.service.connections).length === 0
-              Label { width: parent.width; text: "No ships yet. Add your first ship to this fleet."; secondary: true }
-              ActionButton { objectName: "empty-fleet-add-ship"; text: "Add a ship →"; primary: true; onClicked: {root.page="setup";windowSetup.mode=windowSetup.readyRunners.length ? "ship" : "home"} }
+              Label { width: parent.width; text: root.service.firstRun ? "Set up this computer to run your first Urbit ship." : "No ships yet. Add your first ship to this fleet."; secondary: true }
+              ActionButton { objectName: "empty-fleet-add-ship"; visible: windowSetup.readyRunners.length>0; text: "Add a ship →"; primary: true; onClicked: {root.page="setup";windowSetup.addShip()} }
+              ActionButton { objectName: "empty-fleet-setup"; visible: root.service.firstRun; text: "Set up this computer →"; primary: true; onClicked: {root.page="setup";windowSetup.mode="local";root.service.checkLocalSetup()} }
             }
             Controls.BusyIndicator { running: root.shipPage && !root.instance && !!root.selectedKey; visible:running; anchors.horizontalCenter:parent.horizontalCenter }
             Label { width: parent.width; visible: root.page !== "activity" && root.page !== "setup" && !root.instance && (!!root.selectedKey || Model.fleet(root.service.connections).length > 0); text: root.selectedKey ? "Loading the selected ship…" : "Select a ship from the fleet to inspect its runtime."; secondary: true }

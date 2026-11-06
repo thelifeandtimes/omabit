@@ -4,52 +4,52 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"crypto/ed25519"
+	"crypto/rand"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"io"
 	"os"
 	"os/exec"
 	"os/user"
-	"path/filepath"
 	"strings"
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/hostinstall"
 	"github.com/mattn/go-isatty"
+	"golang.org/x/crypto/ssh"
 )
 
 func desktopKey(ctx context.Context, path string) ([]byte, error) {
-	if _, err := readPrivate(path, 16384); errors.Is(err, os.ErrNotExist) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	data, err := readPrivate(path, 16384)
+	if errors.Is(err, os.ErrNotExist) {
 		if _, err := os.Lstat(path + ".pub"); !errors.Is(err, os.ErrNotExist) {
 			return nil, errors.New("Desktop public key exists without its private key; restore the key before setup.")
 		}
-		stage, err := os.MkdirTemp(filepath.Dir(path), "key-")
+		_, key, err := ed25519.GenerateKey(rand.Reader)
 		if err != nil {
 			return nil, err
 		}
-		defer os.RemoveAll(stage)
-		key := filepath.Join(stage, "identity")
-		c, cancel := context.WithTimeout(ctx, 10*time.Second)
-		defer cancel()
-		cmd := exec.CommandContext(c, "/usr/bin/ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-C", "omabit-local", "-f", key)
-		if err := cmd.Run(); err != nil {
-			return nil, errors.New("Could not create the private desktop access key.")
+		block, err := ssh.MarshalPrivateKey(key, "omabit-local")
+		if err != nil {
+			return nil, err
 		}
-		if err := os.Rename(key, path); err != nil {
+		data = pem.EncodeToMemory(block)
+		if err := writePrivate(path, data); err != nil {
 			return nil, err
 		}
 	} else if err != nil {
 		return nil, err
 	}
-	c, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-	cmd := exec.CommandContext(c, "/usr/bin/ssh-keygen", "-y", "-P", "", "-f", path)
-	var output bytes.Buffer
-	cmd.Stdout = &output
-	if err := cmd.Run(); err != nil || output.Len() > 8192 {
+	signer, err := ssh.ParsePrivateKey(data)
+	if err != nil || signer.PublicKey().Type() != ssh.KeyAlgoED25519 {
 		return nil, errors.New("The desktop setup key is unavailable or modified; it was preserved.")
 	}
-	return output.Bytes(), nil
+	return ssh.MarshalAuthorizedKey(signer.PublicKey()), nil
 }
 
 type boundedStderr struct{ data bytes.Buffer }
@@ -71,7 +71,7 @@ func installHost(ctx context.Context, runner, bundle, public string, emit func(E
 }
 
 func installHostExpected(ctx context.Context, runner, bundle, public, expected string, emit func(Event)) (hostinstall.HostResult, error) {
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, 20*time.Minute)
 	defer cancel()
 	program := "/usr/bin/pkexec"
 	if isatty.IsTerminal(os.Stdin.Fd()) {
@@ -84,6 +84,8 @@ func installHostExpected(ctx context.Context, runner, bundle, public, expected s
 	args := []string{runner, "install-host", "--owner", owner.Username, "--bundle", bundle, "--public-key", public, "--acknowledge-host-changes"}
 	if expected != "" {
 		args = append(args, "--expected-runner-id", expected)
+	} else {
+		args = append(args, "--install-prerequisites")
 	}
 	cmd := exec.CommandContext(ctx, program, args...)
 	cmd.WaitDelay = 2 * time.Second
@@ -124,7 +126,7 @@ func installHostExpected(ctx context.Context, runner, bundle, public, expected s
 			result = *message.Host
 		}
 		if message.Message == "" {
-			message.Message = map[string]string{"engine": "Preparing dedicated rootless Docker", "access": "Configuring private desktop access", "services": "Installing background services", "verify": "Waiting for management readiness", "host": "Host setup complete"}[message.Step]
+			message.Message = map[string]string{"packages": "Downloading and installing missing native packages", "package-verify": "Verifying native packages and host prerequisites", "engine": "Preparing dedicated rootless Docker", "access": "Configuring private desktop access", "services": "Installing background services", "verify": "Waiting for management readiness", "host": "Host setup complete"}[message.Step]
 		}
 		if emit != nil {
 			emit(Event{Step: message.Step, Status: message.Status, Message: message.Message})

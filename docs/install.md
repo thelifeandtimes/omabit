@@ -32,7 +32,7 @@ bash scripts/install.sh
 ```
 
 This builds the three Go binaries, installs the owned panel snapshot and enables it
-in Omarchy. It needs Go 1.25+, Python and the Omarchy shell. Locally modified panel
+in Omarchy. It needs Go 1.26+, Python and the Omarchy shell. Locally modified panel
 files are preserved rather than overwritten.
 
 The runner helper is bundled with the panel alongside the collector and desktop
@@ -47,7 +47,7 @@ to load the new snapshot.
 Source for the three installed Omabit executables is at
 <https://github.com/thelifeandtimes/omabit>: `cmd/omabit/` is the desktop/setup
 helper, and `backend/cmd/urbit-collector/` and `backend/cmd/urbit-runner/` contain
-the generic client and host service. Build with Go 1.25+:
+the generic client and host service. Build with Go 1.26+:
 
 ```bash
 git clone https://github.com/thelifeandtimes/omabit.git
@@ -63,8 +63,9 @@ live in `~/.cache/omabit/native-binaries/`; authorized host setup installs the
 runner at `/usr/local/lib/urbit-runner/current/urbit-runner` and the pinned rootless
 launcher under `/usr/local/lib/urbit-runner/rootless/29.7.2/`.
 
-Docker/RootlessKit/slirp4netns/OpenSSH come from the host's OS packages. Upstream
-Docker source is <https://github.com/moby/moby>, including the verified rootless
+Docker/RootlessKit/slirp4netns/OpenSSH come from the host's OS packages. On
+Arch/Omarchy, Omabit 0.3.7 installs missing native prerequisites during the
+authorized initial setup. Upstream Docker source is <https://github.com/moby/moby>, including the verified rootless
 launcher. Ships run the pinned official Vere image; its source is
 <https://github.com/urbit/vere>. See [runtime policy](runtime-policy.md) for the
 qualified runtime artifact and version constraints.
@@ -76,21 +77,28 @@ Open **~+ → Setup → Set up this computer**.
 The guided flow shows:
 
 1. **Prerequisites** — platform, kernel, Docker and helper checks, with concrete
-   missing/unsupported items. Install missing packages using Omarchy's package
-   manager, then choose **Check again**. Setup does not downgrade packages or enable
-   a system-wide Docker daemon.
+   missing/unsupported items. The development flow lists missing native packages
+   and keeps **Set up this computer** available when they can be installed.
+   Clicking that button authorizes the installation; there is no extra checkbox.
 2. **Desktop access** — creates a dedicated local Ed25519 key in private per-user
    storage. Existing setup keys are reused. Personal SSH configuration is untouched.
 3. **Verified host helper** — downloads the pinned rootless launcher and verifies
    its content before requesting host authorization.
-4. **Host services** — asks for OS authorization, selects the existing desktop user,
+4. **Native packages** — asks for OS authorization once, installs missing packages
+   using the configured Arch/Omarchy repositories, rechecks prerequisites and
+   authenticates installed payloads. Downloads need network access. Setup does not
+   refresh package databases, perform a system upgrade, remove conflicting packages
+   or enable the system-wide Docker daemon. If a transaction fails, retry preserves
+   installed packages and the desktop key. Unsupported distributions retain manual
+   native package preparation; configuration failures show the exact affected check.
+5. **Host services** — selects the existing desktop user,
    creates `/srv/urbit/piers/` for that owner, installs the separate rootless engine
    and runner, configures restricted SSH access and enables lingering/reboot services.
-5. **Desktop connection** — uses the locally authorized SSH host public key for
+6. **Desktop connection** — uses the locally authorized SSH host public key for
    strict host checking, verifies the runner/operator identities, and enrolls the
    connection automatically. An existing enrollment of that same runner is reused
    or updated without duplicating it.
-6. **Ready** — establishes local browser defaults and takes you to **Add a ship**.
+7. **Ready** — establishes local browser defaults and takes you to **Add a ship**.
 
 The terminal equivalent, from the checkout, is:
 

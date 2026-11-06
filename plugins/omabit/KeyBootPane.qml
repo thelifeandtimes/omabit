@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Controls as Controls
-import Quickshell.Io
+import QtQuick.Dialogs as Dialogs
 import qs.Commons
 import "Model.js" as Model
 
@@ -45,18 +45,24 @@ Column {
     width: parent.width; spacing: Style.space(8); visible: !root.pasteKey
     Label { text: "Key file location"; caption: true; secondary: true }
     Field { objectName: "key-file-location"; width: parent.width; text: root.keyFile; placeholderText: "/path/to/ship.key"; enabled: !root.submitted && !root.service.busy; onTextEdited: root.keyFile=text }
-    ActionButton { objectName: "key-file-browse"; text: picker.running ? "Choosing…" : "Browse…"; enabled: !root.submitted && !root.service.busy && !picker.running; onClicked: {root.submitError=""; picker.running=true} }
+    ActionButton { objectName: "key-file-browse"; text: picker.visible ? "Choosing…" : "Browse…"; enabled: !root.submitted && !root.service.busy && !picker.visible; onClicked: {root.submitError=""; picker.open()} }
     Label { width: parent.width; text: "Before boot, Omabit makes this owned key file private to your user (permissions 600)."; caption: true; secondary: true }
   }
   Field { id: keyInput; objectName: "key-pasted"; width: parent.width; visible: root.pasteKey; placeholderText: "Paste your 0w boot key"; maximumLength: 4096; echoMode: TextInput.Password; inputMethodHints: Qt.ImhSensitiveData | Qt.ImhNoPredictiveText; enabled: !root.submitted && !root.service.busy; onTextEdited: bootConsent.checked=false }
-  // An external picker cannot crash the shared desktop shell. No key contents
-  // cross its stdout: only the selected local filename is returned.
-  Process {
+  // Use the Qt chooser already shipped with the desktop, never the in-process
+  // native GTK/GVFS path implicated in the earlier Browse crash. Selection only
+  // returns a filename; the key is read by the separately confirmed boot action.
+  Dialogs.FileDialog {
     id: picker
-    command: ["zenity", "--file-selection", "--title=Select Urbit boot key"]
-    stdout: StdioCollector { onStreamFinished: { if (text.trim() && text.length<=4096) root.keyFile=text.trim() } }
-    stderr: StdioCollector {}
-    onExited: function(code,status) { if(code!==0 && code!==1) root.submitError="File picker could not open. Enter the file path or paste the key." }
+    objectName: "key-file-picker"
+    title: "Select Urbit boot key"
+    // The menubar is an overlay layer-shell window. A separate dialog window
+    // lands underneath that input-grabbing layer; keep the chooser on its surface.
+    parentWindow: root.Window.window
+    popupType: Controls.Popup.Item
+    fileMode: Dialogs.FileDialog.OpenFile
+    options: Dialogs.FileDialog.DontUseNativeDialog
+    onAccepted: root.keyFile=Model.localPath(selectedFile)
   }
   Label { width: parent.width; visible: root.destination!==""; text: "Instance: "+root.instanceName; secondary: true; caption: true }
   ActionButton { objectName: "key-advanced-toggle"; text: root.advanced ? "Advanced settings −" : "Advanced settings +"; quiet: true; onClicked: root.advanced=!root.advanced }

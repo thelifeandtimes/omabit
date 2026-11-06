@@ -47,7 +47,8 @@ Commands:
   verify-host-packages --acknowledge-local-verification [--fetch-missing] [--format json|text]
                              Local root: authenticate native packages; optional download-only fetch.
   repair-engine-guard --acknowledge-host-changes [--fetch-missing] [--format json|text]
-                             Local root: refresh recognized guards/units; optional download-only fetch.
+                              Local root: refresh recognized guards/units; optional download-only fetch.
+  repair-boot-identity        Offline owner-only, verified keyed first-boot name correction; see --help.
   setup-plan                 Show the rootless installation review plan as JSON.
   prepare-rootless --output /absolute/new/directory
                              Fetch pinned, inert rootless setup review artifacts.
@@ -154,6 +155,9 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 	}
 	if len(args) > 0 && args[0] == "install-host" {
 		return runInstallHost(ctx, args[1:], stdout, stderr)
+	}
+	if len(args) > 0 && args[0] == "repair-boot-identity" {
+		return runIdentityRepair(ctx, args[1:], stdout, stderr)
 	}
 	if len(args) > 0 && args[0] == "authorize-desktop" {
 		return runDesktopAccess(ctx, args[1:], stdout, stderr)

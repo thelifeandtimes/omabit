@@ -85,6 +85,28 @@ fallback. Resolve an origin/identity mismatch before changing enrollment.
 These hints apply to error envelopes; `ship-status` continues returning its own
 structured status row, including on failure.
 
+## Mistyped keyed first-boot identity
+
+A first keyed boot can finish while remaining in recovery if the registered
+name differs from the actual ship. Refresh does not clear this quarantine, and
+the private graceful-stop identity check can refuse the same mismatch.
+
+Confirm the actual intended identity and obtain explicit downtime authorization.
+The local installed-owner `urbit-runner repair-boot-identity --help` describes a
+narrow correction for the current schema47/pinned keyed-runtime contract. This
+is not a collector RPC or a general enrollment rename. Stop only the manager's
+`urbit-runner.service`, keeping its dedicated Docker engine running, then supply
+the pinned runner, instance, revision, old/new identities, full boot-container ID
+and stable request ID with `--confirm-stop-and-correct`.
+
+The helper verifies public/private identity and the original launch/storage
+bindings, journals evidence, gracefully stops and removes the exact boot container,
+and atomically corrects registration. The pier, ports and history remain intact.
+Retry an interrupted helper with identical arguments before restarting management;
+intervening manager activity or changed bindings require review. On success,
+restart management and use normal collector Start with the new revision, then
+verify running/healthy and the confirmed identity. Never clear recovery manually.
+
 ## When an authorized sign-in needs a code
 
 Ordinary fleet observation does not require a code. For an explicitly authorized

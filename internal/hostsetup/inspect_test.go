@@ -94,7 +94,7 @@ func fixture() (probe, *fixtureFS) {
 	f.files["run/systemd/system"] = &fstest.MapFile{Mode: fs.ModeDir | 0755}
 	f.files["run/user/942/urbit-docker.sock"] = &fstest.MapFile{Mode: fs.ModeSocket | 0600}
 	f.files["run/docker.sock"] = &fstest.MapFile{Mode: fs.ModeSocket | 0660}
-	for _, name := range strings.Fields("docker dockerd rootlesskit slirp4netns newuidmap newgidmap systemctl loginctl runuser useradd getsubids iptables") {
+	for _, name := range strings.Fields("docker dockerd containerd runc rootlesskit slirp4netns newuidmap newgidmap systemctl loginctl runuser useradd getsubids iptables ssh ssh-keygen sshd") {
 		f.files["usr/bin/"+name] = &fstest.MapFile{Mode: 0755, Data: []byte("not an executable program")}
 	}
 	return probe{files: f, lstat: f.Stat, goos: "linux", goarch: "amd64"}, f
@@ -120,7 +120,7 @@ func TestInspectMetadataDoesNotQualifyRuntime(t *testing.T) {
 	if r.SchemaVersion != 1 || r.Deployment != deployment || r.RuntimeQualified {
 		t.Fatalf("unsafe report metadata: %+v", r)
 	}
-	ids := []string{"platform", "systemd", "cgroup-v2", "userns-clone", "userns-limit", "binary-docker", "binary-dockerd", "binary-rootlesskit", "binary-slirp4netns", "binary-newuidmap", "binary-newgidmap", "binary-systemctl", "binary-loginctl", "binary-runuser", "binary-useradd", "binary-getsubids", "binary-iptables", "docker-version", "account", "account-groups", "subuid", "subgid", "linger", "account-socket", "rootful-socket", "docker-environment", "installation-verification", "runtime-verification"}
+	ids := []string{"platform", "systemd", "cgroup-v2", "userns-clone", "userns-limit", "binary-docker", "binary-dockerd", "binary-containerd", "binary-runc", "binary-rootlesskit", "binary-slirp4netns", "binary-newuidmap", "binary-newgidmap", "binary-systemctl", "binary-loginctl", "binary-runuser", "binary-useradd", "binary-getsubids", "binary-iptables", "binary-ssh", "binary-ssh-keygen", "binary-sshd", "docker-version", "account", "account-groups", "subuid", "subgid", "linger", "account-socket", "rootful-socket", "docker-environment", "installation-verification", "runtime-verification"}
 	var got []string
 	for _, c := range r.Checks {
 		got = append(got, c.ID)
@@ -151,7 +151,7 @@ func TestUnsupportedPlatformAndMissingPrerequisites(t *testing.T) {
 	p, f := fixture()
 	f.files = fstest.MapFS{}
 	r := p.inspect()
-	if len(r.Checks) != 28 {
+	if len(r.Checks) != 33 {
 		t.Fatalf("inspection failed fast: %d checks", len(r.Checks))
 	}
 	for _, c := range r.Checks {

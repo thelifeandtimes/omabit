@@ -1,0 +1,94 @@
+{
+  "version": "0.3.7",
+  "source_commit": "076f97280960961fc21c88d45fef529185b4fbe2",
+  "source_tree": "552380beec78212a587e4511c309e88f3814cd54",
+  "backend_source_sha256": "7a827fdcc469a5fde9b0b8591a253f420d2f9d378592175fe8bbc85b67318fb7",
+  "platform": "linux/amd64",
+  "channel": "stable",
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "runner_schema": 47,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "paths": [
+      {
+        "versions": [
+          "0.3.6",
+          "0.3.7"
+        ],
+        "scope": "Owner-user Linux/AMD64 native desktop and local service upgrade",
+        "evidence": "docs/releases/0.3.7/rehearsal.json",
+        "evidence_sha256": "f95707be0500162b3ff2ca0af2800629f35fd165eaf2b067b3301d97869b63f3"
+      }
+    ],
+    "evidence": "docs/releases/0.3.7/rehearsal.json",
+    "evidence_sha256": "f95707be0500162b3ff2ca0af2800629f35fd165eaf2b067b3301d97869b63f3"
+  },
+  "validation": {
+    "passed": true,
+    "ci": "https://github.com/thelifeandtimes/omabit/actions/runs/42154013063",
+    "ci_commit": "ba0cb92a181716494b29fb933eaa2e4569c9762c",
+    "archive_checksums_and_provenance": true,
+    "offline_help_entries": 133,
+    "fresh_install_and_same_pier_repair": "operator-confirmed during preparation",
+    "picker_real_input": true,
+    "sourceport_evidence_sha256": {
+      "desktop-driver.py": "b2dc70cfaf3480e1f125b9003677c926eefb56c5ee69b8216a7e0959572418b0",
+      "desktop-result.json": "d096dd2b6907b31e210b6cce9e157824c28a9cb0c65e8aac71f152ce7a44bf22",
+      "picker-result.json": "ccd89e3f1abb3469ec4344765c6b9f5124d322be1da0f618145459b5d8aced0d",
+      "picker-sources.json": "ecd3ea5196d82075d7b25264b2aab88dfc46169dfb07dec5d8cd82796874bbab",
+      "picker-tools.json": "c5fa71c0d05638e8efc5255cd4ffd9984028aea2a4559f576021a2fd6c09bca3"
+    },
+    "selected_passing_logs_sha256": {
+      "archive.log": "ae8996ddb7f01d2b95c414f87c4918d1d43019921521f21ca964beb47a5849fb",
+      "native.log": "ba28ad24ef1d2e6e0f4f0531d8ccf08af4e17ccc33732c663359cd636fd3d7b6",
+      "cli.log": "f7c0e262ccbb4c99b4bd8d5268f8e2ef62dda31d78dd1c7963deb6433f21ab60",
+      "onboarding.log": "6e1380b144829b7d1724283adb062da619a9e93ad941928976ce9f54bf62b933",
+      "wayland-picker-corrected.log": "c35a47276a99ac24f2b82177ee5ce9eaa42f483f86df083ced7cd01c4f2c22bc",
+      "desktop-upgrade-corrected.log": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54"
+    }
+  },
+  "frozen_artifacts": {
+    "assets": [
+      {
+        "name": "omabit-0.3.7-linux-amd64.tar.gz",
+        "bytes": 33234198,
+        "sha256": "c9ef29e0b547a78817acce7c6144895f85ae9ea8d9c8a78db7d2b34497596a70"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 19212149,
+        "sha256": "8dd21915946b9d03f54c761584126e3498ce9e492b6e4dd8a19f44ac0934069d"
+      },
+      {
+        "name": "omabit-recommended-apps-0.3.7.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.3.7.tar.gz",
+        "bytes": 23954,
+        "sha256": "4c921a47d76e1c685ad85a00741b784bc92e32c71a8c9c7e6f6cf245a88077a1"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 12838970,
+        "sha256": "57f949a91528bc382d7f33b79ef42e98c697dd576cf691851a26eae9102ba6ef"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 27298746,
+        "sha256": "c2623c3071dd40fd4e77ee0e05f6637f714404e026548767f79a4184e05feb49"
+      }
+    ],
+    "go_version": "go version go1.27.3-X:nodwarf5 linux/amd64"
+  },
+  "scope_limits": [
+    "Qualified on the Linux/AMD64 owner-user installation in an isolated Arch/Omarchy guest with schema 47, Vere 4.6 and the pinned Recommended Apps pill.",
+    "The real QML update controls used an exact-program polkit fixture for denial and retry. Manual password entry, remote service upgrades, other distributions and power loss are outside this rehearsal.",
+    "The service guest used activation acknowledgments. A separate private Wayland test exercised the real desktop hot update, failed-candidate recovery, retained preferences and cold restart.",
+    "Large preview used a sparse file. The full import exercised a small stopped fake and its metadata."
+  ]
+}
