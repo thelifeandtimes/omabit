@@ -72,6 +72,13 @@ func ownerFixture(t *testing.T) (*fixture, ownerhost.Profile, hostProbe) {
 
 func TestOwnerInstallAndRerunPreserveLoginAndGrants(t *testing.T) {
 	f, p, probe := ownerFixture(t)
+	// A minimal host can supply the UID/GID mappers without the optional
+	// getsubids query tool. The owner's account already exists.
+	for _, name := range []string{"getsubids", "useradd"} {
+		if err := os.Remove(f.i.path("/usr/bin/" + name)); err != nil {
+			t.Fatal(err)
+		}
+	}
 	passwd, _ := os.ReadFile(f.i.path("/etc/passwd"))
 	groups, _ := os.ReadFile(f.i.path("/etc/group"))
 	first, err := f.i.installOwner(context.Background(), "/bundle", hostPublic(1), []byte("runner one"), p, probe, nil)

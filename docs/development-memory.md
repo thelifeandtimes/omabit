@@ -7457,3 +7457,26 @@ the isolated guest, preserving engine and ship processes, stopped intent, runner
 identity, enrollment, storage and history through denial, retry and manager
 restart. The private Wayland desktop test covered preference retention, failed
 candidate recovery and cold restart. See the [release qualification](releases/0.3.7/qualification.json).
+
+## M521 — 0.4.0 scope and first owner-user installer regression (2026-11-06)
+
+The user confirmed 0.3.7 publication. The [0.4.0 plan](platform-roadmap.md#040-release-target-2026-11-06)
+prioritizes the rooftop Ubuntu profile, then Debian and Arch/Omarchy on x86-64.
+Agent Help follows Omarchy's default-agent crash flow. Runners should share
+per-ship origins so that each collector can select one it can use. Public
+exposure ends at the ship's web endpoint. This supersedes earlier milestone
+ordering. App discovery, optional Ethereum tooling and wallet custody are
+outside this release.
+
+Confirmed locally that Omarchy 4.0.6 reads the selection with
+`omarchy default agent` and accepts a prompt through `omarchy agent prompt`.
+The installed crash wrapper passes a skill path even when the harness lacks
+skill discovery. No agent or crash diagnosis was launched.
+
+The owner preflight and installer now agree on two dedicated-account-only
+helpers. The owner already exists, and the installer reads subordinate-ID and
+NSS evidence directly. A filesystem fixture failed at the old helper gate,
+then passed fresh installation and rerun without `useradd` or `getsubids`.
+The hostsetup, hostinstall, remotesetup and signed hostcompat suites passed.
+This addresses a reproducible portability issue. A fresh Ubuntu guest and
+current rooftop onboarding are still unqualified.

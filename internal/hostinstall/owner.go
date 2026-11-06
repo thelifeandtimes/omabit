@@ -463,6 +463,9 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 		}
 	}
 	for _, name := range append(append([]string{}, helpers...), hostHelpers...) {
+		if hostsetup.DedicatedAccountHelper(name) {
+			continue
+		}
 		if err = i.helper(ctx, "/usr/bin/"+name); err != nil {
 			return result, err
 		}

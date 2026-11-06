@@ -4,6 +4,95 @@ Recorded 2026-10-21. Product direction from the user; the experiments below are
 proposed delivery steps, not implemented contracts or live-operation approvals.
 Source baseline: Omabit v0.2.0, commit `b233128`.
 
+## 0.4.0 release target (2026-11-06)
+
+The next release starts from published 0.3.7. Its scope is remote runner
+installation, Agent Help and skill installation, and ship URLs for private fleet
+access and clearweb access. The product and engineering checks below are the
+release plan. Final 1.0.0 refinements follow the 0.4.0 user trials.
+
+### Remote runners
+
+Start with a disposable Ubuntu 22.04 x86-64 guest matching the recorded
+[rooftop findings](diagnostics/2026-10-29-production-import-polish.md). The
+previous check authenticated packages already installed on rooftop. A fresh
+install still needs to exercise missing packages, signed package verification,
+owner setup, enrollment and the first successful inventory from another desktop.
+Test the same flow on named Debian and Arch/Omarchy x86-64 images. Record the
+image, package sources, candidate versions and last completed step. A distro
+whose configured repositories lack a compatible engine needs actionable guidance.
+
+Exercise interrupted installation and resume using the same identity and
+installer. Pair a second desktop to an existing runner and verify that its ship
+and services keep running. Qualify the 0.3.7 upgrade separately from fresh setup.
+
+### Agent Help and bundled skills
+
+Follow Omarchy's crash action. It builds a task-specific prompt, points at the
+skill and opens the user's configured coding agent. On 4.0.6,
+`omarchy default agent` reads the selection and `omarchy agent prompt` accepts a
+prompt as a single argument. If no agent is selected, direct the user to
+**Setup → Defaults → Agent**. Omarchy owns launching the agent and its terminal.
+[Omarchy crash action](https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-agent-crash)
+and [prompt launcher](https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-agent-prompt).
+
+Start at a failed or interrupted remote setup. Include the active release,
+operation type, last known stage and an exact read-only diagnostic. Use the
+operator skill from the selected bundle, including in a development profile.
+The native bootstrap currently extracts the UI and executables, so test that
+the referenced skill and all its files actually exist in the activated desktop.
+Keep credentials, raw SSH output and host-supplied free text out of the prompt.
+Opening Help requests a diagnosis. Repairs and changes to network exposure
+have their own explicit actions.
+
+Offer explicit installation of the operator and plugin-developer skills for use
+outside the button. Show the target, verify the source release and preserve
+user-edited skills. Test the default-agent and no-default flows, two active
+skill generations, and an existing custom skill.
+
+### One ship, several reachable URLs
+
+The runner should publish a versioned list of candidate Eyre origins per managed
+ship instance over its existing authenticated inventory. Record the full origin
+(scheme, host and port), network scope, source and revision. Support entering
+an origin explicitly, including a custom hostname on port 443 that forwards to
+a different ship port. Keep the existing per-runner browser setting usable for
+old runners and desktops during upgrade.
+
+Derive a tailnet candidate on the **ship's host** from its own active Tailscale
+identity and the ship's observed listener or configured proxy. Read just the
+runner's own name, tailnet identity and addresses, without distributing its peer
+list. [Tailscale CLI](https://tailscale.com/docs/reference/tailscale-cli)
+
+Keep a loopback listener local unless a separate route actually exposes it. Each collector
+determines which candidates it can reach, preferring a usable same-host route
+then a matching tailnet route. Check the expected public ship identity without
+credentials and require an approved origin before requesting an owner session.
+DNS resolution or a matching ship name alone cannot establish trust in a new
+public origin. Show the chosen URL in Application Connections. The receiving
+plugin keeps its own session bound to that origin. A route change requires a
+new approval and handoff.
+
+Use two collectors and a disposable ship to exercise local-only, same-tailnet,
+off-tailnet and clearweb cases. Include two ships on one runner, an unreachable
+MagicDNS candidate, a wrong ship behind a proxy, and a custom HTTPS origin using
+the standard port. A failed lookup must leave the working plugin session usable.
+
+### Clearweb access
+
+Help the user expose the selected ship's web endpoint. The agent can guide
+Tailscale Funnel, Cloudflare Tunnel, or a user's existing DNS and reverse proxy.
+Show the precise hostname, destination and audience before any change. Verify
+TLS and the selected ship from outside the tailnet, register the verified origin,
+and test disabling the route without disturbing other routes or private access.
+The ship's apps control which content they publish. Runner management, SSH and
+the runtime control interface have no role in this public route.
+
+Keep Lattice/Talon prompts and Omart discovery for later. Optional Ethereum
+devnets can build on the existing private-chain work. ID acquisition and
+master-ticket custody belong to a separate wallet, with a future onboarding
+handoff into Omabit's existing key-file boot flow.
+
 ## Product anchor and repository ownership
 
 **“Multiplayer apps without a subscription.”** This is the user's anchor phrase,
