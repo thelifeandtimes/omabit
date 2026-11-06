@@ -1,8 +1,8 @@
 # One-click local setup trial
 
 Candidate: **0.3.7-dev.20261105.5**, branch `feature/one-click-host-setup`, based on
-stable 0.3.6. This is a local development build; the public plugin still uses the
-published 0.3.6 bundle.
+stable 0.3.6. This page records the local development trial. For stable installation, see the
+[0.3.7 release guide](release-0.3.7.md).
 
 ## Manual trial on sourceport
 
@@ -53,8 +53,8 @@ Use the standard Omarchy installer as your normal desktop user:
 omarchy plugin install ~/.local/share/omabit-review/one-click-setup --enable
 ```
 
-This uses the local candidate as its Git origin. The public GitHub URL still
-installs stable 0.3.6. The local distribution is a fixed manual-review snapshot;
+This uses the local candidate as its Git origin. At the time of the trial the public GitHub URL
+installed stable 0.3.6. The local distribution is a fixed manual-review snapshot;
 it does not automatically incorporate further source edits.
 
 To rebuild and install directly from this checkout instead:

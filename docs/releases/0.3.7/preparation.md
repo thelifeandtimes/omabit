@@ -1,6 +1,8 @@
 # 0.3.7 preparation evidence — 2026-11-05
 
-**Not stable qualification.** Draft [PR #14](https://github.com/thelifeandtimes/omabit/pull/14)
+**Historical preparation record.** The service rehearsal subsequently passed.
+See the [final qualification](qualification.json) and [service evidence](rehearsal.json).
+The following records the state at handoff. Draft [PR #14](https://github.com/thelifeandtimes/omabit/pull/14)
 contains the requested release source. The published baseline remains0.3.6.
 Source/race CI is pending; the exact-artifact service-upgrade VM rehearsal is
 blocked because sourcebox is unavailable. Final qualification and distribution

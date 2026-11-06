@@ -1,12 +1,6 @@
 # Omabit 0.3.7 — one-click setup and verified identity recovery
 
-**Release preparation; not published.** Source is frozen at `076f972`; local
-artifact, picker and exact-bundle native desktop checks pass. Source/race CI is
-pending. See [preparation evidence](releases/0.3.7/preparation.md) and
-[draft PR #14](https://github.com/thelifeandtimes/omabit/pull/14).
-The required exact-artifact 0.3.6 → 0.3.7 service-upgrade
-rehearsal is pending because the existing isolated sourcebox lab is unavailable.
-Do not treat the user-confirmed fresh-install trial as upgrade qualification.
+The supported upgrade is **0.3.6 → 0.3.7** on Linux/AMD64 with an owner-user runner.
 
 ## Changes
 
@@ -25,14 +19,12 @@ Do not treat the user-confirmed fresh-install trial as upgrade qualification.
   identity, gracefully stops the exact boot process, corrects registration and
   preserves the same pier and history. See [procedure](boot-identity-repair.md).
 
-Runner schema47, desktop state1, bootstrapAPI1, Vere4.6 and the Recommended Apps
-pill are unchanged. Source builds require Go1.26 or later; binary users need no Go.
-Native prerequisite installation is limited to initial Arch/Omarchy setup;
-existing management updates retain their identity-preserving upgrade path.
+This release uses runner schema 47, desktop state format 1, bootstrap API 1,
+Vere 4.6 and the same Recommended Apps pill as 0.3.6. Building from source
+requires Go 1.26 or later. Initial Arch/Omarchy setup can install missing native
+packages. Existing installations use the management upgrade described below.
 
-## Planned installation and upgrade
-
-After publication, use the standard commands:
+## Installation and upgrade
 
 ```sh
 # New desktop
@@ -47,25 +39,25 @@ For an existing host, allow the verified bundle to load, then use **Update
 Dependencies** when offered. Remote runner updates remain explicit. A desktop
 update does not itself restart a ship or change its runtime.
 
-The target support path is 0.3.6 → 0.3.7 on Linux/AMD64 owner-user installations.
-Earlier stable versions follow the documented intermediate paths to0.3.6 first.
-Identity repair supports the current schema47/pinned keyed-runtime contract and
-does not migrate older schemas. Stopped or interrupted work needs its existing
-recovery procedure; resetting or re-enrolling is not an upgrade.
+From an earlier stable version, follow the [upgrade policy](upgrade-policy.md)
+to reach 0.3.6 first. Identity repair requires schema 47 and the pinned keyed
+runtime. For stopped or interrupted work, follow the existing recovery procedure
+before upgrading.
 
-## Qualification to finish
+## Upgrade qualification
 
-1. **Done:** freeze source and build matching runner, collector and desktop assets.
-2. **Done:** verify native hot/cold activation, failed-candidate recovery and retained
-   desktop preferences with exact published0.3.6 and frozen0.3.7 assets.
-3. Rehearse published0.3.6 → frozen0.3.7 services in the isolated VM, preserving
-   running containers/processes, stopped intent, identities, storage, access and
-   operation history; include retry and manager restart.
-4. Record exact artifacts, upgrade evidence and limits; add distribution pins.
-5. Pass protected source/race/QML/release-policy checks, review and merge the PR
-   with a merge commit, then publish verified stable artifacts.
+The isolated service rehearsal used the published 0.3.6 tools and the 0.3.7
+artifacts built from `076f97280960`. A running ship kept its container ID, PID and
+start time across an authorization denial, retry, completed update and manager
+restart. A second ship stayed stopped. The rehearsal also checked runner identity,
+SSH access, storage configuration, operation history and a repeated update check.
 
-The user confirmed the `.5` fresh-install/key-picker trial and the repaired
-Recommended Apps moon. That is useful development evidence, not a substitute for
-the frozen-release gates above. See [trial history](one-click-setup-trial.md) and
-[repair evidence](diagnostics/2026-11-05-moon-identity-mismatch.md).
+The native desktop passed hot activation, recovery from a failed candidate and
+cold restart with saved preferences. The key picker passed real pointer and
+keyboard input on a private Wayland compositor. The operator also confirmed the
+fresh-install trial and same-pier identity repair.
+
+The service rehearsal covered a local Arch/Omarchy owner-user installation.
+Remote runner upgrades, other distributions, manual password entry and power
+loss are outside its scope. See the [qualification record](releases/0.3.7/qualification.json)
+and [upgrade evidence](releases/0.3.7/rehearsal.json).

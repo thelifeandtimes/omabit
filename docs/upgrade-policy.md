@@ -1,12 +1,12 @@
 # Stable-release upgrade requirement
 
-## 0.3.7 preparation
+## 0.3.7 one-click setup and identity recovery
 
-The [0.3.7 release branch](release-0.3.7.md) targets a non-destructive upgrade from
-published0.3.6 with matching desktop/collector/runner artifacts and unchanged
-schema47. Exact-artifact service rehearsal is pending: sourcebox's isolated lab
-is unavailable. The user directed preparation of source/checks and reporting that
-blocker. No stable qualification record or publication is implied by the branch.
+The [0.3.7 qualification](releases/0.3.7/qualification.json) covers the published
+0.3.6 desktop and local runner upgrading to 0.3.7 on Linux/AMD64, schema 47.
+The guided update preserves running ship and engine processes, stopped intent,
+access and operation history across retry and a manager restart. See the
+[release notes](release-0.3.7.md) for commands and support limits.
 
 ## Development: keyed first-boot identity correction
 
@@ -29,9 +29,8 @@ Runner schema 47, desktop state 1 and bootstrap API 1 are unchanged. Existing
 OpenSSH-format Ed25519 desktop keys are read in place and reused; key generation
 now uses the bundled SSH library. Source builds require Go 1.26 or later.
 
-This candidate is for a fresh-install manual trial, not a published stable release
-or an upgrade qualification claim. Stable 0.3.6 remains the published baseline.
-The next release still needs the normal exact-artifact upgrade rehearsal.
+The earlier development candidate exercised fresh installation on the operator’s fleet.
+The stable qualification above covers the subsequent exact-artifact upgrade.
 
 ## 0.3.6 local import preview patch
 

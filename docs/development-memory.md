@@ -7447,3 +7447,13 @@ run42153140057 is pending. Release-policy correctly rejects the still0.3.6 pins.
 Final qualification, exact service-upgrade rehearsal, pins, merge and stable
 publication remain pending. The installed personal trial and running moon have
 not been upgraded as part of release preparation.
+
+
+## M520 — 0.3.7 service and desktop upgrade qualified (2026-11-05)
+
+Supersedes the outstanding rehearsal in M518–M519. All six frozen payloads
+matched the preparation hashes. Published 0.3.6 upgraded to those artifacts in
+the isolated guest, preserving engine and ship processes, stopped intent, runner
+identity, enrollment, storage and history through denial, retry and manager
+restart. The private Wayland desktop test covered preference retention, failed
+candidate recovery and cold restart. See the [release qualification](releases/0.3.7/qualification.json).

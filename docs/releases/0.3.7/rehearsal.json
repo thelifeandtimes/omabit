@@ -1,0 +1,53 @@
+{
+  "version": "0.3.7",
+  "source_commit": "076f97280960961fc21c88d45fef529185b4fbe2",
+  "previous_version": "0.3.6",
+  "passed": true,
+  "non_destructive": true,
+  "runner_schema_before": 47,
+  "runner_schema_after": 47,
+  "service_result": "docs/releases/0.3.7/from-0.3.6-result.json",
+  "service_result_sha256": "d526b06be4cd62e719f616291c342c93db25516f27d2e4acdc61bcd06dbcd1a0",
+  "harness": "scripts/qualification/patch-upgrade",
+  "harness_sha256": {
+    "run.py": "8d9a666401baddcf84d92f325c4e45c1d541412a1aa70e4aec59838a10b7133f",
+    "guest.py": "f3834fc79fbb02ea0bb589d082764650aba66040fca3d328d86223797ea510f1",
+    "desktop.py": "59cbce196ca5eb17d3af9f8a1a92913dda809a22182e52c2337011f8ac5a8b21",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46"
+  },
+  "desktop_result": {
+    "passed": true,
+    "previous": "0.3.6",
+    "target": "0.3.7",
+    "host_desktop_access": false,
+    "network": false,
+    "service_upgrade": false
+  },
+  "desktop_result_sha256": "d096dd2b6907b31e210b6cce9e157824c28a9cb0c65e8aac71f152ce7a44bf22",
+  "desktop_harness": "docs/releases/0.3.2/desktop-upgrade-harness.py",
+  "desktop_harness_sha256": "13cf7903e3c23c60c37eb99a73beca431bc9ddbd17d69fffff905884df49eccf",
+  "desktop_log_sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54",
+  "checks": [
+    "Update offered for exact published and candidate runner digests",
+    "Authorization denial preserves fleet and credentials, retry completes with target digest",
+    "Running container ID, PID, start time and engine invocation survive service update and manager restart",
+    "Stopped intent, runner and ship identities, enrollment, SSH grants, storage configuration and operation history preserved",
+    "Completed update is a no-op",
+    "Large logical preview and stopped import with companion metadata pass",
+    "Desktop hot/cold activation, retained preferences and invalid candidate recovery pass"
+  ],
+  "isolation": {
+    "network": "none",
+    "host_mounts": "OS files, QEMU, immutable base and fresh lab only",
+    "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+    "scratch_limit": 4294967296,
+    "used_before": 38065639424,
+    "used_after": 40695533568
+  },
+  "limits": [
+    "Qualified on the Linux/AMD64 owner-user installation in an isolated Arch/Omarchy guest with schema 47, Vere 4.6 and the pinned Recommended Apps pill.",
+    "The real QML update controls used an exact-program polkit fixture for denial and retry. Manual password entry, remote service upgrades, other distributions and power loss are outside this rehearsal.",
+    "The service guest used activation acknowledgments. A separate private Wayland test exercised the real desktop hot update, failed-candidate recovery, retained preferences and cold restart.",
+    "Large preview used a sparse file. The full import exercised a small stopped fake and its metadata."
+  ]
+}

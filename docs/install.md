@@ -64,10 +64,8 @@ runner at `/usr/local/lib/urbit-runner/current/urbit-runner` and the pinned root
 launcher under `/usr/local/lib/urbit-runner/rootless/29.7.2/`.
 
 Docker/RootlessKit/slirp4netns/OpenSSH come from the host's OS packages. On
-Arch/Omarchy, the development setup flow installs missing native prerequisites
-as part of the same authorized setup operation. This is not yet in stable 0.3.6.
-Upstream
-Docker source is <https://github.com/moby/moby>, including the verified rootless
+Arch/Omarchy, Omabit 0.3.7 installs missing native prerequisites during the
+authorized initial setup. Upstream Docker source is <https://github.com/moby/moby>, including the verified rootless
 launcher. Ships run the pinned official Vere image; its source is
 <https://github.com/urbit/vere>. See [runtime policy](runtime-policy.md) for the
 qualified runtime artifact and version constraints.
