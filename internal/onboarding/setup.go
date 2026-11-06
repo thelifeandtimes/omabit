@@ -28,6 +28,7 @@ type Status struct {
 	Ready          bool                   `json:"ready"`
 	CanSetup       bool                   `json:"can_setup"`
 	HostPresent    bool                   `json:"host_present"`
+	Packages       []string               `json:"packages_to_install,omitempty"`
 	Checks         []hostsetup.Check      `json:"checks"`
 	Connection     *collection.Connection `json:"connection,omitempty"`
 	BrowserBase    string                 `json:"browser_base,omitempty"`
@@ -82,37 +83,29 @@ func inspect(ctx context.Context, config, dir string, d dependencies) (Status, e
 	s := Status{CanSetup: true, Checks: []hostsetup.Check{}, ExecutionModel: "owner-user", PierRoot: ownerhost.DefaultPiers}
 	report := d.inspect()
 	s.Compatibility = report.Compatibility
+	// These are needed before authorization. OpenSSH itself can be installed by
+	// the host helper; the desktop access key is prepared using the bundled code.
+	for _, name := range []string{"pkexec"} {
+		c := hostsetup.Check{ID: "binary-" + name, Status: "pass", Detail: name + " is available"}
+		if !d.tool("/usr/bin/" + name) {
+			c.Status, c.Detail = "missing", "Install the native OS package providing "+name+" before local setup."
+		}
+		report.Checks = append(report.Checks, c)
+	}
+	s.Packages = hostsetup.NativePackages(report)
 	for _, c := range report.Checks {
 		if c.ID == "account" {
 			s.HostPresent = c.Status == "pass"
 		}
-		required := c.ID == "owner-account" || c.ID == "platform" || c.ID == "systemd" || c.ID == "cgroup-v2" || c.ID == "userns-limit" || c.ID == "docker-version" || strings.HasPrefix(c.ID, "binary-")
-		if (c.ID == "subuid" || c.ID == "subgid") && c.Status != "missing" {
-			required = true
-		}
-		if c.ID == "userns-clone" && c.Status == "blocked" {
-			required = true
-		}
-		if c.ID == "account" && c.Status == "blocked" {
-			required = true
-		}
-		if required {
+		if hostsetup.RequiredSetupCheck(c) {
+			if name := hostsetup.NativePackageForCheck(report, c); name != "" {
+				c.Detail = strings.TrimPrefix(c.ID, "binary-") + " is missing. Setup will install the native " + name + " package."
+			}
 			s.Checks = append(s.Checks, c)
-			if c.Status != "pass" {
+			if c.Status != "pass" && !hostsetup.InstallableCheck(report, c) {
 				s.CanSetup = false
 			}
 		}
-	}
-	for _, name := range []string{"ssh", "ssh-keygen", "sshd", "pkexec"} {
-		c := hostsetup.Check{ID: "binary-" + name, Status: "pass", Detail: name + " is available"}
-		// Debian installs sshd in /usr/sbin. Resolve only fixed system paths;
-		// desktop PATH is not evidence for privileged host setup.
-		if !d.tool("/usr/bin/"+name) && !(name == "sshd" && d.tool("/usr/sbin/sshd")) {
-			c.Status = "missing"
-			c.Detail = "Install the native OS package providing " + name + " before local setup."
-			s.CanSetup = false
-		}
-		s.Checks = append(s.Checks, c)
 	}
 	// Setup eligibility and an existing connection are independent. Package
 	// updates must not hide enrolled ships or suggest recreating their host.

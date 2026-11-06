@@ -35,7 +35,7 @@ Ui.Panel {
   IpcHandler {
     enabled: root.manageIpc
     target: root.moduleName + ".setup"
-    function open(): void { root.pane = "setup"; root.open() }
+    function open(): void { root.pane = "setup"; if(root.service && root.service.firstRun) setup.mode="local"; root.open() }
     function addShip(): void { root.pane="setup"; setup.addShip(); root.open() }
   }
 
@@ -82,7 +82,7 @@ Ui.Panel {
               Label { text: root.pane === "fleet" ? "YOUR FLEET, AT A GLANCE" : "CONNECTIONS & PROVISIONING"; caption: true; secondary: true; font.letterSpacing: 1 }
             }
             ActionButton { compact: true; quiet: true; text: "↻"; hint: "Refresh runner observations"; enabled: root.service && !root.service.busy; onClicked: root.service.refresh() }
-            ActionButton { compact: true; text: root.pane === "fleet" ? "Setup" : "← Fleet"; onClicked: { root.pane = root.pane === "fleet" ? "setup" : "fleet"; scroll.contentY = 0 } }
+            ActionButton { compact: true; text: root.pane === "fleet" ? "Setup" : "← Fleet"; onClicked: { root.pane = root.pane === "fleet" ? "setup" : "fleet"; if(root.pane==="setup" && root.service && root.service.firstRun) setup.mode="local"; scroll.contentY = 0 } }
           }
           DependencyUpdateNotice {
             objectName: "menubar-dependency-update"
@@ -145,17 +145,17 @@ Ui.Panel {
                 }
               }
             }
-            ActionButton { objectName: "empty-fleet-add-ship"; visible: !!root.service && Model.fleet(root.connections).length === 0; text: "Add a ship →"; primary: true; onClicked: { root.pane="setup"; setup.mode=setup.readyRunners.length ? "ship" : "home"; scroll.contentY=0 } }
-            Label { objectName: "fleet-welcome"; width: parent.width; visible: !!root.service && root.service.firstRun; text: 'An "urbit ship" is a peer-to-peer node for running distributed applications across an end-to-end encrypted network. Omabit helps you run these nodes either on your local machine, or remote servers to which you have SSH access. Click "Start Setup" to get started.'; secondary: true }
+            ActionButton { objectName: "empty-fleet-add-ship"; visible: setup.readyRunners.length > 0 && Model.fleet(root.connections).length === 0; text: "Add a ship →"; primary: true; onClicked: { root.pane="setup"; setup.addShip(); scroll.contentY=0 } }
+            Label { objectName: "fleet-welcome"; width: parent.width; visible: !!root.service && root.service.firstRun; text: 'An "urbit ship" is a peer-to-peer node for running distributed applications across an end-to-end encrypted network. Omabit helps you run these nodes either on your local machine, or remote servers to which you have SSH access. Choose "Set up this computer" to get started.'; secondary: true }
             Label { width: parent.width; visible: !!root.service && root.service.machineUse==="laptop"; text: "Manage remote Urbit runners on a VPS, workstation, or other always-on machine from your laptop."; secondary: true; caption: true }
             RowLayout {
               width: parent.width
               Label { Layout.fillWidth: true; text: root.service && root.service.firstRun ? "" : root.connections.length + " runners · " + Model.fleet(root.connections).length + " instances"; secondary: true; caption: true }
               ActionButton { objectName: "setup-remote"; visible: !!root.service && root.service.machineUse==="laptop"; text: "Set up remote server"; onClicked: root.remoteSetup() }
-              ActionButton { objectName: "open-monitor"; primary: true; text: root.service && root.service.firstRun ? "Start Setup →" : "Monitor & maintenance  ↗"; enabled: !!root.service; onClicked: { if(root.service.firstRun){root.pane="setup";setup.mode="home";scroll.contentY=0}else root.monitor(null,null) } }
+              ActionButton { objectName: "open-monitor"; primary: true; text: root.service && root.service.firstRun ? "Set up this computer →" : "Monitor & maintenance  ↗"; enabled: !!root.service; onClicked: { if(root.service.firstRun){root.pane="setup";setup.mode="local";root.service.checkLocalSetup();scroll.contentY=0}else root.monitor(null,null) } }
             }
           }
-          SetupPane { id: setup; compact: true; width: parent.width; visible: root.pane === "setup"; service: root.service; active: root.opened && visible; onShowFleet: { root.pane="fleet";scroll.contentY=0 } }
+          SetupPane { id: setup; objectName: "panel-setup"; compact: true; width: parent.width; visible: root.pane === "setup"; service: root.service; active: root.opened && visible; onShowFleet: { root.pane="fleet";scroll.contentY=0 } }
         }
       }
     }

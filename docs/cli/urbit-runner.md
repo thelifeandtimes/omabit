@@ -35,7 +35,8 @@ Commands:
   verify-host-packages --acknowledge-local-verification [--fetch-missing] [--format json|text]
                              Local root: authenticate native packages; optional download-only fetch.
   repair-engine-guard --acknowledge-host-changes [--fetch-missing] [--format json|text]
-                             Local root: refresh recognized guards/units; optional download-only fetch.
+                              Local root: refresh recognized guards/units; optional download-only fetch.
+  repair-boot-identity        Offline owner-only, verified keyed first-boot name correction; see --help.
   setup-plan                 Show the rootless installation review plan as JSON.
   prepare-rootless --output /absolute/new/directory
                              Fetch pinned, inert rootless setup review artifacts.
@@ -220,6 +221,10 @@ transactionally upgrades/fences state before activating the retained new binary.
 Rerun the same command after interruption; never reset/re-enroll or lower schema.
 See docs/management-offline-upgrade.md. Normal updates use online quiescence.
 Guided updates add --expected-runner-id ID to bind the existing runner identity.
+
+Add --install-prerequisites to download missing native Arch/Omarchy packages
+using pacman, then recheck and authenticate them before service setup. This is
+not a system upgrade or package repair and cannot accompany upgrade options.
 ```
 
 ## meld-plan
@@ -491,6 +496,31 @@ Usage of remote-bootstrap:
         private session result path
   -ssh-connection string
         OpenSSH connection tuple
+```
+
+## repair-boot-identity
+
+```text
+Usage: urbit-runner repair-boot-identity [flags]
+Run locally as the installed pier owner with ONLY the management service stopped.
+Keep the dedicated engine running. Retry the identical command before restarting management.
+Successful correction leaves the same pier stopped; use normal collector Start.
+  -confirm-stop-and-correct
+        authorize verified graceful stop and same-pier registration correction
+  -container-id string
+        full retained first-boot container ID
+  -expected-runner-id string
+        exact enrolled runner identity
+  -expected-ship string
+        mistyped registered identity
+  -instance string
+        existing stable instance ID
+  -request-id string
+        stable request ID; reuse on interruption
+  -revision uint
+        current configuration revision
+  -ship string
+        confirmed actual identity
 ```
 
 ## repair-engine-guard

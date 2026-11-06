@@ -1,4 +1,7 @@
-# Omabit 0.3.3 binary bundle
+# Omabit 0.3.7 binary bundle
+
+The [release notes](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-0.3.7.md)
+record publication, qualification status and supported upgrade paths.
 
 This Linux x86-64 bundle contains prebuilt `omabit`, `urbit-collector`,
 `urbit-runner`, the Omarchy plugin, service templates, CLI references and agent
@@ -42,7 +45,9 @@ API1.47, RootlessKit, slirp4netns and OpenSSH. Native package authenticity and
 host identity checks apply. Compatibility does not mean every distro/engine
 combination has received live qualification; consult the release record.
 The owner installer does not replace unrelated Docker installations or upgrade
-OS packages. Guided setup explains any missing dependencies before installation.
+OS packages. Initial Arch/Omarchy setup installs missing native prerequisites
+through the same setup action and OS authorization; **View details** lists them.
+Existing-host management upgrades do not install or replace OS packages.
 
 ## Install or update a runner
 
@@ -52,8 +57,9 @@ Update services**, then authorize the OS prompt.
 See the [guided upgrade](https://github.com/thelifeandtimes/omabit/blob/master/docs/guided-service-upgrades.md). The commands below remain
 for standalone/headless installations.
 
-The qualified previous-stable path is owner-user0.3.2 →0.3.3. Earlier stable
-installations use the documented intermediate paths to0.3.2 first.
+The previous-stable upgrade path is owner-user0.3.6 →0.3.7; the release notes record
+its qualification status. Earlier stable installations use the documented
+intermediate paths to0.3.6 first.
 The target uses **schema47**, management protocol1 and desktop/bootstrap state1.
 Finish pending management work first. Prepare a new launcher bundle with the
 new executable, reuse the existing owner and public operator key, then install:
@@ -80,17 +86,16 @@ refuse the newer schema; do not lower its marker, erase journals or re-enroll
 piers to downgrade. Older RC19 hosts require the separately documented offline
 bridge. This bundle does not provide an OS-account or pier-location migration.
 
-Read the [0.3.3 upgrade guide](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-0.3.3.md)
-and [qualification record](https://github.com/thelifeandtimes/omabit/blob/master/docs/releases/0.3.3/qualification.json)
-for verified behavior and limits. The qualification record may live in the
-protected master distribution commit when the tag identifies frozen source.
+Read the [0.3.7 upgrade guide](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-0.3.7.md)
+for qualification status, behavior and limits. The final qualification record will
+live in the protected master distribution commit when the tag identifies frozen source.
 
 ## Bootstrap pills
 
 New-ship forms offer Bare and Recommended Apps. Recommended Apps uses the existing
 stable pill: **59,351,751 bytes**, SHA-256
 `85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62`.
-0.3.3 republishes those unchanged bytes. The configured compatibility alias
+0.3.7 packages those unchanged bytes. The configured compatibility alias
 `https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill` resolves to the
 immutable RC.11 asset and compiled hash/size; changed content fails verification.
 No new application composition or OTA inventory is claimed.
@@ -126,6 +131,6 @@ remain incomplete. Interrupted or uncertain operations retain their records for
 review. Production and development profiles need separate runners/storage when
 runtime isolation is required; a desktop profile alone does not isolate a ship.
 
-[Release notes](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-0.3.3.md)
+[Release notes](https://github.com/thelifeandtimes/omabit/blob/master/docs/release-0.3.7.md)
 cover the support scope. Tend is maintained separately at
 [thelifeandtimes/tend](https://github.com/thelifeandtimes/tend).

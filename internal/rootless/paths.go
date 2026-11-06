@@ -8,9 +8,9 @@ const SafePath = "/usr/bin:/usr/sbin:/bin:/sbin"
 // Callers must validate root ownership, parent directories and permissions.
 func ExecutablePaths(name string) []string {
 	switch name {
-	case "dockerd", "useradd", "usermod", "runuser", "nologin", "sshd", "getsubids", "iptables", "ip6tables":
+	case "dockerd", "runc", "useradd", "usermod", "runuser", "nologin", "sshd", "getsubids", "iptables", "ip6tables":
 		return []string{"/usr/bin/" + name, "/usr/sbin/" + name}
-	case "docker", "rootlesskit", "slirp4netns", "newuidmap", "newgidmap", "systemctl", "loginctl", "id", "getent", "env", "test", "ssh-keygen", "stat", "timeout", "pacman-conf", "apt-config":
+	case "docker", "containerd", "rootlesskit", "slirp4netns", "newuidmap", "newgidmap", "systemctl", "loginctl", "id", "getent", "env", "test", "ssh", "ssh-keygen", "stat", "timeout", "pacman", "pacman-conf", "apt-config":
 		return []string{"/usr/bin/" + name}
 	}
 	return nil

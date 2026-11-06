@@ -1,5 +1,38 @@
 # Stable-release upgrade requirement
 
+## 0.3.7 preparation
+
+The [0.3.7 release branch](release-0.3.7.md) targets a non-destructive upgrade from
+published0.3.6 with matching desktop/collector/runner artifacts and unchanged
+schema47. Exact-artifact service rehearsal is pending: sourcebox's isolated lab
+is unavailable. The user directed preparation of source/checks and reporting that
+blocker. No stable qualification record or publication is implied by the branch.
+
+## Development: keyed first-boot identity correction
+
+The local owner-only [identity repair](boot-identity-repair.md) preserves schema47,
+existing instance/storage IDs, ports and operation history. A version1 opaque meta
+journal supports interrupted correction; completed correction uses existing
+initialized-runtime fields, so the currently installed manager can resume the same
+pier. Synthetic commit-failure/replay/reopen and normal-resume tests cover this
+targeted recovery, not a new release-wide upgrade claim. Its support window is the
+current schema47/pinned keyed-runtime contract; older/future schemas are refused.
+
+## Development: one-click native prerequisites
+
+The `0.3.7-dev.20261105.1` local candidate adds explicitly authorized missing-package
+installation to initial owner setup on Arch/Omarchy. Metadata inspection remains
+read-only. The installer recomputes its package plan locally, rechecks the result,
+then performs the existing native payload authentication and owner setup. It does
+not add package installation to guided management upgrades or the offline bridge.
+Runner schema 47, desktop state 1 and bootstrap API 1 are unchanged. Existing
+OpenSSH-format Ed25519 desktop keys are read in place and reused; key generation
+now uses the bundled SSH library. Source builds require Go 1.26 or later.
+
+This candidate is for a fresh-install manual trial, not a published stable release
+or an upgrade qualification claim. Stable 0.3.6 remains the published baseline.
+The next release still needs the normal exact-artifact upgrade rehearsal.
+
 ## 0.3.6 local import preview patch
 
 The [0.3.6 qualification](releases/0.3.6/qualification.json) records the exact

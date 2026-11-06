@@ -255,9 +255,8 @@ func TestCompatibilityIsForwardedWithoutDesktopVersionPolicy(t *testing.T) {
 		CanMutate: false, Guidance: []string{"Install Debian's native rootless prerequisites."},
 	}
 	d.inspect = func() hostsetup.Report {
-		return hostsetup.Report{Compatibility: r, Checks: []hostsetup.Check{{ID: "docker-version", Status: "pass"}}}
+		return hostsetup.Report{Compatibility: r, Checks: []hostsetup.Check{{ID: "docker-version", Status: "pass"}, {ID: "binary-sshd", Status: "pass"}}}
 	}
-	d.tool = func(path string) bool { return path != "/usr/bin/sshd" }
 	s, err := inspect(context.Background(), config, dir, d)
 	if err != nil || !s.CanSetup || s.Compatibility != r {
 		t.Fatal("report or core setup eligibility changed", s, err)

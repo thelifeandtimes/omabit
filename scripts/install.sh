@@ -8,7 +8,7 @@ fi
 ROOT="$(dirname "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")")"
 for tool in go python3 omarchy; do
   if ! command -v "$tool" >/dev/null; then
-    printf 'Missing %s. Install Go 1.25+, Python and the Omarchy shell before continuing.\n' "$tool" >&2
+    printf 'Missing %s. Install Go 1.26+, Python and the Omarchy shell before continuing.\n' "$tool" >&2
     exit 1
   fi
 done

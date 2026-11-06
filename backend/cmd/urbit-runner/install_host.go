@@ -22,7 +22,7 @@ func runInstallHost(ctx context.Context, args []string, stdout, stderr io.Writer
 
 func runInstallHostWith(ctx context.Context, args []string, stdout, stderr io.Writer, install func(context.Context, string, []byte, string, func(string)) (hostinstall.HostResult, error)) int {
 	return runInstallHostOptionsWith(ctx, args, stdout, stderr, func(ctx context.Context, bundle string, key []byte, owner string, options hostinstall.HostOptions, progress func(string)) (hostinstall.HostResult, error) {
-		if options.OfflineUpgrade {
+		if options.OfflineUpgrade || options.InstallPrerequisites {
 			return hostinstall.HostResult{}, errors.New("offline installer was not provided")
 		}
 		return install(ctx, bundle, key, owner, progress)
@@ -48,9 +48,11 @@ func runInstallHostOptionsWith(ctx context.Context, args []string, stdout, stder
 	ack := flags.Bool("acknowledge-host-changes", false, "authorize owner storage, access and service setup")
 	expected := flags.String("expected-runner-id", "", "require the existing runner identity; never create a replacement host")
 	offline := flags.Bool("offline-upgrade", false, "one-time schema19 upgrade of an already stopped owner manager, preserving ships/state; also resumes its journal")
+	packages := flags.Bool("install-prerequisites", false, "install missing native packages during Arch/Omarchy owner setup")
 	flags.Usage = func() {
 		fmt.Fprintln(stdout, "Usage: urbit-runner install-host --owner USER --bundle DIR --public-key FILE --acknowledge-host-changes\n\nRuns the runner and separate rootless Docker engine as the selected existing Unix\nuser. Creates /srv/urbit/piers for that owner and installs restricted management SSH\nand boot services. Preserves the login shell, personal SSH and unrelated Docker.\nLegacy dedicated-account installations require explicit retirement/migration.")
 		fmt.Fprintln(stdout, "\nAdd --offline-upgrade for the one-time schema19 compatibility bridge. Finish work\nand stop only the owner's urbit-runner.service first. The installer requires the\noriginal runtime flock, no foreground listener and no unresolved jobs, then\ntransactionally upgrades/fences state before activating the retained new binary.\nRerun the same command after interruption; never reset/re-enroll or lower schema.\nSee docs/management-offline-upgrade.md. Normal updates use online quiescence.\nGuided updates add --expected-runner-id ID to bind the existing runner identity.")
+		fmt.Fprintln(stdout, "\nAdd --install-prerequisites to download missing native Arch/Omarchy packages\nusing pacman, then recheck and authenticate them before service setup. This is\nnot a system upgrade or package repair and cannot accompany upgrade options.")
 	}
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -60,6 +62,10 @@ func runInstallHostOptionsWith(ctx context.Context, args []string, stdout, stder
 	}
 	if !*ack || flags.NArg() != 0 || !filepath.IsAbs(*bundle) || filepath.Clean(*bundle) != *bundle || !filepath.IsAbs(*public) || filepath.Clean(*public) != *public {
 		fmt.Fprintln(stderr, "Require an absolute bundle/public-key path and --acknowledge-host-changes.")
+		return 2
+	}
+	if *packages && (*offline || *expected != "") {
+		fmt.Fprintln(stderr, "--install-prerequisites cannot accompany management upgrade options.")
 		return 2
 	}
 	f, err := os.OpenFile(*public, os.O_RDONLY|syscall.O_NOFOLLOW|syscall.O_NONBLOCK, 0)
@@ -81,7 +87,7 @@ func runInstallHostOptionsWith(ctx context.Context, args []string, stdout, stder
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	var outputErr error
-	result, err := install(ctx, *bundle, data, *owner, hostinstall.HostOptions{OfflineUpgrade: *offline, ExpectedRunnerID: *expected}, func(step string) {
+	result, err := install(ctx, *bundle, data, *owner, hostinstall.HostOptions{OfflineUpgrade: *offline, ExpectedRunnerID: *expected, InstallPrerequisites: *packages}, func(step string) {
 		if outputErr == nil {
 			outputErr = encoder.Encode(map[string]string{"step": step, "status": "running"})
 			if outputErr != nil {

@@ -1,5 +1,10 @@
 # Omabit
 
+**Preparing 0.3.7:** one-click native prerequisites, bundled desktop SSH key
+generation, a layer-safe key picker, and verified first-boot identity correction.
+The [release candidate notes](docs/release-0.3.7.md) track qualification; 0.3.6
+remains the published stable release until those gates pass.
+
 **New in 0.3.6:** local import and restoration previews now consistently accept
 up to 8 TiB of logical contents. This fixes the misleading “identity, bounds or
 destination changed” rejection above 100 GB. Cross-host transfers stay at 100 GB.
@@ -135,7 +140,7 @@ go build -o ./build/ ./cmd/... ./backend/cmd/...
 
 See the [fresh installation guide](docs/install.md) for prerequisites, reruns and
 troubleshooting, or [binary bundle installation](docs/release-install.md) for the
-published release assets. Source builds need Go 1.25+. Hosting targets Linux x86-64
+published release assets. Source builds need Go 1.26+. Hosting targets Linux x86-64
 and systemd/cgroup v2. Published RC.12 requires Docker 29.7.2; RC.13
 accepts stable Docker 27.2.0–29.x subject to API 1.47 and the documented
 [host compatibility and package-authentication checks](docs/host-compatibility.md).

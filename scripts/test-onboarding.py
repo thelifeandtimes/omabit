@@ -61,30 +61,32 @@ ShellRoot {
   Timer { interval:100;repeat:true;running:true;onTriggered: {
     try {
     if (phase===0 && service.firstRun && service.localSetupStatus) {
-      if(service.feedError || service.observing || service.machineUse!=="" || service.setupCheckRequested)throw new Error("Fresh collector is not an empty welcome state")
-      if(control(panel,"open-monitor").text!=="Start Setup →" || control(panel,"fleet-welcome").text.indexOf('An "urbit ship"')!==0)throw new Error("Missing requested welcome/CTA")
-      control(panel,"open-monitor").clicked();if(panel.pane!=="setup")throw new Error("Start Setup did not navigate")
-      service.openSetup("local");phase=1
+       if(service.feedError || service.observing || service.machineUse!=="" || service.setupCheckRequested)throw new Error("Fresh collector is not an empty welcome state")
+       panel.open();service.monitorWindow.present()
+       if(control(panel,"open-monitor").text!=="Set up this computer →" || control(panel,"fleet-welcome").text.indexOf('An "urbit ship"')!==0)throw new Error("Missing requested welcome/CTA")
+       if(control(panel,"empty-fleet-add-ship").visible || control(service.monitorWindow,"empty-fleet-add-ship").visible)throw new Error("Fresh install offered ship creation before a runner")
+       control(panel,"open-monitor").clicked();if(panel.pane!=="setup" || control(panel,"panel-setup").mode!=="local")throw new Error("Setup CTA did not go straight to local setup")
+       if(control(panel,"setup-card-manage").visible || control(panel,"setup-card-apps").visible || !control(panel,"local-setup-primary").visible)throw new Error("First-run setup still showed overview cards")
+       service.monitorWindow.present();control(service.monitorWindow,"empty-fleet-setup").clicked()
+       if(service.monitorWindow.setupPane.mode!=="local")throw new Error("Empty monitor did not go straight to local setup")
+       panel.close();service.openSetup("local");phase=1
     } else if(phase===1) {
       var setup=service.monitorWindow.setupPane
       var details=control(setup,"setup-install-details")
-      if(details.visible || control(setup,"setup-install-approval").checked || service.setUpLocal(false))throw new Error("Install details expanded or setup approved by default")
-      if(control(setup,"local-setup-primary").enabled)throw new Error("Installation bypassed its approval checkbox")
-      control(setup,"setup-install-approval").checked=true
-      if(!control(setup,"local-setup-primary").enabled)throw new Error("Approved setup is unavailable")
-      control(setup,"setup-install-approval").checked=false
+       if(details.visible || control(setup,"setup-install-approval") || service.setUpLocal(false))throw new Error("Install details expanded or setup started without a click")
+       if(!control(setup,"local-setup-primary").enabled)throw new Error("Single-click setup is unavailable")
       control(setup,"setup-view-details").clicked()
       if(!details.visible || control(setup,"setup-binaries").text.indexOf("urbit-collector")<0 || !control(setup,"setup-source") || !control(setup,"setup-build-guide"))throw new Error("Expandable software/source details missing")
       control(setup,"setup-view-details").clicked()
-      if(control(setup,"local-check-again").visible)throw new Error("Unchecked first setup offered recheck")
+       if(!control(setup,"local-check-again").visible)throw new Error("Setup cannot refresh prerequisites")
       var machine=control(setup,"machine-use-toggle");machine.checked=false;machine.toggled()
       if(service.machineUse!=="laptop")throw new Error("Laptop choice not retained")
       service.localSetupStatus=Object.assign({},service.localSetupStatus,{can_setup:false})
-      if(!control(setup,"local-setup-primary").enabled || control(setup,"local-setup-primary").text!=="Check prerequisites")throw new Error("Automatic prerequisite failure left no first-check action")
-      control(setup,"local-setup-primary").clicked();phase=2
+       if(control(setup,"local-setup-primary").enabled)throw new Error("A hard prerequisite failure can start setup")
+       control(setup,"local-check-again").clicked();phase=2
     } else if(phase===2 && !service.checkingSetup) {
       if(!control(service.monitorWindow.setupPane,"local-check-again").visible)throw new Error("Completed explicit check cannot be repeated")
-      console.log("PASS: fresh welcome, Start Setup, first-check gating and persisted laptop choice")
+       console.log("PASS: fresh welcome, single-click setup, explicit recheck and persisted laptop choice")
       enroll.running=true;phase=3
     } else if(phase===3 && service.connections.length && !service.busy) {
       if(service.firstRun || control(panel,"open-monitor").text.indexOf("Monitor")!==0)throw new Error("Enrolled fleet stayed in first run")

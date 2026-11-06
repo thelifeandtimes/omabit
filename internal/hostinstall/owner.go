@@ -27,12 +27,17 @@ func InstallOwnerHost(ctx context.Context, bundle string, public []byte, name st
 }
 
 type HostOptions struct {
-	OfflineUpgrade   bool
-	ExpectedRunnerID string
+	OfflineUpgrade       bool
+	ExpectedRunnerID     string
+	InstallPrerequisites bool
 }
 
 func InstallOwnerHostWithOptions(ctx context.Context, bundle string, public []byte, name string, options HostOptions, progress func(string)) (HostResult, error) {
 	i := newInstaller()
+	if options.InstallPrerequisites && (options.OfflineUpgrade || options.ExpectedRunnerID != "") {
+		return HostResult{}, errors.New("native prerequisite installation is a setup action, not a management upgrade")
+	}
+	i.installPrerequisites = options.InstallPrerequisites
 	if i.euid != 0 || i.goos != "linux" || i.goarch != "amd64" {
 		return HostResult{}, errors.New("owner setup requires OS authorization on Linux x86-64")
 	}
@@ -357,8 +362,10 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 	if err = p.Validate(); err != nil {
 		return result, err
 	}
-	if err = i.requireCompatibility(ctx); err != nil {
-		return result, err
+	if !i.installPrerequisites {
+		if err = i.requireCompatibility(ctx); err != nil {
+			return result, err
+		}
 	}
 	if len(binary) == 0 || len(binary) > 128<<20 {
 		return result, errors.New("invalid runner executable")
@@ -372,15 +379,10 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 		return result, err
 	}
 	result.UID, result.Owner, result.PierRoot, result.OperatorFingerprint = p.UID, p.Name, p.Piers, grant.Fingerprint
-	for _, name := range append(append([]string{}, helpers...), hostHelpers...) {
-		if err = i.helper(ctx, "/usr/bin/"+name); err != nil {
-			return result, err
-		}
-	}
 	if i.inspectOwner == nil {
 		return result, errors.New("owner prerequisite inspector unavailable")
 	}
-	if err = requirePass(i.inspectOwner(p.Name), "platform", "systemd", "cgroup-v2", "userns-limit", "owner-account", "docker-version"); err != nil {
+	if err = requirePass(i.inspectOwner(p.Name), "platform", "systemd", "cgroup-v2", "userns-limit", "owner-account"); err != nil {
 		return result, err
 	}
 	files, err := i.verified(bundle)
@@ -448,6 +450,25 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 		}
 	} else if !errors.Is(lockedErr, os.ErrNotExist) || readErr == nil {
 		return result, errors.New("installed owner evidence disappeared or became unavailable; preserving it for review")
+	}
+	if i.installPrerequisites {
+		if err = i.installNativePrerequisites(ctx, p.Name, progress); err != nil {
+			return result, err
+		}
+		if progress != nil {
+			progress("package-verify")
+		}
+		if err = i.requireCompatibility(ctx); err != nil {
+			return result, err
+		}
+	}
+	for _, name := range append(append([]string{}, helpers...), hostHelpers...) {
+		if err = i.helper(ctx, "/usr/bin/"+name); err != nil {
+			return result, err
+		}
+	}
+	if err = requirePass(i.inspectOwner(p.Name), "docker-version"); err != nil {
+		return result, err
 	}
 	if len(expected) > 0 && expected[0] != "" {
 		if lockedErr != nil {

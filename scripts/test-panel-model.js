@@ -24,7 +24,11 @@ assert.throws(() => model.validateSetupStatus({...setupReady,browser_base:"https
 assert.throws(() => model.validateSetupStatus({...setupReady,connection:{...setupReady.connection,mode:"simulation"}}));
 assert.throws(() => model.setupEvent(JSON.stringify({step:"execute-arbitrary",status:"complete"})));
 assert.throws(() => model.setupEvent("x".repeat(131073)));
-assert.equal(model.setupStepIndex("services"),model.setupStepIndex("authorize"));
+assert.equal(model.setupStepIndex("packages"),model.setupStepIndex("authorize"));
+assert.ok(model.setupStepIndex("services")>model.setupStepIndex("packages"));
+assert.equal(model.setupEvent(JSON.stringify({step:"package-verify",status:"running"})).step,"package-verify");
+assert.equal(model.validateSetupStatus({...setupReady,packages_to_install:["rootlesskit","slirp4netns"]}).packages_to_install.length,2);
+for(const packages of ["rootlesskit",["--root=/tmp"],["rootlesskit; reboot"],Array(17).fill("docker")])assert.throws(()=>model.validateSetupStatus({...setupReady,packages_to_install:packages}));
 console.log("PASS: local setup progress is bounded and ready state binds the local development runner");
 const registerConnection={name:"local",runner_id:"runner-local",mode:"development-managed",status:"available",checked_at:new Date().toISOString(),access_role:"operator",features:["create-fake","fake-ship-options","create-comet"],snapshot:{instances:[{id:"comet",mode:"comet",config:{http_port:18080},endpoint:"http://127.0.0.1:18081"},{id:"development",mode:"fake",config:{http_port:18082}}]}};
 assert.match(model.registrationProblem(registerConnection,"comet",18083,"comet",Date.now()),/already exists/);

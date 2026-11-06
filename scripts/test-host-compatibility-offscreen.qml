@@ -53,6 +53,7 @@ ApplicationWindow {
     property var importCatalogue: null
     property var pendingImportConnection: null
     property int registrationChecks: 0
+    property int setupRequests: 0
     QtObject { id: localStatus; property bool running: false; property var command: [] }
     QtObject { id: feed; property bool running: false; property var command: [] }
     function themeCommand(args) { return ["fixture-omabit","--format","json"].concat(args) }
@@ -60,6 +61,7 @@ ApplicationWindow {
     function clearEpochPreview() {}
     function loadRegistrations() { registrationChecks++ }
     function setMachineUse(value) { machineUse=value }
+    function setUpLocal(approved) { if(approved!==true)throw new Error("setup click must authorize installation");setupRequests++ }
     @@SERVICE_METHODS@@
   }
   Column {
@@ -73,7 +75,7 @@ ApplicationWindow {
     interval: 50; running: true; repeat: true
     onTriggered: {
       if(phase===0) {
-        if(setup.detailsOpen || control(setup,"setup-install-approval").checked || control(setup,"local-setup-primary").enabled)throw new Error("Existing setup approval/layout changed")
+        if(setup.detailsOpen || control(setup,"setup-install-approval") || !control(setup,"local-setup-primary").enabled || root.setupRequests!==0)throw new Error("Setup must wait for one explicit click")
         if(control(setup,"local-host-compatibility").visible || control(setup,"setup-progress-checklist").visible)throw new Error("Fresh setup was replaced by technical diagnostics or claimed progress")
         control(setup,"setup-view-details").clicked()
         if(!setup.detailsOpen || control(setup,"host-compatibility-facts").text.indexOf("provider: deb")<0 || control(setup,"host-compatibility-facts").text.indexOf("5:29.9.1-1")<0)throw new Error("Structured local details missing")
@@ -95,10 +97,22 @@ ApplicationWindow {
         filter.toggle();filter.toggled()
         if(filter.checked || runtime.priorityOnly || text.text!=="boot: ready")throw new Error("Turning priority filtering off did not restore output")
         if(Model.canOperate(connection,ship,"stop",root.now)!==connection.host_compatibility.report.can_stop || Model.canOperate(connection,Object.assign({},ship,{observed_state:"stopped"}),"start",root.now)!==connection.host_compatibility.report.can_mutate)throw new Error("Backend Stop/new-work permissions were replaced by UI rules")
-        control(setup,"setup-install-approval").checked=true
+        root.localSetupStatus=Object.assign({},root.localSetupStatus,{packages_to_install:["rootlesskit","slirp4netns"],checks:[{id:"binary-rootlesskit",status:"missing",detail:"rootlesskit is missing"},{id:"binary-slirp4netns",status:"missing",detail:"slirp4netns is missing"}]})
+        if(!control(setup,"setup-native-packages").visible || control(setup,"setup-native-packages").text.indexOf("rootlesskit, slirp4netns")<0)throw new Error("Missing package plan was hidden")
+        control(setup,"setup-view-details").clicked()
+        if(control(setup,"setup-native-packages").visible || control(setup,"setup-install-details").visible || /rootlesskit|slirp4netns/i.test(control(setup,"setup-description").text))throw new Error("Package names leaked out of details")
+        if(control(setup,"setup-description").text.indexOf("run Urbit on your Omarchy computer")<0)throw new Error("Setup purpose is missing")
         if(!control(setup,"local-setup-primary").enabled)throw new Error("Metadata runtime permissions replaced core setup prerequisites")
+        control(setup,"local-setup-primary").clicked()
+        if(root.setupRequests!==1)throw new Error("One click did not begin authorized setup")
+        root.localSetupStatus=Object.assign({},root.localSetupStatus,{can_setup:false})
+        if(control(setup,"local-setup-primary").enabled)throw new Error("A hard prerequisite failure can start setup")
+        root.localSetupStatus=Object.assign({},root.localSetupStatus,{can_setup:true})
         root.settingUp=true;root.localSetupStep="authorize"
         if(!control(setup,"setup-progress-checklist").visible || control(setup,"setup-progress-state-0").text!=="✓" || control(setup,"setup-progress-state-2").text!=="✓" || control(setup,"setup-progress-state-3").text!=="4")throw new Error("Authorization phase lost the checked-off setup steps")
+        root.localSetupStep="packages"
+        if(control(setup,"local-setup-primary").enabled || control(setup,"setup-progress-state-4").text!=="5")throw new Error("Package installation allowed duplicate submission or claimed service readiness")
+        if(control(setup,"setup-native-packages").visible || control(setup,"setup-description").text.indexOf("Installing and configuring")!==0)throw new Error("Installation lost its simple progress description")
         root.settingUp=false
         console.log("PASS: compact runtime, expandable native facts and contextual Urbit log filtering retain controls")
         root.localSetupStatus=Object.assign({},root.localSetupStatus,{ready:true,can_setup:false,connection:{name:"fixture",runner_id:"runner-fixture"}})
@@ -106,7 +120,7 @@ ApplicationWindow {
         phase=1
       } else if(phase===1) {
         if(control(setup,"local-setup-primary").text!=="Add a ship →")throw new Error("Package drift lost connected setup")
-        if(!control(setup,"setup-progress-checklist").visible || control(setup,"setup-progress-state-5").text!=="✓")throw new Error("Completed setup lost its completed checklist")
+        if(!control(setup,"setup-progress-checklist").visible || control(setup,"setup-progress-state-6").text!=="✓")throw new Error("Completed setup lost its completed checklist")
         if(control(runtimeDetails,"host-compatibility-summary").text.indexOf("Update this runner")<0 || Model.instances(connection).length!==1)throw new Error("Older runner lost inventory or technical upgrade hint")
         root.transportStopping=true
         root.refresh()
