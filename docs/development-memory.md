@@ -7425,3 +7425,25 @@ the user selected **Sourcebox unavailable**, directing source/check preparation
 and a report of the remaining qualification blocker. Do not invent successful
 upgrade evidence, publish stable or bypass protection. Prepare the release source
 and local artifact/desktop checks; finish the VM rehearsal when lab access returns.
+
+## M519 — 0.3.7 frozen local checks pass; service rehearsal blocked (2026-11-05)
+
+Supersedes M518's source/artifact preparation status; its sourcebox blocker still
+applies. Source is committed and pushed as
+`076f97280960961fc21c88d45fef529185b4fbe2` on `release/0.3.7`, with draft GitHub
+PR#14 against protected master. Local matching assets pass checksums, provenance,
+isolated installer/replacement checks and all133 networkless CLI help entries.
+
+Local model/native/bootstrap/policy/skill/offscreen/onboarding checks pass. Real
+Wayland picker input passes with the corrected extracted-tool path. The exact
+published0.3.6 → frozen0.3.7 desktop harness passes hot activation, cold restart,
+synthetic failed-candidate recovery and preference preservation inside private
+headless Sway/Bubblewrap. Initial tool-path and mountpoint fixture failures happened
+before application execution; logs are retained and product source is unchanged.
+
+Evidence and artifact identities: [preparation record](releases/0.3.7/preparation.md),
+and sourceport `~/.local/share/omabit-review/release-0.3.7/`. Full source/race CI
+run42153140057 is pending. Release-policy correctly rejects the still0.3.6 pins.
+Final qualification, exact service-upgrade rehearsal, pins, merge and stable
+publication remain pending. The installed personal trial and running moon have
+not been upgraded as part of release preparation.

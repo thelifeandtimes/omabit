@@ -1,7 +1,10 @@
 # Omabit 0.3.7 — one-click setup and verified identity recovery
 
-**Release preparation; not published.** Source, artifact and native desktop
-checks are being prepared. The required exact-artifact 0.3.6 → 0.3.7 upgrade
+**Release preparation; not published.** Source is frozen at `076f972`; local
+artifact, picker and exact-bundle native desktop checks pass. Source/race CI is
+pending. See [preparation evidence](releases/0.3.7/preparation.md) and
+[draft PR #14](https://github.com/thelifeandtimes/omabit/pull/14).
+The required exact-artifact 0.3.6 → 0.3.7 service-upgrade
 rehearsal is pending because the existing isolated sourcebox lab is unavailable.
 Do not treat the user-confirmed fresh-install trial as upgrade qualification.
 
@@ -52,8 +55,9 @@ recovery procedure; resetting or re-enrolling is not an upgrade.
 
 ## Qualification to finish
 
-1. Freeze source and build matching immutable runner, collector and desktop assets.
-2. Verify native hot/cold activation and retained desktop preferences with those assets.
+1. **Done:** freeze source and build matching runner, collector and desktop assets.
+2. **Done:** verify native hot/cold activation, failed-candidate recovery and retained
+   desktop preferences with exact published0.3.6 and frozen0.3.7 assets.
 3. Rehearse published0.3.6 → frozen0.3.7 services in the isolated VM, preserving
    running containers/processes, stopped intent, identities, storage, access and
    operation history; include retry and manager restart.
