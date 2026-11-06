@@ -129,6 +129,9 @@ func TestRepairVerificationOptionsAreExplicitAndKeepGuardOnlyContract(t *testing
 				t.Fatal("verification options changed registered host state")
 			}
 			for _, call := range f.calls {
+				if !failed && call.isRootlessKitHelp() {
+					continue
+				}
 				if failed || call.path != "/usr/bin/systemctl" || len(call.args) == 0 || call.args[0] != "show" {
 					t.Fatal("repair performed service or engine mutation", call)
 				}

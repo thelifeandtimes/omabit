@@ -163,6 +163,18 @@ func (i *installer) updateEngineGuard(ctx context.Context, files map[string][]by
 					known[index] = ownerEngineUnit(known[index], *owner)
 				}
 				target = ownerEngineUnit(target, *owner)
+				// Older native RootlessKit builds can run the pinned launcher
+				// in its attached network namespace mode. Keep both exact
+				// generated units recognizable after a package update.
+				attached := bytes.Replace(target, []byte("DOCKERD_ROOTLESS_ROOTLESSKIT_DETACH_NETNS=true\n"), []byte("DOCKERD_ROOTLESS_ROOTLESSKIT_DETACH_NETNS=false\n"), 1)
+				known = append(known, attached)
+				detach, err := i.rootlessKitCanDetach(ctx)
+				if err != nil {
+					return false, err
+				}
+				if !detach {
+					target = attached
+				}
 			}
 		}
 		path, mode := rootless.InstallDir+"/"+name, os.FileMode(0755)
@@ -197,6 +209,30 @@ func (i *installer) updateEngineGuard(ctx context.Context, files map[string][]by
 		updated = updated || change.replace
 	}
 	return updated, nil
+}
+
+func (i *installer) rootlessKitCanDetach(ctx context.Context) (bool, error) {
+	help, err := i.command(ctx, "/usr/bin/rootlesskit", "--help")
+	if err != nil {
+		return false, err
+	}
+	var stateDir, detach bool
+	for _, line := range strings.Split(string(help), "\n") {
+		fields := strings.Fields(line)
+		if len(fields) == 0 {
+			continue
+		}
+		switch fields[0] {
+		case "--state-dir":
+			stateDir = true
+		case "--detach-netns":
+			detach = true
+		}
+	}
+	if !stateDir {
+		return false, errors.New("cannot recognize the installed RootlessKit options")
+	}
+	return detach, nil
 }
 
 func (i *installer) guardOverrides(ctx context.Context, owner *ownerhost.Profile) error {

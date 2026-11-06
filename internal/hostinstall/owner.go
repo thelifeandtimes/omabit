@@ -343,13 +343,17 @@ func (i *installer) preserveOwnerMappings(ctx context.Context, p ownerhost.Profi
 	return nil
 }
 
-func verifyOwnerInfo(data []byte, p ownerhost.Profile) error {
+func verifyOwnerInfo(data []byte, p ownerhost.Profile, firstStart bool) error {
 	var info struct {
 		ServerVersion, CgroupDriver, CgroupVersion, DockerRootDir string
 		SecurityOptions                                           []string
+		CPUCfsPeriod, CPUCfsQuota, MemoryLimit, PidsLimit         bool
 	}
 	if len(data) > maxOutput || json.Unmarshal(data, &info) != nil || hostcompat.EngineVersionStatus(info.ServerVersion) != "compatible" || info.CgroupDriver != "systemd" || info.CgroupVersion != "2" || !slices.Contains(info.SecurityOptions, "name=rootless") || info.DockerRootDir != filepath.Join(p.Home, ".local/share/urbit-runner/docker") {
 		return errors.New("explicit owner engine must be compatible and rootless with cgroup v2 and isolated user data root")
+	}
+	if firstStart && (!info.CPUCfsPeriod || !info.CPUCfsQuota || !info.MemoryLimit || !info.PidsLimit) {
+		return errors.New("the owner engine cannot enforce managed ship CPU, memory and process limits; check the owner's systemd cgroup delegation before retrying setup")
 	}
 	return nil
 }
@@ -547,6 +551,16 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 		return e
 	}
 	if initialEngineStart {
+		// Some distributions delegate only memory and pids to user@.service.
+		// Delegate adds controllers to existing assignments. Scope it to this
+		// owner and reload before dockerd first detects kernel capabilities.
+		delegation := fmt.Sprintf("/etc/systemd/system/user@%d.service.d/omabit-controllers.conf", p.UID)
+		if err = i.installFile(ctx, delegation, []byte("[Service]\nDelegate=cpu memory pids\n"), 0644, false); err != nil {
+			return result, err
+		}
+		if _, err = i.command(ctx, "/usr/bin/systemctl", "daemon-reload"); err != nil {
+			return result, err
+		}
 		i.mutated = true // the service action can succeed even if acknowledgement is lost
 		if _, err = i.command(ctx, "/usr/bin/loginctl", "enable-linger", p.Name); err != nil {
 			return result, err
@@ -573,7 +587,7 @@ func (i *installer) installOwner(ctx context.Context, bundle string, public, bin
 	if err != nil {
 		return result, err
 	}
-	if err = verifyOwnerInfo(data, p); err != nil {
+	if err = verifyOwnerInfo(data, p, initialEngineStart); err != nil {
 		return result, err
 	}
 	if err = i.verifyEngineAPI(ctx, engine, &p, data); err != nil {

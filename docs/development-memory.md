@@ -7495,3 +7495,14 @@ the receiver [handoff contract](application-handoff-v1.md) binds sessions and
 cleanup to one origin. Retain those per-session protections beneath a durable
 ship grant and qualify automatic reconnection with compatible receivers. See
 the [0.4.0 acceptance cases](platform-roadmap.md#one-ship-several-reachable-urls).
+
+## M523 — Clean Jammy remote setup and first ship (2026-11-06)
+
+The [Ubuntu 22.04.5 VM run](diagnostics/2026-11-06-jammy-remote-runner.md)
+supersedes M521's pending clean Jammy install. Its packaged RootlessKit needs
+attached network namespaces and its default user manager lacks CPU delegation.
+The 0.4.0 development installer adapts to both. Native evidence, a default-loom
+ship, uninterrupted second-desktop pairing and revocation, and same-generation
+recovery from an actual mid-install interruption passed. The collector also
+reconnected after a cold boot. The current rooftop installation, stable upgrade
+and other distros retain their separate gates.

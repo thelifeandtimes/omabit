@@ -159,3 +159,13 @@ On rooftop, the fixed verifier was exercised read-only against native cached APT
 indexes, signatures, archives and installed payloads. No package installation,
 receipt publication, runner installation or ship operation is implied by that
 check. See the [polishing report](diagnostics/2026-10-29-production-import-polish.md).
+
+## Ubuntu 22.04 fresh install in 0.4.0 development
+
+On a clean Jammy server with the stock archive, updates and security repositories
+and universe enabled, the fresh installer authenticated all eight required package
+roles. It selected the networking mode supported by the packaged RootlessKit and
+enabled CPU, memory and process limits for the chosen owner's rootless engine.
+Ubuntu's Docker package can also start its normal system service. Omabit uses the
+owner's private socket. See the [tested package versions, recovery and first-ship
+checks](diagnostics/2026-11-06-jammy-remote-runner.md).

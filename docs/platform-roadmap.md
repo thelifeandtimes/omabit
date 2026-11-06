@@ -15,9 +15,9 @@ release plan. Final 1.0.0 refinements follow the 0.4.0 user trials.
 
 Start with a disposable Ubuntu 22.04 x86-64 guest matching the recorded
 [rooftop findings](diagnostics/2026-10-29-production-import-polish.md). The
-previous check authenticated packages already installed on rooftop. A fresh
-install still needs to exercise missing packages, signed package verification,
-owner setup, enrollment and the first successful inventory from another desktop.
+[Jammy VM run](diagnostics/2026-11-06-jammy-remote-runner.md) now covers
+missing packages, signed payload verification, owner setup, two desktop
+enrollments, interruption and resume, and a healthy first ship.
 Test the same flow on named Debian and Arch/Omarchy x86-64 images. Record the
 image, package sources, candidate versions and last completed step. A distro
 whose configured repositories lack a compatible engine needs actionable guidance.
