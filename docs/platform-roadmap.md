@@ -64,19 +64,37 @@ identity and the ship's observed listener or configured proxy. Read just the
 runner's own name, tailnet identity and addresses, without distributing its peer
 list. [Tailscale CLI](https://tailscale.com/docs/reference/tailscale-cli)
 
-Keep a loopback listener local unless a separate route actually exposes it. Each collector
-determines which candidates it can reach, preferring a usable same-host route
-then a matching tailnet route. Check the expected public ship identity without
-credentials and require an approved origin before requesting an owner session.
-DNS resolution or a matching ship name alone cannot establish trust in a new
-public origin. Show the chosen URL in Application Connections. The receiving
-plugin keeps its own session bound to that origin. A route change requires a
-new approval and handoff.
+The user approves one installed app/profile to connect to one ship on this
+desktop. Persist that grant against the ship's stable managed identity and the
+approved receiver generation. The grant covers the ship's current and future
+verified routes. A different app, profile or ship has its own grant. Revoking
+the grant stops reconnects across all routes for that app and ship.
+
+On connection or loss of connectivity, the collector automatically tries
+same-host loopback first, followed by the matching tailnet and then a
+registered HTTPS clearweb origin. Keep using a working route. Only use loopback
+on the ship's host. Use trusted runner registration and verify that the route
+reaches the expected ship before sending credentials. A hostname guess, redirect
+or unauthenticated ship-name response alone cannot establish a trusted route.
+The normal UI shows the app, ship and connection state. Put the active URL in
+connection details and offer the public URL separately for opening or sharing.
+
+Keep each Eyre session bound to its origin. For a route change, the collector
+uses the existing grant to establish a session at the verified destination and
+hand it to the same plugin. Coordinate that handoff with the receiver so it can
+replace its exact managed session, preserve a newer standalone login and record
+cleanup of the previous session. Keep uncertain issuance or delivery recoverable
+before minting another session. For 0.3.7 users, preserve working single-origin
+connections during upgrade. Make a new or migrated ship grant traceable to the
+original app, profile and ship.
 
 Use two collectors and a disposable ship to exercise local-only, same-tailnet,
 off-tailnet and clearweb cases. Include two ships on one runner, an unreachable
 MagicDNS candidate, a wrong ship behind a proxy, and a custom HTTPS origin using
-the standard port. A failed lookup must leave the working plugin session usable.
+the standard port. Take the client off the tailnet and reconnect over the public
+route with one approval total. Check that the old cookie never goes to the new
+origin and that revocation wins a race with reconnect. A failed lookup must
+leave the working plugin session usable.
 
 ### Clearweb access
 

@@ -7480,3 +7480,18 @@ then passed fresh installation and rerun without `useradd` or `getsubids`.
 The hostsetup, hostinstall, remotesetup and signed hostcompat suites passed.
 This addresses a reproducible portability issue. A fresh Ubuntu guest and
 current rooftop onboarding are still unqualified.
+
+## M522 — Approve an app for a ship across verified routes (2026-11-06)
+
+The user's clarification supersedes M521's proposed new approval on a URL
+change. For Application Connections, approve the app/profile for the ship
+once. The collector chooses and retries verified local, tailnet and clearweb
+origins automatically. Users can find the active URL in details or copy a
+public URL for a browser. Enabling public exposure remains a separate action.
+
+Implementation is pending. In 0.3.7 the UI matches approvals and active attempts
+by origin, the collector's managed enrollment name includes the origin, and
+the receiver [handoff contract](application-handoff-v1.md) binds sessions and
+cleanup to one origin. Retain those per-session protections beneath a durable
+ship grant and qualify automatic reconnection with compatible receivers. See
+the [0.4.0 acceptance cases](platform-roadmap.md#one-ship-several-reachable-urls).
