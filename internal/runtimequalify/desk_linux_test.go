@@ -181,6 +181,15 @@ func TestDeskRuntimeDiscoveryRejectsUnknownAutocommitAndBadInventories(t *testin
 		t.Fatal("duplicate canonical paths accepted")
 	}
 
+	response = atom(`{"zest":"live","source_revision":2,"source_ship":"","source_desk":"","expected_agents":["example"],"agents":[],"treaty_available":false,"treaty_listed":false,"treaty_hash":"","docket_available":false,"docket_hash":"","frontend_mode":"none","frontend_state":"unavailable","frontend_docket_hash":""}`)
+	application, err := runtime.Application(context.Background(), "example")
+	if err != nil || len(application.ExpectedAgents) != 1 || len(application.Agents) != 0 {
+		t.Fatal(application, err)
+	}
+	response = atom(`{"zest":"live","source_revision":2,"expected_agents":[],"agents":[],"treaty_listed":true,"frontend_mode":"none","frontend_state":"unavailable"}`)
+	if _, err = runtime.Application(context.Background(), "example"); err == nil {
+		t.Fatal("unsupported Treaty state accepted")
+	}
 	for _, name := range []string{"../outside", ".urb", "nested/source", ""} {
 		if _, err = runtime.InspectSource(context.Background(), "base", name, nil); err == nil {
 			t.Fatal("source path escape accepted", name)

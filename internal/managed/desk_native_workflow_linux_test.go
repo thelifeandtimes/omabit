@@ -144,6 +144,8 @@ func (f *nativeDeskFixture) post(ctx context.Context, body []byte) (string, erro
 		return "", err
 	}
 	if response.StatusCode != 200 || len(data) > 1<<20 {
+		data, _ := json.MarshalIndent(map[string]any{"status": response.StatusCode, "body": string(data)}, "", "  ")
+		_ = os.WriteFile("/lab/last-failed-lens-transport.json", data, 0600)
 		return "", errors.New("invalid Lens response")
 	}
 	var value string
@@ -180,17 +182,7 @@ func (f *nativeDeskFixture) effect(ctx context.Context, q deskwork.LensRequest, 
 		return err
 	}
 	id := f.effects.Add(1)
-	record := func(state string) error {
-		file, e := os.OpenFile("/lab/workflow-effects.jsonl", os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
-		if e != nil {
-			return e
-		}
-		defer file.Close()
-		if e = json.NewEncoder(file).Encode(map[string]any{"id": id, "state": state}); e != nil {
-			return e
-		}
-		return file.Sync()
-	}
+	record := func(state string) error { return f.recordEffect(id, state) }
 	if err = record("dispatched"); err != nil {
 		return err
 	}
@@ -199,6 +191,9 @@ func (f *nativeDeskFixture) effect(ctx context.Context, q deskwork.LensRequest, 
 		return err
 	}
 	if strings.TrimSpace(out) != ">=" {
+		body, _ := q.Body()
+		data, _ := json.MarshalIndent(map[string]any{"request": json.RawMessage(body), "response": out}, "", "  ")
+		_ = os.WriteFile("/lab/last-failed-desk-effect.json", data, 0600)
 		return fmt.Errorf("effect unacknowledged: %s", out)
 	}
 	return record("acknowledged")
@@ -209,7 +204,22 @@ func (f *nativeDeskFixture) decode(ctx context.Context, q deskwork.LensRequest, 
 		return err
 	}
 	body, _ := json.Marshal(reply)
-	return deskwork.DecodeJSONOutput(body, out)
+	if err = deskwork.DecodeJSONOutput(body, out); err != nil {
+		request, _ := q.Body()
+		data, _ := json.MarshalIndent(map[string]any{"request": json.RawMessage(request), "response": reply, "error": err.Error()}, "", "  ")
+		_ = os.WriteFile("/lab/last-failed-desk-read.json", data, 0600)
+		return fmt.Errorf("%w: %s", err, reply)
+	}
+	return nil
+}
+func (f *nativeDeskFixture) Application(ctx context.Context, desk string) (deskwork.AppState, error) {
+	var out deskwork.AppState
+	q, err := deskwork.AppInventory("~zod", desk)
+	err = f.decode(ctx, q, err, &out)
+	if err == nil {
+		err = out.Normalize()
+	}
+	return out, err
 }
 func (f *nativeDeskFixture) Observe(ctx context.Context, desk string) (deskwork.Observation, error) {
 	var out deskwork.Observation
@@ -345,6 +355,7 @@ func TestNativeDeskWorkflow(t *testing.T) {
 		v, err := registry.DeskOperation(ctx, "native", entry.RunnerID, id)
 		g02Check(t, err)
 		if got := v.Receipt.Steps[len(v.Receipt.Steps)-1].State; got != want {
+			save("unexpected-operation-"+id, v.Receipt)
 			t.Fatalf("operation %s: want %s got %s: %+v", id, want, got, v.Receipt)
 		}
 		return v.Receipt
@@ -463,7 +474,9 @@ func TestNativeDeskWorkflow(t *testing.T) {
 	}
 	_, err = registry.DiscardDeskStage(ctx, "native", entry.RunnerID, second.Intent.ID, second.Intent.SourceDigest)
 	g02Check(t, err)
-	q, err = deskwork.PublishSource(f.Desk)
+	beforePublication, err := f.Observe(ctx, f.Desk)
+	g02Check(t, err)
+	q, err = deskwork.PublishSourceAt("~zod", f.Desk, beforePublication)
 	g02Check(t, f.effect(ctx, q, err))
 	published, err := f.Observe(ctx, f.Desk)
 	g02Check(t, err)
@@ -486,5 +499,145 @@ func TestNativeDeskWorkflow(t *testing.T) {
 		t.Fatal("published commit count")
 	}
 	status("published-source-synchronized", "synchronized")
+	appStatus := func(name string) deskwork.AppState {
+		t.Helper()
+		inspected, err := registry.InspectDeskApplication(ctx, "native", entry.RunnerID, "alpha", f.Desk)
+		g02Check(t, err)
+		save(name, inspected)
+		return inspected.Observation.Application
+	}
+	appStatus("application-before-activation")
+	if _, err := os.Stat("/artifacts/release-source"); err == nil {
+		g02Check(t, filepath.WalkDir("/artifacts/release-source", func(path string, d os.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			rel, e := filepath.Rel("/artifacts/release-source", path)
+			if e != nil {
+				return e
+			}
+			if rel == "." {
+				return nil
+			}
+			target := filepath.Join(source, rel)
+			if d.IsDir() {
+				return os.MkdirAll(target, 0700)
+			}
+			if d.Type() != 0 {
+				return errors.New("unsafe release fixture")
+			}
+			data, e := os.ReadFile(path)
+			if e != nil {
+				return e
+			}
+			return os.WriteFile(target, data, 0600)
+		}))
+		releaseStage := stage()
+		releaseCommit := commit(releaseStage, "application-source-commit", "observed")
+		_ = releaseCommit
+		before, err := f.Observe(ctx, f.Desk)
+		g02Check(t, err)
+		q, err := deskwork.ActivateLocal("~zod", f.Desk, before)
+		g02Check(t, f.effect(ctx, q, err))
+		var active deskwork.AppState
+		for end := time.Now().Add(30 * time.Second); ; {
+			active = appStatus("application-activation")
+			if active.Zest == "live" && active.SourceRevision == before.Revision && slices.ContainsFunc(active.Agents, func(a deskwork.AppAgent) bool { return a.Name == "omabit-state" && a.Live }) && active.FrontendState == "site" {
+				break
+			}
+			if time.Now().After(end) {
+				t.Fatal("application activation not observed", active)
+			}
+			time.Sleep(200 * time.Millisecond)
+		}
+		if active.DocketHash == "" || active.DocketHash != active.FrontendDocketHash || !slices.Contains(active.ExpectedAgents, "omabit-state") {
+			t.Fatal("docket/agent verification missing", active)
+		}
+		q, err = deskwork.PublishTreatyAt("~zod", f.Desk, before)
+		g02Check(t, f.effect(ctx, q, err))
+		for end := time.Now().Add(20 * time.Second); ; {
+			published := appStatus("application-treaty")
+			if published.TreatyListed && published.TreatyHash == before.ClayHash {
+				break
+			}
+			if time.Now().After(end) {
+				t.Fatal("Treaty publication not observed", published)
+			}
+			time.Sleep(200 * time.Millisecond)
+		}
+	}
+	if _, err := os.Stat("/artifacts/release-source"); err == nil {
+		docket, err := os.ReadFile(filepath.Join(source, "desk.docket-0"))
+		g02Check(t, err)
+		globDocket := strings.Replace(string(docket), "site+/apps/omabit-fixture", "base+'"+f.Desk+"'\n   glob-ames+[~zod 0v0]", 1)
+		if globDocket == string(docket) {
+			t.Fatal("fixture docket marker absent")
+		}
+		write("desk.docket-0", globDocket)
+		commit(stage(), "glob-metadata-commit", "observed")
+		for end := time.Now().Add(20 * time.Second); ; {
+			s := appStatus("glob-before-upload")
+			if s.FrontendMode == "glob-ames" && s.DocketHash == s.FrontendDocketHash {
+				break
+			}
+			if time.Now().After(end) {
+				t.Fatal("glob metadata not realized", s)
+			}
+			time.Sleep(200 * time.Millisecond)
+		}
+		before, err := f.Observe(ctx, f.Desk)
+		g02Check(t, err)
+		content := []byte("<!doctype html><title>Omabit native fixture</title><p>Exact frozen frontend</p>\n")
+		g02Check(t, f.uploadGlob(ctx, content))
+		var uploaded deskwork.Observation
+		for end := time.Now().Add(20 * time.Second); ; {
+			s := appStatus("glob-after-upload")
+			uploaded, err = f.Observe(ctx, f.Desk)
+			g02Check(t, err)
+			if s.FrontendState == "glob" && s.DocketHash == s.FrontendDocketHash && uploaded.Revision > before.Revision {
+				break
+			}
+			if time.Now().After(end) {
+				t.Fatal("glob upload not observed", s, uploaded)
+			}
+			time.Sleep(200 * time.Millisecond)
+		}
+		save("glob-upload-committed-docket", uploaded)
+		// Upload edits Clay's docket itself; frozen ownership must not overwrite it.
+		write("app/omabit-broken.hoon", "this-is-deliberately-not-an-agent\n")
+		write("desk.bill", "~[%omabit-state %omabit-broken]\n")
+		staged := stage()
+		review, err := registry.PlanDeskCommit(ctx, "native", entry.RunnerID, staged.Intent.ID)
+		g02Check(t, err)
+		save("glob-source-ownership-conflict", review)
+		if review.Review.ConflictCount == 0 {
+			t.Fatal("external docket commit was overwritten")
+		}
+		// A fixture-only exact delta leaves the externally changed docket intact.
+		// The production API still refuses the unresolved source ownership conflict.
+		q, err := deskwork.CommitFiles("~zod", f.Desk, uploaded, []deskwork.DeltaFile{{Path: "app/omabit-broken.hoon", Bytes: []byte("this-is-deliberately-not-an-agent\n")}, {Path: "desk.bill", Bytes: []byte("~[%omabit-state %omabit-broken]\n")}})
+		effectErr := f.effect(ctx, q, err)
+		save("invalid-agent-effect", map[string]any{"acknowledged": effectErr == nil, "uncertain": effectErr != nil})
+		after, err := f.Observe(ctx, f.Desk)
+		g02Check(t, err)
+		save("invalid-agent-source-observation", after)
+		if after.Revision == uploaded.Revision {
+			if effectErr == nil {
+				t.Fatal("acknowledged invalid agent delta has no observed revision")
+			}
+			save("invalid-agent-revision-unchanged-uncertain", true)
+			save("ok", true)
+			return
+		}
+		if after.Revision < uploaded.Revision {
+			t.Fatal("Clay revision regressed")
+		}
+		time.Sleep(2 * time.Second)
+		broken := appStatus("source-accepted-agent-not-live")
+		if !slices.Contains(broken.ExpectedAgents, "omabit-broken") || slices.ContainsFunc(broken.Agents, func(a deskwork.AppAgent) bool { return a.Name == "omabit-broken" && a.Live }) {
+			t.Fatal("failed agent activation misreported", broken)
+		}
+		save("source-accepted-after-compile-failure", after)
+	}
 	save("ok", true)
 }

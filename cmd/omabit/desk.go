@@ -44,7 +44,7 @@ func deskCommand(ctx context.Context, command string, args []string, config stri
 		if *raw != "" || *id != "" || *desk != "" || *instance == "" {
 			return fail(errors.New("require only --instance for desk discovery"))
 		}
-	case "desk-inspect", "desk-plan-create", "desk-source-status":
+	case "desk-inspect", "desk-plan-create", "desk-source-status", "desk-app-status":
 		if *raw != "" || *id != "" || *instance == "" || *desk == "" {
 			return fail(errors.New("require --instance and --desk for inspection"))
 		}
@@ -79,6 +79,8 @@ func deskCommand(ctx context.Context, command string, args []string, config stri
 	switch command {
 	case "desk-settings":
 		output, err = registry.InspectDeskSetting(ctx, *name, *runner, *instance, *desk)
+	case "desk-app-status":
+		output, err = registry.InspectDeskApplication(ctx, *name, *runner, *instance, *desk)
 	case "desk-source-status":
 		output, err = registry.InspectDeskSource(ctx, *name, *runner, *instance, *desk)
 	case "desk-list":

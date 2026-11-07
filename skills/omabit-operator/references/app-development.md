@@ -5,7 +5,8 @@ typed desk inspection/creation with durable receipts (`desk-create-v1`),
 live installed-desk discovery (`desk-discovery-v1`), and runner-shared workflow
 settings (`desk-workflow-settings-v1`), and source comparison/alerts
 (`desk-source-status-v1`), and private source staging (`desk-source-staging-v1`).
-Staged commits are implemented on `desk-commit-v1` runners. Publication adapters
+Staged commits are implemented on `desk-commit-v1` runners. Separate app-stage
+observations use `desk-application-status-v1`. Agent publication/activation adapters
 and full managed-runtime workflow qualification remain in progress.
 Urgit follows its native workflow; no dedicated Omabit adapter is planned. Verify
 installed capabilities and command help rather than assuming development source
@@ -117,8 +118,9 @@ missing desk or unavailable runtime leaves uncertainty intact. It does not prove
 which external actor created a desk. If reconciliation remains unavailable,
 preserve the receipt and ask for review rather than bypassing it with Dojo.
 
-Creation does not grant commit/publication permission. Treaty and receiver/front-end
-end-to-end qualification remain pending.
+Creation does not grant commit/publication permission. Native Treaty and frontend
+workflow observations are tested as described below; agent effect APIs and receiver
+qualification remain pending.
 
 ## Freeze and transfer prepared source
 
@@ -222,9 +224,45 @@ These paths have private fixture coverage and a native kernel/API/collector pass
 on disposable `~zod` (Vere4.6-5a7614f, pinned pill, probe21/M545). That pass covers
 creation, discovery, canonical alerts, staged updates/deletions, generated-file
 preservation, lost-acknowledgement reconciliation and published-desk gates. It uses
-a synthetic lifecycle backend: it does not requalify Docker/SSH, activation, Treaty,
-frontends or receiver readiness. Check installed capabilities rather than assuming
+a synthetic lifecycle backend: it does not requalify Docker/SSH or receiver
+readiness. Probe34/M546 additionally covers the app-stage API, native local activation,
+source/Treaty publication, and Docket upload with exact served fixture bytes.
+These native publication/upload actions are qualification helpers, not public agent
+commands. Check installed capabilities rather than assuming
 the development source is deployed.
+
+## Inspect application stages separately
+
+On a runner advertising `desk-application-status-v1`:
+
+```sh
+omabit --config-dir REGISTRY desk-app-status --runner NAME --expected-runner-id ID \
+  --instance INSTANCE --desk DESK
+```
+
+This read works with closed gates. It binds the current runner/process/project
+selection and checks that Clay did not change during inspection. The reply reports
+source revision/hash, installation state/source, declared agents and their observed
+liveness, Treaty availability/listing/hash, and current versus realized Docket
+metadata and frontend state. Missing or unsupported observations fail visibly.
+A source revision is **not** a compiled-agent revision. A live agent may still run
+an older version. A `site` or `glob` state is not an HTTP/app health test. Follow the
+configured release checks and verify actual frontend behavior separately. No field
+claims that the entire release is ready.
+
+Native probe34 tested a local Ames glob upload through Docket's existing authenticated
+HTTP interface. It served the exact fixture HTML and changed `desk.docket-0` in Clay,
+advancing the revision and advertised Treaty hash. Classify that upload as a commit,
+and also publication when the desk is already distributed. Do not bypass closed
+gates with a native upload. The resulting external docket edit correctly conflicts
+with older frozen source ownership; reconcile that source instead of overwriting it.
+Existing-desk/source adoption and a public upload adapter are not implemented yet.
+
+An intentionally invalid agent update in that probe returned HTTP500 and left the
+observed revision/hash unchanged. The original dispatch remains uncertain; an
+unchanged read alone does not clear uncertainty or authorize a retry. This is distinct
+from the earlier uninstalled-desk probe where Clay accepted invalid source. Neither
+behavior permits interpreting a commit acknowledgement as compilation success.
 
 ## Classify the requested effect
 

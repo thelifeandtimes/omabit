@@ -4,7 +4,11 @@ Proposed architecture, recorded 2026-11-06. The user added this work to the
 0.4.0 scope after remote-runner installation testing. Source review is complete.
 The [policy layer and Setup editor](app-development-policy.md) are implemented
 and fixture-tested. Gated creation and live desk discovery are implemented;
-source transfer and gated commit API/CLI are implemented; publication remains in progress. The assembled native kernel/API/collector path passes M545; managed engine and
+source transfer and gated commit API/CLI are implemented; publication remains in progress.
+`desk-app-status` now reports source, installation, agent, Treaty and Docket stages
+without claiming overall readiness. Native probe34/M546 verifies this API and the
+underlying local activation, publication and frontend upload workflow. Those effects
+still use private qualification helpers, pending gated public adapters. The assembled native kernel/API/collector path passes M545; managed engine and
 remote transport retain their separate qualification boundaries.
 The user's follow-up fixes the scope to Urbit desks and their frontend assets.
 Agent desk creation, commit and publication start disabled, with permissions configured in
@@ -325,7 +329,10 @@ pipeline after an interrupted terminal or desktop restart.
 2. Complete the transport spike on disposable fakes with explicit test policy.
    Exercise prepare, mount, commit, local activation, Treaty publication,
    source-only publication and receiver installation with native control disabled.
-   Confirm frontend/glob handling and compilation/activation failure reporting.
+   Native frontend/glob upload is confirmed (M546): it commits a new docket hash,
+   so published desks require both gates and prior source ownership can conflict.
+   An invalid installed-agent update returns HTTP500 with unchanged observed Clay;
+   retain uncertainty, and complete compilation/activation failure reporting.
 3. Workflow bindings, canonical change observation and bounded private source
    transfer/recovery and gated commit receipts are implemented (M541–M544). Qualify
    actual runtime commit/publication flows for ordinary instances and project members.

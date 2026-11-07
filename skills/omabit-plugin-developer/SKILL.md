@@ -38,7 +38,13 @@ It does not write live mounts or open any gate. On `desk-commit-v1`, follow the
 operator reference for reviewed staged commits, ownership/conflicts and uncertain
 receipt reconciliation. Source acceptance is separate from compilation/readiness.
 The native kernel/API/collector commit path passes probe21/M545; its lifecycle
-backend is a fixture. Publication, activation, frontends and receivers remain pending.
+backend is a fixture. `desk-app-status` (`desk-application-status-v1`) reports
+source, Gall, Treaty and Docket facts separately; it does not claim compilation or
+app health. Native probe34/M546 covers that API plus local activation, Treaty and
+exact Docket frontend delivery using private qualification helpers. Agent-facing
+activation/publication/upload commands and receivers remain pending. Native Docket
+upload can commit its hash back to Clay and distribute an update: apply the same
+gates and reconcile source ownership. See the operator reference for limits.
 Creation is controlled at the ship, and new desks inherit commit/publication
 settings by default. Creating a desk does not grant either permission. Until a
 supported effect exists and fresh policy permits it, keep the mutation blocked.

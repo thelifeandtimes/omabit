@@ -224,6 +224,12 @@ def host(a):
     if a.workflow_binary:
         if a.workflow_binary.is_symlink() or not a.workflow_binary.is_file():raise ValueError('physical workflow binary required')
         shutil.copyfile(a.workflow_binary,art/'workflow.test');(art/'workflow.test').chmod(0o700)
+    if a.release_source:
+        if not a.workflow_binary or a.release_source.is_symlink() or not a.release_source.is_dir():raise ValueError('release source needs explicit native workflow')
+        files=list(a.release_source.rglob('*'))
+        if len(files)>128 or any(p.is_symlink() or not (p.is_dir() or p.is_file()) for p in files):raise ValueError('unsafe release fixture')
+        if sum(p.stat().st_size for p in files if p.is_file())>2*1024**2:raise ValueError('release fixture exceeds bound')
+        shutil.copytree(a.release_source,art/'release-source')
     (art/'vere').chmod(0o700)
     g={'unit':'omabit-desk-probe-'+uuid.uuid4().hex,'namespaces':{k:os.readlink('/proc/self/ns/'+k) for k in ('net','pid','mnt','user')}}
     g['desk']='omabit-test-'+uuid.uuid4().hex[:8]
@@ -234,7 +240,7 @@ def host(a):
         moved={'from':str(previous),'to':str(out),'device':identity.st_dev,'inode':identity.st_ino,'previous_result_sha256':sha(previous/'lab/result.json')}
         (out/'resume.json').write_text(json.dumps(moved,indent=2));(previous/'pier-transferred.json').write_text(json.dumps(moved,indent=2))
         os.rename(previous/'lab/zod',lab/'zod')
-    (out/'guard.json').write_text(json.dumps(g));(out/'inputs.json').write_text(json.dumps({p.name:sha(p) for p in art.iterdir()},indent=2))
+    (out/'guard.json').write_text(json.dumps(g));(out/'inputs.json').write_text(json.dumps({str(p.relative_to(art)):sha(p) for p in art.rglob('*') if p.is_file()},indent=2))
     command=['systemd-run','--user','--scope','--unit='+g['unit'],'-p','MemoryMax=4G','-p','MemorySwapMax=0','-p','CPUQuota=100%','-p','TasksMax=128','--','bwrap','--unshare-all','--die-with-parent','--clearenv','--ro-bind','/usr','/usr','--symlink','usr/bin','/bin','--symlink','usr/lib','/lib','--symlink','usr/lib','/lib64','--proc','/proc','--dev','/dev','--tmpfs','/tmp','--dir','/run','--ro-bind',str(art),'/artifacts','--ro-bind',str(out/'guard.json'),'/guard.json','--bind',str(lab),'/lab','--chdir','/lab','--setenv','HOME','/lab/home','--setenv','PATH','/usr/bin:/bin','--setenv','LANG','C.UTF-8','--','python3','-B','/artifacts/probe.py','--inside']
     (out/'command.json').write_text(json.dumps(command,indent=2))
     with (out/'console.log').open('wb') as log:
@@ -261,4 +267,4 @@ def host(a):
             if child.poll() is None:os.killpg(child.pid,signal.SIGTERM);child.wait(timeout=10)
     (out/'exit.json').write_text(json.dumps({'exit':rc}));print(json.dumps({'output':str(out),'exit':rc}));return rc
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--release-source',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))

@@ -10,6 +10,8 @@ import (
 func TestDeskCommandRejectsInvalidPlansBeforeOpeningProfile(t *testing.T) {
 	config := filepath.Join(t.TempDir(), "must-not-exist")
 	cases := [][]string{
+		{"desk-app-status", "--runner", "fixture", "--expected-runner-id", "runner-fixture", "--instance", "publisher"},
+		{"desk-app-status", "--runner", "fixture", "--expected-runner-id", "runner-fixture", "--instance", "publisher", "--desk", "base", "--id", "unexpected"},
 		{"desk-list", "--runner", "fixture", "--expected-runner-id", "runner-fixture", "--instance", "publisher", "--desk", "base"},
 		{"desk-list", "--runner", "fixture", "--expected-runner-id", "runner-fixture"},
 		{"desk-create", "--runner", "fixture", "--expected-runner-id", "runner-fixture", "--plan-json", `{"version":1,"unknown":true}`},

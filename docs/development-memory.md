@@ -8212,3 +8212,54 @@ another runtime. Retain at most one active experiment. Production, installed DEV
 trial and manual-preview plugins/runners/ships remain untouched. Publication,
 activation, existing-desk adoption, Urgit, fleet URLs and clearweb continue; release
 qualification remains deferred.
+
+## M546 — Separate app-stage status and native release workflow (2026-11-07)
+
+`desk-application-status-v1` and `omabit desk-app-status` now expose bounded,
+read-only source/installation/Gall/Treaty/Docket observations through the existing
+runner/client/collector selection. Runtime/project/configuration and policy
+revisions are checked, and unchanged Clay brackets the observation. Unavailable,
+stale or malformed data fails visibly. Expected agents and observed live agents
+remain separate; source revision is not a compiled-agent revision. No overall
+readiness flag, permission grant, persistent format change or effect is added.
+Schema remains53. Core/CLI checks, private API/collector race cases and the private
+runtime adapter race fixture pass. The first collection test invocation could not
+open a sandboxed Unix socket; rerunning with private temporary sockets passed.
+The runtime fixture initially refused the host owner profile; the established
+private HOME/network/PID/mount harness passed without changing that profile.
+
+Probe32 passes native source publication, local activation, exact Treaty hash and
+matching current/realized docket metadata. Probe34 repeats those through the real
+app-stage API/client/collector on a fresh isolated fake and additionally uploads a
+local Ames glob via native authenticated Docket HTTP. The exact frozen HTML is
+served. Upload commits a new docket hash to Clay, advances Treaty and correctly
+conflicts with old staged source ownership. An intentionally invalid installed-agent
+update returns HTTP500 `crud!`; a subsequent read has the original revision/hash.
+The unacknowledged effect stays uncertain. Neither a retry nor a proven rejection
+is inferred. Probe34 exits cleanly and its test passes this explicit uncertainty
+case, but ordinary mutation-resume must refuse its pier. Probe33 stopped on the
+same response before read recovery; its original evidence remains unchanged.
+
+Earlier probes fixed three observation bugs: asking a union mark for only one
+variant can stall Lens; read the noun then validate its shape. Hoon's example mold
+returns its default rather than validating docket input; use the real docket mold.
+Treaty sovereign inspection needs the standard library in its subject. These are
+covered by the successful native observations. Malformed fixture docket source29
+was corrected before the successful activation runs; its receipt was not cleared.
+See `diagnostics/2026-11-07-desk-application-stages.json` for pins, hashes and limits.
+
+Source/Treaty/local-activation constructors and runtime wrappers are implemented,
+but their effects still have no public agent API in this checkpoint. Native upload
+is qualification only. Gated release receipts/CLI, source adoption, receiver checks,
+Urgit, fleet routes and clearweb assistance remain active. The lifecycle backend
+is synthetic, so this is not managed Docker/SSH or release qualification. Skills
+now distinguish source acceptance, live agents, metadata and actual frontend checks.
+Installed production/DEV/trial plugins, runners, ships and manual preview stay unchanged.
+
+Retention removed only classified rebuildable caches/binaries, duplicate immutable
+inputs and superseded generated fake piers10/29 with removal manifests. Original
+source, failed receipts/runner databases, compact logs and input identities remain;
+current failure33 and fresh34 piers are retained. The pruned unresolved29 receipt
+still records uncertainty; pruning is not reconciliation. Admission34 measured
+42,720,210,944 bytes including2GiB next scratch and1GiB uncertainty reserve for
+inaccessible DEV overlay work directories. Re-measure before another runtime.
