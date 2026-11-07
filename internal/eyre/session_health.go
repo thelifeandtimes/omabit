@@ -97,6 +97,12 @@ func (c *Client) healthIdentity(ctx context.Context, auth bool) (string, error) 
 		return "", err
 	}
 	defer response.Body.Close()
+	// A gateway or temporarily unavailable service is an unavailable route,
+	// not malformed identity evidence. This permits fresh route selection;
+	// it never proves this retained session was revoked.
+	if response.StatusCode == http.StatusBadGateway || response.StatusCode == http.StatusServiceUnavailable || response.StatusCode == http.StatusGatewayTimeout {
+		return "", ErrTransport
+	}
 	if response.StatusCode != http.StatusOK {
 		return "", ErrProtocol
 	}

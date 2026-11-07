@@ -6,6 +6,11 @@ The externally published URL remains useful for people visiting the ship's apps.
 
 ## Source implementation checkpoint
 
+The feature implementation and assembled receiver checks are complete through
+M572 below. Isolated Theme/DMs branches advertise version2; installed plugins and
+old approvals are unchanged. Native upgrade, live provider networking and release
+qualification remain separate. Historical checkpoints below retain their limits.
+
 `internal/shiproute` implements the route model, network eligibility, deterministic
 selection and unauthenticated identity probes. A binding includes runner ID,
 instance/project generation, ship identity and an opaque verified pier identity.
@@ -75,8 +80,8 @@ until refresh. Offline/replaced selections cannot retain edit authority. Wide an
 narrow offline UI fixtures exercise persistence, selection isolation and a
 concurrent-edit refusal. Registration remains separate from network configuration.
 
-The fleet feature is still in progress. Standing approval is connected in M562;
-automatic session reconnection remains pending. M558 adds collector `app-ship-review`,
+Standing approval is connected in M562 and reconnection in M570–M572.
+M558 adds collector `app-ship-review`,
 `app-ship-approvals` and `app-ship-approve`. Allow compares the live ship selection
 and installed helper; revoke is local and remains available offline or after
 helper removal. These commands change permission only, never issue a session. Installed state is unchanged;
@@ -133,7 +138,7 @@ are distinguished from malformed state, redirects and identity changes. Syntheti
 route/engine/HTTP and public CLI checks pass. This prepares the remaining replacement
 flow; it does not reconnect. See [health evidence](diagnostics/2026-11-07-fleet-session-health.json).
 
-## Integration still required
+## Integration coverage
 
 1. Setup URL editor, runner-owned registry, localhost and Tailscale/Serve discovery,
    explicit route/disable storage and CLI are implemented.
@@ -141,14 +146,14 @@ flow; it does not reconnect. See [health evidence](diagnostics/2026-11-07-fleet-
    are implemented in the public automatic connection command.
 3. Standing approval, journal/issuer and full-panel connection UI are implemented.
    Permission is checked under the lock that publishes each new attempt.
-4. Compatible receiver handoff and automatic reconnection. Preserve origin-bound
+4. Compatible receiver handoff and automatic reconnection are implemented. Preserve origin-bound
    sessions, original uncertain attempts and cleanup records; never replay pending
    app writes or silently copy a cookie to a different origin.
 5. Agent-assisted exposure planning/context and skill pathways are implemented.
    Live provider setup remains specific to the user’s authorized environment; Urbit
    apps own content publication.
 
-Release qualification remains deferred until these features are complete.
+Release qualification remains deferred to its separately scheduled phase.
 
 M565 completes the scoped native Urgit workflow test and operator guidance without
 an adapter. It does not change the outstanding receiver/reconnection work above.
@@ -181,3 +186,13 @@ permission remain required. Disconnect cancels pending automatic handoff without
 stopping an accepted successor during original cleanup. See
 [CLI/UI evidence](diagnostics/2026-11-07-fleet-reconnect-cli-ui.json).
 Real receiver capability advertisement and assembled qualification remain.
+
+M572 completes the assembled private test with actual collector CLI, both retained
+helpers, private Secret Service, the Theme sync coordinator and DMs main loop.
+Same-URL renewal, URL change with dropped old stream, offline predecessor cleanup,
+lost acknowledgement/status and clean shutdown pass. Each login is fresh and each
+cookie stays at its original origin; recovery never redelivers an offer. Theme
+desktop effects are inert and runner/Eyre peers synthetic. The test exposed and
+fixed Theme hub-following/shutdown/cleanup-marker issues and temporary gateway
+health classification. Both isolated receiver branches now advertise version2.
+See [assembled evidence](diagnostics/2026-11-07-real-receiver-reconnect.json).

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -15,7 +16,7 @@ import (
 )
 
 func TestStoredSessionHealthNeverChangesSessionOrFollowsRedirect(t *testing.T) {
-	for _, kind := range []string{"healthy", "expired", "rejected", "wrong-host", "wrong-name", "host-denied", "redirect-host", "redirect-name", "oversized-host", "oversized-name", "html", "unavailable", "timeout", "bad-json", "duplicate", "unknown", "case-alias", "zero-expiry", "wrong-origin", "wrong-cookie", "cancelled"} {
+	for _, kind := range []string{"healthy", "expired", "rejected", "wrong-host", "wrong-name", "host-denied", "redirect-host", "redirect-name", "oversized-host", "oversized-name", "html", "unavailable", "timeout", "bad-json", "duplicate", "unknown", "case-alias", "zero-expiry", "wrong-origin", "wrong-cookie", "cancelled", "502-host", "503-host", "504-host", "502-name", "503-name", "504-name", "404-host", "500-name"} {
 		t.Run(kind, func(t *testing.T) {
 			var calls, authenticated, forwarded atomic.Int32
 			other := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { forwarded.Add(1) }))
@@ -38,6 +39,11 @@ func TestStoredSessionHealthNeverChangesSessionOrFollowsRedirect(t *testing.T) {
 				}
 				if kind == "timeout" {
 					<-r.Context().Done()
+					return
+				}
+				if status, err := strconv.Atoi(strings.Split(kind, "-")[0]); err == nil && (strings.HasSuffix(kind, "-host") && !auth || strings.HasSuffix(kind, "-name") && auth) {
+					w.WriteHeader(status)
+					fmt.Fprint(w, "PRIVATE gateway response")
 					return
 				}
 				if kind == "rejected" && auth || kind == "host-denied" && !auth {
@@ -106,6 +112,14 @@ func TestStoredSessionHealthNeverChangesSessionOrFollowsRedirect(t *testing.T) {
 				wantState, wantCalls = "unreachable", 1
 			case "host-denied":
 				wantState, wantCalls = "unreachable", 1
+			case "502-host", "503-host", "504-host":
+				wantState, wantCalls = "unreachable", 1
+			case "502-name", "503-name", "504-name":
+				wantState, wantCalls, wantAuth = "unreachable", 2, 1
+			case "404-host":
+				wantError, wantCalls = ErrProtocol, 1
+			case "500-name":
+				wantError, wantCalls, wantAuth = ErrProtocol, 2, 1
 			case "wrong-host":
 				wantError, wantCalls = ErrIdentity, 1
 			case "wrong-name":

@@ -61,9 +61,11 @@ lookup does not remove manually configured routes. Path proxies, service VIPs,
 raw TCP forwarding and bespoke reverse proxies need explicit URL registration.
 No live Tailnet qualification is claimed by these fixture checks. The full-panel
 Setup URL editor passes offline interaction/rendering checks. Standing-approval authoring and automatic URL selection/connection are implemented
-below. Collector replacement/recovery and desktop polling pass private fixtures;
-assembled real-receiver qualification and capability advertisement remain pending.
-Do not claim those features from the presence of this registry capability alone.
+below. Collector replacement/recovery and desktop polling pass private fixtures.
+The isolated Theme and DMs source branches also pass assembled public collector,
+real private keyring and running-consumer checks with a synthetic Eyre peer.
+Their version2 declarations advertise replacement. Registry capability alone
+does not imply that an installed or previously approved helper supports it.
 
 Keep existing sessions bound to their original URL. Never copy a cookie to another
 origin or replay an uncertain application write to make a connection appear healthy.
@@ -182,6 +184,9 @@ are required before any replacement.
 that installed generation and the predecessor's retained generation must support
 replacement. Updating a plugin does not widen its older approved helper. Review
 new permission with the user; preserve the older helper for its own cleanup.
+Deploy complete receiver packages and restart their consumers normally during an
+authorized upgrade; do not replace files underneath running production plugins
+as a shortcut to these features.
 
 The desktop checks one eligible connection per minute while Omabit is active.
 It creates a fresh session when a formerly connected attempt is expired, rejected
@@ -189,6 +194,8 @@ or its route is unavailable; healthy connections stay unchanged. It does not cop
 cookies across URLs, replay app writes, or bypass locked/missing credentials,
 wrong identities, redirects or uncertain login results. Explicit Disconnect
 cancels pending automatic handoff and is not undone by maintenance.
+Temporary gateway/service responses (HTTP502/503/504) count as an unavailable
+route for selection, never as proof that its old session has been revoked.
 
 For one bounded maintenance step using the current attempt revision:
 
@@ -220,6 +227,9 @@ links in attempt views to distinguish the current connection from previous-sessi
 cleanup. An unreachable predecessor may remain pending while its accepted successor
 works. Preserve both credentials/history; do not delete a fence to reconnect.
 
-Private synthetic CLI and full-panel fixtures cover this pathway. The two real
-receiver branches still require assembled qualification before version2 is
-advertised. This is not installed upgrade, live Tailnet or release qualification.
+Private CLI and full-panel fixtures cover this pathway. The assembled test also
+checks the actual Theme sync coordinator and DMs bridge across URL changes,
+same-URL renewal, old-origin outage/cleanup, and lost delivery/status replies.
+Fresh login counts and helper calls prove that recovery does not redeliver.
+Theme desktop effects are inert; the runner/Eyre peer is synthetic. This is not
+installed upgrade, live Tailnet or release qualification.

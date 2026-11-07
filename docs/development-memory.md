@@ -9121,3 +9121,47 @@ until the assembled receiver/keyring/transport pathway is qualified. Source
 fixtures do not qualify a native install, production Tailnet or stable release.
 Production/DEV/trial plugins/runners, protected ships, original receiver checkouts
 and the persistent manual preview remain untouched.
+
+## M572 — Assembled reconnect and feature implementation closeout (2026-11-07)
+
+The actual collector public command dispatcher, both retained receiver helpers,
+real private Secret Service and running Theme/DMs consumers pass the assembled
+private test. Each plugin performs an initial connection and three replacements:
+same URL, alternate URL with the original stream/route unavailable, and lost
+delivery/status acknowledgement. Fresh issuance/code counts, exact helper calls
+and strict cookie-origin checks pass. Original cleanup remains pending offline,
+then completes and archives without stopping the accepted successor. Both consumers
+exit cleanly with their UI input pipes still open.
+
+This test exposed and fixed three Theme gaps: following the selected desktop hub
+through accepted handoff ancestry across URL changes; stopping its input reader
+without a Python buffered-I/O shutdown abort; and accepting the exact receiver's
+durable cleanup receipt for a retained in-memory watch marker. Hub selection does
+not enable sync, unpause the user or adopt an unrelated same-named ship. Unknown
+records do not prove cleanup. The collector now classifies HTTP502/503/504 health
+responses as unavailable routes, without treating them as revocation evidence.
+
+The final assembled run is `/tmp/omabit-real-reconnect-07`. Earlier failed runs
+and fixture corrections are recorded, including an archived-flag mistake, omitted
+Talon accent behavior and an incorrect synthetic expired-token response. Final
+Theme regression14 passes151 tests; focused health/validation tests pass with the
+race detector. Skill validation and five packaging tests pass. CLI documentation
+was regenerated from172 actual command/topic help entries in a networkless private
+HOME; help created no registry/state.
+
+Theme source `821242e` and DMs source `c7b7d15` now advertise declaration2 on their
+isolated `codex/0.4.0-session-reconnect` branches. All tested Python runtime bytes
+match those commits. Only profile/manifest names, declaration capability and an
+inventoried lost-reply wrapper were adapted in the capsule. Theme desktop effects
+were inert; its coordinator, watch and Talon bridge were actual code. DMs used its
+actual main loop/control. Runner/Eyre peers were synthetic, so this does not claim
+a new native Urbit, provider/Tailnet deployment, installed upgrade or release gate.
+Older cached version1 helpers retain their original capability and cleanup path.
+
+This supersedes M571's pending assembled receiver/capability work and closes the
+approved feature implementation scope. Original migration fixtures and earlier
+native desk/Urgit evidence remain authoritative within their recorded limits.
+Release qualification/publication remains explicitly deferred. No installed
+production/DEV/trial plugin, runner, ship, desktop/keyring or persistent preview
+was changed. Exact source identities, tests and limitations are recorded in
+`diagnostics/2026-11-07-real-receiver-reconnect.json`.

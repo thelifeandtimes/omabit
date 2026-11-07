@@ -57,6 +57,7 @@ Commands:
   login-code INSTANCE --revision N --container-id FULL_ID --reveal
               Operator-only secret response; requires pinned --runner/--expected-runner-id.
   snapshot    Show the current runner snapshot.
+  app-policy  Read app commit/publication permissions and target identities.
   logs INSTANCE --revision N [--watch --interval 3s]
               Read a bounded operator-only runtime log tail from the pinned runner.
               Watch reuses one connection; JSON updates include tails or retry/stop errors.
@@ -114,12 +115,21 @@ Commands:
   watch [--interval 1s]
                Poll snapshots until canceled; minimum interval: 100ms.
   app-plugins
+  app-ship-review --instance ID
+  app-ship-approvals
+  app-ship-approve --request-file FILE [--allow-owner-session]
   app-connections
   app-connection REQUEST_ID
                Inspect installed connection helpers and durable attempts (no ship IO).
   app-connect SHIP_NAME [selection flags] --approve-owner-session
   app-managed-connect [fleet and plugin selection flags] --approve-owner-session
                Approve an independent owner session for an exact installed helper.
+  app-fleet-connect --request-file FILE --request-id ID
+               Choose a verified URL under an existing standing ship/helper grant.
+  app-fleet-reconnect --request-file FILE --request-id ID --previous-request-id ID --expected-revision N
+  app-fleet-maintain REQUEST_ID --expected-revision N [--lan-profile ID]
+  app-fleet-health REQUEST_ID --expected-revision N [--lan-profile ID]
+               Check a fleet session without changing it or replaying application work.
   app-archive REQUEST_ID --expected-revision N
                Archive a fully closed attempt while retaining its replay receipt.
   app-disconnect REQUEST_ID --expected-revision N
@@ -162,6 +172,8 @@ app-plugins lists locally installed connection-capable plugins. app-connections 
 Approval gives this plugin an independent ordinary Eyre owner session. Eyre does not isolate desks. Plugins then connect directly to the ship and retain standalone sign-in.
 Disconnect revokes only this attempt's session. Recover never retries issuance or delivery. Reconcile removes this attempt's receiver state after revocation.
 app-archive removes a fully closed/reconciled attempt from the active list, retaining a permanent replay receipt. app-connection reads one active or archived request.
+app-fleet-health checks a connected fleet session under current standing permission, installed helper and network eligibility. It makes bounded identity GETs only; it does not reconnect, log out, deliver credentials or change the attempt. LAN scopes must be explicitly supplied for this check.
+app-fleet-maintain performs one bounded health/reconnect or lineage recovery step. It preserves uncertain requests, observes lost replacement replies, and uses current standing permission. Known failed children back off for five minutes and stop automatic retry after three failures. Explicit Disconnect is never automatically undone.
 No command installs plugins or backends. No runner, SSH, login code or cookie argument is accepted.
   -expected-revision uint
         attempt revision from app-connections
@@ -176,6 +188,8 @@ app-plugins lists locally installed connection-capable plugins. app-connections 
 Approval gives this plugin an independent ordinary Eyre owner session. Eyre does not isolate desks. Plugins then connect directly to the ship and retain standalone sign-in.
 Disconnect revokes only this attempt's session. Recover never retries issuance or delivery. Reconcile removes this attempt's receiver state after revocation.
 app-archive removes a fully closed/reconciled attempt from the active list, retaining a permanent replay receipt. app-connection reads one active or archived request.
+app-fleet-health checks a connected fleet session under current standing permission, installed helper and network eligibility. It makes bounded identity GETs only; it does not reconnect, log out, deliver credentials or change the attempt. LAN scopes must be explicitly supplied for this check.
+app-fleet-maintain performs one bounded health/reconnect or lineage recovery step. It preserves uncertain requests, observes lost replacement replies, and uses current standing permission. Known failed children back off for five minutes and stop automatic retry after three failures. Explicit Disconnect is never automatically undone.
 No command installs plugins or backends. No runner, SSH, login code or cookie argument is accepted.
   -approve-owner-session
         approve this helper receiving an ordinary Eyre owner session with access across desks
@@ -202,6 +216,8 @@ app-plugins lists locally installed connection-capable plugins. app-connections 
 Approval gives this plugin an independent ordinary Eyre owner session. Eyre does not isolate desks. Plugins then connect directly to the ship and retain standalone sign-in.
 Disconnect revokes only this attempt's session. Recover never retries issuance or delivery. Reconcile removes this attempt's receiver state after revocation.
 app-archive removes a fully closed/reconciled attempt from the active list, retaining a permanent replay receipt. app-connection reads one active or archived request.
+app-fleet-health checks a connected fleet session under current standing permission, installed helper and network eligibility. It makes bounded identity GETs only; it does not reconnect, log out, deliver credentials or change the attempt. LAN scopes must be explicitly supplied for this check.
+app-fleet-maintain performs one bounded health/reconnect or lineage recovery step. It preserves uncertain requests, observes lost replacement replies, and uses current standing permission. Known failed children back off for five minutes and stop automatic retry after three failures. Explicit Disconnect is never automatically undone.
 No command installs plugins or backends. No runner, SSH, login code or cookie argument is accepted.
 ```
 
@@ -214,6 +230,8 @@ app-plugins lists locally installed connection-capable plugins. app-connections 
 Approval gives this plugin an independent ordinary Eyre owner session. Eyre does not isolate desks. Plugins then connect directly to the ship and retain standalone sign-in.
 Disconnect revokes only this attempt's session. Recover never retries issuance or delivery. Reconcile removes this attempt's receiver state after revocation.
 app-archive removes a fully closed/reconciled attempt from the active list, retaining a permanent replay receipt. app-connection reads one active or archived request.
+app-fleet-health checks a connected fleet session under current standing permission, installed helper and network eligibility. It makes bounded identity GETs only; it does not reconnect, log out, deliver credentials or change the attempt. LAN scopes must be explicitly supplied for this check.
+app-fleet-maintain performs one bounded health/reconnect or lineage recovery step. It preserves uncertain requests, observes lost replacement replies, and uses current standing permission. Known failed children back off for five minutes and stop automatic retry after three failures. Explicit Disconnect is never automatically undone.
 No command installs plugins or backends. No runner, SSH, login code or cookie argument is accepted.
 ```
 
@@ -226,9 +244,64 @@ app-plugins lists locally installed connection-capable plugins. app-connections 
 Approval gives this plugin an independent ordinary Eyre owner session. Eyre does not isolate desks. Plugins then connect directly to the ship and retain standalone sign-in.
 Disconnect revokes only this attempt's session. Recover never retries issuance or delivery. Reconcile removes this attempt's receiver state after revocation.
 app-archive removes a fully closed/reconciled attempt from the active list, retaining a permanent replay receipt. app-connection reads one active or archived request.
+app-fleet-health checks a connected fleet session under current standing permission, installed helper and network eligibility. It makes bounded identity GETs only; it does not reconnect, log out, deliver credentials or change the attempt. LAN scopes must be explicitly supplied for this check.
+app-fleet-maintain performs one bounded health/reconnect or lineage recovery step. It preserves uncertain requests, observes lost replacement replies, and uses current standing permission. Known failed children back off for five minutes and stop automatic retry after three failures. Explicit Disconnect is never automatically undone.
 No command installs plugins or backends. No runner, SSH, login code or cookie argument is accepted.
   -expected-revision uint
         attempt revision from app-connections
+```
+
+## app-fleet-connect
+
+```text
+Usage: urbit-collector --runner NAME --expected-runner-id ID app-fleet-connect --request-file FILE --request-id ID
+
+Connects an exact ship incarnation and installed helper under existing standing permission. Request: version:1, binding, target, grant_revision; optional lan_profiles explicitly selects current LAN scopes. Omabit chooses a verified registered URL from this desktop's current network. Only unauthenticated probes may fall back; login and handoff are never replayed. This command cannot grant permission or print credentials. It creates an independent ordinary Eyre owner session in Secret Service, with no plaintext fallback or parent-login reuse. Eyre does not isolate desks. A repeated request requires inspection/recovery, not another connection. Use app-connections and app-connection for durable status.
+```
+
+## app-fleet-health
+
+```text
+Usage: urbit-collector [--config-dir DIR] [--format text] app-fleet-health REQUEST_ID --expected-revision N
+
+app-plugins lists locally installed connection-capable plugins. app-connections lists durable attempts without contacting ships.
+Approval gives this plugin an independent ordinary Eyre owner session. Eyre does not isolate desks. Plugins then connect directly to the ship and retain standalone sign-in.
+Disconnect revokes only this attempt's session. Recover never retries issuance or delivery. Reconcile removes this attempt's receiver state after revocation.
+app-archive removes a fully closed/reconciled attempt from the active list, retaining a permanent replay receipt. app-connection reads one active or archived request.
+app-fleet-health checks a connected fleet session under current standing permission, installed helper and network eligibility. It makes bounded identity GETs only; it does not reconnect, log out, deliver credentials or change the attempt. LAN scopes must be explicitly supplied for this check.
+app-fleet-maintain performs one bounded health/reconnect or lineage recovery step. It preserves uncertain requests, observes lost replacement replies, and uses current standing permission. Known failed children back off for five minutes and stop automatic retry after three failures. Explicit Disconnect is never automatically undone.
+No command installs plugins or backends. No runner, SSH, login code or cookie argument is accepted.
+  -expected-revision uint
+        attempt revision from app-connections
+  -lan-profile value
+        explicit current LAN scope; may repeat up to eight times
+```
+
+## app-fleet-maintain
+
+```text
+Usage: urbit-collector [--config-dir DIR] [--format text] app-fleet-maintain REQUEST_ID --expected-revision N
+
+app-plugins lists locally installed connection-capable plugins. app-connections lists durable attempts without contacting ships.
+Approval gives this plugin an independent ordinary Eyre owner session. Eyre does not isolate desks. Plugins then connect directly to the ship and retain standalone sign-in.
+Disconnect revokes only this attempt's session. Recover never retries issuance or delivery. Reconcile removes this attempt's receiver state after revocation.
+app-archive removes a fully closed/reconciled attempt from the active list, retaining a permanent replay receipt. app-connection reads one active or archived request.
+app-fleet-health checks a connected fleet session under current standing permission, installed helper and network eligibility. It makes bounded identity GETs only; it does not reconnect, log out, deliver credentials or change the attempt. LAN scopes must be explicitly supplied for this check.
+app-fleet-maintain performs one bounded health/reconnect or lineage recovery step. It preserves uncertain requests, observes lost replacement replies, and uses current standing permission. Known failed children back off for five minutes and stop automatic retry after three failures. Explicit Disconnect is never automatically undone.
+No command installs plugins or backends. No runner, SSH, login code or cookie argument is accepted.
+  -expected-revision uint
+        attempt revision from app-connections
+  -lan-profile value
+        explicit current LAN scope; may repeat up to eight times
+```
+
+## app-fleet-reconnect
+
+```text
+Usage: urbit-collector --runner NAME --expected-runner-id ID app-fleet-connect --request-file FILE --request-id ID
+
+Connects an exact ship incarnation and installed helper under existing standing permission. Request: version:1, binding, target, grant_revision; optional lan_profiles explicitly selects current LAN scopes. Omabit chooses a verified registered URL from this desktop's current network. Only unauthenticated probes may fall back; login and handoff are never replayed. This command cannot grant permission or print credentials. It creates an independent ordinary Eyre owner session in Secret Service, with no plaintext fallback or parent-login reuse. Eyre does not isolate desks. A repeated request requires inspection/recovery, not another connection. Use app-connections and app-connection for durable status.
+Reconnect adds --previous-request-id ID --expected-revision N. It requires the exact replacement-capable helper and current standing permission. Healthy connections are left unchanged; paused predecessors can retry only after failed children are fully reconciled. Lost delivery replies are observed, never replayed.
 ```
 
 ## app-managed-connect
@@ -248,7 +321,29 @@ app-plugins lists locally installed connection-capable plugins. app-connections 
 Approval gives this plugin an independent ordinary Eyre owner session. Eyre does not isolate desks. Plugins then connect directly to the ship and retain standalone sign-in.
 Disconnect revokes only this attempt's session. Recover never retries issuance or delivery. Reconcile removes this attempt's receiver state after revocation.
 app-archive removes a fully closed/reconciled attempt from the active list, retaining a permanent replay receipt. app-connection reads one active or archived request.
+app-fleet-health checks a connected fleet session under current standing permission, installed helper and network eligibility. It makes bounded identity GETs only; it does not reconnect, log out, deliver credentials or change the attempt. LAN scopes must be explicitly supplied for this check.
+app-fleet-maintain performs one bounded health/reconnect or lineage recovery step. It preserves uncertain requests, observes lost replacement replies, and uses current standing permission. Known failed children back off for five minutes and stop automatic retry after three failures. Explicit Disconnect is never automatically undone.
 No command installs plugins or backends. No runner, SSH, login code or cookie argument is accepted.
+```
+
+## app-policy
+
+```text
+Usage: urbit-collector --socket /absolute/path/runner.sock app-policy [--instance ID [--desk NAME]]
+
+Read saved app permissions and their source scopes. No permission edits or desk mutations. Requires app-development-policy-v2.
+
+Omabit fleet management client; inspect hello.mode/features for server capabilities.
+The collector selects runners; the runner owns runtime operations and persistent state.
+Select --socket with an absolute path or --runner with an enrolled name before the subcommand.
+Runner requests check Hello compatibility; listing and forgetting enrollment are local.
+Revisions and request IDs are never inferred; mutations are never automatically retried.
+Results are indented JSON; watch commands emit compact newline-delimited JSON (NDJSON).
+
+  -desk string
+        optional Clay desk name without percent sign
+  -instance string
+        optional managed instance or project member ID
 ```
 
 ## app-reconcile
@@ -260,6 +355,8 @@ app-plugins lists locally installed connection-capable plugins. app-connections 
 Approval gives this plugin an independent ordinary Eyre owner session. Eyre does not isolate desks. Plugins then connect directly to the ship and retain standalone sign-in.
 Disconnect revokes only this attempt's session. Recover never retries issuance or delivery. Reconcile removes this attempt's receiver state after revocation.
 app-archive removes a fully closed/reconciled attempt from the active list, retaining a permanent replay receipt. app-connection reads one active or archived request.
+app-fleet-health checks a connected fleet session under current standing permission, installed helper and network eligibility. It makes bounded identity GETs only; it does not reconnect, log out, deliver credentials or change the attempt. LAN scopes must be explicitly supplied for this check.
+app-fleet-maintain performs one bounded health/reconnect or lineage recovery step. It preserves uncertain requests, observes lost replacement replies, and uses current standing permission. Known failed children back off for five minutes and stop automatic retry after three failures. Explicit Disconnect is never automatically undone.
 No command installs plugins or backends. No runner, SSH, login code or cookie argument is accepted.
   -expected-revision uint
         attempt revision from app-connections
@@ -274,9 +371,35 @@ app-plugins lists locally installed connection-capable plugins. app-connections 
 Approval gives this plugin an independent ordinary Eyre owner session. Eyre does not isolate desks. Plugins then connect directly to the ship and retain standalone sign-in.
 Disconnect revokes only this attempt's session. Recover never retries issuance or delivery. Reconcile removes this attempt's receiver state after revocation.
 app-archive removes a fully closed/reconciled attempt from the active list, retaining a permanent replay receipt. app-connection reads one active or archived request.
+app-fleet-health checks a connected fleet session under current standing permission, installed helper and network eligibility. It makes bounded identity GETs only; it does not reconnect, log out, deliver credentials or change the attempt. LAN scopes must be explicitly supplied for this check.
+app-fleet-maintain performs one bounded health/reconnect or lineage recovery step. It preserves uncertain requests, observes lost replacement replies, and uses current standing permission. Known failed children back off for five minutes and stop automatic retry after three failures. Explicit Disconnect is never automatically undone.
 No command installs plugins or backends. No runner, SSH, login code or cookie argument is accepted.
   -expected-revision uint
         attempt revision from app-connections
+```
+
+## app-ship-approvals
+
+```text
+Usage: urbit-collector [--config-dir DIR] [--runner NAME --expected-runner-id ID] app-ship-approvals [--instance ID | --request-file FILE | --request-json JSON] [--allow-owner-session]
+
+app-ship-review reads a verified running ship and current standing choices. app-ship-approvals lists choices without contacting runners. app-ship-approve saves a revision-bound choice. An allow requires a reviewed selection, matching installed plugin helper and --allow-owner-session; it applies to any verified registered URL of exactly this ship incarnation. Revoke (allowed:false) uses the original binding/target and current approval revision; no runner, helper or online ship is required. Neither operation obtains credentials or starts a connection. Revocation blocks future attempts; existing sessions retain their separate Disconnect/recovery actions. Existing per-attempt approvals never become standing grants.
+```
+
+## app-ship-approve
+
+```text
+Usage: urbit-collector [--config-dir DIR] [--runner NAME --expected-runner-id ID] app-ship-approve [--instance ID | --request-file FILE | --request-json JSON] [--allow-owner-session]
+
+app-ship-review reads a verified running ship and current standing choices. app-ship-approvals lists choices without contacting runners. app-ship-approve saves a revision-bound choice. An allow requires a reviewed selection, matching installed plugin helper and --allow-owner-session; it applies to any verified registered URL of exactly this ship incarnation. Revoke (allowed:false) uses the original binding/target and current approval revision; no runner, helper or online ship is required. Neither operation obtains credentials or starts a connection. Revocation blocks future attempts; existing sessions retain their separate Disconnect/recovery actions. Existing per-attempt approvals never become standing grants.
+```
+
+## app-ship-review
+
+```text
+Usage: urbit-collector [--config-dir DIR] [--runner NAME --expected-runner-id ID] app-ship-review [--instance ID | --request-file FILE | --request-json JSON] [--allow-owner-session]
+
+app-ship-review reads a verified running ship and current standing choices. app-ship-approvals lists choices without contacting runners. app-ship-approve saves a revision-bound choice. An allow requires a reviewed selection, matching installed plugin helper and --allow-owner-session; it applies to any verified registered URL of exactly this ship incarnation. Revoke (allowed:false) uses the original binding/target and current approval revision; no runner, helper or online ship is required. Neither operation obtains credentials or starts a connection. Revocation blocks future attempts; existing sessions retain their separate Disconnect/recovery actions. Existing per-attempt approvals never become standing grants.
 ```
 
 ## configure
@@ -576,6 +699,7 @@ Usage: urbit-collector [--format json|text] help [TOPIC]
 
 Offline client guidance only: no registry, credentials or runner was inspected. Use hello for actual runner capabilities and authority.
 
+  app-development Inspect default-blocked desk creation, commit and publication permissions.
   runners      Select a runner and inspect its identity, authority and fleet.
   ships        Observe and operate ships managed by a selected runner.
   projects     Review fresh fake-galaxy projects, run explicit lifecycle actions and read saved operation history.
