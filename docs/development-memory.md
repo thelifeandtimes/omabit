@@ -7564,3 +7564,32 @@ updates reject Clay-bound destinations. Direct ship pushes are the initial targe
 This turn records source research and architecture. Live pipeline qualification
 and the new CLI implementation remain future work. M525's end of distro testing
 continues to apply, and Agent Help remains the next implementation slice.
+
+## M527 — Default-closed agent gates and Unix/Clay change alerts (2026-11-06)
+
+The user's answers supersede M526's proposed default promotion policy and its
+pending scope decisions. Follow each application's existing release configuration,
+including Urgit's rules. The 0.4.0 workflow covers Urbit desks and their frontend
+assets. Companion Omarchy plugin release coordination is deferred.
+
+Agent CLI desk commit and publication must start disabled. Add **Setup → App
+development and publishing**, where the user configures permissions globally,
+per runner, per ship and per installed desk. The architecture uses independent
+commit and publication permissions with Inherit/Allow/Block and the most specific
+explicit value winning. New development fakes and project members also start
+blocked. A purpose label conveys intent while the effective policy controls
+permission. User-configured gates take precedence over a convenience CLI flow.
+
+Runner enforcement covers equivalent effects, including an Omabit-managed Urgit
+push into a bound desk. Updating a published desk requires both permissions.
+Agents inspect policy read-only and follow the app's release settings. Human
+Dojo and independently configured Urgit clients use their native authority.
+Global policy edits need per-runner rollout status, with offline runners showing
+their last applied revision. Queued effects recheck policy before execution.
+
+Observe mounted Unix content against Clay and alert on uncommitted additions,
+edits and deletions, including direct editor/copy changes. Distinguish divergence
+and unavailable observation, and retain later edits when an earlier commit
+completes. The [architecture](app-development-0.4.0.md) and bundled agent skills
+now record these requirements. This is a design and skill update. Runtime gates,
+Setup controls, change alerts and the new desk CLI remain to be implemented.

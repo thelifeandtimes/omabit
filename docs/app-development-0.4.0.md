@@ -3,14 +3,17 @@
 Proposed architecture, recorded 2026-11-06. The user added this work to the
 0.4.0 scope after remote-runner installation testing. Source review is complete.
 The APIs and CLI commands below are proposed, with runtime qualification pending.
-Default release policy and companion-plugin scope are awaiting user feedback.
+The user's follow-up fixes the scope to Urbit desks and their frontend assets.
+Agent commit and publication start disabled, with permissions configured in
+Omabit Setup. Each application retains its developer's release configuration.
 
 ## Product workflow
 
-An agent should be able to prepare a desk, deploy its source, check the running
-application, publish from a selected distributor and verify installation on
-selected receivers. Support ordinary managed ships, standalone development fakes
-and members of fake project networks through the same operation model.
+An agent should be able to prepare a desk, stage its source, inspect pending
+changes and, when the applicable gates permit it, commit and publish. Follow the
+application's configured release steps and verify its results on selected
+receivers. Support ordinary managed ships, standalone development fakes and
+members of fake project networks through the same operation model.
 
 Provide two source paths with shared status and release records.
 
@@ -73,32 +76,86 @@ Treaty publication is an additional Omabit workflow. Upstream's inspected Git
 publication path updates repository state. Test Treaty capability and metadata
 on the selected ship before offering app discovery publication.
 
-## Ship intent and desk bindings
+## Setup permissions, ship intent and desk bindings
 
-Add a runner-owned **App workflow** setting with `off`, `development` and
-`distribution` values. Show it in the ship profile and expose it through the CLI.
-It controls Omabit's automation and appears consistently on every collector.
+Add **Setup → App development and publishing**, with independent permissions
+for **Commit to Clay** and **Publish or distribute updates**. Both default to
+blocked for existing ships, new ships, development fakes and project members.
+The user enables agent access through this section.
 
-- Existing ships migrate to `off`. New development fakes and project members
-  default to `development`, with that choice visible at creation.
-- `development` enables desk preparation, source deployment, local activation and
-  test-network distribution. `distribution` enables configured release targets.
-- Persist settings against runner/instance identity. Project members also carry
-  the project identity and current member generation. Repeated fake ship names
-  across projects require those additional identifiers.
-- A desk binding records its desk name, source directory or Git source, source
-  mode, expected baseline, optional Urgit repository/branch, publication method,
-  release policy and chosen receiver checks.
+Resolve each permission from global → runner → ship → installed desk. Scoped
+entries offer Inherit, Allow and Block. The most specific explicit value wins,
+with Block as the global default. For example, allowing one desk permits that
+desk while its siblings inherit the global block. Show the effective result and
+the scope supplying it beside each ship/desk and in read-only CLI status.
 
-These settings govern Omabit operations within the existing operator role.
-Unix-owner access and Urgit's own Git endpoint retain their existing authority.
-An Urgit pipeline has an explicit disable action that reconciles its binding and
-Omabit-managed credential. Changing a profile label alone cannot stop direct
-pushes that an existing Urgit binding accepts.
+The runner stores and enforces its policy, shared by every collector. Global
+changes roll out to the enrolled runners, with per-runner applied/pending state.
+An offline runner retains its last acknowledged policy until it receives the
+change. Report that condition in Setup. New runner enrollment begins blocked.
+Use versioned policy updates, preserve overrides during global changes, and
+detect concurrent edits against the runner's current policy revision.
 
-Use a versioned configuration migration and feature negotiation. Older clients'
-ordinary settings edits must preserve the new fields. Stopped host transfers
-must retain intent and bindings, with credential reconfiguration where required.
+Enforce gates at the runner's mutation boundary. The agent CLI can inspect
+policy and report the precise blocking scope. Permission changes use the
+user-facing Setup path. Agent requests, ordinary settings edits, convenience
+deployment commands and acknowledgement flags cannot grant commit/publication
+permission to themselves. Recheck effective policy immediately before every
+effect, including queued work and retries after a restart. A policy change
+fences future effects while completed stages retain their receipts.
+
+Apply permissions to the effects of an operation. A commit to a published desk
+requires commit and publication permission because subscribers can receive that
+revision. An Omabit-initiated push to a Clay-bound Urgit branch has the same
+requirements. Include equivalent resync, merge, generic control and composite
+deployment entry points in enforcement. Source writes into an auto-committing
+mount also require the permissions their resulting effects would use. When the
+auto-commit or publication state is unresolved, keep files in staging and report
+the unresolved evidence.
+
+The boundary covers Omabit's agent-facing operations and managed Git integration.
+Human-operated Dojo and independently configured Urgit clients use their native
+authority. An unrestricted process with Unix-owner access can reach other host
+interfaces. Skills must honor a blocked gate across alternate transports, and
+the UI should describe this scope accurately.
+
+Keep ship purpose as optional descriptive metadata, such as standard,
+development or distribution. New fakes can carry a development label while both
+permissions remain blocked. Persist policy and bindings against runner/instance
+identity. Project members additionally carry project identity and current member
+generation, so repeated fake ship names resolve correctly.
+
+A desk binding records its desk, source directory or Git source, source mode,
+expected baseline, optional Urgit repository/branch, publication method, the
+developer's release configuration and chosen receiver checks. An Urgit pipeline
+has its own disable action for the binding and Omabit-managed credential.
+
+Use a versioned migration and feature negotiation. Older clients' ordinary edits
+must preserve the new fields. Stopped host transfers retain explicit intent and
+desk bindings, then recompute permission against the destination runner's policy.
+Require explicit enablement when the transferred permission cannot be reconciled.
+
+## Uncommitted-change alerts
+
+For mounted desks, compare the current Unix tree with the mounted representation
+of the current Clay revision, including additions, edits and deletions. Observe
+files changed by editors and direct copy as well as Omabit uploads. Reuse Clay's
+mark rendering to avoid false differences from canonicalization.
+
+Display **Uncommitted changes** in the ship/desk view, with the desk name, changed
+file count, observation time and a details action. Expose the same structured
+status to agents. Offer a Commit action only under the effective policy and the
+application's release settings. The alert itself performs observation.
+
+Use debounced file observation, bounded reconciliation and refresh on reconnect.
+Separate synchronized, Unix changes, Clay changes, divergence and unavailable
+states. Restarting a collector must rediscover pending changes, and an offline
+ship or failed comparison must retain an unavailable/stale indication. Clear an
+alert only after the observed trees match. During a commit, track its exact source
+digest so later file saves remain visible as new pending changes.
+
+For Urgit bindings, use its Git/Clay bridge status and the developer's existing
+branch/release configuration. Show pending or divergent work in those terms.
 
 ## Mounted-desk execution
 
@@ -123,14 +180,18 @@ publication state to determine the effects of a commit.
    edits and generated prerequisites. Journal partial file application and
    reconcile it before committing. Check both the mounted files and Clay baseline
    again so direct editor saves or another desktop cannot be silently overwritten.
-5. Submit the typed commit operation and observe the resulting Clay revision.
+5. Read the effective gates and the application's release configuration before
+   submitting the typed commit operation. When blocked, retain the staged or
+   uncommitted work and report its status. After an allowed commit, observe the
+   resulting Clay revision.
    Install locally on first activation when requested, then observe Kiln/Gall and
    app-specific readiness. Record compilation rejection, activation failure and
    successful readiness separately.
 6. Resolve frontend delivery from the desk's declared layout. Support desk-served
    assets and existing docket/glob metadata. A required glob upload has its own
-   result and must complete before claiming the frontend is ready. Confirm the
-   runtime-specific upload adapter in the first implementation spike.
+   result and must complete before claiming the frontend is ready. Apply the
+   publication gate when that upload changes an already distributed frontend.
+   Confirm the runtime-specific upload adapter in the first implementation spike.
 
 Prefer typed operations through the runner's verified private HTTP/Lens access
 for managed ships, reusing existing container/port selection and typed payloads.
@@ -154,10 +215,12 @@ promote the exact tested artifact or commit to the distributor. Initial Treaty
 publication establishes discovery, and later distributor commits may update
 subscribers immediately. [Clay distribution](https://docs.urbit.org/build-on-urbit/core-academy/ca10)
 
-Proposed default is explicit promotion, with per-desk automatic release from a
-configured branch available after setup. A developer authorized to push that
-branch has the corresponding release authority. Branch protection and a
-successful Ford result alone cannot establish application-level tests.
+Follow the developer's configured release gates, including Urgit's configured
+branch and validation behavior. Explicit promotion and automatic release can
+both be valid application configurations. Omabit's default-closed agent gates
+determine whether its CLI may perform a requested effect. The application owns
+the release sequence after permission is enabled. Report the checks actually
+observed, including any app-specific tests required by that configuration.
 
 For desks with a docket, provide Treaty publication. For source-only desks,
 offer explicit Clay read publication and named `|install` on receivers. Read
@@ -194,7 +257,9 @@ Git credential helper bound to the verified origin and repository path. Show the
 chosen Git remote. Reuse the planned fleet-origin registry to discover usable
 routes, with explicit reconciliation after an uncertain push response.
 
-After setup, ordinary Git handles pushes and Urgit performs its Clay validation.
+After setup, ordinary Git handles pushes and Urgit performs its Clay validation
+under the developer's existing release configuration. Omabit-managed agent pushes
+check the effective commit/publication policy before submitting an update.
 Omabit records or observes the resulting commit/revision pair, readiness and
 publication state. Poll authoritative state for operation completion. Webhook
 events can trigger observation, with signed delivery and duplicate handling if
@@ -204,13 +269,15 @@ as a separately qualified extension.
 ## Agent-facing operations and recovery
 
 Use the existing collector CLI and runner operation store. Suggested command
-families are `desk-status`, `desk-prepare`, `desk-stage`, `desk-deploy`,
-`desk-publish`, `desk-install` and `desk-urgit-configure`. Expose individual steps
-for agents as well as a composed deployment. All names remain provisional.
+families are `desk-status`, `desk-prepare`, `desk-stage`, `desk-commit`,
+`desk-deploy`, `desk-publish`, `desk-install` and `desk-urgit-configure`. Expose
+individual steps for agents as well as a composed deployment. All names remain
+provisional.
 
 Each write binds the runner, ship instance, optional project/member, desk,
-configuration revision, source digest and request ID. Return durable operation
-receipts with stage, result and evidence. Persist intent before dispatch and
+configuration and effective policy revisions, source digest and request ID.
+Return durable operation receipts with stage, result and evidence. Persist
+intent before dispatch and
 serialize effects against concurrent desk changes and instance lifecycle actions.
 After a lost response, inspect Clay, Git, installation and publication state
 before deciding whether any further mutation is needed. An unresolved outcome
@@ -223,30 +290,36 @@ pipeline after an interrupted terminal or desktop restart.
 
 ## Implementation sequence and acceptance
 
-1. Complete the transport spike on disposable fakes. Exercise prepare, mount,
-   commit, local activation, Treaty publication, source-only publication and
-   receiver installation with native control disabled. Confirm frontend/glob
-   handling and actual compilation/activation failure reporting.
-2. Add per-ship intent, desk bindings, bounded source transfer, typed runner
-   actions and durable receipts. Implement the collector workflow for ordinary
-   instances and project members together.
-3. Exercise one fake publisher and two receivers. Deploy a first version, verify
-   it, then promote an update and verify receipt on both receivers. Cover wrong
-   project/ship selection, stale revisions, local source conflicts, path escapes,
+1. Implement policy storage, inheritance, runner enforcement and the Setup
+   controls before exposing commit/publish commands. Test global defaults, scoped
+   overrides, all-blocked fakes, concurrent changes, offline policy rollout,
+   stale clients, alternate entry points and disablement while work is queued.
+2. Complete the transport spike on disposable fakes with explicit test policy.
+   Exercise prepare, mount, commit, local activation, Treaty publication,
+   source-only publication and receiver installation with native control disabled.
+   Confirm frontend/glob handling and compilation/activation failure reporting.
+3. Add desk bindings, bounded source transfer, change observation, typed runner
+   actions and durable receipts for ordinary instances and project members.
+   Verify alerts after external copy/edit/delete, reconnect, failed commit,
+   Clay-side changes and edits arriving during an in-flight commit.
+4. Exercise one fake publisher and two receivers. Deploy a first version, verify
+   it, then apply an update under the app's release configuration and verify
+   receipt on both receivers. Cover wrong project/ship selection, stale revisions,
+   local source conflicts, path escapes,
    generated-file preservation, interruption and concurrent lifecycle operations.
-4. Add the optional Urgit adapter against the reviewed revision. Test successful
+5. Add the optional Urgit adapter against the reviewed revision. Test successful
    push, failed compilation, initial binding drift, invalid projected files,
    lost HTTP response, agent reload during a push and recovery of Git/Clay
-   disagreement. Check that direct pushes need only the configured integration.
-5. Add the ship-profile control, operation status and Agent Help context. Extend
+   disagreement, blocked Omabit-managed pushes and the application's existing
+   release rules.
+6. Add ship/desk operation status and Agent Help context. Extend
    the operator and plugin-development skills with supported commands and tested
    tuples after implementation. Integrate with fleet URLs as that feature lands.
-6. Qualify the 0.3.7 upgrade with existing ships disabled by default, preserved
+7. Qualify the 0.3.7 upgrade with commit/publication blocked by default, preserved
    settings and history, older-runner capability handling and matching artifacts.
 
 Agent Help and skill installation remain the next small 0.4.0 implementation
 slice. This workflow follows, alongside the shared origin work it can reuse.
 Remote-runner distro testing is complete for this stage. Clearweb access remains
-in scope. The new app work concerns Urbit desks and their frontend assets under
-the proposed scope; coordinated companion Omarchy plugin releases await the
-user's scope decision.
+in scope. This app workflow covers Urbit desks and their frontend assets. The
+user deferred coordinated companion Omarchy plugin releases beyond this scope.

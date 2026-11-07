@@ -112,8 +112,8 @@ leave the working plugin session usable.
 The user added agent-accessible desk development and publication to 0.4.0.
 Support desk creation/mounting, source deployment, commit, local activation,
 publication and receiver verification on ordinary managed ships, development
-fakes and fake project networks. Add a per-ship workflow setting and expose the
-steps through the collector CLI with durable operation results.
+fakes and fake project networks. Expose the steps through the collector CLI with
+durable operation results and default-closed commit/publication gates.
 
 The [architecture proposal](app-development-0.4.0.md) starts with mounted desks
 and adds an optional Urgit adapter. Urgit already binds Git branches to Clay and
@@ -122,11 +122,20 @@ Treaty handles app publication and Clay delivers subscribed updates. A release
 approval therefore precedes the distributor desk's mutation. Source trees under
 `desk/` need an assembled deployment tree for the Git bridge.
 
-The proposed default is explicit release promotion with per-desk automatic
-releases available. User feedback on that default and coordinated companion
-Omarchy plugin releases is pending. Qualify the actual runtime/Urbit API and
-Urgit revision before advertising support. Reuse the planned fleet origins for
-Git access and include deployment status in Agent Help.
+Follow each developer's release configuration, including Urgit's existing rules.
+Add **Setup → App development and publishing**, with independent commit and
+publication permissions at global, runner, ship and installed-desk scope.
+The most specific explicit setting overrides inherited values. Both permissions
+start blocked, including on development fakes and project members. Enforce them
+at the runner's effect boundary and expose the effective policy read-only to
+agents. A commit that distributes a published desk update requires both gates.
+
+Observe mounted Unix files against Clay and show an uncommitted-change alert,
+including edits made outside Omabit. Keep unavailable observations explicit.
+Skills must follow the configured gates and the application's release rules.
+The user fixed the scope to Urbit desks and their frontend assets. Qualify the
+runtime/Urbit API and Urgit revision before advertising support. Reuse fleet
+origins for Git access and include deployment status in Agent Help.
 
 ### Clearweb access
 

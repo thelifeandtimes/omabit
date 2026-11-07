@@ -1,6 +1,6 @@
 ---
 name: omabit-operator
-description: Manage Urbit runners, ship operations and stopped-pier imports through Omabit's collector CLI. Use for remote runner installation and recovery, host compatibility, fleet status, explicit start/stop, import diagnostics, operation recovery, fake-project lifecycle and private-chain review, reservations and local runtime input inspection.
+description: Manage Urbit runners, ship operations and stopped-pier imports through Omabit's collector CLI. Use for remote runner installation and recovery, host compatibility, fleet status, explicit start/stop, import diagnostics, operation recovery, app development and publishing policy, fake-project lifecycle and private-chain review, reservations and local runtime input inspection.
 ---
 
 # Operate Omabit
@@ -13,6 +13,12 @@ user's excluded ships, hosts and directories without probing them.
 For remote runner installation, failed setup or distro prerequisites, read
 [remote runners](references/remote-runners.md) first. It records tested platforms
 and the host-specific checks an agent can help with.
+
+For app source deployment, desk commits or publication, read
+[app development](references/app-development.md). Agent commit and publication
+default to blocked, including on development fakes. Follow the effective gates
+configured in **Setup → App development and publishing** and the application's
+release configuration. Use only capabilities exposed by the selected tools.
 
 Start with the shortest relevant read path:
 
