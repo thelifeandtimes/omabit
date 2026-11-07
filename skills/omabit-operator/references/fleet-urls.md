@@ -60,9 +60,52 @@ across proxy port changes. The reader never changes Serve/Funnel, and a failed
 lookup does not remove manually configured routes. Path proxies, service VIPs,
 raw TCP forwarding and bespoke reverse proxies need explicit URL registration.
 No live Tailnet qualification is claimed by these fixture checks. The full-panel
-Setup URL editor passes offline interaction/rendering checks. Standing-approval UI
-and automatic application connection/reconnection remain open.
+Setup URL editor passes offline interaction/rendering checks. Standing-approval CLI authoring is implemented below; its UI and automatic
+application connection/reconnection remain open.
 Do not claim those features from the presence of this registry capability alone.
 
 Keep existing sessions bound to their original URL. Never copy a cookie to another
 origin or replay an uncertain application write to make a connection appear healthy.
+
+
+## Standing application permission
+
+Use the matching `urbit-collector` from the selected installation/profile. A grant
+is for one plugin/profile/helper generation and verified ship incarnation across
+its registered URLs. It permits broad owner sessions; it is not limited to a desk.
+Do not turn an earlier per-attempt approval into standing permission, or grant
+an agent's own integration access without the user's authorization.
+
+```sh
+urbit-collector --config-dir REGISTRY --runner NAME --expected-runner-id ID \
+  app-ship-review --instance INSTANCE > ship-access.json
+urbit-collector --config-dir REGISTRY app-plugins > installed-plugins.json
+```
+
+Construct a choice using `routes.record.binding`, `routes.selection`,
+`approvals.revision`, and the exact selected plugin's `target` from these replies:
+
+```json
+{"version":1,"binding":BINDING,"selection":SELECTION,"target":TARGET,"expected_revision":REVISION,"allowed":true}
+```
+
+The placeholders above describe the object shape; replace them with the actual
+JSON values before saving. Submit an explicitly authorized choice:
+
+```sh
+urbit-collector --config-dir REGISTRY --runner NAME --expected-runner-id ID \
+  app-ship-approve --request-file reviewed-access.json --allow-owner-session
+```
+
+The command verifies the installed helper and live ship selection again. It does
+not retrieve a login code, create an owner session, execute the helper or connect.
+A helper update requires another user choice. Conflicts require a fresh read;
+never automatically rebase an allow over a revocation.
+
+`app-ship-approvals` reads the current local choices without contacting runners.
+To revoke, copy the exact saved `binding` and `target`, use the current list's
+`revision` as `expected_revision`, set `allowed:false`, and omit `selection`.
+Run `app-ship-approve --request-file reviewed-revocation.json` **without** runner
+flags or `--allow-owner-session`. Revocation remains available offline and after
+a plugin is removed. It blocks new attempts; use each existing connection's
+Disconnect/recovery path separately to clean up its session.

@@ -170,6 +170,9 @@ Commands:
   watch [--interval 1s]
                Poll snapshots until canceled; minimum interval: 100ms.
   app-plugins
+  app-ship-review --instance ID
+  app-ship-approvals
+  app-ship-approve --request-file FILE [--allow-owner-session]
   app-connections
   app-connection REQUEST_ID
                Inspect installed connection helpers and durable attempts (no ship IO).
@@ -289,6 +292,9 @@ Use COMMAND --help for command flags and constraints.
 	}
 	if command == "app-managed-connect" {
 		return runManagedApplication(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if slices.Contains([]string{"app-ship-review", "app-ship-approvals", "app-ship-approve"}, command) {
+		return runApplicationShipApproval(ctx, command, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
 	}
 	if slices.Contains([]string{"app-plugins", "app-connections", "app-connection", "app-archive", "app-connect", "app-disconnect", "app-recover", "app-reconcile"}, command) {
 		return runApplications(ctx, command, args, *configDir, *socket, *runnerName, format, stdout, fail)

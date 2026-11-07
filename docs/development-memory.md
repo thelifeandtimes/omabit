@@ -8721,3 +8721,28 @@ and fixtures02–04 pass without warnings. Fixture03 adds the save-conflict chec
 `diagnostics/2026-11-07-fleet-setup.json`. This supersedes M556's pending URL editor,
 not standing approval, automatic reconnection or clearweb assistance. Installed
 production/DEV/trial and the persistent review preview remain unchanged.
+
+
+## M558 — Standing application approval CLI and offline revocation (2026-11-07)
+
+Added collector `app-ship-review`, `app-ship-approvals` and `app-ship-approve`.
+Allow requires an explicit owner-session acknowledgement, exact installed helper,
+current live runtime selection, verified pier binding and approval revision.
+Review obtains no credentials and invokes no plugin. The bounded JSON input rejects
+missing/ambiguous choices and duplicate case-alias keys. Revocation uses the exact
+saved target/binding and current revision without requiring a live runner or an
+installed helper. Existing sessions retain independent disconnect/recovery records.
+
+Core race checks and public CLI fixtures pass grant, stale choice, replacement
+pier, changed helper, malformed input, offline help and offline/uninstalled revoke.
+No parent enrollment, application attempt or receiver cache is created. Format1
+and runner schema58 remain unchanged. See
+`diagnostics/2026-11-07-fleet-approval-cli.json`. This supersedes M557's pending CLI
+authoring only; automatic issuance/reconnection and UI integration remain open.
+Production, DEV, trial and persistent preview state remain unchanged.
+
+The first core test admission refused before building at the40GiB storage bound.
+The completed earlier migration-regression fixture's rebuildable Go cache was
+inventoried and retired (243,642,368 bytes), retaining its failed result, logs,
+original binary, inputs and SQL databases. Admission and the new test then passed.
+The diagnostic links the retention manifest. Release work remains deferred.

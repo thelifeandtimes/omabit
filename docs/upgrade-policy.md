@@ -58,8 +58,10 @@ explicit per-attempt workflow; they cannot use it to initiate automatic attempts
 New readers require version1, exact current/history agreement and contiguous
 revision history. Unknown/corrupt state refuses unchanged, including writes.
 Do not reset the file, drop revocations or convert a cached grant into authority.
-Current source only provides internal storage/selection primitives; public
-automatic connection and installed migration qualification remain pending.
+M558 exposes explicit standing-approval review and authoring without changing
+format1 or any attempt/session journal. Offline revocation remains possible after
+a runner or plugin becomes unavailable. Public automatic connection and installed
+migration qualification remain pending.
 
 ## Development: explicit source ownership adoption, schema55
 

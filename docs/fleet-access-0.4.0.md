@@ -75,8 +75,11 @@ until refresh. Offline/replaced selections cannot retain edit authority. Wide an
 narrow offline UI fixtures exercise persistence, selection isolation and a
 concurrent-edit refusal. Registration remains separate from network configuration.
 
-The fleet feature is still in progress. Standing-approval UI/CLI and automatic
-reconnection are not connected yet. Installed state is unchanged;
+The fleet feature is still in progress. Standing-approval UI and automatic
+reconnection are not connected yet. M558 adds collector `app-ship-review`,
+`app-ship-approvals` and `app-ship-approve`. Allow compares the live ship selection
+and installed helper; revoke is local and remains available offline or after
+helper removal. These commands change permission only, never issue a session. Installed state is unchanged;
 these fixture checks do not qualify a live Tailscale deployment or installed upgrade.
 
 ## Integration still required
@@ -85,7 +88,8 @@ these fixture checks do not qualify a live Tailscale deployment or installed upg
    explicit route/disable storage and CLI are implemented.
 2. Collector inspection from each client's network, shared runner configuration and
    fresh binding verification before credentials can be sent.
-3. Setup and CLI standing approval, checked under the same lock that publishes a
+3. Setup standing approval and issuance integration (CLI authoring is implemented),
+   checked under the same lock that publishes a
    new connection attempt. An old snapshot must not bypass revocation.
 4. Compatible receiver handoff and automatic reconnection. Preserve origin-bound
    sessions, original uncertain attempts and cleanup records; never replay pending
