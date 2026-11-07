@@ -39,6 +39,10 @@ type nativeDeskFixture struct {
 	Start            string `json:"start"`
 	Desk             string `json:"desk"`
 	VereSHA          string `json:"vere_sha256"`
+	ShipName         string `json:"ship_name,omitempty"`
+	LensPort         int    `json:"lens_port,omitempty"`
+	HTTPPort         int    `json:"http_port,omitempty"`
+	ledger           string
 	client           *http.Client
 	creates, commits atomic.Int32
 	effects          atomic.Int32
@@ -94,6 +98,19 @@ func nativeDeskGuard(t *testing.T) *nativeDeskFixture {
 	g02Check(t, f.check())
 	return f
 }
+func (f *nativeDeskFixture) ship() string {
+	if f.ShipName != "" {
+		return f.ShipName
+	}
+	return "~zod"
+}
+func (f *nativeDeskFixture) lensPort() int {
+	if f.LensPort != 0 {
+		return f.LensPort
+	}
+	return 12321
+}
+func (f *nativeDeskFixture) pier() string { return "/lab/" + strings.TrimPrefix(f.ship(), "~") }
 func (f *nativeDeskFixture) check() error {
 	if f.PID < 2 {
 		return errors.New("owned child absent")
@@ -129,7 +146,7 @@ func (f *nativeDeskFixture) post(ctx context.Context, body []byte) (string, erro
 	if err := f.check(); err != nil {
 		return "", err
 	}
-	req, err := http.NewRequestWithContext(ctx, "POST", "http://127.0.0.1:12321/", bytes.NewReader(body))
+	req, err := http.NewRequestWithContext(ctx, "POST", fmt.Sprintf("http://127.0.0.1:%d/", f.lensPort()), bytes.NewReader(body))
 	if err != nil {
 		return "", err
 	}
@@ -164,7 +181,7 @@ func (f *nativeDeskFixture) call(ctx context.Context, q deskwork.LensRequest, er
 	}
 	identity := []byte(`{"source":{"dojo":"our"},"sink":{"stdout":null}}`)
 	before, err := f.post(ctx, identity)
-	if err != nil || strings.TrimSpace(before) != "~zod" {
+	if err != nil || strings.TrimSpace(before) != f.ship() {
 		return "", fmt.Errorf("fixture identity before request: %q %w", before, err)
 	}
 	out, err := f.post(ctx, body)
@@ -172,7 +189,7 @@ func (f *nativeDeskFixture) call(ctx context.Context, q deskwork.LensRequest, er
 		return "", err
 	}
 	after, err := f.post(ctx, identity)
-	if err != nil || strings.TrimSpace(after) != "~zod" {
+	if err != nil || strings.TrimSpace(after) != f.ship() {
 		return "", errors.New("fixture identity after request")
 	}
 	return out, nil
@@ -214,7 +231,7 @@ func (f *nativeDeskFixture) decode(ctx context.Context, q deskwork.LensRequest, 
 }
 func (f *nativeDeskFixture) Application(ctx context.Context, desk string) (deskwork.AppState, error) {
 	var out deskwork.AppState
-	q, err := deskwork.AppInventory("~zod", desk)
+	q, err := deskwork.AppInventory(f.ship(), desk)
 	err = f.decode(ctx, q, err, &out)
 	if err == nil {
 		err = out.Normalize()
@@ -223,7 +240,7 @@ func (f *nativeDeskFixture) Application(ctx context.Context, desk string) (deskw
 }
 func (f *nativeDeskFixture) Observe(ctx context.Context, desk string) (deskwork.Observation, error) {
 	var out deskwork.Observation
-	q, err := deskwork.Inventory("~zod", desk)
+	q, err := deskwork.Inventory(f.ship(), desk)
 	err = f.decode(ctx, q, err, &out)
 	if err == nil {
 		err = out.Validate()
@@ -232,12 +249,12 @@ func (f *nativeDeskFixture) Observe(ctx context.Context, desk string) (deskwork.
 }
 func (f *nativeDeskFixture) Create(ctx context.Context, desk string) error {
 	f.creates.Add(1)
-	q, err := deskwork.Create("~zod", desk)
+	q, err := deskwork.Create(f.ship(), desk)
 	return f.effect(ctx, q, err)
 }
 func (f *nativeDeskFixture) ListDesks(ctx context.Context) ([]string, error) {
 	var names []string
-	q, err := deskwork.ListDesks("~zod")
+	q, err := deskwork.ListDesks(f.ship())
 	if err = f.decode(ctx, q, err, &names); err != nil {
 		return nil, err
 	}
@@ -247,7 +264,7 @@ func (f *nativeDeskFixture) SourceIdentity(context.Context) (string, error) {
 	if err := f.check(); err != nil {
 		return "", err
 	}
-	i, err := pierstore.Identify("/lab/zod")
+	i, err := pierstore.Identify(f.pier())
 	if err != nil {
 		return "", err
 	}
@@ -265,15 +282,15 @@ func (f *nativeDeskFixture) canonical(ctx context.Context, q deskwork.LensReques
 	return deskwork.CanonicalManifest(files)
 }
 func (f *nativeDeskFixture) ClayFiles(ctx context.Context, desk string, rev uint64) (deskwork.Manifest, error) {
-	q, err := deskwork.ClayFiles("~zod", desk, rev)
+	q, err := deskwork.ClayFiles(f.ship(), desk, rev)
 	return f.canonical(ctx, q, err)
 }
 func (f *nativeDeskFixture) NormalizeFiles(ctx context.Context, desk string, rev uint64, files []deskwork.SourceFile) (deskwork.Manifest, error) {
-	q, err := deskwork.NormalizeFiles("~zod", desk, rev, files)
+	q, err := deskwork.NormalizeFiles(f.ship(), desk, rev, files)
 	return f.canonical(ctx, q, err)
 }
 func (f *nativeDeskFixture) AutocommitActive(ctx context.Context) (bool, error) {
-	q, err := deskwork.AutocommitActive("~zod")
+	q, err := deskwork.AutocommitActive(f.ship())
 	reply, err := f.call(ctx, q, err)
 	if err != nil {
 		return false, err
@@ -290,18 +307,18 @@ func (f *nativeDeskFixture) InspectSource(ctx context.Context, desk, source stri
 	if !deskwork.ValidSourceName(source) {
 		return deskwork.SourceStatus{}, errors.New("invalid source")
 	}
-	return deskwork.InspectSource(ctx, f, filepath.Join("/lab/zod", source), desk, base)
+	return deskwork.InspectSource(ctx, f, filepath.Join(f.pier(), source), desk, base)
 }
 func (f *nativeDeskFixture) Release(ctx context.Context, desk, action string, baseline deskwork.Observation) error {
 	var q deskwork.LensRequest
 	var err error
 	switch action {
 	case "activate-local":
-		q, err = deskwork.ActivateLocal("~zod", desk, baseline)
+		q, err = deskwork.ActivateLocal(f.ship(), desk, baseline)
 	case "publish-source":
-		q, err = deskwork.PublishSourceAt("~zod", desk, baseline)
+		q, err = deskwork.PublishSourceAt(f.ship(), desk, baseline)
 	case "publish-treaty":
-		q, err = deskwork.PublishTreatyAt("~zod", desk, baseline)
+		q, err = deskwork.PublishTreatyAt(f.ship(), desk, baseline)
 	default:
 		return errors.New("unsupported release action")
 	}
@@ -309,7 +326,7 @@ func (f *nativeDeskFixture) Release(ctx context.Context, desk, action string, ba
 }
 func (f *nativeDeskFixture) CommitFiles(ctx context.Context, desk string, baseline deskwork.Observation, files []deskwork.DeltaFile) error {
 	f.commits.Add(1)
-	q, err := deskwork.CommitFiles("~zod", desk, baseline, files)
+	q, err := deskwork.CommitFiles(f.ship(), desk, baseline, files)
 	err = f.effect(ctx, q, err)
 	if err == nil && f.loseReply.Swap(false) {
 		return errors.New("qualification: discard real acknowledgement")

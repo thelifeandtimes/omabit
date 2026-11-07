@@ -284,6 +284,16 @@ project topology. Public distribution uses a real publisher reachable through
 Urbit's networking. Clearweb configuration is independently useful for Git HTTP
 and browser access. It is a separate operation from making a desk distributable.
 
+M549's native fixture verifies this behavior with one publisher and two new fake
+receivers: exact initial and updated Clay hashes, live fixture agent, Docket state
+and exact frontend bytes. Each receiver receives one install request and follows
+the later publisher commit without another install. The received desks remain
+private. Kiln can reserve a revision-zero desk during download; the typed
+source-arrival read treats that as pending, while the occupied name still refuses
+another installation. This is native protocol evidence; the public gated receiver
+API/CLI and frontend upload adapter are still pending. See
+[receiver evidence](diagnostics/2026-11-07-desk-native-receivers.json).
+
 ## Urgit workflow (scope clarified 2026-11-06)
 
 Support and test Urgit's intended workflow through the bundled operator and

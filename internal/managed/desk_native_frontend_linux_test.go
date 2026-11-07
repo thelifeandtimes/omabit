@@ -18,7 +18,11 @@ import (
 )
 
 func (f *nativeDeskFixture) recordEffect(id int32, state string) error {
-	file, err := os.OpenFile("/lab/workflow-effects.jsonl", os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
+	name := "workflow-effects.jsonl"
+	if f.ledger != "" {
+		name = f.ledger
+	}
+	file, err := os.OpenFile("/lab/"+name, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0600)
 	if err != nil {
 		return err
 	}

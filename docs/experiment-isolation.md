@@ -89,6 +89,18 @@ manifest; preserve source, original migration fixtures and all production exclus
 If the next run cannot fit, prune or reduce its scope before proceeding. This is
 an operating rule; automated launcher enforcement remains to be implemented.
 
+The app-development native launcher now enforces this admission before input
+copies, pier transfers or process creation (M549). Its count includes both
+evidence roots, physical `/tmp/omabit-*` paths and native DEV. The eighteen known
+unreadable rootless overlay work directories carry an explicit1GiB estimated
+reserve; new or different measurement failures refuse. It declares2GiB additional
+scratch for a fresh run, monitors allocation, and records host-side interruptions.
+This supersedes the preceding lack of automated enforcement for that launcher
+only. The three-peer receiver capsule uses6GiB memory, requires8GiB available at
+admission, and retains the one-CPU/no-swap/private-namespace boundaries. Single
+peer capsules retain4GiB. Never use these limits as authorization for installed
+services or another simultaneous runtime experiment.
+
 M448 corrects a cleanup dependency error: always resolve symlinks and qcow backing
 chains, inventory their actual targets, and verify all retained dependencies after
 pruning. Preserving a `/tmp` alias is insufficient when its target is in an evidence

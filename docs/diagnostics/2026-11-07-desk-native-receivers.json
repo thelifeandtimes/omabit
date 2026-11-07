@@ -1,0 +1,281 @@
+{
+  "version": 1,
+  "result": "passed native receiver workflow; public rollout adapter pending",
+  "schema": 55,
+  "base_source": "cbcc831f4aa54ef0ceb6b3f89edae6891c993b05",
+  "native": {
+    "probe": 40,
+    "clean_shutdown": true,
+    "publisher_workflow": "passed",
+    "receiver_seconds": 8.91,
+    "peers": [
+      "~zod",
+      "~nec",
+      "~bud"
+    ],
+    "memory_cap_bytes": 6442450944,
+    "storage_admission": 42621595648,
+    "additional_scratch_bytes": 2147483648
+  },
+  "checks": [
+    "typed install refuses occupied Clay names and pending Kiln subscriptions",
+    "revision-zero reserved desk is pending, not absent or an arrived revision",
+    "both receivers have exact publisher hash and continuing source binding",
+    "expected Gall agent live; Docket metadata matches; exact frozen HTML served",
+    "subsequent publisher commit arrives on both receivers without another install",
+    "one acknowledged install per receiver; no automatic retry; clean shutdown"
+  ],
+  "failures": [
+    {
+      "probe": 37,
+      "result": "scope OOM at 4GiB while second receiver booted; no receiver installation attempted"
+    },
+    {
+      "probe": 38,
+      "result": "interrupted before receiver phase; no completion receipt; transient scope later absent; shutdown unknown; no receiver effect ledger",
+      "preflight_failure": "external shell assertion with conservative1GiB reserve failed by1728512 bytes but did not stop launch",
+      "observed_storage_with_dev_reserve": 42956808192,
+      "budget_bytes": 42949672960,
+      "budget_overage_bytes": 7135232,
+      "correction": "admission now runs inside launcher before copies/transfers/spawn; unexpected measurements refuse; failure evidence retained; only generated disposable piers/cache and verified duplicate inputs pruned"
+    },
+    {
+      "probe": 39,
+      "result": "first install acknowledged; observer rejected revision-zero pending desk; all peers stopped cleanly; corrected by typed read-only source-arrival check"
+    }
+  ],
+  "limits": [
+    "native fake topology only; managed lifecycle is synthetic",
+    "no public receiver API/CLI or schema change in this checkpoint",
+    "source hash and live agents do not prove general application health or compiled-agent revision",
+    "expected hash is verification, not a Kiln version pin; subscriptions follow later publisher commits",
+    "frontend upload remains a private native helper",
+    "post40 periodic aggregate storage monitor was added after this native run; preflight refusal is separately tested",
+    "production/DEV/trial/manual preview unchanged; release qualification deferred"
+  ],
+  "selected_observations": {
+    "boundary": "native fake publisher and receivers; no managed rollout API",
+    "frontend-initial-~bud": true,
+    "frontend-initial-~nec": true,
+    "frontend-updated-~bud": true,
+    "frontend-updated-~nec": true,
+    "initial-publisher": {
+      "exists": true,
+      "revision": 7,
+      "clay_hash": "0v1e.efq4b.dl048.no86v.m7dcs.mq72d.16sti.af1c9.9gl7b.l0dh7.eo0c6",
+      "publication": "published"
+    },
+    "initial-~bud": {
+      "application": {
+        "zest": "live",
+        "source_revision": 1,
+        "source_ship": "~zod",
+        "source_desk": "omabit-test-efb52fe9",
+        "expected_agents": [
+          "omabit-state"
+        ],
+        "agents": [
+          {
+            "name": "omabit-state",
+            "live": true
+          }
+        ],
+        "treaty_available": true,
+        "treaty_listed": false,
+        "treaty_hash": "",
+        "docket_available": true,
+        "docket_hash": "0v4.ehu50.qs0hj.ccdpq.7q8go.mj54h",
+        "frontend_mode": "glob-ames",
+        "frontend_state": "glob",
+        "frontend_docket_hash": "0v4.ehu50.qs0hj.ccdpq.7q8go.mj54h"
+      },
+      "observation": {
+        "exists": true,
+        "revision": 1,
+        "clay_hash": "0v1e.efq4b.dl048.no86v.m7dcs.mq72d.16sti.af1c9.9gl7b.l0dh7.eo0c6",
+        "publication": "private"
+      },
+      "source": {
+        "ship": "~zod",
+        "desk": "omabit-test-efb52fe9",
+        "expected_hash": "0v1e.efq4b.dl048.no86v.m7dcs.mq72d.16sti.af1c9.9gl7b.l0dh7.eo0c6"
+      }
+    },
+    "initial-~nec": {
+      "application": {
+        "zest": "live",
+        "source_revision": 1,
+        "source_ship": "~zod",
+        "source_desk": "omabit-test-efb52fe9",
+        "expected_agents": [
+          "omabit-state"
+        ],
+        "agents": [
+          {
+            "name": "omabit-state",
+            "live": true
+          }
+        ],
+        "treaty_available": true,
+        "treaty_listed": false,
+        "treaty_hash": "",
+        "docket_available": true,
+        "docket_hash": "0v4.ehu50.qs0hj.ccdpq.7q8go.mj54h",
+        "frontend_mode": "glob-ames",
+        "frontend_state": "glob",
+        "frontend_docket_hash": "0v4.ehu50.qs0hj.ccdpq.7q8go.mj54h"
+      },
+      "observation": {
+        "exists": true,
+        "revision": 1,
+        "clay_hash": "0v1e.efq4b.dl048.no86v.m7dcs.mq72d.16sti.af1c9.9gl7b.l0dh7.eo0c6",
+        "publication": "private"
+      },
+      "source": {
+        "ship": "~zod",
+        "desk": "omabit-test-efb52fe9",
+        "expected_hash": "0v1e.efq4b.dl048.no86v.m7dcs.mq72d.16sti.af1c9.9gl7b.l0dh7.eo0c6"
+      }
+    },
+    "install-acknowledged-~bud": true,
+    "install-acknowledged-~nec": true,
+    "ok": true,
+    "receiver-absence-~bud": {
+      "observation": {
+        "exists": false
+      },
+      "subscription": {
+        "present": false,
+        "ship": "",
+        "desk": "",
+        "zest": "",
+        "hash": ""
+      }
+    },
+    "receiver-absence-~nec": {
+      "observation": {
+        "exists": false
+      },
+      "subscription": {
+        "present": false,
+        "ship": "",
+        "desk": "",
+        "zest": "",
+        "hash": ""
+      }
+    },
+    "updated-publisher": {
+      "exists": true,
+      "revision": 8,
+      "clay_hash": "0v17.f0aj7.ncucq.c9s7t.lhsoe.artr8.maaub.eqi79.q0r4b.dq48h.hp6m5",
+      "publication": "published"
+    },
+    "updated-~bud": {
+      "application": {
+        "zest": "live",
+        "source_revision": 2,
+        "source_ship": "~zod",
+        "source_desk": "omabit-test-efb52fe9",
+        "expected_agents": [
+          "omabit-state"
+        ],
+        "agents": [
+          {
+            "name": "omabit-state",
+            "live": true
+          }
+        ],
+        "treaty_available": true,
+        "treaty_listed": false,
+        "treaty_hash": "",
+        "docket_available": true,
+        "docket_hash": "0v4.ehu50.qs0hj.ccdpq.7q8go.mj54h",
+        "frontend_mode": "glob-ames",
+        "frontend_state": "glob",
+        "frontend_docket_hash": "0v4.ehu50.qs0hj.ccdpq.7q8go.mj54h"
+      },
+      "observation": {
+        "exists": true,
+        "revision": 2,
+        "clay_hash": "0v17.f0aj7.ncucq.c9s7t.lhsoe.artr8.maaub.eqi79.q0r4b.dq48h.hp6m5",
+        "publication": "private"
+      },
+      "source": {
+        "ship": "~zod",
+        "desk": "omabit-test-efb52fe9",
+        "expected_hash": "0v17.f0aj7.ncucq.c9s7t.lhsoe.artr8.maaub.eqi79.q0r4b.dq48h.hp6m5"
+      }
+    },
+    "updated-~nec": {
+      "application": {
+        "zest": "live",
+        "source_revision": 2,
+        "source_ship": "~zod",
+        "source_desk": "omabit-test-efb52fe9",
+        "expected_agents": [
+          "omabit-state"
+        ],
+        "agents": [
+          {
+            "name": "omabit-state",
+            "live": true
+          }
+        ],
+        "treaty_available": true,
+        "treaty_listed": false,
+        "treaty_hash": "",
+        "docket_available": true,
+        "docket_hash": "0v4.ehu50.qs0hj.ccdpq.7q8go.mj54h",
+        "frontend_mode": "glob-ames",
+        "frontend_state": "glob",
+        "frontend_docket_hash": "0v4.ehu50.qs0hj.ccdpq.7q8go.mj54h"
+      },
+      "observation": {
+        "exists": true,
+        "revision": 2,
+        "clay_hash": "0v17.f0aj7.ncucq.c9s7t.lhsoe.artr8.maaub.eqi79.q0r4b.dq48h.hp6m5",
+        "publication": "private"
+      },
+      "source": {
+        "ship": "~zod",
+        "desk": "omabit-test-efb52fe9",
+        "expected_hash": "0v17.f0aj7.ncucq.c9s7t.lhsoe.artr8.maaub.eqi79.q0r4b.dq48h.hp6m5"
+      }
+    },
+    "version": 1
+  },
+  "evidence": {
+    "lab/result.json": {
+      "path": "/tmp/omabit-desk-probe-40/lab/result.json",
+      "sha256": "2cb2b2a582c27e7987a22e81ab7ed10a91de2f34b269518a9bc48fb794eb413f"
+    },
+    "lab/receiver-proof.json": {
+      "path": "/tmp/omabit-desk-probe-40/lab/receiver-proof.json",
+      "sha256": "0e074261baceef1c41591f5c63d6f43f18cfbe4e0a55a276cd5eb06aca8eeea6"
+    },
+    "lab/receiver-workflow.log": {
+      "path": "/tmp/omabit-desk-probe-40/lab/receiver-workflow.log",
+      "sha256": "417b8ad4869ce4098a276e6e805c2562ab01b66c6a501ff47a8187dd64a049ad"
+    },
+    "guard.json": {
+      "path": "/tmp/omabit-desk-probe-40/guard.json",
+      "sha256": "dd2e73f1936af5a246a6511e76007a524637dd1ace498c58399495fea311ad99"
+    },
+    "inputs.json": {
+      "path": "/tmp/omabit-desk-probe-40/inputs.json",
+      "sha256": "3566ce08b173901d405c1dc65c995a17a38da72165fa0e56daf1602c312962f2"
+    },
+    "storage-admission.json": {
+      "path": "/tmp/omabit-desk-probe-40/storage-admission.json",
+      "sha256": "bc54b3908c8a4f466353d1a6d85236bc4d92755bca51b0f6e3573a64e220c7ec"
+    },
+    "receiver_runtime_race": {
+      "path": "/tmp/omabit-desk-receiver-runtime-02/result.json",
+      "sha256": "cbf063300bedc27722e294b107b142a130a559de0bb3874c494ecabaaab15a2d"
+    },
+    "receiver_recovery_tests": {
+      "path": "/tmp/omabit-desk-receiver-recovery-admission-tests.log",
+      "sha256": "c3dc4ce80790d0a5a68dcff2d3009be59564c24dfe01144e0f6b50051e539cc3"
+    }
+  }
+}

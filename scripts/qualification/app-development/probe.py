@@ -92,11 +92,18 @@ def inside():
                 fixture={'pid':child.pid,'start':stat[stat.rfind(')')+2:].split()[19],
                          'desk':desk,'vere_sha256':VERE_SHA}
                 (lab/'workflow-runtime.json').write_text(json.dumps(fixture))
-                with (lab/'workflow.log').open('wb') as workflow_log:
-                    run=subprocess.run(['/artifacts/workflow.test','-test.run=^TestNativeDeskWorkflow$','-test.v','-test.timeout=7m'],
-                                       stdout=workflow_log,stderr=subprocess.STDOUT,timeout=440)
-                result['workflow_exit']=run.returncode
-                if run.returncode:raise RuntimeError('native managed workflow failed; see workflow.log')
+                if not g.get('recover_receiver_boot'):
+                    with (lab/'workflow.log').open('wb') as workflow_log:
+                        run=subprocess.run(['/artifacts/workflow.test','-test.run=^TestNativeDeskWorkflow$','-test.v','-test.timeout=7m'],
+                                           stdout=workflow_log,stderr=subprocess.STDOUT,timeout=440)
+                    result['workflow_exit']=run.returncode
+                    if run.returncode:raise RuntimeError('native managed workflow failed; see workflow.log')
+                if g.get('receivers'):
+                    from receivers import run_receivers
+                    expected=g.get('recovered_publisher') or json.loads((lab/'workflow-proof.json').read_text())['glob-upload-committed-docket']
+                    (lab/'receiver-source-expectation.json').write_text(json.dumps(expected))
+                    result['receivers']=run_receivers(lab,g,desk);save()
+                    if not result['receivers']['ok']:raise RuntimeError('native receiver workflow failed; see receiver-result.json')
                 raise WorkflowComplete()
             json_result=lens('json-output',"`@ux`(en:json:html [%o (malt `(list [@t json])`~[['exists' [%b %.y]] ['revision' [%n '2']]])])")
             assert json_result.startswith('0x')
@@ -182,7 +189,7 @@ def inside():
             if child.poll() is None:os.killpg(child.pid,signal.SIGTERM)
             try:child.wait(timeout=60)
             except subprocess.TimeoutExpired:os.killpg(child.pid,signal.SIGKILL);child.wait(timeout=5)
-            result['clean_shutdown']=child.returncode==0
+            result['clean_shutdown']=child.returncode==0 and (not g.get('receivers') or result.get('receivers',{}).get('clean_shutdown') is True)
             result['ok']=result['ok'] and result['clean_shutdown'];save()
     print(json.dumps({'ok':result['ok'],'error':result.get('error')}),flush=True)
     return 0 if result['ok'] else 1
@@ -194,15 +201,21 @@ def host(a):
     if set(frozen_requests)!={'commit-files','commit-invalid','committed-equal','clay-files','normalized-files','normalized-different','desks','files','autocommit','inventory','create','mount','commit','publish-source','equivalent','different'}:raise ValueError('incomplete typed request fixture')
     if sha(a.vere)!=VERE_SHA or sha(a.pill)!=PILL_SHA:raise ValueError('pinned input mismatch')
     if shutil.disk_usage('/tmp').free<4*1024**3:raise RuntimeError('storage reserve absent')
-    previous=None
+    previous=None;recovered=None
+    if a.recover_receiver_boot:
+        if a.resume_from or not a.receivers:raise ValueError('select explicit receiver recovery only')
+        previous=a.recover_receiver_boot.absolute()
+        if previous.parent!=Path('/tmp') or not re.fullmatch('omabit-desk-probe-[a-z0-9-]+',previous.name):raise ValueError('invalid interrupted capsule')
+        from receivers import interrupted_boot_source
+        recovered=interrupted_boot_source(previous)
     if a.resume_from:
         previous=a.resume_from.absolute()
         if previous.parent!=Path('/tmp') or not re.fullmatch('omabit-desk-probe-[a-z0-9-]+',previous.name) or previous.is_symlink():raise ValueError('invalid prior fixture')
         if not json.loads((previous/'lab/result.json').read_text()).get('clean_shutdown') or not (previous/'exit.json').is_file():raise ValueError('prior fixture not stopped')
         report=json.loads((previous/'lab/result.json').read_text())
         if json.loads((previous/'guard.json').read_text()).get('workflow'):
-            effects=previous/'lab/workflow-effects.jsonl'
-            if effects.exists():
+            if json.loads((previous/'guard.json').read_text()).get('receivers'):raise ValueError('receiver capsule needs explicit multi-pier retention/reuse review')
+            for effects in (previous/'lab').glob('*effects.jsonl'):
                 states={}
                 for line in effects.read_text().splitlines():
                     event=json.loads(line);states[event['id']]=event['state']
@@ -215,12 +228,30 @@ def host(a):
                         if receipt['steps'][-1]['state'] not in ('observed','blocked','interrupted','rejected'):raise ValueError('workflow has an unresolved managed effect')
             elif (previous/'lab/runner').exists():raise ValueError('workflow store incomplete; review before reuse')
         if any(row.get('app') and row.get('state')!='returned' for row in report.get('steps',[])):raise ValueError('prior fixture has an uncertain mutation')
+    if previous:
         prior_inputs=json.loads((previous/'inputs.json').read_text())
         if prior_inputs['vere']!=VERE_SHA or prior_inputs['boot.pill']!=PILL_SHA:raise ValueError('prior fixture inputs changed')
         pier=previous/'lab/zod'
         if not pier.is_dir() or pier.is_symlink():raise ValueError('prior fixture pier unavailable')
+        if (previous/'pier-transferred.json').exists():raise ValueError('prior pier already transferred')
+        if recovered:
+            with sqlite3.connect((previous/'lab/runner/runner.sqlite').as_uri()+'?mode=ro',uri=True) as connection:
+                for (body,) in connection.execute('SELECT body FROM desk_operations'):
+                    if json.loads(body)['steps'][-1]['state'] not in ('observed','blocked','interrupted','rejected'):raise ValueError('unresolved managed effect')
+    if a.receivers:
+        available=int(next(line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemAvailable:')))*1024
+        if available<8*1024**3:raise ValueError('three-peer capsule requires 8GiB available before its 6GiB cap')
+    # Refusal happens in this process before copying inputs, transferring a pier,
+    # or spawning a scope. A caller's shell error handling cannot bypass it.
+    from storage import admit
+    scratch_limit=768*1024**2 if recovered else 2*1024**3
+    storage_admission=admit(scratch_limit)
     os.umask(0o077);out.mkdir();art=out/'artifacts';art.mkdir();lab=out/'lab';lab.mkdir();(lab/'home').mkdir()
+    (out/'storage-admission.json').write_text(json.dumps(storage_admission,indent=2)+'\n')
     for source,name in [(a.vere,'vere'),(a.pill,'boot.pill'),(Path(__file__),'probe.py'),(a.requests,'requests.json')]:shutil.copyfile(source,art/name)
+    if a.receivers:
+        if not a.workflow_binary or not a.release_source:raise ValueError('receivers require the assembled release workflow')
+        shutil.copyfile(Path(__file__).with_name('receivers.py'),art/'receivers.py')
     if a.workflow_binary:
         if a.workflow_binary.is_symlink() or not a.workflow_binary.is_file():raise ValueError('physical workflow binary required')
         shutil.copyfile(a.workflow_binary,art/'workflow.test');(art/'workflow.test').chmod(0o700)
@@ -232,16 +263,27 @@ def host(a):
         shutil.copytree(a.release_source,art/'release-source')
     (art/'vere').chmod(0o700)
     g={'unit':'omabit-desk-probe-'+uuid.uuid4().hex,'namespaces':{k:os.readlink('/proc/self/ns/'+k) for k in ('net','pid','mnt','user')}}
-    g['desk']='omabit-test-'+uuid.uuid4().hex[:8]
+    g['desk']=json.loads((previous/'guard.json').read_text())['desk'] if recovered else 'omabit-test-'+uuid.uuid4().hex[:8]
     g['resume']=previous is not None
     g['workflow']=bool(a.workflow_binary)
+    g['receivers']=a.receivers
+    g['recover_receiver_boot']=bool(recovered)
+    g['recovered_publisher']=recovered
+    g['memory_limit']=(6 if a.receivers else 4)*1024**3
+    g['additional_scratch_limit']=scratch_limit
+    g['transferred_allocated_bytes']=0
     if previous:
-        identity=(previous/'lab/zod').stat()
-        moved={'from':str(previous),'to':str(out),'device':identity.st_dev,'inode':identity.st_ino,'previous_result_sha256':sha(previous/'lab/result.json')}
+        names=['zod','nec','bud'] if recovered else ['zod']
+        identities=[]
+        for name in names:
+            pier=previous/'lab'/name;identity=pier.stat()
+            g['transferred_allocated_bytes']+=sum(p.stat().st_blocks*512 for p in pier.rglob('*') if p.is_file())
+            identities.append({'ship':name,'device':identity.st_dev,'inode':identity.st_ino})
+        moved={'from':str(previous),'to':str(out),'piers':identities,'previous_result_sha256':sha(previous/'lab/result.json'),'mode':'pre-install-oom-recovery' if recovered else 'clean-resume'}
         (out/'resume.json').write_text(json.dumps(moved,indent=2));(previous/'pier-transferred.json').write_text(json.dumps(moved,indent=2))
-        os.rename(previous/'lab/zod',lab/'zod')
+        for name in names:os.rename(previous/'lab'/name,lab/name)
     (out/'guard.json').write_text(json.dumps(g));(out/'inputs.json').write_text(json.dumps({str(p.relative_to(art)):sha(p) for p in art.rglob('*') if p.is_file()},indent=2))
-    command=['systemd-run','--user','--scope','--unit='+g['unit'],'-p','MemoryMax=4G','-p','MemorySwapMax=0','-p','CPUQuota=100%','-p','TasksMax=128','--','bwrap','--unshare-all','--die-with-parent','--clearenv','--ro-bind','/usr','/usr','--symlink','usr/bin','/bin','--symlink','usr/lib','/lib','--symlink','usr/lib','/lib64','--proc','/proc','--dev','/dev','--tmpfs','/tmp','--dir','/run','--ro-bind',str(art),'/artifacts','--ro-bind',str(out/'guard.json'),'/guard.json','--bind',str(lab),'/lab','--chdir','/lab','--setenv','HOME','/lab/home','--setenv','PATH','/usr/bin:/bin','--setenv','LANG','C.UTF-8','--','python3','-B','/artifacts/probe.py','--inside']
+    command=['systemd-run','--user','--scope','--unit='+g['unit'],'-p','MemoryMax='+str(g['memory_limit']),'-p','MemorySwapMax=0','-p','CPUQuota=100%','-p','TasksMax=128','--','bwrap','--unshare-all','--die-with-parent','--clearenv','--ro-bind','/usr','/usr','--symlink','usr/bin','/bin','--symlink','usr/lib','/lib','--symlink','usr/lib','/lib64','--proc','/proc','--dev','/dev','--tmpfs','/tmp','--dir','/run','--ro-bind',str(art),'/artifacts','--ro-bind',str(out/'guard.json'),'/guard.json','--bind',str(lab),'/lab','--chdir','/lab','--setenv','HOME','/lab/home','--setenv','PATH','/usr/bin:/bin','--setenv','LANG','C.UTF-8','--','python3','-B','/artifacts/probe.py','--inside']
     (out/'command.json').write_text(json.dumps(command,indent=2))
     with (out/'console.log').open('wb') as log:
         child=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
@@ -251,20 +293,28 @@ def host(a):
                 p=subprocess.run(['systemctl','--user','show',g['unit']+'.scope','--property=ActiveState,MemoryMax,MemorySwapMax,CPUQuotaPerSecUSec,TasksMax'],capture_output=True,text=True,timeout=5)
                 values=dict(line.split('=',1) for line in p.stdout.splitlines() if '=' in line)
                 if values.get('ActiveState')=='active':
-                    assert all(values.get(k)==v for k,v in {'MemoryMax':str(4*1024**3),'MemorySwapMax':'0','CPUQuotaPerSecUSec':'1s','TasksMax':'128'}.items())
+                    assert all(values.get(k)==v for k,v in {'MemoryMax':str(g['memory_limit']),'MemorySwapMax':'0','CPUQuotaPerSecUSec':'1s','TasksMax':'128'}.items())
                     (out/'admission.json').write_text(json.dumps(values));(lab/'admitted').write_text(g['unit']);break
                 time.sleep(.1)
             else:raise RuntimeError('scope admission failed')
-            end=time.monotonic()+550
+            end=time.monotonic()+(1200 if a.receivers else 550)
+            next_storage_check=0
             while child.poll() is None:
                 if time.monotonic()>end:raise RuntimeError('outer deadline')
                 usage=sum(p.stat().st_blocks*512 for p in out.rglob('*') if p.is_file())
-                if usage>2*1024**3:raise RuntimeError('2 GiB scratch budget exceeded')
+                if usage>g['transferred_allocated_bytes']+g['additional_scratch_limit']:raise RuntimeError('additional scratch limit exceeded')
+                if time.monotonic()>=next_storage_check:
+                    observation=admit(0)
+                    (out/'storage-observed.json').write_text(json.dumps(observation,indent=2)+'\n')
+                    next_storage_check=time.monotonic()+15
                 try:child.wait(timeout=2)
                 except subprocess.TimeoutExpired:pass
             rc=child.returncode
+        except BaseException as error:
+            (out/'host-error.json').write_text(json.dumps({'type':type(error).__name__,'error':str(error),'completion':'interrupted; inspect original effect ledgers, never infer clean shutdown'})+'\n')
+            raise
         finally:
             if child.poll() is None:os.killpg(child.pid,signal.SIGTERM);child.wait(timeout=10)
     (out/'exit.json').write_text(json.dumps({'exit':rc}));print(json.dumps({'output':str(out),'exit':rc}));return rc
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--release-source',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--recover-receiver-boot',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--receivers',action='store_true');p.add_argument('--release-source',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))

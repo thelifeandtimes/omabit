@@ -8376,3 +8376,54 @@ uncertainty is unchanged, not reconciled. Removal manifests are
 42,773,184,512 bytes with2GiB scratch and1GiB unmeasured-DEV reserve. Re-measure
 before another runtime. Production/DEV/trial runners, ships, installed plugins and
 the persistent manual preview remain unchanged.
+
+
+## M549 — Native receiver propagation and bounded launcher (2026-11-07)
+
+Typed receiver primitives select a continuing publisher, inspect pending Kiln
+subscriptions even before source arrival, and refuse an occupied Clay desk or
+subscription inside the install expression. A separate read distinguishes a
+reserved revision-zero desk from received source. Expected hashes are verification
+conditions, not version pins; later publisher commits continue to propagate.
+No public receiver mutation API or CLI is introduced yet. Schema55 is unchanged.
+
+Native40 passes the assembled publisher workflow and both fresh receiver paths.
+Each receiver has the exact initial publisher hash, a live fixture Gall agent,
+matching Docket state and exact served HTML. A later publisher commit reaches both
+receivers with no second install. Both received desks stay private. All native
+effects are acknowledged and all three peers stop cleanly. Core receiver tests,
+private runtime adapter race checks and offline recovery/storage tests pass.
+See `diagnostics/2026-11-07-desk-native-receivers.json`. This supersedes M548's
+pending native receiver verification, not its pending public rollout/frontend
+adapters, Urgit, fleet URL, clearweb or release qualification work.
+
+Failures remain recorded:37 hit its4GiB scope memory cap during receiver boot,
+before installation.38 was interrupted before its receiver phase; no completion
+receipt exists and its later absent transient scope is not proof of clean shutdown.
+An external conservative1GiB storage preflight for38 failed by1,728,512 bytes, but
+shell fallthrough still started the launcher with its smaller768MiB cap. A later
+measurement charged42,956,808,192 bytes including the estimated1GiB DEV reserve,
+7,135,232 bytes over budget. The restarted publisher had allocated another epoch.
+Do not describe the admission as passed or the shutdown as clean.39 stopped
+cleanly after its first acknowledged receiver install: the old observer rejected
+revision zero before it could verify arrival.40 fixes that actual transient state.
+
+Admission now executes inside the launcher before copies/transfers/spawn, so shell
+error handling cannot bypass it. Known partial DEV measurement is explicit; all
+other measurement failures refuse. Offline tests prove refusal has no output,
+copy, transfer or spawn. Aggregate periodic monitoring was added after40 and is
+not claimed as native40 coverage. Host exceptions now retain an interruption
+record. Three-peer capsules use6GiB with8GiB available admission, one CPU and no
+swap; all original namespace/production exclusions remain.
+
+Retention removed only verified duplicate38/39 runtime inputs, the superseded
+interrupted38 and clean39 generated fake piers, and the old development-loop Go
+build cache. Full34 failure and current40 piers, source, binaries, receipts and
+original migration fixtures remain. Manifests:
+`/tmp/omabit-desk-runtime-inputs-prune-38.json`,
+`/tmp/omabit-desk-receiver-failed-bootstrap-retention.json`,
+`/tmp/omabit-desk-receiver-superseded39-piers.json`,
+`/tmp/omabit-desk-runtime-inputs-prune-39.json`.
+Native40 admission charged42,621,595,648 bytes including2GiB additional scratch and
+the1GiB DEV estimate. Re-measure before further work. Production/DEV/trial runners,
+ships, installed plugins and the persistent manual preview remain unchanged.
