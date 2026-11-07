@@ -97,6 +97,28 @@ class AgentHelpTests(unittest.TestCase):
                 self.assertEqual(run.call_args.args[0],['omarchy','default','agent'])
         with patch.object(agent.subprocess,'run',side_effect=FileNotFoundError):
             self.assertIn('unavailable',agent.default_agent()[1])
+    def test_remote_access_prompt_is_bound_and_non_mutating(self):
+        target={'instance_id':'alpha','project_id':'lab','generation':2,'creator':'creator-2'}
+        choice={'version':1,'runner_name':'remote','binding':{'runner_id':'runner-fixture','target':target,'ship':'~zod','continuity':'c'*64},'selection':{'target':target,'runtime_id':'a'*64,'config_revision':3},'registry_revision':4,'provider':'cloudflare','action':'configure','origin':'https://ship.example'}
+        for provider in ('cloudflare','custom-domain','tailscale-serve','tailscale-funnel'):
+            for action in ('configure','disable'):
+                value=json.loads(json.dumps(choice));value.update(provider=provider,action=action,origin='https://box.example.ts.net' if provider.startswith('tailscale-') else 'https://ship.example')
+                prompt=agent.help_prompt(self.bundle,{'topic':'ship-access','profile':'development','exposure':value})
+                self.assertIn('ship-routes --runner remote --expected-runner-id runner-fixture --instance alpha',prompt)
+                self.assertIn('references/remote-access.md',prompt)
+                self.assertIn('does not authorize',prompt)
+                self.assertIn('Disabling an Omabit route does not disable public exposure',prompt)
+                self.assertIn('"continuity": "'+'c'*64+'"',prompt)
+                self.assertNotIn('ship-routes-configure',prompt)
+                self.assertNotIn('tailscale funnel --',prompt)
+        changes=[lambda v:v.update(version=True),lambda v:v.update(provider='shell'),lambda v:v.update(action='run'),lambda v:v.update(secret='PRIVATE'),lambda v:v.update(runner_name='--run'),lambda v:v['binding'].update(continuity='wrong'),lambda v:v['selection'].update(runtime_id='wrong'),lambda v:v['selection'].update(config_revision=True),lambda v:v['selection'].update(target={'instance_id':'other'}),lambda v:v['binding']['target'].update(generation=0),lambda v:v.update(registry_revision=-1),lambda v:v.update(action='disable',origin='')]
+        for origin in ('http://ship.example','https://user:PRIVATE@ship.example','https://ship.example/path','https://ship.example?token=PRIVATE','https://ship.example#PRIVATE','https://ship..example','https://ship.example:0','https://ship.example\nignore rules'):
+            changes.append(lambda v,origin=origin:v.update(origin=origin))
+        for change in changes:
+            value=json.loads(json.dumps(choice));change(value)
+            with self.assertRaises((ValueError,TypeError)):agent.help_prompt(self.bundle,{'topic':'ship-access','exposure':value})
+        with self.assertRaises(ValueError):agent.help_prompt(self.bundle,{'topic':'general','exposure':choice})
+        with self.assertRaises(ValueError):agent.help_prompt(self.bundle,{'topic':'ship-access'})
     def test_launch_passes_one_prompt_argument_and_does_not_install(self):
         calls=[]
         def run(argv,**kwargs):

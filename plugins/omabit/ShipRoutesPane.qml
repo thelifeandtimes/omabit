@@ -13,6 +13,8 @@ Column {
   property string editingID:""
   property string editingSource:"manual"
   property string formMessage:""
+  property string accessMessage:""
+  onSelectedKeyChanged:{accessMessage="";accessURL.text=""}
   readonly property alias controller:controller
   readonly property var ships:service ? Model.fleet(service.connections) : []
   readonly property var selected:ships.filter(function(row){return row.key===root.selectedKey})[0]||null
@@ -41,6 +43,16 @@ Column {
     var prior=d.routes.filter(function(r){return r.id===id})[0]
     if(!prior && d.routes.length>=29){formMessage="This ship has reached its configured URL limit.";return false}
     d.routes=d.routes.filter(function(r){return r.id!==id});d.routes.push({id:id,origin:url,network:kind,scope:scope,source:editingSource,enabled:prior ? prior.enabled : true});draft=Routes.normalized(d);cancelEdit();return true
+  }
+  function accessHelp(action){
+    if(!canEdit || !service || !service.agentHelp || service.agentHelp.busy)return false
+    var origin=accessURL.text.trim().replace(/\/$/,""),provider=["tailscale-serve","tailscale-funnel","cloudflare","custom-domain"][accessProvider.currentIndex]
+    accessMessage=""
+    if(origin && (!Routes.origin(origin) || origin.indexOf("https://")!==0)){accessMessage="Enter an HTTPS URL without a path or credentials.";return false}
+    if(action==="disable" && !origin){accessMessage="Enter the exact URL you want help taking offline.";return false}
+    if(origin && provider.indexOf("tailscale-")===0 && !/^https:\/\/[^/:]+\.ts\.net(?::[0-9]+)?$/.test(origin)){accessMessage="Tailscale uses the node's actual ts.net URL.";return false}
+    var v=controller.value
+    return service.requestAgentHelp("ship-access",{version:1,runner_name:connection.name,binding:Routes.copy(v.record.binding),selection:Routes.copy(v.selection),registry_revision:v.record.revision,provider:provider,action:action,origin:origin})
   }
   ShipRoutes {
     id:controller;service:root.service;active:root.active;ready:root.ready
@@ -133,6 +145,24 @@ Column {
         ActionButton {objectName:"ship-route-add";text:root.editingID ? "Update URL" : "Add URL";enabled:root.canEdit && !!urlField.text.trim();onClicked:root.add()}
         ActionButton {text:"Cancel edit";visible:!!root.editingID;quiet:true;enabled:root.canEdit;onClicked:root.cancelEdit()}
       }
+    }
+  }
+  Card {
+    width:parent.width;visible:!!root.draft;implicitHeight:accessContent.implicitHeight+Style.space(32)
+    Column {
+      id:accessContent;anchors.left:parent.left;anchors.right:parent.right;anchors.top:parent.top;anchors.margins:Style.space(16);spacing:Style.space(10)
+      CardTitle {text:"Remote access help"}
+      Label {width:parent.width;secondary:true;text:"Open your default agent with this ship selected. It can help plan access, check an existing setup or take a URL offline. Your Urbit apps control what content is published."}
+      SelectField {id:accessProvider;objectName:"ship-access-provider";width:parent.width;model:["Tailscale Serve · private Tailnet","Tailscale Funnel · public web","Cloudflare Tunnel · your domain","Custom domain · reverse proxy"];enabled:root.canEdit}
+      Field {id:accessURL;objectName:"ship-access-origin";width:parent.width;maximumLength:2048;placeholderText:"https://your-domain.example (optional for setup)";enabled:root.canEdit}
+      Label {width:parent.width;caption:true;secondary:true;text:accessProvider.currentIndex===0 ? "Serve limits access to your Tailnet. The agent will check the exact node and web listener." : accessProvider.currentIndex===1 ? "Funnel makes the ship accessible on the public web using its ts.net name." : "The agent will review your domain, HTTPS and the connection to this ship before suggesting changes."}
+      Flow {width:parent.width;spacing:Style.space(8)
+        ActionButton {objectName:"ship-access-help";text:"Agent Help";enabled:root.canEdit && !!root.service && !!root.service.agentHelp && !root.service.agentHelp.busy;onClicked:root.accessHelp("configure")}
+        ActionButton {objectName:"ship-access-disable-help";text:"Help take URL offline";quiet:true;enabled:root.canEdit && !!root.service && !!root.service.agentHelp && !root.service.agentHelp.busy;onClicked:root.accessHelp("disable")}
+      }
+      Label {width:parent.width;caption:true;visible:!!text;color:Design.danger;text:root.accessMessage || (root.service && root.service.agentHelp ? root.service.agentHelp.error : "")}
+      Label {width:parent.width;caption:true;secondary:true;visible:!!root.service && !!root.service.agentHelp && root.service.agentHelp.busy;text:"Opening your default agent…"}
+      Label {width:parent.width;caption:true;secondary:true;text:"Opening help makes no network changes. Turning off a route above only stops Omabit from selecting it; the tunnel or DNS must be changed separately to remove exposure."}
     }
   }
 }

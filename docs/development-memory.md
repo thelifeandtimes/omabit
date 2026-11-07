@@ -8850,3 +8850,23 @@ unchanged58f10a6. Its expectation was not used to weaken the live-selection guar
 This supersedes M561's pending approval UI. Automatic reconnection/receiver handoff,
 clearweb help and Urgit workflow remain open. Installed state and the persistent
 manual preview are unchanged; release work remains deferred.
+
+
+## M563 — Selected-ship remote access assistance (2026-11-07)
+
+Setup → Ship URLs now opens the default agent with the exact nonsecret runner,
+ship/pier binding, runtime and saved URL revision, plus provider/action selection.
+Help supports private Serve, public Funnel, Cloudflare and custom-domain planning.
+The operator skill describes upstream/audience checks, authorized provider changes,
+verification, registry updates and targeted removal. Disabling an Omabit route is
+explicitly separate from taking its external exposure offline. No provider commands
+or automatic account/network changes are added.
+
+Prompt validation and existing dispatch/skill-install tests pass. Full-panel06
+passes all provider/action contexts, invalid URLs, selection clearing and offline
+invalidation without QML warnings; wide/narrow screenshots were inspected. Run05
+passed interactions but exposed missing fields in the inert agent stub; the fixture
+was corrected. See `diagnostics/2026-11-07-remote-access-help.json`. This supersedes
+M562's pending clearweb Help only. Reconnection/receiver handoff and native Urgit
+workflow coverage remain open. Actual provider deployment, installed networking
+and release qualification are not claimed; all installed state remains untouched.

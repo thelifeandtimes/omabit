@@ -97,6 +97,7 @@ Item {
     var context={topic:topic || "general",profile:profileName,environment:profileEnvironment}
     if(profileName==="default" && settings.configDir)context.config_dir=settings.configDir
     if(topic==="remote-setup" && setup){context.setup_id=setup.id;context.phase=setup.phase}
+    if(topic==="ship-access" && setup)context.exposure=setup
     return agentHelper.launch(context)
   }
   readonly property alias serviceUpgrade: serviceUpdater

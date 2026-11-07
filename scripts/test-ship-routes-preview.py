@@ -26,6 +26,11 @@ def main():
     service = (out / "PreviewService.qml").read_text()
     service = service.replace('"/preview/backend.py",remoteMode].concat(args)', '(args.length && args[0].indexOf("ship-routes")===0 ? "/preview/routes-backend.py" : "/preview/backend.py"),remoteMode].concat(args)')
     service = service.replace('property string remoteMode:"online"', 'property string remoteMode:"online"\n  property string routeScenario:"normal"')
+    service = service.replace('property string routeScenario:"normal"', '''property string routeScenario:"normal"
+  property var agentHelp:({busy:false,value:null,target:"",error:"",message:""})
+  property var lastHelp:null
+  property int helpCalls:0
+  function requestAgentHelp(topic,context){lastHelp={topic:topic,context:JSON.parse(JSON.stringify(context))};helpCalls++;return true}''')
     service = service.replace('remoteMode].concat(args)', '(args.length && args[0].indexOf("ship-routes")===0 && routeScenario!=="normal" ? routeScenario : remoteMode)].concat(args)')
     service = service.replace('observed_state:"stopped",desired_state:"stopped"', 'observed_state:"running",desired_state:"running",resources:{container_id:"a".repeat(64)}')
     service = service.replace('features:[]', 'features:["ship-routes-v1"]')

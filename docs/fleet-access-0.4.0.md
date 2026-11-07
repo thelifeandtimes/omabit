@@ -119,6 +119,13 @@ reordering. Failed saves display confirmed state; refresh does not replay effect
 Wide/narrow full-panel and hosted-flow fixtures pass, as does actual service drain
 with inert helpers. See [UI evidence](diagnostics/2026-11-07-fleet-permission-ui.json).
 
+M563 adds selected-ship Remote access help to Setup → Ship URLs. The default agent
+receives a bounded nonsecret binding/runtime/revision hint and a provider/action
+choice. The bundled skill covers audience, exact upstream, verification, registration
+and targeted disable for Serve/Funnel, Cloudflare and custom domains. Help does not
+configure a provider. Full-panel and prompt validation fixtures pass; no live provider
+deployment is claimed. See [Help evidence](diagnostics/2026-11-07-remote-access-help.json).
+
 ## Integration still required
 
 1. Setup URL editor, runner-owned registry, localhost and Tailscale/Serve discovery,
@@ -130,7 +137,8 @@ with inert helpers. See [UI evidence](diagnostics/2026-11-07-fleet-permission-ui
 4. Compatible receiver handoff and automatic reconnection. Preserve origin-bound
    sessions, original uncertain attempts and cleanup records; never replay pending
    app writes or silently copy a cookie to a different origin.
-5. Agent-assisted exposure plans for Tailscale/Cloudflare/custom DNS, with verified
-   registration and explicit disable behavior. Urbit apps own content publication.
+5. Agent-assisted exposure planning/context and skill pathways are implemented.
+   Live provider setup remains specific to the user’s authorized environment; Urbit
+   apps own content publication.
 
 Release qualification remains deferred until these features are complete.

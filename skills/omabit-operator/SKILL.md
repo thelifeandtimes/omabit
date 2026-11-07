@@ -17,6 +17,10 @@ and the host-specific checks an agent can help with.
 For a ship's registered local, tailnet or public URLs, read
 [fleet URLs](references/fleet-urls.md). It distinguishes URL configuration from
 exposing a service, granting application access and obtaining credentials.
+For Tailnet proxying, public tunnels, custom domains or taking a URL offline, read
+[remote access](references/remote-access.md). Prepare a ship-bound access plan and
+verify the intended network audience; URL registration alone does not expose or
+unpublish a ship.
 
 For app source deployment, desk creation, commits or publication, read
 [app development](references/app-development.md). Agent desk creation, commit and publication
