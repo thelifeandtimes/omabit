@@ -7,7 +7,7 @@ The baseline retains its minimal monitor stub. Neither mode contacts a real runn
 """
 import argparse,hashlib,json,os,re,shutil,signal,socket,subprocess,time
 from pathlib import Path
-COMPONENTS=('Service.qml','Model.js','ApplicationConnections.qml','ImportRestoration.qml','ObservationSchedule.qml')
+COMPONENTS=('Service.qml','AgentHelp.qml','ServiceUpgrade.qml','ProjectCreation.qml','ReaderLifecycle.qml','Model.js','ShipRoutes.js','ApplicationConnections.qml','ImportRestoration.qml','ObservationSchedule.qml')
 MONITOR='''import QtQuick
 Item {
  property var service
@@ -118,6 +118,8 @@ elif args[2:6]==['--runner','fixture','--expected-runner-id','fixture-runner']:
  while True:time.sleep(.05)
 elif args[2:] in (['app-plugins'],['ships'],['app-connections']):
  print('[]')
+elif args[2:]==['app-ship-approvals']:
+ print(json.dumps({'version':1,'revision':0,'entries':[]}))
 elif args[2:]==['fixture-auth-hold']:
  Path('/lab/auth-hold-started').write_text(str(os.getpid()))
  while not Path('/lab/release-auth-hold').exists():time.sleep(.04)

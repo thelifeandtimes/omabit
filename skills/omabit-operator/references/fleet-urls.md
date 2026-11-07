@@ -61,7 +61,8 @@ lookup does not remove manually configured routes. Path proxies, service VIPs,
 raw TCP forwarding and bespoke reverse proxies need explicit URL registration.
 No live Tailnet qualification is claimed by these fixture checks. The full-panel
 Setup URL editor passes offline interaction/rendering checks. Standing-approval authoring and automatic URL selection/connection are implemented
-below. Their UI integration and automatic reconnection remain open.
+below. The full-panel connection UI is implemented; automatic session reconnection remains
+open.
 Do not claim those features from the presence of this registry capability alone.
 
 Keep existing sessions bound to their original URL. Never copy a cookie to another
@@ -69,6 +70,14 @@ origin or replay an uncertain application write to make a connection appear heal
 
 
 ## Standing application permission
+
+In **Setup → Application Connections**, select a fleet ship and turn on Allowed
+for the desired plugin. This saves permission for that exact ship and helper;
+Connect chooses a verified reachable URL. Turning Allowed off blocks future
+sign-ins. Disconnect closes the current session separately. Other saved permissions
+remain revocable while a runner is offline or a plugin has been removed. Failed
+allow choices require review; do not infer permission from a temporarily busy UI.
+
 
 Use the matching `urbit-collector` from the selected installation/profile. A grant
 is for one plugin/profile/helper generation and verified ship incarnation across

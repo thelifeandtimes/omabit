@@ -1,0 +1,326 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M562",
+  "source_base": "58f10a6c8ca0e5490f932f72319ba7c4d600fe39",
+  "full_panel": {
+    "directory": "/tmp/omabit-fleet-access-ui-06",
+    "passed": true,
+    "log_sha256": "0b15b1164ae9345a8ef17aff5b48faa57e176888035dbd578f545461107d2a16",
+    "calls_sha256": "712b8e132b6a5ca794907303765aac2291b1de9bca4587cc03d2fd1f85a288dd",
+    "fixture_source_sha256": "7a3d176855f786ee65cd124eaa7f6d5902b3d23c6867616960f5b595f05d85a9",
+    "screenshots": {
+      "fleet-permissions-narrow.png": "fafd057b96d3b04198b47553cec81a3e60302e620ec60653427a233cdbeabff1",
+      "fleet-permissions-wide.png": "64bcd0743134ccc9c6c4d2c8e4a92dd765d5d408905260cd65ec861607848176"
+    },
+    "screenshots_visually_reviewed": true
+  },
+  "hosted_regression": {
+    "directory": "/tmp/omabit-app-ui-standing-regression-01",
+    "passed": true,
+    "log_sha256": "9b6325e94e60451606b9e2241158b624e08bc6cf1039931ff330f6e0f8d73e65"
+  },
+  "service_drain": {
+    "directory": "/tmp/omabit-service-drain-fleet-02",
+    "result": {
+      "native_panel_mode": false,
+      "readers_mode": false,
+      "actual_monitor": false,
+      "actual_setup_readers": false,
+      "actual_compositor": false,
+      "passed": true,
+      "actual_service": true,
+      "inert_tools": true,
+      "monitor_stub": true,
+      "no_runner_operations": true,
+      "cases": [
+        {
+          "profile": "stable",
+          "feed": {
+            "pid": 11,
+            "start": "39822986",
+            "state": "S"
+          },
+          "readers": [],
+          "receipt": {
+            "closed": true,
+            "reason": "",
+            "auxiliaryReadersTracked": true,
+            "pendingReaders": [],
+            "readerOwnerLost": false,
+            "helperExitsTracked": true,
+            "unconfirmedHelpers": [],
+            "collectionReady": false
+          },
+          "early_receipt": {
+            "closed": false,
+            "reason": "helpers-still-running",
+            "auxiliaryReadersTracked": true,
+            "pendingReaders": [],
+            "readerOwnerLost": false,
+            "helperExitsTracked": true,
+            "unconfirmedHelpers": [],
+            "collectionReady": false
+          },
+          "all_owned_helpers_exited": true,
+          "no_reconnect_or_new_admission": true,
+          "old_helpers_exited_before_replacement": true,
+          "new_call_records": 20
+        },
+        {
+          "profile": "dev",
+          "feed": {
+            "pid": 52,
+            "start": "39823262",
+            "state": "S"
+          },
+          "readers": [],
+          "receipt": {
+            "closed": true,
+            "reason": "",
+            "auxiliaryReadersTracked": true,
+            "pendingReaders": [],
+            "readerOwnerLost": false,
+            "helperExitsTracked": true,
+            "unconfirmedHelpers": [],
+            "collectionReady": false
+          },
+          "early_receipt": {
+            "closed": false,
+            "reason": "helpers-still-running",
+            "auxiliaryReadersTracked": true,
+            "pendingReaders": [],
+            "readerOwnerLost": false,
+            "helperExitsTracked": true,
+            "unconfirmedHelpers": [],
+            "collectionReady": false
+          },
+          "all_owned_helpers_exited": true,
+          "no_reconnect_or_new_admission": true,
+          "old_helpers_exited_before_replacement": true,
+          "new_call_records": 6
+        },
+        {
+          "profile": "stable",
+          "feed": {
+            "pid": 84,
+            "start": "39823485",
+            "state": "S"
+          },
+          "readers": [],
+          "receipt": {
+            "closed": true,
+            "reason": "",
+            "auxiliaryReadersTracked": true,
+            "pendingReaders": [],
+            "readerOwnerLost": false,
+            "helperExitsTracked": true,
+            "unconfirmedHelpers": [],
+            "collectionReady": false
+          },
+          "early_receipt": {
+            "closed": false,
+            "reason": "helpers-still-running",
+            "auxiliaryReadersTracked": true,
+            "pendingReaders": [],
+            "readerOwnerLost": false,
+            "helperExitsTracked": true,
+            "unconfirmedHelpers": [],
+            "collectionReady": false
+          },
+          "all_owned_helpers_exited": true,
+          "no_reconnect_or_new_admission": true,
+          "old_helpers_exited_before_replacement": true,
+          "new_call_records": 6
+        },
+        {
+          "profile": "edge",
+          "feed": {
+            "pid": 116,
+            "start": "39823721",
+            "state": "S"
+          },
+          "readers": [],
+          "receipt": {
+            "closed": true,
+            "reason": "",
+            "auxiliaryReadersTracked": true,
+            "pendingReaders": [],
+            "readerOwnerLost": false,
+            "helperExitsTracked": true,
+            "unconfirmedHelpers": [],
+            "collectionReady": false
+          },
+          "early_receipt": {
+            "closed": false,
+            "reason": "helpers-still-running",
+            "auxiliaryReadersTracked": true,
+            "pendingReaders": [],
+            "readerOwnerLost": false,
+            "helperExitsTracked": true,
+            "unconfirmedHelpers": [],
+            "collectionReady": false
+          },
+          "all_owned_helpers_exited": true,
+          "no_reconnect_or_new_admission": true,
+          "old_helpers_exited_before_replacement": true,
+          "new_call_records": 6
+        },
+        {
+          "profile": "stable",
+          "feed": {
+            "pid": 145,
+            "start": "39823957",
+            "state": "S"
+          },
+          "readers": [],
+          "receipt": {
+            "closed": true,
+            "reason": "",
+            "auxiliaryReadersTracked": true,
+            "pendingReaders": [],
+            "readerOwnerLost": false,
+            "helperExitsTracked": true,
+            "unconfirmedHelpers": [],
+            "collectionReady": false
+          },
+          "early_receipt": {
+            "closed": false,
+            "reason": "helpers-still-running",
+            "auxiliaryReadersTracked": true,
+            "pendingReaders": [],
+            "readerOwnerLost": false,
+            "helperExitsTracked": true,
+            "unconfirmedHelpers": [],
+            "collectionReady": false
+          },
+          "all_owned_helpers_exited": true,
+          "no_reconnect_or_new_admission": true,
+          "old_helpers_exited_before_replacement": true,
+          "new_call_records": 6
+        }
+      ],
+      "scoped_ipc": [
+        {
+          "module": "thelifeandtimes.omabit.qualification-stable",
+          "profile": "stable",
+          "native_status": {
+            "module": "thelifeandtimes.omabit.qualification-stable",
+            "profile": "stable",
+            "version": "0.3.7",
+            "channel": "stable",
+            "release_label": "STABLE",
+            "visible": true,
+            "page": "overview",
+            "fullscreen": false,
+            "busy": false,
+            "first_run": false,
+            "recommended_pill_default": true
+          },
+          "canonical_absent": true
+        },
+        {
+          "module": "thelifeandtimes.omabit.qualification-dev",
+          "profile": "dev",
+          "native_status": {
+            "module": "thelifeandtimes.omabit.qualification-dev",
+            "profile": "dev",
+            "version": "0.3.7",
+            "channel": "stable",
+            "release_label": "STABLE",
+            "visible": true,
+            "page": "overview",
+            "fullscreen": false,
+            "busy": false,
+            "first_run": false,
+            "recommended_pill_default": true
+          },
+          "canonical_absent": true
+        },
+        {
+          "module": "thelifeandtimes.omabit.qualification-stable",
+          "profile": "stable",
+          "native_status": {
+            "module": "thelifeandtimes.omabit.qualification-stable",
+            "profile": "stable",
+            "version": "0.3.7",
+            "channel": "stable",
+            "release_label": "STABLE",
+            "visible": true,
+            "page": "overview",
+            "fullscreen": false,
+            "busy": false,
+            "first_run": false,
+            "recommended_pill_default": true
+          },
+          "canonical_absent": true
+        },
+        {
+          "module": "thelifeandtimes.omabit.qualification-edge",
+          "profile": "edge",
+          "native_status": {
+            "module": "thelifeandtimes.omabit.qualification-edge",
+            "profile": "edge",
+            "version": "0.3.7",
+            "channel": "stable",
+            "release_label": "STABLE",
+            "visible": true,
+            "page": "overview",
+            "fullscreen": false,
+            "busy": false,
+            "first_run": false,
+            "recommended_pill_default": true
+          },
+          "canonical_absent": true
+        },
+        {
+          "module": "thelifeandtimes.omabit.qualification-stable",
+          "profile": "stable",
+          "native_status": {
+            "module": "thelifeandtimes.omabit.qualification-stable",
+            "profile": "stable",
+            "version": "0.3.7",
+            "channel": "stable",
+            "release_label": "STABLE",
+            "visible": true,
+            "page": "overview",
+            "fullscreen": false,
+            "busy": false,
+            "first_run": false,
+            "recommended_pill_default": true
+          },
+          "canonical_absent": true
+        }
+      ],
+      "foreground_work_refuses_drain": true,
+      "application_connection_work_refuses_drain": true,
+      "late_read_blocks_closure": true,
+      "clean_shell_exit": 0
+    },
+    "result_sha256": "16590b7d65b5b2009895176b9ee9d3d3efecc0f08d220f1c3487372dc979b7bc"
+  },
+  "model": {
+    "command": "node scripts/test-fleet-access-model.js",
+    "passed": true
+  },
+  "prior_findings": [
+    "UI01: serialization order prevented grant matching; structural comparison fixed",
+    "UI02/03: old fixture timeout and network simulation incorrectly changed profile identity; fixture corrected",
+    "UI04: offline assertion incorrectly rejected a valid review of another available ship; assertion narrowed to offline binding",
+    "UI05: failed allow left switch optimistically checked; switch now shows confirmed saved state only",
+    "Service-drain01: fixture component list omitted current Service dependencies; corrected in02",
+    "Existing test-project-fleet-state.js expects Project where current model reports Stale; identical failure reproduced on unchanged HEAD 58f10a6; no fleet URL/permission regression identified"
+  ],
+  "storage_observed": {
+    "charged_bytes": 42441793536,
+    "budget_bytes": 42949672960,
+    "additional_scratch_bytes": 0,
+    "total_with_reserves": 42441793536
+  },
+  "limits": [
+    "Full-panel QML and actual service lifecycle with inert backends; no real network, keyring, runner or ship operations",
+    "Persistent preview, installed production/DEV/trial plugins and runners unchanged",
+    "Automatic session reconnection and compatible receiver replacement remain pending",
+    "Feature checks only; release qualification remains deferred"
+  ]
+}

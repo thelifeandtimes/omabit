@@ -1,5 +1,7 @@
 import QtQuick
 import Quickshell.Io
+import "Model.js" as Model
+import "ShipRoutes.js" as Routes
 
 Item {
   id: root
@@ -22,29 +24,42 @@ Item {
   property bool timedOut: false
   property var stagedPlugins: []
   property var stagedShips: []
+  property var stagedAttempts: []
+  property var permissions: null
+  property var review: null
+  property var selectedFleet: null
+  property string selectionKey: ""
+  property string requestSelectionKey: ""
+  property bool pendingReview: false
+  property int generation: 0
+  property int requestGeneration: -1
+  readonly property string profileBinding: service ? JSON.stringify(service.command([])) : ""
+  onProfileBindingChanged: { generation++;fresh=false;permissions=null;review=null }
 
   function ready() { return service && !service.busy && service.activationEnabled && !busy }
   function launch(args, kind, input) {
     operation = kind; output = ""; errorOutput = ""; overflow = false; timedOut = false
+    requestGeneration=generation;requestSelectionKey=selectionKey
     pendingInput = input || ""
     helper.stdinEnabled = pendingInput !== ""
     helper.command = service.command(args)
-    deadline.interval = kind.indexOf("read-") === 0 ? 15000 : 90000
+    deadline.interval = kind === "read-review" ? 45000 : kind === "connect-fleet" ? 120000 : kind.indexOf("read-") === 0 ? 15000 : 90000
     deadline.restart(); helper.running = true
   }
   function refresh() {
     if (!ready()) return false
-    fresh = false
+    fresh = false; review=null
     launch(["app-plugins"], "read-plugins", "")
     return true
   }
   function begin(args, kind, input) {
     if (!ready()) return false
-    fresh = false; message = ""; failed = false
+    fresh = false; review=null; message = ""; failed = false
     launch(args, kind, input)
     return true
   }
   function connect(plugin, ship, approved) {
+    if(ship && ship.managed && ship.managed.fleet)return connectFleet(plugin,ship)
     if (!approved || !fresh || !plugin || plugin.status !== "available" || !ship || (!ship.managed && ship.status !== "session_stored")) return false
     var target = plugin.target
     // An operation ID is a replay key, not a credential or an authorization.
@@ -58,6 +73,48 @@ Item {
       "--request-id",request,"--approve-owner-session"])
     var ok = begin(args, "connect", "")
     if (ok) lastRequestId = request
+    return ok
+  }
+  function selectShip(ship,active) {
+    var current=active && ship && ship.managed && ship.managed.fleet ? ship : null
+    var key=Model.applicationShipKey(current)
+    if(key===selectionKey)return
+    selectedFleet=current;selectionKey=key;review=null;pendingReview=!!current
+    Qt.callLater(ensureReview)
+  }
+  function ensureReview() {
+    if(!pendingReview || !selectedFleet || !fresh || !ready())return
+    pendingReview=false
+    var m=selectedFleet.managed
+    launch(["--runner",m.runner,"--expected-runner-id",m.runner_id,"app-ship-review","--instance",m.instance],"read-review","")
+  }
+  function validPermissions(v) {
+    return v && v.version===1 && Routes.revision(v.revision) && Array.isArray(v.entries) && v.entries.length<=256 && v.entries.every(function(g){
+      return g && g.binding && g.binding.target && Routes.identifier(g.binding.runner_id) && Routes.identifier(g.binding.target.instance_id) && /^[0-9a-f]{64}$/.test(g.binding.continuity||"") && typeof g.binding.ship==="string" && g.target && typeof g.target.plugin_id==="string" && typeof g.target.profile==="string" && /^[0-9a-f]{64}$/.test(g.target.artifact_sha256||"") && typeof g.allowed==="boolean" && Routes.revision(g.revision) && g.revision>0 && g.revision<=v.revision
+    })
+  }
+  function grant(plugin) {
+    if(!review || !plugin || !permissions)return null
+    return permissions.entries.filter(function(g){return Routes.equal(g.binding,review.routes.record.binding) && Routes.equal(g.target,plugin.target)})[0]||null
+  }
+  function permit(plugin,ship,allowed) {
+    if(!fresh || !review || !plugin || plugin.status!=="available" || Model.applicationShipKey(ship)!==selectionKey)return false
+    var m=ship.managed,q={version:1,binding:Routes.copy(review.routes.record.binding),selection:Routes.copy(review.routes.selection),target:Routes.copy(plugin.target),expected_revision:permissions.revision,allowed:allowed}
+    if(!allowed){var g=grant(plugin);return g ? revoke(g) : false}
+    return begin(["--runner",m.runner,"--expected-runner-id",m.runner_id,"app-ship-approve","--request-json",JSON.stringify(q),"--allow-owner-session"],"permit","")
+  }
+  function revoke(g) {
+    if(!fresh || !permissions || !g || !g.allowed || !permissions.entries.some(function(e){return Routes.equal(e,g)}))return false
+    var q={version:1,binding:Routes.copy(g.binding),target:Routes.copy(g.target),expected_revision:permissions.revision,allowed:false}
+    return begin(["app-ship-approve","--request-json",JSON.stringify(q)],"revoke","")
+  }
+  function connectFleet(plugin,ship) {
+    var g=grant(plugin)
+    if(!fresh || !review || !g || !g.allowed || plugin.status!=="available" || Model.applicationShipKey(ship)!==selectionKey)return false
+    var id="";for(var i=0;i<32;i++)id+=Math.floor(Math.random()*16).toString(16)
+    var m=ship.managed,q={version:1,binding:Routes.copy(g.binding),target:Routes.copy(g.target),grant_revision:g.revision}
+    var ok=begin(["--runner",m.runner,"--expected-runner-id",m.runner_id,"app-fleet-connect","--request-json",JSON.stringify(q),"--request-id",id],"connect-fleet","")
+    if(ok)lastRequestId=id
     return ok
   }
   function act(row, action) {
@@ -89,8 +146,19 @@ Item {
     errorOutput=""
     output = ""
     var ok = exitCode === 0 && !overflow && !timedOut
+    if(requestGeneration!==generation){operation="";fresh=false;review=null;message="The selected profile changed. Refresh connection state before continuing.";return}
+    if(kind === "read-review") {
+      operation=""
+      if(requestSelectionKey!==selectionKey || !selectedFleet){Qt.callLater(ensureReview);return}
+      var m=selectedFleet.managed,r=value && value.routes
+      if(!ok || !value || value.version!==1 || !Routes.valid(r,m.runner_id,m.mode,m.instance) || r.selection.config_revision!==m.revision || r.selection.runtime_id!==m.container_id || r.record.binding.ship!==selectedFleet.ship || !validPermissions(value.approvals)) {
+        review=null;failed=true;message="Could not verify this ship's application permission. Refresh to review it again.";return
+      }
+      review=value;permissions=value.approvals
+      return
+    }
     if (kind.indexOf("read-") === 0) {
-      if (!ok || !Array.isArray(value)) {
+      if (!ok || (kind === "read-permissions" ? !validPermissions(value) : !Array.isArray(value))) {
         operation = ""; fresh = false; failed = true
         message = "Could not refresh application connections. No connection was approved."
         return
@@ -101,9 +169,13 @@ Item {
       } else if (kind === "read-ships") {
         stagedShips = value
         Qt.callLater(function() { launch(["app-connections"], "read-connections", "") })
+      } else if (kind === "read-connections") {
+        stagedAttempts=value
+        Qt.callLater(function(){launch(["app-ship-approvals"],"read-permissions","")})
       } else {
-        plugins = stagedPlugins; ships = stagedShips; attempts = value
+        plugins = stagedPlugins; ships = stagedShips; attempts = stagedAttempts;permissions=value
         snapshotRevision++; operation = ""; fresh = true
+        pendingReview=!!selectedFleet;Qt.callLater(ensureReview)
       }
       return
     }
@@ -130,8 +202,12 @@ Item {
     if (!ok) {
       message = problem && typeof problem.message==="string" ? problem.message.slice(0,600) : value && value.message ? String(value.message).slice(0,600) :
         "The operation did not complete. Refresh its status before trying again; approval is never retried automatically."
-    } else if (kind === "connect") {
+    } else if (kind === "connect" || kind === "connect-fleet") {
       message = "Connected. The plugin now talks directly to your ship."
+    } else if(kind === "permit") {
+      message="Permission saved for this ship. Omabit can choose a verified URL when connecting."
+    } else if(kind === "revoke") {
+      message="Future connections are blocked. Existing sessions have their own Disconnect action."
     } else if (kind === "app-archive") {
       message = "Disconnected. The completed connection is saved in history."
     } else if (kind === "login") {

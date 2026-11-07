@@ -1184,13 +1184,20 @@ function applicationShips(service, saved) {
   fleet(service.connections || []).forEach(function(row) {
     var c=row.connection, i=row.instance
     var url=shipURL(c,i,service.registrations||[],service.runnerPreferences||{})
-    if (!url || !i.ship || i.identity_pending || i.observed_state!=="running" || !i.resources || !i.resources.container_id || i.recovery_required || i.active_operation_id) return
+    var automatic=c.access_role==="operator" && hasFeature(c,"ship-routes-v1") && hasFeature(c,"ship-route-code-v1")
+    if ((!url && !automatic) || !i.ship || i.identity_pending || i.observed_state!=="running" || !i.resources || !i.resources.container_id || i.recovery_required || i.active_operation_id) return
     if (service.observing===false || !available(c,service.now||Date.now())) return
     var old=(saved||[]).filter(function(s){return s.origin===url&&s.ship===i.ship})[0]
     result.push(Object.assign({},old||{name:i.id,origin:url,ship:i.ship,status:"managed"},{label:i.label||i.id,
-      managed:{runner:c.name,runner_id:c.runner_id,instance:i.id,revision:i.config_revision,container_id:i.resources.container_id}}))
+      managed:{runner:c.name,runner_id:c.runner_id,mode:c.mode,instance:i.id,revision:i.config_revision,container_id:i.resources.container_id,fleet:automatic}}))
     seen[url+"|"+i.ship]=true
   })
   ;(saved||[]).forEach(function(s){if(!seen[s.origin+"|"+s.ship])result.push(s)})
   return result
+}
+
+function applicationShipKey(ship) {
+  if(!ship)return ""
+  var m=ship.managed
+  return m ? JSON.stringify([m.runner,m.runner_id,m.mode,m.instance,m.revision,m.container_id,ship.ship,!!m.fleet]) : ship.origin+"|"+ship.ship
 }

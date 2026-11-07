@@ -75,8 +75,8 @@ until refresh. Offline/replaced selections cannot retain edit authority. Wide an
 narrow offline UI fixtures exercise persistence, selection isolation and a
 concurrent-edit refusal. Registration remains separate from network configuration.
 
-The fleet feature is still in progress. Standing-approval UI and automatic
-reconnection are not connected yet. M558 adds collector `app-ship-review`,
+The fleet feature is still in progress. Standing approval is connected in M562;
+automatic session reconnection remains pending. M558 adds collector `app-ship-review`,
 `app-ship-approvals` and `app-ship-approve`. Allow compares the live ship selection
 and installed helper; revoke is local and remains available offline or after
 helper removal. These commands change permission only, never issue a session. Installed state is unchanged;
@@ -110,15 +110,23 @@ never cause another login. Public connections use Secret Service without a file
 fallback. Synthetic end-to-end CLI checks exercise delivery and failure recovery.
 See [connection evidence](diagnostics/2026-11-07-fleet-connect.json).
 
+M562 connects standing permission and automatic connection to the full panel.
+Capable remote ships appear without requiring a guessed local URL. The Allowed
+switch persists for the exact ship/helper; Disconnect manages the existing session
+separately. Offline/uninstalled grants remain revocable, and pending/legacy attempts
+retain recovery controls. QML structural identity checks tolerate object field
+reordering. Failed saves display confirmed state; refresh does not replay effects.
+Wide/narrow full-panel and hosted-flow fixtures pass, as does actual service drain
+with inert helpers. See [UI evidence](diagnostics/2026-11-07-fleet-permission-ui.json).
+
 ## Integration still required
 
 1. Setup URL editor, runner-owned registry, localhost and Tailscale/Serve discovery,
    explicit route/disable storage and CLI are implemented.
 2. Collector network inspection, shared configuration and fresh binding checks
    are implemented in the public automatic connection command.
-3. Setup standing approval and issuance integration (CLI authoring is implemented),
-   the journal/issuer core now checks permission under the same lock that publishes
-   a new connection attempt. The public automatic-route command is implemented; connect its permission UI.
+3. Standing approval, journal/issuer and full-panel connection UI are implemented.
+   Permission is checked under the lock that publishes each new attempt.
 4. Compatible receiver handoff and automatic reconnection. Preserve origin-bound
    sessions, original uncertain attempts and cleanup records; never replay pending
    app writes or silently copy a cookie to a different origin.

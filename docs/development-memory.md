@@ -8823,3 +8823,30 @@ To stay under40GiB, five completed managed-test package archives were inventorie
 and removed from the task's rebuildable Go cache (168,030,208 bytes). Exact completed
 binaries, logs, source and original migration fixtures remain. Warm-cache smaller
 package tests reserve400MiB. Release qualification remains deferred.
+
+
+## M562 — Standing ship permission in the full application panel (2026-11-07)
+
+Application Connections now discovers capable remote ships even without a local
+URL. Verified ship/helper grants drive the saved Allowed switch; Connect uses the
+automatic fleet command. Revoke and Disconnect are separate, and offline/removed
+integrations retain visible revocation and recovery controls. Runtime, profile or
+selection changes invalidate review. Failed choices never become optimistic grants,
+and refreshing an uncertain attempt does not replay authentication or delivery.
+Legacy hosted-ship sign-in keeps its existing explicit per-attempt flow.
+
+Full-panel fixture06 passes grant persistence, automatic connection, revoke without
+disconnect, disconnect/reconciliation/archive, another ship's default deny, offline
+revoke, conflict refusal and lost-reply recovery. Wide/narrow screenshots were
+visually reviewed with normal sidebar and app styling. Hosted regression and actual
+service-drain fixtures pass. Model checks cover remote URLs, independent fakes and
+runtime/offline invalidation. See `diagnostics/2026-11-07-fleet-permission-ui.json`.
+
+Earlier fixture runs exposed QML object-order comparisons and an optimistic switch
+after a failed save; both are fixed. Fixture-only deadline/profile-simulation and
+component-copy issues were corrected. An unrelated historical project-fleet test
+expects Project for an observation now marked Stale; the same assertion fails on
+unchanged58f10a6. Its expectation was not used to weaken the live-selection guard.
+This supersedes M561's pending approval UI. Automatic reconnection/receiver handoff,
+clearweb help and Urgit workflow remain open. Installed state and the persistent
+manual preview are unchanged; release work remains deferred.

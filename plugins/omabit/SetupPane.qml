@@ -217,7 +217,7 @@ Column {
   AppDevelopmentPane {id:appDevelopment;objectName:"setup-app-development";width:parent.width;visible:root.mode==="development";active:root.active && visible;service:root.service}
   ShipRoutesPane {id:shipRoutes;objectName:"setup-ship-routes";width:parent.width;visible:root.mode==="routes";active:root.active && visible;service:root.service}
   AgentHelpPane {width:parent.width;visible:root.mode==="agent";service:root.service}
-  ApplicationsPane { requestedPlugin:root.requestedApplication; onShowHosted:root.mode="hosted"; width: parent.width; visible: root.mode === "apps"; active: visible && root.active; service: root.service }
+  ApplicationsPane { objectName:"application-connections-pane";requestedPlugin:root.requestedApplication; onShowHosted:root.mode="hosted"; width: parent.width; visible: root.mode === "apps"; active: visible && root.active; service: root.service }
   Column {
     width: parent.width; spacing: Style.space(10); visible: root.mode === "gaps"
     Label { text: "Secure +code access"; font.pixelSize: Style.space(19); font.bold: true }

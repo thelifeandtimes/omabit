@@ -1,4 +1,12 @@
 function copy(v){return JSON.parse(JSON.stringify(v))}
+// JSON object member order can change when a value crosses a QML property.
+// Compare structure, not serialization order, for ship/helper identity checks.
+function equal(a,b){
+  if(a===b)return true
+  if(!a || !b || typeof a!=="object" || typeof b!=="object" || Array.isArray(a)!==Array.isArray(b))return false
+  var ak=Object.keys(a).sort(),bk=Object.keys(b).sort()
+  return ak.length===bk.length && ak.every(function(k,i){return k===bk[i] && equal(a[k],b[k])})
+}
 function identifier(s){return typeof s==="string" && /^[A-Za-z0-9_-]{1,64}$/.test(s)}
 function revision(n){return Number.isSafeInteger(n) && n>=0}
 function origin(s){return typeof s==="string" && s.length<=2048 && /^https?:\/\/(?:\[[0-9a-fA-F:]+\]|[A-Za-z0-9][A-Za-z0-9.-]*)(?::[0-9]{1,5})?$/.test(s)}
