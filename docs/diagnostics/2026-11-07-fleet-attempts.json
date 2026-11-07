@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M560",
+  "source_base": "dddb2cbfa5708c68f4664127483b0ce575de46d1",
+  "tests": {
+    "fleet-attempt-core-01": {
+      "directory": "/tmp/omabit-fleet-fleet-attempt-core-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^Test(FleetApplication|Application)",
+        "binary_sha256": "1859b6b735a35a1618a982f1d4907775760edb2876ee73923c1d072cb28025df",
+        "package": "internal/collection",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "d249ce3ca8f702c9b2c89f367c48b596c1e8ee1892cf06f9a5593140019e2bc0"
+    },
+    "fleet-attempt-core-02": {
+      "directory": "/tmp/omabit-fleet-fleet-attempt-core-02",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^Test(FleetApplication|Application)",
+        "binary_sha256": "b527a6dc635e6f667a9165f150c32fa4b14f6131d2cb98f3e2c6ca6b6e409a7a",
+        "package": "internal/collection",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "3714768b88beb667a6038a1f49af34337d40844b54993eb361e92952d92e4690"
+    },
+    "fleet-engine-01": {
+      "directory": "/tmp/omabit-fleet-fleet-engine-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": ".",
+        "binary_sha256": "51fe13b3815388826c1324f9f47178b94a5257c82b92acfdb7d565e24c19abaf",
+        "package": "internal/applicationauth",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "c865e953f88aa2457ac46237367a5404c1da54e643af429278b227002aa14193"
+    },
+    "fleet-engine-02": {
+      "directory": "/tmp/omabit-fleet-fleet-engine-02",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^TestFleetApplication",
+        "binary_sha256": "b75809c8acc5be7a9956d8e8e9361be50d26ad448db032758535f4d54ce8d5bf",
+        "package": "internal/applicationauth",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "f3f918c1cf95e6560cf49cd3ef0b2326efde064922b54022cd13150996a2ab81"
+    },
+    "original-writer-upgrade-01": {
+      "directory": "/tmp/omabit-fleet-attempt-upgrade-01",
+      "result": {
+        "original_source": "dddb2cbfa5708c68f4664127483b0ce575de46d1",
+        "current_base": "dddb2cbfa5708c68f4664127483b0ce575de46d1",
+        "dependency_paths": [
+          "internal/apppolicy",
+          "internal/client",
+          "internal/collection",
+          "internal/credentials",
+          "internal/deskwork",
+          "internal/epochs",
+          "internal/eyre",
+          "internal/hostcompat",
+          "internal/ownerhost",
+          "internal/pierstore",
+          "internal/privatechain",
+          "internal/projectnetwork",
+          "internal/protocol",
+          "internal/routines",
+          "internal/runtimecandidate",
+          "internal/shiproute"
+        ],
+        "overlays": {
+          "internal/collection/application_fleet.go": "f6326702f7b3ed3d86977d633376be014b7a0dfb535bbc72fb5d8206af0d8060",
+          "internal/collection/application_fleet_test.go": "9fe8b0ebd9930ac62bf1ad55d009f4fde22f267c4fd266e723de0cf8170f4222",
+          "internal/collection/application_history.go": "354e0fe6b765dccfe6ea890fab867a7dd85f547be09749732f84730602d4eb3a",
+          "internal/collection/applications.go": "9895100ccefa067c0cc4e36e222d11b12808f20dea6bb18d37410802ec7acd18",
+          "internal/collection/applications_test.go": "61ca6a60df47ceafb5adea49490551f26d507f57081a9a2d0598c9879de80d3f"
+        },
+        "binaries": {
+          "original": "c80679341bcb8d9b050e6ba745dd4e0fb5df3a7bc65a5ce64c0effadbcbbca1b",
+          "current": "15ebb87ba6741a86980db1a90f952ff6d6153fc6b65b91114ff87c1daaa01903"
+        },
+        "original_helper_sha256": "32907ec5d5945905613259f581a065f77b4252f401c3b85eec0814ab8d80c1df",
+        "current_helper_sha256": "03cc35eb3543861eeb520edc9cac3b9d8cd5fbb9303e94f4fc19cf9967aec378",
+        "exit": 0,
+        "isolation": "private network/user/PID/mount/IPC/UTS; synthetic state only",
+        "scope": "functional format migration, not installed or release qualification"
+      }
+    },
+    "original-writer-upgrade-02": {
+      "directory": "/tmp/omabit-fleet-attempt-upgrade-02",
+      "result": {
+        "original_source": "dddb2cbfa5708c68f4664127483b0ce575de46d1",
+        "current_base": "dddb2cbfa5708c68f4664127483b0ce575de46d1",
+        "dependency_paths": [
+          "internal/apppolicy",
+          "internal/client",
+          "internal/collection",
+          "internal/credentials",
+          "internal/deskwork",
+          "internal/epochs",
+          "internal/eyre",
+          "internal/hostcompat",
+          "internal/ownerhost",
+          "internal/pierstore",
+          "internal/privatechain",
+          "internal/projectnetwork",
+          "internal/protocol",
+          "internal/routines",
+          "internal/runtimecandidate",
+          "internal/shiproute"
+        ],
+        "overlays": {
+          "internal/collection/application_fleet.go": "dcf6ec021965620f70287d1a3fc100e98fea58bacaa49aec7d0472b80bf189a9",
+          "internal/collection/application_fleet_test.go": "40d911a5c94e3bba2a796b59ffb55e74d7ed5fca31d7989be58aa1b6549f9a6e",
+          "internal/collection/application_history.go": "354e0fe6b765dccfe6ea890fab867a7dd85f547be09749732f84730602d4eb3a",
+          "internal/collection/applications.go": "54686421ac80472d1c31ae451f6b5e30192f102bbc5e35d54c4fc91fd4c7cb97",
+          "internal/collection/applications_test.go": "61ca6a60df47ceafb5adea49490551f26d507f57081a9a2d0598c9879de80d3f"
+        },
+        "binaries": {
+          "original": "a2bd41766140c0ff66b2d8bc9aa52ee3ac0a03076211984f2f71e1e66f8b743e",
+          "current": "dc9a3fba97c693f1ec69ab3fedc65be334a2bb0439e4e4305188633491fd952e"
+        },
+        "original_helper_sha256": "ed49313851fd0ead7b468af51af0197dd86f2c77a102754aa7a8e001efcd0c18",
+        "current_helper_sha256": "03cc35eb3543861eeb520edc9cac3b9d8cd5fbb9303e94f4fc19cf9967aec378",
+        "exit": 0,
+        "isolation": "private network/user/PID/mount/IPC/UTS; synthetic state only",
+        "scope": "functional format migration, not installed or release qualification"
+      }
+    }
+  },
+  "storage_observed": {
+    "charged_bytes": 42509725696,
+    "budget_bytes": 42949672960,
+    "additional_scratch_bytes": 0,
+    "total_with_reserves": 42509725696
+  },
+  "limits": [
+    "Offline synthetic HTTP, Unix runner and receiver fixtures; no actual ship, host keyring or installed service accessed",
+    "applications.json format3 and fleet archives format2; legacy archives retain format1; runner schema58 unchanged",
+    "Public automatic route selection, standing-permission UI and reconnection still pending",
+    "Initial 600MiB migration admission refused before creating output; reduced dependency closure and warm-cache 400MiB admission passed",
+    "Functional migration and recovery evidence, not installed upgrade or release qualification"
+  ]
+}

@@ -8767,3 +8767,31 @@ See `diagnostics/2026-11-07-fleet-route-code.json`. Schema58 and existing state 
 unchanged. Automatic attempt integration, permission UI and reconnection remain
 open; actual live transport and release qualification remain deferred. No installed
 production/DEV/trial/preview state was accessed or changed.
+
+
+## M560 — Durable fleet issuance under standing permission (2026-11-07)
+
+Fleet application attempts now retain the exact ship/pier binding, selected route,
+runtime selection and approval revision. A fresh grant is checked atomically when
+approving, entering issuance and entering delivery, then again before credentials.
+Revocation/reapproval cannot revive queued work. Each attempt creates an independent
+origin-bound session directly; it never borrows a parent login or saves a ship code.
+Lost authentication/delivery replies retain uncertainty and block another URL for
+the same integration. Legacy attempts with unknown ship incarnation must finish
+recovery before fleet work for that identity. Cleanup remains possible after revoke.
+
+The active journal advances to format3 and fleet archives use format2. Legacy
+records/archives retain their original representation. The actual previous writer
+at dddb2cb creates pending and archived state; new readers preserve it alongside
+fleet attempts, and the original readers refuse new formats without changing bytes.
+Offline core and engine race suites pass, including revoke races, corrupt state,
+publication failure, independent fakes and lost replies. Native live tests remain
+explicitly skipped. See `diagnostics/2026-11-07-fleet-attempts.json`. Runner schema58
+is unchanged. This supersedes M559's pending journal/issuer core only; public
+automatic selection, permission UI and reconnection remain open. Production, DEV,
+trial and preview state remain untouched; release work stays deferred.
+
+Initial migration admission at600MiB refused before output/copy/build. Restricting
+the copied source to the collection dependency closure and retaining a warm cache
+allowed the declared400MiB capsule to pass. Completed binary evidence is retained
+as verified lossless gzip. No original fixture or source input was removed.

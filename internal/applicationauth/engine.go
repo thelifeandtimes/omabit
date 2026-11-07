@@ -52,6 +52,9 @@ func New(r *collection.Registry) *Engine {
 		return credentials.NewFile(r.CredentialsDir())
 	}
 	e.issue = func(ctx context.Context, a collection.ApplicationAttempt) ([]byte, error) {
+		if a.Fleet.Version == 1 {
+			return e.issueFleet(ctx, a)
+		}
 		ships, err := r.Ships(ctx)
 		if err != nil {
 			return nil, errors.Join(ErrNotIssued, err)
@@ -129,9 +132,12 @@ func (e *Engine) Connect(ctx context.Context, id string, receiver Receiver) (col
 			return credentials.ErrStore
 		}
 		if err := tx.Advance(ctx, "issuing", ""); err != nil {
+			if errors.Is(err, collection.ErrApplicationPermission) {
+				return errors.Join(ErrNotIssued, err, tx.Advance(ctx, "closed", "not-issued"))
+			}
 			return err
 		}
-		data, issueErr := e.issue(ctx, a)
+		data, issueErr := e.issue(ctx, tx.Current())
 		defer clear(data)
 		if len(data) == 0 || issueErr != nil {
 			// A lost login response can leave a server-side session whose token we
@@ -168,6 +174,11 @@ func (e *Engine) Connect(ctx context.Context, id string, receiver Receiver) (col
 			return e.failedDelivery(ctx, tx, store, data)
 		}
 		if err := tx.Advance(ctx, "delivering", ""); err != nil {
+			if errors.Is(err, collection.ErrApplicationPermission) {
+				cleanup, stop := context.WithTimeout(context.WithoutCancel(ctx), 15*time.Second)
+				defer stop()
+				return errors.Join(err, e.cleanup(cleanup, tx, store, data))
+			}
 			return err
 		}
 		offer, err := json.Marshal(struct {

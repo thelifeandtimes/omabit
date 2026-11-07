@@ -57,11 +57,12 @@ type ApplicationAttempt struct {
 	Revision           uint64            `json:"revision"`
 	// Sticky once delivery might have happened. Cleanup cannot infer that the
 	// receiver removed its local account merely because its session was revoked.
-	ReceiverOutcome        string    `json:"receiver_outcome,omitempty"`
-	ReceiverReconciliation bool      `json:"receiver_reconciliation"`
-	Outcome                string    `json:"outcome,omitempty"`
-	ApprovedAt             time.Time `json:"approved_at"`
-	UpdatedAt              time.Time `json:"updated_at"`
+	ReceiverOutcome        string           `json:"receiver_outcome,omitempty"`
+	ReceiverReconciliation bool             `json:"receiver_reconciliation"`
+	Outcome                string           `json:"outcome,omitempty"`
+	ApprovedAt             time.Time        `json:"approved_at"`
+	UpdatedAt              time.Time        `json:"updated_at"`
+	Fleet                  FleetApplication `json:"fleet,omitzero"`
 }
 
 type applicationsFile struct {
@@ -69,7 +70,27 @@ type applicationsFile struct {
 	Attempts []ApplicationAttempt `json:"attempts"`
 }
 
+func (r *Registry) saveApplications(state applicationsFile, newAttempt bool) error {
+	data, err := json.MarshalIndent(state, "", "  ")
+	if err != nil {
+		return err
+	}
+	limit := maxRegistryBytes
+	// Reserve enough for every existing record's longer terminal fields and
+	// revision. Hitting the active byte limit must not prevent cleanup later.
+	if newAttempt {
+		limit -= 64 * 256
+	}
+	if len(data)+1 > limit {
+		return ErrApplicationLimit
+	}
+	return r.writeFile("applications.json", state)
+}
+
 func (a ApplicationAttempt) valid() bool {
+	if a.Fleet != (FleetApplication{}) && (!a.Fleet.valid() || a.Origin != a.Fleet.Request.Route.Origin || a.Ship != a.Fleet.Request.Binding.Ship || a.ConnectionID != FleetConnectionID(a.Fleet.Request.Binding) || a.ConnectionRevision != a.Fleet.GrantRevision) {
+		return false
+	}
 	origin, err := eyre.Origin(a.Origin)
 	if err != nil || origin != a.Origin || !eyre.ValidShip(a.Ship) || !validRef(a.ID) || !validRef(a.ConnectionID) || !validRef(a.SessionRef) || a.ConnectionRevision == 0 || !a.Target.Valid() || (a.Credentials != "secret-service" && a.Credentials != "file") || a.Authority != "eyre-owner-session" || a.Revision == 0 || a.ApprovedAt.IsZero() || a.UpdatedAt.Before(a.ApprovedAt) {
 		return false
@@ -112,12 +133,36 @@ func (r *Registry) readApplications() (applicationsFile, error) {
 	}
 	d := json.NewDecoder(bytes.NewReader(data))
 	d.DisallowUnknownFields()
-	if d.Decode(&state) != nil || d.Decode(new(any)) != io.EOF || (state.Version != 1 && state.Version != 2) || state.Attempts == nil || len(state.Attempts) > 64 {
+	if d.Decode(&state) != nil || d.Decode(new(any)) != io.EOF || (state.Version != 1 && state.Version != 2 && state.Version != 3) || state.Attempts == nil || len(state.Attempts) > 64 {
 		return state, ErrApplicationJournal
 	}
-	ids, refs, active := map[string]bool{}, map[string]bool{}, map[string]bool{}
+	ids, refs, active, fleetActive := map[string]bool{}, map[string]bool{}, map[string]bool{}, map[string]bool{}
+	legacyShips, fleetShips := map[string]bool{}, map[string]bool{}
 	for _, a := range state.Attempts {
 		key := a.Origin + "\x00" + a.Target.PluginID + "\x00" + a.Target.Profile
+		shipKey := a.Ship + "\x00" + a.Target.PluginID + "\x00" + a.Target.Profile
+		if a.blocksApproval() {
+			if a.Fleet.Version == 0 {
+				if fleetShips[shipKey] {
+					return state, ErrApplicationJournal
+				}
+				legacyShips[shipKey] = true
+			} else {
+				if legacyShips[shipKey] {
+					return state, ErrApplicationJournal
+				}
+				fleetShips[shipKey] = true
+			}
+		}
+		if a.Fleet != (FleetApplication{}) {
+			fleetKey := a.ConnectionID + "\x00" + a.Target.PluginID + "\x00" + a.Target.Profile
+			if state.Version != 3 || a.blocksApproval() && fleetActive[fleetKey] {
+				return state, ErrApplicationJournal
+			}
+			if a.blocksApproval() {
+				fleetActive[fleetKey] = true
+			}
+		}
 		if !a.valid() || ids[a.ID] || refs[a.SessionRef] || a.blocksApproval() && active[key] {
 			return state, ErrApplicationJournal
 		}
@@ -163,13 +208,13 @@ func (r *Registry) ApproveApplication(ctx context.Context, expected Ship, id str
 		}
 		for _, a := range state.Attempts {
 			if a.ID == id {
-				if a.ConnectionID != expected.ID || a.ConnectionRevision != expected.Revision || a.Origin != expected.Origin || a.Ship != expected.Ship || a.Credentials != expected.Credentials || a.Target != target {
+				if a.Fleet != (FleetApplication{}) || a.ConnectionID != expected.ID || a.ConnectionRevision != expected.Revision || a.Origin != expected.Origin || a.Ship != expected.Ship || a.Credentials != expected.Credentials || a.Target != target {
 					return ErrApplicationConflict
 				}
 				result = a
 				return nil
 			}
-			if a.blocksApproval() && a.Origin == expected.Origin && a.Target.PluginID == target.PluginID && a.Target.Profile == target.Profile {
+			if a.blocksApproval() && (a.Origin == expected.Origin || a.Fleet.Version != 0 && a.Ship == expected.Ship) && a.Target.PluginID == target.PluginID && a.Target.Profile == target.Profile {
 				return ErrApplicationConflict
 			}
 		}
@@ -194,7 +239,7 @@ func (r *Registry) ApproveApplication(ctx context.Context, expected Ship, id str
 			Origin: expected.Origin, Ship: expected.Ship, Credentials: expected.Credentials, SessionRef: NewSessionRef(), Target: target,
 			Authority: "eyre-owner-session", Phase: "approved", Revision: 1, ApprovedAt: now, UpdatedAt: now}
 		state.Attempts = append(state.Attempts, result)
-		return r.writeFile("applications.json", state)
+		return r.saveApplications(state, true)
 	})
 	if err != nil {
 		return ApplicationAttempt{}, err
@@ -326,8 +371,13 @@ func (tx *ApplicationTransaction) replace(ctx context.Context, old, next Applica
 			if a != old {
 				return ErrApplicationConflict
 			}
+			if old.Fleet.Version == 1 && (next.Phase == "issuing" || next.Phase == "delivering") {
+				if err := tx.r.currentFleetGrant(old.Fleet, old.Target); err != nil {
+					return err
+				}
+			}
 			state.Attempts[i] = next
-			return tx.r.writeFile("applications.json", state)
+			return tx.r.saveApplications(state, false)
 		}
 		return ErrApplicationConflict
 	})

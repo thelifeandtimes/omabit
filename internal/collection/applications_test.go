@@ -88,7 +88,7 @@ func TestApplicationJournalRefusesUnsafeAndUnknownRecordsWithoutReset(t *testing
 			}
 			switch kind {
 			case "version":
-				state.Version = 3
+				state.Version = 999
 			case "bad-phase":
 				state.Attempts[0].Phase = "unknown"
 			case "missing-reference":

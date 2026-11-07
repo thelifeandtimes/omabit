@@ -92,6 +92,16 @@ new credential path; it creates no session or grant. Native-engine fixtures,
 runner API and client race checks pass. Actual ship/transport qualification is
 not claimed.
 
+M560 connects the durable fleet-attempt and issuer core. New attempts retain the
+full binding and exact standing-grant revision, with fresh checks before issuance
+and delivery. They obtain their own origin-bound session and never reuse a parent
+login. Uncertain effects fence retries across URLs. Legacy attempts without a
+verified incarnation must finish recovery before the same integration can move to
+a fleet route. Cleanup remains available after revocation. Active journal format3
+and fleet archive format2 pass actual previous-writer preservation and older-reader
+refusal checks; runner schema58 is unchanged. The public automatic connection flow
+is still pending. See [attempt evidence](diagnostics/2026-11-07-fleet-attempts.json).
+
 ## Integration still required
 
 1. Setup URL editor, runner-owned registry, localhost and Tailscale/Serve discovery,
@@ -99,8 +109,8 @@ not claimed.
 2. Collector inspection from each client's network, shared runner configuration and
    fresh binding verification before credentials can be sent.
 3. Setup standing approval and issuance integration (CLI authoring is implemented),
-   checked under the same lock that publishes a
-   new connection attempt. An old snapshot must not bypass revocation.
+   the journal/issuer core now checks permission under the same lock that publishes
+   a new connection attempt. Connect the public automatic-route command and UI.
 4. Compatible receiver handoff and automatic reconnection. Preserve origin-bound
    sessions, original uncertain attempts and cleanup records; never replay pending
    app writes or silently copy a cookie to a different origin.
