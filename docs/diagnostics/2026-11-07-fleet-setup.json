@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M557",
+  "source_base": "3dc475a081cc96eafe9b844d8d33f422e6e3ff35",
+  "command": "python3 -B scripts/test-ship-routes-preview.py --output /tmp/omabit-ship-routes-ui-04",
+  "tests": {
+    "02": {
+      "window.log": "ce3e2207ee52c7603f3c020b5c7f6fd6a2c724c7068a0df0360f1cdd90a5ac07",
+      "ship-urls-wide.png": "32a273773697fa0d8e18386c9e6a423c0695116ffd47f2c1b1a186a6dfe8e2da",
+      "ship-urls-narrow.png": "7cf449693572828684fa16b57b7ecdf7960036c4ee845677be363be4f63c25f5",
+      "pass": true
+    },
+    "03": {
+      "window.log": "8b9aaf18ee881848a3294f433697dcb6d77c5b29dd009bf983264fe8734ea537",
+      "ship-urls-wide.png": "0800f58ef3aff7cbc2ec11b94e059dc5e5521a11fa26d49101e7bb0b9f82f1d2",
+      "ship-urls-narrow.png": "b8b4c771ae1392b6c19dd5350c996f4fdbb10b62ea3a1fac981f5712230ceb62",
+      "pass": true
+    },
+    "04": {
+      "window.log": "ce32ba862df16ae4a4948efc7a2bd5f41e437fdafb2b3adef1248b11e5bdc255",
+      "ship-urls-wide.png": "b4e040068e8141f5c040776faf371190fd4c3d03c64e38d375595469a9ad857a",
+      "ship-urls-narrow.png": "424eedddd17d39ba73198dfeb9a9ca9075df1cb21931a5c5d2c9305acac09569",
+      "pass": true
+    },
+    "01": {
+      "result": "failed before fixes: fixture empty-command assumption, transient QML/anchor warnings; timeout at refresh phase"
+    }
+  },
+  "storage_observed": {
+    "charged_bytes": 42300063744,
+    "budget_bytes": 42949672960,
+    "additional_scratch_bytes": 0,
+    "total_with_reserves": 42300063744
+  },
+  "limits": [
+    "offline synthetic full-panel preview only; no installed runner or production state",
+    "no persistent preview update",
+    "URL editing registers addresses; it does not change network configuration",
+    "standing-approval UI/CLI and automatic connections remain pending"
+  ]
+}

@@ -8701,3 +8701,23 @@ Persisted schema58 is unchanged; optional discovery metadata is read-only. This
 supersedes M555's pending automatic Serve invocation, not its remaining Setup URL
 editor, standing-approval UI/CLI, reconnection or clearweb-assistance work. No
 installed/production/DEV/trial/preview state was changed; release work stays deferred.
+
+
+## M557 — Full-panel Ship URLs Setup editor (2026-11-07)
+
+Added Ship URLs to normal Setup, retaining the existing sidebar, typography, cards
+and controls. It selects a verified running ship, presents detected addresses,
+and edits configured routes and persistent automatic-route disable choices.
+Current runtime/configuration binding changes invalidate reads. Saves use the
+runner's current revision; failed or lost replies require refresh, with no replay.
+Registration does not create a tunnel or change DNS.
+
+Offline full-panel fixture04 passes authoring, persistence, another ship's empty
+settings, offline invalidation and a concurrent-edit refusal followed by refresh.
+Wide/narrow screenshots were inspected. Initial fixture01 exposed a fixture-only
+empty-command assumption and transient QML/anchor warnings; those were corrected,
+and fixtures02–04 pass without warnings. Fixture03 adds the save-conflict check;
+04 places Save beside the ship selection. See
+`diagnostics/2026-11-07-fleet-setup.json`. This supersedes M556's pending URL editor,
+not standing approval, automatic reconnection or clearweb assistance. Installed
+production/DEV/trial and the persistent review preview remain unchanged.

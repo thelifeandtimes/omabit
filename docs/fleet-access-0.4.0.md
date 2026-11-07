@@ -68,13 +68,20 @@ Discovery changes no daemon settings. Source references:
 [Serve CLI](https://tailscale.com/docs/reference/tailscale-cli/serve),
 [configuration types](https://github.com/tailscale/tailscale/blob/main/ipn/serve.go).
 
-The fleet feature is still in progress. Setup URL editing, standing-approval UI/CLI
-and automatic reconnection are not connected yet. Installed state is unchanged;
+M557 adds Setup → Ship URLs inside the existing full panel/sidebar. It selects a
+verified running ship, edits configured URLs, and retains automatic-route disable
+choices. Save uses the current binding and revision; failures invalidate editing
+until refresh. Offline/replaced selections cannot retain edit authority. Wide and
+narrow offline UI fixtures exercise persistence, selection isolation and a
+concurrent-edit refusal. Registration remains separate from network configuration.
+
+The fleet feature is still in progress. Standing-approval UI/CLI and automatic
+reconnection are not connected yet. Installed state is unchanged;
 these fixture checks do not qualify a live Tailscale deployment or installed upgrade.
 
 ## Integration still required
 
-1. Setup URL editor; runner-owned registry, localhost and Tailscale/Serve discovery,
+1. Setup URL editor, runner-owned registry, localhost and Tailscale/Serve discovery,
    explicit route/disable storage and CLI are implemented.
 2. Collector inspection from each client's network, shared runner configuration and
    fresh binding verification before credentials can be sent.

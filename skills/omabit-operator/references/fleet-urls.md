@@ -1,5 +1,9 @@
 # Ship URLs across the fleet
 
+The full panel has **Setup → Ship URLs** for selecting a running ship, reviewing
+detected addresses, editing configured URLs, and saving shared route choices.
+Refresh after a conflict or lost save reply before making another edit.
+
 Use the selected installation's `omabit` CLI and collector registry. A runner
 advertising `ship-routes-v1` supports:
 
@@ -55,8 +59,9 @@ Funnel-enabled routes are public; disabling `tailscale-serve` preserves the choi
 across proxy port changes. The reader never changes Serve/Funnel, and a failed
 lookup does not remove manually configured routes. Path proxies, service VIPs,
 raw TCP forwarding and bespoke reverse proxies need explicit URL registration.
-No live Tailnet qualification is claimed by these fixture checks. Setup URL editing,
-standing-approval UI and automatic application connection/reconnection remain open.
+No live Tailnet qualification is claimed by these fixture checks. The full-panel
+Setup URL editor passes offline interaction/rendering checks. Standing-approval UI
+and automatic application connection/reconnection remain open.
 Do not claim those features from the presence of this registry capability alone.
 
 Keep existing sessions bound to their original URL. Never copy a cookie to another
