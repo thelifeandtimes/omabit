@@ -2,7 +2,9 @@
 
 Proposed architecture, recorded 2026-11-06. The user added this work to the
 0.4.0 scope after remote-runner installation testing. Source review is complete.
-The APIs and CLI commands below are proposed, with runtime qualification pending.
+The [policy layer and Setup editor](app-development-policy.md) are implemented
+and fixture-tested. The desk-operation APIs below remain proposed, with runtime
+qualification pending.
 The user's follow-up fixes the scope to Urbit desks and their frontend assets.
 Agent commit and publication start disabled, with permissions configured in
 Omabit Setup. Each application retains its developer's release configuration.
@@ -78,7 +80,7 @@ on the selected ship before offering app discovery publication.
 
 ## Setup permissions, ship intent and desk bindings
 
-Add **Setup → App development and publishing**, with independent permissions
+**Setup → App development and publishing** now provides independent permissions
 for **Commit to Clay** and **Publish or distribute updates**. Both default to
 blocked for existing ships, new ships, development fakes and project members.
 The user enables agent access through this section.
@@ -290,10 +292,10 @@ pipeline after an interrupted terminal or desktop restart.
 
 ## Implementation sequence and acceptance
 
-1. Implement policy storage, inheritance, runner enforcement and the Setup
-   controls before exposing commit/publish commands. Test global defaults, scoped
-   overrides, all-blocked fakes, concurrent changes, offline policy rollout,
-   stale clients, alternate entry points and disablement while work is queued.
+1. Policy storage, inheritance, the runner effect guard and Setup controls are
+   implemented. See [policy behavior and evidence](app-development-policy.md).
+   All desk mutation commands remain unavailable until their typed adapters use
+   that guard and pass runtime qualification.
 2. Complete the transport spike on disposable fakes with explicit test policy.
    Exercise prepare, mount, commit, local activation, Treaty publication,
    source-only publication and receiver installation with native control disabled.

@@ -7593,3 +7593,44 @@ and unavailable observation, and retain later edits when an earlier commit
 completes. The [architecture](app-development-0.4.0.md) and bundled agent skills
 now record these requirements. This is a design and skill update. Runtime gates,
 Setup controls, change alerts and the new desk CLI remain to be implemented.
+
+## M528 — Application policy layer and Setup editor implemented (2026-11-06)
+
+The user prioritized M527's policy layer and Setup controls, explicitly excluding
+active/production runners. This supersedes the pending policy/editor portion of
+M527; desk mutation adapters, bindings, purpose labels, alerts and Urgit remain
+subsequent work. Work used a temporary isolated source checkout, fake backends,
+temporary sockets and a private offscreen desktop. No installed plugin, runner,
+service or live ship was operated on or upgraded.
+
+**Setup → App development and publishing** now supports Global, Runner, Ship and
+Desk permissions with independent commit/publication gates, default Block and
+most-specific explicit inheritance. The runner owns schema48 policy storage,
+CAS revisions and authenticated audit receipts. Ordinary settings preserve policy.
+Instance deletion/restoration atomically retires its scoped grants; project
+targets bind the exact creator and generation. The effect guard rechecks current
+policy under the mutation lock, blocks stale/unknown evidence and requires both
+permissions for commits to a published desk. Runtime desk adapters remain absent.
+
+Global authoring records a private version1 collector rollout before dispatch.
+Offline failures retain intent and the last acknowledged global values/revision.
+Retries reconcile lost responses and reject stale or unreviewed revisions.
+New enrollments are excluded from old rollout intents; pairing an existing runner
+preserves its policy. Other collectors' runner revisions remain authoritative.
+Agents use read-only `app-policy [--instance ID --desk DESK]`, with effective values
+and source scopes. No generic collector setter or desk commit/publish command was
+added. The operator skill forbids bypass through authoring helpers or alternate
+transports. The owner-process limitation is documented explicitly.
+
+Validation passed: full Go tests for apppolicy, protocol, managed, client, access,
+collection, collector CLI and Omabit helper; focused race tests; Go vet; matching
+Linux binary builds reporting schema48; panel model, native plugin and snapshot
+installer fixtures; skill validation/package tests. The networkless Quickshell
+test exercised all four scopes, inherited/default values, offline/observer
+restrictions, malformed/mismatched replies and profile-switch late responses.
+The rendered policy editor was inspected. Historical schema target metadata now
+names unreleased schema48; historical release qualifications remain frozen. The
+schema47→48 fixture preserves identity, settings and receipts with no grants.
+Full exact-artifact 0.3.7→0.4.0 live upgrade qualification remains a release gate.
+
+See [policy behavior, support window and test commands](app-development-policy.md).

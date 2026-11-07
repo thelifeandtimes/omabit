@@ -78,6 +78,7 @@ Column {
         {key:"manage", title:"↔  Manage runners", detail:"Add and edit the runner connections enrolled in this collector"},
         {key:"projects", title:"⌘  Project networks", detail:"Inspect and manage development project networks"},
         {key:"hosted",title:"◇  Remotely Hosted Urbits",detail:"Add and sign in to ships from a hosting provider or another host"},
+        {key:"development", title:"App development and publishing", detail:"Set agent permissions for Clay commits and app distribution"},
         {key:"apps", title:"◇  Application Connections", detail:"Approve installed plugins to connect directly to your ship"}]
       Card {
         required property var modelData
@@ -209,6 +210,7 @@ Column {
   }
   ProjectNetworksPane { id:projectNetworks; onAddShip: {root.shipKind="fake";root.addShip()} width: parent.width; visible: root.mode === "projects"; active: visible && root.active; service: root.service }
   HostedUrbitsPane {width:parent.width;service:root.service;active:root.active&&root.mode==="hosted";visible:root.mode==="hosted";onShowApplications:root.mode="apps"}
+  AppDevelopmentPane {width:parent.width;visible:root.mode==="development";active:root.active && visible;service:root.service}
   ApplicationsPane { requestedPlugin:root.requestedApplication; onShowHosted:root.mode="hosted"; width: parent.width; visible: root.mode === "apps"; active: visible && root.active; service: root.service }
   Column {
     width: parent.width; spacing: Style.space(10); visible: root.mode === "gaps"

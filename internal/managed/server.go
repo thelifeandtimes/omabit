@@ -337,7 +337,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if !ownerhost.Development() {
 			features = append(features, protocol.ManagementUpdateFeature)
 		}
-		features = append(features, protocol.HostCompatibilityFeature)
+		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature)
 		features = append(features, "fake-ship-options", "host-port-suggestion")
 		if p, err := ownerhost.Current(); err == nil && p != nil {
 			features = append(features, "owner-user-runtime", "human-pier-storage")
@@ -499,6 +499,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if r.updateFence.Held && req.Method != http.MethodGet {
 		r.respondError(w, conflict("management_quiesced", "management update holds admission; resume the activation journal"))
+		return
+	}
+	if req.URL.Path == protocol.AppPolicyPath {
+		r.serveAppPolicy(w, req, actor, role)
 		return
 	}
 	if req.Method == http.MethodGet && req.URL.Path == "/v1/port-suggestion" {

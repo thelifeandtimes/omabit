@@ -1,10 +1,10 @@
 # App development and publishing policy
 
-The 0.4.0 architecture adds scoped agent permissions and desk operations. Verify
-the selected helper's actual capabilities and command help before using them.
-The initial plan and skill update precede implementation of those APIs. Until a
-supported tool reports the required effective permissions, keep agent commit and
-publication blocked and continue with source preparation and available inspection.
+The 0.4.0 source implements policy storage, Setup authoring and read-only
+`app-policy` status. Desk commit/publication commands and the Urgit adapter are
+still unimplemented. Verify the selected installation's capabilities and command
+help. Until a supported operation exists and fresh policy permits its effects,
+continue with source preparation and available inspection.
 
 ## Read the configured policy
 
@@ -15,11 +15,29 @@ permissions, their effective values, originating scopes, revisions and freshness
 They inherit global → runner → ship → installed desk, with the most specific
 explicit Allow or Block winning. The global default is Block for both permissions.
 
+Use the saved enrollment, without changing its selection:
+
+```sh
+urbit-collector --config-dir REGISTRY --runner NAME --expected-runner-id ID \
+  app-policy --instance INSTANCE --desk DESK
+```
+
+Requires `app-development-policy-v1`. The response includes the policy revision,
+effective values and source scopes; project targets include their creator and
+generation. Missing/unsupported/unresolved status grants nothing. These are saved
+policy observations, not fresh publication or compilation evidence. A global
+rollout may be pending on an offline runner; read the selected runner's actual
+policy before any supported effect. New runner enrollment does not apply an old
+collector rollout automatically.
+
 Read the application's release configuration and relevant repository instructions.
 Follow the developer's configured branch, checks and release sequence. For Urgit,
 use its existing binding and release rules. A development label or fake identity
 does not grant commit or publication permission. Keep user-controlled policy
 changes in the Setup flow. Report the blocking scope when action is disabled.
+Do not invoke `omabit app-development-save`/`app-development-retry`, write policy
+files, submit raw policy-update RPCs, or use Dojo/Eyre/Git as a workaround for a
+blocked Omabit operation. Those helpers belong to user-facing Setup authoring.
 
 ## Classify the requested effect
 

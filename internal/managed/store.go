@@ -182,6 +182,9 @@ CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TE
 	} else if version != currentSchema {
 		return fmt.Errorf("state database requires compatible runner support (schema %d)", currentSchema)
 	}
+	if err := initializeAppPolicy(tx); err != nil {
+		return err
+	}
 	if err := initializeProjects(tx); err != nil {
 		return err
 	}
@@ -1208,6 +1211,9 @@ func (s *store) finish(op protocol.Operation, state runtimequalify.ManagedState,
 			return errors.New("deletion has no completed filesystem receipt")
 		}
 		if _, err := tx.Exec("DELETE FROM maintenance_policies WHERE instance_id=?", op.InstanceID); err != nil {
+			return err
+		}
+		if err := retireAppPolicyInstance(tx, op.Actor, op.InstanceID); err != nil {
 			return err
 		}
 		if _, err := tx.Exec("INSERT INTO deleted_instances VALUES (?,?,?) ON CONFLICT(id) DO UPDATE SET operation_id=excluded.operation_id,revision=excluded.revision", op.InstanceID, op.ID, op.ConfigRevision); err != nil {

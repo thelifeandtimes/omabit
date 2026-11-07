@@ -113,5 +113,5 @@ func (g Grant) Allows(method, path string) bool {
 	_, projectStatus := protocol.ProjectStatusID(path)
 	_, _, projectRecovery := protocol.ProjectRecoveryCheckpointIDs(path)
 	_, projectRecoverySource := protocol.ProjectRecoverySourceID(path)
-	return g.Role == "operator" || (g.Role == "observer" && method == "GET" && (path == "/hello" || path == "/v1/snapshot" || path == "/v1/host-compatibility" || path == "/v1/projects" || path == protocol.PrivateChainProjectsPath || projectStatus || projectRecovery || projectRecoverySource))
+	return g.Role == "operator" || (g.Role == "observer" && method == "GET" && (path == "/hello" || path == "/v1/snapshot" || path == protocol.AppPolicyPath || path == "/v1/host-compatibility" || path == "/v1/projects" || path == protocol.PrivateChainProjectsPath || projectStatus || projectRecovery || projectRecoverySource))
 }

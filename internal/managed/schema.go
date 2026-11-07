@@ -25,4 +25,5 @@ package managed
 // Schema45 binds captured first-boot pier identities to version2 member launches.
 // Schema46 retains first-boot capture before later running observation.
 // Schema47 permits empty project network reservations; older runners must refuse them.
-const StateSchemaVersion = 47
+// Schema48 fences application policy and its revisioned authoring history.
+const StateSchemaVersion = 48

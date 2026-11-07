@@ -19,6 +19,9 @@ For app source deployment, desk commits or publication, read
 default to blocked, including on development fakes. Follow the effective gates
 configured in **Setup → App development and publishing** and the application's
 release configuration. Use only capabilities exposed by the selected tools.
+Read `app-policy --instance ID --desk DESK` on a pinned, capable runner. Permission
+authoring stays in Setup; agents must not enable their own gates or bypass them
+through another transport.
 
 Start with the shortest relevant read path:
 

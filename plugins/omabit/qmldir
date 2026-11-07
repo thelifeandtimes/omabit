@@ -62,3 +62,5 @@ ServiceUpgrade 1.0 ServiceUpgrade.qml
 ServiceUpgradePane 1.0 ServiceUpgradePane.qml
 DependencyUpdateNotice 1.0 DependencyUpdateNotice.qml
 ObservationSchedule 1.0 ObservationSchedule.qml
+AppDevelopment 1.0 AppDevelopment.qml
+AppDevelopmentPane 1.0 AppDevelopmentPane.qml

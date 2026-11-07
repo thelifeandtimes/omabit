@@ -14,6 +14,7 @@ import (
 	"syscall"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/apppolicy"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/epochs"
@@ -111,6 +112,7 @@ Commands:
   login-code INSTANCE --revision N --container-id FULL_ID --reveal
               Operator-only secret response; requires pinned --runner/--expected-runner-id.
   snapshot    Show the current runner snapshot.
+  app-policy  Read app commit/publication permissions and target identities.
   logs INSTANCE --revision N [--watch --interval 3s]
               Read a bounded operator-only runtime log tail from the pinned runner.
               Watch reuses one connection; JSON updates include tails or retry/stop errors.
@@ -300,6 +302,7 @@ Use COMMAND --help for command flags and constraints.
 	flags := flag.NewFlagSet(command, flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
 	flags.Usage = func() {}
+	var policyInstance, policyDesk string
 	var revision uint64
 	var httpPort, amesPort, loom uint
 	var requestID string
@@ -318,6 +321,10 @@ Use COMMAND --help for command flags and constraints.
 	usage := command
 	switch command {
 	case "hello", "snapshot", "suggest-port":
+	case "app-policy":
+		usage += " [--instance ID [--desk NAME]]\n\nRead saved app permissions and their source scopes. No permission edits or desk mutations. Requires app-development-policy-v1."
+		flags.StringVar(&policyInstance, "instance", "", "optional managed instance or project member ID")
+		flags.StringVar(&policyDesk, "desk", "", "optional Clay desk name without percent sign")
 	case "project-status":
 		usage += " PROJECT\n\nRead recent saved operations only; no runtime probe or changes. Requires project-saved-status-v1. A recorded running operation does not prove the ship is running. Interrupted actions need explicit recovery, never blind retry."
 	case "projects":
@@ -580,6 +587,37 @@ Use COMMAND --help for command flags and constraints.
 	switch command {
 	case "hello":
 		result = hello
+	case "app-policy":
+		var policy protocol.AppPolicyStatus
+		policy, err = c.AppPolicy(ctx, client.Identity{RunnerID: hello.RunnerID, Mode: hello.Mode})
+		result = policy
+		if err == nil && (policyInstance != "" || policyDesk != "") {
+			target := apppolicy.Target{InstanceID: policyInstance, Desk: policyDesk}
+			if target.Validate() != nil || policyInstance == "" {
+				return fail(errors.New("require a valid --instance and optional --desk"), 2)
+			}
+			found := false
+			for _, item := range policy.Targets {
+				if item.Target.InstanceID != policyInstance {
+					continue
+				}
+				target = item.Target
+				target.Desk = policyDesk
+				found = true
+				effective := policy.Policy.Effective(target)
+				if !item.Ready {
+					effective = apppolicy.Effective{Commit: apppolicy.Decision{Value: apppolicy.Block, Source: "unresolved identity"}, Publish: apppolicy.Decision{Value: apppolicy.Block, Source: "unresolved identity"}}
+				}
+				result = struct {
+					protocol.AppPolicyStatus
+					Target    apppolicy.Target    `json:"target"`
+					Effective apppolicy.Effective `json:"effective"`
+				}{policy, target, effective}
+			}
+			if !found {
+				return fail(errors.New("instance is not in this runner's saved policy inventory"), 1)
+			}
+		}
 	case "snapshot":
 		result, err = checkedSnapshot(ctx, c, identity)
 	case "project-status":

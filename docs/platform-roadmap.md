@@ -123,7 +123,8 @@ approval therefore precedes the distributor desk's mutation. Source trees under
 `desk/` need an assembled deployment tree for the Git bridge.
 
 Follow each developer's release configuration, including Urgit's existing rules.
-Add **Setup → App development and publishing**, with independent commit and
+The [policy layer and Setup editor](app-development-policy.md) are implemented
+and fixture-tested, with independent commit and
 publication permissions at global, runner, ship and installed-desk scope.
 The most specific explicit setting overrides inherited values. Both permissions
 start blocked, including on development fakes and project members. Enforce them

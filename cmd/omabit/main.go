@@ -60,6 +60,9 @@ func run(ctx context.Context, args []string) int {
 			return 0
 		}
 	}
+	if command == "app-development-status" || command == "app-development-save" || command == "app-development-retry" {
+		return appDevelopment(ctx, command, args, *config)
+	}
 	if command == "service-upgrade" || command == "service-upgrade-status" {
 		return localServiceUpgrade(ctx, command, args, *config, format)
 	}
