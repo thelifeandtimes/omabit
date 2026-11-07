@@ -96,6 +96,10 @@ never restore an earlier manager database over newer runtime operations. A full
 
 ## Verification
 
+For interactive UI review, use the [persistent isolated Setup preview](app-development-preview.md).
+It runs the actual pane with simulated runners and saved fixture policies; it
+does not connect to an installed collector or runner.
+
 Repository fixtures cover inheritance, effect classification, CAS conflicts,
 schema47 migration, reopened persistence, ordinary settings preservation, audit
 integrity, atomic grant retirement, project generations, revocation before a

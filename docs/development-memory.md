@@ -7658,3 +7658,35 @@ and diff checks passed. Changes are source/UI-only: no installed plugin, runner,
 ship, service or user desktop configuration was changed. This supersedes M528's
 initial screenshot as the visual-review reference; backend policy behavior and
 its qualification remain as recorded there.
+
+## M530 — Persistent isolated application-policy preview (2026-11-06)
+
+The user requested a persistent manual preview while preserving production
+plugins and runners. **Omabit 0.4.0 Preview** opens the actual AppDevelopmentPane
+and shared controls in a separately titled, scrollable native window. Its inert
+Python adapter provides local/remote runners, a publisher and a project member;
+both permissions start blocked. Policies persist across window close/reopen.
+The preview can simulate offline and observer connections and switch between
+controlled dark/light palettes. The connection selector explicitly refreshes
+after changing its adapter binding.
+
+The standalone snapshot is installed at
+`~/.local/share/omabit-policy-preview-040`, with a separately named application
+launcher. It is not an installed Omarchy plugin and does not reload the shell or
+start on login. Private Bubblewrap user/PID/mount/IPC/network namespaces expose
+only read-only system dependencies, the source snapshot and preview-owned data.
+The native window shares only the Wayland rendering socket; host HOME, runtime,
+D-Bus, SSH, keyring, Docker and runner sockets are absent. No live ship, existing
+production/DEV/trial040 plugin, runner or service was inspected or changed.
+
+Validation: default blocked state, all four fixture scopes, independent helper
+reopen/persistence, retained offline acknowledgment, retry, observer refusal and
+unsupported-command/state preservation passed. The actual QML connection
+selector exercised offline global save → online retry → disabled observer
+editing in a fresh offscreen fixture. Namespace inspection found only private
+loopback and the declared mounts/environment. Native rendering, duplicate-open
+refusal, identity-checked exact-preview shutdown and state-preserving relaunch
+passed. A window-only capture was inspected. These are preview/UI checks, not
+additional production runner or release qualification. Human review state is
+never reset or used for automated mutation tests. See the
+[preview guide](app-development-preview.md) for launch paths and review steps.
