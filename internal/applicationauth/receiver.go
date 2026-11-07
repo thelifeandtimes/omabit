@@ -171,13 +171,22 @@ func (a *Artifact) Verify(ctx context.Context) error {
 }
 
 func (a *Artifact) Deliver(ctx context.Context, data []byte) ([]byte, error) {
-	return a.run(ctx, data, false)
+	return a.run(ctx, data, "")
 }
 func (a *Artifact) Reconcile(ctx context.Context, data []byte) ([]byte, error) {
-	return a.run(ctx, data, true)
+	return a.run(ctx, data, "--reconcile")
 }
 
-func (a *Artifact) run(ctx context.Context, data []byte, reconcile bool) ([]byte, error) {
+func (a *Artifact) run(ctx context.Context, data []byte, mode string) ([]byte, error) {
+	switch mode {
+	case "", "--reconcile":
+	case "--prepare-replacement", "--replace", "--replacement-status":
+		if !a.SupportsReplacement() {
+			return nil, ErrArtifact
+		}
+	default:
+		return nil, ErrArtifact
+	}
 	if len(data) > 16384 {
 		return nil, ErrDelivery
 	}
@@ -205,8 +214,8 @@ func (a *Artifact) run(ctx context.Context, data []byte, reconcile bool) ([]byte
 	// approved module directory is added to the standard-library search path.
 	bootstrap := "import sys,runpy; p=sys.argv.pop(1); sys.path.insert(0,p); e=sys.argv.pop(1); sys.argv[0]=e; runpy.run_path(e,run_name='__main__')"
 	args := []string{"-I", "-S", "-B", "-c", bootstrap, filepath.Dir(entry), entry}
-	if reconcile {
-		args = append(args, "--reconcile")
+	if mode != "" {
+		args = append(args, mode)
 	}
 	cmd := exec.CommandContext(ctx, "/usr/bin/python3", args...)
 	cmd.Env = append([]string(nil), a.environment...)

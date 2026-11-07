@@ -1189,3 +1189,22 @@ bridge coordination stores no credential and creates no socket file. An existing
 bridge can adopt a successor without restart, but older cached helpers must not
 be treated as replacement-capable. Source fixture evidence does not qualify an
 installed/native upgrade. See `diagnostics/2026-11-07-dms-session-replacement.json`.
+
+
+## Unreleased collector replacement ancestry (M570)
+
+The collector reads application journals1–4. Explicit replacement publishes4
+atomically with the predecessor retirement and successor intent; read-only open
+does not rewrite prior state. Accepted successors link atomically, while original
+origin/credential references and cleanup remain intact. Replacement receipts use
+archive3; older archive1/2 receipts remain readable. Active attempts remain bounded
+to64 and reachable ancestry to2048. Missing history, cycles and divergent active
+branches are errors, not a reason to delete state or retry a login.
+
+The actual previous3 collection sources are retained under
+`internal/collection/testdata/v3writer` with source hashes. Private migration tests
+use that writer, preserve its original evidence, and prove its refusal of actual4
+state without mutation. Complete replacement requires declaration2 from the exact
+approved helper; an installed update cannot widen a cached1 approval. Public
+receiver advertisement and assembled qualification are still pending. Do not
+downgrade journal markers or remove ancestry to unblock work.

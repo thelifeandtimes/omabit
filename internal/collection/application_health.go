@@ -14,6 +14,15 @@ func (r *Registry) CheckFleetApplicationGrant(ctx context.Context, a Application
 	if !a.valid() || a.Fleet.Version != 1 || a.Phase != "connected" {
 		return ErrApplicationConflict
 	}
+	return r.CheckFleetApplicationPermission(ctx, a)
+}
+
+// CheckFleetApplicationPermission checks current permission for an exact durable
+// attempt, including preparation. It does not authorize a lifecycle transition.
+func (r *Registry) CheckFleetApplicationPermission(ctx context.Context, a ApplicationAttempt) error {
+	if !a.valid() || a.Fleet.Version != 1 {
+		return ErrApplicationConflict
+	}
 	return r.locked(ctx, func() error {
 		state, err := r.readApplications()
 		if err != nil {

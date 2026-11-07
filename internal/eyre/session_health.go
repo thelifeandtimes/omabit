@@ -65,6 +65,22 @@ func StoredSessionHealth(ctx context.Context, origin, ship string, data []byte) 
 	return "healthy", nil
 }
 
+// ValidateStoredSession validates a retained exact-origin credential without
+// network IO, including expired credentials still needed for cleanup. It clears
+// the input. Missing/invalid state cannot be treated as permission to reconnect.
+func ValidateStoredSession(origin, ship string, data []byte) error {
+	defer clear(data)
+	c, err := New(origin, ship)
+	if err != nil || c.origin != origin {
+		return ErrStoredSession
+	}
+	defer c.Close()
+	if !healthSessionJSON(data) || c.restoreSession(data, true) != nil {
+		return ErrStoredSession
+	}
+	return nil
+}
+
 func (c *Client) healthIdentity(ctx context.Context, auth bool) (string, error) {
 	parent := ctx
 	path := "/~/host"

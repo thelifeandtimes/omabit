@@ -50,7 +50,7 @@ func ResolveInstalled(root, id string, environment map[string]string) (*Artifact
 		return nil, info, ErrArtifact
 	}
 	var declaration Declaration
-	if !strictDeclaration(data, &declaration) || declaration.Version != 1 || declaration.Runtime != "python3" || declaration.Authority != OwnerAuthority || !slices.Contains(declaration.Files, DeclarationName) || !slices.Contains(declaration.Files, "manifest.json") {
+	if !strictDeclaration(data, &declaration) || !validDeclaration(declaration) {
 		return nil, info, ErrArtifact
 	}
 	files := append([]string(nil), declaration.Files...)
@@ -80,6 +80,14 @@ func ResolveInstalled(root, id string, environment map[string]string) (*Artifact
 		manifest.Name = id
 	}
 	return a, InstalledPlugin{Target: a.Target(), Name: manifest.Name, Status: "available"}, nil
+}
+
+// Version 2 adds bound preparation/replacement/status to the unchanged initial
+// offer and cleanup protocol. An older cached version-1 helper is never promoted
+// by inspecting the currently installed plugin or by probing an unknown flag.
+func validDeclaration(d Declaration) bool {
+	return (d.Version == 1 || d.Version == 2) && d.Runtime == "python3" && d.Authority == OwnerAuthority &&
+		slices.Contains(d.Files, DeclarationName) && slices.Contains(d.Files, "manifest.json") && slices.Contains(d.Files, d.Entry)
 }
 
 func validInstalledID(id string) bool {

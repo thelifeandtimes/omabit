@@ -1,0 +1,225 @@
+package collection
+
+import (
+	"context"
+	"errors"
+	"slices"
+	"sync"
+	"time"
+
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+)
+
+// Observation keeps instance IDs scoped to a connection and stable runner ID.
+// Unavailable runners have no current snapshot; absence is not a ship crash.
+type Observation struct {
+	ProjectInventory        *protocol.ProjectInventory        `json:"project_inventory,omitempty"`
+	ProjectInventoryStatus  string                            `json:"project_inventory_status,omitempty"`
+	Actor                   string                            `json:"actor,omitempty"`
+	Name                    string                            `json:"name"`
+	RunnerID                string                            `json:"runner_id"`
+	Mode                    string                            `json:"mode"`
+	AccessRole              string                            `json:"access_role,omitempty"`
+	Features                []string                          `json:"features,omitempty"`
+	Status                  string                            `json:"status"`
+	CheckedAt               time.Time                         `json:"checked_at"`
+	Snapshot                *protocol.Snapshot                `json:"snapshot,omitempty"`
+	Error                   *protocol.APIError                `json:"error,omitempty"`
+	HostCompatibility       *protocol.HostCompatibilityReport `json:"host_compatibility,omitempty"`
+	HostCompatibilityStatus string                            `json:"host_compatibility_status,omitempty"`
+	HostCompatibilityError  *protocol.APIError                `json:"host_compatibility_error,omitempty"`
+}
+
+type Inventory struct {
+	Connections []Observation `json:"connections"`
+	Complete    bool          `json:"complete"`
+}
+
+func inspect(ctx context.Context, entry Connection) Observation {
+	c := entry.Client(true)
+	defer c.Close()
+	return inspectClient(ctx, entry, c)
+}
+
+func inspectClient(ctx context.Context, entry Connection, c *client.Client) Observation {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	result := Observation{Name: entry.Name, RunnerID: entry.RunnerID, Mode: entry.Mode, Status: "available"}
+	// Retain capabilities/access for UI affordances; the runner remains the
+	// authorization authority and rechecks every mutation.
+	hello, err := c.Hello(ctx)
+	var snapshot protocol.Snapshot
+	if err == nil {
+		err = entry.Identity().Check(hello.RunnerID, hello.Mode)
+	}
+	if err == nil {
+		result.AccessRole = hello.AccessRole
+		result.Actor = hello.Actor
+		result.Features = hello.Features
+		// Independent requests share the per-runner deadline. Host evidence cannot
+		// erase a usable snapshot, nor does unavailable inventory hide a host report.
+		var reportWG sync.WaitGroup
+		reportWG.Add(2)
+		go func() {
+			defer reportWG.Done()
+			result.ProjectInventoryStatus = "unsupported"
+			if !slices.Contains(hello.Features, protocol.ProjectInventoryFeature) {
+				return
+			}
+			result.ProjectInventoryStatus = "unavailable"
+			inventory, e := c.ProjectsWithHello(ctx, entry.Identity(), hello)
+			if e == nil {
+				result.ProjectInventory = &inventory
+				result.ProjectInventoryStatus = "available"
+			}
+		}()
+		go func() {
+			defer reportWG.Done()
+			result.HostCompatibilityStatus = "unsupported"
+			if !slices.Contains(hello.Features, protocol.HostCompatibilityFeature) {
+				result.HostCompatibilityError = &protocol.APIError{Code: "host_report_unsupported", Message: client.ErrHostCompatibilityUnsupported.Error()}
+				return
+			}
+			report, reportErr := c.HostCompatibilityWithHello(ctx, entry.Identity(), hello)
+			if reportErr == nil {
+				result.HostCompatibility, result.HostCompatibilityStatus = &report, "available"
+				if time.Now().After(report.ExpiresAt) {
+					result.HostCompatibilityStatus = "stale"
+				}
+				return
+			}
+			result.HostCompatibilityStatus = "unavailable"
+			problem := protocol.APIError{Code: "host_report_unavailable", Message: client.ErrHostCompatibilityUnavailable.Error()}
+			if errors.Is(reportErr, client.ErrIdentityMismatch) {
+				problem.Code = "host_report_identity_mismatch"
+			} else if errors.Is(reportErr, context.DeadlineExceeded) {
+				problem.Code = "host_report_timeout"
+			} else if errors.Is(reportErr, client.ErrHostCompatibilityUnsupported) {
+				result.HostCompatibilityStatus, problem.Code = "unsupported", "host_report_unsupported"
+				problem.Message = client.ErrHostCompatibilityUnsupported.Error()
+			}
+			result.HostCompatibilityError = &problem
+		}()
+		snapshot, err = c.Snapshot(ctx)
+		reportWG.Wait()
+	}
+	if err == nil {
+		err = entry.Identity().Check(snapshot.RunnerID, snapshot.Mode)
+	}
+	result.CheckedAt = time.Now().UTC()
+	if err == nil {
+		result.Snapshot = &snapshot
+		return result
+	}
+	result.Status = "unavailable"
+	problem := protocol.APIError{Code: "connection_unavailable", Message: "runner could not be observed; ship state is unknown"}
+	if errors.Is(err, client.ErrIdentityMismatch) {
+		result.Status = "identity_mismatch"
+		problem = protocol.APIError{Code: "runner_identity_mismatch", Message: client.ErrIdentityMismatch.Error()}
+	} else if errors.Is(err, context.DeadlineExceeded) {
+		problem.Code = "connection_timeout"
+	}
+	// Do not copy arbitrary remote error bodies or transport diagnostics into the
+	// combined inventory; they can contain data belonging to another connection.
+	result.Error = &problem
+	return result
+}
+
+// Collect contacts connections concurrently with a five-second per-runner budget.
+func Collect(ctx context.Context, entries []Connection) Inventory {
+	result := Inventory{Connections: make([]Observation, len(entries)), Complete: true}
+	var wg sync.WaitGroup
+	for i, entry := range entries {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			result.Connections[i] = inspect(ctx, entry)
+		}()
+	}
+	wg.Wait()
+	for _, observation := range result.Connections {
+		if observation.Status != "available" {
+			result.Complete = false
+		}
+	}
+	return result
+}
+
+// Watch emits one observation per completed poll. Each runner owns its polling
+// loop, so an unavailable/slow runner cannot delay healthy runners' next poll.
+// Entries are fixed for this invocation; restarting picks up enrollment changes.
+func Watch(ctx context.Context, entries []Connection, interval time.Duration, emit func(Observation) error) error {
+	cadence, err := NewWatchCadence(interval)
+	if err != nil {
+		return err
+	}
+	return WatchWithCadence(ctx, entries, cadence, emit)
+}
+
+// WatchWithCadence preserves a runner's transports while its caller adjusts the
+// polling cadence. The initial observation is immediate, including in idle mode.
+func WatchWithCadence(ctx context.Context, entries []Connection, cadence *WatchCadence, emit func(Observation) error) error {
+	if cadence == nil {
+		return errors.New("inventory cadence is required")
+	}
+	if len(entries) == 0 {
+		return errors.New("no enrolled runners to watch")
+	}
+	ctx, cancel := context.WithCancel(ctx)
+	var wg sync.WaitGroup
+	defer func() { cancel(); wg.Wait() }()
+	updates := make(chan Observation, len(entries))
+	for _, entry := range entries {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			// One private, identity-pinned transport per watched runner. Recreating
+			// it every poll caused an SSH/PAM/logind login every two seconds.
+			var c *client.Client
+			defer func() {
+				if c != nil {
+					c.Close()
+				}
+			}()
+			var failures uint
+			for ctx.Err() == nil {
+				if c == nil {
+					c = entry.Client(true)
+				}
+				_, refresh, _ := cadence.read()
+				observation := inspectClient(ctx, entry, c)
+				if observation.Status == "available" {
+					failures = 0
+				} else {
+					c.Close()
+					c = nil
+					if failures < 9 {
+						failures++
+					}
+				}
+				select {
+				case updates <- observation:
+				case <-ctx.Done():
+					return
+				}
+				if cadence.wait(ctx, time.Now(), refresh, failures) != nil {
+					return
+				}
+			}
+		}()
+	}
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case observation := <-updates:
+			if ctx.Err() != nil {
+				return ctx.Err()
+			}
+			if err := emit(observation); err != nil {
+				return err
+			}
+		}
+	}
+}

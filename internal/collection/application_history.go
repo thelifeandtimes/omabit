@@ -72,7 +72,7 @@ func (r *Registry) readApplicationArchive(id string) (applicationArchive, bool, 
 	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.DisallowUnknownFields()
-	if decoder.Decode(&receipt) != nil || decoder.Decode(new(any)) != io.EOF || (receipt.Version != 1 && receipt.Version != 2) || receipt.Attempt.Fleet.Version == 1 && receipt.Version != 2 || receipt.Attempt.ID != id || !receipt.Attempt.valid() || receipt.Attempt.blocksApproval() || receipt.ArchivedAt.IsZero() || receipt.ArchivedAt.Before(receipt.Attempt.UpdatedAt) {
+	if decoder.Decode(&receipt) != nil || decoder.Decode(new(any)) != io.EOF || (receipt.Version < 1 || receipt.Version > 3) || receipt.Attempt.Fleet.Version == 1 && receipt.Version < 2 || receipt.Attempt.Replacement != (ApplicationReplacement{}) && receipt.Version < 3 || receipt.Attempt.ID != id || !receipt.Attempt.valid() || receipt.Attempt.blocksApproval() || receipt.ArchivedAt.IsZero() || receipt.ArchivedAt.Before(receipt.Attempt.UpdatedAt) {
 		return receipt, false, ErrApplicationJournal
 	}
 	return receipt, true, nil
@@ -108,6 +108,9 @@ func (r *Registry) saveApplicationArchive(a ApplicationAttempt) error {
 	version := 1
 	if a.Fleet.Version == 1 {
 		version = 2
+	}
+	if a.Replacement != (ApplicationReplacement{}) {
+		version = 3
 	}
 	return history.writeFile(a.ID+".json", applicationArchive{version, a, time.Now().UTC()})
 }
@@ -170,6 +173,11 @@ func (r *Registry) ArchiveApplication(ctx context.Context, id string, revision u
 				}
 				if current != a {
 					return ErrApplicationConflict
+				}
+				for _, child := range state.Attempts {
+					if child.Replacement.PreviousID == a.ID && child.blocksApproval() && a.Replacement.SuccessorID == "" {
+						return ErrApplicationConflict
+					}
 				}
 				if err := r.saveApplicationArchive(a); err != nil {
 					return err

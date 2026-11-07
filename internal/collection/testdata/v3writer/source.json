@@ -1,0 +1,31 @@
+{
+  "commit": "255280473b945893ba97cd710acd4044d9d1116a",
+  "scope": "Unmodified collection production sources from the previous version3 journal writer; dependency packages are provided by the test build. No test-only recreation of its journal parser or writer.",
+  "files": {
+    "app_policy.go": "e43fb4f0b75603159f0338990139b15aeb4cd952364127368ce965c33c5e9553",
+    "application_fleet.go": "dcf6ec021965620f70287d1a3fc100e98fea58bacaa49aec7d0472b80bf189a9",
+    "application_health.go": "4eeaca77747b082e7ccb903a068b35c4716f28c64aba01d156a34cc8ceeadbbd",
+    "application_history.go": "354e0fe6b765dccfe6ea890fab867a7dd85f547be09749732f84730602d4eb3a",
+    "application_route.go": "77c7206a0765669fdabe34880f024c87c81facd36b542dfa51dab06a3f16bb68",
+    "application_ship_approval.go": "389a62ff522d9ce8c90015cab683c295b75687deb0a5cccde608cab6daa4b4e7",
+    "application_ship_review.go": "06d6f58eba15fb8b64655361a08a612a8b3d682a2e4ea95697a65f3162ff81a8",
+    "applications.go": "54686421ac80472d1c31ae451f6b5e30192f102bbc5e35d54c4fc91fd4c7cb97",
+    "cadence.go": "b88af00752d718a5743b8b60716978debb612c9ad1026953aeebffbd9a55e73a",
+    "desk.go": "012020d0ed23767cb092f3a32901a50a7e266fb0132bd2aa82b18a911ad70522",
+    "desk_adoption.go": "c79af5a5609b184ef3f8b7d7e9e547cdd16662b61fc2cf75c0620b76cf46ee16",
+    "desk_application.go": "c9b6ecd2d6cfc39465c87bab7e0c85ce8f2cf54a6ab1cab2931881ccc912c9e2",
+    "desk_deployment.go": "c5db999eab4d89298541f676c3c5ea0a3949386b894440e626bb97acc390e867",
+    "desk_frontend.go": "453e77ddf53b8808710319e2f19ee5c558dc1eb75963c120e79f3c2cae4dff52",
+    "desk_receiver.go": "514f0d3c2b1bb68e177d40bf598366f04bb48d6c338f0a9df4ced2377c20ed94",
+    "desk_release.go": "13522130ece07bfe5737c38f71bcb3d845a4253fa5e4dbf4317429b7427dc98d",
+    "desk_settings.go": "3e967717de0673cf2cae093efefd53d2e06590bd2342e438a1f5a990078616a3",
+    "desk_source.go": "0178ccd4b43bfee4f8f4992afbbb4827f65cefa3019da0459b1836f559463310",
+    "desk_stage.go": "3cb40d3df16c4cc34c28d6d6aaf9ae9964079338afaf38801511a8be82b14fa2",
+    "inventory.go": "6bdb571bc905bfec90d1b6621e48846741501cc8b364ace9394a28edabba2b8b",
+    "login_code.go": "1896e72882b62b525a88836f99486e567cbe1b75b3400f57843843562c33eb8d",
+    "logs.go": "609c33057abea1d20935e277e6c5b71bff08c1348dc2b7e98f9bc27bf0c5ef26",
+    "registry.go": "926524ebd1bb4e0053e5351a1e185eba8019c078393c216ff033138b838d594d",
+    "ship_routes.go": "1b399c7ab55a780821d044284c083bec5da1eb7176e710b62898dc8e949e3b2c",
+    "ships.go": "32eb7c675c341969824f36a13c6c862c0a815d07b9898692f8066a5153257ae2"
+  }
+}

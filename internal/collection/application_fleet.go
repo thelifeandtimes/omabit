@@ -77,7 +77,7 @@ func (r *Registry) ApproveFleetApplication(ctx context.Context, id string, targe
 		}
 		for _, a := range state.Attempts {
 			if a.ID == id {
-				if a.Fleet != f || a.Target != target || a.Credentials != credentials {
+				if a.Fleet != f || a.Target != target || a.Credentials != credentials || a.Replacement.PreviousID != "" {
 					return ErrApplicationConflict
 				}
 				result = a
@@ -101,7 +101,9 @@ func (r *Registry) ApproveFleetApplication(ctx context.Context, id string, targe
 		if !result.valid() {
 			return ErrApplicationConflict
 		}
-		state.Version = 3
+		if state.Version < 3 {
+			state.Version = 3
+		}
 		state.Attempts = append(state.Attempts, result)
 		return r.saveApplications(state, true)
 	})

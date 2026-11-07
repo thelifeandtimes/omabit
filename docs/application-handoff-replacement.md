@@ -1,10 +1,11 @@
 # Fleet session replacement — implementation plan
 
-Status: in progress after M569. This is not an advertised protocol or a completed
+Status: in progress after M570. This is not an advertised protocol or a completed
 fleet feature. Both receivers' preparation, activation, recovery and exact
 transport lineage pass private source fixtures, including DMs cooperative bridge
-control. Collector lineage, capability compatibility, automatic polling and
-assembled native qualification remain.
+control. Collector lineage, capability compatibility and issuer recovery pass private fixtures
+(M570). Public reconnect/recovery wiring, automatic polling, real receiver capability
+advertisement and assembled native qualification remain.
 
 ## Required behavior
 
@@ -102,3 +103,13 @@ adoption/recovery. The helper inventory includes all imported modules. Theme's
 201fdd5 follow-up preserves a later independent key/metadata change during partial
 swap cleanup. Both remain unadvertised and isolated; see
 [source evidence](diagnostics/2026-11-07-dms-session-replacement.json).
+
+
+## M570 implementation boundary
+
+Collector format4 ancestry, shared generation locks, exact approved capability2
+and one-time preparation/issuance/replacement are implemented in the isolated
+branch. Lost acknowledgements use bound observation rather than another login or
+offer. Full registry/issuer and focused Eyre fixtures pass, including the actual
+previous writer. See [issuer evidence](diagnostics/2026-11-07-fleet-replacement-issuer.json).
+Public commands, automatic polling and assembled receiver qualification remain.

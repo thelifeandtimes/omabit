@@ -165,3 +165,11 @@ M567 adds the DMs local retirement/drain foundation in its isolated source branc
 Actual previous-writer migration and older-reader refusal pass, alongside bridge
 and transport regressions. It is not yet wired to cooperative receiver requests or
 successor activation; see [drain evidence](diagnostics/2026-11-07-dms-local-handoff.json).
+
+
+M568–M569 complete both receiver source handoff/recovery paths in isolated branches.
+M570 adds collector lineage, exact approved capability and issuer recovery, with
+actual previous-writer preservation and full private registry/issuer regressions.
+Public reconnect/recovery wiring, automatic polling and assembled receiver tests
+remain before advertising the complete feature. See
+[issuer evidence](diagnostics/2026-11-07-fleet-replacement-issuer.json).

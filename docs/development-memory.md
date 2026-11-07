@@ -9044,3 +9044,38 @@ polling and assembled native qualification remain. Current format/readability
 contracts and helper inventory are recorded; older cached helpers must not be
 silently promoted. Installed state, protected ships, original source checkouts and
 the persistent preview remain untouched. Release qualification stays deferred.
+
+
+## M570 — Collector replacement ancestry and issuer recovery (2026-11-07)
+
+The collector now recognizes replacement protocol2 only from an exact approved
+helper declaration. Old cached1 generations remain1 after an installed update.
+Preparation, replacement and status use the existing bounded private launcher.
+No installed receiver is promoted or executed merely to discover capability.
+
+Applications journal4 records immutable predecessor intent before preparation or
+issuance, and records the accepted successor link atomically with connection. A
+shared integration/ship lease serializes every generation, including health and
+old cleanup. Original credentials, origins, bindings and pending cleanup remain
+separate. Closed ancestors use immutable history3; cycles, missing ancestry,
+changed helpers/incarnations and competing active branches are refused. Existing
+formats remain readable; actual unmodified collection sources at2552804 create
+previous3 state and refuse populated4 without changing it. Reopens preserve the
+original evidence. The fixture manifest pins all25 retained source files.
+
+The issuer prepares only with the exact retained predecessor credential, issues
+one independent session and invokes bound replacement once. Reused predecessor
+cookies are neither delivered nor revoked as new sessions. Lost delivery replies
+use bound status observation; unknown replies remain pending, with no repeated
+login or offer. Known acceptance survives restart and records lineage before
+honoring a concurrent permission revocation. Interrupted preparation closes only
+the known-unissued child; it does not pretend the old receiver resumed. Cleanup
+remains bound to each original session. No application write is replayed.
+
+Full collector and issuer race suites and focused Eyre validation/health/logout
+fixtures pass. See `diagnostics/2026-11-07-fleet-replacement-issuer.json` for exact
+logs, binary hashes and previous-writer provenance. This advances M569's pending
+collector work at the private source level. Public reconnect/recovery wiring,
+automatic polling, capability advertisement in the two receiver branches and
+assembled qualification remain. Installed plugins/runners, protected ships and
+the persistent preview are unchanged; release qualification remains deferred.

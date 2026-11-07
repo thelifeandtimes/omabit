@@ -1,0 +1,78 @@
+{
+  "milestone": "M570",
+  "date": "2026-11-07",
+  "result": "passed private source fixtures",
+  "scope": "Collector replacement capability, durable attempt lineage and issuer recovery; no installed/native or release qualification",
+  "previous_writer_commit": "255280473b945893ba97cd710acd4044d9d1116a",
+  "previous_writer_manifest": "internal/collection/testdata/v3writer/source.json",
+  "formats": {
+    "active_applications": "reads1\u20134; writes4 only on explicit replacement; never downgrades",
+    "application_history": "reads1\u20133; replacement ancestry uses3",
+    "receiver_declaration": "reads1/2; complete replacement requires exact approved2; real receivers remain unadvertised1 until assembled tests"
+  },
+  "checks": [
+    {
+      "path": "/tmp/omabit-fleet-receiver-replacement-capability-02",
+      "exit": 0,
+      "test_pattern": "Test(Replacement|UnknownReplacement|Installed|Receiver|Retained|ExpectedRevision)",
+      "binary_sha256": "083bbb887d35351afbe3b8cc8a44e9d9f41990e9a571454ca791c8e236e12d0a",
+      "package": "internal/applicationauth",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "top_level_passes": 10,
+      "skips": 0,
+      "log_sha256": "12f1e02fcf758ede936e165dd2717a4498e7999a3517ded004f025a03bf1dd69"
+    },
+    {
+      "path": "/tmp/omabit-fleet-replacement-journal-01",
+      "exit": 0,
+      "test_pattern": "TestReplacementJournal",
+      "binary_sha256": "e5de8afe0d323daa066495220138246f37f15c2c59f65d0f655e5efa949a70d1",
+      "package": "internal/collection",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "top_level_passes": 6,
+      "skips": 0,
+      "log_sha256": "bdde246f6b4fb964e39fbce317882f3088b657698ed19b02845dd8f2fb593c10"
+    },
+    {
+      "path": "/tmp/omabit-fleet-replacement-collection-full-01",
+      "exit": 0,
+      "test_pattern": "Test",
+      "binary_sha256": "bd0364e3b65b8695340e3e3a90f4e3b474fd301f9e15fa3f10c1773e0bc6dc16",
+      "package": "internal/collection",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "top_level_passes": 69,
+      "skips": 0,
+      "log_sha256": "aa3ffeae9a6dbd9e9c6b1c6fc7bba59e1d344fc6ff68c56b4d29c13cb3bfd008"
+    },
+    {
+      "path": "/tmp/omabit-fleet-replacement-auth-full-01",
+      "exit": 0,
+      "test_pattern": "Test",
+      "binary_sha256": "0738554977a3c8f53ea92e40cf7715887b0eb5807da42ba5f77d866a2667df8b",
+      "package": "internal/applicationauth",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "top_level_passes": 28,
+      "skips": 1,
+      "log_sha256": "6c07a95144d9492813e502b1758cebaa622c1865cad55e97dc88f5d90a4ab42a"
+    },
+    {
+      "path": "/tmp/omabit-fleet-replacement-eyre-01",
+      "exit": 0,
+      "test_pattern": "Test(ValidateStoredSession|StoredSessionHealth|RevokeStored)",
+      "binary_sha256": "d5017356c3155a6891b41b749b084807bf51dc4da2bf4426ca6643cc8be19c7f",
+      "package": "internal/eyre",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "top_level_passes": 5,
+      "skips": 0,
+      "log_sha256": "880242c108c85501298d1164ba0560428d754e602f64d3f55c24f10f73856160"
+    }
+  ],
+  "remaining": [
+    "public reconnect/recovery command",
+    "bounded automatic polling and full-panel status",
+    "real receiver capability advertisement after assembled tests",
+    "assembled real receiver/Secret Service/native workflow qualification"
+  ],
+  "production_changed": false,
+  "persistent_preview_changed": false
+}
