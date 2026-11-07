@@ -1,5 +1,22 @@
 # Stable-release upgrade requirement
 
+## Development: reviewed frontend uploads, schema57
+
+Schema57 adds immutable `desk_frontends` linked atomically to desk operations.
+Reviews bind the exact staged artifact/MIME digest, predicted native glob hash,
+source revision, source excluding the generated docket, workflow settings and pier.
+Receipts retain upload and owner-session cleanup separately. Missing/corrupt or
+rebound records refuse; migration grants no permissions and sends no request.
+Older step bodies remain byte-preserved through optional omitted frontend fields.
+
+The actual schema56 writer at656e64d supplies the original fixture used by
+`scripts/test-desk-frontend-upgrade.py`. Migration/reopen, rollback and original
+older-reader refusal pass, including observed/pending receiver history and source
+ownership. Negotiate `desk-frontend-v1` with matching collector/runner code. Never
+lower a schema marker or reinterpret a lost upload as permission to send it again.
+These are feature checks in synthetic state; installed upgrade/release qualification
+remains deferred. No installed runner was changed.
+
 ## Development: reviewed receiver installation, schema56
 
 Schema56 adds immutable `desk_receivers` linked to the existing operation journal.

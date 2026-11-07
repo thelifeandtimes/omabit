@@ -8562,3 +8562,54 @@ Only classified generated inputs, inactive completed piers and rebuildable cache
 were retired; original failures/receipts and compressed binary sources remain.
 Admission refusals prevented launches before retention made room under40GiB.
 Re-measure before the next build/runtime. Release qualification stays deferred.
+
+
+## M553 — Gated frontend upload API/CLI and durable recovery (2026-11-07)
+
+`desk-frontend-v1` connects the staged build artifact to read-only review/planning
+and one saved-plan upload through CLI, collector, client and runner. Reviews bind
+stage target/digest, MIME artifact digest, expected native glob hash, source revision,
+source excluding desk.docket-0, settings at both levels and exact runtime/pier.
+Only current local own-ship Ames globs on the Unix workflow are supported. Urgit,
+remote subscriptions, HTTP globs and unchanged advertised hashes refuse.
+
+Both Commit and Publish gates apply even for private Clay: the upload immediately
+changes served assets and native Docket HTTP has no atomic expected-revision or
+publication precondition. This tightens the typed adapter beyond M546's native
+classification. Fresh worker checks run under the policy/lifecycle lock, followed
+by an additional source/app/Docket check after ephemeral authentication. External
+owner activity can still race the HTTP endpoint; postflight detects changed other
+source and requires the expected glob and a newer Clay/Docket revision. It does
+not adopt generated source or assert HTTP/application health. Distributed updates
+bind every configured check attestation to both source and artifact; private
+preparation precedes those release tests. No test command is executed by the runner.
+
+Schema57 stores immutable frontend reviews atomically with operations. Exact replay
+returns the original receipt; dispatched/acknowledged interruptions stay uncertain
+without another upload. Read-only reconciliation works after permission revocation
+and needs matching original pier/source/artifact metadata. Reconciliation records
+observation, not causal attribution. Session cleanup remains separate: confirmed,
+unconfirmed or not-created. A trusted adapter's pre-upload abort records rejected
+with attempted=false; lost upload replies never use that state. Known upload
+acknowledgement survives logout failure. Credentials stay ephemeral and absent from
+argv, files, logs and journals; an interrupted or lost login can leave cleanup unknown.
+
+Original schema56 writer656e64d produces the checked-in SQL fixture. Actual migration,
+reopen, rollback, new journals and original-reader refusal pass while preserving
+registry, policy, settings, source/deployment/adoption/release and receiver histories.
+Full desk race regressions, collector/client selection/lost-reply tests, transport
+session tests and CLI/offline help checks pass. Both skills validate. API03 initially
+expected a cache edit after bytes were captured to invalidate those already frozen
+bytes; the corrected test edits before capture and verifies refusal. Regression01's
+helper did not recognize the new terminal rejected state; regression02 passes after
+fixing the helper. Neither failure caused a native upload or touched installed state.
+See `diagnostics/2026-11-07-desk-frontend-api.json` for exact evidence and limits.
+
+This supersedes M552's pending public adapter only. The underlying native hash/bytes
+were qualified in M552, but the assembled public frontend capsule and actual Docker
+transport remain separate checks. Release qualification stays deferred. Installed
+production/DEV/trial and persistent preview remain unchanged. Native48's completed
+pier and verified duplicate Vere/pill inputs were retired after exact-scope inactivity
+and successful proof checks, preserving committed compact proof and all receipts.
+Migration admission refused before launch until retention made room. Re-measure
+before builds and keep failed/current source and evidence recoverable.

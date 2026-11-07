@@ -231,7 +231,7 @@ a synthetic lifecycle backend: it does not requalify Docker/SSH or receiver
 readiness. Probe34/M546 additionally covers the app-stage API, native local activation,
 source/Treaty publication, and Docket upload with exact served fixture bytes.
 Those probes used private effect helpers. The subsequent `desk-release-v1` API
-provides gated activation/publication; native Docket upload still has no agent adapter. Check installed capabilities rather than assuming
+provides gated activation/publication; `desk-frontend-v1` adds reviewed native Docket upload. Check installed capabilities rather than assuming
 the development source is deployed.
 
 ## Adopt selected existing source
@@ -358,14 +358,62 @@ and also publication when the desk is already distributed. Do not bypass closed
 gates with a native upload. The resulting external docket edit correctly conflicts
 with older frozen source ownership; reconcile that source instead of overwriting it.
 Use the explicit source-adoption workflow below only after staging the updated
-source that already matches Clay. A public upload adapter is not implemented yet.
+source that already matches Clay. The typed upload adapter described below requires both Commit and Publish permission.
 
 Native48/M552 verifies the internal artifact path with exact HTML, binary and empty
 files, matching predicted/native glob hash and observed Clay changes. Its limits
 are2048 files/32MiB, required index.html and reserved desk.js. Files ending in a
 NUL byte refuse because native multipart would lose that byte. A successful hash
 or metadata check does not establish HTTP or application health. Do not substitute
-these internal helpers for a supported, permission-checked agent command.
+the private qualification helper for the permission-checked command below.
+
+## Stage, review and upload built frontend assets
+
+Check `desk-frontend-v1` before using these commands. Build the application with
+its own tooling, then use `desk-plan-stage` and `desk-stage` to transfer the exact
+build directory into the private runner cache. Select the target desk as usual;
+these files are frontend assets and must not be sent to `desk-commit` as source.
+The desk must use the saved Unix workflow and a current local installation with
+an Ames glob hosted by this same ship. Remote subscriptions, HTTP globs and Urgit
+bindings refuse; follow their existing native workflow instead.
+
+Run `desk-review-frontend --runner NAME --expected-runner-id ID --stage-id ID`.
+The response reports the artifact digest, predicted glob hash, source baseline,
+ship/desk instructions and configured checks. For an already distributed desk,
+supply one check per configured name, in order, with `name`, `clay_hash`,
+`artifact_digest`, `passed: true` and a nonempty `evidence` description. The source
+and artifact hashes must match this review. Omabit stores these attestations; it
+does not execute tests or claim they passed independently. Private preparation
+uses `[]`, allowing the frontend to be installed before release health checks.
+
+Run `desk-plan-frontend` with the same selection and optional `--checks-file FILE`
+(or `--checks-json JSON`), save its complete JSON, then submit only that saved plan
+with `desk-upload-frontend --runner NAME --expected-runner-id ID --plan-file FILE`.
+Both Commit and Publish must allow, even for a private Clay desk: upload changes
+served assets immediately and Docket has no atomic expected-revision/publication
+precondition. Closed permissions cause zero upload/login requests. Omabit rechecks
+policy, workflow, source, artifact and runtime before dispatch and checks source
+and Docket afterward; external owner activity can still race the native endpoint.
+
+Query `desk-operation` using the saved ID. An observed result confirms the expected
+native glob, a newer Clay revision, unchanged other source and matching Docket
+metadata. It does not prove HTTP/app health or automatically adopt the changed
+`desk.docket-0` into source ownership. Verify behavior and reconcile that generated
+source change before the next source commit. An already advertised identical glob
+is a no-op refusal, not permission to upload again.
+
+For a lost upload reply, use `desk-reconcile`: it only reads the original runtime
+and can succeed after the gates close. Do not create a new ID to retry uncertainty.
+A `rejected` receipt with `frontend_transfer.attempted: false` means the adapter
+aborted before upload; review again before a fresh plan. Independently inspect
+`session_cleanup`: `unconfirmed` means the ephemeral owner session's cleanup could
+not be confirmed, even if upload succeeded. Never copy credentials into a receipt
+or retry an upload to fix authentication/cleanup. An interrupted process can leave
+cleanup unknown; absence of transfer evidence is not proof of logout.
+
+M553 verifies these API/collector/CLI and migration paths with isolated fixtures.
+M552 verifies the underlying native artifact path. Their assembled public native
+workflow and installed Docker/SSH operation remain separate checks.
 
 An intentionally invalid agent update in that probe returned HTTP500 and left the
 observed revision/hash unchanged. The original dispatch remains uncertain; an

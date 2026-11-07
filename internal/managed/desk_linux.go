@@ -300,6 +300,11 @@ func (r *Server) serveDeskReconciliation(w http.ResponseWriter, req *http.Reques
 		respond(w, 202, r.deskReply(receipt))
 		return
 	}
+	if state == "uncertain" && receipt.Intent.Action == "upload-frontend" {
+		r.queueDeskFrontendReconciliation(receipt, actor)
+		respond(w, 202, r.deskReply(receipt))
+		return
+	}
 	if state == "uncertain" && receipt.Intent.Action == "install-remote" {
 		r.queueDeskReceiverReconciliation(receipt, actor)
 		respond(w, 202, r.deskReply(receipt))

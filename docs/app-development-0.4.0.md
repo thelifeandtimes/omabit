@@ -239,7 +239,8 @@ publication state to determine the effects of a commit.
 6. Resolve frontend delivery from the desk's declared layout. Support desk-served
    assets and existing docket/glob metadata. A required glob upload has its own
    result and must complete before claiming the frontend is ready. Apply the
-   publication gate when that upload changes an already distributed frontend.
+   commit and publication gates to every typed upload: served assets change
+   immediately and the native HTTP endpoint has no atomic revision precondition.
    Confirm the runtime-specific upload adapter in the first implementation spike.
 
 Prefer typed operations through the runner's verified private HTTP/Lens access
@@ -361,7 +362,8 @@ pipeline after an interrupted terminal or desktop restart.
    and refuses terminal-NUL files that native multipart would truncate. Docket's
    full MIME header occupies one path atom; splitting it gives the wrong hash.
    Acknowledgement, Clay/Docket observation and HTTP health remain separate facts.
-   Public frontend review/journal/API/CLI integration remains pending; see
+   M553 adds gated frontend review/journal/API/CLI integration and schema57
+   fixtures; its assembled public native test remains pending. See
    [artifact evidence](diagnostics/2026-11-07-desk-frontend-artifacts.json).
    An invalid installed-agent update returns HTTP500 with unchanged observed Clay;
    retain uncertainty, and complete compilation/activation failure reporting.

@@ -98,3 +98,7 @@ func FrontendInventory(ship, desk string) (LensRequest, error) {
 `+"`@ux`(en:json:html [%%o (malt values)])", ship, desk)
 	return LensRequest{expression: expression}, nil
 }
+
+// FrontendOwnerCode is a fixed internal credential read for an ephemeral upload
+// session. Its response must never enter a public reply, journal or diagnostic.
+func FrontendOwnerCode() LensRequest { return LensRequest{expression: "+code"} }

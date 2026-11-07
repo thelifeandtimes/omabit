@@ -2,6 +2,24 @@ package main
 
 // Commands with no ordinary flag parser still expose side-effect-free help.
 var desktopCommandHelp = map[string]string{
+	"desk-review-frontend": `Usage: omabit [--config-dir DIR] desk-review-frontend --runner NAME --expected-runner-id ID --stage-id STAGE_ID
+Review built assets already transferred with desk-plan-stage and desk-stage.
+Requires desk-frontend-v1, a local installation and this ship's Ames glob.
+Reads the artifact hash, Clay, Docket, workflow and release checks without upload.`,
+	"desk-plan-frontend": `Usage: omabit [--config-dir DIR] desk-plan-frontend --runner NAME --expected-runner-id ID --stage-id STAGE_ID [--checks-file FILE]
+Save the complete JSON plan before submission. Distributed updates require every
+configured check bound to both clay_hash and artifact_digest; private preparation
+uses an empty check array. Limits: 2048 files/32 MiB; index.html required; desk.js
+reserved; terminal-NUL assets refused because native multipart would truncate them.`,
+	"desk-upload-frontend": `Usage: omabit [--config-dir DIR] desk-upload-frontend --runner NAME --expected-runner-id ID --plan-file FILE
+Alternatively use --plan-json JSON. Submit one unchanged saved plan.
+Both Commit and Publish gates must allow; both are blocked by default. Upload can
+immediately replace served assets and commit desk.docket-0 in Clay. Native HTTP
+cannot atomically enforce a reviewed revision; drift fails verification afterward.
+Read desk-operation after a lost reply and use desk-reconcile without re-uploading.
+An observed glob/source result does not prove HTTP or application health. Check the
+separate session_cleanup receipt; unconfirmed means owner-session cleanup is unknown.
+Reconcile generated docket changes with source ownership before the next commit.`,
 	"desk-receiver-status": `Usage: omabit [--config-dir DIR] desk-receiver-status --runner NAME --expected-runner-id ID --instance INSTANCE --desk DESK
 Read the current Kiln subscription and distinguish pending source from received
 Clay/application stages. Requires desk-receiver-v1. Never installs or publishes.`,
@@ -54,7 +72,7 @@ while a desk operation on its target is unresolved. Supports interrupted uploads
 and discards; never removes original source, live mounts or Clay. Malformed cache
 metadata is retained for review. An already absent stage returns success.`,
 	"desk-reconcile": `Usage: omabit [--config-dir DIR] desk-reconcile --runner NAME --expected-runner-id ID --id OPERATION_ID
-Observe an uncertain creation, staged commit, release or receiver install on its exact selected runtime.
+Observe an uncertain creation, staged commit, release, frontend upload or receiver install on its exact selected runtime.
 Commit reconciliation requires its retained stage and verifies the whole result.
 Never repeats the effect or changes permissions. Query desk-operation afterward;
 unavailable evidence leaves the outcome uncertain.`,

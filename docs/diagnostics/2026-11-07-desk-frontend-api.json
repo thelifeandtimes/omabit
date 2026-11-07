@@ -1,0 +1,244 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M553",
+  "source_base": "656e64d50c68ec693556575d76cc04c656af2cf1",
+  "schema": 57,
+  "capability": "desk-frontend-v1",
+  "checks": [
+    {
+      "directory": "/tmp/omabit-desk-frontend-api-04",
+      "result": {
+        "package": "./internal/managed",
+        "run": "^TestDeskFrontend",
+        "race": true,
+        "fixture_compilation": false,
+        "exit": 0,
+        "output": "/tmp/omabit-desk-frontend-api-04",
+        "isolation": "private user/network/PID/mount/IPC/UTS; no owner profile, host home/run or Docker socket"
+      },
+      "log_sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "directory": "/tmp/omabit-desk-frontend-schema-01",
+      "result": {
+        "package": "./internal/managed",
+        "run": "^TestDesk(Frontend|Schema57)",
+        "race": true,
+        "fixture_compilation": false,
+        "exit": 0,
+        "output": "/tmp/omabit-desk-frontend-schema-01",
+        "isolation": "private user/network/PID/mount/IPC/UTS; no owner profile, host home/run or Docker socket"
+      },
+      "log_sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "directory": "/tmp/omabit-desk-frontend-regression-02",
+      "result": {
+        "package": "./internal/managed",
+        "run": "^TestDesk",
+        "race": true,
+        "fixture_compilation": false,
+        "exit": 0,
+        "output": "/tmp/omabit-desk-frontend-regression-02",
+        "isolation": "private user/network/PID/mount/IPC/UTS; no owner profile, host home/run or Docker socket"
+      },
+      "log_sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "directory": "/tmp/omabit-desk-frontend-client-01",
+      "result": {
+        "package": "./internal/collection",
+        "run": "^TestDeskFrontend",
+        "race": true,
+        "fixture_compilation": false,
+        "exit": 0,
+        "output": "/tmp/omabit-desk-frontend-client-01",
+        "isolation": "private user/network/PID/mount/IPC/UTS; no owner profile, host home/run or Docker socket"
+      },
+      "log_sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "directory": "/tmp/omabit-desk-frontend-cli-01",
+      "result": {
+        "package": "./cmd/omabit",
+        "run": "^Test(Desk|.*Help)",
+        "race": true,
+        "fixture_compilation": false,
+        "exit": 0,
+        "output": "/tmp/omabit-desk-frontend-cli-01",
+        "isolation": "private user/network/PID/mount/IPC/UTS; no owner profile, host home/run or Docker socket"
+      },
+      "log_sha256": "d30e2a874ea5842734c17ea46d0ac8b67e7f873849b176f0c3b4fbfd57ba9b28"
+    },
+    {
+      "directory": "/tmp/omabit-desk-frontend-session-01",
+      "result": {
+        "package": "./internal/runtimequalify",
+        "run": "^TestDesk(Frontend|HTTP)",
+        "race": true,
+        "fixture_compilation": false,
+        "exit": 0,
+        "output": "/tmp/omabit-desk-frontend-session-01",
+        "isolation": "private user/network/PID/mount/IPC/UTS; no owner profile, host home/run or Docker socket"
+      },
+      "log_sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "directory": "/tmp/omabit-desk-frontend-session-02",
+      "result": {
+        "package": "./internal/runtimequalify",
+        "run": "^TestDeskFrontendUpload",
+        "race": true,
+        "fixture_compilation": false,
+        "exit": 0,
+        "output": "/tmp/omabit-desk-frontend-session-02",
+        "isolation": "private user/network/PID/mount/IPC/UTS; no owner profile, host home/run or Docker socket"
+      },
+      "log_sha256": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+    },
+    {
+      "directory": "/tmp/omabit-desk-frontend-upgrade-01",
+      "result": {
+        "original_source": "656e64d50c68ec693556575d76cc04c656af2cf1",
+        "current_base": "656e64d50c68ec693556575d76cc04c656af2cf1",
+        "overlays": {
+          "cmd/omabit/desk_frontend.go": "b55d4d491975a3d6bdd2cf540d0ae4f09d3b3877a20b243d45230a68a8b8040e",
+          "cmd/omabit/desk_frontend_test.go": "dadd0c6fc38992f8a2c979160d1e8dccf55d829b7f3f42caf60c5a0842f87889",
+          "cmd/omabit/help.go": "020072258a21c9795f19aba6ee7e9a47d037d9452fac20e36db6b88d89299d30",
+          "cmd/omabit/main.go": "225ac166efb291816b41eda765c79654a20fbe8c27aa563a9194cf408d0c7929",
+          "internal/client/desk_frontend.go": "627cb3a55019c9cf0becd99a7f3a5571eb2e574abd00ba0bbbfdd1c8770608e5",
+          "internal/collection/desk_frontend.go": "453e77ddf53b8808710319e2f19ee5c558dc1eb75963c120e79f3c2cae4dff52",
+          "internal/collection/desk_frontend_test.go": "105ae34a68e70b07acdb5637b6deaac3093e7f89e1891d79ccd2eb6053b6a7d1",
+          "internal/deskwork/frontend_record.go": "946afa472d3f016f228529870c4248b12154342183e99ec216aa2929714f7aff",
+          "internal/deskwork/frontend_record_test.go": "13636d5a3c183024f34e222bd0cb9101dc3f097224220f090d5873bc04bef5a4",
+          "internal/deskwork/frontend_source.go": "f4754e0da97d62580c4f083220b50d3721a00e18c7eb7f7ea5ae71d1c1895309",
+          "internal/deskwork/lens_frontend.go": "ffc8638fa84732006d29b330eb9ce5e89364d2cf3b9388bbb1321bfa5343c9ae",
+          "internal/deskwork/operation.go": "5379935368ab79f220b6b5b21afd246cd46e583ef0f249466356a95eb1b9434e",
+          "internal/managed/desk_frontend_linux.go": "625ac519f6b027294eeba6b37fbf60c955ae5932a90bbdabd8a8d5ac45a3a0b9",
+          "internal/managed/desk_frontend_linux_test.go": "c2c1e402cc90d993dcc6bdb4f8e413a3960944563a77e73d16a086102488b454",
+          "internal/managed/desk_frontend_store.go": "2f15683338a4e7a3c4fecf557b108da6c315ac9fce6f94224f4d9ebe238d4ecb",
+          "internal/managed/desk_frontend_store_test.go": "d5e3569ff8ad2dcb7b8fe42b604f5537cbfc89799136971af7b5b1af8e3c68ec",
+          "internal/managed/desk_frontend_upgrade_test.go": "e405fa96e9ce738d4776da6cdfd8ffc63fad6a2b182e52277df6bd7edda43228",
+          "internal/managed/desk_linux.go": "7e64344d3e407b6818137faf8c7289e783d06d4d9819072517d9106a7b12a211",
+          "internal/managed/desk_store.go": "183af7f7cc6a9e3c356ce5557f98c29b4ee2d0b37518d1d1cf5328ea9e8dceb7",
+          "internal/managed/schema.go": "c01268155c3220ec4f81358f4debe9bff74a6e613f1cc3a86bb1a11d7de3465b",
+          "internal/managed/server.go": "0d850f61c56dc5a15ac12c2086a41129e4ec5cd65bfc198536257a2685213931",
+          "internal/managed/store.go": "da417a3028bf68a378ca9a6248829df8f53dc765e5086e8c391bebfb5a14d6ed",
+          "internal/protocol/desk_frontend.go": "b8bfe9738607da4dc94acde0607e112334dd99ed82d57a40ebabd1ea9ea9a645",
+          "internal/runtimequalify/desk_frontend_linux.go": "06170d6f84dc6c566a385d2ec8bdd23eb01f94ea56d2b091b54cc1bf8e06bbe8",
+          "internal/runtimequalify/desk_frontend_upload_linux_test.go": "9db3cca77dfbaab16ce7b69c1aaedaf35dc8c206d4d4c48ce85acd2977bb7498",
+          "scripts/test-desk-frontend-upgrade.py": "18364a44593031186c8e7a03a6c23856df200d65053f212af81ced546938187c"
+        },
+        "binaries": {
+          "writer56": "0d22af3f66623f88f0a11afe1f11876333af3f53c4d601fc4bedbafa86f5a172",
+          "current": "de437f0d6924387e6819a1529d5eb22afda787d746306fd70eee692a5292e4e8"
+        },
+        "writer56_helper_sha256": "e72c342fd10b82bc467a20db3e55a7ccf9120b2c9340b7e33f8f76a537762b80",
+        "current_helper_sha256": "adc87d915dc4bd03e65dd594752a1b6bb1a740f3d16eb792cb2e8776a74317d9",
+        "exit": 0,
+        "isolation": "private user/network/PID/mount/IPC/UTS; synthetic state only",
+        "scope": "functional migration; not release qualification"
+      },
+      "log_sha256": "0e0b5acaed3540b3e7004ed01cc3ee1282ec4d9d6b10e6a53a3708af1a74dc29"
+    }
+  ],
+  "core_checks": [
+    "go test -race ./internal/deskwork ./internal/protocol -count=1",
+    "go test -race ./internal/deskwork -run ^TestFrontend -count=1",
+    "both skill-creator quick_validate checks passed"
+  ],
+  "original_schema56": {
+    "schema": 56,
+    "source_commit": "656e64d50c68ec693556575d76cc04c656af2cf1",
+    "sql_sha256": "1df2488f8a9e4a6c636ec6f0fb021a9457802aa6cd0fb01b1ca303e683824cf7",
+    "provenance": "Actual original schema56 writer, private synthetic fixture; scripts/test-desk-frontend-upgrade.py",
+    "contains": [
+      "runner registry and app policy",
+      "pending desk operation",
+      "workflow settings and history",
+      "canonical source baseline",
+      "verified deployment ownership",
+      "observed source release",
+      "explicit source adoption",
+      "observed and dispatched receiver installations"
+    ]
+  },
+  "failures": [
+    {
+      "directory": "/tmp/omabit-desk-frontend-api-03",
+      "result": {
+        "package": "./internal/managed",
+        "run": "^TestDeskFrontend",
+        "race": true,
+        "fixture_compilation": false,
+        "exit": 1,
+        "output": "/tmp/omabit-desk-frontend-api-03",
+        "isolation": "private user/network/PID/mount/IPC/UTS; no owner profile, host home/run or Docker socket"
+      },
+      "explanation": "The fixture edited cache after verified artifact bytes were already captured; corrected to edit before capture and assert refusal."
+    },
+    {
+      "directory": "/tmp/omabit-desk-frontend-regression-01",
+      "result": {
+        "package": "./internal/managed",
+        "run": "^TestDesk",
+        "race": true,
+        "fixture_compilation": false,
+        "exit": 1,
+        "output": "/tmp/omabit-desk-frontend-regression-01",
+        "isolation": "private user/network/PID/mount/IPC/UTS; no owner profile, host home/run or Docker socket"
+      },
+      "explanation": "Test wait helper did not classify rejected as terminal; helper corrected and full regression02 passed."
+    }
+  ],
+  "retention": [
+    {
+      "classification": "completed generated native48 fake pier; compact proof committed at656e64d; fresh API capsule will replace this runtime",
+      "scope_verified": {
+        "unit": "omabit-desk-probe-d5d8a7faebcb4af0a27f30444c4041e7.scope",
+        "LoadState": "not-found",
+        "ActiveState": "inactive",
+        "Result": "success",
+        "ControlGroup": ""
+      },
+      "frontend_proof_sha256": "223e8ab0a0945ab7c8f7d472ccd3ac60b10c59154017137374121dd74c0524c4",
+      "entries": [
+        {
+          "path": "/tmp/omabit-desk-probe-48/lab/zod",
+          "device": 55,
+          "inode": 1810757,
+          "allocated_bytes": 592867328
+        }
+      ],
+      "retain": "all sources, receipts, input pins, compact proof and failure34; only completed generated pier retired",
+      "status": "complete"
+    },
+    {
+      "classification": "duplicate immutable inputs from the inactive retired native48 capsule",
+      "entries": [
+        {
+          "path": "/tmp/omabit-desk-probe-48/artifacts/vere",
+          "canonical": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/runtime-inputs-20261025-07/vere",
+          "sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+          "bytes": 24044976
+        },
+        {
+          "path": "/tmp/omabit-desk-probe-48/artifacts/boot.pill",
+          "canonical": "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/runtime-inputs-20261025-07/boot.pill",
+          "sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+          "bytes": 217421172
+        }
+      ],
+      "status": "complete"
+    }
+  ],
+  "limits": [
+    "API/store/collector/CLI are qualified with synthetic state; underlying native artifact hash and exact HTTP bytes were qualified separately in M552.",
+    "Assembled public native frontend capsule and actual managed Docker transport are not yet qualified.",
+    "Native Docket HTTP has no atomic expected-revision or publication precondition. Both gates apply; source and metadata are checked before and after.",
+    "Unchanged source excludes the generated docket. No ownership adoption or general HTTP/application health is claimed.",
+    "Ephemeral owner-session cleanup may be unconfirmed after lost login/logout or process interruption; no credentials persist in journals.",
+    "No installed production/DEV/trial runner, ship, plugin, service or persistent preview was changed. Release qualification deferred."
+  ]
+}

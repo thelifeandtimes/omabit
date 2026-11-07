@@ -62,7 +62,7 @@ func (i Intent) Validate() error {
 		if i.Baseline.Exists || i.SourceDigest != "" {
 			return errors.New("desk creation requires observed absence")
 		}
-	case "commit", "adopt-source":
+	case "commit", "adopt-source", "upload-frontend":
 		if !i.Baseline.Exists || !digestPattern.MatchString(i.SourceDigest) {
 			return errors.New("commit requires an observed desk and frozen source")
 		}
@@ -89,6 +89,14 @@ func (i Intent) Check(p apppolicy.Policy, current Observation) error {
 	if !current.Exists {
 		publication = "absent"
 	}
+	if i.Action == "upload-frontend" {
+		// Serving an artifact can immediately publish it. Both gates apply even
+		// while Clay is private; native HTTP has no atomic publication fence.
+		if err := p.Check(i.Target, i.PolicyRevision, "commit", publication); err != nil {
+			return err
+		}
+		return p.Check(i.Target, i.PolicyRevision, "publish", publication)
+	}
 	effect := i.Action
 	if effect == "activate-local" || effect == "adopt-source" {
 		effect = "commit"
@@ -100,13 +108,16 @@ func (i Intent) Check(p apppolicy.Policy, current Observation) error {
 }
 
 type Step struct {
-	Actor                string       `json:"actor,omitempty"`
-	VerifiedSourceDigest string       `json:"verified_source_digest,omitempty"`
-	Kind                 string       `json:"kind"`
-	State                string       `json:"state"`
-	At                   time.Time    `json:"at"`
-	Observation          *Observation `json:"observation,omitempty"`
-	Application          *AppState    `json:"application,omitempty"`
+	Actor                string            `json:"actor,omitempty"`
+	VerifiedSourceDigest string            `json:"verified_source_digest,omitempty"`
+	Kind                 string            `json:"kind"`
+	State                string            `json:"state"`
+	At                   time.Time         `json:"at"`
+	Observation          *Observation      `json:"observation,omitempty"`
+	FrontendSourceDigest string            `json:"frontend_source_digest,omitempty"`
+	Frontend             *FrontendState    `json:"frontend,omitempty"`
+	FrontendTransfer     *FrontendTransfer `json:"frontend_transfer,omitempty"`
+	Application          *AppState         `json:"application,omitempty"`
 }
 type Receipt struct {
 	Version int    `json:"version"`
@@ -146,6 +157,10 @@ func (r Receipt) Validate() error {
 				return errors.New("completed desk effect requires observation")
 			}
 			switch r.Intent.Action {
+			case "upload-frontend":
+				if s.Observation.Revision <= r.Intent.Baseline.Revision || s.VerifiedSourceDigest != r.Intent.SourceDigest || s.Frontend == nil || s.Application == nil || !digestPattern.MatchString(s.FrontendSourceDigest) || s.Frontend.Validate() != nil || s.Application.Validate() != nil || s.Application.SourceRevision != s.Observation.Revision || s.Frontend.SourceRevision != s.Observation.Revision {
+					return errors.New("frontend result was not observed")
+				}
 			case "install-remote":
 				if s.Application == nil {
 					return errors.New("receiver subscription observation absent")
@@ -169,14 +184,25 @@ func (r Receipt) Validate() error {
 					return errors.New("selected release stage was not observed")
 				}
 			}
-		} else if s.Observation != nil || s.VerifiedSourceDigest != "" || s.Application != nil {
+		} else if s.Observation != nil || s.VerifiedSourceDigest != "" || s.Application != nil || s.Frontend != nil || s.FrontendSourceDigest != "" {
 			return errors.New("unexpected desk step observation")
 		}
-		if r.Intent.Action != "commit" && r.Intent.Action != "adopt-source" && s.VerifiedSourceDigest != "" {
+		if r.Intent.Action != "commit" && r.Intent.Action != "adopt-source" && r.Intent.Action != "upload-frontend" && s.VerifiedSourceDigest != "" {
 			return errors.New("unexpected source verification")
 		}
-		if !IsReleaseAction(r.Intent.Action) && r.Intent.Action != "install-remote" && s.Application != nil {
+		if !IsReleaseAction(r.Intent.Action) && r.Intent.Action != "install-remote" && r.Intent.Action != "upload-frontend" && s.Application != nil {
 			return errors.New("unexpected application stage evidence")
+		}
+		if (s.Frontend != nil || s.FrontendSourceDigest != "") && r.Intent.Action != "upload-frontend" {
+			return errors.New("unexpected frontend evidence")
+		}
+		if r.Intent.Action == "upload-frontend" && (s.State == "acknowledged" || s.State == "rejected") && s.FrontendTransfer == nil {
+			return errors.New("frontend transport evidence absent")
+		}
+		if s.FrontendTransfer != nil {
+			if r.Intent.Action != "upload-frontend" || s.FrontendTransfer.Validate() != nil || s.State != "acknowledged" && s.State != "uncertain" && s.State != "rejected" || (s.State == "acknowledged") != s.FrontendTransfer.Acknowledged || s.State == "rejected" && s.FrontendTransfer.Attempted {
+				return errors.New("invalid frontend transport evidence")
+			}
 		}
 		state = s.State
 	}

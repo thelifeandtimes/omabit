@@ -45,13 +45,13 @@ exact Docket frontend delivery using private qualification helpers. `desk-source
 operator reference and exact configured check evidence. Installation can precede
 release checks; publication cannot. `desk-receiver-v1` adds reviewed named installation and pending-source status;
 follow the operator reference. It requires creation and commit permission, keeps
-the received desk private, and follows later publisher updates. Frontend upload
-commands remain pending. Native Docket
+the received desk private, and follows later publisher updates. `desk-frontend-v1` adds staged review/planning/upload commands. Native Docket
 upload can commit its hash back to Clay and distribute an update: apply the same
 gates and reconcile source ownership. Native48 verifies the internal artifact hash
 and exact HTML/binary/empty delivery. Artifacts require index.html, reserve desk.js,
-cap at2048 files/32MiB and refuse terminal-NUL files. Public commands remain pending;
-use the operator reference and do not bypass policy with the qualification helper.
+cap at2048 files/32MiB and refuse terminal-NUL files. Follow the operator reference: both Commit and Publish are required, checks bind
+the source and artifact, and uncertain uploads reconcile without replay. Upload
+and ephemeral session cleanup have separate receipts; neither establishes app health.
 Creation is controlled at the ship, and new desks inherit commit/publication
 settings by default. Creating a desk does not grant either permission. Until a
 supported effect exists and fresh policy permits it, keep the mutation blocked.

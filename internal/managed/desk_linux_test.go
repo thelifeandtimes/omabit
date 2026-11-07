@@ -131,7 +131,7 @@ func deskWait(t *testing.T, r *Server, id string) deskwork.Receipt {
 		var reply protocol.DeskOperation
 		g02Check(t, json.Unmarshal(out.Body.Bytes(), &reply))
 		state := reply.Receipt.Steps[len(reply.Receipt.Steps)-1].State
-		if state == "blocked" || state == "observed" || state == "uncertain" || state == "interrupted" {
+		if state == "blocked" || state == "observed" || state == "uncertain" || state == "interrupted" || state == "rejected" {
 			return reply.Receipt
 		}
 		time.Sleep(time.Millisecond)

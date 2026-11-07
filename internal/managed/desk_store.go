@@ -182,6 +182,15 @@ func appendDeskStep(tx *sql.Tx, expected deskwork.Receipt, step deskwork.Step) (
 	if err = current.Validate(); err != nil {
 		return current, err
 	}
+	if current.Intent.Action == "upload-frontend" {
+		record, err := loadDeskFrontend(tx, current.Intent.ID)
+		if err != nil {
+			return current, err
+		}
+		if err = record.CheckReceipt(current); err != nil {
+			return current, err
+		}
+	}
 	body, _ := json.Marshal(current)
 	if _, err = tx.Exec("INSERT INTO desk_operation_history(id,sequence,body) VALUES(?,?,?)", current.Intent.ID, len(current.Steps), body); err != nil {
 		return current, err

@@ -34,4 +34,5 @@ package managed
 // Schema54 retains reviewed activation/publication and caller-supplied release checks.
 // Schema55 records explicit source ownership adoption without a Clay mutation.
 // Schema56 binds receiver installation to an immutable publisher/review and receipt.
-const StateSchemaVersion = 56
+// Schema57 binds frontend artifacts, source checks and session cleanup to upload receipts.
+const StateSchemaVersion = 57
