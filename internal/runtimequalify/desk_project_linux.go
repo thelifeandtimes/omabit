@@ -41,16 +41,18 @@ func deskFromProject(ctx context.Context, e *projectCurrentReadinessEngine, befo
 	if selected == nil || !ok || !deskRunning(c) {
 		return nil, errors.New("selected project desk member is not running")
 	}
-	var memberPort uint16
+	var memberPort, hostPort uint16
 	var ship string
 	for _, m := range e.source.anchor.base.contract.Selection.Plan.Members {
 		if m.InstanceID == instance {
 			memberPort = m.InternalHTTPPort
+			hostPort = m.HTTPPort
 			ship = m.Ship
 		}
 	}
 	if m := selected.contract.selection.AddedMember; m != nil {
 		memberPort = m.InternalHTTPPort
+		hostPort = m.HTTPPort
 		ship = m.Ship
 	}
 	if !protocol.ValidFakeShip(ship) {
@@ -70,6 +72,15 @@ func deskFromProject(ctx context.Context, e *projectCurrentReadinessEngine, befo
 		return nil, err
 	}
 	s := &DeskRuntime{ship: ship, pier: path, endpoint: fmt.Sprintf("http://127.0.0.1:%d", port), httpEndpoint: fmt.Sprintf("http://127.0.0.1:%d", memberPort), containerID: containerID, q: q}
+	s.hostOrigin = func(ctx context.Context) (string, error) {
+		if err := s.check(ctx); err != nil {
+			return "", err
+		}
+		if hostPort < 1024 {
+			return "", errors.New("project host route unavailable")
+		}
+		return fmt.Sprintf("http://127.0.0.1:%d", hostPort), nil
+	}
 	s.check = func(ctx context.Context) error {
 		after, err := projectFleetInspect(ctx, e)
 		if err != nil {

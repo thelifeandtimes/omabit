@@ -35,14 +35,31 @@ replacing that grant does not leave the older helper independently approved.
 Revocation blocks future attempts without silently erasing active-session cleanup
 receipts. Stale writes, unsupported state and corrupt history refuse unchanged.
 
-These are internal foundations with isolated race coverage, not a finished fleet
-feature. There is no public route registry endpoint, automatic Tailscale invocation,
-standing-approval UI/CLI or automatic reconnection yet. Installed state is unchanged.
+M555 adds the public `ship-routes-v1` runner API and matching collector/client/CLI.
+Schema58 stores manual/tunnel URLs and automatic-route disable choices separately
+from discovery. Settings/history are atomic and revisioned. A port change cannot
+silently re-enable a disabled automatic route. The live native identity, pier
+continuity and host listener are verified under lifecycle admission before reads
+or edits. Replacements retain separate histories and start without old choices.
+Automatic localhost routes use the runner ID as their host scope; the collector
+must only enable that scope for a verified local Unix enrollment, never SSH.
+
+`omabit ship-routes` inspects the registry; `ship-routes-configure` submits an exact
+reviewed selection, binding, expected revision and settings. Two desktop collectors
+share runner-owned choices. Corrupt history, stale edits, changed selections and
+untrusted responses refuse. The actual schema57 writer passes migration/reopen,
+rollback and older-reader refusal while preserving original desk/receiver/frontend
+receipts. See [operator instructions](../skills/omabit-operator/references/fleet-urls.md)
+and [M555 evidence](diagnostics/2026-11-07-fleet-registry.json).
+
+The fleet feature is still in progress. Automatic Tailscale/Serve invocation,
+standing-approval UI/CLI and automatic reconnection are not connected yet. Installed
+state is unchanged; these fixture checks do not qualify an installed upgrade.
 
 ## Integration still required
 
-1. Runner-owned registry API and persistence, fresh runtime/pier binding, automatic
-   local/Tailscale candidates, explicit manual/tunnel routes and disable controls.
+1. Automatic Tailscale/Serve discovery and the Setup URL editor; runner-owned
+   registry, localhost discovery, explicit route/disable storage and CLI are done.
 2. Collector inspection from each client's network, shared runner configuration and
    fresh binding verification before credentials can be sent.
 3. Setup and CLI standing approval, checked under the same lock that publishes a

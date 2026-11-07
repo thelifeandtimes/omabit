@@ -1,5 +1,19 @@
 # Stable-release upgrade requirement
 
+## Development: shared ship URLs, schema58
+
+Schema58 adds current ship URL settings and contiguous authoring history keyed by
+runner, target generation, native ship and verified pier identity. Migration invents
+no URL, route approval or network configuration. Existing desk/source/receiver and
+frontend records remain byte-preserved. Unknown or corrupt current/history state
+refuses reopening; missing tables in an already58 store are not recreated.
+
+`scripts/test-ship-routes-upgrade.py` uses the actual schema57 writer atbdb81b8.
+Migration/reopen, rollback and that older reader's refusal pass with observed and
+dispatched frontend uploads retained. Negotiate `ship-routes-v1` with matching
+clients; never lower a schema marker. This is feature fixture evidence, not the
+separately deferred installed upgrade/release qualification.
+
 ## Development: reviewed frontend uploads, schema57
 
 Schema57 adds immutable `desk_frontends` linked atomically to desk operations.

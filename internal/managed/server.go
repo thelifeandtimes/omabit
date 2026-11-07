@@ -344,6 +344,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature, protocol.DeskSettingsFeature, protocol.DeskStageFeature)
 		if _, ok := r.b.(deskBackend); ok {
+			features = append(features, protocol.ShipRoutesFeature)
 			features = append(features, protocol.DeskCreateFeature, protocol.DeskDiscoveryFeature, protocol.DeskSourceFeature, protocol.DeskCommitFeature, protocol.DeskApplicationFeature, protocol.DeskReleaseFeature, protocol.DeskAdoptionFeature, protocol.DeskReceiverFeature, protocol.DeskFrontendFeature)
 		}
 		features = append(features, "fake-ship-options", "host-port-suggestion")
@@ -524,6 +525,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if req.URL.Path == protocol.AppPolicyPath {
 		r.serveAppPolicy(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.ShipRoutesPath {
+		r.serveShipRoutes(w, req, actor, role)
 		return
 	}
 	if req.URL.Path == protocol.DeskSettingsPath {

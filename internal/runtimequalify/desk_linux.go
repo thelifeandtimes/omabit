@@ -23,6 +23,7 @@ type DeskRuntime struct {
 	ship, pier, endpoint, httpEndpoint, containerID string
 	q                                               *qualifier
 	check                                           func(context.Context) error
+	hostOrigin                                      func(context.Context) (string, error)
 }
 
 func OpenManagedDesk(ctx context.Context, state ManagedState, expectedContainer string) (*DeskRuntime, error) {
@@ -69,6 +70,14 @@ func openManagedDesk(ctx context.Context, state ManagedState, expectedContainer 
 	}
 	ship := managedDeskShip(state)
 	s := &DeskRuntime{ship: ship, pier: q.pierPath(), endpoint: fmt.Sprintf("http://127.0.0.1:%d", port), httpEndpoint: "http://127.0.0.1:8080", containerID: expectedContainer, q: q}
+	s.hostOrigin = func(ctx context.Context) (string, error) {
+		c, err := q.inspect(ctx, index)
+		if err != nil {
+			return "", err
+		}
+		endpoint, err := q.publishedEndpoint(c, q.r.Containers[index].Kind)
+		return strings.TrimSuffix(endpoint, "/~/host"), err
+	}
 	s.check = func(ctx context.Context) error {
 		c, err := q.inspect(ctx, index)
 		if err != nil {

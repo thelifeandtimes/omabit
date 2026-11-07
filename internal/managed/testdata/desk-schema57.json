@@ -1,0 +1,7 @@
+{
+  "schema": 57,
+  "source_commit": "bdb81b8561d81782e0bcf08c3bf68d1d3da8d778",
+  "sql_sha256": "e556110ccdeb8260f2b321fe313b874c240fb3044af2cb4bbf2d0d1f394cf4a6",
+  "evidence": "/tmp/omabit-fleet-upgrade-01",
+  "description": "Actual schema57 writer; prior desk ownership, release, adoption, receiver and observed/dispatched frontend receipts."
+}

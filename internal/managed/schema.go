@@ -35,4 +35,5 @@ package managed
 // Schema55 records explicit source ownership adoption without a Clay mutation.
 // Schema56 binds receiver installation to an immutable publisher/review and receipt.
 // Schema57 binds frontend artifacts, source checks and session cleanup to upload receipts.
-const StateSchemaVersion = 57
+// Schema58 retains ship URL choices and history bound to each pier incarnation.
+const StateSchemaVersion = 58

@@ -8644,3 +8644,35 @@ before using historical extracted paths. The original55 writer source dependency
 used by migration02 stays intact. The diagnostic links every retention manifest.
 Full failure34 and current49 piers remain; native48 proof was already committed.
 Production, DEV, trial and the persistent preview remain unchanged.
+
+## M555 — Shared ship URL registry and CLI (2026-11-07)
+
+Implemented `ship-routes-v1`, runner schema58, collector/client and
+`omabit ship-routes` / `ship-routes-configure`. URL authoring binds the actual
+native ship, verified pier incarnation, current target generation/process and
+configuration revision. A replacement starts with fresh settings. Current and
+contiguous historical records save atomically; stale edits and corrupt state
+refuse. Automatic localhost discovery is verified against the held runtime's
+actual published listener. Its host scope is the runner identity; remote SSH
+collectors must not treat it as their own localhost. Manual/tunnel URLs and
+persistent automatic-route disable choices are separate from dynamic discovery.
+
+Offline core, API/store, runtime adapter, two-collector/client, CLI and help race
+checks pass. The actual schema57 writer atbdb81b8 migrates to58 preserving original
+policy, source ownership, release, adoption, receiver and observed/dispatched
+frontend records; reopen, rollback and actual older-reader refusal pass. The
+checked-in original57 SQL is SHA-pinned. See
+`diagnostics/2026-11-07-fleet-registry.json`. This supersedes M550's pending registry
+API/CLI, not its remaining Tailscale/Serve, approval UI or reconnection work.
+Registration does not configure a tunnel, prove public reachability, obtain
+credentials or authorize an application. Installed upgrade/release qualification
+remains deferred. Operator skills describe this implemented boundary.
+
+The first core capsule could not create its network namespace in the ordinary
+sandbox; the identical verified binary passed in the permitted offline capsule.
+Runtime cold-cache admission refused before building; completed migration binaries
+were retained as verified lossless gzip, then the warm-cache allowance passed.
+Native49's committed proofs, receipts and source inputs remain; its cleanly stopped
+592,924,672-byte generated fake pier was retired only after verifying the exact
+inactive scope. This supersedes M554's temporary full-pier retention. Failure34 and
+all production, DEV, trial and persistent preview state remain untouched.

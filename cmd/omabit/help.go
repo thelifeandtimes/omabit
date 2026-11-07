@@ -2,6 +2,21 @@ package main
 
 // Commands with no ordinary flag parser still expose side-effect-free help.
 var desktopCommandHelp = map[string]string{
+	"ship-routes": `Usage: omabit [--config-dir DIR] ship-routes --runner NAME --expected-runner-id ID --instance INSTANCE
+
+Read the live ship incarnation, saved URL choices and current automatic routes.
+Local routes belong to the runner's host. Registration is not a reachability or
+login claim. This command sends no credentials and configures no network service.`,
+	"ship-routes-configure": `Usage: omabit [--config-dir DIR] ship-routes-configure --runner NAME --expected-runner-id ID --request-file FILE
+
+Save a reviewed ship URL update: {selection,update:{binding,expected_revision,settings}}.
+Use the selection, binding and revision from ship-routes; edit settings only.
+Settings contain routes and disabled_automatic arrays. Manual/tunnel routes need
+id, origin, network, scope, source and enabled. Origins cannot contain paths or
+credentials; public routes require HTTPS. Disable automatic routes by their IDs.
+A changed runtime, pier or settings revision refuses the edit. Inspect again
+after a lost response. This does not expose the ship, configure DNS/tunnels, grant
+application access, or stop an external proxy when a route is disabled.`,
 	"desk-review-frontend": `Usage: omabit [--config-dir DIR] desk-review-frontend --runner NAME --expected-runner-id ID --stage-id STAGE_ID
 Review built assets already transferred with desk-plan-stage and desk-stage.
 Requires desk-frontend-v1, a local installation and this ship's Ames glob.

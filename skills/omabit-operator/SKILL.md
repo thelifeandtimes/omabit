@@ -14,6 +14,10 @@ For remote runner installation, failed setup or distro prerequisites, read
 [remote runners](references/remote-runners.md) first. It records tested platforms
 and the host-specific checks an agent can help with.
 
+For a ship's registered local, tailnet or public URLs, read
+[fleet URLs](references/fleet-urls.md). It distinguishes URL configuration from
+exposing a service, granting application access and obtaining credentials.
+
 For app source deployment, desk creation, commits or publication, read
 [app development](references/app-development.md). Agent desk creation, commit and publication
 default to blocked, including on development fakes. Follow the effective gates
