@@ -82,3 +82,23 @@ refuses unresolved native effects or managed operations, including a harness
 failure. Never discard those receipts to permit reuse. Probe20 stopped before
 runner state existed because the harness omitted directory creation; it mutated
 no desk. The repaired probe21 shut down cleanly.
+
+## Application stages, gated releases and source adoption
+
+With `--release-source` pointing at the frozen fixture041 tree, probes34–36 add
+application-stage observations, source/Treaty publication, local activation and
+native authenticated Docket upload with exact served HTML. Upload changes the
+Clay docket and advertised Treaty hash; the old staged source correctly conflicts.
+Probe34 also records an invalid installed-agent update returning HTTP500 with
+unchanged subsequent Clay. Its dispatch remains uncertain, so ordinary reuse is
+forbidden. This is not proof of rejection or permission to retry.
+
+Probe35 routes activation/source/Treaty publication through the gated public
+release API/collector and verifies default blocking and exact replay. Probe36
+resumes the clean35 pier, selects one existing scaffold file explicitly, verifies
+adoption's default block and scoped grant without any Clay commit, and replays its
+receipt after stage discard. Other scaffold files stay unowned; subsequent staged
+commits and release checks pass. Both runs stop cleanly, with all effects accounted
+for. See M546–M548 and their diagnostics. Frontend upload still uses a private
+helper; managed Docker/SSH, receiver rollout and Urgit remain separate acceptance
+work. Neither live-agent status nor a source revision proves application health.

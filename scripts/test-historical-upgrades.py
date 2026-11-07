@@ -135,7 +135,7 @@ def support_manifest():
         "qualification_target": {"release": "v0.1.0-rc.12", "channel": "prerelease", "state_schema": 20,
                                  "evidence": "source-tests-only"},
         "qualification_note": "docs/reviews/2026-10-18-rc12-historical-upgrades.md",
-        "development_test_target": {"release": "unreleased", "channel": "development", "state_schema": 54,
+        "development_test_target": {"release": "unreleased", "channel": "development", "state_schema": 55,
                                     "evidence": "source-tests-only"},
         "development_test_note": "The reader window and fixture inventory below test the unreleased development target. The RC.12/schema20 qualification target and linked historical evidence remain frozen; these tests do not qualify a new release or artifact.",
         "accepted_schema_window": list(range(11, 46)),

@@ -7,7 +7,8 @@ settings (`desk-workflow-settings-v1`), and source comparison/alerts
 (`desk-source-status-v1`), and private source staging (`desk-source-staging-v1`).
 Staged commits are implemented on `desk-commit-v1` runners. Separate app-stage
 observations use `desk-application-status-v1`. Reviewed local activation and
-source/Treaty publication use `desk-release-v1`. Full managed-runtime workflow
+source/Treaty publication use `desk-release-v1`. Explicit existing-source ownership
+uses `desk-source-adoption-v1`. Full managed-runtime workflow
 qualification remains in progress.
 Urgit follows its native workflow; no dedicated Omabit adapter is planned. Verify
 installed capabilities and command help rather than assuming development source
@@ -231,6 +232,49 @@ Those probes used private effect helpers. The subsequent `desk-release-v1` API
 provides gated activation/publication; native Docket upload still has no agent adapter. Check installed capabilities rather than assuming
 the development source is deployed.
 
+## Adopt selected existing source
+
+Use `desk-source-adoption-v1` when a mounted-workflow desk already contains files
+that subsequent staged commits should manage. Stage only the selected current
+files in an isolated source directory. They must already match Clay after mark
+conversion. If the intended next version differs, first adopt the matching current
+version, then stage the intended update separately. Never treat a source conflict
+as permission to overwrite it or change the configured source workflow to evade it.
+
+```sh
+omabit --config-dir REGISTRY desk-review-adoption --runner NAME --expected-runner-id ID \
+  --stage-id ORIGINAL_STAGE_ID
+omabit --config-dir REGISTRY desk-plan-adoption --runner NAME --expected-runner-id ID \
+  --stage-id ORIGINAL_STAGE_ID > adoption-plan.json
+omabit --config-dir REGISTRY desk-adopt --runner NAME --expected-runner-id ID \
+  --plan-file adoption-plan.json
+```
+
+Review the selected paths, new/refreshed ownership counts, retained ownership and
+conflicts. Details are bounded to the first256 paths; the digest binds the complete
+inventory. Save and submit the complete unchanged plan. Adoption records a verified
+baseline in the runner only: it performs no Unix write, Clay commit, activation or
+publication. It requires Commit permission and also Publish for a distributed desk.
+Defaults remain blocked. It cannot grant itself permission or clear an earlier
+uncertain effect. A missing, differing or unconvertible selected file blocks adoption.
+An identical existing ownership baseline needs no new adoption.
+
+Only selected files are newly owned or refreshed. Unselected generated files stay
+unowned, and prior ownership outside the selection keeps its original baseline.
+Later external edits still conflict rather than being silently adopted. A future
+commit's stage must include every owned file that should remain; omitting an owned
+unchanged file means deletion in that commit's review. The same pier, source name,
+project generation, runtime, settings, policy and reviewed Clay state are pinned.
+
+Adoption and its receipt are one database transaction, with `observed` meaning the
+ownership baseline was saved. It does not advance Clay. After a lost response,
+query the original operation ID; an exact resubmission returns the same receipt,
+even after the stage has been discarded. Do not invent another ID to retry. Native
+probe36/M548 verifies default blocking, one explicitly selected existing file, no
+Clay mutation, replay after stage discard and subsequent commits. The lifecycle
+backend is synthetic; managed Docker/SSH are separate checks. Installed capabilities
+must still be checked before use.
+
 ## Inspect application stages separately
 
 On a runner advertising `desk-application-status-v1`:
@@ -256,7 +300,8 @@ advancing the revision and advertised Treaty hash. Classify that upload as a com
 and also publication when the desk is already distributed. Do not bypass closed
 gates with a native upload. The resulting external docket edit correctly conflicts
 with older frozen source ownership; reconcile that source instead of overwriting it.
-Existing-desk/source adoption and a public upload adapter are not implemented yet.
+Use the explicit source-adoption workflow below only after staging the updated
+source that already matches Clay. A public upload adapter is not implemented yet.
 
 An intentionally invalid agent update in that probe returned HTTP500 and left the
 observed revision/hash unchanged. The original dispatch remains uncertain; an

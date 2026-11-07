@@ -38,7 +38,7 @@ func run(ctx context.Context, args []string) int {
 	stateDir := flags.String("state-dir", "", "Omabit preference directory")
 	flags.StringVar(&format, "format", "json", "json or text")
 	flags.Usage = func() {
-		fmt.Fprintln(os.Stdout, "Usage: omabit [--format text] [--config-dir DIR] [--state-dir DIR] COMMAND\nCommands: desk-review-release, desk-plan-release, desk-release, desk-app-status, desk-review-commit, desk-plan-commit, desk-commit, desk-plan-stage, desk-stage, desk-stage-status, desk-stage-discard, desk-source-status, desk-settings, desk-list, desk-inspect, desk-plan-create, desk-create, desk-operation, desk-reconcile, setup, setup-status, service-upgrade-status, service-upgrade --expected-runner-id ID --target-sha256 SHA --acknowledge-host-changes, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID")
+		fmt.Fprintln(os.Stdout, "Usage: omabit [--format text] [--config-dir DIR] [--state-dir DIR] COMMAND\nCommands: desk-review-adoption, desk-plan-adoption, desk-adopt, desk-review-release, desk-plan-release, desk-release, desk-app-status, desk-review-commit, desk-plan-commit, desk-commit, desk-plan-stage, desk-stage, desk-stage-status, desk-stage-discard, desk-source-status, desk-settings, desk-list, desk-inspect, desk-plan-create, desk-create, desk-operation, desk-reconcile, setup, setup-status, service-upgrade-status, service-upgrade --expected-runner-id ID --target-sha256 SHA --acknowledge-host-changes, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID")
 	}
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -71,6 +71,9 @@ func run(ctx context.Context, args []string) int {
 	}
 	if command == "desk-review-commit" || command == "desk-plan-commit" || command == "desk-commit" {
 		return deskDeploymentCommand(ctx, command, args, *config)
+	}
+	if command == "desk-review-adoption" || command == "desk-plan-adoption" || command == "desk-adopt" {
+		return deskAdoptionCommand(ctx, command, args, *config)
 	}
 	if command == "desk-plan-stage" || command == "desk-stage" || command == "desk-stage-status" || command == "desk-stage-discard" {
 		return deskStageCommand(ctx, command, args, *config)

@@ -32,4 +32,5 @@ package managed
 // Schema52 retains canonical synchronization baselines for source alerts.
 // Schema53 binds staged commit reviews and verified source ownership to desk receipts.
 // Schema54 retains reviewed activation/publication and caller-supplied release checks.
-const StateSchemaVersion = 54
+// Schema55 records explicit source ownership adoption without a Clay mutation.
+const StateSchemaVersion = 55

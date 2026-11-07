@@ -422,6 +422,37 @@ func TestNativeDeskWorkflow(t *testing.T) {
 		save(name, v)
 	}
 	status("initial-source", "synchronized")
+	// Explicitly select one existing scaffold file; the rest must stay unowned.
+	adoptionDir := "/lab/adoption-source"
+	g02Check(t, os.Mkdir(adoptionDir, 0700))
+	kelvin, err := os.ReadFile(filepath.Join(source, "sys.kelvin"))
+	g02Check(t, err)
+	g02Check(t, os.WriteFile(filepath.Join(adoptionDir, "sys.kelvin"), kelvin, 0600))
+	adoptionStage, err := registry.PlanDeskStage(ctx, "native", entry.RunnerID, "alpha", f.Desk, adoptionDir)
+	g02Check(t, err)
+	_, err = registry.StageDesk(ctx, "native", entry.RunnerID, adoptionStage, adoptionDir)
+	g02Check(t, err)
+	adopt := func(want string) collection.DeskAdoptionPlan {
+		t.Helper()
+		plan, err := registry.PlanDeskAdoption(ctx, "native", entry.RunnerID, adoptionStage.Intent.ID)
+		g02Check(t, err)
+		if plan.Review.NewCount != 1 || plan.Review.RefreshCount != 0 || plan.Review.ConflictCount != 0 || !slices.Equal(plan.Review.Paths, []string{"sys.kelvin"}) {
+			t.Fatal("adoption selection changed", plan)
+		}
+		before, err := f.Observe(ctx, f.Desk)
+		g02Check(t, err)
+		result, err := registry.AdoptDeskSource(ctx, "native", entry.RunnerID, plan)
+		g02Check(t, err)
+		after, err := f.Observe(ctx, f.Desk)
+		g02Check(t, err)
+		if result.Receipt.Steps[len(result.Receipt.Steps)-1].State != want || before != after || f.commits.Load() != 0 {
+			t.Fatal("adoption gate or unexpected native commit", result)
+		}
+		save("source-adoption-"+want, result)
+		save("source-adoption-"+want+"-review", plan)
+		return plan
+	}
+	adopt("blocked")
 	write := func(name, value string) {
 		t.Helper()
 		g02Check(t, os.WriteFile(filepath.Join(source, name), []byte(value), 0600))
@@ -455,8 +486,13 @@ func TestNativeDeskWorkflow(t *testing.T) {
 	}
 	policy, err = s.putAppPolicy("fixture-user", apppolicy.Update{ExpectedRevision: policy.Revision, Scope: "desk", Target: target, Gates: apppolicy.Gates{CreateDesk: apppolicy.Inherit, Commit: apppolicy.Allow, Publish: apppolicy.Block}})
 	g02Check(t, err)
+	adopted := adopt("observed")
+	_, err = registry.DiscardDeskStage(ctx, "native", entry.RunnerID, adoptionStage.Intent.ID, adoptionStage.Intent.SourceDigest)
+	g02Check(t, err)
+	_, err = registry.AdoptDeskSource(ctx, "native", entry.RunnerID, adopted)
+	g02Check(t, err)
 	firstCommit := commit(first, "first-commit", "observed")
-	if firstCommit.Review.ChangeCount != 2 || firstCommit.Review.PreservedCount < 5 {
+	if firstCommit.Review.ChangeCount != 2 || firstCommit.Review.PreservedCount < 4 {
 		t.Fatal("scaffold preservation", firstCommit.Review)
 	}
 	status("committed-source", "synchronized")

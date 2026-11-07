@@ -1,5 +1,23 @@
 # Stable-release upgrade requirement
 
+## Development: explicit source ownership adoption, schema55
+
+Schema55 adds `desk_adoptions` records linked to the existing desk operation
+journal. An adoption receipt and the selected source-ownership baseline commit in
+one runner database transaction; no ship effect is dispatched. Existing ownership
+rows keep their original encoding and use their referenced operation's type to
+validate commit or adoption evidence. Missing, corrupt or rebound evidence refuses
+startup and cannot be interpreted as an empty ownership baseline. Migration creates
+no ownership, permission, ship effect or pending adoption.
+
+The actual schema54 writer at829cfed supplies the checked-in fixture and
+`scripts/test-desk-adoption-upgrade.py`. Tests preserve prior policy, settings,
+source baselines, deployment ownership and release receipts; reopening a new
+adoption and rollback pass. The actual older reader refuses55 without changing
+state. Negotiate `desk-source-adoption-v1`; never lower a schema number for a
+downgrade. This is development feature evidence, not release qualification.
+
+
 ## Development: reviewed activation/publication, schema54
 
 Schema54 adds immutable `desk_releases` linked to the existing operation journal,

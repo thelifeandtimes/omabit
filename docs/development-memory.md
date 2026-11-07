@@ -8314,3 +8314,65 @@ removed with their recorded hash/inode checks. Native35 admission included2GiB
 scratch and1GiB unmeasured-DEV reserve at42,838,761,472 bytes. Subsequent regression
 admission with1GiB scratch totals42,392,866,816 bytes. Re-measure before another
 runtime; retain compact evidence and original migration writers/fixtures.
+
+## M548 — Explicit existing-source ownership adoption (2026-11-07)
+
+`desk-source-adoption-v1` supplies read-only review, saved plans and atomic metadata
+adoption through runner/client/collector and CLI: `desk-review-adoption`,
+`desk-plan-adoption`, `desk-adopt`. Agents stage only the files they intend to
+manage. Every selected file must already match current Clay after mark conversion;
+missing, different or unknown conversions conflict. Adoption performs no ship or
+Unix write. It needs Commit and, on a distributed desk, Publish. Defaults remain
+closed, and an unresolved earlier effect blocks it. Runtime/project generation,
+source/pier, stage, workflow/policy revisions and Clay revision/hash are bound.
+
+Only selected paths are newly owned or refreshed. Unselected existing ownership
+retains its prior baseline, so later external drift still conflicts. Unspecified
+scaffold is never adopted. A subsequent commit must include all owned files it
+intends to retain; omission of an owned unchanged file is a reviewed deletion.
+Identical ownership needs no adoption. Adoption cannot replace a lost effect's
+reconciliation or bypass the application's configured source/release workflow.
+
+Schema55 adds immutable adoption records. Receipt and ownership commit atomically
+with no intermediate external dispatch. Replay returns the original observed or
+blocked receipt, even after stage discard or policy/source changes. Client code
+refuses a partial response and directs inspection of the original operation ID.
+Ownership rows preserve their existing encoding and validate against their original
+commit or adoption record. Missing dependent evidence is an error, never an empty
+baseline. Reopen rejects corrupt, orphaned and rebound records; transaction failure
+leaves no partial journal or ownership.
+
+The original schema54 writer at829cfed preserves deployed ownership, settings,
+canonical baselines, pending and completed receipts and publication evidence across
+migration to55. Reopen and rollback pass; the actual older reader refuses55 without
+changing state. Core/CLI, collector race and the full managed desk regression race
+suite pass. Early storage fixtures omitted registering the synthetic ship before a
+grant, and attempted to insert corruption with foreign keys enabled; corrected
+fixtures pass without relaxing product checks. The system Python skill validator
+passes; the initially selected Python lacked its YAML dependency.
+
+Native probe36 resumes only the clean private35 pier, with recorded device/inode
+transfer. It explicitly selects `sys.kelvin`, verifies the closed gate and grant,
+observes unchanged Clay and zero commit calls during adoption, discards its stage,
+and replays the exact receipt. Four other scaffold paths remain unowned. Subsequent
+staged changes, lost-ack recovery, default publication gates, activation, Treaty,
+frontend delivery and the external docket conflict pass. All native effects are
+acknowledged and shutdown is clean. See
+`diagnostics/2026-11-07-desk-source-adoption.json`. Native36 used the pre-final
+client build; the final added rejection of impossible partial adoption responses
+has separate collector race coverage. The lifecycle backend remains synthetic.
+This supersedes M544/M546/M547's pending source adoption, not receiver, frontend
+adapter, Urgit, fleet URL, clearweb or release qualification work.
+
+Retention pruned only the superseded generated33 pier after verifying its exact
+scope inactive, rebuildable Go cache, obsolete managed desk fixture binaries and
+verified duplicate36 runtime inputs. Failure34/current36 piers, all source,
+original migration binaries, failed receipts and compact evidence remain. The33
+uncertainty is unchanged, not reconciled. Removal manifests are
+`/tmp/omabit-desk-superseded-probe33-pruning.json`,
+`/tmp/omabit-desk-adoption-cache-pruning-01.json`,
+`/tmp/omabit-desk-superseded-fixture-binaries-20261107.json` and
+`/tmp/omabit-desk-runtime-inputs-prune-36.json`. Native36 admission measured
+42,773,184,512 bytes with2GiB scratch and1GiB unmeasured-DEV reserve. Re-measure
+before another runtime. Production/DEV/trial runners, ships, installed plugins and
+the persistent manual preview remain unchanged.

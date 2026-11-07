@@ -58,7 +58,7 @@ func (i Intent) Validate() error {
 		if i.Baseline.Exists || i.SourceDigest != "" {
 			return errors.New("desk creation requires observed absence")
 		}
-	case "commit":
+	case "commit", "adopt-source":
 		if !i.Baseline.Exists || !digestPattern.MatchString(i.SourceDigest) {
 			return errors.New("commit requires an observed desk and frozen source")
 		}
@@ -86,7 +86,7 @@ func (i Intent) Check(p apppolicy.Policy, current Observation) error {
 		publication = "absent"
 	}
 	effect := i.Action
-	if effect == "activate-local" {
+	if effect == "activate-local" || effect == "adopt-source" {
 		effect = "commit"
 	}
 	if effect == "publish-source" || effect == "publish-treaty" {
@@ -126,6 +126,9 @@ func (r Receipt) Validate() error {
 			valid = s.State == "planned"
 		case "planned":
 			valid = s.State == "dispatched" || s.State == "blocked" || s.State == "interrupted"
+			if r.Intent.Action == "adopt-source" {
+				valid = s.State == "observed" || s.State == "blocked"
+			}
 		case "dispatched":
 			valid = s.State == "acknowledged" || s.State == "rejected" || s.State == "uncertain"
 		case "acknowledged", "uncertain":
@@ -139,6 +142,10 @@ func (r Receipt) Validate() error {
 				return errors.New("completed desk effect requires observation")
 			}
 			switch r.Intent.Action {
+			case "adopt-source":
+				if *s.Observation != r.Intent.Baseline || s.VerifiedSourceDigest != r.Intent.SourceDigest {
+					return errors.New("adoption changed the reviewed source observation")
+				}
 			case "commit":
 				if s.Observation.Revision <= r.Intent.Baseline.Revision || s.VerifiedSourceDigest != r.Intent.SourceDigest {
 					return errors.New("commit revision was not observed")
@@ -153,7 +160,7 @@ func (r Receipt) Validate() error {
 		} else if s.Observation != nil || s.VerifiedSourceDigest != "" || s.Application != nil {
 			return errors.New("unexpected desk step observation")
 		}
-		if r.Intent.Action != "commit" && s.VerifiedSourceDigest != "" {
+		if r.Intent.Action != "commit" && r.Intent.Action != "adopt-source" && s.VerifiedSourceDigest != "" {
 			return errors.New("unexpected source verification")
 		}
 		if !IsReleaseAction(r.Intent.Action) && s.Application != nil {

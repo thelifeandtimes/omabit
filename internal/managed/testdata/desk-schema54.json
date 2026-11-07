@@ -1,0 +1,7 @@
+{
+  "schema": 54,
+  "source_commit": "829cfedc19b3fe94fb8721b98f03e622deb49b81",
+  "sql_sha256": "8e72959739dc5fcb5b3e2604799f6e1ea4a3b9a983cd80643b2552a4c1424405",
+  "provenance": "Actual original schema54 writer, private synthetic fixture; scripts/test-desk-adoption-upgrade.py",
+  "evidence": "/tmp/omabit-desk-adoption-original-migration-01/result.json"
+}

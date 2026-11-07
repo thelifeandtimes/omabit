@@ -194,6 +194,9 @@ CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TE
 	if err := initializeDeskSourceBaselines(tx, version); err != nil {
 		return err
 	}
+	if err := initializeDeskAdoptions(tx, version); err != nil {
+		return err
+	}
 	if err := initializeDeskDeployments(tx, version); err != nil {
 		return err
 	}

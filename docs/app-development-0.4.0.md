@@ -10,7 +10,9 @@ without claiming overall readiness. Native probe34/M546 verifies this API and th
 underlying local activation, publication and frontend upload workflow. Probe35/M547
 then exercises gated source publication, local activation and Treaty publication
 through the public release API/client/collector. Frontend upload still uses a
-private qualification helper, pending a gated public adapter. The assembled native kernel/API/collector path passes M545; managed engine and
+private qualification helper, pending a gated public adapter. Probe36/M548 verifies
+explicit source adoption without a Clay mutation and subsequent staged commits.
+The assembled native kernel/API/collector path passes M545; managed engine and
 remote transport retain their separate qualification boundaries.
 The user's follow-up fixes the scope to Urbit desks and their frontend assets.
 Agent desk creation, commit and publication start disabled, with permissions configured in
@@ -329,7 +331,9 @@ pipeline after an interrupted terminal or desktop restart.
    receipts. Staged commit review/verification and schema53 ownership are connected
    and fixture-tested (M544); the native kernel/API/collector composition passes M545.
    Schema54 release reviews, check attestations, journal/reconciliation and CLI are
-   implemented and native-tested (M547). Engine/remote transport have separate gates.
+   implemented and native-tested (M547). Explicit matching-source adoption and
+   schema55 ownership evidence pass native36/M548. Engine/remote transport have
+   separate gates.
 2. Complete the transport spike on disposable fakes with explicit test policy.
    Exercise prepare, mount, commit, local activation, Treaty publication,
    source-only publication and receiver installation with native control disabled.

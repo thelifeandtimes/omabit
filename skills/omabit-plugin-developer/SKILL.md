@@ -41,7 +41,7 @@ The native kernel/API/collector commit path passes probe21/M545; its lifecycle
 backend is a fixture. `desk-app-status` (`desk-application-status-v1`) reports
 source, Gall, Treaty and Docket facts separately; it does not claim compilation or
 app health. Native probe34/M546 covers that API plus local activation, Treaty and
-exact Docket frontend delivery using private qualification helpers. `desk-release-v1` adds reviewed activation/source/Treaty publication, following the
+exact Docket frontend delivery using private qualification helpers. `desk-source-adoption-v1` records explicitly selected existing files only after they match Clay; it needs the commit/publication gates and never writes to the ship. `desk-release-v1` adds reviewed activation/source/Treaty publication, following the
 operator reference and exact configured check evidence. Installation can precede
 release checks; publication cannot. Frontend upload commands and receivers remain pending. Native Docket
 upload can commit its hash back to Clay and distribute an update: apply the same

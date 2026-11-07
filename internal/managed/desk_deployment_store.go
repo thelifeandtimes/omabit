@@ -72,15 +72,28 @@ func loadOwnedSource(q querier, key string) (deskwork.OwnedSource, error) {
 	if deskSettingsKey(owned.Target) != key {
 		return owned, errors.New("source ownership target mismatch")
 	}
+	receipt, err := loadDeskOperation(q, owned.OperationID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return owned, errors.New("source ownership is missing its operation receipt")
+		}
+		return owned, err
+	}
+	if receipt.Intent.Action == "adopt-source" {
+		record, err := loadDeskAdoption(q, owned.OperationID)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return owned, errors.New("source ownership is missing adoption evidence")
+			}
+			return owned, err
+		}
+		return owned, owned.CheckAdoption(record, receipt)
+	}
 	record, err := loadDeskDeployment(q, owned.OperationID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return owned, errors.New("source ownership is missing deployment evidence")
 		}
-		return owned, err
-	}
-	receipt, err := loadDeskOperation(q, owned.OperationID)
-	if err != nil {
 		return owned, err
 	}
 	return owned, owned.Check(record, receipt)
@@ -137,8 +150,11 @@ CREATE TABLE IF NOT EXISTS desk_source_ownership(target TEXT PRIMARY KEY,body BL
 	return nil
 }
 func (s *store) sourceOwnership(target apppolicy.Target, sourceName, continuity string) (deskwork.Ownership, error) {
+	return sourceOwnership(s.db, target, sourceName, continuity)
+}
+func sourceOwnership(q querier, target apppolicy.Target, sourceName, continuity string) (deskwork.Ownership, error) {
 	empty := deskwork.EmptyOwnership()
-	owned, err := loadOwnedSource(s.db, deskSettingsKey(target))
+	owned, err := loadOwnedSource(q, deskSettingsKey(target))
 	if errors.Is(err, sql.ErrNoRows) {
 		return empty, nil
 	}
