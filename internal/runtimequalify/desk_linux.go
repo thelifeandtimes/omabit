@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"time"
@@ -262,4 +263,60 @@ func (s *DeskRuntime) AutocommitActive(ctx context.Context) (bool, error) {
 	default:
 		return false, errors.New("autocommit state unavailable or unsupported")
 	}
+}
+
+func (s *DeskRuntime) ClayFiles(ctx context.Context, desk string, revision uint64) (deskwork.Manifest, error) {
+	request, err := deskwork.ClayFiles(s.ship, desk, revision)
+	if err != nil {
+		return deskwork.Manifest{}, err
+	}
+	return s.canonicalFiles(ctx, request)
+}
+func (s *DeskRuntime) NormalizeFiles(ctx context.Context, desk string, revision uint64, files []deskwork.SourceFile) (deskwork.Manifest, error) {
+	request, err := deskwork.NormalizeFiles(s.ship, desk, revision, files)
+	if err != nil {
+		return deskwork.Manifest{}, err
+	}
+	return s.canonicalFiles(ctx, request)
+}
+func (s *DeskRuntime) canonicalFiles(ctx context.Context, request deskwork.LensRequest) (deskwork.Manifest, error) {
+	reply, err := s.call(ctx, request)
+	if err != nil {
+		return deskwork.Manifest{}, err
+	}
+	body, _ := json.Marshal(reply)
+	var files []deskwork.CanonicalFile
+	if deskwork.DecodeJSONOutput(body, &files) != nil {
+		return deskwork.Manifest{}, errors.New("canonical desk inventory unavailable or unsupported")
+	}
+	return deskwork.CanonicalManifest(files)
+}
+
+// InspectSource reads only a selected top-level directory inside the registered
+// pier. It makes no assumption that Unix/Clay mount names are interchangeable.
+func (s *DeskRuntime) InspectSource(ctx context.Context, desk, sourceName string, baseline *deskwork.Manifest) (deskwork.SourceStatus, error) {
+	var out deskwork.SourceStatus
+	if !deskwork.ValidSourceName(sourceName) {
+		return out, errors.New("invalid source directory name")
+	}
+	if err := s.check(ctx); err != nil {
+		return out, err
+	}
+	directory := filepath.Join(s.pier, sourceName)
+	resolved, err := filepath.EvalSymlinks(directory)
+	if err != nil || resolved != directory {
+		return out, errors.New("source directory unavailable or linked")
+	}
+	out, err = deskwork.InspectSource(ctx, s, directory, desk, baseline)
+	if err != nil {
+		return deskwork.SourceStatus{}, err
+	}
+	if err = s.check(ctx); err != nil {
+		return deskwork.SourceStatus{}, err
+	}
+	return out, nil
+}
+func (s *DeskRuntime) CommitFiles(ctx context.Context, desk string, baseline deskwork.Observation, files []deskwork.DeltaFile) error {
+	request, err := deskwork.CommitFiles(s.ship, desk, baseline, files)
+	return s.effect(ctx, request, err)
 }

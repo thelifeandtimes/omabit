@@ -7987,3 +7987,41 @@ No persistent schema change accompanies discovery. Source bindings/transfers,
 canonical Unix/Clay alerts, gated commit/publication, managed-runtime end-to-end,
 Urgit, fleet URLs and clearweb assistance remain active work. This checkpoint
 supersedes M538 only for its pending live-desk-discovery item.
+
+## M540 — Canonical source comparison and targeted Clay delta (2026-11-06)
+
+The canonical source engine compares SHA256(jam([mark noun])) with each selected
+historical desk's MIME conversion. It batches at most128 files/32 MiB, binds reads
+to exact source hashes, and rechecks Unix contents/directory identity and Clay's
+revision before returning status. It distinguishes shared-baseline changes and
+divergence; without a baseline it says different, not an invented direction.
+Unknown autocommit remains unknown. Failed/unsupported conversions never produce
+a synchronized result. The runtime restricts source reads to ordinary selected
+top-level directories inside the registered pier, with the existing process guard.
+
+A typed direct commit constructor sends a bounded MIME delta to the named Clay
+desk, guarded by the reviewed revision/hash. It preserves unspecified files and
+avoids treating a mutable Unix mount alias as proof of commit targeting. This
+supersedes M535/M536's native alias-commit path as the intended agent commit
+adapter, while leaving native human |commit available. The runner must still
+apply current policy, durable dispatch and exact post-commit source verification;
+no commit API/CLI is enabled by this checkpoint. A commit is limited to32 MiB of
+changed bytes; larger sources can stage but need a supported bounded deployment.
+
+Probe19 passes canonical comparison and direct add/replace/delete, then source
+publication and clean shutdown. Probe16 is the first canonical-batch pass after
+probe15's type-inference failure. Probe17's direct delta passed but its verifier
+read the old revision; probe18 corrected that, then disproved the assumption that
+raw invalid Hoon source necessarily rejects a Clay commit. Clay accepted it as
+revision5. Source acceptance, application compilation and Gall readiness must be
+reported separately and follow the developer's release checks. Probe19 explicitly
+records that behavior rather than relabeling it a compilation pass.
+
+The deskwork race suite and private runtime fixture checks pass. Exact native
+inputs, hashes, failures and limits are recorded in
+`diagnostics/2026-11-06-desk-canonical.json`. The experiment reuses only its own
+clean-stopped fake in capped private namespaces; retained native-probe data was
+about2.5 GiB before probe17, with 2 GiB additional scratch declared per run and
+about26 GiB in the two shared evidence roots. Production, installed previews,
+real agents, runners and ships remain untouched. Persistent source bindings,
+agent commit/publication endpoints and the remaining 0.4.0 tracks are still active.

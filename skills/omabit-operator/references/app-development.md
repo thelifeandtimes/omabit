@@ -126,6 +126,8 @@ commit automatically.
 Before an allowed write, re-read the effective policy and source baseline, bind
 the request to the exact target and source digest, and retain its operation ID.
 Follow [operations](operations.md) for receipt reconciliation. Distinguish source
-transfer, Clay acceptance, app activation, publication and receiver readiness.
+transfer, Clay acceptance, app compilation/activation, publication and receiver
+readiness. Clay can accept Hoon source that has not compiled; a new revision or
+accepted commit alone does not satisfy an application's compilation/release gate.
 After a lost response, inspect the original operation and authoritative ship or
 Urgit state before another mutation. Check again for edits made during the commit.

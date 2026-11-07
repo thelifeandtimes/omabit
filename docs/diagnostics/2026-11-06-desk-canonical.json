@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "result": "passed",
+  "kind": "canonical source comparison and desk-targeted commit development probe",
+  "evidence_root": "/tmp/omabit-desk-probe-19",
+  "inputs": {
+    "requests.json": "d24aff7ac349a7398c15a12fb8b333b5cc5fb2a5fcbcf93e63d38dfa2c82ff21",
+    "probe.py": "1d2404810ab4ab6522ff9269e5908f9f87b70c88d1bed71311612699ea9f1e5a",
+    "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+    "vere": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+  },
+  "result_sha256": "dbeceb9f587ad6142a43aaea7c306276250737e14a649eb5f395a1b9470cf7a2",
+  "exit_sha256": "bfdedf06596faa2042b0fedd9653ec1023d2e96ed56dc40b607985bc8438c1d5",
+  "source_sha256": {
+    "internal/deskwork/canonical.go": "29f9f3547768ce454b179d400d90ddce2aa6e943d6de651e2b7ddacd333443ef",
+    "internal/deskwork/commit.go": "1719c1a362d5f68dd27ca72cb0fda1b9562b86a7d2875075d3b55657e363220d",
+    "scripts/qualification/app-development/requests.go": "0583d2276a535a319ad5f64eb4f6509d4f127364a87a84112734d96492940c23",
+    "scripts/qualification/app-development/probe.py": "1d2404810ab4ab6522ff9269e5908f9f87b70c88d1bed71311612699ea9f1e5a"
+  },
+  "checks": [
+    "canonical hash inventory from immutable Clay revision",
+    "batched mark conversion accepts equivalent newline variant and rejects changed contents",
+    "direct MIME delta advances revision3 to4",
+    "reviewed add, replace and delete observed on named desk",
+    "generated and unspecified files preserved by delta",
+    "raw invalid Hoon source can be accepted by Clay; compilation/readiness separate",
+    "publication private to published",
+    "clean shutdown"
+  ],
+  "prior_probes": {
+    "15": "Clay hashes passed; first batch query failed Hoon list shape inference",
+    "16": "canonical batch and complete earlier workflow passed",
+    "17": "targeted delta and revision4 passed; verification mistakenly read revision2",
+    "18": "corrected content check passed; assertion that raw Hoon syntax must reject commit was disproved"
+  },
+  "fixtures": [
+    "deskwork race suite",
+    "/tmp/omabit-desk-canonical-runtime-02"
+  ],
+  "limits": [
+    "No commit API/CLI enabled by this checkpoint",
+    "No persistent source binding or UI change alert yet",
+    "Native fake protocol plus separate runtime fixtures; managed Docker end-to-end pending",
+    "32 MiB changed bytes per direct commit; 128 files/32 MiB per normalization batch",
+    "New or unsupported marks may make pre-commit comparison unavailable; never report synchronized on failed conversion",
+    "Application compilation, activation, Treaty, receiver and Urgit qualification pending",
+    "Not release qualification"
+  ],
+  "generated_preservation_sha256": "168b12194560219ae99b39091c2d28626399f648a12f2686d52ada8ed2c80ecf"
+}

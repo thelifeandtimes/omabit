@@ -40,8 +40,8 @@ def inside():
         expression=expression.replace('omabit-test',desk).replace('omabit-baseline',baseline_alias)
         if expression.count('(')!=expression.count(')') or expression.count('[')!=expression.count(']'):raise ValueError('unbalanced probe expression '+name)
         row={'name':name,'source':expression,'app':app,'mark':mark,'state':'dispatched'};result['steps'].append(row);save()
-        source={'as':{'mark':mark,'next':{'dojo':expression}}} if mark else {'dojo':expression}
-        if data_input is not None:source={'hoon':{'code':expression,'next':{'data':data_input}}}
+        source={'dojo':expression} if data_input is None else {'hoon':{'code':expression,'next':{'data':data_input}}}
+        if mark:source={'as':{'mark':mark,'next':source}}
         data=json.dumps({'source':source,'sink':{'app':app} if app else {'stdout':None}}).encode()
         req=urllib.request.Request('http://127.0.0.1:12321/',data=data,headers={'Content-Type':'application/json'})
         try:
@@ -106,6 +106,7 @@ def inside():
             assert decode_atom(inventory_result)['publication']=='private'
             lens('permissions-before','.^(* %cp /~zod/omabit-test/(scot %da now))')
             (mount/'hello.txt').write_text('first source\n')
+            (mount/'remove.txt').write_text('temporary source\n')
             assert lens('uncommitted','.^(? %cu /~zod/omabit-test/(scot %da now)/hello/txt)')=='%.n'
             fixed('commit','commit')
             end=time.monotonic()+45
@@ -123,6 +124,11 @@ def inside():
             first=len(encoded)%4 or 4;encoded=encoded[:first]+''.join('.'+encoded[i:i+4] for i in range(first,len(encoded),4))
             compare="=/  convert  .^(tube:clay %cc /~zod/omabit-test/"+revision+"/mime/txt)  =(q:(convert !>(`mime`[/text/plain ["+str(len(raw))+" 0x"+encoded+"]])) .^(* %cx /~zod/omabit-test/"+revision+"/hello/txt))"
             assert lens('mark-equivalence',compare)=='%.y'
+            canonical=decode_atom(fixed('typed-clay-files','clay-files'))
+            normalized=decode_atom(fixed('typed-normalized-files','normalized-files'))
+            differing=decode_atom(fixed('typed-normalized-different','normalized-different'))
+            actual=[f for f in canonical if f['path']==['hello','txt']]
+            assert actual==normalized and differing!=normalized
             assert g['desk'] in decode_atom(fixed('typed-desks','desks'))
             assert ['hello','txt'] in decode_atom(fixed('typed-files','files'))
             assert fixed('structured-mark-equivalence','equivalent')=='%.y'
@@ -138,6 +144,22 @@ def inside():
             lens('autocommit-stop','~','hood','kiln-cancel-autocommit')
             lens('timers-cancelled','.^((list [@da duct]) %bx /~zod//(scot %da now)/debug/timers)',required=False)
             assert fixed('typed-autocommit-cancelled','autocommit')=='%.n'
+            before_delta=decode_atom(fixed('before-delta','inventory'))
+            assert before_delta['revision']==3
+            delta=requests['commit-files']['source']['as']
+            expr=delta['next']['hoon']['code'].replace('0v0',before_delta['clay_hash'])
+            lens('typed-commit-files',expr,'hood',delta['mark'],data_input=delta['next']['hoon']['next']['data'])
+            after_delta=decode_atom(fixed('after-delta','inventory'))
+            assert after_delta['revision']==4
+            assert lens('delta-deleted','.^(? %cu /~zod/omabit-test/4/remove/txt)')=='%.n'
+            assert lens('delta-added','.^(? %cu /~zod/omabit-test/4/new/txt)')=='%.y'
+            assert fixed('delta-content','committed-equal')=='%.y'
+            invalid=requests['commit-invalid']['source']['as']
+            lens('typed-commit-invalid',invalid['next']['hoon']['code'].replace('0v0',after_delta['clay_hash']),'hood',invalid['mark'],data_input=invalid['next']['hoon']['next']['data'])
+            after_invalid=decode_atom(fixed('after-invalid','inventory'))
+            assert after_invalid['revision']==5
+            assert lens('uncompiled-file-present','.^(? %cu /~zod/omabit-test/5/gen/broken/hoon)')=='%.y'
+            result['source_acceptance_is_not_compilation']=True;save()
             fixed('publish-source','publish-source')
             assert decode_atom(fixed('inventory-published','inventory'))['publication']=='published'
             result['ok']=True
@@ -155,7 +177,7 @@ def host(a):
     out=a.output.absolute()
     if out.parent!=Path('/tmp') or not re.fullmatch('omabit-desk-probe-[a-z0-9-]+',out.name) or out.exists():raise ValueError('fresh private output required')
     frozen_requests=json.loads(a.requests.read_text())
-    if set(frozen_requests)!={'desks','files','autocommit','inventory','create','mount','commit','publish-source','equivalent','different'}:raise ValueError('incomplete typed request fixture')
+    if set(frozen_requests)!={'commit-files','commit-invalid','committed-equal','clay-files','normalized-files','normalized-different','desks','files','autocommit','inventory','create','mount','commit','publish-source','equivalent','different'}:raise ValueError('incomplete typed request fixture')
     if sha(a.vere)!=VERE_SHA or sha(a.pill)!=PILL_SHA:raise ValueError('pinned input mismatch')
     if shutil.disk_usage('/tmp').free<4*1024**3:raise RuntimeError('storage reserve absent')
     previous=None

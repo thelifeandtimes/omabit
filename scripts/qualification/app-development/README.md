@@ -49,3 +49,10 @@ and actual Behn autocommit timer detection (inactive → active → cancelled).
 Unknown query output is an error, never evidence that autocommit is disabled.
 Probe14 is the first complete pass for this extended set; probe13 retains the
 failed Hoon inference query. See M539 and the discovery diagnostics record.
+
+Probe19 extends the typed set with canonical Clay hashes, batched MIME conversion,
+and a revision/hash-bound direct Clay delta. It verifies additions, replacements
+and deletions. It also records that raw invalid Hoon source can be accepted into
+Clay; this is not an application compilation or readiness pass. Those stages
+require their own configured checks. Probe17/18 retain the incorrect old-revision
+verification and disproved compilation-rejection assumption respectively.

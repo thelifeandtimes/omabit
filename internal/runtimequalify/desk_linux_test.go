@@ -170,4 +170,27 @@ func TestDeskRuntimeDiscoveryRejectsUnknownAutocommitAndBadInventories(t *testin
 	if _, err = runtime.FilePaths(context.Background(), "base", 2); err == nil {
 		t.Fatal("unsafe path accepted")
 	}
+
+	response = atom(`[{"path":["hello","txt"],"hash":"0x123"}]`)
+	canonical, err := runtime.ClayFiles(context.Background(), "base", 2)
+	if err != nil || len(canonical.Files) != 1 || canonical.Files[0].Path != "hello.txt" {
+		t.Fatal(canonical, err)
+	}
+	response = atom(`[{"path":["hello","txt"],"hash":"0x123"},{"path":["hello","txt"],"hash":"0x123"}]`)
+	if _, err = runtime.ClayFiles(context.Background(), "base", 2); err == nil {
+		t.Fatal("duplicate canonical paths accepted")
+	}
+
+	for _, name := range []string{"../outside", ".urb", "nested/source", ""} {
+		if _, err = runtime.InspectSource(context.Background(), "base", name, nil); err == nil {
+			t.Fatal("source path escape accepted", name)
+		}
+	}
+	outside := t.TempDir()
+	if err = os.Symlink(outside, filepath.Join(managedPier(f, state), "linked-source")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = runtime.InspectSource(context.Background(), "base", "linked-source", nil); err == nil {
+		t.Fatal("linked source accepted")
+	}
 }

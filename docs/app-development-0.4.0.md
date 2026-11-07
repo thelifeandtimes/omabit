@@ -141,8 +141,8 @@ generation, so repeated fake ship names resolve correctly.
 
 A desk binding records its desk, source directory or Git source, source mode,
 expected baseline, optional Urgit repository/branch, publication method, the
-developer's release configuration and chosen receiver checks. An Urgit pipeline
-has its own disable action for the binding and Omabit-managed credential.
+developer's release configuration and chosen receiver checks. Urgit retains its native binding/disable and credential lifecycle; Omabit does
+not create a separate adapter or credential store.
 
 Use a versioned migration and feature negotiation. Older clients' ordinary edits
 must preserve the new fields. Stopped host transfers retain explicit intent and
@@ -160,6 +160,13 @@ Display **Uncommitted changes** in the ship/desk view, with the desk name, chang
 file count, observation time and a details action. Expose the same structured
 status to agents. Offer a Commit action only under the effective policy and the
 application's release settings. The alert itself performs observation.
+
+The source implementation uses SHA256 of jammed [mark noun] values and the
+selected historical desk's actual MIME converters, in bounded batches. Failed
+conversions are unavailable comparisons, never synchronized results. The typed
+commit path targets the named Clay desk with reviewed revision/hash and a MIME
+delta; it does not rely on a Unix mount name to identify the destination. The
+runner API, persistent bindings and UI alerts remain in progress (M540).
 
 Use debounced file observation, bounded reconciliation and refresh on reconnect.
 Separate synchronized, Unix changes, Clay changes, divergence and unavailable
@@ -233,7 +240,9 @@ Follow the developer's configured release gates, including Urgit's configured
 branch and validation behavior. Explicit promotion and automatic release can
 both be valid application configurations. Omabit's default-closed agent gates
 determine whether its CLI may perform a requested effect. The application owns
-the release sequence after permission is enabled. Report the checks actually
+the release sequence after permission is enabled. Native probe19 also confirms
+that Clay can accept raw invalid Hoon source: commit success alone is not a
+compilation or Gall-readiness result. Report the checks actually
 observed, including any app-specific tests required by that configuration.
 
 For desks with a docket, provide Treaty publication. For source-only desks,
