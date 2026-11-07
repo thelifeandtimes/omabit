@@ -8427,3 +8427,44 @@ original migration fixtures remain. Manifests:
 Native40 admission charged42,621,595,648 bytes including2GiB additional scratch and
 the1GiB DEV estimate. Re-measure before further work. Production/DEV/trial runners,
 ships, installed plugins and the persistent manual preview remain unchanged.
+
+
+## M550 — Fleet route and standing approval foundations (2026-11-07)
+
+The pure shiproute model binds runner, instance/project generation, ship name and
+verified pier continuity. It validates bounded unique origin registries and orders
+eligible local, tailnet, explicitly selected LAN and HTTPS public routes. Remote
+localhost is not a local collector route. Disabled routes are excluded; bounded
+unauthenticated identity probes can fall back after failures or wrong identities,
+refuse redirects, and never issue sessions or replay writes. Tailscale parsing
+uses current local daemon state, actual full DNS name and listener/interface
+compatibility. No Tailscale command, firewall change or peer inventory collection
+is enabled yet. Official CLI/MagicDNS/status-source research is linked in
+`fleet-access-0.4.0.md`; no assumption that installing Tailscale exposes loopback.
+
+Collector format1 `application-ship-approvals.json` records explicit user choices
+per ship incarnation and exact plugin/profile/helper, independently of URLs.
+Old per-attempt consent does not become a standing grant. A changed helper needs
+another explicit choice and replaces the logical grant; the old helper is not
+left independently approved. Revision-checked revoke preserves existing attempt
+and cleanup receipts. Default/missing state denies, history is contiguous and
+checked against current entries, unknown/duplicate/corrupt state refuses unchanged,
+and repeated identical choices at the current revision do not create another row.
+The existing owner-session authority remains broad, not desk-scoped.
+
+Private route race checks pass at `/tmp/omabit-ship-route-core-03` and approval
+storage race checks pass at `/tmp/omabit-application-ship-approval-01`. They cover
+network eligibility/fallback, identity mismatch, redirect refusal, listener/DNS
+validation, pier/project/helper isolation, reopen/revoke, stale writes, unchanged
+legacy attempt bytes and corruption/symlink refusal. The first route harness
+attempt could compile but sandbox nesting refused its network namespace; the
+same isolated fixture passes when launched with the required namespace permission.
+
+This changes M549's wholly pending fleet work into internal foundations, not a
+finished feature. Runner route persistence/API, collector binding verification,
+standing-approval UI/CLI, automatic reconnection and receiver compatibility remain
+unimplemented. Current internal methods do not authorize a cached approval to be
+used later: the new connection path must recheck current grant and ship identity
+under its attempt-publication lock. No installed collector/runner/plugin state
+was touched, and no automatic login or public exposure is enabled. Schema55 stays
+unchanged; release qualification is still deferred.

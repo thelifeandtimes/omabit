@@ -1,5 +1,18 @@
 # Stable-release upgrade requirement
 
+## Development: standing application/ship approval format1
+
+M550 adds a separate `application-ship-approvals.json` file in the collector profile.
+Existing runner schema55, `ships.json` and per-attempt application journals are
+unchanged. Missing state means no standing permission. Existing approvals never
+migrate into standing grants. Old collectors ignore the new file and retain their
+explicit per-attempt workflow; they cannot use it to initiate automatic attempts.
+New readers require version1, exact current/history agreement and contiguous
+revision history. Unknown/corrupt state refuses unchanged, including writes.
+Do not reset the file, drop revocations or convert a cached grant into authority.
+Current source only provides internal storage/selection primitives; public
+automatic connection and installed migration qualification remain pending.
+
 ## Development: explicit source ownership adoption, schema55
 
 Schema55 adds `desk_adoptions` records linked to the existing desk operation
