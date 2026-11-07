@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "schema": 51,
+  "source_commit": "323ed81cdc61b5d2d6ba084ea6724da3280b9daf",
+  "sql_sha256": "a2ce5d814a85db37058004d8e9fe292a7e29a231118bd91b1e49359babb725af",
+  "writer": "Original schema51 writer register/putAppPolicy/createDeskOperation/appendDeskStep/putDeskSetting; synthetic alpha, policy, dispatched creation receipt and configured release instructions",
+  "scope": "functional development migration fixture; not release qualification",
+  "evidence": "/tmp/omabit-desk-source-original-migration-01/result.json"
+}

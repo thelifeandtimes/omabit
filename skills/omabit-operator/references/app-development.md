@@ -3,8 +3,8 @@
 The 0.4.0 source implements policy storage, Setup authoring, read-only status,
 typed desk inspection/creation with durable receipts (`desk-create-v1`),
 live installed-desk discovery (`desk-discovery-v1`), and runner-shared workflow
-settings (`desk-workflow-settings-v1`). Commit/publication, source staging and
-Unix/Clay alerts are still being connected.
+settings (`desk-workflow-settings-v1`), and source comparison/alerts
+(`desk-source-status-v1`). Commit/publication and source staging are still being connected.
 Urgit follows its native workflow; no dedicated Omabit adapter is planned. Verify
 installed capabilities and command help rather than assuming development source
 is installed. Keep prepared source outside a live mount while its effects are
@@ -139,6 +139,30 @@ user-configurable setting. Ordinary developer-operated tools have their native
 permissions, so Omabit policy status describes Omabit's enforcement boundary.
 
 ## Observe pending work and results
+
+On an operator connection to a capable runner, compare the saved Unix source
+directory with the exact running desk:
+
+```sh
+omabit --config-dir REGISTRY desk-source-status --runner NAME --expected-runner-id ID \
+  --instance INSTANCE --desk DESK
+```
+
+This reads files and Clay, then remembers a shared baseline only if their
+mark-normalized contents match. It performs no source write, commit or publication.
+`synchronized` means source equality, not compiled/active application readiness.
+`unix-changes`, `clay-changes` and `diverged` use the last matching baseline;
+`different` has no usable baseline and does not establish which side changed.
+Failed reads/conversions are errors, never an empty/clean result. Autocommit can
+be active, inactive or unknown; unknown is not safe-to-write evidence.
+
+The baseline is bound to the runner's instance/project generation, runtime,
+configuration, workflow revision and source directory. Changing that binding
+starts without a baseline. The result includes exact difference counts and the
+first 256 sorted file details, plus raw/canonical digests; source bytes are omitted.
+The selected Setup desk refreshes while open and offers manual Refresh. After a
+failure it labels any prior observation stale. Urgit uses its native Git/Clay
+status; this command does not infer a Git binding or treat Urgit metadata as one.
 
 Inspect Unix/Clay status before and after deployment. Report uncommitted additions,
 edits and deletions, including changes made directly by the user. Separate those

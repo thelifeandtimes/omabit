@@ -92,5 +92,13 @@ Card {
     Label {width:parent.width;visible:!root.draft && !controller.error;text:controller.busy ? "Loading workflow…" : "Select a resolved ship or desk to read its workflow.";caption:true;secondary:true}
     Label {width:parent.width;visible:!!controller.error;text:controller.error;color:Design.danger;caption:true}
     Label {width:parent.width;visible:!!controller.message;text:controller.message;color:Design.success;caption:true}
+    AppSourcePane {
+      objectName:"app-source-pane";width:parent.width
+      visible:root.isDesk && !!controller.value && !!controller.value.desk && controller.value.desk.workflow==="mounted"
+      service:root.service;runner:root.runner;target:root.target;setting:controller.value
+      active:root.active && root.ready && visible && controller.canEdit && !controller.busy && !root.dirty
+    }
+    Label {width:parent.width;visible:root.isDesk && root.dirty;text:"Save or refresh the workflow to compare its configured source.";caption:true;secondary:true}
+    Label {width:parent.width;visible:root.isDesk && !!controller.value && !controller.canEdit;text:"Live source comparison requires operator access.";caption:true;secondary:true}
   }
 }

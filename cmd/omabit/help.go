@@ -6,6 +6,14 @@ var desktopCommandHelp = map[string]string{
 Observe an uncertain creation on its exact selected runtime and record the result.
 Never repeats the effect or changes permissions. Query desk-operation afterward;
 unavailable evidence leaves the outcome uncertain.`,
+	"desk-source-status": `Usage: omabit [--config-dir DIR] desk-source-status --runner NAME --expected-runner-id ID --instance INSTANCE --desk DESK
+
+Compare the configured Unix source with Clay on the selected running ship.
+Requires desk-source-status-v1 and desk-workflow-settings-v1. Performs no source
+write, commit or publication. Remembers a canonical baseline only when both trees
+match. Without a baseline, different means unclassified drift. Unknown or failed
+comparison is not clean. Details show at most 256 paths plus the exact total.
+`,
 	"desk-settings": `Usage: omabit [--config-dir DIR] desk-settings --runner NAME --expected-runner-id ID --instance INSTANCE [--desk DESK]
 
 Read ship purpose or the desk's source and release configuration. Follow the

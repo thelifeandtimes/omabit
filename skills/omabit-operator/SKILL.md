@@ -27,6 +27,8 @@ receipt/reconciliation; follow the app-development reference's exact sequence.
 Read ship and desk `desk-settings` on `desk-workflow-settings-v1` runners to follow
 their configured source path, release checks and instructions. Descriptive purpose
 and workflow settings never grant agent permissions.
+Use `desk-source-status` on capable runners to inspect saved Unix source versus
+Clay; consult the reference for drift, stale evidence and baseline limitations.
 
 Start with the shortest relevant read path:
 

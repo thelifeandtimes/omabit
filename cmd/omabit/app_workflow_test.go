@@ -14,6 +14,7 @@ func TestAppWorkflowRejectsRedirectedAndPermissionRequestsBeforeState(t *testing
 		{"app-development-configure", "--request-json", `{"name":"fixture","runner_id":"runner-fixture","target":{"instance_id":"alpha"},"update":{"target":{"instance_id":"other"},"ship":{"purpose":"standard","instructions":""}}}`},
 		{"app-development-workflow", "--request-json", `{} {}`},
 		{"desk-settings", "--runner", "fixture", "--expected-runner-id", "runner-fixture"},
+		{"desk-source-status", "--runner", "fixture", "--expected-runner-id", "runner-fixture", "--instance", "alpha"},
 	}
 	for _, args := range cases {
 		if run(context.Background(), append([]string{"--config-dir", config}, args...)) == 0 {

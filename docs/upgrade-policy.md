@@ -1,5 +1,16 @@
 # Stable-release upgrade requirement
 
+## Development: canonical source baselines, schema52
+
+Schema52 adds a bounded canonical baseline cache, shared by collectors. A baseline
+is recorded only after Unix and Clay match and is bound to the exact workflow and
+runtime selection. Migration creates an empty cache; it does not infer source
+equality or change existing workflow/policy/journal records. Original schema51
+writer fixtures, repeated migration, corrupt-cache refusal and older-reader
+refusal are exercised by `scripts/test-desk-source-upgrade.py` and the source tests
+(M542). Negotiate `desk-source-status-v1` before using the live comparison API.
+This remains development-source evidence, not exact-artifact release qualification.
+
 ## Development: workflow settings, schema51
 
 Schema51 adds versioned ship/desk workflow metadata and append-only history.

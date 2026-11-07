@@ -8057,3 +8057,37 @@ Setup/sidebar/zoom/reopen suite passes. The packaged skills document settings as
 metadata and preserve native Urgit release rules. No installed preview, production,
 DEV or trial runner/plugin/ship was changed. Source status, gated commit/publication,
 Urgit qualification, fleet routes and clearweb assistance remain active work.
+
+## M542 — Source-status API, canonical baselines and change alerts (2026-11-06)
+
+`desk-source-status-v1` connects the tested canonical source engine to the runner,
+collector, `omabit desk-source-status` and the selected Setup desk. The runner reads
+only that desk's saved Unix source configuration on a pinned current runtime and
+exact project generation. Operator access is required; injected source paths,
+changed settings/runtime, stale/malformed responses and Urgit workflow guesses are
+refused. Reads perform no source writes, commits or publications and preserve all
+policy grants. Autocommit unknown remains unknown; source equality is not app
+compilation/readiness. Replies contain counts, hashes and at most256 sorted file
+details, not source bytes or absolute paths.
+
+Schema52 stores a canonical baseline only after Unix/Clay match. It is bound to
+runtime, configuration, workflow revision, source name and target generation.
+Differences and failed reads preserve the prior baseline. A changed binding starts
+unclassified rather than falsely attributing direction. Schema51's actual writer
+at323ed81 supplies the SQL fixture with workflow settings, policy and a pending
+desk receipt. Migration/reopen preserve those records, create no invented baseline,
+roll back on failure and refuse corrupt caches. The original51 reader refuses
+actual52 state unchanged. See `diagnostics/2026-11-06-desk-source-status.json`.
+
+Core/protocol race tests, private API/collector/migration fixtures and wide/narrow
+UI checks pass. Screenshots were inspected. The alert differentiates synchronized,
+Unix changes, Clay changes, divergence and unknown-direction differences. Failed
+refreshes retain prior details explicitly marked unavailable; deactivation/profile
+changes reject late responses. Only the selected saved workflow is refreshed,
+90 seconds after completion or manually; no fleet-wide watcher was added. This
+supersedes the pending source-status/baseline/selected-alert portion of M540/M541.
+The underlying native canonical engine was qualified in M540; this new composition
+still needs managed-runtime end-to-end coverage. Staged transfer, gated commits,
+Treaty, receivers/frontends, Urgit, fleet origins and clearweb remain ongoing.
+Installed preview/production/DEV/trial plugins, services and ships were untouched;
+release qualification remains deferred.

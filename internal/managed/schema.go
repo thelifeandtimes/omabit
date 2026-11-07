@@ -29,4 +29,5 @@ package managed
 // Schema49 fences the default-closed desk-creation gate and policy v2.
 // Schema50 retains typed desk intents and append-only effect receipts.
 // Schema51 retains source workflow settings and their authoring history.
-const StateSchemaVersion = 51
+// Schema52 retains canonical synchronization baselines for source alerts.
+const StateSchemaVersion = 52

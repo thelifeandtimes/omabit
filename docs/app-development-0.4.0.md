@@ -174,10 +174,20 @@ selected historical desk's actual MIME converters, in bounded batches. Failed
 conversions are unavailable comparisons, never synchronized results. The typed
 commit path targets the named Clay desk with reviewed revision/hash and a MIME
 delta; it does not rely on a Unix mount name to identify the destination. The
-runner source-status API, synchronization baselines and UI alerts remain in
-progress (M540); descriptive source configuration is available (M541).
+runner source-status API, synchronization baselines and selected-desk UI alerts
+are implemented (M542), using the saved descriptive source configuration (M541).
+`desk-source-status-v1` and `omabit desk-source-status` return exact counts and at
+most256 file details. Source bytes and absolute paths are not returned. Only a
+confirmed match seeds the schema52 baseline, which is invalid for a changed
+runtime/configuration, project generation, workflow revision or directory name.
+The selected Setup desk refreshes90 seconds after each bounded read completes,
+while active, and supports manual refresh. A failed comparison retains prior
+details with an unavailable/stale label. Unsaved workflow edits and profile
+switches invalidate that view. There is no background fleet-wide source watcher
+in this slice; a selected-desk refresh reconstructs pending edits after restart.
 
-Use debounced file observation, bounded reconciliation and refresh on reconnect.
+Use bounded reconciliation and refresh on reconnect; broader debounced file
+observation remains a possible later optimization.
 Separate synchronized, Unix changes, Clay changes, divergence and unavailable
 states. Restarting a collector must rediscover pending changes, and an offline
 ship or failed comparison must retain an unavailable/stale indication. Clear an

@@ -43,6 +43,7 @@ ShellRoot {
     try {
       var c=pane.controller,save=control(pane,"app-policy-save"),desk=control(pane,"app-policy-desk")
       var w=control(pane,"app-workflow-pane"),wc=w.controller
+      var sourcePane=control(pane,"app-source-pane"),sc=sourcePane.controller
       if(test.phase===0 && c.value && !c.busy){
         test.check(pane.commitValue==="block" && pane.publishValue==="block" && pane.createValue==="block","unsafe defaults")
         test.fits(pane);test.capture("global");test.phase=100
@@ -112,6 +113,26 @@ ShellRoot {
         test.check(wc.value.desk.instructions==="workflow-profile","late workflow crossed profile")
         service.scenario="normal";service.profileName="dev";c.refresh();test.phase=69
       }else if(test.phase===69 && c.value && !c.busy && wc.value && !wc.busy){
+        if(!sc.value || sc.busy)return
+        test.check(sc.value.state==="synchronized","source default fixture not read")
+        service.scenario="source-changes";sc.refresh();test.phase=70
+      }else if(test.phase===70 && !sc.busy && sc.value){
+        test.check(sc.value.state==="unix-changes" && sc.value.difference_count===2,"uncommitted source alert missing")
+        sourcePane.expanded=true;test.capture("source-changes");test.phase=71
+      }else if(test.phase===71 && test.captured){
+        service.scenario="source-error";sc.refresh();test.phase=72
+      }else if(test.phase===72 && !sc.busy && sc.error){
+        test.check(sc.value && sc.value.difference_count===2 && control(pane,"app-source-summary").text==="Source status unavailable","failed comparison cleared pending work or appears clean")
+        service.scenario="source-mismatch";sc.refresh();test.phase=73
+      }else if(test.phase===73 && !sc.busy && sc.error){
+        test.check(sc.value && sc.value.request.selection.target.instance_id==="publisher","source target mismatch accepted")
+        service.scenario="source-delay";sc.refresh();test.ticks=0;test.phase=74
+      }else if(test.phase===74 && ++test.ticks>=6){
+        pane.active=false;test.check(!sc.value && !sc.available,"inactive pane retained live status");test.phase=75
+      }else if(test.phase===75 && !sc.busy){
+        test.check(!sc.value && !sc.error,"late source reply accepted after deactivation")
+        service.scenario="normal";pane.active=true;test.phase=76
+      }else if(test.phase===76 && c.value && !c.busy && wc.value && !wc.busy && sc.value && !sc.busy){
         service.scenario="observer";c.refresh();test.check(c.inventories.length===0,"refresh retained stale discovery");test.phase=6
       }
       else if(test.phase===6 && !c.busy && c.value){test.check(!save.enabled && !w.canSave,"observer can save");service.scenario="offline";c.refresh();test.phase=7}

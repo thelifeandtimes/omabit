@@ -6,7 +6,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 
@@ -110,6 +110,25 @@ def apply(state, mode, command, request=None):
         raise ValueError("Unknown preview connection mode")
     if command == "app-development-status":
         return view(state, mode)
+    if command == "desk-source-status":
+        runner = next(r for r in state["runners"] if r["name"] == request["name"] and r["runner_id"] == request["runner_id"])
+        if not available(runner, mode):
+            raise ValueError("Preview live source comparison requires an online operator")
+        target = dict(next(t["target"] for t in runner["status"]["targets"] if t["target"]["instance_id"] == request["instance"]))
+        target["desk"] = request["desk"]
+        setting = apply(state, mode, "app-development-workflow", {"name":runner["name"], "runner_id":runner["runner_id"], "target":target})["setting"]
+        if setting["desk"]["workflow"] != "mounted":
+            raise ValueError("Use Urgit's native status for this fixture workflow")
+        changed = target["desk"] == "my-app"
+        now = datetime.now(timezone.utc)
+        return {"version":1, "runner_id":runner["runner_id"], "mode":"simulation",
+                "request":{"selection":{"target":target,"runtime_id":"a"*64,"config_revision":1},"settings_revision":setting["revision"]},
+                "source_name":setting["desk"]["source_name"], "read_at":now.isoformat(), "baseline_at":(now-timedelta(minutes=1)).isoformat(),
+                "observation":{"exists":True,"revision":3,"clay_hash":"0v123","publication":"private"},
+                "state":"unix-changes" if changed else "synchronized", "autocommit":"unknown",
+                "unix_digest":"a"*64,"canonical_unix_digest":("b" if changed else "a")*64,"clay_digest":"a"*64,
+                "difference_count":2 if changed else 0,"unix_change_count":2 if changed else 0,"clay_change_count":0,"conflict_count":0,
+                "differences":[{"path":"app/my-app.hoon","kind":"modified"},{"path":"lib/helper.hoon","kind":"only-unix"}] if changed else []}
     if command in ("app-development-workflow", "app-development-configure"):
         runner = next((r for r in state["runners"] if r["runner_id"] == request.get("runner_id") and r["name"] == request.get("name")), None)
         if runner is None or mode == "offline" and runner["name"] == "preview-remote":
@@ -195,10 +214,17 @@ def main():
     # A fixed path inside the preview namespace; no production configuration or
     # fallback transport. Even unknown commands fail before touching this file.
     mode, command, *args = sys.argv[1:]
-    if command not in ("app-development-status", "app-development-save", "app-development-retry", "app-development-workflow", "app-development-configure"):
+    if command not in ("app-development-status", "app-development-save", "app-development-retry", "app-development-workflow", "app-development-configure", "desk-source-status"):
         raise ValueError("Unsupported preview command")
     request = None
-    if command != "app-development-status":
+    if command == "desk-source-status":
+        if len(args)!=8:
+            raise ValueError("Expected a selected source fixture")
+        options=dict(zip(args[::2],args[1::2]))
+        if set(options)!={"--runner","--expected-runner-id","--instance","--desk"}:
+            raise ValueError("Unknown source fixture flags")
+        request={"name":options["--runner"],"runner_id":options["--expected-runner-id"],"instance":options["--instance"],"desk":options["--desk"]}
+    elif command != "app-development-status":
         if len(args) != 2 or args[0] != "--request-json":
             raise ValueError("Expected a preview request")
         request = json.loads(args[1])
@@ -216,7 +242,7 @@ def main():
                 with backup.open("xb") as output:
                     output.write(original)
         result = apply(state, mode, command, request)
-        if upgraded or not path.exists() or command not in ("app-development-status", "app-development-workflow"):
+        if upgraded or not path.exists() or command not in ("app-development-status", "app-development-workflow", "desk-source-status"):
             temporary = path.with_suffix(".tmp")
             with temporary.open("w") as output:
                 json.dump(state, output, indent=2)

@@ -4,15 +4,28 @@ import argparse, json, os, re, shutil, subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENTS = ('AppDevelopment.qml', 'AppDevelopmentPane.qml', 'AppPolicyTree.qml', 'AppPolicy.js', 'AppWorkflow.qml', 'AppWorkflowPane.qml', 'AppWorkflow.js', 'NotesField.qml', 'ReaderLifecycle.qml', 'Field.qml', 'ActionButton.qml', 'SelectField.qml', 'Label.qml', 'Hint.qml', 'Design.qml', 'Card.qml', 'CardTitle.qml', 'StatusBadge.qml')
+COMPONENTS = ('AppDevelopment.qml', 'AppDevelopmentPane.qml', 'AppPolicyTree.qml', 'AppPolicy.js', 'AppWorkflow.qml', 'AppWorkflowPane.qml', 'AppWorkflow.js', 'NotesField.qml', 'AppSource.qml', 'AppSourcePane.qml', 'AppSource.js', 'ReaderLifecycle.qml', 'Field.qml', 'ActionButton.qml', 'SelectField.qml', 'Label.qml', 'Hint.qml', 'Design.qml', 'Card.qml', 'CardTitle.qml', 'StatusBadge.qml')
 HELPER = r'''
 import json, signal, sys, time
 from pathlib import Path
 scenario, profile, command, *args = sys.argv[1:]
-assert command in ('app-development-status','app-development-save','app-development-retry','desk-list','app-development-workflow','app-development-configure')
+assert command in ('app-development-status','app-development-save','app-development-retry','desk-list','app-development-workflow','app-development-configure','desk-source-status')
 path=Path('/lab/policy.json')
 v=json.loads(path.read_text())
 with Path('/lab/calls.jsonl').open('a') as f:f.write(json.dumps({'profile':profile,'command':command,'args':args})+'\n')
+if command=='desk-source-status':
+    from datetime import datetime, timezone, timedelta
+    opts=dict(zip(args[::2],args[1::2]));target={'instance_id':opts['--instance'],'desk':opts['--desk']}
+    assert opts['--runner']=='lab' and opts['--expected-runner-id']=='runner-lab'
+    settings=json.loads(Path('/lab/workflows.json').read_text()) if Path('/lab/workflows.json').exists() else {}
+    setting=settings.get(json.dumps(target,sort_keys=True),{'revision':0,'desk':{'source_name':target['desk']}})
+    now=datetime.now(timezone.utc);changed=scenario.startswith('source-')
+    v={'version':1,'runner_id':'runner-lab','mode':'simulation','request':{'selection':{'target':target,'runtime_id':'a'*64,'config_revision':1},'settings_revision':setting['revision']},'source_name':setting['desk']['source_name'],'read_at':now.isoformat(),'baseline_at':(now-timedelta(minutes=1)).isoformat(),'observation':{'exists':True,'revision':3,'clay_hash':'0v123','publication':'private'},'state':'unix-changes' if changed else 'synchronized','autocommit':'unknown','unix_digest':'a'*64,'canonical_unix_digest':('b' if changed else 'a')*64,'clay_digest':'a'*64,'difference_count':2 if changed else 0,'unix_change_count':2 if changed else 0,'clay_change_count':0,'conflict_count':0,'differences':[{'path':'app/my-app.hoon','kind':'modified'},{'path':'lib/helper.hoon','kind':'only-unix'}] if changed else []}
+    if scenario=='source-error':print(json.dumps({'error':'Fixture source unavailable'}),file=sys.stderr);sys.exit(1)
+    if scenario=='source-mismatch':v['request']['selection']['target']['instance_id']='another'
+    if scenario=='source-delay':
+        signal.signal(signal.SIGTERM,lambda *_:None);time.sleep(.6)
+    print(json.dumps(v));sys.exit(0)
 if command in ('app-development-workflow','app-development-configure'):
     from datetime import datetime, timezone
     r=json.loads(args[1]);target=r['target'];key=json.dumps(target,sort_keys=True);path=Path('/lab/workflows.json')
