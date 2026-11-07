@@ -10,7 +10,7 @@
     "vere": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
   },
   "source_sha256": {
-    "internal/deskwork/lens.go": "18fca1e255a7d2acdcc20e3da45ba9a288041c8b148c6274de557e7215750b98",
+    "internal/deskwork/lens.go": "e8c1cb343e8c802bec3848e9a4f88ed4e07b2a44b0013ad513f06913fa12cc3f",
     "scripts/qualification/app-development/probe.py": "7d1d4e5d844b767e101264dc1d49143756b354e928f21be3b6610ddccfae85dc",
     "scripts/qualification/app-development/requests.go": "9afa8542e19edea676f5e41ef3cd3a2e4af048aff2a21f519bea2c369d8f9b8b"
   },
@@ -53,5 +53,6 @@
     "no runner API/CLI connected",
     "Treaty, receiver, frontend and Urgit tests pending",
     "not stable release qualification"
-  ]
+  ],
+  "source_verification": "Current builder regenerates byte-identical tested requests after adding a mount revision bound."
 }
