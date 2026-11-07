@@ -160,3 +160,8 @@ deleted. Existing cleanup, credentials and account metadata remain. This is not
 yet a reservation, successor delivery or a capability consumed by Omabit. DMs drain,
 activation/recovery and issuer lineage remain pending. See
 [preparation evidence](diagnostics/2026-11-07-theme-handoff-preparation.json).
+
+M567 adds the DMs local retirement/drain foundation in its isolated source branch.
+Actual previous-writer migration and older-reader refusal pass, alongside bridge
+and transport regressions. It is not yet wired to cooperative receiver requests or
+successor activation; see [drain evidence](diagnostics/2026-11-07-dms-local-handoff.json).

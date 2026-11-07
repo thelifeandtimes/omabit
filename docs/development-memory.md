@@ -8952,3 +8952,27 @@ This is partial receiver work for the remaining M565 fleet task. DMs cooperative
 drain, new-session activation/recovery, issuer lineage and automatic reconnection
 remain open. Installed receivers, canonical/auth source checkouts, runners, ships
 and the persistent preview are unchanged. Release qualification stays deferred.
+
+
+## M567 — DMs local retirement and drain (2026-11-07)
+
+An isolated DMs branch now has a bound bridge drain primitive that fences the old
+session before waiting for workers and streams. It preserves accounts, credentials,
+message/action uncertainty and exact remote cleanup records. Successful local
+quiescence is distinct from remote closure; unknown writes prevent handoff. Normal
+restore/read admission rejects retired sessions before network IO.
+
+Retirement upgrades the transport journal1→2; ordinary operation remains1 until
+then. The unmodified6ba5a02 writer produces the migration fixture, whose channel
+and cleanup records survive unchanged; the old reader refuses2 without rewriting.
+Interruption and lost-sync cases retain authoritative evidence. Private journal/
+cleanup48 and bridge/stream50 cases pass. Earlier run02 duplicated an imported test
+class; final03 corrects discovery. Source and hashes are recorded in
+`diagnostics/2026-11-07-dms-local-handoff.json`.
+
+The primitive is not yet wired to the receiver/bridge command loop. Cooperative
+requests, successor activation/recovery, collector lineage and automatic polling
+remain open. This advances M566's pending DMs local drain only; it is not complete
+reconnection or installed-upgrade qualification. Canonical/auth source checkouts,
+installed state, protected ships and the preview remain untouched. Release work
+stays deferred.
