@@ -7743,3 +7743,32 @@ rollout value survived, with only the documented new gate/version/revision
 changes. Human state was not used for automated mutations. Production, DEV and
 trial040 plugins, runners, ships and services were not inspected or operated on.
 See [the updated preview guide](app-development-preview.md).
+
+## M532 — Zoomable policy tree and saved-value reload fix (2026-11-06)
+
+The user requested zoom before reviewing M531. The tree now supports 25–200%
+zoom through shared −/+ buttons, a percentage reset button, Fit, Ctrl+wheel at
+the pointer and focused-tree Ctrl+plus/minus/0 shortcuts. Only the map scales;
+the inspector, selection, filters and unsaved permission choices are retained.
+The viewport supports scrolling and dragging. A dedicated drag handler prevents
+the containing Setup page from stealing the gesture; scaled nodes remain
+clickable. Fit respects the viewport and zoom bounds. This extends M531's tree
+without changing policy, storage, runner contracts or runtime artifacts.
+
+Native inspection also exposed an existing reload ordering bug: reopening a
+saved nondefault global policy could show Block in the controls while the tree
+and saved-value labels correctly showed Allow. The editor now loads after its
+policy-view and derived bindings settle. A fresh fixture saves nondefault gates,
+closes, and reopens the full panel; this regression failed before the fix and
+passes afterward. No saved policy was rewritten to repair the display.
+
+Validation passed: full-panel selection/filter/inheritance/offline/observer
+checks plus actual Qt pointer/keyboard zoom, anchor stability, scaled clicks,
+ordinary-wheel scrolling, dragging without page movement, bounds/reset/Fit and
+preserved edits; close/reopen persistence display; the 408px, 1.25-font-scale
+policy fixture; native plugin packaging and diff checks. Captures were inspected.
+The separately installed preview was refreshed and reopened with policy bytes
+verified unchanged. Native rendering completed; Qt Wayland emitted a text-input
+focus warning during window focus changes, with no QML load errors. Its previous
+code is retained in preview-owned version backups. Production, DEV and trial040
+plugins, runners, ships, services and desktop configuration were untouched.

@@ -35,7 +35,9 @@ Column {
   readonly property string selectionTitle:scope==="global" ? "Global defaults" : scope==="runner" ? runner ? runner.name : "Runner" : scope==="ship" ? ship ? ship.ship || ship.label : "Ship" : "%"+selectedDesk
   readonly property string breadcrumb:scope==="global" ? "Applies to enrolled runners" : "Global / "+(runner ? runner.name : "Runner")+((scope==="ship" || scope==="desk") ? " / "+(ship ? ship.ship || ship.label : "Ship") : "")+(scope==="desk" ? " / %"+selectedDesk : "")
   spacing:Style.space(12)
-  AppDevelopment {id:controller;service:root.service;active:root.active;onValueChanged:root.load()}
+  AppDevelopment {id:controller;service:root.service;active:root.active}
+  // Load after the policy view and its derived runner/ship bindings have settled.
+  onPolicyViewChanged:Qt.callLater(root.load)
   function load() {
     var g={commit:"block",publish:"block",create_desk:"block"}
     if(policyView) {
@@ -112,7 +114,8 @@ Column {
         gate:root.filterGate;filter:root.filterValue;query:search.text;selectedKey:root.selectionKey
         onSelected:function(node){root.selectNode(node)}
       }
-      Label { width:parent.width;caption:true;secondary:true;text:tree.filtering ? "Highlighted paths lead to matches. Each node shows its own effective permission; unrelated branches stay dimmed." : "Permissions shown here are saved values. Select any node to edit it below." }
+      Label { width:parent.width;caption:true;secondary:true;text:tree.filtering ? "Highlighted paths lead to matches. Each node shows its own effective permission; unrelated branches stay dimmed." : "Permissions shown here are saved values. Select any node to edit its permissions." }
+      Label { width:parent.width;caption:true;secondary:true;text:"Ctrl+scroll to zoom. Scroll or drag to explore the tree." }
       Label { width:parent.width;visible:!!root.policyView && root.runners.length===0;text:"No runners enrolled. Add a runner, then review and apply your global settings.";caption:true;secondary:true }
       Label { width:parent.width;visible:!root.policyView;text:controller.busy ? "Loading permissions…" : "Permissions unavailable. Refresh to try again.";caption:true;secondary:true }
     }

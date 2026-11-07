@@ -12,6 +12,11 @@ access. The map shows saved, effective permissions, not unsaved editor choices.
 Runner values come from their own acknowledged policy, even during a pending
 global rollout. Unavailable runners are not represented as known blocked nodes.
 
+Use the tree's −/+ controls or Ctrl+scroll to zoom, the percentage to reset to
+100%, and Fit to fit the map in its viewport (25–200% zoom). Scroll or drag to
+pan an enlarged tree. Zoom affects only the map; selection, filters, unsaved
+permissions and the editor's text size are preserved.
+
 Global offers Allow and Block; narrower scopes also offer Inherit. The most
 specific explicit value supplies each gate. **Create new desks** stops at Ship
 scope: a desk cannot authorize creating its siblings. Newly created desks inherit

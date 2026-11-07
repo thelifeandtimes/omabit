@@ -19,10 +19,15 @@ def main():
     shell=(out/'shell.qml').read_text().replace('ShellRoot {','ShellRoot {\n  PreviewChecks { window:window }',1)
     shell=shell.replace('if(Quickshell.env("OMABIT_PREVIEW_SMOKE")==="1")Qt.quit()','')
     (out/'shell.qml').write_text(shell)
-    q=subprocess.run(['/usr/bin/python3','-B',str(out/'launch.py'),'smoke'],capture_output=True,text=True,timeout=30)
-    log=(out/'data/state/window.log').read_text()
-    assert q.returncode==0 and 'PASS: full Setup navigation' in log,q.stdout+q.stderr+log
-    assert not any(word in log for word in ('WARN','ERROR','Error:','FAIL:','Unable to assign','Binding loop')),log
-    print(log)
+    for reloading in (False,True):
+        if reloading:
+            shell=shell.replace('PreviewChecks { window:window }','PreviewChecks { window:window;reloadOnly:true }')
+            (out/'shell.qml').write_text(shell)
+        q=subprocess.run(['/usr/bin/python3','-B',str(out/'launch.py'),'smoke'],capture_output=True,text=True,timeout=30)
+        log=(out/'data/state/window.log').read_text()
+        marker='PASS: reopened editor' if reloading else 'PASS: full Setup navigation'
+        assert q.returncode==0 and marker in log,q.stdout+q.stderr+log
+        assert not any(word in log for word in ('WARN','ERROR','Error:','FAIL:','Unable to assign','Binding loop')),log
+        print(log)
 
 if __name__=='__main__':main()

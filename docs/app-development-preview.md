@@ -19,6 +19,10 @@ python3 ~/.local/share/omabit-policy-preview-040/launch.py stop
 
 1. Select Global, a runner, a ship, or a desk in the tree. The selected node's
    editor sits beside it on wider windows, or below it on narrower windows.
+   Use **− / +** or **Ctrl+scroll** over the tree to zoom from 25% to 200%.
+   Click the percentage to reset to 100%, or **Fit** to show the tree in the
+   available space. Scroll or drag to pan; the permission editor stays its normal
+   size. When the tree has keyboard focus, Ctrl+plus/minus and Ctrl+0 also work.
    All permissions initially default to Block; previous saved choices are retained.
 2. Select `preview-local → ~zod → %base`, set Commit to Clay to Allow and save.
    With **Permission: Commit to Clay** and **Highlight: Allowed**, that desk and
@@ -81,6 +85,6 @@ python3 scripts/test-app-development-preview.py \
 ```
 
 The full-panel interaction fixture tests selection, the single-desk Allow path,
-creation inheritance, offline/observer behavior, Setup navigation and responsive
-geometry. It uses a fresh networkless offscreen copy. Never run automated policy
+creation inheritance, offline/observer behavior, Setup navigation, responsive geometry and real pointer/keyboard
+input for zooming, scaled node selection, scrolling and dragging. It uses a fresh networkless offscreen copy. Never run automated policy
 mutations against a human's persistent preview.
