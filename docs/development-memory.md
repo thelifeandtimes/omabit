@@ -8522,3 +8522,43 @@ source in migration02 explicitly links the byte-identical retained migration01
 source. Do not remove that dependency. Full failure34 and current41 piers remain.
 The diagnostic lists exact removal/retention manifests. Production/DEV/trial and
 the persistent manual preview stay unchanged. Re-measure before further builds.
+
+
+## M552 — Native frontend artifacts and empty source files (2026-11-07)
+
+The internal frontend artifact format binds the complete sorted file/MIME map,
+with 2048 files/32 MiB limits, required index.html and a reserved desk.js name.
+Native Docket's multipart representation loses a terminal NUL; the adapter refuses
+such files rather than silently corrupting them. Embedded/leading NULs and empty
+files are supported. MIME types use a deterministic table independent of the host.
+A pure Lens calculation predicts Docket's exact glob hash before any upload.
+Native MIME is a single path atom containing the full header, including its slash.
+
+Native48 passes against the pinned Vere/pill: the predicted and uploaded glob hash
+match, all three served assets have exact bytes and MIME types, and Clay advances
+from revision6 to7. The generated docket correctly conflicts with older source
+ownership. The same capsule verifies empty source normalization, commit and
+subsequent comparison; empty base64 now constructs zero-length octs directly in
+all three source primitives. All effects are acknowledged and shutdown is clean.
+
+Earlier42–44 hash construction failures occurred before upload. Native45 performed
+one acknowledged upload whose bytes were correct but whose predicted hash was
+wrong. Read-only diagnostic46/47 transferred that stopped fake, confirmed exact
+HTTP bytes and discovered the MIME representation. No upload was repeated; the
+original failed verification is retained. Fresh48 validates the correction.
+
+Internal Eyre upload sends one bounded request without redirect/replay. The private
+runtime HTTP transport admits only fixed identity/login/logout/upload endpoints,
+keeps credentials out of argv/files/logs, and checks runtime identity around each
+call. Entire Eyre and focused runtime transport/frontend race suites pass in private
+namespaces; core artifact race tests and six capsule Python tests pass. The actual
+Docker invocation remains unqualified. See
+`diagnostics/2026-11-07-desk-frontend-artifacts.json` for hashes, failures and retention.
+
+This completes the native artifact spike, not the public frontend API/CLI or its
+policy/journal integration. Metadata/hash verification is not application health.
+Schema56, installed plugins/runners and the manual preview remain unchanged.
+Only classified generated inputs, inactive completed piers and rebuildable caches
+were retired; original failures/receipts and compressed binary sources remain.
+Admission refusals prevented launches before retention made room under40GiB.
+Re-measure before the next build/runtime. Release qualification stays deferred.

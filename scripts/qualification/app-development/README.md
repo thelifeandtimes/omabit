@@ -102,3 +102,20 @@ commits and release checks pass. Both runs stop cleanly, with all effects accoun
 for. See M546–M548 and their diagnostics. Frontend upload still uses a private
 helper; managed Docker/SSH, receiver rollout and Urgit remain separate acceptance
 work. Neither live-agent status nor a source revision proves application health.
+
+
+## Frontend artifact qualification and read-only diagnostics
+
+Native48/M552 verifies predicted versus actual Docket glob hash, the exact bytes
+and MIME of HTML/binary/empty assets, the resulting Clay revision, source ownership
+conflict and empty-source normalization/commit/comparison. Its internal upload
+client is not yet a public gated frontend command. See the artifact diagnostic.
+
+`--frontend-diagnostic --resume-from PATH` transfers only a verified stopped fake
+from this capsule. It retains the original random desk and performs fixed Lens
+metadata and authenticated asset reads, followed by logout and clean shutdown.
+It refuses workflow binaries, release source, receivers and effect-recovery flags;
+it declares1GiB scratch. A failed frontend verification may be inspected this way
+without authorizing another mutation. Diagnostic46/47 investigated native45's
+acknowledged upload/hash mismatch without retrying it. Fresh48 proves the fix.
+The original failure record remains authoritative for that historical run.

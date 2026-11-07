@@ -69,7 +69,7 @@ func deskFromProject(ctx context.Context, e *projectCurrentReadinessEngine, befo
 	if err != nil {
 		return nil, err
 	}
-	s := &DeskRuntime{ship: ship, pier: path, endpoint: fmt.Sprintf("http://127.0.0.1:%d", port), containerID: containerID, q: q}
+	s := &DeskRuntime{ship: ship, pier: path, endpoint: fmt.Sprintf("http://127.0.0.1:%d", port), httpEndpoint: fmt.Sprintf("http://127.0.0.1:%d", memberPort), containerID: containerID, q: q}
 	s.check = func(ctx context.Context) error {
 		after, err := projectFleetInspect(ctx, e)
 		if err != nil {

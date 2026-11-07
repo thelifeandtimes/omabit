@@ -360,6 +360,13 @@ with older frozen source ownership; reconcile that source instead of overwriting
 Use the explicit source-adoption workflow below only after staging the updated
 source that already matches Clay. A public upload adapter is not implemented yet.
 
+Native48/M552 verifies the internal artifact path with exact HTML, binary and empty
+files, matching predicted/native glob hash and observed Clay changes. Its limits
+are2048 files/32MiB, required index.html and reserved desk.js. Files ending in a
+NUL byte refuse because native multipart would lose that byte. A successful hash
+or metadata check does not establish HTTP or application health. Do not substitute
+these internal helpers for a supported, permission-checked agent command.
+
 An intentionally invalid agent update in that probe returned HTTP500 and left the
 observed revision/hash unchanged. The original dispatch remains uncertain; an
 unchanged read alone does not clear uncertainty or authorize a retry. This is distinct

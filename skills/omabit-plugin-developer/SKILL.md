@@ -48,7 +48,10 @@ follow the operator reference. It requires creation and commit permission, keeps
 the received desk private, and follows later publisher updates. Frontend upload
 commands remain pending. Native Docket
 upload can commit its hash back to Clay and distribute an update: apply the same
-gates and reconcile source ownership. See the operator reference for limits.
+gates and reconcile source ownership. Native48 verifies the internal artifact hash
+and exact HTML/binary/empty delivery. Artifacts require index.html, reserve desk.js,
+cap at2048 files/32MiB and refuse terminal-NUL files. Public commands remain pending;
+use the operator reference and do not bypass policy with the qualification helper.
 Creation is controlled at the ship, and new desks inherit commit/publication
 settings by default. Creating a desk does not grant either permission. Until a
 supported effect exists and fresh policy permits it, keep the mutation blocked.

@@ -87,6 +87,11 @@ def inside():
                 result['private_read_job_cancelled']=True;save()
             assert lens('identity','our')=='~zod' 
             print('DESK_PROBE ready',flush=True)
+            if g.get('frontend_diagnostic'):
+                from frontend_diagnostic import inspect_frontend
+                result['frontend_diagnostic']=inspect_frontend(lab,desk,lens);save()
+                if not result['frontend_diagnostic'].get('session_cleanup'):raise RuntimeError('diagnostic session cleanup unconfirmed')
+                raise WorkflowComplete()
             if g.get('workflow'):
                 stat=Path('/proc/'+str(child.pid)+'/stat').read_text()
                 fixture={'pid':child.pid,'start':stat[stat.rfind(')')+2:].split()[19],
@@ -195,6 +200,8 @@ def inside():
     return 0 if result['ok'] else 1
 
 def host(a):
+    frontend_diagnostic=getattr(a,'frontend_diagnostic',False)
+    if frontend_diagnostic and (not a.resume_from or a.receivers or a.recover_receiver_boot or a.workflow_binary or a.release_source):raise ValueError('frontend diagnostic requires only one clean stopped fixture')
     out=a.output.absolute()
     if out.parent!=Path('/tmp') or not re.fullmatch('omabit-desk-probe-[a-z0-9-]+',out.name) or out.exists():raise ValueError('fresh private output required')
     frozen_requests=json.loads(a.requests.read_text())
@@ -213,6 +220,7 @@ def host(a):
         if previous.parent!=Path('/tmp') or not re.fullmatch('omabit-desk-probe-[a-z0-9-]+',previous.name) or previous.is_symlink():raise ValueError('invalid prior fixture')
         if not json.loads((previous/'lab/result.json').read_text()).get('clean_shutdown') or not (previous/'exit.json').is_file():raise ValueError('prior fixture not stopped')
         report=json.loads((previous/'lab/result.json').read_text())
+        if (previous/'lab/frontend-failed-proof.json').exists() and not frontend_diagnostic:raise ValueError('failed frontend verification permits read-only diagnosis only')
         if json.loads((previous/'guard.json').read_text()).get('workflow'):
             if json.loads((previous/'guard.json').read_text()).get('receivers'):raise ValueError('receiver capsule needs explicit multi-pier retention/reuse review')
             for effects in (previous/'lab').glob('*effects.jsonl'):
@@ -241,10 +249,14 @@ def host(a):
     if a.receivers:
         available=int(next(line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemAvailable:')))*1024
         if available<8*1024**3:raise ValueError('three-peer capsule requires 8GiB available before its 6GiB cap')
+    selected_desk=json.loads((previous/'guard.json').read_text())['desk'] if recovered or frontend_diagnostic else 'omabit-test-'+uuid.uuid4().hex[:8]
+    if not re.fullmatch('omabit-test-[a-f0-9]{8}',selected_desk):raise ValueError('unexpected synthetic desk')
     # Refusal happens in this process before copying inputs, transferring a pier,
     # or spawning a scope. A caller's shell error handling cannot bypass it.
     from storage import admit
-    scratch_limit=768*1024**2 if recovered else 2*1024**3
+    # Read-only frontend diagnosis transfers one stopped pier and adds no new
+    # workflow binary or desks:1GiB covers one generated epoch plus pinned inputs.
+    scratch_limit=1024**3 if frontend_diagnostic else (768*1024**2 if recovered else 2*1024**3)
     storage_admission=admit(scratch_limit)
     os.umask(0o077);out.mkdir();art=out/'artifacts';art.mkdir();lab=out/'lab';lab.mkdir();(lab/'home').mkdir()
     (out/'storage-admission.json').write_text(json.dumps(storage_admission,indent=2)+'\n')
@@ -252,6 +264,7 @@ def host(a):
     if a.receivers:
         if not a.workflow_binary or not a.release_source:raise ValueError('receivers require the assembled release workflow')
         shutil.copyfile(Path(__file__).with_name('receivers.py'),art/'receivers.py')
+    if frontend_diagnostic:shutil.copyfile(Path(__file__).with_name('frontend_diagnostic.py'),art/'frontend_diagnostic.py')
     if a.workflow_binary:
         if a.workflow_binary.is_symlink() or not a.workflow_binary.is_file():raise ValueError('physical workflow binary required')
         shutil.copyfile(a.workflow_binary,art/'workflow.test');(art/'workflow.test').chmod(0o700)
@@ -263,7 +276,8 @@ def host(a):
         shutil.copytree(a.release_source,art/'release-source')
     (art/'vere').chmod(0o700)
     g={'unit':'omabit-desk-probe-'+uuid.uuid4().hex,'namespaces':{k:os.readlink('/proc/self/ns/'+k) for k in ('net','pid','mnt','user')}}
-    g['desk']=json.loads((previous/'guard.json').read_text())['desk'] if recovered else 'omabit-test-'+uuid.uuid4().hex[:8]
+    g['desk']=selected_desk
+    g['frontend_diagnostic']=frontend_diagnostic
     g['resume']=previous is not None
     g['workflow']=bool(a.workflow_binary)
     g['receivers']=a.receivers
@@ -317,4 +331,4 @@ def host(a):
             if child.poll() is None:os.killpg(child.pid,signal.SIGTERM);child.wait(timeout=10)
     (out/'exit.json').write_text(json.dumps({'exit':rc}));print(json.dumps({'output':str(out),'exit':rc}));return rc
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--recover-receiver-boot',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--receivers',action='store_true');p.add_argument('--release-source',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--recover-receiver-boot',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--receivers',action='store_true');p.add_argument('--frontend-diagnostic',action='store_true');p.add_argument('--release-source',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))

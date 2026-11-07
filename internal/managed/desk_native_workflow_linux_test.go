@@ -604,6 +604,10 @@ func TestNativeDeskWorkflow(t *testing.T) {
 	}
 	appStatus("application-before-activation")
 	if _, err := os.Stat("/artifacts/release-source"); err == nil {
+		// An empty file must normalize, commit, and compare as zero octets. The
+		// kernel's base64 parser requires nonempty input, so it needs an explicit
+		// zero-length representation in every typed source path.
+		write("empty.txt", "")
 		g02Check(t, filepath.WalkDir("/artifacts/release-source", func(path string, d os.DirEntry, err error) error {
 			if err != nil {
 				return err
@@ -633,6 +637,13 @@ func TestNativeDeskWorkflow(t *testing.T) {
 		_ = releaseCommit
 		before, err := f.Observe(ctx, f.Desk)
 		g02Check(t, err)
+		emptyCheck, err := deskwork.MarkEquivalent(f.ship(), f.Desk, before.Revision, "empty.txt", []byte{})
+		matches, err := f.call(ctx, emptyCheck, err)
+		g02Check(t, err)
+		if strings.TrimSpace(matches) != "%.y" {
+			t.Fatal("empty source file differs after commit")
+		}
+		save("empty-source-normalized-committed-and-matched", true)
 		release("activate-local", "local-activation-observed", "observed")
 		var active deskwork.AppState
 		for end := time.Now().Add(30 * time.Second); ; {

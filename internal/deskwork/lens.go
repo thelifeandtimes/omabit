@@ -182,7 +182,7 @@ func MarkEquivalent(ship, desk string, revision uint64, name string, raw []byte)
 		quoted[i] = "`@ta`'" + p + "'"
 	}
 	filePath := "(weld /" + ship + "/" + desk + "/" + hoonDecimal(revision) + " ~[" + strings.Join(quoted, " ") + "])"
-	expression := "|=  encoded=@t\n=/  file  " + filePath + "\n?.  .^(? %cu file)  %.n\n=/  raw  (need (de:base64:mimes:html encoded))\n=/  convert  .^(tube:clay %cc /" + ship + "/" + desk + "/" + hoonDecimal(revision) + "/mime/" + fileMark + ")\n=(q:(convert !>(`mime`[/text/plain raw])) .^(* %cx file))"
+	expression := "|=  encoded=@t\n=/  file  " + filePath + "\n?.  .^(? %cu file)  %.n\n=/  raw=octs  ?:(=('' encoded) [0 0] (need (de:base64:mimes:html encoded)))\n=/  convert  .^(tube:clay %cc /" + ship + "/" + desk + "/" + hoonDecimal(revision) + "/mime/" + fileMark + ")\n=(q:(convert !>(`mime`[/text/plain raw])) .^(* %cx file))"
 	data := base64.StdEncoding.EncodeToString(raw)
 	return LensRequest{expression: expression, input: &data}, nil
 }

@@ -20,9 +20,9 @@ import (
 // and persist dispatch before calling a mutation method. This type grants no
 // policy permission, retries no requests, and never cancels shared Lens work.
 type DeskRuntime struct {
-	ship, pier, endpoint, containerID string
-	q                                 *qualifier
-	check                             func(context.Context) error
+	ship, pier, endpoint, httpEndpoint, containerID string
+	q                                               *qualifier
+	check                                           func(context.Context) error
 }
 
 func OpenManagedDesk(ctx context.Context, state ManagedState, expectedContainer string) (*DeskRuntime, error) {
@@ -68,7 +68,7 @@ func openManagedDesk(ctx context.Context, state ManagedState, expectedContainer 
 		return nil, err
 	}
 	ship := managedDeskShip(state)
-	s := &DeskRuntime{ship: ship, pier: q.pierPath(), endpoint: fmt.Sprintf("http://127.0.0.1:%d", port), containerID: expectedContainer, q: q}
+	s := &DeskRuntime{ship: ship, pier: q.pierPath(), endpoint: fmt.Sprintf("http://127.0.0.1:%d", port), httpEndpoint: "http://127.0.0.1:8080", containerID: expectedContainer, q: q}
 	s.check = func(ctx context.Context) error {
 		c, err := q.inspect(ctx, index)
 		if err != nil {

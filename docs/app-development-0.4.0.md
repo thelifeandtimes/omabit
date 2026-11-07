@@ -355,6 +355,14 @@ pipeline after an interrupted terminal or desktop restart.
    source-only publication and receiver installation with native control disabled.
    Native frontend/glob upload is confirmed (M546): it commits a new docket hash,
    so published desks require both gates and prior source ownership can conflict.
+   M552 additionally verifies a deterministic artifact manifest and predicted native
+   glob hash against exact HTML, binary and empty-file delivery. The internal
+   adapter caps artifacts at2048 files/32MiB, reserves desk.js, requires index.html
+   and refuses terminal-NUL files that native multipart would truncate. Docket's
+   full MIME header occupies one path atom; splitting it gives the wrong hash.
+   Acknowledgement, Clay/Docket observation and HTTP health remain separate facts.
+   Public frontend review/journal/API/CLI integration remains pending; see
+   [artifact evidence](diagnostics/2026-11-07-desk-frontend-artifacts.json).
    An invalid installed-agent update returns HTTP500 with unchanged observed Clay;
    retain uncertainty, and complete compilation/activation failure reporting.
 3. Workflow bindings, canonical change observation and bounded private source

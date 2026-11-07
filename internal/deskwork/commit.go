@@ -65,7 +65,8 @@ func CommitFiles(ship, desk string, baseline Observation, changes []DeltaFile) (
   =/  action  (so:dejs:format i.t.fields)
   ?:  =(action 'delete')  [p %%del ~]
   ?>  =(action 'write')
-  =/  raw  (need (de:base64:mimes:html (so:dejs:format i.t.t.fields)))
+  =/  bytes  (so:dejs:format i.t.t.fields)
+  =/  raw=octs  ?:(=('' bytes) [0 0] (need (de:base64:mimes:html bytes)))
   =/  page=cage  [%%mime !>(`+"`mime`"+`[/text/plain raw])]
   ?:  .^(? %%cu (weld root p))  [p %%mut page]
   [p %%ins page]
