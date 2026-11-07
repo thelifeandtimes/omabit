@@ -8176,3 +8176,39 @@ across the two evidence roots and Omabit scratch. The obsolete generated
 allocated bytes) removed using `/tmp/omabit-desk-cache-pruning-20261107.json`.
 Current Go cache, source, migration fixtures and all piers were retained. Recheck
 capacity and declare the next scratch allowance before starting a runtime.
+
+## M545 — Native staged-commit composition and bounded retention (2026-11-07)
+
+Probe21 passes the real disposable kernel + managed API/store + collector/Unix
+transport workflow with schema53. Creation and commits are closed by default;
+explicit fixture-user grants enable only the requested scopes. Live discovery,
+canonical synchronized/Unix-change alerts, source staging, first commit preserving
+scaffold, subsequent add/update/delete, deliberately lost acknowledgement and
+read-only reconciliation after permission revocation pass. An uncertain stage
+cannot be discarded. Exact replay never repeats the commit. A native fixture
+publication makes later commits require both Commit and Publish. The ship exits
+cleanly. Source acceptance remains distinct from compilation/readiness.
+
+The guard admits only the private namespace, loopback, recorded scope and owned
+Vere executable/start time. Effects have retained dispatch/acknowledgement rows;
+reuse checks those and terminal managed receipts. Probe20 failed before runner
+state or any desk operation because the harness omitted mkdir; corrected in21.
+M544's pending native composition is superseded by this evidence. The lifecycle
+backend is still synthetic: managed Docker, SSH, activation, Treaty, frontends,
+receivers and Urgit are not qualified by this run. See the
+`diagnostics/2026-11-07-desk-native-workflow.json` evidence and limits.
+
+Before the run, classified duplicate immutable Vere/pill copies and generated
+cache/superseded successful test binaries were pruned with recorded identity/hash
+checks. Source, original migration fixtures, logs/results and all piers remain.
+Removal manifests are `/tmp/omabit-desk-runtime-inputs-prune-plan.json`,
+`/tmp/omabit-desk-generated-pruning-20261107.json` and
+`/tmp/omabit-desk-runtime-inputs-prune-19-20.json`. Canonical immutable inputs stay
+in runtime-inputs-20261025-07. A read-only DEV disk-size query returned a lower
+bound because18 overlay work directories were inaccessible; sudo was unavailable.
+No permissions or DEV state changed. Admission21 reserves1GiB for that uncertainty
+and2GiB additional scratch, totaling42,542,821,376 bytes under40GiB. Re-measure before
+another runtime. Retain at most one active experiment. Production, installed DEV,
+trial and manual-preview plugins/runners/ships remain untouched. Publication,
+activation, existing-desk adoption, Urgit, fleet URLs and clearweb continue; release
+qualification remains deferred.

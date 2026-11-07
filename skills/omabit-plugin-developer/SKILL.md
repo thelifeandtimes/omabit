@@ -37,7 +37,8 @@ follow the operator reference for frozen plans, receipt reconciliation and disca
 It does not write live mounts or open any gate. On `desk-commit-v1`, follow the
 operator reference for reviewed staged commits, ownership/conflicts and uncertain
 receipt reconciliation. Source acceptance is separate from compilation/readiness.
-Publication adapters and the full native development workflow remain pending.
+The native kernel/API/collector commit path passes probe21/M545; its lifecycle
+backend is a fixture. Publication, activation, frontends and receivers remain pending.
 Creation is controlled at the ship, and new desks inherit commit/publication
 settings by default. Creating a desk does not grant either permission. Until a
 supported effect exists and fresh policy permits it, keep the mutation blocked.

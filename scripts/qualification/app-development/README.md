@@ -56,3 +56,29 @@ and deletions. It also records that raw invalid Hoon source can be accepted into
 Clay; this is not an application compilation or readiness pass. Those stages
 require their own configured checks. Probe17/18 retain the incorrect old-revision
 verification and disproved compilation-rejection assumption respectively.
+
+## Assembled native workflow
+
+Compile the managed test binary and pass it with `--workflow-binary`. The launcher
+starts only `TestNativeDeskWorkflow` after private ship readiness. The test refuses
+ordinary host execution and checks namespaces, admitted scope, loopback-only
+network and the owned child's executable hash/start time before Lens requests.
+
+```sh
+go test -c -o /tmp/omabit-desk-workflow-native.test ./internal/managed
+```
+
+Probe21 passes the real kernel + API/store + collector/Unix transport composition.
+It covers default gates, creation/discovery, source alerts, frozen staging, verified
+commits preserving scaffold, add/update/delete, lost acknowledgement, read-only
+reconciliation after permission revocation, and both gates on a published desk.
+Source publication and mounting are explicit fixture operations, not public API
+claims. The lifecycle backend is synthetic; Docker, SSH, compilation, activation,
+Treaty, receivers and frontend delivery remain separate checks. See M545 and
+`docs/diagnostics/2026-11-07-desk-native-workflow.json`.
+
+Native effect dispatch/acknowledgement and managed receipts are retained. Reuse
+refuses unresolved native effects or managed operations, including a harness
+failure. Never discard those receipts to permit reuse. Probe20 stopped before
+runner state existed because the harness omitted directory creation; it mutated
+no desk. The repaired probe21 shut down cleanly.

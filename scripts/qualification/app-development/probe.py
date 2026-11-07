@@ -9,6 +9,7 @@ import re
 import shutil
 import signal
 import socket
+import sqlite3
 import subprocess
 import time
 import urllib.request
@@ -20,6 +21,7 @@ def sha(path):
     with Path(path).open('rb') as f: return hashlib.file_digest(f,'sha256').hexdigest()
 
 def inside():
+    class WorkflowComplete(Exception): pass
     g=json.loads(Path('/guard.json').read_text());lab=Path('/lab')
     for k in ('net','pid','mnt','user'):
         if os.readlink('/proc/self/ns/'+k)==g['namespaces'][k]:raise RuntimeError('host namespace refused')
@@ -85,6 +87,17 @@ def inside():
                 result['private_read_job_cancelled']=True;save()
             assert lens('identity','our')=='~zod' 
             print('DESK_PROBE ready',flush=True)
+            if g.get('workflow'):
+                stat=Path('/proc/'+str(child.pid)+'/stat').read_text()
+                fixture={'pid':child.pid,'start':stat[stat.rfind(')')+2:].split()[19],
+                         'desk':desk,'vere_sha256':VERE_SHA}
+                (lab/'workflow-runtime.json').write_text(json.dumps(fixture))
+                with (lab/'workflow.log').open('wb') as workflow_log:
+                    run=subprocess.run(['/artifacts/workflow.test','-test.run=^TestNativeDeskWorkflow$','-test.v','-test.timeout=7m'],
+                                       stdout=workflow_log,stderr=subprocess.STDOUT,timeout=440)
+                result['workflow_exit']=run.returncode
+                if run.returncode:raise RuntimeError('native managed workflow failed; see workflow.log')
+                raise WorkflowComplete()
             json_result=lens('json-output',"`@ux`(en:json:html [%o (malt `(list [@t json])`~[['exists' [%b %.y]] ['revision' [%n '2']]])])")
             assert json_result.startswith('0x')
             assert lens('absence','(~(has in .^((set @tas) %cd /~zod//(scot %da now))) %omabit-test)')=='%.n'
@@ -163,6 +176,7 @@ def inside():
             fixed('publish-source','publish-source')
             assert decode_atom(fixed('inventory-published','inventory'))['publication']=='published'
             result['ok']=True
+        except WorkflowComplete:result['ok']=True
         except Exception as e:result['error']=type(e).__name__+': '+str(e)
         finally:
             if child.poll() is None:os.killpg(child.pid,signal.SIGTERM)
@@ -186,6 +200,20 @@ def host(a):
         if previous.parent!=Path('/tmp') or not re.fullmatch('omabit-desk-probe-[a-z0-9-]+',previous.name) or previous.is_symlink():raise ValueError('invalid prior fixture')
         if not json.loads((previous/'lab/result.json').read_text()).get('clean_shutdown') or not (previous/'exit.json').is_file():raise ValueError('prior fixture not stopped')
         report=json.loads((previous/'lab/result.json').read_text())
+        if json.loads((previous/'guard.json').read_text()).get('workflow'):
+            effects=previous/'lab/workflow-effects.jsonl'
+            if effects.exists():
+                states={}
+                for line in effects.read_text().splitlines():
+                    event=json.loads(line);states[event['id']]=event['state']
+                if any(state!='acknowledged' for state in states.values()):raise ValueError('workflow has an uncertain native effect')
+            database=previous/'lab/runner/runner.sqlite'
+            if database.exists():
+                with sqlite3.connect(database.as_uri()+'?mode=ro',uri=True) as connection:
+                    for (body,) in connection.execute('SELECT body FROM desk_operations'):
+                        receipt=json.loads(body)
+                        if receipt['steps'][-1]['state'] not in ('observed','blocked','interrupted','rejected'):raise ValueError('workflow has an unresolved managed effect')
+            elif (previous/'lab/runner').exists():raise ValueError('workflow store incomplete; review before reuse')
         if any(row.get('app') and row.get('state')!='returned' for row in report.get('steps',[])):raise ValueError('prior fixture has an uncertain mutation')
         prior_inputs=json.loads((previous/'inputs.json').read_text())
         if prior_inputs['vere']!=VERE_SHA or prior_inputs['boot.pill']!=PILL_SHA:raise ValueError('prior fixture inputs changed')
@@ -193,10 +221,14 @@ def host(a):
         if not pier.is_dir() or pier.is_symlink():raise ValueError('prior fixture pier unavailable')
     os.umask(0o077);out.mkdir();art=out/'artifacts';art.mkdir();lab=out/'lab';lab.mkdir();(lab/'home').mkdir()
     for source,name in [(a.vere,'vere'),(a.pill,'boot.pill'),(Path(__file__),'probe.py'),(a.requests,'requests.json')]:shutil.copyfile(source,art/name)
+    if a.workflow_binary:
+        if a.workflow_binary.is_symlink() or not a.workflow_binary.is_file():raise ValueError('physical workflow binary required')
+        shutil.copyfile(a.workflow_binary,art/'workflow.test');(art/'workflow.test').chmod(0o700)
     (art/'vere').chmod(0o700)
     g={'unit':'omabit-desk-probe-'+uuid.uuid4().hex,'namespaces':{k:os.readlink('/proc/self/ns/'+k) for k in ('net','pid','mnt','user')}}
     g['desk']='omabit-test-'+uuid.uuid4().hex[:8]
     g['resume']=previous is not None
+    g['workflow']=bool(a.workflow_binary)
     if previous:
         identity=(previous/'lab/zod').stat()
         moved={'from':str(previous),'to':str(out),'device':identity.st_dev,'inode':identity.st_ino,'previous_result_sha256':sha(previous/'lab/result.json')}
@@ -229,4 +261,4 @@ def host(a):
             if child.poll() is None:os.killpg(child.pid,signal.SIGTERM);child.wait(timeout=10)
     (out/'exit.json').write_text(json.dumps({'exit':rc}));print(json.dumps({'output':str(out),'exit':rc}));return rc
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))

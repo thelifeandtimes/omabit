@@ -4,8 +4,8 @@ Proposed architecture, recorded 2026-11-06. The user added this work to the
 0.4.0 scope after remote-runner installation testing. Source review is complete.
 The [policy layer and Setup editor](app-development-policy.md) are implemented
 and fixture-tested. Gated creation and live desk discovery are implemented;
-source transfer and gated commit API/CLI are implemented; publication remains in progress. Full managed-runtime
-qualification is pending.
+source transfer and gated commit API/CLI are implemented; publication remains in progress. The assembled native kernel/API/collector path passes M545; managed engine and
+remote transport retain their separate qualification boundaries.
 The user's follow-up fixes the scope to Urbit desks and their frontend assets.
 Agent desk creation, commit and publication start disabled, with permissions configured in
 Omabit Setup. Each application retains its developer's release configuration.
@@ -320,8 +320,8 @@ pipeline after an interrupted terminal or desktop restart.
    implemented. See [policy behavior and evidence](app-development-policy.md).
    Typed creation now uses fresh policy/runtime checks and durable schema50
    receipts. Staged commit review/verification and schema53 ownership are connected
-   and fixture-tested (M544); publication remains unavailable. Full managed-runtime
-   workflow qualification remains pending.
+   and fixture-tested (M544); the native kernel/API/collector composition passes M545.
+   Publication remains unavailable. Engine/remote transport have separate gates.
 2. Complete the transport spike on disposable fakes with explicit test policy.
    Exercise prepare, mount, commit, local activation, Treaty publication,
    source-only publication and receiver installation with native control disabled.

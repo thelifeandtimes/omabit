@@ -218,9 +218,13 @@ survives a runtime restart only for the same physical pier, target generation an
 source name. A different pier/source starts without owned paths and does not adopt
 existing content. No Unix mount is created or written by these commands. Check the
 configured mounted source separately if a developer also uses a Unix/Clay workflow.
-These APIs/CLI paths have private fixture coverage; the full managed-runtime native
-workflow remains under qualification. Check installed capabilities rather than
-assuming the development source is deployed.
+These paths have private fixture coverage and a native kernel/API/collector pass
+on disposable `~zod` (Vere4.6-5a7614f, pinned pill, probe21/M545). That pass covers
+creation, discovery, canonical alerts, staged updates/deletions, generated-file
+preservation, lost-acknowledgement reconciliation and published-desk gates. It uses
+a synthetic lifecycle backend: it does not requalify Docker/SSH, activation, Treaty,
+frontends or receiver readiness. Check installed capabilities rather than assuming
+the development source is deployed.
 
 ## Classify the requested effect
 
