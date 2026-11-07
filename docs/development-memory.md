@@ -7819,3 +7819,76 @@ snapshot is `/tmp/omabit-040-agent-help-snapshot`.
 The final full-panel screenshot in `/tmp/omabit-agent-ui-02` was inspected after
 the header-width correction. The policy tree regression fixture also passed.
 No installed plugin, real agent, host skill directory, runner or ship was used.
+
+
+## M535 — Desk transport and source-transfer development (2026-11-06)
+
+The Agent Help checkpoint is integrated at `18f3054` in the isolated 0.4.0
+worktree. Desk implementation proceeds in `codex/0.4.0-desk-workflow`. The
+new `internal/deskwork` package prepares bounded source manifests, hashes,
+file-preserving transfer plans, three-tree comparisons and framed source bundles.
+Uploads stage outside a pier; incomplete, changed, linked, oversized or corrupt
+source is refused. Identical untracked files are preserved without adopting them
+for future deletion. Focused source/bundle/request tests pass. No runner endpoint
+uses this package yet, so it does not enable desk mutations.
+
+Disposable native probes use the previously pinned Vere/pill, private network,
+PID, mount, IPC, user and UTS namespaces and a 4 GiB/no-swap/one-core scope.
+The declared scratch allowance is 2 GiB; prior generated piers/input duplicates
+are pruned only after clean shutdown, with removal receipts. Retained classified
+lab roots measured about 26 GiB before this round, below the 40 GiB limit.
+
+Probe02 establishes create, mount, five generated prerequisites, uncommitted file
+absence, an acknowledged commit and revision1→2. It fails the deliberate raw
+byte comparison: a text file ending in newline renders from Clay without that
+newline. Raw byte equality is therefore insufficient for uncommitted alerts.
+The adapter must use the desk's actual mark conversion, or exact previously
+observed commit evidence; it must not suppress real edits by trimming arbitrary
+files. A mount naming the current revision can remain a live mount, so a stable
+comparison baseline requires captured bytes and a revision fence.
+
+Probes01/03/04/06 retain failed expression/observation evidence under
+`/tmp/omabit-desk-probe-NN`, and stopped cleanly. Missing-source scries and malformed
+Dojo expressions can leave Lens waiting; check existence first, use typed
+requests and never interpret transport submission as successful execution.
+Probe05 rejected an empty generated request fixture before starting a runtime.
+Hoon numeric literals require grouping for larger decimal/hex values; mixed
+JSON fields require an explicit list element type. Probe06 verifies a bounded
+JSON-as-hex response; the Go decoder refuses unknown fields and trailing data.
+The corrected complete protocol probe is still pending.
+
+Source review also shows that cancelling Kiln autocommit does not clear its
+saved timer value. Active Behn timer evidence is required; the saved value alone
+cannot establish active/inactive status. Treaty is absent from the tested base
+desk; publication capability discovery and the real Treaty/frontend/receiver
+workflow remain pending. These findings are not a release qualification claim.
+
+
+## M536 — Typed desk protocol probe passed (2026-11-06)
+
+Probe12 closes M535's initial protocol spike: the actual Go-generated create,
+mount, commit and source-publication requests pass on a private fake. Inventory
+reports revision1/private before commit and revision3/published after the
+autocommit test and explicit source publication. The source normalizer passes
+real file bytes as base64 data through Lens's Hoon transform, uses the selected
+desk/revision's MIME→mark converter, accepts semantically equal newline variants
+and rejects different content. Vere's Unix driver uses text/plain MIME for its
+file input; the adapter follows that representation.
+
+An active `/kiln/autocommit` timer is present before cancellation and absent
+after it. The pinned pill lacks the convenience cancellation generator: probe10
+retains that failed attempt. Typed `%kiln-cancel-autocommit` succeeds in probe12.
+A failed Lens read can persist across process restart; probe08 records that
+result. The private harness may clear its own failed read job on a verified
+stopped fixture, but production adapters must not cancel another session's Lens
+job or replay an uncertain mutation. Probe09/11 preserve intermediate type
+errors; probe12 is the first complete pass.
+
+The development operation model now validates reviewed policy/desk baselines,
+requires both commit and publish gates for published desks, and separates
+dispatch, acknowledgement, observed effect and uncertainty. Reopen recovery
+never redispatches an incomplete effect. A later revision alone is insufficient
+to claim an interrupted commit: exact frozen-source verification is required.
+Focused package/policy race tests pass; runner persistence and transport remain
+next. See `diagnostics/2026-11-06-desk-protocol.json` for exact inputs, request
+source hashes, results and explicit limits. Production/DEV/trial state is untouched.
