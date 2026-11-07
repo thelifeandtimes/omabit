@@ -295,6 +295,11 @@ func (r *Server) serveDeskReconciliation(w http.ResponseWriter, req *http.Reques
 		respond(w, 200, r.deskReply(receipt))
 		return
 	}
+	if state == "uncertain" && deskwork.IsReleaseAction(receipt.Intent.Action) {
+		r.queueDeskReleaseReconciliation(receipt, actor)
+		respond(w, 202, r.deskReply(receipt))
+		return
+	}
 	if state == "uncertain" && receipt.Intent.Action == "commit" {
 		r.queueDeskCommitReconciliation(receipt, actor)
 		respond(w, 202, r.deskReply(receipt))

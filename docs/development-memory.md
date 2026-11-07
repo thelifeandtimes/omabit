@@ -8263,3 +8263,54 @@ current failure33 and fresh34 piers are retained. The pruned unresolved29 receip
 still records uncertainty; pruning is not reconciliation. Admission34 measured
 42,720,210,944 bytes including2GiB next scratch and1GiB uncertainty reserve for
 inaccessible DEV overlay work directories. Re-measure before another runtime.
+
+## M547 — Gated local activation and publication (2026-11-07)
+
+`desk-release-v1` exposes read-only review, saved release plans and a single
+journaled dispatch for local activation, Clay source publication and Treaty
+publication. CLI commands are `desk-review-release`, `desk-plan-release` and
+`desk-release`. Ordinary operation inspection and read-only reconciliation also
+cover these receipts. Reviews bind source revision/hash, application observation,
+physical pier, runtime/project generation, both workflow revisions and policy.
+Source/Treaty publication must match the configured method. Local activation
+refuses to replace a remote subscription, including in the native expression.
+Commit gates activation, plus Publish when already distributed; publication
+requires Publish. Defaults remain blocked. Policy/settings/source changes before
+dispatch block the effect. Exact replay returns the original receipt without a
+second write. Lost responses remain uncertain and recovery never repeats effects.
+
+Configured publication checks require ordered, named, passing attestations for
+the reviewed Clay hash with bounded evidence. These are caller-supplied results,
+not commands executed or independently verified by the runner. Activation accepts
+no check attestations, because installation can be needed to perform those checks.
+Observations distinguish source acceptance, Gall liveness and Treaty/Docket state;
+none proves the compiled code version or whole-application health.
+
+Schema54 adds immutable release reviews/checks linked atomically to the existing
+journal, with strict reopen validation. The actual original schema53 writer at
+3a5a5c5 supplies a preserved fixture; migration retains policy, receipts, workflow,
+baselines, deployments and ownership. Reopen and invalid-state rollback pass;
+that original reader refuses54 without modifying state. Frozen historical release
+fixtures remain unchanged; only the development target advances. Core/CLI,
+collector and all managed desk regression race checks pass. One collection fixture
+used a stale interval shorter than the four-minute operation bound; correcting its
+age passes without product changes.
+
+Fresh isolated native probe35 passes gated source publication, exact replay,
+published-desk dual gates, local activation and Treaty publication through the
+managed API/store/client/collector. The native frontend fixture still verifies
+exact served HTML and the ownership conflict after Docket's Clay update. All35
+effects are acknowledged and shutdown is clean. It does not repeat M546's invalid
+agent mutation;34 remains uncertain and cannot be resumed for ordinary mutations.
+See `diagnostics/2026-11-07-desk-gated-releases.json`. This supersedes M546's pending
+public release adapter; frontend upload remains a private test helper. Source
+adoption, receivers, Urgit, fleet routes and clearweb assistance remain active.
+The lifecycle backend is synthetic; managed Docker/SSH and release qualification
+are not claimed. Installed production/DEV/trial/manual preview remain unchanged.
+
+Before35, rebuildable Go cache was pruned with
+`/tmp/omabit-desk-release-cache-pruning-02.json`; duplicate immutable35 inputs were
+removed with their recorded hash/inode checks. Native35 admission included2GiB
+scratch and1GiB unmeasured-DEV reserve at42,838,761,472 bytes. Subsequent regression
+admission with1GiB scratch totals42,392,866,816 bytes. Re-measure before another
+runtime; retain compact evidence and original migration writers/fixtures.

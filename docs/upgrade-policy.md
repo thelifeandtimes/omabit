@@ -1,5 +1,23 @@
 # Stable-release upgrade requirement
 
+## Development: reviewed activation/publication, schema54
+
+Schema54 adds immutable `desk_releases` linked to the existing operation journal,
+and observed application-stage evidence on release receipts. Original policy,
+workflow, source baselines, deployments, ownership and history remain byte-preserved.
+Migration does not invent release records or enable any gate. Opening checks every
+release record against its journal; unknown, incomplete or inconsistent metadata
+refuses reopen. Recovery never redispatches an unfinished release.
+
+`scripts/test-desk-release-upgrade.py` exercises the actual schema53 writer at
+`3a5a5c52a396089231d12998f7316a8d24a48ac9`, migration/reopen with new release
+records, and that actual older reader's refusal without changing54 state. The
+checked-in original53 SQL fixture additionally covers preservation and rollback.
+Negotiate `desk-release-v1` with matching collector/runner code. Never downgrade
+the database schema. This is development functionality and fixture evidence;
+release qualification, supported stable upgrade artifacts and installed upgrades
+remain separate and deferred.
+
 ## Development: verified source deployment, schema53
 
 Schema53 adds immutable staged-commit reviews linked to the existing desk journal,

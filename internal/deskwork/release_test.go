@@ -34,6 +34,10 @@ func TestReleaseRequestsBindReviewedRevisionAndRejectInjection(t *testing.T) {
 			t.Fatal("unbound mutation", q)
 		}
 	}
+	activation, _ := ActivateLocal("~zod", "example", baseline)
+	if !strings.Contains(activation.expression, "?=(~ sync.u.pike)") {
+		t.Fatal("local activation can replace a remote source")
+	}
 	for _, bad := range []string{"~zod/", "~zod\n!!", "arbitrary"} {
 		if _, err := AppInventory(bad, "base"); err == nil {
 			t.Fatal("unsafe app ship")

@@ -62,7 +62,7 @@ func (i Intent) Validate() error {
 		if !i.Baseline.Exists || !digestPattern.MatchString(i.SourceDigest) {
 			return errors.New("commit requires an observed desk and frozen source")
 		}
-	case "publish-source", "publish-treaty":
+	case "publish-source", "publish-treaty", "activate-local":
 		if !i.Baseline.Exists || i.SourceDigest != "" {
 			return errors.New("publication requires an observed desk")
 		}
@@ -86,6 +86,9 @@ func (i Intent) Check(p apppolicy.Policy, current Observation) error {
 		publication = "absent"
 	}
 	effect := i.Action
+	if effect == "activate-local" {
+		effect = "commit"
+	}
 	if effect == "publish-source" || effect == "publish-treaty" {
 		effect = "publish"
 	}
@@ -99,6 +102,7 @@ type Step struct {
 	State                string       `json:"state"`
 	At                   time.Time    `json:"at"`
 	Observation          *Observation `json:"observation,omitempty"`
+	Application          *AppState    `json:"application,omitempty"`
 }
 type Receipt struct {
 	Version int    `json:"version"`
@@ -140,17 +144,20 @@ func (r Receipt) Validate() error {
 					return errors.New("commit revision was not observed")
 				}
 			case "publish-source":
-				if s.Observation.Publication != "published" {
-					return errors.New("publication was not observed")
+				fallthrough
+			case "publish-treaty", "activate-local":
+				if s.Application == nil || VerifyRelease(r.Intent.Action, r.Intent.Baseline, *s.Observation, *s.Application) != nil {
+					return errors.New("selected release stage was not observed")
 				}
-			case "publish-treaty":
-				return errors.New("Treaty publication requires its separate receipt adapter")
 			}
-		} else if s.Observation != nil || s.VerifiedSourceDigest != "" {
+		} else if s.Observation != nil || s.VerifiedSourceDigest != "" || s.Application != nil {
 			return errors.New("unexpected desk step observation")
 		}
 		if r.Intent.Action != "commit" && s.VerifiedSourceDigest != "" {
 			return errors.New("unexpected source verification")
+		}
+		if !IsReleaseAction(r.Intent.Action) && s.Application != nil {
+			return errors.New("unexpected application stage evidence")
 		}
 		state = s.State
 	}

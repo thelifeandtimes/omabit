@@ -115,5 +115,11 @@ func ActivateLocal(ship, desk string, baseline Observation) (LensRequest, error)
 	if err != nil {
 		return LensRequest{}, err
 	}
-	return LensRequest{expression: pre + fmt.Sprintf("[%%%s %s %%%s]", desk, ship, desk), app: "hood", mark: "kiln-install"}, nil
+	// Recheck the subscription in the native expression, not only in the runner
+	// review. Local activation must not replace a remote source configuration.
+	guard := fmt.Sprintf(`=/  pikes  .^((map @tas [sync=(unit [ship=@p desk=@tas]) hash=@uv zest=zest:clay wic=(set weft)]) %%gx /%s/hood/(scot %%da now)/kiln/pikes/noun)
+=/  pike  (~(get by pikes) %%%s)
+?>  ?~(pike & ?=(~ sync.u.pike))
+[%%%s %s %%%s]`, ship, desk, desk, ship, desk)
+	return LensRequest{expression: pre + guard, app: "hood", mark: "kiln-install"}, nil
 }

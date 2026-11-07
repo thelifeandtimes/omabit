@@ -6,8 +6,9 @@ live installed-desk discovery (`desk-discovery-v1`), and runner-shared workflow
 settings (`desk-workflow-settings-v1`), and source comparison/alerts
 (`desk-source-status-v1`), and private source staging (`desk-source-staging-v1`).
 Staged commits are implemented on `desk-commit-v1` runners. Separate app-stage
-observations use `desk-application-status-v1`. Agent publication/activation adapters
-and full managed-runtime workflow qualification remain in progress.
+observations use `desk-application-status-v1`. Reviewed local activation and
+source/Treaty publication use `desk-release-v1`. Full managed-runtime workflow
+qualification remains in progress.
 Urgit follows its native workflow; no dedicated Omabit adapter is planned. Verify
 installed capabilities and command help rather than assuming development source
 is installed. Keep prepared source outside a live mount while its effects are
@@ -119,8 +120,7 @@ which external actor created a desk. If reconciliation remains unavailable,
 preserve the receipt and ask for review rather than bypassing it with Dojo.
 
 Creation does not grant commit/publication permission. Native Treaty and frontend
-workflow observations are tested as described below; agent effect APIs and receiver
-qualification remain pending.
+workflow observations are tested as described below; receiver qualification and the native upload agent adapter remain pending.
 
 ## Freeze and transfer prepared source
 
@@ -227,8 +227,8 @@ preservation, lost-acknowledgement reconciliation and published-desk gates. It u
 a synthetic lifecycle backend: it does not requalify Docker/SSH or receiver
 readiness. Probe34/M546 additionally covers the app-stage API, native local activation,
 source/Treaty publication, and Docket upload with exact served fixture bytes.
-These native publication/upload actions are qualification helpers, not public agent
-commands. Check installed capabilities rather than assuming
+Those probes used private effect helpers. The subsequent `desk-release-v1` API
+provides gated activation/publication; native Docket upload still has no agent adapter. Check installed capabilities rather than assuming
 the development source is deployed.
 
 ## Inspect application stages separately
@@ -263,6 +263,64 @@ observed revision/hash unchanged. The original dispatch remains uncertain; an
 unchanged read alone does not clear uncertainty or authorize a retry. This is distinct
 from the earlier uninstalled-desk probe where Clay accepted invalid source. Neither
 behavior permits interpreting a commit acknowledgement as compilation success.
+
+## Review, activate and publish a selected revision
+
+Use `desk-release-v1` only after checking the installed runner capability. The
+three typed actions are `activate-local`, `publish-source` and `publish-treaty`.
+Local activation uses the commit gate, plus publish permission if the desk already
+distributes updates; it cannot replace a remote source subscription. Publication
+uses the publish gate and must match the desk's saved Setup publication method.
+No command edits those gates or selects a different publication method for the user.
+
+```sh
+omabit --config-dir REGISTRY desk-review-release --runner NAME --expected-runner-id ID \
+  --instance INSTANCE --desk DESK --action publish-treaty
+```
+
+Read both ship and desk instructions in the review. Run the configured release
+checks on that exact source and prepare a JSON array in their displayed order:
+
+```json
+[{"name":"Receiver smoke test","clay_hash":"0v123","passed":true,"evidence":"Exact source tested; report path or concise result"}]
+```
+
+The hash above is only an example: use the reviewed `observation.clay_hash`.
+Evidence is your attestation; the runner does not execute or independently verify
+these checks. Never claim a check passed without its result. Keep credentials,
+private source and sensitive logs out of this retained summary. Failed, omitted or
+mismatched checks block publication. `activate-local` takes an empty check array,
+since installation may be needed to run those checks; it does not attest them.
+When no release checks are configured, omit `--checks-file` to use an empty array.
+
+```sh
+omabit --config-dir REGISTRY desk-plan-release --runner NAME --expected-runner-id ID \
+  --instance INSTANCE --desk DESK --action publish-treaty --checks-file checks.json > release-plan.json
+omabit --config-dir REGISTRY desk-release --runner NAME --expected-runner-id ID \
+  --plan-file release-plan.json
+```
+
+Use the same review/plan sequence with `--action activate-local` or
+`--action publish-source`. Save the full plan unchanged. It binds the runner,
+process/project generation, physical pier, source revision/hash, current app
+observations, policy revision, both ship/desk workflow revisions and check evidence.
+Each effect is queued once and rechecks those bindings before dispatch. Already
+observed stages return `release_unchanged`; inspect their status instead of forcing
+a second effect. Source, workflow or permissions changed since review require a new
+review; they do not amend the old intent.
+
+Query `desk-operation --id ID` for the original receipt. Exact resubmission returns
+the original receipt even after workflow/policy changes, without another effect.
+A lost reply stays uncertain. `desk-reconcile --id ID` reads the original selected
+runtime and exact source without repeating activation/publication, including after
+gates are revoked. A changed revision, pier, unavailable app protocol or missing
+result leaves uncertainty intact. Follow the same review rule for a remaining
+uncertain receipt as for commits; never bypass it through another transport.
+
+An observed activation establishes local installation and declared-agent liveness,
+not the running code's exact compiled revision or application health. An observed
+Treaty publication requires the selected hash in Treaty plus published Clay read
+permissions. Neither proves receiver rollout or frontend HTTP correctness.
 
 ## Classify the requested effect
 

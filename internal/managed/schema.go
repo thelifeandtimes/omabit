@@ -31,4 +31,5 @@ package managed
 // Schema51 retains source workflow settings and their authoring history.
 // Schema52 retains canonical synchronization baselines for source alerts.
 // Schema53 binds staged commit reviews and verified source ownership to desk receipts.
-const StateSchemaVersion = 53
+// Schema54 retains reviewed activation/publication and caller-supplied release checks.
+const StateSchemaVersion = 54

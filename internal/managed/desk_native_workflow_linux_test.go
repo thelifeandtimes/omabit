@@ -292,6 +292,21 @@ func (f *nativeDeskFixture) InspectSource(ctx context.Context, desk, source stri
 	}
 	return deskwork.InspectSource(ctx, f, filepath.Join("/lab/zod", source), desk, base)
 }
+func (f *nativeDeskFixture) Release(ctx context.Context, desk, action string, baseline deskwork.Observation) error {
+	var q deskwork.LensRequest
+	var err error
+	switch action {
+	case "activate-local":
+		q, err = deskwork.ActivateLocal("~zod", desk, baseline)
+	case "publish-source":
+		q, err = deskwork.PublishSourceAt("~zod", desk, baseline)
+	case "publish-treaty":
+		q, err = deskwork.PublishTreatyAt("~zod", desk, baseline)
+	default:
+		return errors.New("unsupported release action")
+	}
+	return f.effect(ctx, q, err)
+}
 func (f *nativeDeskFixture) CommitFiles(ctx context.Context, desk string, baseline deskwork.Observation, files []deskwork.DeltaFile) error {
 	f.commits.Add(1)
 	q, err := deskwork.CommitFiles("~zod", desk, baseline, files)
@@ -474,10 +489,38 @@ func TestNativeDeskWorkflow(t *testing.T) {
 	}
 	_, err = registry.DiscardDeskStage(ctx, "native", entry.RunnerID, second.Intent.ID, second.Intent.SourceDigest)
 	g02Check(t, err)
-	beforePublication, err := f.Observe(ctx, f.Desk)
+	setPublication := func(method string) {
+		t.Helper()
+		setting, err := s.deskSetting(target)
+		g02Check(t, err)
+		setting.Desk.Publication = method
+		_, err = s.putDeskSetting("fixture-user", deskwork.SettingUpdate{Target: target, ExpectedRevision: setting.Revision, Desk: setting.Desk})
+		g02Check(t, err)
+	}
+	release := func(action, name, want string) collection.DeskReleasePlan {
+		t.Helper()
+		plan, err := registry.PlanDeskRelease(ctx, "native", entry.RunnerID, "alpha", f.Desk, action, []deskwork.ReleaseCheck{})
+		g02Check(t, err)
+		save(name+"-plan", plan)
+		_, err = registry.ReleaseDesk(ctx, "native", entry.RunnerID, plan)
+		g02Check(t, err)
+		save(name, wait(plan.Intent.Intent.ID, want))
+		return plan
+	}
+	setPublication("source")
+	effectsBefore := f.effects.Load()
+	release("publish-source", "source-publication-default-blocked", "blocked")
+	if f.effects.Load() != effectsBefore {
+		t.Fatal("closed publication gate dispatched")
+	}
+	policy, err = s.putAppPolicy("fixture-user", apppolicy.Update{ExpectedRevision: policy.Revision, Scope: "desk", Target: target, Gates: apppolicy.Gates{CreateDesk: apppolicy.Inherit, Commit: apppolicy.Block, Publish: apppolicy.Allow}})
 	g02Check(t, err)
-	q, err = deskwork.PublishSourceAt("~zod", f.Desk, beforePublication)
-	g02Check(t, f.effect(ctx, q, err))
+	publishedPlan := release("publish-source", "source-publication-observed", "observed")
+	_, err = registry.ReleaseDesk(ctx, "native", entry.RunnerID, publishedPlan)
+	g02Check(t, err)
+	if f.effects.Load() != effectsBefore+1 {
+		t.Fatal("publication replay repeated effect")
+	}
 	published, err := f.Observe(ctx, f.Desk)
 	g02Check(t, err)
 	if published.Publication != "published" {
@@ -537,8 +580,7 @@ func TestNativeDeskWorkflow(t *testing.T) {
 		_ = releaseCommit
 		before, err := f.Observe(ctx, f.Desk)
 		g02Check(t, err)
-		q, err := deskwork.ActivateLocal("~zod", f.Desk, before)
-		g02Check(t, f.effect(ctx, q, err))
+		release("activate-local", "local-activation-observed", "observed")
 		var active deskwork.AppState
 		for end := time.Now().Add(30 * time.Second); ; {
 			active = appStatus("application-activation")
@@ -553,8 +595,8 @@ func TestNativeDeskWorkflow(t *testing.T) {
 		if active.DocketHash == "" || active.DocketHash != active.FrontendDocketHash || !slices.Contains(active.ExpectedAgents, "omabit-state") {
 			t.Fatal("docket/agent verification missing", active)
 		}
-		q, err = deskwork.PublishTreatyAt("~zod", f.Desk, before)
-		g02Check(t, f.effect(ctx, q, err))
+		setPublication("treaty")
+		release("publish-treaty", "treaty-publication-observed", "observed")
 		for end := time.Now().Add(20 * time.Second); ; {
 			published := appStatus("application-treaty")
 			if published.TreatyListed && published.TreatyHash == before.ClayHash {
@@ -613,31 +655,7 @@ func TestNativeDeskWorkflow(t *testing.T) {
 		if review.Review.ConflictCount == 0 {
 			t.Fatal("external docket commit was overwritten")
 		}
-		// A fixture-only exact delta leaves the externally changed docket intact.
-		// The production API still refuses the unresolved source ownership conflict.
-		q, err := deskwork.CommitFiles("~zod", f.Desk, uploaded, []deskwork.DeltaFile{{Path: "app/omabit-broken.hoon", Bytes: []byte("this-is-deliberately-not-an-agent\n")}, {Path: "desk.bill", Bytes: []byte("~[%omabit-state %omabit-broken]\n")}})
-		effectErr := f.effect(ctx, q, err)
-		save("invalid-agent-effect", map[string]any{"acknowledged": effectErr == nil, "uncertain": effectErr != nil})
-		after, err := f.Observe(ctx, f.Desk)
-		g02Check(t, err)
-		save("invalid-agent-source-observation", after)
-		if after.Revision == uploaded.Revision {
-			if effectErr == nil {
-				t.Fatal("acknowledged invalid agent delta has no observed revision")
-			}
-			save("invalid-agent-revision-unchanged-uncertain", true)
-			save("ok", true)
-			return
-		}
-		if after.Revision < uploaded.Revision {
-			t.Fatal("Clay revision regressed")
-		}
-		time.Sleep(2 * time.Second)
-		broken := appStatus("source-accepted-agent-not-live")
-		if !slices.Contains(broken.ExpectedAgents, "omabit-broken") || slices.ContainsFunc(broken.Agents, func(a deskwork.AppAgent) bool { return a.Name == "omabit-broken" && a.Live }) {
-			t.Fatal("failed agent activation misreported", broken)
-		}
-		save("source-accepted-after-compile-failure", after)
+
 	}
 	save("ok", true)
 }

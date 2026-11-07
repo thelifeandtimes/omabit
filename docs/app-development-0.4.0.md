@@ -4,11 +4,13 @@ Proposed architecture, recorded 2026-11-06. The user added this work to the
 0.4.0 scope after remote-runner installation testing. Source review is complete.
 The [policy layer and Setup editor](app-development-policy.md) are implemented
 and fixture-tested. Gated creation and live desk discovery are implemented;
-source transfer and gated commit API/CLI are implemented; publication remains in progress.
+source transfer, gated commit, local activation and publication API/CLI are implemented.
 `desk-app-status` now reports source, installation, agent, Treaty and Docket stages
 without claiming overall readiness. Native probe34/M546 verifies this API and the
-underlying local activation, publication and frontend upload workflow. Those effects
-still use private qualification helpers, pending gated public adapters. The assembled native kernel/API/collector path passes M545; managed engine and
+underlying local activation, publication and frontend upload workflow. Probe35/M547
+then exercises gated source publication, local activation and Treaty publication
+through the public release API/client/collector. Frontend upload still uses a
+private qualification helper, pending a gated public adapter. The assembled native kernel/API/collector path passes M545; managed engine and
 remote transport retain their separate qualification boundaries.
 The user's follow-up fixes the scope to Urbit desks and their frontend assets.
 Agent desk creation, commit and publication start disabled, with permissions configured in
@@ -39,7 +41,8 @@ source commit, dirty-tree digest and build result supplied by the developer.
 
 Owner-user rootless execution already makes mounted desk files writable by the
 runner's Unix owner. The current managed CLI exposes lifecycle and runtime
-settings. A supported remote desk-file deployment API still needs implementation.
+settings. The bounded staged-source and commit API now uses the existing runner transport;
+remote runtime qualification remains a separate acceptance boundary.
 [Owner-user file access](owner-user-runtime.md)
 
 Private publisher experiments already exercised desk creation, mounting, copied
@@ -325,7 +328,8 @@ pipeline after an interrupted terminal or desktop restart.
    Typed creation now uses fresh policy/runtime checks and durable schema50
    receipts. Staged commit review/verification and schema53 ownership are connected
    and fixture-tested (M544); the native kernel/API/collector composition passes M545.
-   Publication remains unavailable. Engine/remote transport have separate gates.
+   Schema54 release reviews, check attestations, journal/reconciliation and CLI are
+   implemented and native-tested (M547). Engine/remote transport have separate gates.
 2. Complete the transport spike on disposable fakes with explicit test policy.
    Exercise prepare, mount, commit, local activation, Treaty publication,
    source-only publication and receiver installation with native control disabled.
