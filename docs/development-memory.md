@@ -8795,3 +8795,31 @@ Initial migration admission at600MiB refused before output/copy/build. Restricti
 the copied source to the collection dependency closure and retaining a warm cache
 allowed the declared400MiB capsule to pass. Completed binary evidence is retained
 as verified lossless gzip. No original fixture or source input was removed.
+
+
+## M561 — Automatic fleet URL selection and public connection command (2026-11-07)
+
+Added `urbit-collector app-fleet-connect` for a precise standing ship/helper grant.
+The collector checks its own current Tailscale scope, permits localhost only for a
+pinned local Unix runner, and uses explicit LAN scopes. A bounded15-second probe
+window tries eligible URLs without credentials; the selected runtime, pier, route
+and grant are rechecked before publishing an attempt. An existing request cannot
+start another selection or login. Public issuance uses Secret Service only, with
+no parent session or plaintext fallback. Status exposes nonsecret fleet ancestry
+and probe outcomes for the upcoming UI.
+
+Core race fixtures pass default deny, stale/revoked grants, fallback, foreign or
+changed tailnets, explicit LAN selection, changed runtime/pier/route/enrollment and
+cancellation. The actual public CLI passes approval through selection, independent
+login, retained receiver delivery, offline revoke, disconnect/reconcile and archive.
+Wrong-ship candidates receive no credentials; lost login/delivery and storage
+failure do not trigger another URL/login. The fixture uses a private synthetic
+Secret Service command transport; it does not qualify the actual desktop keyring
+or live networking. See `diagnostics/2026-11-07-fleet-connect.json`. Persistent
+formats are unchanged. This supersedes M560's pending public connection path; UI
+integration and automatic reconnection remain open. Installed state stays untouched.
+
+To stay under40GiB, five completed managed-test package archives were inventoried
+and removed from the task's rebuildable Go cache (168,030,208 bytes). Exact completed
+binaries, logs, source and original migration fixtures remain. Warm-cache smaller
+package tests reserve400MiB. Release qualification remains deferred.

@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M561",
+  "source_base": "68e765485d44424c322e7ed4143fbe91feb9da6a",
+  "tests": {
+    "route-selection": {
+      "directory": "/tmp/omabit-fleet-route-selection-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^TestFleetRoute",
+        "binary_sha256": "7eacc9d0d0d3cc4f34001626e69051ab60c2387ff2569079faa0e658465cfd6e",
+        "package": "internal/collection",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "d5955bfe9146225cdd7efde9698d761a51bbf480b474d9e7c3a8e66c93e63fc3"
+    },
+    "local-network": {
+      "directory": "/tmp/omabit-fleet-local-network-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^Test(LocalTailnet|Tailscale)",
+        "binary_sha256": "ff831f797fea3077f166cd394c03898f36ece45906ecc3705b4010d0ec32f562",
+        "package": "internal/shiproute",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "7496d7fd2e3e9665137fc181508b1ad31fbd1b2c784ba30e206dac86d0b5f05b"
+    },
+    "public-cli": {
+      "directory": "/tmp/omabit-fleet-connect-cli-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^Test(FleetApplicationCLI|ApplicationCLI|ApplicationShipCLI)",
+        "binary_sha256": "972e056612cac2853ab9e472e0814ae5b94bbce8ab6fc65ba10506138ddc57a5",
+        "source_base": "68e765485d44424c322e7ed4143fbe91feb9da6a",
+        "fake_secret_tool_sha256": "044e0cd3533f7377cae907e8b50a888521955f6377dc2ec6755c6371cfe399e1",
+        "scope": "offline synthetic runner, Eyre, receiver and keyring transport; no installed/live runtime or real keyring qualification"
+      },
+      "log_sha256": "68c72c60b4a354dcc6b6832e65044545b99c1e934811f29002a7f3abbcef418f"
+    }
+  },
+  "retention": {
+    "path": "/tmp/omabit-fleet-cache-retention-02.json",
+    "sha256": "e54ae9576e4eab8c23784a6e31167e962ee66c2078ecaf2e66a02bb286440f5a",
+    "allocated_cache_bytes_removed": 168030208
+  },
+  "storage_observed": {
+    "charged_bytes": 42401488896,
+    "budget_bytes": 42949672960,
+    "additional_scratch_bytes": 0,
+    "total_with_reserves": 42401488896
+  },
+  "limits": [
+    "Synthetic Unix runner, HTTP Eyre, installed-helper directory and Secret Service command transport in private offline namespaces",
+    "No actual keyring, installed plugin/runner, live ship, Tailscale daemon or remote SSH contacted",
+    "Persistent formats unchanged from M560; UI integration and automatic reconnection remain open",
+    "Feature workflow checks only; installed upgrade and release qualification remain deferred"
+  ]
+}

@@ -60,8 +60,8 @@ across proxy port changes. The reader never changes Serve/Funnel, and a failed
 lookup does not remove manually configured routes. Path proxies, service VIPs,
 raw TCP forwarding and bespoke reverse proxies need explicit URL registration.
 No live Tailnet qualification is claimed by these fixture checks. The full-panel
-Setup URL editor passes offline interaction/rendering checks. Standing-approval CLI authoring is implemented below; its UI and automatic
-application connection/reconnection remain open.
+Setup URL editor passes offline interaction/rendering checks. Standing-approval authoring and automatic URL selection/connection are implemented
+below. Their UI integration and automatic reconnection remain open.
 Do not claim those features from the presence of this registry capability alone.
 
 Keep existing sessions bound to their original URL. Never copy a cookie to another
@@ -109,3 +109,35 @@ Run `app-ship-approve --request-file reviewed-revocation.json` **without** runne
 flags or `--allow-owner-session`. Revocation remains available offline and after
 a plugin is removed. It blocks new attempts; use each existing connection's
 Disconnect/recovery path separately to clean up its session.
+
+
+## Connect using an existing grant
+
+The runner must also advertise `ship-route-code-v1`. Construct a request from the
+current allowed entry in `app-ship-approvals`, using that entry's `revision` as
+`grant_revision` (not the whole list's revision):
+
+```json
+{"version":1,"binding":BINDING,"target":TARGET,"grant_revision":GRANT_REVISION}
+```
+
+```sh
+urbit-collector --config-dir REGISTRY --runner NAME --expected-runner-id ID \
+  app-fleet-connect --request-file connection-choice.json --request-id FRESH_32_HEX_ID
+```
+
+The command resolves the exact installed helper, checks standing permission, and
+selects a verified registered URL from the collector's current network. Localhost
+is eligible only through a pinned local Unix enrollment. Tailscale membership is
+read locally. If the user explicitly selects a current LAN profile, add
+`"lan_profiles":["PROFILE_ID"]`; do not infer it from a remote runner's route list.
+URL fallback uses only unauthenticated probes. Public URLs require HTTPS.
+
+A successful connection owns a new origin-bound session stored in Secret Service.
+No parent ship login is created or reused, and there is no plaintext fallback.
+After any lost/failed reply, inspect `app-connection REQUEST_ID` or `app-connections`
+and follow the reported recovery action. Never submit a new request or change URLs
+to bypass an unresolved login/handoff. An existing request ID is not replayed.
+Revoking permission does not prevent cleanup of its existing session. These CLI
+paths pass synthetic offline runner/HTTP/receiver/keyring-transport checks; live
+Tailnet, actual keyring and installed upgrade qualification remain separate.

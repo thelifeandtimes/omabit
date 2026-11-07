@@ -99,18 +99,26 @@ login. Uncertain effects fence retries across URLs. Legacy attempts without a
 verified incarnation must finish recovery before the same integration can move to
 a fleet route. Cleanup remains available after revocation. Active journal format3
 and fleet archive format2 pass actual previous-writer preservation and older-reader
-refusal checks; runner schema58 is unchanged. The public automatic connection flow
-is still pending. See [attempt evidence](diagnostics/2026-11-07-fleet-attempts.json).
+refusal checks; runner schema58 is unchanged. The public automatic connection flow is implemented in M561 below. See [attempt evidence](diagnostics/2026-11-07-fleet-attempts.json).
+
+M561 adds `app-fleet-connect` for a selected standing grant and fresh request ID.
+It discovers the collector's current tailnet (never assuming the runner's network),
+uses local Unix enrollment for localhost eligibility, and supports explicitly
+selected LAN profiles. A15-second overall probe budget bounds URL fallback. It
+rechecks selection/route/grant before issuance; old requests and uncertain effects
+never cause another login. Public connections use Secret Service without a file
+fallback. Synthetic end-to-end CLI checks exercise delivery and failure recovery.
+See [connection evidence](diagnostics/2026-11-07-fleet-connect.json).
 
 ## Integration still required
 
 1. Setup URL editor, runner-owned registry, localhost and Tailscale/Serve discovery,
    explicit route/disable storage and CLI are implemented.
-2. Collector inspection from each client's network, shared runner configuration and
-   fresh binding verification before credentials can be sent.
+2. Collector network inspection, shared configuration and fresh binding checks
+   are implemented in the public automatic connection command.
 3. Setup standing approval and issuance integration (CLI authoring is implemented),
    the journal/issuer core now checks permission under the same lock that publishes
-   a new connection attempt. Connect the public automatic-route command and UI.
+   a new connection attempt. The public automatic-route command is implemented; connect its permission UI.
 4. Compatible receiver handoff and automatic reconnection. Preserve origin-bound
    sessions, original uncertain attempts and cleanup records; never replay pending
    app writes or silently copy a cookie to a different origin.

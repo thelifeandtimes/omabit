@@ -179,6 +179,8 @@ Commands:
   app-connect SHIP_NAME [selection flags] --approve-owner-session
   app-managed-connect [fleet and plugin selection flags] --approve-owner-session
                Approve an independent owner session for an exact installed helper.
+  app-fleet-connect --request-file FILE --request-id ID
+               Choose a verified URL under an existing standing ship/helper grant.
   app-archive REQUEST_ID --expected-revision N
                Archive a fully closed attempt while retaining its replay receipt.
   app-disconnect REQUEST_ID --expected-revision N
@@ -289,6 +291,9 @@ Use COMMAND --help for command flags and constraints.
 	}
 	if command == "import-sources" || command == "import-fake" {
 		return runImports(ctx, command, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if command == "app-fleet-connect" {
+		return runFleetApplication(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
 	}
 	if command == "app-managed-connect" {
 		return runManagedApplication(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)

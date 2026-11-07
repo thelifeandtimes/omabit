@@ -14,6 +14,7 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/applicationauth"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/shiproute"
 )
 
 type applicationView struct {
@@ -32,6 +33,7 @@ type applicationView struct {
 	ReceiverOutcome        string                       `json:"receiver_outcome,omitempty"`
 	UpdatedAt              time.Time                    `json:"updated_at"`
 	NextActions            []string                     `json:"next_actions"`
+	Fleet                  collection.FleetApplication  `json:"fleet,omitzero"`
 }
 
 func appView(a collection.ApplicationAttempt) applicationView {
@@ -48,17 +50,22 @@ func appView(a collection.ApplicationAttempt) applicationView {
 	default:
 		next = append(next, "app-recover")
 	}
-	return applicationView{false, a.ID, a.ConnectionID, a.ConnectionRevision, a.Origin, a.Ship, a.Target, a.Authority, a.Phase, a.Revision, a.ReceiverReconciliation, a.Outcome, a.ReceiverOutcome, a.UpdatedAt, next}
+	return applicationView{false, a.ID, a.ConnectionID, a.ConnectionRevision, a.Origin, a.Ship, a.Target, a.Authority, a.Phase, a.Revision, a.ReceiverReconciliation, a.Outcome, a.ReceiverOutcome, a.UpdatedAt, next, a.Fleet}
 }
 
 type applicationResult struct {
-	Connection *applicationView `json:"connection,omitempty"`
-	Code       string           `json:"code"`
-	Message    string           `json:"message,omitempty"`
+	Connection    *applicationView    `json:"connection,omitempty"`
+	Code          string              `json:"code"`
+	Message       string              `json:"message,omitempty"`
+	RouteAttempts []shiproute.Attempt `json:"route_attempts,omitempty"`
 }
 
 func applicationFailure(err error) (string, string) {
 	switch {
+	case errors.Is(err, collection.ErrApplicationPermission):
+		return "permission_required", "Review this ship's standing application permission. The grant is absent, revoked or changed."
+	case errors.Is(err, collection.ErrApplicationRoute):
+		return "route_unavailable", "No enabled ship URL could be verified from this desktop's network. Review Ship URLs and network access."
 	case errors.Is(err, collection.ErrApplicationArchived):
 		return "archived", "This request completed and was archived. Its approval cannot be replayed."
 	case errors.Is(err, collection.ErrApplicationLimit):
