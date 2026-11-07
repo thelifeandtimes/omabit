@@ -10,7 +10,9 @@ The next release starts from published 0.3.7. Its scope is remote runner
 installation, Agent Help and skill installation, app development and desk
 distribution, and ship URLs for private fleet access and clearweb access. The
 product and engineering checks below are the
-release plan. Final 1.0.0 refinements follow the 0.4.0 user trials.
+release plan. Final 1.0.0 refinements follow the 0.4.0 user trials. Feature implementation and
+isolated workflow tests are authorized now; release qualification and publication
+wait until that work is ready.
 
 ### Remote runners
 
@@ -116,7 +118,8 @@ fakes and fake project networks. Expose the steps through the collector CLI with
 durable operation results and default-closed commit/publication gates.
 
 The [architecture proposal](app-development-0.4.0.md) starts with mounted desks
-and adds an optional Urgit adapter. Urgit already binds Git branches to Clay and
+and supports Urgit through a tested, documented agent workflow. No dedicated
+Urgit software adapter is planned for 0.4.0. Urgit already binds Git branches to Clay and
 validates linked pushes. Its desk-to-Git export is one part of the workflow;
 Treaty handles app publication and Clay delivers subscribed updates. A release
 approval therefore precedes the distributor desk's mutation. Source trees under
@@ -125,8 +128,9 @@ approval therefore precedes the distributor desk's mutation. Source trees under
 Follow each developer's release configuration, including Urgit's existing rules.
 The [policy layer and Setup editor](app-development-policy.md) are implemented
 and fixture-tested, with independent commit and
-publication permissions at global, runner, ship and installed-desk scope.
-The most specific explicit setting overrides inherited values. Both permissions
+publication permissions at global, runner, ship and installed-desk scope, plus
+a ship-level desk-creation gate. The reviewed tree now supports zoom and pan.
+The most specific explicit setting overrides inherited values. All three permissions
 start blocked, including on development fakes and project members. Enforce them
 at the runner's effect boundary and expose the effective policy read-only to
 agents. A commit that distributes a published desk update requires both gates.

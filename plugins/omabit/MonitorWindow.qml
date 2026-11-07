@@ -85,10 +85,11 @@ Window {
             Label { objectName: "monitor-version"; text: root.service ? root.service.applicationVersion+" / "+root.service.releaseLabel : "Loading"; caption: true; secondary: true }
           }
           Rectangle { width: 1; height: Style.space(28); color: Design.line }
-          Column { Layout.fillWidth: true; spacing: Style.space(3)
-            Label { text: "Monitor & maintenance"; font.bold: true }
-            Label { text: "Your fleet, in focus"; caption: true; secondary: true }
+          Column { Layout.fillWidth: true; Layout.minimumWidth:0; spacing: Style.space(3)
+            Label { width:parent.width;text: "Monitor & maintenance"; font.bold: true;wrapMode:Text.NoWrap;elide:Text.ElideRight }
+            Label { width:parent.width;text: "Your fleet, in focus"; caption: true; secondary: true;wrapMode:Text.NoWrap;elide:Text.ElideRight }
           }
+          ActionButton {objectName:"monitor-agent-help";compact:true;text:"Agent Help";hint:"Open your default Omarchy agent with the relevant Omabit instructions";enabled:!!root.service && !!root.service.agentHelp && !root.service.agentHelp.busy;onClicked:root.service.requestAgentHelp(root.page==="setup" && windowSetup.mode==="development" ? "app-development" : "general")}
           Loader { visible:!!root.headerAccessory;sourceComponent:root.headerAccessory }
           ActionButton { objectName: "monitor-refresh"; text: "↻"; quiet: true; hint: "Refresh runner observations"; enabled: !root.service.busy; onClicked: root.service.refresh() }
           ActionButton { text: "×"; quiet: true; hint: "Close monitoring window"; onClicked: root.visible = false }

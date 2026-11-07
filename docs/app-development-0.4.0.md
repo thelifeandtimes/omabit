@@ -22,9 +22,10 @@ Provide two source paths with shared status and release records.
 | Source path | Intended use | Omabit's responsibility |
 | --- | --- | --- |
 | Mounted desk | Local files, an assembled build directory, development iteration | Create and mount the desk, transfer a reviewed file set, commit, observe compilation and activation, publish and check receivers |
-| Urgit | Ordinary Git pushes to a configured ship/repository/branch | Prepare the desk and Urgit binding, configure Git access, observe Git/Clay agreement, establish publication and check receivers |
+| Urgit | Ordinary Git pushes to a configured ship/repository/branch | Document and qualify the workflow using Urgit's own tools; observe Git/Clay agreement and verify publication/receivers |
 
-Start with the mounted-desk path and make Urgit an optional integration. Both
+Start with the mounted-desk path. Urgit is an optional, tested skill-guided
+workflow; the user explicitly declined a dedicated Omabit software integration. Both
 paths support local and remote runners. The application build remains a developer
 workspace action, with its output frozen before transfer. Omabit can record the
 source commit, dirty-tree digest and build result supplied by the developer.
@@ -242,44 +243,28 @@ project topology. Public distribution uses a real publisher reachable through
 Urbit's networking. Clearweb configuration is independently useful for Git HTTP
 and browser access. It is a separate operation from making a desk distributable.
 
-## Urgit adapter
+## Urgit workflow (scope clarified 2026-11-06)
 
-Detect or install the selected supported Urgit release, verify its APIs, create
-or reconcile the repository, prepare the target desk, and bind the exact branch.
-Record the installed Clay hash and API observations. Upstream names `~matwet` as
-its installation source. Establish correspondence with the reviewed source before
-claiming that a live installation matches this research. For isolated fake
-networks, build the reviewed source in the developer workspace and deploy that
-artifact through the mounted-desk path. Include its three declared agents and
-frontend assets in qualification. [Urgit setup](https://github.com/yapishu/urgit/blob/7834a4e186998265f5175fd527bc17ea8819c44f/README.md)
+Support and test Urgit's intended workflow through the bundled operator and
+plugin-development skills. Do not add an Omabit-specific Urgit adapter, setup
+RPC, token store or Git credential helper. Existing Urgit tooling owns its
+repository, branch binding, authentication and Git/Clay validation. Follow the
+application's release rules and Omabit's effective agent permissions; a direct
+Git push is not a workaround for a blocked commit or publication gate.
 
-Use a full desk tree, including required generated marks and Kelvin-compatible
-inputs. A project with `desk/` can export a deployment repository while retaining
-its source repository and a recorded source-to-artifact mapping.
-
-Create the first commit on `master` and set Urgit's default branch to it when
-Omabit creates a repository for this user. Urgit's current empty-repository API
-initially seeds a `main` symbolic head, which the adapter must reconcile.
-
-Store the repository token using the existing credential infrastructure and a
-Git credential helper bound to the verified origin and repository path. Show the
-chosen Git remote. Reuse the planned fleet-origin registry to discover usable
-routes, with explicit reconciliation after an uncertain push response.
-
-After setup, ordinary Git handles pushes and Urgit performs its Clay validation
-under the developer's existing release configuration. Omabit-managed agent pushes
-check the effective commit/publication policy before submitting an update.
-Omabit records or observes the resulting commit/revision pair, readiness and
-publication state. Poll authoritative state for operation completion. Webhook
-events can trigger observation, with signed delivery and duplicate handling if
-added later. Begin with direct ship pushes, keeping GitHub-triggered automation
-as a separately qualified extension.
+Qualify the documented path using disposable fakes: install the reviewed Urgit
+source, configure a repository and bound desk with its own tools, push a complete
+deployment tree, inspect Git/Clay agreement and compilation results, and verify
+publication/receiver behavior separately. Cover failed compilation, drift,
+interrupted responses and agent reload. Record the tested Urgit revision and
+runtime tuple in the skills; do not claim untested GitHub automation support.
+For newly created Git repositories, use the user's preferred `master` branch.
 
 ## Agent-facing operations and recovery
 
 Use the existing collector CLI and runner operation store. Suggested command
 families are `desk-status`, `desk-prepare`, `desk-stage`, `desk-commit`,
-`desk-deploy`, `desk-publish`, `desk-install` and `desk-urgit-configure`. Expose
+`desk-deploy`, `desk-publish` and `desk-install`. Expose
 individual steps for agents as well as a composed deployment. All names remain
 provisional.
 
@@ -316,10 +301,10 @@ pipeline after an interrupted terminal or desktop restart.
    receipt on both receivers. Cover wrong project/ship selection, stale revisions,
    local source conflicts, path escapes,
    generated-file preservation, interruption and concurrent lifecycle operations.
-5. Add the optional Urgit adapter against the reviewed revision. Test successful
+5. Test and document the optional Urgit workflow against the reviewed revision. Test successful
    push, failed compilation, initial binding drift, invalid projected files,
    lost HTTP response, agent reload during a push and recovery of Git/Clay
-   disagreement, blocked Omabit-managed pushes and the application's existing
+   disagreement, blocked agent pushes and the application's existing
    release rules.
 6. Add ship/desk operation status and Agent Help context. Extend
    the operator and plugin-development skills with supported commands and tested

@@ -70,7 +70,7 @@ Item {
     }
     return "requested"
   }
-  readonly property bool reloadSafe: !busy && !remoteSetupBusy && !copyingCode && !checkingSetup && !themeSync.running && !pendingFirstBoot
+  readonly property bool reloadSafe: !busy && !remoteSetupBusy && !copyingCode && !checkingSetup && !themeSync.running && !agentHelper.busy && !pendingFirstBoot
   property int reconnectAttempts: 0
   property bool desktopViewLoaded: false
   readonly property alias observationSchedule: observationSchedule
@@ -91,6 +91,14 @@ Item {
   }
   property var connections: []
   property var ships: []
+  readonly property alias agentHelp: agentHelper
+  AgentHelp {id:agentHelper;service:root}
+  function requestAgentHelp(topic,setup) {
+    var context={topic:topic || "general",profile:profileName,environment:profileEnvironment}
+    if(profileName==="default" && settings.configDir)context.config_dir=settings.configDir
+    if(topic==="remote-setup" && setup){context.setup_id=setup.id;context.phase=setup.phase}
+    return agentHelper.launch(context)
+  }
   readonly property alias serviceUpgrade: serviceUpdater
   ServiceUpgrade { id: serviceUpdater; service: root }
   readonly property alias applicationConnections: appConnections

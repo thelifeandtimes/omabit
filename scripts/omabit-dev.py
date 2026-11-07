@@ -90,6 +90,8 @@ def build(argv):
                                     "modified": bool(packager.source_git(source, "status", "--porcelain").strip())},
                     "go_version": subprocess.check_output([go, "version"], env=env, text=True).strip()}
         (package / "BUILD.json").write_text(json.dumps(metadata, indent=2) + "\n")
+        packager.package_documentation(source, package)
+        packager.write_skill_manifest(package, metadata)
         packager.checksums(package)
         assets = stage / "assets"
         assets.mkdir()

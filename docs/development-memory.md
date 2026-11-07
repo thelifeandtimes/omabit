@@ -7772,3 +7772,34 @@ verified unchanged. Native rendering completed; Qt Wayland emitted a text-input
 focus warning during window focus changes, with no QML load errors. Its previous
 code is retained in preview-owned version backups. Production, DEV and trial040
 plugins, runners, ships, services and desktop configuration were untouched.
+
+
+## M533 — Approved feature goal and Agent Help implementation (2026-11-06)
+
+The user approved continuing Agent Help/skills, the gated desk workflow, fleet
+URLs and clearweb assistance as an ongoing goal. Work should continue on every
+unblocked path. This supersedes M526's proposed dedicated Urgit adapter: Urgit
+now needs a qualified workflow and skill guidance, not a separate Omabit software
+integration. Release qualification/publication waits until feature work is ready.
+Production exclusions and isolated fixtures remain in force.
+
+Agent Help now uses Omarchy's default-agent query and prompt launcher, with a
+release-bound operator skill and exact read-only diagnostics. The monitor and
+failed/interrupted remote setup expose the action. Setup provides explicit skill
+installation, default/no-default guidance, automatic OpenCode destination and
+an explicit directory for other agents. Custom/edited skills are never replaced;
+reviewed managed updates are atomic and retain the previous copy. No actual agent
+or host skill directory was used during implementation testing.
+
+Two packaging gaps were corrected: development snapshots omitted installed
+skills, and native bootstrap discarded bundled skills. New bundles declare
+SKILLS.json, and native caches verify those files against their pinned archive.
+Historical caches without that declaration retain their previous layout. Agent
+Help never silently substitutes guidance from another release/profile.
+
+Helper/installer tests, bootstrap/archive binding tests, skill/native packaging
+checks and the networkless full-panel interaction fixture pass. The fixture uses
+actual help/installation code with a fake agent, tests complete installation of
+both skills, no-default guidance and remote-setup context. This is feature-level
+qualification, not the deferred stable upgrade or release rehearsal. Other
+approved tracks remain pending; see the current 0.4.0 feature progress record.

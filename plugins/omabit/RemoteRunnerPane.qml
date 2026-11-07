@@ -54,6 +54,7 @@ Column {
       Flow {
         width:parent.width;spacing:Style.space(8)
         ActionButton { objectName:"remote-setup-resume";text:root.setup&&root.setup.phase==="revoked" ? "Connect again" : root.setup&&root.setup.revoking ? "Resume revocation" : "Resume setup";visible:!!root.setup&&["failed","interrupted","revoked"].indexOf(root.setup.phase)>=0;enabled:!root.blocked;onClicked:root.service.resumeRemoteSetup(root.setup.id,root.setup.phase!=="revoked"&&root.setup.revoking===true) }
+        ActionButton {objectName:"remote-setup-agent-help";text:"Agent Help";visible:!!root.setup && ["failed","interrupted"].indexOf(root.setup.phase)>=0;enabled:!!root.service && !!root.service.agentHelp && !root.service.agentHelp.busy;onClicked:root.service.requestAgentHelp("remote-setup",root.setup)}
         ActionButton { objectName:"remote-setup-view";text:"View runners →";visible:!!root.setup&&root.setup.phase==="connected";onClicked:root.viewRunners() }
         ActionButton { objectName:"remote-setup-revoke";text:"Revoke this desktop’s access…";quiet:true;visible:!!root.setup&&root.setup.phase==="connected";enabled:!root.blocked;onClicked:root.service.resumeRemoteSetup(root.setup.id,true) }
       }
