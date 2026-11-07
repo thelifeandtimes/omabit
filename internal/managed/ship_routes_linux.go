@@ -14,6 +14,14 @@ type shipRouteRuntime interface {
 	RouteIdentity(context.Context) (shiproute.Runtime, error)
 }
 
+type shipRouteDiscoveryBackend interface {
+	DiscoverShipRoutes(context.Context, string) shiproute.Discovery
+}
+
+func (realBackend) DiscoverShipRoutes(ctx context.Context, origin string) shiproute.Discovery {
+	return shiproute.DiscoverTailscale(ctx, origin)
+}
+
 // Called with runner lifecycle admission held, including throughout authoring.
 func (r *Server) shipRouteIdentity(ctx context.Context, selection protocol.ShipRouteSelection) (shiproute.Binding, []shiproute.Route, error) {
 	var binding shiproute.Binding
@@ -70,6 +78,22 @@ func (r *Server) serveShipRoutes(w http.ResponseWriter, req *http.Request, actor
 		r.respondError(w, err)
 		return
 	}
+	var network *shiproute.NetworkDiscovery
+	if backend, ok := r.b.(shipRouteDiscoveryBackend); ok {
+		discovery := backend.DiscoverShipRoutes(ctx, automatic[0].Origin)
+		if discovery.Validate() != nil {
+			r.respondError(w, bad("invalid network discovery result"))
+			return
+		}
+		network = &discovery.Network
+		if discovery.Route != nil {
+			automatic = append(automatic, *discovery.Route)
+		}
+	}
+	if err = ctx.Err(); err != nil {
+		r.respondError(w, err)
+		return
+	}
 	var record shiproute.Record
 	if req.Method == http.MethodPut {
 		if update.Update.Binding != binding {
@@ -89,7 +113,7 @@ func (r *Server) serveShipRoutes(w http.ResponseWriter, req *http.Request, actor
 		r.respondError(w, err)
 		return
 	}
-	out := protocol.ShipRoutes{Version: 1, RunnerID: r.s.runnerID, Mode: r.s.mode, Selection: selection, Record: record, Registry: registry, ReadAt: time.Now().UTC()}
+	out := protocol.ShipRoutes{Version: 1, RunnerID: r.s.runnerID, Mode: r.s.mode, Selection: selection, Record: record, Registry: registry, Network: network, ReadAt: time.Now().UTC()}
 	if err = out.Validate(); err != nil {
 		r.respondError(w, err)
 		return

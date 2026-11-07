@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M556",
+  "source_base": "e366093537dd079ce086c9a2c6450cb143043f34",
+  "schema": 58,
+  "tests": {
+    "serve-01": {
+      "directory": "/tmp/omabit-fleet-serve-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": ".",
+        "binary_sha256": "f01f8b90b4d869f974115db39093aef54ef8c47766d324a736f5ca479a16a8aa",
+        "package": "internal/shiproute",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "41966c62e505f34ba482a53ae523294152a032cf17989472051a8556b823ca0e"
+    },
+    "discovery-01": {
+      "directory": "/tmp/omabit-fleet-discovery-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": ".",
+        "binary_sha256": "70a8fe67059b3c29cf4c0611a36251d4f6d6b82374de1e20bbba0fe89f3b9a65",
+        "package": "internal/shiproute",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "507b1caad1c610874ed47a8b27900339848f962924e96eed26af32e76d525b60"
+    },
+    "discovery-api-01": {
+      "directory": "/tmp/omabit-fleet-discovery-api-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^TestShipRoutes",
+        "binary_sha256": "e2ef20f323c954c86b19792b9b134e5f839ff8ada5ff63f8b8d4720bb59a7b04",
+        "package": "internal/managed",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "d9d48ee8c9faaabbac42f538f466123a7f8562b88168f398da565cbfc8a82d70"
+    },
+    "discovery-collection-01": {
+      "directory": "/tmp/omabit-fleet-discovery-collection-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^TestShipRoutes",
+        "binary_sha256": "f3ddf4e1fa47c9a3d0a67158a9a6e8e5d26709d01d0c42dc596a5b8cc2acfb56",
+        "package": "internal/collection",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "3e7cc714ec66aa250954cbc8aa922366e1648046876f7981f937f0c2a2e3b896"
+    }
+  },
+  "storage_observed": {
+    "charged_bytes": 42277507072,
+    "budget_bytes": 42949672960,
+    "additional_scratch_bytes": 0,
+    "total_with_reserves": 42277507072
+  },
+  "sources": [
+    "https://tailscale.com/docs/reference/tailscale-cli/serve",
+    "https://github.com/tailscale/tailscale/blob/main/ipn/serve.go",
+    "https://github.com/tailscale/tailscale/blob/main/cmd/tailscale/cli/serve_v2.go"
+  ],
+  "limits": [
+    "synthetic status/configuration and fixture command/API tests; no live Tailscale daemon or production configuration accessed",
+    "HTTPS whole-origin node proxy only; 443 preferred then lowest matching port; explicit routes for path proxies, services, TCP or bespoke upstreams",
+    "Funnel exposure classified public; discovery itself changes no Serve/Funnel setting",
+    "optional response metadata; persisted schema58 URL settings unchanged",
+    "Setup URL editor, standing-approval UI/CLI, automatic reconnection and clearweb assistance remain open"
+  ]
+}

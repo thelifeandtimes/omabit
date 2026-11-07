@@ -15,16 +15,20 @@ const ShipRoutesTimeout = 30 * time.Second
 type ShipRouteSelection = DeskDiscoverySelection
 
 type ShipRoutes struct {
-	Version   int                `json:"version"`
-	RunnerID  string             `json:"runner_id"`
-	Mode      string             `json:"mode"`
-	Selection ShipRouteSelection `json:"selection"`
-	Record    shiproute.Record   `json:"record"`
-	Registry  shiproute.Registry `json:"registry"`
-	ReadAt    time.Time          `json:"read_at"`
+	Version   int                         `json:"version"`
+	RunnerID  string                      `json:"runner_id"`
+	Mode      string                      `json:"mode"`
+	Selection ShipRouteSelection          `json:"selection"`
+	Record    shiproute.Record            `json:"record"`
+	Registry  shiproute.Registry          `json:"registry"`
+	Network   *shiproute.NetworkDiscovery `json:"network,omitempty"`
+	ReadAt    time.Time                   `json:"read_at"`
 }
 
 func (s ShipRoutes) Validate() error {
+	if s.Network != nil && s.Network.Validate() != nil {
+		return errors.New("invalid ship network discovery")
+	}
 	if s.Version != 1 || !ValidID(s.RunnerID) || !ValidID(s.Mode) || s.Selection.Validate() != nil || s.Record.Validate() != nil || s.Registry.Validate() != nil || s.ReadAt.IsZero() || s.Record.Binding.RunnerID != s.RunnerID || s.Record.Binding.Target != s.Selection.Target || s.Registry.Binding != s.Record.Binding || s.Registry.Revision != s.Record.Revision {
 		return errors.New("invalid ship routes response")
 	}
@@ -33,6 +37,11 @@ func (s ShipRoutes) Validate() error {
 	for _, route := range s.Registry.Routes {
 		if route.Source == "managed" && route.Scope != s.RunnerID {
 			return errors.New("automatic local route belongs to another runner host")
+		}
+		if route.ID == "tailscale-serve" && route.Source == "tailscale" {
+			if s.Network == nil || (shiproute.Discovery{Network: *s.Network, Route: &route}).Validate() != nil {
+				return errors.New("Serve route disagrees with network discovery")
+			}
 		}
 		if route.Source == "managed" || route.Source == "tailscale" {
 			automatic = append(automatic, route)

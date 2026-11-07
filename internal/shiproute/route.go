@@ -79,7 +79,7 @@ func (r Route) Validate() error {
 	default:
 		return errors.New("unknown route source")
 	}
-	if r.Source == "tailscale" && r.Network != "tailnet" || r.Source == "managed" && r.Network != "local" {
+	if r.Source == "tailscale" && r.Network != "tailnet" && r.Network != "public" || r.Source == "managed" && r.Network != "local" {
 		return errors.New("route source and network disagree")
 	}
 	return nil

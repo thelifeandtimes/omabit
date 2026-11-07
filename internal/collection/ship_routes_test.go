@@ -17,7 +17,7 @@ import (
 )
 
 func TestShipRoutesCollectorsShareRunnerSettingsAndVerifyReplies(t *testing.T) {
-	for _, kind := range []string{"ok", "project", "old-runner", "changed-runtime", "changed-binding", "changed-setting", "changed-host", "stale-read", "changed-save"} {
+	for _, kind := range []string{"ok", "project", "network-serve", "network-forged", "network-http", "old-runner", "changed-runtime", "changed-binding", "changed-setting", "changed-host", "stale-read", "changed-save"} {
 		t.Run(kind, func(t *testing.T) {
 			r := registry(t)
 			other := registry(t)
@@ -94,6 +94,17 @@ func TestShipRoutesCollectorsShareRunnerSettingsAndVerifyReplies(t *testing.T) {
 					if routeErr != nil {
 						t.Error(routeErr)
 					}
+					if kind == "network-serve" || kind == "network-forged" || kind == "network-http" {
+						v.Network = &shiproute.NetworkDiscovery{Tailscale: "ready", DNSName: "box.example.ts.net", TailnetSuffix: "example.ts.net", Serve: "tailnet"}
+						route := shiproute.Route{ID: "tailscale-serve", Origin: "https://box.example.ts.net", Network: "tailnet", Scope: "example.ts.net", Source: "tailscale", Enabled: true}
+						if kind == "network-forged" {
+							route.Origin = "https://other.example.ts.net"
+						}
+						if kind == "network-http" {
+							route.Origin = "http://box.example.ts.net"
+						}
+						v.Registry.Routes = append(v.Registry.Routes, route)
+					}
 					switch kind {
 					case "changed-runtime":
 						v.Selection.RuntimeID = strings.Repeat("b", 64)
@@ -125,7 +136,7 @@ func TestShipRoutesCollectorsShareRunnerSettingsAndVerifyReplies(t *testing.T) {
 				}
 			}
 			v, err := r.ShipRoutes(context.Background(), "fixture", binding.RunnerID, "alpha")
-			if kind != "ok" && kind != "project" && kind != "changed-save" {
+			if kind != "ok" && kind != "project" && kind != "network-serve" && kind != "changed-save" {
 				if err == nil {
 					t.Fatal("unsafe response accepted", kind)
 				}

@@ -29,7 +29,7 @@ func ParseTailnetStatus(data []byte) (TailnetStatus, error) {
 		CurrentTailnet *struct{ MagicDNSSuffix string }
 		TailscaleIPs   []netip.Addr
 	}
-	if len(data) > 256<<10 || json.Unmarshal(data, &raw) != nil || raw.BackendState != "Running" || !raw.TUN || raw.Self == nil || !raw.Self.Online || raw.CurrentTailnet == nil || len(raw.TailscaleIPs) == 0 || len(raw.TailscaleIPs) > 8 {
+	if len(data) > 256<<10 || !uniqueJSON(data) || json.Unmarshal(data, &raw) != nil || raw.BackendState != "Running" || !raw.TUN || raw.Self == nil || !raw.Self.Online || raw.CurrentTailnet == nil || len(raw.TailscaleIPs) == 0 || len(raw.TailscaleIPs) > 8 {
 		return TailnetStatus{}, errors.New("running local Tailscale network unavailable")
 	}
 	status := TailnetStatus{DNSName: strings.TrimSuffix(raw.Self.DNSName, "."), Suffix: raw.CurrentTailnet.MagicDNSSuffix, IPs: raw.TailscaleIPs}

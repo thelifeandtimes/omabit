@@ -49,8 +49,14 @@ an eligible candidate; it does not shut down a tunnel, firewall rule or public D
 Current implementation evidence covers isolated core, runner API/store, runtime
 adapter, collector/client and CLI fixtures, plus the actual schema57 writer's
 migration to58. It does not qualify an installed upgrade. Automatic localhost
-discovery is implemented. Automatic Tailscale/Serve invocation, standing-approval
-UI and automatic application connection/reconnection are still being integrated.
+and read-only Tailscale/Serve discovery are implemented. `network` reports whether
+the local daemon is available and whether an HTTPS root proxy matches this ship.
+Funnel-enabled routes are public; disabling `tailscale-serve` preserves the choice
+across proxy port changes. The reader never changes Serve/Funnel, and a failed
+lookup does not remove manually configured routes. Path proxies, service VIPs,
+raw TCP forwarding and bespoke reverse proxies need explicit URL registration.
+No live Tailnet qualification is claimed by these fixture checks. Setup URL editing,
+standing-approval UI and automatic application connection/reconnection remain open.
 Do not claim those features from the presence of this registry capability alone.
 
 Keep existing sessions bound to their original URL. Never copy a cookie to another

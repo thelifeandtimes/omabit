@@ -8676,3 +8676,28 @@ Native49's committed proofs, receipts and source inputs remain; its cleanly stop
 592,924,672-byte generated fake pier was retired only after verifying the exact
 inactive scope. This supersedes M554's temporary full-pier retention. Failure34 and
 all production, DEV, trial and persistent preview state remain untouched.
+
+## M556 — Read-only Tailscale Serve/Funnel discovery (2026-11-07)
+
+Connected bounded local daemon inspection to `ship-routes-v1`. The reader invokes
+only `status --json --peers=false` and `serve status --json`, without a shell or
+ambient socket/debug/proxy overrides. Reads have byte/time limits; a second status
+read rejects a profile switch. Only the local node name, suffix and small status
+fields escape; peers/users/authentication URLs and raw errors are discarded.
+
+Serve discovery verifies the node's whole-origin HTTPS proxy targets this ship's
+exact loopback listener. It supports foreground/background configurations, prefers
+443 then the lowest matching port, and classifies Funnel exposure as public. Path
+mounts, shadow handlers, ambiguous ports, unsupported fields, service VIPs, raw
+TCP and different upstreams do not become automatic ship routes. Disabled choices
+survive port changes. Missing/unavailable discovery keeps saved manual URLs usable.
+Nothing installs, authenticates, exposes a new port or changes daemon settings.
+
+Core parser/command race fixtures, runner API and two-collector/client checks pass;
+byte overflow, cancellation, environment leakage, profile changes and forged or
+non-HTTPS metadata are exercised. See `diagnostics/2026-11-07-fleet-tailscale-discovery.json`
+for sources, exact evidence and limits. No live Tailscale deployment is qualified.
+Persisted schema58 is unchanged; optional discovery metadata is read-only. This
+supersedes M555's pending automatic Serve invocation, not its remaining Setup URL
+editor, standing-approval UI/CLI, reconnection or clearweb-assistance work. No
+installed/production/DEV/trial/preview state was changed; release work stays deferred.

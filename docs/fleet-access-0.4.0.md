@@ -52,14 +52,30 @@ rollback and older-reader refusal while preserving original desk/receiver/fronte
 receipts. See [operator instructions](../skills/omabit-operator/references/fleet-urls.md)
 and [M555 evidence](diagnostics/2026-11-07-fleet-registry.json).
 
-The fleet feature is still in progress. Automatic Tailscale/Serve invocation,
-standing-approval UI/CLI and automatic reconnection are not connected yet. Installed
-state is unchanged; these fixture checks do not qualify an installed upgrade.
+M556 connects read-only local Tailscale discovery. It runs only `status --json
+--peers=false` and `serve status --json`, with byte/time bounds and no ambient
+socket/proxy overrides. A second status read rejects a tailnet profile change.
+The response exposes only the local DNS name, suffix and a small discovery state;
+peer/user/key data and raw command errors are discarded.
+
+Automatic Serve discovery requires a whole-origin HTTPS root proxy to the exact
+managed loopback port. Foreground and background configurations are supported;
+443 is preferred, then the lowest matching port. A Funnel-enabled origin is
+reported as public. Unknown/conflicting configuration, path-mounted apps, shadow
+handlers, raw TCP forwarding, service VIPs and different upstreams need an explicit
+route. Missing/unavailable Tailscale leaves localhost and configured routes usable.
+Discovery changes no daemon settings. Source references:
+[Serve CLI](https://tailscale.com/docs/reference/tailscale-cli/serve),
+[configuration types](https://github.com/tailscale/tailscale/blob/main/ipn/serve.go).
+
+The fleet feature is still in progress. Setup URL editing, standing-approval UI/CLI
+and automatic reconnection are not connected yet. Installed state is unchanged;
+these fixture checks do not qualify a live Tailscale deployment or installed upgrade.
 
 ## Integration still required
 
-1. Automatic Tailscale/Serve discovery and the Setup URL editor; runner-owned
-   registry, localhost discovery, explicit route/disable storage and CLI are done.
+1. Setup URL editor; runner-owned registry, localhost and Tailscale/Serve discovery,
+   explicit route/disable storage and CLI are implemented.
 2. Collector inspection from each client's network, shared runner configuration and
    fresh binding verification before credentials can be sent.
 3. Setup and CLI standing approval, checked under the same lock that publishes a

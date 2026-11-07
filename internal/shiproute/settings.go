@@ -28,7 +28,8 @@ func automaticID(s string) bool {
 }
 func validAutomatic(r Route) bool {
 	return r.ID == "managed-http" && r.Source == "managed" && r.Network == "local" ||
-		(r.ID == "tailscale-http" || r.ID == "tailscale-serve") && r.Source == "tailscale" && r.Network == "tailnet"
+		r.ID == "tailscale-http" && r.Source == "tailscale" && r.Network == "tailnet" ||
+		r.ID == "tailscale-serve" && r.Source == "tailscale" && (r.Network == "tailnet" || r.Network == "public")
 }
 func (s Settings) Validate() error {
 	if s.Routes == nil || s.DisabledAutomatic == nil || len(s.Routes) > MaxRoutes-3 || len(s.DisabledAutomatic) > 3 {
