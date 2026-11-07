@@ -8123,6 +8123,7 @@ Urgit, fleet routes and clearweb assistance remain active. No production/DEV/tri
 plugin, runner, ship or persistent manual preview was changed. Release qualification
 remains deferred.
 
+
 ## M544 — Gated staged commits and verified source ownership (2026-11-07)
 
 `desk-commit-v1` connects private stages to read-only review, saved commit plans,
@@ -8930,3 +8931,24 @@ and retired after native03's successful result and clean process exit. This does
 qualify production upgrades, arbitrary app compilation, every frontend asset,
 Urgit peer/GitHub/LFS features or Urgit-driven multi-ship releases. Release work
 remains deferred.
+
+## M566 — Theme replacement preparation (2026-11-07)
+
+An isolated Theme source branch now has a bound private-stdin preparation path.
+It compares the exact accepted old request, account and stored credential fingerprint
+before fencing transport admission. It waits for local owners and refuses unknown
+settings writes, including those whose channels were deleted. It retains accounts,
+credentials, old remote cleanup receipts and the retirement fence after a failed
+drain. Preparation sends no network traffic and installs no successor.
+
+The source is8c81ea8 in `/tmp/omabit-receiver-reconnect-040/theme`, branched from
+the clean auth source1c239c6. Private namespace tests pass34 transport/admission/
+actual-writer compatibility cases and62 connection/recovery/disconnect/admission
+cases. See `diagnostics/2026-11-07-theme-handoff-preparation.json`. The declaration
+does not advertise complete replacement. Existing journal formats are unchanged.
+An activation must revalidate under the account lock; prepared is not a reservation.
+
+This is partial receiver work for the remaining M565 fleet task. DMs cooperative
+drain, new-session activation/recovery, issuer lineage and automatic reconnection
+remain open. Installed receivers, canonical/auth source checkouts, runners, ships
+and the persistent preview are unchanged. Release qualification stays deferred.

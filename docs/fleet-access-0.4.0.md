@@ -152,3 +152,11 @@ Release qualification remains deferred until these features are complete.
 
 M565 completes the scoped native Urgit workflow test and operator guidance without
 an adapter. It does not change the outstanding receiver/reconnection work above.
+
+M566 adds bound local replacement preparation in an isolated Theme receiver branch.
+It validates the old accepted attempt/account/fingerprint, fences local admission,
+waits for owners and blocks unresolved writes without pretending old channels were
+deleted. Existing cleanup, credentials and account metadata remain. This is not
+yet a reservation, successor delivery or a capability consumed by Omabit. DMs drain,
+activation/recovery and issuer lineage remain pending. See
+[preparation evidence](diagnostics/2026-11-07-theme-handoff-preparation.json).

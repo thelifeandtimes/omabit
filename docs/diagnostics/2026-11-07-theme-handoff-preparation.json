@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M566",
+  "passed": true,
+  "omabit_base": "5bef15cee1cd64891a150a04bb33b4260f2dc16d",
+  "theme": {
+    "checkout": "/tmp/omabit-receiver-reconnect-040/theme",
+    "branch": "codex/0.4.0-session-reconnect",
+    "commit": "8c81ea8f0e8a4e1d3459633ca72fd580fed2486e",
+    "base": "1c239c66bcc594a1f14775885b39a481fe1259de"
+  },
+  "checks": [
+    {
+      "directory": "/tmp/omabit-theme-handoff-01",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_transport_handoff.py",
+          "test_transport_journal.py",
+          "test_transport_upgrade.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "f5aafa65d41a7e2304d7d9c71833ef54b77a1fa234fe0cc66b169554bcce7c28",
+      "source_manifest_sha256": "e12d625a4e07c645b170a1f82b27238dfc0b8166b0c125c62f063f66eafee6de"
+    },
+    {
+      "directory": "/tmp/omabit-theme-handoff-02",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_connection*.py",
+          "test_transport_handoff.py",
+          "test_disconnect_transport.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "f8d440103751663c708ee243c9d4ac6d2b4059a459f5791842190da8f9936288",
+      "source_manifest_sha256": "168f22ceff26bb0a82f286b1b6b152a1b05f667750cde39304440adcbcd9f14d"
+    }
+  ],
+  "coverage": [
+    "Nine local quiescence cases: unknown writes, acknowledged writes, live/released owners, same-fake origin isolation, expiry and repeated preparation",
+    "Ten exact old/new request binding preparation cases: current account/fingerprint, missing/changed/history IDs, malformed/duplicate fields, locked credentials and unresolved writes",
+    "34 transport/admission/original-writer upgrade tests pass in01;62 connection/recovery/disconnect/admission tests pass in02"
+  ],
+  "limits": [
+    "Theme preparation only; no new credential, account swap or remote cleanup",
+    "Prepared is not a slot reservation; activation must revalidate and hold the account lock",
+    "No new persistent format; existing version2 transport retirement is reused",
+    "No complete replacement capability is advertised or consumed by Omabit",
+    "DMs cooperative drain, successor delivery/recovery, issuer lineage and automatic reconnection remain pending",
+    "Private network/HOME/mount/PID fixtures; no installed state, real keyring or runtime qualification",
+    "No production/DEV/trial/preview changes or release work"
+  ]
+}
