@@ -65,5 +65,8 @@ ObservationSchedule 1.0 ObservationSchedule.qml
 AppDevelopment 1.0 AppDevelopment.qml
 AppDevelopmentPane 1.0 AppDevelopmentPane.qml
 AppPolicyTree 1.0 AppPolicyTree.qml
+AppWorkflow 1.0 AppWorkflow.qml
+AppWorkflowPane 1.0 AppWorkflowPane.qml
+NotesField 1.0 NotesField.qml
 AgentHelp 1.0 AgentHelp.qml
 AgentHelpPane 1.0 AgentHelpPane.qml

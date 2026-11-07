@@ -29,6 +29,9 @@ The 0.4.0 source provides `app-policy` on runners with
 `app-development-policy-v2`, plus gated creation on `desk-create-v1` runners.
 Use the operator skill's app-development reference for `desk-inspect`,
 `desk-plan-create`, `desk-create`, and durable receipt/reconciliation commands.
+Read ship and desk `desk-settings` on `desk-workflow-settings-v1` runners for the
+configured workflow, branch, checks and release instructions. These are descriptive
+settings; they neither verify Urgit's native binding nor enable any permission.
 Commit/publication adapters and the full development workflow remain pending.
 Creation is controlled at the ship, and new desks inherit commit/publication
 settings by default. Creating a desk does not grant either permission. Until a

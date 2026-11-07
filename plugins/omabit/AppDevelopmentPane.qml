@@ -180,6 +180,11 @@ Column {
     }
   }
   }
+  AppWorkflowPane {
+    objectName:"app-workflow-pane";width:parent.width
+    visible:root.scope==="ship" || root.scope==="desk"
+    service:root.service;active:root.active && visible;runner:root.runner;target:root.target;ready:!!root.ship && root.ship.ready
+  }
   Card {
     objectName:"app-policy-rollout-card"
     width:parent.width;implicitHeight:rolloutContent.implicitHeight+Style.space(32);visible:root.scope==="global" && root.runners.length>0

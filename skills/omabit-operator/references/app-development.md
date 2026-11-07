@@ -2,8 +2,9 @@
 
 The 0.4.0 source implements policy storage, Setup authoring, read-only status,
 typed desk inspection/creation with durable receipts (`desk-create-v1`),
-and live installed-desk discovery (`desk-discovery-v1`).
-Commit/publication, source bindings and Unix/Clay alerts are still being connected.
+live installed-desk discovery (`desk-discovery-v1`), and runner-shared workflow
+settings (`desk-workflow-settings-v1`). Commit/publication, source staging and
+Unix/Clay alerts are still being connected.
 Urgit follows its native workflow; no dedicated Omabit adapter is planned. Verify
 installed capabilities and command help rather than assuming development source
 is installed. Keep prepared source outside a live mount while its effects are
@@ -43,6 +44,28 @@ changes in the Setup flow. Report the blocking scope when action is disabled.
 Do not invoke `omabit app-development-save`/`app-development-retry`, write policy
 files, submit raw policy-update RPCs, or use Dojo/Eyre/Git as a workaround for a
 blocked Omabit operation. Those helpers belong to user-facing Setup authoring.
+
+On capable runners, use the matching profile's `omabit` binary to read both levels
+of release configuration (the command precedes these flags):
+
+```sh
+omabit --config-dir REGISTRY desk-settings --runner NAME --expected-runner-id ID \
+  --instance INSTANCE
+omabit --config-dir REGISTRY desk-settings --runner NAME --expected-runner-id ID \
+  --instance INSTANCE --desk DESK
+```
+
+Ship settings describe its purpose and development instructions. Desk settings
+record Unix source directory or Urgit workflow, optional repository/branch,
+publication method, release checks and instructions. They are versioned metadata,
+not executable hooks, credentials, verified Urgit bindings or permission grants.
+A default source directory equal to the desk name is a suggested input, not proof
+that a native Unix mount points at that desk. Confirm the source before deployment.
+Follow the configured checks; do not change them to make a release pass. Setup's
+`app-development-configure` helper belongs to user-directed configuration, not an
+agent's automatic release path. These reads resolve the current project generation
+even while its runtime is stopped; they do not provide live source/compilation
+evidence. Unavailable settings must not be mistaken for an unconfigured release.
 
 ## Inspect and create a desk with the supported CLI
 

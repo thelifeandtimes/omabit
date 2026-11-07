@@ -9,6 +9,7 @@ ShellRoot {
   property int phase:0
   property int ticks:0
   property bool captured:false
+  property string policyBeforeWorkflow:""
   function check(v,m){if(!v)throw new Error(m)}
   function control(o,n){if(o.objectName===n)return o;var c=o.children||[];for(var i=0;i<c.length;i++){var r=control(c[i],n);if(r)return r}return null}
   Item {
@@ -25,7 +26,7 @@ ShellRoot {
   }
   function fits(o) {
     if(!o.visible)return
-    if(o.objectName && /^app-policy-(scope|runner|ship|desk|commit|publish|create_desk|filter-gate|filter-value|search|save|retry|refresh)$/.test(o.objectName)) {
+    if(o.objectName && (/^app-policy-(scope|runner|ship|desk|commit|publish|create_desk|filter-gate|filter-value|search|save|retry|refresh)$/.test(o.objectName) || /^app-workflow-(purpose|source|directory|publication|branch|repository|checks|instructions|save)$/.test(o.objectName))) {
       var pos=o.mapToItem(pane,0,0)
       check(o.width>0 && pos.x>=-1 && pos.x+o.width<=pane.width+1,"control overflows: "+o.objectName)
     }
@@ -41,6 +42,7 @@ ShellRoot {
   Timer {interval:25;repeat:true;running:true;onTriggered:{
     try {
       var c=pane.controller,save=control(pane,"app-policy-save"),desk=control(pane,"app-policy-desk")
+      var w=control(pane,"app-workflow-pane"),wc=w.controller
       if(test.phase===0 && c.value && !c.busy){
         test.check(pane.commitValue==="block" && pane.publishValue==="block" && pane.createValue==="block","unsafe defaults")
         test.fits(pane);test.capture("global");test.phase=100
@@ -73,9 +75,46 @@ ShellRoot {
         service.scenario="discovery-error";c.discover("lab","runner-lab",pane.ship.target);test.phase=53
       }else if(test.phase===53 && !c.busy){
         test.check(c.error && c.value && pane.inventory && pane.commitValue==="allow","discovery failure erased edits")
+        service.scenario="normal";test.policyBeforeWorkflow=JSON.stringify(c.value);test.phase=60
+      }else if(test.phase===60 && wc.value && !wc.busy && !w.isDesk){
+        test.check(w.draft.ship.purpose==="standard","unsafe ship purpose default")
+        w.setField("purpose","distribution");w.setField("instructions","Use this fake to test releases.")
+        test.check(w.save(),"ship workflow save refused");test.phase=61
+      }else if(test.phase===61 && !wc.busy && wc.value){
+        test.check(wc.value.ship.purpose==="distribution" && !w.dirty,"ship workflow not saved")
+        test.check(pane.reviewDesk("my-app"),"workflow desk selection refused");test.phase=62
+      }else if(test.phase===62 && wc.value && !wc.busy && w.isDesk){
+        test.check(w.draft.desk.publication==="none" && w.draft.desk.source_name==="my-app","unsafe desk workflow default")
+        w.setField("source_name","../outside");test.check(!!w.validationError && !w.save() && w.canSave,"invalid source accepted or editor disabled")
+        w.setField("source_name","app-source");w.setField("publication","treaty");w.setField("branch","master")
+        w.editChecks("Compile the Gall agent\n\nVerify the frontend\n");test.check(w.draft.desk.checks.length===2,"blank checks not normalized")
+        w.setField("instructions","Follow the configured branch and checks before publishing.")
+        test.check(w.save(),"desk workflow save refused");test.phase=63
+      }else if(test.phase===63 && !wc.busy && wc.value){
+        test.check(wc.value.desk.source_name==="app-source" && wc.value.desk.checks.length===2 && !w.dirty,"desk workflow not saved")
+        test.check(test.policyBeforeWorkflow===JSON.stringify(c.value),"workflow changed permissions")
+        test.fits(pane);test.capture("workflow");test.phase=64
+      }else if(test.phase===64 && test.captured){
+        w.setWorkflow("urgit");test.check(w.draft.desk.source_name==="" && !w.validationError,"Urgit retained Unix binding")
+        w.setWorkflow("mounted");test.check(w.draft.desk.source_name==="my-app","Unix binding default missing")
+        service.scenario="workflow-mismatch";wc.refresh();test.phase=65
+      }else if(test.phase===65 && !wc.busy && wc.error){
+        test.check(!wc.value && !w.canSave,"mismatched workflow accepted")
+        service.scenario="normal";wc.refresh();test.phase=66
+      }else if(test.phase===66 && !wc.busy && wc.value){
+        test.check(wc.value.desk.source_name==="app-source","workflow refresh lost saved source")
+        service.scenario="workflow-delay";wc.refresh();test.ticks=0;test.phase=67
+      }else if(test.phase===67 && ++test.ticks>=6){
+        service.profileName="workflow-profile";test.check(!wc.value,"profile switch kept workflow");test.phase=68
+        // Policy reload supplies the selected target in the new profile.
+        c.refresh()
+      }else if(test.phase===68 && c.value && !wc.busy && wc.value){
+        test.check(wc.value.desk.instructions==="workflow-profile","late workflow crossed profile")
+        service.scenario="normal";service.profileName="dev";c.refresh();test.phase=69
+      }else if(test.phase===69 && c.value && !c.busy && wc.value && !wc.busy){
         service.scenario="observer";c.refresh();test.check(c.inventories.length===0,"refresh retained stale discovery");test.phase=6
       }
-      else if(test.phase===6 && !c.busy && c.value){test.check(!save.enabled,"observer can save");service.scenario="offline";c.refresh();test.phase=7}
+      else if(test.phase===6 && !c.busy && c.value){test.check(!save.enabled && !w.canSave,"observer can save");service.scenario="offline";c.refresh();test.phase=7}
       else if(test.phase===7 && !c.busy && c.value){test.check(!save.enabled && c.value.runners[0].rollout==="pending","offline permissions editable");service.scenario="mismatch";c.refresh();test.phase=8}
       else if(test.phase===8 && !c.busy && c.error){test.check(!c.value && !save.enabled,"wrong runner accepted");service.scenario="malformed";c.refresh();test.phase=9}
       else if(test.phase===9 && !c.busy && c.error){service.scenario="delay";c.refresh();test.ticks=0;test.phase=10}

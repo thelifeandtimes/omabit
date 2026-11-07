@@ -28,4 +28,5 @@ package managed
 // Schema48 fences application policy and its revisioned authoring history.
 // Schema49 fences the default-closed desk-creation gate and policy v2.
 // Schema50 retains typed desk intents and append-only effect receipts.
-const StateSchemaVersion = 50
+// Schema51 retains source workflow settings and their authoring history.
+const StateSchemaVersion = 51

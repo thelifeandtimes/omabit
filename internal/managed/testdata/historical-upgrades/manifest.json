@@ -10,7 +10,7 @@
   "development_test_target": {
     "release": "unreleased",
     "channel": "development",
-    "state_schema": 50,
+    "state_schema": 51,
     "evidence": "source-tests-only"
   },
   "development_test_note": "The reader window and fixture inventory below test the unreleased development target. The RC.12/schema20 qualification target and linked historical evidence remain frozen; these tests do not qualify a new release or artifact.",

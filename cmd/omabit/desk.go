@@ -36,6 +36,10 @@ func deskCommand(ctx context.Context, command string, args []string, config stri
 	}
 	var plan collection.DeskPlan
 	switch command {
+	case "desk-settings":
+		if *raw != "" || *id != "" || *instance == "" {
+			return fail(errors.New("require --instance and optional --desk for workflow inspection"))
+		}
 	case "desk-list":
 		if *raw != "" || *id != "" || *desk != "" || *instance == "" {
 			return fail(errors.New("require only --instance for desk discovery"))
@@ -73,6 +77,8 @@ func deskCommand(ctx context.Context, command string, args []string, config stri
 	}
 	var output any
 	switch command {
+	case "desk-settings":
+		output, err = registry.InspectDeskSetting(ctx, *name, *runner, *instance, *desk)
 	case "desk-list":
 		output, err = registry.DiscoverDesks(ctx, *name, *runner, *instance)
 	case "desk-inspect":

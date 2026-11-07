@@ -64,6 +64,7 @@ def available(runner, mode):
 
 def view(state, mode):
     result = copy.deepcopy(state)
+    result.pop("workflows", None)
     for runner in result["runners"]:
         runner["status"]["read_at"] = datetime.now(timezone.utc).isoformat()
         for target in runner["status"]["targets"]:
@@ -109,6 +110,32 @@ def apply(state, mode, command, request=None):
         raise ValueError("Unknown preview connection mode")
     if command == "app-development-status":
         return view(state, mode)
+    if command in ("app-development-workflow", "app-development-configure"):
+        runner = next((r for r in state["runners"] if r["runner_id"] == request.get("runner_id") and r["name"] == request.get("name")), None)
+        if runner is None or mode == "offline" and runner["name"] == "preview-remote":
+            raise ValueError("Preview runner is unavailable")
+        target = request["target"]
+        ship = {k: v for k, v in target.items() if k != "desk"}
+        if not any(ship == t["target"] for t in runner["status"]["targets"]):
+            raise ValueError("Unknown preview ship")
+        desk = target.get("desk", "")
+        if desk and not re.fullmatch(r"[a-z][a-z0-9-]{0,63}", desk):
+            raise ValueError("Invalid preview desk")
+        key = json.dumps([runner["runner_id"], target], sort_keys=True)
+        config = {"desk": {"workflow": "mounted", "source_name": desk, "publication": "none", "repository": "", "branch": "", "checks": [], "instructions": ""}} if desk else {"ship": {"purpose": "standard", "instructions": ""}}
+        setting = copy.deepcopy(state.get("workflows", {}).get(key, {"version": 1, "target": target, "revision": 0, **config}))
+        if command == "app-development-configure":
+            if not available(runner, mode):
+                raise ValueError("Preview connection has observer access")
+            update = request["update"]
+            if update["target"] != target or update["expected_revision"] != setting["revision"]:
+                raise ValueError("Preview workflow changed. Refresh before saving.")
+            field = "desk" if desk else "ship"
+            if set(update) != {"target", "expected_revision", field}:
+                raise ValueError("Invalid preview workflow update")
+            setting.update({field: copy.deepcopy(update[field]), "revision": setting["revision"] + 1, "actor": "preview-fixture", "updated_at": datetime.now(timezone.utc).isoformat()})
+            state.setdefault("workflows", {})[key] = setting
+        return {"version": 1, "runner_id": runner["runner_id"], "mode": "simulation", "read_at": datetime.now(timezone.utc).isoformat(), "setting": setting}
     if command not in ("app-development-save", "app-development-retry"):
         raise ValueError("Unsupported preview command")
     if not isinstance(request, dict) or request.get("revision") != state["global"]["revision"]:
@@ -168,7 +195,7 @@ def main():
     # A fixed path inside the preview namespace; no production configuration or
     # fallback transport. Even unknown commands fail before touching this file.
     mode, command, *args = sys.argv[1:]
-    if command not in ("app-development-status", "app-development-save", "app-development-retry"):
+    if command not in ("app-development-status", "app-development-save", "app-development-retry", "app-development-workflow", "app-development-configure"):
         raise ValueError("Unsupported preview command")
     request = None
     if command != "app-development-status":
@@ -189,7 +216,7 @@ def main():
                 with backup.open("xb") as output:
                     output.write(original)
         result = apply(state, mode, command, request)
-        if upgraded or not path.exists() or command != "app-development-status":
+        if upgraded or not path.exists() or command not in ("app-development-status", "app-development-workflow"):
             temporary = path.with_suffix(".tmp")
             with temporary.open("w") as output:
                 json.dump(state, output, indent=2)

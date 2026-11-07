@@ -62,8 +62,8 @@ Reviewed upstream commit `7834a4e186998265f5175fd527bc17ea8819c44f`.
   commit, Clay revision and content drift. Its `publish-desk` action exports
   Clay contents into Git. [Bridge architecture](https://github.com/yapishu/urgit/blob/7834a4e186998265f5175fd527bc17ea8819c44f/specs/architecture.md)
 - Administration uses an authenticated ship session. Git uses a repository write
-  token through HTTP Basic authentication. The adapter can use existing HTTP
-  endpoints for repository creation, binding and status. Its native `git-action`
+  token through HTTP Basic authentication. Its native UI uses HTTP endpoints
+  for repository creation, binding and status. Its native `git-action`
   mark currently provides noun conversion. [HTTP client](https://github.com/yapishu/urgit/blob/7834a4e186998265f5175fd527bc17ea8819c44f/fe/src/api.js),
   [mark definition](https://github.com/yapishu/urgit/blob/7834a4e186998265f5175fd527bc17ea8819c44f/desk/mar/git-action.hoon)
 - Binding selects a branch and desk. Whole-tree projection means a repository
@@ -127,15 +127,23 @@ mount also require the permissions their resulting effects would use. When the
 auto-commit or publication state is unresolved, keep files in staging and report
 the unresolved evidence.
 
-The boundary covers Omabit's agent-facing operations and managed Git integration.
+The enforcement boundary covers Omabit's agent-facing operations; its skills
+also honor the gates when guiding native Git workflows.
 Human-operated Dojo and independently configured Urgit clients use their native
 authority. An unrestricted process with Unix-owner access can reach other host
 interfaces. Skills must honor a blocked gate across alternate transports, and
 the UI should describe this scope accurately.
 
-Keep ship purpose as optional descriptive metadata, such as standard,
-development or distribution. New fakes can carry a development label while both
-permissions remain blocked. Persist policy and bindings against runner/instance
+Ship purpose and desk workflow settings are now editable in the selected tree
+node's card and readable with `desk-settings` (`desk-workflow-settings-v1`, M541).
+Schema51 stores them separately from policy, with revision checks and author
+history. Purpose defaults to standard; a desk defaults to Unix source named after
+the desk, no publication method and no release checks. These are descriptive
+defaults, not verified mount mappings. Settings include source mode/directory,
+optional Urgit repository/branch, publication method, checks and agent instructions.
+They contain no executable hooks, scheduler or tokens. Urgit settings document the
+native configuration without changing or verifying it. All three permission gates
+remain independent. Persist policy and bindings against runner/instance
 identity. Project members additionally carry project identity and current member
 generation, so repeated fake ship names resolve correctly.
 
@@ -166,7 +174,8 @@ selected historical desk's actual MIME converters, in bounded batches. Failed
 conversions are unavailable comparisons, never synchronized results. The typed
 commit path targets the named Clay desk with reviewed revision/hash and a MIME
 delta; it does not rely on a Unix mount name to identify the destination. The
-runner API, persistent bindings and UI alerts remain in progress (M540).
+runner source-status API, synchronization baselines and UI alerts remain in
+progress (M540); descriptive source configuration is available (M541).
 
 Use debounced file observation, bounded reconciliation and refresh on reconnect.
 Separate synchronized, Unix changes, Clay changes, divergence and unavailable

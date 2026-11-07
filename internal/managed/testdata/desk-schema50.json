@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "schema": 50,
+  "source_commit": "9f45b42a2b13b886549ebea72082ce8f73bf4be0",
+  "sql_sha256": "b6d82f7cce2ba87df74ac71167f37e1c27966a61ef47d2236bd8f44c659a7a8a",
+  "writer": "Original schema50 testOpenStore/register/putAppPolicy/createDeskOperation/appendDeskStep; synthetic alpha, example desk, commit allow, publish block, dispatched creation receipt",
+  "scope": "functional development migration fixture; not release qualification",
+  "evidence": "/tmp/omabit-desk-settings-original-migration-01/result.json"
+}

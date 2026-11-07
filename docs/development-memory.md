@@ -8025,3 +8025,35 @@ about2.5 GiB before probe17, with 2 GiB additional scratch declared per run and
 about26 GiB in the two shared evidence roots. Production, installed previews,
 real agents, runners and ships remain untouched. Persistent source bindings,
 agent commit/publication endpoints and the remaining 0.4.0 tracks are still active.
+
+## M541 — Shared ship purpose and desk workflow settings (2026-11-06)
+
+Schema51 adds revisioned ship/desk development settings and append-only author
+history, separate from all policy grants and operation receipts. Project targets
+include the exact current generation. Defaults are descriptive: standard ship,
+Unix source directory equal to desk name, no publication method/checks. The Setup
+card records source workflow, directory, optional Urgit repository/branch, release
+checks and instructions; it never executes hooks, stores tokens, configures Urgit
+or changes permissions. Agents read both ship and desk with `desk-settings` on
+`desk-workflow-settings-v1`; Setup owns authoring. A source name does not establish
+a native mount mapping. This supersedes the pending descriptive-binding/purpose
+portion of M540; synchronization baselines and source operations remain pending.
+
+The actual schema50 writer at9f45b42a produces the retained SQL fixture, including
+a dispatched desk receipt. Schema51 preserves original registry/policy/journal,
+reopens idempotently and rolls failed migration back. That schema50 reader refuses
+actual51 state unchanged. Source proof is in
+`diagnostics/2026-11-06-desk-settings.json`; exact-artifact release qualification
+is still deferred. The first SQL fixture unit test incorrectly let SQLite create
+its database with non-private permissions; the runner refused it correctly. The
+fixture now creates its file0600 before import, matching real writer behavior.
+
+Private managed/collector race fixtures pass capability, identity, current project,
+concurrent revision, corruption and response-integrity checks. Wide/narrow UI
+fixtures pass edits, validation, saves without permission changes, observer refusal,
+mismatched targets and a late reply across profile changes. A transient QML warning
+on ship-to-desk selection was fixed. Both screenshots were inspected; the full
+Setup/sidebar/zoom/reopen suite passes. The packaged skills document settings as
+metadata and preserve native Urgit release rules. No installed preview, production,
+DEV or trial runner/plugin/ship was changed. Source status, gated commit/publication,
+Urgit qualification, fleet routes and clearweb assistance remain active work.

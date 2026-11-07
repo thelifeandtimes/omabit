@@ -24,6 +24,9 @@ authoring stays in Setup; agents must not enable their own gates or bypass them
 through another transport. On runners advertising `desk-create-v1`, the matching
 `omabit` CLI supports read-only creation planning, gated submission and durable
 receipt/reconciliation; follow the app-development reference's exact sequence.
+Read ship and desk `desk-settings` on `desk-workflow-settings-v1` runners to follow
+their configured source path, release checks and instructions. Descriptive purpose
+and workflow settings never grant agent permissions.
 
 Start with the shortest relevant read path:
 

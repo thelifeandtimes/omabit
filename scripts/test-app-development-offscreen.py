@@ -4,15 +4,29 @@ import argparse, json, os, re, shutil, subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENTS = ('AppDevelopment.qml', 'AppDevelopmentPane.qml', 'AppPolicyTree.qml', 'AppPolicy.js', 'ReaderLifecycle.qml', 'Field.qml', 'ActionButton.qml', 'SelectField.qml', 'Label.qml', 'Hint.qml', 'Design.qml', 'Card.qml', 'CardTitle.qml', 'StatusBadge.qml')
+COMPONENTS = ('AppDevelopment.qml', 'AppDevelopmentPane.qml', 'AppPolicyTree.qml', 'AppPolicy.js', 'AppWorkflow.qml', 'AppWorkflowPane.qml', 'AppWorkflow.js', 'NotesField.qml', 'ReaderLifecycle.qml', 'Field.qml', 'ActionButton.qml', 'SelectField.qml', 'Label.qml', 'Hint.qml', 'Design.qml', 'Card.qml', 'CardTitle.qml', 'StatusBadge.qml')
 HELPER = r'''
 import json, signal, sys, time
 from pathlib import Path
 scenario, profile, command, *args = sys.argv[1:]
-assert command in ('app-development-status','app-development-save','app-development-retry','desk-list')
+assert command in ('app-development-status','app-development-save','app-development-retry','desk-list','app-development-workflow','app-development-configure')
 path=Path('/lab/policy.json')
 v=json.loads(path.read_text())
 with Path('/lab/calls.jsonl').open('a') as f:f.write(json.dumps({'profile':profile,'command':command,'args':args})+'\n')
+if command in ('app-development-workflow','app-development-configure'):
+    from datetime import datetime, timezone
+    r=json.loads(args[1]);target=r['target'];key=json.dumps(target,sort_keys=True);path=Path('/lab/workflows.json')
+    settings=json.loads(path.read_text()) if path.exists() else {}
+    setting=settings.get(key,{'version':1,'target':target,'revision':0,**({'desk':{'workflow':'mounted','source_name':target['desk'],'publication':'none','repository':'','branch':'','checks':[],'instructions':''}} if target.get('desk') else {'ship':{'purpose':'standard','instructions':''}})})
+    if command=='app-development-configure':
+        u=r['update'];assert u['target']==target and u['expected_revision']==setting['revision']
+        setting={**setting,**{k:u[k] for k in ('ship','desk') if k in u},'revision':setting['revision']+1,'actor':'fixture','updated_at':datetime.now(timezone.utc).isoformat()}
+        settings[key]=setting;path.write_text(json.dumps(settings))
+    if scenario=='workflow-mismatch':setting['target']={'instance_id':'another'}
+    if scenario=='workflow-delay':
+        setting['desk' if target.get('desk') else 'ship']['instructions']=profile
+        signal.signal(signal.SIGTERM,lambda *_:None);time.sleep(.6)
+    print(json.dumps({'version':1,'runner_id':'runner-lab','mode':'simulation','setting':setting,'read_at':datetime.now(timezone.utc).isoformat()}));sys.exit(0)
 if command=='desk-list':
     from datetime import datetime, timezone
     assert args==['--runner','lab','--expected-runner-id','runner-lab','--instance','publisher']
@@ -77,6 +91,7 @@ def main():
     calls=[json.loads(s) for s in (out/'calls.jsonl').read_text().splitlines()]
     assert len([c for c in calls if c['command']=='app-development-save'])==4,calls
     assert len([c for c in calls if c['command']=='desk-list'])==3,calls
+    assert len([c for c in calls if c['command']=='app-development-configure'])==2,calls
     assert (out/'late-finished').read_text()=='dev'
     assert (out/'policy.png').exists() and (out/'global.png').exists()
     print('PASS: four policy scopes, defaults, inheritance, observer/offline refusal, malformed identity and stale-profile response rejection')

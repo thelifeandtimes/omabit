@@ -6,6 +6,12 @@ var desktopCommandHelp = map[string]string{
 Observe an uncertain creation on its exact selected runtime and record the result.
 Never repeats the effect or changes permissions. Query desk-operation afterward;
 unavailable evidence leaves the outcome uncertain.`,
+	"desk-settings": `Usage: omabit [--config-dir DIR] desk-settings --runner NAME --expected-runner-id ID --instance INSTANCE [--desk DESK]
+
+Read ship purpose or the desk's source and release configuration. Follow the
+configured checks and release instructions. This command cannot change settings
+or grant permissions; use Setup to author workflow settings.
+`,
 	"desk-list": `Usage: omabit [--config-dir DIR] desk-list --runner NAME --expected-runner-id ID --instance INSTANCE
 
 Read installed desk names from the selected running ship. Discovery does not

@@ -341,7 +341,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if !ownerhost.Development() {
 			features = append(features, protocol.ManagementUpdateFeature)
 		}
-		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature)
+		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature, protocol.DeskSettingsFeature)
 		if _, ok := r.b.(deskBackend); ok {
 			features = append(features, protocol.DeskCreateFeature, protocol.DeskDiscoveryFeature)
 		}
@@ -514,6 +514,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if req.URL.Path == protocol.AppPolicyPath {
 		r.serveAppPolicy(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskSettingsPath {
+		r.serveDeskSettings(w, req, actor, role)
 		return
 	}
 	if req.URL.Path == protocol.DeskDiscoveryPath {

@@ -1,5 +1,17 @@
 # Stable-release upgrade requirement
 
+## Development: workflow settings, schema51
+
+Schema51 adds versioned ship/desk workflow metadata and append-only history.
+Original schema50 writer state, including pending desk-operation receipts,
+upgrades without changing its registry or policy rows. Repeated opens validate
+the metadata and its history; failed migration rolls back. The schema50 writer
+refuses actual schema51 state unchanged. The original-writer fixture and
+`scripts/test-desk-settings-upgrade.py` record this narrow path (M541).
+`desk-workflow-settings-v1` must be negotiated by matching collectors and runners.
+Ordinary edits preserve these separate records. This does not qualify a released
+0.3.7 → 0.4.0 artifact or authorize updating an installed runner.
+
 ## Development: typed desk operations, schema50
 
 Schema50 adds separately journaled desk-operation intents and append-only history.
