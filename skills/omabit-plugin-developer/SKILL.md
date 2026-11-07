@@ -19,14 +19,17 @@ before changing them. Read only the reference needed for the current slice:
 - [Interface, sign-in and backend readiness](references/application.md)
 - [Development isolation and acceptance](references/development.md)
 
-For backend desk commits or publication through Omabit, follow the user's
+For backend desk creation, commits or publication through Omabit, follow the user's
 **Setup → App development and publishing** gates and the application's release
-configuration, including Urgit's rules. Agent commit/publication default to
+configuration, including Urgit's rules. Agent desk creation, commit and publication default to
 blocked for every ship class. Read the effective permissions through supported
 tools before acting. Keep disabled effects blocked across shell, Dojo and Git
 alternatives, and leave permission changes to the user's Setup action.
-The scoped policy and desk APIs are planned for 0.4.0. Until supported tools can
-report the required permissions, keep agent commit and publication blocked.
+The scoped policy/read-only status is implemented for 0.4.0; desk mutation APIs
+remain pending. Use `app-policy` on a runner with `app-development-policy-v2`.
+Creation is controlled at the ship, and new desks inherit commit/publication
+settings by default. Creating a desk does not grant either permission. Until a
+supported effect exists and fresh policy permits it, keep the mutation blocked.
 
 Work in small vertical slices:
 

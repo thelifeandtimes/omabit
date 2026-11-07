@@ -9,11 +9,9 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENTS = (
-    "AppDevelopment.qml", "AppDevelopmentPane.qml", "AppPolicy.js", "ReaderLifecycle.qml",
-    "Field.qml", "ActionButton.qml", "SelectField.qml", "Label.qml", "Hint.qml",
-    "Design.qml", "Card.qml", "CardTitle.qml", "StatusBadge.qml",
-)
+COMPONENTS = tuple(p.name for p in sorted((ROOT / "plugins/omabit").iterdir())
+                   if p.suffix in (".qml", ".js", ".svg") and p.name not in ("Service.qml", "Panel.qml", "WindowActivation.qml"))
+
 
 
 def main():
@@ -31,9 +29,11 @@ def main():
     (output / "Plugin").mkdir()
     for name in COMPONENTS:
         shutil.copy2(ROOT / "plugins/omabit" / name, output / "Plugin" / name)
-    (output / "Plugin/qmldir").write_text("singleton Design 1.0 Design.qml\n" + "".join(
+    (output / "Plugin/qmldir").write_text("singleton Design 1.0 Design.qml\nWindowActivation 1.0 WindowActivation.qml\n" + "".join(
         name[:-4] + " 1.0 " + name + "\n" for name in COMPONENTS if name.endswith(".qml") and name != "Design.qml"))
-    for name in ("backend.py", "launch.py", "shell.qml"):
+    # Focus only this fixture window, without exposing compositor control IPC.
+    (output / "Plugin/WindowActivation.qml").write_text('import QtQuick\nItem { required property var targetWindow;signal failed();function activate(){targetWindow.visible=true;targetWindow.requestActivate()} }\n')
+    for name in ("backend.py", "launch.py", "shell.qml", "PreviewService.qml"):
         shutil.copy2(ROOT / "scripts/app-development-preview" / name, output / name)
     commons = output / "Commons"
     commons.mkdir()
@@ -42,11 +42,10 @@ def main():
     (commons / "Color.qml").write_text('''pragma Singleton
 import QtQuick
 QtObject {
-  property bool light:false
-  property color background:light ? "#f5f3ee" : "#101315"
-  property color foreground:light ? "#353b3e" : "#cacccc"
-  property color accent:light ? "#346557" : "#94b4a4"
-  property color urgent:light ? "#a53d3d" : "#cc7777"
+  property color background:"#101315"
+  property color foreground:"#cacccc"
+  property color accent:"#94b4a4"
+  property color urgent:"#cc7777"
 }
 ''')
     for name in ("home", "config", "state", "share", "cache"):

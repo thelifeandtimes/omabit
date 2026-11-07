@@ -23,7 +23,7 @@ func TestAppPolicyCLIReadOnlyAndFailClosed(t *testing.T) {
 		if q.URL.Path == "/hello" {
 			h := protocol.Hello{ProtocolVersion: 1, RunnerID: "runner", Mode: "simulation", Features: []string{protocol.AppPolicyFeature}}
 			if older.Load() {
-				h.Features = nil
+				h.Features = []string{"app-development-policy-v1"}
 			}
 			reply(t, w, h)
 			return
@@ -34,7 +34,7 @@ func TestAppPolicyCLIReadOnlyAndFailClosed(t *testing.T) {
 		value := protocol.AppPolicyStatus{Version: 1, RunnerID: "runner", Mode: "simulation", ReadAt: time.Now().UTC(), Policy: apppolicy.Default(), Targets: []protocol.AppPolicyTarget{{Target: apppolicy.Target{InstanceID: "alpha"}, Ready: true}}}
 		switch invalid.Load() {
 		case 1:
-			value.Policy.Version = 2
+			value.Policy.Version = 99
 		case 2:
 			value.RunnerID = "other"
 		case 3:
@@ -47,7 +47,7 @@ func TestAppPolicyCLIReadOnlyAndFailClosed(t *testing.T) {
 	if run(context.Background(), args, &out, &errs) != 0 || !strings.Contains(out.String(), `"source": "global"`) {
 		t.Fatal(out.String(), errs.String())
 	}
-	for _, tail := range [][]string{{"app-policy-set"}, {"app-policy", "--allow"}, {"desk-commit", "alpha"}, {"desk-publish", "alpha"}} {
+	for _, tail := range [][]string{{"app-policy-set"}, {"app-policy", "--allow"}, {"desk-create", "alpha"}, {"desk-commit", "alpha"}, {"desk-publish", "alpha"}} {
 		out.Reset()
 		errs.Reset()
 		if run(context.Background(), append([]string{"--socket", socket}, tail...), &out, &errs) == 0 {
@@ -66,7 +66,7 @@ func TestAppPolicyCLIReadOnlyAndFailClosed(t *testing.T) {
 	older.Store(true)
 	out.Reset()
 	errs.Reset()
-	if run(context.Background(), args, &out, &errs) == 0 || !strings.Contains(errs.String(), "app-development-policy-v1") {
+	if run(context.Background(), args, &out, &errs) == 0 || !strings.Contains(errs.String(), "app-development-policy-v2") {
 		t.Fatal(out.String(), errs.String())
 	}
 }

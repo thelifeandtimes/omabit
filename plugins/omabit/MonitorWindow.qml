@@ -16,6 +16,7 @@ Window {
   property string page: "overview"
   property bool technical: false
   property var revealTarget: null
+  property Component headerAccessory: null
   readonly property alias maintenancePane: maintenance
   readonly property alias activityPane: activity
   readonly property alias setupPane: windowSetup
@@ -88,6 +89,7 @@ Window {
             Label { text: "Monitor & maintenance"; font.bold: true }
             Label { text: "Your fleet, in focus"; caption: true; secondary: true }
           }
+          Loader { visible:!!root.headerAccessory;sourceComponent:root.headerAccessory }
           ActionButton { objectName: "monitor-refresh"; text: "↻"; quiet: true; hint: "Refresh runner observations"; enabled: !root.service.busy; onClicked: root.service.refresh() }
           ActionButton { text: "×"; quiet: true; hint: "Close monitoring window"; onClicked: root.visible = false }
         }

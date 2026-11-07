@@ -4,7 +4,7 @@ import argparse, json, os, re, shutil, subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENTS = ('AppDevelopment.qml', 'AppDevelopmentPane.qml', 'AppPolicy.js', 'ReaderLifecycle.qml', 'Field.qml', 'ActionButton.qml', 'SelectField.qml', 'Label.qml', 'Hint.qml', 'Design.qml', 'Card.qml', 'CardTitle.qml', 'StatusBadge.qml')
+COMPONENTS = ('AppDevelopment.qml', 'AppDevelopmentPane.qml', 'AppPolicyTree.qml', 'AppPolicy.js', 'ReaderLifecycle.qml', 'Field.qml', 'ActionButton.qml', 'SelectField.qml', 'Label.qml', 'Hint.qml', 'Design.qml', 'Card.qml', 'CardTitle.qml', 'StatusBadge.qml')
 HELPER = r'''
 import json, signal, sys, time
 from pathlib import Path
@@ -56,8 +56,8 @@ def main():
     (commons/'Style.qml').write_text('pragma Singleton\nimport QtQuick\nQtObject { function space(n) {return Math.round(n*SCALE)} property var font: ({family:"monospace",caption:Math.round(10*SCALE),bodySmall:Math.round(11*SCALE),body:Math.round(12*SCALE)}) }\n'.replace('SCALE',str(a.font_scale)))
     colors=('#101315','#cacccc','#94b4a4','#cc7777') if a.palette=='dark' else ('#f5f3ee','#353b3e','#346557','#a53d3d')
     (commons/'Color.qml').write_text('pragma Singleton\nimport QtQuick\nQtObject {'+';'.join('property color '+n+':'+json.dumps(v) for n,v in zip(('background','foreground','accent','urgent'),colors))+'}\n')
-    blocked={'commit':'block','publish':'block'};inherit={'commit':'inherit','publish':'inherit'}
-    v={'version':1,'global':{'version':1,'revision':0,'gates':blocked,'runners':[]},'runners':[{'name':'lab','runner_id':'runner-lab','can_edit':True,'rollout':'not enrolled in global rollout','status':{'version':1,'runner_id':'runner-lab','mode':'simulation','read_at':'2026-11-06T00:00:00Z','desk_operations':False,'policy':{'version':1,'revision':0,'global':blocked,'runner':inherit,'entries':[]},'targets':[{'target':{'instance_id':'publisher'},'ship':'~zod','label':'Publisher','ready':True}]}}]}
+    blocked={'commit':'block','publish':'block','create_desk':'block'};inherit={'commit':'inherit','publish':'inherit','create_desk':'inherit'}
+    v={'version':1,'global':{'version':2,'revision':0,'gates':blocked,'runners':[]},'runners':[{'name':'lab','runner_id':'runner-lab','can_edit':True,'rollout':'not enrolled in global rollout','status':{'version':1,'runner_id':'runner-lab','mode':'simulation','read_at':'2026-11-06T00:00:00Z','desk_operations':False,'policy':{'version':2,'revision':0,'global':blocked,'runner':inherit,'entries':[]},'targets':[{'target':{'instance_id':'publisher'},'ship':'~zod','label':'Publisher','ready':True}]}}]}
     (out/'policy.json').write_text(json.dumps(v));(out/'backend.py').write_text(HELPER)
     shutil.copy2(ROOT/'scripts/test-app-development-offscreen.qml',out/'shell.qml')
     env={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8','HOME':'/lab/home','XDG_CONFIG_HOME':'/lab/config','XDG_STATE_HOME':'/lab/state','XDG_DATA_HOME':'/lab/data','XDG_CACHE_HOME':'/lab/cache','XDG_RUNTIME_DIR':'/lab/runtime','QT_QPA_PLATFORM':'offscreen','QT_QUICK_BACKEND':'software','QSG_RHI_BACKEND':'software','QT_QUICK_CONTROLS_STYLE':'Basic','QML_DISABLE_DISK_CACHE':'1','NO_COLOR':'1','OMABIT_POLICY_WIDTH':str(a.width)}

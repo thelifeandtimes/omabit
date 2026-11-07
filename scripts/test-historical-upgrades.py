@@ -10,7 +10,7 @@ The schema14 source bundle retains the original stash and its untracked-file par
 it is imported only into a private temporary Git repository, never the checkout.
 The support manifest distinguishes release database coverage from the narrower
 owner-user host paths: schema19 offline and schema20 quiescence-aware online.
-RC.12 qualification stays frozen; schema48 is an unreleased development target.
+RC.12 qualification stays frozen; schema49 is an unreleased development target.
 Schema21 has a pinned baseline writer; schemas22/23/24/25/26/27/28/29/30/31/32/33/34/35/36/37/38/39/40/41/42/43/44/45 have frozen unreleased source snapshots.
 Unavailable prototype writers are explicit gaps.
 """

@@ -23,7 +23,7 @@ func TestAppDevelopmentHelperOfflineProfileAndValidation(t *testing.T) {
 			t.Fatal("invalid request admitted", raw)
 		}
 	}
-	request := `{"revision":0,"update":{"scope":"global","target":{},"gates":{"commit":"allow","publish":"block"}},"runners":[]}`
+	request := `{"revision":0,"update":{"scope":"global","target":{},"gates":{"commit":"allow","publish":"block","create_desk":"block"}},"runners":[]}`
 	if call("app-development-save", "--request-json", request) != 0 {
 		t.Fatal("global authoring failed")
 	}

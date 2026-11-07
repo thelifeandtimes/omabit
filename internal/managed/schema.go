@@ -26,4 +26,5 @@ package managed
 // Schema46 retains first-boot capture before later running observation.
 // Schema47 permits empty project network reservations; older runners must refuse them.
 // Schema48 fences application policy and its revisioned authoring history.
-const StateSchemaVersion = 48
+// Schema49 fences the default-closed desk-creation gate and policy v2.
+const StateSchemaVersion = 49

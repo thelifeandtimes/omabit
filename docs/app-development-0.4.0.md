@@ -6,7 +6,7 @@ The [policy layer and Setup editor](app-development-policy.md) are implemented
 and fixture-tested. The desk-operation APIs below remain proposed, with runtime
 qualification pending.
 The user's follow-up fixes the scope to Urbit desks and their frontend assets.
-Agent commit and publication start disabled, with permissions configured in
+Agent desk creation, commit and publication start disabled, with permissions configured in
 Omabit Setup. Each application retains its developer's release configuration.
 
 ## Product workflow
@@ -81,11 +81,13 @@ on the selected ship before offering app discovery publication.
 ## Setup permissions, ship intent and desk bindings
 
 **Setup → App development and publishing** now provides independent permissions
-for **Commit to Clay** and **Publish or distribute updates**. Both default to
+for **Create new desks**, **Commit to Clay** and **Publish or distribute updates**. All default to
 blocked for existing ships, new ships, development fakes and project members.
 The user enables agent access through this section.
 
-Resolve each permission from global → runner → ship → installed desk. Scoped
+Creation inherits global → runner → ship; a desk cannot grant creation of its
+siblings. New desks inherit commit/publication permissions unless explicitly
+overridden. Resolve commit/publication from global → runner → ship → installed desk. Scoped
 entries offer Inherit, Allow and Block. The most specific explicit value wins,
 with Block as the global default. For example, allowing one desk permits that
 desk while its siblings inherit the global block. Show the effective result and
@@ -101,12 +103,17 @@ detect concurrent edits against the runner's current policy revision.
 Enforce gates at the runner's mutation boundary. The agent CLI can inspect
 policy and report the precise blocking scope. Permission changes use the
 user-facing Setup path. Agent requests, ordinary settings edits, convenience
-deployment commands and acknowledgement flags cannot grant commit/publication
+deployment commands and acknowledgement flags cannot grant creation/commit/publication
 permission to themselves. Recheck effective policy immediately before every
 effect, including queued work and retries after a restart. A policy change
 fences future effects while completed stages retain their receipts.
 
-Apply permissions to the effects of an operation. A commit to a published desk
+The policy tree highlights effective permissions and matching paths while keeping
+unrelated branches visible. Complete live desk discovery remains a later pipeline
+step; configured desk scopes are visible without querying Clay.
+
+Apply permissions to the effects of an operation. Creation requires the ship
+gate and fresh evidence that the exact desk does not already exist. A commit to a published desk
 requires commit and publication permission because subscribers can receive that
 revision. An Omabit-initiated push to a Clay-bound Urgit branch has the same
 requirements. Include equivalent resync, merge, generic control and composite

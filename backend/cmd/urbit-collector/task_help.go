@@ -32,9 +32,9 @@ type helpDocument struct {
 // Keep command flags in the actual handlers' --help, where they are validated.
 func taskHelpTopics() []helpTopic {
 	return []helpTopic{
-		{Name: "app-development", Summary: "Inspect default-blocked commit and publication permissions.",
+		{Name: "app-development", Summary: "Inspect default-blocked desk creation, commit and publication permissions.",
 			Commands: []helpCommand{{"app-policy", "Read saved policy, revision, identities and effective source scopes; no runtime probe or mutation."}},
-			Guidance: []string{"Select a pinned runner, then app-policy --instance ID --desk DESK. Requires app-development-policy-v1.", "User permission changes belong to Setup → App development and publishing. Agents must not invoke authoring helpers or alternate transports to bypass a block.", "A commit to a published desk requires both permissions. Desk mutation commands and Urgit integration are not yet implemented."}},
+			Guidance: []string{"Select a pinned runner, then app-policy --instance ID --desk DESK. Requires app-development-policy-v2.", "User permission changes belong to Setup → App development and publishing. Agents must not invoke authoring helpers or alternate transports to bypass a block.", "Creation is ship-scoped; new desks inherit commit/publication settings. A commit to a published desk requires both of those permissions. Desk mutation commands and Urgit integration are not yet implemented."}},
 		{
 			Name: "runners", Summary: "Select a runner and inspect its identity, authority and fleet.",
 			Commands: []helpCommand{

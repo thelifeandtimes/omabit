@@ -322,7 +322,7 @@ Use COMMAND --help for command flags and constraints.
 	switch command {
 	case "hello", "snapshot", "suggest-port":
 	case "app-policy":
-		usage += " [--instance ID [--desk NAME]]\n\nRead saved app permissions and their source scopes. No permission edits or desk mutations. Requires app-development-policy-v1."
+		usage += " [--instance ID [--desk NAME]]\n\nRead saved app permissions and their source scopes. No permission edits or desk mutations. Requires app-development-policy-v2."
 		flags.StringVar(&policyInstance, "instance", "", "optional managed instance or project member ID")
 		flags.StringVar(&policyDesk, "desk", "", "optional Clay desk name without percent sign")
 	case "project-status":
@@ -606,7 +606,7 @@ Use COMMAND --help for command flags and constraints.
 				found = true
 				effective := policy.Policy.Effective(target)
 				if !item.Ready {
-					effective = apppolicy.Effective{Commit: apppolicy.Decision{Value: apppolicy.Block, Source: "unresolved identity"}, Publish: apppolicy.Decision{Value: apppolicy.Block, Source: "unresolved identity"}}
+					effective = apppolicy.Effective{CreateDesk: apppolicy.Decision{Value: apppolicy.Block, Source: "unresolved identity"}, Commit: apppolicy.Decision{Value: apppolicy.Block, Source: "unresolved identity"}, Publish: apppolicy.Decision{Value: apppolicy.Block, Source: "unresolved identity"}}
 				}
 				result = struct {
 					protocol.AppPolicyStatus

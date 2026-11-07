@@ -7690,3 +7690,56 @@ passed. A window-only capture was inspected. These are preview/UI checks, not
 additional production runner or release qualification. Human review state is
 never reset or used for automated mutation tests. See the
 [preview guide](app-development-preview.md) for launch paths and review steps.
+
+## M531 — Policy tree, full-panel preview and desk-creation gate (2026-11-06)
+
+The user's review replaces M529's scope-selector presentation and M530's
+standalone-pane/palette-picker preview with a selectable **Global → Runner →
+Ship → Desk** tree inside the actual MonitorWindow and Setup navigation. The
+preview now includes the real fleet sidebar, uses shared native controls and a
+fixed palette, and has no theme control. The remote fixture selector remains
+explicitly simulated. Wide layouts place the inspector beside the tree; narrower
+layouts stack it below. Permission and text filters highlight matches and their
+ancestry while dimming unrelated branches. An ancestor on an allowed leaf's path
+retains its own effective decision; highlighting never implies a broader grant.
+The map represents saved policy, not unapplied edits or pending global intent.
+
+This also extends M528's policy with an independent **Create new desks** gate.
+Global, runner and ship scopes can authorize creation; desk scopes cannot grant
+sibling creation. New desks inherit commit/publication permissions unless an
+explicit desk policy already applies. Allowing creation grants neither of the
+other operations. The effect guard requires exact target identity, current
+revision and fresh absence evidence. Actual creation/commit/publication adapters
+and CLI actions remain unimplemented and refused. The real tree can display
+saved and explicitly named desk scopes; complete installed-desk discovery is
+still pending. Preview desk inventory is synthetic and labelled as such.
+
+Policy/capability version2 and schema49 add this gate without reopening existing
+permissions. The schema48 migration preserves existing commit/publish choices
+and audit bytes, adds blocked global creation with inherited scoped values, and
+appends one migration receipt/revision. Corrupt history rolls back. Legacy
+collector rollout journals retain their bytes/intent until a new version2 write;
+creation defaults closed. A no-runner global save now serializes an empty target
+array so its journal can be reopened. Bundled agent skills explain the creation
+gate, inherited desk policy, release configuration and absent mutation commands.
+Exact-artifact stable upgrade qualification remains required before release.
+
+Validation passed: affected Go suites (including the full managed schema and
+historical migration suite), focused race checks, Go vet, matching Linux builds
+reporting schema49, native plugin/skill packaging tests and skill validation.
+The existing QML harness passed wide and narrow/enlarged-font checks. A new full
+panel harness passed sidebar/Setup navigation, node selection, the single
+`~zod` `%base` allow path, creation inheritance, offline fresh-review rollout,
+observer restrictions and responsive bounds. Fresh networkless fixtures were
+used for every automated policy mutation. Native and offscreen captures were
+visually inspected with no QML warnings or errors in the final runs.
+
+The separately installed `omabit-policy-preview-040` snapshot was updated and
+reopened on the main desktop through its exact identity-checked launcher. Its
+original code is retained under `versions/before-policy-tree-20261106-205507`.
+The original policy bytes are preserved as `policy-v1.before-create-desk.json`;
+a structural comparison verified every prior commit/publication choice and
+rollout value survived, with only the documented new gate/version/revision
+changes. Human state was not used for automated mutations. Production, DEV and
+trial040 plugins, runners, ships and services were not inspected or operated on.
+See [the updated preview guide](app-development-preview.md).

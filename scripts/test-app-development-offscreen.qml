@@ -25,7 +25,7 @@ ShellRoot {
   }
   function fits(o) {
     if(!o.visible)return
-    if(o.objectName && /^app-policy-(scope|runner|ship|desk|commit|publish|save|retry|refresh)$/.test(o.objectName)) {
+    if(o.objectName && /^app-policy-(scope|runner|ship|desk|commit|publish|create_desk|filter-gate|filter-value|search|save|retry|refresh)$/.test(o.objectName)) {
       var pos=o.mapToItem(pane,0,0)
       check(o.width>0 && pos.x>=-1 && pos.x+o.width<=pane.width+1,"control overflows: "+o.objectName)
     }
@@ -42,7 +42,7 @@ ShellRoot {
     try {
       var c=pane.controller,save=control(pane,"app-policy-save"),desk=control(pane,"app-policy-desk")
       if(test.phase===0 && c.value && !c.busy){
-        test.check(pane.commitValue==="block" && pane.publishValue==="block","unsafe defaults")
+        test.check(pane.commitValue==="block" && pane.publishValue==="block" && pane.createValue==="block","unsafe defaults")
         test.fits(pane);test.capture("global");test.phase=100
       }else if(test.phase===100 && test.captured){
         pane.scope="runner";pane.selectedRunner="runner-lab";pane.commitValue="allow";test.check(pane.save(),"runner save refused");test.phase=1
@@ -50,7 +50,7 @@ ShellRoot {
         test.check(pane.effective.commit.source==="runner","runner not effective");test.check(c.message==="Permissions saved.","save confirmation missing")
         pane.scope="ship";pane.selectedShip="publisher";pane.commitValue="block";test.check(pane.save(),"ship save refused");test.phase=2
       }else if(test.phase===2 && !c.busy && c.value){
-        pane.scope="desk";desk.text="my-app";pane.commitValue="allow";pane.publishValue="allow";test.check(pane.save(),"desk save refused");test.phase=3
+        test.check(pane.reviewDesk("my-app"),"desk review refused");pane.commitValue="allow";pane.publishValue="allow";test.check(pane.save(),"desk save refused");test.phase=3
       }else if(test.phase===3 && !c.busy && c.value){
         test.check(pane.effective.commit.source==="desk" && pane.effective.publish.value==="allow","desk permission lost")
         pane.scope="global";pane.commitValue="block";pane.publishValue="block";test.check(pane.save(),"global save refused");test.phase=4

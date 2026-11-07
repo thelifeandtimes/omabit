@@ -14,8 +14,8 @@ For remote runner installation, failed setup or distro prerequisites, read
 [remote runners](references/remote-runners.md) first. It records tested platforms
 and the host-specific checks an agent can help with.
 
-For app source deployment, desk commits or publication, read
-[app development](references/app-development.md). Agent commit and publication
+For app source deployment, desk creation, commits or publication, read
+[app development](references/app-development.md). Agent desk creation, commit and publication
 default to blocked, including on development fakes. Follow the effective gates
 configured in **Setup → App development and publishing** and the application's
 release configuration. Use only capabilities exposed by the selected tools.

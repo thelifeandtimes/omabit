@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 def initial_state():
-    blocked = {"commit": "block", "publish": "block"}
+    blocked = {"commit": "block", "publish": "block", "create_desk": "block"}
     runners = []
     for name, targets in (
         ("preview-local", [
@@ -29,12 +29,33 @@ def initial_state():
             "status": {
                 "version": 1, "runner_id": runner_id, "mode": "simulation",
                 "read_at": datetime.now(timezone.utc).isoformat(), "desk_operations": False,
-                "policy": {"version": 1, "revision": 0, "global": dict(blocked),
-                           "runner": {"commit": "inherit", "publish": "inherit"}, "entries": []},
+                "policy": {"version": 2, "revision": 0, "global": dict(blocked),
+                           "runner": {"commit": "inherit", "publish": "inherit", "create_desk": "inherit"}, "entries": []},
                 "targets": targets,
             },
         })
-    return {"version": 1, "global": {"version": 1, "revision": 0, "gates": blocked, "runners": []}, "runners": runners}
+    return {"version": 1, "global": {"version": 2, "revision": 0, "gates": blocked, "runners": []}, "runners": runners}
+
+
+def upgrade_legacy(state):
+    if state["global"]["version"] != 1:
+        return False
+    state["global"]["version"] = 2
+    state["global"]["gates"]["create_desk"] = "block"
+    for entry in state["global"]["runners"]:
+        if "acknowledged" in entry:
+            entry["acknowledged"]["global"]["create_desk"] = "block"
+    for runner in state["runners"]:
+        if "acknowledged" in runner:
+            runner["acknowledged"]["global"]["create_desk"] = "block"
+        policy = runner["status"]["policy"]
+        policy["version"] = 2
+        policy["revision"] += 1
+        policy["global"]["create_desk"] = "block"
+        policy["runner"]["create_desk"] = "inherit"
+        for entry in policy["entries"]:
+            entry["gates"]["create_desk"] = "inherit"
+    return True
 
 
 def available(runner, mode):
@@ -45,6 +66,9 @@ def view(state, mode):
     result = copy.deepcopy(state)
     for runner in result["runners"]:
         runner["status"]["read_at"] = datetime.now(timezone.utc).isoformat()
+        for target in runner["status"]["targets"]:
+            # Explicit fixture inventory, not an observation of an actual ship.
+            target["desks"] = ["base", "garden"] if target["target"]["instance_id"] == "preview-project-nec" else ["base", "my-app"]
         if runner["name"] == "preview-remote" and mode != "online":
             runner["can_edit"] = False
             runner["error"] = "Preview runner is offline." if mode == "offline" else "Preview connection has observer access."
@@ -62,7 +86,9 @@ def rollout(state, mode):
         error = ""
         if not available(runner, mode):
             error = "Preview runner is offline." if mode == "offline" else "Preview connection has observer access."
-        elif entry["expected_revision"] not in (None, policy["revision"]):
+        elif entry["expected_revision"] is None:
+            error = "Review this online runner, then save the global settings again."
+        elif entry["expected_revision"] != policy["revision"]:
             error = "Preview policy changed. Refresh and save a new global rollout."
         if error:
             entry["error"] = runner["error"] = error
@@ -96,8 +122,10 @@ def apply(state, mode, command, request=None):
     if scope not in ("global", "runner", "ship", "desk"):
         raise ValueError("Unknown preview scope")
     allowed = ("allow", "block") if scope == "global" else ("allow", "block", "inherit")
-    if set(gates) != {"commit", "publish"} or any(v not in allowed for v in gates.values()):
+    if set(gates) != {"commit", "publish", "create_desk"} or any(v not in allowed for v in gates.values()):
         raise ValueError("Invalid preview permissions")
+    if scope == "desk" and gates["create_desk"] != "inherit":
+        raise ValueError("Desk creation is configured on the ship")
     if scope == "global":
         entries = []
         for runner in state["runners"]:
@@ -153,8 +181,15 @@ def main():
     with path.with_suffix(".lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         state = json.loads(path.read_text()) if path.exists() else initial_state()
+        original = path.read_bytes() if path.exists() else None
+        upgraded = upgrade_legacy(state)
+        if upgraded and original is not None:
+            backup = path.with_name("policy-v1.before-create-desk.json")
+            if not backup.exists():
+                with backup.open("xb") as output:
+                    output.write(original)
         result = apply(state, mode, command, request)
-        if not path.exists() or command != "app-development-status":
+        if upgraded or not path.exists() or command != "app-development-status":
             temporary = path.with_suffix(".tmp")
             with temporary.open("w") as output:
                 json.dump(state, output, indent=2)

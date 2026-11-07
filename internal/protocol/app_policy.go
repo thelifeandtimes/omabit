@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const AppPolicyFeature = "app-development-policy-v1"
+const AppPolicyFeature = "app-development-policy-v2"
 const AppPolicyPath = "/v1/app-development-policy"
 
 type AppPolicyTarget struct {

@@ -1,15 +1,19 @@
 # Stable-release upgrade requirement
 
-## Development: application permissions, schema48
+## Development: application permissions, schema49
 
 The 0.4.0 [application policy layer](app-development-policy.md) adds runner
-schema48 and a separate version1 collector rollout journal. Schema47 → schema48
-fixture migration preserves identities, settings and receipts, with commit and
-publication blocked by default. Existing historical database tests remain in
-the regression suite. Schema47 writers refuse the new schema; do not decrement
-`user_version` or reset a store. Ordinary older-client settings edits preserve
-policy. Use matching runner/collector artifacts. This is source/fixture
-qualification; the full exact-artifact 0.3.7 → 0.4.0 upgrade remains a release gate.
+schema49, version2 policy and version2 collector rollout journals. Schema47
+fixtures start with desk creation, commit and publication blocked. Schema48
+fixtures preserve commit/publication grants and all original audit bytes, append
+one migration receipt, and close desk creation. Reopening is idempotent; corrupt
+audit receipts roll migration back. Historical database migrations remain tested.
+Schema48 and earlier writers refuse schema49. Do not decrement `user_version` or
+reset a store. Ordinary settings edits preserve policy. Legacy collector journal
+reads preserve their bytes and report creation blocked; subsequent authoring
+writes version2. Use matching artifacts and the `app-development-policy-v2`
+capability. This is source/fixture qualification; the full exact-artifact
+0.3.7 → 0.4.0 upgrade remains a release gate.
 
 ## 0.3.7 one-click setup and identity recovery
 

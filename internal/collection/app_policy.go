@@ -49,7 +49,7 @@ type AppDevelopmentStatus struct {
 }
 
 func (r *Registry) readAppPolicyGlobal() (AppPolicyGlobal, error) {
-	out := AppPolicyGlobal{Version: 1, Gates: apppolicy.Blocked(), Runners: []AppPolicyRollout{}}
+	out := AppPolicyGlobal{Version: 2, Gates: apppolicy.Blocked(), Runners: []AppPolicyRollout{}}
 	f, err := privateFile(filepath.Join(r.dir, "app-development.json"), os.O_RDONLY)
 	if errors.Is(err, os.ErrNotExist) {
 		return out, nil
@@ -64,7 +64,28 @@ func (r *Registry) readAppPolicyGlobal() (AppPolicyGlobal, error) {
 	}
 	d := json.NewDecoder(bytes.NewReader(b))
 	d.DisallowUnknownFields()
-	if d.Decode(&out) != nil || d.Decode(new(any)) != io.EOF || out.Version != 1 || out.Revision > apppolicy.MaxRevision || out.Gates.Validate(true) != nil || out.Runners == nil || len(out.Runners) > maxConnections {
+	// Decode into zero values so omitted legacy fields cannot inherit a default
+	// that hides an incomplete v2 record.
+	out = AppPolicyGlobal{}
+	if d.Decode(&out) != nil || d.Decode(new(any)) != io.EOF {
+		return out, errors.New("invalid application policy rollout; state preserved")
+	}
+	if out.Version == 1 {
+		if out.Gates.CreateDesk != "" {
+			return out, errors.New("unexpected legacy desk-creation permission")
+		}
+		out.Version = 2
+		out.Gates.CreateDesk = apppolicy.Block
+		for i := range out.Runners {
+			if a := out.Runners[i].Acknowledged; a != nil {
+				if a.Global.CreateDesk != "" {
+					return out, errors.New("unexpected legacy desk-creation acknowledgment")
+				}
+				a.Global.CreateDesk = apppolicy.Block
+			}
+		}
+	}
+	if out.Version != 2 || out.Revision > apppolicy.MaxRevision || out.Gates.Validate(true) != nil || out.Runners == nil || len(out.Runners) > maxConnections {
 		return out, errors.New("invalid application policy rollout; state preserved")
 	}
 	seen := map[string]bool{}
@@ -194,7 +215,10 @@ func (r *Registry) SaveAppPolicyGlobal(ctx context.Context, revision uint64, gat
 				}
 			}
 		}
-		out = AppPolicyGlobal{Version: 1, Revision: revision + 1, Gates: gates, Runners: targets}
+		if targets == nil {
+			targets = []AppPolicyRollout{}
+		}
+		out = AppPolicyGlobal{Version: 2, Revision: revision + 1, Gates: gates, Runners: targets}
 		return r.writeFile("app-development.json", out)
 	})
 	return out, err

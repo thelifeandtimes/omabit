@@ -1,11 +1,14 @@
 package collection
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"net"
 	"net/http"
+	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -95,7 +98,7 @@ func TestAppPolicyGlobalDurableOfflineRolloutAndCAS(t *testing.T) {
 	if err != nil || v.Global.Gates != apppolicy.Blocked() {
 		t.Fatal(v, err)
 	}
-	g, err := r.SaveAppPolicyGlobal(ctx, 0, apppolicy.Gates{Commit: apppolicy.Allow, Publish: apppolicy.Block}, rolloutTargets(v))
+	g, err := r.SaveAppPolicyGlobal(ctx, 0, apppolicy.Gates{CreateDesk: apppolicy.Block, Commit: apppolicy.Allow, Publish: apppolicy.Block}, rolloutTargets(v))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -135,7 +138,7 @@ func TestAppPolicyGlobalDurableOfflineRolloutAndCAS(t *testing.T) {
 		t.Fatal(err)
 	}
 	a.mu.Lock()
-	a.policy.Apply(apppolicy.Update{ExpectedRevision: a.policy.Revision, Scope: "runner", Gates: apppolicy.Gates{Commit: apppolicy.Allow, Publish: apppolicy.Inherit}})
+	a.policy.Apply(apppolicy.Update{ExpectedRevision: a.policy.Revision, Scope: "runner", Gates: apppolicy.Gates{CreateDesk: apppolicy.Inherit, Commit: apppolicy.Allow, Publish: apppolicy.Inherit}})
 	a.mu.Unlock()
 	if err = r.ApplyAppPolicyGlobal(ctx, g.Revision); err != nil {
 		t.Fatal(err)
@@ -175,7 +178,7 @@ func TestAppPolicyRolloutLostResponseAndUnreviewedOfflineRunner(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	g, err := r.SaveAppPolicyGlobal(ctx, 0, apppolicy.Gates{Commit: apppolicy.Allow, Publish: apppolicy.Allow}, rolloutTargets(v))
+	g, err := r.SaveAppPolicyGlobal(ctx, 0, apppolicy.Gates{CreateDesk: apppolicy.Block, Commit: apppolicy.Allow, Publish: apppolicy.Allow}, rolloutTargets(v))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -215,7 +218,7 @@ func TestAppPolicyAcknowledgementSurvivesOfflineDisable(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	g, err := r.SaveAppPolicyGlobal(ctx, 0, apppolicy.Gates{Commit: apppolicy.Allow, Publish: apppolicy.Allow}, rolloutTargets(v))
+	g, err := r.SaveAppPolicyGlobal(ctx, 0, apppolicy.Gates{CreateDesk: apppolicy.Block, Commit: apppolicy.Allow, Publish: apppolicy.Allow}, rolloutTargets(v))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -247,5 +250,44 @@ func TestAppPolicyAcknowledgementSurvivesOfflineDisable(t *testing.T) {
 	ack := v.Runners[0].Acknowledged
 	if ack == nil || ack.Revision != 1 || ack.Global.Commit != apppolicy.Allow || v.Global.Runners[0].Applied || v.Runners[0].Status != nil {
 		t.Fatal("offline pending disable hid last acknowledged allow", v)
+	}
+}
+
+func TestAppPolicyLegacyRolloutAddsClosedCreationWithoutWriting(t *testing.T) {
+	ctx := context.Background()
+	r, err := Open(filepath.Join(t.TempDir(), "collector"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacy := json.RawMessage(`{"version":1,"revision":3,"gates":{"commit":"allow","publish":"block"},"runners":[{"name":"saved","runner_id":"runner-saved","expected_revision":2,"applied":false,"acknowledged":{"revision":2,"global":{"commit":"block","publish":"allow"}}}]}`)
+	if err = r.locked(ctx, func() error { return r.writeFile("app-development.json", legacy) }); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(r.dir, "app-development.json")
+	before, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, err := r.AppDevelopment(ctx)
+	if err != nil || v.Global.Version != 2 || v.Global.Revision != 3 || v.Global.Gates.CreateDesk != apppolicy.Block || v.Global.Gates.Commit != apppolicy.Allow || v.Global.Runners[0].Acknowledged.Global.CreateDesk != apppolicy.Block || v.Global.Runners[0].Acknowledged.Global.Publish != apppolicy.Allow {
+		t.Fatal(v, err)
+	}
+	after, err := os.ReadFile(path)
+	if err != nil || !bytes.Equal(before, after) {
+		t.Fatal("read rewrote legacy journal", err)
+	}
+	if _, err = r.SaveAppPolicyGlobal(ctx, 3, apppolicy.Gates{Commit: apppolicy.Allow, Publish: apppolicy.Block, CreateDesk: apppolicy.Allow}, nil); err != nil {
+		t.Fatal(err)
+	}
+	v, err = r.AppDevelopment(ctx)
+	if err != nil || v.Global.Version != 2 || v.Global.Revision != 4 || v.Global.Gates.CreateDesk != apppolicy.Allow {
+		t.Fatal(v, err)
+	}
+	invalid := json.RawMessage(strings.Replace(string(legacy), `"version":1`, `"version":2`, 1))
+	if err = r.locked(ctx, func() error { return r.writeFile("app-development.json", invalid) }); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = r.AppDevelopment(ctx); err == nil {
+		t.Fatal("incomplete v2 journal was defaulted")
 	}
 }

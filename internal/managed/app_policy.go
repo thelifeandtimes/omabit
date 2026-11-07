@@ -18,6 +18,36 @@ func initializeAppPolicy(tx *sql.Tx) error {
 	if err != nil {
 		return err
 	}
+	// Preserve the exact historical receipt and append a migration revision.
+	var oldBody []byte
+	err = tx.QueryRow("SELECT body FROM app_development_policy WHERE id=1").Scan(&oldBody)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return err
+	}
+	if err == nil {
+		var old apppolicy.Policy
+		if json.Unmarshal(oldBody, &old) != nil {
+			return errors.New("invalid legacy application policy")
+		}
+		if old.Version == 1 {
+			var receipt []byte
+			var actor, at string
+			if err = tx.QueryRow("SELECT actor,updated_at,body FROM app_development_policy_history WHERE revision=?", old.Revision).Scan(&actor, &at, &receipt); err != nil {
+				return err
+			}
+			if _, err = time.Parse(time.RFC3339Nano, at); err != nil || actor == "" || !bytes.Equal(oldBody, receipt) || old.Revision == 0 || old.Revision >= apppolicy.MaxRevision {
+				return errors.New("legacy application policy audit receipt mismatch")
+			}
+			upgraded, err := apppolicy.UpgradeLegacy(old)
+			if err != nil {
+				return err
+			}
+			upgraded.Revision++
+			if err = saveAppPolicy(tx, "schema49-migration", upgraded); err != nil {
+				return err
+			}
+		}
+	}
 	_, err = loadAppPolicy(tx)
 	return err
 }
@@ -189,7 +219,8 @@ func (r *Server) serveAppPolicy(w http.ResponseWriter, req *http.Request, actor,
 // withAppPolicyEffect is the runner effect boundary for future typed desk
 // adapters. Never retain its decision across queueing, restart, or retries.
 // The lock serializes revocation with effects; inspect must obtain fresh trusted
-// desk evidence. No runtime desk adapter is enabled by the policy feature.
+// desk evidence (absence for creation, publication state for commit). No runtime
+// desk adapter is enabled by the policy feature.
 func (r *Server) withAppPolicyEffect(target apppolicy.Target, revision uint64, effect string, inspect func() (string, error), apply func() error) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()

@@ -1,17 +1,22 @@
 package managed
 
 import (
+	"bytes"
 	"context"
+	"database/sql"
 	"encoding/json"
+	"fmt"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/apppolicy"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestAppPolicyMigrationPersistenceAndOrdinaryEdits(t *testing.T) {
@@ -46,7 +51,7 @@ func TestAppPolicyMigrationPersistenceAndOrdinaryEdits(t *testing.T) {
 		t.Fatal(v, err)
 	}
 	target := apppolicy.Target{InstanceID: "alpha", Desk: "app"}
-	p, err := s.putAppPolicy("fixture", apppolicy.Update{Scope: "desk", Target: target, Gates: apppolicy.Gates{Commit: apppolicy.Allow, Publish: apppolicy.Block}})
+	p, err := s.putAppPolicy("fixture", apppolicy.Update{Scope: "desk", Target: target, Gates: apppolicy.Gates{CreateDesk: apppolicy.Inherit, Commit: apppolicy.Allow, Publish: apppolicy.Block}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,7 +110,7 @@ func TestAppPolicyServerAndEffectBoundary(t *testing.T) {
 	if do(0, "private") == nil || effects != 0 {
 		t.Fatal("default gate")
 	}
-	p, err := c.SetAppPolicy(context.Background(), identity, apppolicy.Update{Scope: "desk", Target: target, Gates: apppolicy.Gates{Commit: apppolicy.Allow, Publish: apppolicy.Block}})
+	p, err := c.SetAppPolicy(context.Background(), identity, apppolicy.Update{Scope: "desk", Target: target, Gates: apppolicy.Gates{CreateDesk: apppolicy.Inherit, Commit: apppolicy.Allow, Publish: apppolicy.Block}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -116,7 +121,7 @@ func TestAppPolicyServerAndEffectBoundary(t *testing.T) {
 		t.Fatal("publication bypass")
 	}
 	queuedRevision := p.Revision
-	p, err = c.SetAppPolicy(context.Background(), identity, apppolicy.Update{ExpectedRevision: p.Revision, Scope: "desk", Target: target, Gates: apppolicy.Blocked()})
+	p, err = c.SetAppPolicy(context.Background(), identity, apppolicy.Update{ExpectedRevision: p.Revision, Scope: "desk", Target: target, Gates: apppolicy.Gates{Commit: apppolicy.Block, Publish: apppolicy.Block, CreateDesk: apppolicy.Inherit}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -160,7 +165,7 @@ func TestAppPolicyProjectGenerationAndMissingTarget(t *testing.T) {
 		t.Fatal("no generation", string(raw))
 	}
 	target.Desk = "app"
-	update := apppolicy.Update{Scope: "desk", Target: target, Gates: apppolicy.Gates{Commit: apppolicy.Allow, Publish: apppolicy.Allow}}
+	update := apppolicy.Update{Scope: "desk", Target: target, Gates: apppolicy.Gates{CreateDesk: apppolicy.Inherit, Commit: apppolicy.Allow, Publish: apppolicy.Allow}}
 	saved, err := s.putAppPolicy("fixture", update)
 	if err != nil {
 		t.Fatal(err)
@@ -180,7 +185,7 @@ func TestAppPolicyRetirementIsAtomicAndDoesNotGrantReusedName(t *testing.T) {
 		t.Fatal(err)
 	}
 	target := apppolicy.Target{InstanceID: "alpha", Desk: "app"}
-	p, err := s.putAppPolicy("fixture", apppolicy.Update{Scope: "desk", Target: target, Gates: apppolicy.Gates{Commit: apppolicy.Allow, Publish: apppolicy.Allow}})
+	p, err := s.putAppPolicy("fixture", apppolicy.Update{Scope: "desk", Target: target, Gates: apppolicy.Gates{CreateDesk: apppolicy.Inherit, Commit: apppolicy.Allow, Publish: apppolicy.Allow}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -209,5 +214,111 @@ func TestAppPolicyRetirementIsAtomicAndDoesNotGrantReusedName(t *testing.T) {
 	got, err = loadAppPolicy(s.db)
 	if err != nil || got.Revision != p.Revision+1 || got.Effective(target).Commit.Value != apppolicy.Block {
 		t.Fatal("reused name retained grant", got, err)
+	}
+}
+
+func TestAppPolicySchema48UpgradePreservesAuditAndFleet(t *testing.T) {
+	for _, corrupt := range []bool{false, true} {
+		t.Run(fmt.Sprint(corrupt), func(t *testing.T) {
+			dir := privateDir(t)
+			s, err := testOpenStore(dir)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, _, err = s.register("fixture", registration("alpha", "register", 18080))
+			if err != nil {
+				t.Fatal(err)
+			}
+			before, err := s.snapshot()
+			if err != nil {
+				t.Fatal(err)
+			}
+			legacy := []byte(`{"version":1,"revision":1,"global":{"commit":"allow","publish":"block"},"runner":{"commit":"inherit","publish":"inherit"},"entries":[{"target":{"instance_id":"alpha","desk":"base"},"gates":{"commit":"block","publish":"allow"}}]}`)
+			receipt := append([]byte{}, legacy...)
+			if corrupt {
+				receipt = append(receipt, ' ')
+			}
+			if _, err = s.db.Exec("INSERT INTO app_development_policy(id,body) VALUES(1,?)", legacy); err != nil {
+				t.Fatal(err)
+			}
+			if _, err = s.db.Exec("INSERT INTO app_development_policy_history(revision,actor,updated_at,body) VALUES(1,?,?,?)", "original-operator", time.Now().UTC().Format(time.RFC3339Nano), receipt); err != nil {
+				t.Fatal(err)
+			}
+			if _, err = s.db.Exec("PRAGMA user_version=48"); err != nil {
+				t.Fatal(err)
+			}
+			s.close()
+			s, err = testOpenStore(dir)
+			if corrupt {
+				if err == nil {
+					s.close()
+					t.Fatal("corrupt audit migrated")
+				}
+				db, err := sql.Open("sqlite", filepath.Join(dir, "runner.sqlite"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				defer db.Close()
+				var version int
+				if err = db.QueryRow("PRAGMA user_version").Scan(&version); err != nil || version != 48 {
+					t.Fatal("failed migration changed schema", version, err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer s.close()
+			v, err := s.appPolicyStatus()
+			if err != nil || v.Policy.Version != 2 || v.Policy.Revision != 2 || v.Policy.Global.CreateDesk != apppolicy.Block {
+				t.Fatal(v, err)
+			}
+			e := v.Policy.Effective(apppolicy.Target{InstanceID: "alpha", Desk: "base"})
+			if e.Commit.Value != apppolicy.Block || e.Publish.Value != apppolicy.Allow || e.CreateDesk.Value != apppolicy.Block {
+				t.Fatal(e)
+			}
+			var original []byte
+			if err = s.db.QueryRow("SELECT body FROM app_development_policy_history WHERE revision=1").Scan(&original); err != nil || !bytes.Equal(original, legacy) {
+				t.Fatal("historical receipt changed", err)
+			}
+			after, err := s.snapshot()
+			if err != nil || !reflect.DeepEqual(before, after) {
+				t.Fatal("fleet changed", err)
+			}
+			s.close()
+			s, err = testOpenStore(dir)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer s.close()
+			v, err = s.appPolicyStatus()
+			if err != nil || v.Policy.Revision != 2 {
+				t.Fatal("migration replayed", v, err)
+			}
+		})
+	}
+}
+
+func TestCreateDeskEffectRechecksRevocation(t *testing.T) {
+	r, _, _ := testEndpoint(t, privateDir(t), &fakeBackend{})
+	_, _, err := r.s.register("fixture", registration("alpha", "register-create", 18080))
+	if err != nil {
+		t.Fatal(err)
+	}
+	target := apppolicy.Target{InstanceID: "alpha", Desk: "new-app"}
+	p, err := r.s.putAppPolicy("fixture", apppolicy.Update{Scope: "ship", Target: target.Ship(), Gates: apppolicy.Gates{Commit: apppolicy.Inherit, Publish: apppolicy.Inherit, CreateDesk: apppolicy.Allow}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	effects := 0
+	apply := func() error { effects++; return nil }
+	if err = r.withAppPolicyEffect(target, p.Revision, "create-desk", func() (string, error) { return "absent", nil }, apply); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = r.s.putAppPolicy("fixture", apppolicy.Update{ExpectedRevision: p.Revision, Scope: "ship", Target: target.Ship(), Gates: apppolicy.Blocked()}); err != nil {
+		t.Fatal(err)
+	}
+	if r.withAppPolicyEffect(target, p.Revision, "create-desk", func() (string, error) { return "absent", nil }, apply) == nil || effects != 1 {
+		t.Fatal("stale creation dispatched", effects)
 	}
 }

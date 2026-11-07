@@ -64,3 +64,4 @@ DependencyUpdateNotice 1.0 DependencyUpdateNotice.qml
 ObservationSchedule 1.0 ObservationSchedule.qml
 AppDevelopment 1.0 AppDevelopment.qml
 AppDevelopmentPane 1.0 AppDevelopmentPane.qml
+AppPolicyTree 1.0 AppPolicyTree.qml

@@ -1,7 +1,7 @@
 # App development and publishing policy
 
 The 0.4.0 source implements policy storage, Setup authoring and read-only
-`app-policy` status. Desk commit/publication commands and the Urgit adapter are
+`app-policy` status. Desk creation/commit/publication commands and the Urgit adapter are
 still unimplemented. Verify the selected installation's capabilities and command
 help. Until a supported operation exists and fresh policy permits its effects,
 continue with source preparation and available inspection.
@@ -10,10 +10,12 @@ continue with source preparation and available inspection.
 
 Resolve the runner, ship instance and desk. Project targets also require their
 project/member identities. Read **Setup → App development and publishing** through
-the supported policy-status interface. Inspect independent commit/publication
+the supported policy-status interface. Inspect independent creation/commit/publication
 permissions, their effective values, originating scopes, revisions and freshness.
 They inherit global → runner → ship → installed desk, with the most specific
-explicit Allow or Block winning. The global default is Block for both permissions.
+explicit Allow or Block winning. All three permissions default to Block. Creation stops at Ship scope; a desk
+cannot grant permission to create siblings. New desks inherit commit/publication
+settings unless the user explicitly configured that desk scope.
 
 Use the saved enrollment, without changing its selection:
 
@@ -22,7 +24,7 @@ urbit-collector --config-dir REGISTRY --runner NAME --expected-runner-id ID \
   app-policy --instance INSTANCE --desk DESK
 ```
 
-Requires `app-development-policy-v1`. The response includes the policy revision,
+Requires `app-development-policy-v2`. The response includes the policy revision,
 effective values and source scopes; project targets include their creator and
 generation. Missing/unsupported/unresolved status grants nothing. These are saved
 policy observations, not fresh publication or compilation evidence. A global
@@ -33,7 +35,7 @@ collector rollout automatically.
 Read the application's release configuration and relevant repository instructions.
 Follow the developer's configured branch, checks and release sequence. For Urgit,
 use its existing binding and release rules. A development label or fake identity
-does not grant commit or publication permission. Keep user-controlled policy
+does not grant creation, commit or publication permission. Keep user-controlled policy
 changes in the Setup flow. Report the blocking scope when action is disabled.
 Do not invoke `omabit app-development-save`/`app-development-retry`, write policy
 files, submit raw policy-update RPCs, or use Dojo/Eyre/Git as a workaround for a
@@ -41,6 +43,9 @@ blocked Omabit operation. Those helpers belong to user-facing Setup authoring.
 
 ## Classify the requested effect
 
+- Creating a desk requires the ship’s creation permission and fresh evidence that
+  the exact desk is absent. It grants neither commit nor publication, and the
+  new desk inherits those settings by default.
 - Committing Unix files into Clay requires commit permission.
 - Treaty or Clay read publication requires publication permission.
 - Updating a published desk can reach subscribers immediately, so it requires

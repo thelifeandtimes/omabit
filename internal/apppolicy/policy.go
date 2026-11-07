@@ -8,7 +8,7 @@ import (
 	"regexp"
 )
 
-const Version = 1
+const Version = 2
 const MaxEntries = 2048
 const MaxRevision = 1<<53 - 1 // Also exactly representable by the desktop.
 
@@ -21,14 +21,15 @@ const (
 )
 
 type Gates struct {
-	Commit  Permission `json:"commit"`
-	Publish Permission `json:"publish"`
+	Commit     Permission `json:"commit"`
+	Publish    Permission `json:"publish"`
+	CreateDesk Permission `json:"create_desk"`
 }
 
-func Blocked() Gates   { return Gates{Block, Block} }
-func Inherited() Gates { return Gates{Inherit, Inherit} }
+func Blocked() Gates   { return Gates{Block, Block, Block} }
+func Inherited() Gates { return Gates{Inherit, Inherit, Inherit} }
 func (g Gates) Validate(global bool) error {
-	for _, p := range []Permission{g.Commit, g.Publish} {
+	for _, p := range []Permission{g.Commit, g.Publish, g.CreateDesk} {
 		if p != Allow && p != Block && (global || p != Inherit) {
 			return errors.New("permissions must be allow, block, or scoped inherit")
 		}
@@ -93,7 +94,7 @@ func (p Policy) Validate() error {
 	}
 	seen := map[Target]bool{}
 	for _, e := range p.Entries {
-		if e.Target.InstanceID == "" || e.Target.Validate() != nil || e.Gates.Validate(false) != nil || seen[e.Target] {
+		if e.Target.InstanceID == "" || e.Target.Validate() != nil || e.Gates.Validate(false) != nil || e.Target.Desk != "" && e.Gates.CreateDesk != Inherit || seen[e.Target] {
 			return errors.New("invalid or duplicate policy scope")
 		}
 		seen[e.Target] = true
@@ -106,12 +107,13 @@ type Decision struct {
 	Source string     `json:"source"`
 }
 type Effective struct {
-	Commit  Decision `json:"commit"`
-	Publish Decision `json:"publish"`
+	Commit     Decision `json:"commit"`
+	Publish    Decision `json:"publish"`
+	CreateDesk Decision `json:"create_desk"`
 }
 
 func (p Policy) Effective(t Target) Effective {
-	out := Effective{Decision{Block, "unavailable"}, Decision{Block, "unavailable"}}
+	out := Effective{Decision{Block, "unavailable"}, Decision{Block, "unavailable"}, Decision{Block, "unavailable"}}
 	if p.Validate() != nil || t.Validate() != nil {
 		return out
 	}
@@ -121,6 +123,10 @@ func (p Policy) Effective(t Target) Effective {
 		}
 		if g.Publish != Inherit {
 			out.Publish = Decision{g.Publish, scope}
+		}
+		// Desks cannot authorize the creation of sibling desks.
+		if scope != "desk" && g.CreateDesk != Inherit {
+			out.CreateDesk = Decision{g.CreateDesk, scope}
 		}
 	}
 	apply(p.Global, "global")
@@ -150,6 +156,14 @@ func (p Policy) Check(t Target, revision uint64, effect, publication string) err
 	}
 	e := p.Effective(t)
 	switch effect {
+	case "create-desk":
+		if publication != "absent" {
+			return errors.New("new desk absence is not confirmed")
+		}
+		if e.CreateDesk.Value != Allow {
+			return fmt.Errorf("desk creation blocked by %s policy", e.CreateDesk.Source)
+		}
+		return nil
 	case "commit":
 		if e.Commit.Value != Allow {
 			return fmt.Errorf("commit blocked by %s policy", e.Commit.Source)
@@ -194,10 +208,32 @@ func (u Update) Validate() error {
 		if u.Target.InstanceID == "" || u.Target.Desk == "" {
 			return errors.New("desk scope requires a ship and desk")
 		}
+		if u.Gates.CreateDesk != Inherit {
+			return errors.New("desk creation permission must be inherited from the ship")
+		}
 	default:
 		return errors.New("invalid application policy scope")
 	}
 	return nil
+}
+
+// UpgradeLegacy preserves all existing commit/publication choices and closes
+// the new gate. Callers must preserve the old audit receipt and fence old writers.
+func UpgradeLegacy(p Policy) (Policy, error) {
+	if p.Version != 1 || p.Entries == nil || p.Global.CreateDesk != "" || p.Runner.CreateDesk != "" {
+		return Policy{}, errors.New("invalid legacy application policy")
+	}
+	p.Version = Version
+	p.Global.CreateDesk = Block
+	p.Runner.CreateDesk = Inherit
+	p.Entries = append([]Entry{}, p.Entries...)
+	for i := range p.Entries {
+		if p.Entries[i].Gates.CreateDesk != "" {
+			return Policy{}, errors.New("unexpected legacy desk-creation grant")
+		}
+		p.Entries[i].Gates.CreateDesk = Inherit
+	}
+	return p, p.Validate()
 }
 func (p *Policy) Apply(u Update) error {
 	if err := p.Validate(); err != nil {

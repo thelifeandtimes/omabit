@@ -20,7 +20,7 @@ func (c *Client) AppPolicy(ctx context.Context, expected Identity) (protocol.App
 		return out, err
 	}
 	if !slices.Contains(h.Features, protocol.AppPolicyFeature) {
-		return out, errors.New("runner lacks app-development-policy-v1; commit and publication unavailable")
+		return out, errors.New("runner lacks app-development-policy-v2; desk creation, commit and publication unavailable")
 	}
 	if err = c.do(ctx, http.MethodGet, protocol.AppPolicyPath, nil, &out, true); err != nil {
 		return out, err
