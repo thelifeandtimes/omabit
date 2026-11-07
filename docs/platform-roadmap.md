@@ -7,8 +7,9 @@ Source baseline: Omabit v0.2.0, commit `b233128`.
 ## 0.4.0 release target (2026-11-06)
 
 The next release starts from published 0.3.7. Its scope is remote runner
-installation, Agent Help and skill installation, and ship URLs for private fleet
-access and clearweb access. The product and engineering checks below are the
+installation, Agent Help and skill installation, app development and desk
+distribution, and ship URLs for private fleet access and clearweb access. The
+product and engineering checks below are the
 release plan. Final 1.0.0 refinements follow the 0.4.0 user trials.
 
 ### Remote runners
@@ -105,6 +106,27 @@ the standard port. Take the client off the tailnet and reconnect over the public
 route with one approval total. Check that the old cookie never goes to the new
 origin and that revocation wins a race with reconnect. A failed lookup must
 leave the working plugin session usable.
+
+### App development, rollout and publication
+
+The user added agent-accessible desk development and publication to 0.4.0.
+Support desk creation/mounting, source deployment, commit, local activation,
+publication and receiver verification on ordinary managed ships, development
+fakes and fake project networks. Add a per-ship workflow setting and expose the
+steps through the collector CLI with durable operation results.
+
+The [architecture proposal](app-development-0.4.0.md) starts with mounted desks
+and adds an optional Urgit adapter. Urgit already binds Git branches to Clay and
+validates linked pushes. Its desk-to-Git export is one part of the workflow;
+Treaty handles app publication and Clay delivers subscribed updates. A release
+approval therefore precedes the distributor desk's mutation. Source trees under
+`desk/` need an assembled deployment tree for the Git bridge.
+
+The proposed default is explicit release promotion with per-desk automatic
+releases available. User feedback on that default and coordinated companion
+Omarchy plugin releases is pending. Qualify the actual runtime/Urbit API and
+Urgit revision before advertising support. Reuse the planned fleet origins for
+Git access and include deployment status in Agent Help.
 
 ### Clearweb access
 

@@ -7538,3 +7538,29 @@ rooftop report, Debian's package refusal and host-specific agent assistance.
 The Arch guest exercises the runner foundation. A complete fresh Omarchy
 desktop installation remains untested in this matrix. Agent Help and skill
 installation are next. Stable 0.3.7 upgrade qualification remains a release gate.
+
+## M526 — Desk development and Urgit enter the 0.4.0 scope (2026-11-06)
+
+The user expanded M521's 0.4.0 scope to include app development, rollout and
+publication through the agent CLI, with per-ship intent and support for fakes
+and project networks. The [architecture proposal](app-development-0.4.0.md)
+builds on owner-writable mounts, existing private Lens operations and prior
+publisher/receiver qualification. General desk deployment APIs still need
+implementation and qualification.
+
+Reviewed Urgit at `7834a4e186998265f5175fd527bc17ea8819c44f`. It supports direct
+Smart HTTP pushes into a bound Clay desk and reports Git/Clay correspondence.
+Its publish-desk action exports Clay into Git. Treaty publication is a further
+workflow. A subscribed distributor desk can propagate later mutations, so release
+gating belongs before that mutation. Whole-tree projection requires assembling
+projects whose deployable desk lives in a subdirectory.
+
+The proposal uses mounted-desk deployment first and optional Urgit integration,
+with typed actions, durable receipts, compilation and readiness observations,
+and exact publisher/receiver identities. Explicit promotion as the default and
+Urbit-desk/frontend scope are proposed while user feedback is pending. Incoming
+GitHub notices require explicit pulls in the reviewed upstream, and GitHub import
+updates reject Clay-bound destinations. Direct ship pushes are the initial target.
+This turn records source research and architecture. Live pipeline qualification
+and the new CLI implementation remain future work. M525's end of distro testing
+continues to apply, and Agent Help remains the next implementation slice.
