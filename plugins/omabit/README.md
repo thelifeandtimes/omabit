@@ -22,6 +22,11 @@ ongoing runtime/connection diagnostics and identity-bound request failures live 
 Connectivity & runtime. Runner management cards show a compact inventory/access
 summary and put endpoint IDs and host compatibility reports under Technical details.
 
+App development and publishing uses the same padded cards, uppercase card titles,
+caption labels and status badges. Scope and permission fields use two columns
+when space permits and stack at smaller widths. Runner rollout is grouped in the
+global view; revision and authority explanations are under Policy details.
+
 The remote host field is an editable dropdown. Suggestions are read without sudo
 from literal SSH Host aliases, bounded Include files and readable known-host entries.
 The reader never runs SSH, Match exec or KnownHostsCommand, and does not contact

@@ -7634,3 +7634,27 @@ schema47→48 fixture preserves identity, settings and receipts with no grants.
 Full exact-artifact 0.3.7→0.4.0 live upgrade qualification remains a release gate.
 
 See [policy behavior, support window and test commands](app-development-policy.md).
+
+## M529 — Application policy styling aligned with Setup (2026-11-06)
+
+The user requested a visual pass before reviewing M528. Its transparent component
+capture and placeholder sans-serif typography were insufficient style evidence.
+The policy editor now uses existing Card, CardTitle, StatusBadge, form controls
+and theme tokens, with the same margins and spacing as other Setup panes.
+Scope, agent permissions and global runner rollout have separate cards. Fields
+use two columns where space permits and stack at narrow widths; supporting
+authority/revision information is under Policy details. Normal unapplied status
+uses a neutral badge. A shadowed message assignment was corrected so successful
+saves display their confirmation. Scoped unresolved-identity status no longer
+overrides the runner-level summary when that ship field is hidden.
+
+The existing isolated QML harness now captures an opaque app background and uses
+the shell's default monospace type tokens, with controlled dark/light palettes,
+width and font scaling. Framed global and desk screenshots were inspected at
+688px/default scale and 408px/1.25 scale. Both runs passed all four scope edits,
+inheritance, offline/observer restrictions, stale-profile/malformed responses,
+save confirmation and horizontal control bounds. Native plugin packaging tests
+and diff checks passed. Changes are source/UI-only: no installed plugin, runner,
+ship, service or user desktop configuration was changed. This supersedes M528's
+initial screenshot as the visual-review reference; backend policy behavior and
+its qualification remain as recorded there.

@@ -50,7 +50,7 @@ Item {
     var v;try{v=JSON.parse(output)}catch(_){v=null}
     if(!Policy.valid(v)){value=null;error="The helper returned an unsupported policy response. Refresh before editing.";return}
     value=v
-    if(mutating)message="Permissions saved. Check each runner's rollout status below."
+    if(mutating)root.message="Permissions saved."
   }
   Timer {id:deadline;interval:root.requestTimeoutMs;onTriggered:{root.invalidOutput=true;if(helper.running){helper.signal(15);hardStop.restart()}}}
   Timer {id:hardStop;interval:5000;onTriggered:if(helper.running)helper.signal(9)}
