@@ -1,8 +1,9 @@
 # Fleet session replacement — implementation plan
 
-Status: in progress after M567. This is not an advertised protocol or a completed
-feature. Initial connections and bounded health checks exist; Theme preparation
-and DMs retirement/drain are tested foundations in isolated receiver branches.
+Status: in progress after M568. This is not an advertised protocol or a completed
+fleet feature. Theme preparation, activation, recovery and exact transport lineage
+pass private source fixtures. DMs retirement/drain is a tested foundation; its
+cooperative path, collector lineage and automatic loop remain.
 
 ## Required behavior
 
@@ -81,3 +82,14 @@ sources, isolated Secret Service transport, active workers, URL changes, expiry,
 revocation, standalone replacement, lost replies and original-writer preservation.
 Production/DEV/trial plugins, runners, protected ships and the persistent manual
 preview remain excluded. Release qualification/publication remains deferred.
+
+
+## M568 implementation boundary
+
+Theme's isolated4365455 implements the receiver sequence and preserves older
+unrelated-account cleanup formats with a sidecar. Its complete helper inventory
+includes the new modules. No capability flag is advertised yet. Automatic handoff
+must require a predecessor helper that understands replacement cleanup; a changed
+installed helper/grant cannot silently upgrade an older cached predecessor. Bound
+status observation handles lost delivery replies without another issuance/delivery.
+See [source evidence](diagnostics/2026-11-07-theme-session-replacement.json).

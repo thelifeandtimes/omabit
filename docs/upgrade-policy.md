@@ -1152,3 +1152,23 @@ Only an explicitly selected preflight that retained phase `reserved` with no
 storage/container effects can continue; dispatched unknown outcomes are not
 replayed. Older writers must refuse47. Full expanded engine/anchor recovery is
 not yet implemented; this development format is not release qualification.
+
+
+## Unreleased Theme replacement sidecar (M568)
+
+The isolated Theme receiver retains application journal1 and transport journal2
+for unrelated cached cleanup helpers. Replacement adds private version1
+`application-replacements/active.json` plus immutable bound history receipts;
+existing directory with missing/corrupt state is not silently reinitialized.
+Request-specific Secret Service application namespaces retain old credentials
+before normal-slot overwrite. No secrets enter JSON history. Pending installation
+is fenced; only exact accepted ancestry admits a fresh independent successor.
+Predecessor cleanup operates only on its original session and preserves the new
+account. An original receiver journal writer and prior installer inventory are
+covered in private source fixtures, not installed upgrade qualification.
+
+Older predecessor helpers without replacement cleanup are not eligible for silent
+handoff. Current helper approval, issuer lineage/migration and assembled recovery
+qualification remain prerequisites before advertising automatic reconnection.
+Do not delete sidecar/credential/transport history or downgrade formats to unblock
+an attempt. See `diagnostics/2026-11-07-theme-session-replacement.json`.

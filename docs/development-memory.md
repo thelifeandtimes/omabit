@@ -8976,3 +8976,34 @@ remain open. This advances M566's pending DMs local drain only; it is not comple
 reconnection or installed-upgrade qualification. Canonical/auth source checkouts,
 installed state, protected ships and the preview remain untouched. Release work
 stays deferred.
+
+## M568 — Theme bound replacement and recovery (2026-11-07)
+
+The isolated Theme receiver now replaces an exact accepted account with a fresh
+origin-bound session, preserving its preferences and keeping the old credential
+in a separate request-specific Secret Service application namespace. Durable
+nonsecret intent precedes credential effects. Partial installation cannot admit
+application traffic; a lost accepted reply can be observed without redelivery.
+Exact accepted ancestry permits the new session to operate while old remote
+cleanup is pending. Old cleanup cannot retire or clear the live successor.
+
+Recovery distinguishes old metadata with a new key, installed but unaccepted
+metadata, accepted successors and later standalone changes. A failed partial swap
+can restore only its exact retired predecessor slot; it never reopens that session
+for traffic. Unknown application writes are preserved and never replayed. Same-URL
+renewal, changed URLs, return to prior URLs, multiple generations, active new
+channels, locked/altered secrets and lost persistence acknowledgements are covered.
+
+The receiver/transport formats remain1/2. The new bounded active replacement
+sidecar has immutable completed receipts. An actual previous receiver journal
+writer still finishes an unrelated account; installer upgrades preserve the prior
+recognized inventory. Final private run10 passes146 tests, including22 replacement
+and16 sidecar cases. Source4365455 and the retention foundation1221aa3 are in the
+isolated Theme branch. See `diagnostics/2026-11-07-theme-session-replacement.json`.
+
+This advances M566's pending Theme activation/recovery, not the entire fleet goal.
+No complete replacement capability is advertised or consumed by Omabit yet. A
+predecessor using an older helper without this protocol must not be silently
+promoted. DMs cooperative requests/activation, collector lineage and automatic
+polling still remain. Installed state, original source checkouts, protected ships
+and the persistent preview are unchanged. Release qualification stays deferred.

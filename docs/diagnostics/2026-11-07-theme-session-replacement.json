@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M568",
+  "passed": true,
+  "omabit_base": "857c5c1e9b5370a37f610e0ec20ee5a94b253ce2",
+  "theme": {
+    "checkout": "/tmp/omabit-receiver-reconnect-040/theme",
+    "branch": "codex/0.4.0-session-reconnect",
+    "commit": "43654550d6ac4b7f9bad1665f810846cb88781aa",
+    "retention_foundation": "1221aa3d593833ee6d4dd0c62dbefb5bf04d9051"
+  },
+  "checks": [
+    {
+      "directory": "/tmp/omabit-theme-handoff-04",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_retired_session.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "28f412e4439bd8c42b0042930f8d5bf24be1dd33176b6a2a0507244bf96eb4e9",
+      "source_manifest_sha256": "2a48432d25134ee6405738d6e6b7d9d408aff5076be9a229382983ddde204b77"
+    },
+    {
+      "directory": "/tmp/omabit-theme-handoff-06",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_replacement_journal.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "79e85bc066cc416d5cf111625dc727dacacd9fb66eff7e0dac5700ca3526382c",
+      "source_manifest_sha256": "6d622f0c4135773772bc2d19ac07ba5a4660e4dc456f5d974fb3aaef6549f840"
+    },
+    {
+      "directory": "/tmp/omabit-theme-handoff-08",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_connection_replacement.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "e733e9b7c5a52621b46687eb5bb462a856623917ea327d0fb5d4f3a8fbc25a52",
+      "source_manifest_sha256": "a42a9a40aea51bbaecc7a4c95701011b45f8514e660a963c8909d535da59a8ba"
+    },
+    {
+      "directory": "/tmp/omabit-theme-handoff-09",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_connection_replacement.py",
+          "test_connection_preparation.py",
+          "test_transport_handoff.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "4fbefbd8f9815209367a0307833c008d4767273e4e6a9f09eb4ae415d04a5458",
+      "source_manifest_sha256": "4fe32841cc59424d5a19d498b52a8d6fb3f4685e2fa440859116f773a3754478"
+    },
+    {
+      "directory": "/tmp/omabit-theme-handoff-10",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_connection*.py",
+          "test_transport*.py",
+          "test_retired_session.py",
+          "test_replacement_journal.py",
+          "test_install.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "42252d63992fb1a75cb50f3bcf2168505282340407a202d68e513b2fa59483fd",
+      "source_manifest_sha256": "3f633ae85f91a92ad17622c4cb395d5e86e283012acacd30f9d218713eb01e2c"
+    }
+  ],
+  "coverage": [
+    "Exact old/new connection, profile, ship and account comparison; local drain before delivery; one active child",
+    "Distinct request-specific Secret Service application namespaces preserve original credentials without ambiguous ordinary origin lookups",
+    "Pending intent and partially installed accounts deny application transport; accepted exact ancestry alone permits old remote cleanup to remain pending",
+    "Same-origin renewal and URL changes; return to prior origin with independent fresh cookie; preferences preserved without enabling automatic publication",
+    "Lost store, metadata, acceptance and clear acknowledgements; status observation without redelivery; restoration of exact retired predecessor slot after new-key-before-account interruption",
+    "Old cleanup and normal successor disconnect retain each generation independently, including while the successor has an active channel",
+    "Unknown application writes, unrelated unclosed sessions, malformed bindings, locked or changed keyring items and standalone account changes are preserved",
+    "Previous journal writer finishes unrelated account with new sidecar present; previous installer inventory upgrades with complete helper imports",
+    "Final run10:146 tests pass, including22 replacement and16 sidecar journal cases; all private namespace fixtures"
+  ],
+  "formats": {
+    "receiver_journal": 1,
+    "transport_journal": 2,
+    "new_sidecar": "application-replacements/active.json version1; permanent bound history receipts; no cookie plaintext",
+    "new_keyring_namespace": "INSTANCE.state_name + .retired-session. + original request ID"
+  },
+  "limits": [
+    "No complete replacement capability advertised or consumed by collector yet",
+    "Predecessors with older helpers lacking the protocol cannot be silently promoted; current helper approval remains required",
+    "DMs cooperative bridge path, collector lineage, bounded automatic polling and assembled receiver qualification remain open",
+    "Private synthetic keyring/endpoints and installer HOME only; no installed keyring, plugin, runner, ship or preview changes",
+    "Source fixture qualification, not native runtime, production upgrade or release qualification"
+  ]
+}
