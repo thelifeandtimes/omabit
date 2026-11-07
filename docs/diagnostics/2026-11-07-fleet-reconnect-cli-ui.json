@@ -1,0 +1,107 @@
+{
+  "milestone": "M571",
+  "date": "2026-11-07",
+  "source_base": "083749f65904fb429f2a127faafd3754fab838a7",
+  "source_sha256": {
+    "backend/cmd/urbit-collector/applications.go": "a041218fbc4081ed2440d36df7d7e0a4dcb5e870e9067d3b00d2c56e1aca0b76",
+    "backend/cmd/urbit-collector/fleet_application.go": "dfc9152a00efe79ff7ad896696068be8085834a785ada1118ab4c7de4fe48659",
+    "backend/cmd/urbit-collector/fleet_application_test.go": "5f8b99c9b41e09b349d69da292018cc31011518c9540a9ece65cd1c783da94b9",
+    "backend/cmd/urbit-collector/main.go": "f54419dacca5001503c6e3f04851492bb035fe75d31e7f2135fcdb5c7be531cb",
+    "internal/applicationauth/engine.go": "fd50b220dc1140d5dbf714499ee8a6655c36308888eefbf7edfb7f10d572e8ea",
+    "internal/applicationauth/installed.go": "d9d5e6a45ec35d3d2ae339f5540de37d0ecc85191e9609b6e0f036338f1fbb84",
+    "internal/applicationauth/replacement.go": "73eef008c6ccf5cbaa2acec2d5c39ef0662d7aadbdc7f716d74a6192d38eeb0c",
+    "internal/applicationauth/replacement_test.go": "f103db9affa6d2278d33ec77aca98e50cf0e2c439c090f1036ae648bec025e53",
+    "internal/collection/application_replacement.go": "2cf0b5d104b4ac31071648852ebc9dc7110ca400f7b82a029b017a7e7cb85ed1",
+    "internal/collection/application_replacement_test.go": "f49bd2082f794a0b6a74e1b26d01af3a6335b6df937af362d0bfbf3da5e4c4b6",
+    "plugins/omabit/ApplicationConnections.qml": "31413cf50c676bedecaf7dba6614711dd6881037b68ea834419ca266d915dca3",
+    "plugins/omabit/ApplicationsPane.qml": "15477f85cda8a0028992dd5eeeba8e627138adbd027dcb74e2e6b809d30c7670",
+    "scripts/fleet-access-preview/backend.py": "1f4d7da20ac77acf069ecc350e952d141d5c2115ff59b9b3b0d55451a52b8d0a",
+    "scripts/test-fleet-access-preview.py": "4d51d19d7837c85a50d594b6af923bfe8df1a3a64de9ca8a603435c8aac9293d",
+    "scripts/test-fleet-access-preview.qml": "1c285aef0ba2064ff6bdb40c681348bdc915ba138f2c16815f69f86324c2789d",
+    "skills/omabit-operator/references/fleet-urls.md": "99742cab19596c85eabee0e80b45b713c49b3bd7a6727fc2b1fab460c670b505",
+    "backend/cmd/urbit-collector/fleet_maintenance.go": "9fc2e05b1cd539fe77886e14cf0b522bd89176d1b7ff2ead79e28b2ff6b4f19e"
+  },
+  "result": "passed private source/CLI/full-panel fixtures",
+  "checks": [
+    {
+      "directory": "/tmp/omabit-fleet-connect-replacement-cli-03",
+      "exit": 0,
+      "test_pattern": "^Test(FleetApplicationCLI|ApplicationCLI|ApplicationShipCLI)",
+      "binary_sha256": "3cfdf8729420a30e85bbf8496c45afee214bdd7c8704a21901f639ed047a4be3",
+      "source_base": "083749f65904fb429f2a127faafd3754fab838a7",
+      "fake_secret_tool_sha256": "044e0cd3533f7377cae907e8b50a888521955f6377dc2ec6755c6371cfe399e1",
+      "scope": "offline synthetic runner, Eyre, receiver and keyring transport; no installed/live runtime or real keyring qualification",
+      "log_sha256": "bb9f528f105060f06d49bbce400cf3a836dbd4d39427bc3a83374a35ab836a3e",
+      "top_level_passes": 5,
+      "skips": 0
+    },
+    {
+      "directory": "/tmp/omabit-fleet-replacement-collection-full-02",
+      "exit": 0,
+      "test_pattern": "Test",
+      "binary_sha256": "0d34962e535e9635c04bbdb8b9b8c18eb7372e6f0040ad0bff68b9a20f1894da",
+      "package": "internal/collection",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "log_sha256": "76599d9d0f8332b0fc4d9a59e27543384e16557e5c368818cee4e3394321dd3b",
+      "top_level_passes": 70,
+      "skips": 0
+    },
+    {
+      "directory": "/tmp/omabit-fleet-replacement-auth-full-02",
+      "exit": 0,
+      "test_pattern": "Test",
+      "binary_sha256": "2d8904646f608ed9130438e9f4a63bdb46f917aba58732c5b48300d8ccb10662",
+      "package": "internal/applicationauth",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "log_sha256": "e04a95fe2d67de075dfc00a3a90c6d7776715e3d1a543583ec84ce54b43a5ee6",
+      "top_level_passes": 29,
+      "skips": 1
+    }
+  ],
+  "ui": {
+    "directory": "/tmp/omabit-fleet-access-ui-reconnect-03",
+    "log_sha256": "35ad0ba602af3afad17b007b0d984954e301727c5659f76f659b4386967fe880",
+    "calls_sha256": "5dca6647a9ad3814e18896ca87efad2060a55ec580d878e495f49c6081f4622c",
+    "fixture_source_sha256": "3027e432bace588d47b8331d0b6633b84fcebbe9124a863f42e98bb1a56b9c75",
+    "screenshots": {
+      "fleet-reconnect-narrow.png": "2d7f5428aaa8b0766c96e309bd0b764f6958b3c941225a1395c976459b042bba",
+      "fleet-reconnect-wide.png": "d828edf8cec6564c759ccea881c5d4b8f382f4d809733a17cb33772e5fd888d8"
+    },
+    "screenshots_visually_reviewed": true,
+    "coverage": [
+      "healthy polling without mutation",
+      "single successor through another URL",
+      "predecessor cleanup preserves current connection",
+      "transport shutdown blocks scheduling",
+      "standing revocation blocks new maintenance",
+      "lost initial login remains fenced"
+    ]
+  },
+  "hosted_regression": {
+    "directory": "/tmp/omabit-app-ui-reconnect-regression-01",
+    "log_sha256": "bb9e2e8ab1ddb09b99ad6bfcd2305e90f86d5a3edd6dfaabbd13e710172c241b",
+    "result": "passed"
+  },
+  "skill_checks": [
+    "system /usr/bin/python3 skill-creator quick_validate: passed",
+    "scripts/test-skill-package.py: five passed"
+  ],
+  "prior_failures": [
+    {
+      "directory": "/tmp/omabit-fleet-connect-replacement-cli-01",
+      "cause": "Test result struct reused its pointer and overwrote the saved successor revision with the cleanup response; collector correctly rejected the stale revision. Fixture now captures the successor revision before cleanup.",
+      "superseded_by": "replacement-cli-03"
+    },
+    {
+      "check": "quick_validate under default python3",
+      "cause": "PyYAML absent in that interpreter; unchanged validator passes under system /usr/bin/python3."
+    }
+  ],
+  "remaining": [
+    "Assembled real Theme/DMs receiver, keyring and active transport qualification",
+    "Advertise complete capability only after assembled path passes",
+    "Release qualification/publication remains deferred"
+  ],
+  "production_changed": false,
+  "persistent_preview_changed": false
+}

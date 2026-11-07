@@ -340,3 +340,46 @@ func TestReplacementIssuerPreparationFailureAndPartialIssueStayFenced(t *testing
 		})
 	}
 }
+
+func TestReplacementExplicitDisconnectCancelsPendingAutomationOnly(t *testing.T) {
+	for _, kind := range []string{"unissued-child", "pending-parent", "accepted-parent"} {
+		t.Run(kind, func(t *testing.T) {
+			ctx := context.Background()
+			f, r, parent, child := replacementSetup(t)
+			if kind == "accepted-parent" {
+				var err error
+				child, err = f.e.ConnectReplacement(ctx, child.ID, r)
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			id := parent.ID
+			if kind == "unissued-child" {
+				id = child.ID
+			}
+			if _, err := f.e.Disconnect(ctx, id); err != nil {
+				t.Fatal(err)
+			}
+			p, _, err := f.r.Application(ctx, parent.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			c, _, err := f.r.Application(ctx, child.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if kind == "accepted-parent" {
+				if c.Replacement.AutomaticDisabled || c.Phase != "connected" {
+					t.Fatal("original cleanup stopped successor", c)
+				}
+			} else {
+				if !p.Replacement.AutomaticDisabled || !c.Replacement.AutomaticDisabled {
+					t.Fatal("pending intent could resume", p, c)
+				}
+				if _, err := f.e.ConnectReplacement(ctx, child.ID, r); err == nil {
+					t.Fatal("disconnected handoff resumed")
+				}
+			}
+		})
+	}
+}

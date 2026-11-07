@@ -325,3 +325,34 @@ func TestReplacementJournalActualPreviousWriterPreservationAndRefusal(t *testing
 		}
 	}
 }
+
+func TestReplacementCancellationPreservesPublishedArchiveReceipt(t *testing.T) {
+	ctx := context.Background()
+	r, parent := connectedFleet(t)
+	child := childFleet(t, r, parent, parent.Origin)
+	advanceReplacement(t, r, child.ID, "preparing", "prepared", "issuing", "saved", "delivering", "connected")
+	parent = closeReplacement(t, r, parent.ID)
+	// Model interruption after the receipt is synced but before active removal.
+	if err := r.locked(ctx, func() error { return r.saveApplicationArchive(parent) }); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(r.dir, "applications.json")
+	before, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := r.WithApplication(ctx, parent.ID, func(tx *ApplicationTransaction) error { return tx.DisableReplacementAutomation(ctx) }); err != nil {
+		t.Fatal(err)
+	}
+	after, err := os.ReadFile(path)
+	if err != nil || !bytes.Equal(before, after) {
+		t.Fatal("closed receipt changed after cancellation", err)
+	}
+	if _, err := r.ArchiveApplication(ctx, parent.ID, parent.Revision); err != nil {
+		t.Fatal("lost archive acknowledgement cannot finish", err)
+	}
+	current, _, err := r.Application(ctx, child.ID)
+	if err != nil || current.Replacement.AutomaticDisabled || current.Phase != "connected" {
+		t.Fatal("accepted successor stopped", current, err)
+	}
+}

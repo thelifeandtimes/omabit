@@ -27,7 +27,7 @@ func replacementBinding(a collection.ApplicationAttempt) map[string]any {
 func (e *Engine) prepareReplacement(ctx context.Context, tx *collection.ApplicationTransaction, receiver ReplacementReceiver, fingerprint *[32]byte) (collection.ApplicationAttempt, error) {
 	a := tx.Current()
 	previous, archived, err := e.registry.Application(ctx, a.Replacement.PreviousID)
-	if err != nil || archived || previous.Phase != "retiring" || previous.Replacement.SuccessorID != "" || previous.Target != a.Target || previous.Fleet.Request.Binding != a.Fleet.Request.Binding {
+	if err != nil || archived || previous.Phase != "retiring" || previous.Replacement.SuccessorID != "" || previous.Replacement.AutomaticDisabled || a.Replacement.AutomaticDisabled || previous.Target != a.Target || previous.Fleet.Request.Binding != a.Fleet.Request.Binding {
 		return previous, collection.ErrApplicationConflict
 	}
 	if err := e.registry.CheckFleetApplicationPermission(ctx, a); err != nil {
@@ -139,10 +139,13 @@ func (e *Engine) observeReplacement(ctx context.Context, tx *collection.Applicat
 
 func (e *Engine) replacementPermissionAfterAcceptance(ctx context.Context, tx *collection.ApplicationTransaction, store credentials.Store, data []byte) error {
 	err := e.registry.CheckFleetApplicationGrant(ctx, tx.Current())
+	if tx.Current().Replacement.AutomaticDisabled {
+		err = ErrRecovery
+	}
 	if err == nil {
 		return nil
 	}
-	if !errors.Is(err, collection.ErrApplicationPermission) {
+	if !errors.Is(err, collection.ErrApplicationPermission) && !errors.Is(err, ErrRecovery) {
 		return err
 	}
 	cleanup, stop := context.WithTimeout(context.WithoutCancel(ctx), 15*time.Second)

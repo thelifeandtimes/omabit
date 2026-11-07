@@ -15,8 +15,9 @@ import (
 // SuccessorID is set atomically with a child's connected receipt, never inferred
 // from a timeout. Original origin, credential and cleanup evidence stay intact.
 type ApplicationReplacement struct {
-	PreviousID  string `json:"previous_id,omitempty"`
-	SuccessorID string `json:"successor_id,omitempty"`
+	PreviousID        string `json:"previous_id,omitempty"`
+	SuccessorID       string `json:"successor_id,omitempty"`
+	AutomaticDisabled bool   `json:"automatic_disabled,omitempty"`
 }
 
 func (x ApplicationReplacement) valid(a ApplicationAttempt) bool {
@@ -216,7 +217,8 @@ func (r *Registry) ApproveFleetReplacement(ctx context.Context, previous string,
 					if a != old {
 						return ErrApplicationConflict
 					}
-					if old.Phase == "connected" {
+					if old.Phase == "connected" || old.Replacement.AutomaticDisabled {
+						a.Replacement.AutomaticDisabled = false
 						a.Phase, a.Revision, a.UpdatedAt = "retiring", a.Revision+1, now
 						state.Attempts[i] = a
 					}
@@ -255,7 +257,7 @@ func replaceApplicationParent(state *applicationsFile, old, next ApplicationAtte
 		}
 		switch next.Phase {
 		case "preparing", "prepared", "issuing", "delivering":
-			if p.Phase != "retiring" || p.Replacement.SuccessorID != "" {
+			if p.Phase != "retiring" || p.Replacement.SuccessorID != "" || p.Replacement.AutomaticDisabled || old.Replacement.AutomaticDisabled {
 				return ErrApplicationConflict
 			}
 		case "connected":
@@ -274,4 +276,56 @@ func replaceApplicationParent(state *applicationsFile, old, next ApplicationAtte
 		return ErrApplicationConflict
 	}
 	return nil
+}
+
+// DisableReplacementAutomation records an explicit Disconnect without widening
+// it into logout of an already accepted successor. Pending handoff intent is
+// cancelled in both directions, so a later maintenance pass cannot undo it.
+func (tx *ApplicationTransaction) DisableReplacementAutomation(ctx context.Context) error {
+	if !tx.active {
+		return ErrApplicationConflict
+	}
+	old := tx.current
+	if old.Fleet.Version != 1 || old.Replacement == (ApplicationReplacement{}) && old.Phase != "retiring" {
+		return nil
+	}
+	var updated ApplicationAttempt
+	err := tx.r.locked(ctx, func() error {
+		state, err := tx.r.readApplications()
+		if err != nil {
+			return err
+		}
+		found := false
+		for _, a := range state.Attempts {
+			if a.ID == old.ID {
+				if a != old {
+					return ErrApplicationConflict
+				}
+				found = true
+			}
+		}
+		if !found {
+			return ErrApplicationConflict
+		}
+		for i, a := range state.Attempts {
+			cancel := a.ID == old.ID || a.ID == old.Replacement.PreviousID && a.Replacement.SuccessorID == "" || a.Replacement.PreviousID == old.ID && old.Replacement.SuccessorID == ""
+			if cancel && a.Phase != "closed" && !a.Replacement.AutomaticDisabled {
+				if a.Revision == ^uint64(0) {
+					return ErrApplicationConflict
+				}
+				a.Replacement.AutomaticDisabled = true
+				a.Revision++
+				a.UpdatedAt = time.Now().UTC()
+				state.Attempts[i] = a
+			}
+			if a.ID == old.ID {
+				updated = a
+			}
+		}
+		return tx.r.saveApplications(state, false)
+	})
+	if err == nil {
+		tx.current = updated
+	}
+	return err
 }

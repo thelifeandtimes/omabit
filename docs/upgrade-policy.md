@@ -1208,3 +1208,12 @@ state without mutation. Complete replacement requires declaration2 from the exac
 approved helper; an installed update cannot widen a cached1 approval. Public
 receiver advertisement and assembled qualification are still pending. Do not
 downgrade journal markers or remove ancestry to unblock work.
+
+
+M571 adds an optional `automatic_disabled` bit to unreleased journal4 replacement
+metadata. Explicit disconnect persists cancellation before cleanup, including
+unaccepted parent/child intent. It does not change a closed receipt already
+published for archival or disable an already accepted successor when cleaning its
+parent. Previous stable readers still refuse4. A new explicit reviewed retry can
+clear a retired predecessor's cancellation; periodic maintenance cannot do so.
+CLI and full registry/issuer fixtures cover the transition and interrupted archive.

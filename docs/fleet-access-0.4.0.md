@@ -173,3 +173,11 @@ actual previous-writer preservation and full private registry/issuer regressions
 Public reconnect/recovery wiring, automatic polling and assembled receiver tests
 remain before advertising the complete feature. See
 [issuer evidence](diagnostics/2026-11-07-fleet-replacement-issuer.json).
+
+
+M571 completes public reconnect/recovery, bounded maintenance and desktop polling
+at the private fixture level. Exact approved helper capability and standing
+permission remain required. Disconnect cancels pending automatic handoff without
+stopping an accepted successor during original cleanup. See
+[CLI/UI evidence](diagnostics/2026-11-07-fleet-reconnect-cli-ui.json).
+Real receiver capability advertisement and assembled qualification remain.

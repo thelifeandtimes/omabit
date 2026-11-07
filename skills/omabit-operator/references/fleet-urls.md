@@ -61,8 +61,8 @@ lookup does not remove manually configured routes. Path proxies, service VIPs,
 raw TCP forwarding and bespoke reverse proxies need explicit URL registration.
 No live Tailnet qualification is claimed by these fixture checks. The full-panel
 Setup URL editor passes offline interaction/rendering checks. Standing-approval authoring and automatic URL selection/connection are implemented
-below. The full-panel connection UI is implemented; automatic session reconnection remains
-open.
+below. Collector replacement/recovery and desktop polling pass private fixtures;
+assembled real-receiver qualification and capability advertisement remain pending.
 Do not claim those features from the presence of this registry capability alone.
 
 Keep existing sessions bound to their original URL. Never copy a cookie to another
@@ -172,4 +172,54 @@ and identity changes return a fixed error. A LAN check needs explicit current
 Health does not change the attempt, issue or deliver a session, log out, or retry
 application data. Missing/locked credentials are not equivalent to an expired
 session. Do not bypass cleanup or uncertainty by issuing another connection.
-Automatic replacement and compatible receiver handoff are still being implemented.
+See the replacement pathway below; current helper capability and durable ancestry
+are required before any replacement.
+
+
+## Reconnect and recover under standing permission
+
+`app-plugins` reports `replacement:true` only for a complete version2 helper. Both
+that installed generation and the predecessor's retained generation must support
+replacement. Updating a plugin does not widen its older approved helper. Review
+new permission with the user; preserve the older helper for its own cleanup.
+
+The desktop checks one eligible connection per minute while Omabit is active.
+It creates a fresh session when a formerly connected attempt is expired, rejected
+or its route is unavailable; healthy connections stay unchanged. It does not copy
+cookies across URLs, replay app writes, or bypass locked/missing credentials,
+wrong identities, redirects or uncertain login results. Explicit Disconnect
+cancels pending automatic handoff and is not undone by maintenance.
+
+For one bounded maintenance step using the current attempt revision:
+
+```sh
+urbit-collector --config-dir REGISTRY app-fleet-maintain REQUEST_ID \
+  --expected-revision REVISION
+```
+
+Maintenance can observe a lost replacement reply, finish exact old-session cleanup,
+or select a registered route under the current grant. Known failed children wait
+five minutes between new attempts and stop automatic retry after three failures.
+Those receipts remain visible; never archive them merely to reset the retry count.
+Revocation blocks new sign-ins but does not block cleanup. Explicit LAN scopes
+still require `--lan-profile ID`; do not guess them.
+
+To explicitly retry a retired predecessor after its failed children are fully
+reconciled, reuse the **current grant object**, with a new attempt ID:
+
+```sh
+urbit-collector --config-dir REGISTRY --runner NAME --expected-runner-id ID \
+  app-fleet-reconnect --request-file connection-choice.json \
+  --previous-request-id PREVIOUS_ID --expected-revision PREVIOUS_REVISION \
+  --request-id FRESH_32_HEX_ID
+```
+
+Keep the returned successor ID. `app-recover` uses bound status observation for an
+unacknowledged replacement; it never delivers or logs in again. Read `replacement`
+links in attempt views to distinguish the current connection from previous-session
+cleanup. An unreachable predecessor may remain pending while its accepted successor
+works. Preserve both credentials/history; do not delete a fence to reconnect.
+
+Private synthetic CLI and full-panel fixtures cover this pathway. The two real
+receiver branches still require assembled qualification before version2 is
+advertised. This is not installed upgrade, live Tailnet or release qualification.

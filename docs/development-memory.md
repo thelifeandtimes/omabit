@@ -9079,3 +9079,45 @@ collector work at the private source level. Public reconnect/recovery wiring,
 automatic polling, capability advertisement in the two receiver branches and
 assembled qualification remain. Installed plugins/runners, protected ships and
 the persistent preview are unchanged; release qualification remains deferred.
+
+
+## M571 — Bounded fleet reconnection CLI and desktop polling (2026-11-07)
+
+`app-fleet-reconnect` selects an eligible registered route under the current exact
+ship/helper grant, retains the generation and publishes bound successor intent.
+It leaves healthy sessions unchanged. Both installed and cached predecessor
+generations must support replacement. `app-recover` observes lost replacement
+replies instead of revoking an accepted successor by inference. Public views show
+predecessor/successor links and discovery reports complete helper capability.
+
+`app-fleet-maintain` performs one bounded health/reconnect or lineage cleanup step.
+Known failed children wait five minutes, with three failures requiring review.
+Automatic maintenance never archives failures to evade this budget. An explicit
+Disconnect durably disables pending automation on the selected attempt and its
+unaccepted handoff links; cleanup of an already accepted predecessor does not
+stop the live successor. Closed records with already published archive receipts
+remain unchanged. A manual explicit retry can resume a retired predecessor only
+after all prior child effects are reconciled and current permission still holds.
+
+The desktop schedules at most one eligible step per minute, serially, while
+activation is enabled. It refreshes inventory periodically and never implicitly
+allows permissions or chooses a LAN scope. Initial uncertain logins stay fenced.
+The full Setup panel reports current URLs separately from previous-session cleanup
+and exposes recovery/reconnect controls. Wide/narrow screenshots were reviewed;
+recovery status now wraps independently from long URLs. The operator skill covers
+maintenance, exact lineage, old-helper limits and recovery without replay.
+
+Public CLI fixtures pass healthy no-op, replacement, lost acknowledgement/restart,
+old cleanup, bounded retry and explicit cancellation. The first CLI run exposed
+a fixture alias overwriting the saved successor revision; the collector correctly
+refused it. The fixture was fixed without weakening revision checks. Final CLI03,
+full registry/auth race suites, full-panel03, hosted UI regression and skill
+validation/package checks pass. The default Python lacked PyYAML; the unchanged
+validator passed under system Python. Evidence is in
+`diagnostics/2026-11-07-fleet-reconnect-cli-ui.json`.
+
+This advances M570's public/desktop work. Real Theme/DMs declarations remain1
+until the assembled receiver/keyring/transport pathway is qualified. Source
+fixtures do not qualify a native install, production Tailnet or stable release.
+Production/DEV/trial plugins/runners, protected ships, original receiver checkouts
+and the persistent manual preview remain untouched.

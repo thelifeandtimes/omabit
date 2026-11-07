@@ -1,11 +1,12 @@
 # Fleet session replacement — implementation plan
 
-Status: in progress after M570. This is not an advertised protocol or a completed
+Status: in progress after M571. This is not an advertised protocol or a completed
 fleet feature. Both receivers' preparation, activation, recovery and exact
 transport lineage pass private source fixtures, including DMs cooperative bridge
 control. Collector lineage, capability compatibility and issuer recovery pass private fixtures
-(M570). Public reconnect/recovery wiring, automatic polling, real receiver capability
-advertisement and assembled native qualification remain.
+(M570). Public reconnect/recovery and desktop polling pass private CLI/full-panel fixtures
+(M571). Real receiver capability advertisement and assembled native qualification
+remain.
 
 ## Required behavior
 
@@ -113,3 +114,14 @@ branch. Lost acknowledgements use bound observation rather than another login or
 offer. Full registry/issuer and focused Eyre fixtures pass, including the actual
 previous writer. See [issuer evidence](diagnostics/2026-11-07-fleet-replacement-issuer.json).
 Public commands, automatic polling and assembled receiver qualification remain.
+
+
+## M571 implementation boundary
+
+Public reconnect, recovery observation and bounded maintenance are implemented.
+Desktop polling is serialized and respects activation, exact current permission
+and helper capability. Explicit disconnect cancels unaccepted handoff intent;
+accepted successors retain independent cleanup. CLI, full registry/issuer, UI and
+hosted regressions pass. See [CLI/UI evidence](diagnostics/2026-11-07-fleet-reconnect-cli-ui.json).
+The remaining assembled test must use both real receiver sources, isolated
+Secret Service and active transports before declaration2 is advertised.

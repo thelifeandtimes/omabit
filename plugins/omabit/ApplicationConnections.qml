@@ -16,6 +16,10 @@ Item {
   property bool failed: false
   property string lastRequestId: ""
   property int snapshotRevision: 0
+  property double snapshotAt: 0
+  property int maintenanceCursor: 0
+  property var maintenanceStatus: ({})
+  property string maintenanceRequest: ""
   property string output: ""
   property string errorOutput: ""
   property string pendingInput: ""
@@ -34,7 +38,7 @@ Item {
   property int generation: 0
   property int requestGeneration: -1
   readonly property string profileBinding: service ? JSON.stringify(service.command([])) : ""
-  onProfileBindingChanged: { generation++;fresh=false;permissions=null;review=null }
+  onProfileBindingChanged: { generation++;fresh=false;permissions=null;review=null;maintenanceStatus=({});maintenanceCursor=0;snapshotAt=0 }
 
   function ready() { return service && !service.busy && service.activationEnabled && !busy }
   function launch(args, kind, input) {
@@ -43,7 +47,7 @@ Item {
     pendingInput = input || ""
     helper.stdinEnabled = pendingInput !== ""
     helper.command = service.command(args)
-    deadline.interval = kind === "read-review" ? 45000 : kind === "connect-fleet" ? 120000 : kind.indexOf("read-") === 0 ? 15000 : 90000
+    deadline.interval = kind === "maintain-fleet" || kind === "reconnect-fleet" ? 200000 : kind === "read-review" ? 45000 : kind === "connect-fleet" ? 120000 : kind.indexOf("read-") === 0 ? 15000 : 90000
     deadline.restart(); helper.running = true
   }
   function refresh() {
@@ -117,8 +121,43 @@ Item {
     if(ok)lastRequestId=id
     return ok
   }
+  function currentFleetGrant(row) {
+    if(!permissions || !row || !row.fleet)return null
+    return permissions.entries.filter(function(g){return g.allowed && Routes.equal(g.binding,row.fleet.request.binding) && Routes.equal(g.target,row.target) && g.revision===row.fleet.grant_revision})[0]||null
+  }
+  function retryFleet(row) {
+    if(!fresh || !row || !row.fleet || !currentFleetGrant(row))return false
+    var q={version:1,binding:Routes.copy(row.fleet.request.binding),target:Routes.copy(row.target),grant_revision:row.fleet.grant_revision}
+    var id="";for(var i=0;i<32;i++)id+=Math.floor(Math.random()*16).toString(16)
+    var ok=begin(["--runner",row.fleet.runner_name,"--expected-runner-id",row.fleet.request.binding.runner_id,"app-fleet-reconnect","--request-json",JSON.stringify(q),"--request-id",id,"--previous-request-id",row.request_id,"--expected-revision",String(row.revision)],"reconnect-fleet","")
+    if(ok)lastRequestId=id
+    return ok
+  }
+  function maintenanceCandidates() {
+    return attempts.filter(function(a){
+      if(!a.fleet || a.fleet.version!==1 || a.archived)return false
+      var x=a.replacement||{}
+      if(a.phase==="connected" || a.phase==="retiring" && !x.successor_id) {
+        if(x.automatic_disabled)return true // finish an explicit cancellation
+        if(!currentFleetGrant(a) || !plugins.some(function(p){return p.status==="available" && p.replacement===true && Routes.equal(p.target,a.target)}))return false
+        return !attempts.some(function(c){return c.replacement && c.replacement.previous_id===a.request_id && (c.phase!=="closed" || c.receiver_reconciliation)})
+      }
+      return !!(x.previous_id || x.successor_id) && (a.phase!=="closed" || a.receiver_reconciliation || !!x.successor_id)
+    })
+  }
+  function maintenanceTick() {
+    if(!ready())return false
+    if(!fresh || Date.now()-snapshotAt>300000)return refresh()
+    var candidates=maintenanceCandidates()
+    if(!candidates.length)return false
+    var row=candidates[maintenanceCursor%candidates.length];maintenanceCursor++
+    maintenanceRequest=row.request_id
+    launch(["app-fleet-maintain",row.request_id,"--expected-revision",String(row.revision)],"maintain-fleet","")
+    return true
+  }
   function act(row, action) {
     if (!fresh || !row || !row.next_actions || row.next_actions.indexOf(action) < 0) return false
+    if(action==="app-fleet-reconnect")return retryFleet(row)
     return begin([action, row.request_id, "--expected-revision", String(row.revision)], action, "")
   }
   function enroll(name, origin, ship) {
@@ -147,6 +186,18 @@ Item {
     output = ""
     var ok = exitCode === 0 && !overflow && !timedOut
     if(requestGeneration!==generation){operation="";fresh=false;review=null;message="The selected profile changed. Refresh connection state before continuing.";return}
+    if(kind === "maintain-fleet") {
+      operation=""
+      var statuses=Object.assign({},maintenanceStatus)
+      statuses[maintenanceRequest]=ok ? value && value.health || "updated" : value && value.code || "recovery_required"
+      // Bound this transient display cache to the current active inventory.
+      attempts.forEach(function(a){if(!statuses[a.request_id])statuses[a.request_id]=""})
+      var kept={};attempts.forEach(function(a){kept[a.request_id]=statuses[a.request_id]});maintenanceStatus=kept
+      if(ok && value && value.health==="healthy" && value.connection && value.connection.request_id===maintenanceRequest){Qt.callLater(ensureReview);return}
+      if(ok && value && value.health==="retry-backoff"){Qt.callLater(ensureReview);return}
+      fresh=false;Qt.callLater(refresh)
+      return
+    }
     if(kind === "read-review") {
       operation=""
       if(requestSelectionKey!==selectionKey || !selectedFleet){Qt.callLater(ensureReview);return}
@@ -174,7 +225,7 @@ Item {
         Qt.callLater(function(){launch(["app-ship-approvals"],"read-permissions","")})
       } else {
         plugins = stagedPlugins; ships = stagedShips; attempts = stagedAttempts;permissions=value
-        snapshotRevision++; operation = ""; fresh = true
+        snapshotRevision++; snapshotAt=Date.now(); operation = ""; fresh = true
         pendingReview=!!selectedFleet;Qt.callLater(ensureReview)
       }
       return
@@ -202,10 +253,10 @@ Item {
     if (!ok) {
       message = problem && typeof problem.message==="string" ? problem.message.slice(0,600) : value && value.message ? String(value.message).slice(0,600) :
         "The operation did not complete. Refresh its status before trying again; approval is never retried automatically."
-    } else if (kind === "connect" || kind === "connect-fleet") {
+    } else if (kind === "connect" || kind === "connect-fleet" || kind === "reconnect-fleet") {
       message = "Connected. The plugin now talks directly to your ship."
     } else if(kind === "permit") {
-      message="Permission saved for this ship. Omabit can choose a verified URL when connecting."
+      message="Permission saved for this ship. Omabit can connect and reconnect through verified URLs."
     } else if(kind === "revoke") {
       message="Future connections are blocked. Existing sessions have their own Disconnect action."
     } else if (kind === "app-archive") {
@@ -220,6 +271,7 @@ Item {
     operation = ""
     Qt.callLater(refresh)
   }
+  Timer { interval:60000; repeat:true; running:!!root.service && root.service.activationEnabled; onTriggered:root.maintenanceTick() }
   Timer {
     id: deadline
     onTriggered: {

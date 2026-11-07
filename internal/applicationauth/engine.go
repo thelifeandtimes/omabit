@@ -280,6 +280,12 @@ func (e *Engine) recover(ctx context.Context, id string, disconnect bool) (colle
 		if e.expectedRevision != 0 && a.Revision != e.expectedRevision {
 			return collection.ErrApplicationConflict
 		}
+		if disconnect {
+			if err := tx.DisableReplacementAutomation(ctx); err != nil {
+				return err
+			}
+			a = tx.Current()
+		}
 		if a.Phase == "closed" || a.Phase == "connected" && !disconnect {
 			return nil
 		}

@@ -38,7 +38,7 @@ Column {
   Connections { target:root.connections; function onSnapshotRevisionChanged() {root.resetReview()} }
 
   Label { width:parent.width;text:"Application Connections";font.pixelSize:Style.space(19);font.bold:true }
-  Label { width:parent.width;secondary:true;text:"Choose a ship and the plugins that may connect to it. Each gets its own sign-in. Fleet permissions apply across the ship's verified URLs." }
+  Label { width:parent.width;secondary:true;text:"Choose a ship and the plugins that may connect to it. Each gets its own sign-in. Fleet permissions allow connection and reconnection across the ship's verified URLs." }
   RowLayout {
     width:parent.width
     Label { Layout.fillWidth:true;text:"Ship";font.bold:true }
@@ -92,7 +92,7 @@ Column {
           ActionButton {
             objectName:row.current?"apps-action-"+row.action:"apps-connect-"+row.modelData.target.plugin_id
             compact:true;primary:!row.current;danger:row.connected
-            text:row.connected?"Disconnect":row.action==="app-reconcile"?"Finish disconnect":row.current?"Recover":"Connect"
+            text:row.connected?"Disconnect":row.action==="app-fleet-reconnect"?"Reconnect":row.action==="app-reconcile"?"Finish disconnect":row.current?"Recover":"Connect"
             enabled:root.available&&(row.current?row.action!=="":row.readyShip&&row.modelData.status==="available"&&row.approved)
             onClicked:{if(row.current)root.connections.act(row.current,row.action);else if(root.connections.connect(row.modelData,root.selectedShip,row.approved))root.resetReview()}
           }
@@ -102,6 +102,13 @@ Column {
           visible:!!root.selectedShip&&!row.connected&&(!!row.current||!row.readyShip||row.modelData.status!=="available")
           text:row.modelData.status!=="available"?"Plugin connection helper needs an update.":!row.readyShip?(root.automatic ? "Refresh to verify this ship and its permission." : "Sign in once in Remotely Hosted Urbits."):row.action==="app-reconcile"?"Session closed; local sign-in cleanup remains.":"Connection needs recovery before another sign-in."
         }
+        Label {
+          width:parent.width;caption:true;secondary:true
+          readonly property string health:row.current && root.connections ? root.connections.maintenanceStatus[row.current.request_id] || "" : ""
+          visible:root.automatic && !!row.current && health!=="" && ["healthy","updated","busy"].indexOf(health)<0
+          text:health==="retry-backoff" ? "Waiting briefly before another connection attempt." : health==="route_unavailable" ? "Waiting for a verified ship URL to become reachable." : health==="permission_required" ? "Automatic reconnection is paused. Review this ship's permission." : health==="artifact_unavailable" ? "Automatic reconnection is paused. Review the updated plugin." : "Automatic reconnection needs attention. Refresh and follow the recovery action."
+        }
+        Label {width:parent.width;caption:true;secondary:true;visible:root.automatic && row.connected;text:row.modelData.replacement===true ? "Omabit checks this connection periodically and reconnects when needed." : "Update this plugin and review its permission to enable automatic reconnection."}
         Label {width:parent.width;caption:true;secondary:true;visible:root.automatic;text:row.connected ? "Connected via "+row.current.origin+(row.approved ? "" : ". Future sign-ins are blocked.") : row.approved ? "Allowed for this ship across its verified URLs." : "Allow this plugin to establish owner sessions on this ship.";wrapMode:Text.WrapAnywhere}
       }
     }
@@ -134,9 +141,10 @@ Column {
         id:recoveryContent;anchors.left:parent.left;anchors.right:parent.right;anchors.top:parent.top;anchors.margins:Style.space(12);spacing:Style.space(10)
         Column {Layout.fillWidth:true;Layout.minimumWidth:0;spacing:Style.space(4)
           Label {width:parent.width;text:modelData.ship+" · "+modelData.target.plugin_id;font.bold:true;wrapMode:Text.WrapAnywhere}
-          Label {width:parent.width;text:modelData.origin+" · "+modelData.phase;caption:true;secondary:true;wrapMode:Text.WrapAnywhere}
+          Label {width:parent.width;text:modelData.origin;caption:true;secondary:true;wrapMode:Text.WrapAnywhere}
+          Label {width:parent.width;text:modelData.phase==="retiring" && modelData.replacement && modelData.replacement.successor_id ? "Previous connection; cleanup pending" : modelData.phase;caption:true;secondary:true;wrapMode:Text.WordWrap}
         }
-        ActionButton {objectName:"apps-recovery-"+modelData.request_id;text:next==="app-disconnect" ? "Disconnect" : next==="app-reconcile" ? "Finish disconnect" : next==="app-archive" ? "Archive" : "Recover";compact:true;enabled:root.available && !!next;onClicked:root.connections.act(modelData,next)}
+        ActionButton {objectName:"apps-recovery-"+modelData.request_id;text:next==="app-disconnect" ? "Disconnect" : next==="app-fleet-reconnect" ? "Reconnect" : next==="app-reconcile" ? "Finish disconnect" : next==="app-archive" ? "Archive" : "Recover";compact:true;enabled:root.available && !!next;onClicked:root.connections.act(modelData,next)}
       }
     }
   }

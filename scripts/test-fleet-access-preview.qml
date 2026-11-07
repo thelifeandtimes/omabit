@@ -30,9 +30,25 @@ Item {
       }else if(test.phase===3 && test.captured){connect.clicked();test.phase=4
       }else if(test.phase===4 && c.review && c.attempts.length===1){
         test.check(c.attempts[0].phase==="connected" && toggle.checked,"Automatic connect failed")
+        test.check(c.maintenanceCandidates().length===1,"Approved capable connection missing from maintenance")
+        w.service.activationEnabled=false;test.check(!c.maintenanceTick(),"Maintenance ignored transport shutdown");w.service.activationEnabled=true
+        test.check(c.maintenanceTick(),"Healthy maintenance did not start");test.phase=40
+      }else if(test.phase===40 && c.review){
+        test.check(c.attempts.length===1 && c.maintenanceStatus[c.attempts[0].request_id]==="healthy","Health maintenance changed connection")
+        w.service.applicationScenario="switch-url";test.check(c.maintenanceTick(),"Reconnect maintenance did not start");test.phase=41
+      }else if(test.phase===41 && c.review && c.attempts.length===2){
+        test.check(c.attempts[0].phase==="retiring" && c.attempts[1].phase==="connected" && c.attempts[1].replacement.previous_id===c.attempts[0].request_id,"Successor lineage missing from panel")
+        test.captured=false;w.contentItem.grabToImage(function(image){test.captured=image.saveToFile("/data/state/fleet-reconnect-wide.png")});test.phase=42
+      }else if(test.phase===42 && test.captured){
+        w.width=760;test.captured=false;w.contentItem.grabToImage(function(image){test.captured=image.saveToFile("/data/state/fleet-reconnect-narrow.png")});test.phase=43
+      }else if(test.phase===43 && test.captured){
+        w.service.applicationScenario="normal";test.check(c.maintenanceTick(),"Original cleanup maintenance did not start");test.phase=44
+      }else if(test.phase===44 && c.review && c.attempts.length===1){
+        test.check(c.attempts[0].origin==="https://public.preview.example" && c.attempts[0].phase==="connected","Old cleanup removed successor")
         toggle.checked=false;toggle.clicked();test.phase=5
       }else if(test.phase===5 && c.review){
         test.check(!toggle.checked && c.attempts[0].phase==="connected","Revoking permission disconnected or hid the active session")
+        test.check(c.maintenanceCandidates().length===0,"Revoked connection can reconnect automatically")
         test.find(p,"apps-action-app-disconnect").clicked();test.phase=6
       }else if(test.phase===6 && c.review && c.attempts.length===0){
         test.check(!toggle.checked && !connect.enabled,"Disconnect reapproved future access")

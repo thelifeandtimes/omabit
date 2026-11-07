@@ -10,7 +10,7 @@ path = Path('/data/state/fleet-access.json')
 state = json.loads(path.read_text()) if path.exists() else {'version': 1, 'revision': 0, 'entries': [], 'attempts': []}
 with Path('/data/state/access-calls.jsonl').open('a') as f:
     f.write(json.dumps(args) + '\n')
-plugin = {'name': 'Messenger', 'status': 'available', 'target': {'plugin_id': 'fixture.messenger', 'profile': 'default', 'artifact_sha256': 'a' * 64}}
+plugin = {'name': 'Messenger', 'status': 'available', 'replacement': True, 'target': {'plugin_id': 'fixture.messenger', 'profile': 'default', 'artifact_sha256': 'a' * 64}}
 second = {'name': 'Desktop theme', 'status': 'available', 'target': {'plugin_id': 'fixture.theme', 'profile': 'default', 'artifact_sha256': 'b' * 64}}
 
 def option(name):
@@ -64,6 +64,25 @@ try:
             exitcode = 1
         state['attempts'].append(row)
         result = {'code': 'recovery_required' if exitcode else 'ok', 'connection': row, 'message': 'The connection reply was lost. Follow its recovery action.' if exitcode else ''}
+    elif command == 'app-fleet-maintain':
+        row = next(a for a in state['attempts'] if a['request_id'] == args[args.index(command) + 1])
+        assert row['revision'] == int(option('--expected-revision'))
+        if row['phase'] == 'connected':
+            assert any(e['allowed'] and e['binding'] == row['fleet']['request']['binding'] and e['target'] == row['target'] for e in state['entries'])
+            if scenario == 'switch-url':
+                new = json.loads(json.dumps(row))
+                new.update(request_id='d' * 32, origin='https://public.preview.example', revision=7, replacement={'previous_id': row['request_id']})
+                new['fleet']['request']['route']['origin'] = new['origin']
+                row.update(phase='retiring', revision=row['revision'] + 1, replacement={'successor_id': new['request_id']}, next_actions=['app-recover'])
+                state['attempts'].append(new)
+                result = {'code': 'ok', 'connection': new, 'health': 'rejected'}
+            else:
+                result = {'code': 'ok', 'connection': row, 'health': 'healthy'}
+        else:
+            assert row['phase'] == 'retiring' and row['replacement']['successor_id']
+            row.update(phase='closed', receiver_reconciliation=False, archived=True, next_actions=[])
+            state['attempts'].remove(row)
+            result = {'code': 'ok', 'connection': row}
     elif command in ('app-disconnect', 'app-recover', 'app-reconcile', 'app-archive'):
         row = next(a for a in state['attempts'] if a['request_id'] == args[args.index(command) + 1])
         assert row['revision'] == int(option('--expected-revision'))

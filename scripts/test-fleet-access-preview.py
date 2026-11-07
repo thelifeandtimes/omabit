@@ -42,6 +42,8 @@ assert not any(word in log for word in ('WARN', 'ERROR', 'Error:', 'FAIL:', 'Una
 calls = [json.loads(s) for s in (out / 'data/state/access-calls.jsonl').read_text().splitlines()]
 connects = [c for c in calls if 'app-fleet-connect' in c]
 assert len(connects) == 2, connects
+maintains = [c for c in calls if 'app-fleet-maintain' in c]
+assert len(maintains) == 3, maintains
 assert not any('app-managed-connect' in c or '--url' in c for c in calls)
 for c in calls:
     if 'app-ship-approve' in c:
