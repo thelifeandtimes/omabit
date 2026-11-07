@@ -35,18 +35,20 @@ import (
 )
 
 type nativeDeskFixture struct {
-	PID              int    `json:"pid"`
-	Start            string `json:"start"`
-	Desk             string `json:"desk"`
-	VereSHA          string `json:"vere_sha256"`
-	ShipName         string `json:"ship_name,omitempty"`
-	LensPort         int    `json:"lens_port,omitempty"`
-	HTTPPort         int    `json:"http_port,omitempty"`
-	ledger           string
-	client           *http.Client
-	creates, commits atomic.Int32
-	effects          atomic.Int32
-	loseReply        atomic.Bool
+	PID               int    `json:"pid"`
+	Start             string `json:"start"`
+	Desk              string `json:"desk"`
+	VereSHA           string `json:"vere_sha256"`
+	ShipName          string `json:"ship_name,omitempty"`
+	LensPort          int    `json:"lens_port,omitempty"`
+	HTTPPort          int    `json:"http_port,omitempty"`
+	ledger            string
+	client            *http.Client
+	creates, commits  atomic.Int32
+	effects           atomic.Int32
+	loseReply         atomic.Bool
+	frontendUploads   atomic.Int32
+	loseFrontendReply atomic.Bool
 }
 
 func nativeDeskGuard(t *testing.T) *nativeDeskFixture {
@@ -694,7 +696,65 @@ func TestNativeDeskWorkflow(t *testing.T) {
 		before, err := f.Observe(ctx, f.Desk)
 		g02Check(t, err)
 		content := []byte("<!doctype html><title>Omabit native fixture</title><p>Exact frozen frontend</p>\n")
-		g02Check(t, f.uploadGlob(ctx, content))
+		g02Check(t, f.uploadGlob(ctx, content, func(artifact deskwork.FrontendManifest, files []deskwork.SourceFile) error {
+			directory := "/lab/frontend-build"
+			g02Check(t, os.Mkdir(directory, 0700))
+			for _, file := range files {
+				path := filepath.Join(directory, file.Path)
+				g02Check(t, os.MkdirAll(filepath.Dir(path), 0700))
+				g02Check(t, os.WriteFile(path, file.Bytes, 0600))
+			}
+			stagePlan, e := registry.PlanDeskStage(ctx, "native", entry.RunnerID, "alpha", f.Desk, directory)
+			g02Check(t, e)
+			_, e = registry.StageDesk(ctx, "native", entry.RunnerID, stagePlan, directory)
+			g02Check(t, e)
+			setGates := func(allowed bool) {
+				current, e := loadAppPolicy(s.db)
+				g02Check(t, e)
+				decision := apppolicy.Block
+				if allowed {
+					decision = apppolicy.Allow
+				}
+				_, e = s.putAppPolicy("fixture-user", apppolicy.Update{ExpectedRevision: current.Revision, Scope: "desk", Target: target, Gates: apppolicy.Gates{CreateDesk: apppolicy.Inherit, Commit: decision, Publish: decision}})
+				g02Check(t, e)
+			}
+			setGates(false)
+			blocked, e := registry.PlanDeskFrontend(ctx, "native", entry.RunnerID, stagePlan.Intent.ID, []deskwork.FrontendCheck{})
+			g02Check(t, e)
+			_, e = registry.UploadDeskFrontend(ctx, "native", entry.RunnerID, blocked)
+			g02Check(t, e)
+			save("frontend-default-blocked", wait(blocked.Intent.Intent.ID, "blocked"))
+			if f.frontendUploads.Load() != 0 {
+				t.Fatal("closed frontend gate dispatched")
+			}
+			setGates(true)
+			plan, e := registry.PlanDeskFrontend(ctx, "native", entry.RunnerID, stagePlan.Intent.ID, []deskwork.FrontendCheck{})
+			g02Check(t, e)
+			if plan.Review.Review.ArtifactDigest != artifact.Digest {
+				t.Fatal("native artifact differs from staged plan")
+			}
+			save("frontend-upload-plan", plan)
+			f.loseFrontendReply.Store(true)
+			_, e = registry.UploadDeskFrontend(ctx, "native", entry.RunnerID, plan)
+			g02Check(t, e)
+			save("frontend-upload-lost-ack", wait(plan.Intent.Intent.ID, "uncertain"))
+			setGates(false)
+			_, e = registry.ReconcileDeskOperation(ctx, "native", entry.RunnerID, plan.Intent.Intent.ID)
+			g02Check(t, e)
+			save("frontend-upload-recovered-with-gates-closed", wait(plan.Intent.Intent.ID, "observed"))
+			if f.frontendUploads.Load() != 1 {
+				t.Fatal("frontend recovery repeated upload")
+			}
+			_, e = registry.DiscardDeskStage(ctx, "native", entry.RunnerID, stagePlan.Intent.ID, stagePlan.Intent.SourceDigest)
+			g02Check(t, e)
+			_, e = registry.UploadDeskFrontend(ctx, "native", entry.RunnerID, plan)
+			g02Check(t, e)
+			if f.frontendUploads.Load() != 1 {
+				t.Fatal("frontend replay repeated upload")
+			}
+			setGates(true)
+			return nil
+		}))
 		var uploaded deskwork.Observation
 		for end := time.Now().Add(20 * time.Second); ; {
 			s := appStatus("glob-after-upload")

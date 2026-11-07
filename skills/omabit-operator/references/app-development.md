@@ -412,8 +412,10 @@ or retry an upload to fix authentication/cleanup. An interrupted process can lea
 cleanup unknown; absence of transfer evidence is not proof of logout.
 
 M553 verifies these API/collector/CLI and migration paths with isolated fixtures.
-M552 verifies the underlying native artifact path. Their assembled public native
-workflow and installed Docker/SSH operation remain separate checks.
+M552 verifies the underlying native artifact path. Native49/M554 also verifies the
+assembled public workflow, one upload, recovery after gate revocation, replay after
+stage discard and exact served bytes/MIME. Installed Docker/SSH operation and
+general application health remain separate checks.
 
 An intentionally invalid agent update in that probe returned HTTP500 and left the
 observed revision/hash unchanged. The original dispatch remains uncertain; an

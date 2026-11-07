@@ -36,8 +36,9 @@ func (f *nativeDeskFixture) recordEffect(id int32, state string) error {
 
 // Native Docket's existing upload workflow, confined to the admitted fake ship.
 // No caller URL, credential, filesystem path or production session is accepted.
-// This is qualification, not an agent-facing upload adapter.
-func (f *nativeDeskFixture) uploadGlob(ctx context.Context, content []byte) error {
+// This verifies the public runner workflow through its supplied upload callback;
+// the lifecycle/private-network transport remains the admitted native fixture.
+func (f *nativeDeskFixture) uploadGlob(ctx context.Context, content []byte, upload func(deskwork.FrontendManifest, []deskwork.SourceFile) error) error {
 	if err := f.check(); err != nil {
 		return err
 	}
@@ -89,6 +90,9 @@ func (f *nativeDeskFixture) uploadGlob(ctx context.Context, content []byte) erro
 	if err = deskwork.CheckFrontendUpload(f.ship(), app, before); err != nil {
 		return err
 	}
+	if err = upload(artifact, files); err != nil {
+		return err
+	}
 	owner, err := eyre.New("http://127.0.0.1:18081", "~zod")
 	if err != nil {
 		return err
@@ -110,19 +114,6 @@ func (f *nativeDeskFixture) uploadGlob(ctx context.Context, content []byte) erro
 	clear(secret)
 	if err != nil {
 		return errors.New("fixture session unavailable")
-	}
-	id := f.effects.Add(1)
-	if err = f.recordEffect(id, "dispatched"); err != nil {
-		return err
-	}
-	if err = owner.UploadDocket(ctx, f.Desk, artifact, files); err != nil {
-		return err
-	}
-	if err = f.check(); err != nil {
-		return err
-	}
-	if err = f.recordEffect(id, "acknowledged"); err != nil {
-		return err
 	}
 	var after deskwork.FrontendState
 	for end := time.Now().Add(20 * time.Second); ; {
@@ -170,4 +161,75 @@ func (f *nativeDeskFixture) uploadGlob(ctx context.Context, content []byte) erro
 		return err
 	}
 	return f.check()
+}
+
+func (f *nativeDeskFixture) Ship() string { return f.ship() }
+func (f *nativeDeskFixture) Frontend(ctx context.Context, desk string) (deskwork.FrontendState, error) {
+	var out deskwork.FrontendState
+	if desk != f.Desk {
+		return out, errors.New("wrong fixture desk")
+	}
+	q, err := deskwork.FrontendInventory(f.ship(), desk)
+	if err = f.decode(ctx, q, err, &out); err != nil {
+		return out, err
+	}
+	return out, out.Validate()
+}
+func (f *nativeDeskFixture) FrontendHash(ctx context.Context, m deskwork.FrontendManifest, files []deskwork.SourceFile) (string, error) {
+	var hash string
+	q, err := deskwork.FrontendGlobHash(m, files)
+	if err = f.decode(ctx, q, err, &hash); err != nil {
+		return "", err
+	}
+	return hash, nil
+}
+func (f *nativeDeskFixture) UploadFrontend(ctx context.Context, review deskwork.FrontendReview, m deskwork.FrontendManifest, files []deskwork.SourceFile) (transfer deskwork.FrontendTransfer, err error) {
+	transfer.SessionCleanup = "not-created"
+	if err = f.check(); err != nil {
+		return transfer, err
+	}
+	if review.CheckConfiguredUpload() != nil || review.Ship != f.ship() || review.Stage.Target.Desk != f.Desk || m.Digest != review.ArtifactDigest {
+		return transfer, errors.New("native frontend selection changed")
+	}
+	if _, err = deskwork.FrontendGlobHash(m, files); err != nil {
+		return transfer, err
+	}
+	before, err := f.Observe(ctx, f.Desk)
+	if err != nil || before != review.Observation {
+		return transfer, errors.New("native frontend source changed")
+	}
+	owner, err := eyre.New("http://127.0.0.1:18081", "~zod")
+	if err != nil {
+		return transfer, err
+	}
+	defer owner.Close()
+	transfer.SessionCleanup = "unconfirmed"
+	defer func() {
+		if owner.Logout(context.Background()) == nil {
+			transfer.SessionCleanup = "confirmed"
+		}
+	}()
+	if err = owner.Login(ctx, []byte("lidlut-tabwed-pillex-ridrup")); err != nil {
+		return transfer, err
+	}
+	id := f.effects.Add(1)
+	if err = f.recordEffect(id, "dispatched"); err != nil {
+		return transfer, err
+	}
+	transfer.Attempted = true
+	f.frontendUploads.Add(1)
+	if err = owner.UploadDocket(ctx, f.Desk, m, files); err != nil {
+		return transfer, err
+	}
+	if err = f.check(); err != nil {
+		return transfer, err
+	}
+	if err = f.recordEffect(id, "acknowledged"); err != nil {
+		return transfer, err
+	}
+	if f.loseFrontendReply.Swap(false) {
+		return transfer, errors.New("fixture deliberately discarded native upload acknowledgement")
+	}
+	transfer.Acknowledged = true
+	return transfer, nil
 }

@@ -8613,3 +8613,34 @@ pier and verified duplicate Vere/pill inputs were retired after exact-scope inac
 and successful proof checks, preserving committed compact proof and all receipts.
 Migration admission refused before launch until retention made room. Re-measure
 before builds and keep failed/current source and evidence recoverable.
+
+
+## M554 — Assembled native frontend API and lost-ack recovery (2026-11-07)
+
+Native49 passes M553's public API/store/collector path on a fresh offline fake.
+The typed stage/review/plan/upload flow blocks with both gates closed and sends no
+frontend request. After granting both, exactly one real Docket upload succeeds;
+the fixture discards its acknowledgement. The runner retains uncertainty with
+confirmed ephemeral-session cleanup. Closing both gates again still permits
+read-only reconciliation to the expected artifact and newer Clay revision.
+Exact replay after stage discard sends no additional upload. The native effect
+ledger retains the real acknowledgement independently of the lost managed reply.
+
+Predicted/native glob hash and exact HTML, binary and empty-file bytes/MIME agree.
+Generated docket changes correctly conflict with older source ownership. The full
+publisher/source/release workflow and empty-source regression also pass; the fake
+shuts down cleanly. TestNativeDeskWorkflow takes54.78seconds. See
+`diagnostics/2026-11-07-desk-frontend-native-api.json` for inputs, receipts and limits.
+This supersedes M553's pending assembled native frontend test, not actual Docker/SSH
+or installed upgrade qualification. No HTTP/application health beyond the exact
+fixture assets is claimed. Schema57 stays unchanged; release work remains deferred.
+
+Native49 admission charged42,941,153,280 bytes including2GiB scratch, below40GiB.
+Before launch, completed test binaries were retained as verified lossless gzip,
+completed migration source snapshots as archives verified file-by-file (including
+modes), and the rebuildable isolated Go cache removed. Original SQL fixtures and
+all source/receipt/log evidence remain recoverable; restore the recorded archives
+before using historical extracted paths. The original55 writer source dependency
+used by migration02 stays intact. The diagnostic links every retention manifest.
+Full failure34 and current49 piers remain; native48 proof was already committed.
+Production, DEV, trial and the persistent preview remain unchanged.

@@ -119,3 +119,12 @@ it declares1GiB scratch. A failed frontend verification may be inspected this wa
 without authorizing another mutation. Diagnostic46/47 investigated native45's
 acknowledged upload/hash mismatch without retrying it. Fresh48 proves the fix.
 The original failure record remains authoritative for that historical run.
+
+
+Native49/M554 replaces the standalone upload effect with the public staged frontend
+API/store/collector flow. It proves default blocking, one native upload with its
+acknowledgement deliberately discarded, read-only recovery after both gates close,
+and exact replay after stage discard. Source/Docket metadata and every asset's
+bytes/MIME match; the full source/release workflow and clean shutdown also pass.
+The managed lifecycle/private-network transport remains a fixture. See the native
+frontend API diagnostic; do not treat this as installed Docker/SSH qualification.

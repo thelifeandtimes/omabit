@@ -363,7 +363,8 @@ pipeline after an interrupted terminal or desktop restart.
    full MIME header occupies one path atom; splitting it gives the wrong hash.
    Acknowledgement, Clay/Docket observation and HTTP health remain separate facts.
    M553 adds gated frontend review/journal/API/CLI integration and schema57
-   fixtures; its assembled public native test remains pending. See
+   fixtures; native49/M554 verifies the assembled public upload with one lost
+   acknowledgement, recovery after revocation and exact served assets. See
    [artifact evidence](diagnostics/2026-11-07-desk-frontend-artifacts.json).
    An invalid installed-agent update returns HTTP500 with unchanged observed Clay;
    retain uncertainty, and complete compilation/activation failure reporting.
