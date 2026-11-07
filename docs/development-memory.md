@@ -7913,3 +7913,50 @@ then runs it with private user/network/PID/mount/IPC/UTS namespaces, without the
 installed owner profile, host HOME/run or Docker socket. No host profile was
 changed to make fixture tests pass. This is source/fixture validation, not a
 managed Docker end-to-end or release qualification claim.
+
+## M538 — Gated creation CLI and schema50 operation journal (2026-11-06)
+
+Schema50 adds a separate typed desk-operation journal with immutable intent,
+authenticated actor and append-only mirrored history. Opening validates the
+journal; corrupt/missing receipts fail without repair. Duplicate IDs are accepted
+only for the same actor and exact intent. Restart marks planned work interrupted
+and dispatched/acknowledged work uncertain; it never queues an effect. Unresolved
+work blocks another effect for that exact target. Explicit read-only reconciliation
+can record that a creation's desired desk exists on the selected runtime, including
+after the creation gate was revoked; it does not attribute an external actor's
+creation to Omabit. Missing/changed runtime evidence remains uncertain.
+
+`desk-create-v1` exposes typed observation, asynchronous creation and receipt reads.
+The worker rechecks operator authority, target/generation, current process,
+configuration, policy revision and actual absence before durable dispatch. Source
+commit/publication remain unavailable. Receipt reads remain available during an
+effect. `omabit desk-inspect`, `desk-plan-create`, `desk-create`, `desk-operation`
+and `desk-reconcile` pin enrollment and preserve the reviewed intent across retries.
+Agents cannot author policy. New desks inherit existing commit/publication gates.
+Skills now describe this exact path and its limits; installed copies were not changed.
+
+Evidence: focused race suites in `/tmp/omabit-desk-private-store-01`,
+`/tmp/omabit-desk-private-api-02`, and `/tmp/omabit-desk-private-collection-01`;
+CLI offline help/argument checks and skill-package checks pass. The checked-in
+schema49 SQL fixture was written by original source e2f6377, not by stamping an
+older version onto current state. `/tmp/omabit-desk-original-migration-01` runs the
+original writer, current migration/recovery, then the original reader's unchanged
+refusal of actual upgraded state. `scripts/test-desk-upgrade.py` reproduces that
+functional compatibility path without running any service or ship.
+
+The broad managed run initially found its explicitly pinned development-schema
+assertion and the private harness's missing nested Go compiler. The development
+target is now50; the frozen RC12 qualification record and historical fixture
+coverage are unchanged. The corrected BootDispatch/G02 race run completed all
+preceding cases without failures but reached its cumulative nine-minute limit in
+its final migration/refusal test (`/tmp/omabit-desk-private-migration-regression-01`).
+That final test passes separately in `/tmp/omabit-desk-private-migration-tail-01`.
+The interrupted broad run is retained with cancellation evidence; this is not a
+claim that the complete managed race suite or 0.4.0 release qualification passed.
+The private test harness now optionally supplies a read-only toolchain/module
+cache with private build output for tests that compile their own fixture worker.
+
+No production/DEV/trial service, plugin or ship was changed. The human-reviewed
+persistent preview remains at its earlier source and retains its saved policies.
+Full managed-runtime desk deployment, source bindings/transfers/alerts, Treaty,
+frontends, Urgit workflow, fleet URLs and clearweb assistance remain active work.

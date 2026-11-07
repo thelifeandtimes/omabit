@@ -21,7 +21,9 @@ configured in **Setup → App development and publishing** and the application's
 release configuration. Use only capabilities exposed by the selected tools.
 Read `app-policy --instance ID --desk DESK` on a pinned, capable runner. Permission
 authoring stays in Setup; agents must not enable their own gates or bypass them
-through another transport.
+through another transport. On runners advertising `desk-create-v1`, the matching
+`omabit` CLI supports read-only creation planning, gated submission and durable
+receipt/reconciliation; follow the app-development reference's exact sequence.
 
 Start with the shortest relevant read path:
 

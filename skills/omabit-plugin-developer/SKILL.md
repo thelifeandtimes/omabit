@@ -25,8 +25,11 @@ configuration, including Urgit's rules. Agent desk creation, commit and publicat
 blocked for every ship class. Read the effective permissions through supported
 tools before acting. Keep disabled effects blocked across shell, Dojo and Git
 alternatives, and leave permission changes to the user's Setup action.
-The scoped policy/read-only status is implemented for 0.4.0; desk mutation APIs
-remain pending. Use `app-policy` on a runner with `app-development-policy-v2`.
+The 0.4.0 source provides `app-policy` on runners with
+`app-development-policy-v2`, plus gated creation on `desk-create-v1` runners.
+Use the operator skill's app-development reference for `desk-inspect`,
+`desk-plan-create`, `desk-create`, and durable receipt/reconciliation commands.
+Commit/publication adapters and the full development workflow remain pending.
 Creation is controlled at the ship, and new desks inherit commit/publication
 settings by default. Creating a desk does not grant either permission. Until a
 supported effect exists and fresh policy permits it, keep the mutation blocked.

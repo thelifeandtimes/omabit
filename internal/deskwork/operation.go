@@ -93,6 +93,7 @@ func (i Intent) Check(p apppolicy.Policy, current Observation) error {
 }
 
 type Step struct {
+	Actor                string       `json:"actor,omitempty"`
 	VerifiedSourceDigest string       `json:"verified_source_digest,omitempty"`
 	Kind                 string       `json:"kind"`
 	State                string       `json:"state"`
@@ -112,7 +113,7 @@ func (r Receipt) Validate() error {
 	}
 	state := ""
 	for _, s := range r.Steps {
-		if s.At.IsZero() || s.Kind != r.Intent.Action {
+		if s.At.IsZero() || s.Kind != r.Intent.Action || len(s.Actor) > 128 {
 			return errors.New("invalid desk operation step")
 		}
 		valid := false

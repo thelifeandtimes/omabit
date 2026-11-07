@@ -28,10 +28,13 @@ installed-desk discovery is not connected yet. Select a ship and use **Review
 another desk's permissions** with its exact Clay name, without `%`, to edit an
 unlisted scope. This does not create a desk or verify that it exists.
 
-The policy editor and read-only status are implemented. Typed desk creation and other desk operations,
-Unix/Clay change alerts, ship-purpose labels, source bindings, frontend deployment
-and the Urgit adapter remain part of the [next pipeline steps](app-development-0.4.0.md).
-Enabling a permission does not add those commands or modify a running ship.
+The policy editor, read-only status and typed desk creation are implemented in
+source. Compatible runners advertise `desk-create-v1`; see the operator skill's
+[creation workflow](../skills/omabit-operator/references/app-development.md).
+Other desk operations, Unix/Clay alerts, ship-purpose labels, source bindings and
+frontend deployment remain part of the [pipeline work](app-development-0.4.0.md).
+Urgit will use its native workflow with testing and skill guidance, without a
+dedicated adapter. Enabling a permission does not itself modify a running ship.
 
 ## Global changes and multiple collectors
 
@@ -78,10 +81,10 @@ The runner effect guard reloads policy and target identity under its mutation
 lock immediately before an effect. It rejects stale revisions, unknown effects,
 unresolved publication evidence and unavailable state. A create-desk effect also
 requires fresh evidence that the exact desk is absent. A commit to a published
-desk requires **commit and publish** gates because subscribers may receive the update. Future
-typed adapters must use this boundary for each stage, including retries,
-Omabit-managed Urgit pushes and equivalent auto-commit writes. No desk mutation
-adapter is advertised by this policy-only capability.
+desk requires **commit and publish** gates because subscribers may receive the update. Typed adapters must recheck each stage, including retries and equivalent
+auto-commit writes. `desk-create-v1` journals intent and dispatch separately from
+policy, pins the current runtime and checks observed absence before creation.
+The policy-only capability does not imply operation support.
 
 This is an Omabit workflow boundary, not an OS sandbox for arbitrary programs
 running as the Unix owner. Human Dojo commands and independently configured Urgit
@@ -90,7 +93,8 @@ are not desk-scoped credentials.
 
 ## Storage, compatibility and recovery
 
-Runner schema **49** stores version-2 policy and revisioned audit history. Updates
+Runner schema **50** retains version-2 policy, its authoring history and a separate
+desk-operation journal. Updates
 use compare-and-swap, record the authenticated actor, and commit atomically.
 Ordinary ship settings edits preserve policy. Successful deletion or import
 restoration retires an instance's scoped grants in the same transaction; reuse
@@ -103,6 +107,16 @@ receipt and appends a migration revision. Reopening does not replay migration;
 corrupt receipts abort it. Schema48 and earlier writers refuse schema49. Use
 matching runner/collector builds with `app-development-policy-v2`; earlier policy
 clients are not authorized to write the expanded policy.
+
+Schema49 → schema50 preserves existing records and creates the desk-operation
+journal. Original schema49-writer migration, corruption/rollback, restart recovery
+and original older-reader refusal are tested with synthetic private state. A
+saved intent never acts as a grant. Duplicate requests return the same receipt;
+restart marks undispatched plans interrupted and dispatched/acknowledged work
+uncertain, without repeating any effect. Read-only reconciliation retains its
+actor and may record the desired desk's existence. Missing evidence stays
+uncertain. The reserved `desk_operations` status flag remains false for older
+policy readers; operation support comes from separate `/hello` capabilities.
 
 The collector rollout journal advances from version1 to version2. Legacy reads
 preserve its bytes and pending intent while reporting creation as blocked;

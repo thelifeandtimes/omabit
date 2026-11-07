@@ -209,5 +209,5 @@ Column {
     Label { width:parent.width;text:"The tree includes saved desk policies and any supplied desk inventory. Installed-desk discovery is not connected yet. A name entered here is not evidence that a desk exists on the ship.";caption:true;secondary:true }
     Label { width:parent.width;text:"Permissions govern Omabit-managed agent operations. Human Dojo commands and independent Urgit clients keep their own authority.";caption:true;secondary:true }
   }
-  Label { width:parent.width;text:"Permissions can be saved now. Desk creation, commit and publishing commands are not available yet.";caption:true;secondary:true }
+  Label { width:parent.width;text:"Compatible runners support gated desk creation through the Omabit CLI. Commit and publishing commands are still being implemented.";caption:true;secondary:true }
 }

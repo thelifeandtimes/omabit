@@ -27,4 +27,5 @@ package managed
 // Schema47 permits empty project network reservations; older runners must refuse them.
 // Schema48 fences application policy and its revisioned authoring history.
 // Schema49 fences the default-closed desk-creation gate and policy v2.
-const StateSchemaVersion = 49
+// Schema50 retains typed desk intents and append-only effect receipts.
+const StateSchemaVersion = 50

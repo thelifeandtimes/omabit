@@ -21,6 +21,7 @@ type AppPolicyStatus struct {
 	ReadAt   time.Time         `json:"read_at"`
 	Policy   apppolicy.Policy  `json:"policy"`
 	Targets  []AppPolicyTarget `json:"targets"`
-	// This feature supplies policy only; no desk mutation adapter is enabled.
+	// Reserved false for v1 status readers. Typed operation capabilities are
+	// advertised separately by /hello (for example desk-create-v1).
 	DeskOperations bool `json:"desk_operations"`
 }

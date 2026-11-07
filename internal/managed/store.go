@@ -185,6 +185,9 @@ CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TE
 	if err := initializeAppPolicy(tx); err != nil {
 		return err
 	}
+	if err := initializeDeskOperations(tx, version); err != nil {
+		return err
+	}
 	if err := initializeProjects(tx); err != nil {
 		return err
 	}

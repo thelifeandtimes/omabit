@@ -2,6 +2,25 @@ package main
 
 // Commands with no ordinary flag parser still expose side-effect-free help.
 var desktopCommandHelp = map[string]string{
+	"desk-reconcile": `Usage: omabit [--config-dir DIR] desk-reconcile --runner NAME --expected-runner-id ID --id OPERATION_ID
+Observe an uncertain creation on its exact selected runtime and record the result.
+Never repeats the effect or changes permissions. Query desk-operation afterward;
+unavailable evidence leaves the outcome uncertain.`,
+	"desk-inspect": `Usage: omabit [--config-dir DIR] desk-inspect --runner NAME --expected-runner-id ID --instance INSTANCE --desk DESK
+Read the selected live desk and its effective permissions. DESK omits the % prefix.
+Requires a compatible runner and operator access; never creates or commits a desk.`,
+	"desk-plan-create": `Usage: omabit [--config-dir DIR] desk-plan-create --runner NAME --expected-runner-id ID --instance INSTANCE --desk DESK
+Observe desk absence and output a creation plan with an immutable request ID,
+runtime identity, generation and policy revision. Save the JSON before submission.
+This read-only step grants no permission and does not change Setup.`,
+	"desk-create": `Usage: omabit [--config-dir DIR] desk-create --runner NAME --expected-runner-id ID --plan-json JSON
+Submit the exact saved desk-plan-create output. The runner rechecks the live desk,
+runtime and current Setup policy. Creation is blocked by default; new desks inherit
+commit/publishing gates. Read the operation receipt to learn the outcome. After a
+lost reply, query its ID or resubmit the same plan; never invent a replacement ID.`,
+	"desk-operation": `Usage: omabit [--config-dir DIR] desk-operation --runner NAME --expected-runner-id ID --id OPERATION_ID
+Read a durable desk receipt without dispatching an effect. Acknowledgement alone
+is not completion. Interrupted or uncertain work is never replayed automatically.`,
 	"service-upgrade-status": `Usage: omabit [--config-dir DIR] service-upgrade-status
 Read the existing local owner/enrollment and compare the installed runner with the
 current desktop bundle. Reports an unfinished retained attempt before a new target.

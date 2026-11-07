@@ -129,6 +129,10 @@ func newServerWithStartup(dir string, b backend, interval time.Duration, comets 
 		s.close()
 		return nil, err
 	}
+	if err := s.reconcileDeskOperations(); err != nil {
+		s.close()
+		return nil, err
+	}
 	fence, err := loadManagementFence(s)
 	if err != nil {
 		s.close()
@@ -338,6 +342,9 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			features = append(features, protocol.ManagementUpdateFeature)
 		}
 		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature)
+		if _, ok := r.b.(deskBackend); ok {
+			features = append(features, protocol.DeskCreateFeature)
+		}
 		features = append(features, "fake-ship-options", "host-port-suggestion")
 		if p, err := ownerhost.Current(); err == nil && p != nil {
 			features = append(features, "owner-user-runtime", "human-pier-storage")
@@ -491,6 +498,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		r.handoffData(w, req, actor, role, strings.Split(req.URL.Path, "/")[3])
 		return
 	}
+	if req.Method == http.MethodGet && strings.HasPrefix(req.URL.Path, protocol.DeskOperationsPath+"/") {
+		r.serveDeskReceipt(w, req, role)
+		return
+	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if r.closing || r.failed.Load() {
@@ -503,6 +514,18 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if req.URL.Path == protocol.AppPolicyPath {
 		r.serveAppPolicy(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskObservationPath {
+		r.serveDeskObservation(w, req, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskOperationsPath {
+		r.serveDeskOperation(w, req, actor, role)
+		return
+	}
+	if strings.HasPrefix(req.URL.Path, protocol.DeskOperationsPath+"/") && strings.HasSuffix(req.URL.Path, "/reconcile") {
+		r.serveDeskReconciliation(w, req, actor, role)
 		return
 	}
 	if req.Method == http.MethodGet && req.URL.Path == "/v1/port-suggestion" {

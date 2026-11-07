@@ -286,8 +286,9 @@ pipeline after an interrupted terminal or desktop restart.
 
 1. Policy storage, inheritance, the runner effect guard and Setup controls are
    implemented. See [policy behavior and evidence](app-development-policy.md).
-   All desk mutation commands remain unavailable until their typed adapters use
-   that guard and pass runtime qualification.
+   Typed creation now uses fresh policy/runtime checks and durable schema50
+   receipts. Commit/publication stay unavailable until their adapters are connected
+   and tested. Full managed-runtime workflow qualification remains pending.
 2. Complete the transport spike on disposable fakes with explicit test policy.
    Exercise prepare, mount, commit, local activation, Treaty publication,
    source-only publication and receiver installation with native control disabled.

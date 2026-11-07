@@ -10,7 +10,7 @@ The schema14 source bundle retains the original stash and its untracked-file par
 it is imported only into a private temporary Git repository, never the checkout.
 The support manifest distinguishes release database coverage from the narrower
 owner-user host paths: schema19 offline and schema20 quiescence-aware online.
-RC.12 qualification stays frozen; schema49 is an unreleased development target.
+RC.12 qualification stays frozen; schema50 is an unreleased development target.
 Schema21 has a pinned baseline writer; schemas22/23/24/25/26/27/28/29/30/31/32/33/34/35/36/37/38/39/40/41/42/43/44/45 have frozen unreleased source snapshots.
 Unavailable prototype writers are explicit gaps.
 """
@@ -135,7 +135,7 @@ def support_manifest():
         "qualification_target": {"release": "v0.1.0-rc.12", "channel": "prerelease", "state_schema": 20,
                                  "evidence": "source-tests-only"},
         "qualification_note": "docs/reviews/2026-10-18-rc12-historical-upgrades.md",
-        "development_test_target": {"release": "unreleased", "channel": "development", "state_schema": 48,
+        "development_test_target": {"release": "unreleased", "channel": "development", "state_schema": 50,
                                     "evidence": "source-tests-only"},
         "development_test_note": "The reader window and fixture inventory below test the unreleased development target. The RC.12/schema20 qualification target and linked historical evidence remain frozen; these tests do not qualify a new release or artifact.",
         "accepted_schema_window": list(range(11, 46)),

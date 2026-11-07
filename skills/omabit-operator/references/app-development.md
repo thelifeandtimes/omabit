@@ -1,10 +1,12 @@
 # App development and publishing policy
 
-The 0.4.0 source implements policy storage, Setup authoring and read-only
-`app-policy` status. Desk creation/commit/publication commands and the Urgit adapter are
-still unimplemented. Verify the selected installation's capabilities and command
-help. Until a supported operation exists and fresh policy permits its effects,
-continue with source preparation and available inspection.
+The 0.4.0 source implements policy storage, Setup authoring, read-only status,
+and typed desk inspection/creation with durable receipts (`desk-create-v1`).
+Commit/publication, source bindings and Unix/Clay alerts are still being connected.
+Urgit follows its native workflow; no dedicated Omabit adapter is planned. Verify
+installed capabilities and command help rather than assuming development source
+is installed. Keep prepared source outside a live mount while its effects are
+blocked or unresolved.
 
 ## Read the configured policy
 
@@ -40,6 +42,49 @@ changes in the Setup flow. Report the blocking scope when action is disabled.
 Do not invoke `omabit app-development-save`/`app-development-retry`, write policy
 files, submit raw policy-update RPCs, or use Dojo/Eyre/Git as a workaround for a
 blocked Omabit operation. Those helpers belong to user-facing Setup authoring.
+
+## Inspect and create a desk with the supported CLI
+
+Use the matching `omabit` binary from the selected profile. Its argument order
+is distinct from the collector: the command precedes runner/ship flags.
+
+```sh
+omabit --config-dir REGISTRY desk-inspect --runner NAME --expected-runner-id ID \
+  --instance INSTANCE --desk DESK
+omabit --config-dir REGISTRY desk-plan-create --runner NAME --expected-runner-id ID \
+  --instance INSTANCE --desk DESK
+```
+
+`desk-inspect` obtains a live observation and effective gates. `desk-plan-create`
+requires observed absence and returns an exact plan with its request ID, runtime,
+configuration, project generation and policy revision. Neither changes a desk or
+a permission. Save that plan before submitting it. If the creation gate is Block,
+report its scope and leave the user to change Setup.
+
+When authorized, pass the **unchanged full plan JSON** to:
+
+```sh
+omabit --config-dir REGISTRY desk-create --runner NAME --expected-runner-id ID \
+  --plan-json JSON
+omabit --config-dir REGISTRY desk-operation --runner NAME --expected-runner-id ID \
+  --id OPERATION_ID
+```
+
+An accepted request or `acknowledged` step is not completion; wait for `observed`.
+After a lost submission reply, query the saved ID or resubmit the exact original
+plan. Never generate a replacement ID as an automatic retry. `blocked` means the
+runtime, desk, policy or authority failed a fresh check; inspect again before
+planning different work. An interrupted plan is not automatically dispatched.
+
+For `uncertain`, `desk-reconcile` with the same runner and ID requests read-only
+inspection of the exact original runtime. Query the receipt afterward. It can
+record that creation's desired desk exists; it never repeats creation, and a
+missing desk or unavailable runtime leaves uncertainty intact. It does not prove
+which external actor created a desk. If reconciliation remains unavailable,
+preserve the receipt and ask for review rather than bypassing it with Dojo.
+
+These commands do not grant commit/publication permission. Source staging,
+commit, Treaty and receiver/front-end end-to-end qualification remain pending.
 
 ## Classify the requested effect
 

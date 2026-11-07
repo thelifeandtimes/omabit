@@ -220,7 +220,7 @@ func (r *Server) serveAppPolicy(w http.ResponseWriter, req *http.Request, actor,
 // adapters. Never retain its decision across queueing, restart, or retries.
 // The lock serializes revocation with effects; inspect must obtain fresh trusted
 // desk evidence (absence for creation, publication state for commit). No runtime
-// desk adapter is enabled by the policy feature.
+// operation is implied by this helper; typed adapters also journal dispatch.
 func (r *Server) withAppPolicyEffect(target apppolicy.Target, revision uint64, effect string, inspect func() (string, error), apply func() error) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()

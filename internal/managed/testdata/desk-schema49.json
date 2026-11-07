@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "schema": 49,
+  "source_commit": "e2f6377da3706ceff54ddc33915ea29b15f397c9",
+  "sql_sha256": "45fcaa7feb45b52bda3049e4275bd9b33ad72c7a24c6e51db91b094041001baf",
+  "writer": "testOpenStore, register, putAppPolicy in original schema49 source; synthetic alpha instance, desk example, commit allow and publish block",
+  "scope": "functional development migration fixture; not release qualification",
+  "evidence": "/tmp/omabit-schema49-fixture-01/result.json"
+}
