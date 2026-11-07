@@ -7803,3 +7803,19 @@ actual help/installation code with a fake agent, tests complete installation of
 both skills, no-default guidance and remote-setup context. This is feature-level
 qualification, not the deferred stable upgrade or release rehearsal. Other
 approved tracks remain pending; see the current 0.4.0 feature progress record.
+
+
+## M534 — Agent Help packaged checkpoint (2026-11-06)
+
+The clean development snapshot at `88a07698c289e4776d4df20993672cdcea6f91b9`
+built successfully with label `agent-help-040`. Its bundle SHA256 is
+`eb4f1f990291cc947703faa50b325ec6a40871526a70675a9531df3a21566003`.
+All artifact sizes/hashes, private native import/prepare/re-prepare, activated
+helper bundle resolution and both complete skill trees passed. This closes the
+packaged-feature check from M533, not stable release qualification. Private
+evidence is `/tmp/omabit-agent-snapshot-check-9pnt33l9/result.json`; the generated
+snapshot is `/tmp/omabit-040-agent-help-snapshot`.
+
+The final full-panel screenshot in `/tmp/omabit-agent-ui-02` was inspected after
+the header-width correction. The policy tree regression fixture also passed.
+No installed plugin, real agent, host skill directory, runner or ship was used.
