@@ -8746,3 +8746,24 @@ The completed earlier migration-regression fixture's rebuildable Go cache was
 inventoried and retired (243,642,368 bytes), retaining its failed result, logs,
 original binary, inputs and SQL databases. Admission and the new test then passed.
 The diagnostic links the retention manifest. Release work remains deferred.
+
+
+## M559 — Ship-incarnation-bound credential retrieval (2026-11-07)
+
+Added internal `ship-route-code-v1` for automatic application authentication.
+The selected route, revision, runtime and full ship/pier binding are verified under
+the runner lifecycle lock before reading a code. Disabled/shadowed/changed routes
+refuse; Serve/Funnel configuration is rechecked. The runtime verifies native ship,
+pier continuity, process and listener before and after its private Lens read.
+Responses bind the exact request. All failure messages and audit records exclude
+raw credentials/errors. No session, plugin delivery or public code-printing CLI
+is added; standing approval remains the collector's responsibility.
+
+Synthetic runtime race checks pass normal reads, changed ship/pier/process/port,
+invalid secrets and read errors. Runner API tests pass current/manual/Serve/Funnel
+routes and deny changed/disabled/unavailable routes before credentials. Client
+checks refuse unsupported or rebound/malformed responses without exposing secrets.
+See `diagnostics/2026-11-07-fleet-route-code.json`. Schema58 and existing state remain
+unchanged. Automatic attempt integration, permission UI and reconnection remain
+open; actual live transport and release qualification remain deferred. No installed
+production/DEV/trial/preview state was accessed or changed.

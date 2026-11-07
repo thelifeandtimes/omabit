@@ -82,6 +82,16 @@ and installed helper; revoke is local and remains available offline or after
 helper removal. These commands change permission only, never issue a session. Installed state is unchanged;
 these fixture checks do not qualify a live Tailscale deployment or installed upgrade.
 
+M559 adds internal `ship-route-code-v1` credential retrieval for the upcoming
+automatic connection path. The runner holds lifecycle admission, checks the exact
+ship/pier/process, registered route revision and enabled choice, and rechecks
+Serve/Funnel configuration when selected. The runtime verifies native identity
+and pier continuity before and after the private credential read. Client errors
+and runner audits discard raw secret responses. No public command exposes this
+new credential path; it creates no session or grant. Native-engine fixtures,
+runner API and client race checks pass. Actual ship/transport qualification is
+not claimed.
+
 ## Integration still required
 
 1. Setup URL editor, runner-owned registry, localhost and Tailscale/Serve discovery,

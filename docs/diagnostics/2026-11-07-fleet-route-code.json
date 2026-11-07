@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M559",
+  "source_base": "56c7174afd264aa370c031c5199d4be7b819f83c",
+  "tests": {
+    "route-code-runtime-01": {
+      "directory": "/tmp/omabit-fleet-route-code-runtime-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^TestShipRoute(Code|Identity)",
+        "binary_sha256": "3dd07f72ce1fbe60af7adfaf81bd76283b8983b9f571eb18f63dc577d9332e77",
+        "package": "internal/runtimequalify",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "26c76f0ac0798d82f1fe944f9f6062450388820a45be2f83ac3aff627f1d8907"
+    },
+    "route-code-api-01": {
+      "directory": "/tmp/omabit-fleet-route-code-api-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^TestShipRoute",
+        "binary_sha256": "7894e5fd38f399b357016395d26e0dc7946f422baf91c5e30d5dcd23b7831b67",
+        "package": "internal/managed",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "f15e1bda2add6f2f18eb1bc81829300c171e5bc176100b639c929ccd1c46c1a4"
+    },
+    "route-code-api-02": {
+      "directory": "/tmp/omabit-fleet-route-code-api-02",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^TestShipRouteCode",
+        "binary_sha256": "b3249d6d6908654cf06e850d0e42c496d5bbb4aa20f7ad0b795b099efa021e3b",
+        "package": "internal/managed",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "83f99ae8e7fa1f5e0f1813277d78d3b7f88d7b7976c90ca9f158b926e8566879"
+    },
+    "route-code-client-01": {
+      "directory": "/tmp/omabit-fleet-route-code-client-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^TestShipRouteCode",
+        "binary_sha256": "07373fd63950d8e5cf6a6247b6a2ed737fdca4d03ff2b61056804559fcc8ce5a",
+        "package": "internal/client",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "ceb034a60e423fcca3599a6f25f120cccab4239fb1254aade47d388ce9c37296"
+    }
+  },
+  "storage_observed": {
+    "charged_bytes": 42297995264,
+    "budget_bytes": 42949672960,
+    "additional_scratch_bytes": 0,
+    "total_with_reserves": 42297995264
+  },
+  "limits": [
+    "synthetic engine, runner API and pinned Unix-client fixtures; no actual ship or installed service accessed",
+    "internal credential read only; no session issuance or plugin execution",
+    "schema58 unchanged; automatic attempts, permission UI and reconnection remain pending"
+  ]
+}
