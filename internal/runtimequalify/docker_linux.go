@@ -72,11 +72,20 @@ func (b *limitedOutput) Write(p []byte) (int, error) {
 }
 
 func executeDocker(ctx context.Context, args, env []string) (string, error) {
+	return executeDockerInput(ctx, args, env, nil)
+}
+func executeDockerInput(ctx context.Context, args, env []string, input []byte) (string, error) {
+	if len(input) > 48<<20 {
+		return "", errors.New("Docker input exceeds bound")
+	}
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "/usr/bin/docker", args...)
 	cmd.Env = env
 	cmd.Dir = "/"
+	if input != nil {
+		cmd.Stdin = bytes.NewReader(input)
+	}
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	cmd.Cancel = func() error { return syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL) }
 	cmd.WaitDelay = time.Second
@@ -106,6 +115,15 @@ func (q *qualifier) dockerCreateID(ctx context.Context, timeout time.Duration, a
 }
 
 func (q *qualifier) dockerResult(ctx context.Context, timeout time.Duration, retainCreationID bool, args ...string) (string, error) {
+	return q.dockerWithInput(ctx, timeout, retainCreationID, nil, args...)
+}
+func (q *qualifier) dockerInput(ctx context.Context, timeout time.Duration, input []byte, args ...string) (string, error) {
+	if input == nil || len(input) > 48<<20 || q.d.executeInput == nil {
+		return "", errors.New("bounded Docker input transport unavailable")
+	}
+	return q.dockerWithInput(ctx, timeout, false, input, args...)
+}
+func (q *qualifier) dockerWithInput(ctx context.Context, timeout time.Duration, retainCreationID bool, input []byte, args ...string) (string, error) {
 	if err := ctx.Err(); err != nil {
 		return "", err
 	}
@@ -120,7 +138,14 @@ func (q *qualifier) dockerResult(ctx context.Context, timeout time.Duration, ret
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	args = append([]string{"--host", "unix://" + q.socket, "--config", q.config}, args...)
-	out, err := q.d.execute(ctx, args, []string{"HOME=" + q.d.home, "PATH=/usr/bin:/bin", "LANG=C", "DOCKER_API_VERSION=" + hostcompat.APIVersion})
+	env := []string{"HOME=" + q.d.home, "PATH=/usr/bin:/bin", "LANG=C", "DOCKER_API_VERSION=" + hostcompat.APIVersion}
+	var out string
+	var err error
+	if input != nil {
+		out, err = q.d.executeInput(ctx, args, env, input)
+	} else {
+		out, err = q.d.execute(ctx, args, env)
+	}
 	if err != nil || ctx.Err() != nil || len(out) > outputLimit {
 		status := "client failure"
 		var exit *exec.ExitError

@@ -7892,3 +7892,24 @@ to claim an interrupted commit: exact frozen-source verification is required.
 Focused package/policy race tests pass; runner persistence and transport remain
 next. See `diagnostics/2026-11-06-desk-protocol.json` for exact inputs, request
 source hashes, results and explicit limits. Production/DEV/trial state is untouched.
+
+## M537 — Private runtime desk adapter and fixture isolation (2026-11-06)
+
+Typed Lens requests now have a runner transport bound to the current exact
+container process, registered pier, private HTTP port and ship identity.
+Standalone managed ships and current/expanded project members use their existing
+containment and generation contracts. Payloads use bounded stdin, not argv;
+responses are bounded and transport failures never expose raw source or secrets.
+The adapter neither retries uncertain effects nor cancels shared Lens jobs.
+The caller must still hold policy/lifecycle admission and journal dispatch.
+
+Standalone and current-project fixture tests cover changed identity, process,
+ports, peer containers, transport loss and unsupported inputs. The complete
+runtimequalify race suite passes in `/tmp/omabit-desk-private-runtime-race-02`.
+The first broad run used the repository rather than package working directory;
+its missing-fixture failures are retained in the `-01` evidence directory and
+superseded by the corrected pass. `scripts/test-go-private.py` builds one package
+then runs it with private user/network/PID/mount/IPC/UTS namespaces, without the
+installed owner profile, host HOME/run or Docker socket. No host profile was
+changed to make fixture tests pass. This is source/fixture validation, not a
+managed Docker end-to-end or release qualification claim.
