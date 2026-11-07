@@ -71,3 +71,32 @@ func TestDependencyCandidateUsesSharedNativeEnginePolicy(t *testing.T) {
 		t.Fatal("native output was not bounded")
 	}
 }
+
+func TestNativeCandidateDiagnostic(t *testing.T) {
+	for _, tc := range []struct {
+		field, name, command, output, problem string
+	}{
+		{"Candidate", "docker.io", "apt-cache policy docker.io", "  Installed: (none)\n  Candidate: 26.1.5+dfsg1-9+deb13u1\n", "26.1.5+dfsg1-9+deb13u1"},
+		{"Candidate", "docker.io", "apt-cache policy docker.io", "  Candidate: (none)\n", "No usable candidate"},
+		{"Candidate", "docker.io", "apt-cache policy docker.io", "Version: 29.1.0\n", "No usable candidate"},
+		{"Candidate", "docker.io", "apt-cache policy docker.io", "  Installed: (none)\n  Candidate: 29.1.3-0ubuntu3~22.04.2\n", ""},
+		{"Version", "docker", "pacman -Si -- docker", "Version         : 1:30.0.0-1\n", "1:30.0.0-1"},
+		{"Version", "docker", "pacman -Si -- docker", "Version         : 1:29.7.2-1\n", ""},
+	} {
+		err := validateEngineCandidate([]byte(tc.output), tc.field, tc.name, tc.command)
+		if tc.problem == "" {
+			if err != nil {
+				t.Fatal(err)
+			}
+			continue
+		}
+		if err == nil {
+			t.Fatal("accepted incompatible or absent candidate", tc.output)
+		}
+		for _, want := range []string{tc.problem, tc.name, tc.command, hostcompat.EngineVersionRange(), "Resume setup"} {
+			if !strings.Contains(err.Error(), want) {
+				t.Errorf("missing %q in %q", want, err)
+			}
+		}
+	}
+}

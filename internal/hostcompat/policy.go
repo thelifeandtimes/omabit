@@ -4,6 +4,7 @@ package hostcompat
 
 import (
 	"errors"
+	"fmt"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -96,6 +97,11 @@ func numericVersion(s string, count int) ([]int, bool) {
 		n[i], _ = strconv.Atoi(p)
 	}
 	return n, true
+}
+
+// EngineVersionRange describes the stable releases admitted by EngineVersionStatus.
+func EngineVersionRange() string {
+	return fmt.Sprintf("%d.%d.0 or newer and below %d.0.0", minEngineMajor, minEngineMinor, maxEngineMajorExclusive)
 }
 
 // EngineVersionStatus describes contract support, never live qualification.

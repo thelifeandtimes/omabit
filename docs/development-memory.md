@@ -7506,3 +7506,17 @@ ship, uninterrupted second-desktop pairing and revocation, and same-generation
 recovery from an actual mid-install interruption passed. The collector also
 reconnected after a cold boot. The current rooftop installation, stable upgrade
 and other distros retain their separate gates.
+
+## M524 — Rooftop trial confirmed and stock Debian 13 package boundary (2026-11-06)
+
+The operator reported that manual rooftop configuration worked with the separate
+0.4.0 trial plugin. This supersedes M523's pending rooftop trial. The user did
+not specify whether rooftop took the fresh-install or existing-runner branch.
+
+On a clean Debian 13.7 amd64 guest, the configured archive offered Docker
+26.1.5, below the 27.2.0 minimum. Guided setup now identifies the package and
+version, states the policy range, gives the inspection command, and explains
+how to resume. The terminal and saved status supplied the same guidance.
+Real same-attempt retry preserved the desktop key and installer. The package
+database and administrator SSH grants matched their pre-test hashes. The next
+distro check is Arch/Omarchy. [Debian evidence](diagnostics/2026-11-06-debian-remote-runner.md)

@@ -18,13 +18,14 @@ Start with a disposable Ubuntu 22.04 x86-64 guest matching the recorded
 [Jammy VM run](diagnostics/2026-11-06-jammy-remote-runner.md) now covers
 missing packages, signed payload verification, owner setup, two desktop
 enrollments, interruption and resume, and a healthy first ship.
-Test the same flow on named Debian and Arch/Omarchy x86-64 images. Record the
-image, package sources, candidate versions and last completed step. A distro
-whose configured repositories lack a compatible engine needs actionable guidance.
+The operator subsequently confirmed that the manually driven rooftop configuration
+worked with the separate trial plugin. The [Debian 13.7 VM
+run](diagnostics/2026-11-06-debian-remote-runner.md) verified that stock Trixie
+stops before installing an incompatible Docker package and offers a specific
+next step. Successful Debian provisioning needs its own compatible package tuple.
 
-Exercise interrupted installation and resume using the same identity and
-installer. Pair a second desktop to an existing runner and verify that its ship
-and services keep running. Qualify the 0.3.7 upgrade separately from fresh setup.
+Next, test fresh SSH install, enrollment and a healthy first ship on a named
+Arch/Omarchy x86-64 image. Qualify the 0.3.7 upgrade separately from fresh setup.
 
 ### Agent Help and bundled skills
 
