@@ -181,6 +181,8 @@ Commands:
                Approve an independent owner session for an exact installed helper.
   app-fleet-connect --request-file FILE --request-id ID
                Choose a verified URL under an existing standing ship/helper grant.
+  app-fleet-health REQUEST_ID --expected-revision N [--lan-profile ID]
+               Check a fleet session without changing it or replaying application work.
   app-archive REQUEST_ID --expected-revision N
                Archive a fully closed attempt while retaining its replay receipt.
   app-disconnect REQUEST_ID --expected-revision N
@@ -301,7 +303,7 @@ Use COMMAND --help for command flags and constraints.
 	if slices.Contains([]string{"app-ship-review", "app-ship-approvals", "app-ship-approve"}, command) {
 		return runApplicationShipApproval(ctx, command, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
 	}
-	if slices.Contains([]string{"app-plugins", "app-connections", "app-connection", "app-archive", "app-connect", "app-disconnect", "app-recover", "app-reconcile"}, command) {
+	if slices.Contains([]string{"app-plugins", "app-connections", "app-connection", "app-archive", "app-connect", "app-fleet-health", "app-disconnect", "app-recover", "app-reconcile"}, command) {
 		return runApplications(ctx, command, args, *configDir, *socket, *runnerName, format, stdout, fail)
 	}
 	if slices.Contains([]string{"ship-enroll", "ships", "ship-login", "ship-status", "ship-scry", "ship-watch", "ship-logout", "ship-forget"}, command) {

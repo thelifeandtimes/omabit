@@ -8870,3 +8870,28 @@ was corrected. See `diagnostics/2026-11-07-remote-access-help.json`. This supers
 M562's pending clearweb Help only. Reconnection/receiver handoff and native Urgit
 workflow coverage remain open. Actual provider deployment, installed networking
 and release qualification are not claimed; all installed state remains untouched.
+
+
+## M564 — Non-mutating fleet session health (2026-11-07)
+
+Added a bounded retained-session check and public `app-fleet-health` command.
+Current standing permission, exact installed helper, continuing ship/pier identity
+and current collector network eligibility precede credential access. Healthy,
+expired, rejected and unreachable observations remain distinct from missing/locked
+credentials, malformed state, redirects and wrong ship identity. Identity probes
+send no cookies; only the verified original origin receives its unexpired cookie.
+Checks serialize with disconnect and change no attempt, login, logout or delivery.
+
+Synthetic race fixtures cover21 HTTP/session cases,15 route eligibility cases and
+15 engine cases; the actual public CLI passes with private fake runner/Eyre/receiver
+and Secret Service command transport. Native live Eyre remains explicitly skipped.
+Initial route/expiry fixture mistakes were fixed without weakening the production
+guards. See `diagnostics/2026-11-07-fleet-session-health.json`. Persistent formats
+are unchanged. This is preparation for automatic reconnection, not a completed
+replacement protocol; compatible receiver handoff and Urgit workflow remain open.
+Installed state and the persistent manual preview remain untouched.
+
+The CLI test initially refused at the40GiB admission bound before creating output
+or building. Four completed, rebuildable managed/runtimequalify test cache archives
+were inventoried and retired (114,118,656 bytes); exact evidence binaries, original
+fixtures and all source remain. The admitted test then passed. Release work is deferred.

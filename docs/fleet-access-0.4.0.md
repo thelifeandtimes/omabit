@@ -126,6 +126,13 @@ and targeted disable for Serve/Funnel, Cloudflare and custom domains. Help does 
 configure a provider. Full-panel and prompt validation fixtures pass; no live provider
 deployment is claimed. See [Help evidence](diagnostics/2026-11-07-remote-access-help.json).
 
+M564 adds bounded, non-mutating session health and `app-fleet-health`. Current
+permission, exact helper, ship incarnation and network eligibility precede credential
+reads; the old attempt remains unchanged. Expiry, rejection and unreachable origins
+are distinguished from malformed state, redirects and identity changes. Synthetic
+route/engine/HTTP and public CLI checks pass. This prepares the remaining replacement
+flow; it does not reconnect. See [health evidence](diagnostics/2026-11-07-fleet-session-health.json).
+
 ## Integration still required
 
 1. Setup URL editor, runner-owned registry, localhost and Tailscale/Serve discovery,

@@ -231,10 +231,26 @@ print(json.dumps(reply))
 				if current.Phase != "connected" || !active.Load() {
 					t.Fatal(current)
 				}
+				healthArgs := []string{"app-fleet-health", id, "--expected-revision", strconv.FormatUint(current.Revision, 10)}
+				beforeHealth, e := os.ReadFile(filepath.Join(dir, "applications.json"))
+				if e != nil {
+					t.Fatal(e)
+				}
+				var health applicationResult
+				if err := json.Unmarshal([]byte(invoke(0, healthArgs...)), &health); err != nil || health.Health != "healthy" || health.Connection.Revision != current.Revision {
+					t.Fatal("health check failed", health, err)
+				}
+				if after, e := os.ReadFile(filepath.Join(dir, "applications.json")); e != nil || !bytes.Equal(beforeHealth, after) || login.Load() != 1 || logout.Load() != 0 {
+					t.Fatal("health check changed connection", e)
+				}
 				// Revoke standing permission before using ordinary cleanup commands.
 				allow = false
 				grant, _ = json.Marshal(collection.ApplicationShipApprovalRequest{Version: 1, ExpectedRevision: 1, Binding: binding, Target: u.Target, Allowed: &allow})
 				invoke(0, "app-ship-approve", "--request-json", string(grant))
+				before = runnerCalls.Load()
+				if !strings.Contains(invoke(1, healthArgs...), "permission_required") || before != runnerCalls.Load() {
+					t.Fatal("revoked health check contacted runner")
+				}
 				if err := json.Unmarshal([]byte(invoke(0, "app-disconnect", id, "--expected-revision", strconv.FormatUint(current.Revision, 10))), &result); err != nil {
 					t.Fatal(err)
 				}
@@ -277,7 +293,7 @@ print(json.dumps(reply))
 
 func TestFleetApplicationCLIInvalidInputAndHelpHaveNoEffects(t *testing.T) {
 	dir := filepath.Join(t.TempDir(), "absent")
-	for _, args := range [][]string{{"app-fleet-connect"}, {"app-fleet-connect", "--url", "https://arbitrary.example"}, {"--runner", "fixture", "--expected-runner-id", "runner-fixture", "app-fleet-connect", "--request-id", strings.Repeat("a", 32), "--request-json", "{}"}} {
+	for _, args := range [][]string{{"app-fleet-connect"}, {"app-fleet-connect", "--url", "https://arbitrary.example"}, {"--runner", "fixture", "--expected-runner-id", "runner-fixture", "app-fleet-connect", "--request-id", strings.Repeat("a", 32), "--request-json", "{}"}, {"app-fleet-health"}, {"app-fleet-health", strings.Repeat("a", 32)}, {"app-fleet-health", strings.Repeat("a", 32), "--expected-revision", "1", "--lan-profile", "lab", "--lan-profile", "lab"}} {
 		var out, err bytes.Buffer
 		if code := run(context.Background(), append([]string{"--config-dir", dir}, args...), &out, &err); code != 2 {
 			t.Fatal(code, &out, &err)

@@ -14,6 +14,7 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/applicationauth"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/shiproute"
 )
 
@@ -58,6 +59,7 @@ type applicationResult struct {
 	Code          string              `json:"code"`
 	Message       string              `json:"message,omitempty"`
 	RouteAttempts []shiproute.Attempt `json:"route_attempts,omitempty"`
+	Health        string              `json:"health,omitempty"`
 }
 
 func applicationFailure(err error) (string, string) {
@@ -116,6 +118,7 @@ func runApplications(ctx context.Context, command string, args []string, dir, so
 	var shipRevision, revision uint64
 	var target collection.ApplicationTarget
 	var approve bool
+	var lan []string
 	usage := command
 	switch command {
 	case "app-plugins", "app-connections":
@@ -134,6 +137,20 @@ func runApplications(ctx context.Context, command string, args []string, dir, so
 		usage += " REQUEST_ID --expected-revision N"
 		flags.Uint64Var(&revision, "expected-revision", 0, "attempt revision from app-connections")
 	}
+	if command == "app-fleet-health" {
+		flags.Func("lan-profile", "explicit current LAN scope; may repeat up to eight times", func(value string) error {
+			if !protocol.ValidID(value) || len(lan) >= 8 {
+				return errors.New("invalid LAN profile")
+			}
+			for _, old := range lan {
+				if old == value {
+					return errors.New("duplicate LAN profile")
+				}
+			}
+			lan = append(lan, value)
+			return nil
+		})
+	}
 	if command != "app-plugins" && command != "app-connections" && len(args) > 0 && args[0] != "--help" && args[0] != "-h" {
 		selected, args = args[0], args[1:]
 	}
@@ -144,6 +161,7 @@ func runApplications(ctx context.Context, command string, args []string, dir, so
 			fmt.Fprintln(stdout, "Approval gives this plugin an independent ordinary Eyre owner session. Eyre does not isolate desks. Plugins then connect directly to the ship and retain standalone sign-in.")
 			fmt.Fprintln(stdout, "Disconnect revokes only this attempt's session. Recover never retries issuance or delivery. Reconcile removes this attempt's receiver state after revocation.")
 			fmt.Fprintln(stdout, "app-archive removes a fully closed/reconciled attempt from the active list, retaining a permanent replay receipt. app-connection reads one active or archived request.")
+			fmt.Fprintln(stdout, "app-fleet-health checks a connected fleet session under current standing permission, installed helper and network eligibility. It makes bounded identity GETs only; it does not reconnect, log out, deliver credentials or change the attempt. LAN scopes must be explicitly supplied for this check.")
 			fmt.Fprintln(stdout, "No command installs plugins or backends. No runner, SSH, login code or cookie argument is accepted.")
 			flags.SetOutput(stdout)
 			flags.PrintDefaults()
@@ -162,8 +180,9 @@ func runApplications(ctx context.Context, command string, args []string, dir, so
 		return fail(errors.New("select a request ID and --expected-revision from app-connections"), 2)
 	}
 	out := newOutput(stdout, format, false)
+	var health string
 	emit := func(a collection.ApplicationAttempt, err error) int {
-		result := applicationResult{Code: "ok"}
+		result := applicationResult{Code: "ok", Health: health}
 		if a.ID != "" {
 			view := appView(a)
 			if errors.Is(err, collection.ErrApplicationArchived) {
@@ -283,6 +302,27 @@ func runApplications(ctx context.Context, command string, args []string, dir, so
 	engine = engine.AtRevision(revision)
 	var attempt collection.ApplicationAttempt
 	switch command {
+	case "app-fleet-health":
+		var archived bool
+		attempt, archived, err = r.Application(ctx, selected)
+		if err != nil {
+			return emit(attempt, err)
+		}
+		if archived {
+			return emit(attempt, collection.ErrApplicationArchived)
+		}
+		if attempt.Revision != revision || attempt.Fleet.Version != 1 || attempt.Phase != "connected" {
+			return emit(attempt, collection.ErrApplicationConflict)
+		}
+		env, e := applicationEnvironment()
+		if e != nil {
+			return emit(attempt, e)
+		}
+		receiver, _, e := applicationauth.ResolveInstalled(filepath.Join(env["HOME"], ".config/omarchy/plugins"), attempt.Target.PluginID, env)
+		if e != nil {
+			return emit(attempt, e)
+		}
+		health, err = engine.CheckFleet(ctx, selected, lan, receiver)
 	case "app-disconnect":
 		attempt, err = engine.Disconnect(ctx, selected)
 	case "app-recover":

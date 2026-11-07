@@ -150,3 +150,26 @@ to bypass an unresolved login/handoff. An existing request ID is not replayed.
 Revoking permission does not prevent cleanup of its existing session. These CLI
 paths pass synthetic offline runner/HTTP/receiver/keyring-transport checks; live
 Tailnet, actual keyring and installed upgrade qualification remain separate.
+
+
+## Check a connected session
+
+For a connected fleet attempt, take its request ID and current revision from
+`app-connections`, then run:
+
+```sh
+urbit-collector --config-dir REGISTRY app-fleet-health REQUEST_ID \
+  --expected-revision REVISION
+```
+
+This checks the installed helper, current standing grant, continuing ship/pier
+binding and current network eligibility before reading a credential. It uses only
+bounded identity GETs against the original origin. The result reports `healthy`,
+`expired`, `rejected`, `unreachable` or `route-unavailable`; invalid state, redirects
+and identity changes return a fixed error. A LAN check needs explicit current
+`--lan-profile ID` choices, never a guessed scope from the runner.
+
+Health does not change the attempt, issue or deliver a session, log out, or retry
+application data. Missing/locked credentials are not equivalent to an expired
+session. Do not bypass cleanup or uncertainty by issuing another connection.
+Automatic replacement and compatible receiver handoff are still being implemented.
