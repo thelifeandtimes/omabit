@@ -8895,3 +8895,38 @@ The CLI test initially refused at the40GiB admission bound before creating outpu
 or building. Four completed, rebuildable managed/runtimequalify test cache archives
 were inventoried and retired (114,118,656 bytes); exact evidence binaries, original
 fixtures and all source remain. The admitted test then passed. Release work is deferred.
+
+
+## M565 — Native Urgit development pathway (2026-11-07)
+
+Pinned upstream7834a4e built without source or lockfile changes using Zig0.15.2 and
+Node22.23.4. One fresh, offline fake with pinned Vere/pill installed Urgit, served
+its exact built index, accepted a stock Git push into Clay, rejected an unknown-mark
+conversion without advancing the ref or adding that file, accepted a subsequent
+update, and projected an explicit Clay edit back to Git. The final contents and
+native bridge status agree. The original fixture stopped on two incorrect Hoon
+text assertions; each invocation shut down cleanly and continuation preserved the
+same pier without replaying the acknowledged initial push. Native03 passes.
+
+The upstream frontend suite is not green:83 pass and43 fail, including source-pattern
+assertions against refactored Hoon arms. Original results are preserved. Build01
+needed the resolved certificate bundle mounted into the private capsule; build02
+needed the destination directory required by upstream's clearing/copy step;
+build03 passes. These were fixture setup errors, not upstream patches.
+
+The operator skill now covers the native binding, permissions, Git credentials,
+branch selection, canonical-byte differences, uncertain responses, project checks,
+frontend packaging and the distinction between Clay-to-Git and Treaty publication.
+No Omabit adapter or new release gate was introduced. See
+`diagnostics/2026-11-07-urgit-workflow.json` for hashes and limits. This supersedes
+M564's pending Urgit pathway only; automatic fleet reconnection/receiver handoff
+remains open. All installed state and the persistent preview are untouched.
+
+Completed task Go and Zig/npm caches were inventoried and retired to admit the
+capsules within40GiB. Immutable inputs, dependency source, original fixture Git
+history, exact built desk and compressed full test logs remain. This test does not
+retain the completed fake pier: its615,211,008 allocated bytes were inventoried
+and retired after native03's successful result and clean process exit. This does not
+qualify production upgrades, arbitrary app compilation, every frontend asset,
+Urgit peer/GitHub/LFS features or Urgit-driven multi-ship releases. Release work
+remains deferred.

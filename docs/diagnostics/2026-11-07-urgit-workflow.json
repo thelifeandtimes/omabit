@@ -1,0 +1,531 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M565",
+  "source_base": "b83e2994011e32c05f1008de24abcd2c30ed5ce5",
+  "workflow_passed": true,
+  "upstream_suite_passed": false,
+  "upstream": {
+    "repository": "https://github.com/yapishu/urgit",
+    "commit": "7834a4e186998265f5175fd527bc17ea8819c44f",
+    "archive_sha256": "0530a6d039e917043fdb3e3c7dfee5d9fdcdb7f86991d6c9e18f056f981bff33",
+    "source_manifest": {
+      "path": "/tmp/omabit-urgit-build-040/source-sha256.json",
+      "sha256": "d1621d69fb5dd11c0af44fdd58c4cfb6e579f02437b0f842de68b1a9afed5b73"
+    },
+    "original_source_changes": [],
+    "package_lock_sha256": "7331b174a69e2342a9c5ecd4584d620270a6416d510fd44fba3f21a04e1edd03",
+    "build": {
+      "exit": 0,
+      "problem": null,
+      "source_commit": "7834a4e186998265f5175fd527bc17ea8819c44f",
+      "zig": "/home/thelifeandtimes/.local/share/mise/installs/zig/0.15.2",
+      "node": "/home/thelifeandtimes/.local/share/mise/installs/node/22.23.4",
+      "allocated_before": 222629888,
+      "allocated_after": 224550912,
+      "seconds": 1.01,
+      "network": "download build only; private HOME/mount/PID namespace; no installed state"
+    },
+    "build_log": {
+      "path": "/tmp/omabit-urgit-build-040/build.log",
+      "sha256": "4a745540f438c99d8d4e854f3cf117f9d009cdc12fc71da0f2778ad5df14a928"
+    },
+    "earlier_builds": [
+      {
+        "result": {
+          "exit": 1,
+          "problem": null,
+          "source_commit": "7834a4e186998265f5175fd527bc17ea8819c44f",
+          "zig": "/home/thelifeandtimes/.local/share/mise/installs/zig/0.15.2",
+          "node": "/home/thelifeandtimes/.local/share/mise/installs/node/22.23.4",
+          "allocated_before": 1769472,
+          "allocated_after": 191930368,
+          "seconds": 4.02,
+          "network": "download build only; private HOME/mount/PID namespace; no installed state"
+        },
+        "log": {
+          "path": "/tmp/omabit-urgit-build-040/first-build.log",
+          "sha256": "b94c0bb0479882e9384d49db4d6a9f07abdb3728c92879f64d9a44c28a996864"
+        }
+      },
+      {
+        "result": {
+          "exit": 1,
+          "problem": null,
+          "source_commit": "7834a4e186998265f5175fd527bc17ea8819c44f",
+          "zig": "/home/thelifeandtimes/.local/share/mise/installs/zig/0.15.2",
+          "node": "/home/thelifeandtimes/.local/share/mise/installs/node/22.23.4",
+          "allocated_before": 191946752,
+          "allocated_after": 222617600,
+          "seconds": 3.02,
+          "network": "download build only; private HOME/mount/PID namespace; no installed state"
+        },
+        "log": {
+          "path": "/tmp/omabit-urgit-build-040/second-build.log",
+          "sha256": "4dbf25289aefedb9fdac719c271fa5d83663e94d457f9da706d34d39578af4d6"
+        }
+      }
+    ],
+    "tests": {
+      "pass": 83,
+      "fail": 43,
+      "failures": [
+        "not ok 9 - does not put extensionless SPA shells in the Eyre response cache",
+        "not ok 13 - the fork preparation queue is persisted, so a reload cannot strand a requester",
+        "not ok 15 - new peer requests queue preparation and schedule it one second after acceptance",
+        "not ok 16 - prepare-start wake consumes the queue before emitting a self prepare poke",
+        "not ok 31 - the agent reads the seat from %groups per event, fails closed, and never caches it",
+        "not ok 32 - group policy is owner-administered, membership-checked at save, and hidden from public and peer JSON",
+        "not ok 40 - one catalog request rides to a ship at a time: a ship still unacked is recorded as pending, not asked again",
+        "not ok 42 - the agent tags a catalog entry only when the group policy alone granted the read",
+        "not ok 43 - the fan-out reads seats from this ship's Groups, skips this ship, stops at 200, and says so",
+        "not ok 44 - catalog entries carry via on the wire under a new tag while the old tag keeps its shape",
+        "not ok 48 - migrate-state-2 carries the repositories forward and defaults the queue empty",
+        "not ok 49 - migrate-state-3 rewrites every stored repository without a group policy",
+        "not ok 51 - on-load migrates zero through three forward while accepting four",
+        "not ok 66 - peer pull wire and receive state carry selected refs",
+        "not ok 67 - peer pull API validates selected refs and offers both to the origin",
+        "not ok 72 - merge advances only the recorded target ref and gates Clay only for that ref",
+        "not ok 73 - pull summary and detail JSON expose sourceRef and targetRef",
+        "not ok 77 - native peer browse responses hide repository administration fields",
+        "not ok 81 - outgoing offers remain active until authoritative state is consumed",
+        "not ok 88 - raw-object streaming adds a new begin packet and authenticated self packets",
+        "not ok 89 - transfer-id capability negotiation preserves the legacy request wire and pack fallback",
+        "not ok 90 - transfer modes and stream jobs are transient and reset on init and load",
+        "not ok 92 - object page v2 uses a list of bounded fragments instead of a map",
+        "not ok 93 - batch helpers enforce one-MiB fragments and one-MiB pages lazily",
+        "not ok 94 - stream preparation stores an object job and schedules its first event without pre-growing",
+        "not ok 95 - each stream-next builds and grows exactly one bounded fragment list then yields",
+        "not ok 96 - stream-grown advances the job and announces begin-objects only after page one",
+        "not ok 97 - begin-objects mirrors begin validation, selects object mode, and fills the receive window",
+        "not ok 98 - pack begin remains sequential and explicitly preserves pack mode",
+        "not ok 99 - Fine molds object fragment lists while retaining the exact pack fallback",
+        "not ok 100 - release, snapshot failure, supersede, and serve timeout delete stream jobs",
+        "not ok 101 - stream handlers no-op if either their job or object serving flight disappeared",
+        "not ok 102 - both Fine modes reuse peer-snapshot OID validation and atomic finish",
+        "not ok 103 - fragment pages reject malformed bounds and duplicate oid/offset pairs before accounting",
+        "not ok 104 - zero-length Git objects use one metadata-only fragment and remain content-addressed",
+        "not ok 105 - fragment reassembly is duplicate-safe, contiguous, metadata-stable, and content addressed",
+        "not ok 106 - received counts only completed unique objects and final import remains atomic",
+        "not ok 107 - out-of-order pages are cached and drained sequentially without reopening the transfer",
+        "not ok 108 - hostile object announcements and partial assembly state have hard limits",
+        "not ok 109 - Fine cancellation follows its mode while Mesa archives have no scries to cancel",
+        "not ok 110 - streamed snapshots scale their source lifetime while Fine rates do not hide page stalls",
+        "not ok 111 - Mesa archives retain a distinct mode and validate negotiated object bounds",
+        "not ok 112 - Mesa handshake separates preparation from bulk delivery timeouts"
+      ],
+      "log": {
+        "path": "/tmp/omabit-urgit-build-040/test.log.gz",
+        "sha256": "113d133c8af255adbce9beeb9866593723487c142ae422fd1a9d09f3bb9e7119"
+      },
+      "log_original_sha256": "f2cda78c92b6f16163f0ac808ebbf41ba125fc104ccbc89e4a0631b6bcefaf5b",
+      "assessment": "Includes source-shape assertions affected by refactored Hoon arms; not represented as an all-green upstream suite."
+    }
+  },
+  "native": {
+    "01": {
+      "directory": "/tmp/omabit-urgit-native-01",
+      "passed": false,
+      "clean_shutdown": true,
+      "runtime_exit": 0,
+      "error": "AssertionError: ",
+      "result": {
+        "path": "/tmp/omabit-urgit-native-01/lab/result.json",
+        "sha256": "de1ee8be8ced75e03ea2f1b8e74489c35dd77196854c1fc10e47f1cbe91ba961"
+      },
+      "console": {
+        "path": "/tmp/omabit-urgit-native-01/console.log",
+        "sha256": "08fb5fcb6a4fd421f32d7550dc428d15e6e2235fd1116c515dd4072166bd6311"
+      },
+      "runtime_log": {
+        "path": "/tmp/omabit-urgit-native-01/lab/vere.log",
+        "sha256": "cea388859c0e52268e3f256a56a2a84b76d5b01d8b23074d4dde3008a72241ff"
+      },
+      "inputs": {
+        "path": "/tmp/omabit-urgit-native-01/inputs.json",
+        "sha256": "4debcc72cc6ae516e113beab2ad945bbe7941545f11e0691f23adb7c1a15b798"
+      },
+      "command": {
+        "path": "/tmp/omabit-urgit-native-01/command.json",
+        "sha256": "d324d47d17303e87d77b746d2f8f0be3adcee84f7f0d40dc3d80646bab5749c6"
+      },
+      "guard": {
+        "path": "/tmp/omabit-urgit-native-01/guard.json",
+        "sha256": "7ffd1b8d67cbdcdeab92276c25797536f196841726651d4f96e9e72211be031b"
+      },
+      "scope": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "MemoryMax": "4294967296",
+        "MemorySwapMax": "0",
+        "TasksMax": "128"
+      },
+      "steps": [
+        {
+          "name": "identity",
+          "state": "returned"
+        },
+        {
+          "name": "create-urgit",
+          "state": "returned"
+        },
+        {
+          "name": "mount-urgit",
+          "state": "returned"
+        },
+        {
+          "name": "commit-urgit",
+          "state": "returned"
+        },
+        {
+          "name": "urgit-source-present",
+          "state": "returned"
+        },
+        {
+          "name": "revive-urgit",
+          "state": "returned"
+        },
+        {
+          "name": "fixture-code",
+          "state": "returned"
+        },
+        {
+          "name": "create-omabit-git-test",
+          "state": "returned"
+        },
+        {
+          "name": "mount-omabit-git-test",
+          "state": "returned"
+        },
+        {
+          "name": "git-init",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "git-user",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "git-email",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "git-stage",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "git-commit",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "repository-create",
+          "state": "returned"
+        },
+        {
+          "name": "repository-token",
+          "state": "returned"
+        },
+        {
+          "name": "repository-bind",
+          "state": "returned"
+        },
+        {
+          "name": "remote",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "push-valid",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "first-clay-content",
+          "state": "returned"
+        }
+      ]
+    },
+    "02": {
+      "directory": "/tmp/omabit-urgit-native-02",
+      "passed": false,
+      "clean_shutdown": true,
+      "runtime_exit": 0,
+      "error": "AssertionError: ",
+      "result": {
+        "path": "/tmp/omabit-urgit-native-02/lab/result.json",
+        "sha256": "2f730d7d7030e0a3af0c353b16c58b1d6ab239bccfbd4d18ade46f20185a83bf"
+      },
+      "console": {
+        "path": "/tmp/omabit-urgit-native-02/console.log",
+        "sha256": "49b138f1f1d0718a1c3acf906d3591b04332e5cc75490b2198e809ae1faff09b"
+      },
+      "runtime_log": {
+        "path": "/tmp/omabit-urgit-native-02/lab/vere.log",
+        "sha256": "f5bb4d5a7778b06bcd40ce347ce6ac1dd5eb1f88a358cfbd0626eb4d928b3f5e"
+      },
+      "inputs": {
+        "path": "/tmp/omabit-urgit-native-02/inputs.json",
+        "sha256": "4e0399918a0981bce648d5877bccfe449e819f733d6c0e1573c373fe3b52503b"
+      },
+      "command": {
+        "path": "/tmp/omabit-urgit-native-02/command.json",
+        "sha256": "5afc0e398da3e8065da8531ce6b1e9a8d9a49ecbbf0a6771c411f9a9cc3d90c5"
+      },
+      "guard": {
+        "path": "/tmp/omabit-urgit-native-02/guard.json",
+        "sha256": "70bc94c091be0aaad463bd5d556643fabfdd51452dc9644502ec5f167d881fa2"
+      },
+      "scope": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "MemoryMax": "4294967296",
+        "MemorySwapMax": "0",
+        "TasksMax": "128"
+      },
+      "steps": [
+        {
+          "name": "identity",
+          "state": "returned"
+        },
+        {
+          "name": "fixture-code",
+          "state": "returned"
+        },
+        {
+          "name": "repository-token",
+          "state": "returned"
+        },
+        {
+          "name": "first-clay-content",
+          "state": "returned"
+        }
+      ],
+      "resume": {
+        "from": "/tmp/omabit-urgit-native-01",
+        "to": "/tmp/omabit-urgit-native-02",
+        "mode": "continue after first verified Git push; no native effect replay",
+        "prior_result_sha256": "de1ee8be8ced75e03ea2f1b8e74489c35dd77196854c1fc10e47f1cbe91ba961"
+      }
+    },
+    "03": {
+      "directory": "/tmp/omabit-urgit-native-03",
+      "passed": true,
+      "clean_shutdown": true,
+      "runtime_exit": 0,
+      "error": null,
+      "result": {
+        "path": "/tmp/omabit-urgit-native-03/lab/result.json",
+        "sha256": "8aa417a30d5d501325c13d64bd28a66d491487e16189e9a17ef8e2d466785d20"
+      },
+      "console": {
+        "path": "/tmp/omabit-urgit-native-03/console.log",
+        "sha256": "2c11f0cb2f0b7d73b181068c9eefa3e6486b8e96ad52a2a764bff69c0b2cee12"
+      },
+      "runtime_log": {
+        "path": "/tmp/omabit-urgit-native-03/lab/vere.log",
+        "sha256": "c9f29b0667a02398b96e378863b8352decf429acb2332a8b179d472b06abba0e"
+      },
+      "inputs": {
+        "path": "/tmp/omabit-urgit-native-03/inputs.json",
+        "sha256": "cf8e583958477f5f9f3c3989022f0207f4b8ab4ef34790ca62d8d24afc67eeec"
+      },
+      "command": {
+        "path": "/tmp/omabit-urgit-native-03/command.json",
+        "sha256": "ca6c1d35e2926e110d594530e2418f7ffe47ca2bd9b3ca7b9b8fea0cac8cd08a"
+      },
+      "guard": {
+        "path": "/tmp/omabit-urgit-native-03/guard.json",
+        "sha256": "de36601145eb6ca591fc8b691edd768ba35cab043853bc846f6d7b82da0192e5"
+      },
+      "scope": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "MemoryMax": "4294967296",
+        "MemorySwapMax": "0",
+        "TasksMax": "128"
+      },
+      "steps": [
+        {
+          "name": "identity",
+          "state": "returned"
+        },
+        {
+          "name": "fixture-code",
+          "state": "returned"
+        },
+        {
+          "name": "repository-token",
+          "state": "returned"
+        },
+        {
+          "name": "first-clay-content",
+          "state": "returned"
+        },
+        {
+          "name": "default-branch-master",
+          "state": "returned"
+        },
+        {
+          "name": "first-ref",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "bridge-first",
+          "state": "returned"
+        },
+        {
+          "name": "invalid-stage",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "invalid-commit",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "push-invalid",
+          "state": "returned",
+          "exit": 1
+        },
+        {
+          "name": "ref-after-reject",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "rejected-clay-absence",
+          "state": "returned"
+        },
+        {
+          "name": "reset-own-fixture",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "update-stage",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "update-commit",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "push-update",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "updated-clay-content",
+          "state": "returned"
+        },
+        {
+          "name": "commit-native-change",
+          "state": "returned"
+        },
+        {
+          "name": "publish-clay-to-git",
+          "state": "returned"
+        },
+        {
+          "name": "fetch-native-change",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "git-read-native",
+          "state": "returned",
+          "exit": 0
+        },
+        {
+          "name": "bridge-final",
+          "state": "returned"
+        }
+      ],
+      "resume": {
+        "from": "/tmp/omabit-urgit-native-02",
+        "to": "/tmp/omabit-urgit-native-03",
+        "mode": "continue after first verified Git push; no native effect replay",
+        "prior_result_sha256": "2f730d7d7030e0a3af0c353b16c58b1d6ab239bccfbd4d18ade46f20185a83bf"
+      }
+    }
+  },
+  "proof": {
+    "served_index_sha256": "a7a58e24d69cb6ab9fc6c4aee0282d5d14385e928a6404e0390837b4631333d9",
+    "built_index_sha256": "a7a58e24d69cb6ab9fc6c4aee0282d5d14385e928a6404e0390837b4631333d9",
+    "first_bridge_status": {
+      "clayTimestamp": "~2026.11.07..15.47.14..1380",
+      "relation": "in-sync",
+      "canonicalDifference": true,
+      "branchCommit": "df5c58bf0ce50863bafb499dd7502fa3811b270a",
+      "clayRevision": 2,
+      "desk": "omabit-git-test",
+      "contentsMatch": false,
+      "mappedRevision": 2,
+      "mappedCommit": "df5c58bf0ce50863bafb499dd7502fa3811b270a",
+      "clayTako": "0v16.e9uhc.j2hpr.hff4k.g2h0s.1e4a3.6gbgd.ear01.sp7pr.u2b8q.pe2ol",
+      "branch": "refs/heads/master",
+      "repository": "omabit-test",
+      "canPublish": false,
+      "canApply": false,
+      "bound": true
+    },
+    "final_bridge_status": {
+      "clayTimestamp": "~2026.11.07..15.49.52..bed8",
+      "relation": "in-sync",
+      "canonicalDifference": false,
+      "branchCommit": "84c24eab186fd92bc971441a257482323a306a90",
+      "clayRevision": 4,
+      "desk": "omabit-git-test",
+      "contentsMatch": true,
+      "mappedRevision": 0,
+      "mappedCommit": "84c24eab186fd92bc971441a257482323a306a90",
+      "clayTako": "0v1e.uk23m.dqjsq.dqtu8.29r7k.42add.2ii11.772g1.lmaeg.ok8j2.k2a3d",
+      "branch": "refs/heads/master",
+      "repository": "omabit-test",
+      "canPublish": false,
+      "canApply": false,
+      "bound": true
+    },
+    "rejection": "Missing %omabit-missing-mark produces Clay/Ford rejection; remote refs/heads/master remains the prior OID and destination file remains absent.",
+    "initial_assertion_errors": "01 compared pretty-printed wain representation;02 compared tape literals to cord content.03 uses typed cord equality. Both earlier runs had confirmed first push and clean shutdown; no mutation replay."
+  },
+  "retention": [
+    {
+      "path": "/tmp/omabit-fleet-cache-retention-04.json.gz",
+      "sha256": "f877b50f4e9e0059c674a0dd4b382488420ce61c1f1e6f66212ed1026eb49d0c"
+    },
+    {
+      "path": "/tmp/omabit-urgit-cache-retention-01.json.gz",
+      "sha256": "9e88fade3c1d9366a5d3d6a51ec58dbe141f54a7e0b43c907fb2ef5778b5caef"
+    },
+    {
+      "path": "/tmp/omabit-urgit-build-040/test-log-retention.json",
+      "sha256": "bbe7e5ab9aeb7a2087633120225b7647d6f3deb59b73e36d8243a329a23f6803"
+    },
+    {
+      "path": "/tmp/omabit-urgit-native-03/completed-pier-retention.json",
+      "sha256": "1aee122bc4df7a368c0cf324c6d3d3ff41fc5460df76475e4dcf8c70c92b9a43",
+      "removed_bytes": 615211008,
+      "reason": "Fresh task-only offline fake; completed Git/Clay workflow and clean native exit. Original01/02 fixture assertion failures were resolved without replay; not migration input or user state. Full logs, exact inputs, source/desk and local Git history retained."
+    }
+  ],
+  "limits": [
+    "One private offline fake only; no installed production/DEV/trial/manual preview or protected ship touched",
+    "No dedicated Omabit Urgit adapter or provider-side release gate",
+    "Source commit acceptance is not arbitrary Gall compilation, application health or receiver rollout",
+    "Only served index compared; not all frontend assets or browser interactions",
+    "No production/upstream upgrade, real remote network, peer/GitHub/LFS or Urgit-driven multi-ship qualification",
+    "Full upstream frontend suite has43 failures",
+    "Automatic fleet session replacement remains open",
+    "Release qualification/publication remain deferred"
+  ]
+}

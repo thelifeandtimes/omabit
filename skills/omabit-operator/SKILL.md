@@ -35,6 +35,10 @@ receipt/reconciliation; follow the app-development reference's exact sequence.
 Read ship and desk `desk-settings` on `desk-workflow-settings-v1` runners to follow
 their configured source path, release checks and instructions. Descriptive purpose
 and workflow settings never grant agent permissions.
+For Git-backed development through `%urgit`, also read
+[the native Urgit workflow](references/urgit.md). It records the tested source
+revision, Git-to-Clay failure checks and the distinction between Clay-to-Git
+publication and Treaty releases. Omabit adds no separate Urgit adapter.
 Use `desk-source-status` on capable runners to inspect saved Unix source versus
 Clay; consult the reference for drift, stale evidence and baseline limitations.
 Use the reference's `desk-plan-stage`, `desk-stage`, status and explicit discard

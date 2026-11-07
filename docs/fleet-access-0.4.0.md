@@ -149,3 +149,6 @@ flow; it does not reconnect. See [health evidence](diagnostics/2026-11-07-fleet-
    apps own content publication.
 
 Release qualification remains deferred until these features are complete.
+
+M565 completes the scoped native Urgit workflow test and operator guidance without
+an adapter. It does not change the outstanding receiver/reconnection work above.

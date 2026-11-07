@@ -11,7 +11,8 @@ source/Treaty publication use `desk-release-v1`. Explicit existing-source owners
 uses `desk-source-adoption-v1`. Named receiver installation and pending-source status
 use `desk-receiver-v1`. Full managed-runtime workflow
 qualification remains in progress.
-Urgit follows its native workflow; no dedicated Omabit adapter is planned. Verify
+Urgit follows its [tested native workflow](urgit.md); no dedicated Omabit adapter
+is planned. Verify
 installed capabilities and command help rather than assuming development source
 is installed. Keep prepared source outside a live mount while its effects are
 blocked or unresolved.
