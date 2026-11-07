@@ -453,6 +453,9 @@ func InstallDependencies(ctx context.Context, plan DependencyPlan, progress func
 		return errors.New("unsupported native dependency provider")
 	}
 	if _, err := runHostCommand(ctx, true, program, args...); err != nil {
+		if plan.Provider == "pacman" {
+			return fmt.Errorf("native dependency installation failed (%w). Review the package-manager output on the runner host. For missing package files or mirror 404s, finish the host's normal full system update (pacman -Syu on Arch, or omarchy update on Omarchy), then choose Resume setup. Keep repository metadata and installed packages at the same update level", err)
+		}
 		return fmt.Errorf("native dependency installation did not complete; inspect the native package manager and resume: %w", err)
 	}
 	// Installation is followed by the existing signature/payload and engine-policy

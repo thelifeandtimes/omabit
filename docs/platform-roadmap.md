@@ -24,8 +24,17 @@ run](diagnostics/2026-11-06-debian-remote-runner.md) verified that stock Trixie
 stops before installing an incompatible Docker package and offers a specific
 next step. Successful Debian provisioning needs its own compatible package tuple.
 
-Next, test fresh SSH install, enrollment and a healthy first ship on a named
-Arch/Omarchy x86-64 image. Qualify the 0.3.7 upgrade separately from fresh setup.
+The [Arch VM run](diagnostics/2026-11-06-arch-remote-runner.md) now covers
+fresh SSH install, authenticated native dependencies, enrollment and a healthy
+first ship on the official x86-64 cloud image. Stale rolling-mirror metadata
+required a full guest update and reboot before resuming the same attempt.
+The installer explains that recovery. The operator skill records the exact
+tested coverage and the host-specific assistance an agent may need to provide.
+
+The user considers this sufficient remote-install testing for this stage.
+Proceed to Agent Help and skill installation. A full fresh Omarchy desktop and
+successful Debian provisioning remain outside the completed matrix. Qualify
+the 0.3.7 upgrade separately from fresh setup before releasing 0.4.0.
 
 ### Agent Help and bundled skills
 

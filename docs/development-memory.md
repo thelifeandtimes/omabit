@@ -7520,3 +7520,21 @@ how to resume. The terminal and saved status supplied the same guidance.
 Real same-attempt retry preserved the desktop key and installer. The package
 database and administrator SSH grants matched their pre-test hashes. The next
 distro check is Arch/Omarchy. [Debian evidence](diagnostics/2026-11-06-debian-remote-runner.md)
+
+## M525 — Arch first ship and remote-install test boundary (2026-11-06)
+
+Supersedes M524's pending Arch check. Two clean overlays of the official
+Arch x86-64 cloud image passed native dependency installation, authenticated
+package evidence, restricted-key enrollment and a healthy default-loom bare
+ship. Stale image metadata first requested a removed Docker package. A full
+guest update and reboot allowed the same attempt, key and frozen helper to
+resume. The revised helper explains this recovery in terminal and saved status.
+Second-desktop pairing and revocation preserved the running ship and services.
+[Arch evidence](diagnostics/2026-11-06-arch-remote-runner.md)
+
+The user explicitly ends this round of distro testing after this pass. The
+operator skill now distinguishes verified Ubuntu/Arch behavior, the operator's
+rooftop report, Debian's package refusal and host-specific agent assistance.
+The Arch guest exercises the runner foundation. A complete fresh Omarchy
+desktop installation remains untested in this matrix. Agent Help and skill
+installation are next. Stable 0.3.7 upgrade qualification remains a release gate.
