@@ -1,7 +1,8 @@
 # App development and publishing policy
 
 The 0.4.0 source implements policy storage, Setup authoring, read-only status,
-and typed desk inspection/creation with durable receipts (`desk-create-v1`).
+typed desk inspection/creation with durable receipts (`desk-create-v1`),
+and live installed-desk discovery (`desk-discovery-v1`).
 Commit/publication, source bindings and Unix/Clay alerts are still being connected.
 Urgit follows its native workflow; no dedicated Omabit adapter is planned. Verify
 installed capabilities and command help rather than assuming development source
@@ -49,11 +50,19 @@ Use the matching `omabit` binary from the selected profile. Its argument order
 is distinct from the collector: the command precedes runner/ship flags.
 
 ```sh
+omabit --config-dir REGISTRY desk-list --runner NAME --expected-runner-id ID \
+  --instance INSTANCE
 omabit --config-dir REGISTRY desk-inspect --runner NAME --expected-runner-id ID \
   --instance INSTANCE --desk DESK
 omabit --config-dir REGISTRY desk-plan-create --runner NAME --expected-runner-id ID \
   --instance INSTANCE --desk DESK
 ```
+
+`desk-list` reads installed names on the exact current ship/project generation.
+Setup's **Discover desks** adds the same observation to its permission tree, with
+an observation time. Neither discovering a desk nor entering its name grants
+permission. Unavailable/older runners return an error, not an empty successful
+inventory. A refresh clears Setup's temporary discovery view.
 
 `desk-inspect` obtains a live observation and effective gates. `desk-plan-create`
 requires observed absence and returns an exact plan with its request ID, runtime,

@@ -45,3 +45,33 @@ type DeskOperation struct {
 	Mode     string           `json:"mode"`
 	Receipt  deskwork.Receipt `json:"receipt"`
 }
+
+const DeskDiscoveryFeature = "desk-discovery-v1"
+const DeskDiscoveryPath = "/v1/desk-discovery"
+
+type DeskDiscoverySelection struct {
+	Target         apppolicy.Target `json:"target"`
+	RuntimeID      string           `json:"runtime_id"`
+	ConfigRevision uint64           `json:"config_revision"`
+}
+
+func (s DeskDiscoverySelection) ForDesk(desk string) DeskSelection {
+	target := s.Target
+	target.Desk = desk
+	return DeskSelection{Target: target, RuntimeID: s.RuntimeID, ConfigRevision: s.ConfigRevision}
+}
+func (s DeskDiscoverySelection) Validate() error {
+	if s.Target.Desk != "" {
+		return errors.New("discovery selects a ship, not a desk")
+	}
+	return s.ForDesk("base").Validate()
+}
+
+type DeskDiscovery struct {
+	Version   int                    `json:"version"`
+	RunnerID  string                 `json:"runner_id"`
+	Mode      string                 `json:"mode"`
+	Selection DeskDiscoverySelection `json:"selection"`
+	Desks     []string               `json:"desks"`
+	ReadAt    time.Time              `json:"read_at"`
+}

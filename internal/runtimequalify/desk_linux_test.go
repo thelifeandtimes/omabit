@@ -4,6 +4,7 @@ package runtimequalify
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"os"
@@ -102,5 +103,71 @@ func TestDeskRuntimeUsesPinnedPrivateProcessAndStdin(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestDeskRuntimeDiscoveryRejectsUnknownAutocommitAndBadInventories(t *testing.T) {
+	f, state, persist := managedFixture(t)
+	state, _, err := applyManaged(context.Background(), "start", state, persist, f.d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	id := state.Runtime.Containers[len(state.Runtime.Containers)-1].ID
+	if err = os.WriteFile(filepath.Join(managedPier(f, state), ".http.ports"), []byte("8080 insecure public\n12322 insecure loopback\n"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	var response string
+	f.d.executeInput = func(_ context.Context, _, _ []string, input []byte) (string, error) {
+		var req struct {
+			Source map[string]json.RawMessage `json:"source"`
+		}
+		if json.Unmarshal(input, &req) != nil {
+			t.Fatal("invalid request")
+		}
+		if string(req.Source["dojo"]) == `"our"` {
+			return `"~zod\n"`, nil
+		}
+		b, _ := json.Marshal(response)
+		return string(b), nil
+	}
+	runtime, err := openManagedDesk(context.Background(), state, id, f.d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, reply := range []string{"%.y", "%.n", "compiler failed", "", "~", "%.n extra"} {
+		response = reply
+		active, err := runtime.AutocommitActive(context.Background())
+		if reply == "%.y" || reply == "%.n" {
+			if err != nil || active != (reply == "%.y") {
+				t.Fatal(reply, active, err)
+			}
+		} else if err == nil {
+			t.Fatal("unknown autocommit treated as inactive", reply)
+		}
+	}
+	atom := func(s string) string {
+		b := []byte(s)
+		for i, j := 0, len(b)-1; i < j; i, j = i+1, j-1 {
+			b[i], b[j] = b[j], b[i]
+		}
+		return "0x" + hex.EncodeToString(b)
+	}
+	response = atom(`["zeta","base"]`)
+	names, err := runtime.ListDesks(context.Background())
+	if err != nil || len(names) != 2 || names[0] != "base" {
+		t.Fatal(names, err)
+	}
+	response = atom(`["base","base"]`)
+	if _, err = runtime.ListDesks(context.Background()); err == nil {
+		t.Fatal("duplicate accepted")
+	}
+	response = atom(`[["app","example","hoon"],["sys","kelvin"]]`)
+	paths, err := runtime.FilePaths(context.Background(), "base", 2)
+	if err != nil || len(paths) != 2 || paths[0] != "app/example.hoon" {
+		t.Fatal(paths, err)
+	}
+	response = atom(`[["..","escape","hoon"]]`)
+	if _, err = runtime.FilePaths(context.Background(), "base", 2); err == nil {
+		t.Fatal("unsafe path accepted")
 	}
 }

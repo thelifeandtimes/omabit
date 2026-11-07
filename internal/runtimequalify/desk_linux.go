@@ -212,3 +212,54 @@ func (s *DeskRuntime) Matches(ctx context.Context, desk string, revision uint64,
 		return false, errors.New("desk mark comparison unavailable or unsupported")
 	}
 }
+
+func (s *DeskRuntime) ListDesks(ctx context.Context) ([]string, error) {
+	request, err := deskwork.ListDesks(s.ship)
+	if err != nil {
+		return nil, err
+	}
+	reply, err := s.call(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	body, _ := json.Marshal(reply)
+	var names []string
+	if err = deskwork.DecodeJSONOutput(body, &names); err != nil {
+		return nil, errors.New("desk inventory unavailable or unsupported")
+	}
+	return deskwork.NormalizeDeskNames(names)
+}
+func (s *DeskRuntime) FilePaths(ctx context.Context, desk string, revision uint64) ([]string, error) {
+	request, err := deskwork.FilePaths(s.ship, desk, revision)
+	if err != nil {
+		return nil, err
+	}
+	reply, err := s.call(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	body, _ := json.Marshal(reply)
+	var paths [][]string
+	if err = deskwork.DecodeJSONOutput(body, &paths); err != nil {
+		return nil, errors.New("desk file inventory unavailable or unsupported")
+	}
+	return deskwork.UnixPaths(paths)
+}
+func (s *DeskRuntime) AutocommitActive(ctx context.Context) (bool, error) {
+	request, err := deskwork.AutocommitActive(s.ship)
+	if err != nil {
+		return false, err
+	}
+	reply, err := s.call(ctx, request)
+	if err != nil {
+		return false, err
+	}
+	switch strings.TrimSpace(reply) {
+	case "%.y":
+		return true, nil
+	case "%.n":
+		return false, nil
+	default:
+		return false, errors.New("autocommit state unavailable or unsupported")
+	}
+}

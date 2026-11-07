@@ -52,7 +52,7 @@ function nodeKey(scope,runner,t) {
 
 // This map never derives runner permissions from an unacknowledged global
 // rollout. Each runner contributes its own authoritative saved policy.
-function tree(v, extra) {
+function tree(v, extra, inventories) {
   if(!v)return null
   function decisions(g) {
     var out={}
@@ -73,15 +73,19 @@ function tree(v, extra) {
       var ship=node("ship",r.runner_id,s.target,s.ship||s.target.instance_id,s.label,effective(p,s.target),s.ready)
       runner.children.push(ship)
       var names=[]
-      // Optional known desk names are fixture observations today. Saved scopes
-      // and a reviewed draft remain visible without claiming a Clay inventory.
-      ;(s.desks||[]).forEach(function(d){if(/^[a-z][a-z0-9-]{0,63}$/.test(d) && names.indexOf(d)<0)names.push(d)})
+      // Observations never grant permissions. Saved scopes and draft names stay
+      // visible even if the last discovery did not find that desk.
+      var observed=inventory(inventories,r.runner_id,s.target)
+      ;(observed ? observed.desks : s.desks||[]).forEach(function(d){if(/^[a-z][a-z0-9-]{0,63}$/.test(d) && names.indexOf(d)<0)names.push(d)})
       p.entries.forEach(function(e){if(e.target.desk && same(e.target, Object.assign({},s.target,{desk:e.target.desk})) && names.indexOf(e.target.desk)<0)names.push(e.target.desk)})
       if(extra && extra.runner===r.runner_id && extra.target && extra.target.desk && same(extra.target,Object.assign({},s.target,{desk:extra.target.desk})) && /^[a-z][a-z0-9-]{0,63}$/.test(extra.target.desk) && names.indexOf(extra.target.desk)<0)names.push(extra.target.desk)
       names.sort().forEach(function(name) {
         var target=Object.assign({},s.target,{desk:name})
         var own=configured(p,"desk",target),overridden=own.commit!=="inherit" || own.publish!=="inherit"
-        ship.children.push(node("desk",r.runner_id,target,"%"+name,overridden ? "Desk override" : "Inherited",effective(p,target),s.ready))
+        var child=node("desk",r.runner_id,target,"%"+name,(overridden ? "Desk override" : "Inherited"),effective(p,target),s.ready)
+        child.installed=!!observed && observed.desks.indexOf(name)>=0
+        if(child.installed)child.subtitle="Installed · "+child.subtitle
+        ship.children.push(child)
       })
     })
   })
@@ -111,4 +115,16 @@ function layoutTree(root,gate,filter,query) {
   }
   if(root)walk(root,0,[])
   return {nodes:nodes,edges:edges,rows:Math.max(1,row),matches:matches}
+}
+
+function inventory(inventories,runner,t){
+  return (inventories||[]).filter(function(i){return i.runner_id===runner && same(i.selection.target,t)})[0] || null
+}
+function discovery(v,request){
+  return v && v.version===1 && v.runner_id===request.runner_id && identifier(v.mode)
+    && v.selection && target(v.selection.target) && !v.selection.target.desk && same(v.selection.target,request.target)
+    && typeof v.selection.runtime_id==="string" && /^[0-9a-f]{64}$/.test(v.selection.runtime_id)
+    && revision(v.selection.config_revision) && v.selection.config_revision>0
+    && Array.isArray(v.desks) && deskNames(v.desks)
+    && isFinite(Date.parse(v.read_at)) && Date.now()-Date.parse(v.read_at)<=95000 && Date.parse(v.read_at)<=Date.now()+5000
 }

@@ -6,6 +6,11 @@ var desktopCommandHelp = map[string]string{
 Observe an uncertain creation on its exact selected runtime and record the result.
 Never repeats the effect or changes permissions. Query desk-operation afterward;
 unavailable evidence leaves the outcome uncertain.`,
+	"desk-list": `Usage: omabit [--config-dir DIR] desk-list --runner NAME --expected-runner-id ID --instance INSTANCE
+
+Read installed desk names from the selected running ship. Discovery does not
+create desks or grant permissions; unsupported or unavailable runners fail visibly.
+`,
 	"desk-inspect": `Usage: omabit [--config-dir DIR] desk-inspect --runner NAME --expected-runner-id ID --instance INSTANCE --desk DESK
 Read the selected live desk and its effective permissions. DESK omits the % prefix.
 Requires a compatible runner and operator access; never creates or commits a desk.`,

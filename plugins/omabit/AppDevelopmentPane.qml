@@ -23,6 +23,8 @@ Column {
   readonly property var runner:runners.filter(function(r){return r.runner_id===root.selectedRunner})[0] || null
   readonly property var ships:runner && runner.status ? runner.status.targets : []
   readonly property var ship:ships.filter(function(s){return s.target.instance_id===root.selectedShip})[0] || null
+  readonly property var inventory:ship ? controller.inventory(selectedRunner,ship.target) : null
+  function discoveryTime(stamp){return Qt.formatTime(new Date(stamp),"hh:mm:ss")}
   readonly property var target: {
     var t=(scope==="ship" || scope==="desk") && ship ? JSON.parse(JSON.stringify(ship.target)) : {}
     if(scope==="desk")t.desk=selectedDesk
@@ -110,12 +112,12 @@ Column {
       }
       AppPolicyTree {
         id:tree;objectName:"app-policy-tree";width:parent.width
-        model:Policy.tree(root.policyView,{runner:root.selectedRunner,target:root.target})
+        model:Policy.tree(root.policyView,{runner:root.selectedRunner,target:root.target},controller.inventories)
         gate:root.filterGate;filter:root.filterValue;query:search.text;selectedKey:root.selectionKey
         onSelected:function(node){root.selectNode(node)}
       }
       Label { width:parent.width;caption:true;secondary:true;text:tree.filtering ? "Highlighted paths lead to matches. Each node shows its own effective permission; unrelated branches stay dimmed." : "Permissions shown here are saved values. Select any node to edit its permissions." }
-      Label { width:parent.width;caption:true;secondary:true;text:"Ctrl+scroll to zoom. Scroll or drag to explore the tree." }
+      Label { width:parent.width;caption:true;secondary:true;text:"Ctrl+scroll to zoom. Scroll or drag to explore the tree. ✓ marks a discovered installed desk." }
       Label { width:parent.width;visible:!!root.policyView && root.runners.length===0;text:"No runners enrolled. Add a runner, then review and apply your global settings.";caption:true;secondary:true }
       Label { width:parent.width;visible:!root.policyView;text:controller.busy ? "Loading permissions…" : "Permissions unavailable. Refresh to try again.";caption:true;secondary:true }
     }
@@ -168,6 +170,12 @@ Column {
           ActionButton { text:"Review desk";enabled:!!root.ship && !controller.busy && /^[a-z][a-z0-9-]{0,63}$/.test(deskName.text.trim());onClicked:root.reviewDesk(deskName.text.trim()) }
         }
         Label { width:parent.width;text:"Adds a name to this policy view. It does not create or install a desk.";caption:true;secondary:true }
+        RowLayout {
+          width:parent.width;spacing:Style.space(8)
+          ActionButton { objectName:"app-policy-discover";compact:true;quiet:true;text:"Discover desks";enabled:controller.available && !controller.busy && !!root.runner && root.runner.can_edit && !!root.ship && root.ship.ready;onClicked:controller.discover(root.runner.name,root.runner.runner_id,root.ship.target) }
+          Label { Layout.fillWidth:true;Layout.minimumWidth:0;caption:true;secondary:true;text:root.inventory ? root.inventory.desks.length+" installed · "+root.discoveryTime(root.inventory.read_at) : "Read installed desks from this ship" }
+        }
+
       }
     }
   }
@@ -206,7 +214,7 @@ Column {
   Column {
     width:parent.width;visible:root.detailsOpen;spacing:Style.space(8)
     Label { width:parent.width;visible:!!root.runner && !!root.runner.status;text:"Runner policy revision "+(root.runner && root.runner.status ? root.runner.status.policy.revision : "");caption:true;secondary:true }
-    Label { width:parent.width;text:"The tree includes saved desk policies and any supplied desk inventory. Installed-desk discovery is not connected yet. A name entered here is not evidence that a desk exists on the ship.";caption:true;secondary:true }
+    Label { width:parent.width;text:"Discover desks reads the selected running ship. Installed desks are marked in the tree; saved permissions and manually entered names remain visible too. Refresh clears discovered names until you read the ship again.";caption:true;secondary:true }
     Label { width:parent.width;text:"Permissions govern Omabit-managed agent operations. Human Dojo commands and independent Urgit clients keep their own authority.";caption:true;secondary:true }
   }
   Label { width:parent.width;text:"Compatible runners support gated desk creation through the Omabit CLI. Commit and publishing commands are still being implemented.";caption:true;secondary:true }

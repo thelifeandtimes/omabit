@@ -12,6 +12,9 @@ import (
 )
 
 func (c *Client) requireDesks(ctx context.Context, expected Identity) error {
+	return c.requireDeskFeature(ctx, expected, protocol.DeskCreateFeature)
+}
+func (c *Client) requireDeskFeature(ctx context.Context, expected Identity, feature string) error {
 	h, err := c.Hello(ctx)
 	if err != nil {
 		return err
@@ -19,8 +22,8 @@ func (c *Client) requireDesks(ctx context.Context, expected Identity) error {
 	if err = expected.Check(h.RunnerID, h.Mode); err != nil {
 		return err
 	}
-	if !slices.Contains(h.Features, protocol.DeskCreateFeature) {
-		return errors.New("runner lacks desk-create-v1; use a compatible runner")
+	if !slices.Contains(h.Features, feature) {
+		return errors.New("runner lacks " + feature + "; use a compatible runner")
 	}
 	return nil
 }

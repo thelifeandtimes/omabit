@@ -7960,3 +7960,30 @@ No production/DEV/trial service, plugin or ship was changed. The human-reviewed
 persistent preview remains at its earlier source and retains its saved policies.
 Full managed-runtime desk deployment, source bindings/transfers/alerts, Treaty,
 frontends, Urgit workflow, fleet URLs and clearweb assistance remain active work.
+
+## M539 — Live desk discovery and active-autocommit evidence (2026-11-06)
+
+`desk-discovery-v1` adds operator-only live desk names to the runner/collector and
+`omabit desk-list`. It pins the current process, configuration, ship/project
+generation and enrollment; malformed, stale, duplicate or mismatched responses
+fail visibly. Setup's Discover desks button reads only the selected ship, marks
+installed names, retains saved scopes and unsaved permission edits, and grants
+nothing. Its temporary observations clear on policy refresh/profile change.
+The full policy editor passes wide and narrow offscreen fixtures; the wide
+screenshot was inspected. The persistent human preview was not updated.
+
+Probe14 passes the actual Go-generated desk list, immutable-revision file paths
+and active-autocommit detector (inactive → active → cancelled) on the isolated
+native fake. It also repeats the create/mount/commit/mark-conversion/publication
+protocol checks and shuts down cleanly. Probe13's desk/file reads passed but its
+first autocommit query hit Hoon type inference; that failure remains recorded.
+The corrected query reverses the path before refining its shape. Unknown output
+is never treated as inactive. Fixture wrappers reject bad paths/inventories and
+compiler errors; server/collection race fixtures cover changed selections,
+capabilities, generations and failed observations. Evidence and limits are in
+`diagnostics/2026-11-06-desk-discovery.json`.
+
+No persistent schema change accompanies discovery. Source bindings/transfers,
+canonical Unix/Clay alerts, gated commit/publication, managed-runtime end-to-end,
+Urgit, fleet URLs and clearweb assistance remain active work. This checkpoint
+supersedes M538 only for its pending live-desk-discovery item.

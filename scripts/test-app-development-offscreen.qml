@@ -17,7 +17,7 @@ ShellRoot {
     property bool transportStopping:false
     property string profileName:"dev"
     property string scenario:"normal"
-    function themeCommand(args){return ["/usr/bin/python3","/lab/backend.py",scenario,profileName].concat(args)}
+    function themeCommand(args){return ["/usr/bin/python3","/lab/backend.py",(args.length ? scenario : "binding"),profileName].concat(args)}
   }
   function capture(name) {
     captured=false
@@ -58,7 +58,23 @@ ShellRoot {
         pane.scope="desk";test.check(pane.effective.commit.source==="desk","global erased override")
         test.ticks=0;test.phase=40
       }else if(test.phase===40 && ++test.ticks>=3){test.fits(pane);test.capture("policy");test.phase=5
-      }else if(test.phase===5 && test.captured){service.scenario="observer";c.refresh();test.phase=6}
+      }else if(test.phase===5 && test.captured){
+        pane.scope="ship";pane.commitValue="allow";test.check(c.discover("lab","runner-lab",pane.ship.target),"discovery refused");test.phase=50
+      }else if(test.phase===50 && !c.busy){
+        test.check(c.value && pane.inventory && pane.inventory.desks.length===3,"inventory absent")
+        test.check(pane.commitValue==="allow","discovery erased unsaved edit")
+        var graph=control(pane,"app-policy-tree").graph
+        test.check(graph.nodes.some(function(n){return n.title==="%new-desk" && n.subtitle.indexOf("Installed")===0 && n.permissions.commit.value==="block"}),"discovery granted permission or missing node")
+        test.capture("discovery");test.phase=51
+      }else if(test.phase===51 && test.captured){
+        service.scenario="discovery-mismatch";c.discover("lab","runner-lab",pane.ship.target);test.phase=52
+      }else if(test.phase===52 && !c.busy){
+        test.check(c.error && c.value && pane.inventory && pane.commitValue==="allow","mismatched discovery accepted or erased policy")
+        service.scenario="discovery-error";c.discover("lab","runner-lab",pane.ship.target);test.phase=53
+      }else if(test.phase===53 && !c.busy){
+        test.check(c.error && c.value && pane.inventory && pane.commitValue==="allow","discovery failure erased edits")
+        service.scenario="observer";c.refresh();test.check(c.inventories.length===0,"refresh retained stale discovery");test.phase=6
+      }
       else if(test.phase===6 && !c.busy && c.value){test.check(!save.enabled,"observer can save");service.scenario="offline";c.refresh();test.phase=7}
       else if(test.phase===7 && !c.busy && c.value){test.check(!save.enabled && c.value.runners[0].rollout==="pending","offline permissions editable");service.scenario="mismatch";c.refresh();test.phase=8}
       else if(test.phase===8 && !c.busy && c.error){test.check(!c.value && !save.enabled,"wrong runner accepted");service.scenario="malformed";c.refresh();test.phase=9}

@@ -9,10 +9,17 @@ HELPER = r'''
 import json, signal, sys, time
 from pathlib import Path
 scenario, profile, command, *args = sys.argv[1:]
-assert command in ('app-development-status','app-development-save','app-development-retry')
+assert command in ('app-development-status','app-development-save','app-development-retry','desk-list')
 path=Path('/lab/policy.json')
 v=json.loads(path.read_text())
 with Path('/lab/calls.jsonl').open('a') as f:f.write(json.dumps({'profile':profile,'command':command,'args':args})+'\n')
+if command=='desk-list':
+    from datetime import datetime, timezone
+    assert args==['--runner','lab','--expected-runner-id','runner-lab','--instance','publisher']
+    if scenario=='discovery-error':print(json.dumps({'error':'Discovery unavailable'}),file=sys.stderr);sys.exit(1)
+    target={'instance_id':'publisher'}
+    if scenario=='discovery-mismatch':target.update(project_id='network',generation=2,creator='replacement')
+    print(json.dumps({'version':1,'runner_id':'runner-lab','mode':'simulation','selection':{'target':target,'runtime_id':'a'*64,'config_revision':1},'desks':['base','my-app','new-desk'],'read_at':datetime.now(timezone.utc).isoformat()}));sys.exit(0)
 if command=='app-development-save':
     assert args[0]=='--request-json'
     r=json.loads(args[1]);u=r['update'];p=v['runners'][0]['status']['policy']
@@ -69,6 +76,7 @@ def main():
     assert not any(s in log for s in ('Error:','FAIL:','Unable to assign','Cannot assign','is not defined','Binding loop')),log
     calls=[json.loads(s) for s in (out/'calls.jsonl').read_text().splitlines()]
     assert len([c for c in calls if c['command']=='app-development-save'])==4,calls
+    assert len([c for c in calls if c['command']=='desk-list'])==3,calls
     assert (out/'late-finished').read_text()=='dev'
     assert (out/'policy.png').exists() and (out/'global.png').exists()
     print('PASS: four policy scopes, defaults, inheritance, observer/offline refusal, malformed identity and stale-profile response rejection')

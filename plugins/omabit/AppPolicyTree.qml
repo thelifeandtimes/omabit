@@ -112,7 +112,7 @@ FocusScope {
             readonly property bool current:modelData.key===root.selectedKey
             opacity:!current && !activeFocus && root.filtering && !modelData.onPath ? 0.35 : 1
             hint:modelData.title+" · "+modelData.subtitle+"\n"+(!modelData.ready ? "Permissions unavailable" : modelData.decision.value+" · from "+modelData.decision.source)
-            Accessible.name:modelData.title+", "+modelData.scope+", "+(modelData.ready ? modelData.decision.value : "unavailable")
+            Accessible.name:modelData.title+", "+modelData.scope+(modelData.installed ? ", installed" : "")+", "+(modelData.ready ? modelData.decision.value : "unavailable")
             background:Rectangle {
               radius:Style.space(8)
               color:node.current ? Design.fade(Design.accent,0.16) : root.filtering && node.modelData.match ? Design.fade(Design.accent,0.08) : Design.surface
@@ -121,7 +121,7 @@ FocusScope {
             }
             contentItem:Column {
               spacing:Style.space(6)
-              Label { width:parent.width;text:node.modelData.title;font.bold:node.current;wrapMode:Text.NoWrap;elide:Text.ElideRight }
+              Label { width:parent.width;text:node.modelData.title+(node.modelData.installed ? " ✓" : "");font.bold:node.current;wrapMode:Text.NoWrap;elide:Text.ElideRight }
               Row {
                 spacing:Style.space(5)
                 Rectangle { anchors.verticalCenter:parent.verticalCenter;width:5;height:5;radius:3;color:!node.modelData.ready ? Design.warning : node.modelData.decision.value==="allow" ? Design.accent : Design.muted }

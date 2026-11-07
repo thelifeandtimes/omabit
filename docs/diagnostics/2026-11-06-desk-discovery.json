@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "result": "passed",
+  "kind": "typed desk discovery and autocommit native fake protocol",
+  "evidence_root": "/tmp/omabit-desk-probe-14",
+  "result_sha256": "85a311d691a31bc910218821f5070fce3a756291ee61fc3c9590db964227f7ce",
+  "exit_sha256": "bfdedf06596faa2042b0fedd9653ec1023d2e96ed56dc40b607985bc8438c1d5",
+  "inputs": {
+    "requests.json": "7307a24b63f06db9263d70370255e7b6821bc416657d27cdf39b072ffcc440aa",
+    "probe.py": "051d6ae802236fd1dded439334fa848a509330936b21538723dca668d0af8756",
+    "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+    "vere": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+  },
+  "checks": [
+    "typed-inventory",
+    "typed-desks",
+    "typed-files",
+    "typed-autocommit-inactive",
+    "typed-autocommit-active",
+    "typed-autocommit-cancelled"
+  ],
+  "clean_shutdown": true,
+  "supersedes_failed_discovery_probe": "/tmp/omabit-desk-probe-13",
+  "fixtures": [
+    "/tmp/omabit-desk-discovery-api-01",
+    "/tmp/omabit-desk-discovery-runtime-01",
+    "/tmp/omabit-desk-discovery-collection-01",
+    "/tmp/omabit-policy-ui-discovery-02",
+    "/tmp/omabit-policy-ui-discovery-03"
+  ],
+  "limits": [
+    "Native fake protocol plus separate runner/API fixtures; managed Docker end-to-end pending",
+    "No production/DEV/trial plugins, runners, ships or host agent touched",
+    "Treaty, receiver, frontend and Urgit workflow still pending",
+    "Not release qualification"
+  ],
+  "source_sha256": {
+    "internal/deskwork/lens.go": "e8c1cb343e8c802bec3848e9a4f88ed4e07b2a44b0013ad513f06913fa12cc3f",
+    "internal/deskwork/discovery.go": "80af2b4ea61f386219e9bb6f0f3a6810718f28af60a45a5df78fd770edefca7b",
+    "scripts/qualification/app-development/requests.go": "c1e21a8a8596856106c9f634d526a1b8022a4f30bc94344904ea114b36e2f78c",
+    "scripts/qualification/app-development/probe.py": "051d6ae802236fd1dded439334fa848a509330936b21538723dca668d0af8756"
+  },
+  "source_verification": "Current constructors regenerate byte-identical tested request JSON."
+}

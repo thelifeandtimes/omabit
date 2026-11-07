@@ -3,8 +3,9 @@
 Proposed architecture, recorded 2026-11-06. The user added this work to the
 0.4.0 scope after remote-runner installation testing. Source review is complete.
 The [policy layer and Setup editor](app-development-policy.md) are implemented
-and fixture-tested. The desk-operation APIs below remain proposed, with runtime
-qualification pending.
+and fixture-tested. Gated creation and live desk discovery are implemented;
+source transfer/commit/publication remain in progress. Full managed-runtime
+qualification is pending.
 The user's follow-up fixes the scope to Urbit desks and their frontend assets.
 Agent desk creation, commit and publication start disabled, with permissions configured in
 Omabit Setup. Each application retains its developer's release configuration.
@@ -110,8 +111,11 @@ effect, including queued work and retries after a restart. A policy change
 fences future effects while completed stages retain their receipts.
 
 The policy tree highlights effective permissions and matching paths while keeping
-unrelated branches visible. Complete live desk discovery remains a later pipeline
-step; configured desk scopes are visible without querying Clay.
+unrelated branches visible. **Discover desks** reads the selected running ship
+using `desk-discovery-v1`; it marks installed desks without granting permissions
+or discarding unsaved edits. The observation belongs to the exact runner and
+project generation, is temporary, and clears on refresh/profile change. Saved
+desk scopes remain visible without querying Clay.
 
 Apply permissions to the effects of an operation. Creation requires the ship
 gate and fresh evidence that the exact desk does not already exist. A commit to a published desk
@@ -313,8 +317,8 @@ pipeline after an interrupted terminal or desktop restart.
 7. Qualify the 0.3.7 upgrade with commit/publication blocked by default, preserved
    settings and history, older-runner capability handling and matching artifacts.
 
-Agent Help and skill installation remain the next small 0.4.0 implementation
-slice. This workflow follows, alongside the shared origin work it can reuse.
+Agent Help and skill installation are implemented and fixture-tested. This
+workflow remains active alongside the shared origin work it can reuse.
 Remote-runner distro testing is complete for this stage. Clearweb access remains
 in scope. This app workflow covers Urbit desks and their frontend assets. The
 user deferred coordinated companion Omarchy plugin releases beyond this scope.

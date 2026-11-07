@@ -43,3 +43,9 @@ mark. Earlier pruned runs contain receipts, not reusable piers or runtime copies
 The probe does not qualify managed Docker selection, remote transport, policy
 persistence, Treaty publication, receivers, frontend delivery or Urgit. Those
 remain separate workflow checks.
+
+The typed requests also exercise desk enumeration, immutable-revision file paths
+and actual Behn autocommit timer detection (inactive → active → cancelled).
+Unknown query output is an error, never evidence that autocommit is disabled.
+Probe14 is the first complete pass for this extended set; probe13 retains the
+failed Hoon inference query. See M539 and the discovery diagnostics record.

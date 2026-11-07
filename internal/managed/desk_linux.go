@@ -16,6 +16,7 @@ import (
 )
 
 type deskRuntime interface {
+	ListDesks(context.Context) ([]string, error)
 	Observe(context.Context, string) (deskwork.Observation, error)
 	Create(context.Context, string) error
 }

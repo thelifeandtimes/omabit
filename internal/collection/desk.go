@@ -7,6 +7,7 @@ import (
 	"errors"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/apppolicy"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/deskwork"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
@@ -53,36 +54,9 @@ func (r *Registry) InspectDesk(ctx context.Context, name, runner, instance, desk
 	if err != nil {
 		return out, err
 	}
-	var selection protocol.DeskSelection
-	for _, t := range policy.Targets {
-		if t.Target.InstanceID == instance && t.Ready {
-			selection.Target = t.Target
-			selection.Target.Desk = desk
-		}
-	}
-	if selection.Target.InstanceID == "" {
-		return out, errors.New("ship or project generation is unresolved")
-	}
-	snapshot, err := c.Snapshot(ctx)
+	selection, err := selectDeskRuntime(ctx, c, entry.Identity(), policy, instance, desk)
 	if err != nil {
 		return out, err
-	}
-	if err = entry.Identity().Check(snapshot.RunnerID, snapshot.Mode); err != nil {
-		return out, err
-	}
-	count := 0
-	for _, s := range snapshot.Instances {
-		if s.ID == instance {
-			count++
-			if s.ProjectID != selection.Target.ProjectID || s.ObservedState != "running" || s.ActiveOperationID != "" || s.RecoveryRequired || s.Resources == nil {
-				return out, errors.New("select a ready running ship")
-			}
-			selection.ConfigRevision = s.ConfigRevision
-			selection.RuntimeID = s.Resources.ContainerID
-		}
-	}
-	if count != 1 || selection.Validate() != nil {
-		return out, errors.New("current desk runtime selection unavailable")
 	}
 	observation, err := c.DeskObservation(ctx, entry.Identity(), selection)
 	if err != nil {
@@ -146,4 +120,62 @@ func (r *Registry) ReconcileDeskOperation(ctx context.Context, name, runner, id 
 	c := entry.Client(true)
 	defer c.Close()
 	return c.ReconcileDeskOperation(ctx, entry.Identity(), id)
+}
+
+// Resolve a current process from the same policy target and snapshot. The runner
+// checks this selection again under lifecycle admission before any private read.
+func selectDeskRuntime(ctx context.Context, c *client.Client, identity client.Identity, policy protocol.AppPolicyStatus, instance, desk string) (protocol.DeskSelection, error) {
+	var selection protocol.DeskSelection
+	for _, t := range policy.Targets {
+		if t.Target.InstanceID == instance && t.Ready {
+			selection.Target = t.Target
+			selection.Target.Desk = desk
+		}
+	}
+	if selection.Target.InstanceID == "" {
+		return selection, errors.New("ship or project generation is unresolved")
+	}
+	snapshot, err := c.Snapshot(ctx)
+	if err != nil {
+		return selection, err
+	}
+	if err = identity.Check(snapshot.RunnerID, snapshot.Mode); err != nil {
+		return selection, err
+	}
+	count := 0
+	for _, s := range snapshot.Instances {
+		if s.ID == instance {
+			count++
+			if s.ProjectID != selection.Target.ProjectID || s.ObservedState != "running" || s.ActiveOperationID != "" || s.RecoveryRequired || s.Resources == nil {
+				return selection, errors.New("select a ready running ship")
+			}
+			selection.ConfigRevision = s.ConfigRevision
+			selection.RuntimeID = s.Resources.ContainerID
+		}
+	}
+	if count != 1 || selection.Validate() != nil {
+		return selection, errors.New("current desk runtime selection unavailable")
+	}
+	return selection, nil
+}
+func (r *Registry) DiscoverDesks(ctx context.Context, name, runner, instance string) (protocol.DeskDiscovery, error) {
+	var out protocol.DeskDiscovery
+	if !protocol.ValidID(instance) {
+		return out, errors.New("select a registered ship instance")
+	}
+	entry, err := r.deskConnection(ctx, name, runner)
+	if err != nil {
+		return out, err
+	}
+	c := entry.Client(true)
+	defer c.Close()
+	policy, err := c.AppPolicy(ctx, entry.Identity())
+	if err != nil {
+		return out, err
+	}
+	selection, err := selectDeskRuntime(ctx, c, entry.Identity(), policy, instance, "base")
+	if err != nil {
+		return out, err
+	}
+	return c.DiscoverDesks(ctx, entry.Identity(), protocol.DeskDiscoverySelection{Target: selection.Target.Ship(), RuntimeID: selection.RuntimeID, ConfigRevision: selection.ConfigRevision})
 }

@@ -1,5 +1,17 @@
 # Stable-release upgrade requirement
 
+## Development: typed desk operations, schema50
+
+Schema50 adds separately journaled desk-operation intents and append-only history.
+Original schema49 writer state upgrades without changing prior registry/policy
+records; repeated opens validate the journal and never redispatch an interrupted
+effect. Older schema49 writers refuse actual schema50 state without modifying it.
+The original-writer fixture and `scripts/test-desk-upgrade.py` record this narrow
+source compatibility path (M538). Discovery adds no persistent format; its
+`desk-discovery-v1` capability and typed creation's `desk-create-v1` must be checked
+before use. These are development fixtures, not the deferred exact-artifact
+0.3.7 → 0.4.0 release qualification.
+
 ## Development: application permissions, schema49
 
 The 0.4.0 [application policy layer](app-development-policy.md) adds runner

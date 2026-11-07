@@ -19,7 +19,13 @@ func main() {
 		}
 		out[name] = b
 	}
-	r, e := deskwork.Inventory("~zod", "omabit-test")
+	r, e := deskwork.ListDesks("~zod")
+	save("desks", r, e)
+	r, e = deskwork.FilePaths("~zod", "omabit-test", 2)
+	save("files", r, e)
+	r, e = deskwork.AutocommitActive("~zod")
+	save("autocommit", r, e)
+	r, e = deskwork.Inventory("~zod", "omabit-test")
 	save("inventory", r, e)
 	r, e = deskwork.Create("~zod", "omabit-test")
 	save("create", r, e)

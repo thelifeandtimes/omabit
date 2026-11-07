@@ -123,16 +123,21 @@ def inside():
             first=len(encoded)%4 or 4;encoded=encoded[:first]+''.join('.'+encoded[i:i+4] for i in range(first,len(encoded),4))
             compare="=/  convert  .^(tube:clay %cc /~zod/omabit-test/"+revision+"/mime/txt)  =(q:(convert !>(`mime`[/text/plain ["+str(len(raw))+" 0x"+encoded+"]])) .^(* %cx /~zod/omabit-test/"+revision+"/hello/txt))"
             assert lens('mark-equivalence',compare)=='%.y'
+            assert g['desk'] in decode_atom(fixed('typed-desks','desks'))
+            assert ['hello','txt'] in decode_atom(fixed('typed-files','files'))
             assert fixed('structured-mark-equivalence','equivalent')=='%.y'
             assert fixed('structured-mark-difference','different')=='%.n'
             result['raw_byte_normalization']={'unix_bytes':len(raw),'clay_rendered_bytes':len((snapshot/'hello.txt').read_bytes()),'equivalent':True};save()
             (mount/'hello.txt').write_text('pending second source\n')
             assert (snapshot/'hello.txt').read_bytes()!= (mount/'hello.txt').read_bytes()
+            assert fixed('typed-autocommit-inactive','autocommit')=='%.n'
             lens('autocommit-start','+hood/commit %omabit-test, =auto &','hood')
+            assert fixed('typed-autocommit-active','autocommit')=='%.y'
             lens('timers-active','.^((list [@da duct]) %bx /~zod//(scot %da now)/debug/timers)',required=False)
             lens('hood-state-active','=/  v  .^(vase %gx /~zod/hood/(scot %da now)/dbug/state/noun)  q:(slap v (ream \'commit-timer.kiln\'))',required=False)
             lens('autocommit-stop','~','hood','kiln-cancel-autocommit')
             lens('timers-cancelled','.^((list [@da duct]) %bx /~zod//(scot %da now)/debug/timers)',required=False)
+            assert fixed('typed-autocommit-cancelled','autocommit')=='%.n'
             fixed('publish-source','publish-source')
             assert decode_atom(fixed('inventory-published','inventory'))['publication']=='published'
             result['ok']=True
@@ -150,7 +155,7 @@ def host(a):
     out=a.output.absolute()
     if out.parent!=Path('/tmp') or not re.fullmatch('omabit-desk-probe-[a-z0-9-]+',out.name) or out.exists():raise ValueError('fresh private output required')
     frozen_requests=json.loads(a.requests.read_text())
-    if set(frozen_requests)!={'inventory','create','mount','commit','publish-source','equivalent','different'}:raise ValueError('incomplete typed request fixture')
+    if set(frozen_requests)!={'desks','files','autocommit','inventory','create','mount','commit','publish-source','equivalent','different'}:raise ValueError('incomplete typed request fixture')
     if sha(a.vere)!=VERE_SHA or sha(a.pill)!=PILL_SHA:raise ValueError('pinned input mismatch')
     if shutil.disk_usage('/tmp').free<4*1024**3:raise RuntimeError('storage reserve absent')
     previous=None

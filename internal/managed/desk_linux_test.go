@@ -50,6 +50,14 @@ func (b *deskBackendFixture) Observe(_ context.Context, state runtimequalify.Man
 // A wrapper avoids colliding with the lifecycle backend's Observe method.
 type deskRuntimeFixture struct{ b *deskBackendFixture }
 
+func (d deskRuntimeFixture) ListDesks(context.Context) ([]string, error) {
+	d.b.reads.Add(1)
+	if d.b.scenario == "read-fails" {
+		return nil, errors.New("unavailable")
+	}
+	return []string{"base", "example"}, nil
+}
+
 func (d deskRuntimeFixture) Observe(context.Context, string) (deskwork.Observation, error) {
 	b := d.b
 	b.reads.Add(1)
@@ -280,5 +288,46 @@ func TestDeskAPIRejectsUnknownEffectsAndObserverWrites(t *testing.T) {
 	g02Check(t, err)
 	if len(ids) != 0 {
 		t.Fatal("invalid effects were journaled")
+	}
+}
+
+func TestDeskDiscoveryIsReadOnlyAndBoundToCurrentSelection(t *testing.T) {
+	for _, scenario := range []string{"ok", "read-fails", "runtime-changed", "wrong-revision", "wrong-instance", "desk-selected", "observer", "method"} {
+		t.Run(scenario, func(t *testing.T) {
+			b := &deskBackendFixture{scenario: scenario}
+			r, intent := deskServerFixture(t, b)
+			selection := protocol.DeskDiscoverySelection{Target: intent.Target.Ship(), RuntimeID: intent.RuntimeID, ConfigRevision: intent.ConfigRevision}
+			switch scenario {
+			case "wrong-revision":
+				selection.ConfigRevision++
+			case "wrong-instance":
+				selection.Target.InstanceID = "other"
+			case "desk-selected":
+				selection.Target.Desk = "base"
+			}
+			var out *httptest.ResponseRecorder
+			if scenario == "observer" {
+				body, _ := json.Marshal(selection)
+				out = httptest.NewRecorder()
+				r.serveDeskDiscovery(out, httptest.NewRequest("POST", protocol.DeskDiscoveryPath, bytes.NewReader(body)), "observer")
+			} else {
+				method := "POST"
+				if scenario == "method" {
+					method = "GET"
+				}
+				out = deskHTTPRequest(t, r, method, protocol.DeskDiscoveryPath, selection)
+			}
+			if scenario == "ok" {
+				var result protocol.DeskDiscovery
+				if out.Code != 200 || json.Unmarshal(out.Body.Bytes(), &result) != nil || result.Selection != selection || len(result.Desks) != 2 || b.reads.Load() != 1 {
+					t.Fatal(out.Code, out.Body.String())
+				}
+			} else if out.Code < 400 {
+				t.Fatal("invalid discovery accepted", out.Code, out.Body.String())
+			}
+			if b.calls.Load() != 0 {
+				t.Fatal("discovery dispatched mutation")
+			}
+		})
 	}
 }
