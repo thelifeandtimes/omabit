@@ -1172,3 +1172,20 @@ handoff. Current helper approval, issuer lineage/migration and assembled recover
 qualification remain prerequisites before advertising automatic reconnection.
 Do not delete sidecar/credential/transport history or downgrade formats to unblock
 an attempt. See `diagnostics/2026-11-07-theme-session-replacement.json`.
+
+
+## Unreleased DMs replacement and bridge coordination (M569)
+
+DMs keeps account/attempt formats1 and reads transport1/2. Only explicit retirement
+upgrades transport1 to2; original-writer preservation/old-reader refusal remains
+qualified in private fixtures. Quiescence identifies the exact retired generation,
+allowing it to remain alive after releasing its exclusive lease. It does not admit
+unrelated live cleanup actors, resolve app writes or authorize a successor.
+
+The new version1 replacement sidecar and request-specific Secret Service namespace
+follow Theme's retention rules. Pending installation is fenced; only accepted exact
+ancestry permits a new channel while old remote cleanup remains pending. Private
+bridge coordination stores no credential and creates no socket file. An existing
+bridge can adopt a successor without restart, but older cached helpers must not
+be treated as replacement-capable. Source fixture evidence does not qualify an
+installed/native upgrade. See `diagnostics/2026-11-07-dms-session-replacement.json`.

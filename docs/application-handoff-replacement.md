@@ -1,9 +1,10 @@
 # Fleet session replacement — implementation plan
 
-Status: in progress after M568. This is not an advertised protocol or a completed
-fleet feature. Theme preparation, activation, recovery and exact transport lineage
-pass private source fixtures. DMs retirement/drain is a tested foundation; its
-cooperative path, collector lineage and automatic loop remain.
+Status: in progress after M569. This is not an advertised protocol or a completed
+fleet feature. Both receivers' preparation, activation, recovery and exact
+transport lineage pass private source fixtures, including DMs cooperative bridge
+control. Collector lineage, capability compatibility, automatic polling and
+assembled native qualification remain.
 
 ## Required behavior
 
@@ -54,13 +55,12 @@ cannot silently break their cleanup. Prefer an explicit compatible sidecar for
 successor lineage while retaining the existing version2 transport shape. Validate
 and bound that sidecar with the same ownership/symlink/duplicate-key discipline.
 
-DMs supports one active account and currently holds a transport lease for the whole
-bridge lifetime. Its new local drain is not yet wired to a cooperative request.
-The main loop needs a bounded private request/response path that does not run a
-pool shutdown from one of that pool's workers. Keep the bridge alive while paused;
-after verified activation it can create a fresh worker pool, discard only old
-in-memory views, restore the new account and emit normal login/refresh events.
-Do not require the user to restart the UI or use remote deletion as local exit proof.
+DMs supports one active account and holds a transport lease for the bridge
+lifetime. M569 implements the bounded same-user local request path on the main
+loop, outside the pool it drains. It keeps the bridge alive while paused; verified
+successor adoption creates a fresh pool and discards only old in-memory views.
+Original cleanup can run through that current bridge without stopping new traffic.
+Private fixtures cover this sequence; assembled native qualification remains.
 
 ## Issuer and UI sequence
 
@@ -93,3 +93,12 @@ must require a predecessor helper that understands replacement cleanup; a change
 installed helper/grant cannot silently upgrade an older cached predecessor. Bound
 status observation handles lost delivery replies without another issuance/delivery.
 See [source evidence](diagnostics/2026-11-07-theme-session-replacement.json).
+
+
+## M569 implementation boundary
+
+DMs464076b implements the cooperative receiver sequence and source-level successor
+adoption/recovery. The helper inventory includes all imported modules. Theme's
+201fdd5 follow-up preserves a later independent key/metadata change during partial
+swap cleanup. Both remain unadvertised and isolated; see
+[source evidence](diagnostics/2026-11-07-dms-session-replacement.json).

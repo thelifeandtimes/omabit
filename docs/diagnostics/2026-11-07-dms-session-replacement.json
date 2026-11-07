@@ -1,0 +1,145 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M569",
+  "passed": true,
+  "omabit_base": "69866463389fd275f28c1cb7edfbd5143ef4a58c",
+  "dms": {
+    "checkout": "/tmp/omabit-receiver-reconnect-040/dms",
+    "branch": "codex/0.4.0-session-reconnect",
+    "commit": "464076bb484bf08d76db5a4a08608a0dcaf04797",
+    "control_foundation": "9826d78bf2373b38e1ed6cf1261edaac6e1264b5",
+    "base": "6ba5a02c22362ee79151ccfce96b7042ca74549f"
+  },
+  "theme_followup": {
+    "commit": "201fdd5b204e336faa1bc54fceb45a6e8886e607",
+    "scope": "Preserve independently changed origin credential and account metadata during partial replacement cleanup"
+  },
+  "checks": [
+    {
+      "directory": "/tmp/omabit-dms-retirement-06",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_*.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "c2870f54f5c2e7e2a0eb23ac045101b93fc07166ac0e440065727179e274090b",
+      "source_manifest_sha256": "386c1e3d13ab1002338a193a74ce2062723b8532d29d8dce448c6d085c2d85d2"
+    },
+    {
+      "directory": "/tmp/omabit-dms-retirement-07",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_connection_preparation.py",
+          "test_transport_retirement.py",
+          "test_handoff_control.py",
+          "test_bridge_handoff.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "d7782a15213c51ce541685d644d03c5de2bca2e6066b7f55ebfa1e59965a2469",
+      "source_manifest_sha256": "8efd7546b7c4279802080df136bd86dbb90894b183454f1868da952a09d50225"
+    },
+    {
+      "directory": "/tmp/omabit-dms-retirement-08",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_connection_replacement.py",
+          "test_connection_preparation.py",
+          "test_bridge_transport.py",
+          "test_transport_retirement.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "5f61c29b4bf1f1541f0752b4a09cea59daeb2e255ec79ae986a51ef09909e568",
+      "source_manifest_sha256": "ce4e0fcc0dbde2720a0982402d908e6622e012369b789b46ca665711ac27294c"
+    },
+    {
+      "directory": "/tmp/omabit-dms-retirement-09",
+      "result": {
+        "exit": 1,
+        "patterns": [
+          "test_connection_replacement.py",
+          "test_connection_recovery.py",
+          "test_handoff_control.py",
+          "test_transport_retirement.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "20be2c1f4c42759e594944da08e5b77ce19b6c809478ff0fc5d7e9fdd9694ac4",
+      "source_manifest_sha256": "319f44a97aa2af81935c7a4cf570c8fdb1f3b63805bc3e8af0700c70e1b12f51"
+    },
+    {
+      "directory": "/tmp/omabit-dms-retirement-10",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_*.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "565512b5f7cab6a8d44bbe57e809c7ad58593eef269764685b8c06b589f204ef",
+      "source_manifest_sha256": "e6eafa82998a7402b5b12492d2598ef150d17982c27c30ba5f5b89398d925681"
+    },
+    {
+      "directory": "/tmp/omabit-dms-retirement-11",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_connection_replacement.py",
+          "test_handoff_control.py",
+          "test_input_shutdown.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "8174e0928ea7d5b9a0f417e138143a34b52a89b0f4589aada34e094e0b93d766",
+      "source_manifest_sha256": "ac295f24a02fe9ea1b92ef2bd702322c5d60687b6e803ff6bf93decff8f39bca"
+    },
+    {
+      "directory": "/tmp/omabit-theme-handoff-11",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_connection_replacement.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "f7034ed20a0683218b0049044938b2f9c2ffada6c5cf61a123acbdbf468048e1",
+      "source_manifest_sha256": "cb42ce947170c38855f87efd7f5aca055a367994f7eaf96c5de5f83c6abcf131"
+    }
+  ],
+  "coverage": [
+    "Private Linux abstract Unix socket scoped by canonical root/plugin/profile, peer UID and bound request nonce; idle UI input does not block main-loop preparation",
+    "Receiver releases account.lock while bridge workers finish positive application receipts; compares account/credential again after drain",
+    "Missing listener, released lease without owner exit, unknown application writes and changed bindings cannot authorize preparation",
+    "Exact quiescent old generation can be cleaned while its process remains alive after lease release; unrelated live/unknown actors still block",
+    "Nonsecret replacement intent, request-specific old Secret Service namespace, same-origin/changed-origin/return-to-origin fresh sessions, pending-installation transport fence",
+    "Paused bridge restores exact accepted successor with a fresh pool; current channel admits only verified retired ancestry; later standalone changes survive cleanup",
+    "Active successor bridge can close original predecessor channels without pausing itself or clearing the new normal credential",
+    "Lost metadata/credential/clear acknowledgements, original-slot restoration, accepted-status observation without redelivery, retry of saved successor after temporary restore failure",
+    "Run10 full DMs203 tests pass; follow-up11 DMs29 and Theme23 tests pass; previous-writer migration and existing session/stream/receipt/shutdown tests retained"
+  ],
+  "failed_experiments": [
+    "DMs09: one failed interruption test exposed SessionStore temporary cleanup masking the original completed-rename exception. The completed metadata remained durable. Suppressing only absent-temp cleanup preserves the original failure; run10 passes.",
+    "DMs05 passed59 discovered tests but three requested patterns matched no files. The harness now refuses unmatched patterns; run06 ran the full184-case suite before receiver integration."
+  ],
+  "formats": {
+    "receiver_account": 1,
+    "receiver_attempts": 1,
+    "transport": "reads1/2; explicit retirement upgrades1 to2, previous writer preserved",
+    "replacement_sidecar": "version1 bounded active intents and permanent completed receipts",
+    "credential_storage": "Distinct original-request Secret Service application namespace; no plaintext cookie fallback"
+  },
+  "limits": [
+    "No complete replacement capability advertised or consumed by Omabit yet",
+    "Collector lineage/migration, bounded automatic polling, capability compatibility and assembled native receiver qualification remain open",
+    "Older cached predecessor helpers lacking this protocol cannot be silently promoted; helper digest approvals remain exact",
+    "Running-bridge adoption/cleanup uses real bridge logic with synthetic services; subscribe/stream network operations in the new adoption tests are replaced by controlled fixtures",
+    "Direct old-channel cleanup accepts only exact200/204(empty) or401/403 responses; other responses remain unconfirmed and preserve state",
+    "No installed production/DEV/trial/preview changes, native ship operations or release work"
+  ]
+}

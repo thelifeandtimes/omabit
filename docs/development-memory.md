@@ -9007,3 +9007,40 @@ predecessor using an older helper without this protocol must not be silently
 promoted. DMs cooperative requests/activation, collector lineage and automatic
 polling still remain. Installed state, original source checkouts, protected ships
 and the persistent preview are unchanged. Release qualification stays deferred.
+
+## M569 — Cooperative DMs replacement and exact recovery (2026-11-07)
+
+The isolated DMs bridge now serves bound same-user local control from its main
+loop while the UI is idle. Preparation runs outside its worker pool and the
+receiver releases account.lock while workers persist positive receipts. Original
+request/account/fingerprint bindings are rechecked after drain. Missing sockets
+and free leases alone do not prove prior worker exit. Exact quiescent generation
+receipts now allow cleanup while a paused old bridge process remains alive;
+unrelated live or unknown actors retain their existing refusal.
+
+The receiver supports preparation, independent fresh-session replacement and
+accepted-status observation. Private nonsecret sidecar intent and request-specific
+Secret Service retention precede overwrite; pending installation denies transport.
+The paused bridge restores only its exact accepted successor with a fresh pool,
+without another login or UI restart. Accepted ancestry keeps original cleanup
+pending without blocking new traffic. Bound control can close ancestor channels
+while the successor bridge remains active; credentials/account removal still
+compare the original binding. Unknown application writes are never replayed.
+
+Partial-key/account/acceptance and lost-clear recovery preserve originals and
+later standalone changes. DMs09 found an absent temporary file masking the
+original interruption after completed metadata rename; cleanup now suppresses
+only that secondary FileNotFoundError. DMs10 passes203 tests; follow-up11 passes29
+replacement/control/shutdown cases including saved-session restore retry. Theme
+follow-up201fdd5 passes23 replacement cases and preserves independent credentials
+changed during partial swap. DMs05 had three unmatched requested patterns; the
+harness now refuses unmatched patterns and later full-suite runs supersede it.
+
+Source464076b (control foundation9826d78) remains isolated. See
+`diagnostics/2026-11-07-dms-session-replacement.json`. This supersedes M567's pending
+DMs cooperative/receiver path at the private source-fixture level only. Receiver
+capability advertisement, collector lineage/actual-writer migration, automatic
+polling and assembled native qualification remain. Current format/readability
+contracts and helper inventory are recorded; older cached helpers must not be
+silently promoted. Installed state, protected ships, original source checkouts and
+the persistent preview remain untouched. Release qualification stays deferred.
