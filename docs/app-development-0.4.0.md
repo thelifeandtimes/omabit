@@ -325,7 +325,8 @@ pipeline after an interrupted terminal or desktop restart.
    Exercise prepare, mount, commit, local activation, Treaty publication,
    source-only publication and receiver installation with native control disabled.
    Confirm frontend/glob handling and compilation/activation failure reporting.
-3. Add desk bindings, bounded source transfer, change observation, typed runner
+3. Workflow bindings, canonical change observation and bounded private source
+   transfer/recovery are implemented (M541–M543). Connect typed commit/publication
    actions and durable receipts for ordinary instances and project members.
    Verify alerts after external copy/edit/delete, reconnect, failed commit,
    Clay-side changes and edits arriving during an in-flight commit.

@@ -32,7 +32,10 @@ Use the operator skill's app-development reference for `desk-inspect`,
 Read ship and desk `desk-settings` on `desk-workflow-settings-v1` runners for the
 configured workflow, branch, checks and release instructions. These are descriptive
 settings; they neither verify Urgit's native binding nor enable any permission.
-Commit/publication adapters and the full development workflow remain pending.
+Private prepared-source transfer is available through `desk-source-staging-v1`;
+follow the operator reference for frozen plans, receipt reconciliation and discard.
+It does not write live mounts or open any gate. Commit/publication adapters and
+the full development workflow remain pending.
 Creation is controlled at the ship, and new desks inherit commit/publication
 settings by default. Creating a desk does not grant either permission. Until a
 supported effect exists and fresh policy permits it, keep the mutation blocked.

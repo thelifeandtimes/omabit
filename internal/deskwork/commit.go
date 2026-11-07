@@ -16,7 +16,8 @@ type DeltaFile struct {
 
 // CommitFiles targets Clay by desk identity instead of trusting a mutable Unix
 // mount alias. The reviewed delta preserves every unspecified file and supplies
-// MIME pages so Clay compiles new marks and applications in the resulting tree.
+// MIME pages for Clay's native mark conversion in the resulting tree. Source
+// acceptance does not establish application compilation or activation.
 // The caller must still enforce fresh policy and journal dispatch before use.
 func CommitFiles(ship, desk string, baseline Observation, changes []DeltaFile) (LensRequest, error) {
 	if !validSelection(ship, desk) || baseline.Validate() != nil || !baseline.Exists || len(changes) == 0 || len(changes) > MaxFiles {

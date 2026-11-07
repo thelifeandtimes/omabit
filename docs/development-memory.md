@@ -8091,3 +8091,34 @@ still needs managed-runtime end-to-end coverage. Staged transfer, gated commits,
 Treaty, receivers/frontends, Urgit, fleet origins and clearweb remain ongoing.
 Installed preview/production/DEV/trial plugins, services and ships were untouched;
 release qualification remains deferred.
+
+## M543 — Frozen source staging, receipts and recovery (2026-11-07)
+
+`desk-source-staging-v1` adds operator-only plan/upload/status/discard commands.
+Plans bind runner, ship/desk and project generation, saved workflow revision,
+source digest/count/size and a retained random ID. Source streams into a private
+versioned runner cache outside all piers, with no runtime call or gate change.
+Stopped ships with blocked gates can stage. Exact replays rehash the original
+cache and return its receipt; changed source/selection/owner and corrupt content
+fail visibly. Limits are8192 files,32MiB/file,256MiB/tree,2MiB manifest and
+16 cached stages/1GiB source. SQLite remains52; older clients negotiate capability.
+
+Deterministic pending IDs and retained intents permit cleanup after interrupted
+uploads. Explicit discard checks actor/digest, serializes cache writes and holds
+the runner mutation lock; any unresolved effect on the target retains the cache.
+Source is removed before its intent so interrupted deletion remains recoverable.
+An empty pre-intent/post-removal directory can be removed without traversing
+unbound files. Unknown, contradictory or malformed metadata stays for review.
+Original source directories, mounts and Clay are never discard targets. Client
+DELETE requests now also disable implicit transport replay and label lost replies
+uncertain. A staged receipt proves transfer only, not commit or compilation.
+
+Private runner/collector/client race fixtures and core/CLI tests pass, including
+stopped ships, frozen streams, lost acknowledgements, no implicit replay, exact
+receipt binding, ownership, limits, partial upload/discard and unresolved-effect
+refusal. Skills and packaging checks pass. See
+`diagnostics/2026-11-07-desk-staging.json`. This completes the source-transfer
+portion pending in M542; managed-runtime end-to-end, gated commit/publication,
+Urgit, fleet routes and clearweb assistance remain active. No production/DEV/trial
+plugin, runner, ship or persistent manual preview was changed. Release qualification
+remains deferred.

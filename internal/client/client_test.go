@@ -407,7 +407,7 @@ func (c *failingWriteConn) Write(data []byte) (int, error) {
 }
 
 func TestClientNoMutationReplay(t *testing.T) {
-	for _, method := range []string{http.MethodPut, http.MethodPost} {
+	for _, method := range []string{http.MethodPut, http.MethodPost, http.MethodDelete} {
 		t.Run(method, func(t *testing.T) {
 			var calls, dials atomic.Int32
 			c := newTestClient(t, func(w http.ResponseWriter, r *http.Request) {
@@ -433,6 +433,8 @@ func TestClientNoMutationReplay(t *testing.T) {
 			var err error
 			if method == http.MethodPut {
 				_, err = c.Configure(context.Background(), "demo", protocol.ConfigureRequest{})
+			} else if method == http.MethodDelete {
+				err = c.do(context.Background(), method, "/v1/desk-stages/selected", protocol.DeskStageDiscardRequest{}, new(protocol.DeskStageDiscard), true)
 			} else {
 				_, err = c.Operate(context.Background(), "demo", protocol.OperationRequest{})
 			}

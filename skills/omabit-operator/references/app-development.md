@@ -4,7 +4,8 @@ The 0.4.0 source implements policy storage, Setup authoring, read-only status,
 typed desk inspection/creation with durable receipts (`desk-create-v1`),
 live installed-desk discovery (`desk-discovery-v1`), and runner-shared workflow
 settings (`desk-workflow-settings-v1`), and source comparison/alerts
-(`desk-source-status-v1`). Commit/publication and source staging are still being connected.
+(`desk-source-status-v1`), and private source staging (`desk-source-staging-v1`).
+Commit/publication adapters are still being connected.
 Urgit follows its native workflow; no dedicated Omabit adapter is planned. Verify
 installed capabilities and command help rather than assuming development source
 is installed. Keep prepared source outside a live mount while its effects are
@@ -115,8 +116,53 @@ missing desk or unavailable runtime leaves uncertainty intact. It does not prove
 which external actor created a desk. If reconciliation remains unavailable,
 preserve the receipt and ask for review rather than bypassing it with Dojo.
 
-These commands do not grant commit/publication permission. Source staging,
-commit, Treaty and receiver/front-end end-to-end qualification remain pending.
+These commands do not grant commit/publication permission. Commit, Treaty and
+receiver/front-end end-to-end qualification remain pending.
+
+## Freeze and transfer prepared source
+
+Use a prepared local source directory outside any live mount. Read the ship/desk
+settings and follow the configured build/release checks. On an operator connection
+advertising `desk-source-staging-v1`, the matching profile's CLI supports:
+
+```sh
+omabit --config-dir REGISTRY desk-plan-stage --runner NAME --expected-runner-id ID \
+  --instance INSTANCE --desk DESK --source-dir DIRECTORY
+omabit --config-dir REGISTRY desk-stage --runner NAME --expected-runner-id ID \
+  --plan-json JSON --source-dir DIRECTORY
+omabit --config-dir REGISTRY desk-stage-status --runner NAME --expected-runner-id ID \
+  --id STAGE_ID
+```
+
+Save the unchanged full plan before upload. It freezes target/project generation,
+workflow revision, source digest/count/size and request ID. A changed source or
+workflow is refused. File bytes stream through the enrolled runner transport into
+a private cache outside every pier; they are not command arguments. Staging works
+with a stopped ship and closed gates because it neither writes a live mount nor
+commits/publishes. Urgit uses its native source workflow instead.
+
+A verified receipt proves only transfer. After an interrupted/lost reply, query the
+original stage ID. An exact resubmission can verify the existing cache; it cannot
+replace different or corrupt contents. A corrupt/incomplete stage is not usable.
+Never treat this receipt as Clay acceptance, compilation or publication evidence.
+Bounds: 8192 files, 32 MiB per file, 256 MiB per tree, 2 MiB manifest; 16 retained
+stages and 1 GiB of source per runner. Hidden paths, links and unsafe paths are
+refused. Prepare only the desk's required files rather than an entire checkout.
+
+When a stage is no longer needed, explicitly discard its cached copy:
+
+```sh
+omabit --config-dir REGISTRY desk-stage-discard --runner NAME --expected-runner-id ID \
+  --id STAGE_ID --source-digest SHA256
+```
+
+This checks the original operator/digest and refuses while a desk operation on
+that target remains unresolved. It never deletes original source, a live mount or
+Clay. The same selection can finish an interrupted upload/discard; an absent stage
+is idempotent success. Malformed metadata, unknown entries and ambiguous duplicate
+cache entries are preserved for review. Do not manually clear a runner's cache to
+bypass an unresolved operation. A stage no longer available must be prepared again
+before a later supported commit can use it.
 
 ## Classify the requested effect
 

@@ -45,6 +45,7 @@ type Server struct {
 	cancel                    context.CancelFunc
 	wg                        sync.WaitGroup
 	mu                        sync.Mutex
+	deskStageMu               sync.Mutex
 	closing                   bool
 	workGate                  chan struct{}
 	failed                    atomic.Bool
@@ -341,7 +342,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if !ownerhost.Development() {
 			features = append(features, protocol.ManagementUpdateFeature)
 		}
-		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature, protocol.DeskSettingsFeature)
+		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature, protocol.DeskSettingsFeature, protocol.DeskStageFeature)
 		if _, ok := r.b.(deskBackend); ok {
 			features = append(features, protocol.DeskCreateFeature, protocol.DeskDiscoveryFeature, protocol.DeskSourceFeature)
 		}
@@ -413,6 +414,15 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		r.stagePill(w, req, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskStagesPath || strings.HasPrefix(req.URL.Path, protocol.DeskStagesPath+"/") {
+		if err := r.beginUpdateBulk(); err != nil {
+			r.respondError(w, err)
+			return
+		}
+		defer r.endUpdateBulk()
+		r.serveDeskStage(w, req, actor, role)
 		return
 	}
 	if project, parent, kind, ok := protocol.ProjectRecoveryActionIDs(req.URL.Path); ok && req.Method == http.MethodPost {

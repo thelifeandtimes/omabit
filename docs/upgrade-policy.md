@@ -1,5 +1,16 @@
 # Stable-release upgrade requirement
 
+## Development: private source staging
+
+`desk-source-staging-v1` uses a versioned disposable `desk-stages-v1` runner cache;
+SQLite remains schema52. It adds no live mount, automatic commit or policy grant.
+Matching capability-aware clients verify frozen transfer receipts; older clients
+cannot invoke it and existing workflow/policy/journal records are unchanged.
+Cache metadata is strict and immutable. Interrupted uploads/discards retain their
+original identity; unknown/corrupt contents fail visibly rather than being repaired.
+Private API/collector/core fixtures cover recovery and quota/ownership boundaries
+(M543). Managed-runtime deployment and release artifact qualification remain pending.
+
 ## Development: canonical source baselines, schema52
 
 Schema52 adds a bounded canonical baseline cache, shared by collectors. A baseline

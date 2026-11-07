@@ -2,6 +2,25 @@ package main
 
 // Commands with no ordinary flag parser still expose side-effect-free help.
 var desktopCommandHelp = map[string]string{
+	"desk-plan-stage": `Usage: omabit [--config-dir DIR] desk-plan-stage --runner NAME --expected-runner-id ID --instance INSTANCE --desk DESK --source-dir DIRECTORY
+Read the prepared local source tree and saved workflow, then output a frozen
+transfer plan. Save its full JSON before uploading. No source is sent to a ship,
+and no commit or publication permission is granted. Requires the Unix workflow.`,
+	"desk-stage": `Usage: omabit [--config-dir DIR] desk-stage --runner NAME --expected-runner-id ID --plan-json JSON --source-dir DIRECTORY
+Upload the exact planned source into a private runner cache outside every pier.
+Requires desk-source-staging-v1 and operator access. Does not write a live mount,
+commit, publish or alter permissions. A lost reply must be reconciled using the
+original stage ID. Limits: 8192 files, 256 MiB per tree, 32 MiB per file, 2 MiB
+manifest; cache holds at most 16 stages and 1 GiB of source.`,
+	"desk-stage-status": `Usage: omabit [--config-dir DIR] desk-stage-status --runner NAME --expected-runner-id ID --id STAGE_ID
+Verify the original operator's staged bytes and read its immutable receipt.
+This is transfer evidence, not a Clay commit or release receipt. Changed or
+missing staged content fails visibly; it is never silently repaired.`,
+	"desk-stage-discard": `Usage: omabit [--config-dir DIR] desk-stage-discard --runner NAME --expected-runner-id ID --id STAGE_ID --source-digest SHA256
+Remove only the original operator's cached upload with this ID and digest. Refuses
+while a desk operation on its target is unresolved. Supports interrupted uploads
+and discards; never removes original source, live mounts or Clay. Malformed cache
+metadata is retained for review. An already absent stage returns success.`,
 	"desk-reconcile": `Usage: omabit [--config-dir DIR] desk-reconcile --runner NAME --expected-runner-id ID --id OPERATION_ID
 Observe an uncertain creation on its exact selected runtime and record the result.
 Never repeats the effect or changes permissions. Query desk-operation afterward;

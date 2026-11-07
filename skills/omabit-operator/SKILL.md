@@ -29,6 +29,9 @@ their configured source path, release checks and instructions. Descriptive purpo
 and workflow settings never grant agent permissions.
 Use `desk-source-status` on capable runners to inspect saved Unix source versus
 Clay; consult the reference for drift, stale evidence and baseline limitations.
+Use the reference's `desk-plan-stage`, `desk-stage`, status and explicit discard
+sequence for private cached transfers. A transfer receipt never authorizes or proves
+a commit/publication, and unresolved effects retain their source.
 
 Start with the shortest relevant read path:
 
