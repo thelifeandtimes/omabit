@@ -5,7 +5,8 @@ typed desk inspection/creation with durable receipts (`desk-create-v1`),
 live installed-desk discovery (`desk-discovery-v1`), and runner-shared workflow
 settings (`desk-workflow-settings-v1`), and source comparison/alerts
 (`desk-source-status-v1`), and private source staging (`desk-source-staging-v1`).
-Commit/publication adapters are still being connected.
+Staged commits are implemented on `desk-commit-v1` runners. Publication adapters
+and full managed-runtime workflow qualification remain in progress.
 Urgit follows its native workflow; no dedicated Omabit adapter is planned. Verify
 installed capabilities and command help rather than assuming development source
 is installed. Keep prepared source outside a live mount while its effects are
@@ -116,8 +117,8 @@ missing desk or unavailable runtime leaves uncertainty intact. It does not prove
 which external actor created a desk. If reconciliation remains unavailable,
 preserve the receipt and ask for review rather than bypassing it with Dojo.
 
-These commands do not grant commit/publication permission. Commit, Treaty and
-receiver/front-end end-to-end qualification remain pending.
+Creation does not grant commit/publication permission. Treaty and receiver/front-end
+end-to-end qualification remain pending.
 
 ## Freeze and transfer prepared source
 
@@ -163,6 +164,63 @@ is idempotent success. Malformed metadata, unknown entries and ambiguous duplica
 cache entries are preserved for review. Do not manually clear a runner's cache to
 bypass an unresolved operation. A stage no longer available must be prepared again
 before a later supported commit can use it.
+
+## Review and commit staged source
+
+Read the application's configured checks and release instructions before planning.
+Do not deploy while another process is editing the same desk. The runner serializes
+its own operations; native developer tools retain their independent permissions.
+On a `desk-commit-v1` runner, inspect the proposed changes, then save a plan:
+
+```sh
+omabit --config-dir REGISTRY desk-review-commit --runner NAME --expected-runner-id ID \
+  --stage-id STAGE_ID
+omabit --config-dir REGISTRY desk-plan-commit --runner NAME --expected-runner-id ID \
+  --stage-id STAGE_ID
+omabit --config-dir REGISTRY desk-commit --runner NAME --expected-runner-id ID \
+  --plan-file SAVED_PLAN_JSON
+```
+
+Save the **complete unchanged JSON** from `desk-plan-commit` to the file before
+submission. `--plan-json JSON` is also supported for small plans; do not supply both.
+Reviews report exact counts and the first256 sorted changes/conflicts. The plan's
+hash binds the whole inventory, including omitted details. It also binds the original
+stage, exact runtime and project generation, workflow/policy revisions, pier identity,
+current Clay revision/hash and raw source digest. Planning grants no permission.
+
+A no-op needs no commit. Resolve conflicts in the intended source/release workflow;
+do not delete live files or change gates to force a plan through. Omabit replaces or
+deletes only its previously verified owned files that still match. Identical unowned
+files can be shared without adoption; different unowned files are conflicts. Unspecified
+ship-generated files are preserved. New marks can be introduced in the same delta;
+post-commit verification converts source at the resulting revision. One atomic delta
+is limited to32MiB of changed source and8192 changes; a larger staged tree can include
+unchanged files. Frontend artifacts need their app's separate build/glob flow.
+
+Submission is blocked by default. The runner rechecks all bindings and the effective
+policy before one journaled dispatch. A private desk needs Commit; an already published
+desk needs Commit and Publish because subscribers may receive the update. Commit does
+not enable Treaty, make a private desk public, activate an app or run configured shell
+checks. Follow those checks independently and report failures honestly.
+
+Query `desk-operation --id OPERATION_ID`. `observed` proves a newer Clay revision,
+normalized source equality and preservation of the rest of the tree. It does **not**
+prove Hoon compilation, Gall activation, frontend readiness or receiver installation.
+After a lost reply, query the original ID; an exact resubmission returns its receipt
+without another dispatch, including after a completed stage was discarded. Never
+mint another request ID as an automatic retry. `desk-reconcile` can read and verify an
+uncertain commit on the original runtime using its retained stage. It never writes.
+Unavailable or contradictory evidence remains uncertain and blocks further effects
+on that target. Keep the stage until reconciliation succeeds.
+
+Verified source ownership and the completion receipt are saved atomically. Ownership
+survives a runtime restart only for the same physical pier, target generation and
+source name. A different pier/source starts without owned paths and does not adopt
+existing content. No Unix mount is created or written by these commands. Check the
+configured mounted source separately if a developer also uses a Unix/Clay workflow.
+These APIs/CLI paths have private fixture coverage; the full managed-runtime native
+workflow remains under qualification. Check installed capabilities rather than
+assuming the development source is deployed.
 
 ## Classify the requested effect
 

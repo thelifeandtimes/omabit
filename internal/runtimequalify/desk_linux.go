@@ -67,12 +67,7 @@ func openManagedDesk(ctx context.Context, state ManagedState, expectedContainer 
 	if err != nil {
 		return nil, err
 	}
-	ship := "~zod"
-	if state.Fake != nil {
-		ship = state.Fake.Ship
-	} else if state.Comet != nil {
-		ship = state.Comet.Ship
-	}
+	ship := managedDeskShip(state)
 	s := &DeskRuntime{ship: ship, pier: q.pierPath(), endpoint: fmt.Sprintf("http://127.0.0.1:%d", port), containerID: expectedContainer, q: q}
 	s.check = func(ctx context.Context) error {
 		c, err := q.inspect(ctx, index)
@@ -98,6 +93,18 @@ func openManagedDesk(ctx context.Context, state ManagedState, expectedContainer 
 		return nil, err
 	}
 	return s, nil
+}
+func managedDeskShip(state ManagedState) string {
+	if state.NativeShip != "" {
+		return state.NativeShip
+	}
+	if state.Fake != nil {
+		return state.Fake.Ship
+	}
+	if state.Comet != nil {
+		return state.Comet.Ship
+	}
+	return "~zod" // Legacy qualified fake runtime.
 }
 func deskRunning(c container) bool {
 	return c.State != nil && c.State.Running != nil && *c.State.Running && !c.State.Paused && !c.State.Restarting && !c.State.Dead

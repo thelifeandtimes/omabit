@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "result": "passed",
+  "kind": "gated staged commit API/CLI and schema53 ownership",
+  "original_source": "f7beb08dfb6249dc4979c6d8db17b2e2a2bc34c1",
+  "fixtures": {
+    "/tmp/omabit-desk-commit-core-02.log": "1c457ed384f747db51392d0a739e2c7f4ea74c854ae512cd8c63165ae8718196",
+    "/tmp/omabit-desk-commit-api-01/result.json": "f96f26cc6f0b3092aa37245499b7b6863eea9f78ff1d0549bd9120caa17e9380",
+    "/tmp/omabit-desk-commit-collection-01/result.json": "8aa0876056a53b5988af4a3371f8aad103cd64a3604ec3e72183671717088431",
+    "/tmp/omabit-desk-commit-regression-01/result.json": "078fdb0bbf4db5ec2ae1d347dc29aff7cf5aafcd0a9b39d476fae7413e73de35",
+    "/tmp/omabit-desk-commit-dispatch-02/result.json": "f78f38b71588a9a57d73cb9de47cd49596d91f3a339b530422c1aca0e6781cc2",
+    "/tmp/omabit-desk-deployment-runtime-01/result.json": "ab2a18fee32e96146200c36ef02d1adc117a1c99d24f59c1af647d48aa0511e5",
+    "/tmp/omabit-desk-deployment-store-02/result.json": "9feeaba132b24f66004e9588f4194a983cce06f349aea68c6c7bf3dd0bbd1e17",
+    "/tmp/omabit-desk-deployment-original-migration-01/result.json": "08010b8aa60f7d3cc2230c971876463b9a85ad2a7b308e8b3d62ef45fea21182"
+  },
+  "source_sha256": {
+    "internal/deskwork/deployment.go": "2bbb93269db2b73b9e86b6d37f659b4747619bdd4ebd36057b659b0f0eec1d6f",
+    "internal/deskwork/deployment_record.go": "a938d380ec5b7ddfbf0afbe0b9787580cf091787e5a22486b1db5947f227a5bd",
+    "internal/deskwork/deployment_runtime.go": "fc5cc96538aa40f814a54daebd8efd6d0523f9458f5abebebe0d39a314ae6fab",
+    "internal/deskwork/canonical_source.go": "5825087404aac935442493dbdb4ab79620caba170f220f31d3e3f07c45e74fe9",
+    "internal/managed/desk_deployment_store.go": "05d897c6fb49e0bd84308cc385338bce9258b55814cfa21cfaf229118f27a8cc",
+    "internal/managed/desk_deployment_linux.go": "9fbae76d7c61245b6050ee0a22a7343711948dd71322d2559e9dcbc158232c78",
+    "internal/managed/desk_store.go": "66ff045677c1d976bae9359e268446e686d687da80dd536b5f27b1513b6829dc",
+    "internal/managed/schema.go": "ba1c313bfde2f386c2041fa53584ed393a6207bb7190f6b1d27ba7969abdeae3",
+    "internal/managed/store.go": "8979bab41ee9e4c5389dd68329680c235874e0be8e4dc927823b768cd1ed9bdb",
+    "internal/runtimequalify/desk_continuity_linux.go": "9d7aa8ab93c954ffc685209254eed0cc3d1540aafc4d8aeca4f271b820e9a2a7",
+    "internal/runtimequalify/desk_linux.go": "5084ba07b3533bb6bd6c74857d36da0ba6b73a4b79b1a2bea4e64ef580c70151",
+    "internal/protocol/desk_deployment.go": "2458d54e6b1208b7b65afa1f2c3d4215f124a2627f7aa52dd198611ed5122cc6",
+    "internal/client/desk_deployment.go": "f6069886450a39065c3c0a803b2456e90989f568c20bb433539f3cdf006f9a2c",
+    "internal/collection/desk_deployment.go": "c5db999eab4d89298541f676c3c5ea0a3949386b894440e626bb97acc390e867",
+    "cmd/omabit/desk_deployment.go": "e6b09f0409a7d8cf39830dfe1f0d796342fc7e9db2f1ee17bff815b41e7652e0",
+    "internal/managed/testdata/desk-schema52.sql": "ccf365171937899d4263d1393c9a58230c260884fe69fc057fd9c70a30658a65",
+    "internal/managed/testdata/desk-schema52.json": "62ec585a36246daaf5026f4296de310ef8c66c5a52487ebea1b85950e07503ae"
+  },
+  "checks": [
+    "default-closed commits and both gates on published desks",
+    "exact staged source/runtime/project/workflow/policy/pier/Clay binding",
+    "generated and unowned file preservation, explicit conflicts",
+    "canonical no-op versus changed mark conversion",
+    "whole resulting Clay tree verified after native conversion",
+    "durable dispatch, exact replay and no effect during reconciliation",
+    "queued policy/workflow/source/pier/runtime changes block effects",
+    "schema52 migration/reopen/rollback preserve original records",
+    "actual schema52 reader refuses schema53 unchanged",
+    "observed receipt and ownership written atomically",
+    "collector response integrity, lost replies and no automatic resend",
+    "CLI safe plan-file parsing and offline help; skill and packaging validation"
+  ],
+  "failed_attempts": {
+    "dispatch_01": "synthetic fixture incorrectly tried desk-level creation Block; correctly refused; corrected to Inherit and dispatch_02 passed"
+  },
+  "limits": [
+    "assembled real-runtime workflow is next; API/collector fixtures use inert runtime",
+    "native commit constructor previously qualified in M540, not a new native run",
+    "source acceptance does not establish compilation, activation, publication or receiver readiness",
+    "unowned differing existing files require conflict resolution; adoption pathway remains pending",
+    "single atomic delta at most32MiB changed bytes and8192 changes; source stages may contain larger unchanged trees",
+    "native keyed-ship selection fix covered with fixtures only",
+    "no production/DEV/trial/plugin/preview changes; no release qualification"
+  ],
+  "storage_pruning_receipt": "/tmp/omabit-desk-cache-pruning-20261107.json"
+}

@@ -1,5 +1,19 @@
 # Stable-release upgrade requirement
 
+## Development: verified source deployment, schema53
+
+Schema53 adds immutable staged-commit reviews linked to the existing desk journal,
+and verified source ownership linked to an observed completion. Migration preserves
+policy, workflow, pending operation and canonical source-baseline records. Ownership
+is not invented during migration. Completion and ownership write in one transaction;
+unknown or inconsistent metadata refuses reopen. Original schema52 writer fixtures,
+repeated migration, rollback and older-reader refusal are exercised by
+`scripts/test-desk-deployment-upgrade.py` (M544). Runtime continuity uses the same pier
+object, rather than a container ID, so a restart need not lose owned paths. Different
+pier/source bindings start without ownership. The new CLI requires `desk-commit-v1`;
+publication remains unavailable. This is functional source/fixture evidence, not a
+release qualification or authorization to upgrade any installed runner.
+
 ## Development: private source staging
 
 `desk-source-staging-v1` uses a versioned disposable `desk-stages-v1` runner cache;

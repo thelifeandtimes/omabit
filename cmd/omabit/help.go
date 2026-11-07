@@ -2,6 +2,21 @@ package main
 
 // Commands with no ordinary flag parser still expose side-effect-free help.
 var desktopCommandHelp = map[string]string{
+	"desk-review-commit": `Usage: omabit [--config-dir DIR] desk-review-commit --runner NAME --expected-runner-id ID --stage-id STAGE_ID
+Read the original staged source, current workflow/policy, selected runtime and Clay.
+Reports exact change/conflict counts and at most 256 sorted details of each.
+Preserves unowned/generated paths and grants no permission or commit authority.`,
+	"desk-plan-commit": `Usage: omabit [--config-dir DIR] desk-plan-commit --runner NAME --expected-runner-id ID --stage-id STAGE_ID
+Review the staged source and output an immutable commit plan with a new operation ID.
+Save its complete JSON before submission. No-op and conflicted plans are read-only
+results; neither may be submitted. A published desk requires commit and publish gates.`,
+	"desk-commit": `Usage: omabit [--config-dir DIR] desk-commit --runner NAME --expected-runner-id ID --plan-file FILE
+Alternatively pass the unchanged full plan with --plan-json JSON (not both).
+Requires desk-commit-v1; blocked by default. Rechecks source, runtime, workflow,
+policy and Clay before one journaled dispatch. Preserves unspecified/generated files.
+The observed receipt proves source acceptance, not application compilation, activation
+or publication. After a lost reply, query desk-operation using the saved ID; use
+read-only desk-reconcile for uncertainty. Never generate a replacement ID to retry.`,
 	"desk-plan-stage": `Usage: omabit [--config-dir DIR] desk-plan-stage --runner NAME --expected-runner-id ID --instance INSTANCE --desk DESK --source-dir DIRECTORY
 Read the prepared local source tree and saved workflow, then output a frozen
 transfer plan. Save its full JSON before uploading. No source is sent to a ship,
@@ -22,7 +37,8 @@ while a desk operation on its target is unresolved. Supports interrupted uploads
 and discards; never removes original source, live mounts or Clay. Malformed cache
 metadata is retained for review. An already absent stage returns success.`,
 	"desk-reconcile": `Usage: omabit [--config-dir DIR] desk-reconcile --runner NAME --expected-runner-id ID --id OPERATION_ID
-Observe an uncertain creation on its exact selected runtime and record the result.
+Observe an uncertain creation or staged commit on its exact selected runtime.
+Commit reconciliation requires its retained stage and verifies the whole result.
 Never repeats the effect or changes permissions. Query desk-operation afterward;
 unavailable evidence leaves the outcome uncertain.`,
 	"desk-source-status": `Usage: omabit [--config-dir DIR] desk-source-status --runner NAME --expected-runner-id ID --instance INSTANCE --desk DESK

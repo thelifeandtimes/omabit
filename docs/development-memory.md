@@ -8122,3 +8122,57 @@ portion pending in M542; managed-runtime end-to-end, gated commit/publication,
 Urgit, fleet routes and clearweb assistance remain active. No production/DEV/trial
 plugin, runner, ship or persistent manual preview was changed. Release qualification
 remains deferred.
+
+## M544 — Gated staged commits and verified source ownership (2026-11-07)
+
+`desk-commit-v1` connects private stages to read-only review, saved commit plans,
+one journaled effect dispatch, source verification and read-only reconciliation.
+CLI commands are `desk-review-commit`, `desk-plan-commit` and `desk-commit`; the
+latter accepts an unchanged saved plan file or JSON. Review binds the stage,
+runtime/project generation, workflow/policy revisions, source digest, pier object
+and current Clay revision/hash. Details are bounded with exact counts. No-op and
+conflicted plans cannot dispatch. Both commit and publish gates are required for
+an already published desk; private desks require commit. All remain closed by
+default. Changes between queueing and dispatch block the effect.
+
+The planner pairs previous raw source with its verified canonical Clay ownership.
+It preserves unspecified/generated files, shares identical unowned files without
+adopting them, and refuses external edits or differing unowned collisions. Only
+owned unchanged files can be replaced/deleted. Converter changes are distinguished
+from raw byte equality. New marks can enter the delta without pretending an old
+converter exists; post-verification normalizes the whole staged source using the
+resulting revision and compares the entire Clay tree. One delta is bounded at
+32MiB changed source/8192 changes. This proves source acceptance, not compilation,
+Gall activation, frontend readiness or publication. Existing-desk ownership/adoption
+beyond matching/shared files still needs workflow treatment; it is not silently
+inferred from a permission grant.
+
+Schema53 stores immutable deployment reviews and source ownership linked to the
+existing desk journal. Verified completion and ownership save atomically; failures
+retain uncertainty and prevent another target effect. Replays return the original
+receipt without requiring another dispatch or a retained completed stage. Recovery
+uses the original runtime and retained stage, never repeats the write. Ownership
+survives runtime restart/move of the same pier object, source name and target
+generation; changing pier/source starts without ownership. Typed runtime selection
+also now uses NativeShip for keyed ships rather than the legacy fake fallback;
+this is fixture coverage, not a live keyed-ship test.
+
+Core/protocol/CLI checks, private API/collector tests and all desk regression race
+tests pass. Queued policy, workflow, source, pier and stopped-runtime changes block
+commits. Lost acknowledgements and failed verification reconcile without repeating
+the effect. Original schema52 writer state preserves policy, pending receipts,
+workflow and canonical baselines; reopen/rollback pass and that actual older reader
+refuses schema53 unchanged. See `diagnostics/2026-11-07-desk-commits.json`. One dispatch
+test initially used a desk-level creation Block, which Setup correctly refused;
+the corrected fixture inherits creation from Ship and passes.
+
+This supersedes the pending staged-commit adapter portion of M543. Assembled native
+workflow qualification, compilation/publication/frontends/receivers, Urgit, fleet
+origins and clearweb assistance remain active; no release qualification was run.
+Installed production/DEV/trial plugins, services, ships and manual preview stay
+unchanged. Before the next native run, a capacity check found44,371,935,232 bytes
+across the two evidence roots and Omabit scratch. The obsolete generated
+`/tmp/omabit-040-gocache` was classified and its12,620 cache files (4,759,076,864
+allocated bytes) removed using `/tmp/omabit-desk-cache-pruning-20261107.json`.
+Current Go cache, source, migration fixtures and all piers were retained. Recheck
+capacity and declare the next scratch allowance before starting a runtime.

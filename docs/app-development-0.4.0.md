@@ -4,7 +4,7 @@ Proposed architecture, recorded 2026-11-06. The user added this work to the
 0.4.0 scope after remote-runner installation testing. Source review is complete.
 The [policy layer and Setup editor](app-development-policy.md) are implemented
 and fixture-tested. Gated creation and live desk discovery are implemented;
-source transfer/commit/publication remain in progress. Full managed-runtime
+source transfer and gated commit API/CLI are implemented; publication remains in progress. Full managed-runtime
 qualification is pending.
 The user's follow-up fixes the scope to Urbit desks and their frontend assets.
 Agent desk creation, commit and publication start disabled, with permissions configured in
@@ -319,15 +319,16 @@ pipeline after an interrupted terminal or desktop restart.
 1. Policy storage, inheritance, the runner effect guard and Setup controls are
    implemented. See [policy behavior and evidence](app-development-policy.md).
    Typed creation now uses fresh policy/runtime checks and durable schema50
-   receipts. Commit/publication stay unavailable until their adapters are connected
-   and tested. Full managed-runtime workflow qualification remains pending.
+   receipts. Staged commit review/verification and schema53 ownership are connected
+   and fixture-tested (M544); publication remains unavailable. Full managed-runtime
+   workflow qualification remains pending.
 2. Complete the transport spike on disposable fakes with explicit test policy.
    Exercise prepare, mount, commit, local activation, Treaty publication,
    source-only publication and receiver installation with native control disabled.
    Confirm frontend/glob handling and compilation/activation failure reporting.
 3. Workflow bindings, canonical change observation and bounded private source
-   transfer/recovery are implemented (M541–M543). Connect typed commit/publication
-   actions and durable receipts for ordinary instances and project members.
+   transfer/recovery and gated commit receipts are implemented (M541–M544). Qualify
+   actual runtime commit/publication flows for ordinary instances and project members.
    Verify alerts after external copy/edit/delete, reconnect, failed commit,
    Clay-side changes and edits arriving during an in-flight commit.
 4. Exercise one fake publisher and two receivers. Deploy a first version, verify

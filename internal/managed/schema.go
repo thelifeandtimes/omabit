@@ -30,4 +30,5 @@ package managed
 // Schema50 retains typed desk intents and append-only effect receipts.
 // Schema51 retains source workflow settings and their authoring history.
 // Schema52 retains canonical synchronization baselines for source alerts.
-const StateSchemaVersion = 52
+// Schema53 binds staged commit reviews and verified source ownership to desk receipts.
+const StateSchemaVersion = 53

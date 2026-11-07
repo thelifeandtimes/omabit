@@ -32,6 +32,8 @@ Clay; consult the reference for drift, stale evidence and baseline limitations.
 Use the reference's `desk-plan-stage`, `desk-stage`, status and explicit discard
 sequence for private cached transfers. A transfer receipt never authorizes or proves
 a commit/publication, and unresolved effects retain their source.
+For `desk-commit-v1`, follow the reference's review, saved-plan, gated commit and
+read-only reconciliation sequence. Source acceptance does not prove app readiness.
 
 Start with the shortest relevant read path:
 

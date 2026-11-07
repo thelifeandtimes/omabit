@@ -344,7 +344,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature, protocol.DeskSettingsFeature, protocol.DeskStageFeature)
 		if _, ok := r.b.(deskBackend); ok {
-			features = append(features, protocol.DeskCreateFeature, protocol.DeskDiscoveryFeature, protocol.DeskSourceFeature)
+			features = append(features, protocol.DeskCreateFeature, protocol.DeskDiscoveryFeature, protocol.DeskSourceFeature, protocol.DeskCommitFeature)
 		}
 		features = append(features, "fake-ship-options", "host-port-suggestion")
 		if p, err := ownerhost.Current(); err == nil && p != nil {
@@ -536,6 +536,14 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if req.URL.Path == protocol.DeskDiscoveryPath {
 		r.serveDeskDiscovery(w, req, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskDeploymentReviewPath {
+		r.serveDeskDeploymentReview(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskCommitPath {
+		r.serveDeskCommit(w, req, actor, role)
 		return
 	}
 	if req.URL.Path == protocol.DeskObservationPath {

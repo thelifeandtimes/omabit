@@ -50,6 +50,19 @@ func ReadSourceFile(root *os.Root, item File) ([]byte, error) {
 // directory afterward. Its two manifests describe the same captured source;
 // errors return no usable observation, rather than a false synchronized state.
 func SnapshotCanonical(ctx context.Context, directory string, normalize func(context.Context, []SourceFile) (Manifest, error)) (raw, canonical Manifest, err error) {
+	return snapshotCanonicalPaths(ctx, directory, nil, normalize)
+}
+
+// SnapshotCanonicalPaths normalizes only the explicitly selected existing paths,
+// while rechecking the entire raw source snapshot. This permits planning a new
+// file whose mark is introduced by the same commit without guessing its noun.
+func SnapshotCanonicalPaths(ctx context.Context, directory string, paths []string, normalize func(context.Context, []SourceFile) (Manifest, error)) (raw, canonical Manifest, err error) {
+	if paths == nil {
+		return raw, canonical, errors.New("explicit source path selection required")
+	}
+	return snapshotCanonicalPaths(ctx, directory, paths, normalize)
+}
+func snapshotCanonicalPaths(ctx context.Context, directory string, paths []string, normalize func(context.Context, []SourceFile) (Manifest, error)) (raw, canonical Manifest, err error) {
 	if normalize == nil {
 		return raw, canonical, errors.New("mark normalizer unavailable")
 	}
@@ -60,6 +73,16 @@ func SnapshotCanonical(ctx context.Context, directory string, normalize func(con
 	raw, err = Snapshot(directory)
 	if err != nil {
 		return Manifest{}, Manifest{}, err
+	}
+	selected := map[string]bool{}
+	if paths != nil {
+		index := raw.Index()
+		for _, p := range paths {
+			if _, ok := index[p]; !ok || selected[p] {
+				return Manifest{}, Manifest{}, errors.New("invalid normalization path selection")
+			}
+			selected[p] = true
+		}
 	}
 	root, err := os.OpenRoot(directory)
 	if err != nil {
@@ -91,6 +114,9 @@ func SnapshotCanonical(ctx context.Context, directory string, normalize func(con
 		return nil
 	}
 	for _, f := range raw.Files {
+		if paths != nil && !selected[f.Path] {
+			continue
+		}
 		if err = ctx.Err(); err != nil {
 			return Manifest{}, Manifest{}, err
 		}

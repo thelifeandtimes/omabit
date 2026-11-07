@@ -118,15 +118,22 @@ func loadDeskOperation(q querier, id string) (deskwork.Receipt, error) {
 // createDeskOperation is idempotent only for the same actor and exact intent.
 // A duplicate never becomes permission to dispatch again.
 func (s *store) createDeskOperation(actor string, intent deskwork.Intent) (deskwork.Receipt, bool, error) {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return deskwork.Receipt{}, false, err
+	}
+	defer tx.Rollback()
+	receipt, fresh, err := createDeskOperationTx(tx, actor, intent)
+	if err != nil {
+		return receipt, false, err
+	}
+	return receipt, fresh, tx.Commit()
+}
+func createDeskOperationTx(tx *sql.Tx, actor string, intent deskwork.Intent) (deskwork.Receipt, bool, error) {
 	r := deskwork.Receipt{Version: 1, Intent: intent, Actor: actor, Steps: []deskwork.Step{{Kind: intent.Action, State: "planned", At: time.Now().UTC()}}}
 	if err := r.Validate(); err != nil {
 		return r, false, bad(err.Error())
 	}
-	tx, err := s.db.Begin()
-	if err != nil {
-		return r, false, err
-	}
-	defer tx.Rollback()
 	old, err := loadDeskOperation(tx, intent.ID)
 	if err == nil {
 		if old.Actor != actor || old.Intent != intent {
@@ -158,11 +165,9 @@ func (s *store) createDeskOperation(actor string, intent deskwork.Intent) (deskw
 	if _, err = tx.Exec("INSERT INTO desk_operation_history(id,sequence,body) VALUES(?,1,?)", intent.ID, body); err != nil {
 		return r, false, err
 	}
-	if err = tx.Commit(); err != nil {
-		return r, false, err
-	}
 	return r, true, nil
 }
+
 func appendDeskStep(tx *sql.Tx, expected deskwork.Receipt, step deskwork.Step) (deskwork.Receipt, error) {
 	current, err := loadDeskOperation(tx, expected.Intent.ID)
 	if err != nil {
