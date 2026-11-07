@@ -34,6 +34,9 @@ sequence for private cached transfers. A transfer receipt never authorizes or pr
 a commit/publication, and unresolved effects retain their source.
 For `desk-commit-v1`, follow the reference's review, saved-plan, gated commit and
 read-only reconciliation sequence. Source acceptance does not prove app readiness.
+For `desk-receiver-v1`, use the reference's saved receiver-install plan and
+read-only pending-source status. Installation needs creation and commit permission;
+it keeps the received desk private and establishes a continuing subscription.
 
 Start with the shortest relevant read path:
 

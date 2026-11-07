@@ -290,8 +290,14 @@ and exact frontend bytes. Each receiver receives one install request and follows
 the later publisher commit without another install. The received desks remain
 private. Kiln can reserve a revision-zero desk during download; the typed
 source-arrival read treats that as pending, while the occupied name still refuses
-another installation. This is native protocol evidence; the public gated receiver
-API/CLI and frontend upload adapter are still pending. See
+another installation. The public `desk-receiver-v1` API/CLI now provides gated
+review/planning/install and read-only pending-source status; its schema56 migration,
+policy/recovery and client fixtures pass. Native41/M551 exercises that public path:
+default-blocked installs, one install per receiver, deliberate lost acknowledgement
+and read-only reconciliation with closed gates, then both subscriptions receive
+the next source update and exact frontend bytes. All peers stop cleanly. Lifecycle
+is synthetic; Docker/SSH and installed upgrades are not requalified. Frontend
+upload remains pending. See [API evidence](diagnostics/2026-11-07-desk-receiver-api.json) and
 [receiver evidence](diagnostics/2026-11-07-desk-native-receivers.json).
 
 ## Urgit workflow (scope clarified 2026-11-06)

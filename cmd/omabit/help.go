@@ -2,6 +2,23 @@ package main
 
 // Commands with no ordinary flag parser still expose side-effect-free help.
 var desktopCommandHelp = map[string]string{
+	"desk-receiver-status": `Usage: omabit [--config-dir DIR] desk-receiver-status --runner NAME --expected-runner-id ID --instance INSTANCE --desk DESK
+Read the current Kiln subscription and distinguish pending source from received
+Clay/application stages. Requires desk-receiver-v1. Never installs or publishes.`,
+	"desk-review-install": `Usage: omabit [--config-dir DIR] desk-review-install --runner NAME --expected-runner-id ID --instance INSTANCE --desk DESK --publisher-ship SHIP --publisher-desk DESK --expected-source-hash HASH [--publisher-instance INSTANCE]
+Review an unused receiver desk and its continuing publisher without installing.
+Project receivers require a current publisher instance from the same project.
+The expected hash verifies initial source arrival; future publisher updates continue.`,
+	"desk-plan-install": `Usage: omabit [--config-dir DIR] desk-plan-install --runner NAME --expected-runner-id ID --instance INSTANCE --desk DESK --publisher-ship SHIP --publisher-desk DESK --expected-source-hash HASH [--publisher-instance INSTANCE]
+Review and save a complete immutable receiver installation plan. Requires
+desk-receiver-v1. The ship creation gate and receiver commit gate must allow the
+later install. Planning grants no permission. Source workflow must be mounted.`,
+	"desk-install": `Usage: omabit [--config-dir DIR] desk-install --runner NAME --expected-runner-id ID --plan-file FILE
+Alternatively use --plan-json JSON. Submit the unchanged saved plan once.
+Creation and commit are blocked by default; the received desk remains private.
+Read desk-operation with the saved ID after a lost reply; desk-reconcile observes
+uncertain effects without repeating installation. Closing gates does not cancel
+an existing Kiln subscription or prevent its publisher's future updates.`,
 	"desk-review-commit": `Usage: omabit [--config-dir DIR] desk-review-commit --runner NAME --expected-runner-id ID --stage-id STAGE_ID
 Read the original staged source, current workflow/policy, selected runtime and Clay.
 Reports exact change/conflict counts and at most 256 sorted details of each.
@@ -37,7 +54,7 @@ while a desk operation on its target is unresolved. Supports interrupted uploads
 and discards; never removes original source, live mounts or Clay. Malformed cache
 metadata is retained for review. An already absent stage returns success.`,
 	"desk-reconcile": `Usage: omabit [--config-dir DIR] desk-reconcile --runner NAME --expected-runner-id ID --id OPERATION_ID
-Observe an uncertain creation or staged commit on its exact selected runtime.
+Observe an uncertain creation, staged commit, release or receiver install on its exact selected runtime.
 Commit reconciliation requires its retained stage and verifies the whole result.
 Never repeats the effect or changes permissions. Query desk-operation afterward;
 unavailable evidence leaves the outcome uncertain.`,

@@ -33,4 +33,5 @@ package managed
 // Schema53 binds staged commit reviews and verified source ownership to desk receipts.
 // Schema54 retains reviewed activation/publication and caller-supplied release checks.
 // Schema55 records explicit source ownership adoption without a Clay mutation.
-const StateSchemaVersion = 55
+// Schema56 binds receiver installation to an immutable publisher/review and receipt.
+const StateSchemaVersion = 56

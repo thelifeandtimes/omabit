@@ -156,6 +156,14 @@ func (p Policy) Check(t Target, revision uint64, effect, publication string) err
 	}
 	e := p.Effective(t)
 	switch effect {
+	case "install-remote":
+		if publication != "absent" {
+			return errors.New("receiver desk absence is not confirmed")
+		}
+		if e.CreateDesk.Value != Allow || e.Commit.Value != Allow {
+			return errors.New("receiver installation requires Create Desk and Commit permission")
+		}
+		return nil
 	case "create-desk":
 		if publication != "absent" {
 			return errors.New("new desk absence is not confirmed")

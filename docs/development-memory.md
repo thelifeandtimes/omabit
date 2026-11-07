@@ -8468,3 +8468,57 @@ used later: the new connection path must recheck current grant and ship identity
 under its attempt-publication lock. No installed collector/runner/plugin state
 was touched, and no automatic login or public exposure is enabled. Schema55 stays
 unchanged; release qualification is still deferred.
+
+
+## M551 — Gated receiver installation and native API verification (2026-11-07)
+
+`desk-receiver-v1` adds read-only review/planning/status and a saved-plan install
+through CLI, collector, client and runner. The unused local desk, continuing
+publisher/initial expected hash, target/project generation, runtime, pier and
+workflow/settings revisions stay bound. Projects require a current publisher
+member of the same project. Existing Clay or pending Kiln names refuse; Urgit
+workflow bindings are not overwritten. Create desk at ship scope and Commit at
+the receiver desk must both allow; Publish is unnecessary because the receiver
+stays private. All gates default closed and are checked again before dispatch.
+
+Schema56 stores the immutable review atomically with its operation. Exact replay
+returns the same receipt; failed/lost replies remain uncertain, never retried.
+Read-only reconciliation requires current operator authority but no effect gate.
+It verifies the original publisher/hash/private desk/live subscription and pier.
+Status distinguishes pending revision-zero source from arrived Clay and app stages;
+none of these facts substitute for application-specific health checks. Existing
+subscriptions continue native updates after agent permissions close.
+
+The actual schema55 writer atc912982 produces the checked-in fixture. Migration
+preserves registry, policy, workflow, source/deployment ownership, release and
+adoption history. Reopen, rollback, new journals and unchanged old-reader refusal
+pass. All desk regressions, receiver/schema/store and client fixtures pass race
+checks. Core/protocol race, CLI private regression and updated offline help checks
+pass; both skills validate. The initial API fixture used the wrong gate scope and
+the first migration fixture reused an unresolved desk; corrected fixtures preserve
+both intended refusals. Outer-sandbox CLI socket refusal is not a product failure;
+the private namespace suite passes. See `diagnostics/2026-11-07-desk-receiver-api.json`.
+
+Native41 passes the assembled publisher workflow and public receiver API path for
+~nec and ~bud. Both defaults dispatch zero mutations. ~nec completes normally;
+~bud's real acknowledgement is deliberately discarded, producing uncertainty,
+then read-only recovery succeeds after revocation. Both receive exact initial
+and next-version source, live fixture agent/Docket state and served HTML with
+one install each. All three children exit cleanly. This supersedes M549's pending
+public receiver adapter, not its pending frontend upload or lifecycle/installed
+qualification. No new public frontend upload, Urgit adapter, fleet connection or
+clearweb exposure is claimed. Release qualification remains deferred.
+
+Storage correction: migration01's declared300 MiB omitted enough archive/build
+allocation. A post-run measurement charged43,034,075,136 bytes including the1GiB
+unmeasured-DEV reserve,84,402,176 over40GiB. No native runtime launched at that
+point. The rebuildable isolated Go cache was removed immediately; migration now
+performs internal1200MiB admission before output/copies/build. Native41 admission
+charged42,919,972,864 bytes including2GiB scratch. Retention preserved all originals
+and receipts: clean completed40 piers were retired after exact-scope inactivity
+verification; its compact proof remains. Failed migration successor source and
+an API binary are retained losslessly compressed; duplicate original55 writer
+source in migration02 explicitly links the byte-identical retained migration01
+source. Do not remove that dependency. Full failure34 and current41 piers remain.
+The diagnostic lists exact removal/retention manifests. Production/DEV/trial and
+the persistent manual preview stay unchanged. Re-measure before further builds.

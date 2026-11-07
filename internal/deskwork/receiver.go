@@ -101,7 +101,7 @@ func InstallRemote(ship, desk string, p Publisher) (LensRequest, error) {
 // neither compiled-agent revision nor frontend/application health. A newer hash
 // is not silently accepted as the reviewed release.
 func VerifyReceiver(p Publisher, o Observation, app AppState) error {
-	if p.Validate() != nil || o.Validate() != nil || !o.Exists || app.Validate() != nil || o.ClayHash != p.ExpectedHash || app.SourceRevision != o.Revision || app.SourceShip != p.Ship || app.SourceDesk != p.Desk || app.Zest != "live" {
+	if p.Validate() != nil || o.Validate() != nil || !o.Exists || o.Publication != "private" || app.Validate() != nil || o.ClayHash != p.ExpectedHash || app.SourceRevision != o.Revision || app.SourceShip != p.Ship || app.SourceDesk != p.Desk || app.Zest != "live" {
 		return errors.New("selected publisher source has not been verified on receiver")
 	}
 	return nil

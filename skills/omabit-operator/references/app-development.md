@@ -8,7 +8,8 @@ settings (`desk-workflow-settings-v1`), and source comparison/alerts
 Staged commits are implemented on `desk-commit-v1` runners. Separate app-stage
 observations use `desk-application-status-v1`. Reviewed local activation and
 source/Treaty publication use `desk-release-v1`. Explicit existing-source ownership
-uses `desk-source-adoption-v1`. Full managed-runtime workflow
+uses `desk-source-adoption-v1`. Named receiver installation and pending-source status
+use `desk-receiver-v1`. Full managed-runtime workflow
 qualification remains in progress.
 Urgit follows its native workflow; no dedicated Omabit adapter is planned. Verify
 installed capabilities and command help rather than assuming development source
@@ -121,7 +122,8 @@ which external actor created a desk. If reconciliation remains unavailable,
 preserve the receipt and ask for review rather than bypassing it with Dojo.
 
 Creation does not grant commit/publication permission. Native Treaty and frontend
-workflow observations are tested as described below; receiver qualification and the native upload agent adapter remain pending.
+workflow observations are tested as described below. Receiver installation has a
+supported gated CLI; the native upload agent adapter remains pending.
 
 ## Freeze and transfer prepared source
 
@@ -274,6 +276,61 @@ probe36/M548 verifies default blocking, one explicitly selected existing file, n
 Clay mutation, replay after stage discard and subsequent commits. The lifecycle
 backend is synthetic; managed Docker/SSH are separate checks. Installed capabilities
 must still be checked before use.
+
+## Install and inspect a named receiver
+
+Use `desk-receiver-v1` for a new receiver desk. Inspect the publisher's exact
+current Clay hash first, and follow the application's release configuration.
+The receiver ship's Create desk gate and selected desk's Commit gate must both
+allow installation. Publish is not required: installation keeps the received
+desk private. A desk scope cannot grant Create desk permission. Agent permissions
+control these requests; closing them does not cancel an existing Kiln subscription
+or stop the publisher's later updates.
+
+```sh
+omabit --config-dir REGISTRY desk-review-install --runner NAME --expected-runner-id ID \
+  --instance RECEIVER --desk DESK --publisher-ship '~publisher' \
+  --publisher-desk SOURCE_DESK --expected-source-hash CLAY_HASH
+omabit --config-dir REGISTRY desk-plan-install --runner NAME --expected-runner-id ID \
+  --instance RECEIVER --desk DESK --publisher-ship '~publisher' \
+  --publisher-desk SOURCE_DESK --expected-source-hash CLAY_HASH > receiver-plan.json
+omabit --config-dir REGISTRY desk-install --runner NAME --expected-runner-id ID \
+  --plan-file receiver-plan.json
+omabit --config-dir REGISTRY desk-operation --runner NAME --expected-runner-id ID \
+  --id SAVED_OPERATION_ID
+omabit --config-dir REGISTRY desk-receiver-status --runner NAME --expected-runner-id ID \
+  --instance RECEIVER --desk DESK
+```
+
+For a project receiver, add `--publisher-instance PUBLISHER_INSTANCE` to review
+and planning. It must resolve to the selected publisher identity and a current
+member of that same project. Another project, an old member generation or a
+standalone selector cannot substitute for that binding. Standalone receivers use
+Urbit's existing network reachability; a fake name does not establish a network.
+The receiver name must have neither a Clay desk nor a pending Kiln subscription.
+An Urgit-owned workflow cannot be replaced through this command.
+
+Save the entire plan before submitting. It binds publisher, expected source hash,
+receiver generation/runtime/pier, workflow settings and policy revision. The hash
+is an initial verification condition, **not a version pin**: native Kiln continues
+to follow that publisher. Review a changed source explicitly rather than silently
+accepting a different initial hash.
+
+Read the saved receipt after a lost response. Exact resubmission returns the same
+receipt; a new plan ID is not an automatic retry. `uncertain` uses the existing
+`desk-reconcile --id SAVED_OPERATION_ID` read path. Reconciliation can record the
+reviewed private source at a live subscription even after gates close; it never
+repeats installation. Missing or changed evidence stays uncertain. A reserved
+revision-zero Clay name is pending source, not an absent/free name.
+
+`desk-receiver-status` reports subscription separately from `source_ready`.
+Received source includes Clay and application-stage observations; it does not
+claim agent compilation, frontend HTTP success or general application health.
+Native41/M551 exercises the API/store/collector with two disposable native
+receivers, exact initial/update source and frontend bytes, and one lost-ack recovery
+after revocation. Its lifecycle backend is synthetic; Docker/SSH and installed
+upgrades are not requalified. Perform the developer's actual checks. Public installation never republishes the
+received desk, and changing existing subscriptions is outside this initial command.
 
 ## Inspect application stages separately
 

@@ -1,5 +1,22 @@
 # Stable-release upgrade requirement
 
+## Development: reviewed receiver installation, schema56
+
+Schema56 adds immutable `desk_receivers` linked to the existing operation journal.
+The record binds the reviewed unused name, continuing publisher and expected hash,
+project member generations, workflow settings and receiver pier. Migration creates
+no install, policy grant or subscription. Journal/record writes are atomic, and
+startup checks complete matching ancestry. Interrupted effects become uncertain;
+recovery never repeats installation.
+
+The actual schema55 writer atc912982 produces the original fixture used by
+`scripts/test-desk-receiver-upgrade.py`. Prior policy, settings, source baselines,
+deployment ownership, releases and adoptions remain unchanged. Preservation,
+reopen, rollback, new receiver history and actual older-reader refusal pass.
+Negotiate `desk-receiver-v1` with matching collector/runner code; never lower a
+schema marker. These are development feature checks, not stable upgrade or release
+qualification. No installed runner has been changed.
+
 ## Development: standing application/ship approval format1
 
 M550 adds a separate `application-ship-approvals.json` file in the collector profile.

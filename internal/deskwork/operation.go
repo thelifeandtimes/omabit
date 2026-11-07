@@ -54,6 +54,10 @@ func (i Intent) Validate() error {
 		return errors.New("invalid desk operation intent")
 	}
 	switch i.Action {
+	case "install-remote":
+		if i.Baseline.Exists || !digestPattern.MatchString(i.SourceDigest) {
+			return errors.New("receiver installation requires absence and a frozen publisher selection")
+		}
 	case "create-desk":
 		if i.Baseline.Exists || i.SourceDigest != "" {
 			return errors.New("desk creation requires observed absence")
@@ -142,6 +146,14 @@ func (r Receipt) Validate() error {
 				return errors.New("completed desk effect requires observation")
 			}
 			switch r.Intent.Action {
+			case "install-remote":
+				if s.Application == nil {
+					return errors.New("receiver subscription observation absent")
+				}
+				publisher := Publisher{Ship: s.Application.SourceShip, Desk: s.Application.SourceDesk, ExpectedHash: s.Observation.ClayHash}
+				if VerifyReceiver(publisher, *s.Observation, *s.Application) != nil || publisher.Digest() != r.Intent.SourceDigest {
+					return errors.New("reviewed publisher source not observed")
+				}
 			case "adopt-source":
 				if *s.Observation != r.Intent.Baseline || s.VerifiedSourceDigest != r.Intent.SourceDigest {
 					return errors.New("adoption changed the reviewed source observation")
@@ -163,7 +175,7 @@ func (r Receipt) Validate() error {
 		if r.Intent.Action != "commit" && r.Intent.Action != "adopt-source" && s.VerifiedSourceDigest != "" {
 			return errors.New("unexpected source verification")
 		}
-		if !IsReleaseAction(r.Intent.Action) && s.Application != nil {
+		if !IsReleaseAction(r.Intent.Action) && r.Intent.Action != "install-remote" && s.Application != nil {
 			return errors.New("unexpected application stage evidence")
 		}
 		state = s.State

@@ -43,7 +43,10 @@ source, Gall, Treaty and Docket facts separately; it does not claim compilation 
 app health. Native probe34/M546 covers that API plus local activation, Treaty and
 exact Docket frontend delivery using private qualification helpers. `desk-source-adoption-v1` records explicitly selected existing files only after they match Clay; it needs the commit/publication gates and never writes to the ship. `desk-release-v1` adds reviewed activation/source/Treaty publication, following the
 operator reference and exact configured check evidence. Installation can precede
-release checks; publication cannot. Frontend upload commands and receivers remain pending. Native Docket
+release checks; publication cannot. `desk-receiver-v1` adds reviewed named installation and pending-source status;
+follow the operator reference. It requires creation and commit permission, keeps
+the received desk private, and follows later publisher updates. Frontend upload
+commands remain pending. Native Docket
 upload can commit its hash back to Clay and distribute an update: apply the same
 gates and reconcile source ownership. See the operator reference for limits.
 Creation is controlled at the ship, and new desks inherit commit/publication
