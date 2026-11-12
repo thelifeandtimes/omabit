@@ -124,7 +124,8 @@ preserve the receipt and ask for review rather than bypassing it with Dojo.
 
 Creation does not grant commit/publication permission. Native Treaty and frontend
 workflow observations are tested as described below. Receiver installation has a
-supported gated CLI; the native upload agent adapter remains pending.
+supported gated CLI; built frontend assets use the gated `desk-frontend-v1`
+review/upload workflow described below.
 
 ## Freeze and transfer prepared source
 

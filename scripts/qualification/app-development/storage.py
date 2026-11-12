@@ -52,14 +52,19 @@ def roots():
     return required + sorted(p for p in Path('/tmp').glob('omabit-*') if not p.is_symlink())
 
 
-def admit(additional_bytes, measurements=None):
-    if not 0 <= additional_bytes <= 2 * GIB:
+def admit(additional_bytes, measurements=None, *, budget_bytes=None):
+    # A larger budget is an explicit, separately authorized qualification input;
+    # ordinary development retains the original 40 GiB limit.
+    budget = BUDGET if budget_bytes is None else budget_bytes
+    if budget not in (40 * GIB, 48 * GIB):
+        raise ValueError('unsupported experiment storage budget')
+    if not 0 <= additional_bytes <= 4 * GIB:
         raise ValueError('invalid additional scratch allowance')
     rows = measurements if measurements is not None else [measure(p) for p in roots()]
     used = sum(row['allocated_bytes'] + row['unmeasured_reserve'] for row in rows)
-    report = {'measurements': rows, 'charged_bytes': used, 'budget_bytes': BUDGET,
+    report = {'measurements': rows, 'charged_bytes': used, 'budget_bytes': budget,
               'additional_scratch_bytes': additional_bytes,
               'total_with_reserves': used + additional_bytes}
-    if report['total_with_reserves'] > BUDGET:
+    if report['total_with_reserves'] > budget:
         raise RuntimeError('storage budget exceeded: ' + str(report['total_with_reserves']))
     return report

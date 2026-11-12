@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/apppolicy"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/deskwork"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/eyre"
@@ -265,9 +266,21 @@ func nativeReceiverInstall(t *testing.T, ctx context.Context, f *nativeDeskFixtu
 	g02Check(t, err)
 	status := func() protocol.DeskReceiverStatus {
 		t.Helper()
-		out, err := registry.InspectDeskReceiver(ctx, "native", entry.RunnerID, "receiver", f.Desk)
-		g02Check(t, err)
-		return out
+		// Kiln can update its subscription/desk between the status endpoint's
+		// before/after reads. Retry only that unavailable observation, never the
+		// installation or another effect, and retain the bounded deadline.
+		for end := time.Now().Add(90 * time.Second); ; {
+			out, err := registry.InspectDeskReceiver(ctx, "native", entry.RunnerID, "receiver", f.Desk)
+			if err == nil {
+				return out
+			}
+			var remote *client.RemoteError
+			if !errors.As(err, &remote) || remote.Status != 502 || remote.Problem.Code != "receiver_status_unavailable" || ctx.Err() != nil || time.Now().After(end) {
+				t.Fatal(err)
+			}
+			t.Log("receiver changed during observation; retrying read only", f.ship())
+			time.Sleep(250 * time.Millisecond)
+		}
 	}
 	save("absent-status-"+f.ship(), status())
 	plan, err := registry.PlanDeskReceiver(ctx, "native", entry.RunnerID, "receiver", f.Desk, "", source)

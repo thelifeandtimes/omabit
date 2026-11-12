@@ -257,7 +257,8 @@ def host(a):
     # Read-only frontend diagnosis transfers one stopped pier and adds no new
     # workflow binary or desks:1GiB covers one generated epoch plus pinned inputs.
     scratch_limit=1024**3 if frontend_diagnostic else (768*1024**2 if recovered else 2*1024**3)
-    storage_admission=admit(scratch_limit)
+    storage_budget=getattr(a,'storage_budget_gib',40)*1024**3
+    storage_admission=admit(scratch_limit,budget_bytes=storage_budget)
     os.umask(0o077);out.mkdir();art=out/'artifacts';art.mkdir();lab=out/'lab';lab.mkdir();(lab/'home').mkdir()
     (out/'storage-admission.json').write_text(json.dumps(storage_admission,indent=2)+'\n')
     for source,name in [(a.vere,'vere'),(a.pill,'boot.pill'),(Path(__file__),'probe.py'),(a.requests,'requests.json')]:shutil.copyfile(source,art/name)
@@ -318,7 +319,7 @@ def host(a):
                 usage=sum(p.stat().st_blocks*512 for p in out.rglob('*') if p.is_file())
                 if usage>g['transferred_allocated_bytes']+g['additional_scratch_limit']:raise RuntimeError('additional scratch limit exceeded')
                 if time.monotonic()>=next_storage_check:
-                    observation=admit(0)
+                    observation=admit(0,budget_bytes=storage_budget)
                     (out/'storage-observed.json').write_text(json.dumps(observation,indent=2)+'\n')
                     next_storage_check=time.monotonic()+15
                 try:child.wait(timeout=2)
@@ -331,4 +332,4 @@ def host(a):
             if child.poll() is None:os.killpg(child.pid,signal.SIGTERM);child.wait(timeout=10)
     (out/'exit.json').write_text(json.dumps({'exit':rc}));print(json.dumps({'output':str(out),'exit':rc}));return rc
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--recover-receiver-boot',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--receivers',action='store_true');p.add_argument('--frontend-diagnostic',action='store_true');p.add_argument('--release-source',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--storage-budget-gib',type=int,choices=(40,48),default=40);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--recover-receiver-boot',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--receivers',action='store_true');p.add_argument('--frontend-diagnostic',action='store_true');p.add_argument('--release-source',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))

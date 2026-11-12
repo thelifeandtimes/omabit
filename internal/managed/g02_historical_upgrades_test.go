@@ -114,7 +114,7 @@ func g02ValidateManifest(m g02Manifest, fixtures map[string]g02Fixture) error {
 		return errors.New("preserve historical RC12/schema20 source qualification separately from current development tests")
 	}
 	development := m.DevelopmentTestTarget
-	if currentSchema != 52 || development.StateSchema != currentSchema || development.Release != "unreleased" || development.Channel != "development" || development.Evidence != "source-tests-only" {
+	if currentSchema != 59 || development.StateSchema != currentSchema || development.Release != "unreleased" || development.Channel != "development" || development.Evidence != "source-tests-only" {
 		return errors.New("review the development schema target explicitly; source tests are not release/artifact qualification")
 	}
 	if !slices.Equal(m.AcceptedSchemaWindow, []int{11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45}) || !slices.Equal(m.PrototypeSchemas, []int{11, 12, 14, 17, 18}) || m.SupportedReleaseScope != "database-reader" {

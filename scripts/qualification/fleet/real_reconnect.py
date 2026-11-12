@@ -82,6 +82,7 @@ def main():
     parser.add_argument('--theme')
     parser.add_argument('--dms')
     parser.add_argument('--out')
+    parser.add_argument('--storage-budget-gib', type=int, choices=(40, 48), default=40)
     args = parser.parse_args()
     if args.inside:
         return inside()
@@ -91,7 +92,7 @@ def main():
     spec = importlib.util.spec_from_file_location('storage', root / 'scripts/qualification/app-development/storage.py')
     storage = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(storage)
-    admission = storage.admit(400 * 1024**2)
+    admission = storage.admit(400 * 1024**2, budget_bytes=args.storage_budget_gib * storage.GIB)
     out.mkdir(mode=0o700)
     save(out / 'storage-admission.json', admission)
     for name in ('home', 'config', 'data', 'state', 'cache', 'runtime', 'etc', 'faults', 'evidence'):
@@ -169,7 +170,7 @@ def main():
         assert hashlib.file_digest(stream, 'sha256').hexdigest() == digest
     binary.unlink()
     save(out / 'result.json', {'exit': result.returncode, 'binary_sha256': digest, 'scope': provenance['scope'],
-                              'storage_after': storage.admit(0)['charged_bytes']})
+                              'storage_after': storage.admit(0, budget_bytes=args.storage_budget_gib * storage.GIB)['charged_bytes']})
     print((out / 'test.log').read_text())
     print('Evidence:', out)
     return result.returncode

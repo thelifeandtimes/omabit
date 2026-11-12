@@ -9319,3 +9319,13 @@ checking its original hash. Its previous bytes and patch receipt are preserved i
 production plugin change or automated real-agent launch occurred. M575's initial
 launch-readiness evidence did not cover terminal lifetime; this regression closes
 that gap. Release qualification remains deferred.
+
+## M577 —0.4.0 qualification authorized (2026-11-12, in progress)
+
+The user accepted RAM/CPU and Agent Help launch, delegated real app-development
+and remote URL/receiver testing, and authorized the release qualification and
+isolated upgrade rehearsal. This supersedes M572–M575's deferral of that phase,
+not their stated evidence limits. Live provider testing remains with the user.
+Production and manual-review state remain excluded. The temporary aggregate
+experiment cap is48GiB by explicit user approval, returning below40GiB through
+retirement of only new disposable outputs. See releases/0.4.0/preparation.md.

@@ -82,6 +82,11 @@ def main():
   checks={line.split('  ',1)[1]:line.split('  ',1)[0] for line in (I/version/'SHA256SUMS').read_text().splitlines()}
   for name in ('omabit','urbit-collector','urbit-runner'):
    assert hashlib.sha256(tool(version,name).read_bytes()).hexdigest()==checks[name+'-linux-amd64']
+ if scenario.get('namespace_tests'):
+  report['kernel_semantics_tests']={}
+  for binary,pattern in [('pierstore.test','^TestHostPathAllowsOnlyTheRunnersNarrowACLGrant$'),('rootless.test','^TestPrepareRefusesUnsafeOutputs$')]:
+   result=run([I/binary,'-test.run',pattern,'-test.timeout=2m','-test.count=1','-test.v'],True)
+   report['kernel_semantics_tests'][binary]={'passed':result.returncode==0,'sha256':hashlib.sha256((I/binary).read_bytes()).hexdigest()}
  report['sources']={v:json.loads((I/v/'release.json').read_text())['source_commit'] for v in VERSIONS}
  run(['loginctl','enable-linger','review'])
  run(['systemctl','start','user@1000.service'])
@@ -221,7 +226,15 @@ def main():
   rule.unlink(missing_ok=True)
  assert collector(PREVIOUS,'snapshot')['runner_id']==before['runner_id']
  run(['systemctl','--user','stop','urbit-runner.service'],True)
- assert db_projection()['schema']==report['schema_before']==47
+ expected_schemas={v:json.loads((I/v/'release.json').read_text())['schema'] for v in VERSIONS}
+ assert report['schema_before']==expected_schemas[PREVIOUS]
+ assert db_projection()['schema']==expected_schemas[TARGET]
+ if expected_schemas[TARGET]>expected_schemas[PREVIOUS]:
+  before_old_writer=db_projection()
+  refused=run([tool(PREVIOUS,'urbit-runner'),'serve-development','--acknowledge-development'],True,timeout=20,ok=False)
+  assert refused.returncode!=0 and 'schema' in (refused.stdout+refused.stderr).lower(), 'old writer did not refuse the newer schema'
+  assert db_projection()==before_old_writer, 'old writer changed newer state'
+  report['older_writer_refused_without_state_change']=True
  run(['systemctl','--user','start','urbit-runner.service'],True)
  wait(lambda:collector(TARGET,'hello'))
  assert before==project(TARGET) and runtime_before==runtime(TARGET)
@@ -251,6 +264,9 @@ def main():
  assert ready(TARGET,'upgrade-nec','stopped')
  report['macos_import'].update(passed=True,identity=preview['ship'],stayed_stopped=True,metadata_preserved=True,unrelated_runtime_preserved=True)
 
+ if scenario.get('fleet'):
+  import fleet_guest
+  report['fleet']=fleet_guest.exercise(run,tool,TARGET,host['runner_id'],host['host_public_key'])
  operation(TARGET,'upgrade-zod','stop','release-final-stop')
  wait(lambda:ready(TARGET,'upgrade-zod','stopped'))
  report['passed']=True

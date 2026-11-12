@@ -10,6 +10,18 @@ import storage
 
 
 class StorageAdmission(unittest.TestCase):
+    def test_explicit_temporary_budget_does_not_change_default(self):
+        rows = [{'allocated_bytes': 42 * storage.GIB, 'unmeasured_reserve': storage.GIB}]
+        with self.assertRaises(RuntimeError):
+            storage.admit(4 * storage.GIB, rows)
+        self.assertEqual(storage.admit(4 * storage.GIB, rows, budget_bytes=48 * storage.GIB)['total_with_reserves'], 47 * storage.GIB)
+        self.assertEqual(storage.BUDGET, 40 * storage.GIB)
+        for budget in (0, 41 * storage.GIB, 49 * storage.GIB):
+            with self.assertRaises(ValueError):
+                storage.admit(0, [], budget_bytes=budget)
+        with self.assertRaises(ValueError):
+            storage.admit(4 * storage.GIB + 1, [], budget_bytes=48 * storage.GIB)
+
     def test_launcher_refuses_before_output_copy_transfer_or_spawn(self):
         import probe
         with tempfile.TemporaryDirectory() as directory:
