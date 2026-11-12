@@ -9199,3 +9199,33 @@ standalone runtime only; historical qualification records retain their original
 meaning. Release qualification, installed upgrades and a live16GiB workload remain
 separate and deferred. Source integration targets only the0.4.0 feature branch;
 production/DEV/trial installations, ships and the persistent preview are unchanged.
+
+## M574 — persistent resource-control preview updated (2026-11-12, installed preview only)
+
+The user explicitly authorized updating the isolated preview for manual RAM/CPU
+review while preserving production. `prepare-container-resources-preview.py` now
+creates the full actual panel with a fixed Python simulation for resource edits,
+Start and Stop. It contains no collector, Docker, SSH or runner helper. New choices
+persist in a separate `resources.json`; permission state remains independent.
+Project members stay outside standalone resizing; running/observer/offline contexts
+refuse resource edits. A RAM & CPU shortcut reveals the normal Overview editor.
+
+The full-panel fixture `/tmp/omabit-resources-preview-test-03` passed save/start/stop,
+requested versus applied limits, readonly contexts, Setup tree navigation, reopening
+saved values and byte-preservation of the original permission file. First test
+attempts corrected a nonexistent sidebar test ID and a chart/control name collision
+in the test's global selector. Real controls are scoped to their editor. Screenshots
+were inspected; no QML warnings/errors occurred in the passing offscreen runs.
+
+Preview source6f9b91a was installed at
+`~/.local/share/omabit-policy-preview-040`, preserving its previous source under
+`versions/before-container-resources-20261112`. Original permission SHA256 before
+and after is recorded in `versions/container-resources-update-20261112.json`.
+The native Wayland window loaded and its supervisor was confirmed open from the
+host process namespace (a sandboxed PID view cannot establish that status). One
+native Qt Wayland text-input warning was nonfatal; the window rendered normally.
+The existing separately named desktop launcher is unchanged. This supersedes
+M573's unchanged-preview note only; production/DEV/trial plugins, runner services,
+ships and the active desktop shell were not inspected or changed. All manual
+resource effects in this window are simulated. No installed runner qualification
+or release claim follows from this preview update.

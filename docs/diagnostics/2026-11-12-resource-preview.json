@@ -1,0 +1,20 @@
+{
+  "preview": "/home/thelifeandtimes/.local/share/omabit-policy-preview-040",
+  "source_commit": "6f9b91ab923fcc5dd8d90a9aa7a5e045e6ce8284",
+  "backup": "/home/thelifeandtimes/.local/share/omabit-policy-preview-040/versions/before-container-resources-20261112",
+  "policy_sha256_before": "1aba084c2f80d7ab81ef890703add3019a3b2b8ea96dee64bc4525b9531dc18b",
+  "policy_sha256_after": "1aba084c2f80d7ab81ef890703add3019a3b2b8ea96dee64bc4525b9531dc18b",
+  "production": "not accessed or modified",
+  "scope": "code-only replacement; saved human preview state retained",
+  "fixture_evidence": "/tmp/omabit-resources-preview-test-03",
+  "fixture_tests": [
+    "full-panel save/start/stop",
+    "requested versus applied limits",
+    "running/observer/offline/project refusal",
+    "Setup tree retained",
+    "resource values retained on reopen",
+    "permission bytes preserved"
+  ],
+  "preview_status": "native Wayland supervisor verified open in host process namespace",
+  "source_manifest_sha256": "30a6f876235c9a10cc61702822f80affa65f8f0ec9e20f3139d0ebfb425e9d14"
+}
