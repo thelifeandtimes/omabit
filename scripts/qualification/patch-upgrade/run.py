@@ -4,7 +4,7 @@
 No arguments performs no work. Explicit paths and --run are required. The runner
 never opens an existing guest overlay or any host Docker/runner/socket/keyring.
 """
-import argparse,base64,hashlib,json,os,re,shutil,subprocess,time,sys
+import argparse,base64,errno,hashlib,json,os,re,shutil,subprocess,time,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]
 GIB=1024**3
@@ -14,6 +14,14 @@ import storage
 def run(args,**kw):return subprocess.run([str(a) for a in args],check=True,**kw)
 def digest(p):
  with p.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def stage_immutable(source,destination):
+ if source.is_symlink() or not source.is_file() or destination.exists():raise RuntimeError('unsafe immutable staging input')
+ before=digest(source)
+ try:os.link(source,destination)
+ except OSError as error:
+  if error.errno!=errno.EXDEV:raise
+  with source.open('rb') as src,destination.open('xb') as dst:shutil.copyfileobj(src,dst)
+ if digest(destination)!=before or digest(source)!=before:raise RuntimeError('immutable staging input changed')
 def allocated(p):
  return storage.measure(p)['allocated_bytes']
 def cpio(f,name,data,mode,ino):
@@ -56,18 +64,21 @@ def main():
  for v,path in [(previous,a.previous),(target,a.candidate)]:
   dest=payload/v;dest.mkdir()
   for n in ('release.json','SHA256SUMS','omabit-linux-amd64','urbit-collector-linux-amd64','urbit-runner-linux-amd64'):shutil.copy2(path/n,dest/n)
+  # Downloaded release assets need not carry executable Unix mode bits. Change
+  # only the guest staging copies; their verified content remains identical.
+  for tool in ('omabit','urbit-collector','urbit-runner'):(dest/(tool+'-linux-amd64')).chmod(0o755)
   if v==previous:shutil.copytree(a.rootless,dest/'rootless-bundle')
   archive=path/('omabit-'+v+'-linux-amd64.tar.gz')
   asset=next(x for x in json.loads((path/'release.json').read_text())['assets'] if x['name']==archive.name)
   assert digest(archive)==asset['sha256'] and archive.stat().st_size==asset['bytes']
-  os.link(archive,dest/archive.name)
+  stage_immutable(archive,dest/archive.name)
  runtime=evidence/'2026-10-25-private-docker-code-cache/omabit-import-runtime-20261022-01'
  pill_hash=json.loads((a.candidate/'release.json').read_text())['pill']['sha256']
  pill=a.candidate/json.loads((a.candidate/'release.json').read_text())['pill']['name']
  assert digest(pill)==pill_hash
- os.link(pill,payload/'boot.pill')
- os.link(runtime/'runtime.oci.tar',payload/'runtime.oci.tar')
- for n in ('guest.py','shell.qml','desktop.py','fleet_guest.py','fleet_client.py'):shutil.copy2(Path(__file__).parent/n,payload/n)
+ stage_immutable(pill,payload/'boot.pill')
+ stage_immutable(runtime/'runtime.oci.tar',payload/'runtime.oci.tar')
+ for n in ('guest.py','shell.qml','desktop.py','fleet_guest.py','fleet_client.py','desk_guest.py'):shutil.copy2(Path(__file__).parent/n,payload/n)
  namespace_tests={}
  if a.namespace_tests:
   for name in ('pierstore.test','rootless.test'):
@@ -114,7 +125,7 @@ def main():
  run([tools/'usr/bin/qemu-img','create','-q','-u','-f','qcow2','-F','qcow2','-b','/base.qcow2',work/'root.qcow2',str(base_info['virtual-size'])],env=tenv)
  cmd=['systemd-run','--user','--scope','--unit=omabit-'+work.name,'-p','MemoryMax=10G','-p','MemorySwapMax=0','-p','CPUQuota=300%','--',
  'bwrap','--unshare-all','--die-with-parent','--clearenv','--ro-bind','/usr','/usr','--symlink','usr/bin','/bin','--symlink','usr/lib','/lib','--symlink','usr/lib','/lib64','--proc','/proc','--dev','/dev','--dev-bind','/dev/kvm','/dev/kvm','--tmpfs','/tmp','--dir','/run','--ro-bind',str(tools),'/tools','--ro-bind',str(a.portable/'base.qcow2'),'/base.qcow2','--ro-bind',str(a.portable/'boot/vmlinuz'),'/vmlinuz','--bind',str(work),'/lab','--chdir','/lab','--setenv','HOME','/lab','--setenv','PATH','/usr/bin:/bin','--setenv','LD_LIBRARY_PATH','/tools/usr/lib','--setenv','QEMU_MODULE_DIR','/tools/usr/lib/qemu','--','/tools/usr/bin/qemu-system-x86_64','-accel','kvm','-cpu','host','-machine','q35','-m','8G','-smp','3','-nodefaults','-no-user-config','-display','none','-monitor','none','-nic','none','-no-reboot','-L','/tools/usr/share/qemu','-bios','/tools/usr/share/qemu/bios-256k.bin','-kernel','/vmlinuz','-initrd','/lab/initramfs.cpio','-append','console=ttyS0 panic=-1 quiet rdinit=/init omabit.disposable-guest=release-upgrade-v1 systemd.unit=multi-user.target','-drive','file=/lab/root.qcow2,format=qcow2,if=none,id=rootdisk','-device','virtio-blk-pci,drive=rootdisk','-drive','file=/lab/payload.ext4,format=raw,if=none,id=payload,readonly=on','-device','virtio-blk-pci,drive=payload','-qmp','unix:/lab/control/qmp.sock,server=on,wait=off','-serial','stdio']
- receipt={'storage_admission':admission,'receiver_sources':receiver_provenance,'namespace_tests':namespace_tests,'harness_sha256':{n:digest(Path(__file__).parent/n) for n in ('run.py','guest.py','desktop.py','shell.qml','fleet_guest.py','fleet_client.py')},'scenario':previous+' desktop and services to '+target,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'used_before':used,'scratch_limit':budget,'base_sha256':meta['sha256']['base.qcow2'],'base_path':str(a.portable/'base.qcow2'),'network':'none','host_mounts':'OS files, QEMU, immutable base and fresh lab only'}
+ receipt={'storage_admission':admission,'receiver_sources':receiver_provenance,'namespace_tests':namespace_tests,'harness_sha256':{n:digest(Path(__file__).parent/n) for n in ('run.py','guest.py','desktop.py','shell.qml','fleet_guest.py','fleet_client.py','desk_guest.py')},'scenario':previous+' desktop and services to '+target,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'used_before':used,'scratch_limit':budget,'base_sha256':meta['sha256']['base.qcow2'],'base_path':str(a.portable/'base.qcow2'),'network':'none','host_mounts':'OS files, QEMU, immutable base and fresh lab only'}
  (work/'host.json').write_text(json.dumps(receipt,indent=2)+'\n')
  with (work/'serial.log').open('wb') as log:
   proc=subprocess.Popen(cmd,stdout=log,stderr=subprocess.STDOUT)

@@ -44,3 +44,19 @@ Storage accounting uses the shared capsule inventory, including both DEV roots,
 installed review artifacts and retained `/tmp/omabit-*` outputs. The default stays
 40 GiB; `--storage-budget-gib 48` requires separate temporary operator approval.
 The guest itself remains capped at 4 GiB of additional scratch.
+
+With both receiver source paths supplied, the guest also checks the real
+restricted SSH transport, installed runner, Docker fake, private Secret Service
+and Theme/DMs helpers. A separate client network namespace reads and updates the
+shared URL registry, rejects a wrong-ship endpoint before authentication, ignores
+remote localhost, and reconnects both helpers to an alternate LAN URL under the
+original per-ship approval. An exact veth-only firewall allowance and local SSH
+proxy exist only in this offline guest and are removed afterward. This does not
+qualify a live Tailnet, public provider or DNS configuration.
+
+The final guest scenario exercises actual agent CLI creation, staged commit and
+source publication. Each defaults to a blocked receipt; the test operator then
+opens only the new fake/desk's Setup gates and verifies its observed receipt.
+The gates are closed afterward. Native three-ship fixtures separately qualify
+Treaty, frontend bytes and receiver delivery; this guest scenario does not claim
+those paths. All desks, sources, grants and credentials are generated in the VM.

@@ -267,6 +267,8 @@ def main():
  if scenario.get('fleet'):
   import fleet_guest
   report['fleet']=fleet_guest.exercise(run,tool,TARGET,host['runner_id'],host['host_public_key'])
+  import desk_guest
+  report['app_development']=desk_guest.exercise(run,tool,TARGET,host['runner_id'])
  operation(TARGET,'upgrade-zod','stop','release-final-stop')
  wait(lambda:ready(TARGET,'upgrade-zod','stopped'))
  report['passed']=True
