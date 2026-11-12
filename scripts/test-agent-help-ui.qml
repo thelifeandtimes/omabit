@@ -7,6 +7,8 @@ Item {
   readonly property var service:window.service
   readonly property var agent:service.agentHelp
   property int phase:0
+  property bool persistentAgent:false
+  property double launchedAt:0
   property int ticks:0
   property bool captured:false
   function check(value,message){if(!value)throw new Error(message)}
@@ -15,7 +17,7 @@ Item {
     interval:80;running:true;repeat:true
     onTriggered:{
       try {
-        test.check(++test.ticks<230,"Timed out at phase "+test.phase)
+        test.check(++test.ticks<(test.persistentAgent ? 450 : 230),"Timed out at phase "+test.phase)
         var a=test.agent,w=test.window
         if(a.busy)return
         test.check(!a.error,a.error)
@@ -42,10 +44,12 @@ Item {
           var help=test.find(w.contentItem,"remote-setup-agent-help");test.check(help.visible && help.enabled,"Failed setup has no Agent Help")
           help.clicked();test.phase=8
         }else if(test.phase===8 && a.message.indexOf("Opened opencode")===0){
-          w.setupPane.mode="agent";w.width=900;test.phase=9
+          w.setupPane.mode="agent";w.width=900;test.launchedAt=Date.now();test.phase=9
         }else if(test.phase===9 && a.value){
           test.captured=false;w.contentItem.grabToImage(function(result){test.captured=result.saveToFile("/data/state/agent-skills.png")});test.phase=10
-        }else if(test.phase===10 && test.captured){console.log("PASS: agent help uses the default launcher, preserves the profile, installs both complete skills and explains no default");Qt.quit()}
+        }else if(test.phase===10 && test.captured && test.persistentAgent){
+          test.service.activationEnabled=false;w.visible=false;test.phase=11
+        }else if(test.phase===10 && test.captured || test.phase===11 && Date.now()-test.launchedAt>22000){console.log("PASS: agent help uses the default launcher, preserves the profile, installs both complete skills and explains no default");Qt.quit()}
       }catch(e){console.error("FAIL: "+e.message+" "+e.stack);Qt.exit(1)}
     }
   }

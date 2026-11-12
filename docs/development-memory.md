@@ -9283,3 +9283,39 @@ points are in [the live review guide](native-review-0.4.0.md) and
 `diagnostics/2026-11-12-live-dev-review.json`. Production plugins, services and
 protected ships were not modified or operated on. Release qualification remains
 deferred.
+
+## M576 — Agent Help session lifetime fixed (2026-11-12, installed in DEV)
+
+The user reported that Opencode opened from Agent Help then closed after a few
+seconds. The DEV controller's actual error confirmed `TimeoutExpired` at 15 seconds.
+The helper used `subprocess.run(..., capture_output=True, timeout=15)` for Omarchy's
+interactive launcher. Local Omarchy source shows the exec chain through
+`omarchy-agent-prompt`, `omarchy-agent`, `omarchy-launch-tui`, `setsid` and `uwsm-app`.
+An attached launcher remains alive with its terminal; timing out that subprocess
+ends the interactive session. This was Omabit's lifetime bug, not evidence of an
+Opencode crash. The old prompt and user conversation were not retained in evidence.
+
+Launch now uses Popen with a separate process session, closed inherited descriptors
+and stdin/stdout/stderr on /dev/null. A half-second wait checks immediate startup
+failure; timeout there means the interactive session is running and is acknowledged
+without terminating it. There is no interactive-session deadline. The QML reader's
+own bounded deadline remains unchanged, and skill-installation behavior is unchanged.
+Spawn/early exit failures use a generic error without reflecting the prompt.
+
+Eleven helper tests pass. The actual full-panel helper fixture now has a persistent
+inert-agent mode: two launches survived beyond 21 seconds, past both the old
+15-second launcher deadline and 20-second QML reader deadline, with distinct session
+IDs and private stdio. The test also suspended the service and hid the panel.
+Two early fixture attempts exited because the simulated preview explicitly quits
+when hidden; the corrected fixture removes that test-only hook and keeps a second
+inert window, like the surrounding desktop. No real agent, network, production
+profile or runner was used by the regression test. Evidence is in
+`/tmp/omabit-agent-ui-lifetime-03` and
+`diagnostics/2026-11-12-agent-help-lifetime.json`.
+
+Only the DEV installation's `app040/agent-help.py` was atomically replaced, after
+checking its original hash. Its previous bytes and patch receipt are preserved in
+`/srv/dev/urbit-040/desktop`. No shell or runner restart, global agent setting,
+production plugin change or automated real-agent launch occurred. M575's initial
+launch-readiness evidence did not cover terminal lifetime; this regression closes
+that gap. Release qualification remains deferred.

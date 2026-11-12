@@ -21,7 +21,8 @@ actual memory/quota settings were verified. This checks configuration, not a
   Bulk edits use the agent CLI with a separate verified binding/revision per ship.
 - **Agent Help** opens the configured Omarchy agent; this machine reports Opencode.
   Bundled instructions and private review profile are passed to it. No agent was
-  launched automatically. Skill installation remains available for manual review.
+  launched automatically. Its launcher lifetime was fixed in M576: the agent
+  session outlives the helper and panel. Skill installation remains available for manual review.
 - Setup → App development and publishing uses the real runner's policy. New
   permissions start denied; previous simulated policy choices are preserved in
   the old preview's data, not applied to real ships.

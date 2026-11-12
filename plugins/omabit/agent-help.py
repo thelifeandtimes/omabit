@@ -322,6 +322,30 @@ def help_prompt(bundle, context):
               "Follow the app's release configuration and effective Omabit permissions; do not bypass a blocked gate.")
 
 
+def launch_agent(prompt):
+    # Omarchy may remain attached to the terminal for its entire lifetime.
+    # This interactive session belongs to the user, not the short-lived QML
+    # reader. Give it its own session and no inherited helper pipes. Do not use
+    # subprocess.run(timeout=...) or a Popen context manager here: both can end
+    # up waiting for (or killing) the user's terminal instead of just launching it.
+    problem = "Omarchy could not launch the default agent. Check its installation and sign-in."
+    try:
+        child = subprocess.Popen(["omarchy", "agent", "prompt", prompt],
+                                 stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                                 stderr=subprocess.DEVNULL, close_fds=True,
+                                 start_new_session=True)
+    except OSError:
+        raise ValueError(problem) from None
+    try:
+        code = child.wait(timeout=0.5)
+    except subprocess.TimeoutExpired:
+        # Still running is normal for a terminal launcher. This is only an
+        # immediate-failure check, never a deadline for the agent session.
+        return
+    if code:
+        raise ValueError(problem)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("status", "launch", "install"))
@@ -346,9 +370,7 @@ def main():
         if len(args.context_json) > 32768:
             raise ValueError("Agent Help context exceeds its limit")
         prompt = help_prompt(bundle, json.loads(args.context_json))
-        result = subprocess.run(["omarchy", "agent", "prompt", prompt], capture_output=True, timeout=15)
-        if result.returncode:
-            raise ValueError("Omarchy could not launch the default agent. Check its installation and sign-in.")
+        launch_agent(prompt)
         value = {"version": 1, "launched": agent}
     print(json.dumps(value))
 

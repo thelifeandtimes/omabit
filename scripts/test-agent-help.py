@@ -8,7 +8,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 ROOT=Path(__file__).resolve().parents[1]
 def module(name,path):
@@ -120,15 +120,27 @@ class AgentHelpTests(unittest.TestCase):
         with self.assertRaises(ValueError):agent.help_prompt(self.bundle,{'topic':'general','exposure':choice})
         with self.assertRaises(ValueError):agent.help_prompt(self.bundle,{'topic':'ship-access'})
     def test_launch_passes_one_prompt_argument_and_does_not_install(self):
-        calls=[]
-        def run(argv,**kwargs):
-            calls.append(argv)
-            return subprocess.CompletedProcess(argv,0,'opencode\n' if argv[1]=='default' else b'',b'')
-        with patch.object(agent,'active_bundle',return_value=self.bundle),patch.object(agent.subprocess,'run',side_effect=run),patch('sys.argv',['agent-help.py','launch','--context-json','{}']):
+        child=Mock();child.wait.return_value=0
+        with patch.object(agent,'active_bundle',return_value=self.bundle),patch.object(agent,'default_agent',return_value=('opencode','')),patch.object(agent.subprocess,'Popen',return_value=child) as spawn,patch('sys.argv',['agent-help.py','launch','--context-json','{}']):
             agent.main()
-        self.assertEqual(calls[1][:3],['omarchy','agent','prompt']);self.assertEqual(len(calls[1]),4)
+        argv=spawn.call_args.args[0]
+        self.assertEqual(argv[:3],['omarchy','agent','prompt']);self.assertEqual(len(argv),4)
+        self.assertIn(str(self.bundle.root),argv[3])
+        self.assertEqual(spawn.call_args.kwargs,dict(stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,close_fds=True,start_new_session=True))
         self.assertFalse(self.target.exists())
         with patch.object(agent,'active_bundle',return_value=self.bundle),patch.object(agent,'default_agent',return_value=('','Choose a default agent')),patch('sys.argv',['agent-help.py','launch']):
             with self.assertRaisesRegex(ValueError,'Choose'):agent.main()
+
+    def test_long_lived_launcher_is_acknowledged_without_termination(self):
+        child=Mock();child.wait.side_effect=subprocess.TimeoutExpired(['omarchy','agent','prompt','PRIVATE'],0.5)
+        with patch.object(agent.subprocess,'Popen',return_value=child):agent.launch_agent('PRIVATE')
+        child.kill.assert_not_called();child.terminate.assert_not_called()
+
+    def test_immediate_launch_failure_is_reported_without_prompt(self):
+        child=Mock();child.wait.return_value=17
+        for outcome in (child,FileNotFoundError('PRIVATE')):
+            with patch.object(agent.subprocess,'Popen',**({'side_effect':outcome} if isinstance(outcome,Exception) else {'return_value':outcome})):
+                with self.assertRaisesRegex(ValueError,'Omarchy could not launch') as error:agent.launch_agent('PRIVATE')
+                self.assertNotIn('PRIVATE',str(error.exception))
 
 if __name__=='__main__':unittest.main()

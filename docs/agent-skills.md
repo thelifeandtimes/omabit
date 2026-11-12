@@ -42,6 +42,10 @@ at the exact activated bundle's operator skill and a quoted, read-only command
 for the selected profile and attempt. It excludes raw SSH output, credentials
 and host-supplied free text. Help requests diagnosis, not repairs or exposure.
 The selected agent still owns its sign-in, execution settings and terminal.
+The interactive launcher runs in its own process session, with no inherited
+Omabit input/output pipes. Omabit checks immediate startup failure for half a
+second, then acknowledges the launch without waiting for the terminal to close.
+The helper deadline and panel shutdown must never end the user's agent session.
 
 **Setup → Agent Help and skills** shows the default agent and both bundled
 skills. If no default exists it points to Omarchy's **Setup → Defaults → Agent**.
@@ -79,4 +83,7 @@ cover no/default agent, single-argument prompt dispatch, context rejection,
 complete installation, edited/custom preservation, stale review, atomic updates,
 source mismatch and two skill generations. A networkless full-panel fixture
 exercises both installations, launch, no-default guidance and failed-setup help.
+The `--persistent-agent` variant keeps two inert sessions alive beyond21seconds
+(past the old15-second launcher and20-second QML helper deadlines), verifies
+separate process sessions/private stdio, and suspends/closes the Omabit panel.
 No real agent was launched or user skill directory modified for these tests.

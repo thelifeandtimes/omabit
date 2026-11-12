@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-12",
+  "cause": "Interactive Omarchy launcher was run with a15-second kill timeout; native DEV error confirmed TimeoutExpired.",
+  "helper": "/home/thelifeandtimes/.config/omarchy/plugins/thelifeandtimes.omabit.review040/app040/agent-help.py",
+  "previous_sha256": "b1631157a096c1b81690b4ebc28737aeece2d977375a73a79a874d5d9e542420",
+  "installed_sha256": "2509579482b03b0e8cbcebec52bcd9e6359b17252a3fac05fd6bf0faea04fb6d",
+  "backup": "/srv/dev/urbit-040/desktop/versions/agent-help-before-lifetime-fix.py",
+  "changes": "Detached process session and private stdio; half-second immediate failure probe does not terminate a long-running launcher.",
+  "scope": "DEV helper only; no shell/runner restart, no agent settings or production changes",
+  "tests": "/tmp/omabit-agent-ui-lifetime-03;11 helper tests",
+  "regression": {
+    "private_full_panel": "/tmp/omabit-agent-ui-lifetime-03",
+    "sessions": [
+      {
+        "pid": 25,
+        "session": 25,
+        "age": 23.564749205019325,
+        "stdio": [
+          "/dev/null",
+          "/dev/null",
+          "/dev/null"
+        ]
+      },
+      {
+        "pid": 32,
+        "session": 32,
+        "age": 22.675957289990038,
+        "stdio": [
+          "/dev/null",
+          "/dev/null",
+          "/dev/null"
+        ]
+      }
+    ],
+    "qml_log_sha256": "b699bd89b9f901c7a6536b42cb891de5cabb1f5106336bfa05552071efbc9fcb",
+    "no_real_agent_launched": true,
+    "networkless": true,
+    "panel_hidden_and_activation_disabled": true
+  }
+}
