@@ -9229,3 +9229,57 @@ M573's unchanged-preview note only; production/DEV/trial plugins, runner service
 ships and the active desktop shell were not inspected or changed. All manual
 resource effects in this window are simulated. No installed runner qualification
 or release claim follows from this preview update.
+
+## M575 — per-ship controls and persistent real DEV review (2026-11-12, installed)
+
+The user removed the resource header shortcut, requested RAM/CPU in initial boot
+advanced settings, enabled Agent Help, per-ship URL configuration, and a real DEV
+runner/widget while preserving production. They explicitly authorized local
+TRIAL retirement. This supersedes M574's simulated-only review and the old
+blanket trial/DEV exclusion only for this fresh namespace and local retirement.
+
+Standalone fake/comet/key boot forms and collector commands now carry validated
+1–16GiB/1–16CPU limits. Omission retains4/2 and old-runner compatibility; explicit
+limits require capability. The ship's runtime editor remains stopped-only. URLs
+now belong to the selected fleet ship's own tab, with binding invalidation on
+selection change; bulk CLI workflow remains unchanged. The preview header shortcut
+is removed. Agent Help is enabled in the live panel, correctly discovers Opencode,
+validates its bundled skills and passes the separate review profile. No real agent
+session was launched and no global skills were installed automatically.
+
+A root-owned named development profile now supports `/srv/dev/urbit-NAME`, retaining
+the exact old defaults and requiring clean bounded names, its own owner record,
+pier root, state and runtime directory. The fresh `/srv/dev/urbit-040` engine and
+runner booted a new fake~zod at4/2, stopped, saved16/4 and restarted healthy with
+applied revision2 and the original pier. Actual Docker Memory/NanoCpus matched.
+This is real configuration/restart evidence, not a16GiB pressure/stress test or
+release qualification. Its live URL registry also returned the verified managed
+local route. Default publishing policy was not opened.
+
+Native activation exposed three missing qmldir entries; the shipped registry is
+fixed and previews now consume it rather than synthesizing registrations. Native
+registry tests, CLI bounds/capability/request tests with race detection, scoped
+boot-form/resource/URL/Agent Help QML tests, storage admission, skill packaging and
+172 networkless CLI help entries pass. Early synthetic CLI fixtures needed private
+registry permissions and matching operation receipts; the removed shortcut also
+required fixing the resource fixture's navigation. Those failures are retained.
+
+Quickshell cached the first partial external module's failed types and file names.
+The working plugin was staged completely, then atomically installed at a fresh
+namespace `thelifeandtimes.omabit.review040`; the production shell was not restarted.
+The menubar says DEV and the application launcher is Omabit0.4.0 DEV. Local TRIAL
+and failed DEV copies/profile records were archived, preserving credentials; no
+rooftop action or revocation occurred. The simulated preview data and earlier
+human DEV piers are preserved. The new owner directory was provisioned through
+Polkit; only the two new user units were enabled.
+
+Generated npm caches were reclaimed; retained identical dependency files were
+hard-linked with hashes while preserving paths/content. Completed Go compiler
+cache was retired with a manifest after retaining compiled artifacts. Combined
+storage including both DEV roots, local plugin/archive and explicit unreadable
+rootless-work reserves was39.218GiB, below40GiB. Do not start another experiment
+without fresh admission. Full provenance, failures, scripts, receipts and entry
+points are in [the live review guide](native-review-0.4.0.md) and
+`diagnostics/2026-11-12-live-dev-review.json`. Production plugins, services and
+protected ships were not modified or operated on. Release qualification remains
+deferred.

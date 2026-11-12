@@ -46,7 +46,7 @@ Item {
    w.page="setup";w.setupPane.mode="development";test.phase=6
   }else if(test.phase===6 && w.setupPane.appDevelopmentPane.policyView){
    test.check(!!test.find(w.setupPane,"app-policy-tree"),"permission tree missing")
-   w.selectedKey="preview-local-040/preview-publisher";test.find(w.contentItem,"preview-resources").clicked();test.phase=7
+   w.selectedKey="preview-local-040/preview-publisher";w.page="overview";edit.clicked();var card=test.find(w.contentItem,"connectivity-runtime-card");w.revealItem(card);test.phase=7
   }else if(test.phase===7){
    test.check(w.page==="overview" && ram.enabled,"RAM & CPU shortcut failed")
    w.contentItem.grabToImage(function(result){test.captured=result.saveToFile("/data/state/manual-resources.png")});test.phase=8

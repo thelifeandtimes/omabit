@@ -49,3 +49,8 @@ for (const value of [0,-1,17,1.5,NaN]) assert.throws(()=>model.configure(limits,
 assert.match(model.runtimeDetail({...stopped,runtime_status:{launch_memory_gib:4,launch_cpu_cores:2}}),/Recorded container limits: 4 GiB RAM · 2 CPUs/);
 assert.match(model.runtimeDetail(stopped),/Requested container limits: 8 GiB RAM · 4 CPUs/);
 console.log('PASS: resource limits preserve omitted values, require a capable stopped ship, and display immutable launch limits');
+
+assert.deepEqual(Array.from(model.creationResourceArgs(c)),[]);
+assert.throws(()=>model.creationResourceArgs(c,16,4),/Update/);
+assert.deepEqual(Array.from(model.creationResourceArgs({...c,features:['container-resources-v1']},16,8)),['--memory-gib','16','--cpus','8']);
+for(const bad of [0,17,1.5,NaN])assert.throws(()=>model.creationResourceArgs(c,bad,2),/whole/);

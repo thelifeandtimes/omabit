@@ -22,14 +22,12 @@ def main():
   function find(o,name){if(o.objectName===name)return o;var children=o.children||[];for(var i=0;i<children.length;i++){var v=find(children[i],name);if(v)return v}return null}
   function openResources(){window.page="overview";Qt.callLater(function(){var edit=find(window.contentItem,"edit-ship-ports");if(edit && edit.enabled)edit.clicked();var card=find(window.contentItem,"connectivity-runtime-card");if(card)window.revealItem(card)})}
 ''',1).replace('title:"Omabit 0.4.0 · Setup Preview"','title:"Omabit 0.4.0 · Isolated Preview"').replace('page:"setup"','page:"overview"')
- shell=shell.replace('Plugin.Label { text:"Remote fixture"','Plugin.ActionButton {objectName:"preview-resources";text:"RAM & CPU";enabled:service.resourceReady && !service.busy;onClicked:preview.openResources()}\n        Plugin.Label { text:"Remote fixture"')
  shell=shell.replace('interval:1000;running:!!window.setupPane.appDevelopmentPane.policyView;repeat:false','interval:1000;running:service.resourceReady;repeat:false\n    onTriggered:{preview.openResources();capture.start()}\n  }\n  Timer {\n    id:capture;interval:350;repeat:false')
  (out/'shell.qml').write_text(shell)
  readme=(out/'README.md').read_text();readme='''# RAM and CPU manual review
 
 Open **Omabit 0.4.0 Preview** from the app launcher. The full panel starts with
-`preview-local → ~zod` and its runtime editor visible. The **RAM & CPU** header
-button returns to the selected ship's editor. Choose RAM/CPU, Save, then use the
+`preview-local → ~zod` and its runtime editor visible. Open runtime configuration on the ship's Overview page. Choose RAM/CPU, Save, then use the
 normal Start button at the top of the Overview page. Stop and reload to edit
 again. The remote `~bus` fixture starts running, so its resource controls remain
 disabled until Stop. Its Offline/observer switch also disables editing.

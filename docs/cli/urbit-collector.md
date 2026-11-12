@@ -453,12 +453,16 @@ Results are indented JSON; watch commands emit compact newline-delimited JSON (N
         bare or recommended; recommended requires --pill
   -confirm-network
         acknowledge internally generated comet identity and outbound networking on explicit Start
+  -cpus uint
+        container CPU quota in whole cores (1..16); omitted=2
   -http-port uint
         required loopback host HTTP port, 1024..65535
   -label string
         optional display label
   -loom uint
         loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default) (default 31)
+  -memory-gib uint
+        container RAM ceiling in GiB (1..16); omitted=4
   -native-control
         enable local-owner native control (default off)
 
@@ -493,12 +497,16 @@ Results are indented JSON; watch commands emit compact newline-delimited JSON (N
 
   -bootstrap string
         bare or recommended; recommended requires --pill
+  -cpus uint
+        container CPU quota in whole cores (1..16); omitted=2
   -http-port uint
         required loopback host HTTP port, 1024..65535
   -label string
         optional display label
   -loom uint
         loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default) (default 31)
+  -memory-gib uint
+        container RAM ceiling in GiB (1..16); omitted=4
   -native-control
         enable local-owner native control (default off)
 
@@ -534,6 +542,8 @@ Instance name and tier path are derived; omitted ports are allocated atomically.
         bare or recommended; recommended requires --pill
   -confirm-network
         boot a real networked identity on explicit Start
+  -cpus uint
+        container CPU quota in whole cores (1..16); omitted=2
   -http-port uint
         host loopback HTTP port
   -key-file string
@@ -544,6 +554,8 @@ Instance name and tier path are derived; omitted ports are allocated atomically.
         instance label
   -loom uint
         loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default) (default 31)
+  -memory-gib uint
+        container RAM ceiling in GiB (1..16); omitted=4
   -native-control
         enable local-owner native control (default off)
 

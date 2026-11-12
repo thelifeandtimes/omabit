@@ -61,17 +61,12 @@ Column {
     onValueChanged:root.load()
   }
   Label {text:"Ship URLs";font.pixelSize:Style.space(19);font.bold:true}
-  Label {width:parent.width;secondary:true;text:"Keep the addresses for each ship together. These choices are shared with other desktops connected to its runner."}
+  Label {width:parent.width;secondary:true;text:"Manage the addresses for this ship. These choices are shared with other desktops connected to its runner."}
   Card {
     width:parent.width;implicitHeight:selectionContent.implicitHeight+Style.space(32)
     Column {
       id:selectionContent;anchors.left:parent.left;anchors.right:parent.right;anchors.top:parent.top;anchors.margins:Style.space(16);spacing:Style.space(10)
-      Label {text:"Ship";caption:true;secondary:true}
-      RowLayout {
-        width:parent.width
-        SelectField {objectName:"ship-routes-select";Layout.fillWidth:true;Layout.minimumWidth:0;model:["Choose a ship"].concat(root.ships.map(function(row){return (row.instance.ship||row.instance.id)+" · "+row.connection.name+" · "+row.instance.id}));currentIndex:root.selected ? root.ships.map(function(row){return row.key}).indexOf(root.selectedKey)+1 : 0;onActivated:root.selectedKey=currentIndex>0 ? root.ships[currentIndex-1].key : ""}
-        ActionButton {objectName:"ship-routes-refresh";text:"Refresh";enabled:controller.available && !controller.busy;onClicked:controller.refresh()}
-      }
+      ActionButton {objectName:"ship-routes-refresh";text:"Refresh";enabled:controller.available && !controller.busy;onClicked:controller.refresh()}
       Label {width:parent.width;visible:!root.ready;text:root.unavailable;caption:true;secondary:true}
       Label {width:parent.width;visible:controller.busy;text:controller.saving ? "Saving URLs…" : "Checking this ship's addresses…";caption:true;secondary:true}
       Label {width:parent.width;visible:!!controller.error;text:controller.error;caption:true;color:Design.danger}

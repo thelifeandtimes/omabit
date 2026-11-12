@@ -73,7 +73,7 @@ Discovery changes no daemon settings. Source references:
 [Serve CLI](https://tailscale.com/docs/reference/tailscale-cli/serve),
 [configuration types](https://github.com/tailscale/tailscale/blob/main/ipn/serve.go).
 
-M557 adds Setup → Ship URLs inside the existing full panel/sidebar. It selects a
+M575 moves the URL editor to Fleet → selected ship → Ship URLs in the full panel. It binds to a
 verified running ship, edits configured URLs, and retains automatic-route disable
 choices. Save uses the current binding and revision; failures invalidate editing
 until refresh. Offline/replaced selections cannot retain edit authority. Wide and
@@ -124,7 +124,7 @@ reordering. Failed saves display confirmed state; refresh does not replay effect
 Wide/narrow full-panel and hosted-flow fixtures pass, as does actual service drain
 with inert helpers. See [UI evidence](diagnostics/2026-11-07-fleet-permission-ui.json).
 
-M563 adds selected-ship Remote access help to Setup → Ship URLs. The default agent
+M563 adds selected-ship Remote access help, now under Fleet → selected ship → Ship URLs (M575). The default agent
 receives a bounded nonsecret binding/runtime/revision hint and a provider/action
 choice. The bundled skill covers audience, exact upstream, verification, registration
 and targeted disable for Serve/Funnel, Cloudflare and custom domains. Help does not

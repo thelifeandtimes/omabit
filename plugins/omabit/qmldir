@@ -72,3 +72,6 @@ AppSource 1.0 AppSource.qml
 AppSourcePane 1.0 AppSourcePane.qml
 AgentHelp 1.0 AgentHelp.qml
 AgentHelpPane 1.0 AgentHelpPane.qml
+ContainerResourceFields 1.0 ContainerResourceFields.qml
+ShipRoutes 1.0 ShipRoutes.qml
+ShipRoutesPane 1.0 ShipRoutesPane.qml

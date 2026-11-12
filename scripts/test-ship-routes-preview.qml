@@ -4,7 +4,7 @@ import Quickshell
 Item {
   id:test
   required property var window
-  readonly property var pane:window.setupPane.shipRoutesPane
+  readonly property var pane:window.shipRoutesPane
   property int phase:0
   property int ticks:0
   property bool captured:false
@@ -18,7 +18,7 @@ Item {
       if(c.busy)return
       if(test.phase!==10)test.check(!c.error,c.error)
       if(test.phase===0){
-        w.setupPane.mode="routes";p.selectedKey="preview-local-040/preview-publisher";test.phase=1
+        w.page="urls";w.selectedKey="preview-local-040/preview-publisher";test.phase=1
       }else if(test.phase===1 && c.value){
         test.check(c.value.record.binding.ship==="~zod" && p.ready,"Wrong selected ship")
         test.find(w.contentItem,"ship-route-url").text="https://publish.preview.example"
@@ -57,7 +57,7 @@ Item {
         test.find(w.contentItem,"monitor-scroll").contentY=0;c.refresh();test.phase=4
       }else if(test.phase===4 && c.value){
         test.check(c.value.record.revision===1 && p.draft.routes[0].origin==="https://publish.preview.example","Refresh lost saved URLs")
-        p.selectedKey="preview-remote-040/preview-remote-bus";test.phase=5
+        w.selectedKey="preview-remote-040/preview-remote-bus";test.phase=5
       }else if(test.phase===5 && c.value && c.value.record.binding.ship==="~bus"){
         test.check(p.draft.routes.length===0,"Other ship inherited URLs")
         test.check(test.find(w.contentItem,"ship-access-origin").text==="","Other ship inherited access URL")
@@ -66,7 +66,7 @@ Item {
         test.check(!p.ready && !c.value && !test.find(w.contentItem,"ship-routes-save").enabled,"Offline ship retained edit authority")
         var calls=w.service.helpCalls
         test.check(!test.find(w.contentItem,"ship-access-help").enabled && !p.accessHelp("configure") && calls===w.service.helpCalls,"Offline ship retained Help authority")
-        w.service.remoteMode="online";w.service.refresh();p.selectedKey="preview-local-040/preview-publisher";w.width=760;test.phase=7
+        w.service.remoteMode="online";w.service.refresh();w.selectedKey="preview-local-040/preview-publisher";w.width=760;test.phase=7
       }else if(test.phase===7 && c.value){
         test.captured=false;w.contentItem.grabToImage(function(image){test.captured=image.saveToFile("/data/state/ship-urls-narrow.png")});test.phase=8
       }else if(test.phase===8 && test.captured){
@@ -82,7 +82,7 @@ Item {
         w.service.routeScenario="normal";c.refresh();test.phase=11
       }else if(test.phase===11 && c.value){
         test.check(c.value.record.revision===1 && p.draft.routes[0].origin==="https://publish.preview.example","Conflict changed saved URLs or was replayed")
-        console.log("PASS: ship URL Setup navigation, authoring, persistence, isolation, typed remote-access Help and offline invalidation");Qt.quit()
+        console.log("PASS: ship URL fleet navigation, authoring, persistence, isolation, typed remote-access Help and offline invalidation");Qt.quit()
       }
     }catch(e){console.error("FAIL: "+e.message+" "+e.stack);Qt.exit(1)}}
   }

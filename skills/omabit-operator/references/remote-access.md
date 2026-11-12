@@ -1,6 +1,6 @@
 # Agent-assisted remote access
 
-Use **Setup → Ship URLs → Remote access help** with a verified running ship.
+Use **Fleet → selected ship → Ship URLs → Remote access help** with a verified running ship.
 Agent Help opens Omarchy's configured default agent with the selected runner,
 ship/pier binding, runtime and saved URL revision. It carries no credentials.
 Choose private Tailnet access, public Tailscale Funnel, Cloudflare Tunnel, or a

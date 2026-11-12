@@ -125,6 +125,10 @@ existing sessions when sign-in or observation is unavailable.
 
 On a runner advertising `container-resources-v1`, individually managed ships can
 use 1–16 GiB RAM and 1–16 whole CPU cores. Defaults remain 4 GiB and 2 CPUs.
+Initial standalone fake, comet, and keyed-ship boot forms expose both limits under
+**Advanced settings**. Their collector commands (`create-fake`, `create-comet`,
+`create-ship`) accept `--memory-gib` and `--cpus` before first boot. Omission keeps
+the defaults; explicit values require `container-resources-v1`.
 These are ceilings, not reserved host capacity; CPU quotas do not pin cores.
 Vere's loom remains a separate address-space setting. The runner's configured
 start-admission policy still applies; raising a ceiling does not add host RAM.

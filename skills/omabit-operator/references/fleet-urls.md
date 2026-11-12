@@ -1,7 +1,8 @@
 # Ship URLs across the fleet
 
-The full panel has **Setup → Ship URLs** for selecting a running ship, reviewing
-detected addresses, editing configured URLs, and saving shared route choices.
+Select a ship in the fleet, then open its **Ship URLs** tab to review detected
+addresses, edit configured URLs, and save shared route choices. Bulk changes use
+the CLI below, with a fresh selection and revision for each ship.
 Refresh after a conflict or lost save reply before making another edit.
 
 Use the selected installation's `omabit` CLI and collector registry. A runner

@@ -42,7 +42,7 @@ def main():
     q = subprocess.run(["/usr/bin/python3", "-B", str(out / "launch.py"), "smoke"], capture_output=True, text=True, timeout=35)
     log = (out / "data/state/window.log").read_text()
     print(log)
-    assert q.returncode == 0 and "PASS: ship URL Setup" in log, q.stdout + q.stderr + log
+    assert q.returncode == 0 and "PASS: ship URL fleet" in log, q.stdout + q.stderr + log
     assert not any(word in log for word in ("WARN", "ERROR", "Error:", "FAIL:", "Unable to assign", "Binding loop")), log
 
 

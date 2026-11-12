@@ -20,6 +20,7 @@ Window {
   readonly property alias maintenancePane: maintenance
   readonly property alias activityPane: activity
   readonly property alias setupPane: windowSetup
+  readonly property alias shipRoutesPane: shipRoutes
   readonly property var fleet: service ? Model.fleet(service.connections) : []
   readonly property var selected: fleet.filter(function(s) { return s.key === root.selectedKey })[0] || (!selectedKey && fleet.length ? fleet[0] : null)
   readonly property var connection: selected ? selected.connection : null
@@ -33,7 +34,7 @@ Window {
   readonly property var cpu: Model.cpuView(connection,instance,service.now,service.observing)
   readonly property var epochs: Model.epochDisplay(instance,service ? service.now : Date.now())
   readonly property var roll: Model.lastRoll(instance)
-  readonly property bool shipPage: page === "overview" || page === "maintenance"
+  readonly property bool shipPage: page === "overview" || page === "maintenance" || page === "urls"
   title: "Omabit"+(service && service.profileName!=="default" ? " · "+service.profileName.toUpperCase() : "")+" · Monitor & maintenance"
   color: Design.background
   width: Style.space(1100)
@@ -191,6 +192,7 @@ Window {
               }
               RowLayout {
                 ActionButton { text: "Overview"; primary: root.page === "overview"; onClicked: root.page = "overview" }
+                ActionButton { objectName: "ship-urls-tab"; text: "Ship URLs"; primary: root.page === "urls"; onClicked: root.page = "urls" }
                 ActionButton { text: "Maintenance"; primary: root.page === "maintenance"; onClicked: root.page = "maintenance" }
                 ActionButton { text: "Ship activity ↗"; quiet: true; onClicked: { activity.runnerFilter = root.connection.runner_id; activity.shipFilter = root.selected.key; root.page = "activity" } }
               }
@@ -310,6 +312,7 @@ Window {
                 Label { width: parent.width; visible: root.technical; caption: true; secondary: true; text: root.instance && root.connection ? "Runner: " + root.connection.runner_id + "\nAccess: " + root.connection.access_role + "\nEndpoint reported by runner: " + (root.instance.endpoint || "none") + "\n" + Model.resourceText(root.instance,root.service.now) + (root.instance.active_operation_id ? "\nOperation: " + root.instance.active_operation_id : "") : "" }
                 Label { width: parent.width; visible: root.technical && root.service.lastResult !== ""; text: "Last submitted result: " + root.service.lastResult; caption: true; secondary: true }
               }
+              ShipRoutesPane { id: shipRoutes; objectName: "ship-urls"; width: parent.width; service: root.service; selectedKey: root.selected ? root.selected.key : ""; visible: root.page === "urls"; active: root.watching && visible }
               MaintenancePane { id: maintenance; width: parent.width; service: root.service; connection: root.connection; instance: root.instance; visible: root.page === "maintenance"; onRevealRequested: function(item) { root.revealItem(item) } }
             }
             Column { width: parent.width; spacing: Style.space(12); visible: root.page !== "activity" && root.page !== "setup" && Model.fleet(root.service.connections).length === 0

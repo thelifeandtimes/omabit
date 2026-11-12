@@ -1150,6 +1150,17 @@ function loomLabel(exponent) {
   if (!Number.isInteger(n) || n<20 || n>34) return "Unsupported loom"
   return n+" · "+Math.pow(2,n-(n<30 ? 20 : 30))+(n<30 ? " MiB" : " GiB")
 }
+function creationResourceArgs(connection,memory,cpus) {
+  memory=memory===undefined ? 4 : Number(memory)
+  cpus=cpus===undefined ? 2 : Number(cpus)
+  if (!Number.isInteger(memory) || memory<1 || memory>16 || !Number.isInteger(cpus) || cpus<1 || cpus>16)
+    throw new Error("RAM and CPU limits must be whole numbers in 1–16")
+  if (!hasFeature(connection,"container-resources-v1")) {
+    if (memory!==4 || cpus!==2) throw new Error("Update this runner to configure RAM and CPU limits")
+    return []
+  }
+  return ["--memory-gib",String(memory),"--cpus",String(cpus)]
+}
 function runtimeSettingsArgs(connection,loom) {
   loom=Number(loom)
   if (!Number.isInteger(loom) || loom<30 || loom>34) throw new Error("Loom must be a byte exponent in 30..34 (1–16 GiB)")

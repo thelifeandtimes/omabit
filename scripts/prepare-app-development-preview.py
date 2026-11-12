@@ -29,8 +29,13 @@ def main():
     (output / "Plugin").mkdir()
     for name in COMPONENTS:
         shutil.copy2(ROOT / "plugins/omabit" / name, output / "Plugin" / name)
-    (output / "Plugin/qmldir").write_text("singleton Design 1.0 Design.qml\nWindowActivation 1.0 WindowActivation.qml\n" + "".join(
-        name[:-4] + " 1.0 " + name + "\n" for name in COMPONENTS if name.endswith(".qml") and name != "Design.qml"))
+    # Use the shipped registry, so a preview cannot hide missing native types.
+    registry = (ROOT / "plugins/omabit/qmldir").read_text().splitlines()
+    qml = {name for name in COMPONENTS if name.endswith(".qml")} | {"WindowActivation.qml"}
+    declared = {line.split()[-1] for line in registry if line.strip()}
+    if not qml <= declared:
+        raise ValueError("Preview components are missing from the native QML registry: " + str(sorted(qml - declared)))
+    (output / "Plugin/qmldir").write_text("\n".join(line for line in registry if line.strip() and line.split()[-1] in qml) + "\n")
     # Focus only this fixture window, without exposing compositor control IPC.
     (output / "Plugin/WindowActivation.qml").write_text('import QtQuick\nItem { required property var targetWindow;signal failed();function activate(){targetWindow.visible=true;targetWindow.requestActivate()} }\n')
     for name in ("backend.py", "launch.py", "shell.qml", "PreviewService.qml"):

@@ -26,6 +26,17 @@ and [the native review guide](native-dev-review.md). Count native DEV storage in
 the existing 40 GiB experiment budget. Do not turn human-review state into an
 automated test fixture or reset it without authorization.
 
+## Live0.4.0 review exception —2026-11-12
+
+M575 records the user's explicit request for a real, persistent DEV runner and
+menubar widget, plus permission to retire the old local trial040 plugin. The fresh
+root `/srv/dev/urbit-040`, user units `omabit-dev-040-{docker,runner}.service`,
+plugin `thelifeandtimes.omabit.review040` and `review-040` collector profile are
+separate from production and the earlier `/srv/dev/urbit` installation. Both DEV
+roots, installed review artifacts and archived TRIAL profiles count toward40GiB.
+Only the fresh review fake was operated on. No remote runner or key revocation was
+part of local TRIAL retirement. Preserve this new manual-review state thereafter.
+
 ## Experimental desktop contract
 
 Use separate experimental plugin IDs and visible labels; also isolate every state,

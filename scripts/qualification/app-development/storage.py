@@ -12,6 +12,7 @@ import subprocess
 GIB = 1024**3
 BUDGET = 40 * GIB
 DEV = Path('/srv/dev/urbit')
+NAMED_DEV = Path('/srv/dev/urbit-040')
 
 
 def measure(path):
@@ -25,7 +26,8 @@ def measure(path):
     if result.returncode:
         errors = result.stderr.splitlines()
         pattern = r"du: cannot read directory '/srv/dev/urbit/state/\.local/share/urbit-runner/docker/containerd/daemon/io\.containerd\.snapshotter\.v1\.overlayfs/snapshots/[0-9]+/work/work': Permission denied"
-        if path != DEV or not 1 <= len(errors) <= 18 or not all(re.fullmatch(pattern, e) for e in errors):
+        pattern = pattern.replace('/srv/dev/urbit/', re.escape(str(path)) + '/')
+        if path not in (DEV, NAMED_DEV) or not 1 <= len(errors) <= 18 or not all(re.fullmatch(pattern, e) for e in errors):
             raise RuntimeError('incomplete storage measurement: ' + str(path))
         row.update(unreadable_work_directories=len(errors), unmeasured_reserve=GIB)
     return row
@@ -36,6 +38,17 @@ def roots():
     required = [base / 'omabit-private-docker-labs', base / 'omabit-qualification-evidence', DEV]
     if any(not p.is_dir() or p.is_symlink() for p in required):
         raise RuntimeError('expected physical storage roots unavailable')
+    if NAMED_DEV.exists():
+        if NAMED_DEV.is_symlink() or not NAMED_DEV.is_dir():
+            raise RuntimeError("unsafe named development storage root")
+        required.append(NAMED_DEV)
+    # Include installed native-review artifacts and locally retired trial profiles.
+    for path in (Path.home()/'.config/omarchy/plugins/thelifeandtimes.omabit.review040',
+                 Path.home()/'.local/share/omabit-review-040-retired-20261112'):
+        if path.exists():
+            if path.is_symlink() or not path.is_dir():
+                raise RuntimeError('unsafe native review artifact root')
+            required.append(path)
     return required + sorted(p for p in Path('/tmp').glob('omabit-*') if not p.is_symlink())
 
 

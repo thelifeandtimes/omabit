@@ -4,7 +4,7 @@ from pathlib import Path
 import subprocess,shutil,tempfile,atexit
 r=Path(__file__).resolve().parents[1];temporary=tempfile.TemporaryDirectory(prefix='omabit-compact-');atexit.register(temporary.cleanup);d=Path(temporary.name)
 p=d/'Plugin';p.mkdir(exist_ok=True)
-for n in ('RegistrationPane.qml','KeyBootPane.qml','ProjectCreationStatus.qml','SwitchField.qml','BootstrapSelector.qml','RuntimeSettingsFields.qml','StorageLocationSelector.qml','SelectField.qml','Label.qml','Design.qml','ActionButton.qml','Field.qml','CheckField.qml','Hint.qml','Model.js'):
+for n in ('RegistrationPane.qml','KeyBootPane.qml','ProjectCreationStatus.qml','SwitchField.qml','BootstrapSelector.qml','RuntimeSettingsFields.qml','ContainerResourceFields.qml','StorageLocationSelector.qml','SelectField.qml','Label.qml','Design.qml','ActionButton.qml','Field.qml','CheckField.qml','Hint.qml','Model.js'):
  shutil.copy2(r/'plugins/omabit'/n,p/n)
 (p/'qmldir').write_text('singleton Design 1.0 Design.qml\n')
 c=d/'qs/Commons';c.mkdir(parents=True,exist_ok=True)
@@ -18,7 +18,7 @@ import QtQuick.Dialogs
 import QtQuick.Controls as Controls
 import "Plugin" as P
 Window { id:w; width:590; height:690; visible:true
- property var c: ({name:"dev",runner_id:"dev",access_role:"operator",status:"available",mode:"development-managed",checked_at:new Date().toISOString(),features:["create-comet","create-fake","runtime-settings","bootstrap-selection","pier-storage","project-dependencies-v1"],snapshot:{instances:[]}})
+ property var c: ({name:"dev",runner_id:"dev",access_role:"operator",status:"available",mode:"development-managed",checked_at:new Date().toISOString(),features:["create-comet","create-fake","container-resources-v1","runtime-settings","bootstrap-selection","pier-storage","project-dependencies-v1"],snapshot:{instances:[]}})
  P.RegistrationPane {id:form;width:590;compact:true;connection:w.c;service:svc}
  P.KeyBootPane {id:keyForm;width:590;visible:false;connection:w.c;service:svc}
  QtObject { id:svc
@@ -37,7 +37,7 @@ Window { id:w; width:590; height:690; visible:true
  property var projectCreation: ({busy:false,completed:false,error:"",intent:null,progress:{},start:function(c,n,m,ok,r,p){svc.received={project:n,projectID:p,members:m,confirmed:ok};return true}})
  function suggestPort(c,t){portTarget={token:t,runner:c.runner_id};portSuggestion={runner:c.runner_id,connection:c.name,token:t,port:18082}}
  function editRegistration(){}
- function registerComet(c,n,p,consent,pier,boot,source,loom){received={name:n,port:p,consent:consent,pier:pier,bootstrap:boot,loom:loom};return true}
+ function registerComet(c,n,p,consent,pier,boot,source,loom,memory,cpus){received={name:n,port:p,consent:consent,pier:pier,bootstrap:boot,loom:loom,memory:memory,cpus:cpus};return true}
  function createFromKey(){keyRequests++;throw Error("Browsing must not submit a key")}
  }
  function find(o,n,seen){seen=seen||[];if(!o||seen.indexOf(o)>=0)return null;seen.push(o);if(o.objectName===n)return o;for(var key of ["children","data","contentItem"]){var children=o[key];if(!children)continue;if(typeof children.length!=="number")children=[children];for(var i=0;i<children.length;i++){var f=find(children[i],n,seen);if(f)return f}}return null}
@@ -47,6 +47,11 @@ Window { id:w; width:590; height:690; visible:true
   check(!find(form,"registration-name").visible,"custom fields visible")
   var b=find(form,"register-instance");check(b.enabled,"boot disabled: "+form.problem);b.clicked()
   check(svc.received.name==="comet-1"&&svc.received.port==="18082"&&svc.received.consent&&svc.received.bootstrap==="recommended"&&svc.received.loom===31,"wrong boot settings")
+  find(form,"registration-advanced-toggle").clicked()
+  check(find(form,"container-memory").visible && find(form,"container-memory").enabled,"recommended boot cannot choose resources")
+  find(form,"container-memory").currentIndex=15;find(form,"container-memory").activated(15)
+  find(form,"container-cpus").currentIndex=7;find(form,"container-cpus").activated(7);b.clicked()
+  check(svc.received.memory===16 && svc.received.cpus===8,"boot limits lost")
   find(form,"registration-recommended").checked=false
   check(find(form,"registration-name").visible,"custom controls hidden")
   console.log("PASS compact recommended comet: "+JSON.stringify(svc.received))

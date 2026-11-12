@@ -22,3 +22,19 @@ func TestDevelopmentPathsNeverMutateInstalledProfile(t *testing.T) {
 		}
 	}
 }
+
+func TestNamedDevelopmentRootsStayDistinct(t *testing.T) {
+	for _, root := range []string{"/srv/dev/urbit", "/srv/dev/urbit-040", "/srv/dev/urbit-review-2"} {
+		if !validDevelopmentRoot(root) {
+			t.Fatal(root)
+		}
+	}
+	for _, root := range []string{"/srv/urbit", "/srv/dev/urbit/040", "/srv/dev/urbit-", "/srv/dev/urbit-../urbit", "/srv/dev/urbit-040/", "/srv/dev/urbit-040\n", "/tmp/urbit-040"} {
+		if validDevelopmentRoot(root) {
+			t.Fatal("unsafe root", root)
+		}
+	}
+	if developmentRuntimeName("/srv/dev/urbit") != "omabit-dev" || developmentRuntimeName("/srv/dev/urbit-040") != "omabit-dev-040" {
+		t.Fatal("runtime paths collided")
+	}
+}
