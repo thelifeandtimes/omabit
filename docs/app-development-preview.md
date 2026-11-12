@@ -88,3 +88,30 @@ The full-panel interaction fixture tests selection, the single-desk Allow path,
 creation inheritance, offline/observer behavior, Setup navigation, responsive geometry and real pointer/keyboard
 input for zooming, scaled node selection, scrolling and dragging. It uses a fresh networkless offscreen copy. Never run automated policy
 mutations against a human's persistent preview.
+
+## Resource-control preview (2026-11-12)
+
+The persistent preview now also offers the real ship runtime editor with a
+simulated resource backend. **RAM & CPU** in its header returns to the selected
+ship's editor. On stopped `preview-local → ~zod`, choose RAM/CPU and Save; scroll
+to the Overview header to Start. Stop, then reload settings to edit again.
+`preview-remote → ~bus` starts running so its resource fields are disabled until
+Stop. Its Offline/observer switch disables changes. Project member `~nec` retains
+its separate fixed contract. This is UI simulation, not a disposable Urbit runner.
+
+The new fixture data is `data/state/resources.json`; existing permission data stays
+in `data/state/policy.json`. Updating code preserves both files and the previous
+code snapshot. Production, DEV and trial plugins/runners remain excluded.
+
+Prepare or test a **new** disposable copy with:
+
+```sh
+python3 scripts/prepare-container-resources-preview.py --output /tmp/omabit-resource-preview-UNIQUE
+python3 scripts/test-container-resources-preview.py --output /tmp/omabit-resources-preview-test-UNIQUE
+```
+
+The full-panel test verifies save/start/stop, requested versus applied limits,
+readonly running/observer/offline/project contexts, the permission tree, reopening
+saved limits and byte-preservation of original permission settings. It must never
+be run against a human preview. The adapter invokes only its fixed Python fixture;
+unknown actions fail and no collector, Docker, SSH or runner helper is available.
