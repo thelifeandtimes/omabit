@@ -77,7 +77,7 @@ func (s *store) registerShipReplay(actor string, req protocol.CreateShipRequest,
 	if class == "" || class == "comet" || !req.ConfirmNetwork || !protocol.ValidBootKey(req.Key) || pierstore.Kind(req.PierPath) != class {
 		return protocol.Operation{}, false, bad("require a valid owned ~ship, private 0w key, matching livenet directory and network acknowledgement")
 	}
-	registration := protocol.CreateFakeRequest{ID: req.ID, Label: req.Label, Config: protocol.Configuration{HTTPPort: 18080, AmesPort: 34343, Loom: req.Config.Loom}, RequestID: req.RequestID}
+	registration := protocol.CreateFakeRequest{ID: req.ID, Label: req.Label, Config: protocol.Configuration{HTTPPort: 18080, AmesPort: 34343, Loom: req.Config.Loom, MemoryGiB: req.Config.MemoryGiB, CPUCores: req.Config.CPUCores}, RequestID: req.RequestID}
 	if _, err := registrationFingerprint(&registration, nil); err != nil {
 		return protocol.Operation{}, false, err
 	}
@@ -144,7 +144,7 @@ func (s *store) registerShipReplay(actor string, req protocol.CreateShipRequest,
 	if err != nil {
 		return protocol.Operation{}, false, err
 	}
-	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: revision, Ship: req.Ship, Mode: class, PierPath: req.PierPath, DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: id, Port: req.Config.HTTPPort, Loom: req.Config.Loom, NativeControl: req.Config.NativeControl, AmesPort: req.Config.AmesPort, Boot: &runtimequalify.ManagedBoot{Pill: req.Pill}, NativeShip: req.Ship, NativeKeyDigest: digest, Comet: &runtimequalify.ManagedComet{Ship: req.Ship}, Storage: &pierstore.Location{Path: req.PierPath}}}
+	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: revision, Ship: req.Ship, Mode: class, PierPath: req.PierPath, DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: id, Port: req.Config.HTTPPort, Loom: req.Config.Loom, NativeControl: req.Config.NativeControl, MemoryGiB: req.Config.MemoryGiB, CPUCores: req.Config.CPUCores, AmesPort: req.Config.AmesPort, Boot: &runtimequalify.ManagedBoot{Pill: req.Pill}, NativeShip: req.Ship, NativeKeyDigest: digest, Comet: &runtimequalify.ManagedComet{Ship: req.Ship}, Storage: &pierstore.Location{Path: req.PierPath}}}
 	v.Public.AmesPublished = true
 	v.Public.Bootstrap = &protocol.Bootstrap{Kind: "bare", Pill: req.Pill}
 	if req.Pill != nil {

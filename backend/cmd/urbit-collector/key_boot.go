@@ -77,7 +77,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	f.BoolVar(&secureKeyFile, "secure-key-file", false, "make the selected owned regular key file private before reading it")
 	f.UintVar(&port, "http-port", 0, "host loopback HTTP port")
 	f.UintVar(&ames, "ames-port", 0, "host Ames UDP port; zero/omitted chooses automatically")
-	f.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
+	f.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default)")
 	f.BoolVar(&native, "native-control", false, "enable local-owner native control (default off)\n\n"+protocol.NativeControlWarning)
 	f.StringVar(&pillSource, "pill", "", "Recommended Apps release URL (known S3 default is a frozen release alias), or explicit custom HTTPS URL/local file; blank uses Vere canonical default")
 	f.StringVar(&pillSHA, "pill-sha256", "", "trusted expected SHA-256 for a custom pill; requires --pill-size (built-in release is always pinned)")

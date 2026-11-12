@@ -6,6 +6,8 @@ const MaxLogBytes = 64 << 10
 const MaxLogLines = 200
 
 type RuntimeStatus struct {
+	LaunchMemoryGiB         *uint8     `json:"launch_memory_gib,omitempty"`
+	LaunchCPUCores          *uint8     `json:"launch_cpu_cores,omitempty"`
 	ImportRestoreAvailable  bool       `json:"import_restore_available,omitempty"`
 	ImportRestoreStage      string     `json:"import_restore_stage,omitempty"`
 	LaunchLoom              *uint8     `json:"launch_loom,omitempty"`

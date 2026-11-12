@@ -9165,3 +9165,37 @@ Release qualification/publication remains explicitly deferred. No installed
 production/DEV/trial plugin, runner, ship, desktop/keyring or persistent preview
 was changed. Exact source identities, tests and limitations are recorded in
 `diagnostics/2026-11-07-real-receiver-reconnect.json`.
+
+## M573 — configurable container RAM and CPU limits (2026-11-12, implemented)
+
+The user added per-container resource configuration to0.4.0 and explicitly chose
+RAM and CPU limits. Individually managed ships now expose1–16GiB RAM and1–16 whole
+CPU cores, retaining4GiB/2CPU defaults. Changes require stopped/uninitialized state
+and no active operation, recovery or uncertain provisioning/maintenance. The workflow
+is Stop → reload runtime settings → save → Start; its pier is retained. No existing
+ship or installed plugin/runner was operated on to implement this request.
+
+Schema59 fences optional desired and immutable per-container limits. Migration
+preserves original bodies; absent fields retain historical limits. Old-client edits
+preserve omitted limits. Creation records intent before Docker; probes, containment,
+maintenance and stats check the recorded ceiling. Requested versus recorded limits
+remain distinct, and CPU charts preserve per-core units. Loom and start-admission
+policy remain independent. Project members/private gateways keep their own fixed
+contracts; this feature does not silently modify their separate lifecycle protocol.
+
+Nondefault handoffs require capability at both endpoints before source fencing and
+sign both limits. Explicit defaults normalize to the old settings wire shape, so
+restoring4/2 does not break otherwise compatible moves to an older runner. The
+actual schema58 writer66c641b and its receipts survive migration/reopen; that same
+writer refuses59 unchanged. Original fixture SQL/checksum is retained in source.
+
+Seventy-five focused Go tests pass with the race detector, covering resize/restart,
+containment, metrics, concurrency, old clients, signed moves and migration. UI model
+checks, real wide/narrow QML controls with inert callbacks, skill validation and82
+actual collector help entries pass. See [validation](runtime-settings-validation.md)
+and `diagnostics/2026-11-12-container-resources.json` for scope/evidence and initial
+fixture corrections. This supersedes fixed4GiB/2CPU assumptions for the capable
+standalone runtime only; historical qualification records retain their original
+meaning. Release qualification, installed upgrades and a live16GiB workload remain
+separate and deferred. Source integration targets only the0.4.0 feature branch;
+production/DEV/trial installations, ships and the persistent preview are unchanged.

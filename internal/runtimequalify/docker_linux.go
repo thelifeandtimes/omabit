@@ -363,11 +363,12 @@ func (q *qualifier) command(kind string) (string, []string) {
 
 func (q *qualifier) containment(c container, kind string) error {
 	h := c.HostConfig
+	memory, cpus := q.containerLimits(kind)
 	entry, args := q.command(kind)
 	ok := c.Config.User == "0:0" && c.Config.StopSignal == "SIGTERM" && c.Config.StopTimeout == 300 && !c.Config.Tty && !c.Config.OpenStdin && reflect.DeepEqual(c.Config.Entrypoint, []string{entry}) && reflect.DeepEqual(c.Config.Cmd, args) &&
 		h.PidMode == "" && h.IpcMode == "private" && h.UTSMode == "" && h.UsernsMode == "" && h.CgroupnsMode == "private" && !h.Privileged && !h.PublishAllPorts && !h.AutoRemove &&
 		len(h.CapAdd) == 0 && reflect.DeepEqual(h.CapDrop, []string{"ALL"}) && reflect.DeepEqual(h.SecurityOpt, []string{"no-new-privileges=true"}) && len(h.Binds) == 0 && len(h.VolumesFrom) == 0 && len(h.Links) == 0 && len(h.Devices) == 0 && len(h.DeviceRequests) == 0 &&
-		h.Memory == memoryLimit && h.MemorySwap == memoryLimit && h.PidsLimit != nil && *h.PidsLimit == 256 && h.NanoCpus == 2_000_000_000 && h.CpuQuota == 0 && h.CpuPeriod == 0 &&
+		h.Memory == memory && h.MemorySwap == memory && h.PidsLimit != nil && *h.PidsLimit == 256 && h.NanoCpus == cpus*1_000_000_000 && h.CpuQuota == 0 && h.CpuPeriod == 0 &&
 		h.RestartPolicy.Name == "no" && h.RestartPolicy.MaximumRetryCount == 0 && h.LogConfig.Type == "local" && reflect.DeepEqual(h.LogConfig.Config, map[string]string{"max-size": "10m", "max-file": "2"})
 	if kind == "probe" {
 		// sleep does not install a SIGTERM handler. An init must forward the
@@ -461,17 +462,19 @@ func (q *qualifier) createWithDispatchIntent(ctx context.Context, kind string, b
 		record.SnapshotMinutes = DefaultSnapshotMinutes
 		record.NativeControl = q.d.managed && q.d.nativeControl
 	}
+	record.MemoryGiB, record.CPUCores = q.d.memoryGiB, q.d.cpuCores
 	q.r.Containers = append(q.r.Containers, record)
 	if err := q.save(); err != nil {
 		return index, err
 	}
 	entry, cmd := q.command(kind)
+	memory, cpus := q.containerLimits(kind)
 	dataMount := q.dataMount()
 	args := []string{"container", "create", "--name", name, "--label", q.resourceLabel() + "=true", "--label", q.resourceRunLabel() + "=" + q.r.RunID,
 		"--platform", candidate.Platform, "--pull", "never", "--entrypoint", entry,
 		"--network", network, "--user", "0:0", "--cap-drop", "ALL", "--security-opt", "no-new-privileges=true",
 		"--cgroupns", "private", "--ipc", "private", "--restart", "no", "--stop-signal", "SIGTERM", "--stop-timeout", "300",
-		"--memory", "4294967296", "--memory-swap", "4294967296", "--pids-limit", "256", "--cpus", "2",
+		"--memory", fmt.Sprint(memory), "--memory-swap", fmt.Sprint(memory), "--pids-limit", "256", "--cpus", fmt.Sprint(cpus),
 		"--log-driver", "local", "--log-opt", "max-size=10m", "--log-opt", "max-file=2",
 		"--mount", "type=bind,src=" + dataMount.Source + ",dst=" + dataMount.Destination + ",bind-propagation=rprivate"}
 	if kind == "probe" {

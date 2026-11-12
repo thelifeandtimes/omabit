@@ -39,7 +39,8 @@ func (q *qualifier) resources(ctx context.Context, index int) (*ManagedResources
 	if err != nil || ctx.Err() != nil {
 		return nil, errors.New("container resource read unavailable")
 	}
-	return parseResources(out, c.ID)
+	memory, cpus := q.containerLimits(q.r.Containers[index].Kind)
+	return parseResourcesWithLimits(out, c.ID, uint64(memory), float64(cpus))
 }
 
 // Read only the authenticated private daemon, independent of Docker contexts,
@@ -76,6 +77,9 @@ func readDockerStats(ctx context.Context, socket, id string) (string, error) {
 }
 
 func parseResources(out, id string) (*ManagedResources, error) {
+	return parseResourcesWithLimits(out, id, uint64(memoryLimit), 2)
+}
+func parseResourcesWithLimits(out, id string, memory uint64, cpus float64) (*ManagedResources, error) {
 	invalid := errors.New("invalid or unsupported container resource observation")
 	var wire struct {
 		ID     string    `json:"id"`
@@ -89,7 +93,7 @@ func parseResources(out, id string) (*ManagedResources, error) {
 		} `json:"pids_stats"`
 		CPU json.RawMessage `json:"cpu_stats"`
 	}
-	if len(out) > statsLimit || json.Unmarshal([]byte(out), &wire) != nil || wire.ID != id || !containerIDPattern.MatchString(id) || wire.Read.IsZero() || wire.Memory.Usage == nil || wire.Memory.Limit == nil || *wire.Memory.Limit != uint64(memoryLimit) || wire.PIDs.Current == nil {
+	if len(out) > statsLimit || json.Unmarshal([]byte(out), &wire) != nil || wire.ID != id || !containerIDPattern.MatchString(id) || wire.Read.IsZero() || wire.Memory.Usage == nil || wire.Memory.Limit == nil || *wire.Memory.Limit != memory || wire.PIDs.Current == nil {
 		return nil, invalid
 	}
 	// Preserve the daemon's sample time; reading cached/old data cannot refresh it.
@@ -103,8 +107,8 @@ func parseResources(out, id string) (*ManagedResources, error) {
 		Online *uint32 `json:"online_cpus"`
 	}
 	if json.Unmarshal(wire.CPU, &cpu) == nil && cpu.Usage.Total != nil && cpu.System != nil && cpu.Online != nil && *cpu.Online > 0 && *cpu.Online <= 4096 {
-		// resources() verifies the pinned two-CPU cgroup in containment() first.
-		result.CPU = &ManagedCPU{TotalNS: *cpu.Usage.Total, SystemNS: *cpu.System, OnlineCPUs: *cpu.Online, LimitCores: 2}
+		// resources() verifies the recorded CPU cgroup in containment() first.
+		result.CPU = &ManagedCPU{TotalNS: *cpu.Usage.Total, SystemNS: *cpu.System, OnlineCPUs: *cpu.Online, LimitCores: cpus}
 	}
 	return result, nil
 }

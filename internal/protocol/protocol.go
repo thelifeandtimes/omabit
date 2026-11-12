@@ -24,6 +24,8 @@ type Hello struct {
 }
 
 type Configuration struct {
+	MemoryGiB     uint8  `json:"memory_gib,omitempty"`
+	CPUCores      uint8  `json:"cpu_cores,omitempty"`
 	HTTPPort      uint16 `json:"http_port"`
 	AmesPort      uint16 `json:"ames_port"`
 	Loom          uint8  `json:"loom"`

@@ -40,3 +40,36 @@ func TestHandoffRuntimeSettingsAreSigned(t *testing.T) {
 		t.Fatal("stripped settings retained signature")
 	}
 }
+
+func TestContainerResourcesHandoffSignature(t *testing.T) {
+	public, private, err := ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := Handoff{ID: "resources", VerifyKey: hex.EncodeToString(public), RuntimeSettings: &RuntimeSettings{Loom: 31, MemoryGiB: 16, CPUCores: 8}}
+	proof := hex.EncodeToString(ed25519.Sign(private, h.CommitmentBytes()))
+	if !h.ValidCommitment(proof) {
+		t.Fatal("valid resource contract refused")
+	}
+	h.RuntimeSettings.CPUCores = 2
+	if h.ValidCommitment(proof) {
+		t.Fatal("changed CPU limit retained signature")
+	}
+	h.RuntimeSettings.CPUCores = 8
+	h.RuntimeSettings.MemoryGiB = 4
+	if h.ValidCommitment(proof) {
+		t.Fatal("changed RAM limit retained signature")
+	}
+}
+
+func TestContainerResourcesExplicitDefaultsKeepLegacyHandoff(t *testing.T) {
+	implicit := Configuration{Loom: 34, NativeControl: true}.HandoffRuntimeSettings()
+	explicit := Configuration{Loom: 34, NativeControl: true, MemoryGiB: 4, CPUCores: 2}.HandoffRuntimeSettings()
+	if implicit != explicit {
+		t.Fatal("explicit defaults changed handoff compatibility")
+	}
+	b, err := json.Marshal(explicit)
+	if err != nil || string(b) != `{"loom":34,"native_control":true}` {
+		t.Fatal("historical signed settings changed", string(b), err)
+	}
+}

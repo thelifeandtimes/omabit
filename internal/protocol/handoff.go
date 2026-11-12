@@ -71,7 +71,8 @@ type PrepareHandoffRequest struct {
 	DestinationInstance string `json:"destination_instance"`
 	// The authenticated collector checks the pinned destination's capability
 	// before allowing the source to fence a nondefault runtime configuration.
-	DestinationRuntimeSettings bool `json:"destination_runtime_settings,omitempty"`
+	DestinationContainerResources bool `json:"destination_container_resources,omitempty"`
+	DestinationRuntimeSettings    bool `json:"destination_runtime_settings,omitempty"`
 }
 
 type ReceiveHandoffRequest struct {

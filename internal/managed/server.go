@@ -359,7 +359,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 		if _, ok := r.b.(storageBackend); ok {
 			features = append(features, "bootstrap-selection")
-			features = append(features, "pier-storage", protocol.RuntimeSettingsFeature, protocol.NativeControlAllShipsFeature)
+			features = append(features, "pier-storage", protocol.RuntimeSettingsFeature, protocol.NativeControlAllShipsFeature, protocol.ContainerResourcesFeature)
 			features = append(features, "host-handoff", protocol.RuntimeSettingsHandoffFeature)
 			if r.s.mode == DevelopmentMode {
 				features = append(features, "key-boot", "key-boot-options", "livenet-import")

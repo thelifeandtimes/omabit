@@ -108,3 +108,18 @@ func TestCPUObservationsWarmUpIndependentlyAndClearOnStop(t *testing.T) {
 		t.Fatal("stopped runtime retained CPU evidence")
 	}
 }
+
+func TestContainerResourcesCPUCeilingSurvivesObservation(t *testing.T) {
+	now := time.Now().UTC()
+	var v storedInstance
+	for n := 0; n < 2; n++ {
+		at := now.Add(time.Duration(n) * 10 * time.Second)
+		r := resourceSample(at)
+		r.MemoryLimitBytes = 16 << 30
+		r.CPU = &runtimequalify.ManagedCPU{TotalNS: uint64(n) * 10_000_000_000, SystemNS: 1 + uint64(n)*80_000_000_000, OnlineCPUs: 8, LimitCores: 8}
+		applyObservation(&v, runtimequalify.ManagedObservation{State: "running", Health: "healthy", Resources: r}, at)
+	}
+	if v.Public.Resources.CPULimitCores == nil || *v.Public.Resources.CPULimitCores != 8 || v.Public.Resources.CPUUsagePercent == nil || *v.Public.Resources.CPUUsagePercent != 100 || *v.Public.Resources.MemoryLimitBytes != 16<<30 {
+		t.Fatal("selected ceiling or per-core CPU units lost", v.Public.Resources)
+	}
+}

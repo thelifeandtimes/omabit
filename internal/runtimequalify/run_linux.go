@@ -25,6 +25,8 @@ import (
 
 type timings struct{ command, pull, download, ready, poll, stop, cleanup, pack, cleanupCommand time.Duration }
 type dependencies struct {
+	memoryGiB        uint8
+	cpuCores         uint8
 	loom             uint8
 	nativeControl    bool
 	bootstrap        *protocol.Bootstrap

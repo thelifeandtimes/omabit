@@ -1,5 +1,21 @@
 # Stable-release upgrade requirement
 
+## Development: container resource limits, schema59
+
+Schema59 fences optional RAM/CPU configuration and immutable launch limits.
+Historical omitted values mean 4 GiB / 2 CPUs; migration rewrites no instance,
+operation, application policy, frontend or ship-URL history. Invalid limits refuse
+opening and roll migration back. Old clients omitting limits preserve the current
+selection. Nondefault handoffs bind limits in the signed offer and require
+`container-resources-v1` at both ends before fencing the source.
+
+`scripts/test-container-resources-upgrade.py` uses the actual schema58 writer at
+66c641b, preserves original receipts across repeated migration/reopen, retains
+new resource settings, and verifies that the original writer refuses59 unchanged.
+This is isolated feature evidence, not installed upgrade or release qualification.
+Never lower the schema marker or reset a store to downgrade.
+
+
 ## Development: shared ship URLs, schema58
 
 Schema58 adds current ship URL settings and contiguous authoring history keyed by

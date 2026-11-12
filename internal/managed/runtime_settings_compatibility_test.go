@@ -53,6 +53,7 @@ func TestHandoffPreservesRuntimeSettingsAndRetry(t *testing.T) {
 	dest, target, _ := testEndpoint(t, b, &handoffBackend{dir: b})
 	req := registration("fixture", "register", 18080)
 	req.Config.Loom, req.Config.NativeControl = 34, true
+	req.Config.MemoryGiB, req.Config.CPUCores = 16, 8
 	if _, err := source.CreateFake(ctx, req); err != nil {
 		t.Fatal(err)
 	}
@@ -76,12 +77,12 @@ func TestHandoffPreservesRuntimeSettingsAndRetry(t *testing.T) {
 	for _, id := range []string{"move", "retry"} {
 		offer.RequestID = id
 		h, err := client.MoveStopped(ctx, source, target, r.s.runnerID, req.ID, offer, 18081, 0)
-		if err != nil || h.RuntimeSettings == nil || h.RuntimeSettings.Loom != 34 || !h.RuntimeSettings.NativeControl || !h.ValidCommitment(h.Commitment) {
+		if err != nil || h.RuntimeSettings == nil || h.RuntimeSettings.Loom != 34 || !h.RuntimeSettings.NativeControl || h.RuntimeSettings.MemoryGiB != 16 || h.RuntimeSettings.CPUCores != 8 || !h.ValidCommitment(h.Commitment) {
 			t.Fatal(h, err)
 		}
 	}
 	v, err = loadInstance(dest.s.db, "arrived")
-	if err != nil || v.Public.Config.Loom != 34 || !v.Public.Config.NativeControl || v.Runtime.Loom != 34 || !v.Runtime.NativeControl {
+	if err != nil || v.Public.Config.Loom != 34 || !v.Public.Config.NativeControl || v.Runtime.Loom != 34 || !v.Runtime.NativeControl || v.Runtime.MemoryGiB != 16 || v.Runtime.CPUCores != 8 || v.Public.Config.MemoryGiB != 16 || v.Public.Config.CPUCores != 8 {
 		t.Fatal("settings lost", v, err)
 	}
 }

@@ -326,6 +326,10 @@ CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TE
 	if err := validateProjectRecoveryContinuations(tx); err != nil {
 		return err
 	}
+	// Validate optional limits without rewriting any original instance body.
+	if _, err := instances(tx); err != nil {
+		return err
+	}
 	if _, err := tx.Exec(fmt.Sprintf("PRAGMA user_version=%d", currentSchema)); err != nil {
 		return err
 	}
@@ -361,7 +365,7 @@ func loadInstance(q querier, id string) (storedInstance, error) {
 		return storedInstance{}, err
 	}
 	var value storedInstance
-	if json.Unmarshal(data, &value) != nil || value.Public.ID != id || !protocol.ValidID(id) || value.Public.ConfigRevision == 0 || len(value.Runtime.ID) != 32 {
+	if json.Unmarshal(data, &value) != nil || value.Public.ID != id || !protocol.ValidID(id) || value.Public.ConfigRevision == 0 || len(value.Runtime.ID) != 32 || !validStoredResources(value) {
 		return value, errors.New("invalid stored instance")
 	}
 	return value, nil
@@ -440,7 +444,7 @@ func instances(q querier) ([]storedInstance, error) {
 		if err := rows.Scan(&id, &data); err != nil {
 			return nil, err
 		}
-		if json.Unmarshal(data, &value) != nil || value.Public.ID != id || !protocol.ValidID(id) {
+		if json.Unmarshal(data, &value) != nil || value.Public.ID != id || !protocol.ValidID(id) || !validStoredResources(value) {
 			return nil, errors.New("invalid instance inventory")
 		}
 		out = append(out, value)
@@ -449,6 +453,9 @@ func instances(q querier) ([]storedInstance, error) {
 }
 
 func validateConfig(c protocol.Configuration) error {
+	if err := validateContainerResources(c); err != nil {
+		return err
+	}
 	if c.HTTPPort < 1024 || c.AmesPort != 34343 || !protocol.ValidLoom(c.Loom) {
 		return bad("development runtime requires HTTP port 1024..65535, loom 30..34, and guest Ames value 34343 (no host UDP publication)")
 	}
@@ -491,7 +498,7 @@ func registrationFingerprint(req *protocol.CreateFakeRequest, source *protocol.I
 	}
 	// Historical request fingerprints must remain replayable after tightening
 	// selectable loom bounds. New registrations are validated after replay lookup.
-	if req.Config.HTTPPort < 1024 || req.Config.AmesPort != 34343 || !protocol.ValidRecordedLoom(req.Config.Loom) {
+	if !protocol.ValidContainerResources(req.Config.MemoryGiB, req.Config.CPUCores) || req.Config.HTTPPort < 1024 || req.Config.AmesPort != 34343 || !protocol.ValidRecordedLoom(req.Config.Loom) {
 		return "", bad("invalid registration configuration")
 	}
 	if req.Label == "" {
@@ -639,7 +646,7 @@ func (s *store) registerKindReplay(actor string, req protocol.CreateFakeRequest,
 	if err != nil {
 		return protocol.Operation{}, false, err
 	}
-	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: revision, Mode: "fake", Ship: "~zod", DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: uuid, Port: req.Config.HTTPPort, Loom: req.Config.Loom, NativeControl: req.Config.NativeControl}}
+	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: revision, Mode: "fake", Ship: "~zod", DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: uuid, Port: req.Config.HTTPPort, Loom: req.Config.Loom, NativeControl: req.Config.NativeControl, MemoryGiB: req.Config.MemoryGiB, CPUCores: req.Config.CPUCores}}
 	v.Runtime.Fake = fake
 	if source == nil {
 		v.Runtime.Bootstrap = req.Bootstrap
@@ -706,6 +713,13 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 	if err != nil {
 		return v.Public, err
 	}
+	// Omitted limits from old clients must never reset a selected limit.
+	if req.Config.MemoryGiB == 0 {
+		req.Config.MemoryGiB = v.Public.Config.MemoryGiB
+	}
+	if req.Config.CPUCores == 0 {
+		req.Config.CPUCores = v.Public.Config.CPUCores
+	}
 	if req.PreserveNativeControl {
 		req.Config.NativeControl = v.Public.Config.NativeControl
 	}
@@ -736,6 +750,10 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 	}
 	if v.Public.ActiveOperationID != "" {
 		return v.Public, conflict("instance_busy", "configuration cannot change during an operation")
+	}
+	resourcesChanged := protocol.EffectiveMemoryGiB(req.Config.MemoryGiB) != protocol.EffectiveMemoryGiB(v.Public.Config.MemoryGiB) || protocol.EffectiveCPUCores(req.Config.CPUCores) != protocol.EffectiveCPUCores(v.Public.Config.CPUCores)
+	if resourcesChanged && (v.Public.DesiredState != "stopped" || (v.Public.ObservedState != "stopped" && v.Public.ObservedState != "uninitialized") || v.Public.RecoveryRequired || v.Runtime.UncertainMaintenance() || v.Runtime.UncertainProvisioning()) {
+		return v.Public, conflict("stop_required", "stop this ship and resolve recovery before changing container RAM or CPU limits")
 	}
 	if err := reservePort(tx, id, req.Config.HTTPPort); err != nil {
 		return v.Public, err
@@ -1109,6 +1127,7 @@ func (s *store) beginOperation(opID string) (protocol.Operation, storedInstance,
 			return op, v, bad("invalid runtime settings for this ship mode")
 		}
 		v.Runtime.Loom, v.Runtime.NativeControl = v.Public.Config.Loom, v.Public.Config.NativeControl
+		v.Runtime.MemoryGiB, v.Runtime.CPUCores = v.Public.Config.MemoryGiB, v.Public.Config.CPUCores
 	}
 	op.Status = "running"
 	if op.Kind == "start" || op.Kind == "startup-resume" {
@@ -1294,7 +1313,7 @@ func applyObservation(v *storedInstance, observation runtimequalify.ManagedObser
 		if r := observation.Resources; r != nil {
 			v.Public.Resources = &protocol.ResourceMetrics{Status: "fresh", Source: "docker-stats-v1.47", ContainerID: r.ContainerID, ObservedAt: &r.ObservedAt,
 				MemoryCurrentBytes: &r.MemoryCurrentBytes, MemoryLimitBytes: &r.MemoryLimitBytes, PIDsCurrent: &r.PIDsCurrent}
-			if cpu := r.CPU; cpu != nil && cpu.OnlineCPUs > 0 && cpu.OnlineCPUs <= 4096 && cpu.LimitCores == 2 {
+			if cpu := r.CPU; cpu != nil && cpu.OnlineCPUs > 0 && cpu.OnlineCPUs <= 4096 && cpu.LimitCores >= 1 && cpu.LimitCores <= float64(protocol.MaxCPUCores) {
 				v.CPU = &cpuBaseline{ContainerID: r.ContainerID, ObservedAt: r.ObservedAt, Counters: *cpu}
 				v.Public.Resources.CPULimitCores = &cpu.LimitCores
 				v.Public.Resources.CPUUsagePercent = cpuUsage(previousCPU, v.CPU, now)

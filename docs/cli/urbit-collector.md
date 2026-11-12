@@ -100,6 +100,7 @@ Commands:
                [--bootstrap bare|recommended --pill URL_OR_FILE]
               Register a new comet; first explicit Start generates its identity.
   configure INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT
+              [--memory-gib 1..16] [--cpus 1..16] (stopped ship only; omitted=preserve)
               Replace HTTP/Ames/loom configuration; loom must be 30..34 (1–16 GiB).
               Native control is CLI-only; omit --native-control to preserve it.
   publish-ames INSTANCE --revision N --ames-port PORT --request-id ID --confirm-network
@@ -405,7 +406,7 @@ app-ship-review reads a verified running ship and current standing choices. app-
 ## configure
 
 ```text
-Usage: urbit-collector --socket /absolute/path/runner.sock configure INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT
+Usage: urbit-collector --socket /absolute/path/runner.sock configure INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT [--memory-gib 1..16] [--cpus 1..16]
 
 Omabit fleet management client; inspect hello.mode/features for server capabilities.
 The collector selects runners; the runner owns runtime operations and persistent state.
@@ -416,10 +417,14 @@ Results are indented JSON; watch commands emit compact newline-delimited JSON (N
 
   -ames-port uint
         required Ames port, 1..65535
+  -cpus uint
+        container CPU quota in whole cores (1..16); stopped ship only; omitted=preserve, default=2
   -http-port uint
         required HTTP port, 1..65535
   -loom uint
-        required loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap
+        required loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default)
+  -memory-gib uint
+        container RAM ceiling in GiB (1..16); stopped ship only; omitted=preserve, default=4
   -native-control
         omitted=preserve existing setting; use =true/=false explicitly
 
@@ -453,7 +458,7 @@ Results are indented JSON; watch commands emit compact newline-delimited JSON (N
   -label string
         optional display label
   -loom uint
-        loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap (default 31)
+        loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default) (default 31)
   -native-control
         enable local-owner native control (default off)
 
@@ -493,7 +498,7 @@ Results are indented JSON; watch commands emit compact newline-delimited JSON (N
   -label string
         optional display label
   -loom uint
-        loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap (default 31)
+        loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default) (default 31)
   -native-control
         enable local-owner native control (default off)
 
@@ -538,7 +543,7 @@ Instance name and tier path are derived; omitted ports are allocated atomically.
   -label string
         instance label
   -loom uint
-        loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap (default 31)
+        loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default) (default 31)
   -native-control
         enable local-owner native control (default off)
 

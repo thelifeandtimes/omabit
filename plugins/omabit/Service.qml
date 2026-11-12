@@ -513,9 +513,9 @@ Item {
     return accepted
   }
 
-  function configure(target, port, loom) {
+  function configure(target, port, loom, memory, cpus) {
     if (!canConfigure(target)) return false
-    try { return submit(Model.configure(target, port, loom), "configure") }
+    try { return submit(Model.configure(target, port, loom, memory, cpus), "configure") }
     catch (e) { lastError = e.message; return false }
   }
 

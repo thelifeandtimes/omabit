@@ -746,6 +746,8 @@ function runtimeDetail(instance) {
   var d=instance.runtime_status || {}, op=d.last_operation, parts=[]
   if (d.launch_loom!==undefined) parts.push("Recorded launch: loom "+loomLabel(d.launch_loom)+" address space · native control "+(d.launch_native_control===true ? "enabled" : "disabled"))
   if (instance.config) parts.push("Requested: loom "+loomLabel(instance.config.loom)+" address space · native control "+(instance.config.native_control===true ? "enabled" : "disabled"))
+  if (d.launch_memory_gib!==undefined && d.launch_cpu_cores!==undefined) parts.push("Recorded container limits: "+d.launch_memory_gib+" GiB RAM · "+d.launch_cpu_cores+" CPUs")
+  if (instance.config) parts.push("Requested container limits: "+(instance.config.memory_gib || 4)+" GiB RAM · "+(instance.config.cpu_cores || 2)+" CPUs")
   if (d.native_control_socket) parts.push("Host-local socket path: "+d.native_control_socket+" (path only; reachability not verified)")
   if (instance.active_operation_id) parts.push(runtimeStage(d.stage) || "Runner operation in progress")
   var exited=d.running===false && d.exit_code!==undefined
@@ -1112,10 +1114,13 @@ function edit(connection, instance) {
   return { connection: connection.name, runner: connection.runner_id, instance: instance.id,
     revision: instance.config_revision, port: instance.config.http_port,
     ames: instance.config.ames_port, loom: instance.config.loom, nativeControl: instance.config.native_control === true,
+    memoryGiB: instance.config.memory_gib || 4, cpuCores: instance.config.cpu_cores || 2,
+    containerResources: hasFeature(connection,"container-resources-v1"),
+    resourcesEditable: instance.desired_state==="stopped" && ["stopped","uninitialized"].indexOf(instance.observed_state)>=0 && !instance.recovery_required && !instance.active_operation_id,
     mode: instance.mode, runtimeSettings: hasFeature(connection,"runtime-settings"), nativeAllShips: hasFeature(connection,"native-control-all-ships") }
 }
 
-function configure(target, port, loom) {
+function configure(target, port, loom, memory, cpus) {
   if (!Number.isInteger(Number(port)) || Number(port) < 1024 || Number(port) > 65535)
     throw new Error("HTTP port must be 1024–65535")
   loom = loom === undefined ? target.loom : Number(loom)
@@ -1123,10 +1128,21 @@ function configure(target, port, loom) {
   // Pre-settings runners accept the historical 31..33 range for port edits.
   var legacy = !target.runtimeSettings && Number.isInteger(loom) && loom>=31 && loom<=33
   if (!legacy) runtimeSettingsArgs({features:features},loom)
+  var resources=[]
+  if (memory !== undefined || cpus !== undefined) {
+    memory=memory===undefined ? target.memoryGiB : Number(memory)
+    cpus=cpus===undefined ? target.cpuCores : Number(cpus)
+    if (!Number.isInteger(memory) || memory<1 || memory>16 || !Number.isInteger(cpus) || cpus<1 || cpus>16) throw new Error("RAM and CPU limits must be whole numbers in 1–16")
+    if (memory!==target.memoryGiB || cpus!==target.cpuCores) {
+      if (!target.containerResources) throw new Error("Update this runner for container-resources-v1")
+      if (!target.resourcesEditable) throw new Error("Stop the ship before changing RAM or CPU limits")
+      resources=["--memory-gib",String(memory),"--cpus",String(cpus)]
+    }
+  }
   // Native control is CLI-only. Omitting it preserves any existing CLI choice.
   return ["--runner", target.connection, "--expected-runner-id", target.runner,
     "configure", target.instance, "--revision", String(target.revision),
-    "--http-port", String(port), "--ames-port", String(target.ames), "--loom", String(loom)]
+    "--http-port", String(port), "--ames-port", String(target.ames), "--loom", String(loom)].concat(resources)
 }
 
 function loomLabel(exponent) {

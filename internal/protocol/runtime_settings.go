@@ -5,7 +5,7 @@ package protocol
 // c3_w is uint32_t and u3a_vits is 2, giving 34. These are byte exponents,
 // not resident-memory budgets. New choices are deliberately limited to 30..34;
 // historical records retain the pinned runtime's wider bounds for safe lifecycle
-// management. The managed container retains its separate 4 GiB cap.
+// management. Container RAM is configured separately from address space.
 const (
 	MinLoom                       = 30
 	MaxLoom                       = 34
@@ -18,11 +18,15 @@ const (
 // RuntimeSettings travels with nondefault stopped-pier transfers. A nil value
 // in historical handoffs retains the original loom31/native-off contract.
 type RuntimeSettings struct {
+	MemoryGiB     uint8 `json:"memory_gib,omitempty"`
+	CPUCores      uint8 `json:"cpu_cores,omitempty"`
 	Loom          uint8 `json:"loom"`
 	NativeControl bool  `json:"native_control"`
 }
 
-func (s RuntimeSettings) Nondefault() bool { return s.Loom != DefaultLoom || s.NativeControl }
+func (s RuntimeSettings) Nondefault() bool {
+	return s.Loom != DefaultLoom || s.NativeControl || NondefaultContainerResources(s.MemoryGiB, s.CPUCores)
+}
 
 // NativeControlWarning is shared by collector and runner help. Native-control
 // changes are exposed only through the CLI, not desktop configuration forms.
@@ -46,4 +50,17 @@ func EffectiveLoom(loom uint8) uint8 {
 		return DefaultLoom
 	}
 	return loom
+}
+
+// HandoffRuntimeSettings omits explicitly selected historical defaults so old
+// destinations can still accept an otherwise compatible stopped-pier transfer.
+func (c Configuration) HandoffRuntimeSettings() RuntimeSettings {
+	memory, cpu := c.MemoryGiB, c.CPUCores
+	if memory == DefaultMemoryGiB {
+		memory = 0
+	}
+	if cpu == DefaultCPUCores {
+		cpu = 0
+	}
+	return RuntimeSettings{Loom: c.Loom, NativeControl: c.NativeControl, MemoryGiB: memory, CPUCores: cpu}
 }

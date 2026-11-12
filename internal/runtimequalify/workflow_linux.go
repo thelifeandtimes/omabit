@@ -148,8 +148,9 @@ func (q *qualifier) probe(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	memory, cpus := q.containerLimits("probe")
 	lines := strings.Split(strings.TrimSuffix(out, "\n"), "\n")
-	if len(lines) != 4 || lines[0] != "4294967296" || lines[1] != "0" || lines[2] != "256" {
+	if len(lines) != 4 || lines[0] != strconv.FormatInt(memory, 10) || lines[1] != "0" || lines[2] != "256" {
 		return errors.New("live memory, swap or PID limit mismatch")
 	}
 	cpu := strings.Fields(lines[3])
@@ -158,8 +159,8 @@ func (q *qualifier) probe(ctx context.Context) error {
 	}
 	quota, e1 := strconv.ParseUint(cpu[0], 10, 64)
 	period, e2 := strconv.ParseUint(cpu[1], 10, 64)
-	if e1 != nil || e2 != nil || period == 0 || period > (^uint64(0))/2 || quota != 2*period {
-		return errors.New("live CPU quota must be finite and exactly two CPUs")
+	if e1 != nil || e2 != nil || period == 0 || period > (^uint64(0))/uint64(cpus) || quota != uint64(cpus)*period {
+		return errors.New("live CPU quota does not match the recorded container limit")
 	}
 	q.r.LimitsObserved = true
 	out, err = q.control(ctx, i, q.d.times.command, "exec", "/bin/urbit", "-R")

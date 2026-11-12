@@ -155,6 +155,7 @@ Commands:
                [--bootstrap bare|recommended --pill URL_OR_FILE]
               Register a new comet; first explicit Start generates its identity.
   configure INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT
+              [--memory-gib 1..16] [--cpus 1..16] (stopped ship only; omitted=preserve)
               Replace HTTP/Ames/loom configuration; loom must be 30..34 (1–16 GiB).
               Native control is CLI-only; omit --native-control to preserve it.
   publish-ames INSTANCE --revision N --ames-port PORT --request-id ID --confirm-network
@@ -320,6 +321,8 @@ Use COMMAND --help for command flags and constraints.
 	var policyInstance, policyDesk string
 	var revision uint64
 	var httpPort, amesPort, loom uint
+	var memoryGiB, cpuCores uint
+	var memorySet, cpuSet bool
 	var requestID string
 	var label string
 	var fakeShip, pierName string
@@ -345,7 +348,7 @@ Use COMMAND --help for command flags and constraints.
 	case "projects":
 		usage += "\n\nRead saved project identities and port reservations only; no live runtime probe or resource changes. Requires project-reservations-v1."
 	case "create-fake", "create-comet":
-		flags.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
+		flags.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default)")
 		flags.BoolVar(&nativeControl, "native-control", false, "enable local-owner native control (default off)\n\n"+protocol.NativeControlWarning)
 		usage += " INSTANCE --http-port PORT --request-id ID [--label TEXT]"
 		flags.UintVar(&httpPort, "http-port", 0, "required loopback host HTTP port, 1024..65535")
@@ -368,11 +371,13 @@ Use COMMAND --help for command flags and constraints.
 			usage += " --confirm-network [--loom N] [--native-control]"
 		}
 	case "configure":
-		usage += " INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT"
+		usage += " INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT [--memory-gib 1..16] [--cpus 1..16]"
+		flags.UintVar(&memoryGiB, "memory-gib", 0, "container RAM ceiling in GiB (1..16); stopped ship only; omitted=preserve, default=4")
+		flags.UintVar(&cpuCores, "cpus", 0, "container CPU quota in whole cores (1..16); stopped ship only; omitted=preserve, default=2")
 		flags.Uint64Var(&revision, "revision", 0, "required positive expected configuration revision")
 		flags.UintVar(&httpPort, "http-port", 0, "required HTTP port, 1..65535")
 		flags.UintVar(&amesPort, "ames-port", 0, "required Ames port, 1..65535")
-		flags.UintVar(&loom, "loom", 0, "required loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
+		flags.UintVar(&loom, "loom", 0, "required loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default)")
 		flags.BoolVar(&nativeControl, "native-control", false, "omitted=preserve existing setting; use =true/=false explicitly\n\n"+protocol.NativeControlWarning)
 	case "operate":
 		usage += " INSTANCE start|stop|pack|meld|roll|inspect-epochs|recover-import --revision N --request-id ID"
@@ -417,6 +422,12 @@ Use COMMAND --help for command flags and constraints.
 		return fail(errors.New("unexpected trailing arguments; command flags must follow positional arguments"), 2)
 	}
 	flags.Visit(func(f *flag.Flag) {
+		if f.Name == "memory-gib" {
+			memorySet = true
+		}
+		if f.Name == "cpus" {
+			cpuSet = true
+		}
 		if f.Name == "native-control" {
 			nativeControlSet = true
 		}
@@ -476,6 +487,9 @@ Use COMMAND --help for command flags and constraints.
 			return fail(errors.New("create-comet requires a pinned --runner/--expected-runner-id and --confirm-network"), 2)
 		}
 	case "configure":
+		if (memorySet && (memoryGiB < 1 || memoryGiB > uint(protocol.MaxMemoryGiB))) || (cpuSet && (cpuCores < 1 || cpuCores > uint(protocol.MaxCPUCores))) {
+			return fail(errors.New("--memory-gib and --cpus must be whole numbers in 1..16"), 2)
+		}
 		if httpPort == 0 || httpPort > 65535 || amesPort == 0 || amesPort > 65535 {
 			return fail(errors.New("--http-port and --ames-port are required and must be in 1..65535"), 2)
 		}
@@ -542,6 +556,9 @@ Use COMMAND --help for command flags and constraints.
 			return 0
 		}
 		return fail(err, 1)
+	}
+	if (memorySet || cpuSet) && !slices.Contains(hello.Features, protocol.ContainerResourcesFeature) {
+		return fail(errors.New("update this runner for container-resources-v1 before changing resource limits"), 1)
 	}
 	if runtimeSettings && !slices.Contains(hello.Features, protocol.RuntimeSettingsFeature) {
 		return fail(errors.New("update this runner for runtime-settings capability before changing loom/native control"), 1)
@@ -671,7 +688,7 @@ Use COMMAND --help for command flags and constraints.
 			ExpectedRevision:      revision,
 			PreserveNativeControl: !nativeControlSet,
 			Config: protocol.Configuration{
-				HTTPPort: uint16(httpPort), AmesPort: uint16(amesPort), Loom: uint8(loom), NativeControl: nativeControl,
+				HTTPPort: uint16(httpPort), AmesPort: uint16(amesPort), Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores),
 			},
 		})
 	case "operate":

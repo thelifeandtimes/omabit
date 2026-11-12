@@ -36,4 +36,5 @@ package managed
 // Schema56 binds receiver installation to an immutable publisher/review and receipt.
 // Schema57 binds frontend artifacts, source checks and session cleanup to upload receipts.
 // Schema58 retains ship URL choices and history bound to each pier incarnation.
-const StateSchemaVersion = 58
+// Schema59 fences configurable container limits and immutable per-container contracts.
+const StateSchemaVersion = 59

@@ -17,6 +17,6 @@ Column {
     currentIndex: root.selectedLoom - 30
     onActivated: { root.selectedLoom=30+currentIndex; root.edited() }
   }
-  Label { width: parent.width; text: "Address space is not resident memory (RSS). The container memory cap remains 4 GiB; check available RAM and container usage separately."; caption: true; secondary: true }
+  Label { width: parent.width; text: "Address space is not resident memory (RSS). Container RAM has a separate limit (4 GiB by default). Check host capacity and container usage separately."; caption: true; secondary: true }
   Label { width: parent.width; visible: !root.supported; text: "Update this runner for configurable loom (runtime-settings). Existing settings are preserved."; caption: true; color: Design.warning }
 }
