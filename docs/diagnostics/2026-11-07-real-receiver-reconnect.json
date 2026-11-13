@@ -1,0 +1,120 @@
+{
+  "milestone": "M572",
+  "date": "2026-11-07",
+  "source_base": "a58ac88abc9d38055bd3c23854d806321847e359",
+  "source_sha256": {
+    "internal/eyre/session_health.go": "8772b71092154c2610941672686305bfeaf4386e1f7f3cca9a16ba6f481daae8",
+    "internal/eyre/session_health_test.go": "b7d77e9f6536a07f7d2fcc01b48342959235941b1efdb34b842ac32d97b24c59",
+    "backend/cmd/urbit-collector/fleet_real_reconnect_test.go": "caafb831a36d2865369d2dccd769b2b9c874aca61feb6ae3cf6363799ee54b78",
+    "scripts/qualification/fleet/real_reconnect.py": "67a67b4173c929b80d9d27afc403d10ec03f61a4bed4958c2c52932e345f3452",
+    "scripts/qualification/fleet/reconnect_consumer.py": "ba998a22a35f3e32cb0dc11eef2043c3322f262384d67ad381b0c4faa7359d42",
+    "scripts/qualification/fleet/README.md": "3652a42cf03f1c502d1b9cc4ba1b2f1bc3a18a5b0e1f360b072ac2f3744eacfd",
+    "skills/omabit-operator/references/fleet-urls.md": "fd0061c799d71b70bbae462ea610242b37f867606bd9e1722b8bfe9ce4e405a2",
+    "docs/cli/omabit.md": "0c733d9b775e7f6e6ecf6c7ef45b2fe2e6fe5cbf543582020f14ff6da9fc5dc3",
+    "docs/cli/urbit-collector.md": "d9aa338a051b713449f76db3eb6222c85097175b467871cf9ad31623dc8a79e4"
+  },
+  "receivers": [
+    {
+      "path": "/tmp/omabit-receiver-reconnect-040/theme",
+      "branch": "codex/0.4.0-session-reconnect",
+      "head": "821242e970559bcd1b89bbf12d1f27dec5a4cc49",
+      "declaration_version": 2,
+      "tested_runtime_files_unchanged": true,
+      "declaration_sha256": "f6ff3df674c8e7b8da92d2a852bae689b183d9323a934d1de41e3f1ba8fd5137"
+    },
+    {
+      "path": "/tmp/omabit-receiver-reconnect-040/dms",
+      "branch": "codex/0.4.0-session-reconnect",
+      "head": "c7b7d1510b55e3b19d64bf4669be53d28c766571",
+      "declaration_version": 2,
+      "tested_runtime_files_unchanged": true,
+      "declaration_sha256": "a77b0823207b1ee0b7e3525e17e1ce4f5c14e9428ad0c53db45c8ecbb6a3f62f"
+    }
+  ],
+  "result": "passed assembled private collector/receiver/keyring/consumer qualification",
+  "checks": [
+    {
+      "directory": "/tmp/omabit-real-reconnect-07",
+      "exit": 0,
+      "binary_sha256": "e07055e89eadb2be27e9798b3d2de5b31cec89fa1fee133bc7f0596d96f987f4",
+      "scope": "actual collector public CLI, real receivers, Theme sync loop, DMs main loop, private Secret Service; synthetic runner and Eyre",
+      "storage_after": 42307985408,
+      "log_sha256": "20d01c8e3c1217e682524ee0e3f4baf72d0d8e70bf564514615b94165e53e7c9",
+      "source_manifest_sha256": "14bb73b0a14c10c0258f77cac3e3b45a8d66c1851f79c5e23f8e2271a2d4b3f4",
+      "python_tests": null,
+      "top_level_passes": 1,
+      "subtest_passes": 2
+    },
+    {
+      "directory": "/tmp/omabit-theme-handoff-14",
+      "exit": 0,
+      "patterns": [
+        "test_sync*.py",
+        "test_connection*.py",
+        "test_transport*.py",
+        "test_eyre_journal.py",
+        "test_install.py"
+      ],
+      "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring",
+      "log_sha256": "0f1382937bad6566330783ea7b0016cab6cb0c182cc1d1a087092853f5532ceb",
+      "source_manifest_sha256": "5590fe61387e33d0eeb1b5b88cc2cbdfdfe51c359a481270f0711edd39bc3557",
+      "python_tests": 151,
+      "top_level_passes": 0,
+      "subtest_passes": 0
+    },
+    {
+      "directory": "/tmp/omabit-fleet-reconnect-health-01",
+      "exit": 0,
+      "test_pattern": "^Test(StoredSessionHealth|ValidateStoredSession)",
+      "binary_sha256": "bbd9e946cc1519a96caef270719a1d2f017935926a2f5032470db01d6ff113c1",
+      "package": "internal/eyre",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "log_sha256": "c7cb046de2b388fdfd7a74a3d283302229f684ed42f31be270708e42f9847972",
+      "source_manifest_sha256": null,
+      "python_tests": null,
+      "top_level_passes": 2,
+      "subtest_passes": 36
+    }
+  ],
+  "assembled_claims": [
+    "actual public collector run() command dispatcher with race detector",
+    "real retained helper artifacts and private Secret Service owned by launched daemon",
+    "actual Theme sync coordinator/watch/Talon bridge; only desktop adapter is inert",
+    "actual DMs main loop, cooperative handoff and idle successor adoption",
+    "same-URL renewal and alternate URL after dropped old stream",
+    "offline predecessor cleanup remains pending while successor serves",
+    "original cleanup succeeds after origin returns, preserving active successor",
+    "lost replacement and status reply recovered by observation only",
+    "four fresh logins/code retrievals and exactly three replacement deliveries per plugin",
+    "strict original cookie origins; no raw credential in public output",
+    "both consumers exit cleanly on shutdown with UI pipe still open"
+  ],
+  "fixture_adaptations": [
+    "private manifest/profile",
+    "declaration version2",
+    "bound lost-ack wrapper in retained inventory",
+    "Theme inert desktop adapter and explicitly enabled fixture account"
+  ],
+  "limits": [
+    "runner and Eyre peer are synthetic; no fresh native Urbit in this run",
+    "no installed plugin/service/runner/ship changes",
+    "no live provider/Tailnet/DNS or stable-release qualification",
+    "old cached version1 helpers/approvals cannot acquire replacement capability"
+  ],
+  "earlier_runs": {
+    "01": "build failure: fixture used nonexistent ApplicationAttempt.RequestID; corrected to ID",
+    "02": "sandbox could not create private netlink socket; private namespace launch subsequently authorized through escalation",
+    "03": "fixture misread archived bool as found; also reproduced Theme buffered-input shutdown abort",
+    "04": "fixture omitted Talon accent entry; exposed service-unavailable health classification; DMs same-URL renewal passed",
+    "05": "Theme followed URL; synthetic expired-token response mismatch prevented cleanup; DMs all three stages and clean shutdown passed",
+    "06": "both replacement paths passed; Theme retained externally resolved watch marker and failed shutdown deadline",
+    "07": "corrected peer responses plus exact origins/stream-loss/helper-call assertions; both complete paths and shutdown passed"
+  },
+  "additional_checks": {
+    "skill_validator": "system Python: valid",
+    "skill_package_tests": 5,
+    "generated_help_entries": 172,
+    "generated_help_networkless": true,
+    "generated_help_state_untouched": true
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "schema": 58,
+  "source_commit": "66c641bb41771c03391de3057cbf62c096f3ae51",
+  "sql_sha256": "f942c4946023632263e8c7497a1ea799ab378e6e03787b8af7718d932cf3392b",
+  "evidence": "/tmp/omabit-resources-upgrade-01",
+  "description": "Actual schema58 writer; previous instance, policy, deployment, receiver, frontend and ship URL receipts."
+}

@@ -1,0 +1,72 @@
+{
+  "date": "2026-11-12",
+  "scope": "Fresh live DEV review only; no production or remote runner operations",
+  "guide": "docs/native-review-0.4.0.md",
+  "installed": {
+    "plugin": "/home/thelifeandtimes/.config/omarchy/plugins/thelifeandtimes.omabit.review040",
+    "root": "/srv/dev/urbit-040",
+    "environment": {
+      "XDG_CONFIG_HOME": "/srv/dev/urbit-040/desktop/config",
+      "XDG_DATA_HOME": "/srv/dev/urbit-040/desktop/data",
+      "XDG_STATE_HOME": "/srv/dev/urbit-040/desktop/state",
+      "XDG_CACHE_HOME": "/srv/dev/urbit-040/desktop/cache"
+    },
+    "snapshot": {
+      "label": "review-040",
+      "snapshot_sha256": "78e10bf0126f4978686dee9b97983aed3f607bc9c38cd1a163acb8620bf01cde",
+      "modified": true
+    },
+    "source_commit": "9ec8be815105e2ac99195df340d94815acab90b7",
+    "ui_overlay": "Atomic native installation; distinct DEV label, app040 directory and isolated service wrapper; bundled reference updates and native QML registry overlay recorded by hash",
+    "source_overlay": {
+      "plugins/omabit/qmldir": "8ee5b4b31e314c9c22a201773f683331474fc0984a0ed833ff7dd072ab1ffaff",
+      "skills/omabit-operator/references/fleet-urls.md": "c80dab8a044e0d97c2054c880bdc59c59207b35ee578aba4753308375e135c71",
+      "skills/omabit-operator/references/remote-access.md": "75403bc8582daa2d84d75756d8ffcd43792c487b39747b91839889f3c9106ff7",
+      "skills/omabit-operator/references/operations.md": "bdc808af29811811b65af870b8645216d2566eb90dd82d74f0efe7807d111540"
+    },
+    "ui_module": "app040",
+    "entry_points": {
+      "service": "ReviewService040.qml",
+      "barWidget": "ReviewPanel040.qml"
+    },
+    "retired_local_trial": "/home/thelifeandtimes/.local/share/omabit-review-040-retired-20261112"
+  },
+  "validation_passed": true,
+  "evidence": {
+    "/srv/dev/urbit-040/desktop/installation.json": "c411e5d831838d959fe2d41d114bc2b36f552e81d6d26fd3b29ee93d09aa9b11",
+    "/srv/dev/urbit-040/desktop/runtime-validation.json": "787d4bd4efcf168e90a6b1347c206149512ffb4f550114c487a8627a36a00807",
+    "/srv/dev/urbit-040/desktop/ship-urls-validation.json": "58f2ea3d31e77ed68bfafff2928520a5dc88af1885b0d080fadbdc07b37bea32",
+    "/srv/dev/urbit-040/desktop/review.png": "08b62fb386ab5c7fe03b093f7c48fec33cbab2fc53d0b1d69c4a3187d238797c"
+  },
+  "tests": {
+    "race_collector": "/tmp/omabit-fleet-native-creation-03",
+    "race_ownerhost": "/tmp/omabit-fleet-native-roots-01",
+    "resource_ui": "/tmp/omabit-resources-preview-test-native-02",
+    "urls_ui": "/tmp/omabit-ship-routes-ui-fleet-02",
+    "agent_ui": "/tmp/omabit-agent-ui-native-02",
+    "native_registry_tests": 9,
+    "skill_package_tests": 5,
+    "storage_tests": 3,
+    "networkless_help_entries": 172
+  },
+  "retention_manifests": [
+    "/tmp/omabit-native-storage-retention.json",
+    "/tmp/omabit-native-go-cache-retirement.json"
+  ],
+  "storage": {
+    "charged_bytes": 42110464000,
+    "budget_bytes": 42949672960,
+    "additional_scratch_bytes": 0,
+    "total_with_reserves": 42110464000,
+    "measurement_count": 561,
+    "full_measurements": "/tmp/omabit-native-final-storage.json",
+    "sha256": "1108902dcda4e5bf05d232c863e6c666b001b59b70193de04455b37136910a9a"
+  },
+  "limits": [
+    "No real agent launched automatically",
+    "No public DNS/tunnel configured",
+    "No remote runner upgraded or revoked",
+    "No 16GiB stress workload",
+    "Full release qualification deferred"
+  ]
+}

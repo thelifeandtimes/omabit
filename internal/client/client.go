@@ -297,7 +297,7 @@ func (c *Client) do(ctx context.Context, method, path string, payload, result an
 	if replay, _ := ctx.Value(creationReplayKey{}).(bool); replay && method == http.MethodPost && (path == "/v1/instances" || path == "/v1/comets" || path == "/v1/ships" || path == protocol.ProjectInventoryPath || path == protocol.PrivateChainProjectsPath || projectAction || projectRecoveryAction) {
 		req.Header.Set(protocol.CreationReplayHeader, "true")
 	}
-	if method == http.MethodPut || method == http.MethodPost {
+	if method == http.MethodPut || method == http.MethodPost || method == http.MethodDelete {
 		// Even a failed write on a reused connection must not replay a mutation.
 		req.GetBody = nil
 		defer func() {

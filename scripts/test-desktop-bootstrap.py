@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT / "native/bootstrap"))
 import desktop
 
 
-def bundle(directory, version="0.1.0-rc.13", *, contract=1, bad=None, qml=None, collector=None, panel=None):
+def bundle(directory, version="0.1.0-rc.13", *, contract=1, bad=None, qml=None, collector=None, panel=None, skills=False):
     directory.mkdir(parents=True)
     prefix = "omabit-" + version + "-linux-amd64"
     files = {
@@ -45,6 +45,13 @@ Item {
         files["build/urbit-collector"] = collector
     if panel:
         files["plugins/omabit/Panel.qml"] = panel
+    if skills:
+        for name in ("omabit-operator", "omabit-plugin-developer"):
+            files["skills/" + name + "/SKILL.md"] = b"# Fixture skill\n"
+        if skills != "legacy":
+            files["SKILLS.json"] = json.dumps({"format": 1, "version": version, "source_commit": "a" * 40,
+                "skills": ["omabit-operator", "omabit-plugin-developer"],
+                "files": {name: hashlib.sha256(data).hexdigest() for name,data in files.items() if name.startswith("skills/")}}).encode()
     archive = directory / (prefix + ".tar.gz")
     with tarfile.open(archive, "w:gz") as stream:
         for name, content in files.items():
@@ -97,6 +104,30 @@ class DesktopTests(unittest.TestCase):
             self.desktop.create_profile("dev")
         with self.assertRaises(ValueError):
             self.desktop.create_profile("../outside")
+
+    def test_skills_survive_native_cache_and_remain_archive_bound(self):
+        metadata, archive, _ = bundle(self.root / "with-skills", "0.4.0-rc.1", skills=True)
+        release = self.desktop.import_release(metadata, archive)["release"]
+        self.desktop.select("default", release)
+        prepared = self.desktop.prepare()
+        path = Path(prepared["directory"])
+        self.assertEqual((path / "skills/omabit-operator/SKILL.md").read_text(), "# Fixture skill\n")
+        self.assertTrue((path / "SKILLS.json").is_file())
+        skill = path / "skills/omabit-operator/SKILL.md"
+        skill.chmod(0o600);skill.write_text("changed")
+        inventory = desktop.read_json(path / "inventory.json")
+        inventory["files"]["skills/omabit-operator/SKILL.md"] = desktop.runtime.digest(skill)
+        desktop.atomic_json(path / "inventory.json", inventory)
+        with self.assertRaisesRegex(ValueError, "authenticated archive"):
+            self.desktop.prepare()
+
+    def test_legacy_bundles_keep_old_cache_layout(self):
+        metadata, archive, _ = bundle(self.root / "legacy-skills", "0.3.7", skills="legacy")
+        release = self.desktop.import_release(metadata, archive)["release"]
+        self.desktop.select("default", release)
+        first = self.desktop.prepare()
+        self.assertFalse((Path(first["directory"]) / "skills").exists())
+        self.assertEqual(self.desktop.prepare(), first)
 
     def test_selection_is_not_activation_and_stale_acks_cannot_commit(self):
         plan = self.desktop.resolve()

@@ -3,7 +3,9 @@ package ownerhost
 import (
 	"errors"
 	"path/filepath"
+	"regexp"
 	"strconv"
+	"strings"
 )
 
 // Selected once at command startup, before any goroutines or runtime reads.
@@ -16,8 +18,8 @@ func ConfigureDevelopment(root string) error {
 	}
 	// A dedicated root-owned owner record authorizes exactly this side-by-side
 	// installation. Do not infer authority from HOME, XDG or DOCKER_HOST.
-	if root != "/srv/dev/urbit" {
-		return errors.New("development root must be /srv/dev/urbit")
+	if !validDevelopmentRoot(root) {
+		return errors.New("development root must be /srv/dev/urbit or /srv/dev/urbit-NAME")
 	}
 	p, err := loadProfile(filepath.Join(root, "owner.json"))
 	if err != nil || p == nil {
@@ -34,6 +36,12 @@ func ConfigureDevelopment(root string) error {
 	return nil
 }
 
+func validDevelopmentRoot(root string) bool {
+	return root == "/srv/dev/urbit" || regexp.MustCompile(`^/srv/dev/urbit-[a-z0-9][a-z0-9-]{0,31}$`).MatchString(root)
+}
+func developmentRuntimeName(root string) string {
+	return "omabit-dev" + strings.TrimPrefix(root, "/srv/dev/urbit")
+}
 func Development() bool { return developmentRoot != "" }
 func selectedProfilePath() string {
 	if Development() {
@@ -56,5 +64,5 @@ func RuntimeDirectory() string {
 	if err != nil || p == nil {
 		return "/invalid-omabit-development-runtime"
 	}
-	return filepath.Join("/run/user", strconv.FormatUint(uint64(p.UID), 10), "omabit-dev")
+	return filepath.Join("/run/user", strconv.FormatUint(uint64(p.UID), 10), developmentRuntimeName(developmentRoot))
 }

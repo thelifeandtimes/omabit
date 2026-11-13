@@ -48,7 +48,7 @@ def export_source(root, destination, commit):
     Never copy the caller's index, config, ignored files or working tree.
     """
     destination.mkdir()
-    source_git(destination, "init", "--quiet", "--template=")
+    source_git(destination, "init", "--quiet", "--initial-branch=master", "--template=")
     source_git(destination, "fetch", "--quiet", "--depth=1", "--no-tags", str(root), commit)
     source_git(destination, "update-ref", "HEAD", commit)
     source_git(destination, "read-tree", commit)
@@ -203,7 +203,7 @@ def package_documentation(source, package):
         shutil.copytree(folder, package / relative)
 
 
-def package_skills(source, stage, assets, metadata, epoch):
+def skill_manifest(source, metadata):
     """Ship source-bound documentation without installing into an agent's config.
 
     Historical source exports without skills keep their existing asset set.
@@ -231,19 +231,33 @@ def package_skills(source, stage, assets, metadata, epoch):
             if path.suffix != ".md" or path.stat().st_mode & 0o111 or size > 65536 or total > 1048576 or len(entries) >= 64:
                 raise ValueError("unsupported or oversized skill resource")
             entries.append((path.relative_to(skills), path, sha256(path)))
-    package = stage / ("omabit-skills-" + metadata["version"])
-    package.mkdir()
-    for relative, path, expected in entries:
-        target = package / "skills" / relative
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(path, target)
-        if sha256(target) != expected:
-            raise ValueError("skill changed during packaging")
     provenance = {key: metadata[key] for key in ("version", "source_commit")}
     if "development" in metadata:
         provenance["development"] = metadata["development"]
     provenance.update(format=1, skills=list(names),
                       files={"skills/" + rel.as_posix(): digest for rel, _, digest in entries})
+    return provenance
+
+
+def write_skill_manifest(package, metadata):
+    provenance = skill_manifest(package, metadata)
+    if provenance is not None:
+        (package / "SKILLS.json").write_text(json.dumps(provenance, indent=2) + "\n")
+    return provenance
+
+
+def package_skills(source, stage, assets, metadata, epoch):
+    provenance = skill_manifest(source, metadata)
+    if provenance is None:
+        return None
+    package = stage / ("omabit-skills-" + metadata["version"])
+    package.mkdir()
+    for relative, expected in provenance["files"].items():
+        target = package / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source / relative, target)
+        if sha256(target) != expected:
+            raise ValueError("skill changed during packaging")
     (package / "SKILLS.json").write_text(json.dumps(provenance, indent=2) + "\n")
     checksums(package)
     output = assets / (package.name + ".tar.gz")
@@ -344,6 +358,7 @@ def main():
                         source_epoch=epoch, source_inputs="git-commit-blobs-v1",
                         build_environment="isolated-go-v1")
         (package / "BUILD.json").write_text(json.dumps(metadata, indent=2) + "\n")
+        write_skill_manifest(package, metadata)
         checksums(package)
         assets = stage / "assets"
         assets.mkdir()

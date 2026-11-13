@@ -10,16 +10,28 @@ sessions are not restricted to a desk; the approval UI says this explicitly.
 Open Setup → Application Connections, or choose **Connect via Omabit** in an
 installed plugin. The latter opens the same pane with that plugin highlighted.
 The ship selector combines observed running fleet ships with saved HTTP-only
-ship enrollments. For a remote runner, configure its explicit browser host in
-runner display settings; a remote loopback URL is not treated as this desktop.
+ship enrollments. For a capable fleet ship, enable **Allowed** and choose
+**Connect**. Permission applies to that plugin/profile/helper and exact ship
+incarnation across its registered URLs. Omabit chooses and verifies a reachable
+address from this desktop; a remote runner's localhost is never assumed local.
+Manage addresses in **Setup → Ship URLs**.
 
-Choose a ship, enable **Approved** on a plugin row, then **Connect**. The collector
-verifies the runner, instance revision, container and HTTP identity. It reuses a
-working parent sign-in or retrieves the managed ship's code privately from its
-runner. Neither code nor cookie passes through QML, command arguments or public
-output. The selected plugin receives its own session and talks directly to Eyre.
-The UI displays the selected endpoint once. Changing selections or refreshing
-clears unsubmitted approval. A changed helper or ship needs fresh approval.
+The fleet path retrieves the selected ship's code privately from its runner and
+creates one independent session. Neither code nor cookie passes through QML,
+command arguments or public output. The plugin then talks directly to Eyre.
+Older managed/hosted paths retain per-attempt **Approved** choices and can use an
+existing parent sign-in to create their independent child session. A changed
+helper requires reviewed permission; an update never widens an older approval.
+
+Complete version2 helpers support automatic reconnection under standing permission.
+While Omabit is active, the desktop checks one eligible connection per minute.
+A replacement uses a fresh origin-bound session; the previous session stays linked
+until its exact cleanup finishes. Healthy sessions remain unchanged. Known failed
+children back off for five minutes, with at most three automatic failed attempts
+per predecessor before review. Missing credentials, uncertain effects and identity
+changes stay fenced. Explicit Disconnect cancels pending handoff and is not undone.
+The collector/UI pathway passes private fixtures; real receiver advertisement and
+assembled qualification remain pending in this unreleased branch.
 
 Use the separate **Remotely Hosted Urbits** Setup pane to add a ship by name,
 URL and expected identity, then sign in once with its code. Codes use private
@@ -44,9 +56,10 @@ attempt rather than issuing another one.
 ## Commands
 
 All commands support global `--config-dir DIR` and `--format json|text`, placed
-before the command. Only `app-managed-connect` additionally requires a pinned
-`--runner NAME --expected-runner-id ID`; the remaining application commands do
-not accept runner/socket selection.
+before the command. `app-managed-connect`, `app-fleet-connect` and `app-fleet-reconnect` require a
+pinned `--runner NAME --expected-runner-id ID`. Maintenance derives its runner
+from the exact durable attempt; ordinary lifecycle commands do not accept a
+runner/socket override.
 
 | Command | Effect |
 | --- | --- |
@@ -54,10 +67,14 @@ not accept runner/socket selection.
 | `ships` | Read saved ship IDs, revisions, origins and stored-session status; not a health check |
 | `app-connections` | Read active nonsecret attempts, current revision and `next_actions` |
 | `app-connection REQUEST_ID` | Read one active or archived attempt without contacting a ship |
+| `app-fleet-connect` | Choose a registered route and connect under a standing ship/helper grant |
+| `app-fleet-reconnect` | Replace an exact predecessor when needed, using current permission and a complete helper |
+| `app-fleet-health` | Check one connected fleet session without mutation |
+| `app-fleet-maintain` | Perform one bounded health/reconnect or lineage recovery step |
 | `app-managed-connect` | Verify a fleet selection, obtain/reuse its private login, and hand off one plugin session |
 | `app-connect NAME` | Explicitly approve and attempt one independent handoff |
 | `app-disconnect REQUEST_ID` | Revoke only this attempt's session |
-| `app-recover REQUEST_ID` | Resume cleanup; never retry issuance/delivery |
+| `app-recover REQUEST_ID` | Observe an unacknowledged replacement or resume cleanup; never retry issuance/delivery |
 | `app-reconcile REQUEST_ID` | Reconcile the receiver after remote cleanup |
 | `app-archive REQUEST_ID` | Archive a fully closed/reconciled attempt, retaining its replay receipt |
 
@@ -95,6 +112,11 @@ Each supported plugin supplies `application-connection.json`:
 }
 ```
 
+Declaration2 keeps the initial offer/cleanup protocol and adds complete bound
+preparation, replacement and status observation. Discovery reports this as
+`replacement:true`. The protocol must be qualified before declaring2; do not
+change a declaration merely to bypass a capability check.
+
 Add every Python/JSON dependency used by the helper to `files`; Theme and DMs
 include their actual dependency inventories. The manifest and declaration must
 be included. Optional `application-profile.json` is automatically included in the
@@ -114,10 +136,12 @@ malicious code running as the same desktop user. See the
 The issuer keeps at most 64 active attempts. Explicit archival publishes and syncs
 `application-history/REQUEST_ID.json` before removing the active row. A crash may
 leave both copies; retry preserves the receipt and finishes removal. The first
-archival advances only `applications.json` to version 2. New readers accept
-versions 1 and 2; older issuers must refuse version 2 rather than ignore archived
-IDs. Do not reset or downgrade the journal. Other collector/runner formats do not
-change. `app-connection` returns `archived: true` with no `next_actions` for receipts.
+archival advances a legacy application journal to2. Fleet attempts require3;
+explicit replacement requires4. New readers accept1–4, with archive1–3. Actual
+previous writers must refuse newer markers without mutation. Replacement archives
+preserve immutable ancestry, bounded to2048 reachable records; active attempts
+remain bounded to64. Do not reset markers or discard history to clear a fence.
+`app-connection` returns `archived: true` with no `next_actions` for receipts.
 
 Each receiver also archives reconciled entries into private per-request receipts
 before compacting its active list. Pending and accepted entries remain. It can

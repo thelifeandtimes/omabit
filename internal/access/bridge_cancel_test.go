@@ -28,7 +28,7 @@ func (w *bridgeWriteNotice) Write(p []byte) (int, error) {
 }
 
 func TestBridgeCancellationInterruptsInputAndOutput(t *testing.T) {
-	for _, phase := range []string{"idle", "header", "body", "pill", "handoff", "output", "denied-output", "handoff-output"} {
+	for _, phase := range []string{"idle", "header", "body", "pill", "desk", "handoff", "output", "denied-output", "handoff-output"} {
 		t.Run(phase, func(t *testing.T) {
 			socket, keys, grant := bridgeGrantFixture(t)
 			var requests atomic.Int32
@@ -60,6 +60,8 @@ func TestBridgeCancellationInterruptsInputAndOutput(t *testing.T) {
 				partial = "POST /v1/instances HTTP/1.1\r\nHost: runner\r\nContent-Length: 2\r\n\r\n{"
 			case "pill":
 				partial = "POST " + protocol.PillUploadPath + " HTTP/1.1\r\nHost: runner\r\nContent-Length: 10000\r\nContent-Type: application/octet-stream\r\n" + protocol.PillHashHeader + ": " + strings.Repeat("a", 64) + "\r\n\r\nx"
+			case "desk":
+				partial = "POST " + protocol.DeskStagesPath + " HTTP/1.1\r\nHost: runner\r\nContent-Length: 10000\r\nContent-Type: application/octet-stream\r\n" + protocol.DeskStageHeader + ": " + stageDescriptor(t) + "\r\n\r\nx"
 			case "handoff":
 				partial = "PUT /v1/handoffs/" + strings.Repeat("a", 32) + "/data HTTP/1.1\r\nHost: runner\r\nContent-Length: 10000\r\nContent-Type: application/octet-stream\r\n\r\nx"
 			case "output":

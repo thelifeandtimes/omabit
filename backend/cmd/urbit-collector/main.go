@@ -14,6 +14,7 @@ import (
 	"syscall"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/apppolicy"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/epochs"
@@ -111,6 +112,7 @@ Commands:
   login-code INSTANCE --revision N --container-id FULL_ID --reveal
               Operator-only secret response; requires pinned --runner/--expected-runner-id.
   snapshot    Show the current runner snapshot.
+  app-policy  Read app commit/publication permissions and target identities.
   logs INSTANCE --revision N [--watch --interval 3s]
               Read a bounded operator-only runtime log tail from the pinned runner.
               Watch reuses one connection; JSON updates include tails or retry/stop errors.
@@ -153,6 +155,7 @@ Commands:
                [--bootstrap bare|recommended --pill URL_OR_FILE]
               Register a new comet; first explicit Start generates its identity.
   configure INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT
+              [--memory-gib 1..16] [--cpus 1..16] (stopped ship only; omitted=preserve)
               Replace HTTP/Ames/loom configuration; loom must be 30..34 (1–16 GiB).
               Native control is CLI-only; omit --native-control to preserve it.
   publish-ames INSTANCE --revision N --ames-port PORT --request-id ID --confirm-network
@@ -168,12 +171,21 @@ Commands:
   watch [--interval 1s]
                Poll snapshots until canceled; minimum interval: 100ms.
   app-plugins
+  app-ship-review --instance ID
+  app-ship-approvals
+  app-ship-approve --request-file FILE [--allow-owner-session]
   app-connections
   app-connection REQUEST_ID
                Inspect installed connection helpers and durable attempts (no ship IO).
   app-connect SHIP_NAME [selection flags] --approve-owner-session
   app-managed-connect [fleet and plugin selection flags] --approve-owner-session
                Approve an independent owner session for an exact installed helper.
+  app-fleet-connect --request-file FILE --request-id ID
+               Choose a verified URL under an existing standing ship/helper grant.
+  app-fleet-reconnect --request-file FILE --request-id ID --previous-request-id ID --expected-revision N
+  app-fleet-maintain REQUEST_ID --expected-revision N [--lan-profile ID]
+  app-fleet-health REQUEST_ID --expected-revision N [--lan-profile ID]
+               Check a fleet session without changing it or replaying application work.
   app-archive REQUEST_ID --expected-revision N
                Archive a fully closed attempt while retaining its replay receipt.
   app-disconnect REQUEST_ID --expected-revision N
@@ -285,10 +297,16 @@ Use COMMAND --help for command flags and constraints.
 	if command == "import-sources" || command == "import-fake" {
 		return runImports(ctx, command, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
 	}
+	if command == "app-fleet-connect" || command == "app-fleet-reconnect" {
+		return runFleetApplication(ctx, command, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
 	if command == "app-managed-connect" {
 		return runManagedApplication(ctx, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
 	}
-	if slices.Contains([]string{"app-plugins", "app-connections", "app-connection", "app-archive", "app-connect", "app-disconnect", "app-recover", "app-reconcile"}, command) {
+	if slices.Contains([]string{"app-ship-review", "app-ship-approvals", "app-ship-approve"}, command) {
+		return runApplicationShipApproval(ctx, command, args, *configDir, *socket, *runnerName, *expectedRunner, format, stdout, fail)
+	}
+	if slices.Contains([]string{"app-plugins", "app-connections", "app-connection", "app-archive", "app-connect", "app-fleet-health", "app-fleet-maintain", "app-disconnect", "app-recover", "app-reconcile"}, command) {
 		return runApplications(ctx, command, args, *configDir, *socket, *runnerName, format, stdout, fail)
 	}
 	if slices.Contains([]string{"ship-enroll", "ships", "ship-login", "ship-status", "ship-scry", "ship-watch", "ship-logout", "ship-forget"}, command) {
@@ -300,8 +318,11 @@ Use COMMAND --help for command flags and constraints.
 	flags := flag.NewFlagSet(command, flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
 	flags.Usage = func() {}
+	var policyInstance, policyDesk string
 	var revision uint64
 	var httpPort, amesPort, loom uint
+	var memoryGiB, cpuCores uint
+	var memorySet, cpuSet bool
 	var requestID string
 	var label string
 	var fakeShip, pierName string
@@ -318,12 +339,18 @@ Use COMMAND --help for command flags and constraints.
 	usage := command
 	switch command {
 	case "hello", "snapshot", "suggest-port":
+	case "app-policy":
+		usage += " [--instance ID [--desk NAME]]\n\nRead saved app permissions and their source scopes. No permission edits or desk mutations. Requires app-development-policy-v2."
+		flags.StringVar(&policyInstance, "instance", "", "optional managed instance or project member ID")
+		flags.StringVar(&policyDesk, "desk", "", "optional Clay desk name without percent sign")
 	case "project-status":
 		usage += " PROJECT\n\nRead recent saved operations only; no runtime probe or changes. Requires project-saved-status-v1. A recorded running operation does not prove the ship is running. Interrupted actions need explicit recovery, never blind retry."
 	case "projects":
 		usage += "\n\nRead saved project identities and port reservations only; no live runtime probe or resource changes. Requires project-reservations-v1."
 	case "create-fake", "create-comet":
-		flags.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
+		flags.UintVar(&memoryGiB, "memory-gib", 0, "container RAM ceiling in GiB (1..16); omitted=4")
+		flags.UintVar(&cpuCores, "cpus", 0, "container CPU quota in whole cores (1..16); omitted=2")
+		flags.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default)")
 		flags.BoolVar(&nativeControl, "native-control", false, "enable local-owner native control (default off)\n\n"+protocol.NativeControlWarning)
 		usage += " INSTANCE --http-port PORT --request-id ID [--label TEXT]"
 		flags.UintVar(&httpPort, "http-port", 0, "required loopback host HTTP port, 1024..65535")
@@ -346,11 +373,13 @@ Use COMMAND --help for command flags and constraints.
 			usage += " --confirm-network [--loom N] [--native-control]"
 		}
 	case "configure":
-		usage += " INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT"
+		usage += " INSTANCE --revision N --http-port PORT --ames-port PORT --loom EXPONENT [--memory-gib 1..16] [--cpus 1..16]"
+		flags.UintVar(&memoryGiB, "memory-gib", 0, "container RAM ceiling in GiB (1..16); stopped ship only; omitted=preserve, default=4")
+		flags.UintVar(&cpuCores, "cpus", 0, "container CPU quota in whole cores (1..16); stopped ship only; omitted=preserve, default=2")
 		flags.Uint64Var(&revision, "revision", 0, "required positive expected configuration revision")
 		flags.UintVar(&httpPort, "http-port", 0, "required HTTP port, 1..65535")
 		flags.UintVar(&amesPort, "ames-port", 0, "required Ames port, 1..65535")
-		flags.UintVar(&loom, "loom", 0, "required loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
+		flags.UintVar(&loom, "loom", 0, "required loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default)")
 		flags.BoolVar(&nativeControl, "native-control", false, "omitted=preserve existing setting; use =true/=false explicitly\n\n"+protocol.NativeControlWarning)
 	case "operate":
 		usage += " INSTANCE start|stop|pack|meld|roll|inspect-epochs|recover-import --revision N --request-id ID"
@@ -395,6 +424,12 @@ Use COMMAND --help for command flags and constraints.
 		return fail(errors.New("unexpected trailing arguments; command flags must follow positional arguments"), 2)
 	}
 	flags.Visit(func(f *flag.Flag) {
+		if f.Name == "memory-gib" {
+			memorySet = true
+		}
+		if f.Name == "cpus" {
+			cpuSet = true
+		}
 		if f.Name == "native-control" {
 			nativeControlSet = true
 		}
@@ -435,6 +470,9 @@ Use COMMAND --help for command flags and constraints.
 	}
 	switch command {
 	case "create-fake", "create-comet":
+		if (memorySet && (memoryGiB < 1 || memoryGiB > uint(protocol.MaxMemoryGiB))) || (cpuSet && (cpuCores < 1 || cpuCores > uint(protocol.MaxCPUCores))) {
+			return fail(errors.New("--memory-gib and --cpus must be whole numbers in 1..16"), 2)
+		}
 		if !validCreationLoom(loom) {
 			return fail(errors.New("--loom must be in 30..34 (1–16 GiB)"), 2)
 		}
@@ -454,6 +492,9 @@ Use COMMAND --help for command flags and constraints.
 			return fail(errors.New("create-comet requires a pinned --runner/--expected-runner-id and --confirm-network"), 2)
 		}
 	case "configure":
+		if (memorySet && (memoryGiB < 1 || memoryGiB > uint(protocol.MaxMemoryGiB))) || (cpuSet && (cpuCores < 1 || cpuCores > uint(protocol.MaxCPUCores))) {
+			return fail(errors.New("--memory-gib and --cpus must be whole numbers in 1..16"), 2)
+		}
 		if httpPort == 0 || httpPort > 65535 || amesPort == 0 || amesPort > 65535 {
 			return fail(errors.New("--http-port and --ames-port are required and must be in 1..65535"), 2)
 		}
@@ -521,6 +562,9 @@ Use COMMAND --help for command flags and constraints.
 		}
 		return fail(err, 1)
 	}
+	if (memorySet || cpuSet) && !slices.Contains(hello.Features, protocol.ContainerResourcesFeature) {
+		return fail(errors.New("update this runner for container-resources-v1 before changing resource limits"), 1)
+	}
 	if runtimeSettings && !slices.Contains(hello.Features, protocol.RuntimeSettingsFeature) {
 		return fail(errors.New("update this runner for runtime-settings capability before changing loom/native control"), 1)
 	}
@@ -580,6 +624,37 @@ Use COMMAND --help for command flags and constraints.
 	switch command {
 	case "hello":
 		result = hello
+	case "app-policy":
+		var policy protocol.AppPolicyStatus
+		policy, err = c.AppPolicy(ctx, client.Identity{RunnerID: hello.RunnerID, Mode: hello.Mode})
+		result = policy
+		if err == nil && (policyInstance != "" || policyDesk != "") {
+			target := apppolicy.Target{InstanceID: policyInstance, Desk: policyDesk}
+			if target.Validate() != nil || policyInstance == "" {
+				return fail(errors.New("require a valid --instance and optional --desk"), 2)
+			}
+			found := false
+			for _, item := range policy.Targets {
+				if item.Target.InstanceID != policyInstance {
+					continue
+				}
+				target = item.Target
+				target.Desk = policyDesk
+				found = true
+				effective := policy.Policy.Effective(target)
+				if !item.Ready {
+					effective = apppolicy.Effective{CreateDesk: apppolicy.Decision{Value: apppolicy.Block, Source: "unresolved identity"}, Commit: apppolicy.Decision{Value: apppolicy.Block, Source: "unresolved identity"}, Publish: apppolicy.Decision{Value: apppolicy.Block, Source: "unresolved identity"}}
+				}
+				result = struct {
+					protocol.AppPolicyStatus
+					Target    apppolicy.Target    `json:"target"`
+					Effective apppolicy.Effective `json:"effective"`
+				}{policy, target, effective}
+			}
+			if !found {
+				return fail(errors.New("instance is not in this runner's saved policy inventory"), 1)
+			}
+		}
 	case "snapshot":
 		result, err = checkedSnapshot(ctx, c, identity)
 	case "project-status":
@@ -600,7 +675,7 @@ Use COMMAND --help for command flags and constraints.
 		if !slices.Contains(hello.Features, "create-fake") {
 			return fail(errors.New("this runner does not support create-fake"), 1)
 		}
-		req := protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl}}
+		req := protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}}
 		if fakeOptions {
 			if !slices.Contains(hello.Features, "fake-ship-options") {
 				return fail(errors.New("update this runner to choose a fake identity and pier directory"), 1)
@@ -612,13 +687,13 @@ Use COMMAND --help for command flags and constraints.
 		if hello.Mode != "development-managed" || hello.AccessRole != "operator" || !slices.Contains(hello.Features, "create-comet") {
 			return fail(errors.New("comet creation requires an operator and the explicit development-managed mode/capability"), 1)
 		}
-		result, err = c.CreateComet(ctx, protocol.CreateCometRequest{CreateFakeRequest: protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl}}, ConfirmNetwork: confirmNetwork})
+		result, err = c.CreateComet(ctx, protocol.CreateCometRequest{CreateFakeRequest: protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}}, ConfirmNetwork: confirmNetwork})
 	case "configure":
 		result, err = c.Configure(ctx, instanceID, protocol.ConfigureRequest{
 			ExpectedRevision:      revision,
 			PreserveNativeControl: !nativeControlSet,
 			Config: protocol.Configuration{
-				HTTPPort: uint16(httpPort), AmesPort: uint16(amesPort), Loom: uint8(loom), NativeControl: nativeControl,
+				HTTPPort: uint16(httpPort), AmesPort: uint16(amesPort), Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores),
 			},
 		})
 	case "operate":

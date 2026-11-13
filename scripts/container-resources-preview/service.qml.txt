@@ -1,0 +1,55 @@
+  property var resourceState:({version:1,ships:{}})
+  property string resourceOutput:""
+  property string resourceError:""
+  property string resourceAction:""
+  property bool resourceReady:false
+  function resourceSubmit(action,request) {
+    if(busy)return false
+    resourceOutput="";resourceError="";lastError="";resourceAction=action;busy=true
+    resourceProcess.command=["/usr/bin/python3","-B","/preview/resources-backend.py",remoteMode,action,JSON.stringify(request)]
+    resourceProcess.running=true
+    return true
+  }
+  Process {
+    id:resourceProcess
+    stdout:StdioCollector {onStreamFinished:root.resourceOutput=text}
+    stderr:StdioCollector {onStreamFinished:root.resourceError=text}
+    onExited:(code,status)=>{
+      root.busy=false
+      try {
+        if(code!==0)throw new Error(root.resourceError || "Resource fixture failed")
+        root.resourceState=JSON.parse(root.resourceOutput);root.resourceReady=true
+        root.refresh()
+        if(root.resourceAction!=="status"){root.toastText="Simulated "+root.resourceAction+" saved. No real ship was changed.";root.toastTone="good"}
+      }catch(e){root.lastError=e.message;root.toastText=e.message;root.toastTone="bad"}
+    }
+  }
+  Component.onCompleted:resourceSubmit("status",{})
+  Timer {interval:5000;repeat:true;running:root.activationEnabled;onTriggered:{root.now=Date.now();root.connections=root.inventory()}}
+  function resourceInventory() {
+    function ship(id,name,runner,port,project){
+      var saved=root.resourceState.ships[runner+"/"+id],config=saved ? saved.config : {http_port:port,ames_port:34343,loom:31,memory_gib:4,cpu_cores:2}
+      var running=!!saved && saved.running,launch=saved ? saved.launch_config : config
+      var value={id:id,ship:name,label:id,config_revision:saved ? saved.revision : 1,applied_revision:saved ? saved.applied_revision : 1,mode:"fake",config:config,observed_state:running ? "running":"stopped",desired_state:running ? "running":"stopped",observed_at:new Date().toISOString(),health:running ? "healthy":"unknown",
+        runtime_status:{initialized:true,running:running,launch_loom:launch.loom,launch_native_control:false,launch_memory_gib:launch.memory_gib,launch_cpu_cores:launch.cpu_cores}}
+      if(project){value.project_id="preview-project";value.project_label="Fixture network"}
+      if(running)value.resources={source:"docker-stats-v1.47",status:"fresh",container_id:(saved.launch%2 ? "a":"b").repeat(64),observed_at:new Date().toISOString(),memory_current_bytes:805306368,memory_limit_bytes:launch.memory_gib*1073741824,pids_current:12,cpu_usage_percent:25,cpu_limit_cores:launch.cpu_cores}
+      return value
+    }
+    return [{name:"preview-local",runner_id:"preview-local-040",mode:"simulation",status:"available",access_role:"operator",checked_at:new Date().toISOString(),features:["runtime-settings","container-resources-v1","container-cpu"],snapshot:{instances:[ship("preview-publisher","~zod","preview-local-040",18080,false),ship("preview-project-nec","~nec","preview-local-040",18081,true)],operations:[],incidents:[]}},
+      {name:"preview-remote",runner_id:"preview-remote-040",mode:"simulation",status:remoteMode==="offline" ? "unavailable":"available",access_role:remoteMode==="observer" ? "observer":"operator",checked_at:new Date().toISOString(),features:["runtime-settings","container-resources-v1","container-cpu"],snapshot:{instances:[ship("preview-remote-bus","~bus","preview-remote-040",18082,false)],operations:[],incidents:[]}}]
+  }
+  function resourceCanConfigure(target){
+    if(!target || busy || !resourceReady)return false
+    var c=connections.filter(function(c){return c.name===target.connection && c.runner_id===target.runner})[0]
+    return Model.writable(c,now) && c.snapshot.instances.some(function(i){return i.id===target.instance && !i.project_id && i.config_revision===target.revision})
+  }
+  function resourceConfigure(target,port,loom,memory,cpus){
+    if(!resourceCanConfigure(target))return false
+    try {Model.configure(target,port,loom,memory,cpus)}catch(e){lastError=e.message;return false}
+    return resourceSubmit("configure",{target:target,config:{http_port:Number(port),ames_port:target.ames,loom:Number(loom),memory_gib:Number(memory),cpu_cores:Number(cpus)}})
+  }
+  function resourceOperate(connection,instance,kind){
+    if(["start","stop"].indexOf(kind)<0 || instance.project_id || !Model.canOperate(connection,instance,kind,now))return false
+    return resourceSubmit(kind,{target:Model.edit(connection,instance)})
+  }

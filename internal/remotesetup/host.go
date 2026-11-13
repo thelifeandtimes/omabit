@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strconv"
 	"strings"
 	"syscall"
@@ -452,6 +453,9 @@ func InstallDependencies(ctx context.Context, plan DependencyPlan, progress func
 		return errors.New("unsupported native dependency provider")
 	}
 	if _, err := runHostCommand(ctx, true, program, args...); err != nil {
+		if plan.Provider == "pacman" {
+			return fmt.Errorf("native dependency installation failed (%w). Review the package-manager output on the runner host. For missing package files or mirror 404s, finish the host's normal full system update (pacman -Syu on Arch, or omarchy update on Omarchy), then choose Resume setup. Keep repository metadata and installed packages at the same update level", err)
+		}
 		return fmt.Errorf("native dependency installation did not complete; inspect the native package manager and resume: %w", err)
 	}
 	// Installation is followed by the existing signature/payload and engine-policy
@@ -464,33 +468,40 @@ func InstallDependencies(ctx context.Context, plan DependencyPlan, progress func
 }
 
 func checkEngineCandidate(ctx context.Context, plan DependencyPlan) error {
-	for _, name := range plan.Packages {
-		if name != "docker" && name != "docker.io" {
-			continue
-		}
-		var data []byte
-		var err error
-		if plan.Provider == "pacman" {
-			data, err = hostCommand(ctx, fixedExecutable("pacman"), "-Si", "--", name)
-		} else {
-			data, err = hostCommand(ctx, fixedExecutable("apt-cache"), "policy", name)
-		}
-		if err != nil {
-			return errors.New("cannot inspect the configured native Docker candidate")
-		}
-		version := ""
-		for _, line := range strings.Split(string(data), "\n") {
-			key, value, ok := strings.Cut(strings.TrimSpace(line), ":")
-			if ok && (strings.TrimSpace(key) == "Version" || strings.TrimSpace(key) == "Candidate") {
-				version = strings.TrimSpace(value)
-				break
-			}
-		}
-		if hostcompat.EnginePackageVersionStatus(version) != "compatible" {
-			return fmt.Errorf("configured Docker candidate %q is outside the supported engine policy; choose a supported native repository before setup", version)
+	name, program, field := "docker.io", "apt-cache", "Candidate"
+	args := []string{"policy", name}
+	if plan.Provider == "pacman" {
+		name, program, field = "docker", "pacman", "Version"
+		args = []string{"-Si", "--", name}
+	}
+	if !slices.Contains(plan.Packages, name) {
+		return nil
+	}
+	command := program + " " + strings.Join(args, " ")
+	data, err := hostCommand(ctx, fixedExecutable(program), args...)
+	if err != nil {
+		return fmt.Errorf("could not read the Docker candidate. Run '%s' on the runner host and check its configured repositories, then choose Resume setup", command)
+	}
+	return validateEngineCandidate(data, field, name, command)
+}
+
+func validateEngineCandidate(data []byte, field, name, command string) error {
+	var version string
+	for _, line := range strings.Split(string(data), "\n") {
+		key, value, ok := strings.Cut(line, ":")
+		if ok && strings.TrimSpace(key) == field {
+			version = strings.TrimSpace(value)
+			break
 		}
 	}
-	return nil
+	if hostcompat.EnginePackageVersionStatus(version) == "compatible" {
+		return nil
+	}
+	detail := "No usable candidate was found for " + name
+	if version != "" && version != "(none)" && len(version) <= 256 {
+		detail = fmt.Sprintf("The configured %s candidate is %q", name, version)
+	}
+	return fmt.Errorf("%s. Omabit requires stable Docker %s. Run '%s' on the runner host. Choose Resume setup once a trusted repository supplies a compatible candidate, or use another host", detail, hostcompat.EngineVersionRange(), command)
 }
 
 // Digest verifies a staged executable before it is offered for root execution.

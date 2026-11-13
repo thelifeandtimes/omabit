@@ -25,6 +25,8 @@ import (
 
 type timings struct{ command, pull, download, ready, poll, stop, cleanup, pack, cleanupCommand time.Duration }
 type dependencies struct {
+	memoryGiB        uint8
+	cpuCores         uint8
 	loom             uint8
 	nativeControl    bool
 	bootstrap        *protocol.Bootstrap
@@ -44,6 +46,7 @@ type dependencies struct {
 	admission        func(string) (uint64, uint64, error)
 	resourcePolicy   func() (resourcepolicy.Policy, error)
 	execute          func(context.Context, []string, []string) (string, error)
+	executeInput     func(context.Context, []string, []string, []byte) (string, error)
 	ProbeEngine      func(context.Context, string, string) (hostcompat.Engine, error)
 	InspectHost      func() hostcompat.Report
 	stats            func(context.Context, string, string) (string, error)
@@ -158,7 +161,7 @@ func defaults() dependencies {
 		profile: ProfileLifecycle, hostProbe: probeHostHTTP, hostIdentity: readHostIdentity,
 		home: home, runtimeDir: ownerhost.RuntimeDirectory(), identity: currentIdentity, stat: statNode,
 		resourcePolicy: func() (resourcepolicy.Policy, error) { return resourcepolicy.Load(home) },
-		admission:      available, execute: executeDocker, download: candidate.DownloadPill,
+		admission:      available, execute: executeDocker, executeInput: executeDockerInput, download: candidate.DownloadPill,
 		ProbeEngine: hostcompat.ProbeEngine, InspectHost: hostcompat.InspectCurrent,
 		stats:         readDockerStats,
 		logs:          readDockerLogs,

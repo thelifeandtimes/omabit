@@ -4,29 +4,26 @@
 No arguments performs no work. Explicit paths and --run are required. The runner
 never opens an existing guest overlay or any host Docker/runner/socket/keyring.
 """
-import argparse,base64,hashlib,json,os,re,shutil,subprocess,time
+import argparse,base64,errno,hashlib,json,os,re,shutil,subprocess,time,sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[3]
 GIB=1024**3
-MEASUREMENT_LIMITS={}
+sys.path.insert(0,str(ROOT/"scripts/qualification/app-development"))
+import storage
 
 def run(args,**kw):return subprocess.run([str(a) for a in args],check=True,**kw)
 def digest(p):
  with p.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def stage_immutable(source,destination):
+ if source.is_symlink() or not source.is_file() or destination.exists():raise RuntimeError('unsafe immutable staging input')
+ before=digest(source)
+ try:os.link(source,destination)
+ except OSError as error:
+  if error.errno!=errno.EXDEV:raise
+  with source.open('rb') as src,destination.open('xb') as dst:shutil.copyfileobj(src,dst)
+ if digest(destination)!=before or digest(source)!=before:raise RuntimeError('immutable staging input changed')
 def allocated(p):
- r=subprocess.run(['du','-sx','-B1',str(p)],capture_output=True,text=True)
- if not r.stdout:raise RuntimeError('Cannot measure '+str(p))
- visible=int(r.stdout.split()[0])
- if r.returncode:
-  # Rootless overlay work directories are inaccessible to the ordinary owner.
-  # Record the incomplete count explicitly and reserve extra budget for them.
-  errors=r.stderr.splitlines()
-  pattern=r"du: cannot read directory '/srv/dev/urbit/state/\.local/share/urbit-runner/docker/containerd/daemon/io\.containerd\.snapshotter\.v1\.overlayfs/snapshots/[0-9]+/work/work': Permission denied"
-  if str(p)!='/srv/dev/urbit' or not errors or not all(re.fullmatch(pattern,x) for x in errors):
-   raise RuntimeError('Cannot fully measure '+str(p)+': '+r.stderr)
-  MEASUREMENT_LIMITS[str(p)]={'visible_bytes':visible,'unreadable_work_directories':len(errors),'unmeasured_reserve':4*GIB}
-  return visible+4*GIB
- return visible
+ return storage.measure(p)['allocated_bytes']
 def cpio(f,name,data,mode,ino):
  name=name.encode()+b'\0';fields=[ino,mode,0,0,1,0,len(data),0,0,0,0,len(name),0]
  head=b'070701'+b''.join(('%08x'%v).encode() for v in fields)
@@ -34,9 +31,14 @@ def cpio(f,name,data,mode,ino):
 def main():
  p=argparse.ArgumentParser(description=__doc__)
  for n in ('portable','previous','candidate','rootless','output'):p.add_argument('--'+n,type=Path)
+ p.add_argument('--namespace-tests',type=Path)
+ p.add_argument('--theme-source',type=Path)
+ p.add_argument('--dms-source',type=Path)
+ p.add_argument('--storage-budget-gib',type=int,choices=(40,48),default=40,help='48 requires explicit temporary operator authorization')
  p.add_argument('--run',action='store_true');a=p.parse_args()
  if not a.run:p.print_help();return
  if os.geteuid()==0:raise RuntimeError('Run as ordinary owner')
+ if bool(a.theme_source)!=bool(a.dms_source):p.error('both receiver sources required')
  if any(x is None for x in (a.portable,a.previous,a.candidate,a.rootless,a.output)):p.error('all paths required')
  a.portable=a.portable.resolve();a.previous=a.previous.resolve();a.rootless=a.rootless.resolve();a.candidate=a.candidate.resolve()
  labs=Path.home()/'Documents/ChatGPT/omabit-private-docker-labs';evidence=labs.parent/'omabit-qualification-evidence'
@@ -44,9 +46,9 @@ def main():
  previous=json.loads((a.previous/'release.json').read_text())['version']
  target=json.loads((a.candidate/'release.json').read_text())['version']
  if not all(re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+(?:-rc\.[0-9]+)?',v) for v in (previous,target)) or previous==target:p.error('distinct release versions required')
- roots=[Path('/srv/dev/urbit'),labs,evidence]
- used=sum(allocated(x) for x in roots);budget=4*GIB
- if used+budget>40*GIB:raise RuntimeError('Insufficient headroom for declared 4 GiB scratch cap')
+ budget=4*GIB;storage_limit=a.storage_budget_gib*GIB
+ admission=storage.admit(budget,budget_bytes=storage_limit)
+ used=admission['charged_bytes']
  meta=json.loads((a.portable/'bundle.json').read_text())
  for n in ('base.qcow2','boot/vmlinuz','boot/initramfs.cpio'):
   if (a.portable/n).is_symlink() or digest(a.portable/n)!=meta['sha256'][n]:raise RuntimeError('Pristine input hash differs: '+n)
@@ -62,20 +64,44 @@ def main():
  for v,path in [(previous,a.previous),(target,a.candidate)]:
   dest=payload/v;dest.mkdir()
   for n in ('release.json','SHA256SUMS','omabit-linux-amd64','urbit-collector-linux-amd64','urbit-runner-linux-amd64'):shutil.copy2(path/n,dest/n)
+  # Downloaded release assets need not carry executable Unix mode bits. Change
+  # only the guest staging copies; their verified content remains identical.
+  for tool in ('omabit','urbit-collector','urbit-runner'):(dest/(tool+'-linux-amd64')).chmod(0o755)
   if v==previous:shutil.copytree(a.rootless,dest/'rootless-bundle')
   archive=path/('omabit-'+v+'-linux-amd64.tar.gz')
   asset=next(x for x in json.loads((path/'release.json').read_text())['assets'] if x['name']==archive.name)
   assert digest(archive)==asset['sha256'] and archive.stat().st_size==asset['bytes']
-  os.link(archive,dest/archive.name)
+  stage_immutable(archive,dest/archive.name)
  runtime=evidence/'2026-10-25-private-docker-code-cache/omabit-import-runtime-20261022-01'
  pill_hash=json.loads((a.candidate/'release.json').read_text())['pill']['sha256']
  pill=a.candidate/json.loads((a.candidate/'release.json').read_text())['pill']['name']
  assert digest(pill)==pill_hash
- os.link(pill,payload/'boot.pill')
- os.link(runtime/'runtime.oci.tar',payload/'runtime.oci.tar')
- for n in ('guest.py','shell.qml','desktop.py'):shutil.copy2(Path(__file__).parent/n,payload/n)
+ stage_immutable(pill,payload/'boot.pill')
+ stage_immutable(runtime/'runtime.oci.tar',payload/'runtime.oci.tar')
+ for n in ('guest.py','shell.qml','desktop.py','fleet_guest.py','fleet_client.py','desk_guest.py'):shutil.copy2(Path(__file__).parent/n,payload/n)
+ namespace_tests={}
+ if a.namespace_tests:
+  for name in ('pierstore.test','rootless.test'):
+   source=a.namespace_tests/name;assert source.is_file() and not source.is_symlink()
+   namespace_tests[name]=digest(source);shutil.copy2(source,payload/name)
+ receiver_provenance={}
+ if a.theme_source:
+  plugins=payload/'fleet-plugins';plugins.mkdir()
+  for source,plugin in [(a.theme_source,'thelifeandtimes.urbit-theme'),(a.dms_source,'urbit.dms')]:
+   source=source.resolve();dest=plugins/(plugin+'.qualification040');dest.mkdir()
+   declaration=json.loads((source/'application-connection.json').read_text());assert declaration['version']==2
+   names=set(declaration['files'])|{'manifest.json','application-connection.json'}
+   receiver_provenance[plugin]={'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=source,text=True).strip(),'files':{}}
+   for name in sorted(names):
+    relative=Path(name);assert not relative.is_absolute() and '..' not in relative.parts
+    original=source/relative;assert original.is_file() and not original.is_symlink()
+    copied=dest/relative;copied.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(original,copied)
+    receiver_provenance[plugin]['files'][name]=digest(original)
+   manifest=json.loads((dest/'manifest.json').read_text());manifest.update(id=dest.name,name=manifest['name']+' (Release qualification)')
+   (dest/'manifest.json').write_text(json.dumps(manifest)+'\n')
+   (dest/'application-profile.json').write_text(json.dumps({'version':1,'profile':'qualification040'})+'\n')
  shutil.copytree(ROOT/'native/bootstrap',payload/'bootstrap',ignore=shutil.ignore_patterns('__pycache__'))
- (payload/'scenario.json').write_text(json.dumps({'desktop':previous,'collector':previous,'runner':previous,'target':target}))
+ (payload/'scenario.json').write_text(json.dumps({'desktop':previous,'collector':previous,'runner':previous,'target':target,'fleet':bool(a.theme_source),'namespace_tests':bool(a.namespace_tests)}))
  disk=work/'payload.ext4'
  with disk.open('xb') as f:f.truncate(768*1024**2)
  run(['mkfs.ext4','-q','-F','-d',payload,disk],stdout=subprocess.DEVNULL)
@@ -99,17 +125,26 @@ def main():
  run([tools/'usr/bin/qemu-img','create','-q','-u','-f','qcow2','-F','qcow2','-b','/base.qcow2',work/'root.qcow2',str(base_info['virtual-size'])],env=tenv)
  cmd=['systemd-run','--user','--scope','--unit=omabit-'+work.name,'-p','MemoryMax=10G','-p','MemorySwapMax=0','-p','CPUQuota=300%','--',
  'bwrap','--unshare-all','--die-with-parent','--clearenv','--ro-bind','/usr','/usr','--symlink','usr/bin','/bin','--symlink','usr/lib','/lib','--symlink','usr/lib','/lib64','--proc','/proc','--dev','/dev','--dev-bind','/dev/kvm','/dev/kvm','--tmpfs','/tmp','--dir','/run','--ro-bind',str(tools),'/tools','--ro-bind',str(a.portable/'base.qcow2'),'/base.qcow2','--ro-bind',str(a.portable/'boot/vmlinuz'),'/vmlinuz','--bind',str(work),'/lab','--chdir','/lab','--setenv','HOME','/lab','--setenv','PATH','/usr/bin:/bin','--setenv','LD_LIBRARY_PATH','/tools/usr/lib','--setenv','QEMU_MODULE_DIR','/tools/usr/lib/qemu','--','/tools/usr/bin/qemu-system-x86_64','-accel','kvm','-cpu','host','-machine','q35','-m','8G','-smp','3','-nodefaults','-no-user-config','-display','none','-monitor','none','-nic','none','-no-reboot','-L','/tools/usr/share/qemu','-bios','/tools/usr/share/qemu/bios-256k.bin','-kernel','/vmlinuz','-initrd','/lab/initramfs.cpio','-append','console=ttyS0 panic=-1 quiet rdinit=/init omabit.disposable-guest=release-upgrade-v1 systemd.unit=multi-user.target','-drive','file=/lab/root.qcow2,format=qcow2,if=none,id=rootdisk','-device','virtio-blk-pci,drive=rootdisk','-drive','file=/lab/payload.ext4,format=raw,if=none,id=payload,readonly=on','-device','virtio-blk-pci,drive=payload','-qmp','unix:/lab/control/qmp.sock,server=on,wait=off','-serial','stdio']
- receipt={'measurement_limits':MEASUREMENT_LIMITS,'harness_sha256':{n:digest(Path(__file__).parent/n) for n in ('run.py','guest.py','desktop.py','shell.qml')},'scenario':previous+' desktop and services to '+target,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'used_before':used,'scratch_limit':budget,'base_sha256':meta['sha256']['base.qcow2'],'base_path':str(a.portable/'base.qcow2'),'network':'none','host_mounts':'OS files, QEMU, immutable base and fresh lab only'}
+ receipt={'storage_admission':admission,'receiver_sources':receiver_provenance,'namespace_tests':namespace_tests,'harness_sha256':{n:digest(Path(__file__).parent/n) for n in ('run.py','guest.py','desktop.py','shell.qml','fleet_guest.py','fleet_client.py','desk_guest.py')},'scenario':previous+' desktop and services to '+target,'source_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'used_before':used,'scratch_limit':budget,'base_sha256':meta['sha256']['base.qcow2'],'base_path':str(a.portable/'base.qcow2'),'network':'none','host_mounts':'OS files, QEMU, immutable base and fresh lab only'}
  (work/'host.json').write_text(json.dumps(receipt,indent=2)+'\n')
  with (work/'serial.log').open('wb') as log:
   proc=subprocess.Popen(cmd,stdout=log,stderr=subprocess.STDOUT)
   started=time.monotonic()
-  while proc.poll() is None:
-   time.sleep(10)
-   if allocated(work)>budget or sum(allocated(x) for x in roots)>40*GIB or (work/'serial.log').stat().st_size>32*1024**2 or time.monotonic()-started>2700:
-    subprocess.run(['systemctl','--user','kill','--signal=TERM','omabit-'+work.name+'.scope'],check=True);proc.wait(timeout=15);raise RuntimeError('Guest budget/deadline exceeded; retained bounded failure evidence')
+  try:
+   while proc.poll() is None:
+    time.sleep(10)
+    storage.admit(0,budget_bytes=storage_limit)
+    if allocated(work)>budget or (work/'serial.log').stat().st_size>32*1024**2 or time.monotonic()-started>2700:
+     raise RuntimeError('Guest budget/deadline exceeded; retained bounded failure evidence')
+  except BaseException as error:
+   receipt['interruption']=str(error)
+   (work/'host.json').write_text(json.dumps(receipt,indent=2)+'\n')
+   if proc.poll() is None:
+    subprocess.run(['systemctl','--user','kill','--signal=TERM','omabit-'+work.name+'.scope'],check=True)
+    proc.wait(timeout=15)
+   raise
   receipt['exit']=proc.returncode
- receipt['used_after']=sum(allocated(x) for x in roots)
+ receipt['used_after']=storage.admit(0,budget_bytes=storage_limit)['charged_bytes']
  (work/'host.json').write_text(json.dumps(receipt,indent=2)+'\n')
  lines=(work/'serial.log').read_text(errors='replace').splitlines()
  for line in lines:

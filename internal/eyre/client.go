@@ -125,6 +125,15 @@ type Client struct {
 }
 
 func New(origin, ship string) (*Client, error) {
+	transport := &http.Transport{Proxy: nil, DialContext: (&net.Dialer{Timeout: 5 * time.Second, KeepAlive: 30 * time.Second}).DialContext, TLSHandshakeTimeout: 5 * time.Second, ResponseHeaderTimeout: 5 * time.Second, MaxResponseHeaderBytes: 16384, IdleConnTimeout: 30 * time.Second}
+	return NewWithTransport(origin, ship, transport)
+}
+
+// NewWithTransport is for trusted internal adapters such as a pinned container's
+// loopback transport. The adapter must not redirect, retry effects, use ambient
+// credentials/proxies, or log request/response secrets. Session origin binding
+// and the client's redirect and replay rules still apply.
+func NewWithTransport(origin, ship string, transport http.RoundTripper) (*Client, error) {
 	canonical, err := Origin(origin)
 	if err != nil {
 		return nil, err
@@ -132,7 +141,9 @@ func New(origin, ship string) (*Client, error) {
 	if !ValidShip(ship) {
 		return nil, errors.New("require an expected ship name beginning with ~")
 	}
-	transport := &http.Transport{Proxy: nil, DialContext: (&net.Dialer{Timeout: 5 * time.Second, KeepAlive: 30 * time.Second}).DialContext, TLSHandshakeTimeout: 5 * time.Second, ResponseHeaderTimeout: 5 * time.Second, MaxResponseHeaderBytes: 16384, IdleConnTimeout: 30 * time.Second}
+	if transport == nil {
+		return nil, errors.New("explicit ship transport required")
+	}
 	return &Client{origin: canonical, ship: ship, http: &http.Client{Transport: transport, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}, nil
 }
 

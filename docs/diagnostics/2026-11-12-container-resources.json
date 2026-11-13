@@ -1,0 +1,111 @@
+{
+  "decision": "M573",
+  "date": "2026-11-12",
+  "base": "66c641bb41771c03391de3057cbf62c096f3ae51",
+  "source_sha256": {
+    "backend/cmd/urbit-collector/container_resources_test.go": "3d8288fafa47d95429ba39f318365fc2e466085ddce8fd753725f7277906c0cd",
+    "backend/cmd/urbit-collector/key_boot.go": "e12221639cb31410a614f3fa8edad11c07937cf6f3bc2405b372d4f5d1c09685",
+    "backend/cmd/urbit-collector/main.go": "4475372dd73db4c2b3e347296497c0e0ec8fccf831354ebc9a8e87c654141d6d",
+    "backend/cmd/urbit-collector/output.go": "49ad4fb2d25e9328ef6a283baa8a503f44f008d41034076ce90bd111595a9a0f",
+    "internal/client/move.go": "030eb2352636f1b70062d4b8a0a202b98b81abb9bdbda48653dff348c3a511f3",
+    "internal/client/move_test.go": "23055df061b0311df340333c354001569d91e1e5e3ac89b75882a42e431682f3",
+    "internal/managed/container_resources.go": "1cb7ad8c85352711616bd1c2d8ad81f5191ceb3fca9e1a821100563e7817b3c2",
+    "internal/managed/container_resources_test.go": "0c6b50d9dceabe879cf603719640dac411fe0319ba2a5ee8c4df34ad8229cc23",
+    "internal/managed/container_resources_upgrade_test.go": "db493ce8692df2a24dbc8ba5d1f564b17816c405fc974e931fff2c1efde14651",
+    "internal/managed/cpu_test.go": "37a9ec2da6aaf5372d90d197e328f7e35cb8c61d20f0b12734fdf62002a81327",
+    "internal/managed/handoff.go": "cedfa7f138fed23d58cf7f772010f5d0f2fdd4292fa8b35e13141ea311a97829",
+    "internal/managed/key_boot.go": "8e174b523fe5d2064f71194bc91f0468d6cfa8519a9f9a3a68b63c549f4db5fb",
+    "internal/managed/logs.go": "be7c3ae3b052247d63530e7ad798791af0336a4351bf4e16aa7f4ad750fe9367",
+    "internal/managed/ports.go": "ff8f7d44f11fbdef1af13319fb0515b009ad77bd23a18b7789527ab047cff0e4",
+    "internal/managed/runtime_settings_compatibility_test.go": "a6303e0ab5dd587303616dcb0cf49e0bb25d391a4bff048813b006782ec899b2",
+    "internal/managed/schema.go": "3f843af81d3a2fd726ec7f87f4fc6846ac6f8551932c4ebb10ec1058877bf5be",
+    "internal/managed/server.go": "fd1e90d1c6fb206e5ad9ec25e3e4a0a3621e5cea938e990c599c82817d126a00",
+    "internal/managed/store.go": "72f3697a00a826052592d4ed3fd5abd12a6365e28f46e4db8384f64340700330",
+    "internal/managed/testdata/resources-schema58.json": "649a4fa4e9b1fdbc10be6d0d3f201419c6e165a0e819aa6bf420c2f6ac9470c6",
+    "internal/managed/testdata/resources-schema58.sql": "f942c4946023632263e8c7497a1ea799ab378e6e03787b8af7718d932cf3392b",
+    "internal/protocol/container_resources.go": "82c8b879615e543e507b5f9a19138d62d93c882f176648a92f5419662c44ca28",
+    "internal/protocol/handoff.go": "5918a27383fe12bc8a67aec04ab40bf2c34689dcb77b1521e56a0aa307a3a21b",
+    "internal/protocol/handoff_test.go": "b2eb7766b0a68238824f310ed952778f38080991feda4d9c09b887369b1599c1",
+    "internal/protocol/logs.go": "d3b031b2cbaf5f01fa353917250fcc90042941758e0981255a79cc7c61a6e077",
+    "internal/protocol/protocol.go": "cc4ac3f4f121ab8cdb41d871d3ba9fd2678492595e9fd1545ed47357a0c3feab",
+    "internal/protocol/runtime_settings.go": "77ec84f17c09919d70fb3c675ec1bac35e64e5f6c77b6fa4ebd2e6e63ffb6e87",
+    "internal/runtimequalify/container_resources_linux.go": "e3906f59c905861091870c78d3a14033b13f30e40aab5c447b2bbf01f6a6a567",
+    "internal/runtimequalify/container_resources_linux_test.go": "1a33830babd8a3a3d7317b6600102416fd475b6e4e777e635db7054322fc50e3",
+    "internal/runtimequalify/docker_linux.go": "791aeed5da6429a1e04fa2127c2f05053097e2d241ec840b57595097e6ada550",
+    "internal/runtimequalify/managed.go": "c3edc925cca1e78d9009d4572a52edc39c2f10580880396ae7661b521c3bc476",
+    "internal/runtimequalify/managed_linux.go": "2696067496c5cc09eb64c1fcc2b12a1ee642ccf01a4b2a7884638832c9bcd22f",
+    "internal/runtimequalify/resources_linux.go": "fe7fff3a2213988b27539b292644c91008c8f76753760aeeb144ad67abeffbc5",
+    "internal/runtimequalify/result.go": "cda8a423fdf68e9fbf54430ebc67b6aefe87677b067ce459ce6790bfc3dc3e0e",
+    "internal/runtimequalify/run_linux.go": "245199213171e6824bcd107630211e9e159c67c578adb79a53ba6a3b2084a5e7",
+    "internal/runtimequalify/workflow_linux.go": "79b63a6616dd847e12e91fe4773a0b0403bbb20ece9130582ef064d806238910",
+    "plugins/omabit/ContainerResourceFields.qml": "6303faa2694f402d4b6cbfd645a0a07870db0e5388a36fb98a6915ac2c58f90f",
+    "plugins/omabit/Model.js": "e7e8636f400653df0b40166d9d09f92244a1d5734351d00d3ad4e1eb7ac75c8f",
+    "plugins/omabit/README.md": "6d6132b509f6a6a3cffa887037aa50b15ab7e02b000ac43cb9b1b667c1e7061f",
+    "plugins/omabit/RuntimeSettingsFields.qml": "1b52c0beab3e1d33d00dd147670e35f7cd2e34bc6e0888e840e14f8e8f34c14e",
+    "plugins/omabit/Service.qml": "0212bd1160be730d707a837762c7efb4952f43d4c0d9b38624fbae50f11bf3d3",
+    "plugins/omabit/ShipPortsPane.qml": "a95a6b4ce95fd44b6a1f045f41a0943f2a784c1fbc1c1e3047a8f3bfc02b1b58",
+    "scripts/test-container-resources-ui.py": "d393951d9ee633aa0124519ac5113e9e6152d2b7e54a61fe3f7520c28694cd1a",
+    "scripts/test-container-resources-upgrade.py": "84eef1feddce30e94a53a6405673646db250e5630935c3dbd9936d52c4b66b7b",
+    "scripts/test-runtime-settings-model.js": "dc4e021e64d67c69f9a8f851c8c2e5110b8f85a0cb03a5e8251380a31a57c92d",
+    "skills/omabit-operator/SKILL.md": "528245596403694b2186cb7747e18ffdbb5b353b625884349d40386c9bafa5b2",
+    "skills/omabit-operator/references/operations.md": "8ffd8a148c24465479c2730297a59c0d6b02204fb8cdaca1f1cc45e252dfa79c"
+  },
+  "go_race_tests": [
+    {
+      "exit": 0,
+      "test_pattern": "TestContainerResources|TestRuntimeSettings|TestResource|TestManagedResources|TestOptionalCPU",
+      "binary_sha256": "d3f85e80d58fc10c73c2f48a3a0f88fdee9e11547f2d252f2c00856e373f02b7",
+      "package": "internal/runtimequalify",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "evidence": "/tmp/omabit-fleet-resources-runtime-final"
+    },
+    {
+      "exit": 0,
+      "test_pattern": "TestContainerResources|TestRuntimeSettings|TestLegacyHTTPConfiguration|TestHandoff|TestAmesPublicationReserved|TestCPU|TestResource|TestPartialResource|TestSnapshotsAge|TestDurableIdentity|TestConcurrentRegistration|TestJournalInterruption|TestPortReservations|TestUnsafeStore|TestStoreSurvives|TestLogsAre|TestShipRoutesSchema58",
+      "binary_sha256": "7415a5c9552b50cb6edccea6c88761201058d5c2b7269feaa5e395c78d91e2cd",
+      "package": "internal/managed",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "evidence": "/tmp/omabit-fleet-resources-managed-final"
+    },
+    {
+      "exit": 0,
+      "test_pattern": "TestMove|TestHandoff",
+      "binary_sha256": "c63b6ecdf7ed974a378664a0287e14cca5f3044e8b9c16712fb54c2c51c72d60",
+      "package": "internal/client",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "evidence": "/tmp/omabit-fleet-resources-client"
+    },
+    {
+      "exit": 0,
+      "test_pattern": ".",
+      "binary_sha256": "fd5ae33d1d7be25db3c889d6df641409be0b06e79d2438a3c15da81a9f62fd71",
+      "package": "internal/protocol",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "evidence": "/tmp/omabit-fleet-resources-protocol"
+    },
+    {
+      "exit": 0,
+      "test_pattern": "TestContainerResources|TestRuntimeSettings",
+      "binary_sha256": "796e19331304ca18d3d1f09aa68205670126a0123a9c33ade333d28cd1735793",
+      "package": "backend/cmd/urbit-collector",
+      "scope": "offline synthetic fixture; no installed runtime or release qualification",
+      "evidence": "/tmp/omabit-fleet-resources-cli"
+    }
+  ],
+  "migration": "/tmp/omabit-resources-upgrade-01",
+  "ui": "/tmp/omabit-resources-ui-02",
+  "cli_reference": "/tmp/omabit-resources-cli-reference",
+  "storage": {
+    "charged_bytes": 42681655296,
+    "budget_bytes": 42949672960,
+    "additional_scratch_bytes": 0,
+    "total_with_reserves": 42681655296
+  },
+  "scope": "isolated source fixtures; no live Docker/ship/installed upgrade or release qualification",
+  "cleanup_manifests": [
+    "/tmp/omabit-resource-cache-retirement.json",
+    "/tmp/omabit-resource-binary-retention.json",
+    "/tmp/omabit-resources-compiler-retirement.json"
+  ],
+  "storage_evidence": "/tmp/omabit-resources-storage-final.json"
+}

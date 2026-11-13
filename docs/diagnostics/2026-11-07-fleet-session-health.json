@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M564",
+  "source_base": "e739ac33dfb6a9cde50cd4ea9740490110906762",
+  "passed": true,
+  "checks": {
+    "eyre": {
+      "directory": "/tmp/omabit-fleet-health-02",
+      "result": {
+        "exit": 0,
+        "test_pattern": "TestStoredSessionHealth|TestRevokeStored|TestIndependentSession|TestSession",
+        "binary_sha256": "3653fab778579034b96a89388b332a9759e905bb2b189b28411dc64e16913a11",
+        "package": "internal/eyre",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "11a8c845880f5f98453e972dcd6115a7711c1cca227c4ca103d5bc74b22ad31d"
+    },
+    "route_eligibility": {
+      "directory": "/tmp/omabit-fleet-health-route-02",
+      "result": {
+        "exit": 0,
+        "test_pattern": "TestFleetHealthOrigin",
+        "binary_sha256": "c8826ffcd8030e560eaf8df5acd21161b7e03ab445932f265078c228931679c5",
+        "package": "internal/collection",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "a538ee4394627ebc47c8d325be26e499a7ce305b0b6661d2610d4e715b09b3d2"
+    },
+    "engine": {
+      "directory": "/tmp/omabit-fleet-health-engine-03",
+      "result": {
+        "exit": 0,
+        "test_pattern": "TestFleetHealth",
+        "binary_sha256": "f0fedfddfdfc4d633b16b40971e28ac57d9d8a7217bfa6077e9094bc354da922",
+        "package": "internal/applicationauth",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "13263053f691fbec783b120af98af8d828df6ebf41d98d0f2e6c60ecab85d129"
+    },
+    "public_cli": {
+      "directory": "/tmp/omabit-fleet-connect-health-cli-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^Test(FleetApplicationCLI|ApplicationCLI|ApplicationShipCLI)",
+        "binary_sha256": "5bdc628872d5224efacdee33b520ae8229542ad5fb123bc0a9748771a4b34734",
+        "source_base": "e739ac33dfb6a9cde50cd4ea9740490110906762",
+        "fake_secret_tool_sha256": "044e0cd3533f7377cae907e8b50a888521955f6377dc2ec6755c6371cfe399e1",
+        "scope": "offline synthetic runner, Eyre, receiver and keyring transport; no installed/live runtime or real keyring qualification"
+      },
+      "log_sha256": "5e369d770cde524e60ef3c2e6243d5718fb99559549165cb95bf969373201c46"
+    }
+  },
+  "earlier_runs": [
+    {
+      "directory": "/tmp/omabit-fleet-health-route-01",
+      "passed": false,
+      "reason": "Tailnet fixture mistakenly retained a non-ts.net hostname and was correctly refused at attempt creation; corrected in02."
+    },
+    {
+      "directory": "/tmp/omabit-fleet-health-engine-01",
+      "passed": false,
+      "reason": "Expiry fixture attempted to overwrite an immutable credential slot; corrected to model expiry on read in02. Final03 checks changed-artifact error classification."
+    }
+  ],
+  "retention": {
+    "manifest": "/tmp/omabit-fleet-cache-retention-03.json",
+    "sha256": "26f762d531cc006ddae55b709e1234d565382a295923aaf70dc4fbf95c16852d",
+    "removed_bytes": 114118656,
+    "reason": "400MiB CLI admission refused before output/build; retired four completed rebuildable managed/runtimequalify test cache archives. Source, original fixtures and exact evidence binaries preserved."
+  },
+  "limits": [
+    "Health is read-only preparation, not automatic session replacement/reconnection",
+    "Synthetic runner, HTTP and keyring transport only; actual desktop keyring/live networking not qualified",
+    "Native Eyre test explicitly skipped by isolated fixture guard",
+    "No persistent format change",
+    "Installed production/DEV/trial/manual preview and protected ships untouched",
+    "Release qualification remains deferred"
+  ]
+}

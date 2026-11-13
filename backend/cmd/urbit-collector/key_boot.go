@@ -61,7 +61,8 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	var file, pillSource, bootstrap string
 	var pillSHA string
 	var pillSize int64
-	var port, ames, loom uint
+	var port, ames, loom, memoryGiB, cpuCores uint
+	var memorySet, cpuSet bool
 	var native, runtimeSettings, keyStdin, secureKeyFile bool
 	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
 		req.ID, args = args[0], args[1:]
@@ -77,7 +78,9 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	f.BoolVar(&secureKeyFile, "secure-key-file", false, "make the selected owned regular key file private before reading it")
 	f.UintVar(&port, "http-port", 0, "host loopback HTTP port")
 	f.UintVar(&ames, "ames-port", 0, "host Ames UDP port; zero/omitted chooses automatically")
-	f.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate 4 GiB container cap")
+	f.UintVar(&memoryGiB, "memory-gib", 0, "container RAM ceiling in GiB (1..16); omitted=4")
+	f.UintVar(&cpuCores, "cpus", 0, "container CPU quota in whole cores (1..16); omitted=2")
+	f.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default)")
 	f.BoolVar(&native, "native-control", false, "enable local-owner native control (default off)\n\n"+protocol.NativeControlWarning)
 	f.StringVar(&pillSource, "pill", "", "Recommended Apps release URL (known S3 default is a frozen release alias), or explicit custom HTTPS URL/local file; blank uses Vere canonical default")
 	f.StringVar(&pillSHA, "pill-sha256", "", "trusted expected SHA-256 for a custom pill; requires --pill-size (built-in release is always pinned)")
@@ -94,10 +97,19 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 		return fail(errors.New("invalid key-boot arguments"), 2)
 	}
 	f.Visit(func(flag *flag.Flag) {
+		if flag.Name == "memory-gib" {
+			memorySet = true
+		}
+		if flag.Name == "cpus" {
+			cpuSet = true
+		}
 		if flag.Name == "loom" || flag.Name == "native-control" {
 			runtimeSettings = true
 		}
 	})
+	if (memorySet && (memoryGiB < 1 || memoryGiB > uint(protocol.MaxMemoryGiB))) || (cpuSet && (cpuCores < 1 || cpuCores > uint(protocol.MaxCPUCores))) {
+		return fail(errors.New("--memory-gib and --cpus must be whole numbers in 1..16"), 2)
+	}
 	if !validCreationLoom(loom) {
 		return fail(errors.New("--loom must be in 30..34 (1–16 GiB)"), 2)
 	}
@@ -170,6 +182,9 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	if h.AccessRole != "operator" || !slices.Contains(h.Features, "key-boot-options") {
 		return fail(errors.New("runner requires operator key-boot capability"), 1)
 	}
+	if (memorySet || cpuSet) && !slices.Contains(h.Features, protocol.ContainerResourcesFeature) {
+		return fail(errors.New("update this runner for container-resources-v1 before changing resource limits"), 1)
+	}
 	if runtimeSettings && !slices.Contains(h.Features, protocol.RuntimeSettingsFeature) {
 		return fail(errors.New("update this runner for runtime-settings capability before changing loom/native control"), 1)
 	}
@@ -192,7 +207,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	if err != nil {
 		return fail(err, 1)
 	}
-	req.Config = protocol.Configuration{HTTPPort: uint16(port), AmesPort: uint16(ames), Loom: uint8(loom), NativeControl: native}
+	req.Config = protocol.Configuration{HTTPPort: uint16(port), AmesPort: uint16(ames), Loom: uint8(loom), NativeControl: native, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}
 	op, err := c.CreateShip(ctx, req)
 	req.Key = ""
 	if err != nil {

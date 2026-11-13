@@ -1,0 +1,102 @@
+{
+  "version": "0.4.0",
+  "source_commit": "a9623329a538ebf83d63365053d2d1011ade091e",
+  "previous_version": "0.3.7",
+  "passed": true,
+  "non_destructive": true,
+  "runner_schema_before": 47,
+  "runner_schema_after": 59,
+  "service_result": "docs/releases/0.4.0/from-0.3.7-result.json",
+  "service_result_sha256": "2488fa8208695dd27fdc77c9f083a4ac6312fe3ef506ea6387cb3a48cad7f534",
+  "harness": "scripts/qualification/patch-upgrade",
+  "harness_sha256": {
+    "run.py": "e387c42e2be93015559ad356e9052222b5d9c42dc340e55430fcb003e89c7836",
+    "guest.py": "b864403fc2bac8c63ef78360bfa94b89d2973a61b5ace9e6e7b93640f337f9be",
+    "desktop.py": "59cbce196ca5eb17d3af9f8a1a92913dda809a22182e52c2337011f8ac5a8b21",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46",
+    "fleet_guest.py": "2a06cb2cde781fab6339d6e05e36ae4efa54ffba8a42855b0b143a2ab00dd81f",
+    "fleet_client.py": "c661024aa1d42d1b79decae66fc3207f6a6cd37be5a84aabe6eb8da6c7a6d92b",
+    "desk_guest.py": "b4f4bbdd8dac5ce488b3ab2200d3b9417d72c77c06a99e2a4262e7413b03a878"
+  },
+  "desktop_result": {
+    "passed": true,
+    "previous": "0.3.7",
+    "target": "0.4.0",
+    "host_desktop_access": false,
+    "network": false,
+    "service_upgrade": false
+  },
+  "desktop_result_sha256": "6f2309bfe1b15e604313091ccc42850ee341477da1dd90b3e01f2a3132d62583",
+  "desktop_harness": "docs/releases/0.3.2/desktop-upgrade-harness.py",
+  "desktop_harness_sha256": "13cf7903e3c23c60c37eb99a73beca431bc9ddbd17d69fffff905884df49eccf",
+  "desktop_log_sha256": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54",
+  "checks": [
+    "Exact artifact update offered; authorization denial preserves state; retained retry succeeds",
+    "Running container ID/PID/start time and engine invocation survive update and manager restart",
+    "Stopped intent, runner/ship identities, access, storage configuration and operation history preserved",
+    "Old runner refuses schema59 without changing its database; completed update is a no-op",
+    "Large logical preview and stopped import with metadata pass",
+    "Cold/hot desktop activation, retained preferences and failed-candidate recovery pass",
+    "Both receivers connect from a separate network and replace the unavailable route under standing approval",
+    "Wrong-ship probe receives no credentials; remote localhost is skipped; predecessor sessions cleaned up",
+    "Real agent CLI over SSH stages source; creation/commit/publication blocked by default, then observed under scoped permission; gates closed afterward"
+  ],
+  "isolation": {
+    "network": "none",
+    "host_mounts": "OS files, QEMU, immutable base and fresh lab only",
+    "base_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+    "scratch_limit": 4294967296,
+    "used_before": 42340085760,
+    "used_after": 44922228736
+  },
+  "receiver_sources": {
+    "thelifeandtimes.urbit-theme": {
+      "head": "821242e970559bcd1b89bbf12d1f27dec5a4cc49",
+      "files": {
+        "application-connection.json": "f6ff3df674c8e7b8da92d2a852bae689b183d9323a934d1de41e3f1ba8fd5137",
+        "client/application_connection.py": "a217bdf4d09db6129b45310ebfbbfd6cd1a568046e924415bea7e65e7e5fd019",
+        "client/connection_journal.py": "8506f1996194c6153355472d00cab726d2a0f623708b56efa1aee4e92ba49707",
+        "client/connection_offer.py": "2906a76e455b66ea6655d01f5ba4d2d48d8d99825f76b7a30534bad5b0080299",
+        "client/eyre.py": "f919a97807206f3d08e26c1d149cc41cb97697ec783885844f4906836c45fb64",
+        "client/instance.py": "127511e78115b906972bd92d9ffeaa4415336703d9c8602ebcaacc16171456e7",
+        "client/replacement_admission.py": "20491c762770540450f89bbc913dba79a0de7018acd89bddb4e0ee1f64e61bb5",
+        "client/replacement_connection.py": "25221e9a3398c703a5afc4aa645505510e16f466abbd525481617bdd4e883a76",
+        "client/replacement_journal.py": "ee349bcb0e73000760d2803330ab6a572269e6c251415e61d4347bf5c1c8dc3f",
+        "client/retired_session.py": "e9469ebd283442ef2303b928a87acf8071d3996bf629e08da35c9f29134e37b1",
+        "client/support.py": "74d155fab628a9e4239e4002df21eae7f8e3c591159ab1d6b6e49c6046062cd0",
+        "client/transport_journal.py": "518d47d0fda5e19edea5f3de9638498f86e10d0a43a77fea872d8f301f0d7631",
+        "manifest.json": "fa5a869799d42ff9b6123148b70ecb783aa116ddb62d440da165d5be8fc3b916"
+      }
+    },
+    "urbit.dms": {
+      "head": "c7b7d1510b55e3b19d64bf4669be53d28c766571",
+      "files": {
+        "application-connection.json": "a77b0823207b1ee0b7e3525e17e1ce4f5c14e9428ad0c53db45c8ecbb6a3f62f",
+        "application_connection.py": "24d1dba9dbc3180f4b9c1daf6ce3ee2691f3e633695f1c070c3b924dd68629a0",
+        "connection_journal.py": "456fafa17af87c8719fe6b59c4b4082760148dd3f33b4ba865fb3d599b1da611",
+        "connection_offer.py": "2906a76e455b66ea6655d01f5ba4d2d48d8d99825f76b7a30534bad5b0080299",
+        "effects_journal.py": "ebd59b819664bad96d0aebcf88cde929691c5750e519501e2cbb01a4cf7cf942",
+        "eyre_session.py": "97c065eb44f447526e9b59fe978c17b8bf5bf27b3636d59b5cebfa73dd5934f5",
+        "handoff_control.py": "6658670a2f3ef3ec950ea08a9ebb5fd4ca0deffda5e79f671637e75f7d4d2170",
+        "instance.py": "f7c739b991ffd274226e587316e6464fed59d14dffcb2d20a5dc953ceb5fd1bd",
+        "manifest.json": "75e015a80c4bf71dd6f526cfe3fe8c2845db06d0a880447694ed85d4707b7d8f",
+        "outbound_journal.py": "bc25ef329b421e4160c4df228d55fa753e6532927573cdc6acd779c820bf46a6",
+        "replacement_admission.py": "1edb3e1ab7bbdac3b48b3ce7a93f4d33bb504bc615d85cead26f5a9298cc5198",
+        "replacement_connection.py": "5e0874857503052b1d7282148a94fd92fe51c798a79f13f17ba4f81154154a11",
+        "replacement_journal.py": "816dd69f415abeea28a3a6edb82c63d7ecdd179bf5ad79df5784fe41a858e0f1",
+        "retired_session.py": "4725845af4dbec5b313c792c6e9c5b2858bcadfe1d3c193bf9cdc124b6a0a83d",
+        "session_cleanup.py": "f4c5db1cd38c8299934f0884faed6b356bee3ed4d447ccef460a19c1313dbb31",
+        "session_store.py": "70c37d9be4f783db21ae8e78f38183a2810e49bda15c9181125a9d942c1bc942",
+        "transport_journal.py": "566cf72c161a300e77d4412bc32a8ebaa565955c3ea82b13a62487298fd395a4"
+      }
+    }
+  },
+  "limits": [
+    "Linux/AMD64 owner-user service upgrade in an offline Arch/Omarchy VM, schema47 to59, Vere4.6 and the pinned Recommended Apps pill. Fresh-install distro testing has its separate acceptance matrix.",
+    "The automated service controls use an exact-program Polkit denial/retry fixture. Human password entry is left for the separate manual-review VM; remote service upgrades and power loss are outside this rehearsal.",
+    "Real desktop cold/hot activation and failed-candidate recovery ran separately in a private compositor. The service guest loader used harness activation acknowledgments.",
+    "The fleet test uses restricted SSH and a private routed client namespace with actual Theme/DMs helpers and Secret Service; it does not certify a live Tailnet, Cloudflare account, public DNS or TLS provider.",
+    "The installed runner CLI scenario covers source staging, create/commit gates and Clay source publication. Native three-peer Treaty/frontend delivery is separately tested with a synthetic managed lifecycle backend.",
+    "Large preview uses a sparse file. Full import uses only a small stopped fake and synthetic metadata."
+  ]
+}

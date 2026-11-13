@@ -1,0 +1,85 @@
+{
+  "version": "0.4.0",
+  "source_commit": "a9623329a538ebf83d63365053d2d1011ade091e",
+  "source_tree": "9e06fef7170bc0bb47a8242a659b553b82dea003",
+  "backend_source_sha256": "858460d60ee62aca51b4958ad13a4d8aed7e5384fe120ac8cf4d4e8aef8f49ca",
+  "platform": "linux/amd64",
+  "channel": "stable",
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "runner_schema": 59,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "paths": [
+      {
+        "versions": [
+          "0.3.7",
+          "0.4.0"
+        ],
+        "scope": "Linux/AMD64 owner-user native desktop and local services",
+        "evidence": "docs/releases/0.4.0/rehearsal.json",
+        "evidence_sha256": "45a88bf5506c488570f43ef5882da8d422e2376d7ad9fb636689f6f91503f4a9"
+      }
+    ],
+    "evidence": "docs/releases/0.4.0/rehearsal.json",
+    "evidence_sha256": "45a88bf5506c488570f43ef5882da8d422e2376d7ad9fb636689f6f91503f4a9"
+  },
+  "validation": {
+    "passed": true,
+    "local_evidence": "docs/releases/0.4.0/local-validation.json",
+    "local_evidence_sha256": "aa9b77df8a0dada791d4c6c472513ca5d86ae48b20e944a0c7c39b7c6c7d61e6",
+    "exact_source_ci": "https://github.com/thelifeandtimes/omabit/actions/runs/43335128690",
+    "merge_gate": "All required release PR CI must pass before merge. Manual upgrade review and stable publication are separate.",
+    "archive_checksums_and_provenance": true,
+    "offline_help_entries": 172,
+    "user_confirmed": [
+      "RAM/CPU controls",
+      "Agent Help launch and continued session lifetime"
+    ]
+  },
+  "frozen_artifacts": {
+    "assets": [
+      {
+        "name": "omabit-0.4.0-linux-amd64.tar.gz",
+        "bytes": 33101915,
+        "sha256": "cd22f06011d3c4119322723cf4b2c49c956dbd9b0161ca6519e725bb6101efca"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 19560157,
+        "sha256": "237bb08256a4b077546885dd9306ac94fae0d3ecfb6998475f70d82202aa7a20"
+      },
+      {
+        "name": "omabit-recommended-apps-0.4.0.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.4.0.tar.gz",
+        "bytes": 50365,
+        "sha256": "3b2851bcfba60bf4fc180bf7abdca5d491527585db932e3732458f493820c106"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 12962821,
+        "sha256": "781decb3285ede2cf7bec317041d64599690bf3cb416f0c7b722846c41ca217b"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 28078886,
+        "sha256": "5d273dfa82e2464f94c2ae5e8366cd314edf2917514b4baf3c7131824d195752"
+      }
+    ],
+    "go_version": "go version go1.27.3 linux/amd64"
+  },
+  "scope_limits": [
+    "Linux/AMD64 owner-user service upgrade in an offline Arch/Omarchy VM, schema47 to59, Vere4.6 and the pinned Recommended Apps pill. Fresh-install distro testing has its separate acceptance matrix.",
+    "The automated service controls use an exact-program Polkit denial/retry fixture. Human password entry is left for the separate manual-review VM; remote service upgrades and power loss are outside this rehearsal.",
+    "Real desktop cold/hot activation and failed-candidate recovery ran separately in a private compositor. The service guest loader used harness activation acknowledgments.",
+    "The fleet test uses restricted SSH and a private routed client namespace with actual Theme/DMs helpers and Secret Service; it does not certify a live Tailnet, Cloudflare account, public DNS or TLS provider.",
+    "The installed runner CLI scenario covers source staging, create/commit gates and Clay source publication. Native three-peer Treaty/frontend delivery is separately tested with a synthetic managed lifecycle backend.",
+    "Large preview uses a sparse file. Full import uses only a small stopped fake and synthetic metadata."
+  ]
+}

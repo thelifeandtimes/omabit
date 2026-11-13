@@ -17,6 +17,53 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/rootless"
 )
 
+func (c call) isRootlessKitHelp() bool {
+	return c.path == "/usr/bin/rootlesskit" && slices.Equal(c.args, []string{"--help"})
+}
+
+func TestOwnerEngineGuardTracksNativeDetachSupport(t *testing.T) {
+	f, owner, _ := ownerFixture(t)
+	files, err := rootless.ServiceFiles()
+	if err != nil {
+		t.Fatal(err)
+	}
+	run := f.i.run
+	help := "  --state-dir value  state directory\n"
+	f.i.run = func(ctx context.Context, path string, args, env []string) ([]byte, error) {
+		if path == "/usr/bin/rootlesskit" && slices.Equal(args, []string{"--help"}) {
+			return []byte(help), nil
+		}
+		return run(ctx, path, args, env)
+	}
+	readUnit := func() []byte {
+		unit, err := os.ReadFile(f.i.path(unitPath))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return unit
+	}
+	standard := ownerEngineUnit(files[rootless.UnitName], owner)
+	attached := bytes.Replace(standard, []byte("DETACH_NETNS=true\n"), []byte("DETACH_NETNS=false\n"), 1)
+	for _, supported := range []bool{false, false, true, false} {
+		help = "  --state-dir value  state directory\n"
+		want := attached
+		if supported {
+			help += "    --detach-netns   detach network namespaces\n"
+			want = standard
+		}
+		if _, err := f.i.updateEngineGuard(context.Background(), files, &owner, true); err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Equal(readUnit(), want) {
+			t.Fatal("generated unit differs beyond the detected RootlessKit option")
+		}
+	}
+	help = "unrecognized options output"
+	if _, err := f.i.updateEngineGuard(context.Background(), files, &owner, false); err == nil || !bytes.Equal(readUnit(), attached) {
+		t.Fatal("unrecognized capabilities changed the installed unit")
+	}
+}
+
 func TestAuthorizedInstallerRefreshesNativeProofBeforeChanges(t *testing.T) {
 	for _, status := range []string{"metadata-only", "unknown", "verified", "refresh-failure", "nonroot"} {
 		t.Run(status, func(t *testing.T) {
@@ -102,6 +149,9 @@ func TestGuardRepairRegisteredOwnerRepeatedAndStoppedEngine(t *testing.T) {
 		}
 	}
 	for _, call := range f.calls {
+		if call.isRootlessKitHelp() {
+			continue
+		}
 		if call.path != "/usr/bin/systemctl" || len(call.args) == 0 || call.args[0] != "show" {
 			t.Fatal("repair ran engine or management command", call)
 		}
@@ -193,8 +243,10 @@ func TestGuardMigrationResumesAfterUnitPublicationFailure(t *testing.T) {
 	if _, err := f.i.updateEngineGuard(context.Background(), current, &p, false); err != nil {
 		t.Fatal("interrupted update did not resume", err)
 	}
-	if len(f.calls) != 0 {
-		t.Fatal("migration invoked a service")
+	for _, call := range f.calls {
+		if !call.isRootlessKitHelp() {
+			t.Fatal("migration invoked a service", call)
+		}
 	}
 }
 

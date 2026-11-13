@@ -1,0 +1,15 @@
+{
+  "schema": 55,
+  "source_commit": "c912982b4c26d3891fe0eabf35e000a1fff0c530",
+  "sql_sha256": "9ee3ec297e5a7ea4ec4264140c9348034b8598e3988d25609fd42e6443d66f7c",
+  "provenance": "Actual original schema55 writer, private synthetic fixture; scripts/test-desk-receiver-upgrade.py",
+  "contains": [
+    "runner registry and app policy",
+    "pending desk operation",
+    "workflow settings and history",
+    "canonical source baseline",
+    "verified deployment ownership",
+    "observed source release",
+    "explicit source adoption"
+  ]
+}

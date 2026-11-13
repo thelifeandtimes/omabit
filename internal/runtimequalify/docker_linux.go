@@ -72,11 +72,20 @@ func (b *limitedOutput) Write(p []byte) (int, error) {
 }
 
 func executeDocker(ctx context.Context, args, env []string) (string, error) {
+	return executeDockerInput(ctx, args, env, nil)
+}
+func executeDockerInput(ctx context.Context, args, env []string, input []byte) (string, error) {
+	if len(input) > 48<<20 {
+		return "", errors.New("Docker input exceeds bound")
+	}
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "/usr/bin/docker", args...)
 	cmd.Env = env
 	cmd.Dir = "/"
+	if input != nil {
+		cmd.Stdin = bytes.NewReader(input)
+	}
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	cmd.Cancel = func() error { return syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL) }
 	cmd.WaitDelay = time.Second
@@ -106,6 +115,15 @@ func (q *qualifier) dockerCreateID(ctx context.Context, timeout time.Duration, a
 }
 
 func (q *qualifier) dockerResult(ctx context.Context, timeout time.Duration, retainCreationID bool, args ...string) (string, error) {
+	return q.dockerWithInput(ctx, timeout, retainCreationID, nil, args...)
+}
+func (q *qualifier) dockerInput(ctx context.Context, timeout time.Duration, input []byte, args ...string) (string, error) {
+	if input == nil || len(input) > 48<<20 || q.d.executeInput == nil {
+		return "", errors.New("bounded Docker input transport unavailable")
+	}
+	return q.dockerWithInput(ctx, timeout, false, input, args...)
+}
+func (q *qualifier) dockerWithInput(ctx context.Context, timeout time.Duration, retainCreationID bool, input []byte, args ...string) (string, error) {
 	if err := ctx.Err(); err != nil {
 		return "", err
 	}
@@ -120,7 +138,14 @@ func (q *qualifier) dockerResult(ctx context.Context, timeout time.Duration, ret
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	args = append([]string{"--host", "unix://" + q.socket, "--config", q.config}, args...)
-	out, err := q.d.execute(ctx, args, []string{"HOME=" + q.d.home, "PATH=/usr/bin:/bin", "LANG=C", "DOCKER_API_VERSION=" + hostcompat.APIVersion})
+	env := []string{"HOME=" + q.d.home, "PATH=/usr/bin:/bin", "LANG=C", "DOCKER_API_VERSION=" + hostcompat.APIVersion}
+	var out string
+	var err error
+	if input != nil {
+		out, err = q.d.executeInput(ctx, args, env, input)
+	} else {
+		out, err = q.d.execute(ctx, args, env)
+	}
 	if err != nil || ctx.Err() != nil || len(out) > outputLimit {
 		status := "client failure"
 		var exit *exec.ExitError
@@ -338,11 +363,12 @@ func (q *qualifier) command(kind string) (string, []string) {
 
 func (q *qualifier) containment(c container, kind string) error {
 	h := c.HostConfig
+	memory, cpus := q.containerLimits(kind)
 	entry, args := q.command(kind)
 	ok := c.Config.User == "0:0" && c.Config.StopSignal == "SIGTERM" && c.Config.StopTimeout == 300 && !c.Config.Tty && !c.Config.OpenStdin && reflect.DeepEqual(c.Config.Entrypoint, []string{entry}) && reflect.DeepEqual(c.Config.Cmd, args) &&
 		h.PidMode == "" && h.IpcMode == "private" && h.UTSMode == "" && h.UsernsMode == "" && h.CgroupnsMode == "private" && !h.Privileged && !h.PublishAllPorts && !h.AutoRemove &&
 		len(h.CapAdd) == 0 && reflect.DeepEqual(h.CapDrop, []string{"ALL"}) && reflect.DeepEqual(h.SecurityOpt, []string{"no-new-privileges=true"}) && len(h.Binds) == 0 && len(h.VolumesFrom) == 0 && len(h.Links) == 0 && len(h.Devices) == 0 && len(h.DeviceRequests) == 0 &&
-		h.Memory == memoryLimit && h.MemorySwap == memoryLimit && h.PidsLimit != nil && *h.PidsLimit == 256 && h.NanoCpus == 2_000_000_000 && h.CpuQuota == 0 && h.CpuPeriod == 0 &&
+		h.Memory == memory && h.MemorySwap == memory && h.PidsLimit != nil && *h.PidsLimit == 256 && h.NanoCpus == cpus*1_000_000_000 && h.CpuQuota == 0 && h.CpuPeriod == 0 &&
 		h.RestartPolicy.Name == "no" && h.RestartPolicy.MaximumRetryCount == 0 && h.LogConfig.Type == "local" && reflect.DeepEqual(h.LogConfig.Config, map[string]string{"max-size": "10m", "max-file": "2"})
 	if kind == "probe" {
 		// sleep does not install a SIGTERM handler. An init must forward the
@@ -436,17 +462,19 @@ func (q *qualifier) createWithDispatchIntent(ctx context.Context, kind string, b
 		record.SnapshotMinutes = DefaultSnapshotMinutes
 		record.NativeControl = q.d.managed && q.d.nativeControl
 	}
+	record.MemoryGiB, record.CPUCores = q.d.memoryGiB, q.d.cpuCores
 	q.r.Containers = append(q.r.Containers, record)
 	if err := q.save(); err != nil {
 		return index, err
 	}
 	entry, cmd := q.command(kind)
+	memory, cpus := q.containerLimits(kind)
 	dataMount := q.dataMount()
 	args := []string{"container", "create", "--name", name, "--label", q.resourceLabel() + "=true", "--label", q.resourceRunLabel() + "=" + q.r.RunID,
 		"--platform", candidate.Platform, "--pull", "never", "--entrypoint", entry,
 		"--network", network, "--user", "0:0", "--cap-drop", "ALL", "--security-opt", "no-new-privileges=true",
 		"--cgroupns", "private", "--ipc", "private", "--restart", "no", "--stop-signal", "SIGTERM", "--stop-timeout", "300",
-		"--memory", "4294967296", "--memory-swap", "4294967296", "--pids-limit", "256", "--cpus", "2",
+		"--memory", fmt.Sprint(memory), "--memory-swap", fmt.Sprint(memory), "--pids-limit", "256", "--cpus", fmt.Sprint(cpus),
 		"--log-driver", "local", "--log-opt", "max-size=10m", "--log-opt", "max-file=2",
 		"--mount", "type=bind,src=" + dataMount.Source + ",dst=" + dataMount.Destination + ",bind-propagation=rprivate"}
 	if kind == "probe" {

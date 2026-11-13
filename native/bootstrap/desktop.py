@@ -279,8 +279,10 @@ class Desktop:
                     elif relative.as_posix() in {"build/" + name for name in runtime.COMMANDS}:
                         target = output / "bin" / relative.name
                         mode = 0o555
-                    elif relative.as_posix() == "BUILD.json":
-                        target, mode = output / "BUILD.json", 0o444
+                    elif relative.as_posix() in ("BUILD.json", "SKILLS.json"):
+                        target, mode = output / relative.name, 0o444
+                    elif relative.parts[:1] == ("skills",):
+                        target, mode = output / relative, 0o444
                     else:
                         continue
                     target.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -289,6 +291,10 @@ class Desktop:
                         stream.flush()
                         os.fchmod(stream.fileno(), mode)
                         os.fsync(stream.fileno())
+            # Historical bundles did not declare installed skill provenance.
+            # Preserve their cache layout so a bootstrap update still opens them.
+            if not (output / "SKILLS.json").exists() and (output / "skills").exists():
+                shutil.rmtree(output / "skills")
             shutil.copyfile(sealed, output / "bundle.tar.gz")
             (output / "bundle.tar.gz").chmod(0o400)
             with (output / "bundle.tar.gz").open("rb") as stream:
@@ -336,7 +342,9 @@ class Desktop:
                     target = "ui/" + relative.removeprefix("plugins/omabit/")
                 elif relative in {"build/" + name for name in runtime.COMMANDS}:
                     target = "bin/" + relative.removeprefix("build/")
-                elif relative == "BUILD.json":
+                elif relative in ("BUILD.json", "SKILLS.json"):
+                    target = relative
+                elif relative.startswith("skills/") and (directory / "SKILLS.json").exists():
                     target = relative
                 if target:
                     with tar.extractfile(member) as stream:

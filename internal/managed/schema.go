@@ -25,4 +25,16 @@ package managed
 // Schema45 binds captured first-boot pier identities to version2 member launches.
 // Schema46 retains first-boot capture before later running observation.
 // Schema47 permits empty project network reservations; older runners must refuse them.
-const StateSchemaVersion = 47
+// Schema48 fences application policy and its revisioned authoring history.
+// Schema49 fences the default-closed desk-creation gate and policy v2.
+// Schema50 retains typed desk intents and append-only effect receipts.
+// Schema51 retains source workflow settings and their authoring history.
+// Schema52 retains canonical synchronization baselines for source alerts.
+// Schema53 binds staged commit reviews and verified source ownership to desk receipts.
+// Schema54 retains reviewed activation/publication and caller-supplied release checks.
+// Schema55 records explicit source ownership adoption without a Clay mutation.
+// Schema56 binds receiver installation to an immutable publisher/review and receipt.
+// Schema57 binds frontend artifacts, source checks and session cleanup to upload receipts.
+// Schema58 retains ship URL choices and history bound to each pier incarnation.
+// Schema59 fences configurable container limits and immutable per-container contracts.
+const StateSchemaVersion = 59

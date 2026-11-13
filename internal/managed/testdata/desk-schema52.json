@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "schema": 52,
+  "source_commit": "f7beb08dfb6249dc4979c6d8db17b2e2a2bc34c1",
+  "sql_sha256": "ccf365171937899d4263d1393c9a58230c260884fe69fc057fd9c70a30658a65",
+  "writer": "Original schema52 writer; synthetic alpha, policy, pending creation receipt, workflow and canonical source baseline",
+  "scope": "functional development migration fixture; not release qualification",
+  "evidence": "/tmp/omabit-desk-deployment-original-migration-01/result.json"
+}

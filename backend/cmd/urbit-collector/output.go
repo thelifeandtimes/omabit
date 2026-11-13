@@ -62,7 +62,11 @@ func instances(w io.Writer, values []protocol.Instance) {
 	for _, v := range values {
 		fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%d / %d\t%s\n", cell(v.ID), cell(v.DesiredState), cell(v.ObservedState), cell(v.Health), v.ConfigRevision, v.AppliedRevision, cell(v.Endpoint))
 		fmt.Fprintf(w, "  Requested loom: %s address space\n  Requested native control: %s\n", loomLabel(v.Config.Loom), controlLabel(v.Config.NativeControl))
+		fmt.Fprintf(w, "  Requested container limits: %d GiB RAM / %d CPUs\n", protocol.EffectiveMemoryGiB(v.Config.MemoryGiB), protocol.EffectiveCPUCores(v.Config.CPUCores))
 		if d := v.RuntimeStatus; d != nil {
+			if d.LaunchMemoryGiB != nil && d.LaunchCPUCores != nil {
+				fmt.Fprintf(w, "  Recorded launch limits: %d GiB RAM / %d CPUs\n", *d.LaunchMemoryGiB, *d.LaunchCPUCores)
+			}
 			if d.LaunchLoom != nil {
 				fmt.Fprintf(w, "  Recorded launch loom: %s address space\n", loomLabel(*d.LaunchLoom))
 			}

@@ -29,6 +29,9 @@ func ownerFixture(t *testing.T) (*fixture, ownerhost.Profile, hostProbe) {
 	f.files[rootless.UnitName] = []byte("ConditionUser=urbit-runner\nEnvironment=HOME=/var/lib/urbit-runner\n")
 	var info map[string]any
 	json.Unmarshal(f.info, &info)
+	for _, limit := range []string{"CPUCfsQuota", "CPUCfsPeriod", "MemoryLimit", "PidsLimit"} {
+		info[limit] = true
+	}
 	info["DockerRootDir"] = p.Home + "/.local/share/urbit-runner/docker"
 	f.info, _ = json.Marshal(info)
 	f.i.inspectOwner = func(name string) hostsetup.Report {
@@ -72,6 +75,13 @@ func ownerFixture(t *testing.T) (*fixture, ownerhost.Profile, hostProbe) {
 
 func TestOwnerInstallAndRerunPreserveLoginAndGrants(t *testing.T) {
 	f, p, probe := ownerFixture(t)
+	// A minimal host can supply the UID/GID mappers without the optional
+	// getsubids query tool. The owner's account already exists.
+	for _, name := range []string{"getsubids", "useradd"} {
+		if err := os.Remove(f.i.path("/usr/bin/" + name)); err != nil {
+			t.Fatal(err)
+		}
+	}
 	passwd, _ := os.ReadFile(f.i.path("/etc/passwd"))
 	groups, _ := os.ReadFile(f.i.path("/etc/group"))
 	first, err := f.i.installOwner(context.Background(), "/bundle", hostPublic(1), []byte("runner one"), p, probe, nil)
@@ -182,5 +192,58 @@ func TestOwnerEngineCheckUsesRealGuardTemplateAndPreservesLauncherPin(t *testing
 	}
 	if strings.Contains(check, "'urbit-runner'") || strings.Contains(check, "'/var/lib/urbit-runner'") {
 		t.Fatal("retained legacy account check")
+	}
+}
+
+func TestFirstOwnerInstallRequiresEffectiveDelegation(t *testing.T) {
+	for _, limit := range []string{"CPUCfsQuota", "CPUCfsPeriod", "MemoryLimit", "PidsLimit"} {
+		t.Run(limit, func(t *testing.T) {
+			f, p, probe := ownerFixture(t)
+			var info map[string]any
+			if err := json.Unmarshal(f.info, &info); err != nil {
+				t.Fatal(err)
+			}
+			info[limit] = false
+			f.info, _ = json.Marshal(info)
+			got, err := f.i.installOwner(context.Background(), "/bundle", hostPublic(1), []byte("runner"), p, probe, nil)
+			if err == nil || got.Ready || !strings.Contains(err.Error(), "delegation") || ownerEngineState(t, f).Stage != "prepared" {
+				t.Fatal("accepted unusable engine or lost first activation", got, err)
+			}
+			if err := verifyOwnerInfo(f.info, p, false); err != nil {
+				t.Fatal("established management update applied first-start policy", err)
+			}
+		})
+	}
+}
+
+func TestOwnerDelegationPrecedesEngineStartupAndPreservesLocalEdits(t *testing.T) {
+	const path = "/etc/systemd/system/user@942.service.d/omabit-controllers.conf"
+	f, p, probe := ownerFixture(t)
+	f.put(path, "[Service]\nDelegate=io\n", 0644)
+	if got, err := f.i.installOwner(context.Background(), "/bundle", hostPublic(1), []byte("runner"), p, probe, nil); err == nil || got.Ready {
+		t.Fatal("accepted conflicting local delegation", got, err)
+	}
+	if data, err := os.ReadFile(f.i.path(path)); err != nil || string(data) != "[Service]\nDelegate=io\n" {
+		t.Fatal("lost existing drop-in", string(data), err)
+	}
+	if err := os.Remove(f.i.path(path)); err != nil {
+		t.Fatal(err)
+	}
+	reloaded := false
+	f.fail = func(c call) error {
+		if c.path == "/usr/bin/systemctl" && slices.Equal(c.args, []string{"daemon-reload"}) {
+			data, err := os.ReadFile(f.i.path(path))
+			if err != nil || string(data) != "[Service]\nDelegate=cpu memory pids\n" {
+				t.Fatal("reload before owner delegation", err)
+			}
+			reloaded = true
+		}
+		if c.path == "/usr/bin/loginctl" && !reloaded {
+			t.Fatal("activated owner before system reload")
+		}
+		return nil
+	}
+	if got, err := f.i.installOwner(context.Background(), "/bundle", hostPublic(1), []byte("runner"), p, probe, nil); err != nil || !got.Ready {
+		t.Fatal(got, err)
 	}
 }

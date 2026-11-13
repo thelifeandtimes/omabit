@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M567",
+  "passed": true,
+  "omabit_base": "37e481bdd178badd7b135c67febff263e8ce58e6",
+  "dms": {
+    "checkout": "/tmp/omabit-receiver-reconnect-040/dms",
+    "branch": "codex/0.4.0-session-reconnect",
+    "commit": "c2a1cc5570ebd858ed75afe7fe6a1c7ae89e38f0",
+    "base": "6ba5a02c22362ee79151ccfce96b7042ca74549f"
+  },
+  "original_writer": {
+    "commit": "6ba5a02c22362ee79151ccfce96b7042ca74549f",
+    "path": "transport_journal.py",
+    "sha256": "1b8e3a41d19bbc24b2338d48136b6b05913b034f7d95bba6751b4825e0e7a9c7",
+    "purpose": "Unmodified actual previous writer/reader for retirement upgrade preservation and downgrade refusal"
+  },
+  "checks": [
+    {
+      "directory": "/tmp/omabit-dms-retirement-01",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_transport_retirement.py",
+          "test_transport_journal.py",
+          "test_bridge_transport.py",
+          "test_transport_stop.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "9b6d1706b66c7fcbb22adf6947d0f3ee20bed13454b8559df1ee22f63aa85b1c",
+      "source_manifest_sha256": "51a3b765a0a92f039185d7076288abb18202f831f2d2e68fb7c4ffa5ff9b9f36"
+    },
+    {
+      "directory": "/tmp/omabit-dms-retirement-02",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_bridge_handoff.py",
+          "test_bridge_transport.py",
+          "test_transport_stop.py",
+          "test_bridge.py",
+          "test_stream_generation.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "befd90e79bfd1da1019a61c74d00e3137616adbdfa7100f42d2568b3b6a3f4c9",
+      "source_manifest_sha256": "f4de05913543987b0a72672933c68f86a99a236d4813b240f4c7c6a699e5aa8e"
+    },
+    {
+      "directory": "/tmp/omabit-dms-retirement-03",
+      "result": {
+        "exit": 0,
+        "patterns": [
+          "test_bridge_handoff.py",
+          "test_bridge_transport.py",
+          "test_transport_stop.py",
+          "test_bridge.py",
+          "test_stream_generation.py"
+        ],
+        "scope": "private mount/PID/network/HOME namespace; no native runtime, installed state or keyring"
+      },
+      "log_sha256": "c2fb0626db82d03d7443e906c9d7949639fa4fe34529c69e90749d4575dc6aa6",
+      "source_manifest_sha256": "022856c1f84f208d811992d6de5b305be2bd2503427fbb4369dac10cd74cc34e"
+    }
+  ],
+  "coverage": [
+    "Eleven retirement journal cases;48 total including original-writer migration, older-reader refusal, interruptions and transport/cleanup regressions",
+    "Nine bound bridge drain cases;50 total with bridge, send, read, restore and stream-generation regressions in03",
+    "Run02 passed61 executions but imported fixture class was discovered twice;03 corrects discovery without changing production behavior"
+  ],
+  "limits": [
+    "Only local drain foundation; receiver/bridge cooperative request, successor install/recovery and collector reconnection remain pending",
+    "Retiring/quiescent are local states; no remote deletion/logout or app receipt is fabricated",
+    "Unknown sends and effects prevent successful handoff; account and credential are retained",
+    "Journal upgrades1->2 only on explicit retirement; ordinary ownership/cleanup retain1; no account/receiver format change",
+    "The bridge primitive is not dispatched by the command loop or receiver and no complete replacement capability is advertised",
+    "Private offline Python fixtures only; no installed/live runtime, keyring or release qualification",
+    "Canonical/auth plugin checkouts, production/DEV/trial/preview state and protected ships remain untouched"
+  ]
+}

@@ -7457,3 +7457,1914 @@ the isolated guest, preserving engine and ship processes, stopped intent, runner
 identity, enrollment, storage and history through denial, retry and manager
 restart. The private Wayland desktop test covered preference retention, failed
 candidate recovery and cold restart. See the [release qualification](releases/0.3.7/qualification.json).
+
+## M521 — 0.4.0 scope and first owner-user installer regression (2026-11-06)
+
+The user confirmed 0.3.7 publication. The [0.4.0 plan](platform-roadmap.md#040-release-target-2026-11-06)
+prioritizes the rooftop Ubuntu profile, then Debian and Arch/Omarchy on x86-64.
+Agent Help follows Omarchy's default-agent crash flow. Runners should share
+per-ship origins so that each collector can select one it can use. Public
+exposure ends at the ship's web endpoint. This supersedes earlier milestone
+ordering. App discovery, optional Ethereum tooling and wallet custody are
+outside this release.
+
+Confirmed locally that Omarchy 4.0.6 reads the selection with
+`omarchy default agent` and accepts a prompt through `omarchy agent prompt`.
+The installed crash wrapper passes a skill path even when the harness lacks
+skill discovery. No agent or crash diagnosis was launched.
+
+The owner preflight and installer now agree on two dedicated-account-only
+helpers. The owner already exists, and the installer reads subordinate-ID and
+NSS evidence directly. A filesystem fixture failed at the old helper gate,
+then passed fresh installation and rerun without `useradd` or `getsubids`.
+The hostsetup, hostinstall, remotesetup and signed hostcompat suites passed.
+This addresses a reproducible portability issue. A fresh Ubuntu guest and
+current rooftop onboarding are still unqualified.
+
+## M522 — Approve an app for a ship across verified routes (2026-11-06)
+
+The user's clarification supersedes M521's proposed new approval on a URL
+change. For Application Connections, approve the app/profile for the ship
+once. The collector chooses and retries verified local, tailnet and clearweb
+origins automatically. Users can find the active URL in details or copy a
+public URL for a browser. Enabling public exposure remains a separate action.
+
+Implementation is pending. In 0.3.7 the UI matches approvals and active attempts
+by origin, the collector's managed enrollment name includes the origin, and
+the receiver [handoff contract](application-handoff-v1.md) binds sessions and
+cleanup to one origin. Retain those per-session protections beneath a durable
+ship grant and qualify automatic reconnection with compatible receivers. See
+the [0.4.0 acceptance cases](platform-roadmap.md#one-ship-several-reachable-urls).
+
+## M523 — Clean Jammy remote setup and first ship (2026-11-06)
+
+The [Ubuntu 22.04.5 VM run](diagnostics/2026-11-06-jammy-remote-runner.md)
+supersedes M521's pending clean Jammy install. Its packaged RootlessKit needs
+attached network namespaces and its default user manager lacks CPU delegation.
+The 0.4.0 development installer adapts to both. Native evidence, a default-loom
+ship, uninterrupted second-desktop pairing and revocation, and same-generation
+recovery from an actual mid-install interruption passed. The collector also
+reconnected after a cold boot. The current rooftop installation, stable upgrade
+and other distros retain their separate gates.
+
+## M524 — Rooftop trial confirmed and stock Debian 13 package boundary (2026-11-06)
+
+The operator reported that manual rooftop configuration worked with the separate
+0.4.0 trial plugin. This supersedes M523's pending rooftop trial. The user did
+not specify whether rooftop took the fresh-install or existing-runner branch.
+
+On a clean Debian 13.7 amd64 guest, the configured archive offered Docker
+26.1.5, below the 27.2.0 minimum. Guided setup now identifies the package and
+version, states the policy range, gives the inspection command, and explains
+how to resume. The terminal and saved status supplied the same guidance.
+Real same-attempt retry preserved the desktop key and installer. The package
+database and administrator SSH grants matched their pre-test hashes. The next
+distro check is Arch/Omarchy. [Debian evidence](diagnostics/2026-11-06-debian-remote-runner.md)
+
+## M525 — Arch first ship and remote-install test boundary (2026-11-06)
+
+Supersedes M524's pending Arch check. Two clean overlays of the official
+Arch x86-64 cloud image passed native dependency installation, authenticated
+package evidence, restricted-key enrollment and a healthy default-loom bare
+ship. Stale image metadata first requested a removed Docker package. A full
+guest update and reboot allowed the same attempt, key and frozen helper to
+resume. The revised helper explains this recovery in terminal and saved status.
+Second-desktop pairing and revocation preserved the running ship and services.
+[Arch evidence](diagnostics/2026-11-06-arch-remote-runner.md)
+
+The user explicitly ends this round of distro testing after this pass. The
+operator skill now distinguishes verified Ubuntu/Arch behavior, the operator's
+rooftop report, Debian's package refusal and host-specific agent assistance.
+The Arch guest exercises the runner foundation. A complete fresh Omarchy
+desktop installation remains untested in this matrix. Agent Help and skill
+installation are next. Stable 0.3.7 upgrade qualification remains a release gate.
+
+## M526 — Desk development and Urgit enter the 0.4.0 scope (2026-11-06)
+
+The user expanded M521's 0.4.0 scope to include app development, rollout and
+publication through the agent CLI, with per-ship intent and support for fakes
+and project networks. The [architecture proposal](app-development-0.4.0.md)
+builds on owner-writable mounts, existing private Lens operations and prior
+publisher/receiver qualification. General desk deployment APIs still need
+implementation and qualification.
+
+Reviewed Urgit at `7834a4e186998265f5175fd527bc17ea8819c44f`. It supports direct
+Smart HTTP pushes into a bound Clay desk and reports Git/Clay correspondence.
+Its publish-desk action exports Clay into Git. Treaty publication is a further
+workflow. A subscribed distributor desk can propagate later mutations, so release
+gating belongs before that mutation. Whole-tree projection requires assembling
+projects whose deployable desk lives in a subdirectory.
+
+The proposal uses mounted-desk deployment first and optional Urgit integration,
+with typed actions, durable receipts, compilation and readiness observations,
+and exact publisher/receiver identities. Explicit promotion as the default and
+Urbit-desk/frontend scope are proposed while user feedback is pending. Incoming
+GitHub notices require explicit pulls in the reviewed upstream, and GitHub import
+updates reject Clay-bound destinations. Direct ship pushes are the initial target.
+This turn records source research and architecture. Live pipeline qualification
+and the new CLI implementation remain future work. M525's end of distro testing
+continues to apply, and Agent Help remains the next implementation slice.
+
+## M527 — Default-closed agent gates and Unix/Clay change alerts (2026-11-06)
+
+The user's answers supersede M526's proposed default promotion policy and its
+pending scope decisions. Follow each application's existing release configuration,
+including Urgit's rules. The 0.4.0 workflow covers Urbit desks and their frontend
+assets. Companion Omarchy plugin release coordination is deferred.
+
+Agent CLI desk commit and publication must start disabled. Add **Setup → App
+development and publishing**, where the user configures permissions globally,
+per runner, per ship and per installed desk. The architecture uses independent
+commit and publication permissions with Inherit/Allow/Block and the most specific
+explicit value winning. New development fakes and project members also start
+blocked. A purpose label conveys intent while the effective policy controls
+permission. User-configured gates take precedence over a convenience CLI flow.
+
+Runner enforcement covers equivalent effects, including an Omabit-managed Urgit
+push into a bound desk. Updating a published desk requires both permissions.
+Agents inspect policy read-only and follow the app's release settings. Human
+Dojo and independently configured Urgit clients use their native authority.
+Global policy edits need per-runner rollout status, with offline runners showing
+their last applied revision. Queued effects recheck policy before execution.
+
+Observe mounted Unix content against Clay and alert on uncommitted additions,
+edits and deletions, including direct editor/copy changes. Distinguish divergence
+and unavailable observation, and retain later edits when an earlier commit
+completes. The [architecture](app-development-0.4.0.md) and bundled agent skills
+now record these requirements. This is a design and skill update. Runtime gates,
+Setup controls, change alerts and the new desk CLI remain to be implemented.
+
+## M528 — Application policy layer and Setup editor implemented (2026-11-06)
+
+The user prioritized M527's policy layer and Setup controls, explicitly excluding
+active/production runners. This supersedes the pending policy/editor portion of
+M527; desk mutation adapters, bindings, purpose labels, alerts and Urgit remain
+subsequent work. Work used a temporary isolated source checkout, fake backends,
+temporary sockets and a private offscreen desktop. No installed plugin, runner,
+service or live ship was operated on or upgraded.
+
+**Setup → App development and publishing** now supports Global, Runner, Ship and
+Desk permissions with independent commit/publication gates, default Block and
+most-specific explicit inheritance. The runner owns schema48 policy storage,
+CAS revisions and authenticated audit receipts. Ordinary settings preserve policy.
+Instance deletion/restoration atomically retires its scoped grants; project
+targets bind the exact creator and generation. The effect guard rechecks current
+policy under the mutation lock, blocks stale/unknown evidence and requires both
+permissions for commits to a published desk. Runtime desk adapters remain absent.
+
+Global authoring records a private version1 collector rollout before dispatch.
+Offline failures retain intent and the last acknowledged global values/revision.
+Retries reconcile lost responses and reject stale or unreviewed revisions.
+New enrollments are excluded from old rollout intents; pairing an existing runner
+preserves its policy. Other collectors' runner revisions remain authoritative.
+Agents use read-only `app-policy [--instance ID --desk DESK]`, with effective values
+and source scopes. No generic collector setter or desk commit/publish command was
+added. The operator skill forbids bypass through authoring helpers or alternate
+transports. The owner-process limitation is documented explicitly.
+
+Validation passed: full Go tests for apppolicy, protocol, managed, client, access,
+collection, collector CLI and Omabit helper; focused race tests; Go vet; matching
+Linux binary builds reporting schema48; panel model, native plugin and snapshot
+installer fixtures; skill validation/package tests. The networkless Quickshell
+test exercised all four scopes, inherited/default values, offline/observer
+restrictions, malformed/mismatched replies and profile-switch late responses.
+The rendered policy editor was inspected. Historical schema target metadata now
+names unreleased schema48; historical release qualifications remain frozen. The
+schema47→48 fixture preserves identity, settings and receipts with no grants.
+Full exact-artifact 0.3.7→0.4.0 live upgrade qualification remains a release gate.
+
+See [policy behavior, support window and test commands](app-development-policy.md).
+
+## M529 — Application policy styling aligned with Setup (2026-11-06)
+
+The user requested a visual pass before reviewing M528. Its transparent component
+capture and placeholder sans-serif typography were insufficient style evidence.
+The policy editor now uses existing Card, CardTitle, StatusBadge, form controls
+and theme tokens, with the same margins and spacing as other Setup panes.
+Scope, agent permissions and global runner rollout have separate cards. Fields
+use two columns where space permits and stack at narrow widths; supporting
+authority/revision information is under Policy details. Normal unapplied status
+uses a neutral badge. A shadowed message assignment was corrected so successful
+saves display their confirmation. Scoped unresolved-identity status no longer
+overrides the runner-level summary when that ship field is hidden.
+
+The existing isolated QML harness now captures an opaque app background and uses
+the shell's default monospace type tokens, with controlled dark/light palettes,
+width and font scaling. Framed global and desk screenshots were inspected at
+688px/default scale and 408px/1.25 scale. Both runs passed all four scope edits,
+inheritance, offline/observer restrictions, stale-profile/malformed responses,
+save confirmation and horizontal control bounds. Native plugin packaging tests
+and diff checks passed. Changes are source/UI-only: no installed plugin, runner,
+ship, service or user desktop configuration was changed. This supersedes M528's
+initial screenshot as the visual-review reference; backend policy behavior and
+its qualification remain as recorded there.
+
+## M530 — Persistent isolated application-policy preview (2026-11-06)
+
+The user requested a persistent manual preview while preserving production
+plugins and runners. **Omabit 0.4.0 Preview** opens the actual AppDevelopmentPane
+and shared controls in a separately titled, scrollable native window. Its inert
+Python adapter provides local/remote runners, a publisher and a project member;
+both permissions start blocked. Policies persist across window close/reopen.
+The preview can simulate offline and observer connections and switch between
+controlled dark/light palettes. The connection selector explicitly refreshes
+after changing its adapter binding.
+
+The standalone snapshot is installed at
+`~/.local/share/omabit-policy-preview-040`, with a separately named application
+launcher. It is not an installed Omarchy plugin and does not reload the shell or
+start on login. Private Bubblewrap user/PID/mount/IPC/network namespaces expose
+only read-only system dependencies, the source snapshot and preview-owned data.
+The native window shares only the Wayland rendering socket; host HOME, runtime,
+D-Bus, SSH, keyring, Docker and runner sockets are absent. No live ship, existing
+production/DEV/trial040 plugin, runner or service was inspected or changed.
+
+Validation: default blocked state, all four fixture scopes, independent helper
+reopen/persistence, retained offline acknowledgment, retry, observer refusal and
+unsupported-command/state preservation passed. The actual QML connection
+selector exercised offline global save → online retry → disabled observer
+editing in a fresh offscreen fixture. Namespace inspection found only private
+loopback and the declared mounts/environment. Native rendering, duplicate-open
+refusal, identity-checked exact-preview shutdown and state-preserving relaunch
+passed. A window-only capture was inspected. These are preview/UI checks, not
+additional production runner or release qualification. Human review state is
+never reset or used for automated mutation tests. See the
+[preview guide](app-development-preview.md) for launch paths and review steps.
+
+## M531 — Policy tree, full-panel preview and desk-creation gate (2026-11-06)
+
+The user's review replaces M529's scope-selector presentation and M530's
+standalone-pane/palette-picker preview with a selectable **Global → Runner →
+Ship → Desk** tree inside the actual MonitorWindow and Setup navigation. The
+preview now includes the real fleet sidebar, uses shared native controls and a
+fixed palette, and has no theme control. The remote fixture selector remains
+explicitly simulated. Wide layouts place the inspector beside the tree; narrower
+layouts stack it below. Permission and text filters highlight matches and their
+ancestry while dimming unrelated branches. An ancestor on an allowed leaf's path
+retains its own effective decision; highlighting never implies a broader grant.
+The map represents saved policy, not unapplied edits or pending global intent.
+
+This also extends M528's policy with an independent **Create new desks** gate.
+Global, runner and ship scopes can authorize creation; desk scopes cannot grant
+sibling creation. New desks inherit commit/publication permissions unless an
+explicit desk policy already applies. Allowing creation grants neither of the
+other operations. The effect guard requires exact target identity, current
+revision and fresh absence evidence. Actual creation/commit/publication adapters
+and CLI actions remain unimplemented and refused. The real tree can display
+saved and explicitly named desk scopes; complete installed-desk discovery is
+still pending. Preview desk inventory is synthetic and labelled as such.
+
+Policy/capability version2 and schema49 add this gate without reopening existing
+permissions. The schema48 migration preserves existing commit/publish choices
+and audit bytes, adds blocked global creation with inherited scoped values, and
+appends one migration receipt/revision. Corrupt history rolls back. Legacy
+collector rollout journals retain their bytes/intent until a new version2 write;
+creation defaults closed. A no-runner global save now serializes an empty target
+array so its journal can be reopened. Bundled agent skills explain the creation
+gate, inherited desk policy, release configuration and absent mutation commands.
+Exact-artifact stable upgrade qualification remains required before release.
+
+Validation passed: affected Go suites (including the full managed schema and
+historical migration suite), focused race checks, Go vet, matching Linux builds
+reporting schema49, native plugin/skill packaging tests and skill validation.
+The existing QML harness passed wide and narrow/enlarged-font checks. A new full
+panel harness passed sidebar/Setup navigation, node selection, the single
+`~zod` `%base` allow path, creation inheritance, offline fresh-review rollout,
+observer restrictions and responsive bounds. Fresh networkless fixtures were
+used for every automated policy mutation. Native and offscreen captures were
+visually inspected with no QML warnings or errors in the final runs.
+
+The separately installed `omabit-policy-preview-040` snapshot was updated and
+reopened on the main desktop through its exact identity-checked launcher. Its
+original code is retained under `versions/before-policy-tree-20261106-205507`.
+The original policy bytes are preserved as `policy-v1.before-create-desk.json`;
+a structural comparison verified every prior commit/publication choice and
+rollout value survived, with only the documented new gate/version/revision
+changes. Human state was not used for automated mutations. Production, DEV and
+trial040 plugins, runners, ships and services were not inspected or operated on.
+See [the updated preview guide](app-development-preview.md).
+
+## M532 — Zoomable policy tree and saved-value reload fix (2026-11-06)
+
+The user requested zoom before reviewing M531. The tree now supports 25–200%
+zoom through shared −/+ buttons, a percentage reset button, Fit, Ctrl+wheel at
+the pointer and focused-tree Ctrl+plus/minus/0 shortcuts. Only the map scales;
+the inspector, selection, filters and unsaved permission choices are retained.
+The viewport supports scrolling and dragging. A dedicated drag handler prevents
+the containing Setup page from stealing the gesture; scaled nodes remain
+clickable. Fit respects the viewport and zoom bounds. This extends M531's tree
+without changing policy, storage, runner contracts or runtime artifacts.
+
+Native inspection also exposed an existing reload ordering bug: reopening a
+saved nondefault global policy could show Block in the controls while the tree
+and saved-value labels correctly showed Allow. The editor now loads after its
+policy-view and derived bindings settle. A fresh fixture saves nondefault gates,
+closes, and reopens the full panel; this regression failed before the fix and
+passes afterward. No saved policy was rewritten to repair the display.
+
+Validation passed: full-panel selection/filter/inheritance/offline/observer
+checks plus actual Qt pointer/keyboard zoom, anchor stability, scaled clicks,
+ordinary-wheel scrolling, dragging without page movement, bounds/reset/Fit and
+preserved edits; close/reopen persistence display; the 408px, 1.25-font-scale
+policy fixture; native plugin packaging and diff checks. Captures were inspected.
+The separately installed preview was refreshed and reopened with policy bytes
+verified unchanged. Native rendering completed; Qt Wayland emitted a text-input
+focus warning during window focus changes, with no QML load errors. Its previous
+code is retained in preview-owned version backups. Production, DEV and trial040
+plugins, runners, ships, services and desktop configuration were untouched.
+
+
+## M533 — Approved feature goal and Agent Help implementation (2026-11-06)
+
+The user approved continuing Agent Help/skills, the gated desk workflow, fleet
+URLs and clearweb assistance as an ongoing goal. Work should continue on every
+unblocked path. This supersedes M526's proposed dedicated Urgit adapter: Urgit
+now needs a qualified workflow and skill guidance, not a separate Omabit software
+integration. Release qualification/publication waits until feature work is ready.
+Production exclusions and isolated fixtures remain in force.
+
+Agent Help now uses Omarchy's default-agent query and prompt launcher, with a
+release-bound operator skill and exact read-only diagnostics. The monitor and
+failed/interrupted remote setup expose the action. Setup provides explicit skill
+installation, default/no-default guidance, automatic OpenCode destination and
+an explicit directory for other agents. Custom/edited skills are never replaced;
+reviewed managed updates are atomic and retain the previous copy. No actual agent
+or host skill directory was used during implementation testing.
+
+Two packaging gaps were corrected: development snapshots omitted installed
+skills, and native bootstrap discarded bundled skills. New bundles declare
+SKILLS.json, and native caches verify those files against their pinned archive.
+Historical caches without that declaration retain their previous layout. Agent
+Help never silently substitutes guidance from another release/profile.
+
+Helper/installer tests, bootstrap/archive binding tests, skill/native packaging
+checks and the networkless full-panel interaction fixture pass. The fixture uses
+actual help/installation code with a fake agent, tests complete installation of
+both skills, no-default guidance and remote-setup context. This is feature-level
+qualification, not the deferred stable upgrade or release rehearsal. Other
+approved tracks remain pending; see the current 0.4.0 feature progress record.
+
+
+## M534 — Agent Help packaged checkpoint (2026-11-06)
+
+The clean development snapshot at `88a07698c289e4776d4df20993672cdcea6f91b9`
+built successfully with label `agent-help-040`. Its bundle SHA256 is
+`eb4f1f990291cc947703faa50b325ec6a40871526a70675a9531df3a21566003`.
+All artifact sizes/hashes, private native import/prepare/re-prepare, activated
+helper bundle resolution and both complete skill trees passed. This closes the
+packaged-feature check from M533, not stable release qualification. Private
+evidence is `/tmp/omabit-agent-snapshot-check-9pnt33l9/result.json`; the generated
+snapshot is `/tmp/omabit-040-agent-help-snapshot`.
+
+The final full-panel screenshot in `/tmp/omabit-agent-ui-02` was inspected after
+the header-width correction. The policy tree regression fixture also passed.
+No installed plugin, real agent, host skill directory, runner or ship was used.
+
+
+## M535 — Desk transport and source-transfer development (2026-11-06)
+
+The Agent Help checkpoint is integrated at `18f3054` in the isolated 0.4.0
+worktree. Desk implementation proceeds in `codex/0.4.0-desk-workflow`. The
+new `internal/deskwork` package prepares bounded source manifests, hashes,
+file-preserving transfer plans, three-tree comparisons and framed source bundles.
+Uploads stage outside a pier; incomplete, changed, linked, oversized or corrupt
+source is refused. Identical untracked files are preserved without adopting them
+for future deletion. Focused source/bundle/request tests pass. No runner endpoint
+uses this package yet, so it does not enable desk mutations.
+
+Disposable native probes use the previously pinned Vere/pill, private network,
+PID, mount, IPC, user and UTS namespaces and a 4 GiB/no-swap/one-core scope.
+The declared scratch allowance is 2 GiB; prior generated piers/input duplicates
+are pruned only after clean shutdown, with removal receipts. Retained classified
+lab roots measured about 26 GiB before this round, below the 40 GiB limit.
+
+Probe02 establishes create, mount, five generated prerequisites, uncommitted file
+absence, an acknowledged commit and revision1→2. It fails the deliberate raw
+byte comparison: a text file ending in newline renders from Clay without that
+newline. Raw byte equality is therefore insufficient for uncommitted alerts.
+The adapter must use the desk's actual mark conversion, or exact previously
+observed commit evidence; it must not suppress real edits by trimming arbitrary
+files. A mount naming the current revision can remain a live mount, so a stable
+comparison baseline requires captured bytes and a revision fence.
+
+Probes01/03/04/06 retain failed expression/observation evidence under
+`/tmp/omabit-desk-probe-NN`, and stopped cleanly. Missing-source scries and malformed
+Dojo expressions can leave Lens waiting; check existence first, use typed
+requests and never interpret transport submission as successful execution.
+Probe05 rejected an empty generated request fixture before starting a runtime.
+Hoon numeric literals require grouping for larger decimal/hex values; mixed
+JSON fields require an explicit list element type. Probe06 verifies a bounded
+JSON-as-hex response; the Go decoder refuses unknown fields and trailing data.
+The corrected complete protocol probe is still pending.
+
+Source review also shows that cancelling Kiln autocommit does not clear its
+saved timer value. Active Behn timer evidence is required; the saved value alone
+cannot establish active/inactive status. Treaty is absent from the tested base
+desk; publication capability discovery and the real Treaty/frontend/receiver
+workflow remain pending. These findings are not a release qualification claim.
+
+
+## M536 — Typed desk protocol probe passed (2026-11-06)
+
+Probe12 closes M535's initial protocol spike: the actual Go-generated create,
+mount, commit and source-publication requests pass on a private fake. Inventory
+reports revision1/private before commit and revision3/published after the
+autocommit test and explicit source publication. The source normalizer passes
+real file bytes as base64 data through Lens's Hoon transform, uses the selected
+desk/revision's MIME→mark converter, accepts semantically equal newline variants
+and rejects different content. Vere's Unix driver uses text/plain MIME for its
+file input; the adapter follows that representation.
+
+An active `/kiln/autocommit` timer is present before cancellation and absent
+after it. The pinned pill lacks the convenience cancellation generator: probe10
+retains that failed attempt. Typed `%kiln-cancel-autocommit` succeeds in probe12.
+A failed Lens read can persist across process restart; probe08 records that
+result. The private harness may clear its own failed read job on a verified
+stopped fixture, but production adapters must not cancel another session's Lens
+job or replay an uncertain mutation. Probe09/11 preserve intermediate type
+errors; probe12 is the first complete pass.
+
+The development operation model now validates reviewed policy/desk baselines,
+requires both commit and publish gates for published desks, and separates
+dispatch, acknowledgement, observed effect and uncertainty. Reopen recovery
+never redispatches an incomplete effect. A later revision alone is insufficient
+to claim an interrupted commit: exact frozen-source verification is required.
+Focused package/policy race tests pass; runner persistence and transport remain
+next. See `diagnostics/2026-11-06-desk-protocol.json` for exact inputs, request
+source hashes, results and explicit limits. Production/DEV/trial state is untouched.
+
+## M537 — Private runtime desk adapter and fixture isolation (2026-11-06)
+
+Typed Lens requests now have a runner transport bound to the current exact
+container process, registered pier, private HTTP port and ship identity.
+Standalone managed ships and current/expanded project members use their existing
+containment and generation contracts. Payloads use bounded stdin, not argv;
+responses are bounded and transport failures never expose raw source or secrets.
+The adapter neither retries uncertain effects nor cancels shared Lens jobs.
+The caller must still hold policy/lifecycle admission and journal dispatch.
+
+Standalone and current-project fixture tests cover changed identity, process,
+ports, peer containers, transport loss and unsupported inputs. The complete
+runtimequalify race suite passes in `/tmp/omabit-desk-private-runtime-race-02`.
+The first broad run used the repository rather than package working directory;
+its missing-fixture failures are retained in the `-01` evidence directory and
+superseded by the corrected pass. `scripts/test-go-private.py` builds one package
+then runs it with private user/network/PID/mount/IPC/UTS namespaces, without the
+installed owner profile, host HOME/run or Docker socket. No host profile was
+changed to make fixture tests pass. This is source/fixture validation, not a
+managed Docker end-to-end or release qualification claim.
+
+## M538 — Gated creation CLI and schema50 operation journal (2026-11-06)
+
+Schema50 adds a separate typed desk-operation journal with immutable intent,
+authenticated actor and append-only mirrored history. Opening validates the
+journal; corrupt/missing receipts fail without repair. Duplicate IDs are accepted
+only for the same actor and exact intent. Restart marks planned work interrupted
+and dispatched/acknowledged work uncertain; it never queues an effect. Unresolved
+work blocks another effect for that exact target. Explicit read-only reconciliation
+can record that a creation's desired desk exists on the selected runtime, including
+after the creation gate was revoked; it does not attribute an external actor's
+creation to Omabit. Missing/changed runtime evidence remains uncertain.
+
+`desk-create-v1` exposes typed observation, asynchronous creation and receipt reads.
+The worker rechecks operator authority, target/generation, current process,
+configuration, policy revision and actual absence before durable dispatch. Source
+commit/publication remain unavailable. Receipt reads remain available during an
+effect. `omabit desk-inspect`, `desk-plan-create`, `desk-create`, `desk-operation`
+and `desk-reconcile` pin enrollment and preserve the reviewed intent across retries.
+Agents cannot author policy. New desks inherit existing commit/publication gates.
+Skills now describe this exact path and its limits; installed copies were not changed.
+
+Evidence: focused race suites in `/tmp/omabit-desk-private-store-01`,
+`/tmp/omabit-desk-private-api-02`, and `/tmp/omabit-desk-private-collection-01`;
+CLI offline help/argument checks and skill-package checks pass. The checked-in
+schema49 SQL fixture was written by original source e2f6377, not by stamping an
+older version onto current state. `/tmp/omabit-desk-original-migration-01` runs the
+original writer, current migration/recovery, then the original reader's unchanged
+refusal of actual upgraded state. `scripts/test-desk-upgrade.py` reproduces that
+functional compatibility path without running any service or ship.
+
+The broad managed run initially found its explicitly pinned development-schema
+assertion and the private harness's missing nested Go compiler. The development
+target is now50; the frozen RC12 qualification record and historical fixture
+coverage are unchanged. The corrected BootDispatch/G02 race run completed all
+preceding cases without failures but reached its cumulative nine-minute limit in
+its final migration/refusal test (`/tmp/omabit-desk-private-migration-regression-01`).
+That final test passes separately in `/tmp/omabit-desk-private-migration-tail-01`.
+The interrupted broad run is retained with cancellation evidence; this is not a
+claim that the complete managed race suite or 0.4.0 release qualification passed.
+The private test harness now optionally supplies a read-only toolchain/module
+cache with private build output for tests that compile their own fixture worker.
+
+No production/DEV/trial service, plugin or ship was changed. The human-reviewed
+persistent preview remains at its earlier source and retains its saved policies.
+Full managed-runtime desk deployment, source bindings/transfers/alerts, Treaty,
+frontends, Urgit workflow, fleet URLs and clearweb assistance remain active work.
+
+## M539 — Live desk discovery and active-autocommit evidence (2026-11-06)
+
+`desk-discovery-v1` adds operator-only live desk names to the runner/collector and
+`omabit desk-list`. It pins the current process, configuration, ship/project
+generation and enrollment; malformed, stale, duplicate or mismatched responses
+fail visibly. Setup's Discover desks button reads only the selected ship, marks
+installed names, retains saved scopes and unsaved permission edits, and grants
+nothing. Its temporary observations clear on policy refresh/profile change.
+The full policy editor passes wide and narrow offscreen fixtures; the wide
+screenshot was inspected. The persistent human preview was not updated.
+
+Probe14 passes the actual Go-generated desk list, immutable-revision file paths
+and active-autocommit detector (inactive → active → cancelled) on the isolated
+native fake. It also repeats the create/mount/commit/mark-conversion/publication
+protocol checks and shuts down cleanly. Probe13's desk/file reads passed but its
+first autocommit query hit Hoon type inference; that failure remains recorded.
+The corrected query reverses the path before refining its shape. Unknown output
+is never treated as inactive. Fixture wrappers reject bad paths/inventories and
+compiler errors; server/collection race fixtures cover changed selections,
+capabilities, generations and failed observations. Evidence and limits are in
+`diagnostics/2026-11-06-desk-discovery.json`.
+
+No persistent schema change accompanies discovery. Source bindings/transfers,
+canonical Unix/Clay alerts, gated commit/publication, managed-runtime end-to-end,
+Urgit, fleet URLs and clearweb assistance remain active work. This checkpoint
+supersedes M538 only for its pending live-desk-discovery item.
+
+## M540 — Canonical source comparison and targeted Clay delta (2026-11-06)
+
+The canonical source engine compares SHA256(jam([mark noun])) with each selected
+historical desk's MIME conversion. It batches at most128 files/32 MiB, binds reads
+to exact source hashes, and rechecks Unix contents/directory identity and Clay's
+revision before returning status. It distinguishes shared-baseline changes and
+divergence; without a baseline it says different, not an invented direction.
+Unknown autocommit remains unknown. Failed/unsupported conversions never produce
+a synchronized result. The runtime restricts source reads to ordinary selected
+top-level directories inside the registered pier, with the existing process guard.
+
+A typed direct commit constructor sends a bounded MIME delta to the named Clay
+desk, guarded by the reviewed revision/hash. It preserves unspecified files and
+avoids treating a mutable Unix mount alias as proof of commit targeting. This
+supersedes M535/M536's native alias-commit path as the intended agent commit
+adapter, while leaving native human |commit available. The runner must still
+apply current policy, durable dispatch and exact post-commit source verification;
+no commit API/CLI is enabled by this checkpoint. A commit is limited to32 MiB of
+changed bytes; larger sources can stage but need a supported bounded deployment.
+
+Probe19 passes canonical comparison and direct add/replace/delete, then source
+publication and clean shutdown. Probe16 is the first canonical-batch pass after
+probe15's type-inference failure. Probe17's direct delta passed but its verifier
+read the old revision; probe18 corrected that, then disproved the assumption that
+raw invalid Hoon source necessarily rejects a Clay commit. Clay accepted it as
+revision5. Source acceptance, application compilation and Gall readiness must be
+reported separately and follow the developer's release checks. Probe19 explicitly
+records that behavior rather than relabeling it a compilation pass.
+
+The deskwork race suite and private runtime fixture checks pass. Exact native
+inputs, hashes, failures and limits are recorded in
+`diagnostics/2026-11-06-desk-canonical.json`. The experiment reuses only its own
+clean-stopped fake in capped private namespaces; retained native-probe data was
+about2.5 GiB before probe17, with 2 GiB additional scratch declared per run and
+about26 GiB in the two shared evidence roots. Production, installed previews,
+real agents, runners and ships remain untouched. Persistent source bindings,
+agent commit/publication endpoints and the remaining 0.4.0 tracks are still active.
+
+## M541 — Shared ship purpose and desk workflow settings (2026-11-06)
+
+Schema51 adds revisioned ship/desk development settings and append-only author
+history, separate from all policy grants and operation receipts. Project targets
+include the exact current generation. Defaults are descriptive: standard ship,
+Unix source directory equal to desk name, no publication method/checks. The Setup
+card records source workflow, directory, optional Urgit repository/branch, release
+checks and instructions; it never executes hooks, stores tokens, configures Urgit
+or changes permissions. Agents read both ship and desk with `desk-settings` on
+`desk-workflow-settings-v1`; Setup owns authoring. A source name does not establish
+a native mount mapping. This supersedes the pending descriptive-binding/purpose
+portion of M540; synchronization baselines and source operations remain pending.
+
+The actual schema50 writer at9f45b42a produces the retained SQL fixture, including
+a dispatched desk receipt. Schema51 preserves original registry/policy/journal,
+reopens idempotently and rolls failed migration back. That schema50 reader refuses
+actual51 state unchanged. Source proof is in
+`diagnostics/2026-11-06-desk-settings.json`; exact-artifact release qualification
+is still deferred. The first SQL fixture unit test incorrectly let SQLite create
+its database with non-private permissions; the runner refused it correctly. The
+fixture now creates its file0600 before import, matching real writer behavior.
+
+Private managed/collector race fixtures pass capability, identity, current project,
+concurrent revision, corruption and response-integrity checks. Wide/narrow UI
+fixtures pass edits, validation, saves without permission changes, observer refusal,
+mismatched targets and a late reply across profile changes. A transient QML warning
+on ship-to-desk selection was fixed. Both screenshots were inspected; the full
+Setup/sidebar/zoom/reopen suite passes. The packaged skills document settings as
+metadata and preserve native Urgit release rules. No installed preview, production,
+DEV or trial runner/plugin/ship was changed. Source status, gated commit/publication,
+Urgit qualification, fleet routes and clearweb assistance remain active work.
+
+## M542 — Source-status API, canonical baselines and change alerts (2026-11-06)
+
+`desk-source-status-v1` connects the tested canonical source engine to the runner,
+collector, `omabit desk-source-status` and the selected Setup desk. The runner reads
+only that desk's saved Unix source configuration on a pinned current runtime and
+exact project generation. Operator access is required; injected source paths,
+changed settings/runtime, stale/malformed responses and Urgit workflow guesses are
+refused. Reads perform no source writes, commits or publications and preserve all
+policy grants. Autocommit unknown remains unknown; source equality is not app
+compilation/readiness. Replies contain counts, hashes and at most256 sorted file
+details, not source bytes or absolute paths.
+
+Schema52 stores a canonical baseline only after Unix/Clay match. It is bound to
+runtime, configuration, workflow revision, source name and target generation.
+Differences and failed reads preserve the prior baseline. A changed binding starts
+unclassified rather than falsely attributing direction. Schema51's actual writer
+at323ed81 supplies the SQL fixture with workflow settings, policy and a pending
+desk receipt. Migration/reopen preserve those records, create no invented baseline,
+roll back on failure and refuse corrupt caches. The original51 reader refuses
+actual52 state unchanged. See `diagnostics/2026-11-06-desk-source-status.json`.
+
+Core/protocol race tests, private API/collector/migration fixtures and wide/narrow
+UI checks pass. Screenshots were inspected. The alert differentiates synchronized,
+Unix changes, Clay changes, divergence and unknown-direction differences. Failed
+refreshes retain prior details explicitly marked unavailable; deactivation/profile
+changes reject late responses. Only the selected saved workflow is refreshed,
+90 seconds after completion or manually; no fleet-wide watcher was added. This
+supersedes the pending source-status/baseline/selected-alert portion of M540/M541.
+The underlying native canonical engine was qualified in M540; this new composition
+still needs managed-runtime end-to-end coverage. Staged transfer, gated commits,
+Treaty, receivers/frontends, Urgit, fleet origins and clearweb remain ongoing.
+Installed preview/production/DEV/trial plugins, services and ships were untouched;
+release qualification remains deferred.
+
+## M543 — Frozen source staging, receipts and recovery (2026-11-07)
+
+`desk-source-staging-v1` adds operator-only plan/upload/status/discard commands.
+Plans bind runner, ship/desk and project generation, saved workflow revision,
+source digest/count/size and a retained random ID. Source streams into a private
+versioned runner cache outside all piers, with no runtime call or gate change.
+Stopped ships with blocked gates can stage. Exact replays rehash the original
+cache and return its receipt; changed source/selection/owner and corrupt content
+fail visibly. Limits are8192 files,32MiB/file,256MiB/tree,2MiB manifest and
+16 cached stages/1GiB source. SQLite remains52; older clients negotiate capability.
+
+Deterministic pending IDs and retained intents permit cleanup after interrupted
+uploads. Explicit discard checks actor/digest, serializes cache writes and holds
+the runner mutation lock; any unresolved effect on the target retains the cache.
+Source is removed before its intent so interrupted deletion remains recoverable.
+An empty pre-intent/post-removal directory can be removed without traversing
+unbound files. Unknown, contradictory or malformed metadata stays for review.
+Original source directories, mounts and Clay are never discard targets. Client
+DELETE requests now also disable implicit transport replay and label lost replies
+uncertain. A staged receipt proves transfer only, not commit or compilation.
+
+Private runner/collector/client race fixtures and core/CLI tests pass, including
+stopped ships, frozen streams, lost acknowledgements, no implicit replay, exact
+receipt binding, ownership, limits, partial upload/discard and unresolved-effect
+refusal. Skills and packaging checks pass. See
+`diagnostics/2026-11-07-desk-staging.json`. This completes the source-transfer
+portion pending in M542; managed-runtime end-to-end, gated commit/publication,
+Urgit, fleet routes and clearweb assistance remain active. No production/DEV/trial
+plugin, runner, ship or persistent manual preview was changed. Release qualification
+remains deferred.
+
+
+## M544 — Gated staged commits and verified source ownership (2026-11-07)
+
+`desk-commit-v1` connects private stages to read-only review, saved commit plans,
+one journaled effect dispatch, source verification and read-only reconciliation.
+CLI commands are `desk-review-commit`, `desk-plan-commit` and `desk-commit`; the
+latter accepts an unchanged saved plan file or JSON. Review binds the stage,
+runtime/project generation, workflow/policy revisions, source digest, pier object
+and current Clay revision/hash. Details are bounded with exact counts. No-op and
+conflicted plans cannot dispatch. Both commit and publish gates are required for
+an already published desk; private desks require commit. All remain closed by
+default. Changes between queueing and dispatch block the effect.
+
+The planner pairs previous raw source with its verified canonical Clay ownership.
+It preserves unspecified/generated files, shares identical unowned files without
+adopting them, and refuses external edits or differing unowned collisions. Only
+owned unchanged files can be replaced/deleted. Converter changes are distinguished
+from raw byte equality. New marks can enter the delta without pretending an old
+converter exists; post-verification normalizes the whole staged source using the
+resulting revision and compares the entire Clay tree. One delta is bounded at
+32MiB changed source/8192 changes. This proves source acceptance, not compilation,
+Gall activation, frontend readiness or publication. Existing-desk ownership/adoption
+beyond matching/shared files still needs workflow treatment; it is not silently
+inferred from a permission grant.
+
+Schema53 stores immutable deployment reviews and source ownership linked to the
+existing desk journal. Verified completion and ownership save atomically; failures
+retain uncertainty and prevent another target effect. Replays return the original
+receipt without requiring another dispatch or a retained completed stage. Recovery
+uses the original runtime and retained stage, never repeats the write. Ownership
+survives runtime restart/move of the same pier object, source name and target
+generation; changing pier/source starts without ownership. Typed runtime selection
+also now uses NativeShip for keyed ships rather than the legacy fake fallback;
+this is fixture coverage, not a live keyed-ship test.
+
+Core/protocol/CLI checks, private API/collector tests and all desk regression race
+tests pass. Queued policy, workflow, source, pier and stopped-runtime changes block
+commits. Lost acknowledgements and failed verification reconcile without repeating
+the effect. Original schema52 writer state preserves policy, pending receipts,
+workflow and canonical baselines; reopen/rollback pass and that actual older reader
+refuses schema53 unchanged. See `diagnostics/2026-11-07-desk-commits.json`. One dispatch
+test initially used a desk-level creation Block, which Setup correctly refused;
+the corrected fixture inherits creation from Ship and passes.
+
+This supersedes the pending staged-commit adapter portion of M543. Assembled native
+workflow qualification, compilation/publication/frontends/receivers, Urgit, fleet
+origins and clearweb assistance remain active; no release qualification was run.
+Installed production/DEV/trial plugins, services, ships and manual preview stay
+unchanged. Before the next native run, a capacity check found44,371,935,232 bytes
+across the two evidence roots and Omabit scratch. The obsolete generated
+`/tmp/omabit-040-gocache` was classified and its12,620 cache files (4,759,076,864
+allocated bytes) removed using `/tmp/omabit-desk-cache-pruning-20261107.json`.
+Current Go cache, source, migration fixtures and all piers were retained. Recheck
+capacity and declare the next scratch allowance before starting a runtime.
+
+## M545 — Native staged-commit composition and bounded retention (2026-11-07)
+
+Probe21 passes the real disposable kernel + managed API/store + collector/Unix
+transport workflow with schema53. Creation and commits are closed by default;
+explicit fixture-user grants enable only the requested scopes. Live discovery,
+canonical synchronized/Unix-change alerts, source staging, first commit preserving
+scaffold, subsequent add/update/delete, deliberately lost acknowledgement and
+read-only reconciliation after permission revocation pass. An uncertain stage
+cannot be discarded. Exact replay never repeats the commit. A native fixture
+publication makes later commits require both Commit and Publish. The ship exits
+cleanly. Source acceptance remains distinct from compilation/readiness.
+
+The guard admits only the private namespace, loopback, recorded scope and owned
+Vere executable/start time. Effects have retained dispatch/acknowledgement rows;
+reuse checks those and terminal managed receipts. Probe20 failed before runner
+state or any desk operation because the harness omitted mkdir; corrected in21.
+M544's pending native composition is superseded by this evidence. The lifecycle
+backend is still synthetic: managed Docker, SSH, activation, Treaty, frontends,
+receivers and Urgit are not qualified by this run. See the
+`diagnostics/2026-11-07-desk-native-workflow.json` evidence and limits.
+
+Before the run, classified duplicate immutable Vere/pill copies and generated
+cache/superseded successful test binaries were pruned with recorded identity/hash
+checks. Source, original migration fixtures, logs/results and all piers remain.
+Removal manifests are `/tmp/omabit-desk-runtime-inputs-prune-plan.json`,
+`/tmp/omabit-desk-generated-pruning-20261107.json` and
+`/tmp/omabit-desk-runtime-inputs-prune-19-20.json`. Canonical immutable inputs stay
+in runtime-inputs-20261025-07. A read-only DEV disk-size query returned a lower
+bound because18 overlay work directories were inaccessible; sudo was unavailable.
+No permissions or DEV state changed. Admission21 reserves1GiB for that uncertainty
+and2GiB additional scratch, totaling42,542,821,376 bytes under40GiB. Re-measure before
+another runtime. Retain at most one active experiment. Production, installed DEV,
+trial and manual-preview plugins/runners/ships remain untouched. Publication,
+activation, existing-desk adoption, Urgit, fleet URLs and clearweb continue; release
+qualification remains deferred.
+
+## M546 — Separate app-stage status and native release workflow (2026-11-07)
+
+`desk-application-status-v1` and `omabit desk-app-status` now expose bounded,
+read-only source/installation/Gall/Treaty/Docket observations through the existing
+runner/client/collector selection. Runtime/project/configuration and policy
+revisions are checked, and unchanged Clay brackets the observation. Unavailable,
+stale or malformed data fails visibly. Expected agents and observed live agents
+remain separate; source revision is not a compiled-agent revision. No overall
+readiness flag, permission grant, persistent format change or effect is added.
+Schema remains53. Core/CLI checks, private API/collector race cases and the private
+runtime adapter race fixture pass. The first collection test invocation could not
+open a sandboxed Unix socket; rerunning with private temporary sockets passed.
+The runtime fixture initially refused the host owner profile; the established
+private HOME/network/PID/mount harness passed without changing that profile.
+
+Probe32 passes native source publication, local activation, exact Treaty hash and
+matching current/realized docket metadata. Probe34 repeats those through the real
+app-stage API/client/collector on a fresh isolated fake and additionally uploads a
+local Ames glob via native authenticated Docket HTTP. The exact frozen HTML is
+served. Upload commits a new docket hash to Clay, advances Treaty and correctly
+conflicts with old staged source ownership. An intentionally invalid installed-agent
+update returns HTTP500 `crud!`; a subsequent read has the original revision/hash.
+The unacknowledged effect stays uncertain. Neither a retry nor a proven rejection
+is inferred. Probe34 exits cleanly and its test passes this explicit uncertainty
+case, but ordinary mutation-resume must refuse its pier. Probe33 stopped on the
+same response before read recovery; its original evidence remains unchanged.
+
+Earlier probes fixed three observation bugs: asking a union mark for only one
+variant can stall Lens; read the noun then validate its shape. Hoon's example mold
+returns its default rather than validating docket input; use the real docket mold.
+Treaty sovereign inspection needs the standard library in its subject. These are
+covered by the successful native observations. Malformed fixture docket source29
+was corrected before the successful activation runs; its receipt was not cleared.
+See `diagnostics/2026-11-07-desk-application-stages.json` for pins, hashes and limits.
+
+Source/Treaty/local-activation constructors and runtime wrappers are implemented,
+but their effects still have no public agent API in this checkpoint. Native upload
+is qualification only. Gated release receipts/CLI, source adoption, receiver checks,
+Urgit, fleet routes and clearweb assistance remain active. The lifecycle backend
+is synthetic, so this is not managed Docker/SSH or release qualification. Skills
+now distinguish source acceptance, live agents, metadata and actual frontend checks.
+Installed production/DEV/trial plugins, runners, ships and manual preview stay unchanged.
+
+Retention removed only classified rebuildable caches/binaries, duplicate immutable
+inputs and superseded generated fake piers10/29 with removal manifests. Original
+source, failed receipts/runner databases, compact logs and input identities remain;
+current failure33 and fresh34 piers are retained. The pruned unresolved29 receipt
+still records uncertainty; pruning is not reconciliation. Admission34 measured
+42,720,210,944 bytes including2GiB next scratch and1GiB uncertainty reserve for
+inaccessible DEV overlay work directories. Re-measure before another runtime.
+
+## M547 — Gated local activation and publication (2026-11-07)
+
+`desk-release-v1` exposes read-only review, saved release plans and a single
+journaled dispatch for local activation, Clay source publication and Treaty
+publication. CLI commands are `desk-review-release`, `desk-plan-release` and
+`desk-release`. Ordinary operation inspection and read-only reconciliation also
+cover these receipts. Reviews bind source revision/hash, application observation,
+physical pier, runtime/project generation, both workflow revisions and policy.
+Source/Treaty publication must match the configured method. Local activation
+refuses to replace a remote subscription, including in the native expression.
+Commit gates activation, plus Publish when already distributed; publication
+requires Publish. Defaults remain blocked. Policy/settings/source changes before
+dispatch block the effect. Exact replay returns the original receipt without a
+second write. Lost responses remain uncertain and recovery never repeats effects.
+
+Configured publication checks require ordered, named, passing attestations for
+the reviewed Clay hash with bounded evidence. These are caller-supplied results,
+not commands executed or independently verified by the runner. Activation accepts
+no check attestations, because installation can be needed to perform those checks.
+Observations distinguish source acceptance, Gall liveness and Treaty/Docket state;
+none proves the compiled code version or whole-application health.
+
+Schema54 adds immutable release reviews/checks linked atomically to the existing
+journal, with strict reopen validation. The actual original schema53 writer at
+3a5a5c5 supplies a preserved fixture; migration retains policy, receipts, workflow,
+baselines, deployments and ownership. Reopen and invalid-state rollback pass;
+that original reader refuses54 without modifying state. Frozen historical release
+fixtures remain unchanged; only the development target advances. Core/CLI,
+collector and all managed desk regression race checks pass. One collection fixture
+used a stale interval shorter than the four-minute operation bound; correcting its
+age passes without product changes.
+
+Fresh isolated native probe35 passes gated source publication, exact replay,
+published-desk dual gates, local activation and Treaty publication through the
+managed API/store/client/collector. The native frontend fixture still verifies
+exact served HTML and the ownership conflict after Docket's Clay update. All35
+effects are acknowledged and shutdown is clean. It does not repeat M546's invalid
+agent mutation;34 remains uncertain and cannot be resumed for ordinary mutations.
+See `diagnostics/2026-11-07-desk-gated-releases.json`. This supersedes M546's pending
+public release adapter; frontend upload remains a private test helper. Source
+adoption, receivers, Urgit, fleet routes and clearweb assistance remain active.
+The lifecycle backend is synthetic; managed Docker/SSH and release qualification
+are not claimed. Installed production/DEV/trial/manual preview remain unchanged.
+
+Before35, rebuildable Go cache was pruned with
+`/tmp/omabit-desk-release-cache-pruning-02.json`; duplicate immutable35 inputs were
+removed with their recorded hash/inode checks. Native35 admission included2GiB
+scratch and1GiB unmeasured-DEV reserve at42,838,761,472 bytes. Subsequent regression
+admission with1GiB scratch totals42,392,866,816 bytes. Re-measure before another
+runtime; retain compact evidence and original migration writers/fixtures.
+
+## M548 — Explicit existing-source ownership adoption (2026-11-07)
+
+`desk-source-adoption-v1` supplies read-only review, saved plans and atomic metadata
+adoption through runner/client/collector and CLI: `desk-review-adoption`,
+`desk-plan-adoption`, `desk-adopt`. Agents stage only the files they intend to
+manage. Every selected file must already match current Clay after mark conversion;
+missing, different or unknown conversions conflict. Adoption performs no ship or
+Unix write. It needs Commit and, on a distributed desk, Publish. Defaults remain
+closed, and an unresolved earlier effect blocks it. Runtime/project generation,
+source/pier, stage, workflow/policy revisions and Clay revision/hash are bound.
+
+Only selected paths are newly owned or refreshed. Unselected existing ownership
+retains its prior baseline, so later external drift still conflicts. Unspecified
+scaffold is never adopted. A subsequent commit must include all owned files it
+intends to retain; omission of an owned unchanged file is a reviewed deletion.
+Identical ownership needs no adoption. Adoption cannot replace a lost effect's
+reconciliation or bypass the application's configured source/release workflow.
+
+Schema55 adds immutable adoption records. Receipt and ownership commit atomically
+with no intermediate external dispatch. Replay returns the original observed or
+blocked receipt, even after stage discard or policy/source changes. Client code
+refuses a partial response and directs inspection of the original operation ID.
+Ownership rows preserve their existing encoding and validate against their original
+commit or adoption record. Missing dependent evidence is an error, never an empty
+baseline. Reopen rejects corrupt, orphaned and rebound records; transaction failure
+leaves no partial journal or ownership.
+
+The original schema54 writer at829cfed preserves deployed ownership, settings,
+canonical baselines, pending and completed receipts and publication evidence across
+migration to55. Reopen and rollback pass; the actual older reader refuses55 without
+changing state. Core/CLI, collector race and the full managed desk regression race
+suite pass. Early storage fixtures omitted registering the synthetic ship before a
+grant, and attempted to insert corruption with foreign keys enabled; corrected
+fixtures pass without relaxing product checks. The system Python skill validator
+passes; the initially selected Python lacked its YAML dependency.
+
+Native probe36 resumes only the clean private35 pier, with recorded device/inode
+transfer. It explicitly selects `sys.kelvin`, verifies the closed gate and grant,
+observes unchanged Clay and zero commit calls during adoption, discards its stage,
+and replays the exact receipt. Four other scaffold paths remain unowned. Subsequent
+staged changes, lost-ack recovery, default publication gates, activation, Treaty,
+frontend delivery and the external docket conflict pass. All native effects are
+acknowledged and shutdown is clean. See
+`diagnostics/2026-11-07-desk-source-adoption.json`. Native36 used the pre-final
+client build; the final added rejection of impossible partial adoption responses
+has separate collector race coverage. The lifecycle backend remains synthetic.
+This supersedes M544/M546/M547's pending source adoption, not receiver, frontend
+adapter, Urgit, fleet URL, clearweb or release qualification work.
+
+Retention pruned only the superseded generated33 pier after verifying its exact
+scope inactive, rebuildable Go cache, obsolete managed desk fixture binaries and
+verified duplicate36 runtime inputs. Failure34/current36 piers, all source,
+original migration binaries, failed receipts and compact evidence remain. The33
+uncertainty is unchanged, not reconciled. Removal manifests are
+`/tmp/omabit-desk-superseded-probe33-pruning.json`,
+`/tmp/omabit-desk-adoption-cache-pruning-01.json`,
+`/tmp/omabit-desk-superseded-fixture-binaries-20261107.json` and
+`/tmp/omabit-desk-runtime-inputs-prune-36.json`. Native36 admission measured
+42,773,184,512 bytes with2GiB scratch and1GiB unmeasured-DEV reserve. Re-measure
+before another runtime. Production/DEV/trial runners, ships, installed plugins and
+the persistent manual preview remain unchanged.
+
+
+## M549 — Native receiver propagation and bounded launcher (2026-11-07)
+
+Typed receiver primitives select a continuing publisher, inspect pending Kiln
+subscriptions even before source arrival, and refuse an occupied Clay desk or
+subscription inside the install expression. A separate read distinguishes a
+reserved revision-zero desk from received source. Expected hashes are verification
+conditions, not version pins; later publisher commits continue to propagate.
+No public receiver mutation API or CLI is introduced yet. Schema55 is unchanged.
+
+Native40 passes the assembled publisher workflow and both fresh receiver paths.
+Each receiver has the exact initial publisher hash, a live fixture Gall agent,
+matching Docket state and exact served HTML. A later publisher commit reaches both
+receivers with no second install. Both received desks stay private. All native
+effects are acknowledged and all three peers stop cleanly. Core receiver tests,
+private runtime adapter race checks and offline recovery/storage tests pass.
+See `diagnostics/2026-11-07-desk-native-receivers.json`. This supersedes M548's
+pending native receiver verification, not its pending public rollout/frontend
+adapters, Urgit, fleet URL, clearweb or release qualification work.
+
+Failures remain recorded:37 hit its4GiB scope memory cap during receiver boot,
+before installation.38 was interrupted before its receiver phase; no completion
+receipt exists and its later absent transient scope is not proof of clean shutdown.
+An external conservative1GiB storage preflight for38 failed by1,728,512 bytes, but
+shell fallthrough still started the launcher with its smaller768MiB cap. A later
+measurement charged42,956,808,192 bytes including the estimated1GiB DEV reserve,
+7,135,232 bytes over budget. The restarted publisher had allocated another epoch.
+Do not describe the admission as passed or the shutdown as clean.39 stopped
+cleanly after its first acknowledged receiver install: the old observer rejected
+revision zero before it could verify arrival.40 fixes that actual transient state.
+
+Admission now executes inside the launcher before copies/transfers/spawn, so shell
+error handling cannot bypass it. Known partial DEV measurement is explicit; all
+other measurement failures refuse. Offline tests prove refusal has no output,
+copy, transfer or spawn. Aggregate periodic monitoring was added after40 and is
+not claimed as native40 coverage. Host exceptions now retain an interruption
+record. Three-peer capsules use6GiB with8GiB available admission, one CPU and no
+swap; all original namespace/production exclusions remain.
+
+Retention removed only verified duplicate38/39 runtime inputs, the superseded
+interrupted38 and clean39 generated fake piers, and the old development-loop Go
+build cache. Full34 failure and current40 piers, source, binaries, receipts and
+original migration fixtures remain. Manifests:
+`/tmp/omabit-desk-runtime-inputs-prune-38.json`,
+`/tmp/omabit-desk-receiver-failed-bootstrap-retention.json`,
+`/tmp/omabit-desk-receiver-superseded39-piers.json`,
+`/tmp/omabit-desk-runtime-inputs-prune-39.json`.
+Native40 admission charged42,621,595,648 bytes including2GiB additional scratch and
+the1GiB DEV estimate. Re-measure before further work. Production/DEV/trial runners,
+ships, installed plugins and the persistent manual preview remain unchanged.
+
+
+## M550 — Fleet route and standing approval foundations (2026-11-07)
+
+The pure shiproute model binds runner, instance/project generation, ship name and
+verified pier continuity. It validates bounded unique origin registries and orders
+eligible local, tailnet, explicitly selected LAN and HTTPS public routes. Remote
+localhost is not a local collector route. Disabled routes are excluded; bounded
+unauthenticated identity probes can fall back after failures or wrong identities,
+refuse redirects, and never issue sessions or replay writes. Tailscale parsing
+uses current local daemon state, actual full DNS name and listener/interface
+compatibility. No Tailscale command, firewall change or peer inventory collection
+is enabled yet. Official CLI/MagicDNS/status-source research is linked in
+`fleet-access-0.4.0.md`; no assumption that installing Tailscale exposes loopback.
+
+Collector format1 `application-ship-approvals.json` records explicit user choices
+per ship incarnation and exact plugin/profile/helper, independently of URLs.
+Old per-attempt consent does not become a standing grant. A changed helper needs
+another explicit choice and replaces the logical grant; the old helper is not
+left independently approved. Revision-checked revoke preserves existing attempt
+and cleanup receipts. Default/missing state denies, history is contiguous and
+checked against current entries, unknown/duplicate/corrupt state refuses unchanged,
+and repeated identical choices at the current revision do not create another row.
+The existing owner-session authority remains broad, not desk-scoped.
+
+Private route race checks pass at `/tmp/omabit-ship-route-core-03` and approval
+storage race checks pass at `/tmp/omabit-application-ship-approval-01`. They cover
+network eligibility/fallback, identity mismatch, redirect refusal, listener/DNS
+validation, pier/project/helper isolation, reopen/revoke, stale writes, unchanged
+legacy attempt bytes and corruption/symlink refusal. The first route harness
+attempt could compile but sandbox nesting refused its network namespace; the
+same isolated fixture passes when launched with the required namespace permission.
+
+This changes M549's wholly pending fleet work into internal foundations, not a
+finished feature. Runner route persistence/API, collector binding verification,
+standing-approval UI/CLI, automatic reconnection and receiver compatibility remain
+unimplemented. Current internal methods do not authorize a cached approval to be
+used later: the new connection path must recheck current grant and ship identity
+under its attempt-publication lock. No installed collector/runner/plugin state
+was touched, and no automatic login or public exposure is enabled. Schema55 stays
+unchanged; release qualification is still deferred.
+
+
+## M551 — Gated receiver installation and native API verification (2026-11-07)
+
+`desk-receiver-v1` adds read-only review/planning/status and a saved-plan install
+through CLI, collector, client and runner. The unused local desk, continuing
+publisher/initial expected hash, target/project generation, runtime, pier and
+workflow/settings revisions stay bound. Projects require a current publisher
+member of the same project. Existing Clay or pending Kiln names refuse; Urgit
+workflow bindings are not overwritten. Create desk at ship scope and Commit at
+the receiver desk must both allow; Publish is unnecessary because the receiver
+stays private. All gates default closed and are checked again before dispatch.
+
+Schema56 stores the immutable review atomically with its operation. Exact replay
+returns the same receipt; failed/lost replies remain uncertain, never retried.
+Read-only reconciliation requires current operator authority but no effect gate.
+It verifies the original publisher/hash/private desk/live subscription and pier.
+Status distinguishes pending revision-zero source from arrived Clay and app stages;
+none of these facts substitute for application-specific health checks. Existing
+subscriptions continue native updates after agent permissions close.
+
+The actual schema55 writer atc912982 produces the checked-in fixture. Migration
+preserves registry, policy, workflow, source/deployment ownership, release and
+adoption history. Reopen, rollback, new journals and unchanged old-reader refusal
+pass. All desk regressions, receiver/schema/store and client fixtures pass race
+checks. Core/protocol race, CLI private regression and updated offline help checks
+pass; both skills validate. The initial API fixture used the wrong gate scope and
+the first migration fixture reused an unresolved desk; corrected fixtures preserve
+both intended refusals. Outer-sandbox CLI socket refusal is not a product failure;
+the private namespace suite passes. See `diagnostics/2026-11-07-desk-receiver-api.json`.
+
+Native41 passes the assembled publisher workflow and public receiver API path for
+~nec and ~bud. Both defaults dispatch zero mutations. ~nec completes normally;
+~bud's real acknowledgement is deliberately discarded, producing uncertainty,
+then read-only recovery succeeds after revocation. Both receive exact initial
+and next-version source, live fixture agent/Docket state and served HTML with
+one install each. All three children exit cleanly. This supersedes M549's pending
+public receiver adapter, not its pending frontend upload or lifecycle/installed
+qualification. No new public frontend upload, Urgit adapter, fleet connection or
+clearweb exposure is claimed. Release qualification remains deferred.
+
+Storage correction: migration01's declared300 MiB omitted enough archive/build
+allocation. A post-run measurement charged43,034,075,136 bytes including the1GiB
+unmeasured-DEV reserve,84,402,176 over40GiB. No native runtime launched at that
+point. The rebuildable isolated Go cache was removed immediately; migration now
+performs internal1200MiB admission before output/copies/build. Native41 admission
+charged42,919,972,864 bytes including2GiB scratch. Retention preserved all originals
+and receipts: clean completed40 piers were retired after exact-scope inactivity
+verification; its compact proof remains. Failed migration successor source and
+an API binary are retained losslessly compressed; duplicate original55 writer
+source in migration02 explicitly links the byte-identical retained migration01
+source. Do not remove that dependency. Full failure34 and current41 piers remain.
+The diagnostic lists exact removal/retention manifests. Production/DEV/trial and
+the persistent manual preview stay unchanged. Re-measure before further builds.
+
+
+## M552 — Native frontend artifacts and empty source files (2026-11-07)
+
+The internal frontend artifact format binds the complete sorted file/MIME map,
+with 2048 files/32 MiB limits, required index.html and a reserved desk.js name.
+Native Docket's multipart representation loses a terminal NUL; the adapter refuses
+such files rather than silently corrupting them. Embedded/leading NULs and empty
+files are supported. MIME types use a deterministic table independent of the host.
+A pure Lens calculation predicts Docket's exact glob hash before any upload.
+Native MIME is a single path atom containing the full header, including its slash.
+
+Native48 passes against the pinned Vere/pill: the predicted and uploaded glob hash
+match, all three served assets have exact bytes and MIME types, and Clay advances
+from revision6 to7. The generated docket correctly conflicts with older source
+ownership. The same capsule verifies empty source normalization, commit and
+subsequent comparison; empty base64 now constructs zero-length octs directly in
+all three source primitives. All effects are acknowledged and shutdown is clean.
+
+Earlier42–44 hash construction failures occurred before upload. Native45 performed
+one acknowledged upload whose bytes were correct but whose predicted hash was
+wrong. Read-only diagnostic46/47 transferred that stopped fake, confirmed exact
+HTTP bytes and discovered the MIME representation. No upload was repeated; the
+original failed verification is retained. Fresh48 validates the correction.
+
+Internal Eyre upload sends one bounded request without redirect/replay. The private
+runtime HTTP transport admits only fixed identity/login/logout/upload endpoints,
+keeps credentials out of argv/files/logs, and checks runtime identity around each
+call. Entire Eyre and focused runtime transport/frontend race suites pass in private
+namespaces; core artifact race tests and six capsule Python tests pass. The actual
+Docker invocation remains unqualified. See
+`diagnostics/2026-11-07-desk-frontend-artifacts.json` for hashes, failures and retention.
+
+This completes the native artifact spike, not the public frontend API/CLI or its
+policy/journal integration. Metadata/hash verification is not application health.
+Schema56, installed plugins/runners and the manual preview remain unchanged.
+Only classified generated inputs, inactive completed piers and rebuildable caches
+were retired; original failures/receipts and compressed binary sources remain.
+Admission refusals prevented launches before retention made room under40GiB.
+Re-measure before the next build/runtime. Release qualification stays deferred.
+
+
+## M553 — Gated frontend upload API/CLI and durable recovery (2026-11-07)
+
+`desk-frontend-v1` connects the staged build artifact to read-only review/planning
+and one saved-plan upload through CLI, collector, client and runner. Reviews bind
+stage target/digest, MIME artifact digest, expected native glob hash, source revision,
+source excluding desk.docket-0, settings at both levels and exact runtime/pier.
+Only current local own-ship Ames globs on the Unix workflow are supported. Urgit,
+remote subscriptions, HTTP globs and unchanged advertised hashes refuse.
+
+Both Commit and Publish gates apply even for private Clay: the upload immediately
+changes served assets and native Docket HTTP has no atomic expected-revision or
+publication precondition. This tightens the typed adapter beyond M546's native
+classification. Fresh worker checks run under the policy/lifecycle lock, followed
+by an additional source/app/Docket check after ephemeral authentication. External
+owner activity can still race the HTTP endpoint; postflight detects changed other
+source and requires the expected glob and a newer Clay/Docket revision. It does
+not adopt generated source or assert HTTP/application health. Distributed updates
+bind every configured check attestation to both source and artifact; private
+preparation precedes those release tests. No test command is executed by the runner.
+
+Schema57 stores immutable frontend reviews atomically with operations. Exact replay
+returns the original receipt; dispatched/acknowledged interruptions stay uncertain
+without another upload. Read-only reconciliation works after permission revocation
+and needs matching original pier/source/artifact metadata. Reconciliation records
+observation, not causal attribution. Session cleanup remains separate: confirmed,
+unconfirmed or not-created. A trusted adapter's pre-upload abort records rejected
+with attempted=false; lost upload replies never use that state. Known upload
+acknowledgement survives logout failure. Credentials stay ephemeral and absent from
+argv, files, logs and journals; an interrupted or lost login can leave cleanup unknown.
+
+Original schema56 writer656e64d produces the checked-in SQL fixture. Actual migration,
+reopen, rollback, new journals and original-reader refusal pass while preserving
+registry, policy, settings, source/deployment/adoption/release and receiver histories.
+Full desk race regressions, collector/client selection/lost-reply tests, transport
+session tests and CLI/offline help checks pass. Both skills validate. API03 initially
+expected a cache edit after bytes were captured to invalidate those already frozen
+bytes; the corrected test edits before capture and verifies refusal. Regression01's
+helper did not recognize the new terminal rejected state; regression02 passes after
+fixing the helper. Neither failure caused a native upload or touched installed state.
+See `diagnostics/2026-11-07-desk-frontend-api.json` for exact evidence and limits.
+
+This supersedes M552's pending public adapter only. The underlying native hash/bytes
+were qualified in M552, but the assembled public frontend capsule and actual Docker
+transport remain separate checks. Release qualification stays deferred. Installed
+production/DEV/trial and persistent preview remain unchanged. Native48's completed
+pier and verified duplicate Vere/pill inputs were retired after exact-scope inactivity
+and successful proof checks, preserving committed compact proof and all receipts.
+Migration admission refused before launch until retention made room. Re-measure
+before builds and keep failed/current source and evidence recoverable.
+
+
+## M554 — Assembled native frontend API and lost-ack recovery (2026-11-07)
+
+Native49 passes M553's public API/store/collector path on a fresh offline fake.
+The typed stage/review/plan/upload flow blocks with both gates closed and sends no
+frontend request. After granting both, exactly one real Docket upload succeeds;
+the fixture discards its acknowledgement. The runner retains uncertainty with
+confirmed ephemeral-session cleanup. Closing both gates again still permits
+read-only reconciliation to the expected artifact and newer Clay revision.
+Exact replay after stage discard sends no additional upload. The native effect
+ledger retains the real acknowledgement independently of the lost managed reply.
+
+Predicted/native glob hash and exact HTML, binary and empty-file bytes/MIME agree.
+Generated docket changes correctly conflict with older source ownership. The full
+publisher/source/release workflow and empty-source regression also pass; the fake
+shuts down cleanly. TestNativeDeskWorkflow takes54.78seconds. See
+`diagnostics/2026-11-07-desk-frontend-native-api.json` for inputs, receipts and limits.
+This supersedes M553's pending assembled native frontend test, not actual Docker/SSH
+or installed upgrade qualification. No HTTP/application health beyond the exact
+fixture assets is claimed. Schema57 stays unchanged; release work remains deferred.
+
+Native49 admission charged42,941,153,280 bytes including2GiB scratch, below40GiB.
+Before launch, completed test binaries were retained as verified lossless gzip,
+completed migration source snapshots as archives verified file-by-file (including
+modes), and the rebuildable isolated Go cache removed. Original SQL fixtures and
+all source/receipt/log evidence remain recoverable; restore the recorded archives
+before using historical extracted paths. The original55 writer source dependency
+used by migration02 stays intact. The diagnostic links every retention manifest.
+Full failure34 and current49 piers remain; native48 proof was already committed.
+Production, DEV, trial and the persistent preview remain unchanged.
+
+## M555 — Shared ship URL registry and CLI (2026-11-07)
+
+Implemented `ship-routes-v1`, runner schema58, collector/client and
+`omabit ship-routes` / `ship-routes-configure`. URL authoring binds the actual
+native ship, verified pier incarnation, current target generation/process and
+configuration revision. A replacement starts with fresh settings. Current and
+contiguous historical records save atomically; stale edits and corrupt state
+refuse. Automatic localhost discovery is verified against the held runtime's
+actual published listener. Its host scope is the runner identity; remote SSH
+collectors must not treat it as their own localhost. Manual/tunnel URLs and
+persistent automatic-route disable choices are separate from dynamic discovery.
+
+Offline core, API/store, runtime adapter, two-collector/client, CLI and help race
+checks pass. The actual schema57 writer atbdb81b8 migrates to58 preserving original
+policy, source ownership, release, adoption, receiver and observed/dispatched
+frontend records; reopen, rollback and actual older-reader refusal pass. The
+checked-in original57 SQL is SHA-pinned. See
+`diagnostics/2026-11-07-fleet-registry.json`. This supersedes M550's pending registry
+API/CLI, not its remaining Tailscale/Serve, approval UI or reconnection work.
+Registration does not configure a tunnel, prove public reachability, obtain
+credentials or authorize an application. Installed upgrade/release qualification
+remains deferred. Operator skills describe this implemented boundary.
+
+The first core capsule could not create its network namespace in the ordinary
+sandbox; the identical verified binary passed in the permitted offline capsule.
+Runtime cold-cache admission refused before building; completed migration binaries
+were retained as verified lossless gzip, then the warm-cache allowance passed.
+Native49's committed proofs, receipts and source inputs remain; its cleanly stopped
+592,924,672-byte generated fake pier was retired only after verifying the exact
+inactive scope. This supersedes M554's temporary full-pier retention. Failure34 and
+all production, DEV, trial and persistent preview state remain untouched.
+
+## M556 — Read-only Tailscale Serve/Funnel discovery (2026-11-07)
+
+Connected bounded local daemon inspection to `ship-routes-v1`. The reader invokes
+only `status --json --peers=false` and `serve status --json`, without a shell or
+ambient socket/debug/proxy overrides. Reads have byte/time limits; a second status
+read rejects a profile switch. Only the local node name, suffix and small status
+fields escape; peers/users/authentication URLs and raw errors are discarded.
+
+Serve discovery verifies the node's whole-origin HTTPS proxy targets this ship's
+exact loopback listener. It supports foreground/background configurations, prefers
+443 then the lowest matching port, and classifies Funnel exposure as public. Path
+mounts, shadow handlers, ambiguous ports, unsupported fields, service VIPs, raw
+TCP and different upstreams do not become automatic ship routes. Disabled choices
+survive port changes. Missing/unavailable discovery keeps saved manual URLs usable.
+Nothing installs, authenticates, exposes a new port or changes daemon settings.
+
+Core parser/command race fixtures, runner API and two-collector/client checks pass;
+byte overflow, cancellation, environment leakage, profile changes and forged or
+non-HTTPS metadata are exercised. See `diagnostics/2026-11-07-fleet-tailscale-discovery.json`
+for sources, exact evidence and limits. No live Tailscale deployment is qualified.
+Persisted schema58 is unchanged; optional discovery metadata is read-only. This
+supersedes M555's pending automatic Serve invocation, not its remaining Setup URL
+editor, standing-approval UI/CLI, reconnection or clearweb-assistance work. No
+installed/production/DEV/trial/preview state was changed; release work stays deferred.
+
+
+## M557 — Full-panel Ship URLs Setup editor (2026-11-07)
+
+Added Ship URLs to normal Setup, retaining the existing sidebar, typography, cards
+and controls. It selects a verified running ship, presents detected addresses,
+and edits configured routes and persistent automatic-route disable choices.
+Current runtime/configuration binding changes invalidate reads. Saves use the
+runner's current revision; failed or lost replies require refresh, with no replay.
+Registration does not create a tunnel or change DNS.
+
+Offline full-panel fixture04 passes authoring, persistence, another ship's empty
+settings, offline invalidation and a concurrent-edit refusal followed by refresh.
+Wide/narrow screenshots were inspected. Initial fixture01 exposed a fixture-only
+empty-command assumption and transient QML/anchor warnings; those were corrected,
+and fixtures02–04 pass without warnings. Fixture03 adds the save-conflict check;
+04 places Save beside the ship selection. See
+`diagnostics/2026-11-07-fleet-setup.json`. This supersedes M556's pending URL editor,
+not standing approval, automatic reconnection or clearweb assistance. Installed
+production/DEV/trial and the persistent review preview remain unchanged.
+
+
+## M558 — Standing application approval CLI and offline revocation (2026-11-07)
+
+Added collector `app-ship-review`, `app-ship-approvals` and `app-ship-approve`.
+Allow requires an explicit owner-session acknowledgement, exact installed helper,
+current live runtime selection, verified pier binding and approval revision.
+Review obtains no credentials and invokes no plugin. The bounded JSON input rejects
+missing/ambiguous choices and duplicate case-alias keys. Revocation uses the exact
+saved target/binding and current revision without requiring a live runner or an
+installed helper. Existing sessions retain independent disconnect/recovery records.
+
+Core race checks and public CLI fixtures pass grant, stale choice, replacement
+pier, changed helper, malformed input, offline help and offline/uninstalled revoke.
+No parent enrollment, application attempt or receiver cache is created. Format1
+and runner schema58 remain unchanged. See
+`diagnostics/2026-11-07-fleet-approval-cli.json`. This supersedes M557's pending CLI
+authoring only; automatic issuance/reconnection and UI integration remain open.
+Production, DEV, trial and persistent preview state remain unchanged.
+
+The first core test admission refused before building at the40GiB storage bound.
+The completed earlier migration-regression fixture's rebuildable Go cache was
+inventoried and retired (243,642,368 bytes), retaining its failed result, logs,
+original binary, inputs and SQL databases. Admission and the new test then passed.
+The diagnostic links the retention manifest. Release work remains deferred.
+
+
+## M559 — Ship-incarnation-bound credential retrieval (2026-11-07)
+
+Added internal `ship-route-code-v1` for automatic application authentication.
+The selected route, revision, runtime and full ship/pier binding are verified under
+the runner lifecycle lock before reading a code. Disabled/shadowed/changed routes
+refuse; Serve/Funnel configuration is rechecked. The runtime verifies native ship,
+pier continuity, process and listener before and after its private Lens read.
+Responses bind the exact request. All failure messages and audit records exclude
+raw credentials/errors. No session, plugin delivery or public code-printing CLI
+is added; standing approval remains the collector's responsibility.
+
+Synthetic runtime race checks pass normal reads, changed ship/pier/process/port,
+invalid secrets and read errors. Runner API tests pass current/manual/Serve/Funnel
+routes and deny changed/disabled/unavailable routes before credentials. Client
+checks refuse unsupported or rebound/malformed responses without exposing secrets.
+See `diagnostics/2026-11-07-fleet-route-code.json`. Schema58 and existing state remain
+unchanged. Automatic attempt integration, permission UI and reconnection remain
+open; actual live transport and release qualification remain deferred. No installed
+production/DEV/trial/preview state was accessed or changed.
+
+
+## M560 — Durable fleet issuance under standing permission (2026-11-07)
+
+Fleet application attempts now retain the exact ship/pier binding, selected route,
+runtime selection and approval revision. A fresh grant is checked atomically when
+approving, entering issuance and entering delivery, then again before credentials.
+Revocation/reapproval cannot revive queued work. Each attempt creates an independent
+origin-bound session directly; it never borrows a parent login or saves a ship code.
+Lost authentication/delivery replies retain uncertainty and block another URL for
+the same integration. Legacy attempts with unknown ship incarnation must finish
+recovery before fleet work for that identity. Cleanup remains possible after revoke.
+
+The active journal advances to format3 and fleet archives use format2. Legacy
+records/archives retain their original representation. The actual previous writer
+at dddb2cb creates pending and archived state; new readers preserve it alongside
+fleet attempts, and the original readers refuse new formats without changing bytes.
+Offline core and engine race suites pass, including revoke races, corrupt state,
+publication failure, independent fakes and lost replies. Native live tests remain
+explicitly skipped. See `diagnostics/2026-11-07-fleet-attempts.json`. Runner schema58
+is unchanged. This supersedes M559's pending journal/issuer core only; public
+automatic selection, permission UI and reconnection remain open. Production, DEV,
+trial and preview state remain untouched; release work stays deferred.
+
+Initial migration admission at600MiB refused before output/copy/build. Restricting
+the copied source to the collection dependency closure and retaining a warm cache
+allowed the declared400MiB capsule to pass. Completed binary evidence is retained
+as verified lossless gzip. No original fixture or source input was removed.
+
+
+## M561 — Automatic fleet URL selection and public connection command (2026-11-07)
+
+Added `urbit-collector app-fleet-connect` for a precise standing ship/helper grant.
+The collector checks its own current Tailscale scope, permits localhost only for a
+pinned local Unix runner, and uses explicit LAN scopes. A bounded15-second probe
+window tries eligible URLs without credentials; the selected runtime, pier, route
+and grant are rechecked before publishing an attempt. An existing request cannot
+start another selection or login. Public issuance uses Secret Service only, with
+no parent session or plaintext fallback. Status exposes nonsecret fleet ancestry
+and probe outcomes for the upcoming UI.
+
+Core race fixtures pass default deny, stale/revoked grants, fallback, foreign or
+changed tailnets, explicit LAN selection, changed runtime/pier/route/enrollment and
+cancellation. The actual public CLI passes approval through selection, independent
+login, retained receiver delivery, offline revoke, disconnect/reconcile and archive.
+Wrong-ship candidates receive no credentials; lost login/delivery and storage
+failure do not trigger another URL/login. The fixture uses a private synthetic
+Secret Service command transport; it does not qualify the actual desktop keyring
+or live networking. See `diagnostics/2026-11-07-fleet-connect.json`. Persistent
+formats are unchanged. This supersedes M560's pending public connection path; UI
+integration and automatic reconnection remain open. Installed state stays untouched.
+
+To stay under40GiB, five completed managed-test package archives were inventoried
+and removed from the task's rebuildable Go cache (168,030,208 bytes). Exact completed
+binaries, logs, source and original migration fixtures remain. Warm-cache smaller
+package tests reserve400MiB. Release qualification remains deferred.
+
+
+## M562 — Standing ship permission in the full application panel (2026-11-07)
+
+Application Connections now discovers capable remote ships even without a local
+URL. Verified ship/helper grants drive the saved Allowed switch; Connect uses the
+automatic fleet command. Revoke and Disconnect are separate, and offline/removed
+integrations retain visible revocation and recovery controls. Runtime, profile or
+selection changes invalidate review. Failed choices never become optimistic grants,
+and refreshing an uncertain attempt does not replay authentication or delivery.
+Legacy hosted-ship sign-in keeps its existing explicit per-attempt flow.
+
+Full-panel fixture06 passes grant persistence, automatic connection, revoke without
+disconnect, disconnect/reconciliation/archive, another ship's default deny, offline
+revoke, conflict refusal and lost-reply recovery. Wide/narrow screenshots were
+visually reviewed with normal sidebar and app styling. Hosted regression and actual
+service-drain fixtures pass. Model checks cover remote URLs, independent fakes and
+runtime/offline invalidation. See `diagnostics/2026-11-07-fleet-permission-ui.json`.
+
+Earlier fixture runs exposed QML object-order comparisons and an optimistic switch
+after a failed save; both are fixed. Fixture-only deadline/profile-simulation and
+component-copy issues were corrected. An unrelated historical project-fleet test
+expects Project for an observation now marked Stale; the same assertion fails on
+unchanged58f10a6. Its expectation was not used to weaken the live-selection guard.
+This supersedes M561's pending approval UI. Automatic reconnection/receiver handoff,
+clearweb help and Urgit workflow remain open. Installed state and the persistent
+manual preview are unchanged; release work remains deferred.
+
+
+## M563 — Selected-ship remote access assistance (2026-11-07)
+
+Setup → Ship URLs now opens the default agent with the exact nonsecret runner,
+ship/pier binding, runtime and saved URL revision, plus provider/action selection.
+Help supports private Serve, public Funnel, Cloudflare and custom-domain planning.
+The operator skill describes upstream/audience checks, authorized provider changes,
+verification, registry updates and targeted removal. Disabling an Omabit route is
+explicitly separate from taking its external exposure offline. No provider commands
+or automatic account/network changes are added.
+
+Prompt validation and existing dispatch/skill-install tests pass. Full-panel06
+passes all provider/action contexts, invalid URLs, selection clearing and offline
+invalidation without QML warnings; wide/narrow screenshots were inspected. Run05
+passed interactions but exposed missing fields in the inert agent stub; the fixture
+was corrected. See `diagnostics/2026-11-07-remote-access-help.json`. This supersedes
+M562's pending clearweb Help only. Reconnection/receiver handoff and native Urgit
+workflow coverage remain open. Actual provider deployment, installed networking
+and release qualification are not claimed; all installed state remains untouched.
+
+
+## M564 — Non-mutating fleet session health (2026-11-07)
+
+Added a bounded retained-session check and public `app-fleet-health` command.
+Current standing permission, exact installed helper, continuing ship/pier identity
+and current collector network eligibility precede credential access. Healthy,
+expired, rejected and unreachable observations remain distinct from missing/locked
+credentials, malformed state, redirects and wrong ship identity. Identity probes
+send no cookies; only the verified original origin receives its unexpired cookie.
+Checks serialize with disconnect and change no attempt, login, logout or delivery.
+
+Synthetic race fixtures cover21 HTTP/session cases,15 route eligibility cases and
+15 engine cases; the actual public CLI passes with private fake runner/Eyre/receiver
+and Secret Service command transport. Native live Eyre remains explicitly skipped.
+Initial route/expiry fixture mistakes were fixed without weakening the production
+guards. See `diagnostics/2026-11-07-fleet-session-health.json`. Persistent formats
+are unchanged. This is preparation for automatic reconnection, not a completed
+replacement protocol; compatible receiver handoff and Urgit workflow remain open.
+Installed state and the persistent manual preview remain untouched.
+
+The CLI test initially refused at the40GiB admission bound before creating output
+or building. Four completed, rebuildable managed/runtimequalify test cache archives
+were inventoried and retired (114,118,656 bytes); exact evidence binaries, original
+fixtures and all source remain. The admitted test then passed. Release work is deferred.
+
+
+## M565 — Native Urgit development pathway (2026-11-07)
+
+Pinned upstream7834a4e built without source or lockfile changes using Zig0.15.2 and
+Node22.23.4. One fresh, offline fake with pinned Vere/pill installed Urgit, served
+its exact built index, accepted a stock Git push into Clay, rejected an unknown-mark
+conversion without advancing the ref or adding that file, accepted a subsequent
+update, and projected an explicit Clay edit back to Git. The final contents and
+native bridge status agree. The original fixture stopped on two incorrect Hoon
+text assertions; each invocation shut down cleanly and continuation preserved the
+same pier without replaying the acknowledged initial push. Native03 passes.
+
+The upstream frontend suite is not green:83 pass and43 fail, including source-pattern
+assertions against refactored Hoon arms. Original results are preserved. Build01
+needed the resolved certificate bundle mounted into the private capsule; build02
+needed the destination directory required by upstream's clearing/copy step;
+build03 passes. These were fixture setup errors, not upstream patches.
+
+The operator skill now covers the native binding, permissions, Git credentials,
+branch selection, canonical-byte differences, uncertain responses, project checks,
+frontend packaging and the distinction between Clay-to-Git and Treaty publication.
+No Omabit adapter or new release gate was introduced. See
+`diagnostics/2026-11-07-urgit-workflow.json` for hashes and limits. This supersedes
+M564's pending Urgit pathway only; automatic fleet reconnection/receiver handoff
+remains open. All installed state and the persistent preview are untouched.
+
+Completed task Go and Zig/npm caches were inventoried and retired to admit the
+capsules within40GiB. Immutable inputs, dependency source, original fixture Git
+history, exact built desk and compressed full test logs remain. This test does not
+retain the completed fake pier: its615,211,008 allocated bytes were inventoried
+and retired after native03's successful result and clean process exit. This does not
+qualify production upgrades, arbitrary app compilation, every frontend asset,
+Urgit peer/GitHub/LFS features or Urgit-driven multi-ship releases. Release work
+remains deferred.
+
+## M566 — Theme replacement preparation (2026-11-07)
+
+An isolated Theme source branch now has a bound private-stdin preparation path.
+It compares the exact accepted old request, account and stored credential fingerprint
+before fencing transport admission. It waits for local owners and refuses unknown
+settings writes, including those whose channels were deleted. It retains accounts,
+credentials, old remote cleanup receipts and the retirement fence after a failed
+drain. Preparation sends no network traffic and installs no successor.
+
+The source is8c81ea8 in `/tmp/omabit-receiver-reconnect-040/theme`, branched from
+the clean auth source1c239c6. Private namespace tests pass34 transport/admission/
+actual-writer compatibility cases and62 connection/recovery/disconnect/admission
+cases. See `diagnostics/2026-11-07-theme-handoff-preparation.json`. The declaration
+does not advertise complete replacement. Existing journal formats are unchanged.
+An activation must revalidate under the account lock; prepared is not a reservation.
+
+This is partial receiver work for the remaining M565 fleet task. DMs cooperative
+drain, new-session activation/recovery, issuer lineage and automatic reconnection
+remain open. Installed receivers, canonical/auth source checkouts, runners, ships
+and the persistent preview are unchanged. Release qualification stays deferred.
+
+
+## M567 — DMs local retirement and drain (2026-11-07)
+
+An isolated DMs branch now has a bound bridge drain primitive that fences the old
+session before waiting for workers and streams. It preserves accounts, credentials,
+message/action uncertainty and exact remote cleanup records. Successful local
+quiescence is distinct from remote closure; unknown writes prevent handoff. Normal
+restore/read admission rejects retired sessions before network IO.
+
+Retirement upgrades the transport journal1→2; ordinary operation remains1 until
+then. The unmodified6ba5a02 writer produces the migration fixture, whose channel
+and cleanup records survive unchanged; the old reader refuses2 without rewriting.
+Interruption and lost-sync cases retain authoritative evidence. Private journal/
+cleanup48 and bridge/stream50 cases pass. Earlier run02 duplicated an imported test
+class; final03 corrects discovery. Source and hashes are recorded in
+`diagnostics/2026-11-07-dms-local-handoff.json`.
+
+The primitive is not yet wired to the receiver/bridge command loop. Cooperative
+requests, successor activation/recovery, collector lineage and automatic polling
+remain open. This advances M566's pending DMs local drain only; it is not complete
+reconnection or installed-upgrade qualification. Canonical/auth source checkouts,
+installed state, protected ships and the preview remain untouched. Release work
+stays deferred.
+
+## M568 — Theme bound replacement and recovery (2026-11-07)
+
+The isolated Theme receiver now replaces an exact accepted account with a fresh
+origin-bound session, preserving its preferences and keeping the old credential
+in a separate request-specific Secret Service application namespace. Durable
+nonsecret intent precedes credential effects. Partial installation cannot admit
+application traffic; a lost accepted reply can be observed without redelivery.
+Exact accepted ancestry permits the new session to operate while old remote
+cleanup is pending. Old cleanup cannot retire or clear the live successor.
+
+Recovery distinguishes old metadata with a new key, installed but unaccepted
+metadata, accepted successors and later standalone changes. A failed partial swap
+can restore only its exact retired predecessor slot; it never reopens that session
+for traffic. Unknown application writes are preserved and never replayed. Same-URL
+renewal, changed URLs, return to prior URLs, multiple generations, active new
+channels, locked/altered secrets and lost persistence acknowledgements are covered.
+
+The receiver/transport formats remain1/2. The new bounded active replacement
+sidecar has immutable completed receipts. An actual previous receiver journal
+writer still finishes an unrelated account; installer upgrades preserve the prior
+recognized inventory. Final private run10 passes146 tests, including22 replacement
+and16 sidecar cases. Source4365455 and the retention foundation1221aa3 are in the
+isolated Theme branch. See `diagnostics/2026-11-07-theme-session-replacement.json`.
+
+This advances M566's pending Theme activation/recovery, not the entire fleet goal.
+No complete replacement capability is advertised or consumed by Omabit yet. A
+predecessor using an older helper without this protocol must not be silently
+promoted. DMs cooperative requests/activation, collector lineage and automatic
+polling still remain. Installed state, original source checkouts, protected ships
+and the persistent preview are unchanged. Release qualification stays deferred.
+
+## M569 — Cooperative DMs replacement and exact recovery (2026-11-07)
+
+The isolated DMs bridge now serves bound same-user local control from its main
+loop while the UI is idle. Preparation runs outside its worker pool and the
+receiver releases account.lock while workers persist positive receipts. Original
+request/account/fingerprint bindings are rechecked after drain. Missing sockets
+and free leases alone do not prove prior worker exit. Exact quiescent generation
+receipts now allow cleanup while a paused old bridge process remains alive;
+unrelated live or unknown actors retain their existing refusal.
+
+The receiver supports preparation, independent fresh-session replacement and
+accepted-status observation. Private nonsecret sidecar intent and request-specific
+Secret Service retention precede overwrite; pending installation denies transport.
+The paused bridge restores only its exact accepted successor with a fresh pool,
+without another login or UI restart. Accepted ancestry keeps original cleanup
+pending without blocking new traffic. Bound control can close ancestor channels
+while the successor bridge remains active; credentials/account removal still
+compare the original binding. Unknown application writes are never replayed.
+
+Partial-key/account/acceptance and lost-clear recovery preserve originals and
+later standalone changes. DMs09 found an absent temporary file masking the
+original interruption after completed metadata rename; cleanup now suppresses
+only that secondary FileNotFoundError. DMs10 passes203 tests; follow-up11 passes29
+replacement/control/shutdown cases including saved-session restore retry. Theme
+follow-up201fdd5 passes23 replacement cases and preserves independent credentials
+changed during partial swap. DMs05 had three unmatched requested patterns; the
+harness now refuses unmatched patterns and later full-suite runs supersede it.
+
+Source464076b (control foundation9826d78) remains isolated. See
+`diagnostics/2026-11-07-dms-session-replacement.json`. This supersedes M567's pending
+DMs cooperative/receiver path at the private source-fixture level only. Receiver
+capability advertisement, collector lineage/actual-writer migration, automatic
+polling and assembled native qualification remain. Current format/readability
+contracts and helper inventory are recorded; older cached helpers must not be
+silently promoted. Installed state, protected ships, original source checkouts and
+the persistent preview remain untouched. Release qualification stays deferred.
+
+
+## M570 — Collector replacement ancestry and issuer recovery (2026-11-07)
+
+The collector now recognizes replacement protocol2 only from an exact approved
+helper declaration. Old cached1 generations remain1 after an installed update.
+Preparation, replacement and status use the existing bounded private launcher.
+No installed receiver is promoted or executed merely to discover capability.
+
+Applications journal4 records immutable predecessor intent before preparation or
+issuance, and records the accepted successor link atomically with connection. A
+shared integration/ship lease serializes every generation, including health and
+old cleanup. Original credentials, origins, bindings and pending cleanup remain
+separate. Closed ancestors use immutable history3; cycles, missing ancestry,
+changed helpers/incarnations and competing active branches are refused. Existing
+formats remain readable; actual unmodified collection sources at2552804 create
+previous3 state and refuse populated4 without changing it. Reopens preserve the
+original evidence. The fixture manifest pins all25 retained source files.
+
+The issuer prepares only with the exact retained predecessor credential, issues
+one independent session and invokes bound replacement once. Reused predecessor
+cookies are neither delivered nor revoked as new sessions. Lost delivery replies
+use bound status observation; unknown replies remain pending, with no repeated
+login or offer. Known acceptance survives restart and records lineage before
+honoring a concurrent permission revocation. Interrupted preparation closes only
+the known-unissued child; it does not pretend the old receiver resumed. Cleanup
+remains bound to each original session. No application write is replayed.
+
+Full collector and issuer race suites and focused Eyre validation/health/logout
+fixtures pass. See `diagnostics/2026-11-07-fleet-replacement-issuer.json` for exact
+logs, binary hashes and previous-writer provenance. This advances M569's pending
+collector work at the private source level. Public reconnect/recovery wiring,
+automatic polling, capability advertisement in the two receiver branches and
+assembled qualification remain. Installed plugins/runners, protected ships and
+the persistent preview are unchanged; release qualification remains deferred.
+
+
+## M571 — Bounded fleet reconnection CLI and desktop polling (2026-11-07)
+
+`app-fleet-reconnect` selects an eligible registered route under the current exact
+ship/helper grant, retains the generation and publishes bound successor intent.
+It leaves healthy sessions unchanged. Both installed and cached predecessor
+generations must support replacement. `app-recover` observes lost replacement
+replies instead of revoking an accepted successor by inference. Public views show
+predecessor/successor links and discovery reports complete helper capability.
+
+`app-fleet-maintain` performs one bounded health/reconnect or lineage cleanup step.
+Known failed children wait five minutes, with three failures requiring review.
+Automatic maintenance never archives failures to evade this budget. An explicit
+Disconnect durably disables pending automation on the selected attempt and its
+unaccepted handoff links; cleanup of an already accepted predecessor does not
+stop the live successor. Closed records with already published archive receipts
+remain unchanged. A manual explicit retry can resume a retired predecessor only
+after all prior child effects are reconciled and current permission still holds.
+
+The desktop schedules at most one eligible step per minute, serially, while
+activation is enabled. It refreshes inventory periodically and never implicitly
+allows permissions or chooses a LAN scope. Initial uncertain logins stay fenced.
+The full Setup panel reports current URLs separately from previous-session cleanup
+and exposes recovery/reconnect controls. Wide/narrow screenshots were reviewed;
+recovery status now wraps independently from long URLs. The operator skill covers
+maintenance, exact lineage, old-helper limits and recovery without replay.
+
+Public CLI fixtures pass healthy no-op, replacement, lost acknowledgement/restart,
+old cleanup, bounded retry and explicit cancellation. The first CLI run exposed
+a fixture alias overwriting the saved successor revision; the collector correctly
+refused it. The fixture was fixed without weakening revision checks. Final CLI03,
+full registry/auth race suites, full-panel03, hosted UI regression and skill
+validation/package checks pass. The default Python lacked PyYAML; the unchanged
+validator passed under system Python. Evidence is in
+`diagnostics/2026-11-07-fleet-reconnect-cli-ui.json`.
+
+This advances M570's public/desktop work. Real Theme/DMs declarations remain1
+until the assembled receiver/keyring/transport pathway is qualified. Source
+fixtures do not qualify a native install, production Tailnet or stable release.
+Production/DEV/trial plugins/runners, protected ships, original receiver checkouts
+and the persistent manual preview remain untouched.
+
+## M572 — Assembled reconnect and feature implementation closeout (2026-11-07)
+
+The actual collector public command dispatcher, both retained receiver helpers,
+real private Secret Service and running Theme/DMs consumers pass the assembled
+private test. Each plugin performs an initial connection and three replacements:
+same URL, alternate URL with the original stream/route unavailable, and lost
+delivery/status acknowledgement. Fresh issuance/code counts, exact helper calls
+and strict cookie-origin checks pass. Original cleanup remains pending offline,
+then completes and archives without stopping the accepted successor. Both consumers
+exit cleanly with their UI input pipes still open.
+
+This test exposed and fixed three Theme gaps: following the selected desktop hub
+through accepted handoff ancestry across URL changes; stopping its input reader
+without a Python buffered-I/O shutdown abort; and accepting the exact receiver's
+durable cleanup receipt for a retained in-memory watch marker. Hub selection does
+not enable sync, unpause the user or adopt an unrelated same-named ship. Unknown
+records do not prove cleanup. The collector now classifies HTTP502/503/504 health
+responses as unavailable routes, without treating them as revocation evidence.
+
+The final assembled run is `/tmp/omabit-real-reconnect-07`. Earlier failed runs
+and fixture corrections are recorded, including an archived-flag mistake, omitted
+Talon accent behavior and an incorrect synthetic expired-token response. Final
+Theme regression14 passes151 tests; focused health/validation tests pass with the
+race detector. Skill validation and five packaging tests pass. CLI documentation
+was regenerated from172 actual command/topic help entries in a networkless private
+HOME; help created no registry/state.
+
+Theme source `821242e` and DMs source `c7b7d15` now advertise declaration2 on their
+isolated `codex/0.4.0-session-reconnect` branches. All tested Python runtime bytes
+match those commits. Only profile/manifest names, declaration capability and an
+inventoried lost-reply wrapper were adapted in the capsule. Theme desktop effects
+were inert; its coordinator, watch and Talon bridge were actual code. DMs used its
+actual main loop/control. Runner/Eyre peers were synthetic, so this does not claim
+a new native Urbit, provider/Tailnet deployment, installed upgrade or release gate.
+Older cached version1 helpers retain their original capability and cleanup path.
+
+This supersedes M571's pending assembled receiver/capability work and closes the
+approved feature implementation scope. Original migration fixtures and earlier
+native desk/Urgit evidence remain authoritative within their recorded limits.
+Release qualification/publication remains explicitly deferred. No installed
+production/DEV/trial plugin, runner, ship, desktop/keyring or persistent preview
+was changed. Exact source identities, tests and limitations are recorded in
+`diagnostics/2026-11-07-real-receiver-reconnect.json`.
+
+## M573 — configurable container RAM and CPU limits (2026-11-12, implemented)
+
+The user added per-container resource configuration to0.4.0 and explicitly chose
+RAM and CPU limits. Individually managed ships now expose1–16GiB RAM and1–16 whole
+CPU cores, retaining4GiB/2CPU defaults. Changes require stopped/uninitialized state
+and no active operation, recovery or uncertain provisioning/maintenance. The workflow
+is Stop → reload runtime settings → save → Start; its pier is retained. No existing
+ship or installed plugin/runner was operated on to implement this request.
+
+Schema59 fences optional desired and immutable per-container limits. Migration
+preserves original bodies; absent fields retain historical limits. Old-client edits
+preserve omitted limits. Creation records intent before Docker; probes, containment,
+maintenance and stats check the recorded ceiling. Requested versus recorded limits
+remain distinct, and CPU charts preserve per-core units. Loom and start-admission
+policy remain independent. Project members/private gateways keep their own fixed
+contracts; this feature does not silently modify their separate lifecycle protocol.
+
+Nondefault handoffs require capability at both endpoints before source fencing and
+sign both limits. Explicit defaults normalize to the old settings wire shape, so
+restoring4/2 does not break otherwise compatible moves to an older runner. The
+actual schema58 writer66c641b and its receipts survive migration/reopen; that same
+writer refuses59 unchanged. Original fixture SQL/checksum is retained in source.
+
+Seventy-five focused Go tests pass with the race detector, covering resize/restart,
+containment, metrics, concurrency, old clients, signed moves and migration. UI model
+checks, real wide/narrow QML controls with inert callbacks, skill validation and82
+actual collector help entries pass. See [validation](runtime-settings-validation.md)
+and `diagnostics/2026-11-12-container-resources.json` for scope/evidence and initial
+fixture corrections. This supersedes fixed4GiB/2CPU assumptions for the capable
+standalone runtime only; historical qualification records retain their original
+meaning. Release qualification, installed upgrades and a live16GiB workload remain
+separate and deferred. Source integration targets only the0.4.0 feature branch;
+production/DEV/trial installations, ships and the persistent preview are unchanged.
+
+## M574 — persistent resource-control preview updated (2026-11-12, installed preview only)
+
+The user explicitly authorized updating the isolated preview for manual RAM/CPU
+review while preserving production. `prepare-container-resources-preview.py` now
+creates the full actual panel with a fixed Python simulation for resource edits,
+Start and Stop. It contains no collector, Docker, SSH or runner helper. New choices
+persist in a separate `resources.json`; permission state remains independent.
+Project members stay outside standalone resizing; running/observer/offline contexts
+refuse resource edits. A RAM & CPU shortcut reveals the normal Overview editor.
+
+The full-panel fixture `/tmp/omabit-resources-preview-test-03` passed save/start/stop,
+requested versus applied limits, readonly contexts, Setup tree navigation, reopening
+saved values and byte-preservation of the original permission file. First test
+attempts corrected a nonexistent sidebar test ID and a chart/control name collision
+in the test's global selector. Real controls are scoped to their editor. Screenshots
+were inspected; no QML warnings/errors occurred in the passing offscreen runs.
+
+Preview source6f9b91a was installed at
+`~/.local/share/omabit-policy-preview-040`, preserving its previous source under
+`versions/before-container-resources-20261112`. Original permission SHA256 before
+and after is recorded in `versions/container-resources-update-20261112.json`.
+The native Wayland window loaded and its supervisor was confirmed open from the
+host process namespace (a sandboxed PID view cannot establish that status). One
+native Qt Wayland text-input warning was nonfatal; the window rendered normally.
+The existing separately named desktop launcher is unchanged. This supersedes
+M573's unchanged-preview note only; production/DEV/trial plugins, runner services,
+ships and the active desktop shell were not inspected or changed. All manual
+resource effects in this window are simulated. No installed runner qualification
+or release claim follows from this preview update.
+
+## M575 — per-ship controls and persistent real DEV review (2026-11-12, installed)
+
+The user removed the resource header shortcut, requested RAM/CPU in initial boot
+advanced settings, enabled Agent Help, per-ship URL configuration, and a real DEV
+runner/widget while preserving production. They explicitly authorized local
+TRIAL retirement. This supersedes M574's simulated-only review and the old
+blanket trial/DEV exclusion only for this fresh namespace and local retirement.
+
+Standalone fake/comet/key boot forms and collector commands now carry validated
+1–16GiB/1–16CPU limits. Omission retains4/2 and old-runner compatibility; explicit
+limits require capability. The ship's runtime editor remains stopped-only. URLs
+now belong to the selected fleet ship's own tab, with binding invalidation on
+selection change; bulk CLI workflow remains unchanged. The preview header shortcut
+is removed. Agent Help is enabled in the live panel, correctly discovers Opencode,
+validates its bundled skills and passes the separate review profile. No real agent
+session was launched and no global skills were installed automatically.
+
+A root-owned named development profile now supports `/srv/dev/urbit-NAME`, retaining
+the exact old defaults and requiring clean bounded names, its own owner record,
+pier root, state and runtime directory. The fresh `/srv/dev/urbit-040` engine and
+runner booted a new fake~zod at4/2, stopped, saved16/4 and restarted healthy with
+applied revision2 and the original pier. Actual Docker Memory/NanoCpus matched.
+This is real configuration/restart evidence, not a16GiB pressure/stress test or
+release qualification. Its live URL registry also returned the verified managed
+local route. Default publishing policy was not opened.
+
+Native activation exposed three missing qmldir entries; the shipped registry is
+fixed and previews now consume it rather than synthesizing registrations. Native
+registry tests, CLI bounds/capability/request tests with race detection, scoped
+boot-form/resource/URL/Agent Help QML tests, storage admission, skill packaging and
+172 networkless CLI help entries pass. Early synthetic CLI fixtures needed private
+registry permissions and matching operation receipts; the removed shortcut also
+required fixing the resource fixture's navigation. Those failures are retained.
+
+Quickshell cached the first partial external module's failed types and file names.
+The working plugin was staged completely, then atomically installed at a fresh
+namespace `thelifeandtimes.omabit.review040`; the production shell was not restarted.
+The menubar says DEV and the application launcher is Omabit0.4.0 DEV. Local TRIAL
+and failed DEV copies/profile records were archived, preserving credentials; no
+rooftop action or revocation occurred. The simulated preview data and earlier
+human DEV piers are preserved. The new owner directory was provisioned through
+Polkit; only the two new user units were enabled.
+
+Generated npm caches were reclaimed; retained identical dependency files were
+hard-linked with hashes while preserving paths/content. Completed Go compiler
+cache was retired with a manifest after retaining compiled artifacts. Combined
+storage including both DEV roots, local plugin/archive and explicit unreadable
+rootless-work reserves was39.218GiB, below40GiB. Do not start another experiment
+without fresh admission. Full provenance, failures, scripts, receipts and entry
+points are in [the live review guide](native-review-0.4.0.md) and
+`diagnostics/2026-11-12-live-dev-review.json`. Production plugins, services and
+protected ships were not modified or operated on. Release qualification remains
+deferred.
+
+## M576 — Agent Help session lifetime fixed (2026-11-12, installed in DEV)
+
+The user reported that Opencode opened from Agent Help then closed after a few
+seconds. The DEV controller's actual error confirmed `TimeoutExpired` at 15 seconds.
+The helper used `subprocess.run(..., capture_output=True, timeout=15)` for Omarchy's
+interactive launcher. Local Omarchy source shows the exec chain through
+`omarchy-agent-prompt`, `omarchy-agent`, `omarchy-launch-tui`, `setsid` and `uwsm-app`.
+An attached launcher remains alive with its terminal; timing out that subprocess
+ends the interactive session. This was Omabit's lifetime bug, not evidence of an
+Opencode crash. The old prompt and user conversation were not retained in evidence.
+
+Launch now uses Popen with a separate process session, closed inherited descriptors
+and stdin/stdout/stderr on /dev/null. A half-second wait checks immediate startup
+failure; timeout there means the interactive session is running and is acknowledged
+without terminating it. There is no interactive-session deadline. The QML reader's
+own bounded deadline remains unchanged, and skill-installation behavior is unchanged.
+Spawn/early exit failures use a generic error without reflecting the prompt.
+
+Eleven helper tests pass. The actual full-panel helper fixture now has a persistent
+inert-agent mode: two launches survived beyond 21 seconds, past both the old
+15-second launcher deadline and 20-second QML reader deadline, with distinct session
+IDs and private stdio. The test also suspended the service and hid the panel.
+Two early fixture attempts exited because the simulated preview explicitly quits
+when hidden; the corrected fixture removes that test-only hook and keeps a second
+inert window, like the surrounding desktop. No real agent, network, production
+profile or runner was used by the regression test. Evidence is in
+`/tmp/omabit-agent-ui-lifetime-03` and
+`diagnostics/2026-11-12-agent-help-lifetime.json`.
+
+Only the DEV installation's `app040/agent-help.py` was atomically replaced, after
+checking its original hash. Its previous bytes and patch receipt are preserved in
+`/srv/dev/urbit-040/desktop`. No shell or runner restart, global agent setting,
+production plugin change or automated real-agent launch occurred. M575's initial
+launch-readiness evidence did not cover terminal lifetime; this regression closes
+that gap. Release qualification remains deferred.
+
+## M577 —0.4.0 qualification authorized (2026-11-12, in progress)
+
+The user accepted RAM/CPU and Agent Help launch, delegated real app-development
+and remote URL/receiver testing, and authorized the release qualification and
+isolated upgrade rehearsal. This supersedes M572–M575's deferral of that phase,
+not their stated evidence limits. Live provider testing remains with the user.
+Production and manual-review state remain excluded. The temporary aggregate
+experiment cap is48GiB by explicit user approval, returning below40GiB through
+retirement of only new disposable outputs. See releases/0.4.0/preparation.md.
+
+## M578 —0.4.0 qualification and isolated manual upgrade VM (2026-11-12)
+
+M577's authorized qualification now has a frozen candidate at
+`a9623329a538ebf83d63365053d2d1011ade091e`. Exact archive, native desktop and
+0.3.7→0.4.0 installed-service rehearsal pass. The actual CLI/SSH scenario exposed
+a missing source-transfer descriptor/body allowance in the bridge; the bounded
+streaming fix, identity/capability checks, cancellation/deadline tests and full
+rebuilt VM rerun pass. Candidate02's failure remains recorded. Source/frontend
+publication and two receivers pass in a separate native fixture with a synthetic
+managed lifecycle backend. The real installed-runner scenario covers source
+publication; the separate routed fleet scenario uses actual Theme/DMs helpers,
+private Secret Service and standing approvals. It does not certify public Tailnet,
+Tunnel/DNS setup or ship content publication on a live provider.
+
+See releases/0.4.0/qualification.json, rehearsal.json and local-validation.json
+for exact inputs, source/race coverage, CI and scope limits. The earlier complete
+source CI passed. Exact release PR checks remain required before merging; no
+qualification record waives them. Companion receiver rollout must coordinate the
+compatible Theme/DMs helper versions recorded in the fleet evidence. The tested
+private helper branches are not proof that public plugin distributions contain
+those versions. Stable publication and production upgrades are not authorized.
+
+At the user's request, a separate persistent manual VM was prepared from the
+verified pristine base under `patch-upgrade-040-manual-review`. It has actual
+0.3.7 services/schema47, fresh fake~zod running and~nec stopped, and both sealed
+desktop bundles staged. F5 loads0.4.0; the service update is left to the user.
+Its real Hyprland desktop and stock Omarchy Polkit prompt were inspected; the
+probe was canceled without authorizing an update. The guest config was backed up.
+No host desktop config or existing plugin was changed. The local viewer is6084,
+with its own unit/IPC; no external guest NIC exists. The launcher can only resume
+or gracefully stop this disk and enforces40GiB aggregate/4GiB own allocation.
+
+The approved temporary48GiB allowance is no longer needed: new completed test
+VMs, native fixture piers, compiler cache, superseded unpublished candidates and
+redundant build/download copies were retired with manifests. Compact results and
+hashes remain. Charged storage with the new running review VM was39.485GiB before
+small verification downloads, which were also retired. Both existing DEV roots,
+all historical/manual environments, protected ships and production remain intact.

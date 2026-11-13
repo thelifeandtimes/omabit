@@ -57,11 +57,13 @@ type ApplicationAttempt struct {
 	Revision           uint64            `json:"revision"`
 	// Sticky once delivery might have happened. Cleanup cannot infer that the
 	// receiver removed its local account merely because its session was revoked.
-	ReceiverOutcome        string    `json:"receiver_outcome,omitempty"`
-	ReceiverReconciliation bool      `json:"receiver_reconciliation"`
-	Outcome                string    `json:"outcome,omitempty"`
-	ApprovedAt             time.Time `json:"approved_at"`
-	UpdatedAt              time.Time `json:"updated_at"`
+	ReceiverOutcome        string                 `json:"receiver_outcome,omitempty"`
+	ReceiverReconciliation bool                   `json:"receiver_reconciliation"`
+	Outcome                string                 `json:"outcome,omitempty"`
+	ApprovedAt             time.Time              `json:"approved_at"`
+	UpdatedAt              time.Time              `json:"updated_at"`
+	Fleet                  FleetApplication       `json:"fleet,omitzero"`
+	Replacement            ApplicationReplacement `json:"replacement,omitzero"`
 }
 
 type applicationsFile struct {
@@ -69,7 +71,33 @@ type applicationsFile struct {
 	Attempts []ApplicationAttempt `json:"attempts"`
 }
 
+func (r *Registry) saveApplications(state applicationsFile, newAttempt bool) error {
+	if err := r.validateApplications(state); err != nil {
+		return err
+	}
+	data, err := json.MarshalIndent(state, "", "  ")
+	if err != nil {
+		return err
+	}
+	limit := maxRegistryBytes
+	// Reserve enough for every existing record's longer terminal fields and
+	// revision. Hitting the active byte limit must not prevent cleanup later.
+	if newAttempt {
+		limit -= 64 * 256
+	}
+	if len(data)+1 > limit {
+		return ErrApplicationLimit
+	}
+	return r.writeFile("applications.json", state)
+}
+
 func (a ApplicationAttempt) valid() bool {
+	if !a.Replacement.valid(a) {
+		return false
+	}
+	if a.Fleet != (FleetApplication{}) && (!a.Fleet.valid() || a.Origin != a.Fleet.Request.Route.Origin || a.Ship != a.Fleet.Request.Binding.Ship || a.ConnectionID != FleetConnectionID(a.Fleet.Request.Binding) || a.ConnectionRevision != a.Fleet.GrantRevision) {
+		return false
+	}
 	origin, err := eyre.Origin(a.Origin)
 	if err != nil || origin != a.Origin || !eyre.ValidShip(a.Ship) || !validRef(a.ID) || !validRef(a.ConnectionID) || !validRef(a.SessionRef) || a.ConnectionRevision == 0 || !a.Target.Valid() || (a.Credentials != "secret-service" && a.Credentials != "file") || a.Authority != "eyre-owner-session" || a.Revision == 0 || a.ApprovedAt.IsZero() || a.UpdatedAt.Before(a.ApprovedAt) {
 		return false
@@ -79,6 +107,10 @@ func (a ApplicationAttempt) valid() bool {
 		return false
 	}
 	switch a.Phase {
+	case "preparing", "prepared":
+		return a.Replacement.PreviousID != "" && !a.ReceiverReconciliation && a.Outcome == ""
+	case "retiring":
+		return a.Fleet.Version == 1 && a.ReceiverReconciliation && a.Outcome == ""
 	case "approved", "issuing", "saved":
 		return !a.ReceiverReconciliation && a.Outcome == ""
 	case "delivering", "connected":
@@ -112,19 +144,11 @@ func (r *Registry) readApplications() (applicationsFile, error) {
 	}
 	d := json.NewDecoder(bytes.NewReader(data))
 	d.DisallowUnknownFields()
-	if d.Decode(&state) != nil || d.Decode(new(any)) != io.EOF || (state.Version != 1 && state.Version != 2) || state.Attempts == nil || len(state.Attempts) > 64 {
+	if d.Decode(&state) != nil || d.Decode(new(any)) != io.EOF || (state.Version < 1 || state.Version > 4) || state.Attempts == nil || len(state.Attempts) > 64 {
 		return state, ErrApplicationJournal
 	}
-	ids, refs, active := map[string]bool{}, map[string]bool{}, map[string]bool{}
-	for _, a := range state.Attempts {
-		key := a.Origin + "\x00" + a.Target.PluginID + "\x00" + a.Target.Profile
-		if !a.valid() || ids[a.ID] || refs[a.SessionRef] || a.blocksApproval() && active[key] {
-			return state, ErrApplicationJournal
-		}
-		ids[a.ID], refs[a.SessionRef] = true, true
-		if a.blocksApproval() {
-			active[key] = true
-		}
+	if err := r.validateApplications(state); err != nil {
+		return state, err
 	}
 	return state, nil
 }
@@ -163,13 +187,13 @@ func (r *Registry) ApproveApplication(ctx context.Context, expected Ship, id str
 		}
 		for _, a := range state.Attempts {
 			if a.ID == id {
-				if a.ConnectionID != expected.ID || a.ConnectionRevision != expected.Revision || a.Origin != expected.Origin || a.Ship != expected.Ship || a.Credentials != expected.Credentials || a.Target != target {
+				if a.Fleet != (FleetApplication{}) || a.ConnectionID != expected.ID || a.ConnectionRevision != expected.Revision || a.Origin != expected.Origin || a.Ship != expected.Ship || a.Credentials != expected.Credentials || a.Target != target {
 					return ErrApplicationConflict
 				}
 				result = a
 				return nil
 			}
-			if a.blocksApproval() && a.Origin == expected.Origin && a.Target.PluginID == target.PluginID && a.Target.Profile == target.Profile {
+			if a.blocksApproval() && (a.Origin == expected.Origin || a.Fleet.Version != 0 && a.Ship == expected.Ship) && a.Target.PluginID == target.PluginID && a.Target.Profile == target.Profile {
 				return ErrApplicationConflict
 			}
 		}
@@ -194,7 +218,7 @@ func (r *Registry) ApproveApplication(ctx context.Context, expected Ship, id str
 			Origin: expected.Origin, Ship: expected.Ship, Credentials: expected.Credentials, SessionRef: NewSessionRef(), Target: target,
 			Authority: "eyre-owner-session", Phase: "approved", Revision: 1, ApprovedAt: now, UpdatedAt: now}
 		state.Attempts = append(state.Attempts, result)
-		return r.writeFile("applications.json", state)
+		return r.saveApplications(state, true)
 	})
 	if err != nil {
 		return ApplicationAttempt{}, err
@@ -226,13 +250,22 @@ func (r *Registry) WithApplication(ctx context.Context, id string, fn func(*Appl
 		return err
 	}
 	found := false
+	var scope ApplicationAttempt
 	for _, a := range all {
 		if a.ID == id {
 			found = true
+			scope = a
 		}
 	}
 	if !found {
 		return ErrApplicationConflict
+	}
+	if scope.Fleet.Version == 1 {
+		lease, err := r.applicationScopeLock(scope)
+		if err != nil {
+			return err
+		}
+		defer lease.Close()
 	}
 	f, err := privateFile(filepath.Join(r.dir, "application-"+id+".lock"), os.O_CREATE|os.O_RDWR)
 	if err != nil {
@@ -269,6 +302,10 @@ func (tx *ApplicationTransaction) Advance(ctx context.Context, phase, outcome st
 	allowed := false
 	switch old.Phase {
 	case "approved":
+		allowed = phase == "issuing" && old.Replacement.PreviousID == "" || phase == "preparing" && old.Replacement.PreviousID != "" || phase == "closed" && outcome == "not-issued"
+	case "preparing":
+		allowed = phase == "prepared" || phase == "closed" && outcome == "not-issued"
+	case "prepared":
 		allowed = phase == "issuing" || phase == "closed" && outcome == "not-issued"
 	case "issuing":
 		allowed = phase == "saved" || phase == "unresolved" || phase == "revoking" || phase == "closed" && outcome == "not-issued"
@@ -276,7 +313,7 @@ func (tx *ApplicationTransaction) Advance(ctx context.Context, phase, outcome st
 		allowed = phase == "delivering" || phase == "revoking" || phase == "unresolved"
 	case "delivering":
 		allowed = phase == "connected" || phase == "revoking" || phase == "unresolved"
-	case "connected":
+	case "connected", "retiring":
 		allowed = phase == "revoking"
 	case "unresolved":
 		allowed = phase == "revoking"
@@ -326,8 +363,16 @@ func (tx *ApplicationTransaction) replace(ctx context.Context, old, next Applica
 			if a != old {
 				return ErrApplicationConflict
 			}
+			if old.Fleet.Version == 1 && (next.Phase == "preparing" || next.Phase == "prepared" || next.Phase == "issuing" || next.Phase == "delivering") {
+				if err := tx.r.currentFleetGrant(old.Fleet, old.Target); err != nil {
+					return err
+				}
+			}
+			if err := replaceApplicationParent(&state, old, next); err != nil {
+				return err
+			}
 			state.Attempts[i] = next
-			return tx.r.writeFile("applications.json", state)
+			return tx.r.saveApplications(state, false)
 		}
 		return ErrApplicationConflict
 	})

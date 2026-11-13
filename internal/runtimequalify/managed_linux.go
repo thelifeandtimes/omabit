@@ -59,6 +59,10 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 	if !protocol.ValidRecordedLoom(protocol.EffectiveLoom(state.Loom)) {
 		return nil, errors.New("invalid loom")
 	}
+	if !protocol.ValidContainerResources(state.MemoryGiB, state.CPUCores) {
+		return nil, errors.New("invalid container resources")
+	}
+	d.memoryGiB, d.cpuCores = state.MemoryGiB, state.CPUCores
 	d.loom, d.nativeControl = protocol.EffectiveLoom(state.Loom), state.NativeControl
 	d.profile, d.managed, d.hostPort = ProfileHTTP, true, state.Port
 	d.fake = state.Fake
@@ -158,7 +162,7 @@ func managedSession(state *ManagedState, persist func(ManagedState) error, d dep
 				return nil, errors.New("invalid recorded launch engine version")
 			}
 			entry, args := baseCommand(c.Kind)
-			if !protocol.ValidRecordedLoom(protocol.EffectiveLoom(c.Loom)) || c.NativeControl && (entry != "/bin/urbit" || len(args) == 0 || args[0] != "-t") {
+			if !protocol.ValidContainerResources(c.MemoryGiB, c.CPUCores) || !protocol.ValidRecordedLoom(protocol.EffectiveLoom(c.Loom)) || c.NativeControl && (entry != "/bin/urbit" || len(args) == 0 || args[0] != "-t") {
 				return nil, errors.New("invalid recorded runtime settings")
 			}
 			if c.SnapshotMinutes != 0 && c.SnapshotMinutes != DefaultSnapshotMinutes {

@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "result": "passed",
+  "kind": "canonical source status and schema52 baselines",
+  "original_source": "323ed81cdc61b5d2d6ba084ea6724da3280b9daf",
+  "original_writer_proof": "/tmp/omabit-desk-source-original-migration-01/result.json",
+  "original_writer_proof_sha256": "dd406e73675b05db8fa38b798922aa3d8e209a5eca978a7561d6f89805beab60",
+  "fixtures": {
+    "/tmp/omabit-desk-source-api-02/result.json": "e0409cd6d945b64607fc72e7be28f8eadfda919112e342f0e74bb1c6e389e39f",
+    "/tmp/omabit-desk-source-collection-01/result.json": "7dd29243139d7f5d3e10247f37c1ad178ff3f58ec5b331cba8d8dbc842168d12",
+    "/tmp/omabit-desk-source-regression-01/result.json": "df36f2d881ea1276cb0c6bf6d94c6989b540198e63bcb6a94b90c2e01c2645ad",
+    "/tmp/omabit-desk-source-auth-02/result.json": "0d5c5d2ebbdbbefd4a68242150a15a48d00267784aa254036d00641cd2ae391e",
+    "/tmp/omabit-policy-ui-source-01/qml.log": "50c46f06970f85c4fa2155a23347aaf22b4fe193fd8bb12a1bc2117e5b3b285b",
+    "/tmp/omabit-policy-ui-source-02/qml.log": "f9525410cdb035fbe229e24ad0f8f4167c59ef5e0c6a2ed8dd104d0f5a95cd6d",
+    "/tmp/omabit-policy-tree-test-source-01/data/state/window.log": "12761d9339597e1454298fa9e289b77d34da9f819c85d19ea34df3e106d86edb"
+  },
+  "source_sha256": {
+    "internal/deskwork/baseline.go": "127838ae7c0a2b37cbbcdab4b2290f1939b5d4559011333df3cb36fe12a52ede",
+    "internal/managed/desk_source_store.go": "3c9c095b8ed2f6e1c1c83866705be76a08ff59feb684d0207b6e4481d59ec8ea",
+    "internal/managed/schema.go": "45f8ce42d5063969f3b2efed9f7bec31c05428edd55f57159ef0d8822f835ef3",
+    "internal/managed/store.go": "de5ea40afcd110a0cf4f744f7664eb290158bef855ec86012effab54673d0506",
+    "internal/managed/testdata/desk-schema51.sql": "a2ce5d814a85db37058004d8e9fe292a7e29a231118bd91b1e49359babb725af",
+    "internal/managed/testdata/desk-schema51.json": "8450e951279b86bc8a9377107a1984c73a4d72dc73b4d1e62cf7098a83a3942b",
+    "internal/managed/desk_source_linux.go": "37c15375ccf9ded19b7f690be569f00fc209e71482ffd361b96de4d02c29f386",
+    "internal/protocol/desk_source.go": "af1cefa4899f8036b1edbf7716933ae422bbbd1d21275c928ef9fd0dc0fb7ff6",
+    "internal/client/desk_source.go": "07b9e8bd5e4a1a30ed52aa67cf4ba39ffcb1d3f11e43a20eb6dc2717041948c1",
+    "internal/collection/desk_source.go": "0178ccd4b43bfee4f8f4992afbbb4827f65cefa3019da0459b1836f559463310",
+    "plugins/omabit/AppSource.js": "855257c0076b71af69ea23b542c0471ec41f80bad94bf9fad115c890765c9027",
+    "plugins/omabit/AppSource.qml": "2be6201cf2483db9d203949d6f570dd24cfbec208be2b776eef3899816e1cb17",
+    "plugins/omabit/AppSourcePane.qml": "a32a1b974c4b4d0934f93851c6d5a155fe054dd7ab56e1805ae4f8d5e9facad3",
+    "plugins/omabit/AppWorkflowPane.qml": "1b43982ffd6a96fd600dfb4239bb7e38ff8c70b09c18930434f7c67063794910"
+  },
+  "checks": [
+    "original schema51 workflow/policy/dispatched journal preserved",
+    "schema51 reader refuses actual52 unchanged",
+    "baseline recorded only on confirmed equality, preserved on errors/differences",
+    "baseline isolated by runtime/configuration/workflow/source/target generation",
+    "malformed counts, stale responses, wrong identities and unsafe paths refused",
+    "no source writes or policy changes from inspection",
+    "wide/narrow selected-desk alerts and stale prior observations",
+    "deactivation rejects late source responses",
+    "full Setup/sidebar/tree/zoom and reopen regression",
+    "operator skill validation and reproducible skill packaging"
+  ],
+  "failed_attempts": {
+    "auth_01": "fixture omitted JSON content type; runner correctly refused415 before payload validation; corrected fixture passed02"
+  },
+  "limits": [
+    "new API/UI composition tested with inert/private fixtures; managed-runtime end-to-end pending",
+    "native canonical engine evidence is M540/probe19, not a new native run",
+    "at most256 file details, exact total counts; no background fleet-wide source watcher",
+    "Urgit uses native status and release rules",
+    "production/DEV/trial and persistent human preview unchanged",
+    "not release qualification"
+  ]
+}

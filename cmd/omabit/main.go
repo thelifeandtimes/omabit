@@ -38,7 +38,7 @@ func run(ctx context.Context, args []string) int {
 	stateDir := flags.String("state-dir", "", "Omabit preference directory")
 	flags.StringVar(&format, "format", "json", "json or text")
 	flags.Usage = func() {
-		fmt.Fprintln(os.Stdout, "Usage: omabit [--format text] [--config-dir DIR] [--state-dir DIR] COMMAND\nCommands: setup, setup-status, service-upgrade-status, service-upgrade --expected-runner-id ID --target-sha256 SHA --acknowledge-host-changes, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID")
+		fmt.Fprintln(os.Stdout, "Usage: omabit [--format text] [--config-dir DIR] [--state-dir DIR] COMMAND\nCommands: ship-routes, ship-routes-configure, desk-review-frontend, desk-plan-frontend, desk-upload-frontend, desk-receiver-status, desk-review-install, desk-plan-install, desk-install, desk-review-adoption, desk-plan-adoption, desk-adopt, desk-review-release, desk-plan-release, desk-release, desk-app-status, desk-review-commit, desk-plan-commit, desk-commit, desk-plan-stage, desk-stage, desk-stage-status, desk-stage-discard, desk-source-status, desk-settings, desk-list, desk-inspect, desk-plan-create, desk-create, desk-operation, desk-reconcile, setup, setup-status, service-upgrade-status, service-upgrade --expected-runner-id ID --target-sha256 SHA --acknowledge-host-changes, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID")
 	}
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -59,6 +59,36 @@ func run(ctx context.Context, args []string) int {
 			fmt.Fprintln(os.Stdout, help)
 			return 0
 		}
+	}
+	if command == "app-development-workflow" || command == "app-development-configure" {
+		return appWorkflow(ctx, command, args, *config)
+	}
+	if command == "ship-routes" || command == "ship-routes-configure" {
+		return shipRoutesCommand(ctx, command, args, *config)
+	}
+	if command == "app-development-status" || command == "app-development-save" || command == "app-development-retry" {
+		return appDevelopment(ctx, command, args, *config)
+	}
+	if command == "desk-review-frontend" || command == "desk-plan-frontend" || command == "desk-upload-frontend" {
+		return deskFrontendCommand(ctx, command, args, *config)
+	}
+	if command == "desk-review-release" || command == "desk-plan-release" || command == "desk-release" {
+		return deskReleaseCommand(ctx, command, args, *config)
+	}
+	if command == "desk-receiver-status" || command == "desk-review-install" || command == "desk-plan-install" || command == "desk-install" {
+		return deskReceiverCommand(ctx, command, args, *config)
+	}
+	if command == "desk-review-commit" || command == "desk-plan-commit" || command == "desk-commit" {
+		return deskDeploymentCommand(ctx, command, args, *config)
+	}
+	if command == "desk-review-adoption" || command == "desk-plan-adoption" || command == "desk-adopt" {
+		return deskAdoptionCommand(ctx, command, args, *config)
+	}
+	if command == "desk-plan-stage" || command == "desk-stage" || command == "desk-stage-status" || command == "desk-stage-discard" {
+		return deskStageCommand(ctx, command, args, *config)
+	}
+	if command == "desk-app-status" || command == "desk-source-status" || command == "desk-settings" || command == "desk-list" || command == "desk-inspect" || command == "desk-plan-create" || command == "desk-create" || command == "desk-operation" || command == "desk-reconcile" {
+		return deskCommand(ctx, command, args, *config)
 	}
 	if command == "service-upgrade" || command == "service-upgrade-status" {
 		return localServiceUpgrade(ctx, command, args, *config, format)

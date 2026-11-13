@@ -7,7 +7,9 @@ versions, including immutable `-rc.N` review candidates. `--rootless` supplies t
 launcher bundle used by the previous installer. The new output must be a direct
 `patch-upgrade-NNN-NAME` child of the existing private labs root.
 
-This specializes the retained0.3.1 QML-button rehearsal for schema47 →47. It uses
+This extends the retained0.3.1 QML-button rehearsal to the schemas declared by
+the exact previous and candidate manifests. A schema increase also checks that
+the actual previous writer refuses the new database without changing it. It uses
 actual sealed bundles, a pristine immutable base, offline fresh fakes, actual
 service installation, authorization denial/retry, and a manager restart. It checks
 unchanged running container/engine processes, stopped intent, fleet history,
@@ -37,3 +39,24 @@ acceptance by the target collector with the previous and target runners, and no
 source or enrollment mutation from preview. Only that generated sparse file is
 removed before the normal small import. This qualifies large logical previews,
 not a full 100 GB copy or its duration/disk requirements.
+
+Storage accounting uses the shared capsule inventory, including both DEV roots,
+installed review artifacts and retained `/tmp/omabit-*` outputs. The default stays
+40 GiB; `--storage-budget-gib 48` requires separate temporary operator approval.
+The guest itself remains capped at 4 GiB of additional scratch.
+
+With both receiver source paths supplied, the guest also checks the real
+restricted SSH transport, installed runner, Docker fake, private Secret Service
+and Theme/DMs helpers. A separate client network namespace reads and updates the
+shared URL registry, rejects a wrong-ship endpoint before authentication, ignores
+remote localhost, and reconnects both helpers to an alternate LAN URL under the
+original per-ship approval. An exact veth-only firewall allowance and local SSH
+proxy exist only in this offline guest and are removed afterward. This does not
+qualify a live Tailnet, public provider or DNS configuration.
+
+The final guest scenario exercises actual agent CLI creation, staged commit and
+source publication. Each defaults to a blocked receipt; the test operator then
+opens only the new fake/desk's Setup gates and verifies its observed receipt.
+The gates are closed afterward. Native three-ship fixtures separately qualify
+Treaty, frontend bytes and receiver delivery; this guest scenario does not claim
+those paths. All desks, sources, grants and credentials are generated in the VM.

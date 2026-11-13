@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-COMPONENTS = ('HostedUrbitsPane.qml','Card.qml','Model.js','ApplicationConnections.qml','ApplicationsPane.qml','ActionButton.qml','SelectField.qml','Field.qml','CheckField.qml','SwitchField.qml','Label.qml','Hint.qml','Design.qml')
+COMPONENTS = ('HostedUrbitsPane.qml','Card.qml','Model.js','ShipRoutes.js','ApplicationConnections.qml','ApplicationsPane.qml','ActionButton.qml','SelectField.qml','Field.qml','CheckField.qml','SwitchField.qml','Label.qml','Hint.qml','Design.qml')
 
 HELPER = r'''
 import json,sys
@@ -28,6 +28,7 @@ if cmd=='app-plugins':
     result=[plugin,second]
 elif cmd=='ships':result=[ship]
 elif cmd=='app-connections':result=state['attempts']
+elif cmd=='app-ship-approvals':result={'version':1,'revision':0,'entries':[]}
 elif cmd=='ship-login':
     assert '--code-stdin' in args and '--expected-ship-id' in args
     assert sys.stdin.read()=='fixture-only-secret'
@@ -95,7 +96,7 @@ def main():
         assert process.returncode==0 and 'PASS: actual application connection panel' in text,text
         assert not any(token in text for token in ('Error:','Unable to assign','is not defined','Cannot assign to','Binding loop detected')),text
         calls=[json.loads(line) for line in (directory/'calls.jsonl').read_text().splitlines()]
-        mutations=[c for c in calls if c[0] not in ('app-plugins','ships','app-connections')]
+        mutations=[c for c in calls if c[0] not in ('app-plugins','ships','app-connections','app-ship-approvals')]
         assert [c[0] for c in mutations]==['ship-login','app-connect','app-disconnect','app-recover','app-reconcile','app-archive'],mutations
         assert 'fixture-only-secret' not in json.dumps(calls),calls
         assert (directory/'approval.png').is_file(),'approval UI snapshot missing'

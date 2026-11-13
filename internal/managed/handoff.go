@@ -132,7 +132,11 @@ func (r *Server) prepareHandoff(w http.ResponseWriter, req *http.Request, actor,
 		r.respondError(w, conflict("revision_conflict", "source configuration changed"))
 		return
 	}
-	settings := protocol.RuntimeSettings{Loom: v.Public.Config.Loom, NativeControl: v.Public.Config.NativeControl}
+	settings := v.Public.Config.HandoffRuntimeSettings()
+	if protocol.NondefaultContainerResources(settings.MemoryGiB, settings.CPUCores) && !body.DestinationContainerResources {
+		r.respondError(w, conflict("container_resources_required", "update the collector and destination for container-resources-v1 before moving this ship"))
+		return
+	}
 	if settings.Nondefault() && !body.DestinationRuntimeSettings {
 		r.respondError(w, conflict("runtime_settings_required", "update the collector and destination for runtime-settings-handoff before moving this ship"))
 		return
@@ -247,7 +251,7 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 	settings := protocol.RuntimeSettings{Loom: protocol.DefaultLoom}
 	if h.RuntimeSettings != nil {
 		settings = *h.RuntimeSettings
-		if !protocol.ValidRecordedLoom(settings.Loom) {
+		if !protocol.ValidRecordedLoom(settings.Loom) || !protocol.ValidContainerResources(settings.MemoryGiB, settings.CPUCores) {
 			r.respondError(w, bad("invalid handoff runtime settings"))
 			return
 		}
@@ -328,7 +332,7 @@ func (r *Server) receiveHandoff(w http.ResponseWriter, req *http.Request, actor,
 	h.Direction = "in"
 	h.State = "reserved"
 	h.Message = "Destination reserved; waiting for stopped pier data."
-	v := storedInstance{Public: protocol.Instance{ID: h.DestinationInstance, Label: h.DestinationInstance, Ship: h.Ship, Mode: h.Mode, AmesPublished: h.AmesPublished, PierPath: path, PierName: leaf, Config: protocol.Configuration{HTTPPort: httpPort, AmesPort: ames, Loom: settings.Loom, NativeControl: settings.NativeControl}, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "moving", Health: "unknown", Handoff: &h}, Runtime: runtimequalify.ManagedState{ID: key, Port: httpPort, AmesPort: ames, Loom: settings.Loom, NativeControl: settings.NativeControl, Storage: &pierstore.Location{Path: path}, Handoff: &h}}
+	v := storedInstance{Public: protocol.Instance{ID: h.DestinationInstance, Label: h.DestinationInstance, Ship: h.Ship, Mode: h.Mode, AmesPublished: h.AmesPublished, PierPath: path, PierName: leaf, Config: protocol.Configuration{HTTPPort: httpPort, AmesPort: ames, Loom: settings.Loom, NativeControl: settings.NativeControl, MemoryGiB: settings.MemoryGiB, CPUCores: settings.CPUCores}, ConfigRevision: revision, DesiredState: "stopped", ObservedState: "moving", Health: "unknown", Handoff: &h}, Runtime: runtimequalify.ManagedState{ID: key, Port: httpPort, AmesPort: ames, Loom: settings.Loom, NativeControl: settings.NativeControl, MemoryGiB: settings.MemoryGiB, CPUCores: settings.CPUCores, Storage: &pierstore.Location{Path: path}, Handoff: &h}}
 	if h.Mode == "fake" {
 		v.Runtime.Fake = &runtimequalify.ManagedFake{Ship: h.Ship}
 	} else {

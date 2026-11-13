@@ -22,6 +22,11 @@ ongoing runtime/connection diagnostics and identity-bound request failures live 
 Connectivity & runtime. Runner management cards show a compact inventory/access
 summary and put endpoint IDs and host compatibility reports under Technical details.
 
+App development and publishing uses the same padded cards, uppercase card titles,
+caption labels and status badges. Scope and permission fields use two columns
+when space permits and stack at smaller widths. Runner rollout is grouped in the
+global view; revision and authority explanations are under Policy details.
+
 The remote host field is an editable dropdown. Suggestions are read without sudo
 from literal SSH Host aliases, bounded Include files and readable known-host entries.
 The reader never runs SSH, Match exec or KnownHostsCommand, and does not contact
@@ -236,7 +241,7 @@ saved-policy card.
 
 **Container CPU** and **Container Memory** charts have numeric vertical axes and
 local-time horizontal axes positioned by actual sample timestamps. CPU follows
-Docker's convention: 100% is one logical CPU; the current two-CPU cap is 200%.
+Docker's convention: 100% is one logical CPU; the reported CPU ceiling supplies the chart limit (the default two-CPU cap is 200%).
 Rates require two fresh, increasing counter readings for the same container.
 Missing/reset samples are gaps, genuine zero remains zero, and replacement clears
 the old container's series. Histories are bounded to this desktop session. The
@@ -396,3 +401,12 @@ unreachability as a ship crash. Host setup and real-key bootstrap retain their g
 See `docs/checkpoints/09-management-panel.md` in the source monorepo for the visual
 acceptance walkthrough and `docs/checkpoints/22-maintenance-panel.md` for the 6L
 review gate. No production hosting support is implied by this panel.
+
+### Container resource settings
+
+The selected ship's runtime editor exposes RAM (1–16 GiB) and CPU quota (1–16
+whole cores) on `container-resources-v1` runners. Stop the ship, reload the editor,
+save, then explicitly Start. Defaults remain 4 GiB and 2 CPUs. Limits are disabled
+while running or when the runner is older; unrelated settings preserve them.
+Requested and recorded launch limits are shown separately. Loom is independent
+address space. Project members/gateways retain their existing fixed contracts.

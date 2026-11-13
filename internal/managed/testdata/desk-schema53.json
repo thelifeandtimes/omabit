@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "schema": 53,
+  "source_commit": "3a5a5c52a396089231d12998f7316a8d24a48ac9",
+  "sql_sha256": "325374899d558237f9c6e7f761e9c7f93339c68c673c590fb822279b943252ee",
+  "writer": "Original schema53 writer; synthetic policy, pending creation, workflow, source baseline, completed deployment and verified ownership",
+  "scope": "functional development migration fixture; not release qualification",
+  "evidence": "/tmp/omabit-desk-release-original-migration-01/result.json"
+}

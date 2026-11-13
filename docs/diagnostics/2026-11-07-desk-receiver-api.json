@@ -1,0 +1,809 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M551",
+  "source_base": "c912982b4c26d3891fe0eabf35e000a1fff0c530",
+  "schema": 56,
+  "capability": "desk-receiver-v1",
+  "native": {
+    "directory": "/tmp/omabit-desk-probe-41",
+    "result": {
+      "ok": true,
+      "steps": [
+        {
+          "name": "identity",
+          "source": "our",
+          "app": null,
+          "mark": null,
+          "state": "returned",
+          "response": "~zod\n"
+        }
+      ],
+      "clean_shutdown": true,
+      "workflow_exit": 0,
+      "receivers": {
+        "ok": true,
+        "clean_shutdown": true,
+        "children": [
+          {
+            "ship": "bud",
+            "exit": 0,
+            "forced": false
+          },
+          {
+            "ship": "nec",
+            "exit": 0,
+            "forced": false
+          }
+        ],
+        "workflow_exit": 0
+      }
+    },
+    "proof": {
+      "absent-status-~bud": {
+        "version": 1,
+        "runner_id": "runner-82e6a19bec3cb12b51000c14c3746c2e",
+        "mode": "development-managed-fake",
+        "selection": {
+          "target": {
+            "instance_id": "receiver",
+            "desk": "omabit-test-c5c78027"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1
+        },
+        "subscription": {
+          "present": false,
+          "ship": "",
+          "desk": "",
+          "zest": "",
+          "hash": ""
+        },
+        "source_ready": false,
+        "read_at": "2026-11-07T11:57:58.093264374Z"
+      },
+      "absent-status-~nec": {
+        "version": 1,
+        "runner_id": "runner-b5af396191738eef157a3f9bf20a2b15",
+        "mode": "development-managed-fake",
+        "selection": {
+          "target": {
+            "instance_id": "receiver",
+            "desk": "omabit-test-c5c78027"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1
+        },
+        "subscription": {
+          "present": false,
+          "ship": "",
+          "desk": "",
+          "zest": "",
+          "hash": ""
+        },
+        "source_ready": false,
+        "read_at": "2026-11-07T11:57:49.476017935Z"
+      },
+      "boundary": "native fake publisher and receivers; real receiver API/store/collector; fixture lifecycle backend",
+      "default-block-~bud": {
+        "version": 1,
+        "runner_id": "runner-82e6a19bec3cb12b51000c14c3746c2e",
+        "mode": "development-managed-fake",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "17923d45b6ae07a1c1013f8d5aa5e2e8e2ee60b4a35722923e2f86aab88fe489",
+            "target": {
+              "instance_id": "receiver",
+              "desk": "omabit-test-c5c78027"
+            },
+            "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "config_revision": 1,
+            "policy_revision": 0,
+            "action": "install-remote",
+            "baseline": {
+              "exists": false
+            },
+            "source_digest": "c2670e7f7626b61eb1a1d7b6cf6e79442053fb3a6bab35e8b8785f75bdcb604a"
+          },
+          "actor": "local-uid:1000",
+          "steps": [
+            {
+              "kind": "install-remote",
+              "state": "planned",
+              "at": "2026-11-07T11:57:59.017838539Z"
+            },
+            {
+              "kind": "install-remote",
+              "state": "blocked",
+              "at": "2026-11-07T11:57:59.377755858Z"
+            }
+          ]
+        }
+      },
+      "default-block-~nec": {
+        "version": 1,
+        "runner_id": "runner-b5af396191738eef157a3f9bf20a2b15",
+        "mode": "development-managed-fake",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "5b406ea198e3b2da700c0faf8e407c25838fc95f776d4b432ae7c7a4ff2d0ac7",
+            "target": {
+              "instance_id": "receiver",
+              "desk": "omabit-test-c5c78027"
+            },
+            "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "config_revision": 1,
+            "policy_revision": 0,
+            "action": "install-remote",
+            "baseline": {
+              "exists": false
+            },
+            "source_digest": "c2670e7f7626b61eb1a1d7b6cf6e79442053fb3a6bab35e8b8785f75bdcb604a"
+          },
+          "actor": "local-uid:1000",
+          "steps": [
+            {
+              "kind": "install-remote",
+              "state": "planned",
+              "at": "2026-11-07T11:57:50.39540053Z"
+            },
+            {
+              "kind": "install-remote",
+              "state": "blocked",
+              "at": "2026-11-07T11:57:50.764303284Z"
+            }
+          ]
+        }
+      },
+      "frontend-initial-~bud": true,
+      "frontend-initial-~nec": true,
+      "frontend-updated-~bud": true,
+      "frontend-updated-~nec": true,
+      "initial-install-~bud": {
+        "version": 1,
+        "runner_id": "runner-82e6a19bec3cb12b51000c14c3746c2e",
+        "mode": "development-managed-fake",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "16f5fbcd47185dd778ffca01b6c94ba339f486e0d1732b585fa7c77a6269093a",
+            "target": {
+              "instance_id": "receiver",
+              "desk": "omabit-test-c5c78027"
+            },
+            "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "config_revision": 1,
+            "policy_revision": 1,
+            "action": "install-remote",
+            "baseline": {
+              "exists": false
+            },
+            "source_digest": "c2670e7f7626b61eb1a1d7b6cf6e79442053fb3a6bab35e8b8785f75bdcb604a"
+          },
+          "actor": "local-uid:1000",
+          "steps": [
+            {
+              "kind": "install-remote",
+              "state": "planned",
+              "at": "2026-11-07T11:58:00.10088435Z"
+            },
+            {
+              "kind": "install-remote",
+              "state": "dispatched",
+              "at": "2026-11-07T11:58:00.462871156Z"
+            },
+            {
+              "kind": "install-remote",
+              "state": "uncertain",
+              "at": "2026-11-07T11:58:00.657199821Z"
+            }
+          ]
+        }
+      },
+      "initial-install-~nec": {
+        "version": 1,
+        "runner_id": "runner-b5af396191738eef157a3f9bf20a2b15",
+        "mode": "development-managed-fake",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "c2bc9ad16b2a3841c06951f59dc54327b45f2d4c10d8d3a9071cf595a43ac6e1",
+            "target": {
+              "instance_id": "receiver",
+              "desk": "omabit-test-c5c78027"
+            },
+            "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "config_revision": 1,
+            "policy_revision": 1,
+            "action": "install-remote",
+            "baseline": {
+              "exists": false
+            },
+            "source_digest": "c2670e7f7626b61eb1a1d7b6cf6e79442053fb3a6bab35e8b8785f75bdcb604a"
+          },
+          "actor": "local-uid:1000",
+          "steps": [
+            {
+              "kind": "install-remote",
+              "state": "planned",
+              "at": "2026-11-07T11:57:51.498311455Z"
+            },
+            {
+              "kind": "install-remote",
+              "state": "dispatched",
+              "at": "2026-11-07T11:57:51.869515445Z"
+            },
+            {
+              "kind": "install-remote",
+              "state": "acknowledged",
+              "at": "2026-11-07T11:57:52.064781431Z"
+            },
+            {
+              "kind": "install-remote",
+              "state": "observed",
+              "at": "2026-11-07T11:57:55.565342186Z",
+              "observation": {
+                "exists": true,
+                "revision": 1,
+                "clay_hash": "0ve.3rkom.j8s71.l1d4e.tvfli.id6qn.gkfm5.tlqnn.iphqe.k57va.e1djp",
+                "publication": "private"
+              },
+              "application": {
+                "zest": "live",
+                "source_revision": 1,
+                "source_ship": "~zod",
+                "source_desk": "omabit-test-c5c78027",
+                "expected_agents": [
+                  "omabit-state"
+                ],
+                "agents": [
+                  {
+                    "name": "omabit-state",
+                    "live": true
+                  }
+                ],
+                "treaty_available": true,
+                "treaty_listed": false,
+                "treaty_hash": "",
+                "docket_available": true,
+                "docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp",
+                "frontend_mode": "glob-ames",
+                "frontend_state": "glob",
+                "frontend_docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp"
+              }
+            }
+          ]
+        }
+      },
+      "initial-publisher": {
+        "exists": true,
+        "revision": 7,
+        "clay_hash": "0ve.3rkom.j8s71.l1d4e.tvfli.id6qn.gkfm5.tlqnn.iphqe.k57va.e1djp",
+        "publication": "published"
+      },
+      "initial-~bud": {
+        "application": {
+          "zest": "live",
+          "source_revision": 1,
+          "source_ship": "~zod",
+          "source_desk": "omabit-test-c5c78027",
+          "expected_agents": [
+            "omabit-state"
+          ],
+          "agents": [
+            {
+              "name": "omabit-state",
+              "live": true
+            }
+          ],
+          "treaty_available": true,
+          "treaty_listed": false,
+          "treaty_hash": "",
+          "docket_available": true,
+          "docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp",
+          "frontend_mode": "glob-ames",
+          "frontend_state": "glob",
+          "frontend_docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp"
+        },
+        "observation": {
+          "exists": true,
+          "revision": 1,
+          "clay_hash": "0ve.3rkom.j8s71.l1d4e.tvfli.id6qn.gkfm5.tlqnn.iphqe.k57va.e1djp",
+          "publication": "private"
+        },
+        "source": {
+          "ship": "~zod",
+          "desk": "omabit-test-c5c78027",
+          "expected_hash": "0ve.3rkom.j8s71.l1d4e.tvfli.id6qn.gkfm5.tlqnn.iphqe.k57va.e1djp"
+        }
+      },
+      "initial-~nec": {
+        "application": {
+          "zest": "live",
+          "source_revision": 1,
+          "source_ship": "~zod",
+          "source_desk": "omabit-test-c5c78027",
+          "expected_agents": [
+            "omabit-state"
+          ],
+          "agents": [
+            {
+              "name": "omabit-state",
+              "live": true
+            }
+          ],
+          "treaty_available": true,
+          "treaty_listed": false,
+          "treaty_hash": "",
+          "docket_available": true,
+          "docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp",
+          "frontend_mode": "glob-ames",
+          "frontend_state": "glob",
+          "frontend_docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp"
+        },
+        "observation": {
+          "exists": true,
+          "revision": 1,
+          "clay_hash": "0ve.3rkom.j8s71.l1d4e.tvfli.id6qn.gkfm5.tlqnn.iphqe.k57va.e1djp",
+          "publication": "private"
+        },
+        "source": {
+          "ship": "~zod",
+          "desk": "omabit-test-c5c78027",
+          "expected_hash": "0ve.3rkom.j8s71.l1d4e.tvfli.id6qn.gkfm5.tlqnn.iphqe.k57va.e1djp"
+        }
+      },
+      "ok": true,
+      "received-status-~bud": {
+        "version": 1,
+        "runner_id": "runner-82e6a19bec3cb12b51000c14c3746c2e",
+        "mode": "development-managed-fake",
+        "selection": {
+          "target": {
+            "instance_id": "receiver",
+            "desk": "omabit-test-c5c78027"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1
+        },
+        "subscription": {
+          "present": true,
+          "ship": "~zod",
+          "desk": "omabit-test-c5c78027",
+          "zest": "live",
+          "hash": "0ve.3rkom.j8s71.l1d4e.tvfli.id6qn.gkfm5.tlqnn.iphqe.k57va.e1djp"
+        },
+        "source_ready": true,
+        "observation": {
+          "exists": true,
+          "revision": 1,
+          "clay_hash": "0ve.3rkom.j8s71.l1d4e.tvfli.id6qn.gkfm5.tlqnn.iphqe.k57va.e1djp",
+          "publication": "private"
+        },
+        "application": {
+          "zest": "live",
+          "source_revision": 1,
+          "source_ship": "~zod",
+          "source_desk": "omabit-test-c5c78027",
+          "expected_agents": [
+            "omabit-state"
+          ],
+          "agents": [
+            {
+              "name": "omabit-state",
+              "live": true
+            }
+          ],
+          "treaty_available": true,
+          "treaty_listed": false,
+          "treaty_hash": "",
+          "docket_available": true,
+          "docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp",
+          "frontend_mode": "glob-ames",
+          "frontend_state": "glob",
+          "frontend_docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp"
+        },
+        "read_at": "2026-11-07T11:58:05.189660641Z"
+      },
+      "received-status-~nec": {
+        "version": 1,
+        "runner_id": "runner-b5af396191738eef157a3f9bf20a2b15",
+        "mode": "development-managed-fake",
+        "selection": {
+          "target": {
+            "instance_id": "receiver",
+            "desk": "omabit-test-c5c78027"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1
+        },
+        "subscription": {
+          "present": true,
+          "ship": "~zod",
+          "desk": "omabit-test-c5c78027",
+          "zest": "live",
+          "hash": "0ve.3rkom.j8s71.l1d4e.tvfli.id6qn.gkfm5.tlqnn.iphqe.k57va.e1djp"
+        },
+        "source_ready": true,
+        "observation": {
+          "exists": true,
+          "revision": 1,
+          "clay_hash": "0ve.3rkom.j8s71.l1d4e.tvfli.id6qn.gkfm5.tlqnn.iphqe.k57va.e1djp",
+          "publication": "private"
+        },
+        "application": {
+          "zest": "live",
+          "source_revision": 1,
+          "source_ship": "~zod",
+          "source_desk": "omabit-test-c5c78027",
+          "expected_agents": [
+            "omabit-state"
+          ],
+          "agents": [
+            {
+              "name": "omabit-state",
+              "live": true
+            }
+          ],
+          "treaty_available": true,
+          "treaty_listed": false,
+          "treaty_hash": "",
+          "docket_available": true,
+          "docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp",
+          "frontend_mode": "glob-ames",
+          "frontend_state": "glob",
+          "frontend_docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp"
+        },
+        "read_at": "2026-11-07T11:57:55.905527542Z"
+      },
+      "receiver-absence-~bud": {
+        "observation": {
+          "exists": false
+        },
+        "subscription": {
+          "present": false,
+          "ship": "",
+          "desk": "",
+          "zest": "",
+          "hash": ""
+        }
+      },
+      "receiver-absence-~nec": {
+        "observation": {
+          "exists": false
+        },
+        "subscription": {
+          "present": false,
+          "ship": "",
+          "desk": "",
+          "zest": "",
+          "hash": ""
+        }
+      },
+      "reconciled-after-revocation-~bud": {
+        "version": 1,
+        "runner_id": "runner-82e6a19bec3cb12b51000c14c3746c2e",
+        "mode": "development-managed-fake",
+        "receipt": {
+          "version": 1,
+          "intent": {
+            "version": 1,
+            "id": "16f5fbcd47185dd778ffca01b6c94ba339f486e0d1732b585fa7c77a6269093a",
+            "target": {
+              "instance_id": "receiver",
+              "desk": "omabit-test-c5c78027"
+            },
+            "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "config_revision": 1,
+            "policy_revision": 1,
+            "action": "install-remote",
+            "baseline": {
+              "exists": false
+            },
+            "source_digest": "c2670e7f7626b61eb1a1d7b6cf6e79442053fb3a6bab35e8b8785f75bdcb604a"
+          },
+          "actor": "local-uid:1000",
+          "steps": [
+            {
+              "kind": "install-remote",
+              "state": "planned",
+              "at": "2026-11-07T11:58:00.10088435Z"
+            },
+            {
+              "kind": "install-remote",
+              "state": "dispatched",
+              "at": "2026-11-07T11:58:00.462871156Z"
+            },
+            {
+              "kind": "install-remote",
+              "state": "uncertain",
+              "at": "2026-11-07T11:58:00.657199821Z"
+            },
+            {
+              "actor": "local-uid:1000",
+              "kind": "install-remote",
+              "state": "observed",
+              "at": "2026-11-07T11:58:04.860600233Z",
+              "observation": {
+                "exists": true,
+                "revision": 1,
+                "clay_hash": "0ve.3rkom.j8s71.l1d4e.tvfli.id6qn.gkfm5.tlqnn.iphqe.k57va.e1djp",
+                "publication": "private"
+              },
+              "application": {
+                "zest": "live",
+                "source_revision": 1,
+                "source_ship": "~zod",
+                "source_desk": "omabit-test-c5c78027",
+                "expected_agents": [
+                  "omabit-state"
+                ],
+                "agents": [
+                  {
+                    "name": "omabit-state",
+                    "live": true
+                  }
+                ],
+                "treaty_available": true,
+                "treaty_listed": false,
+                "treaty_hash": "",
+                "docket_available": true,
+                "docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp",
+                "frontend_mode": "glob-ames",
+                "frontend_state": "glob",
+                "frontend_docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp"
+              }
+            }
+          ]
+        }
+      },
+      "updated-publisher": {
+        "exists": true,
+        "revision": 8,
+        "clay_hash": "0v3.3e1i1.rer16.s1rkk.20oih.7um2t.opjv8.952q4.v3f9h.t5nv4.pt9ht",
+        "publication": "published"
+      },
+      "updated-status-~bud": {
+        "version": 1,
+        "runner_id": "runner-82e6a19bec3cb12b51000c14c3746c2e",
+        "mode": "development-managed-fake",
+        "selection": {
+          "target": {
+            "instance_id": "receiver",
+            "desk": "omabit-test-c5c78027"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1
+        },
+        "subscription": {
+          "present": true,
+          "ship": "~zod",
+          "desk": "omabit-test-c5c78027",
+          "zest": "live",
+          "hash": "0v3.3e1i1.rer16.s1rkk.20oih.7um2t.opjv8.952q4.v3f9h.t5nv4.pt9ht"
+        },
+        "source_ready": true,
+        "observation": {
+          "exists": true,
+          "revision": 2,
+          "clay_hash": "0v3.3e1i1.rer16.s1rkk.20oih.7um2t.opjv8.952q4.v3f9h.t5nv4.pt9ht",
+          "publication": "private"
+        },
+        "application": {
+          "zest": "live",
+          "source_revision": 2,
+          "source_ship": "~zod",
+          "source_desk": "omabit-test-c5c78027",
+          "expected_agents": [
+            "omabit-state"
+          ],
+          "agents": [
+            {
+              "name": "omabit-state",
+              "live": true
+            }
+          ],
+          "treaty_available": true,
+          "treaty_listed": false,
+          "treaty_hash": "",
+          "docket_available": true,
+          "docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp",
+          "frontend_mode": "glob-ames",
+          "frontend_state": "glob",
+          "frontend_docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp"
+        },
+        "read_at": "2026-11-07T11:58:10.005510059Z"
+      },
+      "updated-status-~nec": {
+        "version": 1,
+        "runner_id": "runner-b5af396191738eef157a3f9bf20a2b15",
+        "mode": "development-managed-fake",
+        "selection": {
+          "target": {
+            "instance_id": "receiver",
+            "desk": "omabit-test-c5c78027"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1
+        },
+        "subscription": {
+          "present": true,
+          "ship": "~zod",
+          "desk": "omabit-test-c5c78027",
+          "zest": "live",
+          "hash": "0v3.3e1i1.rer16.s1rkk.20oih.7um2t.opjv8.952q4.v3f9h.t5nv4.pt9ht"
+        },
+        "source_ready": true,
+        "observation": {
+          "exists": true,
+          "revision": 2,
+          "clay_hash": "0v3.3e1i1.rer16.s1rkk.20oih.7um2t.opjv8.952q4.v3f9h.t5nv4.pt9ht",
+          "publication": "private"
+        },
+        "application": {
+          "zest": "live",
+          "source_revision": 2,
+          "source_ship": "~zod",
+          "source_desk": "omabit-test-c5c78027",
+          "expected_agents": [
+            "omabit-state"
+          ],
+          "agents": [
+            {
+              "name": "omabit-state",
+              "live": true
+            }
+          ],
+          "treaty_available": true,
+          "treaty_listed": false,
+          "treaty_hash": "",
+          "docket_available": true,
+          "docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp",
+          "frontend_mode": "glob-ames",
+          "frontend_state": "glob",
+          "frontend_docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp"
+        },
+        "read_at": "2026-11-07T11:58:08.24102239Z"
+      },
+      "updated-~bud": {
+        "application": {
+          "zest": "live",
+          "source_revision": 2,
+          "source_ship": "~zod",
+          "source_desk": "omabit-test-c5c78027",
+          "expected_agents": [
+            "omabit-state"
+          ],
+          "agents": [
+            {
+              "name": "omabit-state",
+              "live": true
+            }
+          ],
+          "treaty_available": true,
+          "treaty_listed": false,
+          "treaty_hash": "",
+          "docket_available": true,
+          "docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp",
+          "frontend_mode": "glob-ames",
+          "frontend_state": "glob",
+          "frontend_docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp"
+        },
+        "observation": {
+          "exists": true,
+          "revision": 2,
+          "clay_hash": "0v3.3e1i1.rer16.s1rkk.20oih.7um2t.opjv8.952q4.v3f9h.t5nv4.pt9ht",
+          "publication": "private"
+        },
+        "source": {
+          "ship": "~zod",
+          "desk": "omabit-test-c5c78027",
+          "expected_hash": "0v3.3e1i1.rer16.s1rkk.20oih.7um2t.opjv8.952q4.v3f9h.t5nv4.pt9ht"
+        }
+      },
+      "updated-~nec": {
+        "application": {
+          "zest": "live",
+          "source_revision": 2,
+          "source_ship": "~zod",
+          "source_desk": "omabit-test-c5c78027",
+          "expected_agents": [
+            "omabit-state"
+          ],
+          "agents": [
+            {
+              "name": "omabit-state",
+              "live": true
+            }
+          ],
+          "treaty_available": true,
+          "treaty_listed": false,
+          "treaty_hash": "",
+          "docket_available": true,
+          "docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp",
+          "frontend_mode": "glob-ames",
+          "frontend_state": "glob",
+          "frontend_docket_hash": "0vtjrvd.couq6.8a9l3.jnep6.sclqp"
+        },
+        "observation": {
+          "exists": true,
+          "revision": 2,
+          "clay_hash": "0v3.3e1i1.rer16.s1rkk.20oih.7um2t.opjv8.952q4.v3f9h.t5nv4.pt9ht",
+          "publication": "private"
+        },
+        "source": {
+          "ship": "~zod",
+          "desk": "omabit-test-c5c78027",
+          "expected_hash": "0v3.3e1i1.rer16.s1rkk.20oih.7um2t.opjv8.952q4.v3f9h.t5nv4.pt9ht"
+        }
+      },
+      "version": 2
+    },
+    "sha256": {
+      "exit.json": "bfdedf06596faa2042b0fedd9653ec1023d2e96ed56dc40b607985bc8438c1d5",
+      "inputs.json": "5cd6fe41941c84a6e33e40f7a97229c9c14f669c0053262fad28afd3cc885606",
+      "guard.json": "3b169c4a23dd3604a3bcb33bba4290b18e0ea340e49e512d74755c74a70e1f30",
+      "storage-admission.json": "094471eaedb8a7141415f36f1dc2ce5751923d3ebc7822a9fbc10d17db167eaf",
+      "lab/result.json": "2cb2b2a582c27e7987a22e81ab7ed10a91de2f34b269518a9bc48fb794eb413f",
+      "lab/receiver-result.json": "06294bb1ed4f2cb6b6ff16b7ff2d6ded7c24e9a48e0d1001cc2b71f8de6ed895",
+      "lab/workflow-proof.json": "0325f5edb55b2258582c956159705d4aaa616abac4c6cffb03febee1740be84d",
+      "lab/receiver-proof.json": "adfe63527519b527367c278322455d715b741819342c95ba189fdef18b4c6392",
+      "lab/workflow.log": "a0c9a23a76dd1d13d758c43fb725f383563180c91f2affb3ba564f1b027f03e9",
+      "lab/receiver-workflow.log": "7d4a8a5505098c990312ca349a2c38336e129c7a0f0d517124b528d32814a409",
+      "lab/receiver-nec-effects.jsonl": "8b50b8a766c4b2902df23b5b0c4a39813704df3379fa4fd7b27820a2da74ddb9",
+      "lab/receiver-bud-effects.jsonl": "8b50b8a766c4b2902df23b5b0c4a39813704df3379fa4fd7b27820a2da74ddb9",
+      "artifacts/workflow.test": "0a77a6c79cada1b6774eeabf3ef6e1c4164a032c5125daa78b08ba857b94a935"
+    },
+    "limits": [
+      "real native kernel, typed receiver operations, collector/client/Unix API, policy and journal",
+      "synthetic lifecycle backend; no Docker/SSH or installed-service qualification",
+      "one initial expected source hash is checked; continuing subscription is not version-pinned",
+      "frontend upload still uses private qualification helper; public upload adapter pending"
+    ]
+  },
+  "tests": {
+    "receiver_api_race": "/tmp/omabit-desk-receiver-api-02/result.json",
+    "receiver_and_schema_race": "/tmp/omabit-desk-receiver-schema-03/result.json",
+    "all_desk_regressions_race": "/tmp/omabit-desk-receiver-regression-04/result.json",
+    "collector_client_race": "/tmp/omabit-desk-receiver-client-01/result.json",
+    "cli_race": "/tmp/omabit-desk-receiver-cli-02/result.json",
+    "original_writer_migration": "/tmp/omabit-desk-receiver-upgrade-02/result.json",
+    "core": "deskwork, apppolicy, protocol race pass",
+    "help": "CLI help and receiver validation pass after help additions",
+    "skills": "both quick_validate checks pass",
+    "manifest": "generated development56 manifest matches; frozen RC.12/schema20 and11..45 inventory preserved"
+  },
+  "corrected_failures": [
+    "API fixture originally tried to set Create desk permission at desk scope; test corrected to ship scope, behavior unchanged",
+    "original migration test attempted an install on a desk already holding unfinished creation; corrected to a distinct receiver target",
+    "outer sandbox refused full CLI Unix sockets; identical private fixture suite passes with namespace permission"
+  ],
+  "storage": {
+    "incident": {
+      "charged_bytes": 43034075136,
+      "budget_bytes": 42949672960,
+      "over_budget_bytes": 84402176,
+      "cause": "300 MiB migration allowance omitted sufficient cold build cache and full source archives",
+      "action": "removed rebuildable isolated build cache, retained evidence; migration admission now occurs internally with1200 MiB allowance before copies"
+    },
+    "native41_admission": 42919972864,
+    "retention_manifests": [
+      "/tmp/omabit-desk-receiver-build-cache-retention.json",
+      "/tmp/omabit-desk-receiver-completed40-piers.json",
+      "/tmp/omabit-desk-receiver-migration-source-retention.json",
+      "/tmp/omabit-desk-receiver-duplicate-retention.json",
+      "/tmp/omabit-desk-receiver-pre-native-cache-retention.json"
+    ]
+  },
+  "unchanged": [
+    "production/DEV/trial plugins, runners and ships",
+    "persistent manual preview",
+    "master and release qualification"
+  ]
+}

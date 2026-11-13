@@ -16,9 +16,11 @@ Window {
   property string page: "overview"
   property bool technical: false
   property var revealTarget: null
+  property Component headerAccessory: null
   readonly property alias maintenancePane: maintenance
   readonly property alias activityPane: activity
   readonly property alias setupPane: windowSetup
+  readonly property alias shipRoutesPane: shipRoutes
   readonly property var fleet: service ? Model.fleet(service.connections) : []
   readonly property var selected: fleet.filter(function(s) { return s.key === root.selectedKey })[0] || (!selectedKey && fleet.length ? fleet[0] : null)
   readonly property var connection: selected ? selected.connection : null
@@ -32,7 +34,7 @@ Window {
   readonly property var cpu: Model.cpuView(connection,instance,service.now,service.observing)
   readonly property var epochs: Model.epochDisplay(instance,service ? service.now : Date.now())
   readonly property var roll: Model.lastRoll(instance)
-  readonly property bool shipPage: page === "overview" || page === "maintenance"
+  readonly property bool shipPage: page === "overview" || page === "maintenance" || page === "urls"
   title: "Omabit"+(service && service.profileName!=="default" ? " · "+service.profileName.toUpperCase() : "")+" · Monitor & maintenance"
   color: Design.background
   width: Style.space(1100)
@@ -84,10 +86,12 @@ Window {
             Label { objectName: "monitor-version"; text: root.service ? root.service.applicationVersion+" / "+root.service.releaseLabel : "Loading"; caption: true; secondary: true }
           }
           Rectangle { width: 1; height: Style.space(28); color: Design.line }
-          Column { Layout.fillWidth: true; spacing: Style.space(3)
-            Label { text: "Monitor & maintenance"; font.bold: true }
-            Label { text: "Your fleet, in focus"; caption: true; secondary: true }
+          Column { Layout.fillWidth: true; Layout.minimumWidth:0; spacing: Style.space(3)
+            Label { width:parent.width;text: "Monitor & maintenance"; font.bold: true;wrapMode:Text.NoWrap;elide:Text.ElideRight }
+            Label { width:parent.width;text: "Your fleet, in focus"; caption: true; secondary: true;wrapMode:Text.NoWrap;elide:Text.ElideRight }
           }
+          ActionButton {objectName:"monitor-agent-help";compact:true;text:"Agent Help";hint:"Open your default Omarchy agent with the relevant Omabit instructions";enabled:!!root.service && !!root.service.agentHelp && !root.service.agentHelp.busy;onClicked:root.service.requestAgentHelp(root.page==="setup" && windowSetup.mode==="development" ? "app-development" : "general")}
+          Loader { visible:!!root.headerAccessory;sourceComponent:root.headerAccessory }
           ActionButton { objectName: "monitor-refresh"; text: "↻"; quiet: true; hint: "Refresh runner observations"; enabled: !root.service.busy; onClicked: root.service.refresh() }
           ActionButton { text: "×"; quiet: true; hint: "Close monitoring window"; onClicked: root.visible = false }
         }
@@ -188,6 +192,7 @@ Window {
               }
               RowLayout {
                 ActionButton { text: "Overview"; primary: root.page === "overview"; onClicked: root.page = "overview" }
+                ActionButton { objectName: "ship-urls-tab"; text: "Ship URLs"; primary: root.page === "urls"; onClicked: root.page = "urls" }
                 ActionButton { text: "Maintenance"; primary: root.page === "maintenance"; onClicked: root.page = "maintenance" }
                 ActionButton { text: "Ship activity ↗"; quiet: true; onClicked: { activity.runnerFilter = root.connection.runner_id; activity.shipFilter = root.selected.key; root.page = "activity" } }
               }
@@ -307,6 +312,7 @@ Window {
                 Label { width: parent.width; visible: root.technical; caption: true; secondary: true; text: root.instance && root.connection ? "Runner: " + root.connection.runner_id + "\nAccess: " + root.connection.access_role + "\nEndpoint reported by runner: " + (root.instance.endpoint || "none") + "\n" + Model.resourceText(root.instance,root.service.now) + (root.instance.active_operation_id ? "\nOperation: " + root.instance.active_operation_id : "") : "" }
                 Label { width: parent.width; visible: root.technical && root.service.lastResult !== ""; text: "Last submitted result: " + root.service.lastResult; caption: true; secondary: true }
               }
+              ShipRoutesPane { id: shipRoutes; objectName: "ship-urls"; width: parent.width; service: root.service; selectedKey: root.selected ? root.selected.key : ""; visible: root.page === "urls"; active: root.watching && visible }
               MaintenancePane { id: maintenance; width: parent.width; service: root.service; connection: root.connection; instance: root.instance; visible: root.page === "maintenance"; onRevealRequested: function(item) { root.revealItem(item) } }
             }
             Column { width: parent.width; spacing: Style.space(12); visible: root.page !== "activity" && root.page !== "setup" && Model.fleet(root.service.connections).length === 0

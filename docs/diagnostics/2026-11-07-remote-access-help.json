@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M563",
+  "source_base": "f2c1c7f27d57673d5fdb7a6ac41ce68f33793326",
+  "helper_tests": {
+    "passed": true,
+    "tests": 9,
+    "log": "/tmp/omabit-ship-routes-ui-06/agent-help-test.log",
+    "sha256": "3cf8666e44c88cbe782dfacbbd27f0dc5f78a6d976a75ab13f6b6ac80a5d918d"
+  },
+  "full_panel": {
+    "directory": "/tmp/omabit-ship-routes-ui-06",
+    "passed": true,
+    "log_sha256": "d033090514c0369369cd2d3305c71b860aadc6210cd9b543a539d8345e35e10e",
+    "fixture_source_sha256": "d496e10ec0810d9c0ca7da3d00aa36a5992a45a9e61eafe5b1c7e73557ad7d4d",
+    "screenshots": {
+      "ship-access-narrow.png": "3032da08ddac087b71660ccd7c0c4c7abce7d54cad517d65279c35f501815cef",
+      "ship-access-wide.png": "2a986b827baa747990a91989985e989b0a4e249d3894872dd034592e4d89944a"
+    },
+    "screenshots_visually_reviewed": true
+  },
+  "earlier_runs": [
+    {
+      "directory": "/tmp/omabit-ship-routes-ui-05",
+      "passed": false,
+      "reason": "Interactions passed; incomplete inert AgentHelp stub omitted string fields and produced QML warnings. Fixture completed and rerun06 passes without warnings."
+    }
+  ],
+  "coverage": [
+    "All four providers and configure/disable typed context",
+    "Exact saved binding, runtime and registry revision",
+    "Blank setup URL allowed; blank disable URL refused",
+    "Tailscale custom hostname refused",
+    "Changing ship clears URL; offline ship cannot launch contextual Help",
+    "Malformed context, unknown fields, unsafe URLs and wrong topic refused",
+    "Existing bundle-bound dispatch and skill preservation tests pass"
+  ],
+  "skill_validation": "quick_validate.py passed",
+  "limits": [
+    "No provider configuration, real agent launch, desktop keyring or installed deployment exercised",
+    "Help supplies selection hints and workflow guidance, not network-change authorization",
+    "No persistent format changes",
+    "Production, DEV, trial, persistent manual preview and protected ships untouched",
+    "Release qualification remains deferred"
+  ]
+}

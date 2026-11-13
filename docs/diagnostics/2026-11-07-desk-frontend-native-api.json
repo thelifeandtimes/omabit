@@ -1,0 +1,511 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M554",
+  "source_base": "d74a544cccbc8dd9129f472061fdddb4ed879977",
+  "schema": 57,
+  "directory": "/tmp/omabit-desk-probe-49",
+  "result": {
+    "ok": true,
+    "steps": [
+      {
+        "name": "identity",
+        "source": "our",
+        "app": null,
+        "mark": null,
+        "state": "returned",
+        "response": "~zod\n"
+      }
+    ],
+    "clean_shutdown": true,
+    "workflow_exit": 0
+  },
+  "exit": {
+    "exit": 0
+  },
+  "inputs": {
+    "workflow.test": "439a4d6eb74ea81947dcd22b31041612e43e3fef37bf532407289e1abdaf7071",
+    "requests.json": "d24aff7ac349a7398c15a12fb8b333b5cc5fb2a5fcbcf93e63d38dfa2c82ff21",
+    "probe.py": "fb26049397e8eff8d5dd2d714b65d43e923c5dffd1ec0598ad82862c843e1d62",
+    "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+    "vere": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+    "release-source/desk.docket-0": "a803c248568e7d913d75e03b1dce0f7f0c53f36c42c6a6ba95b7950439f4167c",
+    "release-source/desk.bill": "c9d8b2bc9fcbb25d89cabf1fa52056ebd32439b5ab171bd33ef5bbece69448b3",
+    "release-source/app/omabit-state.hoon": "110a20b47c2e34eca322eda691bb9cb1897c305156e3dc13f02cf4ac1fcd042f",
+    "release-source/sur/docket.hoon": "dd930bf411fa129551bf78496b23a96e19743ec4534f4a08bfa37c92c71fc029",
+    "release-source/lib/skeleton.hoon": "c7c654a91c5dc1a535d4a76b019ec175955e52961b1ddff70ad49121208d20f5",
+    "release-source/lib/default-agent.hoon": "70a8af06601e8d1b75b261b2ac8b2cb06d5622baa1d1b1f8fec9236ce167d113",
+    "release-source/lib/docket.hoon": "031be1e2e944835a3d11a90f26c6c61f9bbd40123d2dd249ff7b728acbb1d025",
+    "release-source/mar/bill.hoon": "a0196da4970b8dfdee321a638040a564f95e8000f3b49eccc274ee8de2fae0ff",
+    "release-source/mar/docket-0.hoon": "4b3e47032694e121e73ec341b388b94c43580f2002086b3c006b62d00debd5cc"
+  },
+  "workflow_log_sha256": "1a018178ce807283c4d7b33df64e75f7de96c30cc1b9fb4d9bd2e5f76779b13e",
+  "workflow_proof_sha256": "9a480be52dea2b5797bc2698360eb6ccdb78116ef98bbd3e6388155c7694f3e5",
+  "native_effects_sha256": "ce99a29251e2773e3b354ce96f28f30ed0d6701fc859979497c5f5f9524d8023",
+  "frontend": {
+    "after": {
+      "source_revision": 7,
+      "docket_available": true,
+      "stage": "glob",
+      "declared": {
+        "mode": "glob-ames",
+        "base": "omabit-test-59f0c2c6",
+        "ship": "~zod",
+        "glob_hash": "0v2.bat46.e07k7.hgk43.vkgeg.oc0i7",
+        "docket_hash": "0v5.v78di.07k7e.cpr63.9es0s.j41cf"
+      },
+      "current": {
+        "mode": "glob-ames",
+        "base": "omabit-test-59f0c2c6",
+        "ship": "~zod",
+        "glob_hash": "0v2.bat46.e07k7.hgk43.vkgeg.oc0i7",
+        "docket_hash": "0v5.v78di.07k7e.cpr63.9es0s.j41cf"
+      }
+    },
+    "artifact": {
+      "version": 1,
+      "files": [
+        {
+          "file": {
+            "path": "assets/Upper_case.file.png",
+            "sha256": "2cef73a150c393972c89a0151723b30d22a455d322e1f3b73f07013e88ff87cd",
+            "bytes": 5
+          },
+          "content_type": "image/png"
+        },
+        {
+          "file": {
+            "path": "empty.txt",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "bytes": 0
+          },
+          "content_type": "text/plain"
+        },
+        {
+          "file": {
+            "path": "index.html",
+            "sha256": "1164dd0601dabbdc8b63b1360855f214f03905666440416f5424c7a332323122",
+            "bytes": 80
+          },
+          "content_type": "text/html"
+        }
+      ],
+      "digest": "e4d62cc280d1acdadaebcf0b98945b00f5ca32e68e5be1ad6e0cc0491dbd2971"
+    },
+    "before": {
+      "source_revision": 6,
+      "docket_available": true,
+      "stage": "install",
+      "declared": {
+        "mode": "glob-ames",
+        "base": "omabit-test-59f0c2c6",
+        "ship": "~zod",
+        "glob_hash": "0v0",
+        "docket_hash": "0v3.cr5sd.4148o.nfljq.q0nc2.pf963"
+      },
+      "current": {
+        "mode": "glob-ames",
+        "base": "omabit-test-59f0c2c6",
+        "ship": "~zod",
+        "glob_hash": "0v0",
+        "docket_hash": "0v3.cr5sd.4148o.nfljq.q0nc2.pf963"
+      }
+    },
+    "exact_bytes_and_mime": true,
+    "expected_hash": "0v2.bat46.e07k7.hgk43.vkgeg.oc0i7",
+    "ok": true
+  },
+  "receipts": {
+    "frontend-default-blocked": {
+      "version": 1,
+      "intent": {
+        "version": 1,
+        "id": "e0eba36debc0c90ee13f1c39ba5a34a44f6cfe62212a52c9a6462f8d662487e7",
+        "target": {
+          "instance_id": "alpha",
+          "desk": "omabit-test-59f0c2c6"
+        },
+        "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "config_revision": 1,
+        "policy_revision": 7,
+        "action": "upload-frontend",
+        "baseline": {
+          "exists": true,
+          "revision": 6,
+          "clay_hash": "0v1m.75trq.64sfa.s8k8l.48ni9.br4uv.lsgp6.27l4l.j3cmc.tgtel.n689r",
+          "publication": "published"
+        },
+        "source_digest": "e4d62cc280d1acdadaebcf0b98945b00f5ca32e68e5be1ad6e0cc0491dbd2971"
+      },
+      "actor": "local-uid:1000",
+      "steps": [
+        {
+          "kind": "upload-frontend",
+          "state": "planned",
+          "at": "2026-11-07T13:28:46.976591257Z"
+        },
+        {
+          "kind": "upload-frontend",
+          "state": "blocked",
+          "at": "2026-11-07T13:28:48.127661698Z"
+        }
+      ]
+    },
+    "frontend-upload-plan": {
+      "version": 1,
+      "runner_id": "runner-0d585041c59b2d26225caa872b2e6eb3",
+      "mode": "development-managed-fake",
+      "intent": {
+        "intent": {
+          "version": 1,
+          "id": "32c1a33fd1b7f4b710a3fd5ee353cb1b8155643712c33b3ff7b29921b985e933",
+          "target": {
+            "instance_id": "alpha",
+            "desk": "omabit-test-59f0c2c6"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1,
+          "policy_revision": 8,
+          "action": "upload-frontend",
+          "baseline": {
+            "exists": true,
+            "revision": 6,
+            "clay_hash": "0v1m.75trq.64sfa.s8k8l.48ni9.br4uv.lsgp6.27l4l.j3cmc.tgtel.n689r",
+            "publication": "published"
+          },
+          "source_digest": "e4d62cc280d1acdadaebcf0b98945b00f5ca32e68e5be1ad6e0cc0491dbd2971"
+        },
+        "stage_id": "ac303d89fa32e50f984d3fb527476592ccf5a93021f284bd076797ab06e3063c",
+        "settings_revision": 2,
+        "ship_settings_revision": 0,
+        "continuity": "fdaef1492e69c4b2cd9596ea599c3a0bf305fe8b09ced8e2b5068ba0afec3205",
+        "review_digest": "736cfc586b206eecd1d3c007d662b5a14d211593ca038949f9e7b1876389d1d2",
+        "checks_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+      },
+      "review": {
+        "version": 1,
+        "runner_id": "runner-0d585041c59b2d26225caa872b2e6eb3",
+        "mode": "development-managed-fake",
+        "request": {
+          "selection": {
+            "target": {
+              "instance_id": "alpha",
+              "desk": "omabit-test-59f0c2c6"
+            },
+            "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "config_revision": 1
+          },
+          "stage_id": "ac303d89fa32e50f984d3fb527476592ccf5a93021f284bd076797ab06e3063c",
+          "settings_revision": 2
+        },
+        "policy_revision": 8,
+        "review": {
+          "version": 1,
+          "ship": "~zod",
+          "observation": {
+            "exists": true,
+            "revision": 6,
+            "clay_hash": "0v1m.75trq.64sfa.s8k8l.48ni9.br4uv.lsgp6.27l4l.j3cmc.tgtel.n689r",
+            "publication": "published"
+          },
+          "application": {
+            "zest": "live",
+            "source_revision": 6,
+            "source_ship": "",
+            "source_desk": "",
+            "expected_agents": [
+              "omabit-state"
+            ],
+            "agents": [
+              {
+                "name": "omabit-state",
+                "live": true
+              }
+            ],
+            "treaty_available": true,
+            "treaty_listed": true,
+            "treaty_hash": "0v1m.75trq.64sfa.s8k8l.48ni9.br4uv.lsgp6.27l4l.j3cmc.tgtel.n689r",
+            "docket_available": true,
+            "docket_hash": "0v3.cr5sd.4148o.nfljq.q0nc2.pf963",
+            "frontend_mode": "glob-ames",
+            "frontend_state": "install",
+            "frontend_docket_hash": "0v3.cr5sd.4148o.nfljq.q0nc2.pf963"
+          },
+          "frontend": {
+            "source_revision": 6,
+            "docket_available": true,
+            "stage": "install",
+            "declared": {
+              "mode": "glob-ames",
+              "base": "omabit-test-59f0c2c6",
+              "ship": "~zod",
+              "glob_hash": "0v0",
+              "docket_hash": "0v3.cr5sd.4148o.nfljq.q0nc2.pf963"
+            },
+            "current": {
+              "mode": "glob-ames",
+              "base": "omabit-test-59f0c2c6",
+              "ship": "~zod",
+              "glob_hash": "0v0",
+              "docket_hash": "0v3.cr5sd.4148o.nfljq.q0nc2.pf963"
+            }
+          },
+          "ship_setting": {
+            "version": 1,
+            "target": {
+              "instance_id": "alpha"
+            },
+            "revision": 0,
+            "ship": {
+              "purpose": "standard",
+              "instructions": ""
+            },
+            "updated_at": "0001-01-01T00:00:00Z"
+          },
+          "desk_setting": {
+            "version": 1,
+            "target": {
+              "instance_id": "alpha",
+              "desk": "omabit-test-59f0c2c6"
+            },
+            "revision": 2,
+            "desk": {
+              "workflow": "mounted",
+              "source_name": "omabit-test-59f0c2c6",
+              "publication": "treaty",
+              "repository": "",
+              "branch": "",
+              "checks": [],
+              "instructions": ""
+            },
+            "actor": "fixture-user",
+            "updated_at": "2026-11-07T13:28:36.617234621Z"
+          },
+          "continuity": "fdaef1492e69c4b2cd9596ea599c3a0bf305fe8b09ced8e2b5068ba0afec3205",
+          "stage": {
+            "version": 1,
+            "id": "ac303d89fa32e50f984d3fb527476592ccf5a93021f284bd076797ab06e3063c",
+            "target": {
+              "instance_id": "alpha",
+              "desk": "omabit-test-59f0c2c6"
+            },
+            "settings_revision": 2,
+            "source_digest": "0daba17f390265e044a17211ccece134efb88b97febac6e38e27ae256c578350",
+            "files": 3,
+            "bytes": 85
+          },
+          "artifact_digest": "e4d62cc280d1acdadaebcf0b98945b00f5ca32e68e5be1ad6e0cc0491dbd2971",
+          "expected_glob_hash": "0v2.bat46.e07k7.hgk43.vkgeg.oc0i7",
+          "unchanged_source_digest": "13ef80086952b398e7a3b20fa2fa8b820786327a5a309f93c961652a2d7f06eb",
+          "digest": "736cfc586b206eecd1d3c007d662b5a14d211593ca038949f9e7b1876389d1d2"
+        },
+        "read_at": "2026-11-07T13:28:49.304598883Z"
+      },
+      "checks": []
+    },
+    "frontend-upload-lost-ack": {
+      "version": 1,
+      "intent": {
+        "version": 1,
+        "id": "32c1a33fd1b7f4b710a3fd5ee353cb1b8155643712c33b3ff7b29921b985e933",
+        "target": {
+          "instance_id": "alpha",
+          "desk": "omabit-test-59f0c2c6"
+        },
+        "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "config_revision": 1,
+        "policy_revision": 8,
+        "action": "upload-frontend",
+        "baseline": {
+          "exists": true,
+          "revision": 6,
+          "clay_hash": "0v1m.75trq.64sfa.s8k8l.48ni9.br4uv.lsgp6.27l4l.j3cmc.tgtel.n689r",
+          "publication": "published"
+        },
+        "source_digest": "e4d62cc280d1acdadaebcf0b98945b00f5ca32e68e5be1ad6e0cc0491dbd2971"
+      },
+      "actor": "local-uid:1000",
+      "steps": [
+        {
+          "kind": "upload-frontend",
+          "state": "planned",
+          "at": "2026-11-07T13:28:50.48948746Z"
+        },
+        {
+          "kind": "upload-frontend",
+          "state": "dispatched",
+          "at": "2026-11-07T13:28:51.647305463Z"
+        },
+        {
+          "kind": "upload-frontend",
+          "state": "uncertain",
+          "at": "2026-11-07T13:28:51.872746774Z",
+          "frontend_transfer": {
+            "attempted": true,
+            "acknowledged": false,
+            "session_cleanup": "confirmed"
+          }
+        }
+      ]
+    },
+    "frontend-upload-recovered-with-gates-closed": {
+      "version": 1,
+      "intent": {
+        "version": 1,
+        "id": "32c1a33fd1b7f4b710a3fd5ee353cb1b8155643712c33b3ff7b29921b985e933",
+        "target": {
+          "instance_id": "alpha",
+          "desk": "omabit-test-59f0c2c6"
+        },
+        "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "config_revision": 1,
+        "policy_revision": 8,
+        "action": "upload-frontend",
+        "baseline": {
+          "exists": true,
+          "revision": 6,
+          "clay_hash": "0v1m.75trq.64sfa.s8k8l.48ni9.br4uv.lsgp6.27l4l.j3cmc.tgtel.n689r",
+          "publication": "published"
+        },
+        "source_digest": "e4d62cc280d1acdadaebcf0b98945b00f5ca32e68e5be1ad6e0cc0491dbd2971"
+      },
+      "actor": "local-uid:1000",
+      "steps": [
+        {
+          "kind": "upload-frontend",
+          "state": "planned",
+          "at": "2026-11-07T13:28:50.48948746Z"
+        },
+        {
+          "kind": "upload-frontend",
+          "state": "dispatched",
+          "at": "2026-11-07T13:28:51.647305463Z"
+        },
+        {
+          "kind": "upload-frontend",
+          "state": "uncertain",
+          "at": "2026-11-07T13:28:51.872746774Z",
+          "frontend_transfer": {
+            "attempted": true,
+            "acknowledged": false,
+            "session_cleanup": "confirmed"
+          }
+        },
+        {
+          "actor": "local-uid:1000",
+          "verified_source_digest": "e4d62cc280d1acdadaebcf0b98945b00f5ca32e68e5be1ad6e0cc0491dbd2971",
+          "kind": "upload-frontend",
+          "state": "observed",
+          "at": "2026-11-07T13:28:52.877850552Z",
+          "observation": {
+            "exists": true,
+            "revision": 7,
+            "clay_hash": "0v1c.dqtp8.0qk9n.dsb3u.ktjrl.1l2db.kkqng.6cesg.0qnn3.r81a0.kefmv",
+            "publication": "published"
+          },
+          "frontend_source_digest": "13ef80086952b398e7a3b20fa2fa8b820786327a5a309f93c961652a2d7f06eb",
+          "frontend": {
+            "source_revision": 7,
+            "docket_available": true,
+            "stage": "glob",
+            "declared": {
+              "mode": "glob-ames",
+              "base": "omabit-test-59f0c2c6",
+              "ship": "~zod",
+              "glob_hash": "0v2.bat46.e07k7.hgk43.vkgeg.oc0i7",
+              "docket_hash": "0v5.v78di.07k7e.cpr63.9es0s.j41cf"
+            },
+            "current": {
+              "mode": "glob-ames",
+              "base": "omabit-test-59f0c2c6",
+              "ship": "~zod",
+              "glob_hash": "0v2.bat46.e07k7.hgk43.vkgeg.oc0i7",
+              "docket_hash": "0v5.v78di.07k7e.cpr63.9es0s.j41cf"
+            }
+          },
+          "application": {
+            "zest": "live",
+            "source_revision": 7,
+            "source_ship": "",
+            "source_desk": "",
+            "expected_agents": [
+              "omabit-state"
+            ],
+            "agents": [
+              {
+                "name": "omabit-state",
+                "live": true
+              }
+            ],
+            "treaty_available": true,
+            "treaty_listed": true,
+            "treaty_hash": "0v1c.dqtp8.0qk9n.dsb3u.ktjrl.1l2db.kkqng.6cesg.0qnn3.r81a0.kefmv",
+            "docket_available": true,
+            "docket_hash": "0v5.v78di.07k7e.cpr63.9es0s.j41cf",
+            "frontend_mode": "glob-ames",
+            "frontend_state": "glob",
+            "frontend_docket_hash": "0v5.v78di.07k7e.cpr63.9es0s.j41cf"
+          }
+        }
+      ]
+    },
+    "glob-upload-committed-docket": {
+      "exists": true,
+      "revision": 7,
+      "clay_hash": "0v1c.dqtp8.0qk9n.dsb3u.ktjrl.1l2db.kkqng.6cesg.0qnn3.r81a0.kefmv",
+      "publication": "published"
+    },
+    "empty-source-normalized-committed-and-matched": true
+  },
+  "asserted_by_passing_workflow": [
+    "closed gates cause zero frontend uploads",
+    "one native upload acknowledgement deliberately discarded",
+    "read-only reconciliation succeeds after both gates close",
+    "exact replay after stage discard sends no upload",
+    "total frontend upload count is one",
+    "all three assets match bytes and MIME types",
+    "generated docket conflicts with older source ownership"
+  ],
+  "storage_admission": {
+    "charged_bytes": 40793669632,
+    "budget_bytes": 42949672960,
+    "additional_scratch_bytes": 2147483648,
+    "total_with_reserves": 42941153280
+  },
+  "retention": [
+    {
+      "manifest": "/tmp/omabit-desk-frontend-api-binary-retention.json",
+      "sha256": "c7e2c2d5e165be27582b3f206864dba775ef8b88aa336c51535212501adbc080",
+      "classification": "completed synthetic test binaries, retained losslessly compressed; sources/results unchanged",
+      "entries": 17,
+      "status": "complete"
+    },
+    {
+      "manifest": "/tmp/omabit-desk-frontend-api-source-retention.json",
+      "sha256": "39e8dcec19d9d179c43dd87d8eb29ac1bc4bd0ba6bdaf7563aec51164491a81f",
+      "classification": "completed synthetic migration source snapshots retained losslessly as verified archives; original SQL fixtures and receipts untouched",
+      "entries": 5,
+      "status": "complete"
+    },
+    {
+      "manifest": "/tmp/omabit-desk-frontend-api-cache-retention.json",
+      "sha256": "e96128054c6593eb1c118b6e0b14e2c46f827b35afd01317786d688c95b42689",
+      "classification": "rebuildable isolated Go build cache; all builds/tests complete, next native binary retained",
+      "entries": 0,
+      "status": "complete"
+    },
+    {
+      "manifest": "/tmp/omabit-desk-frontend-api-older-binary-retention.json",
+      "sha256": "67debc40a56374ed190d0f8b787260317d1f33a3005bcc62a4473dde5a16c829",
+      "classification": "completed earlier desk fixture binaries retained losslessly; original source, SQL, logs and outcomes unchanged",
+      "entries": 13,
+      "status": "complete"
+    }
+  ],
+  "limits": [
+    "Real native kernel, API/store/collector and HTTP asset reads; managed lifecycle/private transport is a guarded fixture.",
+    "Actual Docker/SSH invocation and installed upgrade/release qualification remain separate.",
+    "Glob/source/fixture HTTP success is not general application health.",
+    "No protected production/DEV/trial ships, plugins, services or persistent manual preview were changed."
+  ]
+}

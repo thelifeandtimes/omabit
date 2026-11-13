@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "result": "passed",
+  "kind": "frozen private source staging and recovery",
+  "base_source": "ec20b98ecc9e67bdca64c67944ea7175b2b028fc",
+  "schema": 52,
+  "fixtures": {
+    "/tmp/omabit-desk-stage-core-03.log": "1babefd05a467eff52bed6b777109c0f5e8b70c1737aa3bb98e66a3009f79501",
+    "/tmp/omabit-desk-stage-api-04/result.json": "3fc6bb139611e81d2a670ed622a40d479a0d0454619b8ddcb1e6e2897628e5ed",
+    "/tmp/omabit-desk-stage-collection-03/result.json": "228e828ca0834f3e771e0782df923d1bbfd867dac4099f6ae8b905d890ea7631",
+    "/tmp/omabit-desk-stage-client-01/result.json": "849bbef2dc092449c73d46312aafc6cbe0a85e464837b08691562ddf5731f914"
+  },
+  "source_sha256": {
+    "internal/deskwork/stage.go": "855341ef28a9abc660fb265d3a6f79a66e3e6a3e00d076525abbd902c03c28b9",
+    "internal/deskwork/cache_linux.go": "7cead190915a8cc0e15ad0c960e6d6426b923604283eb82afa9c84b928b75bdb",
+    "internal/deskwork/cache_lifecycle_linux.go": "cd050c042d7f886716a99c67e5b229f05576727b69ccd60dd551f2f38b47a9cb",
+    "internal/managed/desk_stage_linux.go": "1d82da45916030abc5f66d13123b321577d445d83b31f82313a6a23bbdc1c476",
+    "internal/managed/server.go": "32a0705f36910154ffdea34670212f0387dabf1585406529ec37d91c1ba3d30c",
+    "internal/client/desk_stage.go": "bcacce3cdb855f953b644759482baef43fdccc7696bf0ce0ce465185c8f6e25d",
+    "internal/client/client.go": "d1392d8fb9142043c82872bbfe799f82e5bdcbd8a2806bf7495b384d952493c9",
+    "internal/collection/desk_stage.go": "3cb40d3df16c4cc34c28d6d6aaf9ae9964079338afaf38801511a8be82b14fa2",
+    "internal/protocol/desk_stage.go": "59fd08d3eb7bbc8df4827f348927e212d9b22223e9e4f49575cc46996f84a26e",
+    "cmd/omabit/desk_stage.go": "d76217f4496d3a88e475bf8224be5cfb76a61be74c0e6d77c508eff7cd9dee02"
+  },
+  "checks": [
+    "frozen plans and streams, exact prior receipt replay",
+    "stopped synthetic ship and closed gates: cache only",
+    "wrong actor/digest/generation/workflow and modified bytes refused",
+    "truncated/trailing/cancelled uploads publish no stage",
+    "private cache bounds and symlink/corruption refusal",
+    "partial upload/discard recovery, intent removed last",
+    "unresolved target operations retain staged source",
+    "lost reply reconciliation and no automatic transport replay",
+    "CLI offline help/argument validation",
+    "both skills validated and five packaging tests passed"
+  ],
+  "limits": [
+    "new API exercised with private inert runtime fixtures, managed runtime end-to-end remains pending",
+    "no live mount writes, commits, publication or permission grants",
+    "unknown/malformed cache metadata retained for review",
+    "production/DEV/trial and persistent manual preview unchanged",
+    "not release qualification"
+  ]
+}

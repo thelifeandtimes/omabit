@@ -1,5 +1,207 @@
 # Stable-release upgrade requirement
 
+## 0.4.0 candidate: installed0.3.7→0.4.0 qualification
+
+The [exact-artifact rehearsal](releases/0.4.0/rehearsal.json) passes the local
+Linux/AMD64 owner-user upgrade from schema47 to59, preserving running/stopped
+intent, access, identity and history. The actual older runner refuses59 unchanged.
+This supersedes the installed-upgrade deferral in the historical feature notes
+below only for this documented path and artifact. Their individual fixture limits
+remain valid. Manual password entry is left to the user's separate review VM;
+remote service upgrades and live provider configuration remain outside this gate.
+Stable publication and any production upgrade remain separate actions.
+
+
+## Development: container resource limits, schema59
+
+Schema59 fences optional RAM/CPU configuration and immutable launch limits.
+Historical omitted values mean 4 GiB / 2 CPUs; migration rewrites no instance,
+operation, application policy, frontend or ship-URL history. Invalid limits refuse
+opening and roll migration back. Old clients omitting limits preserve the current
+selection. Nondefault handoffs bind limits in the signed offer and require
+`container-resources-v1` at both ends before fencing the source.
+
+`scripts/test-container-resources-upgrade.py` uses the actual schema58 writer at
+66c641b, preserves original receipts across repeated migration/reopen, retains
+new resource settings, and verifies that the original writer refuses59 unchanged.
+This is isolated feature evidence, not installed upgrade or release qualification.
+Never lower the schema marker or reset a store to downgrade.
+
+
+## Development: shared ship URLs, schema58
+
+Schema58 adds current ship URL settings and contiguous authoring history keyed by
+runner, target generation, native ship and verified pier identity. Migration invents
+no URL, route approval or network configuration. Existing desk/source/receiver and
+frontend records remain byte-preserved. Unknown or corrupt current/history state
+refuses reopening; missing tables in an already58 store are not recreated.
+
+`scripts/test-ship-routes-upgrade.py` uses the actual schema57 writer atbdb81b8.
+Migration/reopen, rollback and that older reader's refusal pass with observed and
+dispatched frontend uploads retained. Negotiate `ship-routes-v1` with matching
+clients; never lower a schema marker. This is feature fixture evidence, not the
+separately deferred installed upgrade/release qualification.
+
+## Development: reviewed frontend uploads, schema57
+
+Schema57 adds immutable `desk_frontends` linked atomically to desk operations.
+Reviews bind the exact staged artifact/MIME digest, predicted native glob hash,
+source revision, source excluding the generated docket, workflow settings and pier.
+Receipts retain upload and owner-session cleanup separately. Missing/corrupt or
+rebound records refuse; migration grants no permissions and sends no request.
+Older step bodies remain byte-preserved through optional omitted frontend fields.
+
+The actual schema56 writer at656e64d supplies the original fixture used by
+`scripts/test-desk-frontend-upgrade.py`. Migration/reopen, rollback and original
+older-reader refusal pass, including observed/pending receiver history and source
+ownership. Negotiate `desk-frontend-v1` with matching collector/runner code. Never
+lower a schema marker or reinterpret a lost upload as permission to send it again.
+These are feature checks in synthetic state; installed upgrade/release qualification
+remains deferred. No installed runner was changed.
+
+## Development: reviewed receiver installation, schema56
+
+Schema56 adds immutable `desk_receivers` linked to the existing operation journal.
+The record binds the reviewed unused name, continuing publisher and expected hash,
+project member generations, workflow settings and receiver pier. Migration creates
+no install, policy grant or subscription. Journal/record writes are atomic, and
+startup checks complete matching ancestry. Interrupted effects become uncertain;
+recovery never repeats installation.
+
+The actual schema55 writer atc912982 produces the original fixture used by
+`scripts/test-desk-receiver-upgrade.py`. Prior policy, settings, source baselines,
+deployment ownership, releases and adoptions remain unchanged. Preservation,
+reopen, rollback, new receiver history and actual older-reader refusal pass.
+Negotiate `desk-receiver-v1` with matching collector/runner code; never lower a
+schema marker. These are development feature checks, not stable upgrade or release
+qualification. No installed runner has been changed.
+
+## Development: standing application/ship approval format1
+
+M550 adds a separate `application-ship-approvals.json` file in the collector profile.
+Existing runner schema55, `ships.json` and per-attempt application journals are
+unchanged. Missing state means no standing permission. Existing approvals never
+migrate into standing grants. Old collectors ignore the new file and retain their
+explicit per-attempt workflow; they cannot use it to initiate automatic attempts.
+New readers require version1, exact current/history agreement and contiguous
+revision history. Unknown/corrupt state refuses unchanged, including writes.
+Do not reset the file, drop revocations or convert a cached grant into authority.
+M558 exposes explicit standing-approval review and authoring without changing
+format1 or any attempt/session journal. Offline revocation remains possible after
+a runner or plugin becomes unavailable. Public automatic connection and installed
+migration qualification remain pending.
+
+## Development: explicit source ownership adoption, schema55
+
+Schema55 adds `desk_adoptions` records linked to the existing desk operation
+journal. An adoption receipt and the selected source-ownership baseline commit in
+one runner database transaction; no ship effect is dispatched. Existing ownership
+rows keep their original encoding and use their referenced operation's type to
+validate commit or adoption evidence. Missing, corrupt or rebound evidence refuses
+startup and cannot be interpreted as an empty ownership baseline. Migration creates
+no ownership, permission, ship effect or pending adoption.
+
+The actual schema54 writer at829cfed supplies the checked-in fixture and
+`scripts/test-desk-adoption-upgrade.py`. Tests preserve prior policy, settings,
+source baselines, deployment ownership and release receipts; reopening a new
+adoption and rollback pass. The actual older reader refuses55 without changing
+state. Negotiate `desk-source-adoption-v1`; never lower a schema number for a
+downgrade. This is development feature evidence, not release qualification.
+
+
+## Development: reviewed activation/publication, schema54
+
+Schema54 adds immutable `desk_releases` linked to the existing operation journal,
+and observed application-stage evidence on release receipts. Original policy,
+workflow, source baselines, deployments, ownership and history remain byte-preserved.
+Migration does not invent release records or enable any gate. Opening checks every
+release record against its journal; unknown, incomplete or inconsistent metadata
+refuses reopen. Recovery never redispatches an unfinished release.
+
+`scripts/test-desk-release-upgrade.py` exercises the actual schema53 writer at
+`3a5a5c52a396089231d12998f7316a8d24a48ac9`, migration/reopen with new release
+records, and that actual older reader's refusal without changing54 state. The
+checked-in original53 SQL fixture additionally covers preservation and rollback.
+Negotiate `desk-release-v1` with matching collector/runner code. Never downgrade
+the database schema. This is development functionality and fixture evidence;
+release qualification, supported stable upgrade artifacts and installed upgrades
+remain separate and deferred.
+
+## Development: verified source deployment, schema53
+
+Schema53 adds immutable staged-commit reviews linked to the existing desk journal,
+and verified source ownership linked to an observed completion. Migration preserves
+policy, workflow, pending operation and canonical source-baseline records. Ownership
+is not invented during migration. Completion and ownership write in one transaction;
+unknown or inconsistent metadata refuses reopen. Original schema52 writer fixtures,
+repeated migration, rollback and older-reader refusal are exercised by
+`scripts/test-desk-deployment-upgrade.py` (M544). Runtime continuity uses the same pier
+object, rather than a container ID, so a restart need not lose owned paths. Different
+pier/source bindings start without ownership. The new CLI requires `desk-commit-v1`;
+publication remains unavailable. This is functional source/fixture evidence, not a
+release qualification or authorization to upgrade any installed runner.
+
+## Development: private source staging
+
+`desk-source-staging-v1` uses a versioned disposable `desk-stages-v1` runner cache;
+SQLite remains schema52. It adds no live mount, automatic commit or policy grant.
+Matching capability-aware clients verify frozen transfer receipts; older clients
+cannot invoke it and existing workflow/policy/journal records are unchanged.
+Cache metadata is strict and immutable. Interrupted uploads/discards retain their
+original identity; unknown/corrupt contents fail visibly rather than being repaired.
+Private API/collector/core fixtures cover recovery and quota/ownership boundaries
+(M543). Managed-runtime deployment and release artifact qualification remain pending.
+
+## Development: canonical source baselines, schema52
+
+Schema52 adds a bounded canonical baseline cache, shared by collectors. A baseline
+is recorded only after Unix and Clay match and is bound to the exact workflow and
+runtime selection. Migration creates an empty cache; it does not infer source
+equality or change existing workflow/policy/journal records. Original schema51
+writer fixtures, repeated migration, corrupt-cache refusal and older-reader
+refusal are exercised by `scripts/test-desk-source-upgrade.py` and the source tests
+(M542). Negotiate `desk-source-status-v1` before using the live comparison API.
+This remains development-source evidence, not exact-artifact release qualification.
+
+## Development: workflow settings, schema51
+
+Schema51 adds versioned ship/desk workflow metadata and append-only history.
+Original schema50 writer state, including pending desk-operation receipts,
+upgrades without changing its registry or policy rows. Repeated opens validate
+the metadata and its history; failed migration rolls back. The schema50 writer
+refuses actual schema51 state unchanged. The original-writer fixture and
+`scripts/test-desk-settings-upgrade.py` record this narrow path (M541).
+`desk-workflow-settings-v1` must be negotiated by matching collectors and runners.
+Ordinary edits preserve these separate records. This does not qualify a released
+0.3.7 → 0.4.0 artifact or authorize updating an installed runner.
+
+## Development: typed desk operations, schema50
+
+Schema50 adds separately journaled desk-operation intents and append-only history.
+Original schema49 writer state upgrades without changing prior registry/policy
+records; repeated opens validate the journal and never redispatch an interrupted
+effect. Older schema49 writers refuse actual schema50 state without modifying it.
+The original-writer fixture and `scripts/test-desk-upgrade.py` record this narrow
+source compatibility path (M538). Discovery adds no persistent format; its
+`desk-discovery-v1` capability and typed creation's `desk-create-v1` must be checked
+before use. These are development fixtures, not the deferred exact-artifact
+0.3.7 → 0.4.0 release qualification.
+
+## Development: application permissions, schema49
+
+The 0.4.0 [application policy layer](app-development-policy.md) adds runner
+schema49, version2 policy and version2 collector rollout journals. Schema47
+fixtures start with desk creation, commit and publication blocked. Schema48
+fixtures preserve commit/publication grants and all original audit bytes, append
+one migration receipt, and close desk creation. Reopening is idempotent; corrupt
+audit receipts roll migration back. Historical database migrations remain tested.
+Schema48 and earlier writers refuse schema49. Do not decrement `user_version` or
+reset a store. Ordinary settings edits preserve policy. Legacy collector journal
+reads preserve their bytes and report creation blocked; subsequent authoring
+writes version2. Use matching artifacts and the `app-development-policy-v2`
+capability. This is source/fixture qualification; the full exact-artifact
+0.3.7 → 0.4.0 upgrade remains a release gate.
+
 ## 0.3.7 one-click setup and identity recovery
 
 The [0.3.7 qualification](releases/0.3.7/qualification.json) covers the published
@@ -978,3 +1180,68 @@ Only an explicitly selected preflight that retained phase `reserved` with no
 storage/container effects can continue; dispatched unknown outcomes are not
 replayed. Older writers must refuse47. Full expanded engine/anchor recovery is
 not yet implemented; this development format is not release qualification.
+
+
+## Unreleased Theme replacement sidecar (M568)
+
+The isolated Theme receiver retains application journal1 and transport journal2
+for unrelated cached cleanup helpers. Replacement adds private version1
+`application-replacements/active.json` plus immutable bound history receipts;
+existing directory with missing/corrupt state is not silently reinitialized.
+Request-specific Secret Service application namespaces retain old credentials
+before normal-slot overwrite. No secrets enter JSON history. Pending installation
+is fenced; only exact accepted ancestry admits a fresh independent successor.
+Predecessor cleanup operates only on its original session and preserves the new
+account. An original receiver journal writer and prior installer inventory are
+covered in private source fixtures, not installed upgrade qualification.
+
+Older predecessor helpers without replacement cleanup are not eligible for silent
+handoff. Current helper approval, issuer lineage/migration and assembled recovery
+qualification remain prerequisites before advertising automatic reconnection.
+Do not delete sidecar/credential/transport history or downgrade formats to unblock
+an attempt. See `diagnostics/2026-11-07-theme-session-replacement.json`.
+
+
+## Unreleased DMs replacement and bridge coordination (M569)
+
+DMs keeps account/attempt formats1 and reads transport1/2. Only explicit retirement
+upgrades transport1 to2; original-writer preservation/old-reader refusal remains
+qualified in private fixtures. Quiescence identifies the exact retired generation,
+allowing it to remain alive after releasing its exclusive lease. It does not admit
+unrelated live cleanup actors, resolve app writes or authorize a successor.
+
+The new version1 replacement sidecar and request-specific Secret Service namespace
+follow Theme's retention rules. Pending installation is fenced; only accepted exact
+ancestry permits a new channel while old remote cleanup remains pending. Private
+bridge coordination stores no credential and creates no socket file. An existing
+bridge can adopt a successor without restart, but older cached helpers must not
+be treated as replacement-capable. Source fixture evidence does not qualify an
+installed/native upgrade. See `diagnostics/2026-11-07-dms-session-replacement.json`.
+
+
+## Unreleased collector replacement ancestry (M570)
+
+The collector reads application journals1–4. Explicit replacement publishes4
+atomically with the predecessor retirement and successor intent; read-only open
+does not rewrite prior state. Accepted successors link atomically, while original
+origin/credential references and cleanup remain intact. Replacement receipts use
+archive3; older archive1/2 receipts remain readable. Active attempts remain bounded
+to64 and reachable ancestry to2048. Missing history, cycles and divergent active
+branches are errors, not a reason to delete state or retry a login.
+
+The actual previous3 collection sources are retained under
+`internal/collection/testdata/v3writer` with source hashes. Private migration tests
+use that writer, preserve its original evidence, and prove its refusal of actual4
+state without mutation. Complete replacement requires declaration2 from the exact
+approved helper; an installed update cannot widen a cached1 approval. Public
+receiver advertisement and assembled qualification are still pending. Do not
+downgrade journal markers or remove ancestry to unblock work.
+
+
+M571 adds an optional `automatic_disabled` bit to unreleased journal4 replacement
+metadata. Explicit disconnect persists cancellation before cleanup, including
+unaccepted parent/child intent. It does not change a closed receipt already
+published for archival or disable an already accepted successor when cleaning its
+parent. Previous stable readers still refuse4. A new explicit reviewed retry can
+clear a retired predecessor's cancellation; periodic maintenance cannot do so.
+CLI and full registry/issuer fixtures cover the transition and interrupted archive.

@@ -81,11 +81,17 @@ func InspectCurrentOwner() Report {
 	return InspectOwner(u.Username)
 }
 
+// DedicatedAccountHelper identifies prerequisites specific to the legacy account
+// setup. Owner setup uses an existing account and validates its ID grants directly.
+func DedicatedAccountHelper(name string) bool {
+	return name == "useradd" || name == "getsubids"
+}
+
 func InspectOwner(name string) Report {
 	base := Inspect()
 	r := Report{SchemaVersion: 1, Deployment: "owner-user-rootless", Compatibility: base.Compatibility}
 	for _, c := range base.Checks {
-		if c.ID == "binary-useradd" {
+		if DedicatedAccountHelper(strings.TrimPrefix(c.ID, "binary-")) {
 			continue
 		}
 		c.Detail = strings.ReplaceAll(c.Detail, "dedicated-account", "owner-user")

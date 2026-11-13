@@ -99,3 +99,48 @@ separate qualification. Native control should remain off for routine operation.
 Published desktop and binary pins are unchanged by this source contribution.
 No automatic enabling, ship restart, pier reset, host-policy change or generic
 remote-execution endpoint is introduced.
+
+## 2026-11-12: configurable container resources (M573)
+
+The new schema59 feature supersedes the fixed-cap statements above for individually
+managed ships on `container-resources-v1` runners. Historical records still mean
+4 GiB RAM / 2 CPUs. New selections allow 1–16 GiB and 1–16 whole cores; limits can
+change only while stopped/uninitialized with no operation or recovery pending.
+Stop reconciles an exited container; configuration saves the next launch without
+replacing the pier or starting automatically. Loom and host admission policy are
+independent. Private/project member containers retain their separate contracts.
+
+Creation persists limits before dispatch. Inspect, cgroup probes, maintenance and
+metrics use each immutable container record, including the old defaults when its
+fields are absent. UI and CLI show requested and recorded values separately.
+Nondefault limits are signed into handoffs; both endpoints must support them.
+Explicitly restoring 4/2 keeps the historical handoff encoding so compatible older
+destinations are not refused merely because defaults were explicitly saved.
+
+Validation used private Bubblewrap namespaces, no host Docker or service sockets,
+synthetic runner databases, mocked Docker, and inert QML callbacks:
+
+- 15 runtime/containment/resource tests, 36 managed-store/lifecycle/CPU/handoff
+  tests, 3 client transfer tests, 15 protocol tests and 6 CLI tests passed with
+  `-race`. Evidence: `/tmp/omabit-fleet-resources-{runtime-final,managed-final,client,protocol,cli}`.
+- Actual schema58 writer66c641b →59 migration/reopen and actual older-reader
+  refusal passed in `/tmp/omabit-resources-upgrade-01`. The original SQL fixture
+  and checksum are retained under `internal/managed/testdata/resources-schema58.*`.
+  Final fixture tests also cover preserved receipts and migration rollback.
+- `scripts/test-runtime-settings-model.js` passed. The real ShipPortsPane rendered
+  at640px and420px and submitted16GiB/8CPUs through an inert service; running ships
+  and older runners keep resource controls disabled. Screenshots and source hashes:
+  `/tmp/omabit-resources-ui-02`. The first fixture lacked its Hint component; the
+  corrected fixture passed. No live service was connected.
+- The original restart fixture initially reported old cgroup values for its new
+  container; correcting that synthetic response made the resize cycle pass.
+- Operator skill validation passed. The collector reference was generated from82
+  actual help entries in a networkless private HOME, which remained empty:
+  `/tmp/omabit-resources-cli-reference`.
+
+This qualifies source behavior only. It does not claim a real16GiB workload boot,
+installed-runner upgrade, every CPU/host combination, or0.4.0 release qualification.
+Production/DEV/trial services, protected ships and the persistent preview were
+untouched. Cleanup retired only classified superseded compiler/module caches and
+retained byte-verified gzip copies of standalone test binaries; the40GiB evidence
+budget remains enforced. See the M573 diagnostic for exact sources and evidence.

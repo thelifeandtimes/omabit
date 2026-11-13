@@ -126,6 +126,9 @@ func (s *store) choosePort(q querier, id, kind string, wanted uint16) (uint16, e
 }
 
 func validateOwnedConfig(c protocol.Configuration) error {
+	if err := validateContainerResources(c); err != nil {
+		return err
+	}
 	if c.HTTPPort < 1024 || c.AmesPort < 1024 || !protocol.ValidLoom(c.Loom) {
 		return bad("owned runtime requires unprivileged HTTP/Ames ports and loom 30..34")
 	}

@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "result": "passed",
+  "kind": "shared development workflow settings and schema51 migration",
+  "original_source": "9f45b42a2b13b886549ebea72082ce8f73bf4be0",
+  "original_writer_proof": "/tmp/omabit-desk-settings-original-migration-01/result.json",
+  "original_writer_proof_sha256": "e53eea3e91f9cbe4d30a500341966ec7052da5edd84f239eb1837e695c023a10",
+  "fixtures": {
+    "/tmp/omabit-desk-settings-store-05/result.json": "b89f90f21655e46f43021e151c6ec2fa9a20e203fb2eec43bc5427dc22eee9c1",
+    "/tmp/omabit-desk-settings-collection-01/result.json": "190df07c5fb11985c5a14abed5793372d8b731507c909df48fc8e851b8ae120c",
+    "/tmp/omabit-desk-settings-regression-01/result.json": "bef07fe7c304ca6055c1afb3b932df5690a91759b06631f4681d5dfd4f0b13ec",
+    "/tmp/omabit-policy-ui-workflow-05/qml.log": "612997ccbf5e15007cdba68e650c585aa9f33e74c66fa000df8a2437c3804883",
+    "/tmp/omabit-policy-ui-workflow-04/qml.log": "421540d9acb9148234bfd982d025b2d75f4e5aebb834019f80b3213a1ed22ca7",
+    "/tmp/omabit-policy-tree-test-workflow-01/data/state/window.log": "e8910f9c9c7764d8c9891f26d8f78be0191788f4d2fd5ddeef8da4416247c359"
+  },
+  "source_sha256": {
+    "internal/deskwork/settings.go": "bdac324a67f45e0319b80c185a21c044204b43afb6bd0e8665ed29a3edf00591",
+    "internal/managed/desk_settings_store.go": "764e2fe2ee38f11c29313fe8c7e494d2ce02f619ae0ffd32e462fd98cb876278",
+    "internal/managed/schema.go": "0feb9a4bc5467caeff0238fbcda9c8ed1d5ddea25a285ed6068e2d477256defc",
+    "internal/managed/store.go": "b86bb77eeede20c78d1437b2177f6081680b3ac9c6f5baae681cc5b4f3fcb471",
+    "internal/managed/testdata/desk-schema50.sql": "b6d82f7cce2ba87df74ac71167f37e1c27966a61ef47d2236bd8f44c659a7a8a",
+    "internal/managed/testdata/desk-schema50.json": "bdb15def29439227f330a95a011324be934a9516559b9dacc9d6e17cf91a63d3",
+    "internal/managed/desk_settings_api.go": "713e4f791e0aa042b61bb8faf9e3c759d93aa6b17b87acdcbb281337a0592ba9",
+    "internal/client/desk_settings.go": "4b2cc430860a191171997794295f3045bc6f2999740196f0922d93689e4ee934",
+    "internal/collection/desk_settings.go": "3e967717de0673cf2cae093efefd53d2e06590bd2342e438a1f5a990078616a3",
+    "cmd/omabit/app_workflow.go": "48cc2ca617103746fe7e8fc52faa2c53315cd96fad1b081f2418ce5b7f16da57",
+    "plugins/omabit/AppWorkflow.qml": "4e6d298c64218552e88e2f8e8c2f7c662c02aa3ac33ab69f73d946b11904251a",
+    "plugins/omabit/AppWorkflowPane.qml": "14c0bc7bc01fdab27f5410928d9c65ea0382d0b985d708873112db394b18e574",
+    "plugins/omabit/AppWorkflow.js": "fa1fdf5147963d7bb20c332b8b541df2a92a1ab270fbecde28286230fcadd5a6",
+    "plugins/omabit/NotesField.qml": "f4be59dd884fff6e72c2c8c9bd473cfb08a3ca16622f8793bdf7f42afc0939f6"
+  },
+  "checks": [
+    "original schema50 registry/policy/dispatched receipt preserved",
+    "schema50 reader refuses actual51 unchanged",
+    "repeat reopen, atomic failed migration and corruption refusal",
+    "capability, identity, target generation and revision checks",
+    "read-only agent CLI and strict Setup authoring payloads",
+    "wide/narrow UI, validations and saves leave permissions unchanged",
+    "late workflow reply cannot cross selected profile",
+    "full Setup sidebar/tree/zoom/persistence regression",
+    "both bundled skills validated and packaged reproducibly"
+  ],
+  "limits": [
+    "synthetic runner/API/UI fixtures, not managed-runtime or release qualification",
+    "descriptive source and Urgit metadata; not verified native mount/Git binding",
+    "source-status baseline, staging/commit/publication endpoints still pending",
+    "production/DEV/trial installations and persistent human preview unchanged"
+  ],
+  "failed_attempts": {
+    "ui_workflow_01": "sandbox refused namespace; no test ran",
+    "store_03": "sandbox refused namespace; no test ran",
+    "ui_workflow_02": "transient target-switch undefined-property warning, corrected and passed03/04/05",
+    "store_04": "SQL fixture created database with unsafe permissions; corrected fixture passed05",
+    "skill_validator_default_python": "PyYAML unavailable; system Python validated both skills"
+  }
+}

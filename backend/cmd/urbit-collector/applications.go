@@ -14,24 +14,28 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/applicationauth"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/shiproute"
 )
 
 type applicationView struct {
-	Archived               bool                         `json:"archived"`
-	RequestID              string                       `json:"request_id"`
-	ConnectionID           string                       `json:"connection_id"`
-	ConnectionRevision     uint64                       `json:"connection_revision"`
-	Origin                 string                       `json:"origin"`
-	Ship                   string                       `json:"ship"`
-	Target                 collection.ApplicationTarget `json:"target"`
-	Authority              string                       `json:"authority"`
-	Phase                  string                       `json:"phase"`
-	Revision               uint64                       `json:"revision"`
-	ReceiverReconciliation bool                         `json:"receiver_reconciliation"`
-	Outcome                string                       `json:"outcome,omitempty"`
-	ReceiverOutcome        string                       `json:"receiver_outcome,omitempty"`
-	UpdatedAt              time.Time                    `json:"updated_at"`
-	NextActions            []string                     `json:"next_actions"`
+	Archived               bool                              `json:"archived"`
+	RequestID              string                            `json:"request_id"`
+	ConnectionID           string                            `json:"connection_id"`
+	ConnectionRevision     uint64                            `json:"connection_revision"`
+	Origin                 string                            `json:"origin"`
+	Ship                   string                            `json:"ship"`
+	Target                 collection.ApplicationTarget      `json:"target"`
+	Authority              string                            `json:"authority"`
+	Phase                  string                            `json:"phase"`
+	Revision               uint64                            `json:"revision"`
+	ReceiverReconciliation bool                              `json:"receiver_reconciliation"`
+	Outcome                string                            `json:"outcome,omitempty"`
+	ReceiverOutcome        string                            `json:"receiver_outcome,omitempty"`
+	UpdatedAt              time.Time                         `json:"updated_at"`
+	NextActions            []string                          `json:"next_actions"`
+	Fleet                  collection.FleetApplication       `json:"fleet,omitzero"`
+	Replacement            collection.ApplicationReplacement `json:"replacement,omitzero"`
 }
 
 func appView(a collection.ApplicationAttempt) applicationView {
@@ -39,6 +43,12 @@ func appView(a collection.ApplicationAttempt) applicationView {
 	switch a.Phase {
 	case "connected":
 		next = append(next, "app-disconnect")
+	case "retiring":
+		if a.Replacement.SuccessorID == "" && !a.Replacement.AutomaticDisabled {
+			next = append(next, "app-fleet-reconnect", "app-disconnect")
+		} else {
+			next = append(next, "app-recover")
+		}
 	case "closed":
 		if a.ReceiverReconciliation {
 			next = append(next, "app-reconcile")
@@ -48,17 +58,23 @@ func appView(a collection.ApplicationAttempt) applicationView {
 	default:
 		next = append(next, "app-recover")
 	}
-	return applicationView{false, a.ID, a.ConnectionID, a.ConnectionRevision, a.Origin, a.Ship, a.Target, a.Authority, a.Phase, a.Revision, a.ReceiverReconciliation, a.Outcome, a.ReceiverOutcome, a.UpdatedAt, next}
+	return applicationView{false, a.ID, a.ConnectionID, a.ConnectionRevision, a.Origin, a.Ship, a.Target, a.Authority, a.Phase, a.Revision, a.ReceiverReconciliation, a.Outcome, a.ReceiverOutcome, a.UpdatedAt, next, a.Fleet, a.Replacement}
 }
 
 type applicationResult struct {
-	Connection *applicationView `json:"connection,omitempty"`
-	Code       string           `json:"code"`
-	Message    string           `json:"message,omitempty"`
+	Connection    *applicationView    `json:"connection,omitempty"`
+	Code          string              `json:"code"`
+	Message       string              `json:"message,omitempty"`
+	RouteAttempts []shiproute.Attempt `json:"route_attempts,omitempty"`
+	Health        string              `json:"health,omitempty"`
 }
 
 func applicationFailure(err error) (string, string) {
 	switch {
+	case errors.Is(err, collection.ErrApplicationPermission):
+		return "permission_required", "Review this ship's standing application permission. The grant is absent, revoked or changed."
+	case errors.Is(err, collection.ErrApplicationRoute):
+		return "route_unavailable", "No enabled ship URL could be verified from this desktop's network. Review Ship URLs and network access."
 	case errors.Is(err, collection.ErrApplicationArchived):
 		return "archived", "This request completed and was archived. Its approval cannot be replayed."
 	case errors.Is(err, collection.ErrApplicationLimit):
@@ -109,6 +125,7 @@ func runApplications(ctx context.Context, command string, args []string, dir, so
 	var shipRevision, revision uint64
 	var target collection.ApplicationTarget
 	var approve bool
+	var lan []string
 	usage := command
 	switch command {
 	case "app-plugins", "app-connections":
@@ -127,6 +144,20 @@ func runApplications(ctx context.Context, command string, args []string, dir, so
 		usage += " REQUEST_ID --expected-revision N"
 		flags.Uint64Var(&revision, "expected-revision", 0, "attempt revision from app-connections")
 	}
+	if command == "app-fleet-health" || command == "app-fleet-maintain" {
+		flags.Func("lan-profile", "explicit current LAN scope; may repeat up to eight times", func(value string) error {
+			if !protocol.ValidID(value) || len(lan) >= 8 {
+				return errors.New("invalid LAN profile")
+			}
+			for _, old := range lan {
+				if old == value {
+					return errors.New("duplicate LAN profile")
+				}
+			}
+			lan = append(lan, value)
+			return nil
+		})
+	}
 	if command != "app-plugins" && command != "app-connections" && len(args) > 0 && args[0] != "--help" && args[0] != "-h" {
 		selected, args = args[0], args[1:]
 	}
@@ -137,6 +168,8 @@ func runApplications(ctx context.Context, command string, args []string, dir, so
 			fmt.Fprintln(stdout, "Approval gives this plugin an independent ordinary Eyre owner session. Eyre does not isolate desks. Plugins then connect directly to the ship and retain standalone sign-in.")
 			fmt.Fprintln(stdout, "Disconnect revokes only this attempt's session. Recover never retries issuance or delivery. Reconcile removes this attempt's receiver state after revocation.")
 			fmt.Fprintln(stdout, "app-archive removes a fully closed/reconciled attempt from the active list, retaining a permanent replay receipt. app-connection reads one active or archived request.")
+			fmt.Fprintln(stdout, "app-fleet-health checks a connected fleet session under current standing permission, installed helper and network eligibility. It makes bounded identity GETs only; it does not reconnect, log out, deliver credentials or change the attempt. LAN scopes must be explicitly supplied for this check.")
+			fmt.Fprintln(stdout, "app-fleet-maintain performs one bounded health/reconnect or lineage recovery step. It preserves uncertain requests, observes lost replacement replies, and uses current standing permission. Known failed children back off for five minutes and stop automatic retry after three failures. Explicit Disconnect is never automatically undone.")
 			fmt.Fprintln(stdout, "No command installs plugins or backends. No runner, SSH, login code or cookie argument is accepted.")
 			flags.SetOutput(stdout)
 			flags.PrintDefaults()
@@ -155,8 +188,9 @@ func runApplications(ctx context.Context, command string, args []string, dir, so
 		return fail(errors.New("select a request ID and --expected-revision from app-connections"), 2)
 	}
 	out := newOutput(stdout, format, false)
+	var health string
 	emit := func(a collection.ApplicationAttempt, err error) int {
-		result := applicationResult{Code: "ok"}
+		result := applicationResult{Code: "ok", Health: health}
 		if a.ID != "" {
 			view := appView(a)
 			if errors.Is(err, collection.ErrApplicationArchived) {
@@ -276,10 +310,49 @@ func runApplications(ctx context.Context, command string, args []string, dir, so
 	engine = engine.AtRevision(revision)
 	var attempt collection.ApplicationAttempt
 	switch command {
+	case "app-fleet-maintain":
+		return runFleetMaintenance(ctx, r, selected, revision, lan, dir, format, stdout, fail, emit)
+	case "app-fleet-health":
+		var archived bool
+		attempt, archived, err = r.Application(ctx, selected)
+		if err != nil {
+			return emit(attempt, err)
+		}
+		if archived {
+			return emit(attempt, collection.ErrApplicationArchived)
+		}
+		if attempt.Revision != revision || attempt.Fleet.Version != 1 || attempt.Phase != "connected" {
+			return emit(attempt, collection.ErrApplicationConflict)
+		}
+		env, e := applicationEnvironment()
+		if e != nil {
+			return emit(attempt, e)
+		}
+		receiver, _, e := applicationauth.ResolveInstalled(filepath.Join(env["HOME"], ".config/omarchy/plugins"), attempt.Target.PluginID, env)
+		if e != nil {
+			return emit(attempt, e)
+		}
+		health, err = engine.CheckFleet(ctx, selected, lan, receiver)
 	case "app-disconnect":
 		attempt, err = engine.Disconnect(ctx, selected)
 	case "app-recover":
-		attempt, err = engine.Recover(ctx, selected)
+		attempt, _, err = r.Application(ctx, selected)
+		if err != nil {
+			return emit(attempt, err)
+		}
+		if attempt.Replacement.PreviousID != "" && attempt.Phase == "delivering" {
+			env, e := applicationEnvironment()
+			if e != nil {
+				return emit(attempt, e)
+			}
+			receiver, e := applicationauth.LoadReceiver(r.ApplicationCacheDir(), attempt.Target.SHA256, env)
+			if e != nil {
+				return emit(attempt, e)
+			}
+			attempt, err = engine.RecoverReplacement(ctx, selected, receiver)
+		} else {
+			attempt, err = engine.Recover(ctx, selected)
+		}
 	case "app-reconcile":
 		attempts, e := r.Applications(ctx)
 		if e != nil {

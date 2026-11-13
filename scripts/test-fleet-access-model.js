@@ -1,0 +1,20 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
+const m=vm.createContext({Date,Math,Number,JSON,isFinite});
+vm.runInContext(fs.readFileSync(path.join(__dirname,'../plugins/omabit/Model.js'),'utf8'),m);
+const r=vm.createContext({Date,Math,Number,JSON,isFinite});
+vm.runInContext(fs.readFileSync(path.join(__dirname,'../plugins/omabit/ShipRoutes.js'),'utf8'),r);
+const now=Date.now(),stamp=new Date(now).toISOString();
+function runner(id,features=['ship-routes-v1','ship-route-code-v1']){return {name:id,runner_id:id,mode:'simulation',status:'available',access_role:'operator',checked_at:stamp,features,snapshot:{instances:[{id:'alpha',ship:'~zod',label:'alpha',config_revision:1,config:{http_port:8888},observed_state:'running',resources:{container_id:'a'.repeat(64)}}]}}}
+const service={connections:[runner('runner-a'),runner('runner-b')],now,observing:true,registrations:[{name:'runner-a',runner_id:'runner-a',transport:'ssh',ssh:{host:'fixture-a'}},{name:'runner-b',runner_id:'runner-b',transport:'ssh',ssh:{host:'fixture-b'}}],runnerPreferences:{}};
+let ships=m.applicationShips(service,[]);
+assert.equal(ships.length,2,'remote ships without local URLs must be selectable');
+assert(ships.every(s=>s.managed.fleet));
+assert.notEqual(m.applicationShipKey(ships[0]),m.applicationShipKey(ships[1]),'same-named independent fakes collapsed');
+const prior=m.applicationShipKey(ships[0]);service.connections[0].snapshot.instances[0].resources.container_id='b'.repeat(64);
+assert.notEqual(m.applicationShipKey(m.applicationShips(service,[])[0]),prior,'runtime replacement retained UI authority');
+service.connections[0].status='unavailable';assert.equal(m.applicationShips(service,[]).length,1);
+service.connections[1].features=['ship-routes-v1'];assert.equal(m.applicationShips(service,[]).length,0,'missing credential feature allowed automatic connection');
+assert(r.equal({target:{plugin_id:'fixture',profile:'default'},binding:{runner_id:'a'}},{binding:{runner_id:'a'},target:{profile:'default',plugin_id:'fixture'}}),'QML object order changed identity');
+assert(!r.equal({target:{plugin_id:'fixture'}},{target:{plugin_id:'other'}}));
+assert(!r.equal({binding:{continuity:'a'}},{binding:{continuity:'b'}}));
+console.log('PASS: fleet choices without local URLs, independent fakes, runtime/offline invalidation and structural identity comparison');

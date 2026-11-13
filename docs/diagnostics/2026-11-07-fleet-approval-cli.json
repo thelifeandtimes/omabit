@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "date": "2026-11-07",
+  "milestone": "M558",
+  "source_base": "200feae7a32c6426b392f10352e2f64b55b88f56",
+  "tests": {
+    "approval-cli-01": {
+      "directory": "/tmp/omabit-fleet-approval-cli-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^TestApplicationShipCLI",
+        "binary_sha256": "1c87869101a3f879a06202c69290aa1fc01d0d8249aa7dccbb2423e88ca9dcf3",
+        "package": "backend/cmd/urbit-collector",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "03839411aaca729c953d411ec28e9828322a29ed9a1edda89e690a0fba4b9aa9"
+    },
+    "approval-core-01": {
+      "directory": "/tmp/omabit-fleet-approval-core-01",
+      "result": {
+        "exit": 0,
+        "test_pattern": "^TestApplicationShip",
+        "binary_sha256": "0d97d47ab5544b7bce3bd00768cbaedaf6fefa26233a5321eb6027eebcab696e",
+        "package": "internal/collection",
+        "scope": "offline synthetic fixture; no installed runtime or release qualification"
+      },
+      "log_sha256": "2165b321309535debeca7152ec8b2b0d758aa78ce8184f8df7fe0ddd7cb1644c"
+    }
+  },
+  "storage_observed": {
+    "charged_bytes": 42092802048,
+    "budget_bytes": 42949672960,
+    "additional_scratch_bytes": 0,
+    "total_with_reserves": 42092802048
+  },
+  "retention_manifest": "/tmp/omabit-fleet-cache-retention.json",
+  "limits": [
+    "private synthetic runner/helper fixtures; no installed state or actual ship accessed",
+    "approval authoring only; no sessions, receiver execution or automatic connection",
+    "persistent formats unchanged; UI integration and automatic issuance/reconnection remain pending"
+  ]
+}

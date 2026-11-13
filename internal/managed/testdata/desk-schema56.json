@@ -1,0 +1,16 @@
+{
+  "schema": 56,
+  "source_commit": "656e64d50c68ec693556575d76cc04c656af2cf1",
+  "sql_sha256": "1df2488f8a9e4a6c636ec6f0fb021a9457802aa6cd0fb01b1ca303e683824cf7",
+  "provenance": "Actual original schema56 writer, private synthetic fixture; scripts/test-desk-frontend-upgrade.py",
+  "contains": [
+    "runner registry and app policy",
+    "pending desk operation",
+    "workflow settings and history",
+    "canonical source baseline",
+    "verified deployment ownership",
+    "observed source release",
+    "explicit source adoption",
+    "observed and dispatched receiver installations"
+  ]
+}

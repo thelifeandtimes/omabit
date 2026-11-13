@@ -173,6 +173,8 @@ func newFixture(t *testing.T) *fixture {
 			return []byte(out), nil
 		case path == "/usr/bin/dockerd":
 			return []byte("Docker version 29.7.2, build reviewed\n"), nil
+		case path == "/usr/bin/rootlesskit" && slices.Equal(args, []string{"--help"}):
+			return []byte("  --state-dir value  state directory\n  --detach-netns  detach network namespaces\n"), nil
 		case path == "/usr/bin/useradd" && slices.Equal(args, []string{"--help"}):
 			return []byte("  --add-subids-for-system  allocate subordinate IDs\n"), nil
 		case path == "/usr/bin/useradd":

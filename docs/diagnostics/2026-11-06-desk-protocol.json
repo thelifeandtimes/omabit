@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "result": "passed",
+  "kind": "native disposable desk protocol development probe",
+  "evidence_root": "/tmp/omabit-desk-probe-12",
+  "inputs": {
+    "requests.json": "e8932e38cdad47ec06a6b3e069c71e858766eb509414e185ba649a42727ef032",
+    "probe.py": "7d1d4e5d844b767e101264dc1d49143756b354e928f21be3b6610ddccfae85dc",
+    "boot.pill": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+    "vere": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+  },
+  "source_sha256": {
+    "internal/deskwork/lens.go": "e8c1cb343e8c802bec3848e9a4f88ed4e07b2a44b0013ad513f06913fa12cc3f",
+    "scripts/qualification/app-development/probe.py": "7d1d4e5d844b767e101264dc1d49143756b354e928f21be3b6610ddccfae85dc",
+    "scripts/qualification/app-development/requests.go": "9afa8542e19edea676f5e41ef3cd3a2e4af048aff2a21f519bea2c369d8f9b8b"
+  },
+  "result_sha256": "cc855444d29df8a31201fe1bb32501794e0a1adefae9124b49d2dd3cfd608e3e",
+  "runtime": "4.6-5a7614f",
+  "namespace": "private network/PID/mount/user/IPC/UTS",
+  "resources": {
+    "ActiveState": "active",
+    "CPUQuotaPerSecUSec": "1s",
+    "MemoryMax": "4294967296",
+    "MemorySwapMax": "0",
+    "TasksMax": "128"
+  },
+  "checks": [
+    "typed create preserves generated prerequisites",
+    "typed mount and commit",
+    "revision 1 to 2",
+    "raw newline normalization observed",
+    "structured data converts with selected desk mark",
+    "different source is unequal",
+    "active and cancelled timer observations differ",
+    "typed Kiln autocommit cancellation",
+    "source read publication private to published",
+    "clean shutdown"
+  ],
+  "before": {
+    "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+    "publication": "private",
+    "revision": 1,
+    "exists": true
+  },
+  "published": {
+    "clay_hash": "0v1u.699mm.bn1at.9kuua.fne7i.c1hji.kk4sd.e9lhb.o21u3.qo9s2.uk48e",
+    "publication": "published",
+    "revision": 3,
+    "exists": true
+  },
+  "limits": [
+    "native fake only; no managed Docker transport yet",
+    "no runner API/CLI connected",
+    "Treaty, receiver, frontend and Urgit tests pending",
+    "not stable release qualification"
+  ],
+  "source_verification": "Current builder regenerates byte-identical tested requests after adding a mount revision bound."
+}

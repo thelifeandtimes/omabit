@@ -19,6 +19,43 @@ before changing them. Read only the reference needed for the current slice:
 - [Interface, sign-in and backend readiness](references/application.md)
 - [Development isolation and acceptance](references/development.md)
 
+For backend desk creation, commits or publication through Omabit, follow the user's
+**Setup → App development and publishing** gates and the application's release
+configuration, including Urgit's rules. Agent desk creation, commit and publication default to
+blocked for every ship class. Read the effective permissions through supported
+tools before acting. Keep disabled effects blocked across shell, Dojo and Git
+alternatives, and leave permission changes to the user's Setup action.
+The 0.4.0 source provides `app-policy` on runners with
+`app-development-policy-v2`, plus gated creation on `desk-create-v1` runners.
+Use the operator skill's app-development reference for `desk-inspect`,
+`desk-plan-create`, `desk-create`, and durable receipt/reconciliation commands.
+Read ship and desk `desk-settings` on `desk-workflow-settings-v1` runners for the
+configured workflow, branch, checks and release instructions. These are descriptive
+settings; they neither verify Urgit's native binding nor enable any permission.
+Private prepared-source transfer is available through `desk-source-staging-v1`;
+follow the operator reference for frozen plans, receipt reconciliation and discard.
+It does not write live mounts or open any gate. On `desk-commit-v1`, follow the
+operator reference for reviewed staged commits, ownership/conflicts and uncertain
+receipt reconciliation. Source acceptance is separate from compilation/readiness.
+The native kernel/API/collector commit path passes probe21/M545; its lifecycle
+backend is a fixture. `desk-app-status` (`desk-application-status-v1`) reports
+source, Gall, Treaty and Docket facts separately; it does not claim compilation or
+app health. Native probe34/M546 covers that API plus local activation, Treaty and
+exact Docket frontend delivery using private qualification helpers. `desk-source-adoption-v1` records explicitly selected existing files only after they match Clay; it needs the commit/publication gates and never writes to the ship. `desk-release-v1` adds reviewed activation/source/Treaty publication, following the
+operator reference and exact configured check evidence. Installation can precede
+release checks; publication cannot. `desk-receiver-v1` adds reviewed named installation and pending-source status;
+follow the operator reference. It requires creation and commit permission, keeps
+the received desk private, and follows later publisher updates. `desk-frontend-v1` adds staged review/planning/upload commands. Native Docket
+upload can commit its hash back to Clay and distribute an update: apply the same
+gates and reconcile source ownership. Native48 verifies the internal artifact hash
+and exact HTML/binary/empty delivery. Artifacts require index.html, reserve desk.js,
+cap at2048 files/32MiB and refuse terminal-NUL files. Follow the operator reference: both Commit and Publish are required, checks bind
+the source and artifact, and uncertain uploads reconcile without replay. Upload
+and ephemeral session cleanup have separate receipts; neither establishes app health.
+Creation is controlled at the ship, and new desks inherit commit/publication
+settings by default. Creating a desk does not grant either permission. Until a
+supported effect exists and fresh policy permits it, keep the mutation blocked.
+
 Work in small vertical slices:
 
 1. Establish the actual backend contract: desk/nexus and publisher, Gall agent or

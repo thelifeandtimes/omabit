@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "source_commit": "a9623329a538ebf83d63365053d2d1011ade091e",
+  "preceding_full_ci": {
+    "commit": "88c95d795b163de98e42691d885f480018e7616c",
+    "url": "https://github.com/thelifeandtimes/omabit/actions/runs/43331849506",
+    "conclusion": "success"
+  },
+  "source_delta": {
+    "scope": "Only internal/access product/tests changed after the preceding full source CI; packaging/harness changes were already in that commit. The correction passes access/client/collection race suites and the full rebuilt archive/desktop/VM qualification.",
+    "log_sha256": "5fcdcc8c3b3dc3a77937001518b459f0321eda864ecbdbe50f8b746d22796734",
+    "changed_paths": [
+      "docs/releases/0.4.0/preparation.md",
+      "internal/access/bridge.go",
+      "internal/access/bridge_binding_test.go",
+      "internal/access/bridge_cancel_test.go",
+      "internal/access/desk.go",
+      "internal/access/desk_test.go"
+    ]
+  },
+  "managed_tests": {
+    "inventory": 520,
+    "passed": 498,
+    "guarded_external_runtime_skips": 22,
+    "accounted_for": true,
+    "coverage_sha256": "4396d469ee771f6dbb09ff7c09cc155bea0446770d96c700fcab0cfeadc984d4"
+  },
+  "fixtures": {
+    "fixtures/tmp/results.json": {
+      "passed": true,
+      "commands": 19,
+      "sha256": "7687b0132d0a809c0e643bf417f0bae260dbc0fefb2b76fee8ced8d855557ff1"
+    },
+    "ui-results.json": {
+      "passed": true,
+      "commands": 5,
+      "sha256": "5b4c6ae256931ab5010040411a6b7d53162864e9d26e40a5e6c04df9d3121dac"
+    },
+    "qml-core/tmp/results.json": {
+      "passed": true,
+      "commands": 4,
+      "sha256": "4f6241f0313c933ebaf883ef66b030d2069e30da6bfd32d60efca4de70e76ffa"
+    }
+  },
+  "ownership_acl_namespace_gap": {
+    "resolution": "Unchanged race binaries passed as ordinary uid1000 on the real VM filesystem",
+    "evidence": "docs/releases/0.4.0/from-0.3.7-result.json"
+  },
+  "evidence_sha256": {
+    "archive-03.log": "ae8996ddb7f01d2b95c414f87c4918d1d43019921521f21ca964beb47a5849fb",
+    "desktop-03.log": "e60c186184ebbbc1aa91cc02faedef755bb4ac495276e91b2584d021ee306b54",
+    "cli-reference.log": "a8644403d79ca2cbcbbdf0e92d4daf92134e37feadf1345699309f173218f7ef",
+    "reproducibility-01.log": "4870f0d9477da30e7e273521eaf54c0f0fec266b8261e5e61394912880ee0158",
+    "app-development-validation.json": "96eed7139610cdc4cdc3e83509ab5d9d13d3f8e14b55334e3d0b237374940aa3"
+  },
+  "required_ci": "https://github.com/thelifeandtimes/omabit/actions/runs/43335128690",
+  "required_ci_gate": "Exact release PR checks must pass before merge; no waiver or stable publication is implied by this local record."
+}

@@ -1,6 +1,6 @@
 ---
 name: omabit-operator
-description: Manage Urbit runners, ship operations and stopped-pier imports through Omabit's collector CLI. Use for fleet status, explicit start/stop, import diagnostics, operation recovery, fake-project lifecycle and private-chain review, reservations and local runtime input inspection.
+description: Manage Urbit runners, ship operations and stopped-pier imports through Omabit's collector CLI. Use for remote runner installation and recovery, host compatibility, fleet status, explicit start/stop, container RAM/CPU limits, import diagnostics, operation recovery, app development and publishing policy, fake-project lifecycle and private-chain review, reservations and local runtime input inspection.
 ---
 
 # Operate Omabit
@@ -9,6 +9,50 @@ Use `urbit-collector` from the intended Omabit installation or development profi
 The collector selects runners; the runner owns piers and runtime operations.
 A local desktop profile does not isolate the remote runner or its ships. Honor the
 user's excluded ships, hosts and directories without probing them.
+
+For container RAM/CPU changes and OOM recovery, read
+[operations](references/operations.md#container-ram-and-cpu-limits-040). Resource
+changes require a stopped ship and a capable runner; retain its pier.
+
+For remote runner installation, failed setup or distro prerequisites, read
+[remote runners](references/remote-runners.md) first. It records tested platforms
+and the host-specific checks an agent can help with.
+
+For a ship's registered local, tailnet or public URLs, read
+[fleet URLs](references/fleet-urls.md). It distinguishes URL configuration from
+exposing a service, granting application access and obtaining credentials.
+For Tailnet proxying, public tunnels, custom domains or taking a URL offline, read
+[remote access](references/remote-access.md). Prepare a ship-bound access plan and
+verify the intended network audience; URL registration alone does not expose or
+unpublish a ship.
+
+For app source deployment, desk creation, commits or publication, read
+[app development](references/app-development.md). Agent desk creation, commit and publication
+default to blocked, including on development fakes. Follow the effective gates
+configured in **Setup → App development and publishing** and the application's
+release configuration. Use only capabilities exposed by the selected tools.
+Read `app-policy --instance ID --desk DESK` on a pinned, capable runner. Permission
+authoring stays in Setup; agents must not enable their own gates or bypass them
+through another transport. On runners advertising `desk-create-v1`, the matching
+`omabit` CLI supports read-only creation planning, gated submission and durable
+receipt/reconciliation; follow the app-development reference's exact sequence.
+Read ship and desk `desk-settings` on `desk-workflow-settings-v1` runners to follow
+their configured source path, release checks and instructions. Descriptive purpose
+and workflow settings never grant agent permissions.
+For Git-backed development through `%urgit`, also read
+[the native Urgit workflow](references/urgit.md). It records the tested source
+revision, Git-to-Clay failure checks and the distinction between Clay-to-Git
+publication and Treaty releases. Omabit adds no separate Urgit adapter.
+Use `desk-source-status` on capable runners to inspect saved Unix source versus
+Clay; consult the reference for drift, stale evidence and baseline limitations.
+Use the reference's `desk-plan-stage`, `desk-stage`, status and explicit discard
+sequence for private cached transfers. A transfer receipt never authorizes or proves
+a commit/publication, and unresolved effects retain their source.
+For `desk-commit-v1`, follow the reference's review, saved-plan, gated commit and
+read-only reconciliation sequence. Source acceptance does not prove app readiness.
+For `desk-receiver-v1`, use the reference's saved receiver-install plan and
+read-only pending-source status. Installation needs creation and commit permission;
+it keeps the received desk private and establishes a continuing subscription.
 
 Start with the shortest relevant read path:
 

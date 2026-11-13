@@ -1,0 +1,342 @@
+{
+  "version": 1,
+  "result": "passed bounded native stage workflow; intentional invalid update remains uncertain",
+  "base_source": "c30d169843907c88d882a90896b64fff4f58f671",
+  "feature": "desk-application-status-v1",
+  "schema": 53,
+  "native": {
+    "probe": 34,
+    "vere": "4.6-5a7614f",
+    "vere_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+    "pill_sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+    "ship": "~zod",
+    "desk": "omabit-test-c99a93bb",
+    "clean_shutdown": true,
+    "frontend_source": "pinned Landscape 90a17528a938eebda57e837b7fec76d543f5f7cf plus fixture041 manifest"
+  },
+  "checks": [
+    "closed gates and scoped creation/commit, staging, canonical alerts, lost-ack reconciliation retained from probe21",
+    "real native application-status through managed Unix API/store/client/collector",
+    "typed source publication and local Gall activation",
+    "current docket hash matches realized Docket metadata",
+    "Treaty alliance plus sovereign entry advertises exact selected Clay hash",
+    "native authenticated Docket upload serves exact fixture HTML bytes",
+    "upload advances Clay docket revision and Treaty hash; earlier source ownership conflicts",
+    "invalid installed-agent delta returns HTTP500; subsequent read retains original revision/hash and original uncertain dispatch",
+    "fixture/race coverage rejects stale/wrong runtime/project/runner responses, malformed/unavailable observations and policy changes; observations never grant or dispatch"
+  ],
+  "limits": [
+    "lifecycle backend synthetic; no managed Docker/SSH qualification",
+    "local activation/publication/native upload are private fixture effects, not gated public agent APIs yet",
+    "source revision and Gall liveness do not prove compiled code version or app-specific health",
+    "no receiver distribution or Urgit workflow qualification yet",
+    "HTTP500 is not a proven rejection receipt; no retry or read-only clearance of uncertainty",
+    "fresh native34 pier must not be resumed through ordinary mutation harness because final effect12 remains unacknowledged",
+    "no release qualification, artifact publication or installed production/DEV/trial/manual preview change"
+  ],
+  "selected_observations": {
+    "application-activation": {
+      "observation": {
+        "version": 1,
+        "runner_id": "runner-f8aaf524d88eb61577642f5c1e592587",
+        "mode": "development-managed-fake",
+        "selection": {
+          "target": {
+            "instance_id": "alpha",
+            "desk": "omabit-test-c99a93bb"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1
+        },
+        "policy_revision": 5,
+        "settings_revision": 0,
+        "observation": {
+          "exists": true,
+          "revision": 5,
+          "clay_hash": "0v1r.c754v.8dpv8.161dl.11ue2.bha5h.ktncl.fqb63.dsfpd.5og5e.q6npn",
+          "publication": "published"
+        },
+        "application": {
+          "zest": "live",
+          "source_revision": 5,
+          "source_ship": "",
+          "source_desk": "",
+          "expected_agents": [
+            "omabit-state"
+          ],
+          "agents": [
+            {
+              "name": "omabit-state",
+              "live": true
+            }
+          ],
+          "treaty_available": true,
+          "treaty_listed": false,
+          "treaty_hash": "",
+          "docket_available": true,
+          "docket_hash": "0v5.vhmkj.ekkc5.7sird.hsd4f.0t9s5",
+          "frontend_mode": "site",
+          "frontend_state": "site",
+          "frontend_docket_hash": "0v5.vhmkj.ekkc5.7sird.hsd4f.0t9s5"
+        },
+        "read_at": "2026-11-07T10:03:26.416567426Z"
+      },
+      "permissions": {
+        "commit": {
+          "value": "allow",
+          "source": "desk"
+        },
+        "publish": {
+          "value": "allow",
+          "source": "desk"
+        },
+        "create_desk": {
+          "value": "allow",
+          "source": "ship"
+        }
+      }
+    },
+    "application-treaty": {
+      "observation": {
+        "version": 1,
+        "runner_id": "runner-f8aaf524d88eb61577642f5c1e592587",
+        "mode": "development-managed-fake",
+        "selection": {
+          "target": {
+            "instance_id": "alpha",
+            "desk": "omabit-test-c99a93bb"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1
+        },
+        "policy_revision": 5,
+        "settings_revision": 0,
+        "observation": {
+          "exists": true,
+          "revision": 5,
+          "clay_hash": "0v1r.c754v.8dpv8.161dl.11ue2.bha5h.ktncl.fqb63.dsfpd.5og5e.q6npn",
+          "publication": "published"
+        },
+        "application": {
+          "zest": "live",
+          "source_revision": 5,
+          "source_ship": "",
+          "source_desk": "",
+          "expected_agents": [
+            "omabit-state"
+          ],
+          "agents": [
+            {
+              "name": "omabit-state",
+              "live": true
+            }
+          ],
+          "treaty_available": true,
+          "treaty_listed": true,
+          "treaty_hash": "0v1r.c754v.8dpv8.161dl.11ue2.bha5h.ktncl.fqb63.dsfpd.5og5e.q6npn",
+          "docket_available": true,
+          "docket_hash": "0v5.vhmkj.ekkc5.7sird.hsd4f.0t9s5",
+          "frontend_mode": "site",
+          "frontend_state": "site",
+          "frontend_docket_hash": "0v5.vhmkj.ekkc5.7sird.hsd4f.0t9s5"
+        },
+        "read_at": "2026-11-07T10:03:27.186546943Z"
+      },
+      "permissions": {
+        "commit": {
+          "value": "allow",
+          "source": "desk"
+        },
+        "publish": {
+          "value": "allow",
+          "source": "desk"
+        },
+        "create_desk": {
+          "value": "allow",
+          "source": "ship"
+        }
+      }
+    },
+    "glob-after-upload": {
+      "observation": {
+        "version": 1,
+        "runner_id": "runner-f8aaf524d88eb61577642f5c1e592587",
+        "mode": "development-managed-fake",
+        "selection": {
+          "target": {
+            "instance_id": "alpha",
+            "desk": "omabit-test-c99a93bb"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1
+        },
+        "policy_revision": 5,
+        "settings_revision": 0,
+        "observation": {
+          "exists": true,
+          "revision": 7,
+          "clay_hash": "0vj.rvdn4.jmgis.u3jhk.h6kqd.l7l7r.atlg2.2dsbd.gce23.8cfv2.5ok6v",
+          "publication": "published"
+        },
+        "application": {
+          "zest": "live",
+          "source_revision": 7,
+          "source_ship": "",
+          "source_desk": "",
+          "expected_agents": [
+            "omabit-state"
+          ],
+          "agents": [
+            {
+              "name": "omabit-state",
+              "live": true
+            }
+          ],
+          "treaty_available": true,
+          "treaty_listed": true,
+          "treaty_hash": "0vj.rvdn4.jmgis.u3jhk.h6kqd.l7l7r.atlg2.2dsbd.gce23.8cfv2.5ok6v",
+          "docket_available": true,
+          "docket_hash": "0v4.t10k5.hf3tf.9opeo.csq07.sk65m",
+          "frontend_mode": "glob-ames",
+          "frontend_state": "glob",
+          "frontend_docket_hash": "0v4.t10k5.hf3tf.9opeo.csq07.sk65m"
+        },
+        "read_at": "2026-11-07T10:03:32.037104803Z"
+      },
+      "permissions": {
+        "commit": {
+          "value": "allow",
+          "source": "desk"
+        },
+        "publish": {
+          "value": "allow",
+          "source": "desk"
+        },
+        "create_desk": {
+          "value": "allow",
+          "source": "ship"
+        }
+      }
+    },
+    "glob-upload-committed-docket": {
+      "exists": true,
+      "revision": 7,
+      "clay_hash": "0vj.rvdn4.jmgis.u3jhk.h6kqd.l7l7r.atlg2.2dsbd.gce23.8cfv2.5ok6v",
+      "publication": "published"
+    },
+    "invalid-agent-effect": {
+      "acknowledged": false,
+      "uncertain": true
+    },
+    "invalid-agent-source-observation": {
+      "exists": true,
+      "revision": 7,
+      "clay_hash": "0vj.rvdn4.jmgis.u3jhk.h6kqd.l7l7r.atlg2.2dsbd.gce23.8cfv2.5ok6v",
+      "publication": "published"
+    }
+  },
+  "evidence_sha256": {
+    "/tmp/omabit-desk-probe-29/inputs.json": "0db3be6803da5d26da235ea102256dd74164f7624adb1bb53284f88cb8056941",
+    "/tmp/omabit-desk-probe-29/guard.json": "2b12daceb461d1d596c879e2ae48e8bfda5c08d64031cbfe382c30b238cbcb3c",
+    "/tmp/omabit-desk-probe-29/admission.json": "87b90a16c4f4b937aed25d2f989bc209edc40f53cb7d1d87080fa444909b9fb8",
+    "/tmp/omabit-desk-probe-29/exit.json": "3fcf365c70bf262b9592ec1998f4c4609c36c75d846b67c5e86d7c9f03f07176",
+    "/tmp/omabit-desk-probe-29/lab/result.json": "2f52fa2bc7b62b24a817f8dfe52387e0188c24e9395591558ad124289ada2e51",
+    "/tmp/omabit-desk-probe-29/lab/workflow-proof.json": "4efa06cfa7eb065a2e325f6759a81446f433581baf017360f1c4290333c9aa00",
+    "/tmp/omabit-desk-probe-29/lab/workflow-effects.jsonl": "1891c6ae30e538625938251808b5e18332d2801f8e3ad298948dc997dc6ee28a",
+    "/tmp/omabit-desk-probe-29/lab/workflow.log": "5ad1eddec03a6c852cc434b0e2ef82cdd2246ae1a729894f1d1209bcfb38081c",
+    "/tmp/omabit-desk-probe-30/inputs.json": "32f8c4dcc59c46d93d9a1f85b7a8aa76825ce3d90d2e4e17eff117499efaa720",
+    "/tmp/omabit-desk-probe-30/guard.json": "0fb122dedcad640bea9bc05a345625dcb1ce48b6ad4dee9e249ca6c3cd73b211",
+    "/tmp/omabit-desk-probe-30/admission.json": "87b90a16c4f4b937aed25d2f989bc209edc40f53cb7d1d87080fa444909b9fb8",
+    "/tmp/omabit-desk-probe-30/exit.json": "3fcf365c70bf262b9592ec1998f4c4609c36c75d846b67c5e86d7c9f03f07176",
+    "/tmp/omabit-desk-probe-30/lab/result.json": "07a8fd1d7fd5779810bcadd79aa80a2492d6b91ef04ac698427cb4f582138b2d",
+    "/tmp/omabit-desk-probe-30/lab/workflow-proof.json": "4d834d59fbeffe71640ce77e4bbfb7dce5d685ae2f2798b2853f3fbb85f1fd7d",
+    "/tmp/omabit-desk-probe-30/lab/workflow-effects.jsonl": "caa75ea627cb638d148fea24210cb22e433bfc4bbf687c7e4749fa0a33395756",
+    "/tmp/omabit-desk-probe-30/lab/workflow.log": "70a1eb81ef919bf5ec157cea408d98040f58f99e7cd7d60215d8d467c819d845",
+    "/tmp/omabit-desk-probe-31/inputs.json": "5c617da476ae69f23d031274f739728192548e9a95a4c04718351bf6d2fdba38",
+    "/tmp/omabit-desk-probe-31/guard.json": "74822a91bce498ec385acb767beed872818bba48bb0aed05baa0eafb6daa59d0",
+    "/tmp/omabit-desk-probe-31/admission.json": "87b90a16c4f4b937aed25d2f989bc209edc40f53cb7d1d87080fa444909b9fb8",
+    "/tmp/omabit-desk-probe-31/exit.json": "3fcf365c70bf262b9592ec1998f4c4609c36c75d846b67c5e86d7c9f03f07176",
+    "/tmp/omabit-desk-probe-31/lab/result.json": "2f52fa2bc7b62b24a817f8dfe52387e0188c24e9395591558ad124289ada2e51",
+    "/tmp/omabit-desk-probe-31/lab/workflow-proof.json": "fde2d9a7617d3cb0ac957ff9c19cbd7a9eead2d374be58cbf879e609525c4cdc",
+    "/tmp/omabit-desk-probe-31/lab/workflow-effects.jsonl": "8e6083094c655236b1cdbf6cb3d79f1acf47e5ecb20fa7c7e042a6bbfea4f556",
+    "/tmp/omabit-desk-probe-31/lab/workflow.log": "101c6e32d2b9461c2b90214ca38162470a3212334d1a819d8465017def8f24b5",
+    "/tmp/omabit-desk-probe-32/inputs.json": "0e0272d61298684072e5404291aede63b365696ec88298e4b024dbe4f5c977c9",
+    "/tmp/omabit-desk-probe-32/guard.json": "67b48b8c5ddb117165d9b7209b644edff0a7640a2ec44bc0fab407609f8573a7",
+    "/tmp/omabit-desk-probe-32/admission.json": "87b90a16c4f4b937aed25d2f989bc209edc40f53cb7d1d87080fa444909b9fb8",
+    "/tmp/omabit-desk-probe-32/exit.json": "bfdedf06596faa2042b0fedd9653ec1023d2e96ed56dc40b607985bc8438c1d5",
+    "/tmp/omabit-desk-probe-32/lab/result.json": "e28346023a39da92205975f3fe2df4aaa0b718cb96f8c7005fbc3178ca44f46d",
+    "/tmp/omabit-desk-probe-32/lab/workflow-proof.json": "b2cad9fe2b13ca4e067f55c05947907f58a70e8cb226fca66e8b4155b4141d3c",
+    "/tmp/omabit-desk-probe-32/lab/workflow-effects.jsonl": "8e6083094c655236b1cdbf6cb3d79f1acf47e5ecb20fa7c7e042a6bbfea4f556",
+    "/tmp/omabit-desk-probe-32/lab/workflow.log": "23eb94eec7fc8d4871261f5f340aebb7c21bf865a4c62370765addf81ec5f0e7",
+    "/tmp/omabit-desk-probe-33/inputs.json": "721a04645b0cea0270adf46de93f33c6be6c9ade948aff023f3c6945216b0b57",
+    "/tmp/omabit-desk-probe-33/guard.json": "66f38ed00447f43c299a01f37e2b7bccfc8c2321b343b298aa4faf090567c950",
+    "/tmp/omabit-desk-probe-33/admission.json": "87b90a16c4f4b937aed25d2f989bc209edc40f53cb7d1d87080fa444909b9fb8",
+    "/tmp/omabit-desk-probe-33/exit.json": "3fcf365c70bf262b9592ec1998f4c4609c36c75d846b67c5e86d7c9f03f07176",
+    "/tmp/omabit-desk-probe-33/lab/result.json": "2f52fa2bc7b62b24a817f8dfe52387e0188c24e9395591558ad124289ada2e51",
+    "/tmp/omabit-desk-probe-33/lab/workflow-proof.json": "d2a516895e2a280094255ca3e0ec287e4be1b14dcbeed6ae36d4c24eb52baf75",
+    "/tmp/omabit-desk-probe-33/lab/workflow-effects.jsonl": "53a69f813ef0ae55add31a32dbd077a173576240e14efd2a83f513d70ac831c5",
+    "/tmp/omabit-desk-probe-33/lab/workflow.log": "e27fdf5ebe6075464159c7f435d72927fc7e6943ca1e712eda2c2acadd3701e3",
+    "/tmp/omabit-desk-probe-34/inputs.json": "974048a948788c90a16b66c94581eadb766b5f811c0765ab80295ce6845093d3",
+    "/tmp/omabit-desk-probe-34/guard.json": "23e9006099e68e571c9995b766f92b2651a9b7a688175878f1ee436b229c2a41",
+    "/tmp/omabit-desk-probe-34/admission.json": "87b90a16c4f4b937aed25d2f989bc209edc40f53cb7d1d87080fa444909b9fb8",
+    "/tmp/omabit-desk-probe-34/exit.json": "bfdedf06596faa2042b0fedd9653ec1023d2e96ed56dc40b607985bc8438c1d5",
+    "/tmp/omabit-desk-probe-34/lab/result.json": "0f55697d25cfe42b0b8f66441de6c79215c3e78a827ac98960408f29c4b5c08d",
+    "/tmp/omabit-desk-probe-34/lab/workflow-proof.json": "6fe3324ff40a493f7d022debb323275a4e4c6f04b61878e5063300e999b57a61",
+    "/tmp/omabit-desk-probe-34/lab/workflow-effects.jsonl": "53a69f813ef0ae55add31a32dbd077a173576240e14efd2a83f513d70ac831c5",
+    "/tmp/omabit-desk-probe-34/lab/workflow.log": "dd3bf7fea3580dbfba6b1cc52c2a19cd632da31ac6dee57fb40c65c79a04fa36",
+    "/tmp/omabit-desk-probe-34/lab/last-failed-lens-transport.json": "0891589566856fa63b6ade37e57062c76744e160735036284a47d2de48dd553e",
+    "/tmp/omabit-desk-application-race.log": "249fc33cc421b1c40654ae9d87c810c1100bd2aaa30b9c523a716d04bebe95dc",
+    "/tmp/omabit-desk-application-core.log": "bdd270ef2b358976bf0252a37241ff0db0298d2f911a30417dff7d214df4a670",
+    "/tmp/omabit-desk-application-runtime-01/result.json": "bb374ed8a592b2e3dced49ca4518b8c945b898776044dbd37c61355760617432",
+    "/tmp/omabit-desk-application-runtime-01/test.log": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431"
+  },
+  "source_sha256": {
+    "cmd/omabit/desk.go": "563a9e47a68f9e9d018bf2f7762ba390b97384c9a1aa37b2b0191c75be9a1bca",
+    "cmd/omabit/desk_test.go": "96777c227ef5de980dd4fc50d3ea7d81268ea7a8951d4c11447cfb8e73e18870",
+    "cmd/omabit/main.go": "61143dadfb227b6edb1e4a9cfcf8bda00643bb102b7ebe4bec1e4f7218c68283",
+    "internal/client/desk_application.go": "b0ad5ae8d4b6c502133b273d9ea75118f47002781d72c1e31838228e42385ee8",
+    "internal/collection/desk_application.go": "c9b6ecd2d6cfc39465c87bab7e0c85ce8f2cf54a6ab1cab2931881ccc912c9e2",
+    "internal/collection/desk_application_test.go": "103e0bf48a4b86e94d0c64f2f569b18ec4586d1564d908de8ad2cf4003dbe562",
+    "internal/deskwork/lens_release.go": "7506ab2a3ed6a2e8a869b458238621fcf7df8471c8f60e33c5cc0212226b6816",
+    "internal/deskwork/release.go": "94455a1806a10a5f4ec2f065ab6b584b199ed4b8ff8584f21a126198f6c424ed",
+    "internal/deskwork/release_test.go": "3337a5b233ada4c55bee241c808f08001f558f4bf8c241387b3fe30a300d1dee",
+    "internal/managed/desk_application_linux.go": "5f6a1d20ae19d4b8babb9735a8559ffce0d3177f7637d2df75cc38f189be8234",
+    "internal/managed/desk_application_linux_test.go": "8ab7f30008411264d012f58a4a460cb0ccac58607d77a371d407fdd1d08cb94c",
+    "internal/managed/desk_native_frontend_linux_test.go": "f901c2204316e0aa43c70875ef91845d14886efa7cc4ce8687448680f38fc92f",
+    "internal/managed/desk_native_workflow_linux_test.go": "3636242587c2ceec1a5eb9d0e1ccaafa9e4f5b1cc241794573f78b3f2e5e5518",
+    "internal/managed/server.go": "43d156a4b66964348dc5d88072eeda3ad06793e1c0dc6c7df3022844f96495f2",
+    "internal/protocol/desk_application.go": "73e9d87138e92c6e70f8668205b015d2421462d40bd642c9687a16bad667908a",
+    "internal/runtimequalify/desk_linux_test.go": "317681290a2f0351065fb50551cd0023a044fd5c46f580e14e3874693cf6546e",
+    "internal/runtimequalify/desk_release_linux.go": "c62ba7a3bf10b559f4143691d8b163268d3c4518b11597237003b82328c70713",
+    "scripts/qualification/app-development/probe.py": "b64f45d57e72bb68e0512dd8cca8eb79ff30ea386eaee337a8bb11a99370e0d8"
+  },
+  "failure_notes": {
+    "22-28": "localized union-typed scry mismatch; read noun and then validate value shape",
+    "29": "malformed docket fixture; retained original uncertain receipt; corrected source succeeds later",
+    "30": "constant example normalizer replaced docket with its default; changed to a real validating mold",
+    "31": "Treaty state inspection lacked standard library subject; use slop with zuse, matching dbug",
+    "32": "typed source/local activation/Treaty/site workflow passed",
+    "33": "glob upload and exact HTTP bytes passed; intentional invalid agent effect unacknowledged, stopped before read recovery",
+    "34": "same complete path through app-status API passes and reads unchanged Clay after intentional HTTP500; uncertain effect retained"
+  },
+  "storage_admission": "/tmp/omabit-desk-workflow-storage-admission-34.json",
+  "pruning_manifests": [
+    "/tmp/omabit-desk-binary-pruning-30-31.json",
+    "/tmp/omabit-desk-release-cache-pruning.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-21.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-22.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-23.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-24.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-25.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-26.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-27.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-28.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-29.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-30.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-31.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-32.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-33.json",
+    "/tmp/omabit-desk-superseded-probe10-pruning.json",
+    "/tmp/omabit-desk-superseded-probe29-pruning.json"
+  ]
+}

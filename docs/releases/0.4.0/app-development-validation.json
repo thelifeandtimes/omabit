@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "runtime": {
+    "ok": true,
+    "steps": [
+      {
+        "name": "identity",
+        "source": "our",
+        "app": null,
+        "mark": null,
+        "state": "returned",
+        "response": "~zod\n"
+      }
+    ],
+    "clean_shutdown": true,
+    "workflow_exit": 0,
+    "receivers": {
+      "ok": true,
+      "clean_shutdown": true,
+      "children": [
+        {
+          "ship": "bud",
+          "exit": 0,
+          "forced": false
+        },
+        {
+          "ship": "nec",
+          "exit": 0,
+          "forced": false
+        }
+      ],
+      "workflow_exit": 0
+    }
+  },
+  "boundary": "native Vere/Clay publisher and two receivers; real store/collector APIs over Unix sockets; synthetic managed lifecycle backend",
+  "managed_binary_sha256": "f2e90d03dab9c2b4a7f9a8b13df5089ba4801165f4b379b429a05c6f01e14246",
+  "proof_sha256": {
+    "lab/receiver-proof.json": "f1a5e36565cea800790049d00250ef9cb0d87c84b5737523b98f06e86e158c11",
+    "lab/frontend-proof.json": "23f8478aa171ee2239085b650651ee3dbd2d8317528b1caaefcc08ec7356a646",
+    "lab/workflow-proof.json": "c2e57e42d710247288ea56d75cb2166ff8651702f7868d22de89b74f511c9b29"
+  },
+  "public_cli_reconnect": {
+    "exit": 0,
+    "binary_sha256": "2b4cbcc34a2e24b895c7cb0ab714088b9f850c79dd0a702f01bbbfe42da2a399",
+    "scope": "actual collector public CLI, real receivers, Theme sync loop, DMs main loop, private Secret Service; synthetic runner and Eyre",
+    "storage_after": 43125932032
+  }
+}

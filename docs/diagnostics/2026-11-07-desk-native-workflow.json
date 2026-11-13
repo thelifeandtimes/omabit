@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "result": "passed",
+  "kind": "assembled native desk workflow",
+  "base_source": "e31d8aed913a57e403c029885d79880acde4f10b",
+  "evidence": {
+    "/tmp/omabit-desk-probe-21/inputs.json": "1be22c845a69bd313ff9b91bb97b197322b2e7c69fe3ef4831720de62a34f374",
+    "/tmp/omabit-desk-probe-21/guard.json": "c6a4e2b3206236b6dc8729879248b49f473d065a332d2f617b5456b0baecfed2",
+    "/tmp/omabit-desk-probe-21/admission.json": "87b90a16c4f4b937aed25d2f989bc209edc40f53cb7d1d87080fa444909b9fb8",
+    "/tmp/omabit-desk-probe-21/resume.json": "99e5fcb0b9b23bc17d4175781332d4bbb281c8fac0f94e514756565945277f39",
+    "/tmp/omabit-desk-probe-21/exit.json": "bfdedf06596faa2042b0fedd9653ec1023d2e96ed56dc40b607985bc8438c1d5",
+    "/tmp/omabit-desk-probe-21/lab/result.json": "e28346023a39da92205975f3fe2df4aaa0b718cb96f8c7005fbc3178ca44f46d",
+    "/tmp/omabit-desk-probe-21/lab/workflow-proof.json": "640dc3033912397f01a65b24000761cdcdb149ccba5471d34bebc2aec04e046f",
+    "/tmp/omabit-desk-probe-21/lab/workflow-effects.jsonl": "ba6c185434c0515ad60e1d1292e0ec84d4488df587313f2b00a11c58c599f2c4",
+    "/tmp/omabit-desk-probe-21/lab/workflow.log": "6c615f69ba7bee579b116759db32af7ed9f5a4e476ddbea13375e8d7b2126bca"
+  },
+  "runtime": {
+    "vere_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+    "pill_sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+    "ship": "~zod",
+    "desk": "omabit-test-b2bd4a47",
+    "clean_shutdown": true
+  },
+  "checks": [
+    "default-blocked creation and commit dispatch nothing",
+    "allowed creation, live desk discovery and canonical Unix/Clay alerts",
+    "frozen stage, first commit, scaffold preservation",
+    "update/add/delete uses verified prior source ownership",
+    "acknowledgement intentionally discarded after real commit; reconciliation with gates revoked verifies without another effect",
+    "uncertain stage cannot be discarded; verified stage can",
+    "same ID replay never repeats commit",
+    "native source publication observed independently",
+    "published desk update blocked with Commit only; succeeds with Commit and Publish"
+  ],
+  "limits": [
+    "native typed Lens adapter and synthetic lifecycle selection; does not requalify managed Docker or remote transport",
+    "source publication is a test-fixture action, not an implemented publication API",
+    "no compilation, activation, Treaty, frontend or receiver readiness claim",
+    "schema53 data lives only in private test state; no release qualification or installed changes"
+  ],
+  "failure": {
+    "probe20": "harness failed before runner state existed: required private directory not created; fixed; no desk operation occurred"
+  },
+  "pruning_manifests": [
+    "/tmp/omabit-desk-runtime-inputs-prune-plan.json",
+    "/tmp/omabit-desk-generated-pruning-20261107.json",
+    "/tmp/omabit-desk-runtime-inputs-prune-19-20.json"
+  ],
+  "storage_admission": "/tmp/omabit-desk-workflow-storage-admission-21.json",
+  "source_sha256": {
+    "internal/managed/desk_native_workflow_linux_test.go": "d082e42e2343a436c9d3b43fce409f6fb07a94c8073459856374a887b2cde4bf",
+    "scripts/qualification/app-development/probe.py": "0b61f82dbc92eadbb3a1ae58c85b68541804973c07f28cac80be1d1238fe1a5d"
+  },
+  "launcher_followup": "Post-run source adds fail-closed checks for workflow crashes before workflow_exit is recorded; capsule inputs.json identifies the exact launcher executed."
+}

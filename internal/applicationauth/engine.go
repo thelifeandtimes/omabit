@@ -52,6 +52,9 @@ func New(r *collection.Registry) *Engine {
 		return credentials.NewFile(r.CredentialsDir())
 	}
 	e.issue = func(ctx context.Context, a collection.ApplicationAttempt) ([]byte, error) {
+		if a.Fleet.Version == 1 {
+			return e.issueFleet(ctx, a)
+		}
 		ships, err := r.Ships(ctx)
 		if err != nil {
 			return nil, errors.Join(ErrNotIssued, err)
@@ -103,6 +106,10 @@ func credentialKey(a collection.ApplicationAttempt) string {
 // Connect consumes an already durable approval once. A reopened partial attempt
 // is handled by Recover; it is never implicitly issued or delivered again.
 func (e *Engine) Connect(ctx context.Context, id string, receiver Receiver) (collection.ApplicationAttempt, error) {
+	return e.connect(ctx, id, receiver, false)
+}
+
+func (e *Engine) connect(ctx context.Context, id string, receiver Receiver, replacement bool) (collection.ApplicationAttempt, error) {
 	ctx, cancel := context.WithTimeout(ctx, 55*time.Second)
 	defer cancel()
 	var result collection.ApplicationAttempt
@@ -112,8 +119,16 @@ func (e *Engine) Connect(ctx context.Context, id string, receiver Receiver) (col
 		if e.expectedRevision != 0 && a.Revision != e.expectedRevision {
 			return collection.ErrApplicationConflict
 		}
-		if receiver == nil || receiver.Target() != a.Target {
+		if receiver == nil || receiver.Target() != a.Target || replacement != (a.Replacement.PreviousID != "") {
 			return collection.ErrApplicationConflict
+		}
+		var successor ReplacementReceiver
+		if replacement {
+			var ok bool
+			successor, ok = receiver.(ReplacementReceiver)
+			if !ok || !successor.SupportsReplacement() {
+				return ErrArtifact
+			}
 		}
 		if a.Phase == "connected" {
 			return nil
@@ -128,11 +143,27 @@ func (e *Engine) Connect(ctx context.Context, id string, receiver Receiver) (col
 		if err != nil {
 			return credentials.ErrStore
 		}
+		var previous collection.ApplicationAttempt
+		var previousCredential [32]byte
+		if replacement {
+			previous, err = e.prepareReplacement(ctx, tx, successor, &previousCredential)
+			if err != nil {
+				return err
+			}
+		}
 		if err := tx.Advance(ctx, "issuing", ""); err != nil {
+			if errors.Is(err, collection.ErrApplicationPermission) {
+				return errors.Join(ErrNotIssued, err, tx.Advance(ctx, "closed", "not-issued"))
+			}
 			return err
 		}
-		data, issueErr := e.issue(ctx, a)
+		data, issueErr := e.issue(ctx, tx.Current())
 		defer clear(data)
+		if replacement && len(data) > 0 && replacementCredentialFingerprint(data) == previousCredential {
+			recoveryCtx, done := context.WithTimeout(context.WithoutCancel(ctx), 5*time.Second)
+			defer done()
+			return errors.Join(ErrNotIssued, tx.Advance(recoveryCtx, "closed", "not-issued"))
+		}
 		if len(data) == 0 || issueErr != nil {
 			// A lost login response can leave a server-side session whose token we
 			// never received. Keep the attempt unresolved, including on cancellation.
@@ -168,6 +199,11 @@ func (e *Engine) Connect(ctx context.Context, id string, receiver Receiver) (col
 			return e.failedDelivery(ctx, tx, store, data)
 		}
 		if err := tx.Advance(ctx, "delivering", ""); err != nil {
+			if errors.Is(err, collection.ErrApplicationPermission) {
+				cleanup, stop := context.WithTimeout(context.WithoutCancel(ctx), 15*time.Second)
+				defer stop()
+				return errors.Join(err, e.cleanup(cleanup, tx, store, data))
+			}
 			return err
 		}
 		offer, err := json.Marshal(struct {
@@ -183,13 +219,36 @@ func (e *Engine) Connect(ctx context.Context, id string, receiver Receiver) (col
 			return e.failedDelivery(ctx, tx, store, data)
 		}
 		deliveryCtx, stop := context.WithTimeout(ctx, 25*time.Second)
-		reply, deliveryErr := receiver.Deliver(deliveryCtx, offer)
+		var reply []byte
+		var deliveryErr error
+		if replacement {
+			boundOffer, err := json.Marshal(map[string]any{"version": 1, "action": "replace", "previous": replacementBinding(previous), "offer": json.RawMessage(offer)})
+			defer clear(boundOffer)
+			if err != nil || len(boundOffer) > 16384 {
+				stop()
+				return e.failedDelivery(ctx, tx, store, data)
+			}
+			reply, deliveryErr = successor.Replace(deliveryCtx, boundOffer)
+		} else {
+			reply, deliveryErr = receiver.Deliver(deliveryCtx, offer)
+		}
 		stop()
 		defer clear(reply)
 		if deliveryErr != nil || !accepted(reply, a) {
+			if replacement {
+				observe, done := context.WithTimeout(context.WithoutCancel(ctx), 30*time.Second)
+				defer done()
+				return e.observeReplacement(observe, tx, successor)
+			}
 			return e.failedDelivery(ctx, tx, store, data)
 		}
-		return tx.Advance(ctx, "connected", "")
+		if err := tx.Advance(ctx, "connected", ""); err != nil {
+			return err
+		}
+		if replacement {
+			return e.replacementPermissionAfterAcceptance(ctx, tx, store, data)
+		}
+		return nil
 	})
 	return result, err
 }
@@ -221,11 +280,20 @@ func (e *Engine) recover(ctx context.Context, id string, disconnect bool) (colle
 		if e.expectedRevision != 0 && a.Revision != e.expectedRevision {
 			return collection.ErrApplicationConflict
 		}
+		if disconnect {
+			if err := tx.DisableReplacementAutomation(ctx); err != nil {
+				return err
+			}
+			a = tx.Current()
+		}
 		if a.Phase == "closed" || a.Phase == "connected" && !disconnect {
 			return nil
 		}
-		if a.Phase == "approved" {
+		if a.Phase == "approved" || a.Phase == "preparing" || a.Phase == "prepared" {
 			return tx.Advance(ctx, "closed", "not-issued")
+		}
+		if !disconnect && a.Replacement.PreviousID != "" && a.Phase == "delivering" {
+			return ErrRecovery
 		}
 		store, err := e.store(a)
 		if err != nil {
@@ -284,10 +352,15 @@ func accepted(data []byte, a collection.ApplicationAttempt) bool {
 }
 
 func boundReply(data []byte, a collection.ApplicationAttempt, status, outcome string) bool {
-	expectedFields := 6
+	extra := map[string]string{}
 	if outcome != "" {
-		expectedFields++
+		extra["outcome"] = outcome
 	}
+	return boundReplyWith(data, a, status, extra)
+}
+
+func boundReplyWith(data []byte, a collection.ApplicationAttempt, status string, extra map[string]string) bool {
+	expectedFields := 6 + len(extra)
 	if len(data) > 4096 {
 		return false
 	}
@@ -314,8 +387,8 @@ func boundReply(data []byte, a collection.ApplicationAttempt, status, outcome st
 		return false
 	}
 	expected := map[string]string{"request_id": a.ID, "connection_id": a.ConnectionID, "plugin_id": a.Target.PluginID, "profile": a.Target.Profile, "status": status}
-	if outcome != "" {
-		expected["outcome"] = outcome
+	for key, value := range extra {
+		expected[key] = value
 	}
 	var version int
 	if json.Unmarshal(fields["version"], &version) != nil || version != 1 {

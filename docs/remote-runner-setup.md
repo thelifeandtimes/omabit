@@ -159,3 +159,27 @@ On rooftop, the fixed verifier was exercised read-only against native cached APT
 indexes, signatures, archives and installed payloads. No package installation,
 receipt publication, runner installation or ship operation is implied by that
 check. See the [polishing report](diagnostics/2026-10-29-production-import-polish.md).
+
+## Ubuntu 22.04 fresh install in 0.4.0 development
+
+On a clean Jammy server with the stock archive, updates and security repositories
+and universe enabled, the fresh installer authenticated all eight required package
+roles. It selected the networking mode supported by the packaged RootlessKit and
+enabled CPU, memory and process limits for the chosen owner's rootless engine.
+Ubuntu's Docker package can also start its normal system service. Omabit uses the
+owner's private socket. See the [tested package versions, recovery and first-ship
+checks](diagnostics/2026-11-06-jammy-remote-runner.md).
+
+## Docker availability on Debian 13
+
+On the tested Debian 13.7 amd64 cloud image, `apt-cache policy docker.io`
+selected `26.1.5+dfsg1-9+deb13u1`. Omabit requires stable Docker from 27.2.0
+up to, but excluding, 30.0.0. Trixie, updates, security and backports were
+enabled. None supplied a compatible candidate on the test date.
+
+If setup stops at this check, run `apt-cache policy docker.io` on the runner
+host. If an administrator makes a compatible distro package available, use
+**Resume setup** to keep the desktop's original attempt and key. For a fresh
+host today, Ubuntu 22.04 with updates and universe enabled has a tested
+end-to-end path. See the [Debian test record](diagnostics/2026-11-06-debian-remote-runner.md)
+and [Ubuntu installation](diagnostics/2026-11-06-jammy-remote-runner.md).

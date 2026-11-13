@@ -26,6 +26,7 @@ const fixtureCode = "lidlut-tabwed-pillex-ridrup"
 
 type fixture struct {
 	threadUnavailable   bool
+	lostLogin           bool
 	mu                  sync.Mutex
 	sessions            map[string]bool
 	logins, logoutCalls int
@@ -60,6 +61,15 @@ func setup(t *testing.T) *fixture {
 			f.logins++
 			token := fmt.Sprintf("fixture-cookie-%d", f.logins)
 			f.sessions[token] = true
+			if f.lostLogin {
+				conn, _, err := w.(http.Hijacker).Hijack()
+				if err != nil {
+					t.Error(err)
+				} else {
+					conn.Close()
+				}
+				return
+			}
 			http.SetCookie(w, &http.Cookie{Name: "urbauth-~zod", Value: token, Path: "/", MaxAge: 3600})
 			return
 		}

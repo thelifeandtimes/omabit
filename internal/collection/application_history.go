@@ -72,7 +72,7 @@ func (r *Registry) readApplicationArchive(id string) (applicationArchive, bool, 
 	}
 	decoder := json.NewDecoder(bytes.NewReader(raw))
 	decoder.DisallowUnknownFields()
-	if decoder.Decode(&receipt) != nil || decoder.Decode(new(any)) != io.EOF || receipt.Version != 1 || receipt.Attempt.ID != id || !receipt.Attempt.valid() || receipt.Attempt.blocksApproval() || receipt.ArchivedAt.IsZero() || receipt.ArchivedAt.Before(receipt.Attempt.UpdatedAt) {
+	if decoder.Decode(&receipt) != nil || decoder.Decode(new(any)) != io.EOF || (receipt.Version < 1 || receipt.Version > 3) || receipt.Attempt.Fleet.Version == 1 && receipt.Version < 2 || receipt.Attempt.Replacement != (ApplicationReplacement{}) && receipt.Version < 3 || receipt.Attempt.ID != id || !receipt.Attempt.valid() || receipt.Attempt.blocksApproval() || receipt.ArchivedAt.IsZero() || receipt.ArchivedAt.Before(receipt.Attempt.UpdatedAt) {
 		return receipt, false, ErrApplicationJournal
 	}
 	return receipt, true, nil
@@ -105,7 +105,14 @@ func (r *Registry) saveApplicationArchive(a ApplicationAttempt) error {
 	if err != nil {
 		return err
 	}
-	return history.writeFile(a.ID+".json", applicationArchive{1, a, time.Now().UTC()})
+	version := 1
+	if a.Fleet.Version == 1 {
+		version = 2
+	}
+	if a.Replacement != (ApplicationReplacement{}) {
+		version = 3
+	}
+	return history.writeFile(a.ID+".json", applicationArchive{version, a, time.Now().UTC()})
 }
 
 // Application reads one active or archived attempt without contacting a ship,
@@ -167,14 +174,21 @@ func (r *Registry) ArchiveApplication(ctx context.Context, id string, revision u
 				if current != a {
 					return ErrApplicationConflict
 				}
+				for _, child := range state.Attempts {
+					if child.Replacement.PreviousID == a.ID && child.blocksApproval() && a.Replacement.SuccessorID == "" {
+						return ErrApplicationConflict
+					}
+				}
 				if err := r.saveApplicationArchive(a); err != nil {
 					return err
 				}
 				// Older issuer implementations must refuse this journal instead of
 				// accepting an archived approval ID they do not know to look up.
-				state.Version = 2
+				if state.Version < 2 {
+					state.Version = 2
+				}
 				state.Attempts = append(state.Attempts[:i], state.Attempts[i+1:]...)
-				return r.writeFile("applications.json", state)
+				return r.saveApplications(state, false)
 			}
 			return ErrApplicationConflict
 		})

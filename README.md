@@ -1,5 +1,10 @@
 # Omabit
 
+**0.4.0 candidate:** fleet URLs, Agent Help, app development permissions and
+RAM/CPU controls are in release qualification. See the
+[candidate notes and review scope](docs/release-0.4.0.md). Stable remains0.3.7
+until the reviewed release is published.
+
 **New in 0.3.7** — Set up an Arch/Omarchy host with missing native prerequisites
 in one authorized step. The desktop also supports key-file selection on the
 panel and verified recovery from a mistyped first-boot identity.
@@ -222,6 +227,7 @@ enrollment records and adds explicit recovery rather than requiring a fresh inst
 ## Documentation
 
 - [Complete CLI reference](docs/cli/README.md) (generated and tested offline for all three binaries)
+- [App development permissions](docs/app-development-policy.md) (0.4.0 development; Setup controls and read-only agent status)
 - [Agent skill distribution](docs/agent-skills.md) (source directories and verified archive convention)
 - [Agent operator skill](skills/omabit-operator/SKILL.md) (source development; fleet observation, operations and imports)
 - [Plugin developer skill](skills/omabit-plugin-developer/SKILL.md) (source guidance; standalone apps, optional authentication, backend readiness and isolation)

@@ -1,0 +1,243 @@
+{
+  "version": 1,
+  "result": "passed",
+  "feature": "desk-source-adoption-v1",
+  "schema": 55,
+  "base_source": "829cfedc19b3fe94fb8721b98f03e622deb49b81",
+  "native": {
+    "probe": 36,
+    "resumed_clean_probe": 35,
+    "clean_shutdown": true,
+    "workflow_seconds": 44.35,
+    "pre_final_client_build": true
+  },
+  "checks": [
+    "explicit one-file selection already agrees with native Clay",
+    "default gate blocks adoption; scoped Commit grant allows private source ownership",
+    "adoption leaves native Clay unchanged and performs zero commits",
+    "stage discard and exact replay preserve receipt without another write",
+    "unspecified scaffold stays unowned; subsequent staged commit and gated release workflow pass",
+    "private fixture coverage: closed/publication gates, stale source/pier/policy/plan, unresolved previous effect, exact actor/runner/project/stage binding",
+    "missing/different/unknown selected source conflicts; unselected ownership baseline retained",
+    "atomic database rollback, original schema54 migration and actual older-reader refusal pass",
+    "full managed desk and core/CLI race tests; final collector race rejects partial receipt and does not automatically retry a lost response"
+  ],
+  "limits": [
+    "native lifecycle backend synthetic; no new Docker/SSH or receiver qualification",
+    "native36 predates final added client-only rejection of impossible partial receipt; separate final collector race passes",
+    "adoption is metadata ownership only, not compilation, activation, release, frontend or application health",
+    "no uncertainty clearance, force overwrite or implicit ownership from matching shared files",
+    "frontend upload still private fixture helper; receiver, Urgit, fleet and clearweb work remain",
+    "no release qualification or installed production/DEV/trial/manual preview changes"
+  ],
+  "selected_observations": {
+    "source-adoption-blocked": {
+      "version": 1,
+      "runner_id": "runner-e142d4de6a1d2862c3b0d24bb25e20bf",
+      "mode": "development-managed-fake",
+      "receipt": {
+        "version": 1,
+        "intent": {
+          "version": 1,
+          "id": "c19c67529248a42496ca8b1d997abf72d554291b45f9a789cc67da13a92a0802",
+          "target": {
+            "instance_id": "alpha",
+            "desk": "omabit-test-738065ab"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1,
+          "policy_revision": 1,
+          "action": "adopt-source",
+          "baseline": {
+            "exists": true,
+            "revision": 1,
+            "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+            "publication": "private"
+          },
+          "source_digest": "5ef1de532819988ae0d1398f244da6ed7534d506a3b24b80bdf2bd20d95e4720"
+        },
+        "actor": "local-uid:1000",
+        "steps": [
+          {
+            "kind": "adopt-source",
+            "state": "planned",
+            "at": "2026-11-07T10:43:17.587850462Z"
+          },
+          {
+            "kind": "adopt-source",
+            "state": "blocked",
+            "at": "2026-11-07T10:43:17.588066697Z"
+          }
+        ]
+      }
+    },
+    "source-adoption-observed": {
+      "version": 1,
+      "runner_id": "runner-e142d4de6a1d2862c3b0d24bb25e20bf",
+      "mode": "development-managed-fake",
+      "receipt": {
+        "version": 1,
+        "intent": {
+          "version": 1,
+          "id": "2b75e649b1fd59fc52bc846a5a0b7334b12a42f1b8b2ad0aae4f0c01607760d5",
+          "target": {
+            "instance_id": "alpha",
+            "desk": "omabit-test-738065ab"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1,
+          "policy_revision": 2,
+          "action": "adopt-source",
+          "baseline": {
+            "exists": true,
+            "revision": 1,
+            "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+            "publication": "private"
+          },
+          "source_digest": "5ef1de532819988ae0d1398f244da6ed7534d506a3b24b80bdf2bd20d95e4720"
+        },
+        "actor": "local-uid:1000",
+        "steps": [
+          {
+            "kind": "adopt-source",
+            "state": "planned",
+            "at": "2026-11-07T10:43:22.423978056Z"
+          },
+          {
+            "verified_source_digest": "5ef1de532819988ae0d1398f244da6ed7534d506a3b24b80bdf2bd20d95e4720",
+            "kind": "adopt-source",
+            "state": "observed",
+            "at": "2026-11-07T10:43:22.424203875Z",
+            "observation": {
+              "exists": true,
+              "revision": 1,
+              "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+              "publication": "private"
+            }
+          }
+        ]
+      }
+    },
+    "source-adoption-observed-review": {
+      "version": 1,
+      "runner_id": "runner-e142d4de6a1d2862c3b0d24bb25e20bf",
+      "mode": "development-managed-fake",
+      "intent": {
+        "intent": {
+          "version": 1,
+          "id": "2b75e649b1fd59fc52bc846a5a0b7334b12a42f1b8b2ad0aae4f0c01607760d5",
+          "target": {
+            "instance_id": "alpha",
+            "desk": "omabit-test-738065ab"
+          },
+          "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "config_revision": 1,
+          "policy_revision": 2,
+          "action": "adopt-source",
+          "baseline": {
+            "exists": true,
+            "revision": 1,
+            "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+            "publication": "private"
+          },
+          "source_digest": "5ef1de532819988ae0d1398f244da6ed7534d506a3b24b80bdf2bd20d95e4720"
+        },
+        "stage_id": "816968a3d202169ff7de63dd73d86db074a8610ecc0af6c7995c226496f5f64b",
+        "settings_revision": 0,
+        "source_name": "omabit-test-738065ab",
+        "continuity": "c2aa77cbe27ca30fcd73e5d93176006dfb7473ebaf50ca771a49a786993c2974",
+        "plan_digest": "8cba9ff14b155e57eb66f9b668b2d98a29a9793c52a5c2cef2a45b77a621951e"
+      },
+      "review": {
+        "version": 1,
+        "runner_id": "runner-e142d4de6a1d2862c3b0d24bb25e20bf",
+        "mode": "development-managed-fake",
+        "request": {
+          "selection": {
+            "target": {
+              "instance_id": "alpha",
+              "desk": "omabit-test-738065ab"
+            },
+            "runtime_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "config_revision": 1
+          },
+          "stage_id": "816968a3d202169ff7de63dd73d86db074a8610ecc0af6c7995c226496f5f64b",
+          "settings_revision": 0
+        },
+        "observation": {
+          "exists": true,
+          "revision": 1,
+          "clay_hash": "0vm.k04mi.5fp7c.1sk5b.0eeul.iqpji.t6fd5.9hg56.vhef9.upk7t.0a387",
+          "publication": "private"
+        },
+        "policy_revision": 2,
+        "source_name": "omabit-test-738065ab",
+        "continuity": "c2aa77cbe27ca30fcd73e5d93176006dfb7473ebaf50ca771a49a786993c2974",
+        "source_digest": "5ef1de532819988ae0d1398f244da6ed7534d506a3b24b80bdf2bd20d95e4720",
+        "plan_digest": "8cba9ff14b155e57eb66f9b668b2d98a29a9793c52a5c2cef2a45b77a621951e",
+        "paths": [
+          "sys.kelvin"
+        ],
+        "path_count": 1,
+        "new_count": 1,
+        "refresh_count": 0,
+        "retained_count": 0,
+        "conflicts": [],
+        "conflict_count": 0,
+        "read_at": "2026-11-07T10:43:21.523357478Z"
+      }
+    }
+  },
+  "evidence_sha256": {
+    "/tmp/omabit-desk-probe-36/inputs.json": "e2d537743da9d489d7d3efc018710eb3f2230a7d2ea8d440445421bc5ad60bd9",
+    "/tmp/omabit-desk-probe-36/guard.json": "1e0c555e42688499ce53ce99496c89b1fc93187860cf99459a43ac1e2e86b13b",
+    "/tmp/omabit-desk-probe-36/admission.json": "87b90a16c4f4b937aed25d2f989bc209edc40f53cb7d1d87080fa444909b9fb8",
+    "/tmp/omabit-desk-probe-36/resume.json": "0de39a9575c815f2736ef11261aea9466d60adcfda8a15ab1c450378c5836578",
+    "/tmp/omabit-desk-probe-36/exit.json": "bfdedf06596faa2042b0fedd9653ec1023d2e96ed56dc40b607985bc8438c1d5",
+    "/tmp/omabit-desk-probe-36/lab/result.json": "e28346023a39da92205975f3fe2df4aaa0b718cb96f8c7005fbc3178ca44f46d",
+    "/tmp/omabit-desk-probe-36/lab/workflow-proof.json": "26ad1ffd8d5ef2f59ba43923b2c552138a7fbe85687276ae778eb19b0c83df87",
+    "/tmp/omabit-desk-probe-36/lab/workflow-effects.jsonl": "ce99a29251e2773e3b354ce96f28f30ed0d6701fc859979497c5f5f9524d8023",
+    "/tmp/omabit-desk-probe-36/lab/workflow.log": "200c6789f24035640de7382dbbe108f48981725590be80963ea1333cb7885e5e",
+    "/tmp/omabit-desk-adoption-original-migration-01/result.json": "899b52b3534190d667fe1f3b2d2f72c1981382fb608f2f94ffa5d2096d714926",
+    "/tmp/omabit-desk-adoption-original-migration-01/test.log": "0e0b5acaed3540b3e7004ed01cc3ee1282ec4d9d6b10e6a53a3708af1a74dc29",
+    "/tmp/omabit-desk-adoption-managed-regression-04/result.json": "c6c82b0ca52c8a308591f3ca16eddc234e57345367bf4d2d1769a8d90694e2f4",
+    "/tmp/omabit-desk-adoption-managed-regression-04/test.log": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431",
+    "/tmp/omabit-desk-adoption-collection-02/result.json": "0c8e4f0017dd226ae8975caf4579f5f3bab5b64b43f78715ec6e048282b55dde",
+    "/tmp/omabit-desk-adoption-collection-02/test.log": "c26de83abdc9496cd1301470918ec39ecca1cf389ef0ae1c6504da1800d1c431",
+    "/tmp/omabit-desk-adoption-core-cli-02.log": "2ac5285b5d701a32240e2348a8b0ab8ae12a888898d174f7630a3cc8e657273f",
+    "/tmp/omabit-desk-workflow-storage-admission-36.json": "0e912d92b25fc40453742a1ab34fb03c38e3d3f0ebf423366e1e04c6409ddbe1",
+    "/tmp/omabit-desk-adoption-client-regression-admission.json": "ad52a85d367f9e32a899ee5010c2a036adeea8ca306ffd9eaaea7d91f1910e77",
+    "/tmp/omabit-desk-superseded-probe33-pruning.json": "15f7f6a7929d76c3d8442958385049995d1509de15df48e6214b7829fee1113a",
+    "/tmp/omabit-desk-adoption-cache-pruning-01.json": "f5e03a7ece6a71b0b5579432fe1b98da3428caf7a2f811ec5888a5a521bc89fd",
+    "/tmp/omabit-desk-superseded-fixture-binaries-20261107.json": "1425fb13f9271a8b30987d9e3b80da715fb0df433815118699850069ab91ca53",
+    "/tmp/omabit-desk-runtime-inputs-prune-36.json": "acef2f57831c2fb85e1b6bed559155331681bf99beed9fa7cb30e51f435e0f99"
+  },
+  "source_sha256": {
+    "cmd/omabit/desk_adoption.go": "0e069bd245a6fad2618e4ebcea277f82dded3b43529bb2e38014f22cb4fb537a",
+    "cmd/omabit/desk_adoption_test.go": "19e737bafa77b27dd30744d562f29cc28acbdfcf329ce69195414adc49d7d80f",
+    "cmd/omabit/main.go": "bb40647d74572eef23c74ed8ed63927464a9f9a585e29c3d77a66b3d05ea4b4c",
+    "internal/client/desk_adoption.go": "4f8c0dce559e440b11a2e1b6573b8a09d7e61d9e1fdfcbee5ca60a6392a6d0e9",
+    "internal/collection/desk_adoption.go": "c79af5a5609b184ef3f8b7d7e9e547cdd16662b61fc2cf75c0620b76cf46ee16",
+    "internal/collection/desk_adoption_test.go": "2c69fcbb0eefa09524b3b07e128b16fe5226135f8a9cb32bc8a65266b2aed791",
+    "internal/deskwork/adoption.go": "9a812a4fcf0e086e6e384b48ac3209c18eb46184b7aa8766e2a75cc9ad8aa40b",
+    "internal/deskwork/adoption_test.go": "c0e760daeb4181d4a194965bdc53dcb3432b6d0a3c9f2a3ba7f498dc9cf63b1f",
+    "internal/deskwork/operation.go": "52fa4b959260838cd03126bd8164772517900a9e20fb19985e2d4ea3e457b506",
+    "internal/managed/desk_adoption_linux.go": "a85bebcb8495faf08b5d0439cb0be5caa19c328a0d8270de89b39916013e4a17",
+    "internal/managed/desk_adoption_linux_test.go": "0b0b141930ca489db9dbc7ea2251415caefb01764243d7f8e2e7ad434d717dd5",
+    "internal/managed/desk_adoption_store.go": "5bed89aa2e2c2d9a2266eaf82554537de038a2ad1856a52fceeb360b52c909a2",
+    "internal/managed/desk_adoption_store_test.go": "101f82e03f57d773923d30cb1c1f4f540936314a4162a7c007cc93837a5f9a35",
+    "internal/managed/desk_adoption_upgrade_test.go": "dde8118d710c95b010633c352d1cbdd4cf2b6cf04a55716311ba546c0366da43",
+    "internal/managed/desk_deployment_store.go": "c692ad58b1e9dd6b6d9cf069fba4210d814542c5cf4eef6fe717334f5ad22ad1",
+    "internal/managed/desk_native_workflow_linux_test.go": "51f76e3bd132381917201030987e98d28430e84e004431a9329f84d014f87918",
+    "internal/managed/schema.go": "15b7db7b09786990fc0a2bfd9c87f4dc69b0fbd77a98b70d5cc328291b60e7ba",
+    "internal/managed/server.go": "d21976ae94d14ddfa57a71d6bb6a233dffa149c6318cc5532ae48de64aed70bc",
+    "internal/managed/store.go": "38926efdf8ce8f529d5e12647e1a7ef74638eca2f492c533eebf9b44a5e5e93f",
+    "internal/managed/testdata/desk-schema54.json": "7d7887a360a8a688b0a6f91f004f13de1383242592391a4400d01f4154180353",
+    "internal/managed/testdata/desk-schema54.sql": "8e72959739dc5fcb5b3e2604799f6e1ea4a3b9a983cd80643b2552a4c1424405",
+    "internal/managed/testdata/historical-upgrades/manifest.json": "fc23cf599e70ea3c08212561f0aa4b60610b21bbd98b42d2acb0d4267c235be9",
+    "internal/protocol/desk_adoption.go": "dd4487df89a1c6b799657d4b5f42f1b3454c49350d8f6477f49c7c5cea96111d",
+    "scripts/qualification/app-development/README.md": "bb3ab7b2b1dbdcec1bcc74997f38b81a7ef2204b4245134a6ba3f01795fc14e4",
+    "scripts/test-desk-adoption-upgrade.py": "a7afa8b7a65a87ccc5eafc68b4ff704d8f08588b8dd12788f2987f11777d9d61",
+    "scripts/test-historical-upgrades.py": "809311ecee9bd14e136be1160d3621d034ee19959d3518747105391cb3817d4b"
+  }
+}

@@ -26,6 +26,17 @@ and [the native review guide](native-dev-review.md). Count native DEV storage in
 the existing 40 GiB experiment budget. Do not turn human-review state into an
 automated test fixture or reset it without authorization.
 
+## Live0.4.0 review exception —2026-11-12
+
+M575 records the user's explicit request for a real, persistent DEV runner and
+menubar widget, plus permission to retire the old local trial040 plugin. The fresh
+root `/srv/dev/urbit-040`, user units `omabit-dev-040-{docker,runner}.service`,
+plugin `thelifeandtimes.omabit.review040` and `review-040` collector profile are
+separate from production and the earlier `/srv/dev/urbit` installation. Both DEV
+roots, installed review artifacts and archived TRIAL profiles count toward40GiB.
+Only the fresh review fake was operated on. No remote runner or key revocation was
+part of local TRIAL retirement. Preserve this new manual-review state thereafter.
+
 ## Experimental desktop contract
 
 Use separate experimental plugin IDs and visible labels; also isolate every state,
@@ -88,6 +99,18 @@ whole stages. Remove only classified superseded generated data with a removal
 manifest; preserve source, original migration fixtures and all production exclusions.
 If the next run cannot fit, prune or reduce its scope before proceeding. This is
 an operating rule; automated launcher enforcement remains to be implemented.
+
+The app-development native launcher now enforces this admission before input
+copies, pier transfers or process creation (M549). Its count includes both
+evidence roots, physical `/tmp/omabit-*` paths and native DEV. The eighteen known
+unreadable rootless overlay work directories carry an explicit1GiB estimated
+reserve; new or different measurement failures refuse. It declares2GiB additional
+scratch for a fresh run, monitors allocation, and records host-side interruptions.
+This supersedes the preceding lack of automated enforcement for that launcher
+only. The three-peer receiver capsule uses6GiB memory, requires8GiB available at
+admission, and retains the one-CPU/no-swap/private-namespace boundaries. Single
+peer capsules retain4GiB. Never use these limits as authorization for installed
+services or another simultaneous runtime experiment.
 
 M448 corrects a cleanup dependency error: always resolve symlinks and qcow backing
 chains, inventory their actual targets, and verify all retained dependencies after

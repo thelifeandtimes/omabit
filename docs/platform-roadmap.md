@@ -4,6 +4,159 @@ Recorded 2026-10-21. Product direction from the user; the experiments below are
 proposed delivery steps, not implemented contracts or live-operation approvals.
 Source baseline: Omabit v0.2.0, commit `b233128`.
 
+## 0.4.0 release target (2026-11-06)
+
+The next release starts from published 0.3.7. Its scope is remote runner
+installation, Agent Help and skill installation, app development and desk
+distribution, and ship URLs for private fleet access and clearweb access. The
+product and engineering checks below are the
+release plan. Final 1.0.0 refinements follow the 0.4.0 user trials. Feature implementation and
+isolated workflow tests are authorized now; release qualification and publication
+wait until that work is ready.
+
+### Remote runners
+
+Start with a disposable Ubuntu 22.04 x86-64 guest matching the recorded
+[rooftop findings](diagnostics/2026-10-29-production-import-polish.md). The
+[Jammy VM run](diagnostics/2026-11-06-jammy-remote-runner.md) now covers
+missing packages, signed payload verification, owner setup, two desktop
+enrollments, interruption and resume, and a healthy first ship.
+The operator subsequently confirmed that the manually driven rooftop configuration
+worked with the separate trial plugin. The [Debian 13.7 VM
+run](diagnostics/2026-11-06-debian-remote-runner.md) verified that stock Trixie
+stops before installing an incompatible Docker package and offers a specific
+next step. Successful Debian provisioning needs its own compatible package tuple.
+
+The [Arch VM run](diagnostics/2026-11-06-arch-remote-runner.md) now covers
+fresh SSH install, authenticated native dependencies, enrollment and a healthy
+first ship on the official x86-64 cloud image. Stale rolling-mirror metadata
+required a full guest update and reboot before resuming the same attempt.
+The installer explains that recovery. The operator skill records the exact
+tested coverage and the host-specific assistance an agent may need to provide.
+
+The user considers this sufficient remote-install testing for this stage.
+Proceed to Agent Help and skill installation. A full fresh Omarchy desktop and
+successful Debian provisioning remain outside the completed matrix. Qualify
+the 0.3.7 upgrade separately from fresh setup before releasing 0.4.0.
+
+### Agent Help and bundled skills
+
+Follow Omarchy's crash action. It builds a task-specific prompt, points at the
+skill and opens the user's configured coding agent. On 4.0.6,
+`omarchy default agent` reads the selection and `omarchy agent prompt` accepts a
+prompt as a single argument. If no agent is selected, direct the user to
+**Setup → Defaults → Agent**. Omarchy owns launching the agent and its terminal.
+[Omarchy crash action](https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-agent-crash)
+and [prompt launcher](https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-agent-prompt).
+
+Start at a failed or interrupted remote setup. Include the active release,
+operation type, last known stage and an exact read-only diagnostic. Use the
+operator skill from the selected bundle, including in a development profile.
+The native bootstrap currently extracts the UI and executables, so test that
+the referenced skill and all its files actually exist in the activated desktop.
+Keep credentials, raw SSH output and host-supplied free text out of the prompt.
+Opening Help requests a diagnosis. Repairs and changes to network exposure
+have their own explicit actions.
+
+Offer explicit installation of the operator and plugin-developer skills for use
+outside the button. Show the target, verify the source release and preserve
+user-edited skills. Test the default-agent and no-default flows, two active
+skill generations, and an existing custom skill.
+
+### One ship, several reachable URLs
+
+The runner should publish a versioned list of candidate Eyre origins per managed
+ship instance over its existing authenticated inventory. Record the full origin
+(scheme, host and port), network scope, source and revision. Support entering
+an origin explicitly, including a custom hostname on port 443 that forwards to
+a different ship port. Keep the existing per-runner browser setting usable for
+old runners and desktops during upgrade.
+
+Derive a tailnet candidate on the **ship's host** from its own active Tailscale
+identity and the ship's observed listener or configured proxy. Read just the
+runner's own name, tailnet identity and addresses, without distributing its peer
+list. [Tailscale CLI](https://tailscale.com/docs/reference/tailscale-cli)
+
+The user approves one installed app/profile to connect to one ship on this
+desktop. Persist that grant against the ship's stable managed identity and the
+approved receiver generation. The grant covers the ship's current and future
+verified routes. A different app, profile or ship has its own grant. Revoking
+the grant stops reconnects across all routes for that app and ship.
+
+On connection or loss of connectivity, the collector automatically tries
+same-host loopback first, followed by the matching tailnet and then a
+registered HTTPS clearweb origin. Keep using a working route. Only use loopback
+on the ship's host. Use trusted runner registration and verify that the route
+reaches the expected ship before sending credentials. A hostname guess, redirect
+or unauthenticated ship-name response alone cannot establish a trusted route.
+The normal UI shows the app, ship and connection state. Put the active URL in
+connection details and offer the public URL separately for opening or sharing.
+
+Keep each Eyre session bound to its origin. For a route change, the collector
+uses the existing grant to establish a session at the verified destination and
+hand it to the same plugin. Coordinate that handoff with the receiver so it can
+replace its exact managed session, preserve a newer standalone login and record
+cleanup of the previous session. Keep uncertain issuance or delivery recoverable
+before minting another session. For 0.3.7 users, preserve working single-origin
+connections during upgrade. Make a new or migrated ship grant traceable to the
+original app, profile and ship.
+
+Use two collectors and a disposable ship to exercise local-only, same-tailnet,
+off-tailnet and clearweb cases. Include two ships on one runner, an unreachable
+MagicDNS candidate, a wrong ship behind a proxy, and a custom HTTPS origin using
+the standard port. Take the client off the tailnet and reconnect over the public
+route with one approval total. Check that the old cookie never goes to the new
+origin and that revocation wins a race with reconnect. A failed lookup must
+leave the working plugin session usable.
+
+### App development, rollout and publication
+
+The user added agent-accessible desk development and publication to 0.4.0.
+Support desk creation/mounting, source deployment, commit, local activation,
+publication and receiver verification on ordinary managed ships, development
+fakes and fake project networks. Expose the steps through the collector CLI with
+durable operation results and default-closed commit/publication gates.
+
+The [architecture proposal](app-development-0.4.0.md) starts with mounted desks
+and supports Urgit through a tested, documented agent workflow. No dedicated
+Urgit software adapter is planned for 0.4.0. Urgit already binds Git branches to Clay and
+validates linked pushes. Its desk-to-Git export is one part of the workflow;
+Treaty handles app publication and Clay delivers subscribed updates. A release
+approval therefore precedes the distributor desk's mutation. Source trees under
+`desk/` need an assembled deployment tree for the Git bridge.
+
+Follow each developer's release configuration, including Urgit's existing rules.
+The [policy layer and Setup editor](app-development-policy.md) are implemented
+and fixture-tested, with independent commit and
+publication permissions at global, runner, ship and installed-desk scope, plus
+a ship-level desk-creation gate. The reviewed tree now supports zoom and pan.
+The most specific explicit setting overrides inherited values. All three permissions
+start blocked, including on development fakes and project members. Enforce them
+at the runner's effect boundary and expose the effective policy read-only to
+agents. A commit that distributes a published desk update requires both gates.
+
+Observe mounted Unix files against Clay and show an uncommitted-change alert,
+including edits made outside Omabit. Keep unavailable observations explicit.
+Skills must follow the configured gates and the application's release rules.
+The user fixed the scope to Urbit desks and their frontend assets. Qualify the
+runtime/Urbit API and Urgit revision before advertising support. Reuse fleet
+origins for Git access and include deployment status in Agent Help.
+
+### Clearweb access
+
+Help the user expose the selected ship's web endpoint. The agent can guide
+Tailscale Funnel, Cloudflare Tunnel, or a user's existing DNS and reverse proxy.
+Show the precise hostname, destination and audience before any change. Verify
+TLS and the selected ship from outside the tailnet, register the verified origin,
+and test disabling the route without disturbing other routes or private access.
+The ship's apps control which content they publish. Runner management, SSH and
+the runtime control interface have no role in this public route.
+
+Keep Lattice/Talon prompts and Omart discovery for later. Optional Ethereum
+devnets can build on the existing private-chain work. ID acquisition and
+master-ticket custody belong to a separate wallet, with a future onboarding
+handoff into Omabit's existing key-file boot flow.
+
 ## Product anchor and repository ownership
 
 **“Multiplayer apps without a subscription.”** This is the user's anchor phrase,

@@ -45,7 +45,7 @@ func bridgeRunnerFixture(t *testing.T, socket string, grant Grant, id, mode stri
 	s := &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set(protocol.Header, "1")
 		if r.URL.Path == "/hello" {
-			json.NewEncoder(w).Encode(protocol.Hello{ProtocolVersion: 1, RunnerID: id, Mode: mode, Actor: "ssh-key:" + grant.Fingerprint, AccessRole: grant.Role, Features: []string{"ssh-key-grants", "host-handoff"}})
+			json.NewEncoder(w).Encode(protocol.Hello{ProtocolVersion: 1, RunnerID: id, Mode: mode, Actor: "ssh-key:" + grant.Fingerprint, AccessRole: grant.Role, Features: []string{"ssh-key-grants", "host-handoff", protocol.DeskStageFeature}})
 			return
 		}
 		requests.Add(1)
@@ -79,7 +79,7 @@ func readBridgeResponse(t *testing.T, reader *bufio.Reader, method string) {
 
 func TestBridgePinsEveryLocalHandshake(t *testing.T) {
 	for _, change := range []string{"id", "mode", "same-identity", "grant-role"} {
-		for _, kind := range []string{"rpc", "pill", "handoff-put", "handoff-get"} {
+		for _, kind := range []string{"rpc", "pill", "desk", "handoff-put", "handoff-get"} {
 			t.Run(change+"/"+kind, func(t *testing.T) {
 				socket, keys, grant := bridgeGrantFixture(t)
 				var requests atomic.Int32
@@ -116,6 +116,11 @@ func TestBridgePinsEveryLocalHandshake(t *testing.T) {
 					path = "/v1/handoffs/" + strings.Repeat("a", 32) + "/data"
 					method = "PUT"
 				}
+				extra := ""
+				if kind == "desk" {
+					method, path = "POST", protocol.DeskStagesPath
+					extra = protocol.DeskStageHeader + ": " + stageDescriptor(t) + "\r\n"
+				}
 				if kind == "pill" {
 					method, path = "POST", protocol.PillUploadPath
 				} else if kind == "handoff-get" {
@@ -123,7 +128,7 @@ func TestBridgePinsEveryLocalHandshake(t *testing.T) {
 				}
 				writeDone := make(chan error, 1)
 				go func() {
-					_, err := fmt.Fprintf(peer, "%s %s HTTP/1.1\r\nHost: runner\r\n%s: 1\r\nContent-Type: %s\r\nContent-Length: %d\r\n%s: %s\r\nConnection: close\r\n\r\n%s", method, path, protocol.Header, contentType, len(body), protocol.PillHashHeader, strings.Repeat("a", 64), body)
+					_, err := fmt.Fprintf(peer, "%s %s HTTP/1.1\r\nHost: runner\r\n%s: 1\r\nContent-Type: %s\r\nContent-Length: %d\r\n%s: %s\r\n%sConnection: close\r\n\r\n%s", method, path, protocol.Header, contentType, len(body), protocol.PillHashHeader, strings.Repeat("a", 64), extra, body)
 					writeDone <- err
 				}()
 				if change == "same-identity" {

@@ -45,6 +45,7 @@ type Server struct {
 	cancel                    context.CancelFunc
 	wg                        sync.WaitGroup
 	mu                        sync.Mutex
+	deskStageMu               sync.Mutex
 	closing                   bool
 	workGate                  chan struct{}
 	failed                    atomic.Bool
@@ -126,6 +127,10 @@ func newServerWithStartup(dir string, b backend, interval time.Duration, comets 
 		}
 	}
 	if err := s.reconcileInterrupted(); err != nil {
+		s.close()
+		return nil, err
+	}
+	if err := s.reconcileDeskOperations(); err != nil {
 		s.close()
 		return nil, err
 	}
@@ -337,7 +342,11 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if !ownerhost.Development() {
 			features = append(features, protocol.ManagementUpdateFeature)
 		}
-		features = append(features, protocol.HostCompatibilityFeature)
+		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature, protocol.DeskSettingsFeature, protocol.DeskStageFeature)
+		if _, ok := r.b.(deskBackend); ok {
+			features = append(features, protocol.ShipRoutesFeature, protocol.ShipRouteCodeFeature)
+			features = append(features, protocol.DeskCreateFeature, protocol.DeskDiscoveryFeature, protocol.DeskSourceFeature, protocol.DeskCommitFeature, protocol.DeskApplicationFeature, protocol.DeskReleaseFeature, protocol.DeskAdoptionFeature, protocol.DeskReceiverFeature, protocol.DeskFrontendFeature)
+		}
 		features = append(features, "fake-ship-options", "host-port-suggestion")
 		if p, err := ownerhost.Current(); err == nil && p != nil {
 			features = append(features, "owner-user-runtime", "human-pier-storage")
@@ -350,7 +359,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 		if _, ok := r.b.(storageBackend); ok {
 			features = append(features, "bootstrap-selection")
-			features = append(features, "pier-storage", protocol.RuntimeSettingsFeature, protocol.NativeControlAllShipsFeature)
+			features = append(features, "pier-storage", protocol.RuntimeSettingsFeature, protocol.NativeControlAllShipsFeature, protocol.ContainerResourcesFeature)
 			features = append(features, "host-handoff", protocol.RuntimeSettingsHandoffFeature)
 			if r.s.mode == DevelopmentMode {
 				features = append(features, "key-boot", "key-boot-options", "livenet-import")
@@ -406,6 +415,15 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		r.stagePill(w, req, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskStagesPath || strings.HasPrefix(req.URL.Path, protocol.DeskStagesPath+"/") {
+		if err := r.beginUpdateBulk(); err != nil {
+			r.respondError(w, err)
+			return
+		}
+		defer r.endUpdateBulk()
+		r.serveDeskStage(w, req, actor, role)
 		return
 	}
 	if project, parent, kind, ok := protocol.ProjectRecoveryActionIDs(req.URL.Path); ok && req.Method == http.MethodPost {
@@ -491,6 +509,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		r.handoffData(w, req, actor, role, strings.Split(req.URL.Path, "/")[3])
 		return
 	}
+	if req.Method == http.MethodGet && strings.HasPrefix(req.URL.Path, protocol.DeskOperationsPath+"/") {
+		r.serveDeskReceipt(w, req, role)
+		return
+	}
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if r.closing || r.failed.Load() {
@@ -499,6 +521,90 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if r.updateFence.Held && req.Method != http.MethodGet {
 		r.respondError(w, conflict("management_quiesced", "management update holds admission; resume the activation journal"))
+		return
+	}
+	if req.URL.Path == protocol.AppPolicyPath {
+		r.serveAppPolicy(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.ShipRoutesPath {
+		r.serveShipRoutes(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.ShipRouteCodePath {
+		r.serveShipRouteCode(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskSettingsPath {
+		r.serveDeskSettings(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskSourcePath {
+		r.serveDeskSource(w, req, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskDiscoveryPath {
+		r.serveDeskDiscovery(w, req, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskDeploymentReviewPath {
+		r.serveDeskDeploymentReview(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskCommitPath {
+		r.serveDeskCommit(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskAdoptionReviewPath {
+		r.serveDeskAdoptionReview(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskAdoptionPath {
+		r.serveDeskAdoption(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskReleaseReviewPath {
+		r.serveDeskReleaseReview(w, req, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskFrontendReviewPath {
+		r.serveDeskFrontendReview(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskFrontendsPath {
+		r.serveDeskFrontend(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskReceiverReviewPath {
+		r.serveDeskReceiverReview(w, req, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskReceiverStatusPath {
+		r.serveDeskReceiverStatus(w, req, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskReceiversPath {
+		r.serveDeskReceiver(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskReleasePath {
+		r.serveDeskRelease(w, req, actor, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskApplicationPath {
+		r.serveDeskApplication(w, req, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskObservationPath {
+		r.serveDeskObservation(w, req, role)
+		return
+	}
+	if req.URL.Path == protocol.DeskOperationsPath {
+		r.serveDeskOperation(w, req, actor, role)
+		return
+	}
+	if strings.HasPrefix(req.URL.Path, protocol.DeskOperationsPath+"/") && strings.HasSuffix(req.URL.Path, "/reconcile") {
+		r.serveDeskReconciliation(w, req, actor, role)
 		return
 	}
 	if req.Method == http.MethodGet && req.URL.Path == "/v1/port-suggestion" {

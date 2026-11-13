@@ -20,6 +20,7 @@ func MoveStopped(ctx context.Context, source, destination *Client, sourceRunner,
 		return zero, errors.New("require distinct pinned runners and a request ID of at most 40 characters")
 	}
 	settingsHandoff := true
+	resourcesHandoff := true
 	for _, endpoint := range []struct {
 		c  *Client
 		id string
@@ -32,6 +33,7 @@ func MoveStopped(ctx context.Context, source, destination *Client, sourceRunner,
 			return zero, errors.New("both selected runners must provide operator host-handoff access")
 		}
 		settingsHandoff = settingsHandoff && slices.Contains(h.Features, protocol.RuntimeSettingsHandoffFeature)
+		resourcesHandoff = resourcesHandoff && slices.Contains(h.Features, protocol.ContainerResourcesFeature)
 	}
 	// Inspect the selected revision before any mutation. Old collectors are also
 	// fenced by the source endpoint when they omit this capability acknowledgement.
@@ -52,7 +54,14 @@ func MoveStopped(ctx context.Context, source, destination *Client, sourceRunner,
 	if selected == nil || selected.ConfigRevision != req.ExpectedRevision {
 		return zero, errors.New("source configuration changed; refresh the selected ship")
 	}
-	settings := protocol.RuntimeSettings{Loom: selected.Config.Loom, NativeControl: selected.Config.NativeControl}
+	settings := selected.Config.HandoffRuntimeSettings()
+	req.DestinationContainerResources = false
+	if protocol.NondefaultContainerResources(settings.MemoryGiB, settings.CPUCores) {
+		if !resourcesHandoff {
+			return zero, errors.New("update both runners for container-resources-v1 before moving this ship")
+		}
+		req.DestinationContainerResources = true
+	}
 	req.DestinationRuntimeSettings = false
 	if settings.Nondefault() {
 		if !settingsHandoff {

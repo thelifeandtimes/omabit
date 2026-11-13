@@ -120,3 +120,49 @@ The runner additionally requires a recent observation, no active operation and n
 recovery fence. A refusal is not permission to collect a code another way. Keep
 the returned secret in the sign-in flow and out of normal logs/reports. Preserve
 existing sessions when sign-in or observation is unavailable.
+
+## Container RAM and CPU limits (0.4.0)
+
+On a runner advertising `container-resources-v1`, individually managed ships can
+use 1–16 GiB RAM and 1–16 whole CPU cores. Defaults remain 4 GiB and 2 CPUs.
+Initial standalone fake, comet, and keyed-ship boot forms expose both limits under
+**Advanced settings**. Their collector commands (`create-fake`, `create-comet`,
+`create-ship`) accept `--memory-gib` and `--cpus` before first boot. Omission keeps
+the defaults; explicit values require `container-resources-v1`.
+These are ceilings, not reserved host capacity; CPU quotas do not pin cores.
+Vere's loom remains a separate address-space setting. The runner's configured
+start-admission policy still applies; raising a ceiling does not add host RAM.
+Project-network members and private gateways retain their separate fixed contracts.
+
+For an authorized resize, use the selected ship's ordinary **Stop**, observe its
+receipt and a stopped snapshot with no recovery/operation pending, then configure
+and explicitly **Start**. After an OOM exit, Stop reconciles the exited container
+while preserving the pier. Do not bypass recovery by editing its database or using
+`docker update`. In the panel, open **Edit runtime settings**, choose RAM/CPU,
+save, then Start. Reload the editor after stopping.
+
+From the CLI, preserve the HTTP/Ames ports and loom from the fresh snapshot:
+
+```sh
+urbit-collector --config-dir REGISTRY --runner NAME --expected-runner-id RUNNER_ID configure INSTANCE --revision REVISION --http-port HTTP_PORT --ames-port AMES_PORT --loom LOOM --memory-gib 16 --cpus 4
+```
+
+Either resource flag can be omitted to preserve its setting, including from older
+clients. Explicit `--memory-gib 4 --cpus 2` restores defaults. There is no unlimited
+option. A lost configure response requires a fresh snapshot, not a blind retry.
+Use the returned configuration revision for Start. New containers, including
+maintenance utilities, receive the selected limits; old launch records retain
+what was actually applied. Confirm the new recorded launch limits and fresh
+resource samples after startup. A limit failure leaves its operation receipt for
+review; it is not permission to recreate or delete the pier.
+
+Nondefault limits travel in the signed stopped-pier handoff. Both runners and the
+collector must support the capability; an older destination is refused before the
+source is fenced. Older runner binaries cannot open schema59. Never lower the
+schema marker to downgrade.
+
+Tested: isolated store/API/CLI fixtures, mocked Docker creation/inspection/cgroups,
+stop–resize–start and maintenance, metrics, handoff, actual schema58-writer upgrade
+and older-reader refusal, and the real QML controls with an inert service. This
+feature has not yet passed the separately deferred installed-runner/release
+qualification; the fixtures do not claim a live 16 GiB ship boot on every host.

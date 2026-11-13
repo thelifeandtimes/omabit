@@ -20,7 +20,7 @@ Column {
   readonly property string ship: Model.fakeIdentity(identity.text)
   readonly property string instanceName: ship.slice(1)
   readonly property string runtimeSelection: (connection ? connection.runner_id+"/"+connection.name : "")+"/"+ship
-  onRuntimeSelectionChanged: {if(runtimeSettings) runtimeSettings.selectedLoom=31; if(bootConsent) bootConsent.checked=false}
+  onRuntimeSelectionChanged: {if(runtimeSettings) runtimeSettings.selectedLoom=31; if(containerResources){containerResources.memoryGiB=4;containerResources.cpuCores=2} if(bootConsent) bootConsent.checked=false}
   readonly property string destination: Model.ownedPierPath(ship) ? Model.storagePath(storageLocation.rootID,storageLocation.customPath && customPier.text.trim() ? customPier.text.trim() : Model.ownedPierPath(ship)) : ""
   readonly property string selectedPill: bootstrap.source
   readonly property var currentConnection: service && connection ? service.connections.filter(function(c){return c.name===root.connection.name && c.runner_id===root.connection.runner_id})[0] || null : null
@@ -31,7 +31,7 @@ Column {
     return o && o.kind==="owned" && connection && o.runner===connection.runner_id && o.connection===connection.name && o.instance===instanceName ? o : null
   }
   readonly property bool submitted: registered || !!outcome && outcome.status!=="failed"
-  readonly property string problem: submitted ? "" : !destination || !Model.validPierPath(destination) ? "Enter a galaxy, star, planet or moon identity and valid destination." : (root.pasteKey ? !keyInput.text.trim() : !root.keyFile) ? "Paste a boot key or choose its file." : !Model.optionalPort(httpPort.text) || !Model.optionalPort(amesPort.text) ? "Advanced ports must be blank or 1024–65535." : runtimeSettings.problem || bootstrap.problem
+  readonly property string problem: submitted ? "" : !destination || !Model.validPierPath(destination) ? "Enter a galaxy, star, planet or moon identity and valid destination." : (root.pasteKey ? !keyInput.text.trim() : !root.keyFile) ? "Paste a boot key or choose its file." : !Model.optionalPort(httpPort.text) || !Model.optionalPort(amesPort.text) ? "Advanced ports must be blank or 1024–65535." : runtimeSettings.problem || containerResources.problem || bootstrap.problem
   spacing: Style.space(12)
   Label { text: "Your Urbit ID and boot key"; font.pixelSize: Style.space(21); font.bold: true }
   Label { width: parent.width; text: "Enter your Urbit ID and paste its boot key or choose a key file. Omabit uses your Urbit ID to name the instance, chooses its data directory and available ports, and boots it with your confirmation."; secondary: true }
@@ -69,6 +69,7 @@ Column {
   Column {
     objectName: "key-advanced"; width: parent.width; spacing: Style.space(10); visible: root.advanced
     RuntimeSettingsFields { id: runtimeSettings; width: parent.width; supported: Model.hasFeature(root.connection,"runtime-settings"); enabled: !root.submitted && !!root.service && !root.service.busy; onEdited: {bootConsent.checked=false;root.submitError=""} }
+    ContainerResourceFields { id: containerResources; width: parent.width; initialBoot: true; stopped: true; supported: Model.hasFeature(root.connection,"container-resources-v1"); enabled: !root.submitted && !!root.service && !root.service.busy; onEdited: {bootConsent.checked=false;root.submitError=""} }
     StorageLocationSelector { id: storageLocation; allowCustom: true; width: parent.width; connection: root.connection; visible: !root.registered; enabled: !root.submitted && !root.service.busy; onEdited: bootConsent.checked=false }
     Field { id: customPier; objectName: "key-pier-path"; width: parent.width; visible: storageLocation.customPath; placeholderText: Model.ownedPierPath(root.ship); enabled: !root.submitted && !root.service.busy; onTextEdited: bootConsent.checked=false }
     Label { width: parent.width; visible: root.destination!==""; text: "Pier: "+Model.absolutePierPath(root.connection,root.destination); secondary: true; caption: true }
@@ -82,7 +83,7 @@ Column {
   CheckField { id: bootConsent; objectName: "key-boot-consent"; width: parent.width; visible: !root.registered; enabled: !root.submitted && !root.service.busy; text: "Boot this identity now with these settings." }
   Flow {
     width: parent.width; spacing: Style.space(8)
-    ActionButton { objectName: "key-register"; text: root.registered ? "Boot submitted" : root.submitted ? "Starting…" : root.service.busy ? "Preparing boot files…" : "Boot ship"; primary: !root.registered; enabled: root.connection && root.connection.access_role==="operator" && Model.hasFeature(root.connection,"key-boot-options") && !root.submitted && !root.service.busy && root.problem==="" && bootConsent.checked; onClicked: {root.submitError="";if(!root.service.createFromKey(root.connection,root.ship,root.keyFile,httpPort.text,amesPort.text,root.selectedPill,bootstrap.kind,storageLocation.rootID,root.destination,runtimeSettings.selectedLoom,root.pasteKey ? keyInput.text.trim() : ""))root.submitError=root.service.lastError;else keyInput.clear()} }
+    ActionButton { objectName: "key-register"; text: root.registered ? "Boot submitted" : root.submitted ? "Starting…" : root.service.busy ? "Preparing boot files…" : "Boot ship"; primary: !root.registered; enabled: root.connection && root.connection.access_role==="operator" && Model.hasFeature(root.connection,"key-boot-options") && !root.submitted && !root.service.busy && root.problem==="" && bootConsent.checked; onClicked: {root.submitError="";if(!root.service.createFromKey(root.connection,root.ship,root.keyFile,httpPort.text,amesPort.text,root.selectedPill,bootstrap.kind,storageLocation.rootID,root.destination,runtimeSettings.selectedLoom,root.pasteKey ? keyInput.text.trim() : "",containerResources.memoryGiB,containerResources.cpuCores))root.submitError=root.service.lastError;else keyInput.clear()} }
     ActionButton {
       objectName: "key-start"
       text: "▶ Start"
