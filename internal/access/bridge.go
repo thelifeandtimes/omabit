@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/deskwork"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
@@ -88,6 +89,7 @@ func bridgeRequest(ctx context.Context, reader *bufio.Reader, limited *io.Limite
 		return true, errors.New("invalid SSH RPC request")
 	}
 	upload := req.Method == http.MethodPost && req.URL.Path == protocol.PillUploadPath
+	deskUpload := req.Method == http.MethodPost && req.URL.Path == protocol.DeskStagesPath
 	if req.URL.IsAbs() || req.URL.RawQuery != "" || req.Header.Get("Origin") != "" {
 		return true, errors.New("invalid SSH RPC request")
 	}
@@ -117,7 +119,17 @@ func bridgeRequest(ctx context.Context, reader *bufio.Reader, limited *io.Limite
 		return true, forwardHandoff(ctx, req, output, socket, grant, pin)
 	}
 	var body io.Reader
-	if upload {
+	if deskUpload {
+		if err := deskStageFraming(req); err != nil {
+			return true, err
+		}
+		// Go's streaming source writer uses chunked framing. Bound both wire
+		// overhead and decoded bytes; the runner validates the exact bundle.
+		// This connection ends after one transfer, so trailing bytes can never
+		// become a second mutation, even if the upload is refused or truncated.
+		limited.N = 2*deskwork.MaxBundleBytes + 65536
+		body = io.LimitReader(req.Body, deskwork.MaxBundleBytes+1)
+	} else if upload {
 		meta := protocol.BootPill{SHA256: req.Header.Get(protocol.PillHashHeader), Bytes: req.ContentLength}
 		if !protocol.ValidBootPill(&meta) || req.Header.Get("Content-Type") != "application/octet-stream" {
 			return true, errors.New("invalid pill upload framing")
@@ -148,12 +160,19 @@ func bridgeRequest(ctx context.Context, reader *bufio.Reader, limited *io.Limite
 		local.ContentLength = req.ContentLength
 		local.Header.Set(protocol.PillHashHeader, req.Header.Get(protocol.PillHashHeader))
 	}
+	if deskUpload {
+		local.ContentLength = req.ContentLength
+		local.Header.Set(protocol.DeskStageHeader, req.Header.Get(protocol.DeskStageHeader))
+	}
+	if duration := deskRequestTimeout(req.URL.Path); duration != 0 {
+		timer.Reset(duration)
+	}
 	local.GetBody = nil // a bridge never retries a mutation either
 	resp, data, err := forward(ctx, local, socket, grant, pin)
 	if err != nil {
 		return true, err
 	}
-	if upload {
+	if upload || deskUpload {
 		req.Body.Close()
 	}
 	resp.Body = io.NopCloser(bytes.NewReader(data))
@@ -162,11 +181,11 @@ func bridgeRequest(ctx context.Context, reader *bufio.Reader, limited *io.Limite
 	// Pass only protocol metadata, never local response cookies or credentials.
 	resp.Header = http.Header{protocol.Header: []string{resp.Header.Get(protocol.Header)}, "Content-Type": []string{"application/json"}, "Cache-Control": []string{"no-store"}}
 	resp.Request = &http.Request{Method: req.Method, URL: &url.URL{Path: req.URL.Path}}
-	resp.Close = req.Close
+	resp.Close = req.Close || deskUpload
 	if err := resp.Write(output); err != nil {
 		return true, err
 	}
-	if req.Close || strings.EqualFold(req.Header.Get("Connection"), "close") {
+	if deskUpload || req.Close || strings.EqualFold(req.Header.Get("Connection"), "close") {
 		return true, nil
 	}
 	return false, nil
@@ -179,6 +198,8 @@ func forward(ctx context.Context, req *http.Request, socket string, grant Grant,
 	duration := 5 * time.Second
 	if req.URL.Path == protocol.PillUploadPath {
 		duration = 10 * time.Minute
+	} else if deskDuration := deskRequestTimeout(req.URL.Path); deskDuration != 0 {
+		duration = deskDuration
 	}
 	ctx, cancel := context.WithTimeout(ctx, duration)
 	defer cancel()
@@ -222,6 +243,9 @@ func forward(ctx context.Context, req *http.Request, socket string, grant Grant,
 	}
 	if err := pin.check(hello); err != nil {
 		return nil, nil, err
+	}
+	if req.Method == http.MethodPost && req.URL.Path == protocol.DeskStagesPath && !slices.Contains(hello.Features, protocol.DeskStageFeature) {
+		return nil, nil, errors.New("local runner does not support source staging; request was not forwarded")
 	}
 	replayOnly, err := protocol.CreationReplayOnly(req.Header)
 	if err != nil {

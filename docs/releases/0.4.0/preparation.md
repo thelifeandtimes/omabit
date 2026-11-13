@@ -26,9 +26,10 @@ disposable outputs. Both native DEV roots and historical manual-review state sta
   the real managed-runtime, SSH and network-namespace scenario.
 - The full source suite exposed stale historical-test schema targets52/56.
   Both now explicitly name59, preserving the original RC12 qualification and
-  historical reader window. Full managed race regression is in progress.
+  historical reader window. Full managed race coverage is in progress, with the deadline and remaining
+  inventory accounted for below.
 - Two filesystem ownership/ACL tests cannot use the single-UID Bubblewrap user
-  namespace. Their unchanged binaries will run as the ordinary guest owner on the
+  namespace. Their unchanged binaries ran as the ordinary guest owner on the
   VM filesystem; both passed there with race instrumentation. This is an
   environment-specific rerun, not a waived gate.
 - The upgrade harness now checks schema versions from both exact manifests,
@@ -57,9 +58,28 @@ must replace pending claims before stable release qualification.
 
 ## Remaining gates
 
-Freeze a clean source revision and build matching binaries, panel and skills.
-Verify archive/provenance, full source/race coverage, native QML/bootstrap, cold/hot
-activation and0.3.7→0.4.0 service/state continuity. Test registered remote URLs and
-both capable receivers on the real isolated runner. Record compatibility limits,
-review the release PR and pass required CI before publication. No stable artifact,
-installed runner or distribution pin has yet been changed by this preparation.
+The clean second candidate is `88c95d795b163de98e42691d885f480018e7616c`. Its
+archive/provenance and actual cold/hot desktop activation pass. Complete the
+exact-candidate service, remote-receiver and installed-runner CLI scenarios, all
+managed race coverage and [source CI](https://github.com/thelifeandtimes/omabit/actions/runs/43331849506).
+Then attach qualification, prepare immutable draft artifacts and distribution
+pins, and review the release PR before publication. No stable artifact, installed
+runner or distribution pin has yet been changed by this preparation.
+
+## Installed-runner SSH blocker and correction
+
+Candidate02's actual CLI created its new desk, then source staging failed because
+SSH forwarding dropped the transfer descriptor and used ordinary RPC body limits.
+The local Unix-socket tests did not cover this boundary. The bridge now forwards
+only a validated bounded descriptor and streams a bounded body, pins the local
+runner and capability, and closes after one upload. Desk RPC deadlines match the
+public client; ordinary framing and generic requests retain their short bounds.
+Regression tests cover known/chunked transfers, malformed framing, observer and
+missing-capability refusal, replacement identity/role, cancellation and deadlines.
+The access/client/collection suites pass with race instrumentation. Candidate02
+is not release-qualified; the corrected source requires a fresh candidate.
+
+All520 managed tests are now accounted for:498 passed and22 explicitly guarded
+native/VM tests skipped in source capsules. The fresh native publisher/receivers
+and upgrade VM provide their separately stated runtime evidence; these skips are
+not represented as tests of every historical external-runtime scenario.
