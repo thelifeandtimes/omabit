@@ -1,5 +1,17 @@
 # Stable-release upgrade requirement
 
+## 0.4.0 candidate: installed0.3.7→0.4.0 qualification
+
+The [exact-artifact rehearsal](releases/0.4.0/rehearsal.json) passes the local
+Linux/AMD64 owner-user upgrade from schema47 to59, preserving running/stopped
+intent, access, identity and history. The actual older runner refuses59 unchanged.
+This supersedes the installed-upgrade deferral in the historical feature notes
+below only for this documented path and artifact. Their individual fixture limits
+remain valid. Manual password entry is left to the user's separate review VM;
+remote service upgrades and live provider configuration remain outside this gate.
+Stable publication and any production upgrade remain separate actions.
+
+
 ## Development: container resource limits, schema59
 
 Schema59 fences optional RAM/CPU configuration and immutable launch limits.

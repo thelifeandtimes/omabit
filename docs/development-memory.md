@@ -9329,3 +9329,42 @@ not their stated evidence limits. Live provider testing remains with the user.
 Production and manual-review state remain excluded. The temporary aggregate
 experiment cap is48GiB by explicit user approval, returning below40GiB through
 retirement of only new disposable outputs. See releases/0.4.0/preparation.md.
+
+## M578 —0.4.0 qualification and isolated manual upgrade VM (2026-11-12)
+
+M577's authorized qualification now has a frozen candidate at
+`a9623329a538ebf83d63365053d2d1011ade091e`. Exact archive, native desktop and
+0.3.7→0.4.0 installed-service rehearsal pass. The actual CLI/SSH scenario exposed
+a missing source-transfer descriptor/body allowance in the bridge; the bounded
+streaming fix, identity/capability checks, cancellation/deadline tests and full
+rebuilt VM rerun pass. Candidate02's failure remains recorded. Source/frontend
+publication and two receivers pass in a separate native fixture with a synthetic
+managed lifecycle backend. The real installed-runner scenario covers source
+publication; the separate routed fleet scenario uses actual Theme/DMs helpers,
+private Secret Service and standing approvals. It does not certify public Tailnet,
+Tunnel/DNS setup or ship content publication on a live provider.
+
+See releases/0.4.0/qualification.json, rehearsal.json and local-validation.json
+for exact inputs, source/race coverage, CI and scope limits. The earlier complete
+source CI passed. Exact release PR checks remain required before merging; no
+qualification record waives them. Companion receiver rollout must coordinate the
+compatible Theme/DMs helper versions recorded in the fleet evidence. The tested
+private helper branches are not proof that public plugin distributions contain
+those versions. Stable publication and production upgrades are not authorized.
+
+At the user's request, a separate persistent manual VM was prepared from the
+verified pristine base under `patch-upgrade-040-manual-review`. It has actual
+0.3.7 services/schema47, fresh fake~zod running and~nec stopped, and both sealed
+desktop bundles staged. F5 loads0.4.0; the service update is left to the user.
+Its real Hyprland desktop and stock Omarchy Polkit prompt were inspected; the
+probe was canceled without authorizing an update. The guest config was backed up.
+No host desktop config or existing plugin was changed. The local viewer is6084,
+with its own unit/IPC; no external guest NIC exists. The launcher can only resume
+or gracefully stop this disk and enforces40GiB aggregate/4GiB own allocation.
+
+The approved temporary48GiB allowance is no longer needed: new completed test
+VMs, native fixture piers, compiler cache, superseded unpublished candidates and
+redundant build/download copies were retired with manifests. Compact results and
+hashes remain. Charged storage with the new running review VM was39.485GiB before
+small verification downloads, which were also retired. Both existing DEV roots,
+all historical/manual environments, protected ships and production remain intact.

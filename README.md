@@ -1,5 +1,10 @@
 # Omabit
 
+**0.4.0 candidate:** fleet URLs, Agent Help, app development permissions and
+RAM/CPU controls are in release qualification. See the
+[candidate notes and review scope](docs/release-0.4.0.md). Stable remains0.3.7
+until the reviewed release is published.
+
 **New in 0.3.7** — Set up an Arch/Omarchy host with missing native prerequisites
 in one authorized step. The desktop also supports key-file selection on the
 panel and verified recovery from a mistyped first-boot identity.
