@@ -74,7 +74,7 @@ func (r *Server) serveProjectAction(w http.ResponseWriter, q *http.Request, acto
 		r.respondError(w, bad("require a supported explicit project action and its exact member selection"))
 		return
 	}
-	if !slices.Contains(r.projectActionFeatures(), feature) {
+	if !replay && !slices.Contains(r.projectActionFeatures(), feature) {
 		r.respondError(w, &fault{409, protocol.APIError{Code: "project_action_unsupported", Message: "this runner backend does not support the selected project action"}})
 		return
 	}

@@ -97,8 +97,8 @@ func bridgeRequest(ctx context.Context, reader *bufio.Reader, limited *io.Limite
 	if err != nil {
 		return true, err
 	}
-	if replayOnly && (req.Method != http.MethodPost || req.URL.Path != "/v1/instances" && req.URL.Path != "/v1/comets" && req.URL.Path != "/v1/ships") {
-		return true, errors.New("creation-replay-only header requires a creation endpoint")
+	if replayOnly && !protocol.ReplayOnlyEndpoint(req.Method, req.URL.Path) {
+		return true, errors.New("replay-only header requires a guarded receipt endpoint")
 	}
 	grant, err := Load(keys, id)
 	if err != nil || !grant.Allows(req.Method, req.URL.Path) {
