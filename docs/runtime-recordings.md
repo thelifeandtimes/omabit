@@ -307,3 +307,11 @@ header-inclusive admission. The original2 writer/reader rehearsal is prepared in
 until that exact clean-source gate runs. Indexed seeking, host/ship retention,
 independent capture worker, real Docker/Vere, API/UI and installed qualification
 remain required. No installed recording or runner schema changes here.
+
+The [actual original2 writer/reader rehearsal](diagnostics/2026-11-18-recording-segments3-source-upgrade.json)
+now passes for frozen2b5af45. Repeated new-reader reopen/paging preserve every
+original2 file byte, legacy continuation refuses unchanged, and the actual old
+reader refuses the rotated/continued metadata3 store without changing it. A
+retained original-writer fixture and source/helper pins keep that boundary in
+focused tests. This supersedes the preceding compatibility deferral for these
+exact source artifacts; runtime/native/installed gates remain unqualified.

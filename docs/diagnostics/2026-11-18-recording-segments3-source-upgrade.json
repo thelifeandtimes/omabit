@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "passed": true,
+  "original_source": "2eb1b67a7e42ac8eb8ae428ac9092cbd61a50507",
+  "candidate_source": "2b5af454b965c25d85863cfa4a56898201d4d392",
+  "original_writer_sha256": "f6c51e94537e62031c0e29b1bf867bcef65eab7b5a4d518604aa6e895884e335",
+  "candidate_sha256": "ec56b4a54cf5ede70d840b5ec916cb0307d19f28277ac305d92ed86a94b60f6e",
+  "declared_helper_sha256": "91729f9f85fc9300b463175e198eaac326b4a1696f2b2a09436c91e7fec1538f",
+  "original_source_manifest_sha256": "908608c7e5d76e33d36a6010e85a7569bb07b21b38d9911bf7ada2d923f23f2d",
+  "original_reads_byte_preserved": true,
+  "old_reader_refused_successor_unchanged": true,
+  "legacy_continuation_refused_without_write": true,
+  "scope": "source-only original2/candidate3 segment storage and refusal; no Docker capture, lifecycle, installed upgrade, retention, UI or stable qualification",
+  "original_writer_files": {
+    "11111111111111111111111111111111/frames.obr": "5689c1aa528a43a084fef1b3337a8287c2e871bb486988282e70602608b9d3b9",
+    "11111111111111111111111111111111/metadata.json": "f8c95b362ab275552519d8c229139ad9ab6ac9ecef2a8ab901d2599a31fe8c97",
+    "11111111111111111111111111111111/writer.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "successor_files": {
+    "11111111111111111111111111111111/frames-00000002.obr": "45dba04c254c6b06650b592b3fa4510ad86e998a731260ad716006c391baff3e",
+    "11111111111111111111111111111111/frames-00000003.obr": "58096c3bedd484bed6b9c7aac1e23046539952202d4c8ed313b962590c17f336",
+    "11111111111111111111111111111111/frames.obr": "f7811f36a1c7f72f6e7b869b6919e074efd073568e05a31a25b7a6eb183def14",
+    "11111111111111111111111111111111/metadata.json": "07385f6f9d45ba41ee0183644fc316d5a0c980d276749923f775d8be98c9e0f1",
+    "11111111111111111111111111111111/writer.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "unchanged_original_binary_encoding": true,
+  "metadata2_single_segment_retained": true,
+  "metadata3_rotation_and_restart_gap": true,
+  "production_or_dev_changed": false,
+  "exclusions": [
+    "No Docker/Vere capture or worker lifecycle",
+    "No installed upgrade, public API/UI, retention/pins or stable qualification"
+  ]
+}

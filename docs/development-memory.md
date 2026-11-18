@@ -11213,3 +11213,17 @@ checks the additional header admission. The actual original2 writer/reader
 compatibility rehearsal is prepared but not yet run. No capture worker, index,
 retention/pins, Docker/Vere, public API/UI or installed qualification is claimed.
 No installed schema, namespace, ship or runtime is changed.
+
+## M646 — Qualify the actual original2 reader/writer boundary (2026-11-18)
+
+Supersedes M645's actual-format compatibility deferral for frozen2b5af45.
+The declared source-only rehearsal builds unchanged2eb1b67 production sources
+with its original metadata/identity fixtures and a separately hashed helper.
+Its writer emits populated metadata2 with exact binary/control bytes, stderr,
+gap and exit evidence. The candidate repeatedly reads, pages and reopens it
+without any file change; segmented continuation refuses the original layout.
+The actual old reader refuses the candidate's rotated/continued metadata3 store
+unchanged. Source/helper/binary/file pins and [scoped evidence](diagnostics/2026-11-18-recording-segments3-source-upgrade.json)
+are retained; an actual original2 fixture now runs in ordinary focused tests.
+No Docker/Vere capture, independent worker, retention, API/UI, installed upgrade,
+DEV or stable qualification is implied.
