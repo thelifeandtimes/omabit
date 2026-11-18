@@ -53,7 +53,7 @@ OLD_TEST = OLD_TEST.replace('import(', 'import("encoding/json";"git.thechristoph
 NEW_TEST = r'''package managed
 import("reflect";"testing";"time";"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol")
 func TestStopSchema60Migration(t *testing.T) {
- if StateSchemaVersion<60 || StateSchemaVersion>61 {t.Fatal("unsupported successor schema")}
+ if StateSchemaVersion<60 || StateSchemaVersion>62 {t.Fatal("unsupported successor schema")}
  for n:=0;n<3;n++{s,err:=testOpenStore("/tmp/schema-state");g02Check(t,err);g02Check(t,s.close())}
 }
 func TestStopSchema60Resolution(t *testing.T) {
@@ -95,9 +95,9 @@ run('/current','TestStopSchema60Migration')
 after=rows()
 with sqlite3.connect('file:/tmp/schema-state/runner.sqlite?mode=ro',uri=True) as db:
  target_schema=db.execute('pragma user_version').fetchone()[0]
-assert target_schema in (60,61)
+assert target_schema in (60,61,62)
 expected={'project_stop_reconciliations'}
-if target_schema==61:
+if target_schema>=61:
  expected.update({'grubbery_app_clock','grubbery_app_operations','grubbery_app_events','grubbery_app_leases'})
 assert set(after)-set(before)==expected
 assert all(before[t]==after[t] for t in before),'migration rewrote original state'

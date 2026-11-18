@@ -1,5 +1,28 @@
 # Stable-release upgrade requirement
 
+## Development: native version signals and rejected app writes, schema62
+
+Schema62 fences explicit app plan/journal2 while retaining the schema61 table
+shape and every original plan1/header/event/lease byte. New plans carry a native
+`version` value plus source/epoch/original-request metadata. The first plain-root
+marker uses the pinned native file-make parent behavior, avoiding a separate
+unmarked-root phase. Fresh admission must still refuse existing unowned roots.
+A complete validated native pre-effect rejection is separately retained as
+`refused`; transport errors and5xx never become that evidence. Refused writes
+cannot acquire ownership through later matching content or observation.
+
+Legacy plan1 is retained for saved replay, exact read-only recovery and narrowly
+safe preactivation abandonment. A pending legacy phase cannot be dispatched or
+silently converted into the corrected payload, even with source bytes available.
+Unknown activation remains fenced. The original61 writer fixture and original
+59/60 history preserve all rows and uncertainty across reopen. The actual60 and
+61 readers refuse real populated62 without modifying the closed store; see the
+[source evidence](diagnostics/2026-11-18-grubbery-app-store62-migration.json).
+These gates extend development source evidence only. Matching final artifacts,
+native corrected source following/state tests, installed upgrade and preserved
+DEV qualification remain required; published releases and support pins stay
+unchanged. Never relabel a user database or edit old receipts to downgrade.
+
 ## Development: immutable app phase journals, schema61
 
 Schema61 transactionally adds Grubbery app creation order, immutable intent

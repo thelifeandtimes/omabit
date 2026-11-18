@@ -41,4 +41,6 @@ package managed
 // process bindings. Earlier readers must refuse rather than ignore resolution.
 // Schema61 retains immutable Grubbery app phase journals and namespace leases.
 // Opening never dispatches; older writers must refuse the new format.
-const StateSchemaVersion = 61
+// Schema62 fences app plan/journal2, native-readable version values and known
+// pre-effect refusal. Legacy plan1 receipts stay read-only and byte-preserved.
+const StateSchemaVersion = 62

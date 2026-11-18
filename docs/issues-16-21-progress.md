@@ -17,15 +17,16 @@ are recorded in [experiment isolation](experiment-isolation.md).
 | #21 app preflight/deployment mismatch | Selected runner Hello/build/role and separate missing API/adapter/policy results; pre-boot skill routing; inert no-write/identity/scope tests | Matching DEV artifacts, original-state preservation, actual minimal native app operation; original incident runner remains unproven |
 
 The internal Grubbery coordinator now retains exact app phases, transactional
-namespace leases and safe preactivation abandonment in schema61, with original
-59/60 preservation and genuine60-reader refusal. Native/public app dispatch is
+namespace leases and safe preactivation abandonment in schema62. Native-readable plan2 retains old plans as read-only; known
+rejection stays distinct from uncertainty. Original59/60/61 preservation and
+genuine60/61-reader refusal pass. Native/public app dispatch is
 still pending. The pinned Grubbery source contract has shared offline metadata and exact confined
 verification, with real CLI/stdio parity. Native bootstrap now passes after exact
 original-scaffold export/adoption; its timed-out activation resolves read-only
 without a second install. App workflow qualification and four nested shell-tool
 failures remain separate; see [the boundary](grubbery-adapter.md).
 
-Source/native checkpoints are documented in M579–M609. The shared interface's
+Source/native checkpoints are documented in M579–M612. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or

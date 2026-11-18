@@ -28,6 +28,8 @@ type Backend interface {
 	Admit(context.Context, Plan, Step) (Review, error)
 	// Dispatch makes exactly one typed native call. It must not retry, redirect
 	// or accept arbitrary URLs/commands. Source/cache identity is already checked.
+	// ErrNativeRejected requires a complete, validated native pre-effect refusal
+	// plus its response digest. Transport errors and5xx are never that evidence.
 	Dispatch(context.Context, Plan, Step, Request) (string, error)
 	// nil proof means not established yet. Repeated failed reads do not append
 	// duplicate events or resubmit effects. Errors never become after-evidence.
@@ -160,6 +162,9 @@ func (e Execution) Advance(ctx context.Context, c Call) (Record, error) {
 	if state != "pending" || r.Abandoned() {
 		return r, nil
 	}
+	if r.Plan.Version != 2 {
+		return r, ErrLegacyPlan
+	}
 	step, complete, err := r.Current()
 	if err != nil {
 		return Record{}, err
@@ -196,6 +201,9 @@ func (e Execution) Advance(ctx context.Context, c Call) (Record, error) {
 		return r, nil
 	}
 	response, sendErr := e.Backend.Dispatch(ctx, r.Plan, step, request)
+	if errors.Is(sendErr, ErrNativeRejected) && digest.MatchString(response) {
+		return e.append(ctx, c, r, Event{StepID: step.ID, State: "refused", At: e.now(), ResponseDigest: response, Reason: "native-rejected"})
+	}
 	if sendErr != nil || !digest.MatchString(response) {
 		return e.append(ctx, c, r, Event{StepID: step.ID, State: "uncertain", At: e.now(), Reason: "transport-outcome-unknown"})
 	}
@@ -226,7 +234,7 @@ func (e Execution) Reconcile(ctx context.Context, c Call) (Record, error) {
 	if err != nil {
 		return Record{}, err
 	}
-	if r.Abandoned() || state == "observed" || state == "pending" {
+	if r.Abandoned() || state == "refused" || state == "observed" || state == "pending" {
 		return r, nil
 	}
 	step, complete, err := r.Current()

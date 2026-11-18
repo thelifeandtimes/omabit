@@ -124,7 +124,7 @@ func TestGrubberyOriginal60MigrationPreservesEveryRowAndExactResolution(t *testi
 		var version, clock int
 		g02Check(t, s.db.QueryRow("PRAGMA user_version").Scan(&version))
 		g02Check(t, s.db.QueryRow("SELECT ordinal FROM grubbery_app_clock").Scan(&clock))
-		if version != 61 || clock != 0 {
+		if version != StateSchemaVersion || clock != 0 {
 			t.Fatal("migration invented app history")
 		}
 		g02Check(t, s.close())

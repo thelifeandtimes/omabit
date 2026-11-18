@@ -274,7 +274,7 @@ func (j grubberyJournal) Load(ctx context.Context, id string) (grubbery.Record, 
 	return loadGrubberyRecord(tx, id)
 }
 func (j grubberyJournal) Create(ctx context.Context, r grubbery.Record) (grubbery.Record, error) {
-	if r.Validate() != nil || r.Revision != 0 || r.Plan.Binding.Mode != j.s.mode || r.Plan.Binding.RunnerID != j.s.runnerID {
+	if r.Validate() != nil || r.Version != 2 || r.Revision != 0 || r.Plan.Binding.Mode != j.s.mode || r.Plan.Binding.RunnerID != j.s.runnerID {
 		return grubbery.Record{}, grubbery.ErrConflict
 	}
 	tx, err := j.s.db.BeginTx(ctx, nil)
@@ -359,6 +359,9 @@ func (j grubberyJournal) Append(ctx context.Context, id string, revision uint64,
 	}
 	if r.Revision != revision {
 		return r, grubbery.ErrCAS
+	}
+	if r.Version != 2 && event.State == "dispatched" {
+		return r, grubbery.ErrLegacyPlan
 	}
 	if r.Plan.Binding.RunnerID != j.s.runnerID || r.Plan.Binding.Mode != j.s.mode {
 		return r, grubbery.ErrConflict

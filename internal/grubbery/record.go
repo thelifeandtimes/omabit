@@ -6,16 +6,18 @@ import (
 )
 
 var (
-	ErrAbandoned     = errors.New("app operation was abandoned before activation")
-	ErrMissing       = errors.New("app operation not found")
-	ErrConflict      = errors.New("app operation binding changed")
-	ErrPhase         = errors.New("select the exact original app phase in saved progress")
-	ErrHistory       = errors.New("app operation history changed")
-	ErrCAS           = errors.New("app operation revision changed")
-	ErrNamespaceBusy = errors.New("app namespace has another unfinished operation")
-	ErrAdmission     = errors.New("app phase was not admitted")
-	ErrSource        = errors.New("exact staged app source is unavailable")
-	ErrJournal       = errors.New("app phase journal outcome is unconfirmed; read original saved progress")
+	ErrLegacyPlan     = errors.New("legacy app plan is read-only; preserve its receipt and review preactivation abandonment")
+	ErrNativeRejected = errors.New("native request rejected before its effect")
+	ErrAbandoned      = errors.New("app operation was abandoned before activation")
+	ErrMissing        = errors.New("app operation not found")
+	ErrConflict       = errors.New("app operation binding changed")
+	ErrPhase          = errors.New("select the exact original app phase in saved progress")
+	ErrHistory        = errors.New("app operation history changed")
+	ErrCAS            = errors.New("app operation revision changed")
+	ErrNamespaceBusy  = errors.New("app namespace has another unfinished operation")
+	ErrAdmission      = errors.New("app phase was not admitted")
+	ErrSource         = errors.New("exact staged app source is unavailable")
+	ErrJournal        = errors.New("app phase journal outcome is unconfirmed; read original saved progress")
 )
 
 // Review is produced only by a trusted admission adapter after current role,
@@ -86,10 +88,13 @@ func utcTime(at time.Time) bool {
 func eventDigest(e Event) string { e.Digest = ""; return hash([]byte(textJSON(e))) }
 
 func NewRecord(p Plan, at time.Time) (Record, error) {
+	if p.Version != 2 {
+		return Record{}, ErrLegacyPlan
+	}
 	if p.ValidateMetadata() != nil || !utcTime(at) {
 		return Record{}, ErrHistory
 	}
-	r := Record{Version: 1, Plan: p, CreatedAt: at.UTC(), Events: []Event{}}
+	r := Record{Version: 2, Plan: p, CreatedAt: at.UTC(), Events: []Event{}}
 	r.HeaderDigest = recordHeader(r)
 	return r, nil
 }
@@ -97,7 +102,7 @@ func NewRecord(p Plan, at time.Time) (Record, error) {
 // Validate keeps the immutable plan and each previous event hash bound. Clock
 // corrections do not reorder history: sequence/CAS and the digest chain do.
 func (r Record) Validate() error {
-	if r.Version != 1 || r.Plan.ValidateMetadata() != nil || !utcTime(r.CreatedAt) || r.HeaderDigest != recordHeader(r) || r.Events == nil || len(r.Events) > 1024 || r.Revision != uint64(len(r.Events)) {
+	if (r.Version != 1 && r.Version != 2) || r.Plan.Version != r.Version || r.Plan.ValidateMetadata() != nil || !utcTime(r.CreatedAt) || r.HeaderDigest != recordHeader(r) || r.Events == nil || len(r.Events) > 1024 || r.Revision != uint64(len(r.Events)) {
 		return ErrHistory
 	}
 	states := make([]string, len(r.Plan.Steps))
@@ -141,6 +146,10 @@ func (r Record) Validate() error {
 			}
 		case "acknowledged":
 			if before != "dispatched" || event.Review != nil || event.Proof != nil || !digest.MatchString(event.ResponseDigest) || event.Reason != "" {
+				return ErrHistory
+			}
+		case "refused":
+			if r.Version != 2 || before != "dispatched" || event.Review != nil || event.Proof != nil || !digest.MatchString(event.ResponseDigest) || event.Reason != "native-rejected" {
 				return ErrHistory
 			}
 		case "uncertain":

@@ -10,6 +10,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 
@@ -36,7 +37,7 @@ def source_inputs():
 
 
 CAPSULE = r'''
-import hashlib,json,sqlite3,subprocess
+import hashlib,json,sqlite3,subprocess,os
 from contextlib import closing
 from pathlib import Path
 p=Path('/tmp/schema-state/runner.sqlite')
@@ -56,7 +57,8 @@ run('/writer60','TestAppOriginal60Writer')
 version,before=snapshot();assert version==60
 original_hashes=hashes()
 run('/candidate','TestGrubberyOriginal60MigrationRehearsal')
-version,after=snapshot();assert version==61
+expected=int(os.environ["OMABIT_TEST_APP_TARGET_SCHEMA"])
+version,after=snapshot();assert version==expected
 for table,rows in before.items():
  assert all(row in after[table] for row in rows),'original row changed: '+table
 assert len(after['grubbery_app_operations'])==1
@@ -68,7 +70,12 @@ run('/writer60','TestAppOriginal60ReaderRefuses')
 after_reader=hashes()
 Path('/tmp/after-old-reader.json').write_text(json.dumps(after_reader,indent=2)+'\n')
 assert after_reader==frozen,'old reader changed successor files'
-Path('/tmp/verification.json').write_text(json.dumps({'passed':True,'original_schema':60,'target_schema':61,'original_tables_preserved':sorted(before),'populated_app_journal':True,'original_uncertainty_preserved_across_reopen':True,'actual_old_reader_refused_unchanged':True,'original_file_hashes':original_hashes,'successor_file_hashes':frozen,'scope':'synthetic source journal migration only; no native dispatch, installed service or production state'},indent=2)+'\n')
+if expected>=62:
+ result=subprocess.run(['/writer61','-test.run=^TestGrubberyOriginal60MigrationRehearsal$','-test.count=1','-test.timeout=90s'],capture_output=True,text=True,cwd='/source60/internal/managed')
+ Path('/tmp/original61-reader-refusal.log').write_text(result.stdout+result.stderr)
+ assert result.returncode!=0 and 'state database requires compatible runner support (schema 61)' in result.stdout+result.stderr,'original61 did not refuse at its real schema gate'
+ assert hashes()==frozen,'original61 changed successor files'
+Path('/tmp/verification.json').write_text(json.dumps({'passed':True,'original_schema':60,'target_schema':expected,'original_tables_preserved':sorted(before),'populated_app_journal':True,'original_uncertainty_preserved_across_reopen':True,'actual_old_reader_refused_unchanged':True,'actual61_reader_refused_unchanged':expected>=62,'original_file_hashes':original_hashes,'successor_file_hashes':frozen,'scope':'synthetic source journal migration only; no native dispatch, installed service or production state'},indent=2)+'\n')
 '''
 
 
@@ -76,10 +83,21 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--old-writer', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--old61-reader', type=Path)
     p.add_argument('--budget-gib', type=int, choices=(40, 48), default=40)
     a = p.parse_args()
     old = ordinary(a.old_writer)
     manifest = json.loads((FIXTURE / 'manifest.json').read_text())
+    match=re.search(r'^const StateSchemaVersion = ([0-9]+)$',(ROOT/'internal/managed/schema.go').read_text(),re.MULTILINE)
+    if not match or int(match.group(1)) not in (61,62):
+        raise ValueError('explicit successor schema contract required')
+    target=int(match.group(1))
+    old61=None
+    if target>=62:
+        if a.old61_reader is None: raise ValueError('actual original61 reader required')
+        old61=ordinary(a.old61_reader)
+        old61_manifest=json.loads((ROOT/'internal/managed/testdata/grubbery-app-original61/manifest.json').read_text())
+        if sha(old61)!=old61_manifest['writer_binary_sha256']: raise ValueError('require exact frozen actual61 reader')
     if sha(old) != manifest['writer_binary_sha256']:
         raise ValueError('require the exact frozen actual60 writer')
     # Its historical fixture dependencies are byte-identical, independently of
@@ -108,10 +126,13 @@ def main():
     capsule = out / 'capsule.py'
     capsule.write_text(CAPSULE)
     command = ['bwrap', '--unshare-all', '--die-with-parent', '--clearenv', '--ro-bind', '/usr', '/usr', '--symlink', 'usr/bin', '/bin', '--symlink', 'usr/lib', '/lib', '--symlink', 'usr/lib', '/lib64', '--proc', '/proc', '--dev', '/dev', '--dir', '/etc', '--tmpfs', '/run', '--bind', str(scratch), '/tmp', '--ro-bind', str(old), '/writer60', '--ro-bind', str(candidate), '/candidate', '--ro-bind', str(capsule), '/capsule.py', '--ro-bind', str(dependency), '/source60/internal/managed/testdata/project-stop-recovery', '--setenv', 'HOME', '/tmp', '--setenv', 'PATH', '/usr/bin:/bin', '--setenv', 'LANG', 'C.UTF-8', '--setenv', 'OMABIT_TEST_GRUBBERY_UPGRADE', 'networkless-original60', '--chdir', '/tmp']
+    if old61 is not None:
+        command += ['--ro-bind',str(old61),'/writer61']
+    command += ['--setenv','OMABIT_TEST_APP_TARGET_SCHEMA',str(target)]
     for name in ('passwd', 'group', 'nsswitch.conf', 'hosts'):
         command += ['--ro-bind', '/etc/' + name, '/etc/' + name]
     command += ['--', '/usr/bin/python3', '-B', '/capsule.py']
-    report = {'original_source': manifest['source_commit'], 'candidate_base': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(), 'candidate_go_inputs': before, 'writer_sha256': sha(old), 'candidate_sha256': sha(candidate), 'build_command': build, 'command': command, 'capsule_sha256': sha(capsule), 'storage_admission': admission}
+    report = {'original_source': manifest['source_commit'], 'target_schema':target, 'original61_reader_sha256':sha(old61) if old61 else None, 'candidate_base': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(), 'candidate_go_inputs': before, 'writer_sha256': sha(old), 'candidate_sha256': sha(candidate), 'build_command': build, 'command': command, 'capsule_sha256': sha(capsule), 'storage_admission': admission}
     (out / 'launch.json').write_text(json.dumps(report, indent=2) + '\n')
     with (out / 'test.log').open('w') as log:
         result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, timeout=300)

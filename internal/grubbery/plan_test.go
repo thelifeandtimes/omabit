@@ -189,3 +189,41 @@ func TestOwnedAppUpdateLeavesSavedStateAndPriorCodeUntouched(t *testing.T) {
 		t.Fatal("foreign current release accepted")
 	}
 }
+
+func TestPlan2VersionSignalsPinnedKernelAndBindsOriginalRequest(t *testing.T) {
+	p, _ := plan(t)
+	if p.Version != 2 {
+		t.Fatal("new plans must use explicit generation2")
+	}
+	for _, step := range p.Steps {
+		if step.Kind == "make-file" && strings.HasSuffix(step.Path, "/version.json") {
+			var marker struct {
+				Version      string `json:"version"`
+				Epoch        uint64 `json:"epoch"`
+				SourceDigest string `json:"source_digest"`
+				RequestID    string `json:"request_id"`
+			}
+			if json.Unmarshal([]byte(step.ControlJSON), &marker) != nil || marker.Version == "" || marker.Epoch != p.Epoch || marker.SourceDigest != p.Source.Manifest.Digest || marker.RequestID != p.RequestID || !strings.Contains(marker.Version, p.RequestID) {
+				t.Fatal("version cannot signal the pinned native +version-text", step.ControlJSON)
+			}
+			return
+		}
+	}
+	t.Fatal("controller version marker missing")
+}
+
+func TestPlan2ClaimsPlainRootWithItsFirstNativeMarkerWrite(t *testing.T) {
+	p, files := plan(t)
+	n, err := p.Binding.Namespace()
+	if err != nil {
+		t.Fatal(err)
+	}
+	first := p.Steps[0]
+	if first.Kind != "make-file" || first.Path != n.SourceRoot+"/omabit-owner.json" {
+		t.Fatal("plan2 creates an unmarked plain root interval", first)
+	}
+	q, err := p.Request(first.ID, files)
+	if err != nil || q.Method != "PUT" || q.Path != "/grubbery/api/make"+first.Path || q.Query != "" {
+		t.Fatal("atomic marker call changed", q, err)
+	}
+}

@@ -103,7 +103,7 @@ type phaseBackend struct {
 	mu                                   sync.Mutex
 	applied                              map[string]bool
 	admissions, dispatches, observations atomic.Int32
-	deny, lost, hide, wrong              atomic.Bool
+	deny, lost, hide, wrong, reject      atomic.Bool
 	before                               func()
 }
 
@@ -131,6 +131,9 @@ func (b *phaseBackend) Dispatch(ctx context.Context, p grubbery.Plan, s grubbery
 		return "", errors.New("native call changed source/target/phase")
 	}
 	b.dispatches.Add(1)
+	if b.reject.Load() {
+		return hashValue("known-pre-effect-rejection:" + s.ID), grubbery.ErrNativeRejected
+	}
 	b.mu.Lock()
 	b.applied[s.ID] = true
 	b.mu.Unlock()
@@ -461,5 +464,51 @@ func TestMetadataReplaySurvivesMissingCacheButNeverAuthorizesChangedBytes(t *tes
 	files[0].Bytes = []byte(`{"other":"/state"}`)
 	if clone.ValidateMetadata() != nil || clone.Validate(files) == nil {
 		t.Fatal("changed source was authorized by a metadata-only check")
+	}
+}
+
+func TestKnownPreEffectRefusalNeverReconcilesByLaterMatchingContent(t *testing.T) {
+	e, c, _, j, b, loads := execution(t)
+	ctx := context.Background()
+	b.reject.Store(true)
+	r, err := e.Advance(ctx, c)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if state, _ := r.State(c.StepID); state != "refused" {
+		t.Fatal("known rejection became uncertainty")
+	}
+	if b.observations.Load() != 0 {
+		t.Fatal("known refusal acquired after-evidence")
+	}
+	before := copyRecord(r)
+	calls := b.dispatches.Load()
+	reads := loads.Load()
+	// A subsequent foreign writer can create identical-looking content. That
+	// cannot resolve this operation's known rejected write into native ownership.
+	b.mu.Lock()
+	b.applied[c.StepID] = true
+	b.mu.Unlock()
+	for _, f := range []func(context.Context, grubbery.Call) (grubbery.Record, error){e.Advance, e.Reconcile} {
+		got, err := f(ctx, c)
+		if err != nil || !reflect.DeepEqual(before, got) {
+			t.Fatal("known rejection became adoption", err)
+		}
+	}
+	if b.dispatches.Load() != calls || b.observations.Load() != 0 || loads.Load() != reads {
+		t.Fatal("refused replay acquired source/runtime authority")
+	}
+	e.Backend = nil
+	e.LoadSource = nil
+	r, err = e.Abandon(ctx, c)
+	if err != nil || !r.Abandoned() {
+		t.Fatal("known no-effect refusal retained a lease", err)
+	}
+	own, err := grubbery.DeriveOwnership([]grubbery.Record{r})
+	if err != nil || own.SourceOrigin != nil || own.PendingRequestID != "" {
+		t.Fatal("known rejected write created ownership", err)
+	}
+	if _, err = j.Load(ctx, c.RequestID); err != nil {
+		t.Fatal("original refusal removed", err)
 	}
 }

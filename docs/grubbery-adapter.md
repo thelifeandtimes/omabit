@@ -83,7 +83,7 @@ verified full source commit, one cold activation with a lost reply resolved only
 by observation, live declared agents, authenticated kernel diagnostics, no mount
 and clean shutdown. The root `/code` report has1335files and0build failures.
 The runtime separately reports4failures in `/apps/shell/tools/code`; that nested
-namespace was not individually inspected. This supersedes only the preceding
+namespace was not individually inspected by that bootstrap case. This supersedes only the preceding
 continuation deferral. The remaining app/permit/route/served-byte/restart/peer and
 installed gates still apply, and preflight remains unavailable.
 
@@ -94,3 +94,17 @@ abandonment that preserves staging and live state. [Source migration checks](dia
 use actual original60 and retained59 fixtures. A real process exit after dispatch
 commit preserves that original fence on reopen. These gates qualify the journal,
 not native namespace observations, public app API or a working Grubbery app.
+
+The later [first native app contract case](diagnostics/2026-11-18-grubbery-app-contract-first-capsule.json)
+confirms a single file make creates its plain parent and marker, and the tiny
+local state nexus compiles with the framework-generated marks. It fails source
+following with a null version: the draft marker omitted the `version` value that
+pinned +version-text requires. Preserve that failed result and exact old plan;
+correct it through an explicit successor generation before app dispatch.
+
+The same kernel diagnostic identifies the four nested failures: `lib/pytz.hoon`,
+its dependent `lib/rules.hoon` and `lib/calendar.hoon`, plus the incompatible extra
+`to-lines` arm in `lib/tools/read-terminal.hoon`. They remain unavailable in this
+pin. This is not permission to alter the pinned framework or treat those tools
+as working. State updates, permits, routes, served bytes, restarts and peers still
+need their own qualification; source compilation does not establish them.

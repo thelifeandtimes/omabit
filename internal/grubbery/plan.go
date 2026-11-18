@@ -79,10 +79,13 @@ func NewPlan(binding Binding, stageID, requestID string, manifest deskwork.Manif
 	if err != nil {
 		return Plan{}, err
 	}
-	return reviewedPlan(binding, stageID, requestID, source, before)
+	return reviewedPlanVersion(2, binding, stageID, requestID, source, before)
 }
 
-func reviewedPlan(binding Binding, stageID, requestID string, source Source, before Before) (Plan, error) {
+func reviewedPlanVersion(version int, binding Binding, stageID, requestID string, source Source, before Before) (Plan, error) {
+	if version != 1 && version != 2 {
+		return Plan{}, ErrLegacyPlan
+	}
 	var out Plan
 	n, err := binding.Namespace()
 	if err != nil || !digest.MatchString(stageID) || !digest.MatchString(requestID) || !digest.MatchString(before.SnapshotDigest) || before.Epoch > 1<<53-2 {
@@ -115,7 +118,7 @@ func reviewedPlan(binding Binding, stageID, requestID string, source Source, bef
 	if release == before.ReleaseRoot {
 		return out, errors.New("original app request already names current source; read its saved operation")
 	}
-	out = Plan{Version: 1, Adapter: HTTPContract, Binding: binding, StageID: stageID, RequestID: requestID, Source: source, Before: before, Epoch: before.Epoch + 1, Steps: []Step{}}
+	out = Plan{Version: version, Adapter: HTTPContract, Binding: binding, StageID: stageID, RequestID: requestID, Source: source, Before: before, Epoch: before.Epoch + 1, Steps: []Step{}}
 	add := func(kind, p, source, body, expected string) {
 		step := Step{Kind: kind, Path: p, SourcePath: source, ControlJSON: body}
 		if body != "" {
@@ -128,7 +131,12 @@ func reviewedPlan(binding Binding, stageID, requestID string, source Source, bef
 		out.Steps = append(out.Steps, step)
 	}
 	if before.SourceState == "absent" {
-		add("make-directory", n.SourceRoot, "", "{}", "")
+		if version == 1 {
+			add("make-directory", n.SourceRoot, "", "{}", "")
+		}
+		// The pinned fresh-kernel contract proves that file make creates plain
+		// parents with its marker in the same native call. Avoid an unmarked root
+		// interval in plan2. Admission must still refuse any existing unowned root.
 		add("make-file", n.SourceRoot+"/omabit-owner.json", "", owner, "")
 	}
 	add("make-directory", path.Dir(release), "", "{}", "")
@@ -160,11 +168,22 @@ func reviewedPlan(binding Binding, stageID, requestID string, source Source, bef
 		add("make-file", release+"/"+file.Path, file.Path, "", file.SHA256)
 	}
 	add("observe-code", release, "", "", "")
-	version := textJSON(struct {
+	versionBody := textJSON(struct {
 		Epoch        uint64 `json:"epoch"`
 		SourceDigest string `json:"source_digest"`
 	}{out.Epoch, source.Manifest.Digest})
-	add("make-file", release+"/version.json", "", version, "")
+	if version == 2 {
+		// The pinned kernel's +version-text requires the 'version' value. Epoch
+		// and digest alone do not signal a release. Retain the exact old plan1
+		// constructor for historical validation; never rewrite its payload.
+		versionBody = textJSON(struct {
+			Version      string `json:"version"`
+			Epoch        uint64 `json:"epoch"`
+			SourceDigest string `json:"source_digest"`
+			RequestID    string `json:"request_id"`
+		}{"omabit:" + requestID, out.Epoch, source.Manifest.Digest, requestID})
+	}
+	add("make-file", release+"/version.json", "", versionBody, "")
 	if before.DeskState == "absent" {
 		add("make-directory", n.DeskRoot, "", `{"neck":"/desk"}`, "")
 		add("make-file", n.DataRoot+"/omabit-owner.json", "", owner, "")
@@ -174,7 +193,7 @@ func reviewedPlan(binding Binding, stageID, requestID string, source Source, bef
 	add("poke-source", n.DeskRoot+"/source.json", "", textJSON(struct {
 		Code string `json:"code"`
 	}{release}), "")
-	add("observe-followed-source", n.DeskRoot+"/version.json", "", "", hash([]byte(version)))
+	add("observe-followed-source", n.DeskRoot+"/version.json", "", "", hash([]byte(versionBody)))
 	contextHash := hash([]byte(textJSON(struct {
 		Binding                          Binding
 		StageID, RequestID, SourceDigest string
@@ -195,7 +214,7 @@ func reviewedPlan(binding Binding, stageID, requestID string, source Source, bef
 // ValidateMetadata verifies an already attested plan without requiring a source
 // cache or contacting a runtime. Pending writes additionally require Validate.
 func (p Plan) ValidateMetadata() error {
-	want, err := reviewedPlan(p.Binding, p.StageID, p.RequestID, p.Source, p.Before)
+	want, err := reviewedPlanVersion(p.Version, p.Binding, p.StageID, p.RequestID, p.Source, p.Before)
 	if err != nil || textJSON(want) != textJSON(p) {
 		return errors.New("saved app plan metadata changed")
 	}
@@ -203,6 +222,9 @@ func (p Plan) ValidateMetadata() error {
 }
 
 func (p Plan) Validate(files []deskwork.SourceFile) error {
+	if p.Version != 2 {
+		return ErrLegacyPlan
+	}
 	want, err := NewPlan(p.Binding, p.StageID, p.RequestID, p.Source.Manifest, files, p.Before)
 	if err != nil || textJSON(want) != textJSON(p) {
 		return errors.New("app deployment plan or staged source changed")
@@ -220,8 +242,8 @@ type Request struct {
 
 func (p Plan) Request(stepID string, files []deskwork.SourceFile) (Request, error) {
 	var out Request
-	if p.Validate(files) != nil {
-		return out, errors.New("changed app deployment plan")
+	if err := p.Validate(files); err != nil {
+		return out, err
 	}
 	var selected *Step
 	for i := range p.Steps {

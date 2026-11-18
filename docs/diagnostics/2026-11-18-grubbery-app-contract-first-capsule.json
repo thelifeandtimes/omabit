@@ -1,0 +1,119 @@
+{
+  "format": 1,
+  "date": "2026-11-18",
+  "scope": "first fresh native app contract experiment; synthetic lifecycle; not a supported product adapter",
+  "source_commit": "8a2d030f44fbdfdd4330262f6da0ef0af7aedae3",
+  "workflow_sha256": "26c942d6ee93b33994725dc6c14801b55de14d18d863716f1f829b56aa6e0952",
+  "framework_commit": "7f7701d546ce115eea5f37f66465b362cb121774",
+  "framework_source_digest": "7d2ae430acd4868bb56268188dff57addcdf4520abcc7aabaa6b9a342b22febc",
+  "vere_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+  "pill_sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+  "passed": false,
+  "bootstrap_passed": true,
+  "clean_shutdown": true,
+  "atomic_plain_parent_marker_observed": true,
+  "candidate_source_manifest": {
+    "version": 1,
+    "files": [
+      {
+        "path": "bill.json",
+        "sha256": "53230be82383539af089e644cabac86f9c66dfbbd89dbc22471b23c70039749b",
+        "bytes": 18
+      },
+      {
+        "path": "nex/state.hoon",
+        "sha256": "be5212ea7b0fdbf49c99dd10d8d1b8842c07f59ca9ff5a7d615c9e347037087c",
+        "bytes": 731
+      }
+    ],
+    "digest": "126120ed3e18a908d03a0c2d72eb557c8896dc1ff25f890bcfac105b434b7cd9"
+  },
+  "candidate_compilation": {
+    "failed": 0,
+    "total": 6,
+    "namespace": "fresh private release code namespace",
+    "files": [
+      {
+        "status": "mime",
+        "source": "/bill.json",
+        "error": null
+      },
+      {
+        "status": "vase",
+        "source": "/mar/hoon.hoon",
+        "error": null
+      },
+      {
+        "status": "vase",
+        "source": "/mar/kelvin.hoon",
+        "error": null
+      },
+      {
+        "status": "vase",
+        "source": "/mar/mime.hoon",
+        "error": null
+      },
+      {
+        "status": "vase",
+        "source": "/mar/tang.hoon",
+        "error": null
+      },
+      {
+        "status": "vase",
+        "source": "/nex/state.hoon",
+        "error": null
+      }
+    ]
+  },
+  "failed_at": "followed-version observation",
+  "observed_followed_version": "null",
+  "source_review": "Pinned +version-text requires an object version value; the first prototype only supplied epoch/source_digest. Null following is consistent with that defect; a corrected native case remains required.",
+  "nested_tool_failures": [
+    {
+      "status": "tang",
+      "source": "/lib/calendar.hoon",
+      "error": [
+        "/lib/rules.hoon",
+        "dep failed in /lib/calendar.hoon:"
+      ]
+    },
+    {
+      "status": "tang",
+      "source": "/lib/pytz.hoon",
+      "error": [
+        "/lib/pytz.hoon:<[4 1].[283 3]>",
+        "/lib/pytz.hoon:<[5 3].[16 34]>",
+        "/lib/pytz.hoon:<[5 27].[5 41]>"
+      ]
+    },
+    {
+      "status": "tang",
+      "source": "/lib/rules.hoon",
+      "error": [
+        "/lib/pytz.hoon",
+        "dep failed in /lib/rules.hoon:"
+      ]
+    },
+    {
+      "status": "tang",
+      "source": "/lib/tools/read-terminal.hoon",
+      "error": [
+        "/lib/tools/read-terminal.hoon::[25 1].[137 3]>",
+        "/lib/tools/read-terminal.hoon::[26 1].[137 3]>",
+        "/lib/tools/read-terminal.hoon::[27 1].[137 3]>",
+        "core-number-of-arms.exp=5.hav=6",
+        "missing.~",
+        "extra.~[%to-lines]",
+        "have.~[%handler %name %required %parameters %description %to-lines]",
+        "core-nice"
+      ]
+    }
+  ],
+  "proof_sha256": "69be2380d91ecdfa6bae4cdc295e37c2f62a7b45ad4f466354bf4e1f4e853806",
+  "result_sha256": "07a8fd1d7fd5779810bcadd79aa80a2492d6b91ef04ac698427cb4f582138b2d",
+  "not_qualified": [
+    "app source following and retained state",
+    "permits, aliases, routes, served bytes and peers",
+    "public managed adapter, installed upgrade or DEV deployment"
+  ]
+}

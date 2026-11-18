@@ -141,7 +141,7 @@ func TestFailedCompileAbandonsOnlyAfterAllOriginalWritesAndMarkersObserved(t *te
 	}
 }
 func TestAbandonNeverResolvesUnknownWriteOrDispatchedActivation(t *testing.T) {
-	for _, kind := range []string{"initial-directory", "marker", "activation"} {
+	for _, kind := range []string{"first-write", "marker", "activation"} {
 		t.Run(kind, func(t *testing.T) {
 			e, c, p, j, b, _ := execution(t)
 			ctx := context.Background()
@@ -149,7 +149,7 @@ func TestAbandonNeverResolvesUnknownWriteOrDispatchedActivation(t *testing.T) {
 			e.Backend = backend
 			for _, step := range p.Steps {
 				c.StepID = step.ID
-				stop := kind == "initial-directory" || kind == "marker" && step.ID == p.Steps[1].ID || kind == "activation" && step.Kind == "poke-source"
+				stop := kind == "first-write" || kind == "marker" && step.Kind == "make-file" && strings.HasSuffix(step.Path, "/omabit-owner.json") || kind == "activation" && step.Kind == "poke-source"
 				if stop {
 					b.lost.Store(true)
 				}

@@ -57,6 +57,9 @@ func (r Record) abandonable() (bool, bool) {
 		if step.Kind == "poke-source" {
 			return false, false
 		}
+		if state == "refused" {
+			continue
+		}
 		if step.Kind == "observe-code" || step.Kind == "observe-followed-source" {
 			continue
 		}

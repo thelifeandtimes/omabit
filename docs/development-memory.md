@@ -10204,3 +10204,44 @@ helper before retirement, preserving the actual old60 writer, fixture and source
 commit. The unchanged frozen app experiment then admitted within48GiB. It is the
 only active runtime case. Its result remains pending; preserve the original run
 and do not infer app behavior from bootstrap progress or source review.
+
+## M612 — Correct version signals without rewriting legacy app intents (2026-11-18)
+
+The first frozen app-contract capsule ends failed with clean shutdown. Exact
+framework bootstrap passes again; one file make creates its plain parent and
+marker, and the tiny local state nexus compiles as a vase with four native
+scaffold marks. Following remains null with the prototype's missing `version`
+field, consistent with pinned +version-text. No saved-state/update/route/permit/
+peer or managed adapter claim follows. The original source, effects, failure and
+proof are retained; see [the partial native record](diagnostics/2026-11-18-grubbery-app-contract-first-capsule.json).
+The separate nested tool report identifies pytz, its rules/calendar dependents
+and read-terminal's incompatible extra to-lines arm. These pinned modules remain
+unavailable; neither framework bytes nor their failure status is changed.
+
+New app plan/journal2 carries an original-request-bound native `version` value
+alongside epoch and source digest. Its first plain-root marker uses the observed
+single file/parent call, still requiring refusal of an existing unowned root.
+Legacy plan1 is reproduced exactly for history validation; fresh pending dispatch
+and native request construction refuse instead of rewriting old source payloads.
+Saved uncertainty replay, bound read-only recovery and narrow safe abandonment
+remain available. Schema62 fences older writers unconditionally while preserving
+the same61 table shape, original headers/events/leases and observed marker ancestry.
+
+A validated pre-effect native rejection is now an immutable `refused` state with
+its response digest, distinct from lost/unknown transport. Repeating it loads no
+source and performs no native call. Later matching content cannot reconcile it
+into ownership. A rejected first write can be audited as no-effect abandonment,
+releasing its exact lease while retaining original dispatch/refusal history.
+Any dispatched activation still forbids abandonment. A trusted native adapter
+must classify only complete supported pre-effect responses; errors/5xx are not
+proof of rejection. No public mutation adapter is enabled by this source change.
+
+Focused pure/source race and real SQLite tests pass for native-readable markers,
+request binding, atomic-marker planning, known-refusal persistence/reopen, no
+later adoption, legacy refusal/replay, lease release, original61 preservation and
+corruption rollback. The fresh actual60→62 rehearsal preserves original rows and
+uncertainty; genuine60 and61 readers refuse populated62 unchanged. Exact test
+artifacts/source hashes and limits are in the [migration record](diagnostics/2026-11-18-grubbery-app-store62-migration.json).
+The corrected native contract case, native observers/transport and full app/
+permit/route/state/restart/peer/installed/DEV gates remain active. Earlier schema61
+and native failure evidence stay bound to their original artifacts.

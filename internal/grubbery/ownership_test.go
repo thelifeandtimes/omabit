@@ -76,10 +76,7 @@ func TestOwnershipRequiresObservedOriginalMarkersAndEveryPredecessor(t *testing.
 func TestUncertainMarkerNeverBecomesOwnership(t *testing.T) {
 	e, c, p, _, b, _ := execution(t)
 	ctx := context.Background()
-	if _, err := e.Advance(ctx, c); err != nil {
-		t.Fatal(err)
-	}
-	c.StepID = p.Steps[1].ID
+	c.StepID = p.Steps[0].ID
 	b.lost.Store(true)
 	r, err := e.Advance(ctx, c)
 	if err != nil {
