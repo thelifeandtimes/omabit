@@ -51,7 +51,10 @@ func TestIssuesGrubberyRuntimeRecoveryDisposableVM(t *testing.T) {
 		t.Fatal("fresh recovery proof directory required")
 	}
 	g02Check(t, os.Mkdir(fixture.Root, 0700))
-	ctx, cancel := context.WithTimeout(t.Context(), 30*time.Minute)
+	// The single-CPU native fixture includes the original recovery, both full
+	// source workflows and restart/state checks. Each actual RPC still keeps
+	// its independent four-minute bound; this is only the whole-case budget.
+	ctx, cancel := context.WithTimeout(t.Context(), 90*time.Minute)
 	defer cancel()
 	proof := map[string]any{"scope": "copied fixed pending app pier; actual source runner/Docker/curl, supported lifecycle and audited recovery, CLI/stdio; no installed/DEV/production or full workflow qualification"}
 	save := func(key string, value any) {

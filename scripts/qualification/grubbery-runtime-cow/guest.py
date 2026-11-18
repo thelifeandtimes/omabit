@@ -17,6 +17,8 @@ O = Path('/opt/omabit-issues-runtime-results')
 REVIEW = Path('/home/review')
 PIN = 'a23f10ddc89657489d8e55eaf5e4362603848366a447dbf9f51ce192837a08f9'
 CASE = 'cow-recover-pending-zod-v1'
+HELPER_PROCESS_TIMEOUT_SECONDS = 5700
+HELPER_DEADLINE_SECONDS = 5750
 report = {'version': 1, 'passed': False, 'scope': 'actual source service Docker/curl and CLI/stdio on a fresh COW copy of the fixed pending app fixture; not installed upgrade/DEV/production qualification'}
 
 
@@ -118,8 +120,8 @@ def main():
     old = common.inspect(original_cid)
     if any(old['State'].get(key) is not False for key in ('Running', 'Paused', 'Restarting')) or old['HostConfig']['RestartPolicy']['Name'] != 'no':
         raise RuntimeError('fixed original disposable process is not stopped')
-    helper = subprocess.Popen(common.owner_args(['env', 'OMABIT_APP_RUNTIME_VM='+CASE, R/'managed.test', '-test.run=^TestIssuesGrubberyRuntimeRecoveryDisposableVM$', '-test.v', '-test.timeout=35m']))
-    deadline = time.monotonic()+2150
+    helper = subprocess.Popen(common.owner_args(['env', 'OMABIT_APP_RUNTIME_VM='+CASE, R/'managed.test', '-test.run=^TestIssuesGrubberyRuntimeRecoveryDisposableVM$', '-test.v', '-test.timeout='+str(HELPER_PROCESS_TIMEOUT_SECONDS)+'s']))
+    deadline = time.monotonic()+HELPER_DEADLINE_SECONDS
     try:
         while helper.poll() is None:
             if time.monotonic() > deadline:

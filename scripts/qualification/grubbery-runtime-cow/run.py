@@ -32,6 +32,8 @@ GIB = 1024**3
 SCRATCH = 1024*1024**2
 HOST_BUILD_RESERVE = 64*1024**2
 ROOT_FILE_MAX = 896*1024**2
+VM_DEADLINE_SECONDS = 6100
+SUPERVISOR_DEADLINE_SECONDS = 6300
 PREDECESSOR = Path('/tmp/omabit-issues-app-vm-05/root.qcow2')
 PREDECESSOR_SHA = 'a23f10ddc89657489d8e55eaf5e4362603848366a447dbf9f51ce192837a08f9'
 
@@ -115,7 +117,7 @@ def main():
             pass
         log.chmod(0o600)
         command = ['systemd-run', '--user', '--collect', '--unit='+unit,
-                   '--property=Type=exec', '--property=RuntimeMaxSec=2700',
+                   '--property=Type=exec', '--property=RuntimeMaxSec='+str(SUPERVISOR_DEADLINE_SECONDS),
                    '--property=MemoryMax=2G', '--property=MemorySwapMax=0',
                    '--property=CPUQuota=25%', '--property=UMask=0077',
                    '--property=WorkingDirectory='+str(ROOT),
@@ -230,7 +232,7 @@ def main():
             while child.poll() is None:
                 time.sleep(1)
                 report['latest_storage'] = budget.charge(0, cap)
-                if budget.storage.measure(out)['allocated_bytes'] > scratch or (out/'serial.log').stat().st_size > 32*1024**2 or time.monotonic()-started > 2500:
+                if budget.storage.measure(out)['allocated_bytes'] > scratch or (out/'serial.log').stat().st_size > 32*1024**2 or time.monotonic()-started > VM_DEADLINE_SECONDS:
                     raise RuntimeError('product VM storage/log/deadline exceeded; preserve failure capsule')
         except BaseException as error:
             report['interruption'] = type(error).__name__+': '+str(error)

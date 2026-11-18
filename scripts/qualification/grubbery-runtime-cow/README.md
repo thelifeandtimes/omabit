@@ -31,7 +31,12 @@ The first same-pier case used162,009,088allocated root bytes before its native
 timeout; this tightened hard bound retains over five times that measured space.
 It never permits a fresh bootstrap or silent reservation growth on failure.
 The original8GiB/no-NIC guest,10GiB/no-swap/one-CPU QEMU scope, separate2GiB
-staging supervisor and fixed deadlines remain. A size/I/O/forced-stop failure is
+staging supervisor remain. The whole Go case allows90minutes, its test process
+95minutes and the guest5750seconds; the host VM bound is6100seconds and supervisor
+6300seconds. Measured first-source recovery took1713seconds, so the original
+30minute whole case could not also qualify version two. Individual native RPCs
+retain their four-minute bound and lookup-only handling of uncertain effects.
+A size/I/O/forced-stop failure is
 failed qualification with retained evidence. This case is not yet native-qualified.
 
 Only one runtime experiment may run. Production, manual DEV, protected/tmux ships

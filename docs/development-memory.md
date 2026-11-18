@@ -11645,3 +11645,37 @@ Admission charges50,297,249,792bytes and reserves1,140,850,688bytes, totaling
 51,438,100,480 below48GiB. These are capacity/source gates only. Use a fresh COW
 from unchanged read-only VM05, never resume or rewrite the acknowledged failures.
 No production, protected/tmux ship or manual DEV operation is involved.
+
+## M662 — Complete original native source; preserve whole-case timeout (2026-11-18)
+
+Frozen569f39e6 completes all12 original source phases on the supported replacement
+runtime, each with exactly one durable dispatch. Migration/audit and original
+header/17-event preservation pass again. Compiler/version phases take about195s,
+desk creation210s and desk owner224s. Poke-source returns explicit journal
+uncertainty; follow observation loses its response near the four-minute bound.
+The actual CLI now classifies both as outcome-uncertain, reads the saved
+acknowledged phase and selects read-only reconciliation. Neither effect is sent
+again. The original completes at1713s with36 immutable events. The fixed helper
+reads initial app state and receives an acknowledgement for its state update.
+Version two reviews and begins through actual stdio MCP, but the whole30minute
+fixture context expires during its first advance. Whole qualification fails.
+
+After clean VM shutdown, a fresh offline utility exports35 bounded SQLite/proof/
+request/response/stderr/saved-lookup files through readonly,noload,noexec mounts.
+It limits aggregate raw exports to16MiB and kernel-bounds serial output to32MiB.
+The exact store retains one immutable runtime audit, the completed original,
+and version two with zero events/nine pending steps and its lease. No second
+source phase dispatch occurred. Source/base/original hashes remain unchanged;
+retain the full218,238,976allocated-byte new root and all earlier failure data.
+See [scoped native evidence](diagnostics/2026-11-18-app-runtime-cow02-deadline.json).
+
+The measured first workflow leaves insufficient time for the separate9-phase
+second version and state/restart checks. Increase only the whole fixture context
+to90minutes, its test process to95minutes, guest supervisor to5750s, VM to6100s
+and outer supervisor to6300s, leaving cleanup between bounds. Each product RPC
+still has its existing four-minute limit and lookup-only uncertainty handling.
+Memory/CPU/no-swap/no-NIC, hard896MiB root bound, per-second monitoring and48GiB
+aggregate admission are unchanged. Six input/deadline/kernel-bound guards pass;
+the helper compiles and its host tests skip the real case outside the guarded VM.
+New matching artifacts and a fresh complete native run remain required. No
+production, manual DEV, protected/tmux ship or original failure is operated on.

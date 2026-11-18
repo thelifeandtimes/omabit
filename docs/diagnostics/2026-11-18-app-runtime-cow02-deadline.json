@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "source_commit": "569f39e6437490cc507b21c2ec669d0c2b52a0d4",
+  "passed": false,
+  "failure": "whole fixture 30-minute context expired during first version-two advance; each native RPC retains four-minute bound",
+  "original_header_preserved": true,
+  "original_event_prefix_preserved": true,
+  "runtime_audits": 1,
+  "leases": 1,
+  "database_sha256": "2dc731cd5a377ca6f52e5a9f7b55b15e50702be2ea973ffa121dfe185f071731",
+  "root_sha256": "78b216df0b46853c7fe19f4b0f14d86fa02039c21b2752c74de5fe1ec01125b3",
+  "records": [
+    {
+      "ordinal": 1,
+      "events": 36,
+      "steps": 12,
+      "complete": true,
+      "dispatches": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "states": [
+        "observed",
+        "observed",
+        "observed",
+        "observed",
+        "observed",
+        "observed",
+        "observed",
+        "observed",
+        "observed",
+        "observed",
+        "observed",
+        "observed"
+      ]
+    },
+    {
+      "ordinal": 2,
+      "events": 0,
+      "steps": 9,
+      "complete": false,
+      "dispatches": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "states": [
+        "pending",
+        "pending",
+        "pending",
+        "pending",
+        "pending",
+        "pending",
+        "pending",
+        "pending",
+        "pending"
+      ]
+    }
+  ],
+  "original_vm05_unchanged": true,
+  "closed_native_root_allocated_bytes": 218238976,
+  "charged_at_vm_end_bytes": 50563596288,
+  "native_scoped_successes": [
+    "schema62-to63-original-app-preservation",
+    "same-pier-supported-runtime-replacement",
+    "CLI-review-and-stdio-MCP-linked-audit",
+    "original-unknown-phase-read-only-reconciliation",
+    "all-12-original-source-phases-observed-with-one-dispatch-each",
+    "initial-application-state-read",
+    "state-write-acknowledged",
+    "version-two-review-and-begin"
+  ],
+  "uncertainties": [
+    {
+      "phase": 11,
+      "outcome": "runner-app_journal_uncertain",
+      "saved_lookup": "acknowledged",
+      "continuation": "read-only-reconcile"
+    },
+    {
+      "phase": 12,
+      "outcome": "transport-outcome-uncertain",
+      "saved_lookup": "acknowledged",
+      "continuation": "read-only-reconcile"
+    }
+  ],
+  "original_source_complete_elapsed_seconds": 1713,
+  "whole_case_deadline_seconds": 1800,
+  "read_only_extraction": {
+    "files": 35,
+    "aggregate_limit_bytes": 16777216,
+    "serial_hard_file_limit_bytes": 33554432,
+    "source_base_and_original_unchanged": true,
+    "executed_source_code": false
+  },
+  "not_qualified": [
+    "version-two-phase-completion",
+    "version-two-retained-state-and-new-code",
+    "second-same-pier-replacement",
+    "manager-restart",
+    "installed-upgrade",
+    "DEV-deployment"
+  ]
+}

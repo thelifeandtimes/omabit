@@ -77,7 +77,7 @@ lifetime across caller disconnect; review and runner shutdown still cancel.
 Focused race, actual CLI/stdio parity, HTTP recovery and vet checks pass. This
 does not qualify the retained pending native phase or a new installed artifact.
 
-Source/native checkpoints are documented in M579–M660. The shared interface's
+Source/native checkpoints are documented in M579–M662. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or
@@ -109,3 +109,12 @@ Source changes remove redundant process checks while preserving complete bracket
 identity/launch/network/port/peer observations, and classify explicit journal
 uncertainty as lookup-only uncertainty. Fresh matching native qualification remains
 required; no failed phase is redispatched or edited to advance the gate.
+
+M662's optimized native case completes the original12-phase app source exactly
+once per phase, reads initial state and acknowledges a state update. Explicit
+journal uncertainty and a lost response both lead to saved acknowledged lookup
+and read-only reconciliation. Version two is reviewed/begun but has zero phase
+events when the whole30minute fixture expires. Its full disk, exact original and
+pending lease are retained. The overall fixture window is extended separately
+from unchanged four-minute product RPC limits; whole two-version/restart and
+installed/DEV qualification remain pending.

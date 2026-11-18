@@ -18,6 +18,13 @@ def module(name):
 
 
 class RecoveryGuards(unittest.TestCase):
+    def test_outer_deadlines_leave_time_for_inner_failure_and_cleanup(self):
+        host, guest = module('run'), module('guest')
+        self.assertGreater(guest.HELPER_PROCESS_TIMEOUT_SECONDS, 90*60)
+        self.assertGreater(guest.HELPER_DEADLINE_SECONDS, guest.HELPER_PROCESS_TIMEOUT_SECONDS)
+        self.assertGreater(host.VM_DEADLINE_SECONDS, guest.HELPER_DEADLINE_SECONDS+120)
+        self.assertGreater(host.SUPERVISOR_DEADLINE_SECONDS, host.VM_DEADLINE_SECONDS+120)
+
     def test_no_run_has_no_source_storage_or_process_effect(self):
         host = module('run')
         with patch.object(sys, 'argv', ['run.py']), patch.object(host.subprocess, 'check_output', side_effect=AssertionError('no process')), patch.object(host.budget, 'charge', side_effect=AssertionError('no admission')), contextlib.redirect_stdout(io.StringIO()):
