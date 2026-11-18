@@ -10795,3 +10795,23 @@ recording race checks pass after retaining it. This qualifies only the frozen
 source/filesystem format boundary. No live capture, rotation/index/retention,
 durable pressure/coverage, redaction, API/UI, native/installed or stable behavior
 is implied, and no runner database or installed service changed.
+
+## M631 — Maintained source samples match the public native fixture (2026-11-18)
+
+`app.sample.v1` now returns named Grubbery state source versions1 and2, exactly
+matching the two bill/nexus manifests from M627. Their version2 definitions carry
+relative sample contract metadata and separately pinned framework/runtime inputs.
+Gall definitions and their exact hashes remain unchanged. Evidence binds exact
+qualified source while explicitly declaring that named packaging was added after
+the frozen d2d8cf9 artifact. It does not fabricate a prior named-sample test.
+
+Source digests are840fb9fa309325af2ec44087342999dd95595ceacebd04335ba250103e5859b7
+and5be1882ece1a6c07f58dce29bace4df9bbf3bd2ab9feae164a3ddc3c874a3a3b.
+Source/staging/adapter validation, exact equality with the maintained native Hoon
+fixture, Gall regression and actual CLI/stdio sample parity pass under the race
+detector. The developer skill distinguishes offline source availability, typed
+phase APIs, narrow native evidence and full preflight, which remains unavailable.
+Only bill/nexus files belong in staging; definitions/evidence/notices remain out.
+No public state read/poke/watch API, product Docker qualification, permits/routes/
+assets/peers or installed upgrade is implied. These samples support preparing the
+next fresh product-transport VM without copying test-only source generators.

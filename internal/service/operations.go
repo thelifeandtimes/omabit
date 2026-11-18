@@ -63,7 +63,7 @@ type PreflightInput struct {
 }
 
 type SampleInput struct {
-	Name string `json:"name" jsonschema:"Compiled sample name: gall-state-v1 (native noun) or gall-state-v2 (direct Eyre JSON text)"`
+	Name string `json:"name" jsonschema:"Compiled sample: gall-state-v1, gall-state-v2, grubbery-state-v1 or grubbery-state-v2; exact source and qualification limits are returned separately"`
 }
 
 func description(id, about string, cli, effects, caps []string, role, bindings, replay string) Descriptor {

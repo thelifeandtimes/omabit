@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "id": "grubbery-public-native-source-v2",
+  "status": "passed",
+  "definition_sha256": "d342e98a92566690d7742ff57cedf8cab5bf09069024657b9c0cc31a67b8bf1b",
+  "source_digest": "5be1882ece1a6c07f58dce29bace4df9bbf3bd2ab9feae164a3ddc3c874a3a3b",
+  "scope": "Exact source match to frozen d2d8cf9 public runner/registry/client native workflow; named packaging metadata was added later. Synthetic lifecycle and fixed native state probes; no product Docker/curl or installed qualification.",
+  "vere_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+  "pill_sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+  "workflow_sha256": "8ce0d86adc0a22534d6120cebd3bb93a00c04bc2c5ce2de4d26bb9e0596ecceb",
+  "proof_sha256": "8123645bb2ca94da206a19de74cd0021ee8115c744ec073023a710de9d45b30e",
+  "clean_shutdown": true,
+  "claims": [
+    "exact staged source compiled and followed",
+    "two-version saved-state preservation and new code label",
+    "clean same-pier restart and subsequent state write",
+    "original receipts after SQLite reopen and exact old-phase replay"
+  ],
+  "not_qualified": [
+    "actual product Docker/curl native transport",
+    "pending source operation recovery on a replaced native process/container",
+    "durable owner-session cleanup after process death",
+    "native CLI/stdio integration",
+    "permits, aliases, routes/served assets, peer cases and installed upgrades",
+    "public typed sample state read/poke/watch operations",
+    "named sample packaging in the earlier native artifact",
+    "full Grubbery environment preflight"
+  ]
+}

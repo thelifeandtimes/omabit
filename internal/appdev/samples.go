@@ -18,22 +18,35 @@ import (
 var sampleFiles embed.FS
 
 type SampleDefinition struct {
-	Version        int               `json:"version"`
-	Name           string            `json:"name"`
-	Framework      string            `json:"framework"`
-	APIVersion     int               `json:"api_version"`
-	StateVersion   int               `json:"state_version"`
-	Agent          string            `json:"agent"`
-	ScryPath       string            `json:"scry_path"`
-	WatchPath      string            `json:"watch_path"`
-	PokeMark       string            `json:"poke_mark"`
-	TestShips      []string          `json:"test_ships"`
-	MaxEntries     int               `json:"max_entries"`
-	VereSHA256     string            `json:"vere_sha256"`
-	PillSHA256     string            `json:"pill_sha256"`
-	UpstreamSource string            `json:"upstream_source"`
-	Qualification  string            `json:"qualification"`
-	Files          map[string]string `json:"files"`
+	Version        int                     `json:"version"`
+	Name           string                  `json:"name"`
+	Framework      string                  `json:"framework"`
+	APIVersion     int                     `json:"api_version"`
+	StateVersion   int                     `json:"state_version"`
+	Agent          string                  `json:"agent"`
+	ScryPath       string                  `json:"scry_path"`
+	WatchPath      string                  `json:"watch_path"`
+	PokeMark       string                  `json:"poke_mark"`
+	TestShips      []string                `json:"test_ships"`
+	MaxEntries     int                     `json:"max_entries"`
+	VereSHA256     string                  `json:"vere_sha256"`
+	PillSHA256     string                  `json:"pill_sha256"`
+	UpstreamSource string                  `json:"upstream_source"`
+	Qualification  string                  `json:"qualification"`
+	Files          map[string]string       `json:"files"`
+	Grubbery       *GrubberySampleContract `json:"grubbery,omitempty"`
+}
+
+// Paths are relative to the runner-derived namespace. They are sample metadata,
+// not a configurable native URL, policy grant or public state-operation API.
+type GrubberySampleContract struct {
+	FrameworkDefinition string `json:"framework_definition"`
+	FrameworkCommit     string `json:"framework_commit"`
+	Adapter             string `json:"adapter"`
+	Instance            string `json:"instance"`
+	StateLeaf           string `json:"state_leaf"`
+	LabelLeaf           string `json:"label_leaf"`
+	CodeLabel           string `json:"code_label"`
 }
 type SampleSource struct {
 	Path    string `json:"path"`
@@ -76,10 +89,14 @@ func sampleHash(data []byte) string { sum := sha256.Sum256(data); return hex.Enc
 func ReadSample(name string) (Sample, error) {
 	var out Sample
 	apiVersion, fileCount := 1, 5
+	grubberySample := name == "grubbery-state-v1" || name == "grubbery-state-v2"
+	if grubberySample {
+		fileCount = 2
+	}
 	if name == "gall-state-v2" {
 		apiVersion, fileCount = 2, 8
 	}
-	if name != "gall-state-v1" && name != "gall-state-v2" {
+	if name != "gall-state-v1" && name != "gall-state-v2" && !grubberySample {
 		return out, errors.New("unsupported application sample")
 	}
 	root := "samples/" + name + "/"
@@ -91,8 +108,23 @@ func ReadSample(name string) (Sample, error) {
 		return out, errors.New("invalid frozen sample definition")
 	}
 	d := out.Definition
-	if d.Version != 1 || d.Name != name || d.Framework != "gall" || d.APIVersion != apiVersion || d.StateVersion != 0 || len(d.Files) != fileCount || d.Qualification != "current-workflow-pending" {
+	version, framework := 1, "gall"
+	if grubberySample {
+		version, framework = 2, "grubbery"
+	}
+	if d.Version != version || d.Name != name || d.Framework != framework || d.APIVersion != apiVersion || d.StateVersion != 0 || len(d.Files) != fileCount || d.Qualification != "current-workflow-pending" {
 		return out, errors.New("unsupported frozen sample contract")
+	}
+	if grubberySample {
+		label := "public-v1"
+		if name == "grubbery-state-v2" {
+			label = "public-v2"
+		}
+		if d.Grubbery == nil || *d.Grubbery != (GrubberySampleContract{FrameworkDefinition: GrubberyFramework, FrameworkCommit: "7f7701d546ce115eea5f37f66465b362cb121774", Adapter: "grubbery-darts-7f7701d-v1", Instance: "state", StateLeaf: "state.json", LabelLeaf: "label.json", CodeLabel: label}) || d.Agent != "grubbery" || d.ScryPath != "" || d.WatchPath != "" || d.PokeMark != "json" || d.MaxEntries != 1 {
+			return out, errors.New("unsupported frozen Grubbery source contract")
+		}
+	} else if d.Grubbery != nil {
+		return out, errors.New("unexpected framework sample extension")
 	}
 	out.DefinitionSHA256 = sampleHash(data)
 	out.Files = []SampleSource{}
@@ -138,7 +170,7 @@ func ReadSample(name string) (Sample, error) {
 		return Sample{}, errors.New("sample notices unavailable")
 	}
 	out.Notices = string(notices)
-	if name == "gall-state-v2" {
+	if name == "gall-state-v2" || grubberySample {
 		data, err := sampleFiles.ReadFile(root + "native-qualification.json")
 		var evidence SampleEvidence
 		if err != nil || len(data) > 16384 || json.Unmarshal(data, &evidence) != nil || evidence.Version != 1 || evidence.Status != "passed" || evidence.DefinitionSHA256 != out.DefinitionSHA256 || evidence.SourceDigest != out.Source.Digest || evidence.VereSHA256 != d.VereSHA256 || evidence.PillSHA256 != d.PillSHA256 || !evidence.CleanShutdown {

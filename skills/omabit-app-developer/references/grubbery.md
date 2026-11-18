@@ -7,11 +7,12 @@ exercise only. The proposed newer single-release candidate is a separate input;
 neither revision establishes a timeless endpoint or compatible installed runtime.
 
 Run `app-preflight --workflow grubbery` before app-specific project boot. The
-current development slice reports `missing-workflow-adapter`: the versioned
-Grubbery adapter is still pending. This reference describes the intended
-qualification contract, not commands that already exist. Author source and tests
-while that gap is open; do not substitute a private installer or raw Dojo/Eyre
-write for an unavailable policy-enforced Omabit operation.
+current development preflight still reports `missing-workflow-adapter`: full
+workflow qualification is pending. Separate typed source APIs exist and have a
+narrow native gate using synthetic lifecycle/direct owner HTTP. Their presence
+does not establish product Docker/curl or complete app readiness. Author source
+and tests while that gap is open; do not substitute a private installer or raw
+Dojo/Eyre write for an unavailable policy-enforced Omabit operation.
 
 Current shared offline operations `app.framework.v1` and
 `app.verify-framework-source.v1` provide the frozen `grubbery-7f7701d-v1` source
@@ -21,6 +22,35 @@ at CLI/MCP startup, then pass that name and relative `desk` subtree for verifica
 These operations execute/download nothing and grant no policy. Exact source
 equality does not establish framework compilation, live permits or app readiness.
 The source must still pass the independently bound staging/commit gates.
+
+`app.sample.v1` provides `grubbery-state-v1` and `grubbery-state-v2`: exact two-file
+bill/nexus source matching the frozen public source/state/update/restart native
+gate. Stage only the returned source files; metadata, evidence and notices stay
+outside the source tree. Both versions require the separate pinned framework.
+The second preserves a single saved JSON string and changes its code label.
+Evidence describes exact source bytes, not a complete installed workflow. Public
+sample state read/poke/watch APIs are still unavailable; test-only native probes
+do not authorize inventing a raw HTTP or Dojo tool.
+
+When a qualified selected environment exposes `grubbery-app-source-v1`, use
+`app.review-source.v1` for the exact target/runtime/framework receipt/stage/app
+and prospective request ID. Save its complete plan. `app.begin-source.v1` retains
+that plan and claims its namespace lease without a native app effect.
+`app.advance-source.v1` selects one original plan digest and phase ID; replaying
+an observed or uncertain phase never selects the next phase or resubmits it.
+`app.source-operation.v1` reads saved progress independently of source/live
+availability via its separate receipt feature. `app.reconcile-source.v1` observes
+one original uncertain phase without source cache or redispatch. It still writes
+the journal. `app.abandon-source.v1` releases only proven preactivation work;
+unknown effects/activation remain fenced and live/source state is retained.
+
+Every call requires the selected runner identity and current operator access;
+new effects recheck Commit and exact target/configuration/pier/framework guards.
+MCP must explicitly enable mutations for journal writes. Recovery currently
+requires the original actor and process/config binding; a restarted process or
+rotated key is not permission to alter the original plan or database. Full
+workflow readiness, permits, aliases/routes/served assets, peer cases and actual
+installed upgrade must each be qualified separately.
 
 Framework Clay desk, app code tree/nexus, installed instance, loaded tree, permits,
 HTTP binding, local alias and peer discovery are distinct bindings. Discover the

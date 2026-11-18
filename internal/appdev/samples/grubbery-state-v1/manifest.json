@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "name": "grubbery-state-v1",
+  "framework": "grubbery",
+  "api_version": 1,
+  "state_version": 0,
+  "agent": "grubbery",
+  "scry_path": "",
+  "watch_path": "",
+  "poke_mark": "json",
+  "test_ships": [
+    "~zod"
+  ],
+  "max_entries": 1,
+  "vere_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+  "pill_sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+  "upstream_source": "https://github.com/nisfeb/grubbery/tree/7f7701d546ce115eea5f37f66465b362cb121774",
+  "qualification": "current-workflow-pending",
+  "files": {
+    "bill.json": "53230be82383539af089e644cabac86f9c66dfbbd89dbc22471b23c70039749b",
+    "nex/state.hoon": "1897002f15c3f8b6f58882849cb558f49857ecb00a8308bb22a042e7a65b8e3e"
+  },
+  "grubbery": {
+    "framework_definition": "grubbery-7f7701d-v1",
+    "framework_commit": "7f7701d546ce115eea5f37f66465b362cb121774",
+    "adapter": "grubbery-darts-7f7701d-v1",
+    "instance": "state",
+    "state_leaf": "state.json",
+    "label_leaf": "label.json",
+    "code_label": "public-v1"
+  }
+}

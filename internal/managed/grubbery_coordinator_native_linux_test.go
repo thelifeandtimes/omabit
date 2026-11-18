@@ -16,6 +16,7 @@ import (
 	"testing"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/appdev"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/deskwork"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/eyre"
@@ -101,6 +102,25 @@ func (f *nativeDeskFixture) GrubberyStep(ctx context.Context, p grubbery.Plan, i
 
 func nativeManagedGrubbery(t *testing.T, ctx context.Context, r *Server, f *nativeDeskFixture, frameworkID string, save func(string, any)) {
 	nativeManagedGrubberyRound(t, ctx, r, f, frameworkID, "managed-v1", "managed-app", false, save)
+}
+
+func TestMaintainedGrubberySamplesMatchFrozenNativeContract(t *testing.T) {
+	for _, version := range []string{"1", "2"} {
+		sample, err := appdev.ReadSample("grubbery-state-v" + version)
+		g02Check(t, err)
+		seen := false
+		for _, file := range sample.Files {
+			if file.Path == "nex/state.hoon" {
+				seen = true
+				if !bytes.Equal([]byte(file.Content), nativeGrubberyStateNexus("public-v"+version)) {
+					t.Fatal("native fixture and maintained sample changed independently")
+				}
+			}
+		}
+		if !seen {
+			t.Fatal("sample nexus absent")
+		}
+	}
 }
 func nativeManagedGrubberyRound(t *testing.T, ctx context.Context, r *Server, f *nativeDeskFixture, frameworkID, label, prefix string, public bool, save func(string, any)) grubbery.Record {
 	t.Helper()

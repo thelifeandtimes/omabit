@@ -192,3 +192,13 @@ phase is dispatched once. This uses synthetic lifecycle and direct native owner
 HTTP, so product Docker/curl, pending-operation process rebinding, durable owner
 cleanup on process death, the native CLI combination, permits/routes/assets,
 peers and installed upgrades remain unqualified. Full preflight stays unavailable.
+
+Maintained `grubbery-state-v1` and `grubbery-state-v2` samples now return the exact
+two-file source bytes from the frozen public native workflow through
+`app.sample.v1`. Their separate definition/evidence metadata records that named
+packaging was added afterward; it does not relabel the older artifact as a named
+sample test. Source digest, pinned framework/runtime inputs and qualification
+limits are explicit. Both stage without metadata/notices; v2 changes the code
+label while preserving one saved JSON string. Pure source/native-fixture equality
+and actual CLI/stdio sample parity pass. Sample state probes remain test-only;
+there is no new public state read/poke/watch capability or complete preflight.

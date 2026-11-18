@@ -119,6 +119,8 @@ func TestCLIAndMCPUseSamePolicyAndRefusalContract(t *testing.T) {
 	}{
 		{name: "frozen-sample", id: "app.sample.v1", input: service.SampleInput{Name: "gall-state-v1"}},
 		{name: "json-sample", id: "app.sample.v1", input: service.SampleInput{Name: "gall-state-v2"}},
+		{name: "grubbery-first-source", id: "app.sample.v1", input: service.SampleInput{Name: "grubbery-state-v1"}},
+		{name: "grubbery-next-source", id: "app.sample.v1", input: service.SampleInput{Name: "grubbery-state-v2"}},
 		{name: "policy-read", id: "app.policy.v1", input: service.Target{Name: "dev", RunnerID: "runner"}},
 		{name: "shareable-stop-diagnosis", id: "project.stop-diagnostic-bundle.v1", input: service.StopBundleInput{CheckpointInput: service.CheckpointInput{ProjectInput: service.ProjectInput{Target: service.Target{Name: "dev", RunnerID: "runner"}, ProjectID: "project"}, OperationID: "operation"}, InstanceID: "member"}},
 		{name: "shareable-stop-diagnosis-role", id: "project.stop-diagnostic-bundle.v1", input: service.StopBundleInput{CheckpointInput: service.CheckpointInput{ProjectInput: service.ProjectInput{Target: service.Target{Name: "dev", RunnerID: "runner"}, ProjectID: "project"}, OperationID: "operation"}, InstanceID: "member"}, observer: true, code: "operator_required"},
