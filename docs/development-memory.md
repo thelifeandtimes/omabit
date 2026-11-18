@@ -11341,3 +11341,40 @@ compiler lifetime fix. Disk-bounded source inputs can be compressed and inflated
 into guest tmpfs with exact byte pins; budget memory as well as allocated disk.
 No new runtime has been launched for this model; production and manual DEV stay
 untouched. Other issue tracks remain active.
+
+## M651 — Persist linked app recovery audits without rewriting uncertainty (2026-11-18)
+
+Schema63 adds separately canonicalized immutable receipts, contiguous per-app
+heads and a64-recovery bound. Validate every audit against the original plan/
+header/event prefix and exact predecessor; reject missing tails/heads, changed
+bodies/digests, triggers and unowned successor tables. Migration creates only
+empty heads. The internal metadata-only apply checks current prefix/head/lease
+transactionally. Exact saved replay precedes expiration/current phase checks;
+commit errors remain uncertain and require lookup. Original app/header/event/
+lease/source/access/runtime tables are unchanged. No HTTP exposure or native
+binding is granted by this storage adapter.
+
+Build an actual original62 writer/reader at3e780879 with a declared source helper.
+Its synthetic plan2 has dispatched/acknowledged uncertainty and its held lease,
+with genuine59/60 history. Repeated candidate opening preserves every original
+row/DDL. The actual old reader refuses a populated63 store unchanged in the
+preliminary rehearsal. Retain a public synthetic SQL fixture with original
+source/helper/binary/database pins; never publish the private VM database.
+The clean-source reproducible rehearsal script is ready for a frozen candidate.
+
+Focused race checks pass for original62 migration/rollback, actual process exit
+after a committed audit without close/reply, exact lookup/expired replay,
+stale-prefix/head and concurrent admission, corruption refusal and64-history
+overflow. Existing original60/61 migration checks pass after comparisons exclude
+only the new successor tables. Synthetic old-version encoder fixtures explicitly
+omit only empty new tables; this is not a user downgrade procedure. Focused vet
+passes. Runtime process observation/approved adapter, fresh authenticated review,
+CLI/MCP and native/installed upgrade gates remain pending.
+
+Remove only46 obsolete regenerable test-package compiler cache objects tied to
+this task's exact worktree/unique tests, retaining the newest two objects and all
+named frozen binaries/source/evidence. Prevalidated file identity/hashes precede
+unlink; the private manifest confirms1,617,776,640allocated bytes freed. A sandbox
+read cannot see the DEV PID namespace; the same fixed read-only measurement with
+host authority succeeds. Charged storage is49,626,271,744bytes under48GiB, leaving
+1,913,335,808bytes. No runtime experiment or user service is operated.

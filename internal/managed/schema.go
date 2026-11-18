@@ -43,4 +43,6 @@ package managed
 // Opening never dispatches; older writers must refuse the new format.
 // Schema62 fences app plan/journal2, native-readable version values and known
 // pre-effect refusal. Legacy plan1 receipts stay read-only and byte-preserved.
-const StateSchemaVersion = 62
+// Schema63 retains separate immutable app runtime recovery receipts and exact
+// per-operation heads; original plan/event/lease bytes remain unchanged.
+const StateSchemaVersion = 63

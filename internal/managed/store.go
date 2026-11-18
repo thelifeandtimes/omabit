@@ -221,6 +221,9 @@ CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TE
 	if err := initializeProjectStopReconciliations(tx, version); err != nil {
 		return err
 	}
+	if err := initializeAppRuntimeRecoveryTables(tx, version); err != nil {
+		return err
+	}
 	if err := initializeGrubberyApps(tx, version); err != nil {
 		return err
 	}

@@ -1,9 +1,10 @@
 # App source recovery across a replacement runtime — development contract
 
-Implementation is in progress. The typed review/receipt model has source tests;
-there is no persistent mapping, migration, live observer, API, CLI/MCP tool or
-runtime rebinding yet. Existing source operations continue to require their exact
-original process. No receipt/database edit is an upgrade or recovery procedure.
+Implementation is in progress. The typed review/receipt model and schema63
+metadata-only audit store have source tests. There is no live observer, API,
+CLI/MCP tool or runtime rebinding yet. Existing source operations continue to
+require their exact original process. No receipt/database edit is an upgrade or
+recovery procedure.
 
 The first milestone preserves an unfinished plan2 after a supported Stop/Start
 of its existing disposable pier. The original plan, actor, request/phase IDs,
@@ -45,12 +46,22 @@ readable after later legitimate app progress; an old review never acquires fresh
 CAS authority. Rebinding sends no Start/Stop/signal and grants no Commit or other
 application capability.
 
-Persistent implementation requires a new managed schema boundary and validation
-of the linked audit ancestry. Before promotion, build an actual original62 writer/
-reader fixture containing dispatched/acknowledged uncertainty and its lease;
-preserve all previous tables/events/access across repeated migration/reopen,
-rollback and process death. Prove genuine62-reader refusal of the successor store
-unchanged. Add actual SQLite/HTTP and CLI/official-SDK parity for stale/concurrent
+Schema63 adds separate immutable audit receipts and per-operation heads. Opening
+validates the complete linked ancestry and grants no binding authority. The
+internal metadata-only apply transaction checks exact original prefix/head/lease
+and preserves all original tables, events and access. It accepts exact saved
+replay before expiration/current-phase admission, without native calls. History
+is bounded to64 receipts per original operation; overflow refuses unchanged.
+The authenticated server still must independently observe and compare fresh
+review facts before this transaction becomes externally reachable.
+
+An actual original62 writer fixture retains dispatched/acknowledged uncertainty
+and its lease with original59/60 history. Source checks preserve every previous
+table/DDL/event/access row across repeated migration/reopen, rollback and process
+death after a committed audit with no reply. The actual62 reader refuses a
+populated63 store unchanged in the preliminary rehearsal. The reproducible
+clean-source gate is `scripts/test-app-runtime-recovery-upgrade.py`; frozen
+candidate rehearsal remains required. Add actual SQLite/HTTP and CLI/official-SDK parity for stale/concurrent
 review, role/actor drift, lost apply reply, replay without cache/runtime and exact
 single dispatch after resumed work. Do not publish private original databases.
 

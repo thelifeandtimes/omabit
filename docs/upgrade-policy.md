@@ -1,5 +1,27 @@
 # Stable-release upgrade requirement
 
+## Development: separate app runtime recovery audits, schema63
+
+Schema63 adds immutable linked runtime recovery receipts and exact per-operation
+heads. Migration seeds only empty heads, preserving every original app plan,
+event, lease, framework receipt, runtime, access and other history row/DDL.
+Opening never rebinds, starts, signals or redispatches a runtime. Missing/changed
+audit ancestry or unowned successor tables refuse without repair; failed
+migration rolls back. The internal apply transaction admits an exact prefix/head/
+lease CAS only, with at most64 receipts. Saved exact replay returns the original
+audit after expiration and manager restart without modifying original uncertainty.
+
+The actual frozen62 writer at3e780879 contains acknowledged plan2 uncertainty
+and original59/60 ancestry. Its synthetic metadata fixture is retained under
+`internal/managed/testdata/grubbery-app-original62`. Focused race checks cover
+preservation, rollback, process exit after committed audit/no response, replay,
+concurrent admission, corruption and bounded history. The actual62 reader has
+refused a populated63 store unchanged in the preliminary source rehearsal.
+`scripts/test-app-runtime-recovery-upgrade.py` requires a clean frozen candidate
+for the reproducible source gate. No downgrade through marker/table edits is
+supported. Native recovery, matching final artifacts, installed upgrades and
+preserved DEV qualification remain required; no workflow readiness is advertised.
+
 ## Development: native version signals and rejected app writes, schema62
 
 Schema62 fences explicit app plan/journal2 while retaining the schema61 table

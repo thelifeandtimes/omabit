@@ -54,6 +54,8 @@ func TestOpeningExistingStatePreservesLegacyAmesAndRecovery(t *testing.T) {
 			runnerID := s.runnerID
 			if version < 61 {
 				omitEmptyAppSuccessorForSyntheticFixture(t, s)
+			} else if version < 63 {
+				omitEmptyRuntimeRecoverySuccessorForSyntheticFixture(t, s)
 			}
 			if _, err = s.db.Exec(fmt.Sprintf("PRAGMA user_version=%d", version)); err != nil {
 				t.Fatal(err)

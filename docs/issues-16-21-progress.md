@@ -17,7 +17,13 @@ are recorded in [experiment isolation](experiment-isolation.md).
 | #21 app preflight/deployment mismatch | Selected runner Hello/build/role and separate missing API/adapter/policy results; pre-boot skill routing; inert no-write/identity/scope tests | Matching DEV artifacts, original-state preservation, actual minimal native app operation; original incident runner remains unproven |
 
 The internal Grubbery coordinator now retains exact app phases, transactional
-namespace leases and safe preactivation abandonment in schema62. Native-readable plan2 retains old plans as read-only; known
+namespace leases and safe preactivation abandonment. Schema63 adds separate
+metadata-only runtime recovery audits, with strict ancestry and prefix/head/lease
+CAS; opening or applying an audit changes no original app receipt or native state.
+Actual62-writer migration, corruption rollback and process-death/lost-reply source
+checks preserve original uncertainty and all prior rows. The live observer,
+approved runtime adapter and authenticated review/apply interfaces remain pending.
+Native-readable plan2 retains old plans as read-only; known
 rejection stays distinct from uncertainty. Original59/60/61 preservation and
 genuine60/61-reader refusal pass. The private native coordinator now combines
 trusted creation-order history with actual root/marker/source/version reads,

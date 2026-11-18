@@ -10,6 +10,7 @@ import "testing"
 // Original-writer fixtures never use it; user stores must never be relabeled.
 func omitEmptyAppSuccessorForSyntheticFixture(t *testing.T, s *store) {
 	t.Helper()
+	omitEmptyRuntimeRecoverySuccessorForSyntheticFixture(t, s)
 	for _, table := range grubberyTables {
 		var count int
 		g02Check(t, s.db.QueryRow("SELECT count(*) FROM "+table.name).Scan(&count))
@@ -28,6 +29,23 @@ func omitEmptyAppSuccessorForSyntheticFixture(t *testing.T, s *store) {
 	}
 	for i := len(grubberyTables) - 1; i >= 0; i-- {
 		_, err := s.db.Exec("DROP TABLE " + grubberyTables[i].name)
+		g02Check(t, err)
+	}
+}
+
+// This is only for today's empty synthetic encoder fixtures. Genuine old-writer
+// stores never contain these tables; any populated history must refuse omission.
+func omitEmptyRuntimeRecoverySuccessorForSyntheticFixture(t *testing.T, s *store) {
+	t.Helper()
+	for _, table := range []string{"grubbery_app_runtime_recoveries", "grubbery_app_runtime_heads"} {
+		var count int
+		g02Check(t, s.db.QueryRow("SELECT count(*) FROM "+table).Scan(&count))
+		if count != 0 {
+			t.Fatal("synthetic fixture has runtime recovery history or app heads")
+		}
+	}
+	for _, table := range []string{"grubbery_app_runtime_recoveries", "grubbery_app_runtime_heads"} {
+		_, err := s.db.Exec("DROP TABLE " + table)
 		g02Check(t, err)
 	}
 }

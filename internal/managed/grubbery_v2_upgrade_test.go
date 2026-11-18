@@ -68,6 +68,17 @@ func TestGrubberyOriginal61MigrationPreservesLegacyPlanAndOriginalUncertainty(t 
 		g02Check(t, err)
 		after := appAllRows(t, s.db)
 		delete(after, "@schema")
+		// Schema63 adds only separate audit tables and an empty head for this
+		// original operation; keep every original table/row in the comparison.
+		delete(after, "grubbery_app_runtime_recoveries")
+		delete(after, "grubbery_app_runtime_heads")
+		var count, ordinal int
+		var headDigest string
+		g02Check(t, s.db.QueryRow("SELECT count(*) FROM grubbery_app_runtime_recoveries").Scan(&count))
+		g02Check(t, s.db.QueryRow("SELECT ordinal,digest FROM grubbery_app_runtime_heads WHERE original_id=?", "1111111111111111111111111111111111111111111111111111111111111111").Scan(&ordinal, &headDigest))
+		if count != 0 || ordinal != 0 || headDigest != "" {
+			t.Fatal("migration invented recovery authority")
+		}
 		if !reflect.DeepEqual(before, after) {
 			t.Fatal("migration rewrote legacy plan/event/lease history")
 		}

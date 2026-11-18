@@ -53,6 +53,9 @@ func initializeGrubberyApps(tx *sql.Tx, version int) error {
 			return grubbery.ErrHistory
 		}
 	}
+	if err := seedAppRuntimeHeads(tx, version); err != nil {
+		return err
+	}
 	return validateGrubberyJournal(tx)
 }
 
@@ -200,6 +203,7 @@ func validateGrubberyJournal(q querier) error {
 		return grubbery.ErrHistory
 	}
 	byNamespace := map[string][]grubbery.Record{}
+	allRecords := map[string]grubbery.Record{}
 	for index, id := range ids {
 		var ordinal uint64
 		if err = q.QueryRow("SELECT ordinal FROM grubbery_app_operations WHERE id=?", id).Scan(&ordinal); err != nil {
@@ -212,6 +216,7 @@ func validateGrubberyJournal(q querier) error {
 		if err != nil {
 			return err
 		}
+		allRecords[id] = r
 		n, _ := r.Plan.Binding.Namespace()
 		byNamespace[n.DeskRoot] = append(byNamespace[n.DeskRoot], r)
 	}
@@ -253,7 +258,7 @@ func validateGrubberyJournal(q querier) error {
 	if orphan != 0 {
 		return grubbery.ErrHistory
 	}
-	return nil
+	return validateAppRuntimeRecoveryJournal(q, allRecords)
 }
 
 // grubberyJournal is an internal persistence adapter, not a public dispatch
@@ -397,6 +402,9 @@ func (j grubberyJournal) Create(ctx context.Context, r grubbery.Record) (grubber
 	}
 	h := grubberyHeader{id: r.Plan.RequestID, ordinal: ordinal, namespace: n.DeskRoot, actor: r.Plan.Binding.Actor, plan: r.Plan.Digest, header: r.HeaderDigest, framework: r.Plan.Binding.FrameworkReceiptID, body: body}
 	if _, err = tx.Exec("INSERT INTO grubbery_app_operations(id,ordinal,namespace,actor,plan_digest,header_digest,framework_id,body,stamp,revision) VALUES(?,?,?,?,?,?,?,?,?,0)", h.id, h.ordinal, h.namespace, h.actor, h.plan, h.header, h.framework, h.body, h.digest()); err != nil {
+		return grubbery.Record{}, err
+	}
+	if _, err = tx.Exec("INSERT INTO grubbery_app_runtime_heads(original_id,ordinal,digest) VALUES(?,0,'')", h.id); err != nil {
 		return grubbery.Record{}, err
 	}
 	if _, err = tx.Exec("INSERT INTO grubbery_app_leases(namespace,id) VALUES(?,?)", n.DeskRoot, h.id); err != nil {
