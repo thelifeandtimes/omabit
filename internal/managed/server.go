@@ -343,7 +343,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if !ownerhost.Development() {
 			features = append(features, protocol.ManagementUpdateFeature)
 		}
-		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature, protocol.DeskSettingsFeature, protocol.DeskStageFeature)
+		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature, protocol.DeskSettingsFeature, protocol.DeskStageFeature, protocol.GrubberyAppReceiptsFeature)
 		if _, ok := r.b.(deskBackend); ok {
 			features = append(features, protocol.ShipRoutesFeature, protocol.ShipRouteCodeFeature)
 			features = append(features, protocol.DeskCreateFeature, protocol.DeskSourceExportFeature, protocol.DeskDiscoveryFeature, protocol.DeskSourceFeature, protocol.DeskCommitFeature, protocol.DeskApplicationFeature, protocol.DeskReleaseFeature, protocol.DeskAdoptionFeature, protocol.DeskReceiverFeature, protocol.DeskFrontendFeature)
@@ -516,6 +516,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 		defer r.endUpdateBulk()
 		r.handoffData(w, req, actor, role, strings.Split(req.URL.Path, "/")[3])
+		return
+	}
+	if strings.HasPrefix(req.URL.Path, protocol.GrubberyAppOperationsPath+"/") {
+		r.serveGrubberyAppReceipt(w, req, role)
 		return
 	}
 	if req.Method == http.MethodGet && strings.HasPrefix(req.URL.Path, protocol.DeskOperationsPath+"/") {

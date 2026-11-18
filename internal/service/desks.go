@@ -123,6 +123,10 @@ func (s *Service) registerDesks() error {
 	errs = append(errs, selected(s, read("desk.operation.v1", "Read an existing durable desk receipt with its original operation ID.", "desk-operation", protocol.DeskCreateFeature, saved), func(ctx context.Context, r *collection.Registry, _ collection.Connection, in DeskOperationInput) (protocol.DeskOperation, error) {
 		return r.DeskOperation(ctx, in.Name, in.RunnerID, in.OperationID)
 	}))
+	appReceipt := description("app.source-operation.v1", "Read original saved Grubbery app source phases without source cache or native access.", nil, saved, []string{protocol.GrubberyAppReceiptsFeature}, "operator", bindings, "read-only; preserve the original request ID, plan and uncertainty")
+	errs = append(errs, selected(s, appReceipt, func(ctx context.Context, r *collection.Registry, _ collection.Connection, in DeskOperationInput) (protocol.GrubberyAppOperation, error) {
+		return r.GrubberyAppOperation(ctx, in.Name, in.RunnerID, in.OperationID)
+	}))
 	d := write("desk.reconcile.v1", "Observe an uncertain desk effect and persist its recovery receipt; does not repeat the original effect.", "desk-reconcile", protocol.DeskCreateFeature)
 	d.Effects = []string{"local-metadata-read", "live-probe", "journal-write"}
 	errs = append(errs, selected(s, d, func(ctx context.Context, r *collection.Registry, _ collection.Connection, in DeskOperationInput) (protocol.DeskOperation, error) {

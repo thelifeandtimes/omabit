@@ -168,3 +168,13 @@ The existing0.4.0 feature-based read contracts remain usable. New schema60 Stop
 recovery requires its advertised feature and a compatible runner; older runner
 absence is a refusal, never an upgrade inference. No stable version, frozen pin,
 installed support window or production deployment is changed by this source slice.
+
+Development adds `app.source-operation.v1` to generic `omabit call` and stdio
+MCP. It requires the selected runner's separate `grubbery-app-receipts-v1`
+feature and current operator access. This is saved metadata only: original
+creator, plan, phase history and uncertainty remain unchanged. Lookup uses a
+single validated SQLite snapshot outside the lifecycle mutex and requires no
+source cache or native adapter. An operator other than the original creator can
+read it; this grants no mutation authority on that creator's operation. Missing,
+changed-runner and invalid-history responses refuse. Startup runner allowlists
+still apply. This feature does not advertise live Grubbery workflow readiness.

@@ -10606,3 +10606,23 @@ aliases/routes/assets, peers or installed upgrades. The later recorder-only M622
 commit is outside the frozen artifact. Grubbery capability remains unavailable.
 Next expose saved app receipts and exact phase interfaces with parity, then
 qualify their actual Docker transport and the remaining workflow boundaries.
+
+## M624 — Saved app receipts through shared public interfaces (2026-11-18)
+
+`app.source-operation.v1` now reads the original Grubbery record through the
+runner API, pinned client/registry, generic CLI and official-SDK stdio adapter.
+Its distinct receipt feature grants no live adapter readiness. Current operator
+access suffices for saved inspection; original creator attribution and all
+uncertainty remain unchanged. Reads validate the complete SQLite journal in one
+snapshot, outside the lifecycle mutex, without source cache or runtime access.
+Restricted SSH already allows operator requests and excludes this path for
+observers; no broader observer authority was added.
+
+Focused race gates pass for actual CLI/stdio byte parity, startup allowlists,
+observer/missing-feature refusals before receipt reads, changed response identity
+and corrupt history. An isolated actual SQLite/HTTP gate preserves original
+uncertainty and returns while the lifecycle mutex is held, with no runtime or
+cache. Catalog/access regression checks pass. This is source/inert interface
+evidence, not installed SSH/native app dispatch or final-artifact qualification.
+The48GiB admission counted51,095,093,248 bytes before these focused builds; no
+runtime experiment or deployment was started.
