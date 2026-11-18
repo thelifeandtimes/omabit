@@ -9620,3 +9620,30 @@ These are inert protocol tests; installed-runtime creation/recovery/upgrade stil
 requires the separately isolated disposable guest. No new persistent workflow
 format or native lifecycle contract is introduced. This narrows M581/M585's
 compound-creation coverage gap, without claiming issue19 complete.
+
+## M589 — Guarded installed upgrade/Stop harness (2026-11-17, unqualified)
+
+A new offline guest gate binds actual published0.4.0 tools, matching immutable
+runtime/pills and a clean exact development source snapshot. It reuses only the
+verified pristine not-onboarded base through a fresh COW overlay, with no NIC or
+host state/socket access. One CPU,8GiB guest/10GiB scope RAM, no swap, bounded
+scratch/log/time and aggregate shared-cache accounting are explicit admission
+inputs. The authorized48GiB ceiling is scoped to this goal. Host/default refusal
+tests, syntax, Go compile/skip and static checks pass; **no VM result is claimed**.
+
+The test-only manager delegates to the real backend and blocks before the final
+stopped-phase save after a verified native clean exit. Its parent checks exact
+child UID/PID/start/executable before killing it. A second helper refuses recovery
+observation during exact replay. Both require the precise guest marker, source
+pin and fresh two-fake project. There is no production fault switch or database
+repair. Published and candidate installed executables remain distinct from this
+dependency-injected test helper. Go test lacks automatic VCS metadata, so its
+link-time source binding is checked separately before and inside the guest.
+
+The planned gate checks running/stopped upgrade preservation, older-reader
+refusal, a real interrupted Stop, supported reviewed resolution, immutable
+original/linked receipts, one native SIGTERM, exact guarded SSH replay after
+reopen, same-pier resume and clean final shutdown. See the
+[gate contract](../scripts/qualification/issues-recovery/README.md). Qualification
+must record actual outcomes and failed originals separately; these source guards
+do not resolve M579/M580's live/installed deployment gates by themselves.
