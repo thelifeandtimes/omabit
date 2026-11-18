@@ -10773,3 +10773,25 @@ and Store.ReadPage ErrCorrupt. Original runtime source remains unchanged. Rerun
 in a fresh qualified directory after this freeze; do not relabel the first
 failed result or claim the overall gate passed yet. No engine/runtime/installed
 service or ship was involved.
+
+## M630 — Actual recording1 writer/reader compatibility passes (2026-11-18)
+
+The [fresh corrected rehearsal](diagnostics/2026-11-18-recording-metadata2-source-upgrade.json)
+passes against candidate5041406. The unchanged original3218e6f runtime sources,
+original metadata_test fixture and declared helper write real private recording1
+files with arbitrary stdout/stderr bytes, gap and independently typed exit.
+Repeated candidate reads, exact cursor paging and store reopen preserve every
+original file byte and leave absent identity unknown. Legacy capture refuses
+without writes. The actual original metadata decoder/store reject metadata2 and
+the complete successor file hashes remain unchanged. The failed first directory
+is retained as failed; no baseline or result was relabeled.
+
+Original writer SHA256 is0b27ba1be956f24e6ebcfb0de417ede59b84c4b48cd8534f96357f91454ef843;
+candidate helper SHA256 is9985e8dd71892518711f863c4fab8f32f6ee09bd24bd5ae59df19031aee70031.
+A compact original writer fixture with exact source/helper provenance now runs
+in ordinary source tests, including immutable raw octets, legacy identity refusal,
+new-capture refusal, cursor resume/reopen and unchanged originals. Full focused
+recording race checks pass after retaining it. This qualifies only the frozen
+source/filesystem format boundary. No live capture, rotation/index/retention,
+durable pressure/coverage, redaction, API/UI, native/installed or stable behavior
+is implied, and no runner database or installed service changed.

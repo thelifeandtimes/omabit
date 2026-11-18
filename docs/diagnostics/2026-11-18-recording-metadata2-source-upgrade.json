@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "passed": true,
+  "original_source": "3218e6fb87ef293cc87d9083c574b3232de09271",
+  "candidate_source": "5041406d31797808b0fa74bd026f6d3f4fdc5ee3",
+  "original_writer_sha256": "0b27ba1be956f24e6ebcfb0de417ede59b84c4b48cd8534f96357f91454ef843",
+  "candidate_sha256": "9985e8dd71892518711f863c4fab8f32f6ee09bd24bd5ae59df19031aee70031",
+  "declared_helper_sha256": "7f15cceb3f86f09d57c86c503aa28255011bc889cc4db028ad812b34d856359d",
+  "original_source_manifest_sha256": "1cf7e4431616dd3a72a5768fedbf5832ca5993380d0640ac906c5750c83abd80",
+  "original_writer_files": {
+    "11111111111111111111111111111111/frames.obr": "e0852d81c1837247e8d159d0016e4e3dd0e16947d54806dea5c4bc4498970e95",
+    "11111111111111111111111111111111/metadata.json": "b251bc76eb002414d11d90b81b5f59a0092a4a69512e936a0c7a9afd7fb9b371",
+    "11111111111111111111111111111111/writer.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "successor_files": {
+    "11111111111111111111111111111111/frames.obr": "cd7ad820c0ca77154fc3087e0ba539c5c7b27a00d4f8d01eb04c22a81ed4cfc1",
+    "11111111111111111111111111111111/metadata.json": "f8c95b362ab275552519d8c229139ad9ab6ac9ecef2a8ab901d2599a31fe8c97",
+    "11111111111111111111111111111111/writer.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "original_reads_byte_preserved": true,
+  "old_reader_refused_successor_unchanged": true,
+  "legacy_capture_refused_without_write": true,
+  "scope": "source-only original/candidate filesystem formats; no Docker capture, lifecycle, installed upgrade, retention, UI or stable qualification"
+}

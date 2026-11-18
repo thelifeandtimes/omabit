@@ -193,3 +193,12 @@ Focused race and pointer/binding/refusal checks pass. The source rehearsal
 reads/cursors/reopen, and prove old-reader refusal of metadata2 unchanged. That
 actual original-writer gate is still pending; no live capture, native/installed
 upgrade or public recording API follows from these unit checks.
+
+The [actual original-writer rehearsal](diagnostics/2026-11-18-recording-metadata2-source-upgrade.json)
+now passes for frozen candidate5041406. Original3218e6f bytes, lifecycle evidence,
+cursor paging and repeated reopen remain unchanged; the old reader refuses
+metadata2 without modifying it. The first helper expectation failure remains
+failed and retained. A compact original-writer fixture and source/helper input
+manifest now run in ordinary focused tests. This supersedes the preceding
+original-writer deferral for this exact source boundary, with no live/native or
+installed qualification implied.

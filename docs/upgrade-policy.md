@@ -1345,3 +1345,10 @@ prepared but pending; qualify its exact original files and refusal of successor
 metadata before claiming format compatibility. Matching final artifacts, native
 capture lifecycle/pressure/retention and installed upgrade remain required. This
 is an unreleased development boundary, not a published recording support window.
+
+The later [frozen5041406 original-writer gate](diagnostics/2026-11-18-recording-metadata2-source-upgrade.json)
+passes the recording1→metadata2 source boundary: original raw/metadata/lifecycle
+files survive repeated new-reader cursor/reopen, new legacy capture is refused,
+and the actual original reader refuses metadata2 unchanged. The retained original
+fixture covers subsequent source reads. This resolves only the earlier pending
+original-writer rehearsal; all integration/native/installed requirements remain.

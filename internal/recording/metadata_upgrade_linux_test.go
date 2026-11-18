@@ -15,6 +15,91 @@ import (
 	"testing"
 )
 
+func TestActualOriginalMetadata1FixtureRemainsReadOnlyAndByteExact(t *testing.T) {
+	fixture := filepath.Join("testdata", "original-metadata1")
+	var manifest struct {
+		Version              int               `json:"version"`
+		OriginalSource       string            `json:"original_source"`
+		OriginalWriterSHA256 string            `json:"original_writer_sha256"`
+		SourceManifestSHA256 string            `json:"original_source_manifest_sha256"`
+		Files                map[string]string `json:"files"`
+	}
+	raw, err := os.ReadFile(filepath.Join(fixture, "manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if json.Unmarshal(raw, &manifest) != nil || manifest.Version != 1 || manifest.OriginalSource != "3218e6fb87ef293cc87d9083c574b3232de09271" || manifest.OriginalWriterSHA256 != "0b27ba1be956f24e6ebcfb0de417ede59b84c4b48cd8534f96357f91454ef843" || len(manifest.Files) != 3 {
+		t.Fatal("original fixture provenance changed")
+	}
+	source, err := os.ReadFile(filepath.Join(fixture, "original-source.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	digest := sha256.Sum256(source)
+	if hex.EncodeToString(digest[:]) != manifest.SourceManifestSHA256 {
+		t.Fatal("original source input manifest changed")
+	}
+	store, dir := openTestStore(t, 1<<20)
+	id := strings.Repeat("1", 32)
+	session := filepath.Join(dir, id)
+	if err = os.Mkdir(session, 0700); err != nil {
+		t.Fatal(err)
+	}
+	before := map[string][]byte{}
+	for name, pin := range manifest.Files {
+		if name != "metadata.json" && name != "frames.obr" && name != "writer.lock" {
+			t.Fatal("unexpected fixture filename")
+		}
+		data, err := os.ReadFile(filepath.Join(fixture, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		d := sha256.Sum256(data)
+		if hex.EncodeToString(d[:]) != pin {
+			t.Fatal("actual original writer bytes changed", name)
+		}
+		before[name] = data
+		if err = os.WriteFile(filepath.Join(session, name), data, 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	page, err := store.ReadPage(t.Context(), id, nil, 256, 1<<20)
+	if err != nil || page.Metadata.Version != 1 || page.Metadata.Identity != nil || len(page.Frames) != 4 || page.WriterPresent {
+		t.Fatal("actual original fixture unreadable", err)
+	}
+	if !bytes.Equal(page.Frames[0].Data, []byte("original stdout\r\n\x00\xff\x1b[2K")) || !bytes.Equal(page.Frames[1].Data, []byte("original stderr\n0wfixture.atom")) {
+		t.Fatal("actual original octets changed")
+	}
+	if _, err = page.Metadata.CaptureIdentity(); !errors.Is(err, ErrLegacyMetadata) {
+		t.Fatal("actual legacy fixture invented a current identity", err)
+	}
+	if _, err = store.Create(page.Metadata); !errors.Is(err, ErrLegacyMetadata) {
+		t.Fatal("actual legacy fixture admitted new capture", err)
+	}
+	if err = store.Close(); err != nil {
+		t.Fatal(err)
+	}
+	store, err = OpenStore(dir, Limits{MaxSessionBytes: 1 << 20, ReserveFreeBytes: 1 << 20})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer store.Close()
+	first, err := store.ReadPage(t.Context(), id, nil, 1, 1<<20)
+	if err != nil || len(first.Frames) != 1 {
+		t.Fatal("actual original first page unavailable", err)
+	}
+	rest, err := store.ReadPage(t.Context(), id, &first.Next, 256, 1<<20)
+	if err != nil || !reflect.DeepEqual(rest.Frames, page.Frames[1:]) {
+		t.Fatal("actual original cursor changed after reopen", err)
+	}
+	for name, want := range before {
+		got, err := os.ReadFile(filepath.Join(session, name))
+		if err != nil || !bytes.Equal(got, want) {
+			t.Fatal("reader rewrote actual original file", name, err)
+		}
+	}
+}
+
 // Only an explicit source qualification invokes this gate. Ordinary unit tests
 // do not invent an original writer or touch any installed recording root.
 func TestRecordingMetadataOriginalWriterQualification(t *testing.T) {
