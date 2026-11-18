@@ -9929,3 +9929,29 @@ periodic allocation checks, memory/deadline/one-active-runtime rules and origina
 failed capsule. Exceeding either scratch or aggregate storage still interrupts
 the new owned experiment and retains its uncertain/failure evidence. This is a
 smaller admitted experiment, not an unmeasured allowance or a native pass.
+
+## M602 — Pinned native Grubbery bootstrap passes with explicit limits (2026-11-17)
+
+The fresh f9ca8a7 test artifact under the separately pinned a658341 admission
+harness passes within1.5GiB declared scratch and48GiB aggregate storage. The Go
+artifact inputs are unchanged between those commits. The exact complete framework
+desk is reverified. Ordinary API source export reads the two original scaffold
+files; narrow explicit staged adoption verifies their equality without changing
+Clay. Full framework commit is observed with the frozen source digest and no
+ownership conflicts. Autocommit remains inactive; no Unix source mount is created.
+
+Cold activation exceeds its HTTP reply. The original receipt progresses through
+planned/dispatched/uncertain/observed with exactly one native dispatch; supported
+read-only reconciliation completes it without reinstallation. Both declared Gall
+agents are live. An independently authenticated fixed kernel HTTP diagnostic read
+reports1335root-code files,0failures (223vases/1112assets), including compiled
+shell, desk and nexus-web. The private owner session logs out and the fresh Vere
+shuts down cleanly. See the exact-input native bootstrap JSON diagnostic.
+
+The original runtime also reports four failures under /apps/shell/tools/code.
+Those are a separate namespace, not disproven by a clean root-code report; the
+four individual errors were not queried in this capsule. Preserve that warning
+and the original pre-adoption failure. This supersedes M599–M601's bootstrap and
+native source-read deferral only. App deployment/state/permits/routes/assets,
+publication/discovery/peers, managed lifecycle, installed/DEV qualification and
+issue18 completion remain open. Grubbery preflight still reports unavailable.

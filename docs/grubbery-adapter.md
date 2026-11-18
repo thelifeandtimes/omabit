@@ -76,3 +76,13 @@ policy, mount or source. Stage only the original conflicting files and explicitl
 review/adopt their equality through existing adoption gates before planning the
 complete framework replacement. Never adopt a changed framework file as if it were
 the original scaffold. Native qualification of this continuation remains pending.
+
+The [native bootstrap continuation](diagnostics/2026-11-17-grubbery-native-bootstrap.json)
+now passes for those exact inputs. It proves the original-scaffold read/adoption,
+verified full source commit, one cold activation with a lost reply resolved only
+by observation, live declared agents, authenticated kernel diagnostics, no mount
+and clean shutdown. The root `/code` report has1335files and0build failures.
+The runtime separately reports4failures in `/apps/shell/tools/code`; that nested
+namespace was not individually inspected. This supersedes only the preceding
+continuation deferral. The remaining app/permit/route/served-byte/restart/peer and
+installed gates still apply, and preflight remains unavailable.
