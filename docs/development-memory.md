@@ -10815,3 +10815,42 @@ Only bill/nexus files belong in staging; definitions/evidence/notices remain out
 No public state read/poke/watch API, product Docker qualification, permits/routes/
 assets/peers or installed upgrade is implied. These samples support preparing the
 next fresh product-transport VM without copying test-only source generators.
+
+## M632 — Retain exact old VM evidence and retire superseded full copies (2026-11-18)
+
+A [bounded read-only retention utility](diagnostics/2026-11-18-issues-evidence-retention.json)
+boots only a fresh kernel/init, mounts the old task VM03 root read-only,noload,
+noexec, and copies fixed original SQLite/result/command-log paths. It never runs
+source-disk services/code or opens pier paths. Source/base hashes remain unchanged.
+The closed original schema60 store has47 tables/10 rows and only the two recorded
+disposable fake identities. All original SQLite/SQL/guest commands/result bytes
+are retained privately, along with source/helper hashes, code and compressed
+utility artifact. The first utility command-line guard refused before mounting
+because it assumed a trailing space rather than the kernel's newline; its failed
+result/helper and unchanged source hashes remain retained. Field-based matching
+corrects only that utility guard for the fresh successful run.
+
+After verified extraction and inactive source/utility scopes, the superseded VM03
+whole disk is retired, freeing875,831,296 allocated bytes. Its passed installed
+upgrade section and later overall duplicate-enrollment failure remain unchanged.
+Both retained VM01/VM04 roots directly depend on the reverified canonical base,
+not this retired disk. Tombstones prohibit resuming historical launch commands.
+This supersedes older full-VM03 retention claims only; it adds no product gate.
+
+The current completed public01 native pier is losslessly sparsely archived and
+all1,450 file contents match on streaming decompression:259,190,089 bytes,
+SHA25648b0773c6c251cfe40094618428eb435da0b7678ad7dce5d62b30972a3ea28ff.
+Its verified expansion retirement frees495,067,136 bytes, with original source,
+SQL, proofs, exact helper and both process/restart logs unchanged. This stronger
+full public source/state/update/restart reference supersedes the old app03 kernel
+and managed03 private-only full archives; retiring those exact verified archives
+frees524,328,960 bytes. Their original SQL/receipts/proofs/logs/exact helpers remain
+unchanged. New retirement manifests retain original tombstone bodies and link
+replacement status; historical archive hashes are not claims of present files.
+
+Only classified task-created artifacts were selected. The canonical base/runtime/
+pill/framework sources, selected Gall07 and current public01 full references,
+original writer fixtures, VM04 recovery reference, production, installed services,
+existing/manual-review ships and all excluded paths remain unchanged. No runtime
+experiment remains active. Recheck2GiB VM scratch after preparing/building matching
+product transport artifacts;48GiB remains the hard goal ceiling.
