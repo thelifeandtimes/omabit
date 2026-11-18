@@ -12042,3 +12042,18 @@ No unit, engine, manager, existing process or pier is operated by this checkpoin
 Source CLI/controller, actual old claim writer, active-job upgrade guard and
 native recording remain pending. Primary systemd262 sources are linked in the
 [worker contract](runtime-recordings.md#source-worker-composition-and-acknowledgement).
+
+## M677 — Qualify the inert notify service primitive (2026-11-18)
+
+The fresh bounded transient Type=notify/NotifyAccess=main helper gate passes
+against frozen fb355f8. The exact main process acknowledges readiness, remains
+active after its launcher returns, writes a continuation proof, and exits with
+success and an empty cgroup. Independent PID/start/image/invocation checks match;
+source and executable remain unchanged. Preserve the sanitized
+[report and pins](diagnostics/2026-11-18-recording-notify-inert-service.json).
+
+This supersedes M676's pending inert-helper gate only. The helper reads its own
+process identity and fresh private evidence; it never opens a job/session store,
+manager, engine or pier. Actual recording-worker lifetime, fixed-root CLI,
+authenticated launch, active-job upgrade and native capture remain unqualified.
+No production, manual DEV, installed configuration or existing ship changes.

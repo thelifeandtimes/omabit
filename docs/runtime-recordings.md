@@ -493,3 +493,11 @@ Focused source/race/vet checks pass. A gated inert test helper is prepared to
 verify actual acknowledgement and survival after its launcher returns, using
 only its own process and fresh private files. Actual service, native worker and
 installed launch qualification remain pending; no existing unit is touched.
+
+The [fresh inert service gate](diagnostics/2026-11-18-recording-notify-inert-service.json)
+now passes for frozen source fb355f8. Its exact main process acknowledged
+readiness, remained active after the launcher returned, wrote a continuation
+proof, and ended successfully. The launcher compared PID, start ticks, executable,
+invocation and cgroup; source and binary stayed unchanged. This supersedes the
+pending inert-helper gate above only. It does not qualify a recording worker,
+native capture, authenticated launch or active-job upgrades.

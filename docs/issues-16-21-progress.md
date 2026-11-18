@@ -190,3 +190,8 @@ actual old claim writer and native coverage gates remain pending.
 M676 prepares fixed notify messaging, isolated unit names and exact supervisor/
 process comparisons, passing focused race/vet. Its gated inert service helper
 has not run yet; actual acknowledgement/lifetime, launch and native gates remain.
+
+M677 passes that inert service acknowledgement/lifetime gate against frozen
+fb355f8, including exact live main-process identity, continuation after launcher
+return, successful exit and unchanged source/binary. Actual recording-worker,
+native capture, launch integration and active-job upgrade gates remain open.

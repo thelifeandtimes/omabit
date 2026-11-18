@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "passed": true,
+  "source": "fb355f8e94f148b988494d08a47c92c3f7e00ef4",
+  "binary_sha256": "d4ac4dfb5ff0a11ae5cdf327a94cbcdf40015eb83103c3a8d5890ba2aa36a080",
+  "scope": "fresh inert notify service/self identity only; no manager, engine, job/session store, existing ship or installed config",
+  "admission_scratch_bytes": 201326592,
+  "launch_process_returned_before_continued_proof": true,
+  "post_sync_notify_files_preserved": true,
+  "unit_ended_with_success": true,
+  "source_and_binary_unchanged": true,
+  "systemd": "262.1-1-arch",
+  "service_type": "notify",
+  "notify_access": "main",
+  "exact_pid_start_image_invocation_checked": true,
+  "limits": {
+    "memory_max_mib": 256,
+    "memory_swap_max": 0,
+    "cpu_quota_percent": 25,
+    "runtime_max_seconds": 90
+  },
+  "does_not_qualify": [
+    "actual recorder process lifetime",
+    "native Docker/Vere capture",
+    "manager/CLI integration",
+    "active-job upgrade",
+    "DEV or production deployment"
+  ]
+}
