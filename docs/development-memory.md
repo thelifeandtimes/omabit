@@ -11448,3 +11448,29 @@ change original receipts or write counts; unknown effects are never redispatched
 Focused vet passes. These are inert native-contract source checks. Authenticated
 fresh review/apply, selected runtime/head integration, CLI/MCP, matching native
 artifacts and installed/DEV qualification remain pending. No runtime is launched.
+
+## M655 — Compose fresh review, audit CAS and later phases privately (2026-11-18)
+
+Private server composition now selects the registered replacement through the
+existing target/config/lifecycle/framework/pier/role guards. A trusted runtime
+interface supplies fresh process facts and its sealed read-only view. Native
+prefix evidence and complete saved record/head checks produce the review. Apply
+reobserves independently and compares fresh facts before the audit transaction;
+self-resealed caller claims are not authority. Exact saved replay precedes live/
+cache/management admission. The private later-phase factory loads the current
+saved audit head, fences its approved process on each admission and preserves
+original binding/IDs/payloads. Writes still require current policy and source.
+Ordinary phase factories remain strict. No public route uses these paths yet.
+
+The extracted stage loader initially references an out-of-scope actor; compilation
+catches it and using the already authenticated original binding actor fixes it.
+Actual SQLite with inert native/process fixtures passes changed PID claims,
+namespace/native/config/actor/reader/fence drift, stale heads and expired reviews.
+The first prefix assertion compares decoded pointer identity; comparing complete
+event values fixes that fixture error. Fresh audit/app preservation, store reopen,
+exact cache-free reconciliation after revoked Commit, denied later writes and
+saved replay with unavailable runtime/management fence pass. Existing strict
+normal guards and original cache-free lost-reply recovery pass under race.
+The scoped transport regression and focused vet pass after the runtime factory
+returns only its required native interface. No original private VM or service
+is opened. Public HTTP/CLI/MCP, matching native/installed and DEV gates remain.

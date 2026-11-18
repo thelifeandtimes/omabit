@@ -5,8 +5,9 @@ metadata-only audit store have source tests. Trusted managed/project process
 observation and a separately fenced internal adapter also have source checks.
 The internal native observer also checks exact pending-prefix or unknown-effect
 evidence without loading source or changing the journal. These paths are not
-wired into the server: authenticated API, CLI/MCP and native rebinding
-qualification remain pending. Existing source
+wired into public routes: private server composition now reobserves review facts
+and uses the exact saved audit head for later phases. Authenticated API, CLI/MCP
+and native rebinding qualification remain pending. Existing source
 operations continue to require their exact original process. No receipt/database
 edit is an upgrade or recovery procedure.
 
@@ -66,6 +67,14 @@ constructs its original requests unchanged. Every transport boundary rechecks th
 approved full process/context. These adapters still require the authenticated
 server's trusted journal-head/actor/role/policy/lifecycle admission; they grant
 no authority by themselves and are not externally reachable.
+
+The private server apply path checks authenticated actor/role, compares a fresh
+independently derived review and writes only the exact audit CAS. Exact saved
+replay precedes native/cache/management admission. Later private phase assembly
+requires the current saved head and its exact approved process; normal admission
+still checks current Commit. These paths have actual SQLite/inert runtime tests,
+including store reopen and cache-free reconciliation after revoked Commit. Public
+route/CLI/MCP and real native process replacement gates remain outstanding.
 
 Schema63 adds separate immutable audit receipts and per-operation heads. Opening
 validates the complete linked ancestry and grants no binding authority. The

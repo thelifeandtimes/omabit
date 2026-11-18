@@ -18,6 +18,15 @@ type grubberyRuntime interface {
 	SourceIdentity(context.Context) (string, error)
 }
 
+// A trusted runtime factory, never caller-selected runtime evidence or an RPC
+// adapter. Review's returned adapter refuses every GrubberyStep.
+type grubberyRecoveryRuntime interface {
+	grubberyRuntime
+	GrubberyProcess(context.Context) (grubbery.RuntimeProcess, error)
+	GrubberyRecoveryView(context.Context, grubbery.Binding, grubbery.RuntimeProcess) (grubbery.NativeRuntime, error)
+	GrubberyRecovered(context.Context, grubbery.Record, grubbery.RuntimeRecoveryReceipt) (grubbery.NativeRuntime, error)
+}
+
 // Caller holds r.mu throughout admission, durable dispatch, one effect and
 // observation. actor and role come from authenticated transport, never JSON.
 // This private factory does not register an API or advertise a capability.
@@ -35,8 +44,12 @@ func (r *Server) nativeGrubberyBackend(ctx context.Context, b grubbery.Binding, 
 		_, revision, err := r.grubberyGuard(ctx, binding, actor, role, write)
 		return revision, err
 	}
+	return r.grubberyBackend(runtime, b, guard)
+}
+
+func (r *Server) grubberyBackend(runtime grubbery.NativeRuntime, b grubbery.Binding, guard grubbery.NativeGuard) (*grubbery.NativeBackend, error) {
 	load := func(ctx context.Context, id string) ([]deskwork.SourceFile, error) {
-		_, files, err := r.grubberyStageSource(ctx, b, id, actor)
+		_, files, err := r.grubberyStageSource(ctx, b, id, b.Actor)
 		if err != nil {
 			return nil, err
 		}
@@ -62,6 +75,13 @@ func (r *Server) grubberyStageSource(ctx context.Context, b grubbery.Binding, id
 }
 
 func (r *Server) grubberyGuard(ctx context.Context, b grubbery.Binding, actor, role string, write bool) (grubberyRuntime, uint64, error) {
+	return r.grubberyGuardSelection(ctx, b, protocol.DeskSelection{Target: b.Target, RuntimeID: b.RuntimeID, ConfigRevision: b.ConfigRevision}, actor, role, write)
+}
+
+func (r *Server) grubberyGuardSelection(ctx context.Context, b grubbery.Binding, selection protocol.DeskSelection, actor, role string, write bool) (grubberyRuntime, uint64, error) {
+	if selection.Validate() != nil || selection.Target != b.Target || selection.ConfigRevision != b.ConfigRevision {
+		return nil, 0, grubbery.ErrConflict
+	}
 	if b.Validate() != nil || actor != b.Actor || role != "operator" || b.RunnerID != r.s.runnerID || b.Mode != r.s.mode || r.closing || r.failed.Load() || r.updateFence.Held || !r.routineAuthorized(actor) || ctx.Err() != nil {
 		return nil, 0, grubbery.ErrAdmission
 	}
@@ -71,7 +91,6 @@ func (r *Server) grubberyGuard(ctx context.Context, b grubbery.Binding, actor, r
 	if err := grubberyFrameworkQuiet(r.s.db, b); err != nil {
 		return nil, 0, err
 	}
-	selection := protocol.DeskSelection{Target: b.Target, RuntimeID: b.RuntimeID, ConfigRevision: b.ConfigRevision}
 	base, err := r.openDesk(ctx, selection)
 	if err != nil {
 		return nil, 0, grubbery.ErrAdmission

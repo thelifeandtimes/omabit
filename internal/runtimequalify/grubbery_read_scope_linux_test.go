@@ -167,9 +167,17 @@ func TestGrubberyReadScopeAuthenticatesOnceAndRequiresCleanupAndExactLifetime(t 
 					if _, e = runtime.GrubberyRecovered(t.Context(), record, invalid); e == nil {
 						t.Fatal("changed receipt body accepted")
 					}
-					runtime, e = runtime.GrubberyRecovered(t.Context(), record, receipt)
+					adapter, makeErr := runtime.GrubberyRecovered(t.Context(), record, receipt)
+					e = makeErr
+					if e == nil {
+						runtime = adapter.(*DeskRuntime)
+					}
 				} else {
-					runtime, e = runtime.GrubberyRecoveryView(t.Context(), binding, process)
+					adapter, makeErr := runtime.GrubberyRecoveryView(t.Context(), binding, process)
+					e = makeErr
+					if e == nil {
+						runtime = adapter.(*DeskRuntime)
+					}
 				}
 				if e != nil {
 					t.Fatal(e)

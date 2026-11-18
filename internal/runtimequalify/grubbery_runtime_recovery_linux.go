@@ -102,7 +102,7 @@ func (s *DeskRuntime) GrubberyProcess(ctx context.Context) (grubbery.RuntimeProc
 // GrubberyRecoveryView exposes original typed reads on a newly selected process
 // solely for fresh review. Its GrubberyStep always refuses. The caller holds the
 // common lifecycle guard and verifies the original actor/pier/framework first.
-func (s *DeskRuntime) GrubberyRecoveryView(ctx context.Context, original grubbery.Binding, process grubbery.RuntimeProcess) (*DeskRuntime, error) {
+func (s *DeskRuntime) GrubberyRecoveryView(ctx context.Context, original grubbery.Binding, process grubbery.RuntimeProcess) (grubbery.NativeRuntime, error) {
 	return s.grubberyRecovery(ctx, original, process, true)
 }
 
@@ -110,7 +110,7 @@ func (s *DeskRuntime) GrubberyRecoveryView(ctx context.Context, original grubber
 // authenticated server must load its exact current head from the journal and
 // recheck current actor/role/policy/fences for every later phase. A digest or
 // caller-supplied receipt alone is not authority. Original requests stay intact.
-func (s *DeskRuntime) GrubberyRecovered(ctx context.Context, original grubbery.Record, receipt grubbery.RuntimeRecoveryReceipt) (*DeskRuntime, error) {
+func (s *DeskRuntime) GrubberyRecovered(ctx context.Context, original grubbery.Record, receipt grubbery.RuntimeRecoveryReceipt) (grubbery.NativeRuntime, error) {
 	if receipt.ValidateAncestry(original) != nil {
 		return nil, errDeskProcess
 	}
