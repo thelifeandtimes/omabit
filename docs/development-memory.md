@@ -10901,3 +10901,28 @@ remain explicit in receipts/scenarios. Host supervisor/init builds explicitly
 use cached offline Go dependencies and disable Go telemetry. Four no-effect
 guard tests pass after that harness-only change. No native product result is
 claimed at this freeze; admission/launch remain the next steps.
+
+## M635 — Bound product input staging after observed supervisor OOM (2026-11-18)
+
+The first product attempt never boots QEMU or creates a ship. Its512MiB host
+supervisor reaches exactly that cgroup memory peak while mkfs populates the
+immutable input filesystem; the unit journal records oom-kill/status9. Automatic
+unit collection makes later default unit properties unsuitable as outcome proof;
+the original journal, partial scenario, artifact pins and failed result are
+retained. No native/product gate is relabeled. No installed service was targeted.
+
+Correct only the harness: allow a bounded2GiB/no-swap supervisor for filesystem
+staging page cache, retain25%-CPU/2700seconds, and require14GiB available memory
+before the separate8GiB guest/10GiB scope. Current admission observes45,426,835,456
+available bytes. Preparation receipts now distinguish inert staging/payload-built
+from guest creation. The48GiB aggregate and2GiB additional storage ceilings are
+unchanged; no Go or embedded input changed from frozen e61d971 artifacts.
+
+After the stopped unit is verified, every partial staging file matches its exact
+canonical artifact/framework/runtime source or preserved generated scenario.
+Only those copies and the incomplete input filesystem are retired, with hashes,
+inodes and original failure evidence preserved. This frees519,442,432 allocated
+bytes. There was no VM image, pier or guest service to clean up. Retry must use a
+fresh output directory with explicit artifact/harness identities; the first
+attempt remains failed. No production, DEV manual-review state, protected ship,
+tmux session or excluded path was inspected or changed.

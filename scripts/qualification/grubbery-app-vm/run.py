@@ -100,7 +100,7 @@ def main():
         log.chmod(0o600)
         command = ['systemd-run', '--user', '--collect', '--unit='+unit,
                    '--property=Type=exec', '--property=RuntimeMaxSec=2700',
-                   '--property=MemoryMax=512M', '--property=MemorySwapMax=0',
+                   '--property=MemoryMax=2G', '--property=MemorySwapMax=0',
                    '--property=CPUQuota=25%', '--property=UMask=0077',
                    '--property=WorkingDirectory='+str(ROOT),
                    '--property=StandardOutput=append:'+str(log),
@@ -132,10 +132,12 @@ def main():
     cap, scratch = args.storage_budget_gib*GIB, 2*GIB
     admission = budget.charge(scratch, cap)
     available = next(int(line.split()[1])*1024 for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemAvailable:'))
-    if available < 12*GIB:
-        raise RuntimeError('12GiB available memory required for bounded8GiB guest')
+    if available < 14*GIB:
+        raise RuntimeError('14GiB available memory required for bounded8GiB guest and2GiB staging supervisor')
     out.mkdir(mode=0o700)
     (out/'control').mkdir(mode=0o700)
+    (out/'preparation.json').write_text(json.dumps({'source_commit':commit,'harness_commit':harness_commit,
+        'phase':'immutable-payload-staging','guest_created':False,'candidate':builds,'admission':admission},indent=2)+'\n')
     payload = out/'payload'
     payload.mkdir(mode=0o700)
     (payload/'candidate').mkdir()
@@ -159,6 +161,8 @@ def main():
         stream.truncate(512*1024**2)
     util.run(['mkfs.ext4', '-q', '-F', '-d', payload, disk], stdout=subprocess.DEVNULL)
     shutil.rmtree(payload)  # Only this invocation's completed inert staging.
+    (out/'preparation.json').write_text(json.dumps({'source_commit':commit,'harness_commit':harness_commit,
+        'phase':'payload-built','guest_created':False,'candidate':builds,'admission':admission},indent=2)+'\n')
     init = out/'init'
     util.run(['go', 'build', '-trimpath', '-o', init, './scripts/qualification/release-upgrade/init'], cwd=ROOT, env={**os.environ, 'CGO_ENABLED': '0','GOPROXY':'off','GOTELEMETRY':'off'})
     boot = out/'boot'

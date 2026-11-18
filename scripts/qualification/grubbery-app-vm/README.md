@@ -17,9 +17,9 @@ source identities. `--run` submits an independent temporary supervisor; no work
 occurs by default. Supply every explicit input from `--help`; existing output
 folders never resume. This is not an installed-host or manual-review procedure.
 
-The independent supervisor is512MiB/no-swap/25%-CPU/2700seconds. The separate
+The independent supervisor is2GiB/no-swap/25%-CPU/2700seconds. The separate
 one-VM scope is10GiB/no-swap/one-CPU with an8GiB guest, no NIC and no host HOME,
-run, runner/Docker socket or keyring mounts. Admission requires12GiB available
+run, runner/Docker socket or keyring mounts. Admission requires14GiB available
 memory and reserves2GiB additional storage under the explicitly selected40/48GiB
 aggregate ceiling. Allocation/log/deadline checks remain active. The fixed guest
 service has a2400-second bound; the helper has a30-minute context/35-minute test
@@ -35,3 +35,9 @@ A narrow harness/documentation follow-up may select `--artifact-source` with the
 exact frozen ancestor. Any changed Go/module/embedded input refuses, and receipts
 record both identities. The host supervisor/init build uses cached offline Go
 inputs. This does not qualify a newer product source as the older artifact.
+
+The first512MiB supervisor exhausted its own cgroup limit while mkfs populated
+immutable staging; QEMU was never created. Its original failure/journal and
+verified staging-retirement manifest remain retained. The2GiB bound accommodates
+that filesystem staging page cache, with14GiB available-memory admission before
+the guest starts. Preparation receipts identify the pre-VM phase.
