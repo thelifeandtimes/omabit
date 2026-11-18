@@ -7,8 +7,8 @@ The internal native observer also checks exact pending-prefix or unknown-effect
 evidence without loading source or changing the journal. Typed HTTP and shared
 CLI/stdio MCP now expose review, confirmed apply and saved lookup. Server phase
 assembly uses only the exact saved audit head and its approved process. Source
-gates pass; a matching built-client lost-reply/manager-replacement rehearsal and
-real native rebinding qualification remain pending. No receipt/database edit is
+gates and the matching built-client lost-reply/manager-replacement rehearsal pass;
+real native rebinding qualification remains pending. No receipt/database edit is
 an upgrade or recovery procedure.
 
 The first milestone preserves an unfinished plan2 after a supported Stop/Start
@@ -77,6 +77,13 @@ including store reopen and cache-free reconciliation after revoked Commit. Typed
 HTTP and CLI/stdio source parity pass; real native process replacement remains
 outstanding. Saved status returns original history and its audit from one fully
 validated SQLite snapshot outside the lifecycle mutex.
+
+The [frozen bc04706 client rehearsal](diagnostics/2026-11-18-app-runtime-audit-cli-mcp-source.json)
+uses the actual built CLI/official-SDK stdio with real managed API/SQLite and
+inert process/native observation. Dropping apply's reply after commit produces
+an uncertain outcome with no retry. After manager/stdio replacement without a
+native adapter, CLI retrieves the same audit and original uncertainty without
+source access. This qualifies that source transport boundary only.
 
 The shared operations are `app.review-runtime-recovery.v1`,
 `app.apply-runtime-recovery.v1` and `app.runtime-recovery.v1`. Review takes an

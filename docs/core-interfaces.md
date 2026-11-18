@@ -241,9 +241,10 @@ needs mutation enablement. Preserve original operation and audit request IDs.
 saved exact apply replay when a native adapter is unavailable. Its separate
 `grubbery-app-runtime-receipts-v1` feature denotes saved-only lookup. Neither
 qualifies the full workflow. HTTP/SQLite, exact CLI/official-SDK stdio parity and
-bounded delegated SSH source gates pass. The matching built-client lost-reply/
-manager-replacement rehearsal and real native/installed qualification remain
-required. Same-pier restart remains explicit review/apply; key rotation and
+bounded delegated SSH source gates pass. The matching bc04706 built-client
+[lost-reply/manager-replacement source rehearsal](diagnostics/2026-11-18-app-runtime-audit-cli-mcp-source.json)
+also passes with real SQLite/API and inert native observation. Real native/
+installed qualification remains required. Same-pier restart remains explicit review/apply; key rotation and
 legacy plan1 rebinding are unsupported. No production deployment is implied.
 
 The [frozen d2d8cf9 public native gate](diagnostics/2026-11-18-grubbery-public-native-workflow.json)

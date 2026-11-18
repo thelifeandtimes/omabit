@@ -11503,3 +11503,23 @@ the original audit through CLI. It requires an explicit binary SHA and has not
 yet run. Matching native artifacts, retained disposable VM recovery, installed
 upgrades, full app workflow and preserved DEV remain pending. Production and all
 existing user ships/services remain excluded; no runtime is launched here.
+
+## M657 — Qualify built-client lost apply reply across manager replacement (2026-11-18)
+
+Freeze clean bc047062 Go/embedded/test inputs and build the CLI in a newly admitted
+256MiB source capsule. Exact binary970dda1b and source-manifest pins are retained.
+Actual official-SDK stdio reviews and applies through the real managed API/SQLite
+with an absent source cache and inert process/native observation. Drop the first
+apply reply only after successful commit. MCP reports outcome-uncertain and sends
+one apply, with no retry. Replace manager/stdio, reopen SQLite without a native
+adapter and hold a management fence. CLI saved lookup returns the original exact
+audit and still-uncertain original plan/events, with no native/cache access.
+The original fixture has one inert marker write; recovery adds none.
+
+The exact gated race test passes in13.033s. [Source evidence](diagnostics/2026-11-18-app-runtime-audit-cli-mcp-source.json)
+and private commands/source/binary/storage are retained. This supersedes M656's
+built-client rehearsal deferral only. It is not real runtime/installed/DEV
+qualification. Continue with a separate read-only-backed disposable VM using its
+retained app pier, supported lifecycle actions and explicit audited recovery.
+No fresh bootstrap or source DB/receipt rewrite is needed. Production, existing
+user ships and manual DEV remain untouched. Other issue tracks remain active.

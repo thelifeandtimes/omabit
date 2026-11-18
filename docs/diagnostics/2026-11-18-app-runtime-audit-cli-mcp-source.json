@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "passed": true,
+  "source_commit": "bc047062cc854033a422493e85bd3b2424a9dc45",
+  "source_inputs_sha256": "46196a556fce6fb4fe17273533f6ed2115fa90565b0abba693dc8e7cda02617a",
+  "binary_sha256": "970dda1bcc546172a8252a8fc1328589328c0b94442a0317c9435895a0f6a1b0",
+  "binary_bytes": 17142023,
+  "clean_before_after": true,
+  "scope": "source-only exact built CLI/MCP against real SQLite/API and inert native observation; no runtime/deployment qualification",
+  "lost_apply_reply_did_not_retry": true,
+  "new_manager_without_adapter_lookup_original_audit": true,
+  "original_uncertainty_preserved": true,
+  "native_write_count": 1,
+  "new_native_effects_for_recovery": 0,
+  "raw_cache_absent": true,
+  "aggregate_charged_bytes": 50754850816,
+  "counts_are_inert_fixture_transport_only": true,
+  "test": "TestGrubberyRuntimeMCPApplyLostReplyCLILookupAcrossManagerRestart",
+  "race_test_passed_seconds": 13.033
+}
