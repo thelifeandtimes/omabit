@@ -113,12 +113,15 @@ func write(w io.Writer, data []byte) error {
 
 // Append preserves the given original bytes, including long lines, credentials,
 // invalid UTF-8 and terminal controls. Kind is transport identity or a separately
-// validated lifecycle/gap payload; the codec performs no redaction/rendering.
+// validated canonical lifecycle/gap payload; the codec performs no redaction/rendering.
 func (e *Encoder) Append(kind Kind, data []byte, unixNano int64, elapsedNano uint64) (Frame, error) {
 	if e.poisoned {
 		return Frame{}, ErrPoisoned
 	}
 	if kind < Stdout || kind > Exit || len(data) == 0 || len(data) > MaxFrameBytes || unixNano <= 0 || elapsedNano < e.lastElapsed || e.next == math.MaxUint64 {
+		return Frame{}, ErrInvalid
+	}
+	if validateLifecycle(kind, data) != nil {
 		return Frame{}, ErrInvalid
 	}
 	head := make([]byte, frameHeaderBytes)
@@ -237,6 +240,10 @@ func (d *Decoder) Next() (Frame, error) {
 	var expected [32]byte
 	copy(expected[:], hash.Sum(nil))
 	if frame.Digest != expected {
+		d.failed = true
+		return Frame{}, ErrCorrupt
+	}
+	if validateLifecycle(frame.Kind, frame.Data) != nil {
 		d.failed = true
 		return Frame{}, ErrCorrupt
 	}

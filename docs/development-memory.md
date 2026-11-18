@@ -9708,3 +9708,30 @@ binds the archived original59 store (two instances/five operations), complete
 commands/results and read-only inspection hashes. Integrity and byte preservation
 are checked before full-disk retirement. This narrows M589's original process
 baseline to live containers without weakening stopped-state preservation.
+
+## M593 — Typed recording attachment/lifecycle metadata (2026-11-17)
+
+Source-only recording frames now validate canonical version1 gap/exit payloads,
+rejecting ambiguous/unknown fields, alternate encodings and unsupported metadata
+before write. A correct checksum cannot promote semantically invalid lifecycle
+data. Unknown missing-byte counts remain unknown and full uint64 counts stay
+exact. Stream EOF and failed Start without a launched process cannot become an
+observed exit. OOM/dead/native-error facts remain distinct; recorded wall time can
+reverse without changing monotonic receive order.
+
+Bounded canonical attachment metadata binds runner/target/configuration, original
+operation/request, prepared container, launch/image/runtime/transport and clock
+origin, with no argv/environment/secret-content fields. Exact metadata/session
+hashes bind a segment; replaced identity/revision/artifact/clock refuses. UTC
+normalization is stable. Ownership, live admission, later segment/gap continuity,
+pre-container failure diagnostics and every persistent/runtime/API/UI/retention
+gate remain separate responsibilities. No path is opened or runtime launched.
+
+Focused race/static tests pass for payload semantics/corruption, unknown coverage,
+raw-output preservation, integer precision, identity/revision/artifact rebinding,
+clock changes, unsupported metadata and forbidden arbitrary credential fields.
+This supersedes M587's opaque lifecycle-payload scope only; there is still no
+advertised/shipped recording capability or existing persistent-format migration.
+The running installed-upgrade capsule remains frozen at d24c960 and does not
+qualify this later source-only library change. See the
+[current recording contract](runtime-recordings.md).

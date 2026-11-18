@@ -68,8 +68,10 @@ session ID, exact metadata hash, segment/first-sequence, wall-clock origin and
 previous digest. Each bounded64KiB frame retains kind, sequence, observed wall
 time, monotonic elapsed time, exact bytes and a chained SHA256. These checks detect
 corruption/rebinding/reordering; file ownership and authorization remain separate
-storage responsibilities. Gap and exit payloads need their own typed validation
-in that layer.
+storage responsibilities. Gap and exit payloads now have separate version1 typed
+canonical validation. Unknown/duplicate fields, alternate encodings, unsupported
+reason/version and invalid counts/process bindings refuse before write. Even a
+valid frame checksum cannot promote semantically invalid lifecycle metadata.
 
 A failed/short write permanently poisons that encoder. Reads expose only complete
 verified frames and retain the last complete offset/digest on a partial tail.
@@ -87,9 +89,34 @@ verified process exit. Callers must verify container identity/ownership and TTY
 mode and close blocked transports on cancellation. This library opens no path,
 connects to no engine and runs no command.
 
+Canonical owner-private attachment metadata is bounded to4KiB and binds the exact
+runner/mode, instance/project, configuration revision, original operation/request,
+prepared container, launch contract, image digest, Vere version and transport.
+It contains no command/environment/secret-content fields. A random session ID and
+canonical UTC attachment time bind the first segment header and metadata digest.
+Equivalent time zones encode identically; full uint64 revisions stay exact.
+Metadata content binding does not establish filesystem ownership or authority.
+
+Typed gaps use finite reasons and optional **known** missing-byte counts; omitted
+counts mean unknown, never zero. A gap cannot become a process exit. Typed exit
+evidence requires a nonzero process start/finish, exact container and bounded exit
+code, keeping OOM/dead/native-error flags separate. It records an independently
+observed terminal process, not a Start submission or stream EOF. Wall-clock
+reversal is preserved independently from monotonic receive ordering. A failed
+Start with no launched process cannot fabricate an exit. Before-container setup
+failures still need a separate runner diagnostic/recording contract; these types
+describe attachment to an already prepared container.
+
+Later segments may start another monotonic epoch; durable storage must verify the
+preceding digest, exact metadata, sequence and explicit interruption gap instead
+of inventing continuous coverage. A later recorder attachment can link a distinct
+previous session ID. That link is evidence association, not proof that intervening
+bytes survived. Storage/runtime admission must compare recorded container/process
+facts with the independently verified selected runtime.
+
 Source race tests cover bursts/long lines, raw atoms/fake credentials/controls/
 invalid UTF-8, NTP-style wall-clock reversal, every partial-tail boundary, injected
 short/disk-pressure writes, bounded lengths, corruption/reordering, segment links,
 interrupted Docker payloads and cancellation. Owner-private filesystem storage,
-locking/index/cursors, retention/reserves, typed lifecycle metadata, durable sync,
+locking/index/cursors, retention/reserves, lifecycle coordination, durable sync,
 actual runtime capture and APIs/UI/export remain to implement and qualify.

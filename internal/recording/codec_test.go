@@ -23,7 +23,9 @@ func TestOriginalFramesPreserveBytesAndClockBasis(t *testing.T) {
 	}
 	first := append(bytes.Repeat([]byte("trace\n"), 350), bytes.Repeat([]byte("x"), 12288)...)
 	first = append(first, []byte("\n0wdiagnostic.atom Authorization: fake-token\r\x1b[2K\xff\x00")...)
-	want := [][]byte{first, []byte("stderr retained\n"), []byte(`{"code":"transport-reconnect","unknown_bytes":true}`), []byte(`{"observed_exit":7}`)}
+	gap, _ := (GapEvent{Version: 1, Reason: "transport-interrupted"}).Bytes()
+	exit, _ := (ExitEvent{Version: 1, ContainerID: string(bytes.Repeat([]byte("a"), 64)), StartedUnixNano: h.StartedUnixNano, FinishedUnixNano: h.StartedUnixNano + 1, Code: 7}).Bytes()
+	want := [][]byte{first, []byte("stderr retained\n"), gap, exit}
 	for i, data := range want {
 		kind := []Kind{Stdout, Stderr, Gap, Exit}[i]
 		// Wall clocks can move backwards. Monotonic observation order cannot.
@@ -223,7 +225,8 @@ func TestHeaderContinuationAndInvalidAppendHaveNoEffects(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	frame, err := next.Append(Gap, []byte(`{"code":"recorder-restart","unknown_bytes":true}`), h.StartedUnixNano+100, 0)
+	gap, _ := (GapEvent{Version: 1, Reason: "recorder-restarted"}).Bytes()
+	frame, err := next.Append(Gap, gap, h.StartedUnixNano+100, 0)
 	if err != nil || frame.Sequence != 2 {
 		t.Fatal(frame, err)
 	}
