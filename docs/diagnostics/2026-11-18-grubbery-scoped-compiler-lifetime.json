@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "source_base": "e3d700ce03b97812db903468d5db6982aabce15c",
+  "production_native_source_before": "fdf1ac6ebf21a4c24f7689b788cd6977778746f7",
+  "reproduced": true,
+  "trigger": "enforce callback reader closure in the source model, then execute original complete native phase sequence",
+  "failure": "observe-code remained uncertain because compiler verification read after WithGrubberyReads returned",
+  "fixture_previous_limit": "source model did not fence retained callback reader",
+  "fix": "all conditional compiler verification runs inside capture callback before confirmed cleanup; closed capture cannot read again; callback errors remain independent of transport cleanup claims",
+  "checks": [
+    "entire grubbery race suite",
+    "closed-lifetime complete phase/evidence/single-dispatch parity",
+    "invalid compiler/ignored callback error/unconfirmed logout remain uncertain; exact reconciliation changes no native write count",
+    "managed actual SQLite reopen/missing-cache journal recovery",
+    "private actual HTTP read-scope lifetime/cleanup",
+    "focused vet"
+  ],
+  "source_files": {
+    "internal/grubbery/native.go": "fa337839708b89be3c0a404bc20d394e8b3775544a45fbca82aa72aacac17049",
+    "internal/grubbery/native_read_scope_test.go": "f82443e96312e604963b9c004d1add3ad7361753204aa8cc64fbc1a59232e420"
+  },
+  "runtime_qualification": false,
+  "older_native_timeout_explained": false,
+  "persistent_format_changed": false,
+  "production_or_dev_changed": false
+}

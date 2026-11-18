@@ -232,3 +232,10 @@ complete product workflow and pending-phase container/key recovery remain to
 qualify. No capability or persistent format is promoted by these source gates.
 The next product fixture retains private request/response JSON and bounded CLI
 stderr before reporting a typed failure, preventing another lost error envelope.
+
+M649 corrects a scoped-read lifetime gap found during recovery review: compiler
+verification now finishes inside the authenticated capture before cleanup, and
+source models fence the callback reader just as the actual transport does. The
+complete source phase sequence and conditional-failure/reconciliation gates pass;
+new matching-artifact native evidence is still required. This affects the newer
+read-scope optimization; the earlier retained timeout used5eeae9a.

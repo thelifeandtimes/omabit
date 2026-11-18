@@ -288,7 +288,7 @@ type nativeCapture struct {
 
 func (c *nativeCapture) read(ctx context.Context, r ReadRequest) (NativeResponse, error) {
 	c.count++
-	if c.count > 512 || ctx.Err() != nil {
+	if c.count > 512 || ctx.Err() != nil || c.reader == nil {
 		return NativeResponse{}, ErrObservation
 	}
 	response, err := c.reader.GrubberyRead(ctx, r)
@@ -371,24 +371,47 @@ func (c *nativeCapture) files(ctx context.Context, node *nativeNode, root string
 }
 
 func (b *NativeBackend) capture(ctx context.Context, binding Binding, p nativeProjection) (*nativeCapture, error) {
+	return b.captureWithChecks(ctx, binding, p, nil)
+}
+
+// Every conditional verification read must run inside the same callback as the
+// capture. After that callback no reader can remain usable, and no proof can be
+// returned before confirmed cleanup. Checks retain original read order/evidence.
+func (b *NativeBackend) captureWithChecks(ctx context.Context, binding Binding, p nativeProjection, checks func(*nativeCapture) error) (*nativeCapture, error) {
+	captureReader := func(reader NativeReader, cleanup string) (*nativeCapture, error) {
+		capture, err := b.captureReader(ctx, binding, p, reader, cleanup)
+		if err == nil && checks != nil {
+			err = checks(capture)
+		}
+		if err != nil {
+			return nil, err
+		}
+		return capture, nil
+	}
 	if runtime, ok := b.runtime.(NativeReadScopeRuntime); ok {
 		var capture *nativeCapture
+		var callbackErr error
 		calls := 0
 		cleanup, err := runtime.WithGrubberyReads(ctx, binding, func(reader NativeReader) error {
 			calls++
 			if calls != 1 || reader == nil {
-				return ErrObservation
+				callbackErr = ErrObservation
+				return callbackErr
 			}
-			var err error
-			capture, err = b.captureReader(ctx, binding, p, reader, NativeReadScopeActive)
-			return err
+			capture, callbackErr = captureReader(reader, NativeReadScopeActive)
+			return callbackErr
 		})
-		if err != nil || cleanup != "confirmed" || capture == nil || calls != 1 {
+		if err != nil || callbackErr != nil || cleanup != "confirmed" || capture == nil || calls != 1 {
 			return nil, ErrObservation
 		}
+		capture.reader = nil
 		return capture, nil
 	}
-	return b.captureReader(ctx, binding, p, b.runtime, "confirmed")
+	capture, err := captureReader(b.runtime, "confirmed")
+	if capture != nil {
+		capture.reader = nil
+	}
+	return capture, err
 }
 
 func (b *NativeBackend) captureReader(ctx context.Context, binding Binding, p nativeProjection, reader NativeReader, cleanup string) (*nativeCapture, error) {
@@ -571,21 +594,28 @@ func (b *NativeBackend) ObserveAfter(ctx context.Context, p Plan, s Step) (*Proo
 	if err != nil {
 		return nil, err
 	}
-	c, err := b.capture(ctx, p.Binding, projected)
+	var checks func(*nativeCapture) error
+	if s.Kind == "observe-code" {
+		checks = func(c *nativeCapture) error {
+			reads, err := p.AfterReads(s.ID)
+			if err != nil || len(reads) != 1 {
+				return ErrObservation
+			}
+			response, err := c.read(ctx, reads[0])
+			if err != nil {
+				return err
+			}
+			defer clear(response.Body)
+			report, err := ParseBuildReport(response.Body, s.Path)
+			if response.Status != 200 || err != nil || report.CheckStaged(p.Source, false) != nil {
+				return ErrObservation
+			}
+			return nil
+		}
+	}
+	c, err := b.captureWithChecks(ctx, p.Binding, projected, checks)
 	if err != nil {
 		return nil, err
-	}
-	if s.Kind == "observe-code" {
-		reads, _ := p.AfterReads(s.ID)
-		response, err := c.read(ctx, reads[0])
-		if err != nil {
-			return nil, err
-		}
-		defer clear(response.Body)
-		report, err := ParseBuildReport(response.Body, s.Path)
-		if response.Status != 200 || err != nil || report.CheckStaged(p.Source, false) != nil {
-			return nil, ErrObservation
-		}
 	}
 	if _, err := b.guard(ctx, p.Binding, false); err != nil {
 		return nil, ErrAdmission

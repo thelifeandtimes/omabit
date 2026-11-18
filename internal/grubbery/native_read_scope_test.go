@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"strings"
 	"testing"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/grubbery"
@@ -13,12 +14,29 @@ type scopedNativeModel struct {
 	*nativeModel
 	cleanup, scenario string
 	scopes            int
+	compilerReads     int
+	compilerFailure   bool
 }
 
-type provisionalModelReader struct{ model *nativeModel }
+type provisionalModelReader struct {
+	model  *nativeModel
+	closed bool
+	scope  *scopedNativeModel
+}
 
-func (r provisionalModelReader) GrubberyRead(ctx context.Context, q grubbery.ReadRequest) (grubbery.NativeResponse, error) {
+func (r *provisionalModelReader) GrubberyRead(ctx context.Context, q grubbery.ReadRequest) (grubbery.NativeResponse, error) {
+	if r.closed {
+		return grubbery.NativeResponse{}, errors.New("read scope already closed")
+	}
 	response, err := r.model.GrubberyRead(ctx, q)
+
+	request, _ := q.Request()
+	if r.scope != nil && strings.HasPrefix(request.Path, "/grubbery/api/build") {
+		r.scope.compilerReads++
+		if r.scope.compilerFailure {
+			response = r.model.reply(200, []byte(`{"namespace":"/foreign","total":0,"failed":0,"files":[]}`))
+		}
+	}
 	response.SessionCleanup = grubbery.NativeReadScopeActive
 	return response, err
 }
@@ -29,7 +47,8 @@ func (s *scopedNativeModel) GrubberyRead(context.Context, grubbery.ReadRequest) 
 
 func (s *scopedNativeModel) WithGrubberyReads(ctx context.Context, _ grubbery.Binding, run func(grubbery.NativeReader) error) (string, error) {
 	s.scopes++
-	reader := provisionalModelReader{s.nativeModel}
+	reader := &provisionalModelReader{model: s.nativeModel, scope: s}
+	defer func() { reader.closed = true }()
 	switch s.scenario {
 	case "never-called":
 		return "confirmed", nil
@@ -112,6 +131,71 @@ func TestNativeReadScopeDoesNotIgnoreConditionalReadFailureOrInvalidCallback(t *
 			}
 			if scenario == "ignore-failure" && h.model.reads != 1 {
 				t.Fatal("scope bypassed conditional root checks and read deeper content")
+			}
+		})
+	}
+}
+
+func TestScopedCompilerChecksCannotOutliveCaptureOrIgnoreFailure(t *testing.T) {
+	for _, scenario := range []string{"compiler-failed", "runtime-ignored-error", "logout-unconfirmed"} {
+		t.Run(scenario, func(t *testing.T) {
+			prior, files := plan(t)
+			var scoped *scopedNativeModel
+			h := nativeHarnessFor(t, prior, files, func(model *nativeModel) grubbery.NativeRuntime {
+				scoped = &scopedNativeModel{nativeModel: model, cleanup: "confirmed"}
+				return scoped
+			})
+			p := nativePlan(t, h, prior, prior.RequestID)
+			if _, err := h.execution().Begin(t.Context(), callFor(p, ""), p); err != nil {
+				t.Fatal(err)
+			}
+			var compiler grubbery.Step
+			for _, step := range p.Steps {
+				if step.Kind == "observe-code" {
+					compiler = step
+					break
+				}
+				nativeAdvance(t, h, p, step)
+			}
+			if compiler.ID == "" {
+				t.Fatal("fixture omitted compiler phase")
+			}
+			scoped.compilerFailure = true
+			if scenario == "runtime-ignored-error" {
+				scoped.scenario = "ignore-failure"
+			}
+			// Let dispatch's admission finish normally; its after-read then sees the
+			// invalid compiler report from the independently supplied scoped reader.
+			record, err := h.execution().Advance(t.Context(), callFor(p, compiler.ID))
+			state, stateErr := record.State(compiler.ID)
+			if err != nil || stateErr != nil || state != "uncertain" || scoped.compilerReads == 0 {
+				t.Fatal("invalid compiled evidence became observed", state, err, stateErr)
+			}
+			for _, event := range record.Events {
+				if event.StepID == compiler.ID && event.Proof != nil {
+					t.Fatal("invalid compiler produced a saved proof")
+				}
+			}
+			writes := map[string]int{}
+			for key, count := range h.model.writes {
+				writes[key] = count
+			}
+			// Valid bytes are still provisional until this particular capture's logout.
+			if scenario == "logout-unconfirmed" {
+				scoped.compilerFailure = false
+				scoped.cleanup = "unconfirmed"
+			}
+			repeated, err := h.execution().Reconcile(t.Context(), callFor(p, compiler.ID))
+			if err != nil || !reflect.DeepEqual(repeated, record) || !reflect.DeepEqual(writes, h.model.writes) {
+				t.Fatal("failed compiler/cleanup reconciliation changed history or redispatched", err)
+			}
+			scoped.compilerFailure = false
+			scoped.cleanup = "confirmed"
+			scoped.scenario = ""
+			observed, err := h.execution().Reconcile(t.Context(), callFor(p, compiler.ID))
+			state, stateErr = observed.State(compiler.ID)
+			if err != nil || stateErr != nil || state != "observed" || !reflect.DeepEqual(writes, h.model.writes) {
+				t.Fatal("confirmed in-scope compiler read did not resolve without another effect", state, err)
 			}
 		})
 	}

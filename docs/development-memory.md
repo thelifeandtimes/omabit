@@ -11288,3 +11288,27 @@ its exact original store, failure/logs/source/artifacts and retirement hashes ar
 The complete original VM05 with acknowledged app uncertainty remains unchanged.
 Storage is under48GiB again. Replan native scratch using measurements; do not
 repeat the undersized case or turn source checks into a native pass.
+
+## M649 — Keep conditional compiler verification inside its read scope (2026-11-18)
+
+Review for runtime recovery finds a real M641 source integration gap. Ordinary
+capture returned before observe-code's additional compiler read; the real scope
+had already closed, while the inert model incorrectly left its reader usable.
+Tightening that lifetime first deterministically reproduces an uncertain
+observe-code phase. This narrows M641's complete scoped model evidence; it does
+not explain the earlier5eeae9a timeout, which predates the optimization. The
+081b00d COW gate ended before app phases and made no compiler-read pass claim.
+
+All conditional verification reads now occur inside the capture callback before
+confirmed cleanup. Callback error is checked independently of a runtime's return
+value; a closed capture has no usable reader. Original read ordering, byte checks,
+evidence digests and native single-dispatch behavior remain. Invalid compiler
+reports, ignored callback errors and unconfirmed logout cannot produce a proof;
+exact later reconciliation succeeds only with valid in-scope reads and cleanup,
+without another effect. No native timer, journal, schema or API changes.
+
+The full Grubbery race suite, actual SQLite reopen/missing-cache recovery, actual
+private HTTP scope lifetime/cleanup and focused vet pass. [Scoped source evidence](diagnostics/2026-11-18-grubbery-scoped-compiler-lifetime.json)
+retains reproduction/fix boundaries. Matching artifacts and native qualification
+remain pending. Continue with an explicit audited runtime recovery contract;
+never edit original plan/events to work around their old container binding.
