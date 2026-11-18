@@ -37,4 +37,6 @@ package managed
 // Schema57 binds frontend artifacts, source checks and session cleanup to upload receipts.
 // Schema58 retains ship URL choices and history bound to each pier incarnation.
 // Schema59 fences configurable container limits and immutable per-container contracts.
-const StateSchemaVersion = 59
+// Schema60 retains interrupted-stop reconciliation receipts and pre-signal
+// process bindings. Earlier readers must refuse rather than ignore resolution.
+const StateSchemaVersion = 60

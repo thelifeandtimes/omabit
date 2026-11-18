@@ -3,7 +3,7 @@ package protocol
 import "testing"
 
 func TestReplayOnlyEndpointsExcludeUnguardedEffects(t *testing.T) {
-	for _, path := range []string{"/v1/instances", "/v1/comets", "/v1/ships", "/v1/projects", PrivateChainProjectsPath, ProjectActionPath("project-one"), ProjectRecoveryActionPath("project-one", "", "start"), ProjectRecoveryActionPath("project-one", "op-parent", "observe"), ProjectRecoveryActionPath("project-one", "op-parent", "continue")} {
+	for _, path := range []string{"/v1/instances", "/v1/comets", "/v1/ships", "/v1/projects", PrivateChainProjectsPath, ProjectStopReconcilePath("project-one"), ProjectActionPath("project-one"), ProjectRecoveryActionPath("project-one", "", "start"), ProjectRecoveryActionPath("project-one", "op-parent", "observe"), ProjectRecoveryActionPath("project-one", "op-parent", "continue")} {
 		if !ReplayOnlyEndpoint("POST", path) || ReplayOnlyEndpoint("PUT", path) || ReplayOnlyEndpoint("GET", path) {
 			t.Fatal("invalid guarded endpoint", path)
 		}

@@ -9368,3 +9368,29 @@ redundant build/download copies were retired with manifests. Compact results and
 hashes remain. Charged storage with the new running review VM was39.485GiB before
 small verification downloads, which were also retired. Both existing DEV roots,
 all historical/manual environments, protected ships and production remain intact.
+
+## M579 — Exact interrupted-stop recovery contract (2026-11-17, source-qualified)
+
+Issues #16/#17 expose a recovery gap after an expanded-member clean Stop. An
+inert fixture reproduces the reported observation failure shape when exit occurs
+between preliminary/bracketed reads or during a namespace probe. This supports
+that race mechanism, not a proven predicate for the historical incident. Fleet
+inspection now binds the process and retries only a verified transition, with
+all ownership checks repeated. SSH receipt lookup now retains its guard on
+project endpoints; unsupported guarded writes refuse before client dispatch.
+
+Schema60 adds pre-signal bindings and independent reconciliation receipts. Saved
+diagnosis, live review, exact apply, original receipt lookup and ordinary Start
+have distinct contracts. Recovery binds the original typed request/container,
+preserves the interrupted operation and clears only its verified fence. Legacy
+admission-window evidence remains explicitly distinct from new process capture.
+Reopen/admission validate resolution ancestry; corruption and stale review refuse.
+
+Pinned original0.4.0/schema59 writer preservation and actual older-reader refusal
+pass. The frozen fixture records the writer, helper and SQL hashes with explicit
+supersession. Actual collector lost-reply/replay, focused managed/runtime/bridge
+race checks, the full client race suite and affected-package vet pass using inert
+fixtures. CLI help generation is networkless and creates no state. See
+[the supported source contract](project-member-recovery.md). Disposable real-runtime
+recovery and an installed non-destructive upgrade are still required. No installed
+deployment or broader issue completion is established by this source checkpoint.

@@ -11,6 +11,9 @@ import (
 
 func (r *Server) projectActionFeatures() []string {
 	var out []string
+	if _, ok := r.b.(projectStopRecoveryBackend); ok {
+		out = append(out, protocol.ProjectStopObservationFeature)
+	}
 	if _, ok := r.b.(projectExpansionBackend); ok {
 		out = append(out, "project-add-member-v1")
 	}

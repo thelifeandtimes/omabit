@@ -218,6 +218,9 @@ CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TE
 	if err := initializeProjectExpansions(tx); err != nil {
 		return err
 	}
+	if err := initializeProjectStopReconciliations(tx, version); err != nil {
+		return err
+	}
 	if err := initializePrivateProjects(tx); err != nil {
 		return err
 	}

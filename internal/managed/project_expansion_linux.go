@@ -225,8 +225,8 @@ func (r *Server) queueProjectAddition(actor, id string, req protocol.ProjectActi
 	if err != nil || digest != req.ReviewDigest || p.Revision != req.ExpectedRevision {
 		return protocol.Operation{}, false, bad("project selection changed")
 	}
-	var active int
-	if err = r.s.db.QueryRow("SELECT count(*) FROM operations WHERE json_extract(body,'$.project_id')=? AND id!=? AND json_extract(body,'$.status') IN ('queued','running','interrupted')", id, req.AfterOperationID).Scan(&active); err != nil || active > 0 {
+	active, err := projectPendingOperationCount(r.s.db, id, req.AfterOperationID)
+	if err != nil || active > 0 {
 		return protocol.Operation{}, false, conflict("project_busy", "finish or review the project's pending operation first")
 	}
 	state, err := loadProjectExpansion(r.s.db, id)

@@ -35,6 +35,16 @@ type ProjectExpandedMember struct {
 	Added       bool                            `json:"added"`
 	Phase       string                          `json:"phase"`
 	Publication *ProjectPort                    `json:"publication,omitempty"`
+	StopIntent  *ProjectExpandedStopIntent      `json:"stop_intent,omitempty"`
+}
+
+// Saved before SIGTERM, independently of the effect acknowledgement. Legacy
+// members omit this field; migration must never invent their process evidence.
+type ProjectExpandedStopIntent struct {
+	OperationID string    `json:"operation_id"`
+	ContainerID string    `json:"container_id"`
+	StartedAt   time.Time `json:"started_at"`
+	RecordedAt  time.Time `json:"recorded_at"`
 }
 
 func SeedProjectExpansion(s ProjectCurrentReadinessSelection) (ProjectExpansion, error) {
@@ -97,7 +107,14 @@ func expansionEngineWithDependencies(ctx context.Context, s ProjectExpansion, d 
 				return nil, err
 			}
 		}
-		e.source.members = append(e.source.members, projectObservedMember{contract: c, id: m.Creator.Container.ID})
+		member := projectObservedMember{contract: c, id: m.Creator.Container.ID}
+		if m.StopIntent != nil {
+			if !protocol.ValidID(m.StopIntent.OperationID) || m.StopIntent.ContainerID != member.id || m.StopIntent.StartedAt.IsZero() || m.StopIntent.RecordedAt.Before(m.StopIntent.StartedAt) {
+				return nil, errors.New("retained project stop intent changed")
+			}
+			member.processStartedAt = m.StopIntent.StartedAt
+		}
+		e.source.members = append(e.source.members, member)
 	}
 	return e, nil
 }
@@ -412,6 +429,11 @@ func RunProjectShipAction(ctx context.Context, s *ProjectExpansion, id, action, 
 		if !*old.State.Running {
 			return errors.New("selected project member is already stopped")
 		}
+		started, parseErr := time.Parse(time.RFC3339Nano, old.State.StartedAt)
+		if parseErr != nil || started.IsZero() {
+			return errUntrustedContainer
+		}
+		m.StopIntent = &ProjectExpandedStopIntent{OperationID: operation, ContainerID: m.Creator.Container.ID, StartedAt: started, RecordedAt: time.Now().UTC()}
 		if err = phase("stop-dispatched"); err != nil {
 			return err
 		}
@@ -469,6 +491,7 @@ func RunProjectShipAction(ctx context.Context, s *ProjectExpansion, id, action, 
 	m.Creator.Mode = "resume"
 	m.Creator.Storage = m.Initialized
 	m.Creator.Container = projectnetwork.ResourceIdentity{}
+	m.StopIntent = nil
 	if err = phase("retired"); err != nil {
 		return err
 	}

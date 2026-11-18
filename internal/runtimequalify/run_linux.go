@@ -42,6 +42,7 @@ type dependencies struct {
 	persist          func(Result) error
 	home, runtimeDir string
 	identity         func() (identity, error)
+	readBootID       func() (string, error)
 	stat             func(string) (node, error)
 	admission        func(string) (uint64, uint64, error)
 	resourcePolicy   func() (resourcepolicy.Policy, error)

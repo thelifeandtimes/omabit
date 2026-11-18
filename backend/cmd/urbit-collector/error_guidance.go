@@ -37,6 +37,9 @@ func guidanceFor(err error, problem protocol.APIError) *errorGuidance {
 	}
 	var uncertain *client.OutcomeUncertainError
 	if errors.As(err, &uncertain) {
+		if _, ok := protocol.ProjectStopReconcileID(uncertain.Path); ok {
+			return &errorGuidance{Kind: "lookup_stop_reconciliation", Summary: "Stop reconciliation outcome is unknown. Preserve the exact runner, actor, project, saved review and request ID. Repeat the identical project-reconcile-stop inputs with --replay-only to retrieve the retained receipt. Do not refresh the review, mint a new request ID or start the member to guess the outcome.", Next: []helpCommand{{"project-reconcile-stop --help", "Read exact review and lookup-only flags."}, {"project-diagnose --help", "Read saved diagnosis separately from a fresh runtime probe."}}}
+		}
 		if _, _, _, ok := protocol.ProjectRecoveryActionIDs(uncertain.Path); ok {
 			return &errorGuidance{Kind: "reconcile_project_recovery", Summary: "Recovery request outcome is unknown. Preserve the same runner, actor, project, action, parent, revision, history/checkpoint digests, sequence and request ID. Use the identical project-recover inputs with --replay-only to look up its receipt without scheduling work. An interrupted receipt needs a separately reviewed observation or continuation; do not mint a retry ID.", Next: []helpCommand{{"project-recover --help", "Read explicit recovery and lookup-only flags."}, {"project-recovery-checkpoint --help", "Read the exact retained parent checkpoint without runtime effects."}}}
 		}

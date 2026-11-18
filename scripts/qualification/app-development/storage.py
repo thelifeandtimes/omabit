@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import subprocess
+import stat
 
 GIB = 1024**3
 BUDGET = 40 * GIB
@@ -15,8 +16,42 @@ DEV = Path('/srv/dev/urbit')
 NAMED_DEV = Path('/srv/dev/urbit-040')
 
 
+def measure_development_namespace(path):
+    """Read allocated blocks with the existing rootless engine's file authority.
+
+    This joins only its user namespace for a fixed read-only du command. It does
+    not join its mount/process namespace, contact Docker, or change permissions.
+    A stale PID, changed namespace or incomplete read refuses the measurement.
+    """
+    if path not in (DEV, NAMED_DEV):
+        raise RuntimeError('namespace measurement requires a known DEV root')
+    name = 'omabit-dev' + str(path).removeprefix('/srv/dev/urbit')
+    pidfile = Path('/run/user') / str(os.geteuid()) / name / 'rootlesskit/child_pid'
+    try:
+        node = pidfile.lstat()
+        if not stat.S_ISREG(node.st_mode) or node.st_uid != os.geteuid() or node.st_nlink != 1 or node.st_mode & 0o022:
+            raise RuntimeError('unsafe DEV engine PID evidence')
+        pid = pidfile.read_text().strip()
+        if not pid.isascii() or not pid.isdigit() or not 1 < int(pid) < 2**31:
+            raise RuntimeError('invalid DEV engine PID')
+        namespace = Path('/proc') / pid / 'ns/user'
+        before = os.readlink(namespace)
+        result = subprocess.run(['/usr/bin/nsenter', '--user=' + str(namespace), '--', '/usr/bin/du', '-s', '-B1', '--', str(path)],
+                                capture_output=True, text=True, check=False,
+                                env={**os.environ, 'LC_ALL': 'C'}, timeout=60)
+        if result.returncode or result.stderr or before != os.readlink(namespace) or pidfile.read_text().strip() != pid:
+            raise RuntimeError('DEV namespace allocation measurement incomplete or changed')
+        fields = result.stdout.split()
+        if len(fields) != 2 or fields[1] != str(path) or not fields[0].isdigit():
+            raise RuntimeError('invalid DEV namespace allocation result')
+        return {'path': str(path), 'allocated_bytes': int(fields[0]), 'unmeasured_reserve': 0,
+                'measurement_source': 'existing-rootless-user-namespace', 'namespace': before}
+    except OSError as error:
+        raise RuntimeError('DEV namespace allocation evidence unavailable') from error
+
+
 def measure(path):
-    result = subprocess.run(['du', '-s', '-B1', '--', str(path)],
+    result = subprocess.run(['/usr/bin/du', '-s', '-B1', '--', str(path)],
                             capture_output=True, text=True, check=False,
                             env={**os.environ, 'LC_ALL': 'C'}, timeout=60)
     if not result.stdout:
@@ -27,8 +62,14 @@ def measure(path):
         errors = result.stderr.splitlines()
         pattern = r"du: cannot read directory '/srv/dev/urbit/state/\.local/share/urbit-runner/docker/containerd/daemon/io\.containerd\.snapshotter\.v1\.overlayfs/snapshots/[0-9]+/work/work': Permission denied"
         pattern = pattern.replace('/srv/dev/urbit/', re.escape(str(path)) + '/')
-        if path not in (DEV, NAMED_DEV) or not 1 <= len(errors) <= 18 or not all(re.fullmatch(pattern, e) for e in errors):
+        if path not in (DEV, NAMED_DEV) or not errors or not all(re.fullmatch(pattern, e) for e in errors):
             raise RuntimeError('incomplete storage measurement: ' + str(path))
+        try:
+            return measure_development_namespace(path)
+        except RuntimeError:
+            if len(errors) > 18:
+                # Do not expand the historical partial-measurement allowance.
+                raise
         row.update(unreadable_work_directories=len(errors), unmeasured_reserve=GIB)
     return row
 

@@ -82,10 +82,14 @@ func openProjectAnchorStart(ctx context.Context, s projectSelection, prepared pr
 	if err = base.VerifyEngine(ctx, prepared.EngineID); err != nil {
 		return nil, err
 	}
-	return &projectAnchorEngine{base: base, prepared: prepared, readBootID: func() (string, error) {
-		data, err := os.ReadFile("/proc/sys/kernel/random/boot_id")
-		return strings.TrimSpace(string(data)), err
-	}}, nil
+	readBootID := d.readBootID
+	if readBootID == nil {
+		readBootID = func() (string, error) {
+			data, err := os.ReadFile("/proc/sys/kernel/random/boot_id")
+			return strings.TrimSpace(string(data)), err
+		}
+	}
+	return &projectAnchorEngine{base: base, prepared: prepared, readBootID: readBootID}, nil
 }
 
 func (e *projectAnchorEngine) VerifyEngine(ctx context.Context, id string) error {

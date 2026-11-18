@@ -333,7 +333,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodGet && req.URL.Path == "/hello" {
 		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials", "offline-pack", "offline-meld", "offline-roll", "container-resources", "container-cpu", "epoch-inventory", "epoch-prune-genesis", "epoch-prune-prefix"}
 		features = append(features, "maintenance-schedules")
-		features = append(features, protocol.CreationReplayFeature, protocol.ProjectInventoryFeature, protocol.ProjectStatusFeature, protocol.ProjectRecoveryCheckpointFeature, protocol.ProjectRecoverySourceFeature, protocol.ProjectRegistrationFeature, protocol.PrivateChainRegistrationFeature, protocol.PrivateChainInventoryFeature)
+		features = append(features, protocol.ProjectStopRecoveryFeature, protocol.CreationReplayFeature, protocol.ProjectInventoryFeature, protocol.ProjectStatusFeature, protocol.ProjectRecoveryCheckpointFeature, protocol.ProjectRecoverySourceFeature, protocol.ProjectRegistrationFeature, protocol.PrivateChainRegistrationFeature, protocol.PrivateChainInventoryFeature)
 		features = append(features, r.projectActionFeatures()...)
 		if _, ok := r.b.(projectDependenciesBackend); ok {
 			features = append(features, protocol.ProjectDependenciesFeature)
@@ -432,6 +432,14 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if project, ok := protocol.ProjectActionID(req.URL.Path); ok && req.Method == http.MethodPost {
 		r.serveProjectAction(w, req, actor, role, project)
+		return
+	}
+	if project, member, operation, probe, ok := protocol.ProjectMemberDiagnosisIDs(req.URL.Path); ok && req.Method == http.MethodGet {
+		r.serveProjectMemberDiagnosis(w, req, actor, role, project, member, operation, probe)
+		return
+	}
+	if project, ok := protocol.ProjectStopReconcileID(req.URL.Path); ok && req.Method == http.MethodPost {
+		r.serveProjectStopReconcile(w, req, actor, role, project)
 		return
 	}
 	if id, ok := protocol.ProjectRecoverySourceID(req.URL.Path); ok && req.Method == http.MethodGet {

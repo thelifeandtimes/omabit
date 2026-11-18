@@ -25,6 +25,9 @@ func ReplayOnlyEndpoint(method, path string) bool {
 	if _, ok := ProjectActionID(path); ok {
 		return true
 	}
+	if _, ok := ProjectStopReconcileID(path); ok {
+		return true
+	}
 	_, _, _, ok := ProjectRecoveryActionIDs(path)
 	return ok
 }

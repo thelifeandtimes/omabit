@@ -292,9 +292,10 @@ func (c *Client) do(ctx context.Context, method, path string, payload, result an
 	if versioned {
 		req.Header.Set(protocol.Header, strconv.Itoa(protocol.Version))
 	}
-	_, projectAction := protocol.ProjectActionID(path)
-	_, _, _, projectRecoveryAction := protocol.ProjectRecoveryActionIDs(path)
-	if replay, _ := ctx.Value(creationReplayKey{}).(bool); replay && method == http.MethodPost && (path == "/v1/instances" || path == "/v1/comets" || path == "/v1/ships" || path == protocol.ProjectInventoryPath || path == protocol.PrivateChainProjectsPath || projectAction || projectRecoveryAction) {
+	if IsCreationReplayOnly(ctx) && (method == http.MethodPost || method == http.MethodPut || method == http.MethodDelete) {
+		if !protocol.ReplayOnlyEndpoint(method, path) {
+			return errors.New("lookup-only is unsupported for this endpoint; request was not sent")
+		}
 		req.Header.Set(protocol.CreationReplayHeader, "true")
 	}
 	if method == http.MethodPut || method == http.MethodPost || method == http.MethodDelete {

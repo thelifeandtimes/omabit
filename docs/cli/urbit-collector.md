@@ -13,6 +13,10 @@ Start with help for offline task topics, or help TOPIC for a focused guide.
 
 Commands:
   help [TOPIC]  Offline guidance in JSON (default) or --format text.
+  project-diagnose PROJECT --member INSTANCE --operation STOP [--probe]
+              Diagnose an exact interruption; --probe prepares a read-only review.
+  project-reconcile-stop PROJECT --review FILE --request-id ID --confirm-action
+              Verify stopped state and resolve its exact fence; never starts a ship.
   projects    Read selected runner project reservations; does not probe runtime.
   project-create  Create and boot a complete fresh fake network; use --help.
   project-add PROJECT  Add one fresh fake to an existing project; use --help.
@@ -1266,6 +1270,29 @@ Failed/interrupted actions stop the workflow; no replacement IDs or destructive
 cleanup are attempted. Existing project-operate controls remain available.
 ```
 
+## project-diagnose
+
+```text
+Usage: urbit-collector --runner NAME --expected-runner-id ID COMMAND PROJECT
+  project-diagnose PROJECT --member INSTANCE --operation ORIGINAL_STOP [--probe]
+  project-reconcile-stop PROJECT --review DIAGNOSIS_JSON --request-id ID
+                         --confirm-action [--replay-only]
+
+project-diagnose reads saved state only. --probe additionally makes bounded,
+read-only ownership/exit observations and returns an exact review when supported.
+Save the JSON diagnosis from --probe, inspect its bindings, then pass that same
+file to project-reconcile-stop. Exact private bindings are operator-only data;
+do not publish this review as a shareable diagnostic bundle.
+
+Reconciliation requires the original operator and a clean exit. It changes only
+the selected stop fence and records a new receipt linked to the original
+interruption. It never repeats SIGTERM, starts a ship, replaces a pier or fixes
+an abnormal/OOM exit. Ordinary member-start remains a separate explicit action.
+Keep the original review/request after a lost reply; add --replay-only to retrieve
+that exact result without observing or applying again. A stale/changed review
+requires new diagnosis and review, never automatic refresh into new authority.
+```
+
 ## project-operate
 
 ```text
@@ -1327,6 +1354,29 @@ access. This is a trusted development network, not isolation between hostile app
 Example:
   urbit-collector project-plan --label demo --member demo-zod:~zod:18381 \
     --member demo-nec:~nec:18382 --shared-administration
+```
+
+## project-reconcile-stop
+
+```text
+Usage: urbit-collector --runner NAME --expected-runner-id ID COMMAND PROJECT
+  project-diagnose PROJECT --member INSTANCE --operation ORIGINAL_STOP [--probe]
+  project-reconcile-stop PROJECT --review DIAGNOSIS_JSON --request-id ID
+                         --confirm-action [--replay-only]
+
+project-diagnose reads saved state only. --probe additionally makes bounded,
+read-only ownership/exit observations and returns an exact review when supported.
+Save the JSON diagnosis from --probe, inspect its bindings, then pass that same
+file to project-reconcile-stop. Exact private bindings are operator-only data;
+do not publish this review as a shareable diagnostic bundle.
+
+Reconciliation requires the original operator and a clean exit. It changes only
+the selected stop fence and records a new receipt linked to the original
+interruption. It never repeats SIGTERM, starts a ship, replaces a pier or fixes
+an abnormal/OOM exit. Ordinary member-start remains a separate explicit action.
+Keep the original review/request after a lost reply; add --replay-only to retrieve
+that exact result without observing or applying again. A stale/changed review
+requires new diagnosis and review, never automatic refresh into new authority.
 ```
 
 ## project-recover

@@ -10,6 +10,16 @@ import storage
 
 
 class StorageAdmission(unittest.TestCase):
+    def test_expanding_known_overlay_errors_need_complete_measurement(self):
+        error = "du: cannot read directory '/srv/dev/urbit/state/.local/share/urbit-runner/docker/containerd/daemon/io.containerd.snapshotter.v1.overlayfs/snapshots/42/work/work': Permission denied\n"
+        complete = {'path': str(storage.DEV), 'allocated_bytes': 12345, 'unmeasured_reserve': 0}
+        with patch('storage.subprocess.run', return_value=SimpleNamespace(returncode=1, stdout='4096\tpath\n', stderr=error * 26)), patch('storage.measure_development_namespace', return_value=complete) as namespace:
+            self.assertEqual(storage.measure(storage.DEV), complete)
+            namespace.assert_called_once_with(storage.DEV)
+        with patch('storage.subprocess.run', return_value=SimpleNamespace(returncode=1, stdout='4096\tpath\n', stderr='du: other failure')), patch('storage.measure_development_namespace') as namespace:
+            with self.assertRaises(RuntimeError):
+                storage.measure(storage.DEV)
+            namespace.assert_not_called()
     def test_explicit_temporary_budget_does_not_change_default(self):
         rows = [{'allocated_bytes': 42 * storage.GIB, 'unmeasured_reserve': storage.GIB}]
         with self.assertRaises(RuntimeError):

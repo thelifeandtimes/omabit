@@ -1,5 +1,27 @@
 # Stable-release upgrade requirement
 
+## Development: interrupted project Stop reconciliation, schema60
+
+Schema60 adds separately attributed clean-stop reconciliation receipts and
+pre-signal process bindings for new expanded-member stops. Migration preserves
+all prior rows, grants no permissions, and signals/starts no runtime. Historical
+omitted stop-intent fields remain omitted. Reconciliation preserves the original
+interrupted operation and resolves only its exact fence through a new audited
+receipt. Unknown, corrupt or missing resolution ancestry refuses unchanged.
+
+The frozen synthetic schema59 fixture was written by actual0.4.0 source
+`a9623329a538ebf83d63365053d2d1011ade091e`, with the declared test helper. The
+original-writer rehearsal preserves every original table across repeated
+schema60 opening and tests exact resolution replay after reopen. The actual old
+reader refuses populated60 without modifying it. See
+[project member recovery](project-member-recovery.md) and
+`scripts/test-project-stop-recovery-upgrade.py` for reproducing these gates.
+
+This is development source/migration/interface evidence, not an installed upgrade
+or stable release qualification. Matching artifacts, disposable runtime recovery
+and the non-destructive installed upgrade remain required before promotion.
+Never lower the schema marker or reset a store to run an older manager.
+
 ## 0.4.0 candidate: installed0.3.7→0.4.0 qualification
 
 The [exact-artifact rehearsal](releases/0.4.0/rehearsal.json) passes the local
