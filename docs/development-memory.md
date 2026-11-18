@@ -10133,3 +10133,27 @@ installed/native Grubbery qualification or a stable support promise. Matching
 final artifacts, native admission/observers/transport, actual app source and
 permit/route/served-byte/state/restart/peer gates remain active. Production and
 installed DEV artifacts/state have not changed.
+
+## M609 — Retire superseded task piers before app contract tests (2026-11-18)
+
+After M608's source gates, retire only the completed fresh-fake Gall dependency
+failure and first Grubbery precommit ownership-refusal piers. Later passing cold/
+warm Gall and exact Grubbery bootstrap references retain their full piers. Every
+removed file and directory is bound in a private device/inode/allocation/hash
+manifest; original runner stores, receipts, source inputs, logs, guard and shutdown
+results remain byte-verified. Both removed piers had confirmed clean shutdown.
+A redundant task-local pill and duplicate host workflow executable are verified
+against retained exact references before removal. A completed source-test binary
+is also retired with its source and passing logs preserved. This frees about1.4GiB;
+no installed/manual-review/production data, unrelated experiment or user ship is
+part of this retirement. All original failure results remain failures.
+
+The next single-peer app contract case still needs declared storage admission
+under the temporary48GiB goal ceiling. M608 establishes source persistence only.
+Before public app writes, distinguish a native pre-effect refusal from a lost
+reply, and establish exact native ownership after uncertain root creation. An
+existing derived namespace or matching content alone must not become adoption.
+Native parent creation, root markers, code compilation, followed source and
+retained application state need fresh isolated contract tests; these are research
+questions, not qualified behavior. The four nested shell-tool failures remain
+unclassified. No native app capability or installed update is implied.
