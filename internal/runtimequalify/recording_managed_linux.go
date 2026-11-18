@@ -32,11 +32,15 @@ var errRecordingSelection = errors.New("recording selection unavailable or chang
 // original request to RuntimeID. This constructor cannot establish that journal
 // authority from a name or a digest. Project factories need their own contract.
 type RecordingOperation struct {
-	RunnerID, Mode, RuntimeID      string
-	Target                         apppolicy.Target
-	ConfigurationRevision          uint64
-	OperationID, RequestID         string
-	ContainerID, PreviousSessionID string
+	RunnerID              string           `json:"runner_id"`
+	Mode                  string           `json:"mode"`
+	RuntimeID             string           `json:"runtime_id"`
+	Target                apppolicy.Target `json:"target"`
+	ConfigurationRevision uint64           `json:"configuration_revision"`
+	OperationID           string           `json:"operation_id"`
+	RequestID             string           `json:"request_id"`
+	ContainerID           string           `json:"container_id"`
+	PreviousSessionID     string           `json:"previous_session_id,omitempty"`
 }
 
 // PrepareManagedRecording prepares an ordinary, newly created non-TTY Vere

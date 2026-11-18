@@ -391,3 +391,23 @@ isolation, artifact/launch/storage drift and ambiguous selection refusal. Focuse
 vet passes. No factory is wired into installed launch. Independent supervised
 workers, project factories, later native identity evidence, launch-failure and
 pressure recovery, retention, API/UI and real-runtime gates remain required.
+
+## Source-only worker handoff model
+
+The version1 private job codec binds the original ordinary runner operation,
+actor, revision, prepared runtime and exact executable hash to its native
+admission. It copies only required launch inputs. Signing keys, retained log
+bodies, recorded endpoints and runtime diagnostics are omitted; source quarantine
+cannot be stripped into a clean job. Unknown versions/fields, duplicate or
+noncanonical JSON, invalid bounds and sensitive extra state refuse. Nested values
+are copied and full uint64 fields remain exact.
+
+An independent worker must repeat native admission and match engine/endpoint,
+host boot, target, expected-name/storage basis, launch and runtime-artifact facts.
+Its new session clock and its own recorder namespaces must be independently
+obtained. A matching hash is evidence association, not authentication, an engine
+probe or Start permission. The authenticated manager retains the durable job and
+lifecycle guard. Source/race/vet checks pass with inert engine/private fixtures.
+Durable claim/readiness storage, executable checking, independent supervision,
+launch integration and upgrade guards remain unimplemented; this codec alone
+starts nothing and changes no installed file or database.

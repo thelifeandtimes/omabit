@@ -164,3 +164,8 @@ old-reader refusal unchanged. A retained original3 segmented fixture with exact
 source/helper/writer pins passes ordinary full recording race/vet. Source-format
 compatibility is qualified for that boundary; live capture/worker/retention and
 installed recording remain pending.
+
+M672 adds source-tested version1 private worker-job encoding/admission binding
+without key/log bodies or copied parent receive context. It remains unwired;
+durable claims/readiness, independent supervision and launch/upgrade integration
+are the next recording slice, not an installed capability.

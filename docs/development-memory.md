@@ -11926,3 +11926,26 @@ This supersedes M667/M669's actual original3-writer deferral only. The factory i
 still unwired; independent workers, native bootstrap/recording coverage, retention,
 API/UI/export and installed qualification remain pending. No user recording,
 native runtime, production, manual DEV or existing ship was opened by this gate.
+
+## M672 — Bind an independent recorder's private handoff without private bodies (2026-11-18)
+
+Add an unwired version1 canonical private job codec, bounded64KiB, for an ordinary
+manager-owned launch. Bind original runner/mode/target/revision/request/operation,
+actor, runtime identity, exact executable SHA and native admission. Whitelist the
+state fields required by the factory, excluding signing keys, retained logs,
+user endpoints, runtime diagnostics and unrelated histories. Reject original
+quarantine instead of sanitizing it into launch authority. Canonical decoding
+refuses unknown/duplicate fields, future versions, malformed/sensitive state,
+invalid paths/limits and credential-bearing pill URLs. New jobs copy nested
+state; exact uint64 bindings remain intact.
+
+Worker admission must be independently observed. Match every native binding,
+including daemon/endpoint, host boot, storage/name basis, launch and artifacts;
+exclude only fresh session/receive-clock origin and the worker's own namespaces.
+No parent namespace is assigned to a future worker. A digest is association only,
+never authentication, a fresh observation or Start authority. Targeted job/native
+factory/attachment race checks pass in2.395s; vet passes with inert fixtures.
+No job file, service, persistent database migration or installed feature is
+created by this codec. Claim/readiness durability, actual executable verification,
+supervision, lifecycle integration and downgrade/upgrade guards remain required.
+The six-issue goal stays open.

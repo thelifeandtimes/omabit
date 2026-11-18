@@ -29,6 +29,13 @@ worker lifecycle, later observed identity, real Docker/Vere, installed upgrade
 and final artifact/support-window gates remain required. This is an unreleased
 development format, not qualified recording support.
 
+The private recording-worker job codec is version1 and currently unwired. It has
+no installed predecessor, state database entry or running worker. Unknown or
+noncanonical versions refuse. Before enabling persistent jobs, qualify durable
+claim/readiness and exact-executable admission, add the runner's downgrade guard
+and preserve old jobs/recordings through upgrade. Do not allow a schema63 binary
+to ignore newly active recording authority or replace an existing session.
+
 ## Development: separate app runtime recovery audits, schema63
 
 Schema63 adds immutable linked runtime recovery receipts and exact per-operation
