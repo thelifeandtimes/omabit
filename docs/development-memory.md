@@ -11558,3 +11558,27 @@ host process before mounts. Fixed helper compilation/separation race checks and
 focused vet pass. No VM has launched for this case. Freeze matching artifacts,
 reclaim only classified task compiler-cache objects as needed and admit storage
 before native qualification. Capacity and full native recovery remain unqualified.
+
+## M659 — Freeze matching recovery artifacts and admit the bounded case (2026-11-18)
+
+Freeze clean6676c9ec source for Omabit, collector, runner and the explicitly
+source-pinned native helper. The first build uses an incorrect collector cmd
+path and refuses before any collector/runtime output; the actual backend/cmd
+paths fix it, preserving the verified matching CLI and original failed command.
+All4 final hashes/build identities and exact Go/embedded/test/harness input pins
+are retained. No installed file or service changes. See the [artifact boundary](diagnostics/2026-11-18-app-runtime-cow-artifact-freeze.json).
+
+Classify76 older regenerable managed/runtimequalify/CLI test-package AR objects
+by exact task worktree source file plus task-only test symbols, inode/owner/link/
+mtime/content/build identity and exact archive members. Validate every selected
+and retained object before unlink; a per-file removal manifest records progress.
+Retain the newest2 per package and verify all named frozen binaries unchanged
+before/after. This frees867,160,064allocated bytes, touching no source, SQLite,
+runtime image or installed artifact. No Go build/test remains active during it.
+
+Read-only admission charges50,089,832,448bytes and declares1,409,286,144bytes
+(1280MiB capsule+64MiB host reserve), totaling51,499,118,592 under the approved
+48GiB cap. This is admission, not a native pass. Run one guarded offline COW case
+with the fixed original read-only, hard QEMU root-file bound and per-second
+monitoring. Preserve any failure and report limits; no production/manual DEV or
+existing user ship operation is authorized by this checkpoint.
