@@ -23,7 +23,7 @@ func (c *Client) requireDeskFeature(ctx context.Context, expected Identity, feat
 		return err
 	}
 	if !slices.Contains(h.Features, feature) {
-		return errors.New("runner lacks " + feature + "; use a compatible runner")
+		return &UnsupportedCapabilityError{Feature: feature, Hello: h}
 	}
 	return nil
 }

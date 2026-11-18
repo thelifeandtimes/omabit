@@ -8,7 +8,23 @@ Global options precede the command. Command options follow its positional argume
 
 ```text
 Usage: omabit [--format text] [--config-dir DIR] [--state-dir DIR] COMMAND
-Commands: ship-routes, ship-routes-configure, desk-review-frontend, desk-plan-frontend, desk-upload-frontend, desk-receiver-status, desk-review-install, desk-plan-install, desk-install, desk-review-adoption, desk-plan-adoption, desk-adopt, desk-review-release, desk-plan-release, desk-release, desk-app-status, desk-review-commit, desk-plan-commit, desk-commit, desk-plan-stage, desk-stage, desk-stage-status, desk-stage-discard, desk-source-status, desk-settings, desk-list, desk-inspect, desk-plan-create, desk-create, desk-operation, desk-reconcile, setup, setup-status, service-upgrade-status, service-upgrade --expected-runner-id ID --target-sha256 SHA --acknowledge-host-changes, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID
+Commands: app-preflight, ship-routes, ship-routes-configure, desk-review-frontend, desk-plan-frontend, desk-upload-frontend, desk-receiver-status, desk-review-install, desk-plan-install, desk-install, desk-review-adoption, desk-plan-adoption, desk-adopt, desk-review-release, desk-plan-release, desk-release, desk-app-status, desk-review-commit, desk-plan-commit, desk-commit, desk-plan-stage, desk-stage, desk-stage-status, desk-stage-discard, desk-source-status, desk-settings, desk-list, desk-inspect, desk-plan-create, desk-create, desk-operation, desk-reconcile, setup, setup-status, service-upgrade-status, service-upgrade --expected-runner-id ID --target-sha256 SHA --acknowledge-host-changes, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID
+```
+
+## app-preflight
+
+```text
+Usage: omabit [--config-dir DIR] app-preflight --runner NAME --expected-runner-id ID --workflow gall|grubbery [--instance INSTANCE --desk DESK] [--effects create-desk,commit,publish]
+
+Read only the selected runner's actual Hello and saved application policy before
+creating an app-specific project. Effects default to create-desk,commit. Missing
+runner APIs, operation adapters and named policy denials are separate results.
+Exit 1 with structured output when incompatible; exit 0 means only capability
+and saved-policy compatibility. Omitted instance/desk checks the environment,
+without claiming future ship permissions. No project or policy is changed.
+Fresh runtime, publication and application review is required before each effect.
+Grubbery remains unavailable until its versioned workflow adapter is implemented.
+Runner build metadata is self-reported; absent older-runner metadata is unknown.
 ```
 
 ## copy-code

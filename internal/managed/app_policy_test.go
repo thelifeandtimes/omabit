@@ -97,6 +97,9 @@ func TestAppPolicyServerAndEffectBoundary(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if h.Build == nil || h.Build.SHA256 != r.executableSHA256 || h.Build.GoVersion == "" || h.StateSchema != StateSchemaVersion {
+		t.Fatalf("running executable provenance missing: %+v", h)
+	}
 	identity := client.Identity{RunnerID: h.RunnerID, Mode: h.Mode}
 	v, err := c.AppPolicy(context.Background(), identity)
 	if err != nil || v.DeskOperations {

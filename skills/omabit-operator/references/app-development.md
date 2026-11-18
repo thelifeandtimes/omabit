@@ -19,6 +19,28 @@ blocked or unresolved.
 
 ## Read the configured policy
 
+Before creating or booting a project specifically for app development, run the
+selected profile's matching helper:
+
+```sh
+omabit --config-dir REGISTRY app-preflight --runner NAME --expected-runner-id ID \
+  --workflow gall --effects create-desk,commit
+```
+
+Choose the workflow from the actual source (Gall or Grubbery), not from the user's
+wording alone. This check contacts only that enrollment. Missing runner APIs,
+missing operation/framework adapters and policy denials are distinct. Do not boot
+an app project to discover that its intended operation is unsupported. Generic
+project creation is still available for other purposes. Grubbery currently reports
+its missing versioned adapter; do not bypass it with raw commands.
+
+After selecting a ship/desk, repeat with `--instance INSTANCE --desk DESK` and the
+effects actually requested, adding `publish` only when needed. A policy denial
+names its originating scope. A successful check proves capability and saved-policy
+compatibility only: fresh desk/publication/compile checks remain necessary, and a
+commit to an already published desk also needs Publish permission. Omitted old
+runner build metadata is unknown; the desktop version cannot establish it.
+
 Resolve the runner, ship instance and desk. Project targets also require their
 project/member identities. Read **Setup → App development and publishing** through
 the supported policy-status interface. Inspect independent creation/commit/publication

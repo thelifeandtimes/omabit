@@ -37,6 +37,14 @@ roots, installed review artifacts and archived TRIAL profiles count toward40GiB.
 Only the fresh review fake was operated on. No remote runner or key revocation was
 part of local TRIAL retirement. Preserve this new manual-review state thereafter.
 
+## Issues16–21 temporary budget exception —2026-11-17
+
+The user authorized a temporary48GiB aggregate cap for the issues16–21 goal.
+Keep one runtime experiment active, declare scratch before admission, and preserve
+production and existing ships. This replaces only the40GiB ceiling for this goal;
+the normal cap and all retention/isolation requirements remain in force. Retire
+only classified redundant outputs from this goal with manifests when finished.
+
 ## Experimental desktop contract
 
 Use separate experimental plugin IDs and visible labels; also isolate every state,

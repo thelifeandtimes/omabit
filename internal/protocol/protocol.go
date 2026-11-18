@@ -15,12 +15,14 @@ const (
 )
 
 type Hello struct {
-	ProtocolVersion int      `json:"protocol_version"`
-	RunnerID        string   `json:"runner_id"`
-	Mode            string   `json:"mode"`
-	Features        []string `json:"features"`
-	Actor           string   `json:"actor,omitempty"`
-	AccessRole      string   `json:"access_role,omitempty"`
+	Build           *ExecutableBuild `json:"build,omitempty"`
+	StateSchema     int              `json:"state_schema,omitempty"`
+	ProtocolVersion int              `json:"protocol_version"`
+	RunnerID        string           `json:"runner_id"`
+	Mode            string           `json:"mode"`
+	Features        []string         `json:"features"`
+	Actor           string           `json:"actor,omitempty"`
+	AccessRole      string           `json:"access_role,omitempty"`
 }
 
 type Configuration struct {

@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/access"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/buildmeta"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
@@ -333,7 +334,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if req.Method == http.MethodGet && req.URL.Path == "/hello" {
 		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials", "offline-pack", "offline-meld", "offline-roll", "container-resources", "container-cpu", "epoch-inventory", "epoch-prune-genesis", "epoch-prune-prefix"}
 		features = append(features, "maintenance-schedules")
-		features = append(features, protocol.ProjectStopRecoveryFeature, protocol.CreationReplayFeature, protocol.ProjectInventoryFeature, protocol.ProjectStatusFeature, protocol.ProjectRecoveryCheckpointFeature, protocol.ProjectRecoverySourceFeature, protocol.ProjectRegistrationFeature, protocol.PrivateChainRegistrationFeature, protocol.PrivateChainInventoryFeature)
+		features = append(features, protocol.RunnerBuildIdentityFeature, protocol.ProjectStopRecoveryFeature, protocol.CreationReplayFeature, protocol.ProjectInventoryFeature, protocol.ProjectStatusFeature, protocol.ProjectRecoveryCheckpointFeature, protocol.ProjectRecoverySourceFeature, protocol.ProjectRegistrationFeature, protocol.PrivateChainRegistrationFeature, protocol.PrivateChainInventoryFeature)
 		features = append(features, r.projectActionFeatures()...)
 		if _, ok := r.b.(projectDependenciesBackend); ok {
 			features = append(features, protocol.ProjectDependenciesFeature)
@@ -389,7 +390,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if r.keys != "" {
 			features = append(features, "ssh-key-grants")
 		}
-		respond(w, 200, protocol.Hello{ProtocolVersion: protocol.Version, RunnerID: r.s.runnerID, Mode: r.s.mode, Features: features, Actor: actor, AccessRole: role})
+		respond(w, 200, protocol.Hello{Build: buildmeta.Current(r.executableSHA256), StateSchema: StateSchemaVersion, ProtocolVersion: protocol.Version, RunnerID: r.s.runnerID, Mode: r.s.mode, Features: features, Actor: actor, AccessRole: role})
 		return
 	}
 	if req.Header.Get(protocol.Header) != strconv.Itoa(protocol.Version) {

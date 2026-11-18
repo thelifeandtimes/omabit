@@ -2,6 +2,17 @@ package main
 
 // Commands with no ordinary flag parser still expose side-effect-free help.
 var desktopCommandHelp = map[string]string{
+	"app-preflight": `Usage: omabit [--config-dir DIR] app-preflight --runner NAME --expected-runner-id ID --workflow gall|grubbery [--instance INSTANCE --desk DESK] [--effects create-desk,commit,publish]
+
+Read only the selected runner's actual Hello and saved application policy before
+creating an app-specific project. Effects default to create-desk,commit. Missing
+runner APIs, operation adapters and named policy denials are separate results.
+Exit 1 with structured output when incompatible; exit 0 means only capability
+and saved-policy compatibility. Omitted instance/desk checks the environment,
+without claiming future ship permissions. No project or policy is changed.
+Fresh runtime, publication and application review is required before each effect.
+Grubbery remains unavailable until its versioned workflow adapter is implemented.
+Runner build metadata is self-reported; absent older-runner metadata is unknown.`,
 	"ship-routes": `Usage: omabit [--config-dir DIR] ship-routes --runner NAME --expected-runner-id ID --instance INSTANCE
 
 Read the live ship incarnation, saved URL choices and current automatic routes.

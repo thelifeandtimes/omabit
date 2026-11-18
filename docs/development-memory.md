@@ -9394,3 +9394,26 @@ fixtures. CLI help generation is networkless and creates no state. See
 [the supported source contract](project-member-recovery.md). Disposable real-runtime
 recovery and an installed non-destructive upgrade are still required. No installed
 deployment or broader issue completion is established by this source checkpoint.
+
+## M580 — Selected-runner preflight and temporary budget (2026-11-17)
+
+Issue21's preflight now distinguishes unavailable policy/API support, missing desk
+operation adapters, a missing framework adapter, operator role and exact saved
+policy scope. It contacts only the pinned selected enrollment and never boots a
+project or changes policy. A future ship grant is not inferred from environment
+compatibility. Targeted reads retain project creator/generation; all results limit
+their assurance to capability and saved policy. See
+[the source contract](app-development-preflight.md). Gall uses existing typed desk
+primitives; Grubbery remains unavailable pending its versioned adapter.
+
+Optional managed Hello metadata identifies the executable's compiled provenance,
+hash and schema separately from the client. It is an authenticated self-report,
+not verified release provenance; absent older-peer metadata stays unknown. Inert
+selected-runner/policy-scope/identity/role tests, managed API provenance, offline
+help and affected vet pass. This does not identify the historical incident's
+runner or establish an installed matching deployment or native app execution.
+
+The user explicitly authorized48GiB aggregate evidence/DEV storage for this goal,
+with one runtime experiment active and production/existing ships untouched.
+[Experiment isolation](experiment-isolation.md) records the scoped exception; the
+normal40GiB default is unchanged. This is separate from M577's expired allowance.
