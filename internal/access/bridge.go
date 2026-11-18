@@ -139,7 +139,7 @@ func bridgeRequest(ctx context.Context, reader *bufio.Reader, limited *io.Limite
 		body = io.LimitReader(req.Body, req.ContentLength)
 	} else {
 		bodyLimit := int64(4096)
-		if protocol.GrubberyAppSourceEndpoint(req.Method, req.URL.Path) {
+		if protocol.GrubberyAppSourceEndpoint(req.Method, req.URL.Path) || protocol.GrubberyRuntimeLiveEndpoint(req.Method, req.URL.Path) {
 			bodyLimit = protocol.GrubberyAppRequestBytes
 			limited.N = bodyLimit + 8192
 		}
@@ -254,6 +254,9 @@ func forward(ctx context.Context, req *http.Request, socket string, grant Grant,
 	}
 	if protocol.GrubberyAppSourceEndpoint(req.Method, req.URL.Path) && !slices.Contains(hello.Features, protocol.GrubberyAppSourceFeature) {
 		return nil, nil, errors.New("local runner no longer supports app source phases; request was not forwarded")
+	}
+	if protocol.GrubberyRuntimeLiveEndpoint(req.Method, req.URL.Path) && !slices.Contains(hello.Features, protocol.GrubberyRuntimeRecoveryFeature) {
+		return nil, nil, errors.New("local runner no longer supports app runtime recovery; request was not forwarded")
 	}
 	replayOnly, err := protocol.CreationReplayOnly(req.Header)
 	if err != nil {

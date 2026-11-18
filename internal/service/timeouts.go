@@ -14,7 +14,7 @@ func catalogTimeout(id string, capabilities []string) time.Duration {
 	if slices.Contains(capabilities, protocol.DeskStageFeature) {
 		return protocol.DeskStageTimeout + 15*time.Second
 	}
-	if slices.Contains(capabilities, protocol.GrubberyAppSourceFeature) {
+	if slices.Contains(capabilities, protocol.GrubberyAppSourceFeature) || slices.Contains(capabilities, protocol.GrubberyRuntimeRecoveryFeature) {
 		return protocol.GrubberyAppTimeout + 15*time.Second
 	}
 	for _, feature := range []string{protocol.DeskCommitFeature, protocol.DeskReleaseFeature, protocol.DeskFrontendFeature, protocol.DeskReceiverFeature, protocol.DeskAdoptionFeature} {

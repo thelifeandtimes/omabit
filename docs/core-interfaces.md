@@ -225,6 +225,27 @@ and exact original process/configuration; same-pier restart or key rotation does
 not implicitly rebind an unfinished operation. Native Docker transport, broader
 workflow/recovery and installed qualification remain required.
 
+Schema63 development adds `app.review-runtime-recovery.v1`,
+`app.apply-runtime-recovery.v1` and `app.runtime-recovery.v1` to shared CLI/stdio
+MCP. The [runtime recovery contract](app-source-runtime-recovery.md) binds a new
+immutable audit to exact original history and a separately verified replacement
+process. Review has no journal/app effect. Confirmed apply reobserves every fact
+and writes only its exact audit CAS, leaving the original phase uncertain. Later
+original reconciliation is a separate operation and never redispatches it.
+Saved lookup needs no source, runtime or management admission and validates
+original history/audit together. Current operator access and startup target
+allowlists still apply; review/apply also require the original actor, and apply
+needs mutation enablement. Preserve original operation and audit request IDs.
+
+`grubbery-app-runtime-recovery-v1` means the typed API is compiled, including
+saved exact apply replay when a native adapter is unavailable. Its separate
+`grubbery-app-runtime-receipts-v1` feature denotes saved-only lookup. Neither
+qualifies the full workflow. HTTP/SQLite, exact CLI/official-SDK stdio parity and
+bounded delegated SSH source gates pass. The matching built-client lost-reply/
+manager-replacement rehearsal and real native/installed qualification remain
+required. Same-pier restart remains explicit review/apply; key rotation and
+legacy plan1 rebinding are unsupported. No production deployment is implied.
+
 The [frozen d2d8cf9 public native gate](diagnostics/2026-11-18-grubbery-public-native-workflow.json)
 passes the actual runner source API and pinned registry/client against a fresh
 pinned kernel. Both source versions are independently compiled and followed;

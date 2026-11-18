@@ -21,8 +21,11 @@ namespace leases and safe preactivation abandonment. Schema63 adds separate
 metadata-only runtime recovery audits, with strict ancestry and prefix/head/lease
 CAS; opening or applying an audit changes no original app receipt or native state.
 Actual62-writer migration, corruption rollback and process-death/lost-reply source
-checks preserve original uncertainty and all prior rows. The live observer,
-approved runtime adapter and authenticated review/apply interfaces remain pending.
+checks preserve original uncertainty and all prior rows. Strict process/native
+prefix observers and the approved adapter now have source gates. Typed HTTP and
+shared CLI/stdio expose fresh review, confirmed audit apply and saved lookup;
+later phases select only the saved approved head/process. Matching built-client
+lost-reply/manager-replacement and real native/installed qualification remain.
 Native-readable plan2 retains old plans as read-only; known
 rejection stays distinct from uncertainty. Original59/60/61 preservation and
 genuine60/61-reader refusal pass. The private native coordinator now combines
@@ -73,7 +76,7 @@ lifetime across caller disconnect; review and runner shutdown still cancel.
 Focused race, actual CLI/stdio parity, HTTP recovery and vet checks pass. This
 does not qualify the retained pending native phase or a new installed artifact.
 
-Source/native checkpoints are documented in M579–M649. The shared interface's
+Source/native checkpoints are documented in M579–M656. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or

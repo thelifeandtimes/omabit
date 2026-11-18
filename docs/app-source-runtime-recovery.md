@@ -4,12 +4,12 @@ Implementation is in progress. The typed review/receipt model and schema63
 metadata-only audit store have source tests. Trusted managed/project process
 observation and a separately fenced internal adapter also have source checks.
 The internal native observer also checks exact pending-prefix or unknown-effect
-evidence without loading source or changing the journal. These paths are not
-wired into public routes: private server composition now reobserves review facts
-and uses the exact saved audit head for later phases. Authenticated API, CLI/MCP
-and native rebinding qualification remain pending. Existing source
-operations continue to require their exact original process. No receipt/database
-edit is an upgrade or recovery procedure.
+evidence without loading source or changing the journal. Typed HTTP and shared
+CLI/stdio MCP now expose review, confirmed apply and saved lookup. Server phase
+assembly uses only the exact saved audit head and its approved process. Source
+gates pass; a matching built-client lost-reply/manager-replacement rehearsal and
+real native rebinding qualification remain pending. No receipt/database edit is
+an upgrade or recovery procedure.
 
 The first milestone preserves an unfinished plan2 after a supported Stop/Start
 of its existing disposable pier. The original plan, actor, request/phase IDs,
@@ -66,15 +66,33 @@ every GrubberyStep; the audit-backed view accepts only the original binding and
 constructs its original requests unchanged. Every transport boundary rechecks the
 approved full process/context. These adapters still require the authenticated
 server's trusted journal-head/actor/role/policy/lifecycle admission; they grant
-no authority by themselves and are not externally reachable.
+no authority by themselves. Authenticated server routes provide their admission.
 
-The private server apply path checks authenticated actor/role, compares a fresh
+The server apply path checks authenticated actor/role, compares a fresh
 independently derived review and writes only the exact audit CAS. Exact saved
-replay precedes native/cache/management admission. Later private phase assembly
+replay precedes native/cache/management admission. Later phase assembly
 requires the current saved head and its exact approved process; normal admission
 still checks current Commit. These paths have actual SQLite/inert runtime tests,
-including store reopen and cache-free reconciliation after revoked Commit. Public
-route/CLI/MCP and real native process replacement gates remain outstanding.
+including store reopen and cache-free reconciliation after revoked Commit. Typed
+HTTP and CLI/stdio source parity pass; real native process replacement remains
+outstanding. Saved status returns original history and its audit from one fully
+validated SQLite snapshot outside the lifecycle mutex.
+
+The shared operations are `app.review-runtime-recovery.v1`,
+`app.apply-runtime-recovery.v1` and `app.runtime-recovery.v1`. Review takes an
+original request ID and exact registered replacement selection. Apply takes the
+unchanged `data.review`, a distinct new audit request ID and `confirm:true`.
+Saved lookup takes the original request ID and optional audit request ID; omit the
+audit ID to read the latest head. Preserve both IDs after a lost reply and look up
+the saved audit before attempting another apply. Apply needs MCP mutation
+enablement; review/lookup do not. All require selected runner identity and current
+operator access; review/apply require the original actor too.
+
+`grubbery-app-runtime-recovery-v1` denotes compiled typed API availability,
+including exact apply replay without a live adapter. The separate
+`grubbery-app-runtime-receipts-v1` supports saved lookup. Neither advertises native
+workflow qualification. Requests retain the96KiB body and four-minute bounds,
+with the same declared CLI/MCP timeout and delegated SSH feature/role checks.
 
 Schema63 adds separate immutable audit receipts and per-operation heads. Opening
 validates the complete linked ancestry and grants no binding authority. The

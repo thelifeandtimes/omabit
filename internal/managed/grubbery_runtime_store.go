@@ -217,6 +217,13 @@ func (j grubberyRuntimeJournal) Latest(ctx context.Context, original string) (*g
 	if err = validateGrubberyJournal(tx); err != nil {
 		return nil, err
 	}
+	var exists int
+	if err = tx.QueryRow("SELECT 1 FROM grubbery_app_operations WHERE id=?", original).Scan(&exists); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, grubbery.ErrMissing
+		}
+		return nil, err
+	}
 	receipt, err := latestAppRuntimeRecovery(tx, original)
 	if err != nil {
 		return nil, err

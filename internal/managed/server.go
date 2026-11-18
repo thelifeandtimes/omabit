@@ -344,6 +344,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			features = append(features, protocol.ManagementUpdateFeature)
 		}
 		features = append(features, protocol.HostCompatibilityFeature, protocol.AppPolicyFeature, protocol.DeskSettingsFeature, protocol.DeskStageFeature, protocol.GrubberyAppReceiptsFeature)
+		features = append(features, protocol.GrubberyRuntimeReceiptsFeature)
+		if r.grubberyRuntimeRecoveryAvailable() {
+			features = append(features, protocol.GrubberyRuntimeRecoveryFeature)
+		}
 		if r.grubberyAppSourceAvailable() {
 			features = append(features, protocol.GrubberyAppSourceFeature)
 		}
@@ -519,6 +523,14 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 		defer r.endUpdateBulk()
 		r.handoffData(w, req, actor, role, strings.Split(req.URL.Path, "/")[3])
+		return
+	}
+	if protocol.GrubberyRuntimeLiveEndpoint(req.Method, req.URL.Path) {
+		r.serveGrubberyRuntimeRecovery(w, req, actor, role)
+		return
+	}
+	if strings.HasPrefix(req.URL.Path, protocol.GrubberyRuntimeRecoveriesPath+"/") {
+		r.serveGrubberyRuntimeReceipt(w, req, role)
 		return
 	}
 	if protocol.GrubberyAppSourceEndpoint(req.Method, req.URL.Path) {

@@ -71,5 +71,6 @@ func (s *Service) registerGrubbery() error {
 			return r.GrubberyAppSourcePhase(ctx, in.Name, in.RunnerID, in.OperationID, action, in.Request)
 		}))
 	}
+	errs = append(errs, s.registerGrubberyRuntime())
 	return errors.Join(errs...)
 }

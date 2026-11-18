@@ -167,7 +167,7 @@ func (r *Server) serveGrubberyAppSource(w http.ResponseWriter, req *http.Request
 			out, err = e.Abandon(ctx, call)
 		}
 		if errors.Is(err, grubbery.ErrAdmission) {
-			b, makeErr := r.nativeGrubberyBackend(ctx, original.Plan.Binding, actor, role)
+			b, makeErr := r.nativeGrubberyBackendFor(ctx, original, actor, role)
 			if makeErr != nil {
 				r.respondGrubberyError(w, makeErr)
 				return

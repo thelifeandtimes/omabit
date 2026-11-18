@@ -11474,3 +11474,32 @@ normal guards and original cache-free lost-reply recovery pass under race.
 The scoped transport regression and focused vet pass after the runtime factory
 returns only its required native interface. No original private VM or service
 is opened. Public HTTP/CLI/MCP, matching native/installed and DEV gates remain.
+
+## M656 — Expose typed runtime recovery with preserved replay boundaries (2026-11-18)
+
+Register typed review/confirmed-apply and saved audit/head HTTP routes, shared
+CLI/stdio operations, pinned client/registry methods and exact delegated SSH
+feature/body/deadline guards. The separate compiled-API feature supports exact
+apply replay even with no live adapter; saved-receipt support is independent.
+Neither claims native workflow readiness. Apply requires the original operator
+and explicit confirmation, reobserves review facts and writes only its audit.
+Original phase routing selects only the validated saved head/approved process.
+Saved status validates original history and audit in one SQLite snapshot outside
+the lifecycle mutex. A missing original is an explicit absence, not corruption.
+
+Actual HTTP/SQLite source checks pass for empty/missing heads, fresh review,
+unconfirmed refusal before native access, confirmed audit without original event
+changes, native-free saved lookup, cache-free original reconciliation and saved
+apply replay after progress with no native adapter/management admission. Existing
+source phase recovery still passes. Actual CLI and official-SDK stdio processes
+return byte-identical typed results through the catalog, retaining exact IDs and
+no retries. Apply remains a mutation-gated journal write. Declared timeout checks
+and delegated SSH source/review/apply role/capability/96KiB bounds pass; focused
+vet passes. These remain source/inert transport gates.
+
+A separately gated exact-built-client rehearsal is prepared to drop the apply
+reply after commit, replace the test manager without a native adapter, and read
+the original audit through CLI. It requires an explicit binary SHA and has not
+yet run. Matching native artifacts, retained disposable VM recovery, installed
+upgrades, full app workflow and preserved DEV remain pending. Production and all
+existing user ships/services remain excluded; no runtime is launched here.
