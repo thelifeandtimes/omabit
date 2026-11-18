@@ -140,3 +140,13 @@ lost reply, missing cache and revoked Commit. They do not qualify the native
 coordinator or resolve durable authentication cleanup after process death.
 Public app dispatch, permits/publication, routes/served artifacts, restart and
 peer tests remain required. Grubbery capability is still unavailable.
+
+The first actual coordinator run reaches an
+[empty-code-tree observation mismatch](diagnostics/2026-11-18-grubbery-coordinator-empty-code-tree.json).
+Framework bootstrap and the original marker/release-parent proofs pass, but a
+newly created code namespace is empty. The source/inert model's eager foundational
+files are not a native fact. The acknowledged phase remains uncertain, no next
+phase is submitted, and the ship stops cleanly. A separate fresh kernel layout
+case now records source-tree/raw-byte/build/version/mirror boundaries before
+changing that projection. Previous generated-directory assertions remain
+unqualified; no live Grubbery capability follows from these failed native gates.

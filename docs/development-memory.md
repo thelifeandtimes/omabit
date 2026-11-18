@@ -10467,3 +10467,47 @@ absence of an app store before retirement. Original failed results, logs,
 source/input hashes and a lossless verified helper remain; private manifests
 record each filesystem object and retained canonical inputs. No receipt or
 existing ship was changed. The failed capsule is explicitly non-resumable.
+
+## M620 — Native empty code namespaces disconfirm the eager-foundation model (2026-11-18)
+
+The e1e4b5d fresh coordinator capsule passes the closed fixture guard and actual
+framework create/adopt/commit/activation observations. The managed private factory
+then observes the original source marker and release parent through real native
+HTTP and persists their proofs. Its third phase receives the code-namespace
+creation acknowledgement but after-observation refuses: the actual native tree
+is an empty code neck. M617's inert model/projection expected the foundational
+marks at namespace creation. That timing assumption is disconfirmed. The
+[failed native result](diagnostics/2026-11-18-grubbery-coordinator-empty-code-tree.json)
+retains dispatched/acknowledged/uncertain events; no next phase or repeated write
+was issued. The fresh ship stops cleanly. This is not a native coordinator pass.
+
+M617's generated-mark-directory model and its related at-most-one-call exception
+remain source/inert evidence only, not a qualified native contract. Before
+changing production logic, the new explicit source-layout kernel case observes
+trees and raw file bytes before/after each fixed source write, version and live
+mirror, with separate bounded foundational-source reads and compiler results.
+It uses a fresh unrelated diagnostic namespace and the already exercised v2
+state workflow, not a repair/resubmission of the uncertain managed operation.
+The new case is included in both launcher and closed fixture guard. No capability
+or public source effect is enabled by adding this diagnostic gate.
+
+A later native run's admission first refuses36.5MiB over the48GiB cap after the
+helper rebuild. Six obsolete complete framework input copies in ended tombstoned
+task capsules are verified against every original input hash and the retained
+1443-file canonical pin before retirement, freeing73,900,032allocated bytes.
+Original SQL/history/proofs/logs and canonical framework/Vere/pill remain. Private
+manifests preserve all removed filesystem identities and dependency hashes.
+Original failed results are never rewritten to make qualification pass.
+
+M620 retention follow-through: select the corrected app03 pass and current
+managed02 observation failure alongside the Gall07 reference. Retire the now
+obsolete wrong-marker app01 and caller-interruption app02 whole-pier archives,
+while retaining their original failed results, SQL/WAL/history, logs/proofs/input
+hashes and exact helper bytes. Their original archive verification remains a
+historical fact; replacement tombstones explicitly link retirement and preserve
+the previous tombstone hash/body in the private manifest. No canonical source,
+Vere, pill or running input depends on these archives. Current managed02's full
+pier is then losslessly archived and verified across1450 files before retiring
+its expanded copy; every original app receipt and native diagnostic body remains.
+This is compact forensic evidence, not authority to recreate filesystem identity
+or resume an archived ship. The next runtime still needs fresh admission.

@@ -15,7 +15,7 @@ import subprocess
 import uuid
 
 ROOT = Path(__file__).resolve().parents[3]
-CASES = ('grubbery-bootstrap-v1', 'grubbery-app-contract-v1', 'grubbery-app-contract-v2', 'grubbery-managed-coordinator-v1')
+CASES = ('grubbery-bootstrap-v1', 'grubbery-app-contract-v1', 'grubbery-app-contract-v2', 'grubbery-managed-coordinator-v1', 'grubbery-source-layout-v1')
 
 
 def ordinary(path, directory=False):

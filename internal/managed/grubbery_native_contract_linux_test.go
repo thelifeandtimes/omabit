@@ -118,6 +118,22 @@ func nativeGrubberyAppContractGeneration(t *testing.T, ctx context.Context, f *n
 		t.Helper()
 		root := fmt.Sprintf("%s/release-%d/code", sourceRoot, number)
 		expect(fmt.Sprintf("create-release-%d", number), "PUT", "/grubbery/api/make"+root+"/", "application/json", []byte(`{"neck":"/code"}`), 201)
+		layout := func(label string) {
+			t.Helper()
+			tree := expect(fmt.Sprintf("release-%d-%s-tree", number, label), "GET", "/grubbery/api/peek"+root+"/?as=tree", "", nil, 200)
+			_, err := grubbery.ParseDirectory(tree)
+			g02Check(t, err)
+			foundations := map[string]any{}
+			for _, name := range []string{"hoon", "kelvin", "mime", "tang"} {
+				status, raw := call(fmt.Sprintf("release-%d-%s-foundation-%s", number, label, name), "GET", "/grubbery/api/peek"+root+"/mar/"+name+".hoon", "", nil)
+				if status != 200 && status != 404 {
+					t.Fatal("bounded foundation observation unavailable", status)
+				}
+				foundations[name] = map[string]any{"status": status, "bytes": len(raw), "sha256": stopEvidenceDigest(raw)}
+			}
+			save(fmt.Sprintf("source-layout-%d-%s", number, label), map[string]any{"tree": json.RawMessage(tree), "foundations": foundations})
+		}
+		layout("created")
 		files := []deskwork.SourceFile{{Path: "bill.json", Bytes: []byte(`{"state":"/state"}`)}, {Path: "nex/state.hoon", Bytes: nativeGrubberyStateNexus(fmt.Sprintf("v%d", number))}}
 		entries := []deskwork.File{}
 		for _, file := range files {
@@ -128,6 +144,11 @@ func nativeGrubberyAppContractGeneration(t *testing.T, ctx context.Context, f *n
 				ct = "text/x-hoon"
 			}
 			expect(fmt.Sprintf("release-%d-%s", number, file.Path), "PUT", "/grubbery/api/make"+root+"/"+file.Path+query, ct, file.Bytes, 201)
+			observed := expect(fmt.Sprintf("release-%d-source-bytes-%s", number, file.Path), "GET", "/grubbery/api/peek"+root+"/"+file.Path, "", nil, 200)
+			if !bytes.Equal(observed, file.Bytes) {
+				t.Fatal("native source rendering changed submitted bytes", file.Path)
+			}
+			layout(strings.ReplaceAll(file.Path, "/", "-"))
 		}
 		manifest, err := deskwork.NewManifest(entries)
 		g02Check(t, err)
@@ -166,6 +187,7 @@ func nativeGrubberyAppContractGeneration(t *testing.T, ctx context.Context, f *n
 		}
 		version, _ := json.Marshal(marker)
 		expect(fmt.Sprintf("release-%d-version", number), "PUT", "/grubbery/api/make"+root+"/version.json", "application/json", version, 201)
+		layout("versioned")
 		return release{root, version, manifest, files}
 	}
 	first := prepare(1)
@@ -197,6 +219,8 @@ func nativeGrubberyAppContractGeneration(t *testing.T, ctx context.Context, f *n
 		}
 	}
 	follow(first)
+	firstMirror := expect("first-live-code-tree", "GET", "/grubbery/api/peek"+deskRoot+"/desk/code/?as=tree", "", nil, 200)
+	save("first-live-code-tree", json.RawMessage(firstMirror))
 	statePath := "/grubbery/api/peek" + deskRoot + "/desk/data/state/state.json"
 	initial := expect("initial-state", "GET", statePath, "", nil, 200)
 	if string(initial) != `"initial"` {
@@ -214,6 +238,8 @@ func nativeGrubberyAppContractGeneration(t *testing.T, ctx context.Context, f *n
 	}
 	second := prepare(2)
 	follow(second)
+	secondMirror := expect("second-live-code-tree", "GET", "/grubbery/api/peek"+deskRoot+"/desk/code/?as=tree", "", nil, 200)
+	save("second-live-code-tree", json.RawMessage(secondMirror))
 	saved = expect("state-after-source-update", "GET", statePath, "", nil, 200)
 	if string(saved) != `"saved-entry"` {
 		t.Fatal("code update reset saved state")

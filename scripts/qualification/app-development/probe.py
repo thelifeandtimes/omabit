@@ -15,7 +15,7 @@ import time
 import urllib.request
 import uuid
 
-GRUBBERY_CASES = ('grubbery-bootstrap-v1', 'grubbery-app-contract-v1', 'grubbery-app-contract-v2', 'grubbery-managed-coordinator-v1')
+GRUBBERY_CASES = ('grubbery-bootstrap-v1', 'grubbery-app-contract-v1', 'grubbery-app-contract-v2', 'grubbery-managed-coordinator-v1', 'grubbery-source-layout-v1')
 
 VERE_SHA = 'b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0'
 PILL_SHA = 'f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b'
@@ -106,7 +106,7 @@ def inside():
                 if not g.get('recover_receiver_boot'):
                     with (lab/'workflow.log').open('wb') as workflow_log:
                         case=g.get('workflow_case','desk-workflow-v1')
-                        names={'desk-workflow-v1':'TestNativeDeskWorkflow','gall-state-v2':'TestNativeGallSampleWorkflow','grubbery-bootstrap-v1':'TestNativeGrubberyBootstrap','grubbery-app-contract-v1':'TestNativeGrubberyAppContract','grubbery-app-contract-v2':'TestNativeGrubberyAppContractV2','grubbery-managed-coordinator-v1':'TestNativeGrubberyManagedCoordinator'}
+                        names={'desk-workflow-v1':'TestNativeDeskWorkflow','gall-state-v2':'TestNativeGallSampleWorkflow','grubbery-bootstrap-v1':'TestNativeGrubberyBootstrap','grubbery-app-contract-v1':'TestNativeGrubberyAppContract','grubbery-app-contract-v2':'TestNativeGrubberyAppContractV2','grubbery-managed-coordinator-v1':'TestNativeGrubberyManagedCoordinator','grubbery-source-layout-v1':'TestNativeGrubberySourceLayout'}
                         if case not in names:raise RuntimeError('unsupported named workflow case')
                         if case in ('gall-state-v2',)+GRUBBERY_CASES:
                             from gall_control import read_request, validate_restart, write_receipt
@@ -344,7 +344,7 @@ def _host(a):
     # The completed app03 capsule used about1.1GiB including copied immutable
     # inputs and its full pier. This narrower single-candidate coordinator case
     # admits1.25GiB and retains the same live allocation monitor/refusal.
-    if workflow_case == 'grubbery-managed-coordinator-v1':scratch_limit=1280*1024**2
+    if workflow_case in ('grubbery-managed-coordinator-v1','grubbery-source-layout-v1'):scratch_limit=1280*1024**2
     storage_budget=getattr(a,'storage_budget_gib',40)*1024**3
     def admit_scope(additional):
         if workflow_case not in ('gall-state-v2',)+GRUBBERY_CASES:return admit(additional,budget_bytes=storage_budget)
