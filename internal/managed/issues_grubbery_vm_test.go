@@ -74,6 +74,21 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 	if hello.AccessRole != "operator" || entry.RunnerID != hello.RunnerID {
 		t.Fatal("exact operator runner required")
 	}
+	waitRunning := func() protocol.Instance {
+		t.Helper()
+		for deadline := time.Now().Add(time.Minute); ; {
+			snapshot, e := c.Snapshot(ctx)
+			g02Check(t, e)
+			if v, ready := appVMRunningInstance(snapshot); ready {
+				return v
+			}
+			if time.Now().After(deadline) || ctx.Err() != nil {
+				t.Fatal("running container selection unresolved; no native app mutation attempted")
+			}
+			time.Sleep(time.Second)
+		}
+	}
+	save("initial-running-selection", waitRunning())
 	target := apppolicy.Target{InstanceID: appVMInstance, Desk: grubbery.FrameworkDesk}
 	policy, err := c.AppPolicy(ctx, entry.Identity())
 	g02Check(t, err)
@@ -312,14 +327,7 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 			time.Sleep(time.Second)
 		}
 	}
-	after, err := c.Snapshot(ctx)
-	g02Check(t, err)
-	replacement := ""
-	for _, v := range after.Instances {
-		if v.ID == appVMInstance && v.Resources != nil {
-			replacement = v.Resources.ContainerID
-		}
-	}
+	replacement := waitRunning().Resources.ContainerID
 	if replacement == "" || replacement == originalContainer {
 		t.Fatal("supported restart did not replace its exact container")
 	}
@@ -342,6 +350,55 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 		t.Fatal("state write did not survive manager restart")
 	}
 	save("qualification", map[string]any{"actual_product_docker_transport": true, "native_cli_and_stdio": true, "two_source_versions": true, "state_and_new_code": true, "same_pier_container_replacement": true, "state_after_replacement": true, "manager_restart_original_replay": true, "boundary": "single fresh ordinary fake; fixed test-only state probes; no pending-phase rebinding, process-death auth cleanup, permits/alias/routes/assets/peers or installed upgrade"})
+}
+
+// Start completion precedes optional telemetry. Desk selection needs an actual
+// container ID; a running row with an unavailable stats sample is not ready.
+// Repeat only snapshot reads and never infer identity from an old sample.
+func appVMRunningInstance(snapshot protocol.Snapshot) (protocol.Instance, bool) {
+	var out protocol.Instance
+	count := 0
+	for _, v := range snapshot.Instances {
+		if v.ID == appVMInstance {
+			out = v
+			count++
+		}
+	}
+	if count != 1 || out.ProjectID != "" || out.ObservedState != "running" || out.ActiveOperationID != "" || out.RecoveryRequired || out.Resources == nil {
+		return out, false
+	}
+	selection := protocol.DeskSelection{Target: apppolicy.Target{InstanceID: appVMInstance, Desk: grubbery.FrameworkDesk}, RuntimeID: out.Resources.ContainerID, ConfigRevision: out.ConfigRevision}
+	return out, selection.Validate() == nil
+}
+
+func TestProductVMRunningSelectionWaitsForActualContainer(t *testing.T) {
+	v := protocol.Instance{ID: appVMInstance, ConfigRevision: 1, ObservedState: "running", Resources: &protocol.ResourceMetrics{Status: "unavailable"}}
+	snapshot := protocol.Snapshot{Instances: []protocol.Instance{v}}
+	if _, ready := appVMRunningInstance(snapshot); ready {
+		t.Fatal("Start completion without a container observation became ready")
+	}
+	v.Resources = &protocol.ResourceMetrics{Status: "fresh", ContainerID: strings.Repeat("a", 64)}
+	snapshot.Instances[0] = v
+	if got, ready := appVMRunningInstance(snapshot); !ready || got.Resources.ContainerID != v.Resources.ContainerID {
+		t.Fatal("actual running selection refused")
+	}
+	for _, change := range []func(*protocol.Instance){
+		func(v *protocol.Instance) { v.RecoveryRequired = true },
+		func(v *protocol.Instance) { v.ActiveOperationID = "active" },
+		func(v *protocol.Instance) { v.ObservedState = "starting" },
+		func(v *protocol.Instance) { v.ProjectID = "unrelated" },
+		func(v *protocol.Instance) { v.ConfigRevision = 0 },
+		func(v *protocol.Instance) { v.Resources = nil },
+	} {
+		changed := v
+		change(&changed)
+		if _, ready := appVMRunningInstance(protocol.Snapshot{Instances: []protocol.Instance{changed}}); ready {
+			t.Fatal("unresolved or different selection became ready")
+		}
+	}
+	if _, ready := appVMRunningInstance(protocol.Snapshot{Instances: []protocol.Instance{v, v}}); ready {
+		t.Fatal("duplicate target became ready")
+	}
 }
 
 func appVMPolicy(target apppolicy.Target, revision uint64, scope string) apppolicy.Update {

@@ -10963,3 +10963,28 @@ remain;147,460,096 allocated bytes are freed. Current Gall07/public01 full-refer
 helpers, canonical runtime/pill/framework, frozen Stop/product artifacts and all
 original SQL/receipts/proofs/logs remain unchanged. Archive sidecars supersede old
 raw-path retention claims without rewriting historical input manifests.
+
+## M637 — Wait for an observed container before product desk selection (2026-11-18)
+
+The source60335dd product VM03 completes fresh installed bootstrap/Start, then
+refuses before desk creation with current runtime selection unavailable. Its
+original command snapshots show running/no active operation but unavailable
+resource telemetry; Start completion itself does not supply the container ID
+used by desk selection. The preserved later original database has the actual
+fresh resource/container observation. This is a fixture readiness race, not
+evidence that a native app request failed or that policy should be relaxed.
+
+The helper now polls only bounded snapshot reads for one exact ready ordinary
+instance, valid revision and full observed container ID before the first desk
+plan and after its supported Stop/Start. It never resubmits a mutation or infers
+an ID from an old runtime. Focused race tests cover unavailable telemetry,
+recovery/active-operation fences, different project, missing revision and duplicate
+targets; managed vet passes. A fresh matching helper/artifact freeze is required.
+
+After all owned units end, a separate no-network read-only utility exports the
+original failed database and complete command/result logs without executing any
+source-disk code or services. SQL analysis uses copies; original hashes remain
+unchanged. Only the explained failed root and copied input filesystem are
+retired, freeing1,504,108,544 allocated bytes. The original failed outcome,
+60335dd artifact set and full evidence remain retained; no full old pier archive
+is claimed. Production, DEV manual review and existing ships remain untouched.
