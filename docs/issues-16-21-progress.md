@@ -34,15 +34,17 @@ source from the materialized tree. The corrected private managed native gate now
 SQLite, source/compile/followed-mirror checks and clean shutdown. A separate
 kernel custom-mark layout check passes. Product Docker/curl transport, managed
 second-version/state/restart and public source APIs now have actual SQLite/HTTP lost-reply/cache-loss/revoked-Commit
-checks plus CLI/stdio parity and restricted-SSH framing tests. Their actual native
-product transport and public dispatch qualification remain pending; capability stays
+checks plus CLI/stdio parity and restricted-SSH framing tests. The frozen d2d8cf9 public runner/registry/client native gate now passes two
+source versions, state preservation/new code, clean same-pier restart, another
+state write and original receipts after reopen/replay. Product Docker transport
+and remaining workflow qualification are pending; capability stays
 unavailable. The pinned Grubbery source contract has shared offline metadata and exact confined
 verification, with real CLI/stdio parity. Native bootstrap now passes after exact
 original-scaffold export/adoption; its timed-out activation resolves read-only
 without a second install. App workflow qualification and four nested shell-tool
 failures remain separate; see [the boundary](grubbery-adapter.md).
 
-Source/native checkpoints are documented in M579–M625. The shared interface's
+Source/native checkpoints are documented in M579–M627. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or

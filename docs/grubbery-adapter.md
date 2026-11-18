@@ -181,3 +181,14 @@ SSH tests cover larger bounded plans, missing capability, observer exclusion and
 unchanged ordinary request limits. These interface gates do not extend the frozen
 ac3eec2 native result to newer product artifacts or Docker transport. Original
 actor/process/config binding remains required for unfinished recovery.
+
+The [frozen d2d8cf9 public native gate](diagnostics/2026-11-18-grubbery-public-native-workflow.json)
+passes the actual runner source API and pinned registry/client against a fresh
+pinned kernel. Both source versions are independently compiled and followed;
+saved state survives the update, the new code label is observed, an exact owned
+same-pier restart is clean, and another state write succeeds. Both original
+SQLite receipts survive reopen and old-phase replay unchanged. Each original
+phase is dispatched once. This uses synthetic lifecycle and direct native owner
+HTTP, so product Docker/curl, pending-operation process rebinding, durable owner
+cleanup on process death, the native CLI combination, permits/routes/assets,
+peers and installed upgrades remain unqualified. Full preflight stays unavailable.

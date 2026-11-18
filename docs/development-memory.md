@@ -10699,3 +10699,31 @@ reverified afterward. Their original input/result/proof bytes remain unchanged;
 absent expanded piers; a preliminary tombstone-name assumption refused before
 any unlink. No production, installed service, user pier or manual-review state
 was selected for these retirements. Final runtime admission is still required.
+
+## M627 — Public native source update/state/restart gate passes (2026-11-18)
+
+The [frozen d2d8cf9 gate](diagnostics/2026-11-18-grubbery-public-native-workflow.json)
+passes in1,003.86 seconds. It uses the actual runner API and pinned registry/client
+for two exact source plans:12 then9 phases, each dispatched once, acknowledged
+and independently observed. Their original final revisions are36 and27. Code
+and followed source are checked separately; saved app state survives the source
+update and the new code label is observed. The supervisor verifies the exact
+owned process/pier before clean stop and same-pier restart. State remains, another
+write succeeds, and both original records survive SQLite reopen and old-phase
+replay unchanged. The fresh ship stops cleanly at completion; both scope and
+independent supervisor are inactive with successful results.
+
+This supersedes M626's prepared-only status for that exact artifact. It still
+uses synthetic lifecycle/direct owner HTTP and fixed test state probes, so it
+cannot qualify product Docker/curl, pending operation/process rebinding, owner
+cleanup on process death, native CLI/stdio integration, permits/routes/assets,
+peers, installed upgrade or DEV artifacts. Full Grubbery preflight remains
+unavailable. Recorder-only source edits made during this frozen run are outside
+its artifact and qualification; they were not compiled during the experiment.
+
+Only the ended capsule's exact duplicate pill/Vere/host helper are now retired
+with hashes/inodes and reverified canonical copies, freeing270,422,016 allocated
+bytes. Its full pier, source, original SQL/proofs/logs/helper and restart history
+remain unchanged. Before subsequent focused recorder builds, charged storage is
+50,932,744,192 bytes and128MiB scratch fits under the temporary48GiB cap. No
+production, installed service, user pier or manual-review state was changed.
