@@ -518,3 +518,9 @@ development-root command boundary remains explicit. No arbitrary paths or native
 inputs are accepted; ordinary unsupervised invocation refuses. Source/race gates
 pass, but normal launch still creates/submits no jobs. The database downgrade
 guard and authenticated journal binding must precede that integration.
+
+`scripts/test-recording-claim-upgrade.py` prepares the actual original claim1
+writer/current claim2 compatibility rehearsal using unchanged frozen85ac7c6
+runtime and test sources plus a declared synthetic filesystem helper. It requires
+`--run`, a clean candidate, fresh task output and storage admission. Synthetic
+PID/namespaces are not live authority. Actual old-writer results remain pending.

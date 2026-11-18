@@ -12092,3 +12092,20 @@ Focused race checks pass for runtimequalify in2.712s and runner CLI in1.019s.
 No job is submitted by normal managed launch, no root/service is installed, and no
 native recording is qualified. Active-job schema/journal guards, independently
 submitted worker lifetime and installed/native upgrades remain required.
+
+## M680 — Prepare actual claim1 writer compatibility rehearsal (2026-11-18)
+
+Add a fresh-path, clean-source, storage-admitted source rehearsal using unchanged
+85ac7c6892dd4934b64e5dacc98846001ab3b01d runtime/embedded/test inputs and a
+declared synthetic filesystem helper. The original API writes job1/claim1/ready1;
+candidate lookup must keep omitted start/invocation unknown, preserve exact bytes
+across reopen, and refuse replay. The actual old reader must refuse claim2 while
+retaining the original compatible job1 bytes. Neither helper runs an engine or
+actual worker service; synthetic PID/namespaces and fixture paths are explicit.
+
+Three launcher input guards pass. The gated Go helper compiles and is skipped
+without the explicit rehearsal path. Actual writer/read/refusal results and a
+compact pinned fixture remain pending until this clean source gate is run.
+Only regenerable task-test cache archives were classified and retired with an
+exact hash/inode manifest to admit this work, keeping the newest two per package;
+frozen executables, SQLite evidence and all VM disks remain unchanged.
