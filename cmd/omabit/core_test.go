@@ -112,6 +112,7 @@ func TestCLIAndMCPUseSamePolicyAndRefusalContract(t *testing.T) {
 		observer, missing bool
 		code              string
 	}{
+		{name: "frozen-sample", id: "app.sample.v1", input: service.SampleInput{Name: "gall-state-v1"}},
 		{name: "policy-read", id: "app.policy.v1", input: service.Target{Name: "dev", RunnerID: "runner"}},
 		{name: "capability", id: "app.policy.v1", input: service.Target{Name: "dev", RunnerID: "runner"}, missing: true, code: "capability_unavailable"},
 		{name: "role", id: "project.register.v1", input: register, observer: true, code: "operator_required"},

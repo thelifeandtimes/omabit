@@ -57,6 +57,10 @@ type PreflightInput struct {
 	Effects    []string `json:"effects"`
 }
 
+type SampleInput struct {
+	Name string `json:"name"`
+}
+
 func description(id, about string, cli, effects, caps []string, role, bindings, replay string) Descriptor {
 	return Descriptor{ID: id, Description: about, CLI: cli, Effects: effects, Capabilities: caps, Role: role, Bindings: bindings, Replay: replay}
 }
@@ -83,6 +87,13 @@ func (s *Service) register() error {
 	mutation := []string{"local-metadata-read", "journal-write", "runtime-mutation"}
 	target := "explicit enrolled name and pinned runner ID/mode on every connection"
 	var errs []error
+	errs = append(errs, bind(s, description("app.sample.v1", "Read one compiled named application sample, its exact staging manifest and frozen inputs; never writes files or runs tests.", []string{}, []string{"offline-read"}, []string{}, "local-user", "compiled named fixture only; source and notices are separate; native qualification status is explicit", "pure read; sample content is not deployment authority"), func(_ context.Context, _ *Service, in SampleInput) (appdev.Sample, error) {
+		sample, err := appdev.ReadSample(in.Name)
+		if err != nil {
+			return appdev.Sample{}, invalid()
+		}
+		return sample, nil
+	}))
 	errs = append(errs, bind(s, description("runners.list.v1", "List configured runner identities without connecting; transport paths are omitted.", []string{"urbit-collector runners"}, []string{"local-metadata-read"}, []string{}, "local-user", "server allowlist filters results", "read-only"), func(ctx context.Context, s *Service, _ Empty) ([]RunnerSummary, error) {
 		r, err := s.registry()
 		if err != nil {

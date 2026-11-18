@@ -9478,3 +9478,21 @@ launches only inert agents and renders their distinct responsibilities. A separa
 historical-pair fixture verifies continued UI use. Failed fixture evidence is
 retained. No real agent, global skill directory, installed plugin or service was
 changed. These delivery tests do not qualify either application runtime workflow.
+
+## M583 — Frozen bounded Gall sample source (2026-11-17)
+
+`app.sample.v1` returns the compiled `gall-state-v1` definition, exact source
+manifest, hashes and notices through the same CLI/MCP handler. The4097-byte,
+five-file staging payload contains the state fixture, bill mark, desk bill and
+only its two required libraries. Source accepted by the canonical staging scanner
+is distinct from current Hoon compilation/runtime evidence; the sample explicitly
+reports current-workflow-pending. No source read deploys or executes anything.
+
+The three upstream scaffolding files are pinned to Urbit commit35f70d7 and their
+bytes match the earlier native fixture hashes. This corrects an implicit dependency
+on the base desk's libraries without adding a full repository mount. Upstream
+license/provenance is retained separately from the Clay payload. Source/hash and
+CLI/stdio parity race fixtures pass; native app state/reload/restart and current
+managed-runtime execution remain to qualify. Fresh native inputs were located in
+the existing immutable cache and independently rehashed; no new runtime was
+started. Private paths and storage measurements remain outside Git.

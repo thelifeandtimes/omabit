@@ -6,6 +6,15 @@ the app's configured API as authoritative; there is no universal readiness route
 install publisher or Hoon test command. UI ownership is optional: a standalone
 browser game can use direct authenticated Eyre without an Omarchy frontend.
 
+The current named backend sample is available with
+`omabit call app.sample.v1 --input-json '{"name":"gall-state-v1"}'` or MCP tool
+`omabit.app.sample.v1`. It returns five bounded source files, exact staging/input
+hashes, API/state expectations and its explicit current qualification status.
+Save only the source files into a fresh staging directory and follow its manifest;
+do not use an entire source checkout as a desk. Sample reads run no tests or
+deployment. Missing local sample support requires matching tooling, not a guessed
+download or shell installer.
+
 Read [the common workflow](app-development.md) before deployment. Resolve the
 current project generation, desk workflow and release configuration. A desk's
 existence does not prove that an agent exists, compiled, is active or speaks the
