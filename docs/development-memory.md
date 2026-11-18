@@ -9917,3 +9917,15 @@ mount source or replace differing files by relaxing the conflict planner. Source
 export is private operator data, not a shareable/redacted export. Its current
 fixtures do not establish native conversion or bootstrap success; those results
 remain pending. Grubbery preflight is still unavailable.
+
+## M601 — Fit the bootstrap continuation before process admission (2026-11-17)
+
+After M600's source checks, the host refuses the proposed2GiB reservation before
+creating a capsule, copying inputs or starting a scope. No second native result
+exists yet. Retire only the completed task-owned source-export race fixture
+executable with its private hash/inode manifest. Reduce this fresh single-ship
+bootstrap's declared additional scratch to1.5GiB; preserve the48GiB aggregate cap,
+periodic allocation checks, memory/deadline/one-active-runtime rules and original
+failed capsule. Exceeding either scratch or aggregate storage still interrupts
+the new owned experiment and retains its uncertain/failure evidence. This is a
+smaller admitted experiment, not an unmeasured allowance or a native pass.

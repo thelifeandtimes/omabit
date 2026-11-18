@@ -327,6 +327,7 @@ def host(a):
     # Read-only frontend diagnosis transfers one stopped pier and adds no new
     # workflow binary or desks:1GiB covers one generated epoch plus pinned inputs.
     scratch_limit=1024**3 if frontend_diagnostic else (768*1024**2 if recovered else 2*1024**3)
+    if workflow_case=='grubbery-bootstrap-v1':scratch_limit=1536*1024**2
     storage_budget=getattr(a,'storage_budget_gib',40)*1024**3
     def admit_scope(additional):
         if workflow_case not in ('gall-state-v2','grubbery-bootstrap-v1'):return admit(additional,budget_bytes=storage_budget)

@@ -157,7 +157,7 @@ bounded copy; the owned kernel rechecks it before staging. Only that desk subtre
 is copied, never a repository or dependency cache.
 
 This case has a13-minute test deadline and1100-second outer bound, the same4GiB,
-one-core/no-swap private namespace, and2GiB declared additional storage. Shared Go
+one-core/no-swap private namespace, and1.5GiB declared additional storage. Shared Go
 and module caches are charged under the explicit40/48GiB admission. It exercises
 ordinary API/store staging, commit and cold activation without a Unix mount.
 An uncertain activation permits only bounded read-only reconciliation of the
