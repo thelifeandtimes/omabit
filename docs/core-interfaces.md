@@ -178,3 +178,26 @@ source cache or native adapter. An operator other than the original creator can
 read it; this grants no mutation authority on that creator's operation. Missing,
 changed-runner and invalid-history responses refuse. Startup runner allowlists
 still apply. This feature does not advertise live Grubbery workflow readiness.
+
+Development source APIs also expose `app.review-source.v1`,
+`app.begin-source.v1`, `app.advance-source.v1`, `app.reconcile-source.v1` and
+`app.abandon-source.v1`. Their separate `grubbery-app-source-v1` feature means
+these typed endpoints exist; full workflow preflight remains unavailable.
+Review derives the actor, policy, verified framework receipt/baseline and pier
+continuity on the runner. The caller selects an exact runtime/target, private
+stage, app ID and prospective request ID. Save the returned plan unchanged.
+Begin persists its namespace lease without a native app effect. Advance requires
+both original plan digest and phase ID and can dispatch that phase only once.
+Reconcile needs no source bytes and never dispatches. Abandon retains live/source
+state and releases only proven preactivation work; unknown activation stays fenced.
+
+Replay reads precede live admission, so an original begun/dispatched/observed
+handle remains usable after cache loss or Commit revocation. New effects still
+recheck current authority and exact bindings. HTTP requests are bounded to96KiB;
+restricted SSH checks the feature again on the delegated connection and retains
+ordinary4KiB request limits elsewhere. Calls have four-minute application bounds.
+MCP needs explicit mutation enablement for every journal write, including begin,
+reconciliation and abandonment. Recovery currently requires the original actor
+and exact original process/configuration; same-pier restart or key rotation does
+not implicitly rebind an unfinished operation. Native Docker transport, broader
+workflow/recovery and installed qualification remain required.

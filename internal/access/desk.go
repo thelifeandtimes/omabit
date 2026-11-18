@@ -38,6 +38,9 @@ func deskStageFraming(req *http.Request) error {
 // the short SSH progress deadline; only an authorized, framed desk RPC receives
 // its longer application deadline. Other RPCs keep their previous limits.
 func deskRequestTimeout(path string) time.Duration {
+	if protocol.GrubberyAppSourceEndpoint(http.MethodPost, path) {
+		return protocol.GrubberyAppTimeout
+	}
 	if path == protocol.DeskStagesPath || strings.HasPrefix(path, protocol.DeskStagesPath+"/") && protocol.ValidDeskOperationID(strings.TrimPrefix(path, protocol.DeskStagesPath+"/")) {
 		return protocol.DeskStageTimeout
 	}

@@ -171,3 +171,13 @@ This supersedes the preceding managed-native deferral only for frozen ac3eec2.
 It does not qualify product Docker/curl, public interfaces, managed second-version
 state/restart, process-death cleanup, permits, routes/assets, peers or installed
 upgrades. Live Grubbery capability remains unavailable pending those gates.
+
+The typed public source endpoints now have source/inert qualification for review,
+begin, one exact phase, saved receipt, read-only reconcile and safe abandonment.
+Actual SQLite/HTTP tests preserve a lost reply, recover with missing stage cache
+and revoked Commit, and prove old-phase replay never selects the next phase.
+CLI and official-SDK stdio return identical results for all five calls. Restricted
+SSH tests cover larger bounded plans, missing capability, observer exclusion and
+unchanged ordinary request limits. These interface gates do not extend the frozen
+ac3eec2 native result to newer product artifacts or Docker transport. Original
+actor/process/config binding remains required for unfinished recovery.

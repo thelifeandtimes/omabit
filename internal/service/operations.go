@@ -212,6 +212,7 @@ func (s *Service) register() error {
 		return c.AppPolicy(ctx, e.Identity())
 	}))
 	errs = append(errs, s.registerDesks())
+	errs = append(errs, s.registerGrubbery())
 	errs = append(errs, s.registerProjectCreation())
 	errs = append(errs, s.registerSources())
 	errs = append(errs, s.registerFrameworks())

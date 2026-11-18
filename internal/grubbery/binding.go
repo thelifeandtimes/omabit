@@ -25,6 +25,8 @@ type Binding struct {
 	AppID              string               `json:"app_id"`
 }
 
+func ValidAppID(id string) bool { return term.MatchString(id) }
+
 func (b Binding) Validate() error {
 	if !identifier(b.RunnerID) || !identifier(b.Mode) || b.Actor == "" || len(b.Actor) > 256 || !utf8.ValidString(b.Actor) || b.Target.Validate() != nil || b.Target.InstanceID == "" || b.Target.Desk != FrameworkDesk || b.Target.ProjectID != "" && b.Target.Generation == 0 || !digest.MatchString(b.RuntimeID) || !digest.MatchString(b.Continuity) || !digest.MatchString(b.FrameworkReceiptID) || b.ConfigRevision == 0 || b.ConfigRevision > apppolicy.MaxRevision || b.PolicyRevision > apppolicy.MaxRevision || b.FrameworkBaseline.Validate() != nil || !b.FrameworkBaseline.Exists || !term.MatchString(b.AppID) {
 		return errors.New("invalid exact Grubbery adapter binding")

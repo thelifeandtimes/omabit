@@ -36,23 +36,29 @@ func (r *Server) nativeGrubberyBackend(ctx context.Context, b grubbery.Binding, 
 		return revision, err
 	}
 	load := func(ctx context.Context, id string) ([]deskwork.SourceFile, error) {
-		// Cache lookup is access-bound, not a caller-selected host path. The
-		// constructor/Execution additionally require the exact original manifest.
-		stage, directory, err := deskwork.ReadStage(ctx, filepath.Join(r.s.directory, "desk-stages-v1"), id, actor)
-		if err != nil || stage.Receipt.Intent.Target != b.Target {
-			return nil, grubbery.ErrSource
-		}
-		setting, err := r.s.deskSetting(b.Target)
-		if err != nil || setting.Revision != stage.Receipt.Intent.SettingsRevision || setting.Desk == nil || setting.Desk.Workflow != "mounted" {
-			return nil, grubbery.ErrSource
-		}
-		files, err := deskwork.ReadSourceFiles(ctx, directory, stage.Manifest)
+		_, files, err := r.grubberyStageSource(ctx, b, id, actor)
 		if err != nil {
-			return nil, grubbery.ErrSource
+			return nil, err
 		}
 		return files, nil
 	}
 	return grubbery.NewNativeBackend(runtime, (grubberyJournal{r.s}).History, guard, load)
+}
+
+func (r *Server) grubberyStageSource(ctx context.Context, b grubbery.Binding, id, actor string) (deskwork.Manifest, []deskwork.SourceFile, error) {
+	stage, directory, err := deskwork.ReadStage(ctx, filepath.Join(r.s.directory, "desk-stages-v1"), id, actor)
+	if err != nil || stage.Receipt.Intent.Target != b.Target {
+		return deskwork.Manifest{}, nil, grubbery.ErrSource
+	}
+	setting, err := r.s.deskSetting(b.Target)
+	if err != nil || setting.Revision != stage.Receipt.Intent.SettingsRevision || setting.Desk == nil || setting.Desk.Workflow != "mounted" {
+		return deskwork.Manifest{}, nil, grubbery.ErrSource
+	}
+	files, err := deskwork.ReadSourceFiles(ctx, directory, stage.Manifest)
+	if err != nil {
+		return deskwork.Manifest{}, nil, grubbery.ErrSource
+	}
+	return stage.Manifest, files, nil
 }
 
 func (r *Server) grubberyGuard(ctx context.Context, b grubbery.Binding, actor, role string, write bool) (grubberyRuntime, uint64, error) {

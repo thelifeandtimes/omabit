@@ -10626,3 +10626,39 @@ cache. Catalog/access regression checks pass. This is source/inert interface
 evidence, not installed SSH/native app dispatch or final-artifact qualification.
 The48GiB admission counted51,095,093,248 bytes before these focused builds; no
 runtime experiment or deployment was started.
+
+## M625 — Exact original app phases through typed source APIs (2026-11-18)
+
+Review derives its actor, pinned framework receipt/observed baseline, pier and
+policy at the runner; staged bytes remain private and access-bound. Begin writes
+the unchanged plan/namespace lease without an app effect. Advance selects exactly
+one original phase, with durable dispatch before I/O. Saved replay precedes live
+admission. Reconcile never dispatches or loads source; safe abandonment preserves
+live/source state and its original journal. Current actor comes from transport,
+never from the body. Original actor/process/config remain required; observation
+across same-pier restart and grant rotation is still unqualified.
+
+Actual isolated SQLite/HTTP race tests pass for review without journal/native
+writes, lost reply and single dispatch, skipped-phase refusal, original digest
+and actor binding, missing cache/revoked Commit recovery, original uncertainty
+preservation, completed-phase replay and pristine abandonment/replay. Actual CLI
+and official-SDK stdio parity pass for all five typed operations; explicit MCP
+mutation enablement also gates journal-only calls. Restricted SSH tests pass for
+20KiB plans,96KiB overflow refusal, same-connection missing-feature refusal,
+observer denial and unchanged ordinary4KiB limits. Catalog/access regressions
+and affected Go vet pass. No persistent format changes were made.
+
+`grubbery-app-source-v1` denotes these APIs separately from full workflow readiness;
+preflight remains unavailable. These are source/inert gates, not a new native
+product or installed qualification. Product Docker/curl, managed state/update/
+restart, durable owner cleanup, permits/routes/assets/peers and final-artifact
+upgrades/DEV remain outstanding. Frozen M623 remains scoped to ac3eec2.
+
+Storage reached51,464,445,952 charged bytes during focused builds, below48GiB.
+Two completed source-only test helpers were losslessly archived with SHA/inode
+manifests. An initial atime-inclusive comparison refused before unlink; the
+corrected immutable identity comparison verifies both archive inflations.
+The known managed03 runtime and supervisor are inactive. Only its exact duplicate
+pill/Vere/host helper were retired after canonical hashes were reverified,
+freeing270,315,520 allocated bytes; original SQL/pier/proofs/logs remain unchanged.
+No user ship, installed service, production plugin or manual-review state changed.
