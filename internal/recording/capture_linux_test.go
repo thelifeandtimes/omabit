@@ -24,6 +24,14 @@ func capturePacket(stream byte, data []byte) []byte {
 	return append(packet, data...)
 }
 
+func captureMetadata() Metadata {
+	m := segmentedMetadata()
+	m.Version = CurrentMetadataVersion
+	m.Identity.NativeShipStatus = "registered"
+	m.Identity.PierBinding = "existing-pier"
+	return m
+}
+
 type countedCaptureStream struct {
 	io.ReadCloser
 	closed atomic.Int32
@@ -33,7 +41,7 @@ func (s *countedCaptureStream) Close() error { s.closed.Add(1); return s.ReadClo
 
 func TestCapturePersistsReadyBeforeOriginalBytesAndIndependentExit(t *testing.T) {
 	s, dir := segmentStore(t, 1<<20, 72<<10)
-	m := segmentedMetadata()
+	m := captureMetadata()
 	epoch := m.AttachedAt
 	stdout := append(bytes.Repeat([]byte("trace\n"), 350), bytes.Repeat([]byte("long-trace"), 18000)...)
 	stdout = append(stdout, []byte("\r\x1b[2K\x00\xff 0wdiagnostic.atom Authorization: private-original")...)
@@ -122,7 +130,7 @@ func TestCaptureSeparatesAttachmentCoverageStorageAndProcessFailures(t *testing.
 	for _, scenario := range []string{"attach", "ready", "eof-running", "partial-transport", "wrong-exit", "disk-pressure", "write-failed"} {
 		t.Run(scenario, func(t *testing.T) {
 			s, _ := openTestStore(t, 1<<20)
-			m := segmentedMetadata()
+			m := captureMetadata()
 			packet := capturePacket(1, []byte("preserved partial original"))
 			if scenario == "partial-transport" {
 				packet = packet[:len(packet)-3]
@@ -195,7 +203,7 @@ func TestCaptureSeparatesAttachmentCoverageStorageAndProcessFailures(t *testing.
 
 func TestCaptureCancellationClosesOnlyItsTransportAndPersistsGap(t *testing.T) {
 	s, _ := openTestStore(t, 1<<20)
-	m := segmentedMetadata()
+	m := captureMetadata()
 	reader, writer := io.Pipe()
 	defer writer.Close()
 	stream := &countedCaptureStream{ReadCloser: reader}
@@ -238,7 +246,7 @@ func TestCaptureAdmissionRefusesLegacyIncompleteOrCanceledBeforeEffects(t *testi
 	for _, scenario := range []string{"legacy", "tty", "identity", "missing-ready", "canceled"} {
 		t.Run(scenario, func(t *testing.T) {
 			s, dir := openTestStore(t, 1<<20)
-			m := segmentedMetadata()
+			m := captureMetadata()
 			called := 0
 			source := DockerCaptureSource{
 				Attach: func(context.Context) (io.ReadCloser, error) { called++; return nil, nil },

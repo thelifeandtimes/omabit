@@ -349,3 +349,42 @@ These source gates do not observe a real engine/process. A trusted factory,
 independent supervised worker, launch/start-failure integration, retention/pins,
 indexed seek, API/UI/export and real Docker/Vere/installed qualification remain
 required. Recording support is not advertised by the runner.
+
+## Prepared metadata4 bootstrap boundary — unqualified
+
+A first launch can precede both comet identity and a pier/.urb object. The current
+working model labels pending-comet-mining with an empty ship name and distinguishes
+an existing-pier fingerprint from prepared-storage intent. Registered means an
+expected known identity, not a successful native response. These immutable labels
+never acquire future names/inodes through opening, continuation or exit. Later
+observed identity requires separate linked evidence and trusted runtime factories.
+
+Metadata1–3 retains exact original bytes and omitted labels; current4 uses the
+same segmented frame codec1. Full recording race tests and focused vet now pass;
+actual original3 preservation/old-reader refusal remains pending. No installed recording,
+bootstrap coverage or native identity observation is qualified by this model.
+
+## Ordinary native factory — native qualification pending
+
+`PrepareManagedRecording` is prepared source for a newly created ordinary Vere
+container. The authenticated manager still owns the original job, actor, public
+target/revision and lifecycle fence. The factory verifies the private account and
+daemon, full selected container, non-TTY launch/containment, network and unchanged
+exclusive storage. It refuses an absent or already started container. A pending
+comet keeps its name unknown; empty prepared storage is checked without creating
+a pier. Only digests of private paths/launch configuration enter metadata.
+
+Before and after attachment, and immediately before readiness, recheck the same
+created-container snapshot. Replaced storage, a newly appearing pier, changed
+boot/daemon, caller metadata or launch settings refuse and detach. Independently
+read terminal evidence twice on stream completion; a missing process timestamp,
+changed launch/exit or running container refuses. Preserve nonzero/OOM/error flags
+and wall-clock reversal without copying daemon diagnostics. This code sends no
+Start, Stop, signal, wait, stdin or guest command.
+
+The source/race tests pass with inert engine fixtures and private temporary files,
+including exact output capture, independent terminal evidence, caller-pointer
+isolation, artifact/launch/storage drift and ambiguous selection refusal. Focused
+vet passes. No factory is wired into installed launch. Independent supervised
+workers, project factories, later native identity evidence, launch-failure and
+pressure recovery, retention, API/UI and real-runtime gates remain required.

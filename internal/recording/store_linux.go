@@ -21,13 +21,13 @@ var (
 	ErrCursor  = errors.New("recording cursor no longer matches verified retained coverage")
 )
 
-// Limits bound encoded session bytes and metadata3 segment size. Host/ship
+// Limits bound encoded session bytes and metadata3-or-later segment size. Host/ship
 // quotas, incident pins and retention are not implemented here. Free-space
 // admission is not an exclusive reservation against unrelated filesystem users.
 type Limits struct {
 	MaxSessionBytes  int64
 	ReserveFreeBytes uint64
-	// Zero selects16MiB (bounded by MaxSessionBytes); only metadata3 rotates.
+	// Zero selects16MiB (bounded by MaxSessionBytes); metadata3 and later rotate.
 	MaxSegmentBytes int64
 }
 
@@ -268,7 +268,7 @@ func (w *SessionWriter) Append(kind Kind, data []byte, unixNano int64, elapsedNa
 		return Frame{}, ErrInvalid
 	}
 	n := int64(frameHeaderBytes + len(data) + 32)
-	rotate := w.metadata.Version == 3 && w.encoder.CommittedOffset()+n > w.store.limits.MaxSegmentBytes
+	rotate := w.metadata.Version >= 3 && w.encoder.CommittedOffset()+n > w.store.limits.MaxSegmentBytes
 	extra := n
 	if rotate {
 		extra += int64(headerBytes)
@@ -297,7 +297,7 @@ func (w *SessionWriter) Append(kind Kind, data []byte, unixNano int64, elapsedNa
 		}
 		return Frame{}, err
 	}
-	if w.metadata.Version == 3 && kind == Exit {
+	if w.metadata.Version >= 3 && kind == Exit {
 		w.terminal = true
 	}
 	return f, nil
@@ -360,7 +360,7 @@ func (s *Store) ReadPage(ctx context.Context, id string, cursor *Cursor, maxFram
 	if err != nil || m.SessionID != id {
 		return out, ErrCorrupt
 	}
-	if m.Version == 3 {
+	if m.Version >= 3 {
 		return s.readSegmentedPage(ctx, r, m, cursor, maxFrames, maxBytes)
 	}
 	file, err := privateFile(r, "frames.obr", os.O_RDONLY, s.limits.MaxSessionBytes)

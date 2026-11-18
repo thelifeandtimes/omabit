@@ -11791,3 +11791,81 @@ Admission charges50,487,672,832bytes and reserves1,006,632,960bytes, totaling
 51,494,305,792 under48GiB. Run a fresh original-VM05-backed copy, preserving the
 completed-version-one/new-pending-version-two failure as separate evidence. No
 production, existing ship, manual DEV or tmux operation is involved.
+
+## M667 — Represent bootstrap unknowns without inventing identity (2026-11-18)
+
+Status: implementation/rehearsal prepared; source/native compatibility gates
+pending. New comet creation stores ManagedComet{} without a ship name, and
+pierstore.Identify requires both the pier and its.urb directory. These source
+facts prevent a correct first-Start recorder from requiring a known native name
+or initialized pier object. Do not create/alter a pier merely to fill recording
+metadata, or substitute a fake identity for mining output.
+
+Prepare metadata4 with explicit native_ship_status registered or
+pending-comet-mining, and pier_binding existing-pier or prepared-storage. A
+registered label remains expected intent, not an answered native identity. A
+prepared-storage digest binds verified exclusive storage intent, not a future
+inode. Pending identity has no ship name and is not a project member. Existing
+metadata1–3 keeps byte-exact canonical serialization, with omitted basis fields
+left unknown. Segments/continuation accept4 without rewriting old files; frame
+codec1 is unchanged. New source capture uses current4. Later confirmed identity/
+pier/process facts need separately linked evidence and are not implemented by
+changing the attachment label.
+
+Prepare source gates for unknown bootstrap bytes, strict mixed/guessed-basis
+refusal before storage, exact metadata across rotation/continuation/exit/reopen,
+and legacy canonical preservation. Prepare an actual frozen6e810bc9 original3
+segmented writer/reader plus declared helper and new4 preservation/refusal
+rehearsal. Three Python launch/input guards pass without a source build or
+runtime effect. Go race/vet and the actual writer rehearsal remain pending;
+do not infer them from preparation. The independent native app case continues
+using its frozen6e code, unaffected by these working source changes. No installed
+capture, production/manual DEV or user ship is changed. See the [upgrade boundary](upgrade-policy.md#development-explicit-recording-bootstrap-identity-metadata4--gates-pending).
+
+## M668 — Prepare ordinary recording admission from actual native contracts (2026-11-18)
+
+Status: source prepared; Go/native gates pending. The prior source coordinator
+accepted trusted callbacks but had no ordinary native factory. Prepare a factory
+for a separately supervised worker's newly created ordinary Vere container. The
+authenticated manager must supply the durable original job and hold its lifecycle
+guard; public target/revision/request names alone cannot prove that authority.
+Project contracts and installed launch remain unwired.
+
+Verify the private account/engine and exact unambiguous created full container,
+launch/containment/network, exclusive mount and existing-pier identity or empty
+prepared storage, with boot and own recorder namespaces. Require a saved create
+dispatch without unresolved resources. Recheck the exact created snapshot before
+and after attach and immediately before durable readiness. Detach on change;
+never Start/Stop/signal/wait/exec or modify storage. Hash private launch/path
+context; do not return it. Copy runtime state into a fresh zero value so JSON
+decode cannot reuse the caller's nested pointers.
+
+Independent exit reads bracket the same exact terminal container and launch,
+daemon/boot/storage context. Missing/out-of-range process times, a live process,
+changed evidence or error refuses without inventing an exit. Preserve nonzero,
+OOM, daemon-error presence and reversed wall time as distinct evidence; omit raw
+daemon diagnostics. Prepare inert native-seam/storage/capture tests for bootstrap
+bytes, pointer isolation, pre/during-attach drift, ambiguous admission and terminal
+evidence. Only gofmt and diff checks have run. Go race/vet await the single native
+app case's completion, avoiding build-cache growth inside its reserved budget.
+This supersedes no qualification deferral; installed capture is still disabled.
+
+## M669 — Verify bootstrap metadata and ordinary capture admission in source (2026-11-18)
+
+Full recording race tests pass in1.263s, preserving actual original1/2 fixtures,
+metadata3 canonical bytes and segmented continuation, plus explicit4 bootstrap
+unknowns through raw capture, gaps, exit and reopen. Targeted ordinary native
+factory/attachment/process race tests pass in2.957s with inert engine fixtures
+and private temporary files. Native-seam tests preserve bootstrap raw bytes and
+independent abnormal exit evidence, refuse changed engine/boot/container/TTY/
+launch/network/pill/storage and caller metadata, detach on between-attach drift,
+and reject ambiguous/unbound create intent before contacting output transport.
+Caller edits cannot rebind copied state or metadata. Focused vet passes.
+
+These gates supersede only M667/M668's pending Go-source checks. Their actual
+original3 writer/reader compatibility rehearsal is still pending. The source
+factory still requires the authenticated manager's durable job/lifecycle guard;
+it is not wired into installed launch and creates no independent worker. No real
+container, recording coverage, retention, API/UI or installed upgrade is qualified.
+Three Python original-writer launch/input guards also pass. Production, manual
+DEV, existing ships and tmux remain untouched.

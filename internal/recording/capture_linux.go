@@ -55,7 +55,7 @@ type CaptureResult struct {
 	ClosedDurably bool `json:"closed_durably"`
 }
 
-// CaptureDocker serializes one new private metadata3 recording. It persists
+// CaptureDocker serializes one new private current-format recording. It persists
 // metadata before attaching and acknowledges readiness only after attachment.
 // It never starts, signals, waits for, removes or retries a container. The
 // independently supervised worker supplies its own lifetime and trusted source.

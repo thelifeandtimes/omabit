@@ -1,5 +1,32 @@
 # Stable-release upgrade requirement
 
+## Development: explicit recording bootstrap identity, metadata4 — gates pending
+
+New comet creation has no ship name before mining, and a first launch need not
+yet have a pier/.urb object. The prepared metadata4 model distinguishes a
+registered expected name from pending-comet-mining, and an existing-pier object
+binding from a prepared-storage contract. Pending identity never receives a
+guessed ship name or future inode. This is attachment intent, not proof of a
+successful process, initialized pier or answered native identity. Later verified
+observations need separate linked evidence; original metadata is immutable.
+
+Metadata1–3 retain their exact canonical bytes and omitted basis fields. The
+segmented format introduced by3 is also used by4; frame codec1 is unchanged.
+The source coordinator selects current4 for new captures; generic legacy-format
+source fixtures remain explicitly readable without promotion. No installed file
+or runner database changes, and no recording feature is advertised.
+
+The original3 writer/reader rehearsal is prepared at frozen6e810bc9 with a
+declared helper in `scripts/test-recording-bootstrap-upgrade.py`. It must prove
+actual original3 segment/cursor/reopen preservation and actual old-reader refusal
+of populated4 unchanged. Full recording race tests, focused ordinary native
+factory/process/attachment race tests and vet now pass with inert engine/private
+filesystem fixtures. The actual original3 compatibility rehearsal remains pending.
+Native capture factories,
+worker lifecycle, later observed identity, real Docker/Vere, installed upgrade
+and final artifact/support-window gates remain required. This is an unreleased
+development format, not qualified recording support.
+
 ## Development: separate app runtime recovery audits, schema63
 
 Schema63 adds immutable linked runtime recovery receipts and exact per-operation

@@ -18,7 +18,7 @@ import (
 
 const maxSegments = 1024
 
-var ErrLegacyLayout = errors.New("recording layout is single-segment; preserve it and create a distinct version3 session")
+var ErrLegacyLayout = errors.New("recording layout is single-segment; preserve it and create a distinct current-format session")
 
 func segmentName(number uint64) string {
 	if number == 1 {
@@ -36,7 +36,7 @@ func (w *SessionWriter) Rotate() error {
 	if w.closed || w.poisoned || w.terminal {
 		return ErrPoisoned
 	}
-	if w.metadata.Version != 3 {
+	if w.metadata.Version < 3 {
 		return ErrLegacyLayout
 	}
 	if !boundFile(w.root, segmentName(w.segment), w.file, w.encoder.CommittedOffset()) || !boundFile(w.root, "writer.lock", w.lock, 0) {
@@ -95,7 +95,7 @@ func (s *Store) Continue(ctx context.Context, expected Metadata, at time.Time) (
 	if expected.Validate() != nil {
 		return nil, ErrInvalid
 	}
-	if expected.Version != 3 {
+	if expected.Version < 3 {
 		return nil, ErrLegacyLayout
 	}
 	want, err := expected.Bytes()

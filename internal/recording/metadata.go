@@ -15,7 +15,7 @@ import (
 )
 
 const MaxMetadataBytes = 4096
-const CurrentMetadataVersion = 3
+const CurrentMetadataVersion = 4
 
 var ErrLegacyMetadata = errors.New("legacy recording metadata is read-only; new capture requires complete attachment identity")
 
@@ -44,6 +44,9 @@ type Metadata struct {
 	// generation/pier, daemon endpoint and external recorder's host namespaces.
 	// Version3 selects linked immutable segments; older readers refuse it rather
 	// than silently showing only segment1.
+	// Version4 distinguishes registered identity from a new comet's unresolved
+	// identity, and an existing pier object from prepared exclusive storage.
+	// Neither a ship name nor a not-yet-created pier object is fabricated.
 	// This is attachment intent, never proof that Start occurred or output was
 	// completely captured. Process/exit and coverage need independent events.
 	Identity *AttachmentIdentity `json:"identity,omitempty"`
@@ -61,7 +64,7 @@ func NewSessionID() (string, error) {
 }
 
 func (m Metadata) Validate() error {
-	if (m.Version != 1 && m.Version != 2 && m.Version != 3) || !lowerHex(m.SessionID, 32) || m.SessionID == strings.Repeat("0", 32) || m.PreviousSessionID != "" && (!lowerHex(m.PreviousSessionID, 32) || m.PreviousSessionID == m.SessionID || m.PreviousSessionID == strings.Repeat("0", 32)) || m.ConfigurationRevision == 0 {
+	if (m.Version < 1 || m.Version > CurrentMetadataVersion) || !lowerHex(m.SessionID, 32) || m.SessionID == strings.Repeat("0", 32) || m.PreviousSessionID != "" && (!lowerHex(m.PreviousSessionID, 32) || m.PreviousSessionID == m.SessionID || m.PreviousSessionID == strings.Repeat("0", 32)) || m.ConfigurationRevision == 0 {
 		return ErrInvalid
 	}
 	if m.Version == 1 && m.Identity != nil || m.Version >= 2 && (m.Identity == nil || m.Identity.validate(m) != nil) {

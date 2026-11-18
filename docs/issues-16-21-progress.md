@@ -130,3 +130,21 @@ capture and separately supplied exit/gap evidence. Full recording race/vet pass
 with inert streams/private files. A trusted native factory and independent worker
 remain unwired; installed recording, retention, API/UI/export and real-runtime
 coverage are not implied.
+
+M665 closes the native freeze boundary over every embedded input; only explicitly
+named host/guest harness and non-Go docs may differ from frozen artifacts. M666
+freezes clean6e810bc9 binaries and admits the complete-case copied-pier run with a
+768MiB hard root cap and declared960MiB scratch under48GiB. Every previous failure
+disk and pending operation is retained. Older generated executables are retained
+losslessly compressed, with exact inflation pins and explicit raw-path tombstones.
+
+M667 prepares explicit metadata4 bootstrap unknowns with exact legacy1–3 reads and
+an actual original3 writer/refusal rehearsal. M668 prepares ordinary native
+recording selection, attachment/readiness revalidation and independently observed
+terminal evidence. Their Go/source-upgrade/native gates remain pending while the
+single frozen native app case runs. No recording is installed or advertised.
+
+M669 passes the complete recording race suite and focused ordinary native
+admission/attachment/process race and vet gates using inert engines/private files.
+This supersedes the pending Go checks only; actual original3 writer compatibility,
+independent workers, native capture and installed qualification remain pending.

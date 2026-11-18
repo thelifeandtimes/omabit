@@ -29,9 +29,15 @@ type ProjectNamespace struct {
 }
 
 type AttachmentIdentity struct {
-	Target               apppolicy.Target  `json:"target"`
-	NativeShip           string            `json:"native_ship"`
-	PierContinuitySHA256 string            `json:"pier_continuity_sha256"`
+	Target               apppolicy.Target `json:"target"`
+	NativeShip           string           `json:"native_ship"`
+	PierContinuitySHA256 string           `json:"pier_continuity_sha256"`
+	// Version4 explicitly labels what was knowable before Start. Registered
+	// identity is expected intent, not proof that a process answered /~/host.
+	// Prepared storage binds the verified exclusive mount/selected leaf contract,
+	// not an invented future pier/.urb inode. Older metadata omits both labels.
+	NativeShipStatus     string            `json:"native_ship_status,omitempty"`
+	PierBinding          string            `json:"pier_binding,omitempty"`
 	EngineID             string            `json:"engine_id"`
 	EngineEndpointSHA256 string            `json:"engine_endpoint_sha256"`
 	HostBootID           string            `json:"host_boot_id"`
@@ -65,7 +71,29 @@ func nonzeroDigest(id string) bool { return lowerHex(id, 64) && id != strings.Re
 
 func (i AttachmentIdentity) validate(m Metadata) error {
 	t := i.Target
-	if t.Validate() != nil || t.InstanceID == "" || t.InstanceID != m.InstanceID || t.ProjectID != m.ProjectID || t.Desk != "" || !protocol.ValidFakeShip(i.NativeShip) || !nonzeroDigest(i.PierContinuitySHA256) || !hostcompat.ValidEngineIdentity(i.EngineID) || !nonzeroDigest(i.EngineEndpointSHA256) || !validBootID(i.HostBootID) || i.RecorderNamespaces.User == 0 || i.RecorderNamespaces.Mount == 0 || i.RecorderNamespaces.PID == 0 || i.RecorderNamespaces.Network == 0 {
+	knownShip := protocol.ValidFakeShip(i.NativeShip)
+	if m.Version < 4 {
+		if i.NativeShipStatus != "" || i.PierBinding != "" {
+			return ErrInvalid
+		}
+	} else {
+		if i.PierBinding != "existing-pier" && i.PierBinding != "prepared-storage" {
+			return ErrInvalid
+		}
+		switch i.NativeShipStatus {
+		case "registered":
+			if !knownShip {
+				return ErrInvalid
+			}
+		case "pending-comet-mining":
+			if i.NativeShip != "" || t.ProjectID != "" {
+				return ErrInvalid
+			}
+		default:
+			return ErrInvalid
+		}
+	}
+	if t.Validate() != nil || t.InstanceID == "" || t.InstanceID != m.InstanceID || t.ProjectID != m.ProjectID || t.Desk != "" || !knownShip && i.NativeShipStatus != "pending-comet-mining" || !nonzeroDigest(i.PierContinuitySHA256) || !hostcompat.ValidEngineIdentity(i.EngineID) || !nonzeroDigest(i.EngineEndpointSHA256) || !validBootID(i.HostBootID) || i.RecorderNamespaces.User == 0 || i.RecorderNamespaces.Mount == 0 || i.RecorderNamespaces.PID == 0 || i.RecorderNamespaces.Network == 0 {
 		return ErrInvalid
 	}
 	if t.ProjectID == "" {
