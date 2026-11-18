@@ -10033,3 +10033,24 @@ new-write byte authority. Next wire the persistent runner store/lease, migration
 and exact native transport/observers plus public interfaces, then qualify the app
 sample. No persistent format, namespace, policy, runtime or advertised capability
 changes in this slice; M602 remains the qualified bootstrap boundary.
+
+## M606 — Derive app ownership from original phase receipts (2026-11-18)
+
+The source-only ownership projection requires observed original marker effects,
+exact stable namespace identity and every source/version predecessor in trusted
+creation order. A reservation, dispatched marker or uncertain marker creates no
+ownership. Read-only marker reconciliation can establish its original proof;
+later updates retain that proof and advance only the completed source generation.
+Missing, duplicate, reordered or incomplete predecessor history refuses. The
+focused race/static tests pass, including partial marker history and updates.
+
+Persist this as immutable operation headers and append-only phase events with a
+transactional namespace lease; derive current ownership instead of adding a
+second independently mutable ownership row. Schema61 must preserve all existing
+schema60/59 history and make older writers refuse. Exact original60-writer fixture,
+rollback/reopen/corruption and matching-artifact qualification are still required.
+The native adapter must independently check the actual namespace and current role,
+framework/process/pier, policy and resource limits; a saved projection alone is
+never runtime authority. Safe abandonment of failed compilation before source
+activation also remains required before exposing the app workflow. No persistent
+format or advertised capability changes in this source-only slice.
