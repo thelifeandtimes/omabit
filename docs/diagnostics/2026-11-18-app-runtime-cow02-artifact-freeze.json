@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "source_commit": "569f39e6437490cc507b21c2ec669d0c2b52a0d4",
+  "clean_before_after": true,
+  "artifacts": {
+    "omabit": {
+      "sha256": "a89e8d192ea1e40b4a28e1d21f1f13ebe1b84b8b917bd74d99a8acce7e84a016",
+      "bytes": 17142023
+    },
+    "urbit-collector": {
+      "sha256": "3390bff315a6b9a91328208644400d80b7271227958c0ab45977d9e8b7a4d112",
+      "bytes": 9031943
+    },
+    "urbit-runner": {
+      "sha256": "aee0df242a2fb12bd8f760c3e2d5f3dae82186a705a68b8dea797ae493f39cf5",
+      "bytes": 20562183
+    },
+    "managed.test": {
+      "sha256": "0647b833f4448548ebf83f6850aa4155420b9dea3dbe28b45f51e21310ec8adb",
+      "bytes": 29503751
+    }
+  },
+  "private_manifest_sha256": "793850096270a39f0a9c8faf3ea6c7f8724133513db29c3bfe900a1133e80da5",
+  "schema": 63,
+  "storage": {
+    "charged_bytes": 50297249792,
+    "budget_bytes": 51539607552,
+    "additional_scratch_bytes": 1140850688,
+    "total_with_reserves": 51438100480
+  },
+  "limits": {
+    "capsule_scratch_bytes": 1073741824,
+    "root_logical_max_bytes": 939524096,
+    "host_build_reserve_bytes": 67108864
+  },
+  "cache_reclaim": {
+    "classified_task_test_objects": 88,
+    "freed_allocated_bytes": 350732288,
+    "newest_per_package_retained": 2,
+    "named_frozen_artifacts_unchanged": true
+  },
+  "scope": "matching source artifacts and storage admission; whole native workflow not yet qualified; no installed upgrade/DEV/production deployment"
+}

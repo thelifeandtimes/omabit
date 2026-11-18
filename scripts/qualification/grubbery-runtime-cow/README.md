@@ -22,11 +22,14 @@ supported phase progress appends events and changes only its legitimate revision
 lease state. No SQL/receipt edits, new bootstrap or unreviewed native retry occurs.
 
 No work without `--run`, clean matching artifacts, closed predecessor scopes and
-storage admission. Declare1280MiB capsule scratch plus64MiB host build reserve
+storage admission. Declare1024MiB capsule scratch plus64MiB host build reserve
 under the temporary48GiB goal cap. Compressed inputs use a64MiB read-only
-filesystem. QEMU alone inherits a kernel hard file-size limit of1152MiB, bounding
+filesystem. QEMU alone inherits a kernel hard file-size limit of896MiB, bounding
 its newly written root's logical/allocated size; input/boot/log allowance fits the
 larger scratch reservation. Host storage/log/deadline checks run every second.
+The first same-pier case used162,009,088allocated root bytes before its native
+timeout; this tightened hard bound retains over five times that measured space.
+It never permits a fresh bootstrap or silent reservation growth on failure.
 The original8GiB/no-NIC guest,10GiB/no-swap/one-CPU QEMU scope, separate2GiB
 staging supervisor and fixed deadlines remain. A size/I/O/forced-stop failure is
 failed qualification with retained evidence. This case is not yet native-qualified.

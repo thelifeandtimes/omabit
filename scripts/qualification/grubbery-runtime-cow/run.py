@@ -26,10 +26,12 @@ util = budget.util
 GIB = 1024**3
 # Share the fixed ended task fixture read-only. Recover its copied pending app
 # through supported lifecycle and audited APIs; no bootstrap or full input copies.
-# Enforce this bounded reservation and the temporary48GiB aggregate cap.
-SCRATCH = 1280*1024**2
+# The first same-pier case used162,009,088 allocated root bytes at its native
+# timeout (no fresh bootstrap). Keep more than5x that space behind a hard file
+# bound while reserving every input/log/report byte under the aggregate cap.
+SCRATCH = 1024*1024**2
 HOST_BUILD_RESERVE = 64*1024**2
-ROOT_FILE_MAX = 1152*1024**2
+ROOT_FILE_MAX = 896*1024**2
 PREDECESSOR = Path('/tmp/omabit-issues-app-vm-05/root.qcow2')
 PREDECESSOR_SHA = 'a23f10ddc89657489d8e55eaf5e4362603848366a447dbf9f51ce192837a08f9'
 

@@ -11619,3 +11619,29 @@ saved-lookup guidance. It does not resubmit effects. Read-only and before-effect
 failures retain their existing classifications. Source refusal/privacy tests pass.
 This supersedes M659's pending first-case result only; other issue tracks and
 installed/DEV/production boundaries remain unchanged.
+
+## M661 — Freeze the optimized candidate within a tighter measured capsule (2026-11-18)
+
+Freeze clean569f39e6 matching CLI, collector, runner and source-pinned native
+helper with exact Go/embedded input hashes. Focused actual CLI/stdio app parity
+and managed/service vet also pass after M660. The [new artifact/admission pins](diagnostics/2026-11-18-app-runtime-cow02-artifact-freeze.json)
+qualify source identity only, not native behavior. Preserve the old6676 executables
+and both original/current-failure full roots. No installed files change.
+
+Classify88 obsolete compiler test-package AR objects from this goal's exact
+worktree and goal-only test symbols, retaining newest2 per package. Verify owner,
+link/inode/mtime/content/build identity, exact AR members and every named frozen
+artifact before removal; record each completed unlink. Reclaim350,732,288allocated
+bytes without source, SQLite, executable or runtime-state removal. Stop only the
+superseded task classifier after its exact process identity is verified; the
+replacement uses bounded efficient substring scans and its manifest is retained.
+
+The first copied existing-pier run used162,009,088allocated root bytes, without
+fresh bootstrap. Tighten this case's kernel hard root-file cap to896MiB, still
+over5x that measured allocation; reserve1024MiB capsule plus64MiB host staging.
+All input/log/report bounds must fit before QEMU, and reaching the bound still
+fails the gate with evidence retained. Five refusal/input/kernel-bound tests pass.
+Admission charges50,297,249,792bytes and reserves1,140,850,688bytes, totaling
+51,438,100,480 below48GiB. These are capacity/source gates only. Use a fresh COW
+from unchanged read-only VM05, never resume or rewrite the acknowledged failures.
+No production, protected/tmux ship or manual DEV operation is involved.

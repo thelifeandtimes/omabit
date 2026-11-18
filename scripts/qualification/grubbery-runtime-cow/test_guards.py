@@ -62,7 +62,7 @@ class RecoveryGuards(unittest.TestCase):
     def test_actual_kernel_file_limit_refuses_growth_and_preserves_first_bytes(self):
         host = module('run')
         self.assertLess(host.ROOT_FILE_MAX+64*1024**2+32*1024**2+16*1024**2, host.SCRATCH)
-        self.assertEqual(host.SCRATCH, 1280*1024**2)
+        self.assertEqual(host.SCRATCH, 1024*1024**2)
         with tempfile.TemporaryDirectory() as root:
             target = Path(root)/'bounded-disposable-file'
             code = "import errno,pathlib,sys; p=pathlib.Path(sys.argv[1]); f=p.open('xb',buffering=0); f.write(b'A'*1048576)\ntry: f.write(b'B')\nexcept OSError as e: assert e.errno==errno.EFBIG\nelse: raise RuntimeError('kernel file bound was ignored')\nf.close(); assert p.stat().st_size==1048576 and p.read_bytes()==b'A'*1048576"
