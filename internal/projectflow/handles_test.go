@@ -104,7 +104,7 @@ func TestBoundedHandlesResumeAfterLostReplyWithoutResubmission(t *testing.T) {
 	}
 	for _, step := range Steps(f.plan) {
 		f.lose = step.Kind
-		_, err := Advance(ctx, f, pin, "actor", f.plan, "parent")
+		_, err := Advance(ctx, f, pin, "actor", f.plan, "parent", RequestID("parent", step))
 		var uncertain *client.OutcomeUncertainError
 		if !errors.As(err, &uncertain) {
 			t.Fatal("lost phase reply was not uncertain", step, err)
@@ -122,7 +122,7 @@ func TestBoundedHandlesResumeAfterLostReplyWithoutResubmission(t *testing.T) {
 		}
 		f.operations = restored
 		for i := 0; i < 2; i++ {
-			h, err = Advance(ctx, f, pin, "actor", f.plan, "parent")
+			h, err = Advance(ctx, f, pin, "actor", f.plan, "parent", RequestID("parent", step))
 			if err != nil || h.Phase != "waiting" || h.NativeRequestID != RequestID("parent", step) || h.OperationID != RequestID("parent", step) || f.actions != before {
 				t.Fatal("pending phase resubmitted or rebound", h, err)
 			}
@@ -133,7 +133,7 @@ func TestBoundedHandlesResumeAfterLostReplyWithoutResubmission(t *testing.T) {
 	if err != nil || h.Phase != "ready" || f.creates != 1 || f.actions != 5 || f.downloads != 1 {
 		t.Fatal(h, err, f.creates, f.actions, f.downloads)
 	}
-	if _, err := Advance(ctx, f, pin, "actor", f.plan, "parent"); err != nil || f.actions != 5 {
+	if _, err := Advance(ctx, f, pin, "actor", f.plan, "parent", RequestID("parent", Steps(f.plan)[0])); err != nil || f.actions != 5 {
 		t.Fatal("complete handle dispatched again", err)
 	}
 }
@@ -147,13 +147,14 @@ func TestInterruptedOrChangedHistoryNeverDispatches(t *testing.T) {
 			if _, err := Begin(ctx, f, pin, "actor", f.plan, "parent"); err != nil {
 				t.Fatal(err)
 			}
-			h, err := Advance(ctx, f, pin, "actor", f.plan, "parent")
+			native := RequestID("parent", Steps(f.plan)[0])
+			h, err := Advance(ctx, f, pin, "actor", f.plan, "parent", native)
 			if err != nil {
 				t.Fatal(err)
 			}
 			if scenario == "interrupted" || scenario == "failed" {
 				f.finish(h.NativeRequestID, scenario)
-				next, err := Advance(ctx, f, pin, "actor", f.plan, "parent")
+				next, err := Advance(ctx, f, pin, "actor", f.plan, "parent", native)
 				if err != nil || next.Phase != "needs-recovery" || next.OperationID != h.OperationID || f.actions != 1 {
 					t.Fatal(next, err)
 				}
@@ -178,7 +179,7 @@ func TestInterruptedOrChangedHistoryNeverDispatches(t *testing.T) {
 					s.Operations = append(s.Operations, protocol.ProjectOperationSummary{ID: "out-of-order", RequestID: RequestID("parent", step), Actor: "actor", ConfigRevision: 1, Kind: kind, InstanceID: step.Member, Status: "succeeded"})
 				}
 			}
-			if _, err := Advance(ctx, f, pin, "actor", f.plan, "parent"); !errors.Is(err, ErrHistory) || f.actions != 1 || f.downloads != 1 {
+			if _, err := Advance(ctx, f, pin, "actor", f.plan, "parent", native); !errors.Is(err, ErrHistory) || f.actions != 1 || f.downloads != 1 {
 				t.Fatal("changed history reached a new effect", err, f.actions)
 			}
 		})
@@ -192,7 +193,7 @@ func TestCreationWaitIsBoundedAndCannotAdvanceOrCancelWork(t *testing.T) {
 	if _, err := Begin(ctx, f, pin, "actor", f.plan, "parent"); err != nil {
 		t.Fatal(err)
 	}
-	h, err := Advance(ctx, f, pin, "actor", f.plan, "parent")
+	h, err := Advance(ctx, f, pin, "actor", f.plan, "parent", RequestID("parent", Steps(f.plan)[0]))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -216,5 +217,47 @@ func TestCreationWaitIsBoundedAndCannotAdvanceOrCancelWork(t *testing.T) {
 	}
 	if _, err := Wait(ctx, blockedRead{f}, pin, "actor", f.plan, "parent", time.Millisecond); !errors.Is(err, context.DeadlineExceeded) || f.actions != 1 {
 		t.Fatal("blocked first receipt read escaped wait deadline", err)
+	}
+}
+
+func TestCompletedPhaseRetryCannotAdvanceAfterLostReply(t *testing.T) {
+	f := newFixture(t)
+	ctx := context.Background()
+	pin := client.Identity{}
+	begin, err := Begin(ctx, f, pin, "actor", f.plan, "parent")
+	if err != nil {
+		t.Fatal(err)
+	}
+	first := RequestID("parent", Steps(f.plan)[0])
+	if begin.NativeRequestID != first {
+		t.Fatal("begin omitted initial exact phase binding", begin)
+	}
+	f.lose = "prepare"
+	if _, err := Advance(ctx, f, pin, "actor", f.plan, "parent", first); err == nil {
+		t.Fatal("lost reply not uncertain")
+	}
+	// The background phase completes BEFORE the caller can read or retry. The
+	// unchanged call must keep its old intent, not submit the next missing step.
+	f.finish(first, "succeeded")
+	for i := 0; i < 2; i++ {
+		h, err := Advance(ctx, f, pin, "actor", f.plan, "parent", first)
+		if err != nil || h.Phase != "completed" || h.NativeRequestID != first || h.OperationID != first || f.actions != 1 || f.downloads != 1 {
+			t.Fatal("old phase call advanced after lost reply", h, err, f.actions)
+		}
+	}
+	future := RequestID("parent", Steps(f.plan)[2])
+	if _, err := Advance(ctx, f, pin, "actor", f.plan, "parent", future); !errors.Is(err, ErrPhase) || f.actions != 1 {
+		t.Fatal("future phase bypassed missing predecessor", err)
+	}
+	before := f.lookups
+	if _, err := Advance(ctx, f, pin, "actor", f.plan, "parent", "unknown"); !errors.Is(err, ErrPhase) || f.lookups != before || f.actions != 1 {
+		t.Fatal("unknown phase reached runner", err)
+	}
+	next, err := Inspect(ctx, f, pin, "actor", f.plan, "parent")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h, err := Advance(ctx, f, pin, "actor", f.plan, "parent", next.NativeRequestID); err != nil || h.Step != "start-anchor" || f.actions != 2 {
+		t.Fatal("explicit next phase did not advance", h, err)
 	}
 }

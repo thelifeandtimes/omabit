@@ -11,6 +11,7 @@ import (
 )
 
 var ErrHistory = errors.New("project creation history or binding changed; inspect saved project status before further actions")
+var ErrPhase = errors.New("project creation phase binding changed; read saved status and explicitly select its exact native request ID")
 
 // Handle describes saved creation progress, never current runtime/app health.
 // The caller retains the complete original plan and parent request ID. Each
@@ -100,7 +101,23 @@ func Begin(ctx context.Context, c Client, pin client.Identity, actor string, pla
 	if err != nil {
 		return Handle{}, err
 	}
-	return baseHandle(reg, parent, digest), nil
+	h := baseHandle(reg, parent, digest)
+	first := Steps(plan)[0]
+	h.Step, h.NativeRequestID = first.Kind, RequestID(parent, first)
+	return h, nil
+}
+
+// PhaseStep accepts only an original derived ID from this bounded canonical plan.
+func PhaseStep(plan projectnetwork.Plan, parent, native string) (Step, bool) {
+	if len(plan.Members) > 16 || !protocol.ValidID(parent) || !protocol.ValidID(native) {
+		return Step{}, false
+	}
+	for _, step := range Steps(plan) {
+		if RequestID(parent, step) == native {
+			return step, true
+		}
+	}
+	return Step{}, false
 }
 
 type creationState struct {
@@ -260,16 +277,40 @@ func submit(ctx context.Context, c Client, pin client.Identity, plan projectnetw
 	return c.ProjectOperate(ctx, pin, reg.Operation.ProjectID, request)
 }
 
-// Advance submits one missing phase at most. Pending, interrupted and failed
-// receipts are returned as handles without resubmission. A lost reply propagates
-// uncertainty; only an explicit later call may observe the same derived ID.
-func Advance(ctx context.Context, c Client, pin client.Identity, actor string, plan projectnetwork.Plan, parent string) (Handle, error) {
+// Advance binds one original native phase, not the next phase at retry time.
+// Repeating after an uncertain reply returns that original saved receipt even
+// if it completed before retry. Another phase requires a newly selected ID.
+func Advance(ctx context.Context, c Client, pin client.Identity, actor string, plan projectnetwork.Plan, parent, native string) (Handle, error) {
+	expected, ok := PhaseStep(plan, parent, native)
+	if !ok {
+		return Handle{}, ErrPhase
+	}
 	state, err := inspect(ctx, c, pin, actor, plan, parent)
 	if err != nil {
 		return Handle{}, err
 	}
-	if state.handle.Phase != "next-phase" {
-		return state.handle, nil
+	for _, op := range state.status.Operations {
+		if op.RequestID != native {
+			continue
+		}
+		h := state.handle
+		h.Step, h.InstanceID, h.NativeRequestID = expected.Kind, expected.Member, native
+		h.OperationID, h.OperationStatus = op.ID, op.Status
+		switch op.Status {
+		case "succeeded":
+			h.Phase = "completed"
+			h.NextAction = "This exact original phase completed historically. Read creation status and explicitly select its native_request_id before advancing another phase."
+		case "queued", "running":
+			h.Phase = "waiting"
+			h.NextAction = "Read saved status; this exact runner-owned phase is pending. Do not replace its ID."
+		default:
+			h.Phase = "needs-recovery"
+			h.NextAction = "Inspect the original saved receipt and supported recovery; do not replace IDs or repeat an interrupted phase."
+		}
+		return h, nil
+	}
+	if state.handle.Phase != "next-phase" || state.step == nil || RequestID(parent, *state.step) != native {
+		return Handle{}, ErrPhase
 	}
 	result, err := submit(ctx, c, pin, plan, parent, state.reg, state.status, *state.step, func(Progress) error { return nil })
 	if err != nil {

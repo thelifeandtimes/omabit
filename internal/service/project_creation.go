@@ -38,6 +38,18 @@ type CreationWaitInput struct {
 	CreationSelection
 	TimeoutMillis uint32 `json:"timeout_millis" jsonschema:"Saved-receipt wait bound from 0 to 30000 ms; never advances or cancels native work"`
 }
+type CreationAdvanceInput struct {
+	CreationInput
+	NativeRequestID string `json:"native_request_id" jsonschema:"Exact native phase ID from begin/status; repeating this ID never advances a later phase after a lost reply"`
+}
+
+func (input CreationAdvanceInput) Validate() error {
+	_, ok := projectflow.PhaseStep(input.Plan, input.RequestID, input.NativeRequestID)
+	if input.CreationInput.Validate() != nil || !ok {
+		return invalid()
+	}
+	return nil
+}
 
 func (input CreationWaitInput) Validate() error {
 	if input.CreationSelection.Validate() != nil || input.TimeoutMillis > 30000 {
@@ -109,7 +121,7 @@ func (s *Service) registerProjectCreation() error {
 	bindings := "explicit pinned runner, complete canonical fresh-fake plan (0–16 members), original parent request ID and actor; deterministic native phase IDs; no replacement intent"
 	caps := []string{protocol.ProjectRegistrationFeature, protocol.ProjectStatusFeature, protocol.CreationReplayFeature}
 	begin := description("project.create-begin.v1", "Reserve a guided fresh-fake project only after checking all creation adapters and optional declared app preflight. Does not boot. Save the complete original input.", []string{"urbit-collector project-create"}, []string{"local-metadata-read", "live-probe", "journal-write"}, caps, "operator", bindings, "registration uses the original parent ID; after uncertainty call project.create-status.v1 with the same selection, never a new ID")
-	advance := description("project.create-advance.v1", "Advance at most one missing guided phase using its original derived ID. Pending/failed/interrupted work is returned without resubmission. Downloads only compiled immutable runtime inputs when required.", []string{"urbit-collector project-create"}, []string{"local-metadata-read", "live-probe", "immutable-cache-write", "network-download", "journal-write", "runtime-mutation"}, caps, "operator", bindings, "read status after lost replies; explicitly advance the unchanged selection after success; failed/interrupted phases require supported recovery; closing this process does not cancel a submitted runner-owned phase")
+	advance := description("project.create-advance.v1", "Advance at most one explicitly bound guided native phase. Repeated IDs return that original phase even after completion; pending/failed/interrupted work is never resubmitted. Downloads only compiled immutable runtime inputs when required.", []string{"urbit-collector project-create"}, []string{"local-metadata-read", "live-probe", "immutable-cache-write", "network-download", "journal-write", "runtime-mutation"}, caps, "operator", bindings+"; exact native_request_id from begin/status", "after a lost reply repeat the same native_request_id or read status; another phase needs its explicitly selected ID; failed/interrupted work requires supported recovery; disconnect does not cancel runner-owned work")
 	begin.CapabilityRule = "project-dependencies-v1 and protocol.ProjectAction(step.kind) for every planned phase, checked before reservation"
 	advance.CapabilityRule = begin.CapabilityRule
 	status := description("project.create-status.v1", "Read exact original reservation and saved guided creation progress. No native phase submission, download or live runtime observation; saved ready is not app/current fleet health.", []string{}, []string{"local-metadata-read", "saved-runner-read"}, caps, "operator", bindings, "guarded original reservation lookup; absent reservation refuses without creation")
@@ -126,7 +138,7 @@ func (s *Service) registerProjectCreation() error {
 			}
 			return projectflow.Begin(ctx, c, e.Identity(), hello.Actor, input.Plan, input.RequestID)
 		}),
-		selected(s, advance, func(ctx context.Context, r *collection.Registry, e collection.Connection, input CreationInput) (projectflow.Handle, error) {
+		selected(s, advance, func(ctx context.Context, r *collection.Registry, e collection.Connection, input CreationAdvanceInput) (projectflow.Handle, error) {
 			ctx, cancel := context.WithTimeout(ctx, 90*time.Second)
 			defer cancel()
 			c, hello, err := creationClient(ctx, e, input.Plan, true)
@@ -134,10 +146,10 @@ func (s *Service) registerProjectCreation() error {
 				return projectflow.Handle{}, err
 			}
 			defer c.Close()
-			if err := creationPreflight(ctx, r, input); err != nil {
+			if err := creationPreflight(ctx, r, input.CreationInput); err != nil {
 				return projectflow.Handle{}, err
 			}
-			return projectflow.Advance(ctx, c, e.Identity(), hello.Actor, input.Plan, input.RequestID)
+			return projectflow.Advance(ctx, c, e.Identity(), hello.Actor, input.Plan, input.RequestID, input.NativeRequestID)
 		}),
 		selected(s, status, func(ctx context.Context, _ *collection.Registry, e collection.Connection, input CreationSelection) (projectflow.Handle, error) {
 			c, hello, err := creationClient(ctx, e, input.Plan, false)

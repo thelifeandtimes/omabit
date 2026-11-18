@@ -187,6 +187,9 @@ func invalid() error {
 	return &refusal{"invalid_input", "Input does not match the typed operation contract.", "Read the schema and preserve the reviewed IDs and bindings."}
 }
 func problem(err error, mutates bool) *Problem {
+	if errors.Is(err, projectflow.ErrPhase) {
+		return &Problem{"creation_phase_changed", "The selected native creation phase does not match current saved progress.", "not-dispatched", "", "Read project.create-status.v1 and explicitly bind its native_request_id; repeating a completed phase never starts the next one."}
+	}
 	if errors.Is(err, projectflow.ErrHistory) {
 		return &Problem{"creation_history_changed", "Saved creation history or bindings changed.", "not-dispatched", "", "Read project.status.v1 and its supported recovery source/checkpoint; no new phase was submitted."}
 	}

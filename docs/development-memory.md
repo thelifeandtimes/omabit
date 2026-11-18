@@ -9802,3 +9802,22 @@ timing, legacy missing-intent runtime migration, full native refusal/dropped-rep
 matrices, managed app-state, later artifacts and desktop/DEV remain outside this
 case. Source/inert matrices remain distinct. Recordings/Grubbery/broader interfaces
 and containment are still active work; this is not issue-wide goal completion.
+
+## M596 — Bind each bounded creation call to one native phase (2026-11-17)
+
+The initial M588 advance input could mean “next missing phase at call time.” If
+the reply was lost and its phase finished before retry, an unchanged call could
+select the next phase. Tighten this unpublished shared interface: advance now
+requires the exact `native_request_id` returned by begin/status. Repeating a
+completed ID returns only that original historical completed handle, without
+submission or dependency preparation. Another phase needs its newly selected ID;
+foreign/future/out-of-order bindings refuse before dispatch. Legacy progress
+orchestration, native request derivation and durable formats remain unchanged.
+
+The regression completes a deliberately lost-reply phase before any read/retry,
+then verifies repeated calls cannot move ahead. Actual CLI/official-SDK stdio
+tests enforce the same rule and require explicit selection for the next phase;
+missing bindings refuse. Existing pending/interrupted/history/wait cases pass
+under the race detector. This supersedes M588's ambiguous advance-call semantics.
+It is a later client/core source change, not part of the frozen d24c960 native
+artifact qualification. Matching final artifacts/interfaces remain required.

@@ -69,7 +69,13 @@ legacy `urbit-collector project-create` progress loop. Call `project.plan.v1`
 first, then retain the complete canonical plan, target and parent request ID.
 `project.create-begin.v1` checks all required adapters before reserving only;
 `project.create-advance.v1` submits at most one missing native phase, with a
-90-second client bound. Cache preparation can download only the compiled pinned
+90-second client bound. Advance additionally requires the exact
+`native_request_id` returned by begin or saved status. Repeating that same call
+after a phase finishes returns its historical `completed` handle; it cannot
+become consent to the next phase after a lost reply. Read status and explicitly
+select its next ID to advance again. Missing, foreign or out-of-order phase IDs
+refuse before phase dispatch. The legacy progress loop keeps its original IDs
+and NDJSON behavior. Cache preparation can download only the compiled pinned
 runtime inputs before the first prepare phase. Pending, failed and interrupted
 phases return their original receipt instead of being resubmitted. After a lost
 reply, use `project.create-status.v1` with the unchanged selection; its original

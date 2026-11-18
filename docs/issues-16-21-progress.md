@@ -16,7 +16,7 @@ are recorded in [experiment isolation](experiment-isolation.md).
 | #20 durable runtime recordings | Inert private backend lifecycle comparison; provisional external stream recorder; source-only bounded chained raw/timing codec, typed attachment/gap/exit records and Docker stream decoder with partial/write-failure tests | Owner-private durable filesystem/index/cursors, lifecycle coordination, retention/reserves, redacted export, integration/API/UI and real Docker/Vere/installed qualification |
 | #21 app preflight/deployment mismatch | Selected runner Hello/build/role and separate missing API/adapter/policy results; pre-boot skill routing; inert no-write/identity/scope tests | Matching DEV artifacts, original-state preservation, actual minimal native app operation; original incident runner remains unproven |
 
-Source/native checkpoints are documented in M579–M595. The shared interface's
+Source/native checkpoints are documented in M579–M596. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or

@@ -169,6 +169,10 @@ func TestCLIBeginMCPAdvanceLostReplyAndCLIStatus(t *testing.T) {
 	if problem != nil || h.Phase != "reserved" {
 		t.Fatal(h, problem)
 	}
+	advanceInput := service.CreationAdvanceInput{CreationInput: input, NativeRequestID: h.NativeRequestID}
+	if _, problem := cli("project.create-advance.v1", input); problem == nil || problem.Code != "invalid_input" {
+		t.Fatal("unbound phase reached dispatch", problem)
+	}
 	connect := func() *mcp.ClientSession {
 		t.Helper()
 		s, err := mcp.NewClient(&mcp.Implementation{Name: "creation-fixture", Version: "1"}, nil).Connect(ctx, &mcp.CommandTransport{Command: coreTestCommand(t, "--config-dir", config, "mcp", "serve", "--allow-runner", "dev:runner", "--enable-mutations")}, nil)
@@ -186,7 +190,7 @@ func TestCLIBeginMCPAdvanceLostReplyAndCLIStatus(t *testing.T) {
 		}
 		return decode([]byte(result.Content[0].(*mcp.TextContent).Text))
 	}
-	if _, problem := call("project.create-advance.v1", input); problem == nil || problem.Code != "outcome_uncertain" {
+	if _, problem := call("project.create-advance.v1", advanceInput); problem == nil || problem.Code != "outcome_uncertain" {
 		t.Fatal("lost phase response not uncertain", problem)
 	}
 	if err := session.Close(); err != nil {
@@ -209,7 +213,7 @@ func TestCLIBeginMCPAdvanceLostReplyAndCLIStatus(t *testing.T) {
 	if err := json.Unmarshal([]byte(waitResult.Content[0].(*mcp.TextContent).Text), &waited); err != nil || waited.Error != nil || !waited.Data.WaitExpired || waited.Data.Handle.OperationID != h.OperationID {
 		t.Fatal("MCP wait rebound or advanced pending work", waited, err)
 	}
-	h, problem = call("project.create-advance.v1", input)
+	h, problem = call("project.create-advance.v1", advanceInput)
 	if problem != nil || h.Phase != "waiting" {
 		t.Fatal(h, problem)
 	}
@@ -221,7 +225,21 @@ func TestCLIBeginMCPAdvanceLostReplyAndCLIStatus(t *testing.T) {
 	operations[1].Status = "succeeded"
 	operations[1].FinishedAt = &finished
 	mu.Unlock()
-	h, problem = cli("project.create-advance.v1", input)
+	h, problem = cli("project.create-advance.v1", advanceInput)
+	if problem != nil || h.Phase != "completed" {
+		t.Fatal("completed old phase was not returned", h, problem)
+	}
+	mu.Lock()
+	if actions != 1 || downloads != 1 {
+		t.Fatal("old phase retry advanced another phase", actions, downloads)
+	}
+	mu.Unlock()
+	h, problem = cli("project.create-status.v1", selection)
+	if problem != nil || h.Phase != "next-phase" {
+		t.Fatal(h, problem)
+	}
+	advanceInput.NativeRequestID = h.NativeRequestID
+	h, problem = cli("project.create-advance.v1", advanceInput)
 	if problem != nil || h.Phase != "submitted" || h.Step != "start-anchor" {
 		t.Fatal(h, problem)
 	}
@@ -230,7 +248,7 @@ func TestCLIBeginMCPAdvanceLostReplyAndCLIStatus(t *testing.T) {
 	operations[2].Status = "interrupted"
 	operations[2].FinishedAt = &finished
 	mu.Unlock()
-	h, problem = call("project.create-advance.v1", input)
+	h, problem = call("project.create-advance.v1", advanceInput)
 	if problem != nil || h.Phase != "needs-recovery" {
 		t.Fatal("interruption bypassed", h, problem)
 	}
