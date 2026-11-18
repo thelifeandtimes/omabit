@@ -315,3 +315,37 @@ reader refuses the rotated/continued metadata3 store without changing it. A
 retained original-writer fixture and source/helper pins keep that boundary in
 focused tests. This supersedes the preceding compatibility deferral for these
 exact source artifacts; runtime/native/installed gates remain unqualified.
+
+## Source capture coordinator
+
+`Store.CaptureDocker` composes new metadata3 session creation, an already trusted
+output-only attachment factory, durable-readiness acknowledgement, multiplexed
+raw-byte decoding and independent exit observation. Metadata syncs before attach;
+readiness follows successful attachment. Its single receive clock retains a Go
+monotonic origin while wall time is recorded independently. Bounded original
+chunks, including long traces, controls and credentials, sync through existing
+linked segments. The persistent metadata/frame formats are unchanged.
+
+EOF with no independently verified matching exit produces a gap. Interrupted
+transport can retain its received prefix, an explicit gap and a separately
+verified exit. Cancellation closes only this output connection and records lost
+coverage; it establishes no process exit. Read/stream completion detaches before
+storage diagnostics or bounded exit observation, preventing an unread connection
+from applying backpressure while diagnosis runs. Neither this coordinator nor its
+transport sends a lifecycle action, signal, console input or replay request.
+
+Storage refusal is visible even when no gap can be written: the returned finite
+reason and `gap_saved=false` retain that distinction. A successfully closed file
+is not proof of complete coverage. Raw diagnostics and original payloads are not
+copied into status. Existing/incomplete sessions are never reused automatically;
+reconnection, pressure recovery and retention require separate admission.
+
+Full recording race tests and focused vet pass with inert streams/private files,
+covering durable readiness, exact raw bytes across rotation, wall-clock reversal,
+metadata-pointer isolation, interrupted payloads, EOF without exit, wrong-process
+exit, failed attach/readiness, quota/reserve/write refusal and cancellation of a
+blocked read. The existing actual-original1/2 fixtures remain readable unchanged.
+These source gates do not observe a real engine/process. A trusted factory,
+independent supervised worker, launch/start-failure integration, retention/pins,
+indexed seek, API/UI/export and real Docker/Vere/installed qualification remain
+required. Recording support is not advertised by the runner.

@@ -11710,3 +11710,35 @@ selected installed provider remains a connection gate. No client profile, T3
 thread, plugin or user setting changes. This supersedes the recipe deferral only;
 actual named-client connections, remaining operations and HTTP delivery still
 need their own checks. The full six-issue goal remains open.
+
+## M664 — Compose durable recording capture without changing lifecycle (2026-11-18)
+
+The source-only CaptureDocker coordinator persists a fresh metadata3 session
+before trusted output attachment, then acknowledges durable readiness separately
+from Start. One receive-clock origin retains monotonic ordering through wall-clock
+reversal. Existing segmented storage fsyncs exact original multiline/long/binary/
+credential bytes, without formatting or redaction. The metadata/frame format is
+unchanged and actual original1/2 fixtures remain byte-exact in the full source
+suite. No installed capture is enabled.
+
+An independent supplied terminal-process proof must match the exact metadata
+container; EOF alone produces a gap. Interrupted payloads retain their received
+prefix, gap and separately verified exit where available. Cancellation closes only
+this output connection, never signals the process, and serializes Close across
+cleanup races. Detach immediately after read completion/error before bounded exit
+observation or storage diagnostics, avoiding unread-stream backpressure. A failed
+Start/attachment never fabricates an exit. Private callback diagnostics do not
+escape status. Pressure/write failure remains explicit even when the gap itself
+cannot be saved; no reconnect, repair or runtime mutation is retried.
+
+Full recording race tests pass in1.263s and focused vet passes. Fixtures cover
+durable readiness, segment rotation/raw/timing preservation, nested metadata
+isolation, exact completed-session refusal, partial transport, EOF/running,
+wrong exit, storage pressure/write refusal, blocked-read cancellation and legacy/
+incomplete/canceled admission before any file or attachment effect. These are
+inert streams/private files, not a native process observation. See the
+[coordinator boundary](runtime-recordings.md#source-capture-coordinator).
+Trusted runtime identity/launch factories, independently supervised workers,
+start-failure coordination, retention/pins, indexed seeking, API/UI/export and
+real Docker/Vere/installed gates remain. This supersedes only the absence of a
+source capture coordinator; comprehensive runtime recording is still unqualified.

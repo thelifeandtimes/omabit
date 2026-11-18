@@ -124,3 +124,9 @@ preview reads. CLI/official-SDK stdio parity covers opt-in, changed selection an
 lost-read transport; read-only POST errors remain failed reads. Primary vendor
 configuration recipes are documented separately from actual client connection
 qualification. The preview does not replace the unfinished recording integration.
+
+M664 composes source recording creation, durable readiness, exact segmented raw
+capture and separately supplied exit/gap evidence. Full recording race/vet pass
+with inert streams/private files. A trusted native factory and independent worker
+remain unwired; installed recording, retention, API/UI/export and real-runtime
+coverage are not implied.
