@@ -10177,3 +10177,30 @@ existing4GiB/no-swap/one-core boundary, original pinned inputs, bounded deadline
 and1.5GiB declared scratch still apply under the temporary48GiB goal cap. Unknown
 outcomes preserve original evidence and terminate through the owned supervisor;
 there is no mutation retry, source mount or adoption of existing namespaces.
+
+## M611 — Freeze actual61 history before correcting the app plan (2026-11-18)
+
+Pinned source review identifies a concrete draft-plan defect: +version-text in
+Grubbery7f7701d accepts an object's `version` string/number, while plan1 writes
+only `epoch` and `source_digest`. That object does not signal a release. Native
+qualification has not established otherwise, and public app dispatch remains
+unavailable. Correct this through a new explicit plan/journal generation; retain
+old intent/receipt bytes and refuse a fresh legacy pending dispatch rather than
+silently rewriting its payload. Known native pre-effect refusal also needs a
+state distinct from an unconfirmed transport outcome before supported dispatch.
+
+Before those changes, freeze the populated actual61 journal1 database from M608's
+passing original-writer rehearsal, with original59/60 ancestry and uncertainty.
+Every compiled product Go input matches frozen6407cda; exact invoked test helpers,
+artifact/build-input/SQL/packed hashes and source scope are recorded alongside it.
+The original reader executable remains retained. Successor preservation and real
+old61-reader refusal still need qualification; the fixture alone makes no such
+claim and contains no installed or native application state.
+
+The fresh app-contract launch first refused its scratch reservation about5MiB
+over the temporary cap, before capsule creation. A redundant31MiB historical
+source extraction was verified against every original Git blob and declared
+helper before retirement, preserving the actual old60 writer, fixture and source
+commit. The unchanged frozen app experiment then admitted within48GiB. It is the
+only active runtime case. Its result remains pending; preserve the original run
+and do not infer app behavior from bootstrap progress or source review.
