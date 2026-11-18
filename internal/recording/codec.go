@@ -76,7 +76,7 @@ type Frame struct {
 	UnixNano    int64
 	ElapsedNano uint64
 	Kind        Kind
-	Data        []byte
+	Data        []byte `json:"-"` // raw originals require an explicit export choice
 	Digest      [32]byte
 }
 

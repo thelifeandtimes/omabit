@@ -157,3 +157,18 @@ Synthetic source tests cover close/reopen, long/raw bytes, exact/live paging,
 partial/corrupt/lost coverage, links/root replacement, stream/exit rebinding and
 quota/reserve refusal. No installed recording or persistent migration is created
 by adding this unwired library.
+
+## Source-only explicit raw JSON boundary
+
+Ordinary Frame/Page JSON omits original payload bytes, including their base64
+representation. `ExportOriginalFrame` explicitly selects a bounded original-byte
+encoding while retaining its frame timing/kind/digest metadata. It copies bytes;
+changing an export cannot change the retained frame. Binary storage/decoding is
+unchanged, including credentials, controls, NULs and invalid UTF-8.
+
+This is an encoding boundary, not a redacted view, complete session export,
+authorization grant or independent digest-chain verifier. The future API must
+select actual verified retained data and enforce exact target/operator/raw-export
+authorization. No recorder, public raw endpoint or UI is enabled. Source/race
+checks cover implicit omission, exact explicit octets/metadata, export isolation
+and invalid/oversize frames. Redaction and lifecycle integration remain pending.

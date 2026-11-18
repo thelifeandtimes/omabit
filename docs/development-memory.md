@@ -10547,3 +10547,37 @@ also has a separate fixed kernel diagnostic after the minimal coordinator loop
 to observe an explicit custom-mark create, raw source and compile, without
 repairing the earlier pending operation or accepting caller proof. No schema,
 existing header/event or live capability changes.
+
+## M622 — Make original recording bytes an explicit JSON encoding choice (2026-11-18)
+
+Unwired Frame/Page metadata JSON now omits raw data rather than implicitly
+base64-encoding it. A separate bounded ExportOriginalFrame encoding preserves
+original octets and frame timing/kind/digest metadata in an independent copy.
+The binary format, retained bytes and decoder remain unchanged. Source/race
+checks pass for omission of raw/fake-secret bytes, exact explicit export including
+controls/NUL/invalid UTF-8, no mutation alias and refusal of invalid/oversize frames.
+This is not redaction, authorization, whole-session export or verified capture;
+public callers must independently select verified retained data and enforce
+current target/operator/explicit raw-export grants. No runtime/API/UI is enabled.
+
+Read-only integration review also identifies the v1 metadata's missing full
+project generation/creator, native ship/pier and engine/namespace binding. A
+successor needs original-reader preservation/refusal before live capture. Current
+pages rescan prefixes; any index must state its actual verified coverage and not
+claim a skipped old prefix was reread. Storage reserve refusal cannot guarantee
+that a subsequent gap itself persists. Coverage state, retention, safe pressure
+recovery and independent exit/drain remain required. Docker CLI29.7.2's pinned
+upstream run flow attaches before start and drains output after exit; this is a
+primary-source implementation guide, not qualified Omabit recording behavior.
+Private notes retain those follow-ups and upstream links. The active native app
+helper remains the separately frozen ac3eec2 artifact; this later recorder-only
+source change is outside its qualification scope.
+
+M621 retention follow-through keeps the corrected app03 and Gall07 full references.
+The completed source-layout01 full diagnostic pier/duplicate inputs are now
+obsolete and retired with full file identities/hashes, preserving original
+qualified proof/SQL/history/logs and exact helper. The explained managed02
+whole-pier forensic archive is also retired; original acknowledged/uncertain SQL,
+native response bodies, proofs/logs/input hashes and exact helper remain intact.
+Replacement tombstones link superseded archive claims explicitly. No canonical
+source/Vere/pill, current experiment, user ship or production service was changed.
