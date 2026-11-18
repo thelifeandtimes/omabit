@@ -104,20 +104,20 @@ func TestProjectStopRecoveryActualCollectorLostReply(t *testing.T) {
 	review := run(0, args...)
 	var diagnosis protocol.ProjectMemberDiagnosis
 	g02Check(t, json.Unmarshal(review, &diagnosis))
-	if diagnosis.Review == nil || b.observations != 1 {
+	if diagnosis.Review == nil || b.observations.Load() != 1 {
 		t.Fatal("CLI review unavailable", string(review))
 	}
 	path := filepath.Join(dir, "review.json")
 	g02Check(t, os.WriteFile(path, review, 0600))
 	apply := append(append([]string{}, pin...), "project-reconcile-stop", original.ProjectID, "--review", path, "--request-id", "same-reconciliation", "--confirm-action")
 	lost := run(1, apply...)
-	if !strings.Contains(string(lost), "lookup_stop_reconciliation") || !strings.Contains(string(lost), "--replay-only") || submissions.Load() != 1 || b.observations != 2 {
-		t.Fatal("lost reply retried or lost guidance", string(lost), submissions.Load(), b.observations)
+	if !strings.Contains(string(lost), "lookup_stop_reconciliation") || !strings.Contains(string(lost), "--replay-only") || submissions.Load() != 1 || b.observations.Load() != 2 {
+		t.Fatal("lost reply retried or lost guidance", string(lost), submissions.Load(), b.observations.Load())
 	}
 	lookup := run(0, append(apply, "--replay-only")...)
 	var result protocol.ProjectStopReconcileResult
 	g02Check(t, json.Unmarshal(lookup, &result))
-	if result.OriginalOperationID != original.ID || result.Operation.Status != "succeeded" || submissions.Load() != 2 || b.observations != 2 {
+	if result.OriginalOperationID != original.ID || result.Operation.Status != "succeeded" || submissions.Load() != 2 || b.observations.Load() != 2 {
 		t.Fatal("lookup changed effects", string(lookup))
 	}
 	retained, err := loadOperation(r.s.db, original.ID)

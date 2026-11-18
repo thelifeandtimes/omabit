@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -20,12 +21,12 @@ import (
 type stopRecoveryFixtureBackend struct {
 	*expansionFixtureBackend
 	observation  protocol.ProjectStopObservation
-	observations int
+	observations atomic.Int32
 	onObserve    func()
 }
 
 func (b *stopRecoveryFixtureBackend) ExpandedProjectStopObservation(_ context.Context, _ runtimequalify.ProjectExpansion, _ string) (protocol.ProjectStopObservation, error) {
-	b.observations++
+	b.observations.Add(1)
 	if b.onObserve != nil {
 		b.onObserve()
 	}
@@ -115,7 +116,7 @@ func TestProjectStopReconciliationPreservesOriginalAndUnlocksOnlyItsFence(t *tes
 			before, err := loadProjectExpansion(r.s.db, original.ProjectID)
 			g02Check(t, err)
 			saved := stopDiagnosisCall(t, r, original, false)
-			if b.observations != 0 || saved.RuntimeObservation != "not-performed" || saved.Phase != "stop-dispatched" || saved.Review != nil || saved.Operation.Message != "" {
+			if b.observations.Load() != 0 || saved.RuntimeObservation != "not-performed" || saved.Phase != "stop-dispatched" || saved.Review != nil || saved.Operation.Message != "" {
 				t.Fatal("saved diagnosis probed or exposed private text", saved)
 			}
 			diagnosis := stopDiagnosisCall(t, r, original, true)
@@ -130,8 +131,8 @@ func TestProjectStopReconciliationPreservesOriginalAndUnlocksOnlyItsFence(t *tes
 			}
 			var result protocol.ProjectStopReconcileResult
 			g02Check(t, json.Unmarshal(w.Body.Bytes(), &result))
-			if result.Operation.Kind != "reconcile-project-ship-stop" || result.OriginalOperationID != original.ID || result.Operation.Status != "succeeded" || b.observations != 2 {
-				t.Fatal(result, b.observations)
+			if result.Operation.Kind != "reconcile-project-ship-stop" || result.OriginalOperationID != original.ID || result.Operation.Status != "succeeded" || b.observations.Load() != 2 {
+				t.Fatal(result, b.observations.Load())
 			}
 			after, err := loadProjectExpansion(r.s.db, original.ProjectID)
 			g02Check(t, err)
@@ -165,7 +166,7 @@ func TestProjectStopReconciliationPreservesOriginalAndUnlocksOnlyItsFence(t *tes
 			r.b = nil
 			r.failed.Store(true)
 			repeated := stopReconcileCall(t, r, original.ProjectID, req, true)
-			if repeated.Code != 200 || repeated.Body.String() != w.Body.String() || b.observations != 2 {
+			if repeated.Code != 200 || repeated.Body.String() != w.Body.String() || b.observations.Load() != 2 {
 				t.Fatal("lost response lookup changed effects", repeated.Code, repeated.Body.String())
 			}
 			r.failed.Store(false)

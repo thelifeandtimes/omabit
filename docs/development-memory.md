@@ -9417,3 +9417,38 @@ The user explicitly authorized48GiB aggregate evidence/DEV storage for this goal
 with one runtime experiment active and production/existing ships untouched.
 [Experiment isolation](experiment-isolation.md) records the scoped exception; the
 normal40GiB default is unchanged. This is separate from M577's expired allowance.
+
+## M581 — Shared CLI/MCP source checkpoint (2026-11-17)
+
+Issue19 now has a typed service facade, a maintained public CLI inventory with
+explicit exclusions, canonical inferred input/output schemas and version1 result
+envelopes. `omabit call` and the official SDK1.8.0 stdio adapter invoke those same
+handlers. Per-call target pins, server allowlists, role/capability/policy admission,
+exact original request IDs and bounded results are retained. Existing CLI output
+contracts remain separate and unchanged. See [coverage and limits](core-interfaces.md).
+
+Focused fixtures found and corrected a schema-number mismatch without dispatch:
+json.Number was classified as string by the inferred-schema library. Exact int64/
+uint64 conversion now preserves review/revision/inode values above2^53. Canonical
+output validation also runs before returning a successful envelope. Arbitrary
+transport/runtime diagnostic text is not reflected into model-visible errors.
+
+Actual CLI dispatch and SDK stdio subprocess fixtures agree on saved policy and
+input/capability/role/policy refusals. Four legacy protocol revisions negotiate;
+newer2026 negotiation, named-client products and HTTP remain unqualified. Pinned
+BUILD/SKILLS resources and ordinary tool reads serve the same rehashed Markdown;
+legacy two-skill bundles remain accepted and changed/linked/unlisted resources
+refuse. Reading guidance never installs it or grants authority.
+
+The built Omabit MCP adapter submitted a reconciliation, lost its reply, closed,
+then the built CLI found the exact receipt after authoritative store/manager
+reopen with no observation backend. The old interruption remained unchanged and
+lookup performed no additional observation/effect. This is real API/SQLite and an inert runtime
+observer. An initial fixture directory mode failure was corrected without
+weakening socket checks. A combined rerun also exposed a non-atomic observer
+counter in the earlier collector fixture; it now uses an atomic counter. Focused
+race, static and networkless-help checks pass;
+CI explicitly builds helpers for this cross-interface test. Source staging,
+compound workflows, named qualification, live Urbit, installed upgrades and broader
+catalog coverage remain later slices. Production and manual-review state were not
+changed; this checkpoint does not complete issue19 or authorize publication.

@@ -2,6 +2,26 @@ package main
 
 // Commands with no ordinary flag parser still expose side-effect-free help.
 var desktopCommandHelp = map[string]string{
+	"operations": `Usage: omabit operations
+Read the offline shared operation catalog, inferred JSON schemas, effects, target
+bindings, replay rules and explicit legacy CLI exclusions. Creates no state.`,
+	"call": `Usage: omabit [--config-dir DIR] call OPERATION_ID [--input-file FILE | --input-json JSON]
+Invoke the same typed core handler used by MCP. FILE=- reads stdin; input is
+bounded to 128 KiB. The version1 JSON envelope contains data or a structured error.
+Use operations to discover schemas. Existing command JSON formats are unchanged.
+Select name and runner_id explicitly for live operations. Save complete plans and
+original IDs before mutation; read receipts after uncertainty. No automatic retry.`,
+	"mcp": `Usage: omabit [--config-dir DIR] mcp serve --transport stdio [--allow-runner NAME:ID ...] [--enable-mutations]
+Serve the shared core with the official pinned Go SDK. Stdout is MCP only.
+An empty allowlist denies all live targets; only offline discovery remains usable.
+Mutation tools require explicit startup enablement and still enforce operator role,
+runner capability, exact reviewed bindings and saved policy. Every call selects its
+own target. No secrets, policy authoring, shell, SQL, Docker or host installation.
+Cancelling a call or closing this subprocess never cancels runner-owned work.
+Optional global --skills-bundle DIR --skills-manifest-sha256 SHA exposes the exact
+verified bundle guidance through resources and bounded ordinary tool reads. Both
+BUILD and SKILLS provenance must match. Reading guidance installs nothing.
+Streamable HTTP and actual named-client qualification remain separate work.`,
 	"app-preflight": `Usage: omabit [--config-dir DIR] app-preflight --runner NAME --expected-runner-id ID --workflow gall|grubbery [--instance INSTANCE --desk DESK] [--effects create-desk,commit,publish]
 
 Read only the selected runner's actual Hello and saved application policy before

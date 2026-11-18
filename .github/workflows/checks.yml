@@ -40,6 +40,14 @@ jobs:
         run: |
           mkdir -p build
           CGO_ENABLED=0 go build -trimpath -o build/ ./cmd/... ./backend/cmd/...
+      - name: Shared CLI and MCP contracts
+        env:
+          TZ: UTC
+          OMABIT_TEST_OMABIT_BINARY: ${{ github.workspace }}/build/omabit
+          OMABIT_TEST_COLLECTOR_BINARY: ${{ github.workspace }}/build/urbit-collector
+        run: |
+          python3 -B scripts/ci-go-tests.py -race -timeout=5m ./internal/service ./internal/mcpserver ./internal/guidance ./cmd/omabit
+          python3 -B scripts/ci-go-tests.py -race -timeout=5m -run 'TestProjectStopRecovery(MCPSubmitCLILookupAcrossManagerRestart|ActualCollectorLostReply)$' ./internal/managed
       - name: Desktop model and installer fixtures
         run: |
           node scripts/test-panel-model.js

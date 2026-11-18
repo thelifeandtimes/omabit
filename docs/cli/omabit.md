@@ -8,7 +8,7 @@ Global options precede the command. Command options follow its positional argume
 
 ```text
 Usage: omabit [--format text] [--config-dir DIR] [--state-dir DIR] COMMAND
-Commands: app-preflight, ship-routes, ship-routes-configure, desk-review-frontend, desk-plan-frontend, desk-upload-frontend, desk-receiver-status, desk-review-install, desk-plan-install, desk-install, desk-review-adoption, desk-plan-adoption, desk-adopt, desk-review-release, desk-plan-release, desk-release, desk-app-status, desk-review-commit, desk-plan-commit, desk-commit, desk-plan-stage, desk-stage, desk-stage-status, desk-stage-discard, desk-source-status, desk-settings, desk-list, desk-inspect, desk-plan-create, desk-create, desk-operation, desk-reconcile, setup, setup-status, service-upgrade-status, service-upgrade --expected-runner-id ID --target-sha256 SHA --acknowledge-host-changes, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID
+Commands: operations, call, mcp, app-preflight, ship-routes, ship-routes-configure, desk-review-frontend, desk-plan-frontend, desk-upload-frontend, desk-receiver-status, desk-review-install, desk-plan-install, desk-install, desk-review-adoption, desk-plan-adoption, desk-adopt, desk-review-release, desk-plan-release, desk-release, desk-app-status, desk-review-commit, desk-plan-commit, desk-commit, desk-plan-stage, desk-stage, desk-stage-status, desk-stage-discard, desk-source-status, desk-settings, desk-list, desk-inspect, desk-plan-create, desk-create, desk-operation, desk-reconcile, setup, setup-status, service-upgrade-status, service-upgrade --expected-runner-id ID --target-sha256 SHA --acknowledge-host-changes, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID
 ```
 
 ## app-preflight
@@ -25,6 +25,17 @@ without claiming future ship permissions. No project or policy is changed.
 Fresh runtime, publication and application review is required before each effect.
 Grubbery remains unavailable until its versioned workflow adapter is implemented.
 Runner build metadata is self-reported; absent older-runner metadata is unknown.
+```
+
+## call
+
+```text
+Usage: omabit [--config-dir DIR] call OPERATION_ID [--input-file FILE | --input-json JSON]
+Invoke the same typed core handler used by MCP. FILE=- reads stdin; input is
+bounded to 128 KiB. The version1 JSON envelope contains data or a structured error.
+Use operations to discover schemas. Existing command JSON formats are unchanged.
+Select name and runner_id explicitly for live operations. Save complete plans and
+original IDs before mutation; read receipts after uncertainty. No automatic retry.
 ```
 
 ## copy-code
@@ -387,6 +398,30 @@ Read desk-operation after a lost reply and use desk-reconcile without re-uploadi
 An observed glob/source result does not prove HTTP or application health. Check the
 separate session_cleanup receipt; unconfirmed means owner-session cleanup is unknown.
 Reconcile generated docket changes with source ownership before the next commit.
+```
+
+## mcp
+
+```text
+Usage: omabit [--config-dir DIR] mcp serve --transport stdio [--allow-runner NAME:ID ...] [--enable-mutations]
+Serve the shared core with the official pinned Go SDK. Stdout is MCP only.
+An empty allowlist denies all live targets; only offline discovery remains usable.
+Mutation tools require explicit startup enablement and still enforce operator role,
+runner capability, exact reviewed bindings and saved policy. Every call selects its
+own target. No secrets, policy authoring, shell, SQL, Docker or host installation.
+Cancelling a call or closing this subprocess never cancels runner-owned work.
+Optional global --skills-bundle DIR --skills-manifest-sha256 SHA exposes the exact
+verified bundle guidance through resources and bounded ordinary tool reads. Both
+BUILD and SKILLS provenance must match. Reading guidance installs nothing.
+Streamable HTTP and actual named-client qualification remain separate work.
+```
+
+## operations
+
+```text
+Usage: omabit operations
+Read the offline shared operation catalog, inferred JSON schemas, effects, target
+bindings, replay rules and explicit legacy CLI exclusions. Creates no state.
 ```
 
 ## remote-setup
