@@ -12074,3 +12074,21 @@ inert property/process seams and actual self-only proc checks. This is not a new
 actual service or native recording gate. Fixed-root worker entry, authenticated
 launch and downgrade/upgrade integration remain pending; installed state and
 existing ships remain untouched.
+
+## M679 — Add a fixed-root service-only recording entry (2026-11-18)
+
+Add the exact `recording-worker --job ID --sha256 DIGEST` internal CLI, including
+the separately selected development-root command boundary. It accepts no paths,
+commands or native inputs and reports finite failures without private diagnostics.
+Derive jobs/recordings roots solely from the verified owner's selected state home;
+both must already be private trusted directories. HOME/XDG/DOCKER_HOST cannot
+select them. Ordinary unsupervised invocation refuses before account/storage reads.
+
+Before the once-only claim, the service verifies that systemd tracks its actual
+self process/image/start/namespaces/invocation as the exact starting notify/main
+job unit. A refused supervisor consumes no claim and reaches no engine. Successful
+capture sends fixed notification only through the existing post-sync callback.
+Focused race checks pass for runtimequalify in2.712s and runner CLI in1.019s.
+No job is submitted by normal managed launch, no root/service is installed, and no
+native recording is qualified. Active-job schema/journal guards, independently
+submitted worker lifetime and installed/native upgrades remain required.

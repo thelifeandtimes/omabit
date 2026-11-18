@@ -200,3 +200,8 @@ M678 adds fixed bounded selected-unit reads and bracketed exact-PID kernel/image
 cgroup observation. Focused race checks pass, including stale/reused identity,
 changed unit, cancellation, bounded output and actual self-only observations.
 Startup admission cannot grant readiness. Worker entry and launch/upgrade remain.
+
+M679 adds the service-only fixed-root worker CLI and pre-claim exact supervision
+gate, passing focused runtime/CLI race checks. Unsupervised, exposed/symlinked or
+missing roots and malformed inputs refuse; no normal managed launch submits jobs.
+Active-job downgrade/journal guards and actual worker/native upgrades remain.

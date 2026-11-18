@@ -509,3 +509,12 @@ image, owner, namespaces, cgroup or invocation. It reads no process arguments or
 environment. The startup main-process check is separate from ready authority.
 Focused race checks use inert supervisor seams and actual self-only proc; actual
 worker-service/native/installed gates remain pending.
+
+The internal `recording-worker --job ID --sha256 DIGEST` entry now derives
+`recording-jobs` and `recordings` only below the verified owner's selected
+`.local/share/urbit-runner` home. It requires existing private directories and
+real starting notify/main supervision before consuming a job claim. The separate
+development-root command boundary remains explicit. No arbitrary paths or native
+inputs are accepted; ordinary unsupervised invocation refuses. Source/race gates
+pass, but normal launch still creates/submits no jobs. The database downgrade
+guard and authenticated journal binding must precede that integration.

@@ -21,7 +21,7 @@ func NotifyRecordingSupervisor(ctx context.Context) error {
 }
 
 func notifyRecordingSupervisor(ctx context.Context, socket, invocation string) error {
-	if !recordingJobHex(invocation, 32) || len(socket) < 2 || len(socket) > 107 || strings.ContainsAny(socket, "\x00\r\n") || socket[0] != '@' && (!filepath.IsAbs(socket) || filepath.Clean(socket) != socket) {
+	if !validRecordingNotifyEnvironment(socket, invocation) {
 		return ErrRecordingWorker
 	}
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
@@ -43,4 +43,8 @@ func notifyRecordingSupervisor(ctx context.Context, socket, invocation string) e
 		return ErrRecordingWorker
 	}
 	return nil
+}
+
+func validRecordingNotifyEnvironment(socket, invocation string) bool {
+	return recordingJobHex(invocation, 32) && len(socket) >= 2 && len(socket) <= 107 && !strings.ContainsAny(socket, "\x00\r\n") && (socket[0] == '@' || filepath.IsAbs(socket) && filepath.Clean(socket) == socket)
 }

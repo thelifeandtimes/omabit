@@ -28,6 +28,7 @@ type RecordingWorkerOptions struct {
 	RecordingsRoot      string
 	MaxJobs             int
 	JobReserveFreeBytes uint64
+	beforeClaim         func(context.Context, ManagedRecordingJob, RecordingWorkerIdentity) error
 }
 
 // RunManagedRecordingWorker uses the worker process's own independent lifetime.
@@ -114,6 +115,9 @@ func runManagedRecordingWorker(ctx context.Context, opts RecordingWorkerOptions,
 	job, err := jobs.Read(id, digest)
 	if err != nil {
 		return out, err
+	}
+	if opts.beforeClaim != nil && opts.beforeClaim(ctx, job, worker) != nil {
+		return out, ErrRecordingWorker
 	}
 	jobs.reserve = max(jobs.reserve, job.Limits.ReserveFreeBytes)
 	lease, err := jobs.Claim(id, digest, worker)
