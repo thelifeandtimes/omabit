@@ -10581,3 +10581,28 @@ whole-pier forensic archive is also retired; original acknowledged/uncertain SQL
 native response bodies, proofs/logs/input hashes and exact helper remain intact.
 Replacement tombstones link superseded archive claims explicitly. No canonical
 source/Vere/pill, current experiment, user ship or production service was changed.
+
+## M623 — Corrected private managed native source phases pass (2026-11-18)
+
+The [frozen ac3eec2 coordinator gate](diagnostics/2026-11-18-grubbery-managed-native-source.json)
+passes all12 original phases, each dispatched once and observed, with real private
+SQLite/cache/policy/ownership/byte/compile/version/live-mirror checks against the
+pinned kernel. The fresh ship stops cleanly. Virtual foundational bytes remain
+separate from materialized source. No earlier uncertain header or event is
+repaired, rewritten or relabeled; those failed capsules remain failed.
+
+A separate fixed kernel namespace confirms the custom-mark question: its mar
+fold is absent before explicit creation, the single create returns201, then the
+submitted exact custom source is the only materialized mark while four virtual
+pinned sources remain compiler inputs. All five compile cleanly. This confirms
+removing the unconditional generated-directory skip; it does not by itself
+qualify a managed custom-mark source operation. Native per-call owner cleanup
+must finish before evidence is accepted. Process-death cleanup remains unqualified.
+
+This gate invokes the private managed coordinator through a native owner HTTP
+fixture with synthetic lifecycle and exact typed sources; it does not exercise
+product Docker/curl, public CLI/MCP, managed second-version/state/restart, permits,
+aliases/routes/assets, peers or installed upgrades. The later recorder-only M622
+commit is outside the frozen artifact. Grubbery capability remains unavailable.
+Next expose saved app receipts and exact phase interfaces with parity, then
+qualify their actual Docker transport and the remaining workflow boundaries.

@@ -160,3 +160,14 @@ Inert/race checks pass for that separation and for refusing a newly introduced
 materialized directory even with matching pinned source bytes. The corrected
 managed coordinator still needs its own fresh native gate; kernel diagnostics
 alone do not qualify it.
+
+The corrected [private managed native gate](diagnostics/2026-11-18-grubbery-managed-native-source.json)
+now passes all12 exact phases against the pinned kernel, including durable
+SQLite dispatch, independent ownership/source/compile/followed-mirror checks and
+confirmed per-call session cleanup. The fresh ship stops cleanly. A separate
+kernel diagnostic proves a custom-mark directory needs its explicit single
+create before the custom source compiles alongside four virtual foundations.
+This supersedes the preceding managed-native deferral only for frozen ac3eec2.
+It does not qualify product Docker/curl, public interfaces, managed second-version
+state/restart, process-death cleanup, permits, routes/assets, peers or installed
+upgrades. Live Grubbery capability remains unavailable pending those gates.

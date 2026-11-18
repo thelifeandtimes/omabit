@@ -30,16 +30,17 @@ coordinator capsule passes framework bootstrap and initial ownership writes but
 refuses an empty-code-tree layout that the inert model incorrectly seeded with
 foundational marks. Its acknowledgement/uncertainty and clean stop are retained;
 a fresh layout diagnostic passes and distinguishes readable virtual foundational
-source from the materialized tree. The projection/model correction passes source
-checks and still needs a fresh managed native run. Real native adapter
-and public CLI/MCP dispatch qualification are still pending; capability stays
+source from the materialized tree. The corrected private managed native gate now passes all12 exact phases with
+SQLite, source/compile/followed-mirror checks and clean shutdown. A separate
+kernel custom-mark layout check passes. Product Docker/curl transport, managed
+second-version/state/restart and public CLI/MCP dispatch qualification remain pending; capability stays
 unavailable. The pinned Grubbery source contract has shared offline metadata and exact confined
 verification, with real CLI/stdio parity. Native bootstrap now passes after exact
 original-scaffold export/adoption; its timed-out activation resolves read-only
 without a second install. App workflow qualification and four nested shell-tool
 failures remain separate; see [the boundary](grubbery-adapter.md).
 
-Source/native checkpoints are documented in M579–M621. The shared interface's
+Source/native checkpoints are documented in M579–M623. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or
