@@ -11904,3 +11904,25 @@ private managed.test, correct the fixture and reject invalid expectations before
 probing. The product limit is unchanged. This fixes the harness only; fresh native
 manager/replay and whole-case qualification remain pending, with no installed or
 production operation.
+
+## M671 — Preserve actual original3 recording bytes across metadata4 (2026-11-18)
+
+The [source compatibility rehearsal](diagnostics/2026-11-18-recording-metadata4-source-upgrade.json)
+passes from clean0b28bac. Build unchanged frozen6e810bc9 ordinary Go/modules/
+embedded sources plus its declared qualification writer helper, recording every
+Git blob/hash and helper SHA. The actual original writer creates six files across
+four segments, raw stdout/stderr/control/invalid-UTF8 bytes, recorder-restart gap
+and a typed exit fixture. Candidate4 reads/cursors/reopens preserve every
+original byte and leave omitted basis fields unknown. The actual original3 reader
+refuses the populated4 successor without modifying it. Private commands, exact
+source/binary pins and both original/successor byte manifests are retained.
+
+Retain the compact actual original3 files, source-input manifest and declared
+helper with writer/source/helper SHA pins. Ordinary regression checks verify
+original octets, cross-segment cursors, different receive-clock epoch/gap, terminal
+evidence, repeated reopen and unchanged files after refused continuation. Full
+recording race tests pass in1.258s with all original1/2/3 fixtures; vet passes.
+This supersedes M667/M669's actual original3-writer deferral only. The factory is
+still unwired; independent workers, native bootstrap/recording coverage, retention,
+API/UI/export and installed qualification remain pending. No user recording,
+native runtime, production, manual DEV or existing ship was opened by this gate.

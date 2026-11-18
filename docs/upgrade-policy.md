@@ -16,13 +16,15 @@ The source coordinator selects current4 for new captures; generic legacy-format
 source fixtures remain explicitly readable without promotion. No installed file
 or runner database changes, and no recording feature is advertised.
 
-The original3 writer/reader rehearsal is prepared at frozen6e810bc9 with a
-declared helper in `scripts/test-recording-bootstrap-upgrade.py`. It must prove
-actual original3 segment/cursor/reopen preservation and actual old-reader refusal
-of populated4 unchanged. Full recording race tests, focused ordinary native
+The [actual original3 writer/reader rehearsal](diagnostics/2026-11-18-recording-metadata4-source-upgrade.json)
+passes for candidate0b28bac and unchanged frozen6e810bc9 code with a declared
+helper in `scripts/test-recording-bootstrap-upgrade.py`. Original3 segments,
+cross-segment cursors, omitted identity basis and repeated reopen stay exact. The
+actual old reader refuses populated4 without changing it. A compact actual
+original3 fixture with source/helper/writer pins runs in ordinary tests.
+Full recording race tests, focused ordinary native
 factory/process/attachment race tests and vet now pass with inert engine/private
-filesystem fixtures. The actual original3 compatibility rehearsal remains pending.
-Native capture factories,
+filesystem fixtures. Native capture factories,
 worker lifecycle, later observed identity, real Docker/Vere, installed upgrade
 and final artifact/support-window gates remain required. This is an unreleased
 development format, not qualified recording support.

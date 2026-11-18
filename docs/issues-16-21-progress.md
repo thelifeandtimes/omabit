@@ -158,3 +158,9 @@ A bounded read-only readiness correction passes source/race/vet, refusing change
 identity/configuration and invalid expectations. Fresh native qualification is
 still required; this failure does not qualify the entire workflow or current
 unwired recording changes.
+
+M671 passes actual frozen3 writer → candidate4 reads/preservation and actual
+old-reader refusal unchanged. A retained original3 segmented fixture with exact
+source/helper/writer pins passes ordinary full recording race/vet. Source-format
+compatibility is qualified for that boundary; live capture/worker/retention and
+installed recording remain pending.

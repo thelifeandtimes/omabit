@@ -360,8 +360,11 @@ never acquire future names/inodes through opening, continuation or exit. Later
 observed identity requires separate linked evidence and trusted runtime factories.
 
 Metadata1–3 retains exact original bytes and omitted labels; current4 uses the
-same segmented frame codec1. Full recording race tests and focused vet now pass;
-actual original3 preservation/old-reader refusal remains pending. No installed recording,
+same segmented frame codec1. Full recording race tests and focused vet now pass.
+The [actual original3 writer rehearsal](diagnostics/2026-11-18-recording-metadata4-source-upgrade.json)
+passes for frozen0b28bac: old segmented bytes/cursors/reopen stay exact, and the
+actual old reader refuses populated4 unchanged. A retained original3 fixture with
+source/helper/writer pins runs in ordinary tests. No installed recording,
 bootstrap coverage or native identity observation is qualified by this model.
 
 ## Ordinary native factory — native qualification pending

@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "passed": true,
+  "original_source": "6e810bc937e57a9f5ff521c8957502fdceb71bb5",
+  "candidate_source": "0b28bac11ede044d7e6e2dc5e13a8ccdafd232fa",
+  "original_writer_sha256": "647ece5d9da0b1da08ac4e6b40860268c7e9592291a743f96db3f3d2f95e48ad",
+  "candidate_sha256": "374af7590c1c146608cc535ce9e0b75c3e37183a2420874d5b165e57462355a2",
+  "declared_helper_sha256": "6bd1c61b4a671b65bda250fb3d5e5bcc6a1a65d6444094387de0493ea82083d0",
+  "original_source_manifest_sha256": "764dc8f33483369db87c8b8716b7363419322ef8aaea77ccfc629391d38f3c13",
+  "original_writer_files": {
+    "11111111111111111111111111111111/frames-00000002.obr": "306145b0e45953b7be2ff15dc3e664711008340e098f66e7f616d0d65cca37f7",
+    "11111111111111111111111111111111/frames-00000003.obr": "dee9bfdecad76c7a149971225df23a4792df05102834276c67bd9d5f24e3750b",
+    "11111111111111111111111111111111/frames-00000004.obr": "6fc4f2e90de8883b3f00d723e103fbae5d75d461d12abde635bc05a9560fb2a4",
+    "11111111111111111111111111111111/frames.obr": "f95d6e9ef663e2a1b50099b5b167799cced4f35f14dfe99075a57ef5da9a95cd",
+    "11111111111111111111111111111111/metadata.json": "07385f6f9d45ba41ee0183644fc316d5a0c980d276749923f775d8be98c9e0f1",
+    "11111111111111111111111111111111/writer.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "successor_files": {
+    "11111111111111111111111111111111/frames-00000002.obr": "b42984cb64f8d11f69ed17289d10514a985a96759f861bc77f5e44994a0c5212",
+    "11111111111111111111111111111111/frames-00000003.obr": "e61390573c6497b9efb9052d3d2b80319037524ff460e171528837c329783414",
+    "11111111111111111111111111111111/frames.obr": "d89b06e05c2b16969d1cc1bbfc8dcba6a05e09b6e699f352b3c9e096fc042231",
+    "11111111111111111111111111111111/metadata.json": "94dd106721b641f96496abc445781e6c5aeddde3f38c35218b186ce018ed673c",
+    "11111111111111111111111111111111/writer.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "original_reads_byte_preserved": true,
+  "old_reader_refused_successor_unchanged": true,
+  "original3_segment_and_continuation_bytes_preserved": true,
+  "pending_bootstrap_identity_not_invented": true,
+  "scope": "source-only original3/candidate4 bootstrap metadata, retained segmented storage and refusal; no Docker capture, lifecycle, installed upgrade, retention, UI or stable qualification"
+}
