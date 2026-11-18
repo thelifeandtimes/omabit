@@ -10662,3 +10662,40 @@ The known managed03 runtime and supervisor are inactive. Only its exact duplicat
 pill/Vere/host helper were retired after canonical hashes were reverified,
 freeing270,315,520 allocated bytes; original SQL/pier/proofs/logs remain unchanged.
 No user ship, installed service, production plugin or manual-review state changed.
+
+## M626 — Prepare public native update/restart gate within the budget (2026-11-18)
+
+A new explicitly guarded `grubbery-public-workflow-v1` case will exercise the
+actual public source API and pinned registry/client for two source versions,
+independent fixed native state/code probes, a supervisor-bound clean same-pier
+restart, another state write, original SQLite reopen and completed-phase replay.
+This is prepared code, not a passed native result. It still uses synthetic
+lifecycle and direct owner HTTP, so it cannot qualify product Docker/curl,
+recovery of a pending operation on a changed runtime, permits/routes/assets,
+peers, installed upgrades or the native CLI combination.
+
+Only this longer case receives a20-minute Go context,21-minute test bound,
+1,280-second inner workflow bound,1,600-second outer deadline and1,750-second
+independent supervisor cap. It retains one active experiment,4GiB/no-swap/one-CPU
+capsule,512MiB/no-swap/25%-CPU supervisor, namespace guards,1.25GiB scratch
+admission and live48GiB aggregate enforcement. Existing case deadlines remain
+unchanged. The closed Go identity guard and12 launcher tests pass; affected
+managed Go vet passes. Build a matching clean helper before admission.
+
+The clean completed managed03 pier is now sparsely archived with all1,450 file
+contents verified on streaming decompression: archive SHA256
+23fdd4b5b8ea3aebef97c2135e91f5be3f0c0bd736b5a7a14a6b347ee157afc2,
+258,569,202 bytes. Retiring its verified expanded files frees520,200,192 allocated
+bytes. Original SQL/proofs/logs/helper remain unchanged. The obsolete first Gall
+capsule's full pier is separately retired with all file hashes and a tombstone;
+its original uncertain activation result/SQL/proofs/source/helper remain failed
+and unchanged. The selected successful Gall07 full archive is reverified and
+retained. This frees589,733,888 bytes and makes no historical-cause claim.
+
+Three further ended-capsule framework-source duplicates are retired only after
+all1,443 files match the exact canonical pin, which remains retained and is
+reverified afterward. Their original input/result/proof bytes remain unchanged;
+36,950,016 allocated bytes are freed. Completed retirement manifests identify
+absent expanded piers; a preliminary tombstone-name assumption refused before
+any unlink. No production, installed service, user pier or manual-review state
+was selected for these retirements. Final runtime admission is still required.

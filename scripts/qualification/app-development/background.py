@@ -15,7 +15,7 @@ import subprocess
 import uuid
 
 ROOT = Path(__file__).resolve().parents[3]
-CASES = ('grubbery-bootstrap-v1', 'grubbery-app-contract-v1', 'grubbery-app-contract-v2', 'grubbery-managed-coordinator-v1', 'grubbery-source-layout-v1')
+CASES = ('grubbery-bootstrap-v1', 'grubbery-app-contract-v1', 'grubbery-app-contract-v2', 'grubbery-managed-coordinator-v1', 'grubbery-source-layout-v1', 'grubbery-public-workflow-v1')
 
 
 def ordinary(path, directory=False):
@@ -54,13 +54,14 @@ def main():
     subprocess.run(['git', 'cat-file', '-e', a.artifact_source + '^{commit}'], cwd=ROOT, check=True)
     if subprocess.check_output(['git', 'diff', a.artifact_source, '--', '*.go', 'go.mod', 'go.sum', 'internal/appdev'], cwd=ROOT):
         p.error('Go/embedded inputs changed after this artifact; build a matching helper')
+    supervisor_deadline = 1750 if a.workflow_case == 'grubbery-public-workflow-v1' else 1250
     token = uuid.uuid4().hex
     unit = 'omabit-issues-capsule-supervisor-' + token
     log = Path('/tmp') / (unit + '.log')
     fd = os.open(log, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     os.close(fd)
     command = ['systemd-run', '--user', '--collect', '--unit=' + unit,
-               '--property=Type=exec', '--property=RuntimeMaxSec=1250',
+               '--property=Type=exec', '--property=RuntimeMaxSec=' + str(supervisor_deadline),
                '--property=MemoryMax=512M', '--property=MemorySwapMax=0',
                '--property=CPUQuota=25%', '--property=UMask=0077',
                '--property=WorkingDirectory=' + str(ROOT),
@@ -77,7 +78,7 @@ def main():
               'harness_source': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
               'harness_sha256': sha(Path(__file__).with_name('probe.py')),
               'command': command, 'limits': {'supervisor_memory_bytes': 512 * 1024**2,
-              'supervisor_no_swap': True, 'supervisor_deadline_seconds': 1250,
+              'supervisor_no_swap': True, 'supervisor_deadline_seconds': supervisor_deadline,
               'capsule': 'separate guarded4GiB/no-swap/one-core scope; fresh private namespaces; declared storage admission'}}
     receipt = Path('/tmp') / (unit + '.json')
     with receipt.open('x') as stream:

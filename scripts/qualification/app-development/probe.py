@@ -15,7 +15,7 @@ import time
 import urllib.request
 import uuid
 
-GRUBBERY_CASES = ('grubbery-bootstrap-v1', 'grubbery-app-contract-v1', 'grubbery-app-contract-v2', 'grubbery-managed-coordinator-v1', 'grubbery-source-layout-v1')
+GRUBBERY_CASES = ('grubbery-bootstrap-v1', 'grubbery-app-contract-v1', 'grubbery-app-contract-v2', 'grubbery-managed-coordinator-v1', 'grubbery-source-layout-v1', 'grubbery-public-workflow-v1')
 
 VERE_SHA = 'b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0'
 PILL_SHA = 'f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b'
@@ -106,13 +106,13 @@ def inside():
                 if not g.get('recover_receiver_boot'):
                     with (lab/'workflow.log').open('wb') as workflow_log:
                         case=g.get('workflow_case','desk-workflow-v1')
-                        names={'desk-workflow-v1':'TestNativeDeskWorkflow','gall-state-v2':'TestNativeGallSampleWorkflow','grubbery-bootstrap-v1':'TestNativeGrubberyBootstrap','grubbery-app-contract-v1':'TestNativeGrubberyAppContract','grubbery-app-contract-v2':'TestNativeGrubberyAppContractV2','grubbery-managed-coordinator-v1':'TestNativeGrubberyManagedCoordinator','grubbery-source-layout-v1':'TestNativeGrubberySourceLayout'}
+                        names={'desk-workflow-v1':'TestNativeDeskWorkflow','gall-state-v2':'TestNativeGallSampleWorkflow','grubbery-bootstrap-v1':'TestNativeGrubberyBootstrap','grubbery-app-contract-v1':'TestNativeGrubberyAppContract','grubbery-app-contract-v2':'TestNativeGrubberyAppContractV2','grubbery-managed-coordinator-v1':'TestNativeGrubberyManagedCoordinator','grubbery-source-layout-v1':'TestNativeGrubberySourceLayout','grubbery-public-workflow-v1':'TestNativeGrubberyPublicWorkflow'}
                         if case not in names:raise RuntimeError('unsupported named workflow case')
                         if case in ('gall-state-v2',)+GRUBBERY_CASES:
                             from gall_control import read_request, validate_restart, write_receipt
-                            workflow=subprocess.Popen(['/artifacts/workflow.test','-test.run=^'+names[case]+'$','-test.v','-test.timeout=13m' if case in GRUBBERY_CASES else '-test.timeout=9m'],
+                            workflow=subprocess.Popen(['/artifacts/workflow.test','-test.run=^'+names[case]+'$','-test.v','-test.timeout=21m' if case=='grubbery-public-workflow-v1' else ('-test.timeout=13m' if case in GRUBBERY_CASES else '-test.timeout=9m')],
                                                       stdout=workflow_log,stderr=subprocess.STDOUT)
-                            deadline=time.monotonic()+(800 if case in GRUBBERY_CASES else 550)
+                            deadline=time.monotonic()+(1280 if case=='grubbery-public-workflow-v1' else (800 if case in GRUBBERY_CASES else 550))
                             handled=set()
                             while workflow.poll() is None:
                                 if time.monotonic()>deadline:workflow.kill();workflow.wait();raise RuntimeError('named native workflow deadline')
@@ -344,7 +344,7 @@ def _host(a):
     # The completed app03 capsule used about1.1GiB including copied immutable
     # inputs and its full pier. This narrower single-candidate coordinator case
     # admits1.25GiB and retains the same live allocation monitor/refusal.
-    if workflow_case in ('grubbery-managed-coordinator-v1','grubbery-source-layout-v1'):scratch_limit=1280*1024**2
+    if workflow_case in ('grubbery-managed-coordinator-v1','grubbery-source-layout-v1', 'grubbery-public-workflow-v1'):scratch_limit=1280*1024**2
     storage_budget=getattr(a,'storage_budget_gib',40)*1024**3
     def admit_scope(additional):
         if workflow_case not in ('gall-state-v2',)+GRUBBERY_CASES:return admit(additional,budget_bytes=storage_budget)
@@ -421,7 +421,7 @@ def _host(a):
                     (out/'admission.json').write_text(json.dumps(values));(lab/'admitted').write_text(g['unit']);break
                 time.sleep(.1)
             else:raise RuntimeError('scope admission failed')
-            end=time.monotonic()+(1200 if a.receivers else (1100 if workflow_case in GRUBBERY_CASES else (850 if workflow_case=='gall-state-v2' else 550)))
+            end=time.monotonic()+(1200 if a.receivers else (1600 if workflow_case=='grubbery-public-workflow-v1' else (1100 if workflow_case in GRUBBERY_CASES else (850 if workflow_case=='gall-state-v2' else 550))))
             next_storage_check=0
             while child.poll() is None:
                 if time.monotonic()>end:raise RuntimeError('outer deadline')

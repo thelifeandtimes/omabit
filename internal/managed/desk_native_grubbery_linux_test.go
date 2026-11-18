@@ -45,6 +45,9 @@ func TestNativeGrubberyManagedCoordinator(t *testing.T) {
 func TestNativeGrubberySourceLayout(t *testing.T) {
 	nativeGrubberyBootstrap(t, "grubbery-source-layout-v1", nativeGrubberyAppContractV2)
 }
+func TestNativeGrubberyPublicWorkflow(t *testing.T) {
+	nativeGrubberyBootstrap(t, "grubbery-public-workflow-v1", nil)
+}
 func nativeGrubberyBootstrap(t *testing.T, workflowCase string, after func(*testing.T, context.Context, *nativeDeskFixture, *eyre.Client, func(string, any))) {
 	f := nativeDeskGuard(t)
 	var guard struct {
@@ -62,7 +65,11 @@ func nativeGrubberyBootstrap(t *testing.T, workflowCase string, after func(*test
 	if guard.WorkflowCase != workflowCase || guard.Inputs.Commit != framework.Commit || guard.Inputs.Digest != framework.Source.Digest {
 		t.Fatal("explicit fresh pinned Grubbery bootstrap capsule required")
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Minute)
+	limit := 12 * time.Minute
+	if workflowCase == "grubbery-public-workflow-v1" {
+		limit = 20 * time.Minute
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), limit)
 	defer cancel()
 	proof := map[string]any{"scope": "fresh kernel/bootstrap only; synthetic lifecycle; no app deployment/permits/publication"}
 	if after != nil {
@@ -70,6 +77,9 @@ func nativeGrubberyBootstrap(t *testing.T, workflowCase string, after func(*test
 	}
 	if workflowCase == "grubbery-managed-coordinator-v1" {
 		proof["scope"] = "fresh pinned kernel with private managed app coordinator and actual SQLite/policy/source evidence; synthetic lifecycle; no public app API, Docker transport, permits, routes or peers"
+	}
+	if workflowCase == "grubbery-public-workflow-v1" {
+		proof["scope"] = "fresh pinned kernel with public source API/registry/client and two managed source versions/state/restart; synthetic lifecycle; no product Docker, pending-operation rebinding, permits/routes/served UI/peers"
 	}
 	save := func(name string, value any) {
 		t.Helper()
@@ -287,6 +297,9 @@ func nativeGrubberyBootstrap(t *testing.T, workflowCase string, after func(*test
 	if workflowCase == "grubbery-managed-coordinator-v1" {
 		nativeManagedGrubbery(t, ctx, r, f, commit.Intent.Intent.ID, save)
 		nativeGrubberyMarkLayout(t, ctx, f, owner, save)
+	}
+	if workflowCase == "grubbery-public-workflow-v1" {
+		nativePublicGrubbery(t, ctx, r, f, commit.Intent.Intent.ID, save)
 	}
 }
 

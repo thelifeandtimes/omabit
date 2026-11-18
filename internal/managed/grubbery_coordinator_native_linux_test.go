@@ -11,13 +11,16 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/deskwork"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/eyre"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/grubbery"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
 // This is a fresh guarded native HTTP adapter for the private test fixture. It
@@ -97,6 +100,9 @@ func (f *nativeDeskFixture) GrubberyStep(ctx context.Context, p grubbery.Plan, i
 }
 
 func nativeManagedGrubbery(t *testing.T, ctx context.Context, r *Server, f *nativeDeskFixture, frameworkID string, save func(string, any)) {
+	nativeManagedGrubberyRound(t, ctx, r, f, frameworkID, "managed-v1", "managed-app", false, save)
+}
+func nativeManagedGrubberyRound(t *testing.T, ctx context.Context, r *Server, f *nativeDeskFixture, frameworkID, label, prefix string, public bool, save func(string, any)) grubbery.Record {
 	t.Helper()
 	continuity, err := f.SourceIdentity(ctx)
 	g02Check(t, err)
@@ -110,8 +116,8 @@ func nativeManagedGrubbery(t *testing.T, ctx context.Context, r *Server, f *nati
 	binding := grubbery.Binding{RunnerID: r.s.runnerID, Mode: r.s.mode, Actor: actor, Target: framework.Intent.Target, RuntimeID: framework.Intent.RuntimeID, ConfigRevision: framework.Intent.ConfigRevision, Continuity: continuity, FrameworkReceiptID: frameworkID, FrameworkBaseline: *last.Observation, AppID: "native-state"}
 	// A maintained native JSON-state nexus, copied into this immutable bounded
 	// candidate. No source directory is mounted into the running ship.
-	files := []deskwork.SourceFile{{Path: "bill.json", Bytes: []byte(`{"state":"/state"}`)}, {Path: "nex/state.hoon", Bytes: nativeGrubberyStateNexus("managed-v1")}}
-	dir := "/lab/managed-app-source"
+	files := []deskwork.SourceFile{{Path: "bill.json", Bytes: []byte(`{"state":"/state"}`)}, {Path: "nex/state.hoon", Bytes: nativeGrubberyStateNexus(label)}}
+	dir := "/lab/managed-app-source-" + label
 	g02Check(t, os.Mkdir(dir, 0700))
 	entries := []deskwork.File{}
 	var size int64
@@ -124,7 +130,7 @@ func nativeManagedGrubbery(t *testing.T, ctx context.Context, r *Server, f *nati
 	}
 	manifest, err := deskwork.NewManifest(entries)
 	g02Check(t, err)
-	stageID, requestID := stopEvidenceDigest([]byte("native-managed-stage-v1")), stopEvidenceDigest([]byte("native-managed-request-v1"))
+	stageID, requestID := stopEvidenceDigest([]byte("native-managed-stage-"+label)), stopEvidenceDigest([]byte("native-managed-request-"+label))
 	root := filepath.Join(r.s.directory, "desk-stages-v1")
 	var bundle bytes.Buffer
 	g02Check(t, deskwork.WriteBundle(ctx, dir, manifest, &bundle))
@@ -135,33 +141,65 @@ func nativeManagedGrubbery(t *testing.T, ctx context.Context, r *Server, f *nati
 	policy, err := loadAppPolicy(r.s.db)
 	g02Check(t, err)
 	binding.PolicyRevision = policy.Revision
-	r.mu.Lock()
-	backend, err := r.nativeGrubberyBackend(ctx, binding, actor, "operator")
-	if err != nil {
+
+	var plan grubbery.Plan
+	var execution grubbery.Execution
+	var registry *collection.Registry
+	if public {
+		registry, err = collection.Open("/lab/collector")
+		g02Check(t, err)
+		review, e := registry.ReviewGrubberyAppSource(ctx, "native", r.s.runnerID, protocol.GrubberyAppReviewRequest{Selection: protocol.DeskSelection{Target: binding.Target, RuntimeID: binding.RuntimeID, ConfigRevision: binding.ConfigRevision}, FrameworkReceiptID: frameworkID, AppID: binding.AppID, StageID: stageID, RequestID: requestID})
+		g02Check(t, e)
+		plan = review.Plan
+		binding = plan.Binding
+	} else {
+		r.mu.Lock()
+		backend, e := r.nativeGrubberyBackend(ctx, binding, actor, "operator")
+		if e != nil {
+			r.mu.Unlock()
+			t.Fatal(e)
+		}
+		before, e := backend.Inspect(ctx, binding)
 		r.mu.Unlock()
-		t.Fatal(err)
+		g02Check(t, e)
+		plan, err = grubbery.NewPlan(binding, stageID, requestID, manifest, files, before)
+		g02Check(t, err)
+		execution = backend.Execution(grubberyJournal{r.s})
 	}
-	before, err := backend.Inspect(ctx, binding)
-	r.mu.Unlock()
-	g02Check(t, err)
-	plan, err := grubbery.NewPlan(binding, stageID, requestID, manifest, files, before)
-	g02Check(t, err)
-	save("managed-app-plan", plan)
-	execution := backend.Execution(grubberyJournal{r.s})
+	save(prefix+"-plan", plan)
 	call := grubbery.Call{RunnerID: binding.RunnerID, Mode: binding.Mode, Actor: actor, Target: binding.Target, AppID: binding.AppID, RequestID: requestID, PlanDigest: plan.Digest}
 	var record grubbery.Record
-	// This private fixture has no concurrent lifecycle caller; retain the same
-	// product guard across each complete journal/effect/after-observation call.
-	r.mu.Lock()
-	record, err = execution.Begin(ctx, call, plan)
-	r.mu.Unlock()
-	g02Check(t, err)
+	if public {
+		reply, e := registry.BeginGrubberyAppSource(ctx, "native", r.s.runnerID, protocol.GrubberyAppBeginRequest{Plan: plan})
+		g02Check(t, e)
+		record = reply.Record
+	} else {
+		r.mu.Lock()
+		record, err = execution.Begin(ctx, call, plan)
+		r.mu.Unlock()
+		g02Check(t, err)
+	}
+	phaseCall := func(action string) {
+		t.Helper()
+		if public {
+			reply, e := registry.GrubberyAppSourcePhase(ctx, "native", r.s.runnerID, requestID, action, protocol.GrubberyAppPhaseRequest{PlanDigest: plan.Digest, StepID: call.StepID})
+			g02Check(t, e)
+			record = reply.Record
+		} else {
+			r.mu.Lock()
+			if action == "advance" {
+				record, err = execution.Advance(ctx, call)
+			} else {
+				record, err = execution.Reconcile(ctx, call)
+			}
+			r.mu.Unlock()
+			g02Check(t, err)
+		}
+	}
 	for i, step := range plan.Steps {
 		call.StepID = step.ID
-		r.mu.Lock()
-		record, err = execution.Advance(ctx, call)
-		r.mu.Unlock()
-		save(fmt.Sprintf("managed-app-phase-%02d", i), record)
+		phaseCall("advance")
+		save(fmt.Sprintf("%s-phase-%02d", prefix, i), record)
 		g02Check(t, err)
 		for deadline := time.Now().Add(20 * time.Second); ; {
 			state, stateErr := record.State(step.ID)
@@ -174,11 +212,9 @@ func nativeManagedGrubbery(t *testing.T, ctx context.Context, r *Server, f *nati
 			}
 			// Observe only. The original uncertain effect is never resubmitted.
 			time.Sleep(250 * time.Millisecond)
-			r.mu.Lock()
-			record, err = execution.Reconcile(ctx, call)
-			r.mu.Unlock()
+			phaseCall("reconcile")
 			g02Check(t, err)
-			save(fmt.Sprintf("managed-app-phase-%02d", i), record)
+			save(fmt.Sprintf("%s-phase-%02d", prefix, i), record)
 		}
 	}
 	if _, done, err := record.Current(); err != nil || !done {
@@ -187,8 +223,139 @@ func nativeManagedGrubbery(t *testing.T, ctx context.Context, r *Server, f *nati
 	if record.Plan.Digest != plan.Digest {
 		t.Fatal("native coordinator replaced original plan")
 	}
-	save("managed-app-source-followed", true)
-	save("managed-app-boundary", "actual pinned kernel, typed native HTTP, real policy/SQLite/cache/phase evidence; synthetic lifecycle; no public app API, Docker transport, permits/routes/served UI/restart/peers")
+	save(prefix+"-source-followed", true)
+	boundary := "actual pinned kernel, typed native HTTP, real policy/SQLite/cache/phase evidence; synthetic lifecycle; no Docker transport, permits/routes/served UI/peers"
+	if public {
+		boundary += "; public runner API and pinned registry/client"
+	} else {
+		boundary += "; private coordinator only"
+	}
+	save(prefix+"-boundary", boundary)
+
+	return record
+}
+
+func nativePublicGrubbery(t *testing.T, ctx context.Context, r *Server, f *nativeDeskFixture, frameworkID string, save func(string, any)) {
+	t.Helper()
+	first := nativeManagedGrubberyRound(t, ctx, r, f, frameworkID, "public-v1", "public-app-v1", true, save)
+	n, err := first.Plan.Binding.Namespace()
+	g02Check(t, err)
+	// This fixed test-only state probe is deliberately separate from the product
+	// source API. It has no configurable native route or command input.
+	state := func(write bool, label bool, value string) string {
+		t.Helper()
+		response, err := f.appOwnerSession(ctx, func(owner *eyre.Client) (grubbery.NativeResponse, error) {
+			encoded, e := owner.ExportSession()
+			if e != nil {
+				return grubbery.NativeResponse{}, e
+			}
+			defer clear(encoded)
+			var cookie struct {
+				Name  string `json:"cookie_name"`
+				Value string `json:"cookie_value"`
+			}
+			if e = json.Unmarshal(encoded, &cookie); e != nil {
+				return grubbery.NativeResponse{}, e
+			}
+			defer func() { cookie.Value = "" }()
+			method, path, body := "GET", "/grubbery/api/peek"+n.DataRoot+"/state/state.json", []byte{}
+			if label {
+				path = "/grubbery/api/peek" + n.DataRoot + "/state/label.json"
+			}
+			if write {
+				method = "POST"
+				path = "/grubbery/api/poke" + n.DataRoot + "/state/state.json?blot=%2Fjson"
+				body, _ = json.Marshal(value)
+			}
+			req, e := http.NewRequestWithContext(ctx, method, "http://127.0.0.1:18081"+path, bytes.NewReader(body))
+			if e != nil {
+				return grubbery.NativeResponse{}, e
+			}
+			req.GetBody = nil
+			req.AddCookie(&http.Cookie{Name: cookie.Name, Value: cookie.Value})
+			if write {
+				req.Header.Set("Content-Type", "application/json")
+			}
+			client := *f.client
+			client.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
+			resp, e := client.Do(req)
+			if e != nil {
+				return grubbery.NativeResponse{}, e
+			}
+			defer resp.Body.Close()
+			raw, e := io.ReadAll(io.LimitReader(resp.Body, 4097))
+			if e != nil || len(raw) > 4096 {
+				return grubbery.NativeResponse{}, fmt.Errorf("fixed state response bound")
+			}
+			if resp.StatusCode != 200 {
+				return grubbery.NativeResponse{}, fmt.Errorf("fixed state response status %d", resp.StatusCode)
+			}
+			return nativeManagedResponse(200, raw), nil
+		})
+		g02Check(t, err)
+		if response.SessionCleanup != "confirmed" {
+			t.Fatal("fixed state owner cleanup unconfirmed")
+		}
+		if write {
+			return ""
+		}
+		var got string
+		g02Check(t, json.Unmarshal(response.Body, &got))
+		return got
+	}
+	if state(false, false, "") != "initial" {
+		t.Fatal("initial managed state differs")
+	}
+	state(true, false, "managed-saved-entry")
+	if state(false, false, "") != "managed-saved-entry" {
+		t.Fatal("managed state poke unavailable")
+	}
+	save("public-app-v1-state-saved", true)
+	second := nativeManagedGrubberyRound(t, ctx, r, f, frameworkID, "public-v2", "public-app-v2", true, save)
+	if second.Plan.Epoch <= first.Plan.Epoch || second.Plan.Binding != first.Plan.Binding {
+		t.Fatal("managed source successor changed namespace identity")
+	}
+	if state(false, false, "") != "managed-saved-entry" || state(false, true, "") != "public-v2" {
+		t.Fatal("source update reset state or did not change code")
+	}
+	save("public-app-v2-state-and-code", true)
+	restart := nativeGallRestart(t, ctx, f)
+	save("public-app-same-pier-restart", restart)
+	if state(false, false, "") != "managed-saved-entry" || state(false, true, "") != "public-v2" {
+		t.Fatal("same-pier restart lost state or code")
+	}
+	state(true, false, "managed-entry-after-restart")
+	if state(false, false, "") != "managed-entry-after-restart" {
+		t.Fatal("state write after restart unavailable")
+	}
+	// The fixture has no background lifecycle observer. Reopen only this exact
+	// task-owned store after all native source phases completed; opening must not
+	// change either original record or issue any native request.
+	r.wg.Wait()
+	r.mu.Lock()
+	directory := r.s.directory
+	if err = r.s.close(); err != nil {
+		r.mu.Unlock()
+		t.Fatal(err)
+	}
+	r.s, err = testOpenStore(directory)
+	r.mu.Unlock()
+	g02Check(t, err)
+	registry, err := collection.Open("/lab/collector")
+	g02Check(t, err)
+	for _, original := range []grubbery.Record{first, second} {
+		reply, e := registry.GrubberyAppOperation(ctx, "native", r.s.runnerID, original.Plan.RequestID)
+		g02Check(t, e)
+		if !reflect.DeepEqual(reply.Record, original) {
+			t.Fatal("reopen changed original app receipt")
+		}
+		replay, e := registry.GrubberyAppSourcePhase(ctx, "native", r.s.runnerID, original.Plan.RequestID, "advance", protocol.GrubberyAppPhaseRequest{PlanDigest: original.Plan.Digest, StepID: original.Plan.Steps[0].ID})
+		g02Check(t, e)
+		if !reflect.DeepEqual(replay.Record, original) {
+			t.Fatal("old phase replay changed completed source")
+		}
+	}
+	save("public-app-workflow", map[string]any{"source_versions": 2, "state_preserved_on_source_update": true, "new_code_label_observed": true, "same_pier_clean_restart": true, "state_preserved_on_restart": true, "write_after_restart": true, "original_receipts_after_store_reopen": true, "old_phase_replay_unchanged": true, "boundary": "actual public runner API/registry/client and pinned native HTTP; synthetic lifecycle and fixed kernel state probes; product Docker transport, pending-operation rebinding, CLI/native combination, permits/routes/assets/peers and installed upgrade unqualified"})
 }
 
 var _ grubbery.NativeRuntime = (*nativeDeskFixture)(nil)
