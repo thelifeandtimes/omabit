@@ -91,6 +91,17 @@ func main() {
 	for _, name := range []string{"commands.jsonl", "result.json"} {
 		files[name] = read("opt/omabit-issues-results/" + name)
 	}
+	// Explicit private archival of this fresh fixture's original writer bytes,
+	// before retiring an obsolete full disk. Never interpreted or repaired here.
+	if slices.Contains(strings.Fields(string(command)), "omabit.inspect-original-store=1") {
+		for _, name := range []string{"runner.sqlite", "runner.sqlite-wal", "runner.sqlite-shm"} {
+			path := "home/review/.local/share/urbit-runner/managed/" + name
+			if _, err := os.Stat("/newroot/" + path); os.IsNotExist(err) && name != "runner.sqlite" {
+				continue
+			}
+			files[name] = read(path)
+		}
+	}
 	b, err := json.Marshal(map[string]any{"passed": true, "read_only": true, "journal_replayed": false, "services_started": false, "files": files})
 	must(err)
 	fmt.Println("OMABIT_ISSUES_INSPECTION " + string(b))

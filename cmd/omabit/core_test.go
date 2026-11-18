@@ -57,8 +57,9 @@ func TestCLIAndMCPUseSamePolicyAndRefusalContract(t *testing.T) {
 	}
 	var observer, missing atomic.Bool
 	var writes atomic.Int32
-	h := protocol.Hello{ProtocolVersion: 1, RunnerID: "runner", Mode: "simulation", AccessRole: "operator", Actor: "actor", Features: []string{protocol.AppPolicyFeature, protocol.ProjectRegistrationFeature}}
+	h := protocol.Hello{ProtocolVersion: 1, RunnerID: "runner", Mode: "simulation", AccessRole: "operator", Actor: "actor", Features: []string{protocol.AppPolicyFeature, protocol.ProjectRegistrationFeature, protocol.ProjectStopRecoveryFeature}}
 	policy := protocol.AppPolicyStatus{Version: 1, RunnerID: h.RunnerID, Mode: h.Mode, ReadAt: time.Now().UTC(), Policy: apppolicy.Default(), Targets: []protocol.AppPolicyTarget{}}
+	diagnosis := protocol.ProjectMemberDiagnosis{SchemaVersion: 1, RunnerID: h.RunnerID, Mode: h.Mode, Actor: h.Actor, ProjectID: "project", InstanceID: "member", Operation: protocol.Operation{ID: "operation", ProjectID: "project", InstanceID: "member", Kind: "stop-project-ship", RequestID: "private-request", Actor: "private cookie", Status: "interrupted", ConfigRevision: 1, CreatedAt: policy.ReadAt, Message: "private cookie must not escape"}, Phase: "stop-dispatched", Fence: "original-interrupted-operation", ReasonCode: "stop_needs_observation", Message: "private cookie must not escape", RuntimeObservation: "not-performed", ReadAt: policy.ReadAt}
 	socket := filepath.Join(t.TempDir(), "r.sock")
 	listener, err := net.Listen("unix", socket)
 	if err != nil {
@@ -81,6 +82,10 @@ func TestCLIAndMCPUseSamePolicyAndRefusalContract(t *testing.T) {
 			writes.Add(1)
 			w.WriteHeader(403)
 			_ = json.NewEncoder(w).Encode(protocol.ErrorResponse{Error: protocol.APIError{Code: "policy_denied", Message: "private cookie must not escape"}})
+			return
+		}
+		if q.URL.RequestURI() == protocol.ProjectMemberDiagnosisPath("project", "member", "operation", false) {
+			_ = json.NewEncoder(w).Encode(diagnosis)
 			return
 		}
 		if q.URL.Path != protocol.AppPolicyPath {
@@ -115,6 +120,8 @@ func TestCLIAndMCPUseSamePolicyAndRefusalContract(t *testing.T) {
 		{name: "frozen-sample", id: "app.sample.v1", input: service.SampleInput{Name: "gall-state-v1"}},
 		{name: "json-sample", id: "app.sample.v1", input: service.SampleInput{Name: "gall-state-v2"}},
 		{name: "policy-read", id: "app.policy.v1", input: service.Target{Name: "dev", RunnerID: "runner"}},
+		{name: "shareable-stop-diagnosis", id: "project.stop-diagnostic-bundle.v1", input: service.StopBundleInput{CheckpointInput: service.CheckpointInput{ProjectInput: service.ProjectInput{Target: service.Target{Name: "dev", RunnerID: "runner"}, ProjectID: "project"}, OperationID: "operation"}, InstanceID: "member"}},
+		{name: "shareable-stop-diagnosis-role", id: "project.stop-diagnostic-bundle.v1", input: service.StopBundleInput{CheckpointInput: service.CheckpointInput{ProjectInput: service.ProjectInput{Target: service.Target{Name: "dev", RunnerID: "runner"}, ProjectID: "project"}, OperationID: "operation"}, InstanceID: "member"}, observer: true, code: "operator_required"},
 		{name: "capability", id: "app.policy.v1", input: service.Target{Name: "dev", RunnerID: "runner"}, missing: true, code: "capability_unavailable"},
 		{name: "role", id: "project.register.v1", input: register, observer: true, code: "operator_required"},
 		{name: "runner-policy", id: "project.register.v1", input: register, code: "runner_rejected"},

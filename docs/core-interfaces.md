@@ -28,6 +28,13 @@ projects, named qualification, credentials, policy authoring, destructive
 maintenance and host installation remain explicit exclusions or later slices.
 This is not a claim of complete issue19 parity.
 
+`project.stop-diagnostic-bundle.v1` derives a bounded shareable view from the exact
+saved operator diagnosis. Its fixed categories/messages omit private bindings,
+actor/request/member names, free-form diagnostics and sealed reviews. It probes
+no runtime and cannot authorize recovery. Unsupported categories cannot reflect
+arbitrary runner text into the export. Read the separate private diagnosis/review
+for action bindings; sharing output remains an explicit owner decision.
+
 Start a local server with:
 
 ```sh

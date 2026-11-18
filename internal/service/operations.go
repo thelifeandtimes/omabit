@@ -6,6 +6,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/appdev"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/projectdiagnostic"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/projectnetwork"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
@@ -31,6 +32,10 @@ type StopReconcileInput struct {
 	ProjectInput
 	Request    protocol.ProjectStopReconcileRequest `json:"request"`
 	LookupOnly bool                                 `json:"lookup_only,omitempty"`
+}
+type StopBundleInput struct {
+	CheckpointInput
+	InstanceID string `json:"instance_id"`
 }
 type ProjectRegisterInput struct {
 	Target
@@ -157,6 +162,15 @@ func (s *Service) register() error {
 		c := e.Client(true)
 		defer c.Close()
 		return c.ProjectMemberDiagnosis(ctx, e.Identity(), in.ProjectID, in.InstanceID, in.OperationID, in.Probe)
+	}))
+	errs = append(errs, selected(s, description("project.stop-diagnostic-bundle.v1", "Derive a bounded shareable view of saved Stop diagnosis. Omits exact private bindings, request/actor/member names, free-form diagnostics and sealed reviews. No runtime probe or effect.", []string{}, saved, []string{protocol.ProjectStopRecoveryFeature}, "operator", target+"; exact project/member/original operation selected privately; exported view cannot authorize an action", "saved read only; unknown categories use fixed unsupported guidance; explicit publishing/sharing remains a separate owner choice"), func(ctx context.Context, _ *collection.Registry, e collection.Connection, in StopBundleInput) (projectdiagnostic.Bundle, error) {
+		c := e.Client(true)
+		defer c.Close()
+		d, err := c.ProjectMemberDiagnosis(ctx, e.Identity(), in.ProjectID, in.InstanceID, in.OperationID, false)
+		if err != nil {
+			return projectdiagnostic.Bundle{}, err
+		}
+		return projectdiagnostic.Derive(d), nil
 	}))
 	errs = append(errs, selected(s, description("project.stop-reconcile.v1", "Apply an exact clean-stop review with a linked audit receipt; never starts or signals a ship.", []string{"urbit-collector project-reconcile-stop"}, []string{"local-metadata-read", "live-probe", "journal-write"}, []string{protocol.ProjectStopRecoveryFeature}, "operator", target+"; unchanged sealed review, original request binding and new request ID", "lookup_only repeats the exact original reconciliation; never reobserves or redispatches a matched receipt"), func(ctx context.Context, _ *collection.Registry, e collection.Connection, in StopReconcileInput) (protocol.ProjectStopReconcileResult, error) {
 		c := e.Client(true)

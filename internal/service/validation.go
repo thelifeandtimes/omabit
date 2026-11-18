@@ -26,6 +26,12 @@ func (i DiagnosisInput) Validate() error {
 	}
 	return nil
 }
+func (i StopBundleInput) Validate() error {
+	if i.CheckpointInput.Validate() != nil || !protocol.ValidID(i.InstanceID) {
+		return invalid()
+	}
+	return nil
+}
 func (i StopReconcileInput) Validate() error {
 	q := i.Request
 	if i.ProjectInput.Validate() != nil || !protocol.ValidID(q.RequestID) || !q.ConfirmAction || q.Review.Validate() != nil || q.Review.ProjectID != i.ProjectID || q.Review.RunnerID != i.RunnerID {

@@ -4,6 +4,7 @@ import io
 from pathlib import Path
 import unittest
 from unittest.mock import patch
+from types import SimpleNamespace
 
 
 def load(name):
@@ -14,6 +15,16 @@ def load(name):
 
 
 class AdmissionTests(unittest.TestCase):
+    def test_baseline_inspects_only_live_ids_once_and_preserves_stopped_history_elsewhere(self):
+        guest=load('guest')
+        rows={'instances':[{'id':'stopped','observed_state':'stopped','runtime_status':{'container_id':'historical-removed'}},{'id':'running','observed_state':'running','runtime_status':{'container_id':'owned-live'}}]}
+        with patch.object(guest,'collector',return_value=rows), patch.object(guest,'run',return_value=SimpleNamespace(stdout='same-engine')), patch.object(guest,'inspect',return_value={'State':{'Running':True,'Pid':123,'StartedAt':'fixed-start'}}) as native:
+            observed=guest.runtime('previous')
+        native.assert_called_once_with('owned-live')
+        self.assertEqual(set(observed['containers']),{'running'})
+        self.assertEqual(observed['containers']['running']['container_id'],'owned-live')
+        self.assertEqual(rows['instances'][0]['runtime_status']['container_id'],'historical-removed')
+
     def test_no_run_and_existing_capsule_cannot_reach_effects(self):
         host = load('run')
         with patch.object(host, 'charge', side_effect=AssertionError('storage/effect admission reached')), patch.object(host.subprocess,'check_output',side_effect=AssertionError('subprocess reached')):

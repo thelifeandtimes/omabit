@@ -55,3 +55,10 @@ copies a whole virtual disk, mounts a pier, or changes the original overlay; its
 hash must match before/after. The reader has a64MiB scratch allowance,1GiB memory
 scope, no swap, one CPU,90-second deadline and bounded exports. Original failed
 capsules remain evidence and cannot be resumed as qualification guests.
+
+When an obsolete full fixture disk must be compacted, explicit
+`--include-original-store` also archives its fixed SQLite/WAL/SHM files privately.
+These are copied as original bytes, never opened as a database, interpreted or
+repaired by the reader. Preserve that original-writer fixture and hash manifest
+alongside full commands/results before retiring only classified generated disks.
+The original store is not a shareable diagnostic bundle.

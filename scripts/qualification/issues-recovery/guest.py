@@ -100,7 +100,10 @@ def projection(version):
 
 
 def cid(row):
-    return (row.get('runtime_status') or row.get('resources') or {})['container_id']
+    value = (row.get('runtime_status') or {}).get('container_id') or (row.get('resources') or {}).get('container_id')
+    if not value:
+        raise RuntimeError('selected live row has no exact container binding')
+    return value
 
 
 def docker(*args, **kwargs):
@@ -113,8 +116,19 @@ def inspect(container):
 
 def runtime(version):
     rows = collector(version,'snapshot')['instances']
+    current = {}
+    for row in rows:
+        # A stopped ordinary fake retains a historical container ID after
+        # supported Stop removes it. That is not live process evidence.
+        if row['observed_state']!='running':
+            continue
+        container = cid(row)
+        state = inspect(container)['State']
+        if not state['Running']:
+            raise RuntimeError('live baseline changed during inspection')
+        current[row['id']] = {'container_id':container,**{k:state[k] for k in ('Pid','StartedAt','Running')}}
     return {'engine':run(['systemctl','--user','show','urbit-docker.service','-p','MainPID,InvocationID'],True).stdout,
-            'containers':{x['id']:{k:inspect(cid(x))['State'][k] for k in ('Pid','StartedAt','Running')} for x in rows}}
+            'containers':current}
 
 
 def db_projection():

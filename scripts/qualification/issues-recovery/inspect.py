@@ -20,6 +20,7 @@ def main():
     for n in ('capsule','portable','output'):
         p.add_argument('--'+n,type=Path)
     p.add_argument('--storage-budget-gib',type=int,choices=(40,48),default=40)
+    p.add_argument('--include-original-store',action='store_true',help='archive only this fresh fixture original SQLite/WAL/SHM privately; never opens or modifies it')
     p.add_argument('--run',action='store_true')
     a=p.parse_args()
     if not a.run:
@@ -64,7 +65,7 @@ def main():
         '--ro-bind',str(root),'/inspected.qcow2','--ro-bind',str(portable/'boot/vmlinuz'),'/vmlinuz','--bind',str(out),'/lab','--chdir','/lab','--setenv','HOME','/lab','--setenv','PATH','/usr/bin:/bin',
         '--setenv','LD_LIBRARY_PATH','/tools/usr/lib','--setenv','QEMU_MODULE_DIR','/tools/usr/lib/qemu','--','/tools/usr/bin/qemu-system-x86_64','-accel','kvm','-cpu','host','-machine','q35','-m','512M','-smp','1',
         '-nodefaults','-no-user-config','-display','none','-monitor','none','-nic','none','-no-reboot','-L','/tools/usr/share/qemu','-bios','/tools/usr/share/qemu/bios-256k.bin',
-        '-kernel','/vmlinuz','-initrd','/lab/initramfs.cpio','-append','console=ttyS0 panic=-1 quiet rdinit=/init omabit.disposable-guest=issues-readonly-inspection-v1',
+        '-kernel','/vmlinuz','-initrd','/lab/initramfs.cpio','-append','console=ttyS0 panic=-1 quiet rdinit=/init omabit.disposable-guest=issues-readonly-inspection-v1'+(' omabit.inspect-original-store=1' if a.include_original_store else ''),
         '-drive','file=/inspected.qcow2,format=qcow2,if=none,id=inspected,readonly=on','-device','virtio-blk-pci,drive=inspected','-serial','stdio']
     with (out/'serial.log').open('wb') as log:
         child=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT)
@@ -83,7 +84,9 @@ def main():
         raise RuntimeError('inspection process or original disk changed')
     lines=(out/'serial.log').read_text(errors='replace').splitlines()
     result=next(json.loads(line.split('OMABIT_ISSUES_INSPECTION ',1)[1]) for line in reversed(lines) if 'OMABIT_ISSUES_INSPECTION ' in line)
-    if not result.get('passed') or set(result['files'])!={'commands.jsonl','result.json'}:
+    allowed={'commands.jsonl','result.json'} | ({'runner.sqlite','runner.sqlite-wal','runner.sqlite-shm'} if a.include_original_store else set())
+    names=set(result.get('files',{}))
+    if not result.get('passed') or not {'commands.jsonl','result.json'}.issubset(names) or not names.issubset(allowed) or a.include_original_store and 'runner.sqlite' not in names:
         raise RuntimeError('read-only inspection did not complete')
     files={}
     for n,b in result.pop('files').items():
@@ -91,6 +94,7 @@ def main():
         if len(raw)>4*1024**2:
             raise RuntimeError('extracted file exceeded bound')
         (out/n).write_bytes(raw)
+        (out/n).chmod(0o600)
         files[n]={'bytes':len(raw),'sha256':host.util.digest(out/n)}
     (out/'inspection.json').write_text(json.dumps({'admission':admission,'original_overlay_sha256':root_hash,'files':files,'result':result,'command':command},indent=2)+'\n')
     print(json.dumps({'passed':True,'read_only':True,'original_overlay_unchanged':True,'output':str(out)}))

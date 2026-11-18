@@ -9668,3 +9668,43 @@ or ships started. Reproducible inert staging is retired with a private manifest;
 the original failure overlay/receipts/results and immutable base stay preserved.
 See the [compact failure evidence](diagnostics/2026-11-17-issues-upgrade-first-capsule.json).
 This updates M589 with an actual failure, not an installed-support claim.
+
+## M591 — Bounded shareable Stop diagnostic view (2026-11-17)
+
+The shared CLI/API and MCP catalog expose `project.stop-diagnostic-bundle.v1` over
+the exact saved operator diagnosis. A pure enumerated projection strips all exact
+private bindings, actor/request/member text, endpoints/paths, arbitrary messages,
+database bodies and sealed reviews. Known and unknown categories use fixed
+messages; saved state never gains live observation fields. A bundle states that
+it is not an action review. Reconciliation still requires the private exact fresh
+review; exporting a view sends no probe, signal or policy grant and publishes
+nothing. This is specific to expanded-member Stop, not universal phase diagnosis.
+
+Focused source/race/static checks and actual CLI/official-SDK stdio parity pass,
+including operator refusal and private sentinel text throughout the raw input.
+OOM/exit facts stay distinct from historical status and never become Start or
+clean-stop authority. No persistent format or installed runner change is needed.
+
+## M592 — Second guest reaches real baseline; correct historical ID use (2026-11-17)
+
+The second fresh guest at d9b536e boots two recommended fake ships using the actual
+published0.4.0 runner, then successfully stops one. The three-virtual-CPU/one-core
+quota topology passes the first capsule's early Docker failure point. This supports
+M590's topology hypothesis without recovering the original suppressed predicate.
+Before candidate installation, the harness wrongly inspects the stopped fake's
+retained historical container ID; supported Stop has removed that container.
+Its bounded Docker diagnostic is “no such object.” This is a harness error, not
+upgrade failure. Correct baseline process inspection to running rows only; retain
+saved stopped intent, pier/configuration and history comparisons independently.
+
+The failed original is inspected read-only/noload with no old services restarted.
+Its saved commands/results and original schema59 SQLite/WAL/SHM bytes are archived
+privately before any full-disk compaction. Retire only classified superseded
+generated full disks/staging with a manifest; preserve the immutable base, original
+store fixture, full compact failure evidence and unrelated/manual-review state.
+No candidate install or upgrade/Stop-recovery pass is claimed by this checkpoint.
+The [second compact failure record](diagnostics/2026-11-17-issues-upgrade-second-capsule.json)
+binds the archived original59 store (two instances/five operations), complete
+commands/results and read-only inspection hashes. Integrity and byte preservation
+are checked before full-disk retirement. This narrows M589's original process
+baseline to live containers without weakening stopped-state preservation.

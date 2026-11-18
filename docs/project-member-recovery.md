@@ -57,6 +57,24 @@ digests, complete container ID, initialized pier, engine/anchor/namespace and
 process start/finish evidence. This exact review is operator-only data. It is
 not a sanitized bundle suitable for public sharing.
 
+For a bounded shareable **saved-state** diagnostic view, use the shared CLI/API
+operation (also available as MCP tool `omabit.project.stop-diagnostic-bundle.v1`):
+
+```sh
+omabit --config-dir REGISTRY call project.stop-diagnostic-bundle.v1 \
+  --input-json '{"name":"RUNNER","runner_id":"RUNNER_ID","project_id":"PROJECT","instance_id":"MEMBER","operation_id":"ORIGINAL_STOP"}'
+```
+
+This reads the original saved diagnosis with operator access. It sends no live
+probe, signal or recovery request. The versioned view retains only enumerated
+phase/status/fence/reason categories and timestamps, using fixed messages for
+known and unknown reasons. Exact identities, names, request/actor text, endpoints,
+paths, free-form messages, raw database bodies and sealed reviews are omitted.
+It explicitly states that private bindings are omitted and it is not an action
+review. A recorded linked resolution is distinct from current runtime health.
+Publishing or sharing this output remains the owner's separate explicit choice.
+Actual recovery still requires the complete private fresh review below.
+
 Apply only that review, using the same operator that submitted the original Stop:
 
 ```sh
