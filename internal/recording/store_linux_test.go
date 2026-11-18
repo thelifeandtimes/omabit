@@ -28,9 +28,39 @@ func openTestStore(t *testing.T, limit int64) (*Store, string) {
 	return s, dir
 }
 
+func TestStorePinsIndependentAttachmentIdentityAfterAdmission(t *testing.T) {
+	s, _ := openTestStore(t, 1<<20)
+	m := attachmentMetadata()
+	original, err := m.Bytes()
+	if err != nil {
+		t.Fatal(err)
+	}
+	w, err := s.Create(m)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer w.Close()
+	m.Identity.Target.InstanceID = "other"
+	m.Identity.ProjectNamespace.Inode++
+	if _, err = w.Append(Stdout, []byte("original"), m.AttachedAt.UnixNano(), 0); err != nil {
+		t.Fatal(err)
+	}
+	page, err := s.ReadPage(t.Context(), m.SessionID, nil, 1, 1<<20)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := page.Metadata.Bytes()
+	if err != nil || !bytes.Equal(got, original) {
+		t.Fatal("caller rebound admitted writer metadata", err)
+	}
+	if w.metadata.Identity.Target.InstanceID != "member" || w.metadata.Identity.ProjectNamespace.Inode != 200 {
+		t.Fatal("writer retained caller-owned nested pointer")
+	}
+}
+
 func TestPrivateStorePersistsOriginalBytesAndExactPagingAcrossReopen(t *testing.T) {
 	s, dir := openTestStore(t, 1<<20)
-	m := testMetadata()
+	m := attachmentMetadata()
 	w, err := s.Create(m)
 	if err != nil {
 		t.Fatal(err)
@@ -92,7 +122,7 @@ func TestStoreReportsPartialCorruptAndLostCursorWithoutRepair(t *testing.T) {
 	for _, damage := range []string{"partial", "corrupt"} {
 		t.Run(damage, func(t *testing.T) {
 			s, dir := openTestStore(t, 1<<20)
-			m := testMetadata()
+			m := attachmentMetadata()
 			w, err := s.Create(m)
 			if err != nil {
 				t.Fatal(err)
@@ -142,7 +172,7 @@ func TestStoreReportsPartialCorruptAndLostCursorWithoutRepair(t *testing.T) {
 
 func TestStorePinsPrivateRootAndRefusesLinkedOrExposedFiles(t *testing.T) {
 	s, dir := openTestStore(t, 1<<20)
-	m := testMetadata()
+	m := attachmentMetadata()
 	moved := dir + "-moved"
 	if err := os.Rename(dir, moved); err != nil {
 		t.Fatal(err)
@@ -186,7 +216,7 @@ func TestStorePinsPrivateRootAndRefusesLinkedOrExposedFiles(t *testing.T) {
 
 func TestStorePressureAndLimitsRefuseBeforeWriting(t *testing.T) {
 	s, dir := openTestStore(t, 4096)
-	m := testMetadata()
+	m := attachmentMetadata()
 	realFree := s.free
 	s.free = func(*os.Root, uint64) error { return ErrReserve }
 	if _, err := s.Create(m); !errors.Is(err, ErrReserve) {
@@ -227,7 +257,7 @@ func TestStorePressureAndLimitsRefuseBeforeWriting(t *testing.T) {
 
 func TestWriterRefusesWrongStreamExitOrReplacedOriginal(t *testing.T) {
 	s, dir := openTestStore(t, 1<<20)
-	m := testMetadata()
+	m := attachmentMetadata()
 	w, err := s.Create(m)
 	if err != nil {
 		t.Fatal(err)
@@ -271,7 +301,7 @@ func TestWriterRefusesWrongStreamExitOrReplacedOriginal(t *testing.T) {
 
 func TestLiveStorePagingDoesNotDuplicateOrLoseCompleteFrames(t *testing.T) {
 	s, _ := openTestStore(t, 1<<20)
-	m := testMetadata()
+	m := attachmentMetadata()
 	w, err := s.Create(m)
 	if err != nil {
 		t.Fatal(err)
@@ -312,5 +342,23 @@ func TestLiveStorePagingDoesNotDuplicateOrLoseCompleteFrames(t *testing.T) {
 	}
 	if err := <-done; err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestPrivateStoreRefusesNewLegacyCaptureWithoutInventingIdentity(t *testing.T) {
+	s, dir := openTestStore(t, 1<<20)
+	m := testMetadata()
+	if _, err := s.Create(m); !errors.Is(err, ErrLegacyMetadata) {
+		t.Fatal("new legacy capture admitted", err)
+	}
+	if _, err := os.Lstat(filepath.Join(dir, m.SessionID)); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("legacy refusal changed storage", err)
+	}
+	m.Version = 3
+	if _, err := s.Create(m); !errors.Is(err, ErrInvalid) {
+		t.Fatal("unknown metadata version treated as legacy", err)
+	}
+	if _, err := os.Lstat(filepath.Join(dir, m.SessionID)); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("unknown version refusal changed storage", err)
 	}
 }

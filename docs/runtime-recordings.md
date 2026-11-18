@@ -172,3 +172,24 @@ select actual verified retained data and enforce exact target/operator/raw-expor
 authorization. No recorder, public raw endpoint or UI is enabled. Source/race
 checks cover implicit omission, exact explicit octets/metadata, export isolation
 and invalid/oversize frames. Redaction and lifecycle integration remain pending.
+
+Development metadata2 adds an immutable attachment identity: full project target
+with generation/creator, native ship, pier continuity, actual daemon identity,
+endpoint digest, host boot ID and the external recorder's host namespaces. A
+project also binds its already verified anchor network namespace. An ordinary
+pre-Start attachment omits that project field; this metadata makes no claim that
+a container process or its eventual namespace has been observed. Independent
+process/lifecycle/coverage evidence remains required.
+
+New store captures require metadata2. Version1 remains readable with its exact
+original canonical bytes and header digest; a missing identity stays unknown.
+`CaptureIdentity` refuses legacy names instead of assigning a current generation,
+and new capture with legacy metadata refuses before creating files. Writer
+admission copies nested metadata so a retained caller pointer cannot rebind it.
+The binary frame codec stays at1 and binds the versioned metadata by SHA256.
+Focused race and pointer/binding/refusal checks pass. The source rehearsal
+`scripts/test-recording-metadata-upgrade.py` is prepared to build an actual
+3218e6f writer/reader plus a declared helper, verify original bytes through new
+reads/cursors/reopen, and prove old-reader refusal of metadata2 unchanged. That
+actual original-writer gate is still pending; no live capture, native/installed
+upgrade or public recording API follows from these unit checks.

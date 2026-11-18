@@ -10727,3 +10727,31 @@ bytes. Its full pier, source, original SQL/proofs/logs/helper and restart histor
 remain unchanged. Before subsequent focused recorder builds, charged storage is
 50,932,744,192 bytes and128MiB scratch fits under the temporary48GiB cap. No
 production, installed service, user pier or manual-review state was changed.
+
+## M628 — Draft capture identity becomes a source-tested format fence (2026-11-18)
+
+Recording metadata2 binds the full target generation/creator, native ship, pier
+continuity, daemon identity/endpoint digest, host boot and external recorder's
+namespaces; projects additionally bind the verified anchor namespace. These are
+attachment identity fields, not evidence that Start occurred or a container
+process namespace exists. Future runtime admission must obtain them itself.
+Metadata2 shape validation is not runtime observation or caller authorization.
+
+Version1 remains canonical/byte-preserving and never acquires invented identity.
+New Store.Create with legacy metadata refuses before creating files. Unknown
+versions refuse as invalid. CaptureIdentity also refuses to infer a current
+generation from legacy instance/project names. A new writer copies nested identity
+values before admission so callers cannot mutate its captured binding. The
+binary frame codec remains1 with exact metadata digest binding. There is no
+runner database version change, runtime integration or installed mutation.
+
+Full focused recording race checks and Go vet pass, including identity/header
+binding, complete project/ordinary distinctions, caller-pointer isolation,
+legacy/unknown refusal without filesystem changes and the existing raw codec,
+paging, privacy, torn-tail and pressure checks. A separate source rehearsal is
+prepared with an actual3218e6f writer/reader and a declared helper: original
+arbitrary bytes/gap/exit through new cursor/read/reopen, read-only legacy refusal,
+and genuine old-reader refusal of successor bytes unchanged. Its actual gate
+is pending at this freeze; unit reconstruction is not original-writer evidence.
+Runtime, indexed seeking/rotation/retention, durable coverage/pressure, derived
+redaction, API/UI and native/installed capture qualification remain outstanding.

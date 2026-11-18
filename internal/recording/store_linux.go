@@ -160,7 +160,16 @@ func transportKind(m Metadata, kind Kind) bool {
 // Metadata/header and directory entries sync before returning an attachment.
 // A failed create leaves its original incomplete files for explicit diagnosis.
 func (s *Store) Create(m Metadata) (_ *SessionWriter, err error) {
+	if m.Version == 1 {
+		return nil, ErrLegacyMetadata
+	}
 	b, err := m.Bytes()
+	if err != nil {
+		return nil, err
+	}
+	// Pin independent copies of successor metadata's nested identity pointers.
+	// A caller retaining its Metadata value cannot rebind an admitted writer.
+	m, err = ReadMetadata(b)
 	if err != nil {
 		return nil, err
 	}

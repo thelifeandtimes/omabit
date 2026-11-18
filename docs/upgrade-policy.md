@@ -1330,3 +1330,18 @@ published for archival or disable an already accepted successor when cleaning it
 parent. Previous stable readers still refuse4. A new explicit reviewed retry can
 clear a retired predecessor's cancellation; periodic maintenance cannot do so.
 CLI and full registry/issuer fixtures cover the transition and interrupted archive.
+
+## Development: recording attachment metadata2
+
+The unwired recording store now admits only metadata2 for new captures, with
+full attachment target/pier/engine/host/project-namespace identity. Version1
+canonical metadata and original frame/header bytes remain readable, with missing
+identity left unknown; no new capture or generation inference is allowed from it.
+No runner database format changes or installed data rewrites are part of this
+source change. The frame codec remains1, bound to the metadata's digest.
+
+Focused source race checks pass. The original3218e6f writer/reader rehearsal is
+prepared but pending; qualify its exact original files and refusal of successor
+metadata before claiming format compatibility. Matching final artifacts, native
+capture lifecycle/pressure/retention and installed upgrade remain required. This
+is an unreleased development boundary, not a published recording support window.
