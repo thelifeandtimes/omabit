@@ -233,3 +233,31 @@ interleaving, gaps, context loss, long traces, control containment, unchanged
 originals and output bounds. The recording format is unchanged. Runtime capture,
 operator/target authorization, retained-prefix selection, complete bundles,
 redaction preview/API/UI and native/installed qualification remain pending.
+
+## Unwired private Docker attachment primitive
+
+The prepared transport requests only output from one full container ID on the
+already selected owner-private Unix socket. It verifies socket ownership/layout,
+unchanged socket identity and the actual Unix peer UID. It accepts only the
+explicit101/TCP upgrade with non-TTY multiplex content type for pinned API1.47;
+the [primary implementation](https://github.com/moby/moby/blob/v27.5.1/api/server/router/container/container_routes.go#L847)
+distinguishes that format from raw TTY output. There are no proxy, redirect,
+stdin, log-replay, signal, Start or Stop options. Consumers receive only a reader.
+Headers/dialing are bounded; the lifetime belongs to the future independent
+recorder rather than a UI/SSH request. Explicit close/cancellation interrupts a
+blocked read by closing only that attachment connection.
+
+Inert private Unix-peer race tests preserve multiplexed bursts/long traces,
+diagnostic atoms, fake credential text, controls and arbitrary bytes. They verify
+the buffered first bytes, no writable console surface, no extra request on close,
+blocked-read cancellation, wrong framing/upgrade/headers/redirect refusal and
+invalid ID/socket layout refusal before connection. These are source transport
+gates, not Docker, Vere or recorder-service lifecycle evidence.
+
+The primitive is unexported and not called by runtime lifecycle code. A trusted
+factory still must establish exact daemon/container/TTY/launch ownership before
+and after attachment, persist admission and complete metadata, and coordinate
+capture before Start. Peer UID alone establishes none of those facts. Persistent
+writer/cursors/retention integration, independent worker lifetime, process/exit
+and missing-coverage observations and actual disposable Docker/Vere qualification
+remain required. No installed logging behavior changes.

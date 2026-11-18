@@ -232,4 +232,3 @@ complete product workflow and pending-phase container/key recovery remain to
 qualify. No capability or persistent format is promoted by these source gates.
 The next product fixture retains private request/response JSON and bounded CLI
 stderr before reporting a typed failure, preventing another lost error envelope.
-

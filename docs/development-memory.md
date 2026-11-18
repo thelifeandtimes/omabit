@@ -11119,3 +11119,26 @@ managed app and HTTP regressions plus vet pass. Native speed/full workflow and
 pending-phase container/key rebinding remain unqualified. The next guarded
 fixture preserves private request/response JSON and bounded CLI stderr before
 reporting a typed failure; no original outcome is relabeled.
+
+## M642 — Prepare read-only private Docker attachment without lifecycle effects (2026-11-18)
+
+Issue20's unexported transport primitive pins one full container ID and an
+owner-private Unix socket, checks its unchanged filesystem object and actual
+peer UID, and requests only streaming output with no replay/stdin. The pinned
+API1.47 path requires explicit101/TCP/non-TTY multiplex acknowledgement; raw TTY,
+other upgrade, redirect, oversized headers and invalid layout refuse. Headers
+and dialing have bounded timeouts while the stream belongs to its independent
+recorder lifetime. Cancellation/close interrupts blocked I/O by closing only
+the owned connection. There is no writable console or runtime signal/action.
+
+Inert Unix-peer race tests preserve a350-line burst,12288-byte trace, diagnostic
+atoms/fake credentials, controls/NUL/invalid UTF-8 and buffered initial output;
+decoder stream identity remains exact. Close/cancel send one attach request only,
+with no stdin or lifecycle request. Invalid ID, public/symlink socket, raw TTY,
+header/protocol and redirect checks refuse; runtime/HTTP regressions and vet pass.
+Primary Moby API source confirms the framing distinction. No real Docker/Vere
+capture, launch handshake, process status, independent service, persistent-store
+integration, new metadata authority, API/UI or installed behavior is qualified.
+The future trusted factory must separately verify exact engine/container/launch
+and namespace ownership, complete metadata and durable pre-Start admission.
+The existing provisional backend choice remains provisional.
