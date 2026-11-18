@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "passed": false,
+  "source_commit": "081b00d69b7d81505a38108c0eb1c86da69beded",
+  "artifacts": {
+    "managed.test": {
+      "sha256": "81813db4c3b17e8b615f2f4983bf25c15e5c03fdeb44e1430af103c567e74fe2",
+      "bytes": 29139207
+    },
+    "omabit": {
+      "sha256": "a592b330a5383b6e4676c43b17f906b7ef2628639be5164b28580c3f6b67cd9f",
+      "bytes": 17096967
+    },
+    "urbit-collector": {
+      "sha256": "6f7dd0424ecd91cde29aadef4305982816adc1d2f88cd2a6cd93ce70ed6ed37d",
+      "bytes": 9089287
+    },
+    "urbit-runner": {
+      "sha256": "00a81e081b1e0af24407691f89f8ff47f970d0af248f010c58cb4e2c1f73757a",
+      "bytes": 20476167
+    }
+  },
+  "case": "fresh ordinary ~nec in new COW guest with fixed task-only predecessor readonly",
+  "failure": "declared scratch exceeded during fresh Start, before framework/app phases",
+  "declared_scratch_bytes": 939524096,
+  "observed_capsule_allocated_bytes_after_stop": 1001316352,
+  "temporary_aggregate_cap_bytes": 51539607552,
+  "observed_aggregate_bytes_after_stop": 51561099264,
+  "guard_interval_seconds": 5,
+  "owned_scope_terminated": true,
+  "clean_runtime_exit_qualified": false,
+  "original_pending_app_records": 1,
+  "original_pending_app_events": 17,
+  "original_pending_app_leases": 1,
+  "original_pending_app_rows_exact": true,
+  "new_app_operations": 0,
+  "new_helper_phase_proof_absent": true,
+  "readonly_utility_executed_source_disk_code": false,
+  "closed_sqlite_wal_shm_commands_serial_source_artifacts_retained": true,
+  "obsolete_bootstrap_cow_root_retired": true,
+  "full_original_pending_vm_retained_unchanged": true,
+  "current_storage_restored_under_cap": true,
+  "production_or_dev_changed": false,
+  "limits": [
+    "No Grubbery framework or app phase ran in this case",
+    "No complete source/state/restart/CLI-MCP native qualification",
+    "No installed upgrade or stable qualification",
+    "No current-failure full COW pier retained; complete original pending VM05 remains"
+  ]
+}

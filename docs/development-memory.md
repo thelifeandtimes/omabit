@@ -11255,3 +11255,36 @@ memory/no-swap/CPU/deadline/no-network boundaries. The allocation and full nativ
 workflow are not yet qualified. This exercises a source service on a derived
 fixture, not the installer or a non-destructive installed upgrade. Production,
 manual DEV and all user's ships remain excluded. See the [capsule contract](../scripts/qualification/grubbery-app-cow/README.md).
+
+## M648 — Preserve the bounded COW bootstrap failure and restore storage (2026-11-18)
+
+Freeze matching4source artifacts at081b00d after M647's guards. Final admission
+is short by6,467,584bytes; lossless archival of the superseded5eeae9a binaries
+verifies every inflated original byte and frees46,993,408allocated bytes. Exact
+artifacts/source/provenance remain, with archival sidecars for former raw paths.
+No unclassified Go cache, installed artifact, namespace or service is changed.
+
+The fresh COW gate boots the intended source service without startup resume and
+reads the original pending receipt, then hits its declared896MiB scratch bound
+during new~nec Start. The owned scope terminates; no clean runtime exit is
+qualified. Allocation after stopping is1,001,316,352bytes. Between five-second
+samples aggregate allocation also rises21,491,712bytes above48GiB. This is a
+failed resource gate, not permission to exceed either bound or silently raise it.
+No framework/app phase or new app journal operation runs. The [scoped failure](diagnostics/2026-11-18-grubbery-cow-bootstrap-budget.json)
+does not qualify native source/state/restart or installed behavior.
+
+Restore the cap by retiring only the new byte-verified copied input filesystem,
+freeing85,594,112bytes. A separate bounded48MiB no-network kernel utility mounts
+the ended COW source read-only/noload/noexec with both backings read-only. It
+executes none of that disk's code and preserves exact SQLite/WAL/SHM and commands.
+Analysis uses copies; its first query assumes a nonexistent kind column and
+refuses, then uses the actual JSON body schema. All original app header/event/
+lease rows remain exact: one operation,17events,one lease; no new app operation.
+Both source and original backing hashes remain unchanged after inspection.
+
+Retire only this explained obsolete bootstrap overlay after those evidence
+checks, freeing897,126,400bytes. Its full new partial fake/pier is not retained;
+its exact original store, failure/logs/source/artifacts and retirement hashes are.
+The complete original VM05 with acknowledged app uncertainty remains unchanged.
+Storage is under48GiB again. Replan native scratch using measurements; do not
+repeat the undersized case or turn source checks into a native pass.
