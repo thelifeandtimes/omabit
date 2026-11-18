@@ -61,7 +61,13 @@ native performance and the complete app workflow still require matching artifact
 and a fresh qualification case. New fixture calls retain private typed error
 envelopes instead of losing them on CLI exit.
 
-Source/native checkpoints are documented in M579–M641. The shared interface's
+CLI and MCP now share catalog-declared operation deadlines instead of MCP's
+shorter blanket90seconds. Accepted app phases retain the runner's bounded
+lifetime across caller disconnect; review and runner shutdown still cancel.
+Focused race, actual CLI/stdio parity, HTTP recovery and vet checks pass. This
+does not qualify the retained pending native phase or a new installed artifact.
+
+Source/native checkpoints are documented in M579–M644. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or

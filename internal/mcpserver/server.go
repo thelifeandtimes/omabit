@@ -9,7 +9,6 @@ import (
 	"log/slog"
 	"os"
 	"strings"
-	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/guidance"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/service"
@@ -40,8 +39,6 @@ func New(core *service.Service) *mcp.Server {
 		}
 		closed := false
 		s.AddTool(&mcp.Tool{Name: d.MCP, Description: d.Description, InputSchema: d.InputSchema, OutputSchema: d.OutputSchema, Annotations: &mcp.ToolAnnotations{ReadOnlyHint: !mutates, IdempotentHint: !mutates, OpenWorldHint: &closed}}, func(ctx context.Context, req *mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-			ctx, cancel := context.WithTimeout(ctx, 90*time.Second)
-			defer cancel()
 			out := core.Call(ctx, d.ID, req.Params.Arguments)
 			encoded, err := json.Marshal(out)
 			if err != nil {

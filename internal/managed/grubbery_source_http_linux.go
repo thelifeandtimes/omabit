@@ -69,7 +69,14 @@ func (r *Server) serveGrubberyAppSource(w http.ResponseWriter, req *http.Request
 		return
 	}
 	_ = http.NewResponseController(w).SetWriteDeadline(time.Now().Add(protocol.GrubberyAppTimeout + time.Second))
-	ctx, cancel := context.WithTimeout(req.Context(), protocol.GrubberyAppTimeout)
+	base := req.Context()
+	if req.URL.Path != protocol.GrubberyAppReviewPath {
+		// Exact journal/phase requests belong to the runner after admission.
+		// Disconnecting a caller cancels its wait, not an already accepted phase.
+		// The original IDs, durable dispatch and native four-minute bound remain.
+		base = r.ctx
+	}
+	ctx, cancel := context.WithTimeout(base, protocol.GrubberyAppTimeout)
 	defer cancel()
 	// Preserve existing lifecycle/config/policy serialization. Saved GET lookup
 	// has its separate unlocked path. Every effect starts with its exact record.

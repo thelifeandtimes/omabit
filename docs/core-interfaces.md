@@ -17,6 +17,13 @@ schema library as the official MCP SDK. Semantic invariants stay in typed
 validation and authoritative runner admission. Large integer bindings remain
 exact; they are never decoded through float64 before typed dispatch.
 
+Each catalog descriptor declares its trusted `timeout_ms`. CLI and MCP enforce
+the same bound, preserving an earlier caller deadline. Most calls allow90seconds;
+bounded desk reads, deployments, app phases and source uploads allow their native
+RPC deadline plus15seconds for identity/capability checks. Tool arguments cannot
+extend these bounds. A timed-out mutation remains uncertain and requires lookup
+with its original IDs; a transport deadline never authorizes redispatch.
+
 The current shared catalog covers selected runner identities/Hello, saved project
 inventory/status/recovery source/checkpoints, Stop diagnosis/reconciliation,
 offline fake-project planning, project reservation/lifecycle/coordinated recovery,
@@ -207,6 +214,11 @@ handle remains usable after cache loss or Commit revocation. New effects still
 recheck current authority and exact bindings. HTTP requests are bounded to96KiB;
 restricted SSH checks the feature again on the delegated connection and retains
 ordinary4KiB request limits elsewhere. Calls have four-minute application bounds.
+An accepted exact app journal/phase call belongs to the runner, with that native
+bound and runner shutdown context. A disconnected client stops waiting without
+cancelling the accepted phase. Read-only review retains its caller context.
+Saved lookup remains independent of the lifecycle mutex; this does not add a
+background queue, extend native deadlines or authorize the next phase.
 MCP needs explicit mutation enablement for every journal write, including begin,
 reconciliation and abandonment. Recovery currently requires the original actor
 and exact original process/configuration; same-pier restart or key rotation does

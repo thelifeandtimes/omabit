@@ -11142,3 +11142,46 @@ integration, new metadata authority, API/UI or installed behavior is qualified.
 The future trusted factory must separately verify exact engine/container/launch
 and namespace ownership, complete metadata and durable pre-Start admission.
 The existing provisional backend choice remains provisional.
+
+## M643 — Share bounded operation deadlines and preserve accepted app work (2026-11-18)
+
+MCP's blanket90-second timeout could expire before existing four-minute app/desk
+RPCs and ten-minute source uploads. Trusted typed catalog descriptors now declare
+their bounded timeout; both generic CLI and MCP enforce that same deadline with
+15seconds for connection identity/capability handshakes. Earlier caller deadlines
+remain earlier, and tool inputs cannot override the bound. Mutation cancellation
+still means uncertain outcome, never safe redispatch. Native RPC bounds remain.
+
+Accepted app journal/phase requests use the runner lifetime and existing
+four-minute bound rather than the disconnected caller's context. Review remains
+caller-cancellable; runner shutdown still cancels phase work. Exact journal IDs,
+dispatch/acknowledgement, serialization and saved lookup remain unchanged. No
+schema, queue, new native effect or installed artifact is introduced.
+
+Focused catalog/deadline race checks and actual CLI/official-SDK stdio app-source
+and reconciliation parity pass. Actual SQLite/HTTP tests prove one observed
+write after caller disconnect and no native write for cancelled review or runner
+shutdown; existing source recovery checks and vet pass. Initial test-only waits
+were too short for race-enabled SQLite setup and are increased to15seconds;
+no production timer is enlarged. Native performance and complete app workflow,
+pending-operation rebinding and matching installed artifacts remain unqualified.
+
+## M644 — Explicitly retire the old full Stop reference, preserve current uncertainty (2026-11-18)
+
+Supersedes only M640/M641's statement that the older qualified Stop VM's full
+image remains retained. Automatic approval review refused irreversible deletion
+of that sole full image; no deletion ran at rejection. The user then explicitly
+authorized removing that exact archive while retaining its SQLite, receipts,
+logs, source and binaries. The verified removal frees1,000,701,952 allocated
+bytes. A private retirement manifest/tombstone retains original image/archive
+hashes, preserved evidence hashes and dependency checks. No full old Stop pier
+or image is now claimed; its original scoped qualification results remain valid.
+
+The newer app VM with an acknowledged pending phase remains intact and unchanged.
+Original Stop SQLite and exact losslessly archived binaries remain available.
+Shared build-cache growth had taken the measured aggregate above the temporary
+48GiB cap by69,615,616bytes; further runtime admission stopped. After the approved
+removal, aggregate allocation is50,647,777,280bytes, leaving891,830,272bytes.
+Source checks may continue within that margin; a new runtime must separately fit
+its declared scratch. No production, existing ships, manual-review state or
+unclassified user cache was altered.

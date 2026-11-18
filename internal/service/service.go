@@ -59,6 +59,7 @@ type Descriptor struct {
 	CapabilityRule string             `json:"capability_rule,omitempty"`
 	Bindings       string             `json:"bindings"`
 	Replay         string             `json:"replay"`
+	TimeoutMillis  int64              `json:"timeout_ms"`
 	InputSchema    *jsonschema.Schema `json:"input_schema"`
 	OutputSchema   *jsonschema.Schema `json:"output_schema"`
 }
@@ -147,6 +148,8 @@ func (s *Service) Call(ctx context.Context, id string, input json.RawMessage) Re
 		out.Error = &Problem{"invalid_input", "Input exceeds the bounded operation limit.", "not-dispatched", "", "Use the operation's typed schema."}
 		return out
 	}
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(op.descriptor.TimeoutMillis)*time.Millisecond)
+	defer cancel()
 	data, err := op.invoke(ctx, s, input)
 	if err != nil {
 		out.Error = problem(err, op.mutates)
@@ -298,6 +301,12 @@ func (s *Service) authorize(ctx context.Context, t Target, d Descriptor) (*colle
 func bind[I, O any](s *Service, d Descriptor, handler func(context.Context, *Service, I) (O, error)) error {
 	if _, exists := s.operations[d.ID]; exists {
 		return errors.New("duplicate core operation")
+	}
+	if d.TimeoutMillis == 0 {
+		d.TimeoutMillis = catalogTimeout(d.ID, d.Capabilities).Milliseconds()
+	}
+	if d.TimeoutMillis < 1 || d.TimeoutMillis > (16*time.Minute).Milliseconds() {
+		return errors.New("core operation timeout outside supported bounds")
 	}
 	in, err := jsonschema.For[I](nil)
 	if err != nil {
