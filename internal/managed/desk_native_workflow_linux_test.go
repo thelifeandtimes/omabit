@@ -95,12 +95,41 @@ func nativeDeskGuard(t *testing.T) *nativeDeskFixture {
 	data, err = os.ReadFile("/lab/workflow-runtime.json")
 	g02Check(t, err)
 	g02Check(t, json.Unmarshal(data, f))
-	if !(strings.HasPrefix(f.Desk, "omabit-test-") || (guard.WorkflowCase == "grubbery-bootstrap-v1" || guard.WorkflowCase == "grubbery-app-contract-v1" || guard.WorkflowCase == "grubbery-app-contract-v2") && f.Desk == "grubbery") || !deskwork.ValidSourceName(f.Desk) || f.VereSHA != "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0" {
+	if !nativeDeskIdentityAllowed(f.Desk, guard.WorkflowCase, f.VereSHA) {
 		t.Fatal("unexpected fixture identity")
 	}
 	f.client = &http.Client{Transport: &http.Transport{Proxy: nil, DisableKeepAlives: true}, Timeout: 30 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return errors.New("redirect refused") }}
 	g02Check(t, f.check())
 	return f
+}
+
+func nativeDeskIdentityAllowed(desk, workflowCase, vereSHA string) bool {
+	grubberyCase := false
+	switch workflowCase {
+	case "grubbery-bootstrap-v1", "grubbery-app-contract-v1", "grubbery-app-contract-v2", "grubbery-managed-coordinator-v1":
+		grubberyCase = true
+	}
+	return (strings.HasPrefix(desk, "omabit-test-") || grubberyCase && desk == "grubbery") && deskwork.ValidSourceName(desk) && vereSHA == "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+}
+
+func TestNativeDeskIdentityGuardIncludesManagedCoordinatorAndRemainsClosed(t *testing.T) {
+	pin := "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0"
+	for _, c := range []struct {
+		desk, workflow, sha string
+		allowed             bool
+	}{
+		{"grubbery", "grubbery-managed-coordinator-v1", pin, true},
+		{"grubbery", "grubbery-app-contract-v2", pin, true},
+		{"omabit-test-0123abcd", "desk-workflow-v1", pin, true},
+		{"grubbery", "unknown-case", pin, false},
+		{"grubbery", "grubbery-managed-coordinator-v1", strings.Repeat("a", 64), false},
+		{"other", "grubbery-managed-coordinator-v1", pin, false},
+		{"../grubbery", "grubbery-managed-coordinator-v1", pin, false},
+	} {
+		if nativeDeskIdentityAllowed(c.desk, c.workflow, c.sha) != c.allowed {
+			t.Fatal("fixture identity admission changed", c.desk, c.workflow)
+		}
+	}
 }
 func (f *nativeDeskFixture) ship() string {
 	if f.ShipName != "" {

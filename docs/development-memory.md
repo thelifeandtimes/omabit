@@ -10444,3 +10444,26 @@ helpers. No retained canonical Vere/pill input was removed. Detailed private
 manifests bind paths, device/inode, before/after hashes, preserved dependencies
 and the bounded archival services. Admission is required again before launch;
 temporary headroom is not approval for another experiment or a higher cap.
+
+## M619 — Preserve the first coordinator capsule's fixture refusal and correct its closed guard (2026-11-18)
+
+The dca9e8d native coordinator helper failed immediately in nativeDeskGuard:
+its separate fixture-identity case list had not been extended along with the
+launcher. Namespace, loopback/no-host-access and scope-admission checks still
+ran; the guard then refused the literal framework desk for the new named case.
+No framework/app operation or app store was reached. The new fake stopped cleanly.
+The [original failed result](diagnostics/2026-11-18-grubbery-coordinator-fixture-refusal.json)
+is retained, not relabeled as a native/product pass.
+
+The correction adds only the explicit coordinator case to the existing identity
+guard. A direct source regression verifies that case and the existing supported
+identities, wrong framework case/desk, traversal and changed Vere pin. It does
+not bypass any namespace/process/pier/resource/ownership requirement. This
+corrected harness needs a new fresh capsule; M618 is preparation only.
+
+The obsolete pre-app fake and verified duplicate inputs were classified by exact
+identity, helper/input hash, clean-shutdown result, ended owned scope and the
+absence of an app store before retirement. Original failed results, logs,
+source/input hashes and a lossless verified helper remain; private manifests
+record each filesystem object and retained canonical inputs. No receipt or
+existing ship was changed. The failed capsule is explicitly non-resumable.
