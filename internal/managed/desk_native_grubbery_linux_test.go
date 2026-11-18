@@ -39,6 +39,9 @@ func TestNativeGrubberyAppContract(t *testing.T) {
 func TestNativeGrubberyAppContractV2(t *testing.T) {
 	nativeGrubberyBootstrap(t, "grubbery-app-contract-v2", nativeGrubberyAppContractV2)
 }
+func TestNativeGrubberyManagedCoordinator(t *testing.T) {
+	nativeGrubberyBootstrap(t, "grubbery-managed-coordinator-v1", nil)
+}
 func nativeGrubberyBootstrap(t *testing.T, workflowCase string, after func(*testing.T, context.Context, *nativeDeskFixture, *eyre.Client, func(string, any))) {
 	f := nativeDeskGuard(t)
 	var guard struct {
@@ -61,6 +64,9 @@ func nativeGrubberyBootstrap(t *testing.T, workflowCase string, after func(*test
 	proof := map[string]any{"scope": "fresh kernel/bootstrap only; synthetic lifecycle; no app deployment/permits/publication"}
 	if after != nil {
 		proof["scope"] = "fresh kernel/bootstrap and fixed app contract experiment; synthetic lifecycle; no product app adapter, permits, routes or peers"
+	}
+	if workflowCase == "grubbery-managed-coordinator-v1" {
+		proof["scope"] = "fresh pinned kernel with private managed app coordinator and actual SQLite/policy/source evidence; synthetic lifecycle; no public app API, Docker transport, permits, routes or peers"
 	}
 	save := func(name string, value any) {
 		t.Helper()
@@ -274,6 +280,9 @@ func nativeGrubberyBootstrap(t *testing.T, workflowCase string, after func(*test
 	save("passed-bootstrap-only", true)
 	if after != nil {
 		after(t, ctx, f, owner, save)
+	}
+	if workflowCase == "grubbery-managed-coordinator-v1" {
+		nativeManagedGrubbery(t, ctx, r, f, commit.Intent.Intent.ID, save)
 	}
 }
 

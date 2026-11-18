@@ -10406,3 +10406,41 @@ format/schema, live capability, installed artifact, DEV or production change.
 Next qualify the managed coordinator against the pinned fresh native kernel and
 then expose exact phase operations with shared interface evidence. M615 stays
 kernel-only evidence; Grubbery preflight remains unavailable.
+
+## M618 — Prepare a separately supervised native coordinator gate and compact retained evidence (2026-11-18)
+
+The new explicit grubbery-managed-coordinator-v1 capsule bootstraps the same
+frozen framework, then uses the private managed factory/SQLite/cache/policy guard
+and exact original phase handles against actual typed native owner HTTP calls.
+Each call checks the fresh private fixture and closes its own owner session.
+It reuses the M615 JSON-state nexus fixture; the refactored v1 source was compared
+byte-for-byte with that qualified capsule. No product API/capability, Docker/curl
+transport or installed lifecycle claim follows from this new test. Source compile
+and twelve launcher tests pass; the new native case has not run at this decision.
+Bounded last-read diagnostic bytes stay private and separate from response JSON.
+Unknown phases only get original read-only reconciliation, never write retries.
+
+The background supervisor now captures its actual named unit's properties just
+after submission, identifying whether it was still live. Later collected-unit
+stubs cannot establish the limits that applied during a run. The new smaller
+single-candidate case declares1.25GiB scratch based on the completed app03
+allocation (about1.1GiB with copied inputs and pier), retaining the same live
+allocation monitor and hard refusal. Other Grubbery cases keep1.5GiB. The scoped
+48GiB goal cap, one runtime experiment,4GiB/no-swap/one-core native boundary and
+all production/existing-ship exclusions remain unchanged.
+
+To make room, three completed app03 input copies were verified against retained
+canonical hashes before retirement. Its complete cleanly stopped pier and the
+interrupted app02 pier now have sparse lossless archives, verified across every
+original file byte and directory metadata before removing expanded copies.
+The latter's failed result, unconfirmed shutdown and original uncertain activation
+remain unchanged; archiving grants no restore/resume or filesystem ownership.
+All original SQLite/WAL/SHM, proofs, logs and source manifests remain. The two
+archives verify1450 and1452 files respectively. The ended owned scopes were
+checked explicitly; no existing ship, process inventory or native service was
+used. Three old task executables were also losslessly compressed with verified
+original hashes and manifests, including the original wrong-marker/bootstrap
+helpers. No retained canonical Vere/pill input was removed. Detailed private
+manifests bind paths, device/inode, before/after hashes, preserved dependencies
+and the bounded archival services. Admission is required again before launch;
+temporary headroom is not approval for another experiment or a higher cap.

@@ -107,36 +107,7 @@ func nativeGrubberyAppContractGeneration(t *testing.T, ctx context.Context, f *n
 		t.Fatal("native marker bytes changed")
 	}
 	save("atomic-plain-parent-and-marker", true)
-	candidate := func(label string) []byte {
-		return []byte(fmt.Sprintf(`:: fixed native contract candidate; qualified only by exact source hashes
-^-  nexus:nexus
-|%%
-++  on-load
-  |=  =ball:tarball
-  ^-  bole:tarball
-  %%+  spin:loader  ball
-  :~  (manifest:loader 0)
-      [%%fall %%& [/ %%'state.json'] [[/ %%json] [%%s 'initial']]]
-      [%%over %%& [/ %%'label.json'] [[/ %%json] [%%s '%s']]]
-  ==
-++  on-file
-  |=  [=rail:tarball =blot:tarball]
-  ^-  spool:fiber:nexus
-  |=  =prod:fiber:nexus
-  =/  m  (fiber:fiber:nexus ,~)
-  ^-  process:fiber:nexus
-  ?+  rail  stay:m
-      [~ %%'state.json']
-    ;<  ~  bind:m  (rise-wait:io prod "omabit state fixture restarted")
-    |-
-    ;<  =sage:tarball  bind:m  take-poke:io
-    ?.  =([/ %%json] p.sage)  $
-    ;<  ~  bind:m  (replace:io !<(json q.sage))
-    $
-  ==
---
-`, label))
-	}
+
 	type release struct {
 		Root     string
 		Version  []byte
@@ -147,7 +118,7 @@ func nativeGrubberyAppContractGeneration(t *testing.T, ctx context.Context, f *n
 		t.Helper()
 		root := fmt.Sprintf("%s/release-%d/code", sourceRoot, number)
 		expect(fmt.Sprintf("create-release-%d", number), "PUT", "/grubbery/api/make"+root+"/", "application/json", []byte(`{"neck":"/code"}`), 201)
-		files := []deskwork.SourceFile{{Path: "bill.json", Bytes: []byte(`{"state":"/state"}`)}, {Path: "nex/state.hoon", Bytes: candidate(fmt.Sprintf("v%d", number))}}
+		files := []deskwork.SourceFile{{Path: "bill.json", Bytes: []byte(`{"state":"/state"}`)}, {Path: "nex/state.hoon", Bytes: nativeGrubberyStateNexus(fmt.Sprintf("v%d", number))}}
 		entries := []deskwork.File{}
 		for _, file := range files {
 			entries = append(entries, deskwork.File{Path: file.Path, SHA256: stopEvidenceDigest(file.Bytes), Bytes: int64(len(file.Bytes))})
@@ -252,4 +223,35 @@ func nativeGrubberyAppContractGeneration(t *testing.T, ctx context.Context, f *n
 		t.Fatal("new nexus code not observed")
 	}
 	save("app-contract-passed", map[string]any{"atomic_plain_parent_marker": true, "local_nexus_compiled": true, "desk_followed_both_versions": true, "saved_state_preserved_on_update": true, "new_code_label_observed": true, "known_409_unchanged_marker": true, "effect_calls": calls, "source_root": sourceRoot, "desk_root": deskRoot})
+}
+
+func nativeGrubberyStateNexus(label string) []byte {
+	return []byte(fmt.Sprintf(`:: fixed native contract candidate; qualified only by exact source hashes
+^-  nexus:nexus
+|%%
+++  on-load
+  |=  =ball:tarball
+  ^-  bole:tarball
+  %%+  spin:loader  ball
+  :~  (manifest:loader 0)
+      [%%fall %%& [/ %%'state.json'] [[/ %%json] [%%s 'initial']]]
+      [%%over %%& [/ %%'label.json'] [[/ %%json] [%%s '%s']]]
+  ==
+++  on-file
+  |=  [=rail:tarball =blot:tarball]
+  ^-  spool:fiber:nexus
+  |=  =prod:fiber:nexus
+  =/  m  (fiber:fiber:nexus ,~)
+  ^-  process:fiber:nexus
+  ?+  rail  stay:m
+      [~ %%'state.json']
+    ;<  ~  bind:m  (rise-wait:io prod "omabit state fixture restarted")
+    |-
+    ;<  =sage:tarball  bind:m  take-poke:io
+    ?.  =([/ %%json] p.sage)  $
+    ;<  ~  bind:m  (replace:io !<(json q.sage))
+    $
+  ==
+--
+`, label))
 }

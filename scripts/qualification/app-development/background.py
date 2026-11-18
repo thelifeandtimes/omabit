@@ -15,7 +15,7 @@ import subprocess
 import uuid
 
 ROOT = Path(__file__).resolve().parents[3]
-CASES = ('grubbery-bootstrap-v1', 'grubbery-app-contract-v1', 'grubbery-app-contract-v2')
+CASES = ('grubbery-bootstrap-v1', 'grubbery-app-contract-v1', 'grubbery-app-contract-v2', 'grubbery-managed-coordinator-v1')
 
 
 def ordinary(path, directory=False):
@@ -88,6 +88,14 @@ def main():
     report['submit_exit'] = result.returncode
     report['submit_stdout'] = result.stdout
     report['submit_stderr'] = result.stderr
+    if result.returncode == 0:
+        observed = subprocess.run(['systemctl', '--user', 'show', report['unit'],
+                                   '--property=ActiveState,SubState,ControlGroup,InvocationID,MemoryMax,MemorySwapMax,CPUQuotaPerSecUSec,RuntimeMaxUSec'],
+                                  capture_output=True, text=True, timeout=10)
+        report['supervisor_observation'] = {'exit': observed.returncode,
+                                            'properties': observed.stdout,
+                                            'error': observed.stderr,
+                                            'live_observation': observed.returncode == 0 and 'ActiveState=active\n' in observed.stdout}
     receipt.write_text(json.dumps(report, indent=2) + '\n')
     if result.returncode:
         raise RuntimeError('owned supervisor submission failed; preserve its receipt')
