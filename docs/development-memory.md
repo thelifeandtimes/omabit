@@ -11185,3 +11185,31 @@ removal, aggregate allocation is50,647,777,280bytes, leaving891,830,272bytes.
 Source checks may continue within that margin; a new runtime must separately fit
 its declared scratch. No production, existing ships, manual-review state or
 unclassified user cache was altered.
+
+## M645 — Preserve recording segments and continue with explicit missing coverage (2026-11-18)
+
+Metadata3 fences the linked-segment layout from older readers, retaining exact
+metadata1/2 single-segment reads and original binary encoding. Size/explicit
+rotation syncs a new unique header/directory with original metadata, sequence and
+previous digest. Same-capture rotation keeps its receive-clock epoch; returned
+frame metadata identifies segment and epoch. Header and retained partial bytes
+count against the session ceiling, with a1024-segment bound. Host retention and
+filesystem-overhead accounting remain separate requirements.
+
+Exact-metadata continuation takes the original exclusive writer lock, validates
+its entire bounded prefix and rechecks file identity/size after reserve admission.
+It preserves every old byte and opens a new epoch with a durable unknown-loss
+restart gap. Crossing an original torn frame requires corrupt-tail evidence,
+even through empty successor headers. Corrupt complete frames, missing/foreign
+segments, incomplete headers, changed bindings/live writers and observed terminal
+processes refuse. Reattachment/runtime authority remains the future factory's
+responsibility; a host/identity change requires a distinct session.
+
+Full recording race checks and vet pass, including actual owned writer-process
+death, concurrent paging/rotation, exact cursor replay, raw bytes/timing/streams,
+new-epoch wall reversal, pressure/quota, links and post-scan replacement. A quota
+fixture's first segment bound did not require rotation; its corrected bound
+checks the additional header admission. The actual original2 writer/reader
+compatibility rehearsal is prepared but not yet run. No capture worker, index,
+retention/pins, Docker/Vere, public API/UI or installed qualification is claimed.
+No installed schema, namespace, ship or runtime is changed.

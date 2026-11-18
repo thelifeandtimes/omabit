@@ -72,24 +72,29 @@ func encodeHeader(h Header) []byte {
 }
 
 type Frame struct {
-	Sequence    uint64
-	UnixNano    int64
-	ElapsedNano uint64
-	Kind        Kind
-	Data        []byte `json:"-"` // raw originals require an explicit export choice
-	Digest      [32]byte
+	// Derived from the verified segment header; not extra encoded frame bytes.
+	Segment       uint64
+	EpochUnixNano int64
+	Sequence      uint64
+	UnixNano      int64
+	ElapsedNano   uint64
+	Kind          Kind
+	Data          []byte `json:"-"` // raw originals require an explicit export choice
+	Digest        [32]byte
 }
 
 // Encoder belongs to one serialized capture coordinator; calls are not
 // concurrent. It never rewrites bytes and becomes permanently poisoned on any
 // short or failed write. The owner must sync files before claiming persistence.
 type Encoder struct {
-	w           io.Writer
-	next        uint64
-	lastElapsed uint64
-	digest      [32]byte
-	committed   int64
-	poisoned    bool
+	w             io.Writer
+	segment       uint64
+	epochUnixNano int64
+	next          uint64
+	lastElapsed   uint64
+	digest        [32]byte
+	committed     int64
+	poisoned      bool
 }
 
 func NewEncoder(w io.Writer, h Header) (*Encoder, error) {
@@ -100,7 +105,7 @@ func NewEncoder(w io.Writer, h Header) (*Encoder, error) {
 	if err := write(w, b); err != nil {
 		return nil, err
 	}
-	return &Encoder{w: w, next: h.FirstSequence, digest: sha256.Sum256(b), committed: int64(len(b))}, nil
+	return &Encoder{w: w, segment: h.Segment, epochUnixNano: h.StartedUnixNano, next: h.FirstSequence, digest: sha256.Sum256(b), committed: int64(len(b))}, nil
 }
 
 func write(w io.Writer, data []byte) error {
@@ -142,7 +147,7 @@ func (e *Encoder) Append(kind Kind, data []byte, unixNano int64, elapsedNano uin
 			return Frame{}, err
 		}
 	}
-	frame := Frame{Sequence: e.next, UnixNano: unixNano, ElapsedNano: elapsedNano, Kind: kind, Data: append([]byte(nil), data...), Digest: digest}
+	frame := Frame{Segment: e.segment, EpochUnixNano: e.epochUnixNano, Sequence: e.next, UnixNano: unixNano, ElapsedNano: elapsedNano, Kind: kind, Data: append([]byte(nil), data...), Digest: digest}
 	e.next++
 	e.lastElapsed = elapsedNano
 	e.digest = digest
@@ -218,7 +223,7 @@ func (d *Decoder) Next() (Frame, error) {
 		d.failed = true
 		return Frame{}, incomplete(err)
 	}
-	frame := Frame{Sequence: binary.BigEndian.Uint64(head), UnixNano: int64(binary.BigEndian.Uint64(head[8:])), ElapsedNano: binary.BigEndian.Uint64(head[16:]), Kind: Kind(head[24])}
+	frame := Frame{Segment: d.Header.Segment, EpochUnixNano: d.Header.StartedUnixNano, Sequence: binary.BigEndian.Uint64(head), UnixNano: int64(binary.BigEndian.Uint64(head[8:])), ElapsedNano: binary.BigEndian.Uint64(head[16:]), Kind: Kind(head[24])}
 	size := binary.BigEndian.Uint32(head[25:])
 	if size == 0 || size > MaxFrameBytes || frame.Kind < Stdout || frame.Kind > Exit || frame.Sequence != d.next || d.next == math.MaxUint64 || frame.UnixNano <= 0 || frame.ElapsedNano < d.lastElapsed {
 		d.failed = true

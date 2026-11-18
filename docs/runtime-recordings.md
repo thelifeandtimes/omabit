@@ -261,3 +261,49 @@ capture before Start. Peer UID alone establishes none of those facts. Persistent
 writer/cursors/retention integration, independent worker lifetime, process/exit
 and missing-coverage observations and actual disposable Docker/Vere qualification
 remain required. No installed logging behavior changes.
+
+## Source-only linked segments and recorder continuation
+
+Metadata3 explicitly selects a segmented layout. Metadata1/2 retain their exact
+canonical bytes and single-segment read/cursor contracts; their writers do not
+acquire segmented continuation. An older reader must refuse3 before presenting
+an incomplete first-segment view. The original binary frame/header format stays
+at1. Frame results now include segment number and receive-clock epoch origin,
+derived from the verified header, so a restart cannot silently reset elapsed time.
+
+Size rotation and explicit coordinator-scheduled rotation seal the old file and
+fsync a uniquely numbered successor header/directory before accepting new output.
+Each header binds exact metadata, next sequence and previous verified digest.
+Rotation in the same capture retains its clock epoch and inserts no invented
+transport gap. The default segment bound is16MiB, with an explicit smaller bound
+allowed; all original encoded segment/header/partial bytes count toward the
+session ceiling. At most1024segments are admitted. Metadata and filesystem
+allocation overhead require separate host retention/reserve accounting.
+
+Continuation requires exact saved metadata, an exclusive original writer lock,
+verified bounded prefix and unchanged original file identities/sizes at admission.
+It never appends to, truncates, replaces or repairs an old segment. A new clock
+epoch begins with an fsynced `recorder-restarted` gap with unknown missing bytes.
+A torn final frame instead requires `corrupt-tail`; crossing that preserved tail
+without the matching gap refuses, including across an empty successor header.
+Corrupt complete frames, missing/reordered segments, incomplete headers, changed
+bindings and an already observed terminal process refuse. An observed exit seals
+a metadata3 writer. Transport EOF alone still establishes no process outcome.
+
+The caller must independently revalidate the same runtime/host attachment before
+continuation. Metadata equality and a released writer lock are not runtime
+authority. Changed host/attachment identity needs a distinct linked session;
+this library does not reconnect a transport or update saved identity. A failed
+or pressure-refused write still needs the future capture coordinator's incident
+and recovery-gap handling. There is no automatic pruning, ship signal or resume.
+
+Source race tests cover exact paging/reconnect across size/explicit rotation,
+concurrent rotation/readers, real owned recorder-process death, changed binding,
+live writer, quota/reserve, file replacement, torn-tail preservation and gaps,
+wall-clock reversal/new epochs, terminal refusal, links and segment corruption.
+A quota test's first bound did not force a new header; its corrected bound proves
+header-inclusive admission. The original2 writer/reader rehearsal is prepared in
+`scripts/test-recording-segment-upgrade.py`; actual compatibility remains pending
+until that exact clean-source gate runs. Indexed seeking, host/ship retention,
+independent capture worker, real Docker/Vere, API/UI and installed qualification
+remain required. No installed recording or runner schema changes here.

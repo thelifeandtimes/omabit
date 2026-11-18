@@ -354,7 +354,7 @@ func TestPrivateStoreRefusesNewLegacyCaptureWithoutInventingIdentity(t *testing.
 	if _, err := os.Lstat(filepath.Join(dir, m.SessionID)); !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("legacy refusal changed storage", err)
 	}
-	m.Version = 3
+	m.Version = 4
 	if _, err := s.Create(m); !errors.Is(err, ErrInvalid) {
 		t.Fatal("unknown metadata version treated as legacy", err)
 	}

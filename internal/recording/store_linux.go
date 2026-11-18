@@ -21,12 +21,14 @@ var (
 	ErrCursor  = errors.New("recording cursor no longer matches verified retained coverage")
 )
 
-// Limits bound this single-segment source implementation. Rotation, host/ship
+// Limits bound encoded session bytes and metadata3 segment size. Host/ship
 // quotas, incident pins and retention are not implemented here. Free-space
 // admission is not an exclusive reservation against unrelated filesystem users.
 type Limits struct {
 	MaxSessionBytes  int64
 	ReserveFreeBytes uint64
+	// Zero selects16MiB (bounded by MaxSessionBytes); only metadata3 rotates.
+	MaxSegmentBytes int64
 }
 
 type Store struct {
@@ -64,6 +66,13 @@ func OpenStore(path string, limits Limits) (*Store, error) {
 		return nil, ErrStorage
 	}
 	if !sameDirectory(r, info) {
+		r.Close()
+		return nil, ErrStorage
+	}
+	if limits.MaxSegmentBytes == 0 {
+		limits.MaxSegmentBytes = min(16<<20, limits.MaxSessionBytes)
+	}
+	if limits.MaxSegmentBytes < int64(headerBytes+1024) || limits.MaxSegmentBytes > limits.MaxSessionBytes {
 		r.Close()
 		return nil, ErrStorage
 	}
@@ -150,6 +159,10 @@ type SessionWriter struct {
 	metadata         Metadata
 	closed, poisoned bool
 	closeErr         error
+	segment          uint64
+	closedBytes      int64
+	epochUnixNano    int64
+	terminal         bool
 }
 
 func transportKind(m Metadata, kind Kind) bool {
@@ -183,7 +196,7 @@ func (s *Store) Create(m Metadata) (_ *SessionWriter, err error) {
 	if err != nil {
 		return nil, err
 	}
-	w := &SessionWriter{root: r, store: s, metadata: m}
+	w := &SessionWriter{root: r, store: s, metadata: m, segment: 1, epochUnixNano: m.AttachedAt.UnixNano()}
 	defer func() {
 		if err != nil {
 			if w.file != nil {
@@ -235,10 +248,10 @@ func (s *Store) Create(m Metadata) (_ *SessionWriter, err error) {
 func (w *SessionWriter) Append(kind Kind, data []byte, unixNano int64, elapsedNano uint64) (Frame, error) {
 	w.mu.Lock()
 	defer w.mu.Unlock()
-	if w.closed || w.poisoned {
+	if w.closed || w.poisoned || w.terminal {
 		return Frame{}, ErrPoisoned
 	}
-	if !boundFile(w.root, "frames.obr", w.file, w.encoder.CommittedOffset()) || !boundFile(w.root, "writer.lock", w.lock, 0) {
+	if !boundFile(w.root, segmentName(w.segment), w.file, w.encoder.CommittedOffset()) || !boundFile(w.root, "writer.lock", w.lock, 0) {
 		w.poisoned = true
 		return Frame{}, ErrStorage
 	}
@@ -251,12 +264,28 @@ func (w *SessionWriter) Append(kind Kind, data []byte, unixNano int64, elapsedNa
 			return Frame{}, ErrInvalid
 		}
 	}
+	if unixNano <= 0 || elapsedNano < w.encoder.lastElapsed {
+		return Frame{}, ErrInvalid
+	}
 	n := int64(frameHeaderBytes + len(data) + 32)
-	if n > w.store.limits.MaxSessionBytes-w.encoder.CommittedOffset() {
+	rotate := w.metadata.Version == 3 && w.encoder.CommittedOffset()+n > w.store.limits.MaxSegmentBytes
+	extra := n
+	if rotate {
+		extra += int64(headerBytes)
+	}
+	if extra > w.store.limits.MaxSessionBytes-w.closedBytes-w.encoder.CommittedOffset() {
 		return Frame{}, ErrLimit
 	}
-	if err := w.store.admit(w.root, uint64(n)+4096); err != nil {
+	if err := w.store.admit(w.root, uint64(extra)+4096); err != nil {
 		return Frame{}, err
+	}
+	if rotate {
+		if n+int64(headerBytes) > w.store.limits.MaxSegmentBytes {
+			return Frame{}, ErrLimit
+		}
+		if err := w.rotateLocked(); err != nil {
+			return Frame{}, err
+		}
 	}
 	f, err := w.encoder.Append(kind, data, unixNano, elapsedNano)
 	if err == nil {
@@ -267,6 +296,9 @@ func (w *SessionWriter) Append(kind Kind, data []byte, unixNano int64, elapsedNa
 			w.poisoned = true
 		}
 		return Frame{}, err
+	}
+	if w.metadata.Version == 3 && kind == Exit {
+		w.terminal = true
 	}
 	return f, nil
 }
@@ -327,6 +359,9 @@ func (s *Store) ReadPage(ctx context.Context, id string, cursor *Cursor, maxFram
 	m, err := ReadMetadata(b)
 	if err != nil || m.SessionID != id {
 		return out, ErrCorrupt
+	}
+	if m.Version == 3 {
+		return s.readSegmentedPage(ctx, r, m, cursor, maxFrames, maxBytes)
 	}
 	file, err := privateFile(r, "frames.obr", os.O_RDONLY, s.limits.MaxSessionBytes)
 	if err != nil {
