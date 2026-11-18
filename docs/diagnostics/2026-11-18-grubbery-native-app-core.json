@@ -4,7 +4,7 @@
   "passed": true,
   "scope": "fixed fresh native API/source/nexus/state experiment; synthetic lifecycle; not public adapter qualification",
   "artifact_source": "f00f5fbfbf2e8be6e6c017607f98cb444f1da61c",
-  "harness_source": "5d64d4d",
+  "harness_source": "5d64d4dffea6787163932758b347cb00e6bddefe",
   "workflow_sha256": "bbadfdb273839fe941fad9dfc2be49d5c4f7e165c57b08638dbf3e99e5693a73",
   "framework_commit": "7f7701d546ce115eea5f37f66465b362cb121774",
   "framework_source_digest": "7d2ae430acd4868bb56268188dff57addcdf4520abcc7aabaa6b9a342b22febc",
