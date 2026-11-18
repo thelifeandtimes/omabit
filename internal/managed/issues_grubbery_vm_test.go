@@ -182,19 +182,29 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 	session, err := mcp.NewClient(&mcp.Implementation{Name: "omabit-product-qualification", Version: "1"}, nil).Connect(ctx, &mcp.CommandTransport{Command: serverCommand}, &mcp.ClientSessionOptions{ProtocolVersion: "2025-11-25"})
 	g02Check(t, err)
 	defer session.Close()
+	invocation := 0
 	invoke := func(adapter, id string, input, output any) {
 		t.Helper()
 		data, e := json.Marshal(input)
 		g02Check(t, e)
+		invocation++
+		base := filepath.Join(appVMRoot, fmt.Sprintf("invocation-%03d-%s", invocation, id))
+		g02Check(t, os.WriteFile(base+"-request.json", data, 0600))
 		var reply []byte
+		failed := false
 		if adapter == "cli" {
 			command := exec.CommandContext(ctx, "/opt/omabit-release-input/candidate/omabit", "--config-dir", config, "call", id, "--input-json", string(data))
 			reply, e = command.Output()
-			g02Check(t, e)
+			failed = e != nil
+			if exit, ok := e.(*exec.ExitError); ok {
+				// Output's ExitError keeps a bounded stderr prefix/suffix. Retain
+				// it privately, not in the public serial/qualification result.
+				g02Check(t, os.WriteFile(base+"-stderr.log", exit.Stderr, 0600))
+			}
 		} else {
 			tool, e := session.CallTool(ctx, &mcp.CallToolParams{Name: "omabit." + id, Arguments: json.RawMessage(data)})
 			g02Check(t, e)
-			if tool.IsError || len(tool.Content) != 1 {
+			if len(tool.Content) != 1 {
 				t.Fatal("typed product MCP call refused", id)
 			}
 			text, ok := tool.Content[0].(*mcp.TextContent)
@@ -202,7 +212,9 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 				t.Fatal("unexpected MCP content")
 			}
 			reply = []byte(text.Text)
+			failed = tool.IsError
 		}
+		g02Check(t, os.WriteFile(base+"-response.json", reply, 0600))
 		var envelope struct {
 			Data  json.RawMessage  `json:"data"`
 			Error *service.Problem `json:"error"`
@@ -210,6 +222,9 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 		g02Check(t, json.Unmarshal(reply, &envelope))
 		if envelope.Error != nil {
 			t.Fatal("typed product core call refused", id, envelope.Error.Code)
+		}
+		if failed {
+			t.Fatal("typed product call failed; private response retained", id)
 		}
 		g02Check(t, json.Unmarshal(envelope.Data, output))
 	}

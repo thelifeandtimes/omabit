@@ -11083,3 +11083,39 @@ unqualified. Existing five-second scratch/48GiB aggregate refusal and interrupti
 checks remain, as do one-runtime, memory/no-swap/CPU, guest-only trim and no-network
 boundaries. An over-limit new case must remain failed and preserved, never become
 permission to exceed the cap. No production, user ships or manual review changes.
+
+## M641 — Preserve acknowledged app uncertainty and scope read authentication (2026-11-18)
+
+The frozen5eeae9a product case with harnessd22733e passes real Docker/curl
+framework create/adopt/commit and resolves activation by read-only reconciliation
+without another install. Initial app phases0–4 are observed; phase5 is dispatched
+and acknowledged, with later phases pending and its exact lease held. The helper
+fails after about241seconds in that call; timing fits the four-minute bound, but
+the old helper discards its CLI error envelope, so the precise client error is
+not proven. The original17-event journal, phase plans, commands/serial and full
+VM image are retained unchanged. No unknown phase is redispatched or abandoned.
+The scoped [partial product evidence](diagnostics/2026-11-18-grubbery-product-partial-source.json)
+does not claim source activation, state, second-version, restart or full CLI/MCP
+qualification. The earlier full Stop reference also remains retained.
+
+Each verification read previously created a new owner session. An optional trusted
+read scope now authenticates once per bounded read-only capture. Original
+sequential/conditional reads, request bounds, exact bindings/process checks,
+framework/pier capture brackets, current runner guards and native write dispatch
+remain. Provisional scope-active responses cannot produce a proof until logout
+is confirmed. Callback/cleanup failure, invalid callback or drift refuse; a
+retained reader or independent background context cannot extend the scope.
+Ordinary runtimes keep their existing individual-session path; native writes
+keep separately authenticated exact dispatch. No persistent format changes.
+
+Native-model race tests produce identical complete plans/read counts/source and
+single-write counts in both modes. Cleanup/invalid-callback and conditional-root
+refusals remain closed. Inert runtime/HTTP tests prove one code/login/logout,
+exact cookies, callback/cleanup failures, foreign actor, parent cancellation,
+process/framework drift and retained-reader refusal. The first transport fixture
+incorrectly returned plain JSON where Lens requires a hex atom; it fails before
+authentication and is corrected to the actual wire format. All focused native,
+managed app and HTTP regressions plus vet pass. Native speed/full workflow and
+pending-phase container/key rebinding remain unqualified. The next guarded
+fixture preserves private request/response JSON and bounded CLI stderr before
+reporting a typed failure; no original outcome is relabeled.

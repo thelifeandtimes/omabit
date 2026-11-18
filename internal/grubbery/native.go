@@ -23,9 +23,25 @@ type NativeResponse struct {
 	BodySHA256     string `json:"body_sha256"`
 }
 
-type NativeRuntime interface {
+type NativeReader interface {
 	GrubberyRead(context.Context, ReadRequest) (NativeResponse, error)
+}
+
+type NativeRuntime interface {
+	NativeReader
 	GrubberyStep(context.Context, Plan, string, []deskwork.SourceFile) (NativeResponse, error)
+}
+
+const NativeReadScopeActive = "scope-active"
+
+// NativeReadScopeRuntime optionally amortizes owner authentication over one
+// read-only capture. The callback keeps the original sequential/conditional
+// checks: it cannot dispatch a write through its reader. Provisional responses
+// are not evidence until this method returns confirmed cleanup. A runtime must
+// fence retained readers after the callback and bind every request to the exact
+// original target/process. This interface is trusted runner code, never RPC data.
+type NativeReadScopeRuntime interface {
+	WithGrubberyReads(context.Context, Binding, func(NativeReader) error) (string, error)
 }
 
 // These adapters are assembled inside the authenticated runner. History must
@@ -264,6 +280,8 @@ type nativeEvidence struct {
 type nativeCapture struct {
 	backend  *NativeBackend
 	binding  Binding
+	reader   NativeReader
+	cleanup  string
 	evidence []nativeEvidence
 	count    int
 }
@@ -273,8 +291,8 @@ func (c *nativeCapture) read(ctx context.Context, r ReadRequest) (NativeResponse
 	if c.count > 512 || ctx.Err() != nil {
 		return NativeResponse{}, ErrObservation
 	}
-	response, err := c.backend.runtime.GrubberyRead(ctx, r)
-	if err != nil || !response.Attempted || response.SessionCleanup != "confirmed" || response.Status != 200 && response.Status != 404 || len(response.Body) > 1<<20 || hash(response.Body) != response.BodySHA256 {
+	response, err := c.reader.GrubberyRead(ctx, r)
+	if err != nil || !response.Attempted || response.SessionCleanup != c.cleanup || response.Status != 200 && response.Status != 404 || len(response.Body) > 1<<20 || hash(response.Body) != response.BodySHA256 {
 		clear(response.Body)
 		return NativeResponse{}, ErrObservation
 	}
@@ -353,7 +371,28 @@ func (c *nativeCapture) files(ctx context.Context, node *nativeNode, root string
 }
 
 func (b *NativeBackend) capture(ctx context.Context, binding Binding, p nativeProjection) (*nativeCapture, error) {
-	c := &nativeCapture{backend: b, binding: binding}
+	if runtime, ok := b.runtime.(NativeReadScopeRuntime); ok {
+		var capture *nativeCapture
+		calls := 0
+		cleanup, err := runtime.WithGrubberyReads(ctx, binding, func(reader NativeReader) error {
+			calls++
+			if calls != 1 || reader == nil {
+				return ErrObservation
+			}
+			var err error
+			capture, err = b.captureReader(ctx, binding, p, reader, NativeReadScopeActive)
+			return err
+		})
+		if err != nil || cleanup != "confirmed" || capture == nil || calls != 1 {
+			return nil, ErrObservation
+		}
+		return capture, nil
+	}
+	return b.captureReader(ctx, binding, p, b.runtime, "confirmed")
+}
+
+func (b *NativeBackend) captureReader(ctx context.Context, binding Binding, p nativeProjection, reader NativeReader, cleanup string) (*nativeCapture, error) {
+	c := &nativeCapture{backend: b, binding: binding, reader: reader, cleanup: cleanup}
 	source, err := c.bound(ctx, ReadSourceRoot)
 	if err != nil {
 		return nil, err

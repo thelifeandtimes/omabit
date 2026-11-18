@@ -1,0 +1,93 @@
+{
+  "format": 1,
+  "passed": false,
+  "scope": "Fresh offline Linux/AMD64 real Docker/curl product adapter; development evidence, incomplete native workflow.",
+  "artifact_source": "5eeae9a2c9c15c764aaa6534b6a9fd6d745f6bb4",
+  "harness_source": "d22733e",
+  "candidate_artifacts": {
+    "omabit": {
+      "sha256": "6faf98f38503df00e0c22468005c8f6136fb7f18ea110b2678d932cf4f40b138",
+      "bytes": 17080583
+    },
+    "urbit-collector": {
+      "sha256": "e7af97f3bb9737a3f95f95741f596651a3a3f9689657fc0c029d45e7956ab5b5",
+      "bytes": 9089287
+    },
+    "urbit-runner": {
+      "sha256": "7cb044943a8ad43d53111ed3d61e8c245f6d6d8ad5059c8296df45f3519a2707",
+      "bytes": 20455687
+    },
+    "managed.test": {
+      "sha256": "786a0a21c9a0e15ee4b8bb2ff422f5dd18420109e1fd9af57cad8ea5201800dc",
+      "bytes": 29073671
+    }
+  },
+  "framework": {
+    "create": "observed",
+    "adopt_original_scaffold": "observed",
+    "commit": "observed",
+    "activation_states": [
+      "planned",
+      "dispatched",
+      "uncertain",
+      "observed"
+    ],
+    "activation_dispatches": 1,
+    "reconciliation": "read-only; no second install"
+  },
+  "app": {
+    "plan_version": 2,
+    "source_sample": "grubbery-state-v1",
+    "observed_phase_indices": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "acknowledged_phase_index": 5,
+    "phase5_event_states": [
+      "dispatched",
+      "acknowledged"
+    ],
+    "later_phases": "pending",
+    "operation_events": 17,
+    "namespace_lease_retained": true,
+    "native_source_redispatches": 0
+  },
+  "failure": {
+    "helper_exit": 1,
+    "reported_error": "CLI process exit status1; old helper did not retain its error-envelope bytes",
+    "phase_elapsed_seconds": 240.989917,
+    "interpretation": "Timing is consistent with the four-minute phase bound. The exact client error text is unavailable; the retained journal proves acknowledgement without a final observation.",
+    "phase_intervals_seconds": [
+      138.528043,
+      121.386881,
+      152.968808,
+      219.205826,
+      228.725752
+    ]
+  },
+  "retention": {
+    "full_current_failure_vm_image": "retained unchanged",
+    "original_sqlite_phase_proof_commands_serial": "retained through a no-network read-only utility; analysis uses copies",
+    "original_and_base_unchanged": true,
+    "old_stop_full_reference_archive": "retained; no retirement performed"
+  },
+  "source_followup": {
+    "read_scope": "One bounded read-only capture authenticates once; original conditional reads, per-request process/URL checks and capture framework/pier brackets remain. Provisional responses cannot become evidence until logout is confirmed.",
+    "fixture_diagnostics": "Retain exact private request/response JSON and bounded stderr before reporting typed refusal.",
+    "persistent_format_change": false
+  },
+  "unqualified": [
+    "remaining initial source phases",
+    "complete source/state/compile/activation",
+    "second source version",
+    "real CLI/MCP full native parity",
+    "Stop/Start state preservation",
+    "pending-phase container/key rebinding",
+    "installed app upgrade",
+    "preserved DEV",
+    "production/stable"
+  ]
+}

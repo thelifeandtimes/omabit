@@ -202,3 +202,34 @@ limits are explicit. Both stage without metadata/notices; v2 changes the code
 label while preserving one saved JSON string. Pure source/native-fixture equality
 and actual CLI/stdio sample parity pass. Sample state probes remain test-only;
 there is no new public state read/poke/watch capability or complete preflight.
+## Bounded read-scope development checkpoint
+
+The real Docker/curl product case now resolves framework activation by read-only
+reconciliation, without another install. Five original app source phases are
+observed; the sixth is acknowledged without its final observation, retaining the
+exact lease and all original receipts. The overall case remains failed. Its
+last call lasts about241seconds, consistent with the four-minute bound; the old
+fixture loses its CLI error envelope, so that precise error is not proven. See
+the [partial product evidence](diagnostics/2026-11-18-grubbery-product-partial-source.json).
+
+A source follow-up authenticates once for one bounded read-only capture, instead
+of once for every verification read. It preserves sequential/conditional source,
+tree, marker and mirror checks and their original evidence digests. Each request
+keeps its exact binding, process, URL/method/body and owner identity checks;
+framework/pier checks bracket the capture, and normal runner policy/lifecycle
+guards still bracket admission and dispatch. The callback exposes only typed
+reads. Provisional `scope-active` responses are not evidence until logout is
+confirmed. Cleanup failure, callback failure, drift or an invalid callback cannot
+produce a proof. Retained readers refuse after the capture or parent lifetime.
+Native writes retain their existing separately authenticated exact dispatch.
+
+Source race tests compare full plans, read counts, conditional refusals and native
+write counts with the original adapter. Inert transport tests cover one login/code
+read/logout per capture, exact cookies, cleanup/callback failures, foreign actor,
+parent cancellation, process/framework drift and retained-reader refusal. Existing
+managed app source/journal regressions and focused vet pass. Native performance,
+complete product workflow and pending-phase container/key recovery remain to
+qualify. No capability or persistent format is promoted by these source gates.
+The next product fixture retains private request/response JSON and bounded CLI
+stderr before reporting a typed failure, preventing another lost error envelope.
+

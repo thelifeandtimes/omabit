@@ -246,7 +246,7 @@ type nativeHarness struct {
 	revision            uint64
 }
 
-func nativeHarnessFor(t *testing.T, p grubbery.Plan, files []deskwork.SourceFile) *nativeHarness {
+func nativeHarnessFor(t *testing.T, p grubbery.Plan, files []deskwork.SourceFile, adapters ...func(*nativeModel) grubbery.NativeRuntime) *nativeHarness {
 	t.Helper()
 	h := &nativeHarness{model: newNativeModel(t), journal: newJournal(), files: files, revision: p.Binding.PolicyRevision}
 	history := func(context.Context, grubbery.Binding) ([]grubbery.Record, error) {
@@ -277,7 +277,14 @@ func nativeHarnessFor(t *testing.T, p grubbery.Plan, files []deskwork.SourceFile
 		return h.files, nil
 	}
 	var err error
-	h.backend, err = grubbery.NewNativeBackend(h.model, history, guard, load)
+	var runtime grubbery.NativeRuntime = h.model
+	if len(adapters) > 1 {
+		t.Fatal("one explicit fixture runtime adapter required")
+	}
+	if len(adapters) == 1 {
+		runtime = adapters[0](h.model)
+	}
+	h.backend, err = grubbery.NewNativeBackend(runtime, history, guard, load)
 	if err != nil {
 		t.Fatal(err)
 	}

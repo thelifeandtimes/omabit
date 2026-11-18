@@ -51,7 +51,17 @@ explicit saved busy/queued responses and one observer, qualified through source
 race checks and actual CLI/stdio parity. A fresh matching-artifact native result
 is still required; no install is retried to resolve the original uncertainty.
 
-Source/native checkpoints are documented in M579–M639. The shared interface's
+Frozen5eeae9a now resolves framework activation through that admission and
+observes five initial app source phases. Its sixth phase is acknowledged without
+a final observation near the four-minute request bound; the exact original lease,
+full current-failure VM and journal remain retained. Read authentication is now
+scoped per capture with unchanged conditional checks/evidence and confirmed
+cleanup required before any proof. Source race/transport/managed gates pass;
+native performance and the complete app workflow still require matching artifacts
+and a fresh qualification case. New fixture calls retain private typed error
+envelopes instead of losing them on CLI exit.
+
+Source/native checkpoints are documented in M579–M641. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or
