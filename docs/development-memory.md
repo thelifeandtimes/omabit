@@ -9955,3 +9955,27 @@ and the original pre-adoption failure. This supersedes M599–M601's bootstrap a
 native source-read deferral only. App deployment/state/permits/routes/assets,
 publication/discovery/peers, managed lifecycle, installed/DEV qualification and
 issue18 completion remain open. Grubbery preflight still reports unavailable.
+
+## M603 — Separate bounded app code and stable state identity (2026-11-17)
+
+The source-only Grubbery adapter contracts now distinguish an app code namespace
+from a framework Clay desk. Review requires the exact staged manifest and at most
+64files/512KiB (64KiB each), a bounded duplicate-free bill and locally supplied
+nexus source for every declared instance. Framework/repository root metadata,
+controller-owned version markers, unresolved external nexuses, changed bytes,
+nested code bundles and oversized/partial stages refuse. Binary assets remain
+lossless. These checks establish input boundaries, not native compilation.
+
+Stable candidate namespace addresses bind runner/mode, exact pier continuity,
+project creator/generation/member, framework desk and explicit app ID. Actor,
+container, configuration, policy and framework-receipt updates do not rename saved
+app state. Immutable source releases are outside the live desk mirror/data and
+have distinct original-request addresses. A derived name is never proof of
+ownership: persistent ownership, current native observations and refusal of an
+existing unowned root are still required before effects. Pure race/static tests
+check these boundaries and the exact match to the frozen framework contract.
+
+No app namespace, HTTP write, permission, persistent format or advertised live
+capability changes in this slice. Durable step dispatch/reconciliation, runtime
+and public interface wiring, the native app sample and its full update/restart/
+permit/route/peer qualification remain active work.
