@@ -286,6 +286,7 @@ func nativeGrubberyBootstrap(t *testing.T, workflowCase string, after func(*test
 	}
 	if workflowCase == "grubbery-managed-coordinator-v1" {
 		nativeManagedGrubbery(t, ctx, r, f, commit.Intent.Intent.ID, save)
+		nativeGrubberyMarkLayout(t, ctx, f, owner, save)
 	}
 }
 

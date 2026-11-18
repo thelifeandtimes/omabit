@@ -24,12 +24,14 @@ trusted creation-order history with actual root/marker/source/version reads,
 independent staged and live-mirror byte checks, separate compile observations,
 fresh runner policy/lifecycle/activation guards and access-bound source loading.
 Source/inert tests cover exact lost-reply recovery across SQLite reopen with a
-missing cache and revoked Commit, original receipt preservation, generated-mark
-directory provenance and unresolved-stage discard refusal. The first actual
+missing cache and revoked Commit, original receipt preservation, explicit
+directory phases and unresolved-stage discard refusal. The first actual
 coordinator capsule passes framework bootstrap and initial ownership writes but
 refuses an empty-code-tree layout that the inert model incorrectly seeded with
 foundational marks. Its acknowledgement/uncertainty and clean stop are retained;
-a fresh layout diagnostic precedes the projection fix. Real native adapter
+a fresh layout diagnostic passes and distinguishes readable virtual foundational
+source from the materialized tree. The projection/model correction passes source
+checks and still needs a fresh managed native run. Real native adapter
 and public CLI/MCP dispatch qualification are still pending; capability stays
 unavailable. The pinned Grubbery source contract has shared offline metadata and exact confined
 verification, with real CLI/stdio parity. Native bootstrap now passes after exact
@@ -37,7 +39,7 @@ original-scaffold export/adoption; its timed-out activation resolves read-only
 without a second install. App workflow qualification and four nested shell-tool
 failures remain separate; see [the boundary](grubbery-adapter.md).
 
-Source/native checkpoints are documented in M579–M620. The shared interface's
+Source/native checkpoints are documented in M579–M621. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or

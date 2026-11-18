@@ -7,6 +7,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -190,3 +192,103 @@ func nativeManagedGrubbery(t *testing.T, ctx context.Context, r *Server, f *nati
 }
 
 var _ grubbery.NativeRuntime = (*nativeDeskFixture)(nil)
+
+// A separate fixed kernel namespace, not a repair of any managed pending phase.
+// Record the actual custom-mark directory behavior before claiming it is safe
+// to skip a create or derive materialized directories from virtual source.
+func nativeGrubberyMarkLayout(t *testing.T, ctx context.Context, f *nativeDeskFixture, owner *eyre.Client, save func(string, any)) {
+	t.Helper()
+	encoded, err := owner.ExportSession()
+	g02Check(t, err)
+	defer clear(encoded)
+	var cookie struct {
+		Name  string `json:"cookie_name"`
+		Value string `json:"cookie_value"`
+	}
+	g02Check(t, json.Unmarshal(encoded, &cookie))
+	defer func() { cookie.Value = "" }()
+	log, err := os.OpenFile("/lab/managed-mar-layout-calls.jsonl", os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+	g02Check(t, err)
+	defer log.Close()
+	seq := 0
+	appendEntry := func(v any) {
+		t.Helper()
+		raw, err := json.Marshal(v)
+		g02Check(t, err)
+		_, err = log.Write(append(raw, '\n'))
+		g02Check(t, err)
+		g02Check(t, log.Sync())
+	}
+	call := func(name, method, path, content string, body []byte) (int, []byte) {
+		t.Helper()
+		g02Check(t, f.check())
+		seq++
+		appendEntry(map[string]any{"sequence": seq, "name": name, "state": "dispatched", "method": method, "path": path, "bytes": len(body), "sha256": stopEvidenceDigest(body)})
+		req, err := http.NewRequestWithContext(ctx, method, "http://127.0.0.1:18081"+path, bytes.NewReader(body))
+		g02Check(t, err)
+		req.GetBody = nil
+		if content != "" {
+			req.Header.Set("Content-Type", content)
+		}
+		req.AddCookie(&http.Cookie{Name: cookie.Name, Value: cookie.Value})
+		response, err := f.client.Do(req)
+		g02Check(t, err)
+		raw, err := io.ReadAll(io.LimitReader(response.Body, (1<<20)+1))
+		response.Body.Close()
+		g02Check(t, err)
+		if len(raw) > 1<<20 {
+			t.Fatal("mark layout response bound")
+		}
+		g02Check(t, f.check())
+		appendEntry(map[string]any{"sequence": seq, "name": name, "state": "returned", "status": response.StatusCode, "bytes": len(raw), "sha256": stopEvidenceDigest(raw)})
+		return response.StatusCode, raw
+	}
+	expect := func(name, method, path, content string, body []byte, status int) []byte {
+		t.Helper()
+		got, raw := call(name, method, path, content, body)
+		if got != status {
+			save("custom-mark-refusal", map[string]any{"name": name, "status": got, "response_sha256": stopEvidenceDigest(raw)})
+			t.Fatal("custom mark layout refused", name, got)
+		}
+		return raw
+	}
+	nonce, err := randomID()
+	g02Check(t, err)
+	root := "/omabit-mar-contract-" + nonce
+	code := root + "/code"
+	expect("absent", "GET", "/grubbery/api/peek"+root+"/", "", nil, 404)
+	expect("marker", "PUT", "/grubbery/api/make"+root+"/omabit-owner.json", "application/json", []byte(`{"purpose":"fresh bounded native mark-layout contract"}`), 201)
+	expect("code", "PUT", "/grubbery/api/make"+code+"/", "application/json", []byte(`{"neck":"/code"}`), 201)
+	beforeStatus, before := call("mar-before", "GET", "/grubbery/api/peek"+code+"/mar/?as=tree", "", nil)
+	if beforeStatus != 200 && beforeStatus != 404 {
+		t.Fatal("mark directory read unavailable", beforeStatus)
+	}
+	created, _ := call("create-mar-once", "PUT", "/grubbery/api/make"+code+"/mar/", "application/json", []byte(`{}`))
+	if created != 201 && created != 409 {
+		t.Fatal("mark directory create unavailable", created)
+	}
+	marAfter := expect("mar-after-create", "GET", "/grubbery/api/peek"+code+"/mar/?as=tree", "", nil, 200)
+	raw, err := os.ReadFile("/artifacts/framework-source/gub/mar/hoon.hoon")
+	g02Check(t, err)
+	if stopEvidenceDigest(raw) != "fcec4e0a96c28b75dd8284b4b7e824c911442a706424b2ccf0b05cca7e857afe" {
+		t.Fatal("custom mark fixture source changed")
+	}
+	expect("custom-source", "PUT", "/grubbery/api/make"+code+"/mar/custom.hoon?blot=%2Fhoon", "text/x-hoon", raw, 201)
+	actual := expect("custom-source-bytes", "GET", "/grubbery/api/peek"+code+"/mar/custom.hoon", "", nil, 200)
+	if !bytes.Equal(actual, raw) {
+		t.Fatal("custom mark source bytes changed")
+	}
+	codeAfter := expect("code-after-custom", "GET", "/grubbery/api/peek"+code+"/?as=tree", "", nil, 200)
+	marFinal := expect("mar-after-custom", "GET", "/grubbery/api/peek"+code+"/mar/?as=tree", "", nil, 200)
+	build := expect("custom-build", "GET", "/grubbery/api/build"+code+"?all=1", "", nil, 200)
+	report, err := grubbery.ParseBuildReport(build, code)
+	g02Check(t, err)
+	if report.Failed != 0 || report.Total != 5 {
+		t.Fatal("custom mark compilation not complete/clean")
+	}
+	beforeValue := any(map[string]any{"status": beforeStatus, "sha256": stopEvidenceDigest(before)})
+	if beforeStatus == 200 {
+		beforeValue = json.RawMessage(before)
+	}
+	save("custom-mark-layout", map[string]any{"before_status": beforeStatus, "before": beforeValue, "create_status": created, "after_create": json.RawMessage(marAfter), "code_after_custom": json.RawMessage(codeAfter), "mar_after_custom": json.RawMessage(marFinal), "build": report, "custom_source_sha256": stopEvidenceDigest(raw), "calls": seq, "scope": "kernel diagnostic only; separate namespace, no managed receipt/ownership assertion"})
+}

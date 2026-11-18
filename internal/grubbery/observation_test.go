@@ -120,9 +120,6 @@ func stagedTreeFixture(p grubbery.Plan) map[string]any {
 		}
 		node["files"].(map[string]string)[parts[len(parts)-1]] = mark
 	}
-	for _, name := range foundationFixture {
-		insert(name, "hoon")
-	}
 	for _, file := range p.Source.Manifest.Files {
 		mark := "mime"
 		if strings.HasPrefix(file.Path, "nex/") || strings.HasPrefix(file.Path, "lib/") || strings.HasPrefix(file.Path, "mar/") {
@@ -134,7 +131,7 @@ func stagedTreeFixture(p grubbery.Plan) map[string]any {
 }
 func TestStagedTreeSeparatesFrameworkSeedsAndRejectsUnexpectedPaths(t *testing.T) {
 	p, _ := plan(t)
-	for _, kind := range []string{"complete", "partial", "foreign-file", "foreign-dir", "nested-nexus", "wrong-root", "missing-foundation", "wrong-mark", "alias-key", "duplicate"} {
+	for _, kind := range []string{"complete", "partial", "foreign-file", "foreign-dir", "nested-nexus", "wrong-root", "unowned-foundation-dir", "wrong-mark", "alias-key", "duplicate"} {
 		t.Run(kind, func(t *testing.T) {
 			tree := stagedTreeFixture(p)
 			dirs := tree["dirs"].(map[string]any)
@@ -149,8 +146,12 @@ func TestStagedTreeSeparatesFrameworkSeedsAndRejectsUnexpectedPaths(t *testing.T
 				dirs["nex"].(map[string]any)["neck"] = "shell"
 			case "wrong-root":
 				tree["neck"] = "desk"
-			case "missing-foundation":
-				delete(dirs["mar"].(map[string]any)["files"].(map[string]string), "mime.hoon")
+			case "unowned-foundation-dir":
+				files := map[string]string{}
+				for _, name := range foundationFixture {
+					files[strings.TrimPrefix(name, "mar/")] = "hoon"
+				}
+				dirs["mar"] = map[string]any{"neck": nil, "files": files, "dirs": map[string]any{}}
 			case "wrong-mark":
 				dirs["nex"].(map[string]any)["files"].(map[string]string)["state.hoon"] = "mime"
 			case "alias-key":

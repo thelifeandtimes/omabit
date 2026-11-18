@@ -10511,3 +10511,39 @@ pier is then losslessly archived and verified across1450 files before retiring
 its expanded copy; every original app receipt and native diagnostic body remains.
 This is compact forensic evidence, not authority to recreate filesystem identity
 or resume an archived ship. The next runtime still needs fresh admission.
+
+## M621 — Native foundational sources and materialized trees are separate views (2026-11-18)
+
+The [b4b01c6 fresh layout contract](diagnostics/2026-11-18-grubbery-native-source-layout.json)
+passes74 bounded calls and clean shutdown. Immediately after code-namespace
+creation the materialized tree is empty, while all four foundational sources are
+already directly readable with the exact pinned framework byte counts/hashes.
+They remain absent from the materialized tree after bill/nexus/version writes
+and in both live code mirrors, while their compiler results are present/clean.
+Submitted app Hoon/mime bytes read back exactly. Version following, saved-state
+poke/read and preservation on the second source update still pass.
+
+This refines M620: the eager materialized-tree assumption was wrong, rather than
+establishing that foundation generation happens later. Keep native source-tree,
+virtual derived-source and compiler-cache evidence independent. Correct the
+projection/model to verify pinned foundational bytes through separate bound reads;
+never manufacture their materialized directory or use matching bytes to adopt an
+unowned namespace. Custom-mark directory semantics need their own exact proof
+before claiming those phases. M617's inert generated-directory result remains
+unqualified. This is a kernel contract, not a managed coordinator, Docker/curl,
+public interface, permit/route/restart/peer/installed pass; capability stays closed.
+
+M621 implementation follow-through: the code-namespace projection no longer
+invents a materialized mar directory/files. Separate constructor-bound direct
+reads verify every virtual foundational grub against the pinned original bytes
+on release and live-mirror checks. The source-tree helper and inert model now
+represent that same separation; the compiler report still requires all four
+foundational artifacts. The unconditional generated-directory skip is removed:
+one native call per selected phase, no implicit directory adoption. A new race
+regression introduces a materialized directory containing all matching pinned
+bytes and confirms that it cannot acquire ownership through those hashes.
+Custom-mark directory semantics remain unqualified. The next fresh managed gate
+also has a separate fixed kernel diagnostic after the minimal coordinator loop
+to observe an explicit custom-mark create, raw source and compile, without
+repairing the earlier pending operation or accepting caller proof. No schema,
+existing header/event or live capability changes.

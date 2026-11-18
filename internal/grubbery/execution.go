@@ -26,10 +26,8 @@ type Backend interface {
 	// Admit and ObserveAfter are bounded read-only operations. No argument from
 	// an external caller can substitute for their actual fresh evidence.
 	Admit(context.Context, Plan, Step) (Review, error)
-	// Dispatch makes at most one typed native call. An already observed pinned
-	// code-namespace creator plus fresh exact foundational source can prove its
-	// generated mar directory without another write; retain that provenance in
-	// the response digest. Arbitrary matching directories cannot be adopted.
+	// Dispatch makes exactly one typed native call. Virtual foundational source
+	// does not establish a materialized directory or authorize adopting one.
 	// It must not retry, redirect
 	// or accept arbitrary URLs/commands. Source/cache identity is already checked.
 	// ErrNativeRejected requires a complete, validated native pre-effect refusal

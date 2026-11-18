@@ -190,18 +190,16 @@ func ParseDirectory(raw []byte) (NativeDirectory, error) {
 }
 
 // CheckStagedTree checks only this release's namespace structure, independently
-// of its bytes and compiled cache. Framework-created foundational marks remain
-// separate from application-owned files. Missing files may be allowed while
+// of its bytes and compiled cache. Pinned virtual foundational grubs are read
+// separately; their existence does not put files/directories in this tree.
+// Missing files may be allowed while
 // staging, but unknown paths, wrong marks or nested nexuses always refuse.
 func CheckStagedTree(source Source, tree NativeDirectory, complete, versionAllowed bool) error {
 	if CheckNativeSource(source) != nil || tree.Neck == nil || *tree.Neck != "code" {
 		return ErrObservation
 	}
 	expected := map[string]string{}
-	dirs := map[string]bool{"mar": true}
-	for _, name := range foundationPaths {
-		expected[name] = "hoon"
-	}
+	dirs := map[string]bool{}
 	for _, f := range source.Manifest.Files {
 		mark := "mime"
 		if codePath(f.Path) {
@@ -243,11 +241,6 @@ func CheckStagedTree(source Source, tree NativeDirectory, complete, versionAllow
 	}
 	if check(tree, "", true) != nil {
 		return ErrObservation
-	}
-	for _, name := range foundationPaths {
-		if !seen[name] {
-			return ErrObservation
-		}
 	}
 	if complete {
 		for name := range expected {

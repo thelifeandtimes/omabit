@@ -24,6 +24,7 @@ type nativeModel struct {
 	t                  *testing.T
 	dirs               map[string]string
 	files              map[string][]byte
+	virtual            map[string][]byte
 	marks              map[string]string
 	writes             map[string]int
 	reads              int
@@ -34,7 +35,7 @@ type nativeModel struct {
 
 func newNativeModel(t *testing.T) *nativeModel {
 	t.Helper()
-	f := &nativeModel{t: t, dirs: map[string]string{}, files: map[string][]byte{}, marks: map[string]string{}, writes: map[string]int{}, cleanup: "confirmed", foundations: map[string][]byte{}}
+	f := &nativeModel{t: t, dirs: map[string]string{}, files: map[string][]byte{}, virtual: map[string][]byte{}, marks: map[string]string{}, writes: map[string]int{}, cleanup: "confirmed", foundations: map[string][]byte{}}
 	framework, err := appdev.ReadFramework(appdev.GrubberyFramework)
 	if err != nil {
 		t.Fatal(err)
@@ -61,9 +62,8 @@ func (f *nativeModel) mkdir(name, neck string) {
 	}
 	f.dirs[name] = neck
 	if neck == "code" {
-		f.dirs[name+"/mar"] = ""
 		for p, data := range f.foundations {
-			f.put(name+"/"+p, "hoon", data)
+			f.virtual[name+"/"+p] = append([]byte{}, data...)
 		}
 	}
 	if neck == "desk" {
@@ -128,10 +128,17 @@ func (f *nativeModel) GrubberyRead(_ context.Context, r grubbery.ReadRequest) (g
 				keys = append(keys, p)
 			}
 		}
+		for p := range f.virtual {
+			if strings.HasPrefix(p, root+"/") {
+				if _, actual := f.files[p]; !actual {
+					keys = append(keys, p)
+				}
+			}
+		}
 		sort.Strings(keys)
 		for _, p := range keys {
 			status := "mime"
-			if f.marks[p] == "hoon" {
+			if f.marks[p] == "hoon" || f.virtual[p] != nil {
 				status = "vase"
 			}
 			rows = append(rows, map[string]any{"source": strings.TrimPrefix(p, root), "status": status, "error": nil})
@@ -140,6 +147,9 @@ func (f *nativeModel) GrubberyRead(_ context.Context, r grubbery.ReadRequest) (g
 		return f.reply(200, raw), nil
 	}
 	if raw, ok := f.files[p]; ok {
+		return f.reply(200, raw), nil
+	}
+	if raw, ok := f.virtual[p]; ok {
 		return f.reply(200, raw), nil
 	}
 	return f.reply(404, []byte("Not found")), nil
@@ -310,10 +320,10 @@ func nativeAdvance(t *testing.T, h *nativeHarness, p grubbery.Plan, step grubber
 	return r
 }
 
-func TestNativeCoordinatorCompleteUpdatesRetainOriginalOwnershipAndGeneratedDirectory(t *testing.T) {
+func TestNativeCoordinatorCompleteUpdatesRetainOriginalOwnershipAndExplicitMarkDirectory(t *testing.T) {
 	prior, files := plan(t)
-	// A custom mark requires the framework-generated mar directory. It is not
-	// one of the four protected foundational paths.
+	// A custom mark has an explicit original directory phase. Virtual pinned
+	// sources do not establish that materialized directory in this inert model.
 	m, files := source(t, `{"state":"/state"}`, deskwork.SourceFile{Path: "mar/custom.hoon", Bytes: []byte(":: inert custom mark\n")})
 	var err error
 	prior, err = grubbery.NewPlan(prior.Binding, prior.StageID, prior.RequestID, m, files, prior.Before)
@@ -330,8 +340,8 @@ func TestNativeCoordinatorCompleteUpdatesRetainOriginalOwnershipAndGeneratedDire
 	}
 	root, _ := p.Binding.ReleaseRoot(p.RequestID)
 	for _, step := range p.Steps {
-		if step.Path == root+"/mar" && h.model.writes[step.ID] != 0 {
-			t.Fatal("retried generated directory")
+		if step.Path == root+"/mar" && h.model.writes[step.ID] != 1 {
+			t.Fatal("directory phase lost its original native call")
 		}
 	}
 	first, _ := h.journal.Load(t.Context(), p.RequestID)
@@ -470,5 +480,43 @@ func TestNativeCoordinatorCompileAndVersionCannotHideWrongServedSource(t *testin
 	h.model.files[n.CodeRoot+"/nex/state.hoon"] = []byte("matching version with wrong code")
 	if _, err = h.backend.Inspect(t.Context(), p.Binding); err == nil {
 		t.Fatal("version plus clean compiler hid changed live code")
+	}
+}
+
+func TestNativeCoordinatorVirtualSourcesDoNotAdoptAMaterializedDirectory(t *testing.T) {
+	prior, files := plan(t)
+	h := nativeHarnessFor(t, prior, files)
+	p := nativePlan(t, h, prior, prior.RequestID)
+	_, err := h.execution().Begin(t.Context(), callFor(p, ""), p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := mustRelease(t, p)
+	index := 0
+	for ; index < len(p.Steps); index++ {
+		step := p.Steps[index]
+		nativeAdvance(t, h, p, step)
+		if step.Kind == "make-directory" && step.Path == root {
+			index++
+			break
+		}
+	}
+	if _, exists := h.model.dirs[root+"/mar"]; exists {
+		t.Fatal("model materialized virtual source")
+	}
+	for _, name := range foundationFixture {
+		if len(h.model.virtual[root+"/"+name]) == 0 {
+			t.Fatal("code namespace lost pinned virtual source", name)
+		}
+	}
+	// A foreign directory remains foreign even when every contained file has a
+	// pinned framework hash. There is no original materialized-directory receipt.
+	h.model.mkdir(root+"/mar", "")
+	for name, data := range h.model.foundations {
+		h.model.put(root+"/"+name, "hoon", data)
+	}
+	writes := len(h.model.writes)
+	if _, err := h.execution().Advance(t.Context(), callFor(p, p.Steps[index].ID)); err == nil || len(h.model.writes) != writes {
+		t.Fatal("virtual-source hashes adopted an unowned directory", err)
 	}
 }

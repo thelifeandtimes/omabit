@@ -120,8 +120,9 @@ routes/assets, runtime restart, peers, installed upgrades or DEV deployment.
 The development coordinator now derives native source expectations from the
 complete immutable namespace history in database creation order. It refuses
 unowned roots, changed markers, foreign source paths and changed foundational
-bytes. Original code-namespace creation plus freshly checked pinned foundational
-source can establish its generated `mar` directory without a second create.
+bytes. Virtual foundational grubs are verified separately from the materialized
+tree. They do not establish a materialized `mar` directory or waive its original
+directory phase; native custom-mark semantics remain under qualification.
 No arbitrary existing directory is adopted. Source bytes, compilation and the
 followed live mirror are independently checked. Native reads stop at512 calls,
 the existing1MiB response/4096-node tree limits and the caller's deadline;
@@ -150,3 +151,12 @@ phase is submitted, and the ship stops cleanly. A separate fresh kernel layout
 case now records source-tree/raw-byte/build/version/mirror boundaries before
 changing that projection. Previous generated-directory assertions remain
 unqualified; no live Grubbery capability follows from these failed native gates.
+
+The [source-layout contract](diagnostics/2026-11-18-grubbery-native-source-layout.json)
+now passes: four exact pinned source grubs are directly readable while absent
+from both materialized release and live-mirror trees. The corrected coordinator
+keeps those observations separate and restores one native call per exact phase.
+Inert/race checks pass for that separation and for refusing a newly introduced
+materialized directory even with matching pinned source bytes. The corrected
+managed coordinator still needs its own fresh native gate; kernel diagnostics
+alone do not qualify it.
