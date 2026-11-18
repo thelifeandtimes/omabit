@@ -22,7 +22,7 @@ original-scaffold export/adoption; its timed-out activation resolves read-only
 without a second install. App workflow qualification and four nested shell-tool
 failures remain separate; see [the boundary](grubbery-adapter.md).
 
-Source/native checkpoints are documented in M579–M604. The shared interface's
+Source/native checkpoints are documented in M579–M605. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or

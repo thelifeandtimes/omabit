@@ -47,7 +47,7 @@ type Source struct {
 // cannot instantiate a privileged built-in by pointing outside its own nex/.
 func ReviewSource(manifest deskwork.Manifest, files []deskwork.SourceFile) (Source, error) {
 	var out Source
-	if manifest.Validate() != nil || len(files) != len(manifest.Files) || len(files) < 2 || len(files) > MaxAppFiles {
+	if validateManifest(manifest) != nil || len(files) != len(manifest.Files) {
 		return out, errors.New("invalid bounded Grubbery app source")
 	}
 	index := manifest.Index()
@@ -56,9 +56,12 @@ func ReviewSource(manifest deskwork.Manifest, files []deskwork.SourceFile) (Sour
 	var bill []byte
 	for _, file := range files {
 		entry, ok := index[file.Path]
-		sum := sha256.Sum256(file.Bytes)
 		total += len(file.Bytes)
-		if !ok || seen[file.Path] || len(file.Bytes) > MaxAppFileBytes || total > MaxAppBytes || entry.Bytes != int64(len(file.Bytes)) || entry.SHA256 != hex.EncodeToString(sum[:]) {
+		if !ok || seen[file.Path] || len(file.Bytes) > MaxAppFileBytes || total > MaxAppBytes || entry.Bytes != int64(len(file.Bytes)) {
+			return out, errors.New("app source differs from its exact stage")
+		}
+		sum := sha256.Sum256(file.Bytes)
+		if entry.SHA256 != hex.EncodeToString(sum[:]) {
 			return out, errors.New("app source differs from its exact stage")
 		}
 		seen[file.Path] = true
@@ -66,33 +69,72 @@ func ReviewSource(manifest deskwork.Manifest, files []deskwork.SourceFile) (Sour
 			bill = file.Bytes
 			continue
 		}
-		if file.Path == "README.md" {
-			continue
-		}
-		parts := strings.Split(file.Path, "/")
-		if len(parts) < 2 {
-			return out, errors.New("unexpected app source root file")
-		}
-		switch parts[0] {
-		case "nex", "lib", "mar":
-			if !strings.HasSuffix(file.Path, ".hoon") || !utf8.Valid(file.Bytes) || bytes.ContainsRune(file.Bytes, 0) {
-				return out, errors.New("invalid app Hoon source")
-			}
-		case "assets":
-		default:
-			return out, errors.New("app source must contain only code and declared assets")
-		}
-		for _, part := range parts[:len(parts)-1] {
-			if parts[0] != "assets" && (part == "bundle" || strings.HasSuffix(part, "-bundle")) {
-				return out, errors.New("this adapter does not compile nested code bundles")
-			}
+		if codePath(file.Path) && (!utf8.Valid(file.Bytes) || bytes.ContainsRune(file.Bytes, 0)) {
+			return out, errors.New("invalid app Hoon source")
 		}
 	}
 	instances, err := readBill(bill, index)
 	if err != nil {
 		return out, err
 	}
-	return Source{Version: 1, Manifest: manifest, Instances: instances}, nil
+	copyManifest, err := deskwork.NewManifest(manifest.Files)
+	if err != nil {
+		return out, err
+	}
+	return Source{Version: 1, Manifest: copyManifest, Instances: instances}, nil
+}
+
+func codePath(name string) bool {
+	return strings.HasPrefix(name, "nex/") || strings.HasPrefix(name, "lib/") || strings.HasPrefix(name, "mar/")
+}
+
+func validateManifest(manifest deskwork.Manifest) error {
+	if manifest.Validate() != nil || len(manifest.Files) < 2 || len(manifest.Files) > MaxAppFiles {
+		return errors.New("invalid app manifest")
+	}
+	var total int64
+	for _, file := range manifest.Files {
+		total += file.Bytes
+		if file.Bytes > MaxAppFileBytes || total > MaxAppBytes {
+			return errors.New("app source exceeds bounds")
+		}
+		if file.Path == "bill.json" || file.Path == "README.md" {
+			continue
+		}
+		parts := strings.Split(file.Path, "/")
+		if len(parts) < 2 || parts[0] != "assets" && !codePath(file.Path) || codePath(file.Path) && !strings.HasSuffix(file.Path, ".hoon") {
+			return errors.New("unexpected app source path")
+		}
+		for _, part := range parts[:len(parts)-1] {
+			if parts[0] != "assets" && (part == "bundle" || strings.HasSuffix(part, "-bundle")) {
+				return errors.New("nested code bundles are unsupported")
+			}
+		}
+	}
+	bill, ok := manifest.Index()["bill.json"]
+	if !ok || bill.Bytes == 0 || bill.Bytes > 8192 {
+		return errors.New("bounded app bill required")
+	}
+	return nil
+}
+
+// ValidateMetadata is for a previously attested saved plan/history. It grants no
+// upload authority; a new native write still requires ReviewSource over the exact
+// staged bytes. Historical receipts and read-only reconciliation need no cache.
+func (s Source) ValidateMetadata() error {
+	if s.Version != 1 || validateManifest(s.Manifest) != nil || len(s.Instances) == 0 || len(s.Instances) > MaxInstances {
+		return errors.New("invalid saved app source metadata")
+	}
+	index := s.Manifest.Index()
+	for i, instance := range s.Instances {
+		if !term.MatchString(instance.Name) || !validNeck(instance.Neck) || i > 0 && s.Instances[i-1].Name >= instance.Name {
+			return errors.New("invalid saved app instance")
+		}
+		if _, ok := index["nex"+instance.Neck+".hoon"]; !ok {
+			return errors.New("saved instance is outside its source")
+		}
+	}
+	return nil
 }
 
 func readBill(raw []byte, files map[string]deskwork.File) ([]Instance, error) {

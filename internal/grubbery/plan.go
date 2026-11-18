@@ -75,14 +75,21 @@ func (b Binding) OwnerMarker() ([]byte, error) {
 }
 
 func NewPlan(binding Binding, stageID, requestID string, manifest deskwork.Manifest, files []deskwork.SourceFile, before Before) (Plan, error) {
+	source, err := ReviewSource(manifest, files)
+	if err != nil {
+		return Plan{}, err
+	}
+	return reviewedPlan(binding, stageID, requestID, source, before)
+}
+
+func reviewedPlan(binding Binding, stageID, requestID string, source Source, before Before) (Plan, error) {
 	var out Plan
 	n, err := binding.Namespace()
 	if err != nil || !digest.MatchString(stageID) || !digest.MatchString(requestID) || !digest.MatchString(before.SnapshotDigest) || before.Epoch > 1<<53-2 {
 		return out, errors.New("invalid app deployment plan binding")
 	}
-	source, err := ReviewSource(manifest, files)
-	if err != nil {
-		return out, err
+	if source.ValidateMetadata() != nil {
+		return out, errors.New("invalid attested app source metadata")
 	}
 	owner := ownerJSON(binding)
 	ownerHash := hash([]byte(owner))
@@ -183,6 +190,16 @@ func NewPlan(binding Binding, stageID, requestID string, manifest deskwork.Manif
 	}
 	out.Digest = hash([]byte(textJSON(out)))
 	return out, nil
+}
+
+// ValidateMetadata verifies an already attested plan without requiring a source
+// cache or contacting a runtime. Pending writes additionally require Validate.
+func (p Plan) ValidateMetadata() error {
+	want, err := reviewedPlan(p.Binding, p.StageID, p.RequestID, p.Source, p.Before)
+	if err != nil || textJSON(want) != textJSON(p) {
+		return errors.New("saved app plan metadata changed")
+	}
+	return nil
 }
 
 func (p Plan) Validate(files []deskwork.SourceFile) error {

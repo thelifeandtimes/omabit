@@ -10004,3 +10004,32 @@ writes, reconcile by bounded read and replay completed receipts without source
 cache/runtime calls. Persistent/migration and runtime/interface wiring remain
 required. No namespace is created and no HTTP request, policy or installed
 capability changes in this slice. M602 remains bootstrap-only evidence.
+
+## M605 — Guard exact app dispatch and cache-free receipt recovery (2026-11-18)
+
+The source-only app coordinator now defines atomic namespace claiming and
+revision-CAS append contracts, immutable creation headers and hash-chained phase
+events. Dispatch is allowed only for the exact selected pending original phase,
+after exact staged-byte validation and fresh trusted admission. Only the worker
+that wins the dispatch CAS may call the native adapter; losing callers return
+saved progress. Dispatch carries explicit plan/step context rather than shared
+mutable target selection. Unknown native outcomes retain their original events.
+
+Completed/uncertain advance replay, matched Begin replay and saved lookup use no
+source cache, probe or native dispatch. Read-only reconciliation needs no cache,
+accepts only exact bound after-evidence, and appends one resolution without
+replacing the original dispatch/uncertainty. Repeated unproved reads append no
+duplicate history. A different unfinished operation cannot claim the app namespace;
+only full original phase completion releases its lease. Changed Begin bodies,
+targets/actors, future/foreign phases, bytes and malformed history refuse.
+
+Focused race/static fixtures pass for concurrent claims, native reply loss,
+coordinator reopen, journal commit/reply loss before native I/O, full completion,
+corrupt/reordered/rebound header/event chains, clock correction and cache loss.
+The model store tests transaction semantics only: no SQLite/fsync durability,
+migration or native app deployment is implied. Source caps are checked before
+hashing oversized data, and attested metadata validation stays separate from
+new-write byte authority. Next wire the persistent runner store/lease, migration
+and exact native transport/observers plus public interfaces, then qualify the app
+sample. No persistent format, namespace, policy, runtime or advertised capability
+changes in this slice; M602 remains the qualified bootstrap boundary.
