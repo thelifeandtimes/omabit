@@ -207,31 +207,19 @@ def project_done(request):
     return wait(done,600)
 
 
-def main():
-    global scenario
-    scenario = guard()
-    if O.exists():
-        raise RuntimeError('never reset or resume a guest')
-    O.mkdir(mode=0o700)
-    for path in ('/etc/urbit-runner','/srv/urbit/piers','/home/review/.local/share/urbit-runner'):
-        if Path(path).exists():
-            raise RuntimeError('guest is not pristine: '+path)
-    for version in ('previous','candidate'):
-        for name in ('omabit','urbit-collector','urbit-runner'):
-            expected = scenario['previous'][name+'-linux-amd64'] if version=='previous' else scenario['candidate'][name]['sha256']
-            assert sha(I/version/name)==expected
-    assert sha(I/'managed.test')==scenario['candidate']['managed.test']['sha256']
-    assert sha(I/'runtime.oci.tar')==scenario['oci_sha256'] and sha(I/'boot.pill')==scenario['pill_sha256'] and sha(I/'recommended.pill')==scenario['recommended_sha256']
-    report['source_commit'] = scenario['source_commit']
-    report['inputs'] = scenario
-    run(['loginctl','enable-linger','review'])
-    run(['systemctl','start','user@1000.service'])
-    run(['ssh-keygen','-q','-t','ed25519','-N','','-f',HOME/'operator'],True)
-    previous_host = install('previous')
-    report['runner_id'] = previous_host['runner_id']
-    run([I/'previous/urbit-collector','enroll','local','--socket',SOCK],True)
-    docker('load','--input',I/'runtime.oci.tar')
-    report['guest_virtual_cpus'] = json.loads(docker('info','--format','{{json .NCPU}}').stdout)
+def switch_fixture_access(config):
+    # One runner identity has one enrollment. Switch this fresh fixture's
+    # existing access binding through the supported CAS editor, never duplicate
+    # its identity or loosen the registry's enrollment conflict protection.
+    entries=json.loads(run([I/'candidate/urbit-collector','runners'],True).stdout)
+    if len(entries)!=1 or entries[0]['name']!='local' or entries[0]['runner_id']!=report['runner_id']:
+        raise RuntimeError('fresh fixture enrollment binding changed')
+    run([I/'candidate/urbit-collector','runner-edit','local','--runner-id',report['runner_id'],'--revision',str(entries[0]['revision']),
+         '--name','bridge','--ssh','issues-runner','--ssh-config',config],True)
+    report['connection']='bridge'
+
+
+def qualify_upgrade():
     for name, ship, port in (('upgrade-zod','~zod',19180),('upgrade-nec','~nec',19181)):
         collector('previous','create-fake',name,'--ship',ship,'--http-port',str(port),'--request-id',name+'-create','--bootstrap','recommended','--pill',str(I/'recommended.pill'))
         operation('previous',name,'start',name+'-start')
@@ -252,6 +240,7 @@ def main():
     unit('stop')
     newer = db_projection()
     assert newer['schema']==60
+    report['schema_after']=60
     refused = run([I/'previous/urbit-runner','serve-development','--acknowledge-development'],True,ok=False,timeout=20)
     assert refused.returncode!=0 and 'schema' in (refused.stdout+refused.stderr).lower() and db_projection()==newer
     report['installed_upgrade']['old_reader_refused_unchanged'] = True
@@ -260,6 +249,46 @@ def main():
     # Stop the upgrade witness before another new fake boots; all history stays.
     operation('candidate','upgrade-zod','stop','upgrade-zod-final-stop')
     wait(lambda:instance('candidate','upgrade-zod','stopped'))
+
+
+def main():
+    global scenario
+    scenario = guard()
+    if O.exists():
+        raise RuntimeError('never reset or resume a guest')
+    O.mkdir(mode=0o700)
+    for path in ('/etc/urbit-runner','/srv/urbit/piers','/home/review/.local/share/urbit-runner'):
+        if Path(path).exists():
+            raise RuntimeError('guest is not pristine: '+path)
+    for version in ('previous','candidate'):
+        for name in ('omabit','urbit-collector','urbit-runner'):
+            expected = scenario['previous'][name+'-linux-amd64'] if version=='previous' else scenario['candidate'][name]['sha256']
+            assert sha(I/version/name)==expected
+    assert sha(I/'managed.test')==scenario['candidate']['managed.test']['sha256']
+    assert sha(I/'runtime.oci.tar')==scenario['oci_sha256'] and sha(I/'boot.pill')==scenario['pill_sha256'] and sha(I/'recommended.pill')==scenario['recommended_sha256']
+    report['source_commit'] = scenario['source_commit']
+    report['inputs'] = scenario
+    run(['loginctl','enable-linger','review'])
+    run(['systemctl','start','user@1000.service'])
+    run(['ssh-keygen','-q','-t','ed25519','-N','','-f',HOME/'operator'],True)
+    case=scenario.get('case','upgrade-recovery')
+    if case not in ('upgrade-recovery','recovery-only'):
+        raise RuntimeError('unsupported explicit case')
+    recovery_only=case=='recovery-only'
+    if recovery_only and not scenario.get('prerequisite_upgrade'):
+        raise RuntimeError('missing exact-artifact installed upgrade prerequisite')
+    report['case']=case
+    initial='candidate' if recovery_only else 'previous'
+    previous_host=install(initial)
+    report['runner_id']=previous_host['runner_id']
+    run([I/initial/'urbit-collector','enroll','local','--socket',SOCK],True)
+    docker('load','--input',I/'runtime.oci.tar')
+    report['guest_virtual_cpus'] = json.loads(docker('info','--format','{{json .NCPU}}').stdout)
+    if not recovery_only:
+        qualify_upgrade()
+    else:
+        report['fresh_candidate_install']={'passed':hello()['build']['sha256']==scenario['candidate']['urbit-runner']['sha256'],'schema':db_projection()['schema']}
+        assert report['fresh_candidate_install']=={'passed':True,'schema':60}
     # Explicit fixture cache population from the already rehashed immutable pill.
     cache = HOME/'.local/share/urbit-runner/managed/boot-pills'
     cache.mkdir(mode=0o700,exist_ok=True)
@@ -280,8 +309,10 @@ def main():
     for path in (known,config):
         path.chmod(0o600)
         os.chown(path,1000,1000)
-    run([I/'candidate/urbit-collector','enroll','bridge','--ssh','issues-runner','--ssh-config',config],True)
-    report['connection'] = 'bridge'
+    switch_fixture_access(config)
+    preflight=json.loads(run([I/'candidate/omabit','call','app.preflight.v1','--input-json',json.dumps({'name':'bridge','runner_id':report['runner_id'],'workflow':'gall','effects':['commit']})],True).stdout)
+    assert preflight.get('data',{}).get('environment_compatible') is True,'selected installed app environment incompatible before project boot'
+    report['app_preflight']=preflight['data']
     create = run([I/'candidate/urbit-collector','--runner','bridge','--expected-runner-id',report['runner_id'],
         'project-create','--label','issues recovery fresh network','--member','issues-original-zod:~zod:19280','--request-id','issues-create','--shared-administration','--confirm-start'],True,timeout=900)
     progress = [json.loads(line) for line in create.stdout.splitlines()]

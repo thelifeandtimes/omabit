@@ -138,5 +138,10 @@ The harness checks the experiment storage budget. Its optional `--budget-gib 48`
 requires separately authorized temporary capacity; the default remains40GiB.
 An opt-in `TestProjectStopRecoveryActualCollectorLostReply` exercises the actual
 collector, API routing and SQLite using an inert runtime observer. These gates
-are synthetic migration/interface evidence. Installed artifact upgrades and
-disposable real-runtime stop/recovery/start remain separate qualification gates.
+are synthetic migration/interface evidence. A later exact d24c960 Linux/AMD64
+development artifact passes installed0.4.0/schema59→60 preservation for fresh
+ordinary running/stopped fakes and actual old-reader refusal. Its
+[scope and later harness failure](diagnostics/2026-11-17-issues-installed-upgrade-section.json)
+do not establish interrupted-project migration or native Stop/review/apply/resume.
+Those recovery/app-state gates and matching final-artifact qualification remain
+separate requirements.

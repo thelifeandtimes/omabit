@@ -17,9 +17,17 @@ reader refuses populated60 without modifying it. See
 [project member recovery](project-member-recovery.md) and
 `scripts/test-project-stop-recovery-upgrade.py` for reproducing these gates.
 
-This is development source/migration/interface evidence, not an installed upgrade
-or stable release qualification. Matching artifacts, disposable runtime recovery
-and the non-destructive installed upgrade remain required before promotion.
+The later exact development snapshot at d24c960 passes a local Linux/AMD64
+installed0.4.0/schema59→60 gate with two fresh ordinary fakes: running/stopped
+intent, identity, configuration, history, access, engine invocation and the
+running container process remain unchanged. The actual old reader refuses60
+unchanged and the new manager restarts without touching that process. See the
+[exact artifact evidence and limits](diagnostics/2026-11-17-issues-installed-upgrade-section.json).
+That capsule stops later at a harness duplicate-enrollment refusal before its
+recovery project. This does not qualify native interrupted-project migration,
+Stop recovery/app-state preservation, desktop/DEV deployment, later artifacts or
+a stable release. Matching final artifacts and relevant disposable runtime
+recovery/upgrade gates remain required before promotion.
 Never lower the schema marker or reset a store to run an older manager.
 
 ## 0.4.0 candidate: installed0.3.7→0.4.0 qualification

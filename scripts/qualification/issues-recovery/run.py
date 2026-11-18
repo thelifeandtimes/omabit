@@ -51,11 +51,20 @@ def charge(additional, cap):
     return storage.admit(additional, [storage.measure(p) for p in roots], budget_bytes=cap)
 
 
+def verify_upgrade_section(prior,commit,builds):
+    section=prior.get('installed_upgrade',{})
+    if prior.get('source_commit')!=commit or prior.get('schema_before')!=59 or not section.get('passed') or not all(section.get(k) is True for k in ('running_stopped_intent_and_history_preserved','engine_and_container_processes_preserved','access_preserved','old_reader_refused_unchanged')) or any(prior.get('inputs',{}).get('candidate',{}).get(n,{}).get('sha256')!=builds[n]['sha256'] for n in builds):
+        raise RuntimeError('recovery prerequisite is not the exact passed installed-upgrade section')
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('portable', 'previous', 'candidate', 'rootless', 'runtime', 'helper', 'output'):
         p.add_argument('--'+name, type=Path)
     p.add_argument('--storage-budget-gib', type=int, choices=(40, 48), default=40)
+    p.add_argument('--case',choices=('upgrade-recovery','recovery-only'),default='upgrade-recovery')
+    p.add_argument('--artifact-source',help='explicit frozen artifact commit, independent of the clean qualification-harness commit')
+    p.add_argument('--upgrade-evidence',type=Path,help='required passed exact-artifact upgrade section for recovery-only')
     p.add_argument('--run', action='store_true')
     a = p.parse_args()
     if not a.run:
@@ -67,11 +76,16 @@ def main():
         p.error('fresh /tmp/omabit-issues-vm-NN output required; existing capsules never resume')
     if subprocess.check_output(['git','status','--porcelain'], cwd=ROOT, text=True):
         raise RuntimeError('freeze a clean source commit before qualification')
-    commit = subprocess.check_output(['git','rev-parse','HEAD'], cwd=ROOT, text=True).strip()
+    harness_commit = subprocess.check_output(['git','rev-parse','HEAD'], cwd=ROOT, text=True).strip()
+    commit = a.artifact_source or harness_commit
+    if not re.fullmatch('[0-9a-f]{40}',commit):
+        p.error('exact frozen artifact source commit required')
+    subprocess.run(['git','merge-base','--is-ancestor',commit,harness_commit],cwd=ROOT,check=True)
     lock = os.open('/tmp/omabit-issues-vm-runtime.lock', os.O_RDWR|os.O_CREAT|os.O_NOFOLLOW, 0o600)
     fcntl.flock(lock, fcntl.LOCK_EX|fcntl.LOCK_NB)
     cap = a.storage_budget_gib*GIB
-    admission = charge(4*GIB, cap)
+    scratch_limit=(3 if a.case=='recovery-only' else 4)*GIB
+    admission = charge(scratch_limit, cap)
     mem = {line.split(':')[0]: int(line.split()[1])*1024 for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemAvailable:')}
     if mem['MemAvailable'] < 12*GIB:
         raise RuntimeError('12GiB available memory required for the bounded8GiB guest')
@@ -103,6 +117,13 @@ def main():
         elif '\tvcs.revision='+commit not in info or '\tvcs.modified=false' not in info:
             raise RuntimeError('source snapshot provenance differs: '+name)
         source_builds[name] = {'sha256': util.digest(path), 'bytes': path.stat().st_size, 'build_info': info}
+    prerequisite=None
+    if a.case=='recovery-only':
+        if a.upgrade_evidence is None:
+            p.error('recovery-only requires passed exact-artifact upgrade evidence')
+        prior=json.loads(ordinary(a.upgrade_evidence).read_text())
+        verify_upgrade_section(prior,commit,source_builds)
+        prerequisite={'original_report_sha256':util.digest(a.upgrade_evidence),'passed_section':'installed_upgrade','whole_original_scenario_passed':prior.get('passed',False),'source_commit':commit,'runner_sha256':source_builds['urbit-runner']['sha256']}
     out = a.output
     out.mkdir(mode=0o700)
     (out/'control').mkdir(mode=0o700)
@@ -121,6 +142,7 @@ def main():
     shutil.copy2(a.helper, payload/'managed.test')
     shutil.copy2(Path(__file__).with_name('guest.py'), payload/'guest.py')
     scenario = {'kind': 'issues16-21-development-v1', 'source_commit': commit, 'development_snapshot': True,
+                'harness_commit':harness_commit,'case':a.case,'prerequisite_upgrade':prerequisite,
                 'previous_version': '0.4.0', 'previous_schema': 59, 'target_schema': 60,
                 'previous': OLD, 'candidate': source_builds, 'pill_sha256': PILL, 'recommended_sha256': RECOMMENDED, 'oci_sha256': OCI}
     (payload/'scenario.json').write_text(json.dumps(scenario,indent=2)+'\n')
@@ -164,7 +186,7 @@ def main():
         '-qmp','unix:/lab/control/qmp.sock,server=on,wait=off','-serial','stdio']
     receipt = {'scenario':scenario,'admission':admission,'memory_available_before':mem['MemAvailable'],
         'host_mounts':'read-only OS/QEMU/pristine inputs; only fresh capsule writable; no host HOME/run/sockets',
-        'network':'none','scratch_limit':4*GIB,'command':command,'harness_sha256':{str(path.relative_to(ROOT)):util.digest(path) for path in (Path(__file__),Path(__file__).with_name('guest.py'),ROOT/'internal/managed/issues_stop_vm_test.go')}}
+        'network':'none','scratch_limit':scratch_limit,'command':command,'harness_sha256':{str(path.relative_to(ROOT)):util.digest(path) for path in (Path(__file__),Path(__file__).with_name('guest.py'),ROOT/'internal/managed/issues_stop_vm_test.go')}}
     def save():
         (out/'host.json').write_text(json.dumps(receipt,indent=2)+'\n')
     save()
@@ -175,7 +197,7 @@ def main():
             while proc.poll() is None:
                 time.sleep(5)
                 receipt['latest_storage'] = charge(0,cap)
-                if storage.measure(out)['allocated_bytes']>4*GIB or (out/'serial.log').stat().st_size>32*1024**2 or time.monotonic()-started>2400:
+                if storage.measure(out)['allocated_bytes']>scratch_limit or (out/'serial.log').stat().st_size>32*1024**2 or time.monotonic()-started>2400:
                     raise RuntimeError('VM storage/log/deadline exceeded; retain failure capsule')
         except BaseException as error:
             receipt['interruption'] = type(error).__name__+': '+str(error)

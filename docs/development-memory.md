@@ -9735,3 +9735,40 @@ advertised/shipped recording capability or existing persistent-format migration.
 The running installed-upgrade capsule remains frozen at d24c960 and does not
 qualify this later source-only library change. See the
 [current recording contract](runtime-recordings.md).
+
+## M594 — Exact installed upgrade section passes; staged recovery continuation (2026-11-17)
+
+The third fresh guest qualifies the installed d24c960 snapshot's0.4.0/schema59→60
+ordinary-fake path. Running/stopped intent, registrations, configuration, history,
+access, engine invocation and running container process survive actual installer
+activation and a later manager restart. The actual old writer refuses60 without
+changing its dump. Both upgrade witnesses then stop through supported APIs. This
+supersedes the installed-upgrade deferral only for these exact artifact/scope
+claims; native interrupted-project migration, recovery/app state and desktop/DEV
+remain unqualified. The [artifact-bound record](diagnostics/2026-11-17-issues-installed-upgrade-section.json)
+keeps the later scenario failure separate from its passed upgrade section.
+
+Before a recovery project, the harness tries a duplicate enrollment of the same
+runner and correctly receives the registry's conflict refusal. Switch the exact
+existing fixture connection through supported `runner-edit` with runner ID and
+revision; do not weaken enrollment protection. Read-only/noload inspection and
+private original60-store integrity/byte preservation pass. Original failure
+evidence remains unchanged.
+
+The recovery-only continuation uses a new fresh candidate-only guest with3GiB
+scratch and the same four frozen artifacts, explicitly linked to the passed
+upgrade section. The harness and artifact commits are recorded separately; later
+source-library changes are not qualified by this frozen result. Unit guards
+refuse changed artifacts/source, failed preservation or old-reader evidence, and
+changed enrollment identity before editing. No combined/native recovery pass is
+claimed until that separate case completes. Production/manual-review state and
+excluded ships remain untouched.
+
+To fit the continuation without removing a selected pier or full reference, the
+completed upgrade QCOW is recompressed with its original/base bound read-only.
+The first512MiB processing scope hits its memory cap; the original stays unchanged
+and only the unverified derivative is discarded. A2GiB/no-swap/one-core retry
+passes full QEMU virtual-block comparison and preserves the backing/input hashes
+before replacing the archive representation. About1GiB is freed, with original
+store/command/result archives retained. This is a content-identical storage
+derivation, not a guest restart, filesystem repair or pier mutation.

@@ -3,6 +3,7 @@ import importlib.util
 import io
 from pathlib import Path
 import unittest
+import copy
 from unittest.mock import patch
 from types import SimpleNamespace
 
@@ -15,6 +16,35 @@ def load(name):
 
 
 class AdmissionTests(unittest.TestCase):
+    def test_recovery_prerequisite_binds_exact_artifacts_without_promoting_whole_scenario(self):
+        host=load('run'); builds={n:{'sha256':n+'-frozen'} for n in ('omabit','urbit-collector','urbit-runner','managed.test')}
+        prior={'source_commit':'frozen','schema_before':59,'passed':False,'inputs':{'candidate':copy.deepcopy(builds)},'installed_upgrade':{k:True for k in ('passed','running_stopped_intent_and_history_preserved','engine_and_container_processes_preserved','access_preserved','old_reader_refused_unchanged')}}
+        host.verify_upgrade_section(prior,'frozen',builds)
+        self.assertFalse(prior['passed'])
+        for change in ('artifact','source','section','old-reader'):
+            altered=copy.deepcopy(prior)
+            if change=='artifact':altered['inputs']['candidate']['urbit-runner']['sha256']='different'
+            if change=='source':altered['source_commit']='different'
+            if change=='section':altered['installed_upgrade']['passed']=False
+            if change=='old-reader':altered['installed_upgrade']['old_reader_refused_unchanged']=False
+            with self.assertRaisesRegex(RuntimeError,'exact passed installed-upgrade'):
+                host.verify_upgrade_section(altered,'frozen',builds)
+
+    def test_fixture_switches_existing_access_with_exact_identity_and_revision(self):
+        guest=load('guest');guest.report['runner_id']='original-runner'
+        with patch.object(guest,'run',side_effect=[SimpleNamespace(stdout='[{"name":"local","runner_id":"original-runner","revision":7}]'),SimpleNamespace(stdout='{}')]) as calls:
+            guest.switch_fixture_access(Path('/home/review/fixture-config'))
+        args=calls.call_args_list[1].args[0]
+        self.assertIn('runner-edit',args)
+        self.assertIn('7',args)
+        self.assertIn('original-runner',args)
+        self.assertNotIn('enroll',args)
+        self.assertEqual(guest.report['connection'],'bridge')
+        with patch.object(guest,'run',return_value=SimpleNamespace(stdout='[{"name":"local","runner_id":"other","revision":7}]')) as calls:
+            with self.assertRaisesRegex(RuntimeError,'enrollment binding changed'):
+                guest.switch_fixture_access(Path('/home/review/fixture-config'))
+            self.assertEqual(calls.call_count,1)
+
     def test_baseline_inspects_only_live_ids_once_and_preserves_stopped_history_elsewhere(self):
         guest=load('guest')
         rows={'instances':[{'id':'stopped','observed_state':'stopped','runtime_status':{'container_id':'historical-removed'}},{'id':'running','observed_state':'running','runtime_status':{'container_id':'owned-live'}}]}

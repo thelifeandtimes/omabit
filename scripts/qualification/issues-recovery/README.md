@@ -25,6 +25,22 @@ intent, access, engine invocation and container processes, schema59→60, unchan
 refusal by the old writer, and restart of the new installed manager. This is a
 development artifact qualification, not a new stable version or publication.
 
+After a passed exact-artifact upgrade section, `--case recovery-only` starts
+another fresh candidate-only guest with3GiB scratch, preserving that evidence
+instead of repeating its successful work. It requires `--upgrade-evidence` and
+checks the source and all four CLI/collector/runner/test-helper hashes plus every
+preservation/old-reader assertion. A passed section never changes the failed
+original scenario's result. The composed evidence still has two distinct fresh
+guests and does not prove migration of an already interrupted native project.
+
+`--artifact-source` pins an explicit frozen ancestor commit independently of the
+clean qualification-harness commit. Product binaries and test-helper source pins
+must match that artifact commit. Both commits and exact harness hashes are
+recorded. This permits a harness correction to qualify the same immutable product
+artifacts; it never transfers their result to later product binaries/source.
+The existing fixture enrollment switches transport through `runner-edit` with
+its exact runner ID/revision; duplicate enrollment protections remain intact.
+
 It then stops the running upgrade witness and creates a separate new core-pill
 project through the public restricted-SSH collector. Adding a new peer must keep
 the original peer's process intact. A separately hashed Go test manager embeds
