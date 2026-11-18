@@ -20,7 +20,7 @@ folders never resume. This is not an installed-host or manual-review procedure.
 The independent supervisor is2GiB/no-swap/25%-CPU/2700seconds. The separate
 one-VM scope is10GiB/no-swap/one-CPU with an8GiB guest, no NIC and no host HOME,
 run, runner/Docker socket or keyring mounts. Admission requires14GiB available
-memory and reserves2GiB additional storage under the explicitly selected40/48GiB
+memory and reserves1920MiB additional storage under the explicitly selected40/48GiB
 aggregate ceiling. Allocation/log/deadline checks remain active. The fixed guest
 service has a2400-second bound; the helper has a30-minute context/35-minute test
 bound. Only the newly created scope is terminated on interruption. Failed phases,
@@ -53,4 +53,12 @@ The new VM drive enables discard. Only the explicitly guarded guest trims its
 own new writable root before/after bootstrap and periodically during the helper;
 no host filesystem or retained reference image is trimmed. This releases deleted
 bootstrap/checkpoint blocks from the new overlay while retaining the declared
-2GiB scratch and48GiB aggregate refusal boundaries.
+declared scratch and48GiB aggregate refusal boundaries.
+
+The earlier2GiB scratch reservation is now1920MiB. The ended bootstrap/framework
+case retains1,667,629,056 allocated root/payload bytes, with a small separate boot
+archive. This tighter reservation leaves room for the small source/state and
+container-replacement phases; their final allocation is not yet qualified.
+Admission and five-second allocation checks still refuse/terminate only the
+fresh capsule if its declared scratch or aggregate limit is exceeded. No automatic
+pruning or increased total cap follows from this adjustment.

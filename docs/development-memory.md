@@ -11055,3 +11055,31 @@ allocated bytes. Uncertainty remains unchanged; no full old pier archive is
 claimed. A separate lossless archive preserves exact55331af executables and the
 older superseded aa71757 failed-Start full image, freeing198,737,920 bytes after
 full inflation verification. Sources/base dependencies/original logs remain.
+
+## M640 — Retain exact evidence and reduce the fresh product reservation (2026-11-18)
+
+Freeze new matching development artifacts at5eeae9a after M639's source/race,
+actual CLI/stdio parity and vet gates. No installed namespace is updated. Only
+harness/documentation follows that freeze; artifact and harness commits remain
+separate explicit bindings. Full native app qualification is still pending.
+
+Four ended read-only utilities retain exact init gzip/source, canonical module
+bundle and original SQL/proofs/logs. Their generated boot archives and copied
+modules are verified member-by-member against those retained bytes before
+retirement, freeing54,722,560 allocated bytes. An initial guard uses the wrong
+historical manifest filename and refuses before any deletion; the corrected
+selection requires the exact existing closed-store manifest. No missing evidence
+check is waived. A separate full lossless archive of the ended qualified D24 Stop
+image verifies every inflated byte and retains its shared base; only4,337,664
+bytes are saved. Original hashes and qualification limits remain authoritative.
+Read-only classification finds no shared Go-cache file byte-identical to the
+selected archived executables, so no Go-cache files are removed.
+
+The product launcher reduces its declared additional reservation from2GiB to
+1920MiB. The explained ended framework case retains1,667,629,056 root/payload
+bytes plus a small boot archive; this leaves bounded space for the two small
+source versions/state and container replacement. Their final allocation remains
+unqualified. Existing five-second scratch/48GiB aggregate refusal and interruption
+checks remain, as do one-runtime, memory/no-swap/CPU, guest-only trim and no-network
+boundaries. An over-limit new case must remain failed and preserved, never become
+permission to exceed the cap. No production, user ships or manual review changes.

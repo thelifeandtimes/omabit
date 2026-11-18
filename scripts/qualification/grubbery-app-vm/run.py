@@ -24,6 +24,10 @@ budget = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(budget)
 util = budget.util
 GIB = 1024**3
+# The ended bootstrap/framework case retains about1.56GiB of root/payload.
+# Keep additional room for small source/state/replacement phases, with the same
+# enforced refusal if this new case exceeds its reservation. Total cap is48GiB.
+SCRATCH = 1920*1024**2
 
 
 def ordinary(path, directory=False):
@@ -91,7 +95,7 @@ def main():
     if not args.worker:
         # This unit owns only the host-side supervisor. The fresh QEMU scope is
         # separate and has its own stronger memory/CPU/no-swap boundary.
-        budget.charge(2*GIB, args.storage_budget_gib*GIB)
+        budget.charge(SCRATCH, args.storage_budget_gib*GIB)
         token = uuid.uuid4().hex
         unit = 'omabit-issues-app-vm-supervisor-'+token
         log = Path('/tmp')/(unit+'.log')
@@ -129,7 +133,7 @@ def main():
     signal.signal(signal.SIGINT, terminate)
     lock = os.open('/tmp/omabit-issues-vm-runtime.lock', os.O_RDWR|os.O_CREAT|os.O_NOFOLLOW, 0o600)
     fcntl.flock(lock, fcntl.LOCK_EX|fcntl.LOCK_NB)
-    cap, scratch = args.storage_budget_gib*GIB, 2*GIB
+    cap, scratch = args.storage_budget_gib*GIB, SCRATCH
     admission = budget.charge(scratch, cap)
     available = next(int(line.split()[1])*1024 for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemAvailable:'))
     if available < 14*GIB:
