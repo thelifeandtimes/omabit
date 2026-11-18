@@ -5,16 +5,20 @@ package managed
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"reflect"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/appdev"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/apppolicy"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/grubbery"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
@@ -117,17 +121,11 @@ func TestIssuesGrubberyRuntimeRecoveryDisposableVM(t *testing.T) {
 	}
 	waitRunning := func() protocol.Instance {
 		t.Helper()
-		for deadline := time.Now().Add(time.Minute); ; {
-			snapshot, e := c.Snapshot(ctx)
-			g02Check(t, e)
-			if row, ok := appVMRunningInstanceFor(snapshot, fixture.Instance); ok {
-				return row
-			}
-			if time.Now().After(deadline) || ctx.Err() != nil {
-				t.Fatal("current process selection unresolved")
-			}
-			time.Sleep(time.Second)
-		}
+		readiness, stop := context.WithTimeout(ctx, time.Minute)
+		defer stop()
+		row, err := appRuntimeVMWaitRunning(readiness, entry.RunnerID, entry.Mode, protocol.Instance{ID: fixture.Instance, Ship: fixture.Ship, ConfigRevision: b.ConfigRevision}, c.Snapshot, time.Second)
+		g02Check(t, err)
+		return row
 	}
 	// The inherited process is already stopped. Supported Stop retires only its
 	// recorded container; Start resumes its initialized pier, never bootstrap.
@@ -364,4 +362,39 @@ func TestIssuesGrubberyRuntimeRecoveryDisposableVM(t *testing.T) {
 		t.Fatal("state changed after manager replacement")
 	}
 	save("qualification", map[string]any{"audited_replacement": true, "unknown_phase_observed_without_redispatch": true, "original_source_completed": true, "second_source_state_and_code": true, "second_same_pier_replacement_state": true, "manager_restart_audit_and_original_replay": true, "one_durable_dispatch_per_original_phase": true, "boundary": "fixed disposable pending app only; no full permits/routes/assets/peers, process-death auth cleanup, installed upgrade or DEV/production qualification"})
+}
+
+// Service Type=exec acknowledges process creation before its socket is ready.
+// Retry only bounded read-only readiness probes, never a lifecycle/source effect.
+// Wrong identity/configuration and protocol/API errors remain immediate failures.
+func appRuntimeVMWaitRunning(ctx context.Context, runner, mode string, expected protocol.Instance, probe func(context.Context) (protocol.Snapshot, error), interval time.Duration) (protocol.Instance, error) {
+	if probe == nil || interval <= 0 || !protocol.ValidID(runner) || !protocol.ValidID(mode) || !protocol.ValidID(expected.ID) || !protocol.ValidFakeShip(expected.Ship) || expected.ConfigRevision == 0 || expected.ConfigRevision > apppolicy.MaxRevision {
+		return protocol.Instance{}, errors.New("invalid fixed readiness expectation")
+	}
+	for {
+		if err := ctx.Err(); err != nil {
+			return protocol.Instance{}, err
+		}
+		snapshot, err := probe(ctx)
+		if expired := ctx.Err(); expired != nil {
+			return protocol.Instance{}, expired
+		}
+		if err == nil {
+			if snapshot.RunnerID != runner || snapshot.Mode != mode || len(snapshot.Instances) != 1 || snapshot.Instances[0].ID != expected.ID || snapshot.Instances[0].Ship != expected.Ship || snapshot.Instances[0].ConfigRevision != expected.ConfigRevision {
+				return protocol.Instance{}, errors.New("fixed readiness identity or configuration changed")
+			}
+			if row, ok := appVMRunningInstanceFor(snapshot, expected.ID); ok {
+				return row, nil
+			}
+		} else if !errors.Is(err, os.ErrNotExist) && !errors.Is(err, syscall.ECONNREFUSED) && !errors.Is(err, io.EOF) && !errors.Is(err, io.ErrUnexpectedEOF) {
+			return protocol.Instance{}, err
+		}
+		timer := time.NewTimer(interval)
+		select {
+		case <-ctx.Done():
+			timer.Stop()
+			return protocol.Instance{}, ctx.Err()
+		case <-timer.C:
+		}
+	}
 }

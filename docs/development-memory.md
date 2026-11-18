@@ -11869,3 +11869,38 @@ it is not wired into installed launch and creates no independent worker. No real
 container, recording coverage, retention, API/UI or installed upgrade is qualified.
 Three Python original-writer launch/input guards also pass. Production, manual
 DEV, existing ships and tmux remain untouched.
+
+## M670 — Retain completed app phases and failed manager-readiness gate (2026-11-18)
+
+Frozen6e810bc9/native harness15f766a completes both real Grubbery source workflows
+through CLI/official-SDK stdio. Original12 phases have36 events; second9 phases
+have27 events. Independently retained SQLite shows every phase observed with
+exactly one dispatch, no app leases and one runtime recovery audit. The original
+header and17-event prefix remain exact. Initial saved state and new public-v2
+code survive the second supported same-pier Stop/Start. Saved storage identity,
+instance configuration and revision remain exact. These are scoped native results,
+not a whole-case pass; see the [failure record](diagnostics/2026-11-18-app-runtime-cow03-readiness-failure.json).
+
+Immediately after acknowledged systemctl manager restart, the fixture's snapshot
+GET returns ENOENT for its Unix socket and the helper fails at2825.69s. It does
+not wait for Type=exec's process to listen. A startup window is plausible, but the
+eventual manager health is unobserved. Historical audit/completed-source API
+replay and final state read-back are skipped. No guest cleanup result arrives for
+over five minutes; terminate only the exact task supervisor/VM scope and retain
+the full root as unclean/failed. Both cgroups end; original VM05/pristine base and
+input payload remain unchanged. A fresh read-only,noload,noexec utility exports53
+bounded DB/WAL/SHM/proof/call files; SQLite quick_check passes. Analyze copies,
+preserving exact exports. The first utility safely refuses an absent transient
+payload mount path; the next reads its separately pinned read-only input disk.
+
+Replace immediate fatal readiness with a one-minute read-only context bound.
+Retry only missing/refused sockets and transport EOF; require exact runner/mode,
+single instance, ship and configuration plus actual current container evidence.
+Protocol, permission, identity and configuration errors fail immediately. No
+mutation is retried or deadline extended. Source/race readiness checks pass
+in1.018s and vet passes. An initial test fixture used a revision above the desk
+contract limit and hung; retain that failed source gate, terminate only its exact
+private managed.test, correct the fixture and reject invalid expectations before
+probing. The product limit is unchanged. This fixes the harness only; fresh native
+manager/replay and whole-case qualification remain pending, with no installed or
+production operation.

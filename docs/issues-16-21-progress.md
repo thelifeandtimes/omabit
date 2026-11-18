@@ -148,3 +148,13 @@ M669 passes the complete recording race suite and focused ordinary native
 admission/attachment/process race and vet gates using inert engines/private files.
 This supersedes the pending Go checks only; actual original3 writer compatibility,
 independent workers, native capture and installed qualification remain pending.
+
+M670's frozen native case completes both source versions, preserved state/new
+code through another supported same-pier replacement, and all single-dispatch
+phases in retained SQLite. It fails immediately on an absent runner socket after
+manager restart; eventual readiness/replay remains unobserved. Full failure disk,
+original prefixes and exact exports are retained; cleanup is unclean/unqualified.
+A bounded read-only readiness correction passes source/race/vet, refusing changed
+identity/configuration and invalid expectations. Fresh native qualification is
+still required; this failure does not qualify the entire workflow or current
+unwired recording changes.
