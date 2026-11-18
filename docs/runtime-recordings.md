@@ -58,3 +58,38 @@ the historical blanket rule. Authenticated owners can choose an original export;
 sharing/publishing remains an explicit choice. CLI/API and safe MCP diagnostics,
 history/recovery UI and versioned migration/support evidence remain to implement.
 No production deployment follows from this design checkpoint.
+
+## Source-only frame format
+
+`internal/recording` now supplies a development codec and non-TTY Docker stream
+decoder. It is not wired into runner launch or advertised as recording support.
+No existing persistent state is changed. The version1 segment header binds a
+session ID, exact metadata hash, segment/first-sequence, wall-clock origin and
+previous digest. Each bounded64KiB frame retains kind, sequence, observed wall
+time, monotonic elapsed time, exact bytes and a chained SHA256. These checks detect
+corruption/rebinding/reordering; file ownership and authorization remain separate
+storage responsibilities. Gap and exit payloads need their own typed validation
+in that layer.
+
+A failed/short write permanently poisons that encoder. Reads expose only complete
+verified frames and retain the last complete offset/digest on a partial tail.
+Partial data never satisfies `errors.Is(err, io.EOF)`. Continue in a new segment
+with explicit gap evidence; never truncate an original to make it readable.
+Complete encoded offsets do not claim fsync durability. Wall-clock adjustments
+may go backwards; monotonic elapsed order cannot. Segments are written by one
+serialized coordinator, with transport observation order stated honestly.
+
+The transport decoder streams arbitrarily large declared payloads through bounded
+chunks and keeps stdout/stderr identity. It preserves received partial payload
+prefixes before reporting interrupted coverage. Writer failure reports known
+unrecorded bytes and performs no replay. Transport EOF remains distinct from a
+verified process exit. Callers must verify container identity/ownership and TTY
+mode and close blocked transports on cancellation. This library opens no path,
+connects to no engine and runs no command.
+
+Source race tests cover bursts/long lines, raw atoms/fake credentials/controls/
+invalid UTF-8, NTP-style wall-clock reversal, every partial-tail boundary, injected
+short/disk-pressure writes, bounded lengths, corruption/reordering, segment links,
+interrupted Docker payloads and cancellation. Owner-private filesystem storage,
+locking/index/cursors, retention/reserves, typed lifecycle metadata, durable sync,
+actual runtime capture and APIs/UI/export remain to implement and qualify.

@@ -9572,3 +9572,29 @@ See [recording contract and evidence](runtime-recordings.md). Capsules enforce
 256MiB/no swap/one CPU/64 tasks,16MiB declared scratch and the temporary48GiB
 aggregate cap. Only known private child/server PIDs are signalled/reaped; no host
 process or tmux inventory is taken. All capsule parents exit after collection.
+
+## M587 — Recording frame/transport source foundation (2026-11-17)
+
+`internal/recording` adds bounded original-byte frames with exact session/metadata
+and segment anchors, sequence, receive wall/monotonic timing, stream kind and a
+chained digest. Failed/short writes poison the encoder; partial/corrupt readers
+retain the last complete offset/digest and never rewrite or accept a partial tail
+as EOF. Encoded completion is distinct from durable filesystem sync. Wall-clock
+reversal is allowed independently of monotonic ordering. Gap/exit payloads remain
+opaque here and need typed storage/runtime validation.
+
+A separate non-TTY Docker decoder preserves raw stream labels, bursts, long lines,
+diagnostic/fake credential text, controls and invalid UTF-8 without tail/line limits
+or redaction. Declared transport payloads stream through64KiB chunks. Interrupted
+payload prefixes remain recorded, write failure reports known missing bytes, and
+there is no automatic replay. EOF is not proof of process exit. The library opens
+no host path or transport and runs no effect. Focused race and static checks cover
+partial boundaries, corruption, rebinding/reordering, bounded lengths, injected
+disk-pressure/short writes, segment linkage and cancellation.
+
+This source foundation creates no production/DEV recording, persistent migration
+or Hello capability. Owner-private filesystem/index/locking/cursors, lifecycle and
+gap validation, retention/reserves, sync/reopen, runtime capture, APIs/UI/export and
+actual Docker/Vere/installed upgrade remain open. See
+[format scope](runtime-recordings.md). M586's backend choice stays provisional;
+these unit tests do not broaden its native fixture claim.
