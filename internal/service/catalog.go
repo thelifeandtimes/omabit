@@ -40,15 +40,25 @@ func (s *Service) Discovery() Catalog {
 	for i, b := range inventory.Bindings {
 		b.Operations = []string{}
 		b.MCPStatus = "excluded"
+		sharedEffects := map[string]bool{}
 		for _, op := range operations {
 			for _, cli := range op.CLI {
 				if cli == b.CLI {
 					b.Operations = append(b.Operations, op.ID)
 					b.ExclusionReason = ""
 					b.MCPStatus = "shared-core"
-					b.Effects = op.Effects
+					for _, effect := range op.Effects {
+						sharedEffects[effect] = true
+					}
 				}
 			}
+		}
+		if len(b.Operations) > 0 {
+			b.Effects = []string{}
+			for effect := range sharedEffects {
+				b.Effects = append(b.Effects, effect)
+			}
+			sort.Strings(b.Effects)
 		}
 		inventory.Bindings[i] = b
 	}

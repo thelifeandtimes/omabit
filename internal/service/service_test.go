@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"testing"
 
@@ -31,6 +32,7 @@ func TestCatalogAndInputGuardsStayOffline(t *testing.T) {
 		{"project.stop-reconcile.v1", `{}`, "mutation_disabled"},
 		{"runners.list.v1", `null`, "invalid_input"},
 		{"runners.list.v1", `{} {}`, "invalid_input"},
+		{"project.create-wait.v1", `{"name":"dev","runner_id":"runner","plan":{},"request_id":"parent","timeout_millis":30001}`, "invalid_input"},
 	} {
 		out := s.Call(context.Background(), tc.id, json.RawMessage(tc.input))
 		if out.Error == nil || out.Error.Code != tc.code || out.Error.Dispatch != "not-dispatched" {
@@ -45,6 +47,22 @@ func TestCatalogAndInputGuardsStayOffline(t *testing.T) {
 			t.Fatalf("incomplete descriptor %+v", d)
 		}
 	}
+}
+
+func TestSharedLegacyCreationBindingRetainsAllEffects(t *testing.T) {
+	s, err := New(Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, binding := range s.Discovery().CLIBindings {
+		if binding.CLI == "urbit-collector project-create" {
+			if len(binding.Operations) != 2 || !slices.Contains(binding.Effects, "journal-write") || !slices.Contains(binding.Effects, "runtime-mutation") || !slices.Contains(binding.Effects, "network-download") {
+				t.Fatal("shared legacy alias underreported its effects", binding)
+			}
+			return
+		}
+	}
+	t.Fatal("legacy creation binding missing")
 }
 
 func TestCatalogAccountsForEveryDocumentedCLI(t *testing.T) {

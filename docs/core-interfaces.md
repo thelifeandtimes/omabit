@@ -22,8 +22,8 @@ inventory/status/recovery source/checkpoints, Stop diagnosis/reconciliation,
 offline fake-project planning, project reservation/lifecycle/coordinated recovery,
 application preflight/policy, desk discovery/settings/status/receipt/reconciliation,
 and existing desk review/plan/create/commit/adopt/release/frontend/receiver
-primitives, plus bounded local source staging from explicitly allowed roots.
-Ship routes are read-only. Compound project-create, sanitized snapshot/watch/log exports, broader private
+primitives, bounded creation handles and local source staging from explicitly allowed roots.
+Ship routes are read-only. Sanitized snapshot/watch/log exports, broader private
 projects, named qualification, credentials, policy authoring, destructive
 maintenance and host installation remain explicit exclusions or later slices.
 This is not a claim of complete issue19 parity.
@@ -56,6 +56,31 @@ the exact stage ID/digest after a lost reply and read `desk.stage-status.v1` wit
 requiring the local source again. Definite pre-upload refusals are distinguished
 from transport uncertainty. A replaced root pathname cannot rebind a running
 server's directory handle.
+
+Guided creation shares its coordinator and deterministic phase IDs with the
+legacy `urbit-collector project-create` progress loop. Call `project.plan.v1`
+first, then retain the complete canonical plan, target and parent request ID.
+`project.create-begin.v1` checks all required adapters before reserving only;
+`project.create-advance.v1` submits at most one missing native phase, with a
+90-second client bound. Cache preparation can download only the compiled pinned
+runtime inputs before the first prepare phase. Pending, failed and interrupted
+phases return their original receipt instead of being resubmitted. After a lost
+reply, use `project.create-status.v1` with the unchanged selection; its original
+reservation lookup cannot create a missing project. Historical `ready` describes
+initial receipts, not current fleet or application health.
+
+An optional declared `workflow` (`gall` or `grubbery`) and `app_effects` run the
+selected app preflight before reservation or advancement. Missing app APIs,
+adapters or role refuse before project creation. Omit the workflow for generic
+project creation. This advisory preflight never grants later app policy, and
+every actual app effect still has its own admission checks.
+
+`project.create-wait.v1` polls saved receipts for up to30000ms; zero requests one
+bounded read without waiting. It never advances a phase. Cancelling this wait or
+disconnecting MCP leaves runner-owned work intact. Full history, actor, revision,
+plan and derived request bindings must match; incomplete, foreign or unexpected
+history refuses further advancement. This does not introduce a second workflow
+journal or require optional protocol task extensions.
 
 The server uses pinned official Go SDK1.8.0. Its tested negotiated revisions are
 2024-11-05,2025-03-26,2025-06-18 and2025-11-25; the SDK's newer2026 protocol is
@@ -107,6 +132,14 @@ SDK stdio subprocess: CLI plan → MCP upload with deliberately discarded respon
 refuses before a second upload. Directory replacement, links and traversal have
 separate confinement tests. This fixture is inert; the native Gall gate composes
 the existing real collector/staging path with a fresh kernel separately.
+
+A separate actual CLI/stdio fixture reserves through CLI, deliberately loses an
+MCP phase response, closes MCP, reads the original handle through CLI, waits and
+continues through a new MCP process. App preflight refuses before reservation;
+generic creation works. Pending/interrupted phases cause no resubmission. Core
+race fixtures reconstruct the coordinator at every phase and reject altered or
+truncated history; cancellation/deadline tests preserve queued work. These use
+an inert protocol server, not installed-runtime durability evidence.
 
 The existing0.4.0 feature-based read contracts remain usable. New schema60 Stop
 recovery requires its advertised feature and a compatible runner; older runner

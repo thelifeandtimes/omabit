@@ -9598,3 +9598,25 @@ gap validation, retention/reserves, sync/reopen, runtime capture, APIs/UI/export
 actual Docker/Vere/installed upgrade remain open. See
 [format scope](runtime-recordings.md). M586's backend choice stays provisional;
 these unit tests do not broaden its native fixture claim.
+
+## M588 — Shared bounded project creation (2026-11-17)
+
+The legacy progress loop and new CLI/MCP begin/advance/status/wait operations now
+share one coordinator and the original deterministic native request IDs. Begin
+checks required phase adapters before reservation; optional declared application
+preflight refuses before boot, while generic projects remain usable. Advance
+submits at most one missing phase. Guarded original reservation lookup, complete
+history/actor/revision/digest checks and contiguous receipt phases prevent a new
+intent from being inferred after disconnect. Failed/interrupted phases stop at
+their original receipt. Bounded saved-receipt waits never advance or cancel work.
+Initial completed receipts do not establish current runtime/application health.
+
+Race fixtures reconstruct the coordinator at every lost phase reply and reject
+foreign, duplicate, out-of-order and truncated history. Actual CLI/official-SDK
+stdio subprocesses exercise app refusal, generic reservation, lost prepare reply,
+process exit, CLI lookup, MCP wait/reconnect, subsequent phase and interrupted
+refusal without repeating an effect. Legacy progress/resume fixtures pass.
+These are inert protocol tests; installed-runtime creation/recovery/upgrade still
+requires the separately isolated disposable guest. No new persistent workflow
+format or native lifecycle contract is introduced. This narrows M581/M585's
+compound-creation coverage gap, without claiming issue19 complete.
