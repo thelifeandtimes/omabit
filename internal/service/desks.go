@@ -14,6 +14,19 @@ type DeskInput struct {
 	InstanceID string `json:"instance_id"`
 	Desk       string `json:"desk"`
 }
+type DeskExportInput struct {
+	Target
+	Observation protocol.DeskObservation `json:"observation"`
+	Paths       []string                 `json:"paths"`
+}
+
+func (in DeskExportInput) Validate() error {
+	if in.Target.Validate() != nil || (protocol.DeskSourceExportRequest{Selection: in.Observation.Selection, Baseline: in.Observation.Observation, Paths: in.Paths}).Validate() != nil || in.Observation.RunnerID != in.RunnerID {
+		return invalid()
+	}
+	return nil
+}
+
 type DeskListInput struct {
 	Target
 	InstanceID string `json:"instance_id"`
@@ -75,6 +88,9 @@ type ReceiverReviewInput struct {
 
 func (s *Service) registerDesks() error {
 	var errs []error
+	errs = append(errs, selected(s, description("desk.export-source.v1", "Read explicitly selected source files at an exact reviewed Clay/runtime baseline without mounting or adopting; bytes are private source, not a sanitized export.", nil, []string{"local-metadata-read", "live-probe"}, []string{protocol.DeskSourceExportFeature}, "operator", "complete desk observation plus sorted explicit paths; runner rechecks process/pier/Clay identity and byte bounds", "read-only; ownership adoption remains an explicit separately gated operation"), func(ctx context.Context, r *collection.Registry, _ collection.Connection, in DeskExportInput) (protocol.DeskSourceExport, error) {
+		return r.ExportDeskSource(ctx, in.Name, in.RunnerID, in.Observation, in.Paths)
+	}))
 	probe := []string{"local-metadata-read", "live-probe"}
 	saved := []string{"local-metadata-read", "saved-runner-read"}
 	mutate := []string{"local-metadata-read", "live-probe", "journal-write", "runtime-mutation"}

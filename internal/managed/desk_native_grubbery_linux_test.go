@@ -150,6 +150,33 @@ func TestNativeGrubberyBootstrap(t *testing.T) {
 	_, err = registry.CreateDesk(ctx, "native", connection.RunnerID, create)
 	g02Check(t, err)
 	wait(create.Intent.ID)
+	inspected, err := registry.InspectDesk(ctx, "native", connection.RunnerID, "alpha", f.Desk)
+	g02Check(t, err)
+	exported, err := registry.ExportDeskSource(ctx, "native", connection.RunnerID, inspected.Observation, []string{"mar/hoon.hoon", "sys.kelvin"})
+	g02Check(t, err)
+	save("original-scaffold-export", exported)
+	adoptionSource := "/lab/scaffold-adoption"
+	g02Check(t, os.Mkdir(adoptionSource, 0700))
+	for _, file := range exported.Files {
+		path := filepath.Join(adoptionSource, file.Path)
+		g02Check(t, os.MkdirAll(filepath.Dir(path), 0700))
+		raw, err := file.Decode()
+		g02Check(t, err)
+		g02Check(t, os.WriteFile(path, raw, 0600))
+	}
+	adoptionStage, err := registry.PlanDeskStage(ctx, "native", connection.RunnerID, "alpha", f.Desk, adoptionSource)
+	g02Check(t, err)
+	_, err = registry.StageDesk(ctx, "native", connection.RunnerID, adoptionStage, adoptionSource)
+	g02Check(t, err)
+	adoption, err := registry.PlanDeskAdoption(ctx, "native", connection.RunnerID, adoptionStage.Intent.ID)
+	g02Check(t, err)
+	save("scaffold-adoption-plan", adoption)
+	if adoption.Review.NewCount != 2 || adoption.Review.ConflictCount != 0 {
+		t.Fatal("exact original scaffold adoption differs")
+	}
+	_, err = registry.AdoptDeskSource(ctx, "native", connection.RunnerID, adoption)
+	g02Check(t, err)
+	wait(adoption.Intent.Intent.ID)
 	stage, err := registry.PlanDeskStage(ctx, "native", connection.RunnerID, "alpha", f.Desk, source)
 	g02Check(t, err)
 	_, err = registry.StageDesk(ctx, "native", connection.RunnerID, stage, source)
@@ -232,4 +259,16 @@ func TestNativeGrubberyBootstrap(t *testing.T) {
 	// Keep this narrower than framework/app qualification, even with zero build
 	// failures. App instances, permits, routes, state and peers are untested here.
 	save("passed-bootstrap-only", true)
+}
+
+func (f *nativeDeskFixture) ExportSourceFiles(ctx context.Context, desk string, revision uint64, paths []string) ([]deskwork.ExportedFile, error) {
+	request, err := deskwork.ExportFiles(f.ship(), desk, revision, paths)
+	if err != nil {
+		return nil, err
+	}
+	value, err := f.call(ctx, request, nil)
+	if err != nil {
+		return nil, err
+	}
+	return deskwork.DecodeExportedFiles(value, paths)
 }

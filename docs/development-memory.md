@@ -9891,3 +9891,29 @@ replacement, and the original SQLite archive still matches its recorded SHA.
 The retained representation saves1581604864bytes; the public native recovery
 record explicitly links old and new overlay hashes. No guest is booted or mounted
 during this storage derivation. Native Grubbery results remain pending.
+
+## M600 — Preserve scaffold ownership before framework replacement (2026-11-17)
+
+The first fresh Grubbery gate stages the exact source, then correctly refuses its
+commit: mar/hoon.hoon and sys.kelvin differ from unowned fresh-desk scaffold files.
+No framework commit or activation is dispatched; shutdown is clean. Preserve that
+original failure. Source review separately finds the framework reads a literal
+grubbery Clay desk; random names cannot satisfy that pin. The next fresh-only gate
+uses the required name and keeps every other native namespace boundary.
+
+Add a typed, pure historical Clay source read with explicit paths and64-file,
+256KiB bounds, then API/client/collection/shared-service bindings. Operator role
+and exact process/pier/Clay baseline bracket the read. Clients reject changed
+identity, paths, revision, bytes/hash or timestamps. The output contains explicit
+canonical base64, including empty/binary bytes. An initial []byte wire shape fails
+the inferred output schema in actual interface testing; the explicit base64 field
+fixes this before native use. Source/race/static checks, actual CLI/stdio parity
+and the private API refusal/no-mutation matrix pass.
+
+The native continuation will export only the two original conflicts, stage them,
+explicitly adopt their verified equality under the existing policy gate, then
+review a new full-framework commit. This does not acquire unspecified ownership,
+mount source or replace differing files by relaxing the conflict planner. Source
+export is private operator data, not a shareable/redacted export. Its current
+fixtures do not establish native conversion or bootstrap success; those results
+remain pending. Grubbery preflight is still unavailable.

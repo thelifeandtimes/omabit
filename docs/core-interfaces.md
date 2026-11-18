@@ -67,6 +67,13 @@ requiring the local source again. Definite pre-upload refusals are distinguished
 from transport uncertainty. A replaced root pathname cannot rebind a running
 server's directory handle.
 
+`desk.export-source.v1` reads at most64explicitly selected files/256KiB from the
+exact observation returned by `desk.inspect.v1`. It requires operator role and
+`desk-source-export-v1`; binary content is canonical base64 with its SHA256.
+Process, pier, revision/hash and selected paths are checked independently. This
+is private source content, not sanitized diagnostics. It changes no ownership
+and grants no commit permission; source adoption remains separately gated.
+
 Guided creation shares its coordinator and deterministic phase IDs with the
 legacy `urbit-collector project-create` progress loop. Call `project.plan.v1`
 first, then retain the complete canonical plan, target and parent request ID.

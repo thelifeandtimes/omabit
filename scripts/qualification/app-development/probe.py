@@ -319,7 +319,8 @@ def host(a):
         available=int(next(line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemAvailable:')))*1024
         if available<8*1024**3:raise ValueError('three-peer capsule requires 8GiB available before its 6GiB cap')
     selected_desk=json.loads((previous/'guard.json').read_text())['desk'] if recovered or frontend_diagnostic else 'omabit-test-'+uuid.uuid4().hex[:8]
-    if not re.fullmatch('omabit-test-[a-f0-9]{8}',selected_desk):raise ValueError('unexpected synthetic desk')
+    if workflow_case=='grubbery-bootstrap-v1':selected_desk='grubbery'
+    if not (re.fullmatch('omabit-test-[a-f0-9]{8}',selected_desk) or workflow_case=='grubbery-bootstrap-v1' and selected_desk=='grubbery'):raise ValueError('unexpected synthetic desk')
     # Refusal happens in this process before copying inputs, transferring a pier,
     # or spawning a scope. A caller's shell error handling cannot bypass it.
     from storage import admit, measure, roots

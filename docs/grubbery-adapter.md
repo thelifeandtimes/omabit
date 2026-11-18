@@ -58,3 +58,21 @@ permission/route/served-artifact checks, resumable uncertain-write receipts,
 state-preserving update/restart, two-ship discovery and the three-member workflow.
 No live Grubbery capability, API effect or completed issue18 claim follows from
 the offline contract. Unix source mounts remain unnecessary for this source check.
+
+The first native bootstrap capsule stopped at a correct ownership conflict for
+`mar/hoon.hoon` and `sys.kelvin`; no framework commit or activation was submitted.
+The fresh kernel shut down cleanly. See the [original failure record](diagnostics/2026-11-17-grubbery-bootstrap-first-capsule.json).
+This pin also reads its own Clay source from the literal desk `grubbery`; the
+separate fresh-only gate uses that required name inside its private ship.
+
+Shared `desk.export-source.v1` provides an operator-only, bounded read of explicit
+files at the complete `observation` returned by `desk.inspect.v1`. Pass that
+unchanged observation and sorted unique `paths`. Up to64files and256KiB are
+returned as canonical `content_base64` plus SHA256, preserving binary and empty
+content. The runner brackets mark-to-MIME conversion with exact process, pier and
+Clay baseline checks. These bytes may use the mark's canonical spelling; they are
+private source, not a redacted/shareable diagnostic. The read changes no ownership,
+policy, mount or source. Stage only the original conflicting files and explicitly
+review/adopt their equality through existing adoption gates before planning the
+complete framework replacement. Never adopt a changed framework file as if it were
+the original scaffold. Native qualification of this continuation remains pending.

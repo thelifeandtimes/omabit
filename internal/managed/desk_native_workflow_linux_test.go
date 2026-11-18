@@ -58,9 +58,10 @@ func nativeDeskGuard(t *testing.T) *nativeDeskFixture {
 		t.Skip("explicit private native workflow capsule required")
 	}
 	var guard struct {
-		Namespaces map[string]string `json:"namespaces"`
-		Unit       string            `json:"unit"`
-		Workflow   bool              `json:"workflow"`
+		Namespaces   map[string]string `json:"namespaces"`
+		Unit         string            `json:"unit"`
+		Workflow     bool              `json:"workflow"`
+		WorkflowCase string            `json:"workflow_case"`
 	}
 	data, err := os.ReadFile("/guard.json")
 	g02Check(t, err)
@@ -94,7 +95,7 @@ func nativeDeskGuard(t *testing.T) *nativeDeskFixture {
 	data, err = os.ReadFile("/lab/workflow-runtime.json")
 	g02Check(t, err)
 	g02Check(t, json.Unmarshal(data, f))
-	if !strings.HasPrefix(f.Desk, "omabit-test-") || !deskwork.ValidSourceName(f.Desk) || f.VereSHA != "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0" {
+	if !(strings.HasPrefix(f.Desk, "omabit-test-") || guard.WorkflowCase == "grubbery-bootstrap-v1" && f.Desk == "grubbery") || !deskwork.ValidSourceName(f.Desk) || f.VereSHA != "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0" {
 		t.Fatal("unexpected fixture identity")
 	}
 	f.client = &http.Client{Transport: &http.Transport{Proxy: nil, DisableKeepAlives: true}, Timeout: 30 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return errors.New("redirect refused") }}

@@ -42,7 +42,7 @@ func deskRequestTimeout(path string) time.Duration {
 		return protocol.DeskStageTimeout
 	}
 	switch path {
-	case protocol.DeskObservationPath, protocol.DeskDiscoveryPath, protocol.DeskSourcePath,
+	case protocol.DeskObservationPath, protocol.DeskSourceExportPath, protocol.DeskDiscoveryPath, protocol.DeskSourcePath,
 		protocol.DeskApplicationPath, protocol.DeskReceiverStatusPath:
 		return protocol.DeskReadTimeout
 	case protocol.DeskDeploymentReviewPath, protocol.DeskCommitPath, protocol.DeskAdoptionReviewPath,
