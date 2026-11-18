@@ -84,7 +84,7 @@ func (m *memoryJournal) Append(_ context.Context, id string, revision uint64, ev
 		return grubbery.Record{}, grubbery.ErrHistory
 	}
 	m.records[id] = copyRecord(next)
-	if _, done, _ := next.Current(); done {
+	if done, _ := next.Terminal(); done {
 		n, _ := r.Plan.Binding.Namespace()
 		if m.leases[n.DeskRoot] == id {
 			delete(m.leases, n.DeskRoot)

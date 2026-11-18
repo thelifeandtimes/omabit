@@ -92,6 +92,9 @@ func DeriveOwnership(records []Record) (Ownership, error) {
 			}
 			*destination = &Origin{RequestID: r.Plan.RequestID, StepID: step.ID, EventDigest: event.Digest}
 		}
+		if r.Abandoned() {
+			continue
+		}
 		_, done, err := r.Current()
 		if err != nil {
 			return Ownership{}, ErrHistory

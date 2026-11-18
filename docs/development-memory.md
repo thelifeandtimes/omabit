@@ -10054,3 +10054,31 @@ framework/process/pier, policy and resource limits; a saved projection alone is
 never runtime authority. Safe abandonment of failed compilation before source
 activation also remains required before exposing the app workflow. No persistent
 format or advertised capability changes in this source-only slice.
+
+## M607 — Audit preactivation abandonment and freeze original60 (2026-11-18)
+
+The source coordinator can abandon a reserved intent without runtime access. Once
+writes exist, every submitted write and created-root marker must have its exact
+original after-proof, and a trusted bounded read must establish the original live
+source baseline unchanged. Unknown writes and any dispatched source activation
+refuse abandonment. Failed compile/read uncertainty can remain in immutable
+history. An appended terminal audit releases only that namespace lease; it grants
+no deletion, marker adoption or native effect. Source ownership origins remain,
+while the applied generation does not advance. A replacement uses a new original
+request/release and preserves failed staging plus live application data.
+
+Focused race tests cover cache-free terminal replay, changed baseline refusal,
+retained marker ancestry, unknown writes/activation, and stale worker dispatch CAS
+loss to abandonment. This is source-only; the durable store and native observer
+remain required. M605's completion-only lease rule is superseded by this narrow
+validated preactivation alternative. Abandonment is distinct from source-followed
+completion and cannot become application readiness.
+
+Before schema61 changes, actual frozen d24c960 source with a declared synthetic
+helper wrote a populated60 fixture containing original59 history plus a real
+linked Stop reconciliation. The isolated writer passed with no host service or
+native ship access. Its source, helper, executable, SQL and packed fixture hashes
+and row counts are recorded under testdata/grubbery-app-original60. One unexecuted
+wrong-working-directory build was classified and replaced before this run;
+private provenance records that correction. Preservation, rollback, repeated
+reopen and genuine original-reader refusal remain required for the successor.

@@ -6,6 +6,7 @@ import (
 )
 
 var (
+	ErrAbandoned     = errors.New("app operation was abandoned before activation")
 	ErrMissing       = errors.New("app operation not found")
 	ErrConflict      = errors.New("app operation binding changed")
 	ErrPhase         = errors.New("select the exact original app phase in saved progress")
@@ -48,16 +49,17 @@ func (r Proof) matches(p Plan, id string) bool {
 }
 
 type Event struct {
-	Sequence       uint64    `json:"sequence"`
-	StepID         string    `json:"step_id"`
-	State          string    `json:"state"`
-	At             time.Time `json:"at"`
-	Review         *Review   `json:"review,omitempty"`
-	Proof          *Proof    `json:"proof,omitempty"`
-	ResponseDigest string    `json:"response_digest,omitempty"`
-	Reason         string    `json:"reason,omitempty"`
-	PreviousDigest string    `json:"previous_digest"`
-	Digest         string    `json:"digest"`
+	Sequence       uint64        `json:"sequence"`
+	StepID         string        `json:"step_id"`
+	State          string        `json:"state"`
+	At             time.Time     `json:"at"`
+	Review         *Review       `json:"review,omitempty"`
+	AbandonProof   *AbandonProof `json:"abandon_proof,omitempty"`
+	Proof          *Proof        `json:"proof,omitempty"`
+	ResponseDigest string        `json:"response_digest,omitempty"`
+	Reason         string        `json:"reason,omitempty"`
+	PreviousDigest string        `json:"previous_digest"`
+	Digest         string        `json:"digest"`
 }
 
 type Record struct {
@@ -101,6 +103,9 @@ func (r Record) Validate() error {
 	states := make([]string, len(r.Plan.Steps))
 	previous := r.HeaderDigest
 	for i, event := range r.Events {
+		if i > 0 && r.Events[i-1].State == "abandoned" || event.State != "abandoned" && event.AbandonProof != nil {
+			return ErrHistory
+		}
 		if event.Sequence != uint64(i+1) || !utcTime(event.At) || event.PreviousDigest != previous || event.Digest != eventDigest(event) {
 			return ErrHistory
 		}
@@ -121,6 +126,15 @@ func (r Record) Validate() error {
 		}
 		before := states[index]
 		switch event.State {
+		case "abandoned":
+			prefix := r
+			prefix.Events = r.Events[:i]
+			prefix.Revision = uint64(i)
+			allowed, effects := prefix.abandonable()
+			current, done, err := prefix.Current()
+			if !allowed || done || err != nil || current.ID != event.StepID || event.Review != nil || event.Proof != nil || event.ResponseDigest != "" || event.Reason != "preactivation-abandoned" || effects && (event.AbandonProof == nil || !event.AbandonProof.matches(prefix)) || !effects && event.AbandonProof != nil {
+				return ErrHistory
+			}
 		case "dispatched":
 			if before != "" || event.Review == nil || !event.Review.matches(r.Plan, event.StepID) || event.Proof != nil || event.ResponseDigest != "" || event.Reason != "" {
 				return ErrHistory
@@ -194,6 +208,9 @@ func (r Record) State(stepID string) (string, error) {
 func (r Record) Current() (Step, bool, error) {
 	if r.Validate() != nil {
 		return Step{}, false, ErrHistory
+	}
+	if r.Abandoned() {
+		return Step{}, false, ErrAbandoned
 	}
 	states := map[string]string{}
 	for _, event := range r.Events {

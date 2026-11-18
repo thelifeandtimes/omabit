@@ -1,0 +1,26 @@
+package managed
+import("os";"reflect";"testing";"time";"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol")
+func TestAppOriginal60Writer(t *testing.T) {
+ if StateSchemaVersion!=60 {t.Fatal("not original60")}
+ g02Check(t,os.Mkdir("/tmp/schema-state",0700))
+ loadOriginal59StopFixture(t,"/tmp/schema-state")
+ s,err:=testOpenStore("/tmp/schema-state");g02Check(t,err)
+ original,err:=loadOperation(s.db,"op-original59-stop");g02Check(t,err)
+ selected,err:=s.projectStopSelection(s.db,"actor",original.ProjectID,original.InstanceID,original.ID);g02Check(t,err)
+ m,a:=selected.member,selected.state.Anchor
+ ns:=a.Namespace
+ o:=protocol.ProjectStopObservation{ContainerID:m.Creator.Container.ID,ContractDigest:m.Creator.Container.ContractDigest,EngineID:a.Prepared.EngineID,AnchorID:a.Prepared.Anchor.ID,BridgeID:a.Prepared.Bridge.ID,BootID:ns.BootID,NamespaceDevice:ns.Device,NamespaceInode:ns.Inode,Storage:m.Initialized,StartedAt:original.CreatedAt.Add(-time.Minute),FinishedAt:*original.FinishedAt,ObservedAt:time.Now().UTC()}
+ review,err:=selected.observedReview(o);g02Check(t,err)
+ if review.EvidenceBasis!="legacy-admission-window"{t.Fatal("invented old process binding")}
+ req:=protocol.ProjectStopReconcileRequest{RequestID:"schema60-reconcile",Review:review,ConfirmAction:true}
+ result,err:=s.commitProjectStopResolution("actor",original.ProjectID,req,review);g02Check(t,err)
+ retained,err:=loadOperation(s.db,original.ID);g02Check(t,err);if !reflect.DeepEqual(original,retained){t.Fatal("original receipt changed")}
+ g02Check(t,s.close());s,err=testOpenStore("/tmp/schema-state");g02Check(t,err);defer s.close()
+ replay,hit,err:=s.replayProjectStopResolution("actor",original.ProjectID,req);g02Check(t,err)
+ if !hit||!reflect.DeepEqual(result,replay){t.Fatal("reopen changed resolution")}
+}
+
+func TestAppOriginal60ReaderRefuses(t *testing.T) {
+ if StateSchemaVersion!=60 {t.Fatal("not original60")}
+ if s,err:=testOpenStore("/tmp/schema-state");err==nil {s.close();t.Fatal("old60 accepted newer schema")}
+}

@@ -10,11 +10,11 @@ import (
 )
 
 // Store is authoritative, durable and transactional. Create atomically claims
-// the derived app namespace until all original steps are observed. It refuses a
+// the derived app namespace until original completion or validated preactivation abandonment. It refuses a
 // different unfinished owner, never changes an existing intent, and returns
 // ErrConflict/ErrNamespaceBusy on collisions. Append commits one immutable event
 // by exact revision CAS before success and releases only that operation's lease
-// after its last observation. Implementations must return independent snapshots.
+// after its last observation or safe abandonment. Implementations must return independent snapshots.
 // This interface is not evidence that a persistent adapter has been qualified.
 type Store interface {
 	Load(context.Context, string) (Record, error)
@@ -157,7 +157,7 @@ func (e Execution) Advance(ctx context.Context, c Call) (Record, error) {
 	if err != nil {
 		return Record{}, err
 	}
-	if state != "pending" {
+	if state != "pending" || r.Abandoned() {
 		return r, nil
 	}
 	step, complete, err := r.Current()
@@ -226,7 +226,7 @@ func (e Execution) Reconcile(ctx context.Context, c Call) (Record, error) {
 	if err != nil {
 		return Record{}, err
 	}
-	if state == "observed" || state == "pending" {
+	if r.Abandoned() || state == "observed" || state == "pending" {
 		return r, nil
 	}
 	step, complete, err := r.Current()
