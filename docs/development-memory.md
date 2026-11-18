@@ -10854,3 +10854,34 @@ original writer fixtures, VM04 recovery reference, production, installed service
 existing/manual-review ships and all excluded paths remain unchanged. No runtime
 experiment remains active. Recheck2GiB VM scratch after preparing/building matching
 product transport artifacts;48GiB remains the hard goal ceiling.
+
+## M633 — Prepare an actual product Docker/CLI/stdio capsule (2026-11-18)
+
+A separate fresh VM harness now targets the actual installed runner and product
+rootless Docker/curl source transport, with no backend injection. The helper uses
+SDK staging/framework setup plus actual CLI/official-SDK stdio source operations,
+exact saved receipt parity, two maintained source versions, fixed independent
+state/code probes, supported Stop/Start with changed container ID, manager restart
+and completed-phase replay. It saves complete reviewed plans before submission.
+Only read-only state observations may repeat while the nexus loads; state writes
+and uncertain source effects are never retried. Fixed state probes use the existing
+operator code endpoint and exact enabled private local route, keeping secrets
+out of proof and process arguments. No new public state API is introduced.
+
+Four no-effect host/guest guard tests pass; the Go helper compiles/skips outside
+its explicit scenario/user/QEMU guard, and managed Go vet passes. This is prepared,
+not native product qualification. It requires clean matching collector/runner/CLI
+and source-pinned helper before launch. The fresh standalone base, complete frozen
+framework and runtime/pill must be reverified. Historical bootstrap Kind remains
+"recommended" for an explicit uploaded pill; this case selects the standard
+f8b08c pill rather than the Apps pill, matching the prior native source gate.
+
+One separate bounded VM uses8GiB guest/10GiB scope memory, no swap/one CPU, no NIC,
+no host HOME/run/runner/engine/keyring mounts, and a2GiB storage reservation under
+the temporary48GiB goal cap. Admission requires12GiB available memory; allocation,
+log and deadline monitors remain active. The independent host supervisor has
+512MiB/no-swap/25%-CPU/2700seconds; the guest helper has a30-minute context and
+35-minute test bound, with2400-second guest/2500-second host bounds. Only its own
+fresh scope is signalled on interruption. No production/DEV service is targeted.
+Product transport, workflow failures, pending-phase rebinding, durable auth cleanup,
+permits/alias/routes/assets/peers and matching installed upgrade remain pending.
