@@ -23,6 +23,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/apppolicy"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/deskwork"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/eyre"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
@@ -30,6 +31,12 @@ import (
 // publication. Lifecycle is synthetic. The outer fresh-kernel supervisor owns
 // process shutdown; a lost install reply only permits bounded reconciliation.
 func TestNativeGrubberyBootstrap(t *testing.T) {
+	nativeGrubberyBootstrap(t, "grubbery-bootstrap-v1", nil)
+}
+func TestNativeGrubberyAppContract(t *testing.T) {
+	nativeGrubberyBootstrap(t, "grubbery-app-contract-v1", nativeGrubberyAppContract)
+}
+func nativeGrubberyBootstrap(t *testing.T, workflowCase string, after func(*testing.T, context.Context, *nativeDeskFixture, *eyre.Client, func(string, any))) {
 	f := nativeDeskGuard(t)
 	var guard struct {
 		WorkflowCase string `json:"workflow_case"`
@@ -43,12 +50,15 @@ func TestNativeGrubberyBootstrap(t *testing.T) {
 	g02Check(t, json.Unmarshal(data, &guard))
 	framework, err := appdev.ReadFramework(appdev.GrubberyFramework)
 	g02Check(t, err)
-	if guard.WorkflowCase != "grubbery-bootstrap-v1" || guard.Inputs.Commit != framework.Commit || guard.Inputs.Digest != framework.Source.Digest {
+	if guard.WorkflowCase != workflowCase || guard.Inputs.Commit != framework.Commit || guard.Inputs.Digest != framework.Source.Digest {
 		t.Fatal("explicit fresh pinned Grubbery bootstrap capsule required")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 12*time.Minute)
 	defer cancel()
 	proof := map[string]any{"scope": "fresh kernel/bootstrap only; synthetic lifecycle; no app deployment/permits/publication"}
+	if after != nil {
+		proof["scope"] = "fresh kernel/bootstrap and fixed app contract experiment; synthetic lifecycle; no product app adapter, permits, routes or peers"
+	}
 	save := func(name string, value any) {
 		t.Helper()
 		proof[name] = value
@@ -259,6 +269,9 @@ func TestNativeGrubberyBootstrap(t *testing.T) {
 	// Keep this narrower than framework/app qualification, even with zero build
 	// failures. App instances, permits, routes, state and peers are untested here.
 	save("passed-bootstrap-only", true)
+	if after != nil {
+		after(t, ctx, f, owner, save)
+	}
 }
 
 func (f *nativeDeskFixture) ExportSourceFiles(ctx context.Context, desk string, revision uint64, paths []string) ([]deskwork.ExportedFile, error) {

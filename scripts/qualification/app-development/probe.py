@@ -15,6 +15,8 @@ import time
 import urllib.request
 import uuid
 
+GRUBBERY_CASES = ('grubbery-bootstrap-v1', 'grubbery-app-contract-v1')
+
 VERE_SHA = 'b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0'
 PILL_SHA = 'f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b'
 def sha(path):
@@ -100,13 +102,13 @@ def inside():
                 if not g.get('recover_receiver_boot'):
                     with (lab/'workflow.log').open('wb') as workflow_log:
                         case=g.get('workflow_case','desk-workflow-v1')
-                        names={'desk-workflow-v1':'TestNativeDeskWorkflow','gall-state-v2':'TestNativeGallSampleWorkflow','grubbery-bootstrap-v1':'TestNativeGrubberyBootstrap'}
+                        names={'desk-workflow-v1':'TestNativeDeskWorkflow','gall-state-v2':'TestNativeGallSampleWorkflow','grubbery-bootstrap-v1':'TestNativeGrubberyBootstrap','grubbery-app-contract-v1':'TestNativeGrubberyAppContract'}
                         if case not in names:raise RuntimeError('unsupported named workflow case')
-                        if case in ('gall-state-v2','grubbery-bootstrap-v1'):
+                        if case in ('gall-state-v2',)+GRUBBERY_CASES:
                             from gall_control import read_request, validate_restart, write_receipt
-                            workflow=subprocess.Popen(['/artifacts/workflow.test','-test.run=^'+names[case]+'$','-test.v','-test.timeout=13m' if case=='grubbery-bootstrap-v1' else '-test.timeout=9m'],
+                            workflow=subprocess.Popen(['/artifacts/workflow.test','-test.run=^'+names[case]+'$','-test.v','-test.timeout=13m' if case in GRUBBERY_CASES else '-test.timeout=9m'],
                                                       stdout=workflow_log,stderr=subprocess.STDOUT)
-                            deadline=time.monotonic()+(800 if case=='grubbery-bootstrap-v1' else 550)
+                            deadline=time.monotonic()+(800 if case in GRUBBERY_CASES else 550)
                             handled=set()
                             while workflow.poll() is None:
                                 if time.monotonic()>deadline:workflow.kill();workflow.wait();raise RuntimeError('named native workflow deadline')
@@ -258,10 +260,10 @@ def inside():
 def host(a):
     frontend_diagnostic=getattr(a,'frontend_diagnostic',False)
     workflow_case=getattr(a,'workflow_case','desk-workflow-v1')
-    if workflow_case not in ('desk-workflow-v1','gall-state-v2','grubbery-bootstrap-v1'):raise ValueError('unsupported named workflow case')
+    if workflow_case not in ('desk-workflow-v1','gall-state-v2')+GRUBBERY_CASES:raise ValueError('unsupported named workflow case')
     framework_source=getattr(a,'framework_source',None)
-    if framework_source and workflow_case!='grubbery-bootstrap-v1':raise ValueError('framework source is only for the explicit Grubbery bootstrap gate')
-    if workflow_case=='grubbery-bootstrap-v1':
+    if framework_source and workflow_case not in GRUBBERY_CASES:raise ValueError('framework source is only for the explicit Grubbery bootstrap gate')
+    if workflow_case in GRUBBERY_CASES:
         if not framework_source or not a.workflow_binary or a.resume_from or a.receivers or a.recover_receiver_boot or frontend_diagnostic or a.release_source:
             raise ValueError('Grubbery bootstrap requires only a fresh single-peer capsule, workflow binary and exact framework source')
         from grubbery_inputs import verify_framework_source
@@ -319,18 +321,18 @@ def host(a):
         available=int(next(line.split()[1] for line in Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemAvailable:')))*1024
         if available<8*1024**3:raise ValueError('three-peer capsule requires 8GiB available before its 6GiB cap')
     selected_desk=json.loads((previous/'guard.json').read_text())['desk'] if recovered or frontend_diagnostic else 'omabit-test-'+uuid.uuid4().hex[:8]
-    if workflow_case=='grubbery-bootstrap-v1':selected_desk='grubbery'
-    if not (re.fullmatch('omabit-test-[a-f0-9]{8}',selected_desk) or workflow_case=='grubbery-bootstrap-v1' and selected_desk=='grubbery'):raise ValueError('unexpected synthetic desk')
+    if workflow_case in GRUBBERY_CASES:selected_desk='grubbery'
+    if not (re.fullmatch('omabit-test-[a-f0-9]{8}',selected_desk) or workflow_case in GRUBBERY_CASES and selected_desk=='grubbery'):raise ValueError('unexpected synthetic desk')
     # Refusal happens in this process before copying inputs, transferring a pier,
     # or spawning a scope. A caller's shell error handling cannot bypass it.
     from storage import admit, measure, roots
     # Read-only frontend diagnosis transfers one stopped pier and adds no new
     # workflow binary or desks:1GiB covers one generated epoch plus pinned inputs.
     scratch_limit=1024**3 if frontend_diagnostic else (768*1024**2 if recovered else 2*1024**3)
-    if workflow_case=='grubbery-bootstrap-v1':scratch_limit=1536*1024**2
+    if workflow_case in GRUBBERY_CASES:scratch_limit=1536*1024**2
     storage_budget=getattr(a,'storage_budget_gib',40)*1024**3
     def admit_scope(additional):
-        if workflow_case not in ('gall-state-v2','grubbery-bootstrap-v1'):return admit(additional,budget_bytes=storage_budget)
+        if workflow_case not in ('gall-state-v2',)+GRUBBERY_CASES:return admit(additional,budget_bytes=storage_budget)
         # This named source gate uses the shared compiler/module caches. Charge
         # their whole allocation conservatively, including unrelated entries,
         # without pruning or changing another project's cache.
@@ -345,7 +347,7 @@ def host(a):
     (out/'storage-admission.json').write_text(json.dumps(storage_admission,indent=2)+'\n')
     for source,name in [(a.vere,'vere'),(a.pill,'boot.pill'),(Path(__file__),'probe.py'),(a.requests,'requests.json')]:shutil.copyfile(source,art/name)
     if sha(art/'vere')!=VERE_SHA or sha(art/'boot.pill')!=PILL_SHA:raise ValueError('copied frozen input mismatch')
-    if workflow_case in ('gall-state-v2','grubbery-bootstrap-v1'):
+    if workflow_case in ('gall-state-v2',)+GRUBBERY_CASES:
         shutil.copyfile(Path(__file__).with_name('gall_control.py'),art/'gall_control.py')
     if a.receivers:
         if not a.workflow_binary or not a.release_source:raise ValueError('receivers require the assembled release workflow')
@@ -354,7 +356,7 @@ def host(a):
     if a.workflow_binary:
         if a.workflow_binary.is_symlink() or not a.workflow_binary.is_file():raise ValueError('physical workflow binary required')
         shutil.copyfile(a.workflow_binary,art/'workflow.test');(art/'workflow.test').chmod(0o700)
-    if workflow_case=='grubbery-bootstrap-v1':
+    if workflow_case in GRUBBERY_CASES:
         shutil.copytree(framework_source,art/'framework-source',symlinks=True)
         if verify_framework_source(art/'framework-source',framework_definition)!=framework_inputs:raise ValueError('copied framework source changed')
         if verify_framework_source(framework_source,framework_definition)!=framework_inputs:raise ValueError('original framework source changed')
@@ -372,7 +374,7 @@ def host(a):
     g['resume']=previous is not None
     g['workflow']=bool(a.workflow_binary)
     g['workflow_case']=workflow_case
-    if workflow_case=='grubbery-bootstrap-v1':g['framework_inputs']=framework_inputs
+    if workflow_case in GRUBBERY_CASES:g['framework_inputs']=framework_inputs
     g['receivers']=a.receivers
     g['recover_receiver_boot']=bool(recovered)
     g['recovered_publisher']=recovered
@@ -404,7 +406,7 @@ def host(a):
                     (out/'admission.json').write_text(json.dumps(values));(lab/'admitted').write_text(g['unit']);break
                 time.sleep(.1)
             else:raise RuntimeError('scope admission failed')
-            end=time.monotonic()+(1200 if a.receivers else (1100 if workflow_case=='grubbery-bootstrap-v1' else (850 if workflow_case=='gall-state-v2' else 550)))
+            end=time.monotonic()+(1200 if a.receivers else (1100 if workflow_case in GRUBBERY_CASES else (850 if workflow_case=='gall-state-v2' else 550)))
             next_storage_check=0
             while child.poll() is None:
                 if time.monotonic()>end:raise RuntimeError('outer deadline')
@@ -424,4 +426,4 @@ def host(a):
             if child.poll() is None:os.killpg(child.pid,signal.SIGTERM);child.wait(timeout=10)
     (out/'exit.json').write_text(json.dumps({'exit':rc}));print(json.dumps({'output':str(out),'exit':rc}));return rc
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--storage-budget-gib',type=int,choices=(40,48),default=40);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--recover-receiver-boot',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--workflow-case',choices=('desk-workflow-v1','gall-state-v2','grubbery-bootstrap-v1'),default='desk-workflow-v1');p.add_argument('--receivers',action='store_true');p.add_argument('--frontend-diagnostic',action='store_true');p.add_argument('--release-source',type=Path);p.add_argument('--framework-source',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--storage-budget-gib',type=int,choices=(40,48),default=40);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--recover-receiver-boot',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--workflow-case',choices=('desk-workflow-v1','gall-state-v2')+GRUBBERY_CASES,default='desk-workflow-v1');p.add_argument('--receivers',action='store_true');p.add_argument('--frontend-diagnostic',action='store_true');p.add_argument('--release-source',type=Path);p.add_argument('--framework-source',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))

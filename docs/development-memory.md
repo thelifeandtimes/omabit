@@ -10157,3 +10157,23 @@ Native parent creation, root markers, code compilation, followed source and
 retained application state need fresh isolated contract tests; these are research
 questions, not qualified behavior. The four nested shell-tool failures remain
 unclassified. No native app capability or installed update is implied.
+
+## M610 — Prepare a fixed fresh Grubbery app contract case (2026-11-18)
+
+A separately named native case now composes the exact framework bootstrap with
+fixed private HTTP contract checks. It records each request hash before one send,
+uses an ephemeral owner session, refuses redirects/replay and remains confined to
+the fresh guarded kernel. Proposed checks cover atomic plain-parent/marker file
+creation, separate nested-tool compilation diagnostics, a tiny local JSON-state
+nexus, immutable versioned source, a closed framework desk wrapper, explicit
+source following, a known duplicate-create refusal, code-label change and saved
+state across source update. No permit/alias/route/public app API is introduced.
+
+Launcher syntax and its11 input/isolation tests pass; the candidate is not yet
+native-qualified. Its native operations are a contract experiment with synthetic
+runner/lifecycle bindings, not the supported production adapter or public sample.
+Original bootstrap-only case identity remains separate. One fresh capsule, the
+existing4GiB/no-swap/one-core boundary, original pinned inputs, bounded deadlines
+and1.5GiB declared scratch still apply under the temporary48GiB goal cap. Unknown
+outcomes preserve original evidence and terminate through the owned supervisor;
+there is no mutation retry, source mount or adoption of existing namespaces.
