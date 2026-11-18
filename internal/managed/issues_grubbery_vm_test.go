@@ -41,12 +41,20 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 	cmdline, e2 := os.ReadFile("/proc/cmdline")
 	raw, e3 := os.ReadFile("/opt/omabit-release-input/scenario.json")
 	var scenario struct {
-		Kind   string `json:"kind"`
-		Source string `json:"source_commit"`
+		Kind        string `json:"kind"`
+		Source      string `json:"source_commit"`
+		Case        string `json:"case"`
+		Predecessor string `json:"predecessor_root_sha256"`
 	}
-	if e1 != nil || e2 != nil || e3 != nil || json.Unmarshal(raw, &scenario) != nil || scenario.Kind != "issues18-product-grubbery-v1" || len(issuesVMSourceRevision) != 40 || scenario.Source != issuesVMSourceRevision || strings.TrimSpace(string(vendor)) != "QEMU" || !strings.Contains(string(cmdline), "omabit.disposable-guest=release-upgrade-v1") || os.Geteuid() != 1000 || os.Getenv("HOME") != "/home/review" || os.Getenv("OMABIT_APP_PRODUCT_VM") != "source-state-restart-v1" {
+	decoded := json.Unmarshal(raw, &scenario) == nil
+	fixture, caseAdmitted := appVMFixtureForCase(scenario.Case)
+	if scenario.Case == "cow-fresh-nec-v1" && scenario.Predecessor != "a23f10ddc89657489d8e55eaf5e4362603848366a447dbf9f51ce192837a08f9" {
+		caseAdmitted = false
+	}
+	if e1 != nil || e2 != nil || e3 != nil || !decoded || !caseAdmitted || scenario.Kind != "issues18-product-grubbery-v1" || len(issuesVMSourceRevision) != 40 || scenario.Source != issuesVMSourceRevision || strings.TrimSpace(string(vendor)) != "QEMU" || !strings.Contains(string(cmdline), "omabit.disposable-guest=release-upgrade-v1") || os.Geteuid() != 1000 || os.Getenv("HOME") != "/home/review" || os.Getenv("OMABIT_APP_PRODUCT_VM") != fixture.Environment {
 		t.Fatal("refused outside fresh explicit product VM")
 	}
+	appVMRoot, appVMInstance := fixture.Root, fixture.Instance
 	ctx, cancel := context.WithTimeout(t.Context(), 30*time.Minute)
 	defer cancel()
 	if _, err := os.Lstat(appVMRoot); !os.IsNotExist(err) {
@@ -74,12 +82,51 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 	if hello.AccessRole != "operator" || entry.RunnerID != hello.RunnerID {
 		t.Fatal("exact operator runner required")
 	}
+	var predecessor *protocol.GrubberyAppOperation
+	if fixture.Ship == "~nec" {
+		prior, e := c.GrubberyAppOperation(ctx, entry.Identity(), stopEvidenceDigest([]byte("product-source-request-v1")))
+		g02Check(t, e)
+		if prior.Record.Plan.Binding.Target.InstanceID != "grubbery-zod" || len(prior.Record.Events) != 17 {
+			t.Fatal("wrong preserved pending predecessor")
+		}
+		predecessor = &prior
+		snapshot, e := c.Snapshot(ctx)
+		g02Check(t, e)
+		if len(snapshot.Instances) != 1 || snapshot.Instances[0].ID != "grubbery-zod" {
+			t.Fatal("new fixture requires exact old disposable inventory")
+		}
+		_, e = c.CreateFake(ctx, protocol.CreateFakeRequest{ID: fixture.Instance, Label: fixture.Instance, FakeShip: fixture.Ship, Config: protocol.Configuration{HTTPPort: fixture.Port, AmesPort: 34343, Loom: 31}, RequestID: "product-nec-create", Bootstrap: &protocol.Bootstrap{Kind: "recommended", Pill: &protocol.BootPill{SHA256: "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b", Bytes: 217421172}}})
+		g02Check(t, e)
+		op, e := c.Operate(ctx, fixture.Instance, protocol.OperationRequest{Kind: "start", RequestID: "product-nec-initial-start", ExpectedRevision: 1})
+		g02Check(t, e)
+		for deadline := time.Now().Add(10 * time.Minute); ; {
+			snapshot, e := c.Snapshot(ctx)
+			g02Check(t, e)
+			done := false
+			for _, o := range snapshot.Operations {
+				if o.ID == op.ID {
+					if o.Status == "succeeded" {
+						done = true
+					} else if o.Status != "queued" && o.Status != "running" && o.Status != "pending" {
+						t.Fatal("new fake Start failed", o.Status)
+					}
+				}
+			}
+			if done {
+				break
+			}
+			if time.Now().After(deadline) || ctx.Err() != nil {
+				t.Fatal("new fake Start unresolved")
+			}
+			time.Sleep(time.Second)
+		}
+	}
 	waitRunning := func() protocol.Instance {
 		t.Helper()
 		for deadline := time.Now().Add(time.Minute); ; {
 			snapshot, e := c.Snapshot(ctx)
 			g02Check(t, e)
-			if v, ready := appVMRunningInstance(snapshot); ready {
+			if v, ready := appVMRunningInstanceFor(snapshot, fixture.Instance); ready {
 				return v
 			}
 			if time.Now().After(deadline) || ctx.Err() != nil {
@@ -246,7 +293,7 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 		g02Check(t, e)
 		fresh, e := registry.InspectDesk(ctx, "fixture", entry.RunnerID, appVMInstance, grubbery.FrameworkDesk)
 		g02Check(t, e)
-		requestID := stopEvidenceDigest([]byte(fmt.Sprintf("product-source-request-v%d", number+1)))
+		requestID := stopEvidenceDigest([]byte(fmt.Sprintf("product-%s-source-request-v%d", fixture.Instance, number+1)))
 		var review protocol.GrubberyAppReview
 		invoke(adapter, "app.review-source.v1", service.AppSourceReviewInput{Target: selected, Request: protocol.GrubberyAppReviewRequest{Selection: fresh.Observation.Selection, FrameworkReceiptID: commit.Intent.Intent.ID, AppID: "product-state", StageID: plan.Intent.ID, RequestID: requestID}}, &review)
 		g02Check(t, review.Validate())
@@ -289,11 +336,11 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 		// operator code endpoint and an enabled exact local route. No credential
 		// response/cookie is written to proof or process arguments.
 		if number == 0 {
-			if appVMState(t, ctx, registry, entry, reply.Record, false, false, "initial") != "initial" {
+			if appVMState(t, ctx, registry, entry, fixture, reply.Record, false, false, "initial") != "initial" {
 				t.Fatal("initial product state differs")
 			}
-			appVMState(t, ctx, registry, entry, reply.Record, true, false, "product-saved-entry")
-		} else if appVMState(t, ctx, registry, entry, reply.Record, false, false, "product-saved-entry") != "product-saved-entry" || appVMState(t, ctx, registry, entry, reply.Record, false, true, "public-v2") != "public-v2" {
+			appVMState(t, ctx, registry, entry, fixture, reply.Record, true, false, "product-saved-entry")
+		} else if appVMState(t, ctx, registry, entry, fixture, reply.Record, false, false, "product-saved-entry") != "product-saved-entry" || appVMState(t, ctx, registry, entry, fixture, reply.Record, false, true, "public-v2") != "public-v2" {
 			t.Fatal("product update lost state or code label")
 		}
 	}
@@ -318,7 +365,7 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 				revision = v.ConfigRevision
 			}
 		}
-		op, e := c.Operate(ctx, appVMInstance, protocol.OperationRequest{Kind: action, RequestID: "product-" + action + "-same-pier", ExpectedRevision: revision})
+		op, e := c.Operate(ctx, appVMInstance, protocol.OperationRequest{Kind: action, RequestID: "product-" + fixture.Instance + "-" + action + "-same-pier", ExpectedRevision: revision})
 		g02Check(t, e)
 		for deadline := time.Now().Add(5 * time.Minute); ; {
 			snapshot, e = c.Snapshot(ctx)
@@ -347,10 +394,10 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 		t.Fatal("supported restart did not replace its exact container")
 	}
 	last := records[len(records)-1]
-	if appVMState(t, ctx, registry, entry, last, false, false, "product-saved-entry") != "product-saved-entry" || appVMState(t, ctx, registry, entry, last, false, true, "public-v2") != "public-v2" {
+	if appVMState(t, ctx, registry, entry, fixture, last, false, false, "product-saved-entry") != "product-saved-entry" || appVMState(t, ctx, registry, entry, fixture, last, false, true, "public-v2") != "public-v2" {
 		t.Fatal("product same-pier replacement lost state/code")
 	}
-	appVMState(t, ctx, registry, entry, last, true, false, "product-after-restart")
+	appVMState(t, ctx, registry, entry, fixture, last, true, false, "product-after-restart")
 	save("same-pier-new-container-state", true)
 	command := exec.CommandContext(ctx, "systemctl", "--user", "restart", "urbit-runner.service")
 	g02Check(t, command.Run())
@@ -361,8 +408,16 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 			t.Fatal("completed replay changed after real process/store restart")
 		}
 	}
-	if appVMState(t, ctx, registry, entry, last, false, false, "product-after-restart") != "product-after-restart" {
+	if appVMState(t, ctx, registry, entry, fixture, last, false, false, "product-after-restart") != "product-after-restart" {
 		t.Fatal("state write did not survive manager restart")
+	}
+	if predecessor != nil {
+		original, e := c.GrubberyAppOperation(ctx, entry.Identity(), predecessor.Record.Plan.RequestID)
+		g02Check(t, e)
+		if !reflect.DeepEqual(original, *predecessor) {
+			t.Fatal("fresh peer changed the original pending app receipt")
+		}
+		save("original-pending-app-receipt-unchanged", true)
 	}
 	save("qualification", map[string]any{"actual_product_docker_transport": true, "native_cli_and_stdio": true, "two_source_versions": true, "state_and_new_code": true, "same_pier_container_replacement": true, "state_after_replacement": true, "manager_restart_original_replay": true, "boundary": "single fresh ordinary fake; fixed test-only state probes; no pending-phase rebinding, process-death auth cleanup, permits/alias/routes/assets/peers or installed upgrade"})
 }
@@ -371,10 +426,13 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 // container ID; a running row with an unavailable stats sample is not ready.
 // Repeat only snapshot reads and never infer identity from an old sample.
 func appVMRunningInstance(snapshot protocol.Snapshot) (protocol.Instance, bool) {
+	return appVMRunningInstanceFor(snapshot, appVMInstance)
+}
+func appVMRunningInstanceFor(snapshot protocol.Snapshot, instance string) (protocol.Instance, bool) {
 	var out protocol.Instance
 	count := 0
 	for _, v := range snapshot.Instances {
-		if v.ID == appVMInstance {
+		if v.ID == instance {
 			out = v
 			count++
 		}
@@ -382,7 +440,7 @@ func appVMRunningInstance(snapshot protocol.Snapshot) (protocol.Instance, bool) 
 	if count != 1 || out.ProjectID != "" || out.ObservedState != "running" || out.ActiveOperationID != "" || out.RecoveryRequired || out.Resources == nil {
 		return out, false
 	}
-	selection := protocol.DeskSelection{Target: apppolicy.Target{InstanceID: appVMInstance, Desk: grubbery.FrameworkDesk}, RuntimeID: out.Resources.ContainerID, ConfigRevision: out.ConfigRevision}
+	selection := protocol.DeskSelection{Target: apppolicy.Target{InstanceID: instance, Desk: grubbery.FrameworkDesk}, RuntimeID: out.Resources.ContainerID, ConfigRevision: out.ConfigRevision}
 	return out, selection.Validate() == nil
 }
 
@@ -431,19 +489,19 @@ func TestProductVMPolicyAuthoringUsesExactShipAndInheritedDeskCreation(t *testin
 	}
 }
 
-func appVMState(t *testing.T, ctx context.Context, r *collection.Registry, entry collection.Connection, record grubbery.Record, write, label bool, value string) string {
+func appVMState(t *testing.T, ctx context.Context, r *collection.Registry, entry collection.Connection, fixture appVMFixture, record grubbery.Record, write, label bool, value string) string {
 	t.Helper()
-	routes, err := r.ShipRoutes(ctx, "fixture", entry.RunnerID, appVMInstance)
+	routes, err := r.ShipRoutes(ctx, "fixture", entry.RunnerID, fixture.Instance)
 	g02Check(t, err)
 	for _, route := range routes.Registry.Routes {
-		if !route.Enabled || route.Network != "local" || route.Scope != entry.RunnerID || (route.Origin != "http://127.0.0.1:19380" && route.Origin != "http://localhost:19380") {
+		if !route.Enabled || route.Network != "local" || route.Scope != entry.RunnerID || (route.Origin != fmt.Sprintf("http://127.0.0.1:%d", fixture.Port) && route.Origin != fmt.Sprintf("http://localhost:%d", fixture.Port)) {
 			continue
 		}
 		c := entry.Client(true)
 		defer c.Close()
 		secret, err := c.ShipRouteCode(ctx, entry.Identity(), protocol.ShipRouteCodeRequest{Selection: routes.Selection, Binding: routes.Record.Binding, RegistryRevision: routes.Registry.Revision, Route: route})
 		g02Check(t, err)
-		owner, err := eyre.New(route.Origin, "~zod")
+		owner, err := eyre.New(route.Origin, fixture.Ship)
 		g02Check(t, err)
 		defer owner.Close()
 		code := []byte(secret.Code)
@@ -519,4 +577,36 @@ func appVMState(t *testing.T, ctx context.Context, r *collection.Registry, entry
 	}
 	t.Fatal("enabled exact private local route unavailable")
 	return ""
+}
+
+type appVMFixture struct {
+	Root, Instance, Ship, Environment string
+	Port                              uint16
+}
+
+func appVMFixtureForCase(name string) (appVMFixture, bool) {
+	switch name {
+	case "source-state-restart-v1":
+		return appVMFixture{appVMRoot, appVMInstance, "~zod", "source-state-restart-v1", 19380}, true
+	case "cow-fresh-nec-v1":
+		return appVMFixture{"/home/review/omabit-app-product-nec", "grubbery-nec", "~nec", "source-state-restart-nec-v1", 19381}, true
+	}
+	return appVMFixture{}, false
+}
+func TestProductVMFixedCasesCannotReusePendingIdentityOrRequest(t *testing.T) {
+	old, ok := appVMFixtureForCase("source-state-restart-v1")
+	if !ok {
+		t.Fatal("original fixture missing")
+	}
+	fresh, ok := appVMFixtureForCase("cow-fresh-nec-v1")
+	if !ok || fresh.Root == old.Root || fresh.Instance == old.Instance || fresh.Ship == old.Ship || fresh.Port == old.Port || fresh.Environment == old.Environment {
+		t.Fatal("fresh fixture aliases original pending work")
+	}
+	if _, ok = appVMFixtureForCase("custom-host-path"); ok {
+		t.Fatal("arbitrary fixture override admitted")
+	}
+	v := protocol.Instance{ID: old.Instance, ConfigRevision: 1, ObservedState: "running", Resources: &protocol.ResourceMetrics{Status: "fresh", ContainerID: strings.Repeat("a", 64)}}
+	if _, ok = appVMRunningInstanceFor(protocol.Snapshot{Instances: []protocol.Instance{v}}, fresh.Instance); ok {
+		t.Fatal("old running identity selected for new fixture")
+	}
 }

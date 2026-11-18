@@ -11227,3 +11227,31 @@ unchanged. Source/helper/binary/file pins and [scoped evidence](diagnostics/2026
 are retained; an actual original2 fixture now runs in ordinary focused tests.
 No Docker/Vere capture, independent worker, retention, API/UI, installed upgrade,
 DEV or stable qualification is implied.
+
+## M647 — Bound a fresh peer with a read-only task-only backing (2026-11-18)
+
+VM05's copied input filesystem is classified read-only against all1459 retained
+canonical files, including exact frozen binaries/scripts/framework/runtime/pill
+and rootless bundle. An initial classifier refuses zero-inode unused lost+found
+slots before any deletion; the corrected classifier accepts only that exact empty
+slot shape. Exact hashes/source paths and small original scripts/scenario remain
+in a private manifest. Retirement frees324,628,480allocated bytes. The full
+current-failure root/pier/journal remains unchanged; its original capsule is now
+marked nonlaunchable without reconstructed inputs, never relabeled successful.
+
+Prepare a separate fresh COW capsule with that exact ended task-only root and its
+pristine base exposed read-only. Before systemd, its private PID1 suppresses
+automatic management startup and omits startup resume for the explicitly bound
+source service. A new~nec uses separate instance/port/output/request IDs and the
+public cached-pill registration API. Original~zod must stay stopped with unchanged
+StartedAt; its original pending receipt/rows/lease must stay exact. No old pending
+phase is redispatched/reconciled/rebound/abandoned. Only the new peer is operated.
+
+The fixed-case helper's first compile catches a fixture-local boolean colliding
+with the existing selected-target name; renaming fixes it. Focused pure helper
+race checks, Python refusal guards and isolated PID1 compilation pass. Declare
+896MiB additional scratch under48GiB, retaining one active runtime and existing
+memory/no-swap/CPU/deadline/no-network boundaries. The allocation and full native
+workflow are not yet qualified. This exercises a source service on a derived
+fixture, not the installer or a non-destructive installed upgrade. Production,
+manual DEV and all user's ships remain excluded. See the [capsule contract](../scripts/qualification/grubbery-app-cow/README.md).
