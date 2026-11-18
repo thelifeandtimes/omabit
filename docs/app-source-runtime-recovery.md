@@ -59,9 +59,10 @@ An actual original62 writer fixture retains dispatched/acknowledged uncertainty
 and its lease with original59/60 history. Source checks preserve every previous
 table/DDL/event/access row across repeated migration/reopen, rollback and process
 death after a committed audit with no reply. The actual62 reader refuses a
-populated63 store unchanged in the preliminary rehearsal. The reproducible
-clean-source gate is `scripts/test-app-runtime-recovery-upgrade.py`; frozen
-candidate rehearsal remains required. Add actual SQLite/HTTP and CLI/official-SDK parity for stale/concurrent
+populated63 store unchanged. The reproducible clean-source gate
+`scripts/test-app-runtime-recovery-upgrade.py` passes at frozen217275f; see the
+[exact scoped evidence](diagnostics/2026-11-18-app-runtime-audit63-source-upgrade.json).
+Add actual SQLite/HTTP and CLI/official-SDK parity for stale/concurrent
 review, role/actor drift, lost apply reply, replay without cache/runtime and exact
 single dispatch after resumed work. Do not publish private original databases.
 

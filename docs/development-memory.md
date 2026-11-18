@@ -11378,3 +11378,19 @@ unlink; the private manifest confirms1,617,776,640allocated bytes freed. A sandb
 read cannot see the DEV PID namespace; the same fixed read-only measurement with
 host authority succeeds. Charged storage is49,626,271,744bytes under48GiB, leaving
 1,913,335,808bytes. No runtime experiment or user service is operated.
+
+## M652 — Qualify the frozen audit store against the actual62 reader (2026-11-18)
+
+The clean217275f source gate builds unchanged3e780879 Go/embedded inputs/tests
+with the declared metadata-only helper and a separately pinned candidate binary.
+The actual62 writer creates acknowledged plan2 uncertainty with its exact lease
+and original59/60 ancestry. Repeated63 migration/reopen preserves all original
+rows/DDL/access/history and that uncertainty. A new metadata-only audit changes
+none of those original rows. The actual62 reader refuses the populated63 store;
+all closed original/successor files remain byte-identical before/after refusal.
+Source/helper/binary/file pins are in the [scoped report](diagnostics/2026-11-18-app-runtime-audit63-source-upgrade.json).
+
+This supersedes M651's frozen-source rehearsal deferral only. Runtime observation,
+approved process adapter, authenticated fresh review/apply, CLI/MCP and native/
+installed/DEV gates remain pending. No service, engine, runtime or user ship is
+opened. Both source fixtures and exact binaries remain retained privately.

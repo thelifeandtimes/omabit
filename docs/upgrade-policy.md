@@ -16,9 +16,10 @@ and original59/60 ancestry. Its synthetic metadata fixture is retained under
 `internal/managed/testdata/grubbery-app-original62`. Focused race checks cover
 preservation, rollback, process exit after committed audit/no response, replay,
 concurrent admission, corruption and bounded history. The actual62 reader has
-refused a populated63 store unchanged in the preliminary source rehearsal.
-`scripts/test-app-runtime-recovery-upgrade.py` requires a clean frozen candidate
-for the reproducible source gate. No downgrade through marker/table edits is
+refused a populated63 store unchanged. The clean frozen217275f rehearsal passes
+through `scripts/test-app-runtime-recovery-upgrade.py`, with
+[source/binary/fixture pins](diagnostics/2026-11-18-app-runtime-audit63-source-upgrade.json).
+No downgrade through marker/table edits is
 supported. Native recovery, matching final artifacts, installed upgrades and
 preserved DEV qualification remain required; no workflow readiness is advertised.
 
