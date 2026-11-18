@@ -10271,3 +10271,34 @@ new marker. Launcher input/isolation tests pass; native following, saved state
 and source-update behavior remain pending for this corrected case. Preserve the
 same fresh single-peer boundary and declare full scratch before launching it.
 The framework pin and unavailable nested tool modules remain unchanged.
+
+## M614 — Preserve interrupted activation and separate supervisor lifetime (2026-11-18)
+
+The second fresh app-contract capsule's caller exits143 during framework
+activation, before app checks. Its exact owned scope is confirmed inactive/dead
+with no cgroup; the scope journal records about180seconds wall time and3.3GiB
+peak below its4GiB cap. Cause is unestablished. An external command lifetime is a
+hypothesis, not proof of a runtime/app defect. No clean-shutdown/final-exit receipt
+was saved, so clean shutdown stays unconfirmed. The original activation receipt
+is uncertain; no install or app write is replayed. A copied complete SQLite/WAL
+snapshot passes quick_check while every original database file remains unchanged.
+See [the interruption record](diagnostics/2026-11-18-grubbery-app-contract-launcher-interruption.json).
+
+The source qualification launcher now converts SIGTERM into a recorded exception
+and cleanup path. An inert owned-child signal test verifies finally execution;
+all12 launcher tests pass. A separate fresh-only background entry submits a
+transient user supervisor with512MiB/no swap/25%-CPU and1250second deadline,
+retaining source/artifact/command hashes and private logs. Its child still needs
+the original independent4GiB/no-swap/one-core namespace/storage admission. This
+keeps the long native experiment independent of a short-lived CLI/MCP/tool caller;
+it does not install or change an existing service. The next capsule is fresh,
+with the same frozen f00f5fb helper and a separately frozen harness.
+
+Storage remains under48GiB without changing the ceiling. The completed first
+app-contract failure retains its full1450-file pier as a verified sparse lossless
+archive (about253MiB), and remains a failure. Original source-reader executables
+are also verified lossless archives; decompress to fresh private executables and
+verify original hashes before another actual-reader rehearsal. Preserve the full
+unconfirmed second pier and original WAL/receipts. Only verified duplicate task
+inputs are retired. These archives/tombstones grant no runtime resume authority;
+production, existing user ships and installed DEV remain unchanged.

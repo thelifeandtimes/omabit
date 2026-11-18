@@ -22,7 +22,11 @@ PILL_SHA = 'f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b'
 def sha(path):
     with Path(path).open('rb') as f: return hashlib.file_digest(f,'sha256').hexdigest()
 
+def _termination_signal(number, frame):
+    raise InterruptedError('qualification supervisor received termination signal '+str(number))
+
 def inside():
+    signal.signal(signal.SIGTERM, _termination_signal)
     class WorkflowComplete(Exception): pass
     g=json.loads(Path('/guard.json').read_text());lab=Path('/lab')
     for k in ('net','pid','mnt','user'):
@@ -258,6 +262,13 @@ def inside():
     return 0 if result['ok'] else 1
 
 def host(a):
+    previous=signal.signal(signal.SIGTERM, _termination_signal)
+    try:
+        return _host(a)
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+
+def _host(a):
     frontend_diagnostic=getattr(a,'frontend_diagnostic',False)
     workflow_case=getattr(a,'workflow_case','desk-workflow-v1')
     if workflow_case not in ('desk-workflow-v1','gall-state-v2')+GRUBBERY_CASES:raise ValueError('unsupported named workflow case')
