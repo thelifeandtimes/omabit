@@ -28,7 +28,7 @@ func recordingJobsFixture(t *testing.T, maximum int) (*RecordingJobs, string, Ma
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { store.Close() })
-	worker := RecordingWorkerIdentity{ExecutableSHA256: job.ExecutableSHA256, PID: uint32(os.Getpid()), HostBootID: m.Identity.HostBootID, Namespaces: m.Identity.RecorderNamespaces}
+	worker := RecordingWorkerIdentity{ExecutableSHA256: job.ExecutableSHA256, PID: uint32(os.Getpid()), StartTicks: 1, HostBootID: m.Identity.HostBootID, Namespaces: m.Identity.RecorderNamespaces}
 	return store, dir, job, m, worker
 }
 

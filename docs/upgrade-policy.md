@@ -36,13 +36,23 @@ claim/readiness and exact-executable admission, add the runner's downgrade guard
 and preserve old jobs/recordings through upgrade. Do not allow a schema63 binary
 to ignore newly active recording authority or replace an existing session.
 
-The unwired job-file source layer now writes immutable version1 jobs, claims and
-readiness under an explicitly supplied private test root. Unknown/corrupt or
+The unwired job-file source layer now writes immutable version1 jobs, readiness
+and finite results plus claim2 under an explicitly supplied private test root.
+Claim2 adds worker process-start ticks and service invocation. Legacy claim1
+lookup leaves those fields unknown and cannot grant current worker authority;
+actual original-writer compatibility for that boundary remains pending.
+Unknown/corrupt or
 partial originals refuse and remain retained. Lookups preserve those bytes, and
 closed claims cannot be retried as new captures. Source fsync/locking tests are
-not native crash/power-loss, self-executable or supervision qualification; these
+not native crash/power-loss or supervision qualification. The source worker now
+observes only its kernel-selected self executable/process/namespaces; source
+composition checks do not qualify independent process lifetime. These gates
 and the active-job runner downgrade/upgrade guard are still required before
 enabling this layer in installed launch.
+
+File visibility is not proof that fsync returned. Installed launch must require a
+separate post-sync supervisor acknowledgement and exact live-worker observation;
+it may not treat a readable marker or Type=exec submission as that authority.
 
 ## Development: separate app runtime recovery audits, schema63
 

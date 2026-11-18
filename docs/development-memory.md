@@ -11992,3 +11992,33 @@ unrecorded chunk is counted; the acknowledged prefix stays exact and a gap that
 cannot be saved remains explicit. Actual original1/2/3 fixture checks and vet
 pass. This qualifies source capture sizing only, with no live engine, installed
 worker or comprehensive native-recording claim.
+
+## M675 — Compose exact self-bound worker capture after durable acknowledgement (2026-11-18)
+
+The source worker hashes its kernel-selected self image, reads only own boot/
+namespace/process-start facts, verifies the account boundary, claims its original
+job and repeats exact native pre-Start admission. Capture syncs metadata/header,
+attaches output and syncs readiness before a separate trusted acknowledgement
+callback. A complete visible marker can precede successful fsync return; marker
+lookup is therefore not that acknowledgement. Failed acknowledgement leaves an
+incomplete capture and explicit gap, never successful readiness or exit.
+
+Claim2 binds worker PID/start ticks, boot/namespaces/image and service invocation
+when present. Parse Linux comm with embedded spaces/parentheses without weakening
+start identity. Legacy claim1 synthetic-shape lookup keeps omitted facts unknown
+and cannot claim anew; actual original-writer compatibility remains pending.
+Immutable finite result1 records omit raw output/private exception text and
+refuse repeated overwrite, invalid success, corruption or unknown fields.
+Cancellation interrupts only this attachment, preserving gaps without a ship
+signal. Wrong executable/refused admission/storage produces no attachment.
+
+Targeted worker/job/factory/transport race checks pass in3.484s; vet passes.
+Fixtures include actual self-executable/proc observation and inert native/data
+composition, post-sync callback order, raw long/binary/comet-unknown output,
+independent synthetic abnormal exit, stale identity, failed acknowledgement with
+a visible marker, EOF/running, blocked cancellation and saved outcomes. No real
+worker service or Docker/Vere is operated. Verify primary systemd262 notify/main
+process semantics before service work; see the [worker contract](runtime-recordings.md#source-worker-composition-and-acknowledgement).
+Independent supervision, fixed-root CLI/configuration, actual crash/lifetime,
+authenticated launch and downgrade/upgrade integration remain unwired. No
+production/manual DEV/installed state or existing ship changes.

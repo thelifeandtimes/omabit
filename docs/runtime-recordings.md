@@ -408,8 +408,8 @@ Its new session clock and its own recorder namespaces must be independently
 obtained. A matching hash is evidence association, not authentication, an engine
 probe or Start permission. The authenticated manager retains the durable job and
 lifecycle guard. Source/race/vet checks pass with inert engine/private fixtures.
-The source claim/readiness layer is described below. Actual executable checking,
-independent supervision, launch integration and upgrade guards remain required;
+The source claim/readiness and worker layers are described below. Independent
+supervision, launch integration and upgrade guards remain required;
 this codec alone starts nothing and changes no installed file or database.
 
 ## Source-only durable job handoff files
@@ -421,13 +421,15 @@ child directory entries sync before acknowledgement. A worker lock serializes a
 single claim, which syncs before further native admission. A closed/crashed claim
 refuses replay; a partial original is preserved without repair. Supplied worker
 executable/boot/namespace observations must match the job and actual attachment
-metadata. Actual self-executable observation remains the future worker's duty.
+metadata. The source worker now observes its actual self image and context.
 
 Readiness binds the exact job, session and canonical metadata hash. Replaced,
 linked, exposed, malformed or rebound files/directories refuse. Repeated readiness
 does not overwrite its original. Lookups contact no engine, mutate no file and
 remain available after writer closure. A saved ready receipt does not prove a
-currently live worker or authorize Start; supervision, fresh native admission
+currently live worker or authorize Start. A complete file may be visible before
+its writer's fsync call returns: require a separate post-sync acknowledgement.
+Supervision, fresh native admission
 and the manager's lifecycle fence remain separate mandatory checks.
 
 Source/race/vet checks pass with private temporary files and inert native seams,
@@ -446,3 +448,34 @@ transport decoder keeps its existing64KiB default and frame/metadata formats are
 unchanged. Full source/race checks preserve long binary/multiline output through
 4KiB segments and verify exact known received/unrecorded counts under pressure.
 The original1/2/3 byte fixtures stay unchanged. Native capture remains pending.
+
+## Source worker composition and acknowledgement
+
+The unwired worker function verifies the installed-account boundary, hashes the
+kernel-selected self executable, observes own host/namespace/process-start facts,
+claims its exact private job and repeats native pre-Start admission. It persists
+capture metadata/header and readiness, then calls a separate trusted supervisor
+acknowledgement only after sync returns. A readable marker with failed
+acknowledgement remains an incomplete capture. Neither file visibility nor a
+queued service invocation can authorize Start.
+
+Claim2 binds PID/start ticks, host boot, namespaces, executable and service
+invocation when present. Legacy claim1 lookups leave start/invocation unknown and
+cannot establish a live worker. Synthetic legacy-shape checks pass; actual old
+claim-writer compatibility still needs qualification. Immutable version1 result
+files contain finite status, byte counts and gap/exit/durability flags, with no
+raw output or private exception text. Lookups/repeated outcomes preserve originals.
+
+For the upcoming service, systemd's [notify contract](https://www.freedesktop.org/software/systemd/man/latest/sd_notify.html)
+and [service types](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html)
+require the main worker to acknowledge readiness through Type=notify, followed
+by exact live-worker checks in the manager. Parent/client lifetime must not own
+the capture service. The inspected host uses systemd262; no service is installed
+or started by this source checkpoint.
+
+Source/race/vet checks cover raw bootstrap/exit composition, actual self identity,
+changed job/native bindings, failed acknowledgement, EOF without terminal proof,
+storage refusal, blocked-read cancellation, immutable finite results and legacy
+unknowns. Cancellation closes only the output connection. This is not independent
+process/service, Docker/Vere, crash/power-loss or installed qualification. Fixed
+configuration/CLI, supervision and authenticated launch/upgrade integration remain.

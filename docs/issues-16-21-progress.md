@@ -180,3 +180,9 @@ M674 bounds capture reads to the configured segment's payload capacity. Full
 recording race/vet checks preserve long raw data across4KiB segments and exact
 known lost-byte counts under pressure; original formats/fixtures remain exact.
 This is source sizing qualification, not installed/native capture.
+
+M675 composes source worker self-image/start identity, exact native re-admission,
+durable capture, separate post-sync acknowledgement and immutable finite results.
+Focused race/vet checks pass; file visibility alone is explicitly insufficient.
+Claim2 keeps legacy1 omissions unknown. Independent service/CLI/launch/upgrade,
+actual old claim writer and native coverage gates remain pending.

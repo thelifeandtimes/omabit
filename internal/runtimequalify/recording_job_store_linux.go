@@ -316,13 +316,19 @@ func (s *RecordingJobs) Read(id, digest string) (ManagedRecordingJob, error) {
 type RecordingWorkerIdentity struct {
 	ExecutableSHA256 string                   `json:"executable_sha256"`
 	PID              uint32                   `json:"pid"`
+	StartTicks       uint64                   `json:"start_ticks,omitempty"`
 	HostBootID       string                   `json:"host_boot_id"`
 	Namespaces       recording.HostNamespaces `json:"namespaces"`
+	InvocationID     string                   `json:"invocation_id,omitempty"`
 }
 
 func (i RecordingWorkerIdentity) valid() bool {
+	return i.validBase() && i.StartTicks != 0
+}
+
+func (i RecordingWorkerIdentity) validBase() bool {
 	b := i.HostBootID
-	return recordingJobHex(i.ExecutableSHA256, 64) && i.PID > 1 && len(b) == 36 && b[8] == '-' && b[13] == '-' && b[18] == '-' && b[23] == '-' && recordingJobHex(stringsWithoutBootDashes(b), 32) && i.Namespaces.User != 0 && i.Namespaces.Mount != 0 && i.Namespaces.PID != 0 && i.Namespaces.Network != 0
+	return recordingJobHex(i.ExecutableSHA256, 64) && i.PID > 1 && (i.InvocationID == "" || recordingJobHex(i.InvocationID, 32)) && len(b) == 36 && b[8] == '-' && b[13] == '-' && b[18] == '-' && b[23] == '-' && recordingJobHex(stringsWithoutBootDashes(b), 32) && i.Namespaces.User != 0 && i.Namespaces.Mount != 0 && i.Namespaces.PID != 0 && i.Namespaces.Network != 0
 }
 
 func stringsWithoutBootDashes(s string) string {
@@ -340,6 +346,16 @@ type recordingJobClaim struct {
 	JobID     string                  `json:"job_id"`
 	JobSHA256 string                  `json:"job_sha256"`
 	Worker    RecordingWorkerIdentity `json:"worker"`
+}
+
+func (c recordingJobClaim) valid() bool {
+	switch c.Version {
+	case 1:
+		return c.Worker.validBase() && c.Worker.StartTicks == 0 && c.Worker.InvocationID == ""
+	case 2:
+		return c.Worker.valid()
+	}
+	return false
 }
 
 type RecordingJobReady struct {
@@ -405,7 +421,7 @@ func (s *RecordingJobs) Claim(id, digest string, worker RecordingWorkerIdentity)
 	if err = s.admit(8192); err != nil {
 		return nil, err
 	}
-	data, _ := json.Marshal(recordingJobClaim{Version: 1, JobID: id, JobSHA256: digest, Worker: worker})
+	data, _ := json.Marshal(recordingJobClaim{Version: 2, JobID: id, JobSHA256: digest, Worker: worker})
 	if err = recordingJobWrite(root, "claim.json", data); err != nil {
 		return nil, err
 	}
@@ -446,9 +462,10 @@ func (l *RecordingJobLease) Ready(m recording.Metadata) error {
 	return recordingJobWrite(l.root, "ready.json", data)
 }
 
-// ReadReady returns saved durable evidence only. It establishes neither current
-// worker/process health nor permission to Start; the manager must separately
-// verify its lifecycle fence, current native admission and exact live worker.
+// ReadReady returns saved evidence only. A complete visible file does not prove
+// that the writer's fsync call returned. The manager must also receive the
+// independent worker's post-sync acknowledgement and verify its lifecycle fence,
+// current native admission and exact live worker before Start.
 func (s *RecordingJobs) ReadReady(id, digest string) (RecordingJobReady, error) {
 	root, err := recordingJobChild(s.root, id)
 	if err != nil {
@@ -476,7 +493,7 @@ func (s *RecordingJobs) ReadReady(id, digest string) (RecordingJobReady, error) 
 	}
 	claimData, err := recordingJobRead(root, "claim.json", 4096)
 	var claim recordingJobClaim
-	if err != nil || json.Unmarshal(claimData, &claim) != nil || claim.Version != 1 || claim.JobID != id || claim.JobSHA256 != digest || !claim.Worker.valid() || claim.Worker.ExecutableSHA256 != job.ExecutableSHA256 {
+	if err != nil || json.Unmarshal(claimData, &claim) != nil || !claim.valid() || claim.JobID != id || claim.JobSHA256 != digest || claim.Worker.ExecutableSHA256 != job.ExecutableSHA256 {
 		return RecordingJobReady{}, ErrRecordingJobStorage
 	}
 	canonical, _ = json.Marshal(claim)
