@@ -262,6 +262,69 @@ type grubberyJournal struct{ s *store }
 
 var _ grubbery.Store = grubberyJournal{}
 
+func (j grubberyJournal) StageInUse(ctx context.Context, id string) (bool, error) {
+	tx, err := j.s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return false, err
+	}
+	defer tx.Rollback()
+	if err = validateGrubberyJournal(tx); err != nil {
+		return false, err
+	}
+	ids, err := appIDs(tx, "")
+	if err != nil {
+		return false, err
+	}
+	for _, request := range ids {
+		r, err := loadGrubberyRecord(tx, request)
+		if err != nil {
+			return false, err
+		}
+		if r.Plan.StageID != id {
+			continue
+		}
+		terminal, err := r.Terminal()
+		if err != nil {
+			return false, err
+		}
+		if !terminal {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// History supplies the trusted observer's entire namespace ancestry in durable
+// creation order. It never accepts a caller's ownership projection or cached
+// current row, and validates the whole journal in the same read transaction.
+func (j grubberyJournal) History(ctx context.Context, b grubbery.Binding) ([]grubbery.Record, error) {
+	n, err := b.Namespace()
+	if err != nil || b.RunnerID != j.s.runnerID || b.Mode != j.s.mode {
+		return nil, grubbery.ErrConflict
+	}
+	tx, err := j.s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	if err = validateGrubberyJournal(tx); err != nil {
+		return nil, err
+	}
+	ids, err := appIDs(tx, n.DeskRoot)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]grubbery.Record, 0, len(ids))
+	for _, id := range ids {
+		r, err := loadGrubberyRecord(tx, id)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, r)
+	}
+	return out, tx.Commit()
+}
+
 func (j grubberyJournal) Load(ctx context.Context, id string) (grubbery.Record, error) {
 	tx, err := j.s.db.BeginTx(ctx, nil)
 	if err != nil {

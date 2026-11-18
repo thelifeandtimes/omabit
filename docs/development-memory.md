@@ -10359,3 +10359,50 @@ large integers and private-error output. These are source/inert/local-HTTP check
 not real Docker transport or durable managed app workflow qualification. Next wire
 the trusted store/policy/native observer coordinator and API/CLI/MCP parity. M615
 remains the native kernel-only boundary; Grubbery preflight is still unavailable.
+
+## M617 — Coordinate checked native app evidence with immutable runner history (2026-11-18)
+
+A private native Backend now derives expected source structure and original
+ownership from the complete namespace journal in durable creation order. Actual
+root/marker, immutable source and pinned foundational bytes, source configuration,
+followed version and live-mirror bytes are checked independently. Compilation
+requires its own exact native report and cannot hide changed served source.
+Unknown paths/marks/nexuses, replaced markers, incomplete reads, mismatched
+hashes and unconfirmed owner-session cleanup refuse. Reads have explicit512-call,
+1MiB-response/4096-node bounds and require the outer deadline; no history is
+pruned to make an observation pass. Original observed code-namespace creation
+plus fresh exact foundational source proves its generated mar directory without
+another create. This narrowly supersedes the earlier exactly-one-call Dispatch
+comment: at most one app call, or a digest of that original derived provenance.
+It does not adopt an arbitrary existing directory or change old plans/events.
+
+The Linux runner factory binds this observer to authenticated role/actor, exact
+runner/mode/target/config/container/pier, original pinned framework commit,
+separate observed activation, live framework agents and fresh Commit policy.
+The lifecycle/policy mutex remains mandatory across the Execution call. Creating
+the adapter does not grant writes; read-only reconcile/abandon can remain usable
+after Commit revocation. New effects still recheck current authority. Private
+cache loading checks actor, target, workflow/settings and complete source bytes.
+A focused fixture exposed that the frontend reader requires index.html: the
+shared confined byte reader now serves both paths while frontend validation
+retains its index/MIME rules. No mark conversion or live Unix mount is introduced.
+
+The existing stage-discard API now retains a stage used by any unfinished app
+operation, including known refusal until supported abandonment. Terminal replay
+remains independent of that cache. SQLite history checks the complete journal
+in one transaction and never accepts caller ownership projections or substitutes
+request-ID sorting for durable creation order.
+
+Focused race gates pass for complete two-release source following, exact original
+ownership, generated-directory provenance, wrong native markers/paths/foundations/
+cleanup/authority, compiler/version versus mirror bytes, and uncertain native
+reply recovery without source or redispatch. Isolated runner/SQLite gates pass
+across normal reopen, unavailable source cache and revoked Commit, preserving the
+original uncertain chain and single write. Guard drift/refusal, missing activation,
+unresolved framework operations, stage retention/discard and creation-order history
+are tested. The underlying native runtime is inert in these tests; this is not
+real Docker/native coordinator or public CLI/MCP qualification. No persistent
+format/schema, live capability, installed artifact, DEV or production change.
+Next qualify the managed coordinator against the pinned fresh native kernel and
+then expose exact phase operations with shared interface evidence. M615 stays
+kernel-only evidence; Grubbery preflight remains unavailable.

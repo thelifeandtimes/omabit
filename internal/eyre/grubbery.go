@@ -17,14 +17,7 @@ import (
 // GrubberyResponse contains private native data. Body is deliberately omitted
 // from JSON: a facade must explicitly select bounded, sanitized observations.
 // An HTTP acknowledgement alone proves neither ownership nor loaded app health.
-type GrubberyResponse struct {
-	SessionCleanup string `json:"session_cleanup,omitempty"`
-	Attempted      bool   `json:"attempted"`
-	Status         int    `json:"status"`
-	ContentType    string `json:"content_type"`
-	Body           []byte `json:"-"`
-	BodySHA256     string `json:"body_sha256"`
-}
+type GrubberyResponse = grubbery.NativeResponse
 
 // GrubberyStep constructs one exact original phase from validated actual bytes.
 // Caller owns role/policy/runtime/ownership admission and durable dispatch before

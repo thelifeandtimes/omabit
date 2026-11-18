@@ -116,3 +116,27 @@ new code label and a duplicate-create rejection with unchanged original marker.
 The ship exits cleanly. This is kernel-only evidence with synthetic lifecycle;
 it does not qualify the public managed adapter, permits, local aliases, HTTP
 routes/assets, runtime restart, peers, installed upgrades or DEV deployment.
+
+The development coordinator now derives native source expectations from the
+complete immutable namespace history in database creation order. It refuses
+unowned roots, changed markers, foreign source paths and changed foundational
+bytes. Original code-namespace creation plus freshly checked pinned foundational
+source can establish its generated `mar` directory without a second create.
+No arbitrary existing directory is adopted. Source bytes, compilation and the
+followed live mirror are independently checked. Native reads stop at512 calls,
+the existing1MiB response/4096-node tree limits and the caller's deadline;
+exceeding a bound refuses without pruning history or resubmitting an effect.
+
+The runner factory rechecks authenticated operator access, management fences,
+configuration/container/pier, the original verified framework commit, separate
+observed activation, live declared agents and current application policy. Its
+new-effect admission requires Commit; read-only recovery remains available after
+Commit revocation. An unfinished app operation protects its private stage from
+the existing discard API. Owner-session cleanup must be confirmed before native
+evidence is accepted; unconfirmed cleanup cannot fabricate an acknowledgement.
+
+These are source and inert fixture gates, including actual SQLite reopen with
+lost reply, missing cache and revoked Commit. They do not qualify the native
+coordinator or resolve durable authentication cleanup after process death.
+Public app dispatch, permits/publication, routes/served artifacts, restart and
+peer tests remain required. Grubbery capability is still unavailable.
