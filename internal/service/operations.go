@@ -58,7 +58,7 @@ type PreflightInput struct {
 }
 
 type SampleInput struct {
-	Name string `json:"name"`
+	Name string `json:"name" jsonschema:"Compiled sample name: gall-state-v1 (native noun) or gall-state-v2 (direct Eyre JSON text)"`
 }
 
 func description(id, about string, cli, effects, caps []string, role, bindings, replay string) Descriptor {
@@ -198,6 +198,7 @@ func (s *Service) register() error {
 		return c.AppPolicy(ctx, e.Identity())
 	}))
 	errs = append(errs, s.registerDesks())
+	errs = append(errs, s.registerSources())
 	errs = append(errs, s.registerGuidance())
 	return errors.Join(errs...)
 }

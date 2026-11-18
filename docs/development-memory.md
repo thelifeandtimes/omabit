@@ -9496,3 +9496,52 @@ CLI/stdio parity race fixtures pass; native app state/reload/restart and current
 managed-runtime execution remain to qualify. Fresh native inputs were located in
 the existing immutable cache and independently rehashed; no new runtime was
 started. Private paths and storage measurements remain outside Git.
+
+## M584 — Gall JSON v2 native loop (2026-11-17)
+
+The separate eight-file5528-byte `gall-state-v2` sample passes the named fresh
+native loop: scoped policy, staged commit, separate native compilation, activation,
+authenticated read/poke/watch, deliberate rejection without state change, changed
+code/on-load verification, clean same-pier restart and state/session/subscription
+reconciliation. Own channels/session and final runtime shut down cleanly. Native
+effect inputs are audited before dispatch; no Unix mount occurs and autocommit
+stays inactive. Frozen v1 bytes/status remain unchanged. The separate report binds
+the definition/source/runtime/test/proof hashes and is returned with v2 through
+the shared CLI/MCP sample handler. Its authoring-time pending field is immutable;
+the later qualification report states the actual scope.
+
+Seven sequential capsules exposed and retained two unresolved activation receipts,
+a custom mark JSON mold-shadowing error, a new diagnostic's unavailable type alias,
+and missing JSON/MIME scaffold conversions before the complete pass. The final
+seventh capsule also passed cold activation before the read-only compiler probes.
+Later success
+does not rewrite uncertain originals or prove their cause. All six stop cleanly.
+See the [native diagnostic and limits](diagnostics/2026-11-17-gall-state-v2-native.md).
+Managed lifecycle is synthetic; container/installed upgrade,
+multi-peer behavior, state migration, clients and Grubbery remain unqualified.
+This supersedes M583's pending native scope only for v2's exact reported inputs.
+The48GiB temporary aggregate cap, shared-cache accounting, one active capsule,
+4GiB/no-swap/one-core boundaries were enforced. Production/manual-review state
+and all excluded ships remained untouched.
+
+## M585 — Confined shared staging parity (2026-11-17)
+
+Shared `desk.plan-stage.v1` and `desk.stage.v1` now reuse the existing collector,
+manifest/bundle and runner cache contracts. CLI/MCP startup must explicitly open
+named local source roots; calls select only relative ordinary subtrees. Pinned
+directory handles prevent root-path replacement from rebinding a running server.
+Traversal, absolute tool paths, links, unexpected files and existing byte/tree
+limits refuse. Planning transfers no source; staging changes cache/journal only,
+with no Clay commit or Unix mount. Complete source selection and native plan are
+returned together. Typed pre-upload failures establish no upload dispatch; later
+transport failures retain uncertainty and the original stage ID/digest.
+
+The actual CLI dispatcher plans, official-SDK stdio MCP uploads with its response
+deliberately discarded, and CLI reads the same verified durable receipt without
+source authority. Changed source refuses before a second upload. Confinement,
+directory replacement, links, bundles, existing collector compatibility and
+cross-interface tests pass under the race detector. These inert tests complement
+M584's real collector/staging native composition; they do not establish named
+product-client, installed upgrade or complete issue19 coverage. See
+[current interface coverage](core-interfaces.md). No new persistent format or
+policy grant is introduced by pinned local roots.

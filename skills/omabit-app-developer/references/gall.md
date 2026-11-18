@@ -6,14 +6,20 @@ the app's configured API as authoritative; there is no universal readiness route
 install publisher or Hoon test command. UI ownership is optional: a standalone
 browser game can use direct authenticated Eyre without an Omarchy frontend.
 
-The current named backend sample is available with
-`omabit call app.sample.v1 --input-json '{"name":"gall-state-v1"}'` or MCP tool
-`omabit.app.sample.v1`. It returns five bounded source files, exact staging/input
-hashes, API/state expectations and its explicit current qualification status.
+The direct Eyre JSON text sample is available with
+`omabit call app.sample.v1 --input-json '{"name":"gall-state-v2"}'` or MCP tool
+`omabit.app.sample.v1`. It returns eight bounded source files, exact staging/input
+hashes, API/state expectations and a separate digest-bound native report. The
+single-peer native loop covers authenticated read/poke/watch, rejection without
+state change, code reload, clean same-pier restart and session/subscription
+reconciliation. Managed container lifecycle, installed upgrades and multi-peer
+behavior remain separate gates. The immutable definition preserves its pending
+authoring-time status; the later evidence states its exact tested scope.
 Save only the source files into a fresh staging directory and follow its manifest;
 do not use an entire source checkout as a desk. Sample reads run no tests or
 deployment. Missing local sample support requires matching tooling, not a guessed
-download or shell installer.
+download or shell installer. The separate frozen v1 sample retains its native
+noun wire, which has no generic JSON decoder; do not send browser JSON through it.
 
 Read [the common workflow](app-development.md) before deployment. Resolve the
 current project generation, desk workflow and release configuration. A desk's
@@ -28,6 +34,12 @@ frozen inputs; `desk-review-commit`, `desk-plan-commit` and `desk-commit` bind t
 accepted delta to current source/runtime/policy. These operations create no Unix
 source mount. Save complete stage/plan IDs and receipts. Keep generated and unowned
 desk paths separate from explicitly owned app paths; do not prune the scaffold.
+
+Shared `desk.plan-stage.v1`/`desk.stage.v1` calls require an explicitly named local
+source root at CLI/MCP process startup with `--allow-source NAME:/absolute/source`.
+Select only its relative source subtree. Tool arguments cannot grant access to a
+new host path. Changed source refuses before upload; after a lost upload response,
+read `desk.stage-status.v1` with the original stage ID before further effects.
 
 Observe source revision/hash independently from `desk-app-status` and the
 app-specific read/poke/watch contract. A commit receipt verifies its defined source

@@ -45,6 +45,7 @@ type Options struct {
 	Allowed         []Target
 	EnableMutations bool
 	Guidance        *guidance.Bundle
+	Sources         []*SourceRoot
 }
 type Descriptor struct {
 	ID             string             `json:"id"`
@@ -100,6 +101,18 @@ func New(options Options) (*Service, error) {
 		seen[t] = true
 	}
 	options.Allowed = slices.Clone(options.Allowed)
+	options.Sources = slices.Clone(options.Sources)
+	seenSources := map[string]bool{}
+	for _, source := range options.Sources {
+		if source == nil || source.root == nil || !protocol.ValidID(source.Name) || seenSources[source.Name] {
+			return nil, errors.New("invalid or duplicate approved source root")
+		}
+		seenSources[source.Name] = true
+	}
+	for i, source := range options.Sources {
+		frozen := *source
+		options.Sources[i] = &frozen
+	}
 	s := &Service{options: options, operations: map[string]operation{}}
 	if err := s.register(); err != nil {
 		return nil, err
@@ -173,6 +186,12 @@ func invalid() error {
 	return &refusal{"invalid_input", "Input does not match the typed operation contract.", "Read the schema and preserve the reviewed IDs and bindings."}
 }
 func problem(err error, mutates bool) *Problem {
+	var staging *collection.DeskStageAdmissionError
+	if errors.As(err, &staging) {
+		out := problem(staging.Err, false)
+		out.Dispatch = "not-dispatched"
+		return out
+	}
 	var before *beforeEffect
 	if errors.As(err, &before) {
 		out := problem(before.err, false)

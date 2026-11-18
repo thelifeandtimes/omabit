@@ -49,6 +49,7 @@ type nativeDeskFixture struct {
 	loseReply         atomic.Bool
 	frontendUploads   atomic.Int32
 	loseFrontendReply atomic.Bool
+	auditEffect       func([]byte) error
 }
 
 func nativeDeskGuard(t *testing.T) *nativeDeskFixture {
@@ -199,6 +200,15 @@ func (f *nativeDeskFixture) call(ctx context.Context, q deskwork.LensRequest, er
 func (f *nativeDeskFixture) effect(ctx context.Context, q deskwork.LensRequest, err error) error {
 	if err != nil {
 		return err
+	}
+	if f.auditEffect != nil {
+		body, err := q.Body()
+		if err != nil {
+			return err
+		}
+		if err = f.auditEffect(body); err != nil {
+			return err
+		}
 	}
 	id := f.effects.Add(1)
 	record := func(state string) error { return f.recordEffect(id, state) }

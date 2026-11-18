@@ -99,10 +99,66 @@ def inside():
                 (lab/'workflow-runtime.json').write_text(json.dumps(fixture))
                 if not g.get('recover_receiver_boot'):
                     with (lab/'workflow.log').open('wb') as workflow_log:
-                        run=subprocess.run(['/artifacts/workflow.test','-test.run=^TestNativeDeskWorkflow$','-test.v','-test.timeout=7m'],
-                                           stdout=workflow_log,stderr=subprocess.STDOUT,timeout=440)
-                    result['workflow_exit']=run.returncode
-                    if run.returncode:raise RuntimeError('native managed workflow failed; see workflow.log')
+                        case=g.get('workflow_case','desk-workflow-v1')
+                        names={'desk-workflow-v1':'TestNativeDeskWorkflow','gall-state-v2':'TestNativeGallSampleWorkflow'}
+                        if case not in names:raise RuntimeError('unsupported named workflow case')
+                        if case=='gall-state-v2':
+                            from gall_control import read_request, validate_restart, write_receipt
+                            workflow=subprocess.Popen(['/artifacts/workflow.test','-test.run=^'+names[case]+'$','-test.v','-test.timeout=9m'],
+                                                      stdout=workflow_log,stderr=subprocess.STDOUT)
+                            deadline=time.monotonic()+550
+                            handled=set()
+                            while workflow.poll() is None:
+                                if time.monotonic()>deadline:workflow.kill();workflow.wait();raise RuntimeError('named Gall workflow deadline')
+                                control=lab/'gall-control-request.json'
+                                if control.exists():
+                                    request,request_sha=read_request(control)
+                                    if not isinstance(request,dict) or not isinstance(request.get('id'),str):raise RuntimeError('invalid owned control identity')
+                                    if request['id'] not in handled:
+                                        before=Path('/proc/'+str(child.pid)+'/stat').read_text()
+                                        start=before[before.rfind(')')+2:].split()[19]
+                                        identity=(lab/'zod').stat()
+                                        owned={'pid':child.pid,'start':start,'vere_sha256':VERE_SHA,'device':identity.st_dev,'inode':identity.st_ino,
+                                               'running':child.poll() is None,'executable':os.readlink('/proc/'+str(child.pid)+'/exe')}
+                                        validate_restart(request,owned)
+                                        handled.add(request['id'])
+                                        receipt={'version':1,'id':request['id'],'state':'stop-dispatched','original_pid':child.pid,'original_start':start,
+                                                 'device':identity.st_dev,'inode':identity.st_ino,'request_sha256':request_sha}
+                                        def control_receipt():
+                                            write_receipt(lab,receipt)
+                                        control_receipt()
+                                        child.send_signal(signal.SIGTERM)
+                                        try:child.wait(timeout=60)
+                                        except subprocess.TimeoutExpired:
+                                            receipt['state']='stop-unconfirmed';control_receipt();workflow.kill();workflow.wait();raise RuntimeError('owned runtime clean stop deadline')
+                                        if child.returncode!=0:
+                                            receipt.update(state='stop-failed',exit=child.returncode);control_receipt();workflow.kill();workflow.wait();raise RuntimeError('owned runtime did not exit cleanly')
+                                        if (lab/'zod').stat().st_ino!=identity.st_ino or (lab/'zod').stat().st_dev!=identity.st_dev:
+                                            workflow.kill();workflow.wait();raise RuntimeError('owned pier identity changed before restart')
+                                        resume=args[:args.index('-F')]+['/lab/zod']
+                                        with (lab/'vere-restart.log').open('xb') as resumed_log:
+                                            child=subprocess.Popen(resume,stdin=subprocess.DEVNULL,stdout=resumed_log,stderr=subprocess.STDOUT,start_new_session=True)
+                                        receipt.update(state='restart-dispatched',pid=child.pid);control_receipt()
+                                        end=time.monotonic()+120
+                                        while child.poll() is None and time.monotonic()<end:
+                                            try:
+                                                with opener.open('http://127.0.0.1:18081/~/host',timeout=1) as response:ready=response.read(128).strip()==b'~zod'
+                                            except OSError:ready=False
+                                            if ready:break
+                                            time.sleep(.2)
+                                        else:
+                                            receipt['state']='restart-unconfirmed';control_receipt();workflow.kill();workflow.wait();raise RuntimeError('owned same-pier restart readiness deadline')
+                                        stat=Path('/proc/'+str(child.pid)+'/stat').read_text()
+                                        receipt.update(state='succeeded',start=stat[stat.rfind(')')+2:].split()[19],exit=0,vere_sha256=VERE_SHA)
+                                        control_receipt();result['owned_restart']=receipt;save()
+                                time.sleep(.1)
+                            code=workflow.returncode
+                        else:
+                            run=subprocess.run(['/artifacts/workflow.test','-test.run=^'+names[case]+'$','-test.v','-test.timeout=7m'],
+                                               stdout=workflow_log,stderr=subprocess.STDOUT,timeout=440)
+                            code=run.returncode
+                    result['workflow_exit']=code
+                    if code:raise RuntimeError('native managed workflow failed; see workflow.log')
                 if g.get('receivers'):
                     from receivers import run_receivers
                     expected=g.get('recovered_publisher') or json.loads((lab/'workflow-proof.json').read_text())['glob-upload-committed-docket']
@@ -201,6 +257,10 @@ def inside():
 
 def host(a):
     frontend_diagnostic=getattr(a,'frontend_diagnostic',False)
+    workflow_case=getattr(a,'workflow_case','desk-workflow-v1')
+    if workflow_case not in ('desk-workflow-v1','gall-state-v2'):raise ValueError('unsupported named workflow case')
+    if workflow_case=='gall-state-v2' and (not a.workflow_binary or a.resume_from or a.receivers or a.recover_receiver_boot or frontend_diagnostic or a.release_source):
+        raise ValueError('Gall sample requires a fresh single-peer capsule and explicit workflow binary only')
     if frontend_diagnostic and (not a.resume_from or a.receivers or a.recover_receiver_boot or a.workflow_binary or a.release_source):raise ValueError('frontend diagnostic requires only one clean stopped fixture')
     out=a.output.absolute()
     if out.parent!=Path('/tmp') or not re.fullmatch('omabit-desk-probe-[a-z0-9-]+',out.name) or out.exists():raise ValueError('fresh private output required')
@@ -218,6 +278,7 @@ def host(a):
     if a.resume_from:
         previous=a.resume_from.absolute()
         if previous.parent!=Path('/tmp') or not re.fullmatch('omabit-desk-probe-[a-z0-9-]+',previous.name) or previous.is_symlink():raise ValueError('invalid prior fixture')
+        if (previous/'pruning-tombstone.json').exists():raise ValueError('pruned capsule is evidence only; reuse refused')
         if not json.loads((previous/'lab/result.json').read_text()).get('clean_shutdown') or not (previous/'exit.json').is_file():raise ValueError('prior fixture not stopped')
         report=json.loads((previous/'lab/result.json').read_text())
         if (previous/'lab/frontend-failed-proof.json').exists() and not frontend_diagnostic:raise ValueError('failed frontend verification permits read-only diagnosis only')
@@ -253,15 +314,29 @@ def host(a):
     if not re.fullmatch('omabit-test-[a-f0-9]{8}',selected_desk):raise ValueError('unexpected synthetic desk')
     # Refusal happens in this process before copying inputs, transferring a pier,
     # or spawning a scope. A caller's shell error handling cannot bypass it.
-    from storage import admit
+    from storage import admit, measure, roots
     # Read-only frontend diagnosis transfers one stopped pier and adds no new
     # workflow binary or desks:1GiB covers one generated epoch plus pinned inputs.
     scratch_limit=1024**3 if frontend_diagnostic else (768*1024**2 if recovered else 2*1024**3)
     storage_budget=getattr(a,'storage_budget_gib',40)*1024**3
-    storage_admission=admit(scratch_limit,budget_bytes=storage_budget)
+    def admit_scope(additional):
+        if workflow_case!='gall-state-v2':return admit(additional,budget_bytes=storage_budget)
+        # This named source gate uses the shared compiler/module caches. Charge
+        # their whole allocation conservatively, including unrelated entries,
+        # without pruning or changing another project's cache.
+        measured_roots=roots()
+        for path in (Path.home()/'.cache/go-build',Path.home()/'go/pkg/mod',Path(__file__).resolve().parents[3]/'build'):
+            if not path.exists():continue
+            if path.is_symlink() or not path.is_dir():raise RuntimeError('unsafe shared qualification cache root')
+            if not any(path==root or path.is_relative_to(root) for root in measured_roots):measured_roots.append(path)
+        return admit(additional,measurements=[measure(path) for path in measured_roots],budget_bytes=storage_budget)
+    storage_admission=admit_scope(scratch_limit)
     os.umask(0o077);out.mkdir();art=out/'artifacts';art.mkdir();lab=out/'lab';lab.mkdir();(lab/'home').mkdir()
     (out/'storage-admission.json').write_text(json.dumps(storage_admission,indent=2)+'\n')
     for source,name in [(a.vere,'vere'),(a.pill,'boot.pill'),(Path(__file__),'probe.py'),(a.requests,'requests.json')]:shutil.copyfile(source,art/name)
+    if sha(art/'vere')!=VERE_SHA or sha(art/'boot.pill')!=PILL_SHA:raise ValueError('copied frozen input mismatch')
+    if workflow_case=='gall-state-v2':
+        shutil.copyfile(Path(__file__).with_name('gall_control.py'),art/'gall_control.py')
     if a.receivers:
         if not a.workflow_binary or not a.release_source:raise ValueError('receivers require the assembled release workflow')
         shutil.copyfile(Path(__file__).with_name('receivers.py'),art/'receivers.py')
@@ -281,6 +356,7 @@ def host(a):
     g['frontend_diagnostic']=frontend_diagnostic
     g['resume']=previous is not None
     g['workflow']=bool(a.workflow_binary)
+    g['workflow_case']=workflow_case
     g['receivers']=a.receivers
     g['recover_receiver_boot']=bool(recovered)
     g['recovered_publisher']=recovered
@@ -312,14 +388,14 @@ def host(a):
                     (out/'admission.json').write_text(json.dumps(values));(lab/'admitted').write_text(g['unit']);break
                 time.sleep(.1)
             else:raise RuntimeError('scope admission failed')
-            end=time.monotonic()+(1200 if a.receivers else 550)
+            end=time.monotonic()+(1200 if a.receivers else (850 if workflow_case=='gall-state-v2' else 550))
             next_storage_check=0
             while child.poll() is None:
                 if time.monotonic()>end:raise RuntimeError('outer deadline')
                 usage=sum(p.stat().st_blocks*512 for p in out.rglob('*') if p.is_file())
                 if usage>g['transferred_allocated_bytes']+g['additional_scratch_limit']:raise RuntimeError('additional scratch limit exceeded')
                 if time.monotonic()>=next_storage_check:
-                    observation=admit(0,budget_bytes=storage_budget)
+                    observation=admit_scope(0)
                     (out/'storage-observed.json').write_text(json.dumps(observation,indent=2)+'\n')
                     next_storage_check=time.monotonic()+15
                 try:child.wait(timeout=2)
@@ -332,4 +408,4 @@ def host(a):
             if child.poll() is None:os.killpg(child.pid,signal.SIGTERM);child.wait(timeout=10)
     (out/'exit.json').write_text(json.dumps({'exit':rc}));print(json.dumps({'output':str(out),'exit':rc}));return rc
 if __name__=='__main__':
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--storage-budget-gib',type=int,choices=(40,48),default=40);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--recover-receiver-boot',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--receivers',action='store_true');p.add_argument('--frontend-diagnostic',action='store_true');p.add_argument('--release-source',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--storage-budget-gib',type=int,choices=(40,48),default=40);p.add_argument('--inside',action='store_true');p.add_argument('--output',type=Path);p.add_argument('--resume-from',type=Path);p.add_argument('--recover-receiver-boot',type=Path);p.add_argument('--requests',type=Path);p.add_argument('--workflow-binary',type=Path);p.add_argument('--workflow-case',choices=('desk-workflow-v1','gall-state-v2'),default='desk-workflow-v1');p.add_argument('--receivers',action='store_true');p.add_argument('--frontend-diagnostic',action='store_true');p.add_argument('--release-source',type=Path);p.add_argument('--vere',type=Path);p.add_argument('--pill',type=Path);a=p.parse_args();raise SystemExit(inside() if a.inside else host(a))

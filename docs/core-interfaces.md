@@ -22,8 +22,8 @@ inventory/status/recovery source/checkpoints, Stop diagnosis/reconciliation,
 offline fake-project planning, project reservation/lifecycle/coordinated recovery,
 application preflight/policy, desk discovery/settings/status/receipt/reconciliation,
 and existing desk review/plan/create/commit/adopt/release/frontend/receiver
-primitives. Ship routes are read-only. Source staging from local directories,
-compound project-create, sanitized snapshot/watch/log exports, broader private
+primitives, plus bounded local source staging from explicitly allowed roots.
+Ship routes are read-only. Compound project-create, sanitized snapshot/watch/log exports, broader private
 projects, named qualification, credentials, policy authoring, destructive
 maintenance and host installation remain explicit exclusions or later slices.
 This is not a claim of complete issue19 parity.
@@ -43,6 +43,19 @@ CLI subprocess parsing, runner database access, generic shell/Dojo/SQL/Docker
 escape hatch or login-code tool. Startup performs no enrollment or deployment.
 Registry reads can acquire/create their private local lock file, but never enroll
 a runner. An unavailable registry is refused instead of created.
+
+For shared source staging, add `--allow-source SOURCE_NAME:/absolute/source` to
+`mcp serve` or the individual `call`. Each root is opened and pinned at process
+startup. Discovery lists only names; calls select a relative ordinary subtree.
+Links, parent traversal and arbitrary absolute tool paths refuse. Source tree and
+bundle limits remain8192 files,32MiB per file and256MiB total. Planning reads the
+source and runner settings; upload writes the runner cache/journal, with no Clay
+commit or Unix mount. `desk.plan-stage.v1` returns a versioned source selection
+and the unchanged native stage plan. Submit both through `desk.stage.v1`. Preserve
+the exact stage ID/digest after a lost reply and read `desk.stage-status.v1` without
+requiring the local source again. Definite pre-upload refusals are distinguished
+from transport uncertainty. A replaced root pathname cannot rebind a running
+server's directory handle.
 
 The server uses pinned official Go SDK1.8.0. Its tested negotiated revisions are
 2024-11-05,2025-03-26,2025-06-18 and2025-11-25; the SDK's newer2026 protocol is
@@ -87,6 +100,13 @@ receipt through CLI after manager/store reopen with no runtime observer backend.
 This uses real API/SQLite and an inert runtime observer, not a live Urbit. CI runs
 that test explicitly with built helpers. Disposable real-runtime and matching DEV
 deployment/upgrade gates remain required before any installed-support claim.
+
+The staging parity fixture uses the actual CLI argument dispatcher and official
+SDK stdio subprocess: CLI plan → MCP upload with deliberately discarded response
+→ CLI lookup of the same durable verified cache receipt. Changed-source resubmit
+refuses before a second upload. Directory replacement, links and traversal have
+separate confinement tests. This fixture is inert; the native Gall gate composes
+the existing real collector/staging path with a fresh kernel separately.
 
 The existing0.4.0 feature-based read contracts remain usable. New schema60 Stop
 recovery requires its advertised feature and a compatible runner; older runner

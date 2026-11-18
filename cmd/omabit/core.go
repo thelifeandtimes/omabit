@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
@@ -17,6 +18,18 @@ import (
 )
 
 type allowedRunners []service.Target
+
+type sourceDirectories [][2]string
+
+func (s *sourceDirectories) String() string { return "explicit NAME:/absolute/source pairs" }
+func (s *sourceDirectories) Set(value string) error {
+	name, path, ok := strings.Cut(value, ":")
+	if !ok || !filepath.IsAbs(path) || name == "" {
+		return errors.New("--allow-source requires NAME:/absolute/source")
+	}
+	*s = append(*s, [2]string{name, path})
+	return nil
+}
 
 func (a *allowedRunners) String() string { return "explicit NAME:ID pairs" }
 func (a *allowedRunners) Set(value string) error {
@@ -33,6 +46,7 @@ func coreCommand(ctx context.Context, command string, args []string, config, ski
 	options := service.Options{ConfigDir: config, EnableMutations: command == "call"}
 	var id string
 	var input []byte
+	var sources sourceDirectories
 	if command == "mcp" {
 		if len(args) == 0 || args[0] != "serve" {
 			return 2
@@ -43,6 +57,7 @@ func coreCommand(ctx context.Context, command string, args []string, config, ski
 		mutations := f.Bool("enable-mutations", false, "expose typed mutation tools; runner role/policy still apply")
 		var allowed allowedRunners
 		f.Var(&allowed, "allow-runner", "explicit NAME:ID target allowlist; repeat for each runner")
+		f.Var(&sources, "allow-source", "explicit NAME:/absolute/source root; repeat only for approved source trees")
 		if err := f.Parse(args); err != nil {
 			if errors.Is(err, flag.ErrHelp) {
 				return 0
@@ -63,6 +78,7 @@ func coreCommand(ctx context.Context, command string, args []string, config, ski
 		f := flag.NewFlagSet("omabit call "+id, flag.ContinueOnError)
 		file := f.String("input-file", "", "bounded JSON input file; - reads stdin")
 		raw := f.String("input-json", "", "typed JSON input (mutually exclusive with input-file)")
+		f.Var(&sources, "allow-source", "explicit NAME:/absolute/source root required for local staging")
 		if err := f.Parse(args); err != nil {
 			if errors.Is(err, flag.ErrHelp) {
 				return 0
@@ -91,6 +107,14 @@ func coreCommand(ctx context.Context, command string, args []string, config, ski
 		}
 	} else if command != "operations" || len(args) != 0 {
 		return 2
+	}
+	for _, selected := range sources {
+		root, err := service.OpenSourceRoot(selected[0], selected[1])
+		if err != nil {
+			return fail(err)
+		}
+		defer root.Close()
+		options.Sources = append(options.Sources, root)
 	}
 	if command != "operations" && options.ConfigDir == "" {
 		var err error

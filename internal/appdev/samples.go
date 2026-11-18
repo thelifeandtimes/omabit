@@ -46,6 +46,26 @@ type Sample struct {
 	Source           deskwork.Manifest `json:"source"`
 	Files            []SampleSource    `json:"files"`
 	Notices          string            `json:"notices"`
+	Evidence         *SampleEvidence   `json:"evidence,omitempty"`
+}
+
+// SampleEvidence is a frozen qualification report, separate from the immutable
+// source definition's authoring-time qualification field. It does not certify a
+// different source digest, runtime input, lifecycle backend or deployment.
+type SampleEvidence struct {
+	Version          int      `json:"version"`
+	ID               string   `json:"id"`
+	Status           string   `json:"status"`
+	DefinitionSHA256 string   `json:"definition_sha256"`
+	SourceDigest     string   `json:"source_digest"`
+	Scope            string   `json:"scope"`
+	VereSHA256       string   `json:"vere_sha256"`
+	PillSHA256       string   `json:"pill_sha256"`
+	WorkflowSHA256   string   `json:"workflow_sha256"`
+	ProofSHA256      string   `json:"proof_sha256"`
+	CleanShutdown    bool     `json:"clean_shutdown"`
+	Claims           []string `json:"claims"`
+	NotQualified     []string `json:"not_qualified"`
 }
 
 func sampleHash(data []byte) string { sum := sha256.Sum256(data); return hex.EncodeToString(sum[:]) }
@@ -55,7 +75,11 @@ func sampleHash(data []byte) string { sum := sha256.Sum256(data); return hex.Enc
 // live mount until explicitly staged through the normal policy-enforced path.
 func ReadSample(name string) (Sample, error) {
 	var out Sample
-	if name != "gall-state-v1" {
+	apiVersion, fileCount := 1, 5
+	if name == "gall-state-v2" {
+		apiVersion, fileCount = 2, 8
+	}
+	if name != "gall-state-v1" && name != "gall-state-v2" {
 		return out, errors.New("unsupported application sample")
 	}
 	root := "samples/" + name + "/"
@@ -67,7 +91,7 @@ func ReadSample(name string) (Sample, error) {
 		return out, errors.New("invalid frozen sample definition")
 	}
 	d := out.Definition
-	if d.Version != 1 || d.Name != name || d.Framework != "gall" || d.APIVersion != 1 || d.StateVersion != 0 || len(d.Files) != 5 || d.Qualification != "current-workflow-pending" {
+	if d.Version != 1 || d.Name != name || d.Framework != "gall" || d.APIVersion != apiVersion || d.StateVersion != 0 || len(d.Files) != fileCount || d.Qualification != "current-workflow-pending" {
 		return out, errors.New("unsupported frozen sample contract")
 	}
 	out.DefinitionSHA256 = sampleHash(data)
@@ -114,5 +138,13 @@ func ReadSample(name string) (Sample, error) {
 		return Sample{}, errors.New("sample notices unavailable")
 	}
 	out.Notices = string(notices)
+	if name == "gall-state-v2" {
+		data, err := sampleFiles.ReadFile(root + "native-qualification.json")
+		var evidence SampleEvidence
+		if err != nil || len(data) > 16384 || json.Unmarshal(data, &evidence) != nil || evidence.Version != 1 || evidence.Status != "passed" || evidence.DefinitionSHA256 != out.DefinitionSHA256 || evidence.SourceDigest != out.Source.Digest || evidence.VereSHA256 != d.VereSHA256 || evidence.PillSHA256 != d.PillSHA256 || !evidence.CleanShutdown {
+			return Sample{}, errors.New("sample qualification does not bind these inputs")
+		}
+		out.Evidence = &evidence
+	}
 	return out, nil
 }

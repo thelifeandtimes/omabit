@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "name": "gall-state-v2",
+  "framework": "gall",
+  "api_version": 2,
+  "state_version": 0,
+  "agent": "omabit-state",
+  "scry_path": "/~/scry/omabit-state/state.json",
+  "watch_path": "/state",
+  "poke_mark": "omabit-entry",
+  "test_ships": [
+    "~zod",
+    "~nec"
+  ],
+  "max_entries": 16,
+  "vere_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+  "pill_sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+  "upstream_source": "https://github.com/urbit/urbit/tree/35f70d7ec50479f311d372a2d48e9824d8a84c38/pkg/base-dev",
+  "qualification": "current-workflow-pending",
+  "files": {
+    "app/omabit-state.hoon": "6bcda0f306e59bad204b972714562f115f7e53e14a4ff3dfc4ebfb68a45fdc91",
+    "desk.bill": "c9d8b2bc9fcbb25d89cabf1fa52056ebd32439b5ab171bd33ef5bbece69448b3",
+    "lib/default-agent.hoon": "70a8af06601e8d1b75b261b2ac8b2cb06d5622baa1d1b1f8fec9236ce167d113",
+    "lib/skeleton.hoon": "c7c654a91c5dc1a535d4a76b019ec175955e52961b1ddff70ad49121208d20f5",
+    "mar/bill.hoon": "a0196da4970b8dfdee321a638040a564f95e8000f3b49eccc274ee8de2fae0ff",
+    "mar/json.hoon": "1a9b61feb7d40dc94e682ba665c9f8d5d37c458868942d3b9e7b87562e538fc6",
+    "mar/mime.hoon": "f1b94f43735fd3a6b86f5cd4619851bc1af9145281f68a07724c4bea870de535",
+    "mar/omabit-entry.hoon": "2e68c616964fef2b0294b136de122e6ccf9960c435016e286bd4b53b1b73ea7f"
+  }
+}

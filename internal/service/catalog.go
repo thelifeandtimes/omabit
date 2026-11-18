@@ -25,6 +25,7 @@ type Catalog struct {
 	CLIBindings          []CLIBinding              `json:"cli_bindings"`
 	MutationToolsEnabled bool                      `json:"mutation_tools_enabled"`
 	Transport            string                    `json:"transport"`
+	SourceRoots          []string                  `json:"source_roots"`
 }
 
 func (s *Service) Discovery() Catalog {
@@ -55,5 +56,10 @@ func (s *Service) Discovery() Catalog {
 		inventory.Bindings = append(inventory.Bindings, CLIBinding{CLI: "omabit call " + op.ID, Effects: op.Effects, Operations: []string{op.ID}, MCPStatus: "shared-core"})
 	}
 	sort.Slice(inventory.Bindings, func(i, j int) bool { return inventory.Bindings[i].CLI < inventory.Bindings[j].CLI })
-	return Catalog{ClientBuild: buildmeta.Current(""), Version: 1, Operations: operations, CLIBindings: inventory.Bindings, MutationToolsEnabled: s.options.EnableMutations, Transport: "local-stdio; HTTP not implemented"}
+	roots := []string{}
+	for _, source := range s.options.Sources {
+		roots = append(roots, source.Name)
+	}
+	sort.Strings(roots)
+	return Catalog{ClientBuild: buildmeta.Current(""), Version: 1, Operations: operations, CLIBindings: inventory.Bindings, MutationToolsEnabled: s.options.EnableMutations, Transport: "local-stdio; HTTP not implemented", SourceRoots: roots}
 }

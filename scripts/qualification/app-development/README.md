@@ -68,6 +68,24 @@ network and the owned child's executable hash/start time before Lens requests.
 go test -c -o /tmp/omabit-desk-workflow-native.test ./internal/managed
 ```
 
+The explicit `--workflow-case gall-state-v2` selects the named minimal Gall gate
+instead of the historical assembled desk workflow. It requires a fresh single
+fake, explicit workflow binary and no receivers/resume/release-source flags.
+It uses the normal4GiB/no-swap/one-CPU scope,2GiB scratch and an850-second outer
+deadline covering boot, bounded workflow and graceful shutdown. The48GiB option
+is only for the user-authorized issues16–21 goal; default admission remains40GiB.
+This case also conservatively charges the whole shared compiler/module caches.
+
+The test checks the exact eight-file sample with cold activation before its
+separate native compilation probes and authenticated Eyre read/poke/watch. A fixed supervisor control
+accepts one owned PID/start/executable/pier-bound restart request, writes durable
+transition receipts, waits for clean exit and resumes that same fake without
+creation flags. It accepts no path/command/ship selection. State/session and fresh
+subscription reconciliation are checked after restart. The lifecycle backend in
+the Go manager remains synthetic; this is not installed Docker/upgrade evidence.
+Pruned capsules contain tombstones and refuse reuse. See the
+[current native report](../../../docs/diagnostics/2026-11-17-gall-state-v2-native.md).
+
 Probe21 passes the real kernel + API/store + collector/Unix transport composition.
 It covers default gates, creation/discovery, source alerts, frozen staging, verified
 commits preserving scaffold, add/update/delete, lost acknowledgement, read-only
