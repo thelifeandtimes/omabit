@@ -9772,3 +9772,33 @@ passes full QEMU virtual-block comparison and preserves the backing/input hashes
 before replacing the archive representation. About1GiB is freed, with original
 store/command/result archives retained. This is a content-identical storage
 derivation, not a guest restart, filesystem repair or pier mutation.
+
+## M595 — Installed native clean-stop recovery passes (2026-11-17)
+
+The fresh recovery-only case passes on the exact four d24c960 artifacts linked to
+M594's passed upgrade section. Restricted access switches with exact connection
+ID/revision. Selected installed Gall preflight passes before project creation,
+without granting app policy. A fresh original fake and added peer boot; the
+original process remains unchanged. A separately hashed test manager delegates
+to real native code, blocks after a clean exit before the final phase save, and
+only that owned child is killed. The installed manager reopens normal state and
+retains the interrupted Stop/fence. No database edit or repair is performed.
+
+Saved diagnosis, fresh exact retained-intent review and ordinary API reconciliation
+pass. A new successful linked receipt resolves only that fence; the original stays
+interrupted. Reconciliation changes no native process. Exact restricted-SSH replay
+works after store/manager reopen with a deliberately refusing observer, then again
+under the installed binary. Docker events for the exact owned container show one
+SIGTERM. Supported Start resumes the same verified pier and ship with an ordinary
+new container, leaving its peer process unchanged. Both fresh ships stop cleanly;
+the final installed executable SHA and schema60 match. See the
+[artifact-bound native evidence](diagnostics/2026-11-17-issues-native-stop-recovery.json).
+
+This supersedes M579/M589/M594's native recovery deferral only for the clean new
+retained-intent path. The interrupted process is the test helper, not the installed
+executable; real native backend/API/SQLite/SSH and installed reopen/recovery are
+composed explicitly. The historical race remains a hypothesis; native forced read
+timing, legacy missing-intent runtime migration, full native refusal/dropped-reply
+matrices, managed app-state, later artifacts and desktop/DEV remain outside this
+case. Source/inert matrices remain distinct. Recordings/Grubbery/broader interfaces
+and containment are still active work; this is not issue-wide goal completion.

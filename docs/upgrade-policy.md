@@ -24,9 +24,12 @@ running container process remain unchanged. The actual old reader refuses60
 unchanged and the new manager restarts without touching that process. See the
 [exact artifact evidence and limits](diagnostics/2026-11-17-issues-installed-upgrade-section.json).
 That capsule stops later at a harness duplicate-enrollment refusal before its
-recovery project. This does not qualify native interrupted-project migration,
-Stop recovery/app-state preservation, desktop/DEV deployment, later artifacts or
-a stable release. Matching final artifacts and relevant disposable runtime
+recovery project. The same four frozen artifacts later pass a separate fresh
+[native clean-stop recovery case](diagnostics/2026-11-17-issues-native-stop-recovery.json)
+with exact reviewed reconciliation, store/manager reopen, original receipt
+preservation, one SIGTERM, same-pier resume and unchanged peer. Neither case
+qualifies migration of an already interrupted native project, managed application
+state, desktop/DEV deployment, later artifacts or a stable release. Matching final artifacts and relevant disposable runtime
 recovery/upgrade gates remain required before promotion.
 Never lower the schema marker or reset a store to run an older manager.
 

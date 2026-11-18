@@ -142,6 +142,18 @@ are synthetic migration/interface evidence. A later exact d24c960 Linux/AMD64
 development artifact passes installed0.4.0/schema59→60 preservation for fresh
 ordinary running/stopped fakes and actual old-reader refusal. Its
 [scope and later harness failure](diagnostics/2026-11-17-issues-installed-upgrade-section.json)
-do not establish interrupted-project migration or native Stop/review/apply/resume.
-Those recovery/app-state gates and matching final-artifact qualification remain
-separate requirements.
+do not establish migration of an already interrupted native project. A separate
+fresh candidate-only case using the same four artifacts passes native clean-stop
+diagnosis/review/apply, exact restricted-SSH lookup after store/manager reopen,
+and same-pier resume with the peer process unchanged. Its test manager blocks
+after a real clean exit before final save; the installed manager then reopens and
+recovers. The original interrupted receipt stays intact, only one SIGTERM is
+observed, and a refusing recovery observer cannot break exact result replay.
+All fresh fixture ships stop cleanly. See the
+[native scope and limits](diagnostics/2026-11-17-issues-native-stop-recovery.json).
+
+This native case covers retained-intent clean Stop, not the complete refusal/
+dropped-reply matrix, managed application state, legacy missing-intent runtime
+migration or a deterministically forced native inspection race. Source/inert
+fixtures cover those indicated matrices separately. Matching final artifacts,
+broader runtime qualification and any stable release remain separate gates.
