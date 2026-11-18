@@ -11017,3 +11017,41 @@ selected runtime references remain unchanged. These two batches free186,970,112
 allocated bytes. Explicit inflation and fresh storage admission are required
 before reusing an archived executable. No production or manual-review data is
 selected or changed.
+
+## M639 — Nonblocking, single-observer desk reconciliation admission (2026-11-18)
+
+The source55331af product VM04 passes exact readiness, real Docker/curl framework
+creation, original-scaffold adoption and source commit. Activation retains
+planned→dispatched→uncertain with one native install submission. A later
+reconciliation poll exceeds the ordinary5-second client timeout while waiting
+behind a long observer holding lifecycle admission. The original failed result,
+full phase plans, SQLite/commands and serial remain unchanged. This is not a
+proved activation failure or permission to install again; app-source phases
+never start. See the [scoped failed-case evidence](diagnostics/2026-11-18-grubbery-product-initial-failures.json).
+
+Desk reconciliation now authenticates/validates and reads saved evidence outside
+the long admission mutex. `busy` returns that unchanged receipt without queuing
+more work; `queued` admits one bounded read-only observer. Pending workers also
+return busy, closing the pre-worker scheduling race. Current receipt state is
+reloaded under admission; completed replay remains read-only. Failed-store,
+closing/update fences and the workers' current actor/ownership/configuration/pier
+checks remain. No native effect is retried, timer enlarged or receipt rewritten.
+The optional response field is shared by typed clients/catalog/CLI/MCP and is
+distinct from original journal state. Unknown admission values refuse. No database
+format changes; matching final runner/collector artifacts remain required.
+
+All managed desk source race regressions pass, including creation, commit,
+activation/publication, receiver/frontend and their recovery/refusal paths.
+Actual SQLite/HTTP held-admission and pending-worker checks retain the original
+receipt;30 polling calls admit only one observer and preserve one original native
+effect. Actual CLI and official-SDK stdio return byte-identical busy/queued
+receipts and reject unknown admission values. Focused client/collection/catalog
+checks and vet pass. A new matching-artifact product VM is still required.
+
+After all owned units end, a no-network read-only utility retains VM04's original
+SQLite, phase proof and full commands/result logs without executing disk code.
+Only the explained root/copied input filesystem is retired, freeing1,667,629,056
+allocated bytes. Uncertainty remains unchanged; no full old pier archive is
+claimed. A separate lossless archive preserves exact55331af executables and the
+older superseded aa71757 failed-Start full image, freeing198,737,920 bytes after
+full inflation verification. Sources/base dependencies/original logs remain.

@@ -44,6 +44,10 @@ type DeskOperation struct {
 	RunnerID string           `json:"runner_id"`
 	Mode     string           `json:"mode"`
 	Receipt  deskwork.Receipt `json:"receipt"`
+	// A reconciliation response can return the unchanged saved receipt while
+	// another bounded worker holds admission. Busy queues no additional work;
+	// queued is admission only, never a fresh observation or native effect.
+	ReconciliationAdmission string `json:"reconciliation_admission,omitempty"`
 }
 
 const DeskDiscoveryFeature = "desk-discovery-v1"

@@ -127,7 +127,7 @@ func (s *Service) registerDesks() error {
 	errs = append(errs, selected(s, appReceipt, func(ctx context.Context, r *collection.Registry, _ collection.Connection, in DeskOperationInput) (protocol.GrubberyAppOperation, error) {
 		return r.GrubberyAppOperation(ctx, in.Name, in.RunnerID, in.OperationID)
 	}))
-	d := write("desk.reconcile.v1", "Observe an uncertain desk effect and persist its recovery receipt; does not repeat the original effect.", "desk-reconcile", protocol.DeskCreateFeature)
+	d := write("desk.reconcile.v1", "Observe an uncertain desk effect without repeating it; busy returns saved evidence without queuing another observer.", "desk-reconcile", protocol.DeskCreateFeature)
 	d.Effects = []string{"local-metadata-read", "live-probe", "journal-write"}
 	errs = append(errs, selected(s, d, func(ctx context.Context, r *collection.Registry, _ collection.Connection, in DeskOperationInput) (protocol.DeskOperation, error) {
 		return r.ReconcileDeskOperation(ctx, in.Name, in.RunnerID, in.OperationID)

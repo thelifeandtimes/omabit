@@ -295,24 +295,73 @@ func (r *Server) serveDeskReconciliation(w http.ResponseWriter, req *http.Reques
 		respond(w, 200, r.deskReply(receipt))
 		return
 	}
+	if state != "uncertain" || receipt.Intent.Action != "create-desk" && !deskwork.IsReleaseAction(receipt.Intent.Action) && receipt.Intent.Action != "upload-frontend" && receipt.Intent.Action != "install-remote" && receipt.Intent.Action != "commit" {
+		r.respondError(w, conflict("desk_reconciliation_unavailable", "this receipt has no supported uncertain effect to reconcile"))
+		return
+	}
+	busy := func() {
+		out := r.deskReply(receipt)
+		out.ReconciliationAdmission = "busy"
+		respond(w, http.StatusAccepted, out)
+	}
+	// Long native work holds lifecycle admission, but saved receipts remain
+	// readable. Never wait here beyond the ordinary client's request lifetime,
+	// or enqueue another observer behind an already pending worker. A busy reply
+	// contains the original saved evidence and explicitly grants no new work.
+	if !r.mu.TryLock() {
+		busy()
+		return
+	}
+	defer r.mu.Unlock()
+	if r.closing || r.failed.Load() {
+		r.respondError(w, &fault{503, protocol.APIError{Code: "runner_unavailable", Message: "runner is stopping or state storage needs review"}})
+		return
+	}
+	if r.updateFence.Held {
+		r.respondError(w, conflict("management_quiesced", "management update holds admission; resume the activation journal"))
+		return
+	}
+	if r.updateWorkers != 0 {
+		busy()
+		return
+	}
+	// A worker may have completed between the initial saved read and TryLock.
+	// Return its current original evidence rather than queue a stale observer.
+	receipt, err = loadDeskOperation(r.s.db, id)
+	if err != nil {
+		r.respondError(w, err)
+		return
+	}
+	state = receipt.Steps[len(receipt.Steps)-1].State
+	if state == "observed" {
+		respond(w, http.StatusOK, r.deskReply(receipt))
+		return
+	}
+	// The worker retains all live ownership/auth/configuration guards. Marking
+	// this response queued is not an observation and changes no saved receipt.
+	queued := func() {
+		out := r.deskReply(receipt)
+		out.ReconciliationAdmission = "queued"
+		respond(w, http.StatusAccepted, out)
+	}
 	if state == "uncertain" && deskwork.IsReleaseAction(receipt.Intent.Action) {
 		r.queueDeskReleaseReconciliation(receipt, actor)
-		respond(w, 202, r.deskReply(receipt))
+		queued()
 		return
 	}
 	if state == "uncertain" && receipt.Intent.Action == "upload-frontend" {
 		r.queueDeskFrontendReconciliation(receipt, actor)
-		respond(w, 202, r.deskReply(receipt))
+		queued()
 		return
 	}
 	if state == "uncertain" && receipt.Intent.Action == "install-remote" {
 		r.queueDeskReceiverReconciliation(receipt, actor)
-		respond(w, 202, r.deskReply(receipt))
+		queued()
 		return
 	}
 	if state == "uncertain" && receipt.Intent.Action == "commit" {
 		r.queueDeskCommitReconciliation(receipt, actor)
-		respond(w, 202, r.deskReply(receipt))
+		queued()
 		return
 	}
 	if state != "uncertain" || receipt.Intent.Action != "create-desk" {
@@ -352,5 +401,5 @@ func (r *Server) serveDeskReconciliation(w http.ResponseWriter, req *http.Reques
 			r.failed.Store(true)
 		}
 	}()
-	respond(w, 202, r.deskReply(receipt))
+	queued()
 }

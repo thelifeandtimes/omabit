@@ -95,7 +95,7 @@ func validateDeskReply(expected Identity, out protocol.DeskOperation) error {
 	if err := expected.Check(out.RunnerID, out.Mode); err != nil {
 		return err
 	}
-	if out.Version != 1 || out.Receipt.Validate() != nil {
+	if out.Version != 1 || out.Receipt.Validate() != nil || out.ReconciliationAdmission != "" && out.ReconciliationAdmission != "busy" && out.ReconciliationAdmission != "queued" {
 		return errors.New("invalid desk operation receipt")
 	}
 	return nil

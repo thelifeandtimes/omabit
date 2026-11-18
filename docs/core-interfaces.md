@@ -116,6 +116,17 @@ Queued/running receipts are operation handles, not completion. Read saved status
 with the same IDs. A lost response produces uncertainty and supported lookup
 guidance; the facade never retries an effect or invents request IDs. Cancelling
 a wait/request or closing the MCP process does not cancel runner-owned work.
+
+Desk reconciliation returns an optional `reconciliation_admission` status:
+`busy` carries the unchanged saved receipt and queues no new observer; `queued`
+admits one bounded read-only observer and still carries saved evidence. Neither
+is a fresh observation or native-effect completion. Poll the saved operation,
+then explicitly request reconciliation again only while uncertainty remains.
+Long lifecycle/native work does not block this admission response, and repeated
+polls cannot build an observer backlog. Completed receipts replay outside that
+admission guard. Current operator authentication, management/failed-store fences
+and each worker's actor/runtime/pier/configuration checks remain authoritative.
+
 Keep exact sealed review JSON from the text result when saving a request: clients
 must not round large integers and reserialize a changed review. `lookup_only`
 repeats the original request through the existing guarded transport. A matched
