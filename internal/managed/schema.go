@@ -39,4 +39,6 @@ package managed
 // Schema59 fences configurable container limits and immutable per-container contracts.
 // Schema60 retains interrupted-stop reconciliation receipts and pre-signal
 // process bindings. Earlier readers must refuse rather than ignore resolution.
-const StateSchemaVersion = 60
+// Schema61 retains immutable Grubbery app phase journals and namespace leases.
+// Opening never dispatches; older writers must refuse the new format.
+const StateSchemaVersion = 61

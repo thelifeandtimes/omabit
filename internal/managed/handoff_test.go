@@ -36,6 +36,7 @@ func TestHandoffSchemaUpgradePreservesPermanentRegistration(t *testing.T) {
 		t.Fatal(err)
 	}
 	runner := s.runnerID
+	omitEmptyAppSuccessorForSyntheticFixture(t, s)
 	if _, err = s.db.Exec("PRAGMA user_version=11"); err != nil {
 		t.Fatal(err)
 	}

@@ -86,3 +86,11 @@ The runtime separately reports4failures in `/apps/shell/tools/code`; that nested
 namespace was not individually inspected. This supersedes only the preceding
 continuation deferral. The remaining app/permit/route/served-byte/restart/peer and
 installed gates still apply, and preflight remains unavailable.
+
+The internal coordinator now has a schema61 SQLite persistence adapter: immutable
+headers and append-only events, transactional exact leases, original observed
+marker ancestry, replay without source/runtime access, and preactivation
+abandonment that preserves staging and live state. [Source migration checks](diagnostics/2026-11-18-grubbery-app-store-migration.json)
+use actual original60 and retained59 fixtures. A real process exit after dispatch
+commit preserves that original fence on reopen. These gates qualify the journal,
+not native namespace observations, public app API or a working Grubbery app.

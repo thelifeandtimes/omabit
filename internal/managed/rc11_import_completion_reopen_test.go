@@ -143,6 +143,7 @@ func TestRC11ImportCompletionServerRecoveryAcrossReopen(t *testing.T) {
 					must(err)
 					// These bodies reproduce the prior release's callback states;
 					// reopening also exercises schema19 -> current migration.
+					omitEmptyAppSuccessorForSyntheticFixture(t, s)
 					_, err = s.db.Exec("PRAGMA user_version=19")
 					must(err)
 					must(s.close())

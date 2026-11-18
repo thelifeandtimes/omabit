@@ -33,6 +33,7 @@ func TestAppPolicyMigrationPersistenceAndOrdinaryEdits(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	omitEmptyAppSuccessorForSyntheticFixture(t, s)
 	if _, err = s.db.Exec("DROP TABLE app_development_policy; DROP TABLE app_development_policy_history; PRAGMA user_version=47"); err != nil {
 		t.Fatal(err)
 	}
@@ -247,6 +248,7 @@ func TestAppPolicySchema48UpgradePreservesAuditAndFleet(t *testing.T) {
 			if _, err = s.db.Exec("INSERT INTO app_development_policy_history(revision,actor,updated_at,body) VALUES(1,?,?,?)", "original-operator", time.Now().UTC().Format(time.RFC3339Nano), receipt); err != nil {
 				t.Fatal(err)
 			}
+			omitEmptyAppSuccessorForSyntheticFixture(t, s)
 			if _, err = s.db.Exec("PRAGMA user_version=48"); err != nil {
 				t.Fatal(err)
 			}

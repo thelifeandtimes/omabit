@@ -1,5 +1,34 @@
 # Stable-release upgrade requirement
 
+## Development: immutable app phase journals, schema61
+
+Schema61 transactionally adds Grubbery app creation order, immutable intent
+headers, append-only phase events and exact namespace leases. Opening validates
+ancestry and changes no native state. Unknown mixed schemas, missing tables,
+receipts, events, clock entries or leases refuse; opening does not repair them.
+Applied ownership is derived from original observed marker receipts rather than
+an independently editable current-owner row. Completed or narrowly abandoned
+preactivation operations release their exact lease without deleting staged code
+or live app data. Unknown writes and dispatched activation remain fenced.
+
+The development source gate preserves the actual0.4.0/schema59 fixture and an
+actual d24c960/schema60 writer's populated state, including its linked Stop
+resolution. Repeated open/replay, migration rollback, corruption and process death
+after committed dispatch are covered. The genuine60 reader refuses populated61
+without changing the closed database bytes. See the [source evidence](diagnostics/2026-11-18-grubbery-app-store-migration.json)
+and `scripts/test-grubbery-app-upgrade.py`. The older RC.12/schema20 qualification
+record and release pins remain frozen; its historical source tests now target61.
+Synthetic compatibility tests explicitly omit only empty successor app tables;
+they are not original-writer or user downgrade procedures.
+
+The supported source-reader fixtures include the stable0.4.0/schema59 boundary
+and the unreleased60 predecessor alongside the separately frozen older inventory.
+This does not qualify installed59→61, interrupted native projects, managed app
+state, DEV installation or a stable release. Build matching collector/runner
+artifacts and rehearse the relevant non-destructive native/installed paths before
+promotion. Never lower markers, remove tables or reset a user store to downgrade.
+The live Grubbery workflow remains unadvertised pending the native adapter gates.
+
 ## Development: interrupted project Stop reconciliation, schema60
 
 Schema60 adds separately attributed clean-stop reconciliation receipts and

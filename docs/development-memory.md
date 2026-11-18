@@ -10082,3 +10082,54 @@ and row counts are recorded under testdata/grubbery-app-original60. One unexecut
 wrong-working-directory build was classified and replaced before this run;
 private provenance records that correction. Preservation, rollback, repeated
 reopen and genuine original-reader refusal remain required for the successor.
+
+## M608 — Persist immutable app phases and qualify schema61 ancestry (2026-11-18)
+
+Schema61 adds separate app intent headers, append-only chained events, exact
+namespace leases and a transactional creation clock. Header stamps bind creation
+order and immutable context. Opening validates the complete original marker and
+version ancestry, framework commit receipt/source/pier baseline, clock, events
+and leases. Missing/corrupt/mixed state refuses without repair. There is no
+mutable current-owner row, queued app replay or native call during opening.
+Creation claims the namespace atomically; revision CAS appends an event and
+releases only the exact terminal owner's lease in the same transaction. The
+SQLite store retains FULL-synchronous acknowledgement and private existing store
+ownership requirements. This adapter remains internal and unwired to public app
+mutation APIs; live Grubbery preflight remains unavailable.
+
+Focused race/static gates pass for immutable header/history across repeated
+reopen, concurrent phase CAS, failed append rollback, namespace conflict,
+completed and abandoned lease release, wrong runner/mode/framework/pier/baseline,
+missing/rebound evidence, schema/table/event/clock/lease corruption, and an actual
+child process exiting immediately after dispatch commit without closing SQLite.
+That last case retains the original dispatched fence and cache/backend-free
+replay; it does not establish host power-loss behavior. Retained original59 and
+actual original60 writer fixtures preserve every original row, linked Stop
+resolution and exact replay, with rollback/refusal of unknown successor tables.
+
+The fresh actual60→61 rehearsal passes with a populated uncertain app journal;
+the genuine d24c960 reader refuses61 without changing closed database bytes.
+Source inputs, helper/artifact hashes and limits are linked in the source
+[migration evidence](diagnostics/2026-11-18-grubbery-app-store-migration.json).
+Its first capsule correctly refused a reused synthetic test receipt ID, then
+received a distinct deterministic fixture ID. Two subsequent sidecar comparisons
+found only empty verifier-created WAL/SHM removal, with identical main database
+bytes. Immutable reads of fully closed fixtures correct the verifier; no database
+or sidecar repair/deletion was used to obtain the passing result. Earlier failures
+and before/after hashes remain in private evidence.
+
+The older source inventory now explicitly targets61; RC.12/schema20 qualification
+and its release pins remain frozen. Original-writer preservation/replay and
+invalid-identity/future-schema byte-preservation regressions pass through the
+retained schema45 inventory. Focused synthetic compatibility, legacy runtime
+settings and import-completion reopen tests also pass. Those synthetic tests omit
+only verified-empty successor app tables before assigning an older test marker;
+they never claim original-writer evidence or authorize relabeling a user store.
+The first combined regression group exceeded its aggregate four-minute deadline;
+separate bounded groups subsequently pass with individual results retained.
+
+This extends development source-reader evidence for retained59/60 state, not
+installed/native Grubbery qualification or a stable support promise. Matching
+final artifacts, native admission/observers/transport, actual app source and
+permit/route/served-byte/state/restart/peer gates remain active. Production and
+installed DEV artifacts/state have not changed.

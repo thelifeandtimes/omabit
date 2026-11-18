@@ -70,7 +70,7 @@ func stopUpgradeRows(t *testing.T, db *sql.DB) map[string][]string {
 	g02Check(t, rows.Close())
 	out := map[string][]string{}
 	for _, table := range tables {
-		if table == "project_stop_reconciliations" {
+		if table == "project_stop_reconciliations" || strings.HasPrefix(table, "grubbery_app_") {
 			continue
 		}
 		r, err := db.Query(`SELECT * FROM "` + strings.ReplaceAll(table, `"`, `""`) + `"`)

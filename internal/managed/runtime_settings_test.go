@@ -115,6 +115,7 @@ func TestRuntimeSettingsSchemaAndLegacyDefaults(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Schema16 has no runtime settings fields. Leave original bytes intact.
+	omitEmptyAppSuccessorForSyntheticFixture(t, s)
 	_, err := s.db.Exec(`UPDATE instances SET body=json_remove(body,'$.runtime.loom','$.runtime.native_control'); PRAGMA user_version=16`)
 	if err != nil {
 		t.Fatal(err)

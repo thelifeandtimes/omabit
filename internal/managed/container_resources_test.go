@@ -104,6 +104,7 @@ func TestContainerResourcesCorruptStoreRefusesWithoutMigration(t *testing.T) {
 	g02Check(t, err)
 	v.Runtime.MemoryGiB = 17
 	saveRecoveryFixture(t, s, v)
+	omitEmptyAppSuccessorForSyntheticFixture(t, s)
 	_, err = s.db.Exec("PRAGMA user_version=58")
 	g02Check(t, err)
 	if err = s.initialize(); err == nil {

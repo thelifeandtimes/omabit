@@ -11,18 +11,21 @@ are recorded in [experiment isolation](experiment-isolation.md).
 | --- | --- | --- |
 | #16 interrupted expanded-member Stop/SSH lookup | Verified-transition reobservation with strict ownership bindings; bounded refusal tests; native clean-exit interruption/reconciliation/same-pier resume and exact restricted-SSH replay pass for frozen d24c960 | Forced native preliminary/bracketed injection, managed app-state and final-artifact qualification; the historical race explanation remains a hypothesis |
 | #17 supported recovery and containment | Saved vs live exact Stop diagnosis, bounded shareable diagnostic view, pre-signal process binding, sealed review/apply, linked audit receipt, exact fence CAS; original59 preservation and old-reader refusal; lost-reply/reopen/race/refusal fixtures; frozen d24c960 installed ordinary-fake upgrade and separate native clean-stop recovery pass | Other interrupted phases, resource/growth containment, managed app-state, interrupted-project migration and final-artifact qualification |
-| #18 app-development workflow | Third independent skill and legacy-safe packaging/install/UI; frozen v1 preserved; complete v2 JSON sample; native compile/activation/read/poke/watch/rejection/reload and clean same-pier restart pass with bounded source and no Unix mount | Versioned Grubbery adapter/sample; two/three-peer and further failure qualification; managed lifecycle/installed upgrade |
+| #18 app-development workflow | Third independent skill and legacy-safe packaging/install/UI; frozen v1 preserved; complete v2 JSON sample; native compile/activation/read/poke/watch/rejection/reload and clean same-pier restart pass with bounded source and no Unix mount | Native Grubbery adapter/sample; two/three-peer and further failure qualification; managed lifecycle/installed upgrade |
 | #19 CLI/MCP parity | Typed catalog/facade and official-SDK stdio handlers, exact schemas/results/errors, target and pinned-source-root allowlists, verified skill resources, bounded shared creation/receipt waits, actual cross-interface recovery and lost-upload/creation lookup tests | Remaining operations, named qualification execution/reports, client recipes/qualification and authenticated HTTP |
 | #20 durable runtime recordings | Inert private backend lifecycle comparison; provisional external stream recorder; source-only raw/timing codec, typed metadata/lifecycle and Docker decoder; private single-segment files with verified live/reopened paging and pressure/binding tests | Indexed seeking, rotation/writer continuation, lifecycle coordination, host/ship retention/pins, pressure recovery, redacted export, integration/API/UI and real Docker/Vere/installed qualification |
 | #21 app preflight/deployment mismatch | Selected runner Hello/build/role and separate missing API/adapter/policy results; pre-boot skill routing; inert no-write/identity/scope tests | Matching DEV artifacts, original-state preservation, actual minimal native app operation; original incident runner remains unproven |
 
-The pinned Grubbery source contract has shared offline metadata and exact confined
+The internal Grubbery coordinator now retains exact app phases, transactional
+namespace leases and safe preactivation abandonment in schema61, with original
+59/60 preservation and genuine60-reader refusal. Native/public app dispatch is
+still pending. The pinned Grubbery source contract has shared offline metadata and exact confined
 verification, with real CLI/stdio parity. Native bootstrap now passes after exact
 original-scaffold export/adoption; its timed-out activation resolves read-only
 without a second install. App workflow qualification and four nested shell-tool
 failures remain separate; see [the boundary](grubbery-adapter.md).
 
-Source/native checkpoints are documented in M579–M607. The shared interface's
+Source/native checkpoints are documented in M579–M608. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or

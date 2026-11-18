@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Original 0.4.0/schema59 writer, schema60 preservation and old-reader refusal.
+"""Original 0.4.0/schema59 writer, successor preservation and old-reader refusal.
 
 Private synthetic state only. No installed service, Docker engine or ship is used.
 This does not replace an installed artifact upgrade or live runtime qualification.
@@ -53,7 +53,7 @@ OLD_TEST = OLD_TEST.replace('import(', 'import("encoding/json";"git.thechristoph
 NEW_TEST = r'''package managed
 import("reflect";"testing";"time";"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol")
 func TestStopSchema60Migration(t *testing.T) {
- if StateSchemaVersion!=60 {t.Fatal("not schema60")}
+ if StateSchemaVersion<60 || StateSchemaVersion>61 {t.Fatal("unsupported successor schema")}
  for n:=0;n<3;n++{s,err:=testOpenStore("/tmp/schema-state");g02Check(t,err);g02Check(t,s.close())}
 }
 func TestStopSchema60Resolution(t *testing.T) {
@@ -93,11 +93,17 @@ with sqlite3.connect('file:/tmp/schema-state/runner.sqlite?mode=ro',uri=True) as
 before=rows()
 run('/current','TestStopSchema60Migration')
 after=rows()
-assert set(after)-set(before)=={'project_stop_reconciliations'}
+with sqlite3.connect('file:/tmp/schema-state/runner.sqlite?mode=ro',uri=True) as db:
+ target_schema=db.execute('pragma user_version').fetchone()[0]
+assert target_schema in (60,61)
+expected={'project_stop_reconciliations'}
+if target_schema==61:
+ expected.update({'grubbery_app_clock','grubbery_app_operations','grubbery_app_events','grubbery_app_leases'})
+assert set(after)-set(before)==expected
 assert all(before[t]==after[t] for t in before),'migration rewrote original state'
 run('/current','TestStopSchema60Resolution')
 run('/writer59','TestDeskOlderReaderRefusesUnchanged')
-Path('/tmp/verification.json').write_text(json.dumps({'passed':True,'original_schema':59,'target_schema':60,'original_tables_preserved':sorted(before),'migration_reopens':3,'resolution_reopen_and_exact_replay':True,'actual_old_reader_refusal':True,'scope':'synthetic writer/migration/interface evidence; no installed or live-runtime qualification'},indent=2)+'\n')
+Path('/tmp/verification.json').write_text(json.dumps({'passed':True,'original_schema':59,'target_schema':target_schema,'original_tables_preserved':sorted(before),'migration_reopens':3,'resolution_reopen_and_exact_replay':True,'actual_old_reader_refusal':True,'scope':'synthetic writer/migration/interface evidence; no installed or live-runtime qualification'},indent=2)+'\n')
 '''
 
 
