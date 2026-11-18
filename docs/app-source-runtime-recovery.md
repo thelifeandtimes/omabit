@@ -3,8 +3,10 @@
 Implementation is in progress. The typed review/receipt model and schema63
 metadata-only audit store have source tests. Trusted managed/project process
 observation and a separately fenced internal adapter also have source checks.
-They are not wired into the server: fresh native review evidence, authenticated
-API, CLI/MCP and native rebinding qualification remain pending. Existing source
+The internal native observer also checks exact pending-prefix or unknown-effect
+evidence without loading source or changing the journal. These paths are not
+wired into the server: authenticated API, CLI/MCP and native rebinding
+qualification remain pending. Existing source
 operations continue to require their exact original process. No receipt/database
 edit is an upgrade or recovery procedure.
 
@@ -29,6 +31,13 @@ insufficient evidence, a refused/abandoned/complete operation, changed actor,
 configuration/pier/project generation/framework or unavailable evidence refuse.
 All compiler/conditional reads must complete inside authenticated read capture
 with confirmed cleanup, including any recompilation required by recovery.
+
+The source observer verifies all retained observed compiler phases inside that
+same capture; it accounts for an already observed/candidate exact version file
+without admitting other extra files. A pending compile is never executed by
+review. Complete validated history brackets the capture, so app progress during
+review refuses rather than returning evidence for a stale prefix. Review emits
+no source write, app dispatch or phase-resolution event and needs no source cache.
 
 Apply must authenticate the original operator, require explicit confirmation,
 reobserve every reviewed fact and compare the actual fresh review. A digest is a

@@ -11424,3 +11424,27 @@ replacement; namespace drift blocks a later effect. This is inert adapter-level
 evidence, not native or authenticated server recovery. Focused vet passes.
 Fresh native prefix/unknown-effect review, API/CLI/MCP, matching native artifacts,
 installed upgrades and preserved DEV remain pending. No runtime is launched.
+
+## M654 — Observe a retained native prefix without resolving its phase (2026-11-18)
+
+The internal native recovery observer requires the exact unfinished plan2 record
+in complete validated ownership history. Pending review captures only retained
+observed effects; unknown dispatch/acknowledgement/uncertainty requires the exact
+already applied candidate effect. All previous observed compiler phases are
+verified again inside authenticated capture before confirmed cleanup. Version
+file allowance derives only from its original observed/candidate phase, so a
+post-compile prefix is checked with its actual expected inventory. No pending
+compile is submitted. Fresh complete history and admission checks bracket the
+capture; concurrent prefix progress refuses. No source-cache load, native write,
+phase dispatch/resolution or journal edit is permitted by this observer.
+
+The initial stale-prefix fixture tries to advance after disabling its source
+cache and correctly refuses; move that earlier fixture action before cache loss
+to exercise the intended stale CAS. Focused race checks then pass for absent/
+compiled/versioned pending prefixes, compiler/cleanup/unowned/guard refusals,
+exact unknown original effect with a missing cache, changed native version,
+reverified prior compiler output and prefix progress during capture. Reads do not
+change original receipts or write counts; unknown effects are never redispatched.
+Focused vet passes. These are inert native-contract source checks. Authenticated
+fresh review/apply, selected runtime/head integration, CLI/MCP, matching native
+artifacts and installed/DEV qualification remain pending. No runtime is launched.
