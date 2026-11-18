@@ -9979,3 +9979,28 @@ No app namespace, HTTP write, permission, persistent format or advertised live
 capability changes in this slice. Durable step dispatch/reconciliation, runtime
 and public interface wiring, the native app sample and its full update/restart/
 permit/route/peer qualification remain active work.
+
+## M604 — Construct exact staged app phases without granting dispatch (2026-11-17)
+
+The unwired pinned Grubbery planner now derives an immutable release tree from
+the original request, with stable per-step IDs and a complete plan digest. Code
+files carry the native hoon blot; binary assets remain mime, and HTML/JS/CSS/JSON
+have explicit MIME. Compile observation precedes the controller's version marker,
+then the framework source fiber is poked as json rather than overwritten as mime.
+An exact followed-source read remains separate from application readiness.
+
+Existing unowned/conflicting roots or changed ownership markers refuse planning.
+Updates create new immutable code and leave prior code and saved instance data
+untouched. The plan contains no sand/permit/alias/cull effect and never force-
+overwrites a source file. Tampered paths, control bodies, source, bindings, epoch,
+step IDs/order or digest refuse request construction. Focused source race/static
+checks pass. These are pure constructors, not a dispatch authority or a native
+app test; derived markers still require actual persistent ownership and fresh
+native observation before effects.
+
+Next integrate an authoritative durable coordinator: claim the app namespace,
+save dispatch before I/O, admit only the exact original step, preserve uncertain
+writes, reconcile by bounded read and replay completed receipts without source
+cache/runtime calls. Persistent/migration and runtime/interface wiring remain
+required. No namespace is created and no HTTP request, policy or installed
+capability changes in this slice. M602 remains bootstrap-only evidence.
