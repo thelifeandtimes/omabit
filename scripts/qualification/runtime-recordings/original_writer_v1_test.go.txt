@@ -69,7 +69,16 @@ func TestOriginalRecordingReaderRefusesSuccessorUnchanged(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer s.Close()
-	if _, err = s.ReadPage(context.Background(), strings.Repeat("1", 32), nil, 256, 1<<20); !errors.Is(err, ErrInvalid) {
-		t.Fatal("original reader accepted successor metadata", err)
+	data, err := os.ReadFile(filepath.Join(root, strings.Repeat("1", 32), "metadata.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = ReadMetadata(data); !errors.Is(err, ErrInvalid) {
+		t.Fatal("original metadata decoder did not refuse successor", err)
+	}
+	// The unchanged original store classifies invalid metadata as ErrCorrupt;
+	// its metadata decoder has the narrower ErrInvalid contract.
+	if _, err = s.ReadPage(context.Background(), strings.Repeat("1", 32), nil, 256, 1<<20); !errors.Is(err, ErrCorrupt) {
+		t.Fatal("original store did not refuse successor metadata", err)
 	}
 }

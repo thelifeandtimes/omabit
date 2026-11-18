@@ -10755,3 +10755,21 @@ and genuine old-reader refusal of successor bytes unchanged. Its actual gate
 is pending at this freeze; unit reconstruction is not original-writer evidence.
 Runtime, indexed seeking/rotation/retention, durable coverage/pressure, derived
 redaction, API/UI and native/installed capture qualification remain outstanding.
+
+## M629 — Preserve first recording rehearsal and correct helper expectation (2026-11-18)
+
+The first actual original3218e6f rehearsal passes original-byte, cursor and
+repeated reopen preservation through the candidate58d0586 reader, including
+read-only legacy capture refusal. Its last helper assertion fails: unchanged
+Store.ReadPage classifies invalid/unsupported metadata as ErrCorrupt, while the
+helper expected the metadata decoder's narrower ErrInvalid. The original store
+therefore did refuse metadata2; this is not evidence it accepted it. Inspection
+of the exact frozen original source confirms that mapping. The failed command,
+original binaries/source/input manifest and candidate report remain retained;
+both original and successor file hashes are reverified unchanged after failure.
+
+Correct only the declared helper: independently require ReadMetadata ErrInvalid
+and Store.ReadPage ErrCorrupt. Original runtime source remains unchanged. Rerun
+in a fresh qualified directory after this freeze; do not relabel the first
+failed result or claim the overall gate passed yet. No engine/runtime/installed
+service or ship was involved.
