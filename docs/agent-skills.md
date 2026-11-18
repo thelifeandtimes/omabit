@@ -1,11 +1,11 @@
 # Agent skills shipped with Omabit
 
-Source checkouts include `skills/omabit-operator/` and
-`skills/omabit-plugin-developer/`. Each is a complete skill directory: keep its
+Development source declares three skills in `SKILLSET.json`: `omabit-operator`,
+`omabit-plugin-developer` and `omabit-app-developer`. Each is a complete skill directory: keep its
 `SKILL.md` and `references/` together. Agents can read the relevant SKILL.md directly
 from the checkout; an agent-specific global installation is optional and explicit.
 
-The binary bundle and flattened plugin export include both skills under `skills/`
+The binary bundle and flattened plugin export include the declared skills under `skills/`
 and the CLI reference under `docs/cli/`, covered by the bundle checksums. The native
 Git checkout carries the same source guidance.
 
@@ -14,7 +14,7 @@ asset alongside the binaries and desktop bundle. The release checksum list and
 asset metadata cover the archive. Inside, `SKILLS.json` records the source commit,
 version and every resource hash; development snapshots also retain their development
 label/source binding. The archive's own `SHA256SUMS` covers the complete payload.
-The two skill directories remain under its `skills/` directory. No install hook,
+The skill directories remain under its `skills/` directory. No install hook,
 executable resource or automatic agent-configuration change is included.
 
 Use instructions matching the intended binary generation. Verify the archive
@@ -47,7 +47,7 @@ Omabit input/output pipes. Omabit checks immediate startup failure for half a
 second, then acknowledges the launch without waiting for the terminal to close.
 The helper deadline and panel shutdown must never end the user's agent session.
 
-**Setup → Agent Help and skills** shows the default agent and both bundled
+**Setup → Agent Help and skills** shows the default agent and the actual bundled
 skills. If no default exists it points to Omarchy's **Setup → Defaults → Agent**.
 The feature does not select, install or configure an agent automatically.
 Agent Help works without a global skill installation because the prompt includes
@@ -82,8 +82,31 @@ Validation uses fake agents and private installation directories: helper tests
 cover no/default agent, single-argument prompt dispatch, context rejection,
 complete installation, edited/custom preservation, stale review, atomic updates,
 source mismatch and two skill generations. A networkless full-panel fixture
-exercises both installations, launch, no-default guidance and failed-setup help.
+exercises all declared installations, launch, no-default guidance and failed-setup help.
 The `--persistent-agent` variant keeps two inert sessions alive beyond21seconds
 (past the old15-second launcher and20-second QML helper deadlines), verifies
 separate process sessions/private stdio, and suspends/closes the Omabit panel.
 No real agent was launched or user skill directory modified for these tests.
+
+## Application developer skill — development source
+
+The third entry point handles Gall/Grubbery backends independently of an Omarchy
+frontend. Operator guidance retains fleet/lifecycle ownership; plugin guidance
+retains desktop integration. The new skill routes from actual code and requires
+selected-runner preflight before app-specific project boot. Its Grubbery reference
+explicitly identifies the pending adapter; documentation does not create support.
+
+The independently installable app skill includes generated copies of the operator
+app-development, operations and Urgit references. Edit those canonical operator
+files, then run `scripts/sync-app-development-guidance.py`; CI checks exact equality
+and all local reference links. Avoid divergent policy prose or sibling installation
+dependencies. Executable adapters remain ordinary Go code, outside skill archives.
+
+New packaging requires the complete source-declared three-skill inventory. Old
+source exports without `SKILLSET.json` retain their two-skill contract. The current
+Agent Help reader accepts both verified manifests and lists only their actual
+skills; app-development Help selects the third entry when present and falls back
+to the operator on a historical bundle. Existing custom/edited installs remain
+preserved. Native bootstrap binds third-skill bytes to the authenticated archive,
+as it already did for the pair. No installed plugin or agent settings are changed
+by these source changes. Gall/Grubbery live workflow qualification remains separate.

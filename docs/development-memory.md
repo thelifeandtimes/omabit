@@ -9452,3 +9452,29 @@ CI explicitly builds helpers for this cross-interface test. Source staging,
 compound workflows, named qualification, live Urbit, installed upgrades and broader
 catalog coverage remain later slices. Production and manual-review state were not
 changed; this checkpoint does not complete issue19 or authorize publication.
+
+## M582 — Independently usable third skill delivery (2026-11-17)
+
+Issue18's `omabit-app-developer` now routes actual Gall/Grubbery source into
+preflight, staged-source/policy and recovery guidance. The entry point is backend
+focused and does not require an Omarchy frontend or sibling global skill install.
+Its shared app/operations/Urgit references are generated from canonical operator
+files, with exact-sync and independent local-link checks. Gall sample/native
+execution and the Grubbery adapter remain unfinished; the latter is explicitly
+unavailable in preflight and guidance. See [the per-issue status](issues-16-21-progress.md).
+
+`SKILLSET.json` requires the full three-skill inventory in new source packaging;
+historical exports without it retain the pair. Agent Help accepts both verified
+manifests, lists their actual inventory and routes app-development Help to the
+third entry when present. Custom/edited installation preservation is unchanged.
+Seven packaging, twelve helper/installation, fifteen native-bootstrap and nine
+native-plugin fixtures pass. The system-Python skill validator passes; the other
+Python lacked PyYAML, so no global package was installed to run it.
+
+The first full-panel offscreen run exposed the QML reader's old two-skill bound.
+The corrected reader validates either exact manifest inventory. A fresh networkless
+private-HOME/XDG fixture installs all three complete skills through actual controls,
+launches only inert agents and renders their distinct responsibilities. A separate
+historical-pair fixture verifies continued UI use. Failed fixture evidence is
+retained. No real agent, global skill directory, installed plugin or service was
+changed. These delivery tests do not qualify either application runtime workflow.
