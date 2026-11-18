@@ -11761,3 +11761,33 @@ embedded-inventory change with zero artifact reads/admission/process dispatch.
 The next frozen build records hashes for every tracked ordinary source file,
 covering all embedded inputs;3781 tracked files currently have no symlinks.
 No installed runtime or native helper behavior changes in this guard checkpoint.
+
+## M666 — Admit complete native qualification with every failure retained (2026-11-18)
+
+Freeze clean6e810bc9 matching CLI, collector, runner and native helper, including
+M662's longer whole-case context, tested shared reads and unwired capture library.
+Hash all3781 tracked ordinary source files, covering embedded JSON/assets as well
+as Go/modules; verify clean source and identical hashes after building. Preserve
+exact binary/build/input pins in the [artifact/admission record](diagnostics/2026-11-18-app-runtime-cow03-artifact-freeze.json).
+This is source identity/capacity evidence, not a complete native workflow pass.
+
+With no Go build/test or runtime active, classify30 obsolete task test-package AR
+objects by exact worktree path and task-only symbols, owner/link/inode/mtime/
+content/build identity and exact AR members. Keep newest2 per package and verify
+all named binaries before/after. Reclaim109,260,800allocated bytes. Separately
+losslessly gzip16 older task executables, verify complete inflated bytes/size/SHA,
+then record each raw-path retirement and explicit inflation instructions. Reclaim
+208,166,912allocated bytes; all original executable bytes remain available.
+Source, SQL, receipts, logs, all three full VM roots and current03 raw binaries
+are verified unchanged. No installed file or original migration fixture changes.
+
+The completed first-source case used218,238,976allocated root bytes. Tighten only
+this no-bootstrap experiment's hard root-file cap to768MiB, over3x that measured
+space; reserve896MiB capsule plus64MiB host staging. Input/log/report worst-case
+bounds still fit before QEMU, with per-second aggregate checks. Eight input/
+embedded/deadline/kernel-file-limit guards pass. Reaching the file/storage bound
+still fails qualification and retains its evidence; no hidden reservation growth.
+Admission charges50,487,672,832bytes and reserves1,006,632,960bytes, totaling
+51,494,305,792 under48GiB. Run a fresh original-VM05-backed copy, preserving the
+completed-version-one/new-pending-version-two failure as separate evidence. No
+production, existing ship, manual DEV or tmux operation is involved.
