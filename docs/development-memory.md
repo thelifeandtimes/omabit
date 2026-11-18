@@ -11312,3 +11312,32 @@ private HTTP scope lifetime/cleanup and focused vet pass. [Scoped source evidenc
 retains reproduction/fix boundaries. Matching artifacts and native qualification
 remain pending. Continue with an explicit audited runtime recovery contract;
 never edit original plan/events to work around their old container binding.
+
+## M650 — Bind app recovery to an immutable prefix and fresh process facts (2026-11-18)
+
+The first recovery model preserves original plan2/actor/IDs/events and changes
+only a separately reviewed effective container selection. It binds exact prefix,
+phase/state, previous recovery head, process PID/start/boot/engine/image/runtime
+and a trusted launch/namespace context digest. Pending phases need verified
+prefix evidence; unknown dispatched phases need their exact native read-after
+proof. Metadata validation/digests grant no authority: the future authenticated
+server must independently produce and compare a fresh review. A five-minute
+window and exact prefix/head CAS cannot silently refresh an old review.
+Historical linked receipts remain valid after later legitimate progress.
+
+Focused race checks and vet pass for unchanged plan/events/namespace, stale
+prefix/head, expiration, self-resealed immutable-identity changes, changed fresh
+process/native facts, missing/wrong proof and historical audit ancestry. This is
+only a typed source model. Runtime observation/adapter fencing, schema migration,
+transactional storage, HTTP/CLI/MCP, genuine62-writer/refusal and native gates are
+still required; no existing process check is relaxed or capability advertised.
+See the [implementation contract](app-source-runtime-recovery.md).
+
+Prioritize this path before another fresh bootstrap: the complete retained task
+fixture already has meaningful app uncertainty. A new read-only-backed capsule
+can use supported Stop/Start and audited recovery without another fresh pier.
+Keep original before-evidence unchanged. Native artifacts must include M649's
+compiler lifetime fix. Disk-bounded source inputs can be compressed and inflated
+into guest tmpfs with exact byte pins; budget memory as well as allocated disk.
+No new runtime has been launched for this model; production and manual DEV stay
+untouched. Other issue tracks remain active.
