@@ -108,3 +108,11 @@ its dependent `lib/rules.hoon` and `lib/calendar.hoon`, plus the incompatible ex
 pin. This is not permission to alter the pinned framework or treat those tools
 as working. State updates, permits, routes, served bytes, restarts and peers still
 need their own qualification; source compilation does not establish them.
+
+The separately supervised [corrected native contract](diagnostics/2026-11-18-grubbery-native-app-core.json)
+passes with the original failure retained. It proves the local state nexus,
+explicit version following, saved-state poke/read, state-preserving source update,
+new code label and a duplicate-create rejection with unchanged original marker.
+The ship exits cleanly. This is kernel-only evidence with synthetic lifecycle;
+it does not qualify the public managed adapter, permits, local aliases, HTTP
+routes/assets, runtime restart, peers, installed upgrades or DEV deployment.

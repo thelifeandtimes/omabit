@@ -10302,3 +10302,24 @@ verify original hashes before another actual-reader rehearsal. Preserve the full
 unconfirmed second pier and original WAL/receipts. Only verified duplicate task
 inputs are retired. These archives/tombstones grant no runtime resume authority;
 production, existing user ships and installed DEV remain unchanged.
+
+## M615 — Qualify native source following and retained app state (2026-11-18)
+
+A new fresh capsule under the independent supervisor passes using the same frozen
+f00f5fb helper and corrected version marker. Exact source compile, plain-parent
+marker creation, two immutable release versions, framework desk following,
+initial/saved JSON state, unchanged saved entry after code update, new code label
+and known duplicate-create409 with unchanged marker all pass. The workflow makes
+28 bounded native calls and the owned ship shuts down cleanly. Pinned framework,
+Vere/pill, source/artifact/proof/effect hashes and limits are in the
+[native core record](diagnostics/2026-11-18-grubbery-native-app-core.json).
+The earlier null-version failure stays failed; the separate interrupted capsule
+stays uncertain and was neither resumed nor reinstalled.
+
+This is kernel/API contract evidence with synthetic lifecycle/runner bindings.
+It does not qualify the durable managed adapter, public CLI/MCP mutation parity,
+permits/aliases/routes/served artifacts, runtime restart, peers, installed upgrades
+or DEV. Grubbery preflight remains unavailable. The four nested tool modules
+remain failed and do not become healthy because this tiny app works. Next wire
+only these typed checked native operations to exact durable phase selection and
+fresh runtime/policy/namespace observations, then qualify the remaining workflow.
