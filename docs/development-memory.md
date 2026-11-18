@@ -9870,3 +9870,24 @@ discovery/aliases and served bytes remain distinct. Approval is replacement of t
 selected declared subset, with a separate reload; trusted built-ins are not a
 substitute for closed desk apps. Grubbery preflight remains unavailable pending
 versioned live effects, durable uncertain-write recovery and native qualification.
+
+## M599 — Bound the fresh Grubbery bootstrap gate (2026-11-17)
+
+Add a separately named fresh-only bootstrap capsule for M598's exact complete
+framework desk. Host/copy/kernel source checks precede API staging, commit and
+cold activation. No Unix mount, app-specific write or permit authoring is allowed
+in this gate. Lost activation replies retain the original receipt and permit only
+bounded observation/reconciliation. A fixed kernel diagnostic read is independent
+of the shell; its owner session is cleaned up. Host/source/admission tests pass;
+this records the harness before execution, not a native bootstrap pass.
+
+Storage admission first refuses the proposed archive-processing allowance before
+creating a converter. Retire only task-owned inert staging, exact duplicate
+immutable inputs and superseded non-frozen source-test executables, with private
+per-file hash/inode manifests. Keep all selected piers/VMs and original stores.
+The completed recovery-only VM is then recompressed under2GiB/no-swap/one core.
+Full virtual-block comparison passes, original/base hashes stay unchanged before
+replacement, and the original SQLite archive still matches its recorded SHA.
+The retained representation saves1581604864bytes; the public native recovery
+record explicitly links old and new overlay hashes. No guest is booted or mounted
+during this storage derivation. Native Grubbery results remain pending.

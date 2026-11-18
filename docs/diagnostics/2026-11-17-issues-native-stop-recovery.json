@@ -95,5 +95,19 @@
         "sha256": "7a96698a101b5a2bc6362746ad80c9c462cc6600fd93b051eb9bacada66e2e64"
       }
     }
+  },
+  "retained_overlay_derivation": {
+    "format": 1,
+    "original_sha256": "430171966dc83ffc8055dd14d68cdafc0734e199ca7caa9c9877ebdce2a9a040",
+    "new_sha256": "89c0ef46f91dc375d8c9bb58b207b2195bd67aea3d168a67e888603ea9399c5a",
+    "old_allocated": 2586644480,
+    "new_allocated": 1005039616,
+    "all_virtual_block_contents_identical": true,
+    "virtual_bytes": 17179869184,
+    "immutable_backing_sha256": "e778801a4d1366004bbb0700b3920c2bc9cf4d1b0c07137357adfbabb1b7ec32",
+    "original_store_archive_preserved": true,
+    "comparison_exit": 0,
+    "replacement_complete": true,
+    "scope": "content-identical archive representation only; no guest boot or filesystem mutation"
   }
 }

@@ -146,3 +146,24 @@ and exact replay after stage discard. Source/Docket metadata and every asset's
 bytes/MIME match; the full source/release workflow and clean shutdown also pass.
 The managed lifecycle/private-network transport remains a fixture. See the native
 frontend API diagnostic; do not treat this as installed Docker/SSH qualification.
+
+## Pinned Grubbery bootstrap gate
+
+`--workflow-case grubbery-bootstrap-v1` requires an explicit current managed test
+binary and `--framework-source /absolute/pinned-checkout/desk`. It refuses resume,
+receivers, frontend diagnostics and ordinary release-source inputs. The complete
+source must match the compiled1443-file Grubbery definition before and after the
+bounded copy; the owned kernel rechecks it before staging. Only that desk subtree
+is copied, never a repository or dependency cache.
+
+This case has a13-minute test deadline and1100-second outer bound, the same4GiB,
+one-core/no-swap private namespace, and2GiB declared additional storage. Shared Go
+and module caches are charged under the explicit40/48GiB admission. It exercises
+ordinary API/store staging, commit and cold activation without a Unix mount.
+An uncertain activation permits only bounded read-only reconciliation of the
+original receipt. Kernel diagnostics are read with a separate private owner session
+and logged out. The supervisor stops only the newly created kernel.
+
+Passing this bootstrap gate does not qualify app deployment, permits, publication,
+discovery, served assets, saved-state restart, managed Docker lifecycle or an
+installed environment. Unrelated build failures must be reported separately.
