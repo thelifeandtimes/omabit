@@ -32,6 +32,10 @@ type RecordingSupervisorState struct {
 // ParseRecordingSupervisorState accepts only the exact selected unit's bounded
 // systemctl property response. It grants no authority and performs no probe.
 func ParseRecordingSupervisorState(job ManagedRecordingJob, raw []byte) (RecordingSupervisorState, error) {
+	return parseRecordingSupervisorState(job, raw, true)
+}
+
+func parseRecordingSupervisorState(job ManagedRecordingJob, raw []byte, ready bool) (RecordingSupervisorState, error) {
 	want, err := RecordingWorkerUnitName(job)
 	if err != nil || len(raw) > 8192 {
 		return RecordingSupervisorState{}, ErrRecordingWorker
@@ -48,7 +52,11 @@ func ParseRecordingSupervisorState(job ManagedRecordingJob, raw []byte) (Recordi
 		}
 		values[key] = value
 	}
-	if len(values) != len(allowed) || values["Id"] != want || values["Type"] != "notify" || values["NotifyAccess"] != "main" || values["ActiveState"] != "active" || values["SubState"] != "running" || !recordingJobHex(values["InvocationID"], 32) {
+	lifecycle := values["ActiveState"] == "active" && values["SubState"] == "running"
+	if !ready {
+		lifecycle = values["ActiveState"] == "activating" && values["SubState"] == "start"
+	}
+	if len(values) != len(allowed) || values["Id"] != want || values["Type"] != "notify" || values["NotifyAccess"] != "main" || !lifecycle || !recordingJobHex(values["InvocationID"], 32) {
 		return RecordingSupervisorState{}, ErrRecordingWorker
 	}
 	pid, err := strconv.ParseUint(values["MainPID"], 10, 32)

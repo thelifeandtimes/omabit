@@ -501,3 +501,11 @@ proof, and ended successfully. The launcher compared PID, start ticks, executabl
 invocation and cgroup; source and binary stayed unchanged. This supersedes the
 pending inert-helper gate above only. It does not qualify a recording worker,
 native capture, authenticated launch or active-job upgrades.
+
+The source observer now runs a fixed bounded property read for only the selected
+unit, reads only its exact main PID's kernel identity/image/cgroup, and requires
+the unit observation to match afterward. It refuses changed process start,
+image, owner, namespaces, cgroup or invocation. It reads no process arguments or
+environment. The startup main-process check is separate from ready authority.
+Focused race checks use inert supervisor seams and actual self-only proc; actual
+worker-service/native/installed gates remain pending.

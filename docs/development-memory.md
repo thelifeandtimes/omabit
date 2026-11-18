@@ -12057,3 +12057,20 @@ process identity and fresh private evidence; it never opens a job/session store,
 manager, engine or pier. Actual recording-worker lifetime, fixed-root CLI,
 authenticated launch, active-job upgrade and native capture remain unqualified.
 No production, manual DEV, installed configuration or existing ship changes.
+
+## M678 — Observe the exact recorder unit and process (2026-11-18)
+
+Add a fixed, bounded systemctl read for the selected job unit and bracket an
+exact-PID proc observation with matching supervisor reads. Bind executable hash,
+process start ticks, owner, boot, namespaces, invocation and actual unified cgroup;
+changed/dead/stopped processes, ambiguous cgroups, oversized output and changed
+unit observations refuse. Only that PID is read, never process arguments or
+environment. Invocation comes from the two matching manager observations and is
+compared with the original claim. No runtime lifecycle command is sent.
+
+Starting notify/main admission is distinct from active/running readiness and
+cannot grant launch authority. Focused source/race checks pass in2.682s with
+inert property/process seams and actual self-only proc checks. This is not a new
+actual service or native recording gate. Fixed-root worker entry, authenticated
+launch and downgrade/upgrade integration remain pending; installed state and
+existing ships remain untouched.
