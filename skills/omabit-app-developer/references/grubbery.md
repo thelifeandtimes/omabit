@@ -13,6 +13,15 @@ qualification contract, not commands that already exist. Author source and tests
 while that gap is open; do not substitute a private installer or raw Dojo/Eyre
 write for an unavailable policy-enforced Omabit operation.
 
+Current shared offline operations `app.framework.v1` and
+`app.verify-framework-source.v1` provide the frozen `grubbery-7f7701d-v1` source
+contract. The pin is `7f7701d546ce115eea5f37f66465b362cb121774`; its complete
+`desk` subtree has1443files/8013304bytes. Select a source-root handle explicitly
+at CLI/MCP startup, then pass that name and relative `desk` subtree for verification.
+These operations execute/download nothing and grant no policy. Exact source
+equality does not establish framework compilation, live permits or app readiness.
+The source must still pass the independently bound staging/commit gates.
+
 Framework Clay desk, app code tree/nexus, installed instance, loaded tree, permits,
 HTTP binding, local alias and peer discovery are distinct bindings. Discover the
 live framework revision, instance paths and endpoints from supported observation;

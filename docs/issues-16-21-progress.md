@@ -16,7 +16,11 @@ are recorded in [experiment isolation](experiment-isolation.md).
 | #20 durable runtime recordings | Inert private backend lifecycle comparison; provisional external stream recorder; source-only raw/timing codec, typed metadata/lifecycle and Docker decoder; private single-segment files with verified live/reopened paging and pressure/binding tests | Indexed seeking, rotation/writer continuation, lifecycle coordination, host/ship retention/pins, pressure recovery, redacted export, integration/API/UI and real Docker/Vere/installed qualification |
 | #21 app preflight/deployment mismatch | Selected runner Hello/build/role and separate missing API/adapter/policy results; pre-boot skill routing; inert no-write/identity/scope tests | Matching DEV artifacts, original-state preservation, actual minimal native app operation; original incident runner remains unproven |
 
-Source/native checkpoints are documented in M579–M597. The shared interface's
+The pinned Grubbery source contract now has shared offline metadata and exact
+confined-source verification, with real CLI/stdio parity. Native Grubbery adapter
+qualification remains pending; see [its boundary](grubbery-adapter.md).
+
+Source/native checkpoints are documented in M579–M598. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or

@@ -214,6 +214,7 @@ func (s *Service) register() error {
 	errs = append(errs, s.registerDesks())
 	errs = append(errs, s.registerProjectCreation())
 	errs = append(errs, s.registerSources())
+	errs = append(errs, s.registerFrameworks())
 	errs = append(errs, s.registerGuidance())
 	return errors.Join(errs...)
 }

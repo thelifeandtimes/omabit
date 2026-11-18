@@ -9847,3 +9847,26 @@ fsync/power/crash qualification, safe views/exports and UI remain open. Free-spa
 admission is not an exclusive filesystem reservation. No runtime or installed
 state is touched; only synthetic temporary recording files are created in tests.
 This narrows M587/M593's filesystem/cursor gap without advertising issue20 support.
+
+## M598 — Freeze Grubbery source before live adapter qualification (2026-11-17)
+
+Review of nisfeb/grubbery7f7701d546ce115eea5f37f66465b362cb121774 finds a
+different HTTP/namespace contract from the ff2b66b exercise. Its documents embed
+older code references; actual pinned Hoon is authoritative. Independently verified
+all1515archive blobs against the exact Git tree, then froze only the1443-file,
+8013304-byte Clay desk manifest with the upstream MIT notice. Private downloaded
+source stays outside Git and live mounts; the compiled definition contains hashes.
+
+Shared offline framework metadata and confined source verification reject missing,
+changed, additional, linked or unsupported files. A caller cannot replace the
+compiled definition with its own manifest. Existing stage planning/transfer still
+independently bind source bytes. Focused source/race/static checks and actual
+CLI/official-SDK stdio parity verify the complete downloaded desk without creating
+registry state or connecting to a ship. No framework source is executed or installed.
+
+This narrows issue18's reproducible-input gap, not its native readiness gap.
+Build/code namespace, loaded instance/state, shell-owned approvals, actual weirs,
+discovery/aliases and served bytes remain distinct. Approval is replacement of the
+selected declared subset, with a separate reload; trusted built-ins are not a
+substitute for closed desk apps. Grubbery preflight remains unavailable pending
+versioned live effects, durable uncertain-write recovery and native qualification.

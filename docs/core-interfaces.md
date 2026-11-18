@@ -23,6 +23,9 @@ offline fake-project planning, project reservation/lifecycle/coordinated recover
 application preflight/policy, desk discovery/settings/status/receipt/reconciliation,
 and existing desk review/plan/create/commit/adopt/release/frontend/receiver
 primitives, bounded creation handles and local source staging from explicitly allowed roots.
+Frozen framework metadata and exact local source verification are offline shared
+operations; see the [versioned Grubbery contract](grubbery-adapter.md). They do not
+install the framework or establish live adapter readiness.
 Ship routes are read-only. Sanitized snapshot/watch/log exports, broader private
 projects, named qualification, credentials, policy authoring, destructive
 maintenance and host installation remain explicit exclusions or later slices.
