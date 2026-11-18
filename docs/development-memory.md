@@ -10926,3 +10926,40 @@ bytes. There was no VM image, pier or guest service to clean up. Retry must use 
 fresh output directory with explicit artifact/harness identities; the first
 attempt remains failed. No production, DEV manual-review state, protected ship,
 tmux session or excluded path was inspected or changed.
+
+## M636 — Preserve product policy-setup failure and correct fixture scope (2026-11-18)
+
+Product VM02 boots the actual installed source-e61d971 runner/schema62 and starts
+one fresh fake. The Go helper refuses before desk creation: it incorrectly asked
+the desk-level policy update to grant CreateDesk. The existing contract requires
+that gate at ship scope and inheritance at desk scope, as the earlier native
+fixture already did. This is a fixture mistake, not a product permission change.
+Correct the helper's exact selected ship update, then inherit CreateDesk while
+allowing Commit/blocking Publish at the selected Grubbery desk. A pure race test
+validates both scoped updates and their gates; managed Go vet/guard tests pass.
+
+The failed original image/result/artifact pins are preserved through read-only
+retention extraction before retirement. Original SQLite/WAL/SHM, full guest
+commands/result and host serial remain unchanged. Queries/dumps use separate
+analysis copies because WAL is present; the snapshot has51 tables/schema62 and
+only the recorded single disposable fake. No immutable=1 shortcut ignores WAL.
+The original full root/input filesystem are now superseded and retired with
+hashes/inodes/manifest, freeing2,024,460,288 allocated bytes. The failed result is
+not relabeled, and exact e61d971 product artifacts remain retained.
+
+The untrimmed new overlay retained1,699,876,864 allocated bytes even at this early
+stage. Enable discard only on future new VM drives, and let the explicitly guarded
+guest trim only its own writable root before/after bootstrap and periodically
+during its helper. This reclaims deleted bootstrap/checkpoint blocks, without
+raising the2GiB scratch or48GiB aggregate ceilings or touching host/reference
+filesystems. The earlier staging2GiB-memory supervisor/no-swap limits remain.
+After this Go helper change build a fresh matching artifact set; no production
+code, saved permission, installed service, user pier or manual-review state changed.
+
+M636 retention also losslessly archives six older ended native helpers and one
+completed superseded source test binary, verifying each full inflation/hash and
+file identity before retiring its raw duplicate. Exact artifact hashes and sidecars
+remain;147,460,096 allocated bytes are freed. Current Gall07/public01 full-reference
+helpers, canonical runtime/pill/framework, frozen Stop/product artifacts and all
+original SQL/receipts/proofs/logs remain unchanged. Archive sidecars supersede old
+raw-path retention claims without rewriting historical input manifests.

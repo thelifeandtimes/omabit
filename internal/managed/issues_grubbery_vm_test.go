@@ -77,7 +77,9 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 	target := apppolicy.Target{InstanceID: appVMInstance, Desk: grubbery.FrameworkDesk}
 	policy, err := c.AppPolicy(ctx, entry.Identity())
 	g02Check(t, err)
-	_, err = c.SetAppPolicy(ctx, entry.Identity(), apppolicy.Update{ExpectedRevision: policy.Policy.Revision, Scope: "desk", Target: target, Gates: apppolicy.Gates{CreateDesk: apppolicy.Allow, Commit: apppolicy.Allow, Publish: apppolicy.Block}})
+	shipPolicy, err := c.SetAppPolicy(ctx, entry.Identity(), appVMPolicy(target, policy.Policy.Revision, "ship"))
+	g02Check(t, err)
+	_, err = c.SetAppPolicy(ctx, entry.Identity(), appVMPolicy(target, shipPolicy.Revision, "desk"))
 	g02Check(t, err)
 	waitDesk := func(id string) {
 		t.Helper()
@@ -340,6 +342,21 @@ func TestIssuesGrubberyProductDisposableVM(t *testing.T) {
 		t.Fatal("state write did not survive manager restart")
 	}
 	save("qualification", map[string]any{"actual_product_docker_transport": true, "native_cli_and_stdio": true, "two_source_versions": true, "state_and_new_code": true, "same_pier_container_replacement": true, "state_after_replacement": true, "manager_restart_original_replay": true, "boundary": "single fresh ordinary fake; fixed test-only state probes; no pending-phase rebinding, process-death auth cleanup, permits/alias/routes/assets/peers or installed upgrade"})
+}
+
+func appVMPolicy(target apppolicy.Target, revision uint64, scope string) apppolicy.Update {
+	if scope == "ship" {
+		return apppolicy.Update{ExpectedRevision: revision, Scope: "ship", Target: target.Ship(), Gates: apppolicy.Gates{CreateDesk: apppolicy.Allow, Commit: apppolicy.Inherit, Publish: apppolicy.Inherit}}
+	}
+	return apppolicy.Update{ExpectedRevision: revision, Scope: "desk", Target: target, Gates: apppolicy.Gates{CreateDesk: apppolicy.Inherit, Commit: apppolicy.Allow, Publish: apppolicy.Block}}
+}
+
+func TestProductVMPolicyAuthoringUsesExactShipAndInheritedDeskCreation(t *testing.T) {
+	target := apppolicy.Target{InstanceID: appVMInstance, Desk: grubbery.FrameworkDesk}
+	ship, desk := appVMPolicy(target, 0, "ship"), appVMPolicy(target, 1, "desk")
+	if ship.Validate() != nil || desk.Validate() != nil || ship.Target != target.Ship() || desk.Target != target || ship.Scope != "ship" || desk.Scope != "desk" || ship.Gates.CreateDesk != apppolicy.Allow || desk.Gates.CreateDesk != apppolicy.Inherit || desk.Gates.Commit != apppolicy.Allow || desk.Gates.Publish != apppolicy.Block {
+		t.Fatal("product fixture permission scope changed")
+	}
 }
 
 func appVMState(t *testing.T, ctx context.Context, r *collection.Registry, entry collection.Connection, record grubbery.Record, write, label bool, value string) string {

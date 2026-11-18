@@ -193,7 +193,7 @@ def main():
                '-accel', 'kvm', '-cpu', 'host', '-machine', 'q35', '-m', '8G', '-smp', '3', '-nodefaults', '-no-user-config', '-display', 'none', '-monitor', 'none', '-nic', 'none', '-no-reboot',
                '-L', '/tools/usr/share/qemu', '-bios', '/tools/usr/share/qemu/bios-256k.bin', '-kernel', '/vmlinuz', '-initrd', '/lab/initramfs.cpio',
                '-append', 'console=ttyS0 panic=-1 quiet rdinit=/init omabit.disposable-guest=release-upgrade-v1 systemd.unit=multi-user.target',
-               '-drive', 'file=/lab/root.qcow2,format=qcow2,if=none,id=rootdisk', '-device', 'virtio-blk-pci,drive=rootdisk',
+               '-drive', 'file=/lab/root.qcow2,format=qcow2,discard=unmap,if=none,id=rootdisk', '-device', 'virtio-blk-pci,drive=rootdisk',
                '-drive', 'file=/lab/payload.ext4,format=raw,if=none,id=payload,readonly=on', '-device', 'virtio-blk-pci,drive=payload',
                '-serial', 'stdio']
     report = {'scenario': scenario, 'admission': admission, 'scratch_limit': scratch,

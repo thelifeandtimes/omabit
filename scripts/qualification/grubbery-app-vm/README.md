@@ -41,3 +41,16 @@ immutable staging; QEMU was never created. Its original failure/journal and
 verified staging-retirement manifest remain retained. The2GiB bound accommodates
 that filesystem staging page cache, with14GiB available-memory admission before
 the guest starts. Preparation receipts identify the pre-VM phase.
+
+The product fixture authors CreateDesk at its exact ship scope, then inherits it
+at desk scope while allowing Commit and blocking Publish. A pure policy test
+checks those existing contract semantics before launch. Its second attempt
+started the fresh fake but failed that earlier fixture authoring before creating
+a desk; original snapshot/WAL/SHM/logs remain retained, and the overall result
+remains failed. Fresh retries use matching artifacts after this Go helper change.
+
+The new VM drive enables discard. Only the explicitly guarded guest trims its
+own new writable root before/after bootstrap and periodically during the helper;
+no host filesystem or retained reference image is trimmed. This releases deleted
+bootstrap/checkpoint blocks from the new overlay while retaining the declared
+2GiB scratch and48GiB aggregate refusal boundaries.

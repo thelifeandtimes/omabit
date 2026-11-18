@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import time
 
 I = Path('/opt/omabit-release-input')
 O = Path('/opt/omabit-issues-results')
@@ -62,6 +63,7 @@ def main():
     report['runner_id'] = host['runner_id']
     common.run([I/'candidate/urbit-collector', 'enroll', 'local', '--socket', common.SOCK], True)
     common.docker('load', '--input', I/'runtime.oci.tar')
+    common.run(['fstrim', '/'])
     hello = common.hello()
     if hello['build']['sha256'] != scenario['candidate']['urbit-runner']['sha256'] or common.db_projection()['schema'] != 62:
         raise RuntimeError('installed build/schema does not match frozen source')
@@ -72,10 +74,28 @@ def main():
                      '--bootstrap', 'recommended', '--pill', str(I/'boot.pill'))
     common.operation('candidate', 'grubbery-zod', 'start', 'product-initial-start')
     common.wait(lambda: common.instance('candidate', 'grubbery-zod', 'running'), 600)
-    helper = subprocess.run(common.owner_args([
+    common.run(['fstrim', '/'])
+    helper = subprocess.Popen(common.owner_args([
         'env', 'OMABIT_APP_PRODUCT_VM=source-state-restart-v1', I/'managed.test',
-        '-test.run=^TestIssuesGrubberyProductDisposableVM$', '-test.v', '-test.timeout=35m']),
-        timeout=2150)
+        '-test.run=^TestIssuesGrubberyProductDisposableVM$', '-test.v', '-test.timeout=35m']))
+    deadline = time.monotonic()+2150
+    try:
+        while helper.poll() is None:
+            if time.monotonic() > deadline:
+                raise RuntimeError('product helper deadline')
+            # Only this guarded fresh guest's writable root. Pass discard to
+            # the new overlay so deleted bootstrap/checkpoint files do not
+            # remain charged as retained VM data. Never trim a host filesystem.
+            common.run(['fstrim', '/'])
+            time.sleep(5)
+    finally:
+        if helper.poll() is None:
+            helper.terminate()
+            try:
+                helper.wait(timeout=15)
+            except subprocess.TimeoutExpired:
+                helper.kill()
+                helper.wait()
     report['helper_exit'] = helper.returncode
     if helper.returncode:
         raise RuntimeError('product helper failed; original phase proof and serial log retained')
@@ -104,6 +124,7 @@ if __name__ == '__main__':
         print('OMABIT_GRUBBERY_VM_RESULT '+json.dumps(report, separators=(',', ':')), flush=True)
         try:
             guard()
+            subprocess.run(['fstrim', '/'], timeout=60, check=False)
             subprocess.run(['systemctl', 'poweroff'], check=True)
         except BaseException:
             pass
