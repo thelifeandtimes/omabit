@@ -11975,3 +11975,20 @@ M672's absence of source claim/readiness files only. Actual self-executable
 observation, independent process/service lifetime, crash/power-loss, integration
 and downgrade/upgrade gates remain pending. No installed job root or service is
 created, and no ship is operated on.
+
+## M674 — Fit raw capture chunks to configured segments without losing counts (2026-11-18)
+
+The fixed64KiB decoder chunk could exceed a valid smaller segment. Select a
+bounded capture chunk after subtracting segment/frame/digest overhead, before
+reading the transport. Keep the public decoder's64KiB default. A callback still
+acknowledges its entire received chunk or fails: splitting within the callback
+would overcount known unrecorded bytes after a partially successful append.
+No frame or metadata format changes and no original is rewritten.
+
+Full recording race tests pass in1.275s, including a long binary/multiline trace
+across more than16 configured4KiB segments, exact original octets/chunk counts,
+and injected pressure after the first acknowledged chunk. Only the next received
+unrecorded chunk is counted; the acknowledged prefix stays exact and a gap that
+cannot be saved remains explicit. Actual original1/2/3 fixture checks and vet
+pass. This qualifies source capture sizing only, with no live engine, installed
+worker or comprehensive native-recording claim.

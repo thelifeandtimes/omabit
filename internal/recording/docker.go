@@ -27,11 +27,18 @@ type CopyStats struct {
 // never proof of a clean runtime exit. Cancellation must also close the upstream
 // transport if its Reader blocks; a context alone cannot interrupt arbitrary I/O.
 func CopyDockerStream(ctx context.Context, reader io.Reader, appendFrame func(Kind, []byte) error) (CopyStats, error) {
+	return copyDockerStream(ctx, reader, appendFrame, MaxFrameBytes)
+}
+
+// A durable destination may select a smaller chunk that fits a fresh segment.
+// Each callback still either acknowledges that whole received chunk or fails;
+// never split inside the callback and overstate how many bytes were lost.
+func copyDockerStream(ctx context.Context, reader io.Reader, appendFrame func(Kind, []byte) error, chunkBytes int) (CopyStats, error) {
 	var stats CopyStats
-	if reader == nil || appendFrame == nil {
+	if reader == nil || appendFrame == nil || chunkBytes < 1 || chunkBytes > MaxFrameBytes {
 		return stats, ErrInvalid
 	}
-	buffer := make([]byte, MaxFrameBytes)
+	buffer := make([]byte, chunkBytes)
 	for {
 		stats.AtFrameBoundary = true
 		if err := ctx.Err(); err != nil {

@@ -133,7 +133,11 @@ func (s *Store) captureDocker(ctx context.Context, m Metadata, source DockerCapt
 		return out, ErrCaptureIncomplete
 	}
 	out.ReadyAcknowledged = true
-	out.Stats, err = CopyDockerStream(ctx, stream, appendFrame)
+	// Leave room for both the segment header and complete frame overhead.
+	// Smaller configured segments must not discard a long decoder chunk, and
+	// partial appends inside a callback would make lost-byte counts incorrect.
+	chunkBytes := min(int64(MaxFrameBytes), s.limits.MaxSegmentBytes-int64(headerBytes+frameHeaderBytes+32))
+	out.Stats, err = copyDockerStream(ctx, stream, appendFrame, int(chunkBytes))
 	// Stop consuming only this output connection immediately on failure/EOF.
 	// Storage diagnostics and independent exit observation must not leave an
 	// unread attachment applying backpressure to the runtime.

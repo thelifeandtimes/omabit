@@ -175,3 +175,8 @@ immutable originals, closed-claim refusal, separate handles, concurrent quotas,
 space reserve and changed bindings/files. Saved readiness deliberately remains
 historical. Independent worker/process supervision and launch/upgrade admission
 are still unwired and required; no installed recording capability is advertised.
+
+M674 bounds capture reads to the configured segment's payload capacity. Full
+recording race/vet checks preserve long raw data across4KiB segments and exact
+known lost-byte counts under pressure; original formats/fixtures remain exact.
+This is source sizing qualification, not installed/native capture.

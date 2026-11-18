@@ -434,3 +434,15 @@ Source/race/vet checks pass with private temporary files and inert native seams,
 including independent handles, claim/reclaim, concurrent quotas, disk reserve and
 metadata/ownership changes. This is not process-death/power-loss qualification.
 No default job root, service, launch integration or installed database is enabled.
+
+## Segment-sized capture reads
+
+The capture coordinator now selects transport read chunks that fit a complete
+frame plus header in the configured segment. A long output frame therefore
+rotates through small segments without forcing an avoidable limit failure.
+Append callbacks still acknowledge a whole received chunk or fail; no callback
+splits a prefix and then overstates the number of unrecorded bytes. The public
+transport decoder keeps its existing64KiB default and frame/metadata formats are
+unchanged. Full source/race checks preserve long binary/multiline output through
+4KiB segments and verify exact known received/unrecorded counts under pressure.
+The original1/2/3 byte fixtures stay unchanged. Native capture remains pending.
