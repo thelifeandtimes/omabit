@@ -1,10 +1,12 @@
 # App source recovery across a replacement runtime — development contract
 
 Implementation is in progress. The typed review/receipt model and schema63
-metadata-only audit store have source tests. There is no live observer, API,
-CLI/MCP tool or runtime rebinding yet. Existing source operations continue to
-require their exact original process. No receipt/database edit is an upgrade or
-recovery procedure.
+metadata-only audit store have source tests. Trusted managed/project process
+observation and a separately fenced internal adapter also have source checks.
+They are not wired into the server: fresh native review evidence, authenticated
+API, CLI/MCP and native rebinding qualification remain pending. Existing source
+operations continue to require their exact original process. No receipt/database
+edit is an upgrade or recovery procedure.
 
 The first milestone preserves an unfinished plan2 after a supported Stop/Start
 of its existing disposable pier. The original plan, actor, request/phase IDs,
@@ -45,6 +47,16 @@ or another PID/container/namespace transition refuses. Historical receipts remai
 readable after later legitimate app progress; an old review never acquires fresh
 CAS authority. Rebinding sends no Start/Stop/signal and grants no Commit or other
 application capability.
+
+The internal process reader brackets full validated launch/network snapshots,
+namespace identity and host boot with unchanged engine/process checks. It binds
+the pinned image's Vere contract version, not a new probe of running executable
+bytes. Only an opaque context digest leaves the adapter. A review view refuses
+every GrubberyStep; the audit-backed view accepts only the original binding and
+constructs its original requests unchanged. Every transport boundary rechecks the
+approved full process/context. These adapters still require the authenticated
+server's trusted journal-head/actor/role/policy/lifecycle admission; they grant
+no authority by themselves and are not externally reachable.
 
 Schema63 adds separate immutable audit receipts and per-operation heads. Opening
 validates the complete linked ancestry and grants no binding authority. The

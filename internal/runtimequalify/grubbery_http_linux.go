@@ -94,7 +94,13 @@ func (t grubberyHTTPTransport) RoundTrip(req *http.Request) (*http.Response, err
 	return response, nil
 }
 func (s *DeskRuntime) grubberyBinding(ctx context.Context, b grubbery.Binding) error {
-	if b.Validate() != nil || s == nil || s.containerID != b.RuntimeID || s.check == nil || s.check(ctx) != nil {
+	if b.Validate() != nil || s == nil || s.check == nil {
+		return errors.New("app runtime binding changed")
+	}
+	if s.grubberyOriginal == nil && s.containerID != b.RuntimeID || s.grubberyOriginal != nil && b != *s.grubberyOriginal {
+		return errors.New("app runtime binding changed")
+	}
+	if s.check(ctx) != nil {
 		return errors.New("app runtime binding changed")
 	}
 	continuity, err := s.SourceIdentity(ctx)
@@ -152,6 +158,9 @@ func (s *DeskRuntime) withGrubberyOwner(ctx context.Context, b grubbery.Binding,
 // GrubberyStep requires the server's lifecycle/policy guard and a durably saved
 // original dispatch. It never admits policy, creates a journal or retries a call.
 func (s *DeskRuntime) GrubberyStep(ctx context.Context, p grubbery.Plan, stepID string, files []deskwork.SourceFile) (eyre.GrubberyResponse, error) {
+	if s == nil || s.grubberyReadOnly {
+		return eyre.GrubberyResponse{}, errDeskProcess
+	}
 	if err := grubbery.CheckNativeSource(p.Source); err != nil {
 		return eyre.GrubberyResponse{}, err
 	}

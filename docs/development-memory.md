@@ -11394,3 +11394,33 @@ This supersedes M651's frozen-source rehearsal deferral only. Runtime observatio
 approved process adapter, authenticated fresh review/apply, CLI/MCP and native/
 installed/DEV gates remain pending. No service, engine, runtime or user ship is
 opened. Both source fixtures and exact binaries remain retained privately.
+
+## M653 — Fence original app requests on a separately approved process (2026-11-18)
+
+The private managed/project desk constructors now supply a lazy trusted process
+reader. Full validated container/launch/network snapshots, fixed namespace stat
+and host boot are bracketed with exact engine/process checks. Context hashing
+exports no path, argv, environment or credential. Runtime version names the
+verified pinned image contract, not a new live executable probe; the project
+qualifier explicitly supplies that contract rather than an absent ordinary
+ManagedState field. Project evidence includes the unchanged complete fleet.
+
+A read-only recovery view accepts only the original binding and refuses every
+GrubberyStep. An audit-backed view validates immutable ancestry, checks a fresh
+full process observation and accepts the unchanged original binding/requests on
+that approved process. Each later transport boundary rechecks it. No original
+plan/payload/ID rewrite or generic URL/command override is introduced. These
+trusted adapters require server actor/role/policy/lifecycle and saved-head
+admission; they are not registered or advertised and do not grant authority.
+
+Initial observer fixtures refuse because old inert containers omit PID/start;
+explicit fixture facts fix that gap while production validation stays strict.
+A project namespace test initially changes unused bookkeeping; making the actual
+fixed stat response change reproduces/refuses namespace drift. Focused race
+checks then pass for ordinary/project PID/start/engine/namespace/launch/port/peer
+drift, scoped auth/cleanup/lifetime, sealed original binding and read-only writes.
+An exact saved audit permits one unchanged original request on the selected
+replacement; namespace drift blocks a later effect. This is inert adapter-level
+evidence, not native or authenticated server recovery. Focused vet passes.
+Fresh native prefix/unknown-effect review, API/CLI/MCP, matching native artifacts,
+installed upgrades and preserved DEV remain pending. No runtime is launched.
