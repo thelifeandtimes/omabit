@@ -11949,3 +11949,29 @@ No job file, service, persistent database migration or installed feature is
 created by this codec. Claim/readiness durability, actual executable verification,
 supervision, lifecycle integration and downgrade/upgrade guards remain required.
 The six-issue goal stays open.
+
+## M673 — Persist private recording claims/readiness without replay (2026-11-18)
+
+Add an unwired private job-file source layer, pinning an explicitly authorized
+0700 root with0600 owner-only single-link files. Serialize count admission across
+processes; enforce explicit max jobs and free-space reserve before creation.
+Fsync job/lock and directory entries before acknowledging. Claim once under a
+per-job flock, comparing supplied actual-worker executable identity, then fsync
+the immutable claim. Active claims refuse duplication; closed/crashed claims
+refuse reuse. Existing partial files/directories remain without overwrite,
+adoption, repair or deletion.
+
+Readiness requires the same original job/claim, independently admitted metadata
+and worker boot/namespaces; it binds session and metadata SHA. Refuse replaced,
+linked, exposed, malformed or rebound files/directories and storage pressure.
+Saved lookups remain read-only after writer closure: historical readiness is not
+live-worker evidence or Start authority. Real supervision/current process checks
+and the manager's authenticated lifecycle fence remain mandatory. Source/race
+checks pass in2.849s and vet passes with private files/inert native seams,
+including distinct parent/worker handles, exact executable mismatch, claim
+exclusion/reclaim, no readiness after claim-only, mutation refusal, immutable
+partial originals, reserve/quota and concurrent creator limits. This supersedes
+M672's absence of source claim/readiness files only. Actual self-executable
+observation, independent process/service lifetime, crash/power-loss, integration
+and downgrade/upgrade gates remain pending. No installed job root or service is
+created, and no ship is operated on.

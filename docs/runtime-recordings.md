@@ -318,13 +318,13 @@ exact source artifacts; runtime/native/installed gates remain unqualified.
 
 ## Source capture coordinator
 
-`Store.CaptureDocker` composes new metadata3 session creation, an already trusted
+`Store.CaptureDocker` composes current-version session creation, an already trusted
 output-only attachment factory, durable-readiness acknowledgement, multiplexed
 raw-byte decoding and independent exit observation. Metadata syncs before attach;
 readiness follows successful attachment. Its single receive clock retains a Go
 monotonic origin while wall time is recorded independently. Bounded original
 chunks, including long traces, controls and credentials, sync through existing
-linked segments. The persistent metadata/frame formats are unchanged.
+linked segments using versioned metadata and the existing frame/segment formats.
 
 EOF with no independently verified matching exit produces a gap. Interrupted
 transport can retain its received prefix, an explicit gap and a separately
@@ -408,6 +408,29 @@ Its new session clock and its own recorder namespaces must be independently
 obtained. A matching hash is evidence association, not authentication, an engine
 probe or Start permission. The authenticated manager retains the durable job and
 lifecycle guard. Source/race/vet checks pass with inert engine/private fixtures.
-Durable claim/readiness storage, executable checking, independent supervision,
-launch integration and upgrade guards remain unimplemented; this codec alone
-starts nothing and changes no installed file or database.
+The source claim/readiness layer is described below. Actual executable checking,
+independent supervision, launch integration and upgrade guards remain required;
+this codec alone starts nothing and changes no installed file or database.
+
+## Source-only durable job handoff files
+
+An explicitly authorized0700 job root now supports bounded, immutable0600 job,
+claim and readiness files. Cross-process admission locks enforce an explicit job
+count ceiling; free-space reserve refusal creates no job. Job bytes and parent/
+child directory entries sync before acknowledgement. A worker lock serializes a
+single claim, which syncs before further native admission. A closed/crashed claim
+refuses replay; a partial original is preserved without repair. Supplied worker
+executable/boot/namespace observations must match the job and actual attachment
+metadata. Actual self-executable observation remains the future worker's duty.
+
+Readiness binds the exact job, session and canonical metadata hash. Replaced,
+linked, exposed, malformed or rebound files/directories refuse. Repeated readiness
+does not overwrite its original. Lookups contact no engine, mutate no file and
+remain available after writer closure. A saved ready receipt does not prove a
+currently live worker or authorize Start; supervision, fresh native admission
+and the manager's lifecycle fence remain separate mandatory checks.
+
+Source/race/vet checks pass with private temporary files and inert native seams,
+including independent handles, claim/reclaim, concurrent quotas, disk reserve and
+metadata/ownership changes. This is not process-death/power-loss qualification.
+No default job root, service, launch integration or installed database is enabled.

@@ -36,6 +36,14 @@ claim/readiness and exact-executable admission, add the runner's downgrade guard
 and preserve old jobs/recordings through upgrade. Do not allow a schema63 binary
 to ignore newly active recording authority or replace an existing session.
 
+The unwired job-file source layer now writes immutable version1 jobs, claims and
+readiness under an explicitly supplied private test root. Unknown/corrupt or
+partial originals refuse and remain retained. Lookups preserve those bytes, and
+closed claims cannot be retried as new captures. Source fsync/locking tests are
+not native crash/power-loss, self-executable or supervision qualification; these
+and the active-job runner downgrade/upgrade guard are still required before
+enabling this layer in installed launch.
+
 ## Development: separate app runtime recovery audits, schema63
 
 Schema63 adds immutable linked runtime recovery receipts and exact per-operation

@@ -169,3 +169,9 @@ M672 adds source-tested version1 private worker-job encoding/admission binding
 without key/log bodies or copied parent receive context. It remains unwired;
 durable claims/readiness, independent supervision and launch/upgrade integration
 are the next recording slice, not an installed capability.
+
+M673 passes private durable job/claim/readiness source/race/vet checks, including
+immutable originals, closed-claim refusal, separate handles, concurrent quotas,
+space reserve and changed bindings/files. Saved readiness deliberately remains
+historical. Independent worker/process supervision and launch/upgrade admission
+are still unwired and required; no installed recording capability is advertised.
