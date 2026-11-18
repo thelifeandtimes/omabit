@@ -9545,3 +9545,30 @@ M584's real collector/staging native composition; they do not establish named
 product-client, installed upgrade or complete issue19 coverage. See
 [current interface coverage](core-interfaces.md). No new persistent format or
 policy grant is introduced by pinned local roots.
+
+## M586 — Recording lifecycle prototype (2026-11-17, provisional)
+
+Four sequential private inert capsules compare pipe, controlling PTY, installed
+script2.42.4 and tmux3.8. They create no ship/container and cannot access host
+HOME, sockets or existing tmux. The final run retains350-line bursts,12288-byte
+lines, diagnostic atoms, fake credential strings, redraws and stderr in all
+backends. Monotonic timing/offsets cover all raw pipe/PTY/tmux bytes with a UTC
+origin. Pipes retain stream identity; PTYs combine streams and transform LF.
+
+Signalling the script wrapper yields actual inner exit7 but wrapper0 and omits an
+accepted final write. Stopping the private tmux server delivers HUP, observes
+inner129 and an EIO final write; its client0 means submission only. Direct pipe
+and PTY TERM preserve observed7 and final output. The first pipe trial timed out;
+its cause remains unresolved, while the next three pass with exact owned-target/
+signal-mask and later adopted-child exit evidence. Do not erase the failure or
+infer a universal behavior from these installed versions/stop paths.
+
+Proceed provisionally with a runner-owned external stream recorder attached before
+container Start, preserving the native signal/TTY/lifecycle contract. Actual
+Docker buffering/bootstrap, recorder loss, host restart, retention/pressure,
+persistent format, APIs/UI/export and installed upgrade remain open. This is an
+architecture prototype, not shipped recording support or production permission.
+See [recording contract and evidence](runtime-recordings.md). Capsules enforce
+256MiB/no swap/one CPU/64 tasks,16MiB declared scratch and the temporary48GiB
+aggregate cap. Only known private child/server PIDs are signalled/reaped; no host
+process or tmux inventory is taken. All capsule parents exit after collection.
