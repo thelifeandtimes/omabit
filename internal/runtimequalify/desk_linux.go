@@ -111,11 +111,21 @@ func openManagedDesk(ctx context.Context, state ManagedState, expectedContainer 
 			return container{}, nil, errDeskProcess
 		}
 		network, err := q.inspectNetwork(ctx)
+		if err != nil {
+			return container{}, nil, err
+		}
+		if err = q.containment(current, q.r.Containers[index].Kind); err != nil {
+			return container{}, nil, err
+		}
+		currentPorts, err := q.readHTTPPorts()
+		if err != nil || currentPorts != ports {
+			return container{}, nil, errHTTPPorts
+		}
 		return current, struct {
 			Container container
 			Network   bridge
 			Ports     string
-		}{current, network, ports}, err
+		}{current, network, currentPorts}, nil
 	})
 	return s, nil
 }

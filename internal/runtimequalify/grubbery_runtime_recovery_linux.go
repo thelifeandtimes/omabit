@@ -32,12 +32,14 @@ func deskProcessBootReader(q *qualifier) func() (string, error) {
 }
 
 // The original constructors supply the full validated container and launch/
-// network context. Two snapshots, namespace reads and engine checks bracket the
-// observation. No source, application, credential or caller path is accepted.
+// network context, including every check in the ordinary process guard. Two
+// complete snapshots, namespace reads and engine checks bracket observation;
+// nesting another pair of the same process/network guards adds no new evidence.
+// No source, application, credential or caller path is accepted.
 func deskProcessReader(s *DeskRuntime, engineID, runtimeVersion string, boot func() (string, error), snapshot func(context.Context) (container, any, error)) func(context.Context) (grubbery.RuntimeProcess, error) {
 	return func(ctx context.Context) (grubbery.RuntimeProcess, error) {
 		refuse := func() (grubbery.RuntimeProcess, error) { return grubbery.RuntimeProcess{}, errDeskProcess }
-		if s == nil || s.q == nil || s.check == nil || snapshot == nil || boot == nil || engineID == "" || s.check(ctx) != nil {
+		if s == nil || s.q == nil || s.check == nil || snapshot == nil || boot == nil || engineID == "" {
 			return refuse()
 		}
 		q := s.q
@@ -66,7 +68,7 @@ func deskProcessReader(s *DeskRuntime, engineID, runtimeVersion string, boot fun
 			return refuse()
 		}
 		after, err := json.Marshal(contextAfter)
-		if err != nil || !bytes.Equal(before, after) || afterContainer.ID != selected.ID || q.verifyEngine(ctx) != nil || q.engineEvidence.ID != engineID || s.check(ctx) != nil {
+		if err != nil || !bytes.Equal(before, after) || afterContainer.ID != selected.ID || q.verifyEngine(ctx) != nil || q.engineEvidence.ID != engineID {
 			return refuse()
 		}
 		started, err := time.Parse(time.RFC3339Nano, selected.State.StartedAt)

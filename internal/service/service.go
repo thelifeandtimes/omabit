@@ -233,6 +233,12 @@ func problem(err error, mutates bool) *Problem {
 		if !protocol.ValidID(code) {
 			code = "runner_error"
 		}
+		if mutates && code == "app_journal_uncertain" {
+			// A valid error response can itself report an uncertain commit.
+			// Calling it a rejection would invite redispatch after an effect
+			// that the runner may already have acknowledged durably.
+			return &Problem{"outcome_uncertain", "The runner could not confirm the saved operation outcome.", "outcome-uncertain", code, "Read the original saved receipt using its exact IDs before deciding whether a read-only reconciliation is needed; never resubmit the mutation or mint a replacement ID."}
+		}
 		return &Problem{"runner_rejected", "The runner rejected this request.", "runner-reported-error", code, "Read the original receipt and current policy/revision before deciding how to proceed."}
 	}
 	dispatch := "read-failed"

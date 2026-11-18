@@ -105,6 +105,36 @@ func TestCoreErrorsDoNotReflectUntrustedDiagnostics(t *testing.T) {
 	}
 }
 
+func TestRunnerJournalUncertaintyRequiresOriginalLookup(t *testing.T) {
+	for _, tc := range []struct {
+		name, code, want, dispatch string
+		mutates, before            bool
+	}{
+		{"uncertain-commit", "app_journal_uncertain", "outcome_uncertain", "outcome-uncertain", true, false},
+		{"saved-read", "app_journal_uncertain", "runner_rejected", "runner-reported-error", false, false},
+		{"before-effect", "app_journal_uncertain", "runner_rejected", "not-dispatched", true, true},
+		{"policy-refusal", "app_policy_denied", "runner_rejected", "runner-reported-error", true, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var err error = &client.RemoteError{Status: 503, Problem: protocol.APIError{Code: tc.code, Message: "private runner diagnostic"}}
+			if tc.before {
+				err = &beforeEffect{err}
+			}
+			out := problem(err, tc.mutates)
+			if out.Code != tc.want || out.Dispatch != tc.dispatch || out.OriginalCode != tc.code {
+				t.Fatal("runner outcome misclassified", out)
+			}
+			if out.Code == "outcome_uncertain" && (!strings.Contains(out.NextAction, "original saved receipt") || !strings.Contains(out.NextAction, "never resubmit")) {
+				t.Fatal("uncertainty did not preserve lookup-only guidance", out)
+			}
+			body, _ := json.Marshal(out)
+			if strings.Contains(string(body), "private runner diagnostic") {
+				t.Fatal("private diagnostic disclosed")
+			}
+		})
+	}
+}
+
 func TestSchemaValidationPreservesLargeIntegerBindings(t *testing.T) {
 	s, err := New(Options{})
 	if err != nil {

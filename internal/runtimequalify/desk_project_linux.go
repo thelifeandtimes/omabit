@@ -110,11 +110,15 @@ func deskFromProject(ctx context.Context, e *projectCurrentReadinessEngine, befo
 		if err != nil || !reflect.DeepEqual(current, expected) {
 			return container{}, nil, errDeskProcess
 		}
+		currentPorts, err := readHTTPPortsAt(path)
+		if err != nil || currentPorts != ports {
+			return container{}, nil, errHTTPPorts
+		}
 		return current.Containers[containerID], struct {
 			Snapshot projectMemberSnapshot
 			Contract string
 			Ports    string
-		}{current, selected.contract.digest, ports}, nil
+		}{current, selected.contract.digest, currentPorts}, nil
 	})
 	return s, nil
 }

@@ -14,7 +14,7 @@ import (
 )
 
 func TestProjectDeskUsesCurrentMemberPortAndGeneration(t *testing.T) {
-	for _, variant := range []string{"ok", "wrong-container", "wrong-ship", "changed-peer", "process-ok", "process-peer", "process-namespace"} {
+	for _, variant := range []string{"ok", "wrong-container", "wrong-ship", "changed-peer", "process-ok", "process-peer", "process-namespace", "process-ports-during-read"} {
 		t.Run(variant, func(t *testing.T) {
 			f, input, _ := resumedStopAdapterFixture(t, false, 2)
 			selection := ProjectCurrentReadinessSelection{Project: input.Project, Launches: input.Launches, Resumes: input.Resumes, Original: f.readiness["receiver"]}
@@ -101,6 +101,23 @@ func TestProjectDeskUsesCurrentMemberPortAndGeneration(t *testing.T) {
 				}
 				if variant == "process-namespace" {
 					f.ns.Inode++
+				}
+				if variant == "process-ports-during-read" {
+					q := e.source.anchor.base.q
+					execute := q.d.execute
+					reads := 0
+					q.d.execute = func(ctx context.Context, args, env []string) (string, error) {
+						out, err := execute(ctx, args, env)
+						if err == nil && len(args) == 12 && args[6] == id && reflect.DeepEqual(args[7:], []string{"/bin/stat", "-L", "-c", "%d:%i", "/proc/self/ns/net"}) {
+							reads++
+							if reads == 2 {
+								if err := os.WriteFile(filepath.Join(path, ".http.ports"), []byte(fmt.Sprintf("%d insecure public\n12330 insecure loopback\n", public)), 0600); err != nil {
+									t.Fatal(err)
+								}
+							}
+						}
+						return out, err
+					}
 				}
 				fresh, err := runtime.GrubberyProcess(t.Context())
 				if variant == "process-ok" {

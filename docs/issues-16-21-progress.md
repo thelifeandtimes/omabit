@@ -77,7 +77,7 @@ lifetime across caller disconnect; review and runner shutdown still cancel.
 Focused race, actual CLI/stdio parity, HTTP recovery and vet checks pass. This
 does not qualify the retained pending native phase or a new installed artifact.
 
-Source/native checkpoints are documented in M579–M658. The shared interface's
+Source/native checkpoints are documented in M579–M660. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or
@@ -99,3 +99,13 @@ and HTTP/CLI/MCP source gates through M657. M658 prepares a separately bounded
 read-only-backed copied-pier native case with supported lifecycle and audited
 recovery. Native capacity/recovery remain unqualified; original plans/events and
 the retained pending VM remain immutable.
+
+M660 records the first frozen recovery case: migration, supported same-pier
+replacement, audited CLI/MCP recovery, original unknown-phase observation, compile
+and version-file phases pass. Desk creation dispatches once and is acknowledged
+without its final observation before the four-minute bound. Whole qualification
+fails; exact SQLite/proofs and both full source/failure roots remain retained.
+Source changes remove redundant process checks while preserving complete bracketed
+identity/launch/network/port/peer observations, and classify explicit journal
+uncertainty as lookup-only uncertainty. Fresh matching native qualification remains
+required; no failed phase is redispatched or edited to advance the gate.

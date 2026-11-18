@@ -14,7 +14,7 @@ import (
 )
 
 func TestGrubberyProcessObservesExactEngineProcessNamespaceAndLaunchContext(t *testing.T) {
-	for _, scenario := range []string{"ok", "pid", "start", "engine", "boot", "namespace", "namespace-during-read", "launch", "ports", "invalid-pid", "missing-engine"} {
+	for _, scenario := range []string{"ok", "pid", "start", "engine", "boot", "namespace", "namespace-during-read", "launch", "ports", "invalid-pid", "missing-engine", "pid-during-read", "launch-during-read", "ports-during-read", "engine-during-read"} {
 		t.Run(scenario, func(t *testing.T) {
 			f, state, persist := managedFixture(t)
 			f.engine.ID = "fixture-process-daemon"
@@ -39,6 +39,27 @@ func TestGrubberyProcessObservesExactEngineProcessNamespaceAndLaunchContext(t *t
 			f.d.execute = func(ctx context.Context, args, env []string) (string, error) {
 				if len(args) >= 4 && reflect.DeepEqual(args[4:], []string{"container", "exec", id, "/bin/stat", "-L", "-c", "%d:%i", "/proc/self/ns/net"}) {
 					reads++
+					// The second observation has already captured its first full
+					// snapshot. Drift here must be caught by its final snapshot or
+					// engine bracket, without relying on extra process guards.
+					if reads == 4 {
+						switch scenario {
+						case "pid-during-read", "launch-during-read":
+							for _, c := range f.containers {
+								if scenario == "pid-during-read" {
+									mapAt(c.doc, "State")["Pid"] = 4243
+								} else {
+									mapAt(c.doc, "HostConfig")["Memory"] = 1
+								}
+							}
+						case "ports-during-read":
+							if err := os.WriteFile(ports, []byte("8080 insecure public\n12323 insecure loopback\n"), 0600); err != nil {
+								t.Fatal(err)
+							}
+						case "engine-during-read":
+							f.engine.ID = "other-process-daemon"
+						}
+					}
 					if changeDuring && reads%2 == 0 {
 						return "4:9999", nil
 					}

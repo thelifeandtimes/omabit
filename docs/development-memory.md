@@ -11582,3 +11582,40 @@ Read-only admission charges50,089,832,448bytes and declares1,409,286,144bytes
 with the fixed original read-only, hard QEMU root-file bound and per-second
 monitoring. Preserve any failure and report limits; no production/manual DEV or
 existing user ship operation is authorized by this checkpoint.
+
+## M660 — Preserve acknowledged native timeout and tighten exact observation (2026-11-18)
+
+The first frozen6676 native runtime-recovery capsule fails its whole workflow at
+phase9's four-minute bound. Schema62→63 preserves original app rows; supported
+Stop/Start resumes the same initialized copied pier. Actual CLI review and stdio
+MCP apply save one linked audit without rewriting the original17 events. Read-only
+reconciliation observes original phase6; compile and version-file phases pass.
+The next desk-directory phase dispatches once and is acknowledged, but its final
+observation is not saved. The runner returns app_journal_uncertain; the shared
+facade incorrectly labels this runner_rejected and the helper stops. Neither the
+new source nor later state/replacement/restart gates pass. See the [failure evidence](diagnostics/2026-11-18-app-runtime-cow01-failure.json).
+
+After both test units end, a fresh512MiB offline utility mounts the failed disk
+readonly,noload,nodev,nosuid,noexec and exports16 bounded SQLite/proof/invocation
+files. The closed store has26 events, one audit, exact original header and17-event
+prefix. Source/base hashes remain unchanged; retain the complete new failure
+root and original VM05. This is independent saved evidence, not a DB repair or
+permission to redispatch the acknowledged phase. Host/guest exit cleanly; root
+allocation is162,009,088bytes and aggregate50,299,912,192bytes, below48GiB.
+
+Complete process snapshots now each include containment and fresh exact HTTP
+ports, alongside all prior container/launch/network/engine/namespace facts.
+Remove the redundant surrounding process guards while retaining two complete
+snapshots, two namespace/boot observations and both engine brackets. No identity,
+ownership, launch, port or peer check is relaxed and no deadline is extended.
+Add drift between snapshots for PID, launch, ports and engine plus project ports.
+Focused runtime race/vet pass, as do full Grubbery and service race suites and
+focused app SQLite/HTTP recovery checks. This is source evidence only; native
+latency and complete workflow need fresh matching artifacts and qualification.
+
+On mutation, the shared facade now classifies the runner's explicit
+app_journal_uncertain as outcome_uncertain with its original error code and exact
+saved-lookup guidance. It does not resubmit effects. Read-only and before-effect
+failures retain their existing classifications. Source refusal/privacy tests pass.
+This supersedes M659's pending first-case result only; other issue tracks and
+installed/DEV/production boundaries remain unchanged.

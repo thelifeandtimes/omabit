@@ -23,6 +23,10 @@ bounded desk reads, deployments, app phases and source uploads allow their nativ
 RPC deadline plus15seconds for identity/capability checks. Tool arguments cannot
 extend these bounds. A timed-out mutation remains uncertain and requires lookup
 with its original IDs; a transport deadline never authorizes redispatch.
+The runner's `app_journal_uncertain` error on a mutation also produces
+`outcome_uncertain`, retaining that original error code. A received error does
+not establish that dispatch was rejected: the exact phase may already be
+acknowledged. Read its original saved receipt before read-only reconciliation.
 
 The current shared catalog covers selected runner identities/Hello, saved project
 inventory/status/recovery source/checkpoints, Stop diagnosis/reconciliation,

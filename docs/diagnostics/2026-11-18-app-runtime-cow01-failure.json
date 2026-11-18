@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "source_commit": "6676c9ec5fcf36e7b3823bcc0ebc80e8090b103a",
+  "passed": false,
+  "original_headers_preserved": true,
+  "original_events_preserved": true,
+  "original_events": 17,
+  "final_events": 26,
+  "runtime_audits": 1,
+  "unknown_original_phase_reconciled": true,
+  "database_sha256": "62f5f40a7e8a492aeb63213e546414e46621644f171a9ca2c087a4f1b6452594",
+  "failed_root_sha256": "bc601623733d11212a339c3eaa7270464057738fa096d66e0ee0c87d43a13056",
+  "original_vm05_unchanged": true,
+  "classification": "desk creation dispatched once and acknowledged; final observation not saved; no second source/version-state/restart qualification",
+  "effect_retried": false,
+  "native_successes": [
+    "schema62-to63-original-app-row-preservation",
+    "supported-stopped-container-stop-and-same-pier-start",
+    "typed-CLI-review-and-stdio-MCP-audit",
+    "read-only-original-acknowledged-phase-reconciliation",
+    "observe-code-phase",
+    "version-file-phase"
+  ],
+  "failed_phase": {
+    "ordinal": 9,
+    "kind": "make-directory",
+    "durable_state": "acknowledged",
+    "dispatches": 1,
+    "response_error": "app_journal_uncertain",
+    "shared_envelope_error": "runner_rejected",
+    "request_bound_seconds": 240
+  },
+  "not_qualified": [
+    "source-workflow-completion",
+    "second-source-version-and-state",
+    "second-runtime-replacement",
+    "manager-restart",
+    "installed-upgrade",
+    "DEV-deployment"
+  ],
+  "read_only_extraction": {
+    "source_and_base_unchanged": true,
+    "exported_files": 16,
+    "executed_source_code": false,
+    "mount": "readonly,noload,nodev,nosuid,noexec"
+  },
+  "root_at_end": {
+    "logical_bytes": 211746816,
+    "allocated_bytes": 162009088
+  }
+}
