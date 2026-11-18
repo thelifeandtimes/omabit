@@ -9647,3 +9647,24 @@ reopen, same-pier resume and clean final shutdown. See the
 [gate contract](../scripts/qualification/issues-recovery/README.md). Qualification
 must record actual outcomes and failed originals separately; these source guards
 do not resolve M579/M580's live/installed deployment gates by themselves.
+
+## M590 — First installed guest failure and bounded inspection (2026-11-17)
+
+The first source-pinned guest at aa71757 installs the actual0.4.0 runner and pinned
+image, but the first fresh recommended fake Start fails during pill preparation
+with a bounded Docker-command failure. No candidate install, upgrade preservation
+or Stop recovery gate is reached. The powered-off original failure disk/receipts
+remain evidence. The single virtual CPU may reject the unchanged default two-CPU
+contract; this remains a hypothesis. The next capsule uses three virtual CPUs
+inside the same one-core host quota; no product resource contract is weakened.
+
+Full raw conversion admission refused before creating a copy because mapped
+nonzero ranges exceeded available scratch. A separate512MiB no-NIC reader mounts
+the static failure filesystem read-only/noload under a dedicated PID1 and exports
+only two fixed bounded saved files. Its first guard rejected a final command-line
+token followed by newline, before opening the disk; exact token parsing fixes it.
+The next reader succeeds with the original overlay hash unchanged and no services
+or ships started. Reproducible inert staging is retired with a private manifest;
+the original failure overlay/receipts/results and immutable base stay preserved.
+See the [compact failure evidence](diagnostics/2026-11-17-issues-upgrade-first-capsule.json).
+This updates M589 with an actual failure, not an installed-support claim.

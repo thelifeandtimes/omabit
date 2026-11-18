@@ -8,7 +8,8 @@ are rehashed before launch. The original read-only not-onboarded base receives a
 new COW overlay; existing overlays, manual-review state and host services are
 never exposed. The payload is read-only and contains no user's state or keys.
 
-The VM has no NIC, one CPU,8GiB RAM within a10GiB/no-swap/512-task scope, a40-minute
+The VM has no NIC and three virtual CPUs within a one-core CPU quota,8GiB RAM
+within a10GiB/no-swap/512-task scope, a40-minute
 deadline and4GiB additional scratch admission. Aggregate DEV/evidence, temporary
 outputs and shared compiler/module/build caches count toward the default40GiB
 cap;48GiB is accepted only for the user's explicitly authorized temporary goal.
@@ -46,3 +47,11 @@ record both hashes. Passing this gate does not prove the historical timing race,
 other interrupted phases, a desktop UI or DEV deployment, multi-host upgrades,
 Grubbery, or production permission. Later source changes need matching artifacts
 and renewed relevant qualification.
+
+`inspect.py` uses a separate512MiB no-NIC reader VM after the original scope has
+ended. Its dedicated PID1 mounts the old disk read-only/noload and reads only
+the fixed saved result/command files. It never boots that disk's OS or services,
+copies a whole virtual disk, mounts a pier, or changes the original overlay; its
+hash must match before/after. The reader has a64MiB scratch allowance,1GiB memory
+scope, no swap, one CPU,90-second deadline and bounded exports. Original failed
+capsules remain evidence and cannot be resumed as qualification guests.

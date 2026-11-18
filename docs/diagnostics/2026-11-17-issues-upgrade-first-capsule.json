@@ -1,0 +1,42 @@
+{
+  "format": 1,
+  "passed": false,
+  "source_commit": "aa71757e2e97fc1265ec54b2a416913d4fd8ad28",
+  "scope": "fresh offline Linux/AMD64 VM, published0.4.0 installation; no upgrade/recovery gate reached",
+  "failed_stage": "first published-runner fake Start, runtime stage preparing-pill",
+  "saved_diagnostic": "runtime action failed: managed: docker command failed (exit 1)",
+  "previous_runner_sha256": "5d273dfa82e2464f94c2ae5e8366cd314edf2917514b4baf3c7131824d195752",
+  "candidate_runner_sha256": "241cdea2ff05f93e27b7884eb757642061b622722cfc7e6b1f48f312c4e29bf2",
+  "candidate_installed": false,
+  "clean_final_ship_shutdown_gate_passed": false,
+  "vm_powered_off": true,
+  "hypothesis": {
+    "explanation": "one virtual CPU may reject the existing default two-CPU Docker contract",
+    "verified": false,
+    "next_change": "three virtual CPUs within the unchanged one-core host quota"
+  },
+  "read_only_inspection": {
+    "passed": true,
+    "services_started": false,
+    "journal_replayed": false,
+    "original_overlay_sha256": "0af43b199caeb7a168e8a7476a4af076ee1926afaf0b179ff6f8df6e5f763979",
+    "original_overlay_unchanged": true,
+    "files": {
+      "commands.jsonl": {
+        "bytes": 14333,
+        "sha256": "b3dab85eb9ff5a9e9a85490419c1b28bdc948ec36a44d77e4ade6e956d047a6e"
+      },
+      "result.json": {
+        "bytes": 8420,
+        "sha256": "1e6ffe15a80c92cbacfe285925c5b9c4e7c40774aaa48daf2bc33e1629adfa7f"
+      }
+    }
+  },
+  "reader_first_attempt": {
+    "passed": false,
+    "reason": "exact kernel-token guard incorrectly rejected a final token followed by newline",
+    "disk_opened": false
+  },
+  "retention": "original failure overlay, console, receipts and extracted command/result evidence preserved; reproducible inert staging retired with private hash manifest; immutable backing base retained",
+  "production_or_existing_ship_access": false
+}

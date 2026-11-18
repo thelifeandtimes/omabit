@@ -87,6 +87,7 @@ def operation(version, name, action, request):
         if not op or op['status'] in ('queued','running','pending'):
             return None
         if op['status']!='succeeded':
+            report['failed_operation'] = op
             raise RuntimeError('native standalone operation did not succeed: '+request)
         return op
     return wait(done,600)
@@ -186,6 +187,7 @@ def project_done(request):
         if not op or op['status'] in ('queued','running'):
             return None
         if op['status']!='succeeded':
+            report['failed_operation'] = op
             raise RuntimeError('project phase did not succeed: '+request)
         return op
     return wait(done,600)
@@ -215,6 +217,7 @@ def main():
     report['runner_id'] = previous_host['runner_id']
     run([I/'previous/urbit-collector','enroll','local','--socket',SOCK],True)
     docker('load','--input',I/'runtime.oci.tar')
+    report['guest_virtual_cpus'] = json.loads(docker('info','--format','{{json .NCPU}}').stdout)
     for name, ship, port in (('upgrade-zod','~zod',19180),('upgrade-nec','~nec',19181)):
         collector('previous','create-fake',name,'--ship',ship,'--http-port',str(port),'--request-id',name+'-create','--bootstrap','recommended','--pill',str(I/'recommended.pill'))
         operation('previous',name,'start',name+'-start')
