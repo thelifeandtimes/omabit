@@ -10988,3 +10988,32 @@ unchanged. Only the explained failed root and copied input filesystem are
 retired, freeing1,504,108,544 allocated bytes. The original failed outcome,
 60335dd artifact set and full evidence remain retained; no full old pier archive
 is claimed. Production, DEV manual review and existing ships remain untouched.
+
+## M638 — Preserve originals and account for derived redacted spans (2026-11-18)
+
+Issue20's unwired source library now has bounded explicit redacted windows over
+already verified frames. Narrow credential-field values and owner-selected
+literal secrets are omitted with reason/offset/length; broad0w atom removal and
+whole-line keyword dropping are not inherited. Matching crosses frame boundaries
+per stream without changing original timing/order or raw bytes. Unknown leading
+and all trailing partial lines are withheld, and gaps invalidate context. Text
+escapes terminal/format controls and invalid UTF-8 for plain-text rendering.
+Secret inputs never enter metadata/results. Repeated/overlapping literals use
+linear matching; bounded spans refuse without partial output.
+
+All recording race tests and focused vet pass, including every credential split,
+interleaved streams, long traces, context gaps, exact byte accounting and original
+fixture preservation. This is derived encoding, not authorization, digest-chain
+verification, complete export, automatic publication or a guarantee that every
+private application value is identified. Capture/integration/API/UI and native
+qualification remain pending; the persistent recording format is unchanged.
+
+Storage retention losslessly archives ended frozen60335dd product artifacts,
+original60 writer, selected Gall07/public01 and older app helpers, plus frozen
+d24c960 tools and failed product02/03 boot helpers. All full inflations match
+their original SHA256/size before raw duplicates are retired. Sidecars supersede
+historical raw-path claims; sources, original fixtures/SQL/receipts/logs and full
+selected runtime references remain unchanged. These two batches free186,970,112
+allocated bytes. Explicit inflation and fresh storage admission are required
+before reusing an archived executable. No production or manual-review data is
+selected or changed.

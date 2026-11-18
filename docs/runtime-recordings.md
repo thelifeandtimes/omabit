@@ -202,3 +202,34 @@ failed and retained. A compact original-writer fixture and source/helper input
 manifest now run in ordinary focused tests. This supersedes the preceding
 original-writer deferral for this exact source boundary, with no live/native or
 installed qualification implied.
+
+## Source-only derived redacted windows
+
+`RenderRedactedFrames` produces an explicitly selected, bounded derived view of
+already verified retained frames. It never changes original bytes or includes
+them implicitly in JSON. Diagnostic `0w` atoms, multiline context and long traces
+remain visible. Finite credential-field rules omit values after Authorization,
+Proxy-Authorization, Cookie, Set-Cookie, boot.key and login-code labels. Explicit
+owner-selected literal secrets can supplement those rules; their bytes are
+ephemeral inputs and never become metadata or result fields. These rules do not
+identify all private application data, so a redacted export still needs review
+before sharing. No export is published by this library.
+
+Matching crosses original frame boundaries within each stream. Interleaved
+stdout/stderr retain their own context and their original frame timing/order.
+Every rendered or omitted byte range carries its original frame offset/length;
+omissions explain their reason. Typed gaps/exits remain separate evidence. Without
+independently verified line-start context, a leading partial line is withheld;
+every trailing partial line is withheld. A gap invalidates earlier context.
+Page edges cannot silently leak a split credential fragment. Stream EOF and an
+omitted fragment are never represented as a quiet or successfully exited ship.
+
+Text uses escaped literal plain-text representation, including terminal controls,
+invalid UTF-8 and non-ASCII formatting controls. Consumers must render it as plain
+text. Input, secret count/size and transformation spans have explicit bounds;
+excess refuses with no partial export. Overlapping/repeated secret matching uses
+linear scanning. Source race tests cover all frame split positions, stream
+interleaving, gaps, context loss, long traces, control containment, unchanged
+originals and output bounds. The recording format is unchanged. Runtime capture,
+operator/target authorization, retained-prefix selection, complete bundles,
+redaction preview/API/UI and native/installed qualification remain pending.
