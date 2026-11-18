@@ -214,6 +214,11 @@ func problem(err error, mutates bool) *Problem {
 	}
 	var uncertain *client.OutcomeUncertainError
 	if errors.As(err, &uncertain) {
+		if !mutates {
+			// Some legacy read/probe RPCs use POST. Their HTTP method does
+			// not turn a failed read into an uncertain runtime mutation.
+			return &Problem{"operation_failed", "The selected read did not return a verified result.", "read-failed", "", "Repeat the supported read after checking the selected connection."}
+		}
 		return &Problem{"outcome_uncertain", "The response did not establish the operation outcome.", "outcome-uncertain", "", "Read saved status or perform exact-request lookup using the original request; never mint a replacement ID."}
 	}
 	if errors.Is(err, client.ErrIdentityMismatch) {

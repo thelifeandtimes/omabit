@@ -28,7 +28,19 @@ The runner's `app_journal_uncertain` error on a mutation also produces
 not establish that dispatch was rejected: the exact phase may already be
 acknowledged. Read its original saved receipt before read-only reconciliation.
 
-The current shared catalog covers selected runner identities/Hello, saved project
+`runner.snapshot.v1` checks response identity/mode and reports its live project/
+storage probes in the effect catalog. `runtime.log-tail.v1` selects an exact
+instance, configuration revision and full container ID. It requires operator
+access and `include_private_data=true`; a changed reply is withheld. This bounded
+sanitized preview is not comprehensive session history or a durable cursor. Legacy
+log watch remains separately excluded. A transport failure on a read-only POST
+is a failed read, not an uncertain mutation merely because its method is POST.
+
+See [client setup recipes](mcp-clients.md) for primary-source-checked Codex,
+Claude Code and OpenCode configuration and the separate T3 provider connection
+gate. Recipes do not establish an actual named-client connection pass.
+
+The current shared catalog covers selected runner identities/Hello, fleet snapshots, saved project
 inventory/status/recovery source/checkpoints, Stop diagnosis/reconciliation,
 offline fake-project planning, project reservation/lifecycle/coordinated recovery,
 application preflight/policy, desk discovery/settings/status/receipt/reconciliation,

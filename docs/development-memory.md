@@ -11679,3 +11679,34 @@ aggregate admission are unchanged. Six input/deadline/kernel-bound guards pass;
 the helper compiles and its host tests skip the real case outside the guarded VM.
 New matching artifacts and a fresh complete native run remain required. No
 production, manual DEV, protected/tmux ship or original failure is operated on.
+
+## M663 — Share pinned fleet/private previews and document client setup (2026-11-18)
+
+Add runner.snapshot.v1 over the existing typed snapshot client, checking response
+runner/mode in addition to enrollment/connection identity. Its catalog includes
+live project/storage probes. Add runtime.log-tail.v1 as an operator-private
+bounded sanitized preview, requiring explicit private-data selection, instance,
+exact configuration revision and full container ID. Withhold a changed reply.
+This is not comprehensive recording access, export or following; legacy log
+watch stays separately excluded in discovery rather than claiming stream parity.
+
+A legacy read using POST can return OutcomeUncertainError from its transport.
+The facade now follows the declared operation effects: read-only failure remains
+read-failed, while mutations retain lookup-first uncertainty. No request is
+retried by this change and arbitrary diagnostics remain private. Actual CLI
+argument-dispatch and official-SDK stdio subprocesses return byte-identical
+snapshots/previews/refusals across observer/capability/response identity, mode,
+container/revision, private opt-in and lost-transport cases. Each valid/withheld
+pair sends exactly two reads; preflight refusals send none. Revisions above2^53
+remain exact. Existing source/runtime recovery parity also passes (24.314s total).
+Full service/MCP race suites and focused vet pass. Fixtures are inert private Unix
+peers, not production, native UI or named-client connection qualification.
+
+Use the OpenAI Docs skill and primary vendor pages to verify stdio configuration,
+protocol and timeout fields for [client recipes](mcp-clients.md). Parse both JSON
+examples and TOML. Pin T3's official provider-injection document at c2a7c5cb;
+its orchestration service is separate and exact external-server forwarding in a
+selected installed provider remains a connection gate. No client profile, T3
+thread, plugin or user setting changes. This supersedes the recipe deferral only;
+actual named-client connections, remaining operations and HTTP delivery still
+need their own checks. The full six-issue goal remains open.

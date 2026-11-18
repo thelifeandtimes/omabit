@@ -640,7 +640,7 @@
         "live-probe",
         "operator-log-disclosure"
       ],
-      "exclusion_reason": "Bounded legacy tail is not a durable recording/export contract; pending issue20 retention and disclosure controls."
+      "exclusion_reason": "The typed runtime.log-tail.v1 preview requires exact container binding and explicit private-data selection. Legacy --watch is excluded until streaming and cursor parity are qualified."
     },
     {
       "cli": "urbit-collector move-host",

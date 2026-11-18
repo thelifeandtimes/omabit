@@ -135,6 +135,19 @@ func TestRunnerJournalUncertaintyRequiresOriginalLookup(t *testing.T) {
 	}
 }
 
+func TestReadOnlyPOSTLossDoesNotSuggestMutationRecovery(t *testing.T) {
+	err := &client.OutcomeUncertainError{Method: "POST", Path: "/v1/instances/alpha/logs", Err: errors.New("private transport detail")}
+	read := problem(err, false)
+	write := problem(err, true)
+	if read.Code != "operation_failed" || read.Dispatch != "read-failed" || strings.Contains(read.NextAction, "request ID") || write.Code != "outcome_uncertain" || write.Dispatch != "outcome-uncertain" {
+		t.Fatal("transport method replaced declared operation effects", read, write)
+	}
+	body, _ := json.Marshal(read)
+	if strings.Contains(string(body), "private transport detail") {
+		t.Fatal("read failure disclosed transport diagnostics")
+	}
+}
+
 func TestSchemaValidationPreservesLargeIntegerBindings(t *testing.T) {
 	s, err := New(Options{})
 	if err != nil {
