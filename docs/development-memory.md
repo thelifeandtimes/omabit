@@ -12022,3 +12022,23 @@ process semantics before service work; see the [worker contract](runtime-recordi
 Independent supervision, fixed-root CLI/configuration, actual crash/lifetime,
 authenticated launch and downgrade/upgrade integration remain unwired. No
 production/manual DEV/installed state or existing ship changes.
+
+## M676 — Prepare fixed notify and exact supervisor binding (2026-11-18)
+
+Add a bounded fixed READY=1 Unix-datagram notifier, requiring a valid service
+invocation and explicit local socket. No arbitrary message, private output,
+credentials or runtime effect. Namespace recording units by runner/mode/root/job.
+Parse only the exact bounded property response for notify/main/active/running,
+full unit, canonical PID, invocation and matching cgroup. Compare independently
+obtained live process/image/start/boot/namespaces/invocation against the original
+claim; PID reuse, old unknown identity and changed supervisor refuse. These pure
+checks are not a fresh probe or Start permission.
+
+Focused supervisor/worker/job/factory/attachment race checks pass in3.537s; vet
+passes. The newly compiled gated helper is skipped in ordinary tests. It prepares
+a fresh inert service primitive with only self proc/image observations and private
+files; actual service acknowledgement/lifetime remains unqualified until run.
+No unit, engine, manager, existing process or pier is operated by this checkpoint.
+Source CLI/controller, actual old claim writer, active-job upgrade guard and
+native recording remain pending. Primary systemd262 sources are linked in the
+[worker contract](runtime-recordings.md#source-worker-composition-and-acknowledgement).

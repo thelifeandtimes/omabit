@@ -479,3 +479,17 @@ storage refusal, blocked-read cancellation, immutable finite results and legacy
 unknowns. Cancellation closes only the output connection. This is not independent
 process/service, Docker/Vere, crash/power-loss or installed qualification. Fixed
 configuration/CLI, supervision and authenticated launch/upgrade integration remain.
+
+## Prepared notify supervisor primitive
+
+Source support now sends only fixed READY=1 to a bounded local supervisor socket
+with a valid invocation identity. No raw status, output or secret is sent. Unit
+names bind runner/mode/root/job. Exact bounded property parsing requires notify,
+NotifyAccess=main, active/running, full unit identity, invocation and cgroup;
+current process/image/boot/namespaces/start ticks must match the original claim.
+These comparisons do not perform a probe or grant launch authority.
+
+Focused source/race/vet checks pass. A gated inert test helper is prepared to
+verify actual acknowledgement and survival after its launcher returns, using
+only its own process and fresh private files. Actual service, native worker and
+installed launch qualification remain pending; no existing unit is touched.

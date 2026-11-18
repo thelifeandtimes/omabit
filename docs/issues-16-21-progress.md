@@ -186,3 +186,7 @@ durable capture, separate post-sync acknowledgement and immutable finite results
 Focused race/vet checks pass; file visibility alone is explicitly insufficient.
 Claim2 keeps legacy1 omissions unknown. Independent service/CLI/launch/upgrade,
 actual old claim writer and native coverage gates remain pending.
+
+M676 prepares fixed notify messaging, isolated unit names and exact supervisor/
+process comparisons, passing focused race/vet. Its gated inert service helper
+has not run yet; actual acknowledgement/lifetime, launch and native gates remain.
