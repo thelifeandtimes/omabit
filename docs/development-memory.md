@@ -10245,3 +10245,29 @@ artifacts/source hashes and limits are in the [migration record](diagnostics/202
 The corrected native contract case, native observers/transport and full app/
 permit/route/state/restart/peer/installed/DEV gates remain active. Earlier schema61
 and native failure evidence stay bound to their original artifacts.
+
+## M613 — Preserve compact full evidence and prepare corrected native case (2026-11-18)
+
+The original bootstrap-only full pier is superseded by the later app-contract
+capsule's independently passing exact bootstrap section. Its original store,
+source artifacts, receipt/proof and logs remain byte-verified while only that
+fresh fake pier and verified duplicate task inputs are retired. Keep the current
+failed app-contract full pier intact. Private before/after manifests bind every
+retired object and preserve the original outcomes and source identities.
+
+The completed Gall cold reference is retained as a full sparse lossless archive,
+not discarded. A bounded1GiB/no-swap/one-core archive scope verifies all15 file
+contents against original SHA256, every directory and ownership/mode, plus original
+store/proof hashes before retiring the expanded tree. The archive retains about
+193MiB instead of563MiB; original metadata/inodes and exact archive hash are in its
+private manifest. It is evidence only: restoration creates new filesystem objects
+and never grants runtime ownership or automatic resume authority. Tombstones
+prevent older capsule launch instructions from reusing retired/archived trees.
+No installed, manual-review, production or unrelated user data is involved.
+
+The separate grubbery-app-contract-v2 case keeps the original failed prototype
+available and supplies the explicit native version value/original request in its
+new marker. Launcher input/isolation tests pass; native following, saved state
+and source-update behavior remain pending for this corrected case. Preserve the
+same fresh single-peer boundary and declare full scratch before launching it.
+The framework pin and unavailable nested tool modules remain unchanged.

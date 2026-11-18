@@ -36,6 +36,9 @@ func TestNativeGrubberyBootstrap(t *testing.T) {
 func TestNativeGrubberyAppContract(t *testing.T) {
 	nativeGrubberyBootstrap(t, "grubbery-app-contract-v1", nativeGrubberyAppContract)
 }
+func TestNativeGrubberyAppContractV2(t *testing.T) {
+	nativeGrubberyBootstrap(t, "grubbery-app-contract-v2", nativeGrubberyAppContractV2)
+}
 func nativeGrubberyBootstrap(t *testing.T, workflowCase string, after func(*testing.T, context.Context, *nativeDeskFixture, *eyre.Client, func(string, any))) {
 	f := nativeDeskGuard(t)
 	var guard struct {

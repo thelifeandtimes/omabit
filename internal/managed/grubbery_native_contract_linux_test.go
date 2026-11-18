@@ -24,6 +24,12 @@ import (
 // It submits each write once, retains dispatch/response hashes, and leaves a
 // failed or uncertain outcome intact for the outer supervisor's clean shutdown.
 func nativeGrubberyAppContract(t *testing.T, ctx context.Context, f *nativeDeskFixture, owner *eyre.Client, save func(string, any)) {
+	nativeGrubberyAppContractGeneration(t, ctx, f, owner, save, false)
+}
+func nativeGrubberyAppContractV2(t *testing.T, ctx context.Context, f *nativeDeskFixture, owner *eyre.Client, save func(string, any)) {
+	nativeGrubberyAppContractGeneration(t, ctx, f, owner, save, true)
+}
+func nativeGrubberyAppContractGeneration(t *testing.T, ctx context.Context, f *nativeDeskFixture, owner *eyre.Client, save func(string, any), correctedVersion bool) {
 	t.Helper()
 	save("app-contract-scope", "fresh kernel-only API/source/nexus/state experiment; no public app adapter, permits, routes, peers or installed lifecycle")
 	encoded, err := owner.ExportSession()
@@ -181,7 +187,13 @@ func nativeGrubberyAppContract(t *testing.T, ctx context.Context, f *nativeDeskF
 		if !live {
 			t.Fatal("native state nexus did not compile")
 		}
-		version, _ := json.Marshal(map[string]any{"epoch": number, "source_digest": manifest.Digest})
+		marker := map[string]any{"epoch": number, "source_digest": manifest.Digest}
+		if correctedVersion {
+			request := stopEvidenceDigest([]byte(nonce + ":" + fmt.Sprint(number)))
+			marker["version"] = "omabit:" + request
+			marker["request_id"] = request
+		}
+		version, _ := json.Marshal(marker)
 		expect(fmt.Sprintf("release-%d-version", number), "PUT", "/grubbery/api/make"+root+"/version.json", "application/json", version, 201)
 		return release{root, version, manifest, files}
 	}
