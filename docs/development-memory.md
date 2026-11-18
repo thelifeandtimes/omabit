@@ -12109,3 +12109,21 @@ compact pinned fixture remain pending until this clean source gate is run.
 Only regenerable task-test cache archives were classified and retired with an
 exact hash/inode manifest to admit this work, keeping the newest two per package;
 frozen executables, SQLite evidence and all VM disks remain unchanged.
+
+## M681 — Preserve actual claim1 bytes and refuse old-reader claim2 (2026-11-18)
+
+The M680 rehearsal passes for frozen candidate252aa548 and unchanged original
+85ac7c6892dd4934b64e5dacc98846001ab3b01d plus the declared helper. The actual
+original API writes five job/claim/readiness/lock files. Candidate repeated lookup
+preserves all bytes, keeps missing start/invocation unknown and refuses a second
+claim. The genuine old reader accepts successor job1 but refuses claim2 unchanged.
+Preserve the [source/binary/helper pins and hashes](diagnostics/2026-11-18-recording-claim2-source-upgrade.json).
+
+Retain the compact five-file fixture with exact original source manifest, helper
+and writer pins under runtimequalify/testdata/original-recording-claim1. Its
+ordinary race check verifies every byte before/after reopen and refused reclaim,
+including the revision above2^53. Focused worker/service/job/fixture race tests
+pass in2.449s. This supersedes M680's pending actual-writer gate and M675's
+synthetic-only compatibility boundary. It does not qualify live worker continuity,
+power loss, database/installed upgrade or native capture. Production/manual DEV
+and existing ships remain untouched.

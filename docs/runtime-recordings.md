@@ -524,3 +524,11 @@ writer/current claim2 compatibility rehearsal using unchanged frozen85ac7c6
 runtime and test sources plus a declared synthetic filesystem helper. It requires
 `--run`, a clean candidate, fresh task output and storage admission. Synthetic
 PID/namespaces are not live authority. Actual old-writer results remain pending.
+
+The [actual claim1/current claim2 gate](diagnostics/2026-11-18-recording-claim2-source-upgrade.json)
+now passes for candidate252aa548. Original job/claim/readiness/lock bytes survive
+repeated lookup; old omitted identity facts remain unknown and the original claim
+cannot be reused. The genuine old reader refuses claim2 unchanged. A compact
+five-file fixture, unchanged source manifest and declared helper run in ordinary
+tests. This closes only the source-format gate, not independent live-worker,
+database/installed upgrade, power-loss or native recording qualification.

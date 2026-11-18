@@ -3,6 +3,7 @@
 package runtimequalify
 
 import (
+	"encoding/json"
 	"errors"
 	"os"
 	"path/filepath"
@@ -99,4 +100,57 @@ func checkOriginalRecordingClaim(t *testing.T, root string) (ManagedRecordingJob
 		}
 	}
 	panic("unreachable")
+}
+
+func TestRecordingActualOriginalClaimFixture(t *testing.T) {
+	base := "testdata/original-recording-claim1"
+	raw, err := os.ReadFile(filepath.Join(base, "manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var m struct {
+		Source string            `json:"original_source"`
+		Helper string            `json:"declared_helper_sha256"`
+		Inputs string            `json:"original_source_manifest_sha256"`
+		Files  map[string]string `json:"files"`
+	}
+	if recordingJobSHA(raw) != "9d45af2e61b3d60e36593e5e508423b6ffa1dc672a4806eec9c338b1ec27d3e8" || json.Unmarshal(raw, &m) != nil || m.Source != "85ac7c6892dd4934b64e5dacc98846001ab3b01d" || m.Helper != "14a10b65054d9840010c0f6fcfc138db0439ecf2960840e840ba0d56dff6bf9c" || m.Inputs != "f85918611d6aab2c41d41dc57fbe1531070ef89d6f78421da4d03e42a2f7c4c9" || len(m.Files) != 5 {
+		t.Fatal("actual original writer provenance changed")
+	}
+	for name, pin := range map[string]string{"writer-helper.go.txt": m.Helper, "original-source.json": m.Inputs} {
+		data, err := os.ReadFile(filepath.Join(base, name))
+		if err != nil || recordingJobSHA(data) != pin {
+			t.Fatal("original source/helper changed", name, err)
+		}
+	}
+	root := t.TempDir()
+	if err := os.Chmod(root, 0700); err != nil {
+		t.Fatal(err)
+	}
+	for name, pin := range m.Files {
+		if !filepath.IsLocal(name) || filepath.Clean(name) != name {
+			t.Fatal("fixture escaped root")
+		}
+		data, err := os.ReadFile(filepath.Join(base, "files", name))
+		if err != nil || recordingJobSHA(data) != pin {
+			t.Fatal("original writer bytes changed", name, err)
+		}
+		path := filepath.Join(root, name)
+		if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, data, 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	job, _, _ := checkOriginalRecordingClaim(t, root)
+	if job.Operation.ConfigurationRevision != 9007199254740999 {
+		t.Fatal("original wide revision was truncated")
+	}
+	for name, pin := range m.Files {
+		data, err := os.ReadFile(filepath.Join(root, name))
+		if err != nil || recordingJobSHA(data) != pin {
+			t.Fatal("read/reopen/refused claim changed original bytes", name, err)
+		}
+	}
 }

@@ -205,3 +205,8 @@ M679 adds the service-only fixed-root worker CLI and pre-claim exact supervision
 gate, passing focused runtime/CLI race checks. Unsupervised, exposed/symlinked or
 missing roots and malformed inputs refuse; no normal managed launch submits jobs.
 Active-job downgrade/journal guards and actual worker/native upgrades remain.
+
+M680–M681 pass actual frozen claim1 writer/current claim2 lookup and old-reader
+refusal, with all original bytes retained and a compact ordinary fixture gate.
+Legacy omitted process facts remain unknown and cannot authorize a new claim.
+Active-job database guard, launch binding and actual worker/native gates remain.

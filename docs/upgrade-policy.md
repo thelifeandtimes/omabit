@@ -40,7 +40,11 @@ The unwired job-file source layer now writes immutable version1 jobs, readiness
 and finite results plus claim2 under an explicitly supplied private test root.
 Claim2 adds worker process-start ticks and service invocation. Legacy claim1
 lookup leaves those fields unknown and cannot grant current worker authority;
-actual original-writer compatibility for that boundary remains pending.
+the [actual original-writer gate](diagnostics/2026-11-18-recording-claim2-source-upgrade.json)
+now passes for candidate252aa548 and unchanged85ac7c6 plus a declared synthetic
+helper. Original1 bytes survive reopen/refused reclaim; the genuine old reader
+refuses claim2 unchanged. A compact exact fixture runs in ordinary tests. This is
+source filesystem compatibility only, not active-job/installed upgrade support.
 Unknown/corrupt or
 partial originals refuse and remain retained. Lookups preserve those bytes, and
 closed claims cannot be retried as new captures. Source fsync/locking tests are

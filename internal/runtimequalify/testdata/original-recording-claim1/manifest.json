@@ -1,0 +1,16 @@
+{
+  "original_source": "85ac7c6892dd4934b64e5dacc98846001ab3b01d",
+  "candidate_source": "252aa5489afbcab141b09ebcd8a882b2233b3e67",
+  "original_writer_sha256": "765d31add46e1a692fac7ff2ff2a11574f9143de6f75c6c6c8793d5de573b068",
+  "candidate_sha256": "600bcb9e3b62a6ba0ffe1ff253b55dfc3f2e21d6a504a3c88cb07a672c157dbf",
+  "declared_helper_sha256": "14a10b65054d9840010c0f6fcfc138db0439ecf2960840e840ba0d56dff6bf9c",
+  "original_source_manifest_sha256": "f85918611d6aab2c41d41dc57fbe1531070ef89d6f78421da4d03e42a2f7c4c9",
+  "scope": "source-only original claim1 and candidate claim2 filesystem lookup/refusal with synthetic job/metadata; no live worker, Docker, lifecycle, power-loss or installed upgrade qualification",
+  "files": {
+    "11111111111111111111111111111111/claim.json": "fc31161698dfd0dbe57744d23cf0531ca746ba84ed29ca3d8906b16b98a867f7",
+    "11111111111111111111111111111111/job.json": "8466615252134e37298f4307a5ee59588ec3c4c0ed1fc5c12f01e79ebc6d95e2",
+    "11111111111111111111111111111111/ready.json": "91de5d81f33d72ac8c443bca45abf6f57c42f95db1448469521ebf0ac167781a",
+    "11111111111111111111111111111111/worker.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "admission.lock": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}
