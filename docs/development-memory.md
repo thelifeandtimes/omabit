@@ -11523,3 +11523,38 @@ qualification. Continue with a separate read-only-backed disposable VM using its
 retained app pier, supported lifecycle actions and explicit audited recovery.
 No fresh bootstrap or source DB/receipt rewrite is needed. Production, existing
 user ships and manual DEV remain untouched. Other issue tracks remain active.
+
+## M658 — Prepare a bounded copied-pier native recovery case (2026-11-18)
+
+Refresh protected-ship and experiment constraints before preparing a separate
+fixed-case [native recovery capsule](../scripts/qualification/grubbery-runtime-cow/README.md).
+The exact ended VM05 and pristine base remain read-only dependencies. PID1
+validates both predecessor and new scenario before systemd and suppresses startup
+resume. Hash/size-verified compressed binaries inflate into guest/run tmpfs.
+The guest requires one exact initialized disposable~zod, verifies original62→63
+app-row preservation before operations and checks the original process is stopped.
+No fresh bootstrap, database repair or original plan/event rewrite is permitted.
+
+The guarded helper uses supported Stop/Start on that copied existing pier, then
+actual CLI/stdio review/apply and exact read-after reconciliation. It completes
+the original source, checks second-version state/new code, another same-pier
+replacement and manager restart historical audit/completed replay. Every original
+header/body/stamp and17-event prefix must remain exact; legitimate later source
+progress appends and may change its revision/lease. Exact lost phase/apply replies
+permit saved lookup only, retaining each original invocation envelope separately.
+No mutation is resubmitted merely because its reply is lost.
+
+Declare1280MiB capsule scratch plus64MiB host build reserve under48GiB. Compressed
+inputs use a64MiB filesystem. QEMU alone inherits a1152MiB kernel hard file-size
+limit; staged inputs/root/log/report allowance must fit before launch. Monitor
+allocation/logs each second. Existing guest/supervisor memory/no-swap/CPU/no-NIC/
+deadline limits remain. Size/I/O/forced termination is a failed clean-shutdown
+gate, preserving evidence; this is not permission to overshoot. Original fixture
+and host production/manual DEV/user ships stay excluded from mutation.
+
+Five refusal/input tests pass, including an actual kernel file-size refusal
+retaining exact first bytes. The new PID1 compiles and exits80 as an ordinary
+host process before mounts. Fixed helper compilation/separation race checks and
+focused vet pass. No VM has launched for this case. Freeze matching artifacts,
+reclaim only classified task compiler-cache objects as needed and admit storage
+before native qualification. Capacity and full native recovery remain unqualified.

@@ -77,7 +77,7 @@ lifetime across caller disconnect; review and runner shutdown still cancel.
 Focused race, actual CLI/stdio parity, HTTP recovery and vet checks pass. This
 does not qualify the retained pending native phase or a new installed artifact.
 
-Source/native checkpoints are documented in M579–M657. The shared interface's
+Source/native checkpoints are documented in M579–M658. The shared interface's
 [coverage and limits](core-interfaces.md), [Stop recovery](project-member-recovery.md)
 and [preflight](app-development-preflight.md) contracts distinguish saved, inert,
 native and installed evidence. No issue-wide completion, stable release or
@@ -94,5 +94,8 @@ restoration; a larger measured case must fit48GiB before another launch.
 M649 closes the newer scoped compiler-read lifetime gap with a deterministic
 closed-reader reproduction, full source phase checks, unchanged single dispatch
 and actual SQLite/HTTP regressions. Runtime recovery across an explicitly
-reviewed replacement process is the next app milestone; original plans/events
-and the retained pending VM remain immutable.
+reviewed replacement process now has typed model/store/process/native-observer
+and HTTP/CLI/MCP source gates through M657. M658 prepares a separately bounded
+read-only-backed copied-pier native case with supported lifecycle and audited
+recovery. Native capacity/recovery remain unqualified; original plans/events and
+the retained pending VM remain immutable.
