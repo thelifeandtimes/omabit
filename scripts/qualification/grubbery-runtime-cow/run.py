@@ -38,6 +38,18 @@ PREDECESSOR = Path('/tmp/omabit-issues-app-vm-05/root.qcow2')
 PREDECESSOR_SHA = 'a23f10ddc89657489d8e55eaf5e4362603848366a447dbf9f51ce192837a08f9'
 
 
+def artifact_change_allowed(path):
+    relative = Path(path)
+    if relative.is_absolute() or '..' in relative.parts or path.endswith('.go'):
+        return False
+    return path.startswith('docs/') or path in {
+        'scripts/qualification/grubbery-runtime-cow/run.py',
+        'scripts/qualification/grubbery-runtime-cow/guest.py',
+        'scripts/qualification/grubbery-runtime-cow/test_guards.py',
+        'scripts/qualification/grubbery-runtime-cow/README.md',
+    }
+
+
 def ordinary(path, directory=False):
     if path.is_symlink() or path.resolve() != path.absolute() or not (path.is_dir() if directory else path.is_file()):
         raise RuntimeError('ordinary physical input required')
@@ -73,8 +85,9 @@ def main():
     if not re.fullmatch('[0-9a-f]{40}',commit):
         raise RuntimeError('exact artifact source commit required')
     subprocess.run(['git','merge-base','--is-ancestor',commit,harness_commit],cwd=ROOT,check=True)
-    if subprocess.check_output(['git','diff',commit,'--','*.go','go.mod','go.sum','internal/appdev'],cwd=ROOT):
-        raise RuntimeError('Go/embedded inputs changed after the frozen artifacts')
+    changed = subprocess.check_output(['git','diff','--name-only',commit],cwd=ROOT,text=True).splitlines()
+    if any(not artifact_change_allowed(path) for path in changed):
+        raise RuntimeError('runtime or embedded inputs changed after the frozen artifacts')
     portable = ordinary(args.portable, True)
     meta = json.loads(ordinary(portable/'bundle.json').read_text())
     for name, pin in meta['sha256'].items():

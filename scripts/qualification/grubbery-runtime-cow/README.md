@@ -42,3 +42,8 @@ failed qualification with retained evidence. This case is not yet native-qualifi
 Only one runtime experiment may run. Production, manual DEV, protected/tmux ships
 and `~/temp-ur` remain excluded. This case does not qualify full permits/routes/
 assets/peers, process-death owner cleanup, installed upgrades or a stable release.
+
+An explicit older `--artifact-source` permits only non-Go documentation and the
+four named host/guest/Python-test/README harness files to differ. Embedded JSON,
+source samples, QML, modules and all Go changes require new matching artifacts;
+the launcher refuses them before artifact reads or storage admission.

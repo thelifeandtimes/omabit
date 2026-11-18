@@ -18,6 +18,34 @@ def module(name):
 
 
 class RecoveryGuards(unittest.TestCase):
+    def test_artifact_boundary_rejects_embedded_and_other_runtime_inputs(self):
+        host = module('run')
+        for path in ('internal/service/legacy-inventory.json', 'internal/appdev/samples/grubbery-state-v2/nex/state.hoon', 'contents/ui/Panel.qml', 'go.mod', 'go.sum', 'internal/managed/server.go', 'docs/example.go', 'docs/../internal/service/legacy-inventory.json', '/docs/result.json'):
+            self.assertFalse(host.artifact_change_allowed(path), path)
+        for path in ('docs/diagnostics/result.json', 'docs/development-memory.md', 'scripts/qualification/grubbery-runtime-cow/run.py', 'scripts/qualification/grubbery-runtime-cow/guest.py', 'scripts/qualification/grubbery-runtime-cow/test_guards.py', 'scripts/qualification/grubbery-runtime-cow/README.md'):
+            self.assertTrue(host.artifact_change_allowed(path), path)
+
+    def test_changed_embedded_inventory_refuses_before_artifact_reads_or_admission(self):
+        host = module('run')
+        args = ['run.py', '--run', '--artifact-source', 'a'*40, '--output', '/tmp/omabit-issues-runtime-cow-99']
+        for key in ('portable', 'candidate', 'rootless', 'runtime', 'helper'):
+            args += ['--'+key, '/missing']
+
+        def git(command, **kwargs):
+            if command == ['git', 'status', '--porcelain']:
+                return b''
+            if command == ['git', 'rev-parse', 'HEAD']:
+                return 'b'*40+'\n'
+            if command == ['git', 'diff', '--name-only', 'a'*40]:
+                return 'internal/service/legacy-inventory.json\n'
+            raise AssertionError('unexpected command before refusal')
+
+        with patch.object(sys, 'argv', args), patch.object(host.os, 'geteuid', return_value=1000), patch.object(Path, 'exists', return_value=False), patch.object(host.subprocess, 'check_output', git), patch.object(host.subprocess, 'run') as ancestry, patch.object(host, 'ordinary', side_effect=AssertionError('no artifact read')), patch.object(host.budget, 'charge', side_effect=AssertionError('no storage admission')):
+            with self.assertRaisesRegex(RuntimeError, 'runtime or embedded inputs changed'):
+                host.main()
+            self.assertEqual(ancestry.call_args.args[0], ['git', 'merge-base', '--is-ancestor', 'a'*40, 'b'*40])
+            self.assertEqual(ancestry.call_count, 1)
+
     def test_outer_deadlines_leave_time_for_inner_failure_and_cleanup(self):
         host, guest = module('run'), module('guest')
         self.assertGreater(guest.HELPER_PROCESS_TIMEOUT_SECONDS, 90*60)

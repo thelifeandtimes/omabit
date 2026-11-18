@@ -11742,3 +11742,22 @@ Trusted runtime identity/launch factories, independently supervised workers,
 start-failure coordination, retention/pins, indexed seeking, API/UI/export and
 real Docker/Vere/installed gates remain. This supersedes only the absence of a
 source capture coordinator; comprehensive runtime recording is still unqualified.
+
+## M665 — Close the native artifact boundary over embedded inputs (2026-11-18)
+
+The native launcher previously compared Go/modules and appdev assets after an
+artifact freeze. That could miss a different embedded input, notably service's
+legacy-inventory.json. No such drift is observed in the previous frozen cases:
+their actual source stayed clean and later changes were documented harness/docs.
+Still, that extension rule was incomplete and must not become qualification
+permission for an unrecorded catalog change.
+
+Allow artifact-source differences only for non-Go docs and the four explicitly
+named host/guest/Python-test/README harness files. Reject every other tracked
+change, including JSON inventory, source samples, QML, Go/modules, paths escaping
+docs and absolute paths, before reading artifacts or storage admission. Eight
+host guards pass, including a main-entry reproduction of the formerly missed
+embedded-inventory change with zero artifact reads/admission/process dispatch.
+The next frozen build records hashes for every tracked ordinary source file,
+covering all embedded inputs;3781 tracked files currently have no symlinks.
+No installed runtime or native helper behavior changes in this guard checkpoint.
