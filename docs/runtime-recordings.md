@@ -120,3 +120,40 @@ short/disk-pressure writes, bounded lengths, corruption/reordering, segment link
 interrupted Docker payloads and cancellation. Owner-private filesystem storage,
 locking/index/cursors, retention/reserves, lifecycle coordination, durable sync,
 actual runtime capture and APIs/UI/export remain to implement and qualify.
+
+## Source-only private session files and paging
+
+The Linux storage layer pins an explicitly authorized, already private owner
+directory. New session directories require unique validated IDs; metadata, lock
+and original frame files are0600 within0700 directories. Metadata/header and
+directory entries sync before creation returns. Append serializes and fsyncs
+before successful writer acknowledgement. It checks exact stream/container
+binding and refuses replaced, linked, exposed or unexpectedly resized files.
+An existing or incomplete session is never reused or repaired.
+
+Read-only pages verify the bounded original prefix and bind each cursor to its
+session, exact metadata, sequence and chained digest. Reconnecting returns the
+same subsequent bytes. A changed or lost cursor refuses instead of silently
+rewinding. Partial/corrupt snapshot tails remain explicit and originals remain
+unchanged. A live append can transiently expose a partial snapshot; rereading the
+same verified cursor can later observe completion. Writer-lock presence is an
+observation at read time, not process health. Snapshot EOF requires separate
+terminal-process evidence. Merely reading returns bytes, not terminal commands.
+
+This first implementation scans a single bounded segment; it has no trusted
+persistent index, writer reopen/continuation, rotation, global/per-ship retention,
+incident pins or runtime service. Metadata/root selection and operator API
+authorization remain the caller's responsibility. Reader pages establish the
+verified prefix visible at read time; only successful append acknowledgement
+claims the writer's fsync path. Crash/power-loss and fsync-failure gates remain
+unqualified, including any cursor whose bytes disappear after an interrupted write.
+
+An explicit session byte ceiling and free-space reserve are checked before writes;
+refusal preserves originals. This reserve is admission against current free space,
+not an exclusive reservation against other filesystem writers. Hitting a limit
+sends no ship signal and prunes nothing; the future capture coordinator must
+surface the incident and record missing coverage when storage can resume.
+Synthetic source tests cover close/reopen, long/raw bytes, exact/live paging,
+partial/corrupt/lost coverage, links/root replacement, stream/exit rebinding and
+quota/reserve refusal. No installed recording or persistent migration is created
+by adding this unwired library.

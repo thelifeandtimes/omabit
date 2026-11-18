@@ -9821,3 +9821,29 @@ missing bindings refuse. Existing pending/interrupted/history/wait cases pass
 under the race detector. This supersedes M588's ambiguous advance-call semantics.
 It is a later client/core source change, not part of the frozen d24c960 native
 artifact qualification. Matching final artifacts/interfaces remain required.
+
+## M597 — Private recording files and verified source paging (2026-11-17)
+
+The unwired Linux recording store pins a private owner directory, exclusively
+creates unique sessions and syncs immutable metadata/header/directory entries.
+Append serializes original frames, checks stream/container and current file/lock
+identity, admits explicit byte/free-space ceilings, and fsyncs before success.
+Changed, exposed, linked, unexpectedly resized or replaced files refuse; a failed
+writer becomes unusable. Existing/incomplete sessions are never reused or repaired.
+
+Cursor pages verify the bounded original prefix and exact metadata/sequence/digest.
+Reopen/reconnect and live concurrent paging retain raw bytes without duplication.
+Partial/corrupt tails stay visible and unchanged; a lost cursor refuses without
+rewind. Writer presence and snapshot EOF are separate from runtime exit. Source
+race/static checks pass for privacy/binding, long lines/raw atoms/controls, paging,
+replacement/links, quota and reserve refusals. Test temporary roots were initially
+0755 and correctly refused; fixtures explicitly become0700 rather than loosening
+the store's ownership rule.
+
+This is one bounded segment with a verified scan, not a persistent index/rotation,
+writer continuation, per-host/ship retention, incident pins, authorization API or
+capture daemon. Before-container errors, runtime lifecycle, pressure recovery,
+fsync/power/crash qualification, safe views/exports and UI remain open. Free-space
+admission is not an exclusive filesystem reservation. No runtime or installed
+state is touched; only synthetic temporary recording files are created in tests.
+This narrows M587/M593's filesystem/cursor gap without advertising issue20 support.
