@@ -41,6 +41,7 @@ def main():
     for name in ('portable', 'candidate', 'rootless', 'runtime', 'framework-source', 'helper', 'output'):
         parser.add_argument('--'+name, type=Path)
     parser.add_argument('--storage-budget-gib', type=int, choices=(40, 48), default=40)
+    parser.add_argument('--artifact-source', help='exact frozen artifact commit when only harness/documentation changed')
     parser.add_argument('--run', action='store_true')
     parser.add_argument('--worker', action='store_true', help=argparse.SUPPRESS)
     args = parser.parse_args()
@@ -55,7 +56,13 @@ def main():
         parser.error('fresh physical /tmp/omabit-issues-app-vm-NN required; never resume a capsule')
     if subprocess.check_output(['git', 'status', '--porcelain'], cwd=ROOT):
         raise RuntimeError('freeze clean matching source before qualification')
-    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    harness_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    commit = args.artifact_source or harness_commit
+    if not re.fullmatch('[0-9a-f]{40}',commit):
+        raise RuntimeError('exact artifact source commit required')
+    subprocess.run(['git','merge-base','--is-ancestor',commit,harness_commit],cwd=ROOT,check=True)
+    if subprocess.check_output(['git','diff',commit,'--','*.go','go.mod','go.sum','internal/appdev'],cwd=ROOT):
+        raise RuntimeError('Go/embedded inputs changed after the frozen artifacts')
     portable = ordinary(args.portable, True)
     meta = json.loads(ordinary(portable/'bundle.json').read_text())
     for name, pin in meta['sha256'].items():
@@ -98,9 +105,10 @@ def main():
                    '--property=WorkingDirectory='+str(ROOT),
                    '--property=StandardOutput=append:'+str(log),
                    '--property=StandardError=append:'+str(log),
-                   '--setenv=OMABIT_PRODUCT_VM_WORKER=1', '--', '/usr/bin/python3', '-B',
+                   '--setenv=OMABIT_PRODUCT_VM_WORKER=1', '--setenv=GOPROXY=off', '--setenv=GOTELEMETRY=off',
+                   '--setenv=GOCACHE='+str(Path.home()/'.cache/go-build'), '--', '/usr/bin/python3', '-B',
                    str(Path(__file__).resolve()), *sys.argv[1:], '--worker']
-        report = {'unit': unit+'.service', 'source_commit': commit, 'candidate': builds,
+        report = {'unit': unit+'.service', 'source_commit': commit, 'harness_commit':harness_commit,'candidate': builds,
                   'output': str(out), 'log': str(log), 'command': command,
                   'scope': 'one fresh offline product transport VM; no installed host service changes'}
         receipt = Path('/tmp')/(unit+'.json')
@@ -142,7 +150,7 @@ def main():
     shutil.copy2(Path(__file__).with_name('guest.py'), payload/'guest.py')
     shutil.copy2(ROOT/'scripts/qualification/issues-recovery/guest.py', payload/'issues-common.py')
     scenario = {'kind': 'issues18-product-grubbery-v1', 'development_snapshot': True,
-                'source_commit': commit, 'target_schema': 62, 'candidate': builds,
+                'source_commit': commit, 'harness_commit':harness_commit,'target_schema': 62, 'candidate': builds,
                 'pill_sha256': budget.PILL, 'oci_sha256': budget.OCI,
                 'framework_inputs': framework, 'case': 'source-state-restart-v1'}
     (payload/'scenario.json').write_text(json.dumps(scenario, indent=2)+'\n')
@@ -152,7 +160,7 @@ def main():
     util.run(['mkfs.ext4', '-q', '-F', '-d', payload, disk], stdout=subprocess.DEVNULL)
     shutil.rmtree(payload)  # Only this invocation's completed inert staging.
     init = out/'init'
-    util.run(['go', 'build', '-trimpath', '-o', init, './scripts/qualification/release-upgrade/init'], cwd=ROOT, env={**os.environ, 'CGO_ENABLED': '0'})
+    util.run(['go', 'build', '-trimpath', '-o', init, './scripts/qualification/release-upgrade/init'], cwd=ROOT, env={**os.environ, 'CGO_ENABLED': '0','GOPROXY':'off','GOTELEMETRY':'off'})
     boot = out/'boot'
     boot.mkdir()
     util.run(['bsdtar', '-xf', portable/'boot/initramfs.cpio', '-C', boot, 'guest-modules', 'modules'])

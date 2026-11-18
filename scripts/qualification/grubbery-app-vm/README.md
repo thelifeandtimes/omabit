@@ -30,3 +30,8 @@ Four source tests cover no-effect default invocation, output refusal before
 input/process access, exact guest guards and wrong workflow/schema refusal.
 The helper compiles/skips outside the explicit guest. These are preparation gates;
 a live product result is required before claiming Docker transport qualification.
+
+A narrow harness/documentation follow-up may select `--artifact-source` with the
+exact frozen ancestor. Any changed Go/module/embedded input refuses, and receipts
+record both identities. The host supervisor/init build uses cached offline Go
+inputs. This does not qualify a newer product source as the older artifact.

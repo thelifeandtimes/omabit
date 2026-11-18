@@ -10885,3 +10885,19 @@ log and deadline monitors remain active. The independent host supervisor has
 fresh scope is signalled on interruption. No production/DEV service is targeted.
 Product transport, workflow failures, pending-phase rebinding, durable auth cleanup,
 permits/alias/routes/assets/peers and matching installed upgrade remain pending.
+
+## M634 — Freeze matching product artifacts and separate harness provenance (2026-11-18)
+
+The three product executables and source-pinned helper are built cleanly from
+e61d971 with all Go/embedded input hashes checked before/after. This is an
+unqualified development snapshot for the fresh product VM, not installed DEV or
+stable distribution. The helper source pin and executable VCS identities bind
+that exact commit. No prior qualified or installed binary was overwritten.
+
+The launcher now accepts a separate exact ancestor artifact source only when
+all Go/go.mod/go.sum/embedded inputs remain unchanged. This permits narrow harness
+or documentation fixes without relabeling artifact provenance. Both identities
+remain explicit in receipts/scenarios. Host supervisor/init builds explicitly
+use cached offline Go dependencies and disable Go telemetry. Four no-effect
+guard tests pass after that harness-only change. No native product result is
+claimed at this freeze; admission/launch remain the next steps.
