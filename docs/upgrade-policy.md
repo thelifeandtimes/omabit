@@ -17,6 +17,15 @@ reader refusal, relevant native/installed upgrades, final matching artifacts and
 support window remain required. Normal launch still submits no recording jobs.
 Never lower markers or remove recording history to run an older manager.
 
+The [actual frozen63 writer/reader rehearsal](diagnostics/2026-11-18-recording-schema64-source-upgrade.json)
+now passes for candidate6fd35d6d and unchanged1589158b with a declared synthetic
+helper. Original rows/DDL/access, pending Start and earlier linked audit ancestry
+stay exact; one new recording intent/head replays unchanged. The genuine63 reader
+refuses populated64 unchanged. A compact actual63 SQL fixture verifies repeated
+preservation and rollback in ordinary race tests. This supersedes only the source
+writer/reader deferral above. Native capture, active-worker/installed upgrades and
+final matching artifacts remain unqualified; normal submission is still disabled.
+
 ## Development: explicit recording bootstrap identity, metadata4 — gates pending
 
 New comet creation has no ship name before mining, and a first launch need not

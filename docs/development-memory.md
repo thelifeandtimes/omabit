@@ -12164,3 +12164,21 @@ Three input guards pass; the gated candidate helper compiles/skips without its
 explicit fresh root. Actual writer/reader results remain pending until this
 frozen source rehearsal runs. It submits no job/unit and operates no engine,
 native runtime, existing store, production or manual DEV state.
+
+## M684 — Qualify actual63→64 recording journal preservation/refusal (2026-11-18)
+
+The M683 source rehearsal passes for frozen6fd35d6d and unchanged original
+1589158b schema63 plus the declared helper. Every original row/DDL/access and
+uncertainty survives migration/reopen. One recording intent/head binds the exact
+original pending Start without changing its receipt or prior linked app audit;
+saved replay stays exact. The genuine63 reader refuses populated64 unchanged.
+Preserve [source/binary/helper/SQLite pins](diagnostics/2026-11-18-recording-schema64-source-upgrade.json).
+
+Retain a compressed exact actual63 SQL fixture with unchanged source manifest and
+declared helper, including original59/60/62 ancestry, linked63 recovery and pending
+Start. Ordinary fixture race checks pass in5.964s for repeated preservation and
+rollback when original audit ancestry is missing. This supersedes M683's pending
+actual writer/reader gate. No job file/service is submitted and no native process
+is observed or rebound by this metadata-only rehearsal. Active worker continuity,
+normal-launch integration, native/installed upgrade and final artifacts remain
+required. Production/manual DEV, existing ships and all VM disks stay unchanged.

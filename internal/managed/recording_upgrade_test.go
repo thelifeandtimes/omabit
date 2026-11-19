@@ -1,7 +1,10 @@
 package managed
 
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -77,5 +80,106 @@ func TestRecordingStoreActualOriginal63Qualification(t *testing.T) {
 	g02Check(t, err)
 	if head != 1 {
 		t.Fatal("wrong recording intent head")
+	}
+}
+
+func loadOriginal63RecordingFixture(t *testing.T, dir string) {
+	t.Helper()
+	base := "testdata/recording-original63"
+	raw, err := os.ReadFile(filepath.Join(base, "manifest.json"))
+	g02Check(t, err)
+	var m struct {
+		Schema int    `json:"schema"`
+		Source string `json:"original_source"`
+		Packed string `json:"gzip_sha256"`
+		SQL    string `json:"raw_sql_sha256"`
+		Helper string `json:"declared_helper_sha256"`
+		Inputs string `json:"original_source_manifest_sha256"`
+	}
+	g02Check(t, json.Unmarshal(raw, &m))
+	if stopEvidenceDigest(raw) != "9fe62f73c1cffbc4f8d3bfa021636cea559ebf1ce62e972b003cdcc7d58a28cf" || m.Schema != 63 || m.Source != "1589158b4484c1a7c0f96c188a223e0faa83e141" || m.Helper != "25defad826b12b20b2430adc859b0b6966b57ee65edd1bfd758dd89ac22e5c67" || m.Inputs != "8edc0d810c2dd1cd7adfbbc0ceb3939258ff3c80868c802a14511956f08720af" {
+		t.Fatal("actual original63 writer provenance changed")
+	}
+	for name, pin := range map[string]string{"writer-helper.go.txt": m.Helper, "original-source.json": m.Inputs} {
+		data, err := os.ReadFile(filepath.Join(base, name))
+		g02Check(t, err)
+		if stopEvidenceDigest(data) != pin {
+			t.Fatal("frozen source/helper changed", name)
+		}
+	}
+	packed, err := os.ReadFile(filepath.Join(base, "state.sql.gz"))
+	g02Check(t, err)
+	if stopEvidenceDigest(packed) != m.Packed {
+		t.Fatal("actual original63 archive changed")
+	}
+	z, err := gzip.NewReader(bytes.NewReader(packed))
+	g02Check(t, err)
+	body, err := io.ReadAll(io.LimitReader(z, 4<<20+1))
+	g02Check(t, err)
+	g02Check(t, z.Close())
+	if len(body) > 4<<20 || stopEvidenceDigest(body) != m.SQL {
+		t.Fatal("actual original63 SQL changed")
+	}
+	f, err := os.OpenFile(filepath.Join(dir, "runner.sqlite"), os.O_CREATE|os.O_EXCL|os.O_RDWR, 0600)
+	g02Check(t, err)
+	g02Check(t, f.Close())
+	db := g02RawDB(t, dir)
+	_, err = db.Exec(string(body))
+	g02Check(t, err)
+	g02Check(t, db.Close())
+}
+
+func TestRecordingOriginal63MigrationPreservesAllRowsAuditAndPendingStart(t *testing.T) {
+	dir := privateDir(t)
+	loadOriginal63RecordingFixture(t, dir)
+	db := g02RawDB(t, dir)
+	before := appAllRows(t, db)
+	delete(before, "@schema")
+	var opID string
+	g02Check(t, db.QueryRow("SELECT id FROM operations WHERE actor='recording-actor' AND request_id='recording-start'").Scan(&opID))
+	op, err := loadOperation(db, opID)
+	g02Check(t, err)
+	if op.Status != "running" || op.Kind != "start" {
+		t.Fatal("original63 pending Start missing")
+	}
+	var audits int
+	g02Check(t, db.QueryRow("SELECT count(*) FROM grubbery_app_runtime_recoveries").Scan(&audits))
+	if audits != 1 {
+		t.Fatal("original63 linked audit missing")
+	}
+	g02Check(t, db.Close())
+	for pass := 0; pass < 3; pass++ {
+		s, err := testOpenStore(dir)
+		g02Check(t, err)
+		after := rowsWithoutEmptyRecordingSuccessor(appAllRows(t, s.db))
+		delete(after, "@schema")
+		if !reflect.DeepEqual(before, after) {
+			t.Fatal("64 migration changed original rows/DDL/access or uncertainty")
+		}
+		got, err := loadOperation(s.db, opID)
+		g02Check(t, err)
+		if !reflect.DeepEqual(op, got) {
+			t.Fatal("migration replayed or changed original Start")
+		}
+		g02Check(t, s.close())
+	}
+}
+
+func TestRecordingOriginal63MigrationRollsBackMissingOriginalAudit(t *testing.T) {
+	dir := privateDir(t)
+	loadOriginal63RecordingFixture(t, dir)
+	db := g02RawDB(t, dir)
+	_, err := db.Exec("DELETE FROM grubbery_app_runtime_recoveries")
+	g02Check(t, err)
+	before := appAllRows(t, db)
+	g02Check(t, db.Close())
+	if s, err := testOpenStore(dir); err == nil {
+		s.close()
+		t.Fatal("missing actual63 ancestry admitted")
+	}
+	db = g02RawDB(t, dir)
+	defer db.Close()
+	if !reflect.DeepEqual(before, appAllRows(t, db)) {
+		t.Fatal("failed64 migration repaired63 or committed recording tables")
 	}
 }

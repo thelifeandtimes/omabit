@@ -553,3 +553,11 @@ populated64 reader-refusal rehearsal. It preserves earlier Stop/app uncertainty
 and linked recovery ancestry, then tests one synthetic pre-Start recording intent.
 Fresh output, clean source, explicit `--run` and storage admission are required.
 Its actual result is pending; no job service or native runtime is submitted.
+
+The [actual63→64 source gate](diagnostics/2026-11-18-recording-schema64-source-upgrade.json)
+now passes for frozen6fd35d6d. Original rows/DDL, earlier uncertainty and linked
+audits remain exact; one new intent/head replays unchanged, and the genuine63
+reader refuses populated64 without changing it. The compact actual63 SQL fixture
+also passes ordinary race checks for preservation and rollback on missing original
+ancestry. This closes the source database gate only. It does not qualify normal
+worker submission, active-worker/native continuity or installed upgrade.

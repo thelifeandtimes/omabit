@@ -216,3 +216,9 @@ one job per operation and an independent count/digest chain. SQLite race tests
 pass for competing admission, committed/no-response replay, rollback, missing
 history and original59–62/synthetic11–63 preservation. No normal-launch submission
 is enabled. Actual63 writer/reader, installed upgrade and native worker gates remain.
+
+M683–M684 pass actual63→64 source migration/reopen, exact linked recording intent
+and genuine old-reader refusal. A compact actual63 fixture keeps the pending Start
+and all earlier app/Stop uncertainty, with ordinary race preservation/rollback
+checks. Normal submission, active-worker/native continuity and installed upgrades
+remain open; no production/manual DEV or existing ship changes.
