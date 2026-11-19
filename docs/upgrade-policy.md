@@ -1,5 +1,18 @@
 # Stable-release upgrade requirement
 
+## Development: recording policy/API native64→65 gate
+
+The [matching-artifact native rehearsal](diagnostics/2026-11-19-recording-policy-native-upgrade.json)
+passes at703de9f2: online activation preserves the old detached worker, native
+container/engine and saved history; raw API windows match independent retained
+bytes; audited policy/replay/lookup/pin and immutable old/new worker limits pass.
+Two same-pier sessions Stop cleanly. The genuine old64 executable refuses the
+closed65 database unchanged, and candidate reopen preserves controls. This
+supersedes prior deferral only for that explicit development pilot/scenario.
+Published0.4.0/schema59→65, installed/preserved DEV and the remaining recording
+features still require their own qualification. No production service or stable
+release changes are implied.
+
 ## Development: recording launch intents, schema64 — gates pending
 
 Schema64 adds empty private recording intent/head tables without rewriting older

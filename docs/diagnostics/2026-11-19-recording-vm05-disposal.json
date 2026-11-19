@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "status": "completed",
+  "authorization": "Explicit user approval: Allow removal of the old recording VM05 disks",
+  "scope": "two obsolete recording VM05 disk/input files only; no archive created",
+  "files": [
+    {
+      "sha256": "cfbde62ef60b84a6ee3d058c570998fb0ee9f2506492dbd89a47d07895747b2c",
+      "bytes": 1574895616,
+      "allocated_bytes": 1229787136,
+      "name": "root.qcow2"
+    },
+    {
+      "sha256": "30b4779fe9b5d97ffdbb1b8ca9a8bc294ec4ed7da75c541ffad67c6dfdec9086",
+      "bytes": 536870912,
+      "allocated_bytes": 334888960,
+      "name": "payload.ext4"
+    }
+  ],
+  "freed_allocated_bytes": 1564676096,
+  "retained_files_reverified": 65,
+  "full_image_available": false,
+  "original_compact_SQL_receipts_recordings_logs_source_binaries_retained": true,
+  "newer_recording_VM06_and_pending_app_VM05_unchanged": true
+}

@@ -73,4 +73,13 @@ fixture failure: normal management activation requires the original listener for
 online quiescence. Reopen the old manager under the stock invocation before the
 normal installer, preserving its independent recording worker. Do not use the
 historical schema19 offline bridge for a schema64 manager. The revised helper has
-an inert ordering/failure-restoration regression test; native execution is pending.
+an inert ordering/failure-restoration regression test.
+
+The corrected full case now passes with frozen703de9f2 artifacts and babe4af9
+harness; see `docs/diagnostics/2026-11-19-recording-policy-native-upgrade.json`.
+Later retries exposed a nonempty base64 output-schema bug and a fixture read-only
+SQLite connection leak. The latter needs explicit connection closure: a Python
+connection context ends a transaction, not the connection. Eight inert guards
+cover this and the preceding fixture protections. Historical failed cases remain
+failures; the pass qualifies only the exact native64→65 ordinary recording/API/
+controls case, not stable59→65, desktop/DEV, pressure or complete export support.

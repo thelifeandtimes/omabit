@@ -412,3 +412,12 @@ remain unchanged. Exact compact evidence and newer full recording VM06 remain,
 as does the unrelated pending app VM05. Safe derived boot-copy/compiler-cache
 cleanup finishes; all eight fixture guards pass again. Native retry still needs
 approval-dependent storage admission. No installed namespace changes.
+
+M712 applies the user's separate explicit old recording VM05 disposal approval:
+two files removed, no archive,1,564,676,096bytes freed and65 retained files exact.
+Fresh VM07 then passes the complete native64→65 active-worker upgrade/API/control
+case, including independently exact raw bytes, policy replay/lookup/pin, old/new
+limits, both same-pier clean Stops, genuine old-reader refusal unchanged and
+final reopen. See [exact artifacts/results and limits](diagnostics/2026-11-19-recording-policy-native-upgrade.json).
+This closes that scoped native gate only. Stable59→65, app workflows, remaining
+recording/containment/interface work and installed DEV qualification remain.

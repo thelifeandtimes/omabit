@@ -12856,3 +12856,35 @@ images. These are derived reproducible boot copies, not the blocked disks or a
 workaround for their rejection. Reuse the preserved frozen boot helper for the
 next case; regenerate utility boot archives only in a new utility. Production,
 preserved DEV and existing/protected/tmux ships remain unchanged.
+
+## M712 — Authorized old recording VM05 disposal; full native policy upgrade passes (2026-11-19)
+
+The user explicitly authorizes removal of the old recording VM05 disks. This
+supersedes only M711's pending two-file retirement/rejection boundary, not any
+other retained image. Reverify exact source hashes/inodes/ownership, six ended
+units, no open users and65 retained files; remove only its root/input disks.
+No archive is created. Reverify all65 retained files unchanged, including the
+pending app VM05 and newer recording VM06. The [disposal record](diagnostics/2026-11-19-recording-vm05-disposal.json)
+records1,564,676,096allocated bytes freed and a no-resume tombstone.
+
+All eight inert fixture guards pass (0.025s). Admit fresh VM07 with2GiB scratch:
+49,352,978,432charged bytes plus2,147,483,648scratch stays below51,539,607,552.
+The [full native case](diagnostics/2026-11-19-recording-policy-native-upgrade.json)
+passes with unchanged clean703de9f2 runtime artifacts and babe4af9 harness. This
+supersedes M710's unreached old-reader/final-reopen gate and full-case deferral
+for these exact artifacts/scenario. Historical failures remain failures.
+
+Actual64→65 online activation preserves the exact independent recording worker,
+container, engine, identity and operation history. Original API windows match the
+independent raw decoder across both same-pier cleanly stopped sessions (170/32
+frames, one exit and no gaps each). Audited configuration, exact replay/lookup,
+incident pin, immutable old64MiB and new32MiB/4MiB limits, and96MiB commitments
+pass. The genuine old64 executable refuses the closed65 database unchanged;
+the final candidate reopen preserves controls. Both VM/supervisor end with empty
+cgroups. Production and installed DEV remain untouched.
+
+This does not qualify published0.4.0/schema59→65 installation, desktop/preserved
+DEV, host reboot, pressure recovery, running adoption, projects/maintenance,
+measured usage, retirement, indexing or complete exports. Final matching-artifact
+and remaining issue-track qualification still apply; no stable/publication or
+issue-wide completion is claimed.

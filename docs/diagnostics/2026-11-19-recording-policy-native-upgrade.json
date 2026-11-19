@@ -1,0 +1,95 @@
+{
+  "format": 1,
+  "passed": true,
+  "case": "ordinary-capture-active-worker-upgrade-policy-api-v1",
+  "source_commit": "703de9f257b6f67296c8ed6551d845d2754182af",
+  "harness_commit": "babe4af9dc93bc24ca518ce6a7373a863bfa107b",
+  "target_schema": 65,
+  "original_schema": 64,
+  "artifacts": {
+    "managed.test": {
+      "sha256": "3560ac9e7fc37acb5e8ede06c717278c60dceed7a3384ac01467180cec18e619",
+      "bytes": 29999264
+    },
+    "omabit": {
+      "sha256": "18233722802d816310c8abf96aa93d28fd7f9e47dd907eb47285ccd786e4ec92",
+      "bytes": 17924256
+    },
+    "urbit-collector": {
+      "sha256": "bc3c6807c697baf4e09c56b029dedd490ba0dea0b586a50ad3dded153a655ff6",
+      "bytes": 8982688
+    },
+    "urbit-runner": {
+      "sha256": "8d29f129de334793bbe3ef988c536815fd8baeec8f06137f026f8f88f00260f9",
+      "bytes": 21119136
+    }
+  },
+  "predecessor": {
+    "source": "2d0281971cca0285e5aabc4b91279830a04ab9b1",
+    "runner_sha256": "98bfa21634dce830076f49b0b05a2422944fe55476734bd8e961b68c1ee60e6c",
+    "state_schema": 64
+  },
+  "boot_helper_sha256": "63a86300f9ba7ca08bf7df1fe28eb8b1b070d93ab67e868c7a51194e6bce1ec7",
+  "pill_sha256": "f8b08c53dd6d0aa9c4f7654f0a7bcd11e94089222888a3c99c0a10eedcbb377b",
+  "oci_sha256": "25d86c8984acdc031380a897ccbf7dd2289fc1e19c10f81ba8cbe216009938ec",
+  "evidence_sha256": {
+    "root.qcow2": "e3a728a4b1dcc090a10560481dd8414e801c4ef12632164fb05e0f4db5d022d9",
+    "payload.ext4": "821ad5e96af8b690d00db9bf7a104806b427085714ac5e4ec3d6976b5657dcfe",
+    "result.json": "29b659f6aad864f9cc6e0c4aba915f5b25420004d079c78f90f509b8d803f28f",
+    "serial.log": "7391f9d25fa0a48657b75c3f26d54d8dd3796e98a208842e861183c97b0d2f0a"
+  },
+  "control_qualification": {
+    "schema64_to65_active_worker_upgrade": true,
+    "actual_old_reader_refused_unchanged": true,
+    "engine_runtime_worker_preserved": true,
+    "native_history_and_raw_page_exact": true,
+    "original_control_replay_lookup": true,
+    "incident_pin_preserved": true,
+    "new_job_uses_selected_limits": true,
+    "old_job_limits_unchanged": true,
+    "committed_bytes": 100663296
+  },
+  "qualification": {
+    "installed_native_prestart_capture": true,
+    "exact_notify_worker_outside_container": true,
+    "manager_stop_and_reopen_preserve_processes": true,
+    "single_worker_per_launch": true,
+    "terminal_drain_before_container_removal": true,
+    "same_pier_new_session": true,
+    "original_session_unchanged": true,
+    "final_clean_ship_stop": true
+  },
+  "sessions": [
+    {
+      "frames": 170,
+      "stdout_bytes": 2812,
+      "stderr_bytes": 337,
+      "stdout_sha256": "d21644ccef51502d2215e3483dc764bf4f00e2b395ab344b8a8f5cac011274b4",
+      "stderr_sha256": "3290e36c5688c35ced7936610124de465367252b0788737c8a7b5a07824cf5ae",
+      "last_sequence": 170,
+      "last_digest": "9a37d3d380ccccc7a3f15a91671cb9f1df51d5ed5136cf8b3a09f679e5927342",
+      "tail": "snapshot-eof",
+      "exit_frames": 1,
+      "gap_frames": 0
+    },
+    {
+      "frames": 32,
+      "stdout_bytes": 1031,
+      "stderr_bytes": 160,
+      "stdout_sha256": "4fc3af95aea0d8b1f8e94aece4328870b1018e0f538df5535405adfc01e86f96",
+      "stderr_sha256": "70a0e74122b8964de6bc133cf6e48e83f5c7ff0d96661013871481a636cd495a",
+      "last_sequence": 32,
+      "last_digest": "3f02fc47e48d7ec25dcc76864596b628bcbce207cc386157626cf2f8f365d2ee",
+      "tail": "snapshot-eof",
+      "exit_frames": 1,
+      "gap_frames": 0
+    }
+  ],
+  "scope": "One fresh offline Linux/AMD64 ordinary fake, schema64 recording pilot to65. Exact detached original worker/native container/engine/history preserve through normal management activation. Original API windows match independent raw decodes; two same-pier sessions Stop cleanly; audited policy/replay/lookup/pin and immutable old/new limits pass; actual old64 reader refuses the closed65 store unchanged; final reopen preserves controls.",
+  "limits": [
+    "Not the published0.4.0/schema59 installed upgrade path",
+    "Not existing-running capture adoption, project/maintenance recording, host reboot or pressure recovery",
+    "No measured usage, retirement/compression, indexed search or complete export packaging qualification",
+    "No installed desktop/DEV or production deployment; no issue-wide or stable release qualification"
+  ]
+}
