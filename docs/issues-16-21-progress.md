@@ -444,3 +444,13 @@ consolidated, but matching builds plus the next native reservation still need
 space. A separate two-file recording VM06 retirement plan is classified and
 explicit permission requested; its disks remain intact, with full successful07
 and pending app05 preserved. No new native/installed/DEV change is claimed.
+
+M716 applies explicit user authorization for only recording VM06's two disks:
+1,594,851,328bytes freed, no archive and65 retained files exact. Matching clean
+12f78952 CLI/collector/runner/helper are frozen with3937 tracked inputs verified.
+Ten fixture guards pass; fresh COW04 starts within the960MiB reservation, keeping
+original app VM05/base read-only. Copied62→65 opening, same-pier replacement and
+the reviewed/applied runtime audit have passed; source reconciliation and complete
+two-version/state/restart qualification are still running. See the
+[current report](diagnostics/2026-11-19-current65-grubbery-recovery-native.json).
+No installed/DEV/production change or complete native pass is claimed.

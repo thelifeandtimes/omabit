@@ -12972,3 +12972,34 @@ prior permissions name03/04/05 only; no VM06 unlink or new native launch occurs.
 The original SQLite/WAL/SHM, receipts, raw frames, logs/source/binaries remain,
 as do full successful VM07 and the separate pending app VM05. All production,
 preserved DEV and existing/protected/tmux ship exclusions remain in force.
+
+## M716 — Authorized VM06 disposal, matching artifacts and current65 native recovery starts (2026-11-19)
+
+The user explicitly authorizes the old recording VM06 disks. Supersede only
+M715's pending two-file boundary: recheck exact hashes/inodes/ownership, closed
+units/no open users and65 retained files, then remove its root/input. Reverify
+all65 retained files unchanged, including original SQLite/WAL/SHM, raw frames,
+receipts/logs and successful full VM07/pending app VM05. No archive is created;
+the [record](diagnostics/2026-11-19-recording-vm06-disposal.json) records
+1,594,851,328allocated bytes freed and a no-resume tombstone.
+
+Admit1GiB for matching source builds, with no VM active. Freeze clean
+12f789521d7303ed182e43fb3c55e00d7e6dca5f and verify3937 tracked input hashes.
+CLI f6dec754e51c03fcff90b5abe3e55d37be46cb3c30ef741288426ee1e161bcf4,
+collector bfff81f4e714148fcab8ec68d20997a9ccf78ef032293a5661664dfd5d8eedd9,
+runner20af5a66f00339d40800d997e9a24c29b7f1c21e9faed17716f5bb9f996d0feb,
+helper62a306cc001b5d5a4c78d9f4178d4a79d0659710d2f5ea29225264933627289d.
+The helper source pin is derived programmatically from Git and verified before
+launch. The independently frozen COW PID1/source/provenance remains exact.
+
+Ten inert guards pass (0.049s). Admit960MiB capsule/preparation reserve:
+49,771,778,048charged plus1,006,632,960 is below51,539,607,552. Start fresh
+COW04 under the existing one-CPU/no-NIC/no-swap,8GiB guest/10GiB QEMU and768MiB
+root-file boundaries, with no Go builds/tests during native execution. The
+[current report](diagnostics/2026-11-19-current65-grubbery-recovery-native.json)
+is explicitly running, not passed. It has migrated the copied62 store to65,
+performed supported same-pier replacement and saved the CLI-reviewed/MCP-applied
+runtime audit; original uncertain source reconciliation and both-version/restart
+checks remain in progress. The original acknowledged app VM05 is mounted only
+read-only and never resumed writable. Production, preserved DEV, existing ships,
+tmux and `~/temp-ur` remain excluded.

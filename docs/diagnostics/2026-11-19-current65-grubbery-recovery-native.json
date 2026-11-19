@@ -1,0 +1,44 @@
+{
+  "format": 1,
+  "status": "running",
+  "passed": null,
+  "case": "cow-recover-pending-zod-v1",
+  "original_schema": 62,
+  "target_schema": 65,
+  "source_commit": "12f789521d7303ed182e43fb3c55e00d7e6dca5f",
+  "artifacts": {
+    "omabit": {
+      "sha256": "f6dec754e51c03fcff90b5abe3e55d37be46cb3c30ef741288426ee1e161bcf4",
+      "bytes": 17932448
+    },
+    "urbit-collector": {
+      "sha256": "bfff81f4e714148fcab8ec68d20997a9ccf78ef032293a5661664dfd5d8eedd9",
+      "bytes": 8986784
+    },
+    "urbit-runner": {
+      "sha256": "20af5a66f00339d40800d997e9a24c29b7f1c21e9faed17716f5bb9f996d0feb",
+      "bytes": 21147808
+    },
+    "managed.test": {
+      "sha256": "62a306cc001b5d5a4c78d9f4178d4a79d0659710d2f5ea29225264933627289d",
+      "bytes": 30027936
+    }
+  },
+  "tracked_inputs_verified": 3937,
+  "boot": {
+    "source_commit": "bf5b6c1c12d7e57715b5faf7cd3b119bac4a7214",
+    "sha256": "aa4992d292a925986caa64ea64e0173506119f9d44933a0d00b262b34eab17a9",
+    "source_sha256": "bfa53c26aa0c08266520df8d1b9186be04468df5416efea7769e7ac8a7df9eb8"
+  },
+  "predecessor_root_sha256": "a23f10ddc89657489d8e55eaf5e4362603848366a447dbf9f51ce192837a08f9",
+  "capsule_scratch_bytes": 939524096,
+  "preparation_reserve_bytes": 67108864,
+  "root_hard_file_bytes": 805306368,
+  "whole_host_deadline_seconds": 6100,
+  "scope": "one fresh offline COW overlay; exact original pending-app image and pristine backing read-only. Supported same-pier lifecycle and audited recovery, original phase observation, two app source versions/state, replacement and manager restart. No original/installed/DEV/production mutations.",
+  "limits": [
+    "Running is not a passed qualification",
+    "Not installed59-to65 upgrade, preserved DEV, peers/permits/routes/assets, full workflow readiness or stable release",
+    "Native scoped recording allocation observation remains a separate gate"
+  ]
+}

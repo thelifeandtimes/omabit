@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "status": "completed",
+  "authorization": "Explicit user approval: Allow removal of the old recording VM06 disks",
+  "scope": "only the superseded recording VM06 root image/input disk; no archive created",
+  "files": [
+    {
+      "sha256": "b8f0043973c200cafa6d2b1bbd871809d42e052db774706112e0e935981df708",
+      "bytes": 1574109184,
+      "allocated_bytes": 1259933696,
+      "name": "root.qcow2"
+    },
+    {
+      "sha256": "255a49d9bd878d503f576997c8cbd43f64f918d0a316431e5cdfa37ffbb25bd3",
+      "bytes": 536870912,
+      "allocated_bytes": 334917632,
+      "name": "payload.ext4"
+    }
+  ],
+  "freed_allocated_bytes": 1594851328,
+  "retained_files_reverified": 65,
+  "full_image_available": false,
+  "original_SQLite_WAL_SHM_receipts_frames_logs_source_binaries_retained": true,
+  "successful_recording_VM07_and_pending_app_VM05_unchanged": true
+}
