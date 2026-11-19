@@ -40,14 +40,15 @@ func runManagedMode(ctx context.Context, args []string, stdout, stderr io.Writer
 	flags.SetOutput(io.Discard)
 	flags.Usage = func() {}
 	ack := flags.Bool("acknowledge-development", false, "authorize the selected development management mode; ships outlive this process")
-	var resume bool
+	var resume, record bool
 	if comets {
 		flags.BoolVar(&resume, "resume-running", false, "resume eligible initialized ships after host reboot, once per host boot")
+		flags.BoolVar(&record, "record-runtime", false, "opt into bounded ordinary-runtime recording pilot; no automatic pruning")
 	}
 	if err := flags.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			if comets {
-				fmt.Fprint(stdout, `Usage: urbit-runner serve-development --acknowledge-development [--resume-running]
+				fmt.Fprint(stdout, `Usage: urbit-runner serve-development --acknowledge-development [--resume-running] [--record-runtime]
 
 Serve the installed pier-owner development runner with fake/comet creation, owned-key
 bootstrap, stopped-pier enrollment, maintenance and host handoff. Comets generate
@@ -62,6 +63,10 @@ With --resume-running, startup may replace terminal runtime containers for
 initialized ships whose persisted desired state is running. Each ship gets at most
 one journaled attempt per host boot. Nonzero exits require a recorded healthy prior
 boot; intentionally stopped, interrupted and independently uncertain ships are skipped.
+With --record-runtime, new ordinary launches use the private recording pilot:
+at most sixteen 64 MiB sessions, a 2 GiB free-space floor, and no automatic pruning.
+Recording workers outlive management. This pilot does not adopt running containers
+or record project and maintenance runtimes. Native and upgrade qualification is pending.
 `)
 				fmt.Fprintln(stdout, "\nWarning: known ship-crash bug\n"+protocol.NativeControlWarning)
 				return 0
@@ -107,7 +112,9 @@ Interrupted work is recorded for reconciliation, never blindly re-executed.
 		keys = ""
 	} // No production SSH grants in the dev runner.
 	var runner *managed.Server
-	if comets {
+	if comets && record {
+		runner, err = managed.NewDevelopmentRecordingService(host.Directory, keys, resume)
+	} else if comets {
 		runner, err = managed.NewDevelopmentService(host.Directory, keys, resume)
 	} else {
 		runner, err = managed.NewWithAccess(host.Directory, keys)

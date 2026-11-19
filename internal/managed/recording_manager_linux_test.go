@@ -4,6 +4,7 @@ package managed
 
 import (
 	"context"
+	"errors"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -59,7 +60,7 @@ func managerRecordingMetadata(op runtimequalify.RecordingOperation, state runtim
 }
 
 func TestRecordingManagerBindsActualOperationBeforeOneSubmissionAndFreshGuard(t *testing.T) {
-	for _, scenario := range []string{"pass", "wrong-actor", "wrong-snapshot", "changed-before-admit", "lost-ack", "stale-final-guard"} {
+	for _, scenario := range []string{"pass", "wrong-actor", "wrong-snapshot", "changed-before-admit", "lost-ack", "stale-final-guard", "never-started-cleanup", "unproved-cleanup"} {
 		t.Run(scenario, func(t *testing.T) {
 			s, op, state, m := recordingManagerFixture(t)
 			prepares, submissions, observations := 0, 0, 0
@@ -67,6 +68,9 @@ func TestRecordingManagerBindsActualOperationBeforeOneSubmissionAndFreshGuard(t 
 			var status runtimequalify.RecordingWorkerStatus
 			m.prepare = func(_ context.Context, snapshot runtimequalify.ManagedState, selected runtimequalify.RecordingOperation) (recording.Metadata, error) {
 				prepares++
+				if prepares > 1 && scenario == "unproved-cleanup" {
+					return recording.Metadata{}, errors.New("strict created-container proof unavailable")
+				}
 				if selected.OperationID != op.ID || selected.RequestID != op.RequestID || selected.Target.InstanceID != op.InstanceID || selected.RuntimeID != state.ID || selected.RunnerID != s.runnerID || selected.Mode != s.mode {
 					t.Fatal("manager invented operation/target authority")
 				}
@@ -92,7 +96,7 @@ func TestRecordingManagerBindsActualOperationBeforeOneSubmissionAndFreshGuard(t 
 				_, err = jobs.Read(job.ID, i.JobSHA256)
 				g02Check(t, err)
 				g02Check(t, jobs.Close())
-				if scenario == "lost-ack" {
+				if scenario == "lost-ack" || scenario == "never-started-cleanup" || scenario == "unproved-cleanup" {
 					return runtimequalify.RecordingJobReady{}, runtimequalify.ErrRecordingSubmissionUncertain
 				}
 				worker := runtimequalify.RecordingWorkerIdentity{ExecutableSHA256: job.ExecutableSHA256, PID: 42, StartTicks: 123, InvocationID: strings.Repeat("a", 32), HostBootID: metadata.Identity.HostBootID, Namespaces: metadata.Identity.RecorderNamespaces}
@@ -119,6 +123,29 @@ func TestRecordingManagerBindsActualOperationBeforeOneSubmissionAndFreshGuard(t 
 			}
 			container := state.Runtime.Containers[len(state.Runtime.Containers)-1].ID
 			guard, err := m.lifecycle(s, selectedOp).BeforeStart(t.Context(), selectedState, container)
+			if scenario == "never-started-cleanup" || scenario == "unproved-cleanup" {
+				if err != runtimequalify.ErrRecordingSubmissionUncertain || guard != nil || submissions != 1 {
+					t.Fatal("uncertain submission changed", err)
+				}
+				drains := 0
+				m.drain = func(context.Context, string, string) (runtimequalify.RecordingJobResult, error) {
+					drains++
+					return runtimequalify.RecordingJobResult{}, runtimequalify.ErrRecordingDrainPending
+				}
+				before := appAllRows(t, s.db)
+				err = m.lifecycle(s, op).BeforeRemove(t.Context(), state, container)
+				if scenario == "never-started-cleanup" {
+					if err != nil || drains != 0 {
+						t.Fatal("proven never-started container blocked on nonexistent process exit", err)
+					}
+				} else if err == nil || drains != 1 {
+					t.Fatal("unproved container bypassed terminal drain", err)
+				}
+				if !reflect.DeepEqual(before, appAllRows(t, s.db)) || submissions != 1 || prepares != 2 {
+					t.Fatal("cleanup rewrote/retried original uncertain submission")
+				}
+				return
+			}
 			if scenario == "pass" || scenario == "stale-final-guard" {
 				g02Check(t, err)
 				if scenario == "stale-final-guard" {

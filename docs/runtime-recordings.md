@@ -680,3 +680,14 @@ Its bounded pilot has sixteen64MiB sessions plus metadata, eight retained images
 and a2GiB free-space floor, with no automatic pruning. Configurable retention,
 pressure recovery, actual service/native capture and interface/upgrade gates
 remain required before comprehensive recording readiness.
+
+M694 adds the explicit `serve-development --record-runtime` pilot selection. It
+configures before background workers, uses the actual running operation and
+advertises only `runtime-recording-pilot-v1`. Default startup remains unrecorded.
+The pilot bounds sixteen64MiB sessions and leaves2GiB free, with no automatic
+pruning; running-container adoption, projects and maintenance are excluded.
+Strict original-job/native created-state proof permits never-started cleanup
+without fabricating an exit. Otherwise the existing drain barrier applies.
+Focused synthetic manager/server/CLI race gates and vet pass. Actual native
+service/capture, retention, interfaces and installed/active-worker upgrades are
+still required. This is not qualified comprehensive recording support.

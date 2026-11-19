@@ -26,6 +26,11 @@ preservation and rollback in ordinary race tests. This supersedes only the sourc
 writer/reader deferral above. Native capture, active-worker/installed upgrades and
 final matching artifacts remain unqualified; normal submission is still disabled.
 
+M694 adds an explicit unqualified development-only `--record-runtime` pilot.
+Default service startup still submits nothing. Its source manager/server/CLI
+gates do not qualify native capture or an installed/active-worker upgrade. Do not
+select it for preserved manual-review state until those gates have been assessed.
+
 ## Development: explicit recording bootstrap identity, metadata4 — gates pending
 
 New comet creation has no ship name before mining, and a first launch need not

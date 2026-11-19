@@ -12368,3 +12368,26 @@ ordering, one-shot uncertainty, historical mode and unchanged cleanup history.
 No binary is launched, native lifecycle action performed, or installed state
 changed. Normal server selection, native worker/capture and active/installed
 upgrade, retention and public interface gates remain pending.
+
+## M694 — Select the development recording pilot before workers (2026-11-18)
+
+An explicit `serve-development --record-runtime` opt-in now configures the bounded
+ordinary-runtime adapter before startup, observation or schedule goroutines. The
+actual running journal operation supplies recording authority. Start, startup
+resume and Stop select the recording-aware backend; default service construction
+keeps its existing behavior. Hello distinguishes the pilot; it does not advertise
+comprehensive recording. Help states its sixteen64MiB sessions,2GiB floor, lack of
+automatic pruning and project/maintenance/running-container exclusions.
+
+Strict original-job/native preparation can also prove a container never started,
+allowing its ordinary removal without waiting for an impossible process-exit
+receipt. Failed proof retains the normal terminal-drain barrier. This neither
+retries an uncertain submission nor invents capture success/exit; original history
+and any partial session remain retained.
+
+Admitted focused manager/server/CLI and existing client-disconnect/development
+Hello race checks pass in8.348s/1.019s; vet passes. Tests use synthetic private
+state and inert native/supervision adapters. This supersedes M693's server-wiring
+deferral only. Actual service/capture, native and active/installed upgrades,
+retention and public recording interfaces remain pending. No installed namespace,
+service, ship or production artifact was changed.

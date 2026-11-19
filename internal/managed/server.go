@@ -28,6 +28,10 @@ type backend interface {
 	Observe(context.Context, runtimequalify.ManagedState) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error)
 }
 
+type recordingBackend interface {
+	ApplyWithRecording(context.Context, string, runtimequalify.ManagedState, func(runtimequalify.ManagedState) error, runtimequalify.ManagedRecordingLifecycle) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error)
+}
+
 type realBackend struct{}
 
 func (realBackend) Apply(ctx context.Context, action string, state runtimequalify.ManagedState, persist func(runtimequalify.ManagedState) error) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error) {
@@ -35,6 +39,10 @@ func (realBackend) Apply(ctx context.Context, action string, state runtimequalif
 }
 func (realBackend) Observe(ctx context.Context, state runtimequalify.ManagedState) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error) {
 	return runtimequalify.ObserveManaged(ctx, state)
+}
+
+func (realBackend) ApplyWithRecording(ctx context.Context, action string, state runtimequalify.ManagedState, persist func(runtimequalify.ManagedState) error, lifecycle runtimequalify.ManagedRecordingLifecycle) (runtimequalify.ManagedState, runtimequalify.ManagedObservation, error) {
+	return runtimequalify.ApplyManagedWithRecording(ctx, action, state, persist, lifecycle)
 }
 
 // Server serves only the private local management API. Its host/state lock must
@@ -57,6 +65,7 @@ type Server struct {
 	updateBulk, updateWorkers int
 	executableSHA256          string
 	hostCompatibility         hostCompatibilityCache
+	recording                 func(protocol.Operation) runtimequalify.ManagedRecordingLifecycle
 }
 
 func New(dir string) (*Server, error) { return newServer(dir, realBackend{}, 10*time.Second) }
@@ -87,6 +96,12 @@ func newServerMode(dir string, b backend, interval time.Duration, comets bool) (
 }
 
 func newServerWithStartup(dir string, b backend, interval time.Duration, comets bool, bootID string) (*Server, error) {
+	return newServerConfigured(dir, b, interval, comets, bootID, nil)
+}
+
+// Configuration finishes before any observation, startup or schedule goroutine.
+// The nil configuration is the existing, unrecorded server behavior.
+func newServerConfigured(dir string, b backend, interval time.Duration, comets bool, bootID string, configure func(*Server) error) (*Server, error) {
 	s, err := openStore(dir)
 	if err != nil {
 		return nil, err
@@ -163,6 +178,13 @@ func newServerWithStartup(dir string, b backend, interval time.Duration, comets 
 	ctx, cancel := context.WithCancel(context.Background())
 	r := &Server{s: s, b: b, ctx: ctx, cancel: cancel, workGate: make(chan struct{}, 1), uid: uint32(os.Geteuid()), bootID: bootID}
 	r.updateFence, r.executableSHA256 = fence, digest
+	if configure != nil {
+		if err := configure(r); err != nil {
+			cancel()
+			s.close()
+			return nil, err
+		}
+	}
 	if len(resume) > 0 {
 		r.wg.Add(1)
 		go r.resumeStartup(resume, interval)
@@ -267,13 +289,23 @@ func (r *Server) launch(op protocol.Operation) {
 			}
 			return
 		}
-		state, observation, err := r.b.Apply(r.ctx, actual.Kind, instance.Runtime, func(state runtimequalify.ManagedState) error {
+		persist := func(state runtimequalify.ManagedState) error {
 			if err := r.s.runtimeUpdate(actual.InstanceID, actual.ID, state); err != nil {
 				r.failed.Store(true)
 				return errors.New("resource intent journal failed; operation stopped")
 			}
 			return nil
-		})
+		}
+		state, observation := instance.Runtime, runtimequalify.ManagedObservation{}
+		if r.recording != nil && (actual.Kind == "start" || actual.Kind == "startup-resume" || actual.Kind == "stop") {
+			if b, ok := r.b.(recordingBackend); ok {
+				state, observation, err = b.ApplyWithRecording(r.ctx, actual.Kind, state, persist, r.recording(actual))
+			} else {
+				err = errors.New("selected backend does not support recording lifecycle")
+			}
+		} else {
+			state, observation, err = r.b.Apply(r.ctx, actual.Kind, state, persist)
+		}
 		if err := r.s.finish(actual, state, observation, err, r.ctx.Err() != nil); err != nil {
 			r.failed.Store(true)
 		}
@@ -333,6 +365,9 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if req.Method == http.MethodGet && req.URL.Path == "/hello" {
 		features := []string{"snapshot", "create-fake", "configuration-revisions", "durable-operations", "local-peer-credentials", "offline-pack", "offline-meld", "offline-roll", "container-resources", "container-cpu", "epoch-inventory", "epoch-prune-genesis", "epoch-prune-prefix"}
+		if r.recording != nil {
+			features = append(features, "runtime-recording-pilot-v1")
+		}
 		features = append(features, "maintenance-schedules")
 		features = append(features, protocol.RunnerBuildIdentityFeature, protocol.ProjectStopRecoveryFeature, protocol.CreationReplayFeature, protocol.ProjectInventoryFeature, protocol.ProjectStatusFeature, protocol.ProjectRecoveryCheckpointFeature, protocol.ProjectRecoverySourceFeature, protocol.ProjectRegistrationFeature, protocol.PrivateChainRegistrationFeature, protocol.PrivateChainInventoryFeature)
 		features = append(features, r.projectActionFeatures()...)

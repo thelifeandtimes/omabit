@@ -272,3 +272,9 @@ and fresh final guard in a private manager adapter. Cleanup preserves original
 mode/history and distinguishes closed incomplete from pending/unclosed evidence.
 Admitted source race gates pass with inert adapters; normal server selection,
 native service/capture, retention, interfaces and active/installed upgrades remain.
+
+M694 selects the ordinary-runtime pilot only with explicit development
+`--record-runtime`, configured before all workers and bound to the actual running
+operation. Admitted manager/server/CLI race checks and vet pass, including strict
+never-started cleanup after uncertain submission. Native service/capture and
+active/installed upgrade remain unqualified; no installed state changed.

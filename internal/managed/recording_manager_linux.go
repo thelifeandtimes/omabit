@@ -14,7 +14,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
 
-// This bounded pilot is deliberately not selected by normal server construction.
+// This bounded pilot is selected only by explicit development service opt-in.
 // Configurable retention, running/project/utility factories and native/installed
 // qualification must precede advertising comprehensive recording support.
 type recordingManager struct {
@@ -26,6 +26,18 @@ type recordingManager struct {
 	status  func(context.Context, string, string) (runtimequalify.RecordingWorkerStatus, error)
 	observe func(context.Context, runtimequalify.ManagedRecordingJob, runtimequalify.RecordingWorkerIdentity) (runtimequalify.RecordingSupervisorState, error)
 	drain   func(context.Context, string, string) (runtimequalify.RecordingJobResult, error)
+}
+
+func configureRecordingServer(r *Server) error {
+	if _, ok := r.b.(recordingBackend); !ok || r.s.mode != DevelopmentMode {
+		return errors.New("recording pilot requires development management with a recording backend")
+	}
+	m, err := newRecordingManager(r.s.directory)
+	if err != nil {
+		return err
+	}
+	r.recording = func(op protocol.Operation) runtimequalify.ManagedRecordingLifecycle { return m.lifecycle(r.s, op) }
+	return nil
 }
 
 func newRecordingManager(dir string) (*recordingManager, error) {
@@ -114,6 +126,20 @@ func (m *recordingManager) lifecycle(s *store, op protocol.Operation) runtimequa
 			if err != nil || i == nil {
 				return err // an older unrecorded container remains ordinary native cleanup
 			}
+			if m.prepare != nil {
+				neverStarted, err := m.verifiedNeverStarted(ctx, snapshot, *i)
+				if err != nil {
+					return err
+				}
+				if neverStarted {
+					// Strict native preparation proves this exact original launch
+					// is still created with zero process/times. There is no process
+					// exit to drain. Retain its job/partial session without inventing
+					// a successful capture or holding Stop cleanup indefinitely.
+					_, err := s.recordingSnapshotAuthority(ctx, op, snapshot)
+					return err
+				}
+			}
 			result, err := m.drain(ctx, i.JobID, i.JobSHA256)
 			finished := err == nil && result.Code == "capture-finished" && result.Capture.ExitSaved
 			incomplete := errors.Is(err, recording.ErrCaptureIncomplete) && result.Code == "capture-incomplete"
@@ -132,6 +158,23 @@ func (m *recordingManager) lifecycle(s *store, op protocol.Operation) runtimequa
 			return runtimequalify.ErrRecordingDrainPending
 		},
 	}
+}
+
+func (m *recordingManager) verifiedNeverStarted(ctx context.Context, snapshot runtimequalify.ManagedState, i recordingIntent) (bool, error) {
+	jobs, err := runtimequalify.OpenRecordingJobs(m.opts.JobsRoot, m.opts.MaxJobs, m.opts.JobReserveFreeBytes)
+	if err != nil {
+		return false, err
+	}
+	defer jobs.Close()
+	job, err := jobs.Read(i.JobID, i.JobSHA256)
+	if err != nil || job.Actor != i.Actor || job.Operation.RunnerID != i.RunnerID || job.Operation.Mode != i.Mode || job.Operation.RuntimeID != i.RuntimeID || job.Operation.Target.InstanceID != i.InstanceID || job.Operation.OperationID != i.OperationID || job.Operation.RequestID != i.RequestID || job.Operation.ConfigurationRevision != i.ConfigurationRevision || job.Operation.ContainerID != i.ContainerID {
+		return false, errRecordingHistory
+	}
+	actual, err := m.prepare(ctx, snapshot, job.Operation)
+	if err != nil {
+		return false, nil // no never-started proof; normal terminal drain is required
+	}
+	return job.MatchesAdmission(actual), nil
 }
 
 func recordingStatusMatchesIntent(status runtimequalify.RecordingWorkerStatus, i recordingIntent) bool {
