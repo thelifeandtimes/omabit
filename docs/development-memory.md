@@ -12243,3 +12243,20 @@ before any test began; two classified obsolete task-test cache objects were then
 retired with exact pins and the check admitted within48GiB. All disks remain.
 Normal launch integration, actual recorder service/native capture and installed/
 active-worker upgrades remain required; no production/manual DEV or ship changes.
+
+## M688 — Separate fresh recording authority from saved replay (2026-11-18)
+
+Add a read-only context-bound store fence requiring the exact saved intent/head,
+still-running original operation, active public target/configuration and exact
+runtime revision/state. Share this authority check with new-intent admission;
+require one sole live created container and no uncertain creation history, even
+when marked removed. Historical replay intentionally skips current authority and
+stays inspectable after interruption. It cannot substitute for this fresh fence.
+
+Focused recording journal/original63 fixture race checks pass in20.336s. They
+cover unsaved intent refusal, read-only success, interruption, unchanged bytes at
+a newer runtime revision, changed job binding, cancellation, extra live/uncertain
+containers and unchanged historical replay. Existing journal CAS, rollback,
+process-exit and actual63 preservation gates remain passing. The store check
+dispatches nothing. Normal launch wiring, actual worker/native capture and
+installed/active-worker upgrade gates remain open; installed state is unchanged.

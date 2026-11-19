@@ -605,3 +605,10 @@ is never retried. Historical receipt replay cannot invoke this coordinator.
 Focused race tests pass with inert submit/supervisor/native seams and real private
 files. No launcher is executed and normal managed launch remains unwired. Actual
 service/native and installed/active-worker upgrade gates remain required.
+
+The store now supplies the coordinator's fresh read-only fence: it checks the
+exact saved receipt/head, current original operation and exact runtime/configuration
+generation. It refuses extra live containers and uncertain creation history.
+Historical replay remains available after interruption and cannot grant this
+authority. Focused SQLite/fixture race gates pass without changing original rows;
+normal launch still does not invoke the coordinator.

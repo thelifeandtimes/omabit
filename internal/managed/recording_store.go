@@ -2,6 +2,7 @@ package managed
 
 import (
 	"bytes"
+	"context"
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
@@ -203,6 +204,61 @@ func recordingOperationAncestry(i recordingIntent, op protocol.Operation) bool {
 	return op.ID == i.OperationID && op.Actor == i.Actor && op.RequestID == i.RequestID && op.InstanceID == i.InstanceID && op.ProjectID == "" && op.ConfigRevision == i.ConfigurationRevision && (op.Kind == "start" || op.Kind == "startup-resume")
 }
 
+func recordingLiveAuthority(q querier, i recordingIntent, runner, selectedMode string) error {
+	op, err := loadOperation(q, i.OperationID)
+	if err != nil || !recordingOperationAncestry(i, op) || op.Status != "running" || i.RunnerID != runner || i.Mode != selectedMode {
+		return errRecordingHistory
+	}
+	v, err := loadInstance(q, i.InstanceID)
+	stateDigest, digestErr := recordingStateDigest(v.Runtime)
+	if err != nil || digestErr != nil || stateDigest != i.StateSHA256 || v.Public.ActiveOperationID != op.ID || v.Runtime.ID != i.RuntimeID || v.RuntimeRevision != i.RuntimeRevision || v.Public.ConfigRevision != i.ConfigurationRevision || v.RuntimeConfigRevision != i.ConfigurationRevision || !v.Runtime.Prepared || v.Runtime.Storage == nil || v.Runtime.Storage.Uncertain || v.Runtime.ImportRestore != nil || v.Runtime.Deletion != nil || v.Runtime.Handoff.Fenced() || v.Runtime.MoveTarget != "" || v.Runtime.Fake != nil && v.Runtime.Fake.Uncertain {
+		return errRecordingHistory
+	}
+	selected, live := 0, 0
+	for _, c := range v.Runtime.Runtime.Containers {
+		if c.CreateUncertain {
+			return errRecordingHistory
+		}
+		if !c.Removed {
+			live++
+		}
+		if c.ID == i.ContainerID && c.CreateDispatched && !c.Removed && c.Kind != "probe" {
+			selected++
+		}
+	}
+	if selected != 1 || live != 1 {
+		return errRecordingHistory
+	}
+	return nil
+}
+
+// checkRecordingIntent is a fresh, read-only launch fence. Historical replay is
+// deliberately separate: an interrupted/completed intent remains inspectable but
+// cannot acquire current operation/state authority through its saved receipt.
+// The caller holds the ordinary lifecycle guard across the whole handoff.
+func (s *store) checkRecordingIntent(ctx context.Context, i recordingIntent) error {
+	if ctx.Err() != nil {
+		return errRecordingHistory
+	}
+	raw, err := i.bytes()
+	if err != nil || json.Unmarshal(raw, &i) != nil {
+		return errRecordingHistory
+	}
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return errRecordingHistory
+	}
+	defer tx.Rollback()
+	if validateRecordingHistory(tx) != nil {
+		return errRecordingHistory
+	}
+	saved, err := loadRecordingIntent(tx, i.JobID)
+	if err != nil || !reflect.DeepEqual(saved, i) || recordingLiveAuthority(tx, i, s.runnerID, s.mode) != nil || ctx.Err() != nil {
+		return errRecordingHistory
+	}
+	return nil
+}
+
 // admitRecordingIntent commits once before service submission. An exact saved
 // replay returns history only, even after interruption; the caller must never
 // turn that replay into a second submission or a new claim. No worker or native
@@ -236,23 +292,11 @@ func (s *store) admitRecordingIntent(i recordingIntent) (saved recordingIntent, 
 	if !errors.Is(err, sql.ErrNoRows) {
 		return saved, false, err
 	}
-	op, err := loadOperation(tx, i.OperationID)
-	if err != nil || !recordingOperationAncestry(i, op) || op.Status != "running" || i.RunnerID != s.runnerID || i.Mode != s.mode {
+	if recordingLiveAuthority(tx, i, s.runnerID, s.mode) != nil {
 		return saved, false, errRecordingHistory
-	}
-	v, err := loadInstance(tx, i.InstanceID)
-	stateDigest, digestErr := recordingStateDigest(v.Runtime)
-	if err != nil || digestErr != nil || stateDigest != i.StateSHA256 || v.Public.ActiveOperationID != op.ID || v.Runtime.ID != i.RuntimeID || v.RuntimeRevision != i.RuntimeRevision || v.Public.ConfigRevision != i.ConfigurationRevision || v.RuntimeConfigRevision != i.ConfigurationRevision || !v.Runtime.Prepared || v.Runtime.Storage == nil || v.Runtime.Storage.Uncertain || v.Runtime.ImportRestore != nil || v.Runtime.Deletion != nil || v.Runtime.Handoff.Fenced() || v.Runtime.MoveTarget != "" || v.Runtime.Fake != nil && v.Runtime.Fake.Uncertain {
-		return saved, false, errRecordingHistory
-	}
-	selected := 0
-	for _, c := range v.Runtime.Runtime.Containers {
-		if c.ID == i.ContainerID && c.CreateDispatched && !c.CreateUncertain && !c.Removed && c.Kind != "probe" {
-			selected++
-		}
 	}
 	var count int
-	if selected != 1 || tx.QueryRow("SELECT count(*) FROM runtime_recording_intents").Scan(&count) != nil || count >= maxRecordingIntents {
+	if tx.QueryRow("SELECT count(*) FROM runtime_recording_intents").Scan(&count) != nil || count >= maxRecordingIntents {
 		return saved, false, errRecordingHistory
 	}
 	ordinal, previous, err := recordingHead(tx)

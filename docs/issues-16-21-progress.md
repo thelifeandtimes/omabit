@@ -238,3 +238,8 @@ matching live checks, exact open empty metadata and fresh native admission.
 Focused race checks pass for uncertainty/stale/partial/closed/refused cases without
 executing a launcher or any native lifecycle action. Normal launch integration
 and actual service/native/upgrade gates remain open.
+
+M688 adds the fresh read-only store fence, distinct from historical replay.
+Recording journal/original63 fixture race checks pass for interruption, generation
+changes, cancellation and extra/uncertain containers, with no row changes. The
+normal Start hook and actual worker/native/installed gates remain open.

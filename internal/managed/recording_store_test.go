@@ -2,6 +2,7 @@ package managed
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"os"
 	"os/exec"
@@ -81,7 +82,7 @@ func TestRecordingIntentCommitsExactBindingWithoutChangingOriginalRowsAndReplays
 }
 
 func TestRecordingIntentRefusesWrongAuthorityOrStaleStateWithoutSaving(t *testing.T) {
-	for _, scenario := range []string{"actor", "request", "runner", "mode", "runtime", "revision", "runtime-revision", "state", "container", "quarantine", "queued", "ambiguous-container"} {
+	for _, scenario := range []string{"actor", "request", "runner", "mode", "runtime", "revision", "runtime-revision", "state", "container", "quarantine", "queued", "ambiguous-container", "other-container", "uncertain-removed"} {
 		t.Run(scenario, func(t *testing.T) {
 			s, _, i := recordingIntentFixture(t)
 			switch scenario {
@@ -111,13 +112,20 @@ func TestRecordingIntentRefusesWrongAuthorityOrStaleStateWithoutSaving(t *testin
 				g02Check(t, err)
 				g02Check(t, saveOperation(tx, op))
 				g02Check(t, tx.Commit())
-			case "quarantine", "ambiguous-container":
+			case "quarantine", "ambiguous-container", "other-container", "uncertain-removed":
 				v, err := loadInstance(s.db, i.InstanceID)
 				g02Check(t, err)
 				if scenario == "quarantine" {
 					v.Runtime.Storage.Uncertain = true
 				} else {
-					v.Runtime.Runtime.Containers = append(v.Runtime.Runtime.Containers, v.Runtime.Runtime.Containers[0])
+					extra := v.Runtime.Runtime.Containers[0]
+					if scenario == "other-container" || scenario == "uncertain-removed" {
+						extra.ID = strings.Repeat("b", 64)
+					}
+					if scenario == "uncertain-removed" {
+						extra.Removed, extra.CreateUncertain = true, true
+					}
+					v.Runtime.Runtime.Containers = append(v.Runtime.Runtime.Containers, extra)
 				}
 				g02Check(t, s.runtimeUpdate(i.InstanceID, i.OperationID, v.Runtime))
 				v, err = loadInstance(s.db, i.InstanceID)
@@ -127,6 +135,49 @@ func TestRecordingIntentRefusesWrongAuthorityOrStaleStateWithoutSaving(t *testin
 			before := appAllRows(t, s.db)
 			if _, _, err := s.admitRecordingIntent(i); err == nil || !reflect.DeepEqual(before, appAllRows(t, s.db)) {
 				t.Fatal("stale/unowned intent admitted or refusal changed state", err)
+			}
+		})
+	}
+}
+
+func TestRecordingIntentFreshFenceNeverTurnsHistoricalReplayIntoAuthority(t *testing.T) {
+	for _, scenario := range []string{"interrupted", "runtime-revision", "different-intent", "canceled"} {
+		t.Run(scenario, func(t *testing.T) {
+			s, _, i := recordingIntentFixture(t)
+			before := appAllRows(t, s.db)
+			if s.checkRecordingIntent(t.Context(), i) == nil || !reflect.DeepEqual(before, appAllRows(t, s.db)) {
+				t.Fatal("unsaved intent granted authority or changed state")
+			}
+			_, _, err := s.admitRecordingIntent(i)
+			g02Check(t, err)
+			before = appAllRows(t, s.db)
+			g02Check(t, s.checkRecordingIntent(t.Context(), i))
+			if !reflect.DeepEqual(before, appAllRows(t, s.db)) {
+				t.Fatal("fresh fence changed history")
+			}
+			ctx, cancel := context.WithCancel(t.Context())
+			defer cancel()
+			selected := i
+			switch scenario {
+			case "interrupted":
+				g02Check(t, s.reconcileInterrupted())
+			case "runtime-revision":
+				v, err := loadInstance(s.db, i.InstanceID)
+				g02Check(t, err)
+				// Even unchanged runtime bytes have a different saved generation.
+				g02Check(t, s.runtimeUpdate(i.InstanceID, i.OperationID, v.Runtime))
+			case "different-intent":
+				selected.JobSHA256 = strings.Repeat("f", 64)
+			case "canceled":
+				cancel()
+			}
+			before = appAllRows(t, s.db)
+			if err := s.checkRecordingIntent(ctx, selected); err != errRecordingHistory || !reflect.DeepEqual(before, appAllRows(t, s.db)) {
+				t.Fatal("stale/refused fence became current authority or changed history", err)
+			}
+			got, replay, err := s.admitRecordingIntent(i)
+			if err != nil || !replay || !reflect.DeepEqual(got, i) || !reflect.DeepEqual(before, appAllRows(t, s.db)) {
+				t.Fatal("historical replay was lost or rewrote its original", err)
 			}
 		})
 	}
