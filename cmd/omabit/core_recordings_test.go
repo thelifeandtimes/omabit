@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"net"
 	"net/http"
@@ -39,7 +41,33 @@ func TestCLIAndMCPPrivateRecordingHistoryAndExactPage(t *testing.T) {
 		t.Fatal(err)
 	}
 	const revision = uint64(9007199254740993)
-	descriptor := recording.SessionDescriptor{RunnerID: "runner", Mode: "simulation", InstanceID: "alpha", RuntimeID: strings.Repeat("b", 32), ConfigurationRevision: revision, ContainerID: strings.Repeat("c", 64), JobID: strings.Repeat("d", 32), JobSHA256: strings.Repeat("e", 64), OperationID: "op-original", RequestID: "start-original", CreatedAt: time.Date(2026, 11, 18, 0, 0, 0, 0, time.UTC)}
+	descriptor := recording.SessionDescriptor{RunnerID: "runner", Mode: "development-managed", InstanceID: "alpha", RuntimeID: strings.Repeat("b", 32), ConfigurationRevision: revision, ContainerID: strings.Repeat("c", 64), JobID: strings.Repeat("d", 32), JobSHA256: strings.Repeat("e", 64), OperationID: "op-original", RequestID: "start-original", CreatedAt: time.Date(2026, 11, 18, 0, 0, 0, 0, time.UTC)}
+	metadataBytes, err := os.ReadFile("../../internal/recording/testdata/original-metadata1/metadata.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	metadata, err := recording.ReadMetadata(metadataBytes)
+	if err != nil {
+		t.Fatal(err)
+	}
+	metadata.InstanceID, metadata.ConfigurationRevision, metadata.ContainerID = descriptor.InstanceID, descriptor.ConfigurationRevision, descriptor.ContainerID
+	metadata.OperationID, metadata.RequestID = descriptor.OperationID, descriptor.RequestID
+	metadataBytes, err = metadata.Bytes()
+	if err != nil {
+		t.Fatal(err)
+	}
+	metadataHash := sha256.Sum256(metadataBytes)
+	metadataDigest := hex.EncodeToString(metadataHash[:])
+	payload := []byte("original private octets\x00\x1b[2K\xff\n")
+	frame := recording.Frame{Segment: 1, Sequence: 1, UnixNano: 1795046400123456789, Kind: recording.Stdout, Digest: sha256.Sum256(payload), Data: payload}
+	original, err := recording.ExportOriginalFrame(frame)
+	if err != nil {
+		t.Fatal(err)
+	}
+	redacted, err := recording.RenderRedactedFrames([]recording.Frame{frame}, recording.RedactionOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
 	var variant atomic.Value
 	variant.Store("ok")
 	var reads atomic.Int32
@@ -92,7 +120,13 @@ func TestCLIAndMCPPrivateRecordingHistoryAndExactPage(t *testing.T) {
 			if v == "wrong-reply" {
 				d.JobSHA256 = strings.Repeat("f", 64)
 			}
-			json.NewEncoder(w).Encode(recording.ReadWindow{Version: 1, Session: d, Status: recording.SavedStatus{State: "job-saved", SessionIDBasis: "unknown", SessionStorage: "unknown"}, Representation: in.Representation, From: in.Cursor, Tail: "not-scanned", ReadAt: descriptor.CreatedAt, Basis: "saved fixture"})
+			page := recording.ReadWindow{Version: 1, Session: d, Status: recording.SavedStatus{State: "job-saved", SessionID: metadata.SessionID, SessionIDBasis: "immutable-metadata", SessionStorage: "unknown"}, Metadata: &metadata, MetadataSHA256: metadataDigest, Representation: in.Representation, From: in.Cursor, Next: &recording.Cursor{Version: 1, SessionID: metadata.SessionID, MetadataSHA256: metadataDigest, Sequence: frame.Sequence, Digest: hex.EncodeToString(frame.Digest[:])}, FrameCount: 1, Tail: "not-scanned", ReadAt: descriptor.CreatedAt, Basis: "saved fixture"}
+			if in.Representation == "original" {
+				page.Original = []recording.OriginalFrameExport{original}
+			} else {
+				page.Redacted = &redacted
+			}
+			json.NewEncoder(w).Encode(page)
 			return
 		}
 		t.Error("unexpected effect", q.Method, q.URL.Path)
@@ -109,12 +143,13 @@ func TestCLIAndMCPPrivateRecordingHistoryAndExactPage(t *testing.T) {
 	}
 	defer session.Close()
 	target := service.Target{Name: "dev", RunnerID: "runner"}
-	for _, operation := range []string{"runtime.recordings.v1", "runtime.recording-page.v1"} {
+	for _, selection := range []struct{ operation, representation string }{{"runtime.recordings.v1", ""}, {"runtime.recording-page.v1", "original"}, {"runtime.recording-page.v1", "redacted"}} {
+		operation := selection.operation
 		for _, name := range []string{"ok", "observer", "missing-capability", "no-consent", "wrong-reply", "transport-lost"} {
 			variant.Store(name)
 			var in any = service.RecordingCatalogInput{Target: target, InstanceID: "alpha", IncludePrivateData: name != "no-consent"}
 			if operation == "runtime.recording-page.v1" {
-				in = service.RecordingPageInput{Target: target, InstanceID: "alpha", JobID: descriptor.JobID, JobSHA256: descriptor.JobSHA256, Representation: "original", IncludePrivateData: name != "no-consent"}
+				in = service.RecordingPageInput{Target: target, InstanceID: "alpha", JobID: descriptor.JobID, JobSHA256: descriptor.JobSHA256, Representation: selection.representation, IncludePrivateData: name != "no-consent"}
 			}
 			raw, _ := json.Marshal(in)
 			before := reads.Load()
@@ -126,6 +161,23 @@ func TestCLIAndMCPPrivateRecordingHistoryAndExactPage(t *testing.T) {
 			if name == "ok" {
 				if cliErr != nil || tool.IsError || reads.Load() != before+2 || !bytes.Contains(cli, []byte("9007199254740993")) {
 					t.Fatal("bounded exact read failed", operation, name, cliErr, string(cli))
+				}
+				if operation == "runtime.recording-page.v1" {
+					var decoded struct {
+						Data recording.ReadWindow `json:"data"`
+					}
+					if err := json.Unmarshal(cli, &decoded); err != nil {
+						t.Fatal(err)
+					}
+					if decoded.Data.FrameCount != 1 || !bytes.Contains(cli, []byte("1795046400123456789")) || decoded.Data.MetadataSHA256 != metadataDigest || decoded.Data.Next == nil || decoded.Data.Next.Digest != hex.EncodeToString(frame.Digest[:]) {
+						t.Fatal("nonempty frame binding changed", selection)
+					}
+					if selection.representation == "original" && (len(decoded.Data.Original) != 1 || !bytes.Equal(decoded.Data.Original[0].OriginalBytes, payload) || decoded.Data.Original[0].Frame.Digest != frame.Digest) {
+						t.Fatal("original octets changed")
+					}
+					if selection.representation == "redacted" && (decoded.Data.Redacted == nil || len(decoded.Data.Redacted.Frames) != 1 || len(decoded.Data.Original) != 0) {
+						t.Fatal("derived representation changed")
+					}
 				}
 			} else {
 				if cliErr == nil || !tool.IsError || bytes.Contains(cli, []byte("op-original")) {

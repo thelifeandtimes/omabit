@@ -385,3 +385,11 @@ The authorized M708 disposal is complete: four files removed, no archive,
 3,079,081,984allocated bytes freed,41 retained evidence/artifact files verified.
 Both capsules carry no-resume tombstones. Aggregate usage is47,887,331,328bytes,
 leaving room to admit the corrected fresh recording qualification under48GiB.
+
+M709 records the fresh VM05 native failure after successful64→65 activation,
+exact process/history preservation and first clean Stop. Its first nonempty raw
+window exposes a shared schema inference mismatch ([]byte JSON is base64, not an
+array). Correct the mapping and extend actual CLI/SDK parity to nonempty original
+and redacted data with exact bytes/times/digests/large revisions. Service races,
+focused CLI/control parity and vet pass. Matching new artifacts and a fresh full
+native retry remain required; no installed namespace is changed.

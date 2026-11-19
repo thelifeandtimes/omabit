@@ -71,5 +71,5 @@ func (s *Service) Discovery() Catalog {
 		roots = append(roots, source.Name)
 	}
 	sort.Strings(roots)
-	return Catalog{ClientBuild: buildmeta.Current(""), Version: 1, Operations: operations, CLIBindings: inventory.Bindings, MutationToolsEnabled: s.options.EnableMutations, Transport: "local-stdio; HTTP not implemented", SourceRoots: roots}
+	return Catalog{ClientBuild: buildmeta.Current(""), Version: 1, Operations: operations, CLIBindings: inventory.Bindings, MutationToolsEnabled: s.options.EnableMutations, Transport: "stdio and explicit local authenticated HTTP; selected at server startup", SourceRoots: roots}
 }

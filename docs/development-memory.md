@@ -12769,3 +12769,31 @@ superseded. The [disposal record](diagnostics/2026-11-19-recording-upgrade-fixtu
 records original hashes and the new retention state; measured aggregate usage is
 47,887,331,328bytes after removal. Seven fixture guards pass again before preparing
 a fresh recording-upgrade VM05; the unrelated pending app VM05 is excluded.
+
+## M709 — Nonempty original recording schema regression (2026-11-19)
+
+The fresh recording-upgrade VM05 reaches actual64→65 activation with its exact
+worker/container/engine/history preserved, saved controls/catalog available and
+the first clean Stop drained (148frames, one exit, no gaps). The first original
+window then fails `invalid_output`; retain that failed whole-case outcome and its
+[pinned evidence](diagnostics/2026-11-19-recording-native-output-schema-failure.json).
+Read-only extraction preserves the original disk/backing. Do not resume or repair
+the failed fixture; the unrelated acknowledged app VM05 remains excluded.
+
+A focused source regression reproduces the exact output-schema failure:
+encoding/json emits []byte as base64 strings while jsonschema-go0.4.3 infers
+null/array. Explicitly map only []byte to null/base64 string during input/output
+schema inference; fixed byte arrays remain exact integer arrays. Retain target,
+metadata/digest/cursor and private-consent validation. Existing stored bytes, RPC
+shape and recording codecs do not change. Extend actual CLI/official-SDK stdio
+parity from empty pages to nonempty original and redacted windows, preserving
+invalid UTF-8/control octets, frame digests, nanosecond times and revisions above
+2^53. All shared service race tests pass (6.399s); focused CLI recording/control
+parity passes (25.346s), and vet passes. The public transport catalog now accurately
+names the already implemented explicit authenticated local HTTP option.
+
+This supersedes M698's empty-page parity coverage only. It does not turn the
+failed native case into a pass. Freeze new matching binaries and repeat the full
+native upgrade/API/control case before claiming qualification; the282c3b3
+artifacts remain the preserved failed candidate. No installed DEV or production
+deployment changes.

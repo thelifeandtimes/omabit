@@ -10,6 +10,7 @@ import (
 	"errors"
 	"io"
 	"os"
+	"reflect"
 	"slices"
 	"sort"
 	"strconv"
@@ -319,11 +320,17 @@ func bind[I, O any](s *Service, d Descriptor, handler func(context.Context, *Ser
 	if d.TimeoutMillis < 1 || d.TimeoutMillis > (16*time.Minute).Milliseconds() {
 		return errors.New("core operation timeout outside supported bounds")
 	}
-	in, err := jsonschema.For[I](nil)
+	// encoding/json represents []byte as base64 (or null), unlike ordinary
+	// slices and fixed byte arrays. The inference library needs that explicit
+	// mapping; otherwise a verified nonempty recording fails output validation.
+	schemaOptions := &jsonschema.ForOptions{TypeSchemas: map[reflect.Type]*jsonschema.Schema{
+		reflect.TypeFor[[]byte](): {Types: []string{"string", "null"}, ContentEncoding: "base64", Pattern: `^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$`},
+	}}
+	in, err := jsonschema.For[I](schemaOptions)
 	if err != nil {
 		return err
 	}
-	out, err := jsonschema.For[envelope[O]](nil)
+	out, err := jsonschema.For[envelope[O]](schemaOptions)
 	if err != nil {
 		return err
 	}

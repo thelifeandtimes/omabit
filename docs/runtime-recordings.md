@@ -7,6 +7,13 @@ This choice remains provisional until actual Docker/Vere lifecycle, interruption
 retention and pressure gates pass. The existing bounded sanitized tail cannot be
 treated as a comprehensive original recording.
 
+The fresh schema64→65 active-worker test preserves processes/history and drains
+its first Stop, then exposes an original-window output-schema bug. The shared
+facade now describes []byte as JSON base64 strings; nonempty CLI/MCP original and
+redacted source tests pass. See the [failed native evidence](diagnostics/2026-11-19-recording-native-output-schema-failure.json).
+That failed case does not qualify the full upgrade/API/control workflow; a fresh
+matching-artifact retry remains required. No persisted recording encoding changes.
+
 The fixture compares fixed inert processes, not existing ships or tmux sessions.
 All four paths retain350-line bursts, a12288-byte line, diagnostic atoms, fake
 credential text, terminal redraws and stderr. Pipes preserve separate stream
