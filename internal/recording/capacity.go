@@ -26,6 +26,7 @@ type Capacity struct {
 	AvailableBytes uint64               `json:"available_bytes"`
 	ReadAt         time.Time            `json:"read_at"`
 	Basis          string               `json:"basis"`
+	Usage          *StorageUsage        `json:"usage,omitempty"`
 }
 
 func (c Capacity) Validate() error {
@@ -44,6 +45,9 @@ func (c Capacity) Validate() error {
 		total += i.CommittedBytes
 	}
 	if jobs != c.Jobs || total != c.CommittedBytes {
+		return ErrSelection
+	}
+	if c.Usage != nil && c.Usage.Validate(c.RunnerID, c.Instances) != nil {
 		return ErrSelection
 	}
 	return nil

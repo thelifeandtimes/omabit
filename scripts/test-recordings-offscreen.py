@@ -15,7 +15,14 @@ if scenario=='delay':signal.signal(signal.SIGTERM,lambda *_:None);time.sleep(.5)
 s={'job_id':'1'*32,'job_sha256':'2'*64,'runner_id':'runner-lab','mode':'development-managed','instance_id':'one','runtime_id':'3'*32,'configuration_revision':1,'container_id':'4'*64,'operation_id':'start-original','request_id':'request-original','created_at':'2026-11-18T00:00:00Z'}
 now='2026-11-18T00:01:00Z'
 if operation=='runtime.recordings.v1':data={'version':1,'runner_id':'runner-lab','instance_id':'one','sessions':[s],'read_at':now,'basis':'saved fixture only'}
-elif operation=='runtime.recording-controls.v1':data={'version':1,'state':{'version':1,'runner_id':'runner-lab','revision':0,'digest':'','pins':[],'policy':{'version':1,'max_jobs':16,'max_session_bytes':67108864,'host_max_raw_bytes':1073741824,'instance_max_raw_bytes':268435456,'reserve_free_bytes':2147483648}},'capacity_status':'unknown','pilot_enabled':True,'read_at':now}
+elif operation=='runtime.recording-controls.v1':
+ data={'version':1,'state':{'version':1,'runner_id':'runner-lab','revision':0,'digest':'','pins':[],'policy':{'version':1,'max_jobs':16,'max_session_bytes':67108864,'host_max_raw_bytes':1073741824,'instance_max_raw_bytes':268435456,'reserve_free_bytes':2147483648}},'capacity_status':'unknown','pilot_enabled':True,'read_at':now}
+ if scenario in ('measured','usage-unknown','foreign-usage'):
+  shared={'files':1,'directories':2,'logical_bytes':0,'allocated_bytes':8192}
+  usage={'version':1,'runner_id':'runner-lab','status':'measured','started_at':now,'read_at':now,'basis':'inert recording roots only','shared':shared,'totals':{'files':3,'directories':4,'logical_bytes':4194304,'allocated_bytes':24576},'instances':[{'instance_id':'one','totals':{'files':2,'directories':2,'logical_bytes':4194304,'allocated_bytes':16384}}]}
+  if scenario=='usage-unknown':usage={k:v for k,v in usage.items()if k not in ('shared','totals','instances')};usage.update(status='unknown',reason='changed')
+  if scenario=='foreign-usage':usage['runner_id']='other'
+  data.update(capacity_status='available',capacity={'version':1,'runner_id':'runner-lab','jobs':1,'committed_bytes':67108864,'instances':[{'instance_id':'one','jobs':1,'committed_bytes':67108864}],'usage':usage})
 elif operation=='runtime.recording-page.v1':
  assert request['job_id']==s['job_id']and request['job_sha256']==s['job_sha256']
  m={'runner_id':s['runner_id'],'instance_id':'one','container_id':s['container_id'],'operation_id':s['operation_id'],'request_id':s['request_id'],'session_id':'5'*32}
@@ -48,7 +55,7 @@ def main():
  assert q.returncode==0 and 'PASS: private saved recording UI'in log,log
  assert not any(x in log for x in ('FAIL:','Unable to assign','Cannot assign','is not defined','Binding loop')),log
  calls=[json.loads(line)for line in (out/'calls.jsonl').read_text().splitlines()]
- assert len(calls)==7 and all(c['request']['include_private_data']is True for c in calls),calls
+ assert len(calls)==10 and all(c['request']['include_private_data']is True for c in calls),calls
  assert len([c for c in calls if c['operation']=='runtime.recording-page.v1'and c['request']['representation']=='original'])==1,calls
  print(json.dumps({'passed':True,'calls':len(calls),'scope':'inert private desktop only; consent, explicit encoding, plain text, unknown storage and stale-profile rejection; no installed state'}))
 if __name__=='__main__':main()

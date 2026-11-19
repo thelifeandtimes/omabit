@@ -846,3 +846,45 @@ inspected. An initial fixture accidentally changed its transport identity when
 changing simulated server behavior; correct that fixture before the passing runs.
 This is source UI qualification, with no installed plugin or preserved DEV change.
 Matching native API/upgrade and final desktop qualification remain required.
+
+## Scoped recording storage measurements — source qualified
+
+Recording status now optionally includes `capacity.usage`, separately from
+immutable admission commitments. A `measured` result reports regular-file logical
+lengths, inode-reported allocated blocks, file/directory counts, shared root
+overhead and per-instance totals, with start/read timestamps. The scope is only
+the private `recording-jobs` and `recordings` roots; piers, managed SQLite,
+executable caches and unrelated storage are excluded. Directory blocks count;
+their implementation-specific logical lengths do not. Shared/reflink extents and
+filesystem compression mean inode blocks are not exclusive physical ownership.
+This is a non-atomic observation, not a space reservation or recording coverage
+proof. Partial captures can occupy measurable storage without a valid header.
+
+The census binds existing owned roots/directories/files, accepts only the finite
+job/session inventory and opens no runtime or engine channel. Foreign/unexpected
+objects, links, unsafe permissions, a replaced root, observed change, cancellation,
+overflow or bounds produce `unknown` with a fixed reason and no partial totals.
+At most65536 entries and1024 detailed instances are measured; larger inventories
+remain explicitly unknown while their existing commitments remain accounted for.
+No missing entry is repaired, no file is deleted and no job is adopted.
+
+Omitted usage from an older runner means unavailable, never zero. Actual frozen
+703de9f2 CLI reads of newer measured/unknown responses preserve old settings and
+commitments while omitting unsupported measurement fields. New clients validate
+runner/instance bindings, arithmetic, timestamps and complete/unknown shape.
+Status discovery labels the filesystem observation as a live probe; original
+receipt lookup remains saved-only. The existing operator/private-consent gate
+still applies. Admission uses its conservative limits/free-space floor, not a
+smaller measured value; unknown measurement does not erase known commitments.
+
+The source UI shows host and selected-ship totals beside commitments, distinguishes
+logical bytes from allocated blocks and uses KiB/B for small values. Explicit
+unknown and legacy omission remain visible. [Focused race, actual CLI/SDK/API and
+private ten-read UI checks](diagnostics/2026-11-19-recording-usage-source.json)
+pass; the [synthetic view](diagnostics/2026-11-19-recording-usage-source.png) is
+visually inspected. The first size fixture used unsupported128-character IDs;
+correct it to the existing64-character limit without weakening validation.
+Schema65 and persisted job/recording/control encodings are unchanged. New matching
+artifacts/native/installed qualification are required; the earlier703de9f2 native
+pass does not qualify these later source changes. Retirement, pressure recovery,
+oldest-output indexing and complete export packaging remain separate work.

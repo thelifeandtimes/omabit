@@ -12888,3 +12888,35 @@ DEV, host reboot, pressure recovery, running adoption, projects/maintenance,
 measured usage, retirement, indexing or complete exports. Final matching-artifact
 and remaining issue-track qualification still apply; no stable/publication or
 issue-wide completion is claimed.
+
+## M713 — Scoped allocated/logical recording usage and explicit unknowns (2026-11-19)
+
+Add optional transient `capacity.usage`: separate logical lengths/inode blocks,
+shared root and per-instance counts, timestamps and explicit unknown reasons.
+Measure only bound private job/session roots, without reading frame bodies,
+following links, repairing or deleting files. Validate root/file identity and
+ownership/mode/link count; withhold all partial totals on change/unsafe objects,
+failure, cancellation, overflow or entry/instance bounds. Existing full-limit
+commitments and new-launch admission remain unchanged. No stored encoding or
+schema65 change. Status catalog declares fresh filesystem metadata observation;
+saved receipt lookup remains a saved read.
+
+[Source evidence](diagnostics/2026-11-19-recording-usage-source.json) passes sparse/
+partial-owned-file accounting and unchanged bytes; link/FIFO/permission/root
+replacement, limits/cancellation and arithmetic/refusal checks; real SQLite/HTTP
+state/replay/fences; actual CLI/official-SDK parity; an actual frozen703de9f2
+client's omission of unsupported new fields; focused vet; and ten private UI
+reads with consent/profile/foreign-response controls. An initial reply-size test
+used128-character IDs and correctly failed the existing64-character guard; fix
+the fixture, not the protocol. The first UI namespace setup is sandbox-blocked;
+the fresh private run succeeds. Visual inspection catches small allocations
+rounded to0.0MiB; switch those values to KiB/B and reverify the final view.
+
+The [synthetic UI](diagnostics/2026-11-19-recording-usage-source.png) distinguishes
+24KiB allocated from4MiB logical and selected-ship16KiB. Unknown/older omission
+does not become zero, and unknown measurement retains known commitments. Blocks
+can include shared/compressed extents; this is a non-atomic scoped census, not
+exclusive physical accounting, complete coverage or a reservation. Original
+frames/receipts and installed namespaces stay untouched. M712's native pass stays
+tied to703de9f2; new matching/native/installed qualification, retirement/pressure,
+indexing/full exports and the other issue tracks remain required.

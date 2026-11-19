@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestRecordingControlAPIExactActorLookupCASAndReplay(t *testing.T) {
@@ -67,6 +68,28 @@ func TestRecordingControlAPIExactActorLookupCASAndReplay(t *testing.T) {
 	g02Check(t, json.Unmarshal(statusReply.Body.Bytes(), &status))
 	if statusReply.Code != 200 || status.CapacityStatus != "unknown" || status.Capacity != nil || status.State.Revision != 1 {
 		t.Fatal("unknown capacity erased saved controls", statusReply.Code, statusReply.Body)
+	}
+	for _, invalid := range []bool{false, true} {
+		r.recordingCapacity = func(context.Context, string) (recording.Capacity, error) {
+			at := time.Now().UTC()
+			u := recording.StorageUsage{Version: 1, RunnerID: s.runnerID, Status: "unknown", Reason: "unsafe-storage", StartedAt: at, ReadAt: at, Basis: "private bounded recording roots"}
+			if invalid {
+				u.RunnerID = "other"
+			}
+			return recording.Capacity{Version: 1, RunnerID: s.runnerID, Jobs: 1, CommittedBytes: 64 << 20, Instances: []recording.InstanceCommitment{{InstanceID: "one", Jobs: 1, CommittedBytes: 64 << 20}}, ReadAt: at, Usage: &u}, nil
+		}
+		w := call(protocol.RecordingControlStatusPath, "owner", "operator", read)
+		var status recording.ControlStatus
+		g02Check(t, json.Unmarshal(w.Body.Bytes(), &status))
+		if w.Code != 200 || status.State.Revision != 1 {
+			t.Fatal("usage read erased saved controls", w.Code, w.Body)
+		}
+		if !invalid && (status.CapacityStatus != "available" || status.Capacity == nil || status.Capacity.Usage.Status != "unknown" || status.Capacity.CommittedBytes != 64<<20) {
+			t.Fatal("unknown measurement erased known commitment", w.Body)
+		}
+		if invalid && (status.CapacityStatus != "unknown" || status.Capacity != nil) {
+			t.Fatal("foreign usage escaped or invented partial capacity", w.Body)
+		}
 	}
 	r.updateWorkers = 1
 	w = call(protocol.RecordingControlApplyPath, "owner", "operator", in)

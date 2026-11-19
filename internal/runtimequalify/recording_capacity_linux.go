@@ -39,6 +39,8 @@ func RecordingCapacity(ctx context.Context, opts RecordingWorkerOptions, runner 
 	}
 	instances := map[string]recording.InstanceCommitment{}
 	sessions := map[string]bool{}
+	jobInstances := map[string]string{}
+	sessionInstances := map[string]string{}
 	for _, e := range entries {
 		if ctx.Err() != nil {
 			return out, ctx.Err()
@@ -68,6 +70,7 @@ func RecordingCapacity(ctx context.Context, opts RecordingWorkerOptions, runner 
 				return out, ErrRecordingJobStorage
 			}
 			sessions[a.SessionID] = true
+			sessionInstances[a.SessionID] = job.Operation.Target.InstanceID
 		} else if !errors.Is(err, ErrRecordingSessionUnknown) {
 			return out, ErrRecordingJobStorage
 		}
@@ -76,6 +79,7 @@ func RecordingCapacity(ctx context.Context, opts RecordingWorkerOptions, runner 
 		i.Jobs++
 		i.CommittedBytes += uint64(job.Limits.MaxSessionBytes)
 		instances[i.InstanceID] = i
+		jobInstances[job.ID] = i.InstanceID
 		out.Jobs++
 		out.CommittedBytes += uint64(job.Limits.MaxSessionBytes)
 	}
@@ -115,6 +119,8 @@ func RecordingCapacity(ctx context.Context, opts RecordingWorkerOptions, runner 
 		out.Instances = append(out.Instances, i)
 	}
 	sort.Slice(out.Instances, func(i, j int) bool { return out.Instances[i].InstanceID < out.Instances[j].InstanceID })
+	usage := measureRecordingUsage(ctx, jobs.root, recordings, runner, jobInstances, sessionInstances, out.Instances, recording.MaxUsageEntries)
+	out.Usage = &usage
 	if out.Validate() != nil || ctx.Err() != nil {
 		return out, ErrRecordingJobStorage
 	}

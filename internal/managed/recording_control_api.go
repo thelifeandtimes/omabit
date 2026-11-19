@@ -39,7 +39,7 @@ func (r *Server) serveRecordingControls(w http.ResponseWriter, req *http.Request
 		}
 		if r.recordingCapacity != nil {
 			capacity, err := r.recordingCapacity(ctx, r.s.runnerID)
-			if err == nil {
+			if err == nil && capacity.RunnerID == r.s.runnerID && capacity.Validate() == nil {
 				out.Capacity = &capacity
 				out.CapacityStatus = "available"
 			}

@@ -9,6 +9,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sync/atomic"
 	"testing"
@@ -51,6 +52,13 @@ func TestCLIAndMCPRecordingControlsAndLostWriteLookup(t *testing.T) {
 	}{"omabit-recording-control-v1", 1, "", event})
 	sum := sha256.Sum256(raw)
 	receipt := recording.ControlReceipt{Event: event, State: recording.ControlState{Version: 1, RunnerID: "runner", Revision: 1, Digest: hex.EncodeToString(sum[:]), Policy: policy, Pins: []recording.IncidentPin{}, Basis: "inert fixture"}}
+	shared := recording.StorageTotals{Directories: 2, Files: 1, AllocatedBytes: 8192}
+	shipUsage := recording.StorageTotals{Directories: 2, Files: 4, LogicalBytes: 8192, AllocatedBytes: 24576}
+	total, err := shared.Add(shipUsage)
+	if err != nil {
+		t.Fatal(err)
+	}
+	usage := recording.StorageUsage{Version: 1, RunnerID: "runner", Status: "measured", Shared: &shared, Totals: &total, Instances: []recording.InstanceStorageUsage{{InstanceID: "one", Totals: shipUsage}}, StartedAt: event.CreatedAt, ReadAt: event.CreatedAt, Basis: "non-atomic inode blocks; private recording roots only"}
 	var variant atomic.Value
 	variant.Store("ok")
 	var calls atomic.Int32
@@ -84,7 +92,21 @@ func TestCLIAndMCPRecordingControlsAndLostWriteLookup(t *testing.T) {
 		}
 		switch q.URL.Path {
 		case protocol.RecordingControlStatusPath:
-			json.NewEncoder(w).Encode(recording.ControlStatus{Version: 1, CapacityStatus: "pilot-disabled", State: r.State, ReadAt: event.CreatedAt, Basis: "inert fixture"})
+			measured := usage
+			if v == "usage-unknown" || v == "partial-usage" {
+				measured.Status, measured.Reason = "unknown", "unsafe-storage"
+				if v == "usage-unknown" {
+					measured.Shared, measured.Totals, measured.Instances = nil, nil, nil
+				}
+			}
+			if v == "foreign-usage" {
+				measured.RunnerID = "other"
+			}
+			capacity := recording.Capacity{Version: 1, RunnerID: "runner", Jobs: 1, CommittedBytes: 64 << 20, Instances: []recording.InstanceCommitment{{InstanceID: "one", Jobs: 1, CommittedBytes: 64 << 20}}, ReadAt: event.CreatedAt, Usage: &measured}
+			if v == "legacy-no-usage" {
+				capacity.Usage = nil
+			}
+			json.NewEncoder(w).Encode(recording.ControlStatus{Version: 1, CapacityStatus: "available", Capacity: &capacity, PilotEnabled: true, State: r.State, ReadAt: event.CreatedAt, Basis: "inert fixture"})
 		case protocol.RecordingControlLookupPath:
 			json.NewEncoder(w).Encode(recording.ControlLookupResult{Version: 1, RunnerID: "runner", RequestID: request.RequestID, Found: true, Receipt: &r})
 		case protocol.RecordingControlApplyPath:
@@ -106,7 +128,11 @@ func TestCLIAndMCPRecordingControlsAndLostWriteLookup(t *testing.T) {
 	defer session.Close()
 	target := service.Target{Name: "dev", RunnerID: "runner"}
 	for _, op := range []string{"runtime.recording-controls.v1", "runtime.recording-control-lookup.v1", "runtime.recording-control-apply.v1"} {
-		for _, name := range []string{"ok", "observer", "missing-capability", "bad-input", "wrong-reply", "transport-lost"} {
+		variants := []string{"ok", "observer", "missing-capability", "bad-input", "wrong-reply", "transport-lost"}
+		if op == "runtime.recording-controls.v1" {
+			variants = append(variants, "usage-unknown", "legacy-no-usage", "foreign-usage", "partial-usage")
+		}
+		for _, name := range variants {
 			variant.Store(name)
 			var in any = service.RecordingControlsInput{Target: target, IncludePrivateData: name != "bad-input"}
 			if op == "runtime.recording-control-lookup.v1" {
@@ -126,9 +152,30 @@ func TestCLIAndMCPRecordingControlsAndLostWriteLookup(t *testing.T) {
 			if err != nil || len(tool.Content) != 1 || !bytes.Equal(bytes.TrimSpace(cli), []byte(tool.Content[0].(*mcp.TextContent).Text)) {
 				t.Fatal("CLI/MCP controls differ", op, name, err, string(cli), tool)
 			}
-			if name == "ok" {
+			if name == "ok" || name == "usage-unknown" || name == "legacy-no-usage" {
 				if cliErr != nil || tool.IsError || calls.Load() != before+2 {
 					t.Fatal("control failed", op, string(cli))
+				}
+				if op == "runtime.recording-controls.v1" {
+					var result struct {
+						Data recording.ControlStatus `json:"data"`
+					}
+					if err := json.Unmarshal(cli, &result); err != nil {
+						t.Fatal(err)
+					}
+					if result.Data.Capacity == nil || result.Data.Capacity.CommittedBytes != 64<<20 {
+						t.Fatal("usage changed commitment")
+					}
+					u := result.Data.Capacity.Usage
+					if name == "ok" && (u == nil || u.Status != "measured" || *u.Totals != total) {
+						t.Fatal("measured usage lost")
+					}
+					if name == "usage-unknown" && (u == nil || u.Status != "unknown" || u.Totals != nil || u.Reason != "unsafe-storage") {
+						t.Fatal("unknown usage gained totals")
+					}
+					if name == "legacy-no-usage" && u != nil {
+						t.Fatal("legacy omission invented usage")
+					}
 				}
 				continue
 			}
@@ -164,4 +211,34 @@ func TestCLIAndMCPRecordingControlsAndLostWriteLookup(t *testing.T) {
 	if err != nil || calls.Load() != before+1 || !bytes.Contains(out, []byte("control-original")) {
 		t.Fatal("original lost-write receipt cannot be read", err, string(out))
 	}
+	t.Run("frozen703-reader-ignores-optional-usage", func(t *testing.T) {
+		old := os.Getenv("OMABIT_RECORDING_OLD_READ_CLI")
+		if old == "" {
+			t.Skip("explicit frozen original client only")
+		}
+		body, err := os.ReadFile(old)
+		if err != nil {
+			t.Fatal(err)
+		}
+		hash := sha256.Sum256(body)
+		if !filepath.IsAbs(old) || hex.EncodeToString(hash[:]) != "18233722802d816310c8abf96aa93d28fd7f9e47dd907eb47285ccd786e4ec92" {
+			t.Fatal("wrong frozen703 client")
+		}
+		input, _ := json.Marshal(service.RecordingControlsInput{Target: target, IncludePrivateData: true})
+		home := t.TempDir()
+		for _, name := range []string{"ok", "usage-unknown"} {
+			variant.Store(name)
+			command := exec.CommandContext(ctx, old, "--config-dir", config, "call", "runtime.recording-controls.v1", "--input-json", string(input))
+			command.Env = []string{"HOME=" + home, "PATH=/usr/bin:/bin", "LANG=C", "XDG_CONFIG_HOME=" + filepath.Join(home, "config"), "XDG_RUNTIME_DIR=" + filepath.Join(home, "runtime")}
+			before := calls.Load()
+			raw, err := command.CombinedOutput()
+			var result struct {
+				Data  recording.ControlStatus `json:"data"`
+				Error *service.Problem        `json:"error"`
+			}
+			if err != nil || json.Unmarshal(raw, &result) != nil || result.Error != nil || calls.Load() != before+1 || result.Data.Capacity == nil || result.Data.Capacity.CommittedBytes != 64<<20 || result.Data.Capacity.Usage != nil {
+				t.Fatal("frozen reader changed old fields or exposed unsupported measurement", name, err, string(raw))
+			}
+		}
+	})
 }

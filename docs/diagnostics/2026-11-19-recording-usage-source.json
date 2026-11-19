@@ -1,0 +1,126 @@
+{
+  "format": 1,
+  "passed": true,
+  "qualification": "source and inert UI only",
+  "base_commit": "d71ad63cd493d87a039b8f1824e7309f418d60f2",
+  "source_sha256": {
+    "internal/recording/usage.go": "8e8f221bd0de93fef5cd1e0343e5d50c4a8edc5e50585360fc9c58b2a9c12d4d",
+    "internal/recording/usage_test.go": "444569b14bc612c6ff1e295a52f5e1f14b0295da27e01abccf5f512da7dad275",
+    "internal/recording/capacity.go": "b4e04ce1a0c715644eb6614c449babe12dfac29695a4868370add005eb2526da",
+    "internal/runtimequalify/recording_usage_linux.go": "9dd767d9060e934bd97855f08bbd4390dc85dd13279635aad95b20b2714b1c78",
+    "internal/runtimequalify/recording_usage_linux_test.go": "2878ed2931720606140d3f344d2540dc8bbda2a2d80f63d553c6903098564de6",
+    "internal/runtimequalify/recording_capacity_linux.go": "e20c6bac6f4f1012934ffe337822e1019973594e40098422c828a2c0eb481555",
+    "internal/managed/recording_control_api.go": "6329db2ae41a89d7bca6ddb31ec512b2b09a19dd6e81c98a6822f47921ac8f6b",
+    "internal/managed/recording_control_api_test.go": "cb672f920f47cf19c99d2e81dbf85dbd8965a2c6ebe9b77b36f51d1a79bf9d0b",
+    "internal/service/recording_controls.go": "e70c1d45d4aacc84277cbb81d0d151862f3daee39420851485d37834017c020d",
+    "cmd/omabit/core_recording_controls_test.go": "365a49901d18df7e04b47314f4daf74f7a247135a28503c5f71ff745da8f24cc",
+    "plugins/omabit/Recordings.js": "35425e3e4e9d33ebc9a3ce4e8a5c05411558ca935e497c4f91bf5f0b967b4e00",
+    "plugins/omabit/RecordingsPane.qml": "b5f623a3b4c33ab4f25822b695643bc11c7744331d32f85907bd61250665f8f3",
+    "scripts/test-recordings-offscreen.py": "6bb83e85526773e882a7b144b7824f4967bc3aeed485452fe175224ea09ee3cf",
+    "scripts/test-recordings-offscreen.qml": "e3de9493d67787b952b0aef8f08ed10d66795baa3ff1a15ee5c40c2f79336ce0"
+  },
+  "contract": {
+    "optional_field": "recording capacity.usage",
+    "statuses": [
+      "measured",
+      "unknown"
+    ],
+    "separate_logical_lengths_and_inode_blocks": true,
+    "shared_root_and_per_instance_counts": true,
+    "max_stat_entries": 65536,
+    "max_detailed_instances": 1024,
+    "incomplete_or_unsafe_measurement_returns_no_partial_totals": true,
+    "unchanged_immutable_admission_commitments": true,
+    "omission_is_unknown_not_zero": true,
+    "scope": [
+      "recording-jobs",
+      "recordings"
+    ],
+    "excludes": [
+      "piers",
+      "managed SQLite",
+      "executable caches",
+      "unrelated storage"
+    ],
+    "persistent_schema": 65,
+    "persistent_encoding_changes": false
+  },
+  "checks": [
+    {
+      "scope": "storage DTO arithmetic/selection/unknown and largest supported reply bound",
+      "package": "internal/recording",
+      "race": true,
+      "passed": true,
+      "seconds": 1.023
+    },
+    {
+      "scope": "sparse/partial storage, unchanged bytes, links/FIFO/permissions, replaced root, limits and cancellation",
+      "package": "internal/runtimequalify",
+      "race": true,
+      "passed": true,
+      "seconds": 1.336
+    },
+    {
+      "scope": "real SQLite/HTTP state, capacity, actor, replay and activation fences",
+      "package": "internal/managed",
+      "race": true,
+      "passed": true,
+      "seconds": 1.446
+    },
+    {
+      "scope": "actual CLI and official-SDK stdio parity for measured/unknown/omitted/foreign/partial usage",
+      "package": "cmd/omabit",
+      "race": true,
+      "passed": true,
+      "seconds": 17.485
+    },
+    {
+      "scope": "shared output-schema/offline/large-integer guards",
+      "package": "internal/service",
+      "race": true,
+      "passed": true,
+      "seconds": 2.863
+    },
+    {
+      "scope": "final offline catalog/input guards",
+      "package": "internal/service",
+      "race": true,
+      "passed": true,
+      "seconds": 1.365
+    },
+    {
+      "scope": "focused vet for all five changed packages, with final service rerun after filesystem effect annotation",
+      "passed": true
+    },
+    {
+      "scope": "private Bubblewrap/offscreen source QML; ten explicit reads, sparse host/ship usage, unknown and legacy omission, foreign replies, consent/profile revocation",
+      "passed": true,
+      "calls": 10
+    },
+    {
+      "scope": "actual frozen703 CLI compatibility with new measured/unknown fields; private HOME and exact inert target",
+      "race_harness": true,
+      "passed": true,
+      "whole_parity_test_seconds": 17.539,
+      "binary_sha256": "18233722802d816310c8abf96aa93d28fd7f9e47dd907eb47285ccd786e4ec92",
+      "unsupported_measurements_omitted_old_commitments_unchanged": true
+    }
+  ],
+  "fixture_corrections": [
+    "Initial size-bound fixture used unsupported128-character identifiers; corrected to the existing64-character limit without relaxing validation",
+    "First offscreen attempt was prevented by sandbox network-namespace creation; the fresh private-namespaced run passed",
+    "Visual review found small allocations rounded to0.0MiB; final UI uses KiB/B and re-passes all ten reads"
+  ],
+  "image": {
+    "file": "2026-11-19-recording-usage-source.png",
+    "sha256": "d20d599a7b1a782e44ea8c7e561210e2a5e24f81fd17f59d3c939051f63f7853",
+    "synthetic_data_only": true,
+    "visually_inspected": true
+  },
+  "limitations": [
+    "No native qualification or installed deployment of this new optional measurement",
+    "Prior native64-to65 recording pass remains tied to703de9f2 and does not qualify these later changes",
+    "No automatic retirement, pressure recovery, project containment or exclusive/reflink physical accounting",
+    "No complete session export, indexing or oldest-output-timestamp claim"
+  ]
+}

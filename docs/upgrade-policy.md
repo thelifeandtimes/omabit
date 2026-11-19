@@ -1,5 +1,15 @@
 # Stable-release upgrade requirement
 
+## Development: optional recording storage observations, schema65 unchanged
+
+`capacity.usage` adds transient read evidence without changing stored jobs,
+recordings, receipts, policy or schema65. New clients accept older omission as
+unavailable, and an actual frozen703de9f2 CLI ignores newer measured/unknown
+fields while preserving its old settings/commitments. Source race/API/SDK/UI and
+reply-bound checks pass; see the [evidence and limits](diagnostics/2026-11-19-recording-usage-source.json).
+New matching native/installed artifacts still require qualification. The earlier
+703de9f2 native pass is not evidence for this later measurement implementation.
+
 ## Development: recording policy/API native64→65 gate
 
 The [matching-artifact native rehearsal](diagnostics/2026-11-19-recording-policy-native-upgrade.json)

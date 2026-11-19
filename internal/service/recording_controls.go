@@ -47,8 +47,9 @@ func (i RecordingControlApplyInput) Validate() error {
 func (s *Service) registerRecordingControls() error {
 	caps := []string{protocol.RecordingControlFeature}
 	read := []string{"local-metadata-read", "saved-runner-read", "private-runtime-read"}
+	statusRead := append(append([]string{}, read...), "live-probe") // bounded filesystem metadata, never engine/runtime health
 	return errors.Join(
-		selected(s, description("runtime.recording-controls.v1", "Read private saved recording policy, incident pins and conservative admission commitments. Every retained job charges its immutable maximum, including closed/unclaimed jobs. Age/automatic retirement are not implemented; no filesystem deletion or live probe.", nil, read, caps, "operator", "explicit enrolled runner and include_private_data=true", "read only; unknown storage refuses admission"), func(ctx context.Context, _ *collection.Registry, e collection.Connection, in RecordingControlsInput) (recording.ControlStatus, error) {
+		selected(s, description("runtime.recording-controls.v1", "Read private saved recording policy, incident pins and conservative admission commitments, plus optional bounded non-atomic recording-root allocation measurements. Every retained job charges its immutable maximum. Unknown/omitted usage is not zero; usage excludes piers, SQLite and executable caches. No deletion, age/automatic retirement or engine probe.", nil, statusRead, caps, "operator", "explicit enrolled runner and include_private_data=true", "read only; unknown admission commitments refuse new launches; unknown optional usage retains those commitments"), func(ctx context.Context, _ *collection.Registry, e collection.Connection, in RecordingControlsInput) (recording.ControlStatus, error) {
 			c := e.Client(true)
 			defer c.Close()
 			return c.RecordingControls(ctx, recording.ControlReadRequest{RunnerID: in.RunnerID, IncludePrivateData: in.IncludePrivateData})

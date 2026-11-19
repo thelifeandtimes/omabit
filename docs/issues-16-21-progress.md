@@ -421,3 +421,12 @@ limits, both same-pier clean Stops, genuine old-reader refusal unchanged and
 final reopen. See [exact artifacts/results and limits](diagnostics/2026-11-19-recording-policy-native-upgrade.json).
 This closes that scoped native gate only. Stable59→65, app workflows, remaining
 recording/containment/interface work and installed DEV qualification remain.
+
+M713 adds optional scoped recording storage observations beside commitments:
+logical bytes, inode blocks, shared/per-ship totals and explicit unknowns. Bounded
+root/file ownership and change checks preserve original bytes and withhold partial
+totals. Source races, actual SQLite/API and CLI/SDK checks, real frozen703-client
+compatibility, vet and the private ten-read UI pass; small allocations use KiB/B.
+[Evidence and scope](diagnostics/2026-11-19-recording-usage-source.json) distinguish
+this additive schema65 source slice from the earlier native703 pass. New matching
+native/installed qualification and remaining retention/export/issue tracks remain.

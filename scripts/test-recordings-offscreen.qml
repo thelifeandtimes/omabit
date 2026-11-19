@@ -7,6 +7,7 @@ ApplicationWindow {
   property int phase:0
   property int ticks:0
   property bool captured:false
+  property bool usageCaptured:false
   function check(ok,message){if(!ok)throw new Error(message)}
   function control(object,name){if(!object)return null;if(object.objectName===name)return object;for(var key of ["children","data","contentItem"]){var list=object[key];if(!list)continue;if(typeof list.length!=="number")list=[list];for(var i=0;i<list.length;i++){var found=control(list[i],name);if(found)return found}}return null}
   QtObject {
@@ -44,6 +45,21 @@ ApplicationWindow {
         c.readControls();test.phase=4
       }else if(test.phase===4 && c.controls && !c.busy){
         test.check(c.controls.capacity_status==="unknown" && control(pane,"recording-capacity").text.indexOf("Capacity unknown")>=0,"unknown storage hid saved controls or became available")
+        test.check(control(pane,"recording-storage-usage").text.indexOf("does not mean zero")>=0,"legacy omission became zero usage")
+        service.scenario="measured";c.readControls();test.phase=40
+      }else if(test.phase===40 && c.controls && c.controls.capacity && c.controls.capacity.usage && c.controls.capacity.usage.status==="measured" && !c.busy){
+        test.check(control(pane,"recording-storage-usage").text.indexOf("24.0 KiB allocated blocks · 4.0 MiB logical")>=0,"sparse measured usage lost distinction or rounded allocation to zero")
+        test.check(control(pane,"recording-storage-usage").text.indexOf("Selected ship recording storage: 16.0 KiB allocated")>=0,"selected ship usage missing")
+        test.check(control(pane,"recording-capacity").text.indexOf("64.0 MiB")>=0,"measurement replaced admission commitment")
+        test.phase=400
+        pane.grabToImage(function(image){test.usageCaptured=image.saveToFile("/lab/recording-usage-view.png")})
+      }else if(test.phase===400 && test.usageCaptured){
+        service.scenario="usage-unknown";c.readControls();test.phase=41
+      }else if(test.phase===41 && c.controls && c.controls.capacity && c.controls.capacity.usage.status==="unknown" && !c.busy){
+        test.check(control(pane,"recording-storage-usage").text.indexOf("unknown (changed)")>=0,"changing storage gained zero/partial totals")
+        service.scenario="foreign-usage";c.readControls();test.phase=42
+      }else if(test.phase===42 && c.error && !c.busy){
+        test.check(c.controls.capacity.usage.status==="unknown" && c.controls.capacity.usage.reason==="changed","foreign usage replaced accepted evidence")
         service.scenario="foreign";c.readWindow("redacted",false);test.phase=5
       }else if(test.phase===5 && c.error && !c.busy){
         test.check(c.window.representation==="original","foreign window replaced accepted evidence")

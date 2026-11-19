@@ -294,3 +294,13 @@ control head. These settings govern new recording admissions, preserve existing
 worker limits and do not alter application permissions or delete data. Exact
 lookup is the recovery path after a lost write response. See the
 [recording control contract](runtime-recordings.md#recording-controls-and-admission-commitments).
+
+Status reads optionally report scoped filesystem measurements through
+`capacity.usage`. The catalog declares this bounded metadata observation as a
+`live-probe`; lookup retains its saved-only effects. Measured logical bytes and
+inode blocks remain separate from immutable admission commitments. Unknown or
+legacy-omitted usage cannot become zero, and foreign/partial totals are withheld.
+Source, actual frozen-client compatibility and CLI/SDK parity are covered in the
+[measurement contract](runtime-recordings.md#scoped-recording-storage-measurements--source-qualified).
+No persistent encoding or schema marker changes; native/installed qualification
+of this additive development field remains pending.

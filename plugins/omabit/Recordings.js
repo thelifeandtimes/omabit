@@ -41,8 +41,39 @@ function controls(v,runner) {
       || typeof v.pilot_enabled!=="boolean" || ["available","unknown","pilot-disabled"].indexOf(v.capacity_status)<0 || !isFinite(Date.parse(v.read_at)))fail()
   if(v.capacity_status==="available" && (!v.capacity || v.capacity.runner_id!==runner || v.capacity.version!==1 || !integer(v.capacity.jobs,4096) || !integer(v.capacity.committed_bytes,4398046511104) || !Array.isArray(v.capacity.instances)))fail()
   if(v.capacity_status!=="available" && v.capacity)fail()
+  if(v.capacity && v.capacity.usage)usage(v.capacity.usage,runner,v.capacity.instances)
   return v
 }
+function storageTotals(v) {
+  return !!v && integer(v.files,65536) && integer(v.directories,65536) && v.files+v.directories<=65536
+    && integer(v.logical_bytes,Number.MAX_SAFE_INTEGER) && integer(v.allocated_bytes,Number.MAX_SAFE_INTEGER)
+}
+function usage(v,runner,instances) {
+  if(!v || v.version!==1 || v.runner_id!==runner || !text(v.basis,1024) || !isFinite(Date.parse(v.started_at)) || !isFinite(Date.parse(v.read_at)) || Date.parse(v.read_at)<Date.parse(v.started_at))fail()
+  if(v.instances && !Array.isArray(v.instances))fail()
+  if(v.status==="unknown") {
+    if(["changed","unsafe-storage","entry-limit","unavailable","cancelled","overflow"].indexOf(v.reason)<0 || v.totals || v.shared || (v.instances||[]).length)fail()
+    return v
+  }
+  if(v.status!=="measured" || v.reason || !storageTotals(v.totals) || !storageTotals(v.shared) || v.shared.directories!==2 || !Array.isArray(v.instances||[]) || (v.instances||[]).length!==instances.length || instances.length>1024)fail()
+  var total={files:v.shared.files,directories:v.shared.directories,logical_bytes:v.shared.logical_bytes,allocated_bytes:v.shared.allocated_bytes}
+  ;(v.instances||[]).forEach(function(s,i){
+    if(!s || s.instance_id!==instances[i].instance_id || !storageTotals(s.totals))fail()
+    Object.keys(total).forEach(function(k){total[k]+=s.totals[k]})
+    if(!storageTotals(total))fail()
+  })
+  Object.keys(total).forEach(function(k){if(total[k]!==v.totals[k])fail()})
+  return v
+}
+function usageText(v,instance) {
+  if(!v || !v.capacity || !v.capacity.usage)return "Measured recording storage: unavailable from this runner. Omission does not mean zero usage."
+  var u=v.capacity.usage
+  if(u.status!=="measured")return "Measured recording storage: unknown ("+u.reason+"). Partial totals are withheld."
+  var selected=(u.instances||[]).filter(function(s){return s.instance_id===instance})
+  var ship=selected.length ? "\nSelected ship recording storage: "+storageBytes(selected[0].totals.allocated_bytes)+" allocated · "+storageBytes(selected[0].totals.logical_bytes)+" logical" : "\nNo attributed recording jobs for this selection in this measurement."
+  return "Measured recording storage: "+storageBytes(u.totals.allocated_bytes)+" allocated blocks · "+storageBytes(u.totals.logical_bytes)+" logical file bytes\n"+u.totals.files+" files · "+u.totals.directories+" directories · read "+u.read_at+ship+"\nRecording roots only; excludes ship data, management history and executable caches. Non-atomic measurement; blocks may include shared extents or filesystem compression."
+}
+function storageBytes(n) { return n<1024 ? n+" B" : n<1048576 ? (n/1024).toFixed(1)+" KiB" : bytes(n) }
 function bytes(n) { return Number.isFinite(n) && n>=0 ? (n/1048576).toFixed(1)+" MiB" : "Unknown" }
 function frameLabel(f) { var at=Number.isFinite(f.UnixNano) && f.UnixNano>0 ? new Date(Math.floor(f.UnixNano/1000000)).toISOString() : "receive time unknown";return at+" · #"+f.Sequence+" · "+({1:"stdout",2:"stderr",3:"combined terminal",4:"coverage gap",5:"observed exit"}[f.Kind]||"unknown") }
 function windowText(v) {

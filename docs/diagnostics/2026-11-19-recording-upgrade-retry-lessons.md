@@ -31,7 +31,13 @@ change; it still requires storage admission before launch.
 
 The user's prior disposal authorization applied to03/04 only. Automatic approval
 review separately refused removal of case05's whole-image/input files; those files
-remain unchanged pending explicit authorization. Its classified retirement plan
+remained unchanged pending explicit authorization. Its classified retirement plan
 retains exact compact SQLite, receipts, original recording frames, logs, source
 and binaries while keeping the newer full case06 and the separate acknowledged
 app fixture. No production or preserved DEV deployment is involved.
+
+M712 records the later separate user authorization and completed two-file
+case05 disposal, with all65 retained evidence/artifact files unchanged. No archive
+was created; the old whole image is unavailable. The corrected fresh case07 now
+passes the full native policy/API/upgrade scenario, including genuine old-reader
+refusal and final reopen. See its [pinned result](2026-11-19-recording-policy-native-upgrade.json).
