@@ -12575,3 +12575,38 @@ then pass in5.806s. This corrects the export, not the historical writer.
 This supersedes M700's actual source-writer deferral only. Broad historical gates,
 installed/active-worker upgrade, policy enforcement/usage/retirement and UI remain
 open. No job is submitted and no installed/user runtime state changes.
+
+## M702 — Enforce recording commitments and expose audited controls (2026-11-18)
+
+Wire host/per-instance/job/session/segment/free-reserve settings into the explicit
+DEV pilot. Read every retained immutable job's full maximum as a conservative
+commitment, including closed/unclaimed jobs. Validate allocation ancestry and
+refuse unknown/foreign/partial jobs or unattributed session entries. Observe free
+bytes on both roots. Preflight runs before native Apply/create and repeats before
+job admission; the single launch gate serializes management work. New intent2
+binds the selected control head through submission/final Start. Intent1 bytes and
+historical replay remain unchanged. Existing workers keep their frozen job limits.
+
+Add private status, apply and authenticated-actor exact-request lookup through
+HTTP and the shared CLI/stdio/HTTP MCP core. New writes respect management update,
+shutdown, bulk and worker fences; exact saved replay/lookup remain available.
+Unknown capacity remains explicit without withholding saved settings/pins. Client
+validation binds returned event/request/predecessor digest and configured policy.
+Lost writes remain uncertain and never retry automatically. App permission
+editing stays excluded. Automatic retirement is explicitly refused; age settings
+and pins remain saved review selections and do not delete data.
+
+Focused admission/control/migration races pass (managed21.905s, native factory
+fixture1.056s, client1.026s). Actual CLI/SDK stdio parity and lost-write/read guards
+pass14.006s; final unknown-capacity/reopen/client/parity gates pass9.583s/1.024s/
+13.933s. The added activation fence regression passes1.413s. Vet across changed
+packages passes. Automatic review mistakenly flagged a combined new-test command
+as truncating an existing file; use an explicit Add File patch instead, verify the
+existing test's unchanged SHA, then run separately. No file was lost or approval
+bypassed.
+
+The isolated historical interrupted-operation race group reaches its five-minute
+limit during active schema45 validation after advancing through earlier cases;
+this is still not a whole-group pass. Split gates remain required. Matching native
+API/active-worker upgrade, measured usage, retirement/pressure recovery, other
+factories and UI remain open. No installed namespace or existing runtime changed.

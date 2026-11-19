@@ -66,3 +66,43 @@ func (c *Client) RecordingPage(ctx context.Context, in recording.PageRequest) (r
 	}
 	return out, nil
 }
+
+func (c *Client) RecordingControls(ctx context.Context, in recording.ControlReadRequest) (recording.ControlStatus, error) {
+	var out recording.ControlStatus
+	if err := in.Validate(); err != nil {
+		return out, err
+	}
+	if err := c.do(ctx, "POST", protocol.RecordingControlStatusPath, in, &out, true); err != nil {
+		return out, err
+	}
+	if out.Version != 1 || out.State.Validate() != nil || out.State.RunnerID != in.RunnerID || out.ReadAt.IsZero() || out.Capacity != nil && (out.Capacity.Validate() != nil || out.Capacity.RunnerID != in.RunnerID) || !out.PilotEnabled && out.CapacityStatus != "pilot-disabled" || out.PilotEnabled && out.CapacityStatus != "available" && out.CapacityStatus != "unknown" || (out.CapacityStatus == "available") != (out.Capacity != nil) {
+		return recording.ControlStatus{}, errors.New("invalid recording control status binding")
+	}
+	return out, nil
+}
+func (c *Client) ApplyRecordingControl(ctx context.Context, in recording.ControlRequest) (recording.ControlApplyResult, error) {
+	var out recording.ControlApplyResult
+	if err := in.Validate(); err != nil {
+		return out, err
+	}
+	if err := c.do(ctx, "POST", protocol.RecordingControlApplyPath, in, &out, true); err != nil {
+		return out, err
+	}
+	if out.Receipt.Validate() != nil || !reflect.DeepEqual(out.Receipt.Event.Request, in) {
+		return recording.ControlApplyResult{}, errors.New("invalid recording control receipt binding; lookup original request")
+	}
+	return out, nil
+}
+func (c *Client) LookupRecordingControl(ctx context.Context, in recording.ControlLookupRequest) (recording.ControlLookupResult, error) {
+	var out recording.ControlLookupResult
+	if err := in.Validate(); err != nil {
+		return out, err
+	}
+	if err := c.do(ctx, "POST", protocol.RecordingControlLookupPath, in, &out, true); err != nil {
+		return out, err
+	}
+	if out.Version != 1 || out.RunnerID != in.RunnerID || out.RequestID != in.RequestID || out.Found != (out.Receipt != nil) || out.Receipt != nil && (out.Receipt.Validate() != nil || out.Receipt.Event.Request.RunnerID != in.RunnerID || out.Receipt.Event.Request.RequestID != in.RequestID) {
+		return recording.ControlLookupResult{}, errors.New("invalid recording control lookup binding")
+	}
+	return out, nil
+}

@@ -284,3 +284,13 @@ phase is dispatched once. This uses synthetic lifecycle and direct native owner
 HTTP, so product Docker/curl, pending-operation process rebinding, durable owner
 cleanup on process death, the native CLI combination, permits/routes/assets,
 peers and installed upgrades remain unqualified. Full preflight stays unavailable.
+
+
+Recording control operations now include `runtime.recording-controls.v1`,
+`runtime.recording-control-apply.v1` and `runtime.recording-control-lookup.v1`.
+Reads require explicit private-data consent; writes require enabled mutations,
+operator role, the selected runner capability, original request ID and exact
+control head. These settings govern new recording admissions, preserve existing
+worker limits and do not alter application permissions or delete data. Exact
+lookup is the recovery path after a lost write response. See the
+[recording control contract](runtime-recordings.md#recording-controls-and-admission-commitments).

@@ -51,7 +51,9 @@ func recordingManagerFixture(t *testing.T) (*store, protocol.Operation, runtimeq
 	for _, path := range []string{opts.JobsRoot, opts.RecordingsRoot} {
 		g02Check(t, os.Mkdir(path, 0700))
 	}
-	m := &recordingManager{opts: opts, limits: runtimequalify.RecordingJobLimits{MaxSessionBytes: 1 << 20, MaxSegmentBytes: 4096, ReserveFreeBytes: 1 << 20}}
+	m := &recordingManager{opts: opts, capacity: func(ctx context.Context, runner string) (recording.Capacity, error) {
+		return runtimequalify.RecordingCapacity(ctx, opts, runner)
+	}}
 	return s, op, state, m
 }
 
@@ -60,7 +62,7 @@ func managerRecordingMetadata(op runtimequalify.RecordingOperation, state runtim
 }
 
 func TestRecordingManagerBindsActualOperationBeforeOneSubmissionAndFreshGuard(t *testing.T) {
-	for _, scenario := range []string{"pass", "wrong-actor", "wrong-snapshot", "changed-before-admit", "lost-ack", "stale-final-guard", "never-started-cleanup", "unproved-cleanup"} {
+	for _, scenario := range []string{"pass", "wrong-actor", "wrong-snapshot", "changed-before-admit", "lost-ack", "stale-final-guard", "never-started-cleanup", "unproved-cleanup", "changed-control-final-guard"} {
 		t.Run(scenario, func(t *testing.T) {
 			s, op, state, m := recordingManagerFixture(t)
 			prepares, submissions, observations := 0, 0, 0
@@ -146,9 +148,17 @@ func TestRecordingManagerBindsActualOperationBeforeOneSubmissionAndFreshGuard(t 
 				}
 				return
 			}
-			if scenario == "pass" || scenario == "stale-final-guard" {
+			if scenario == "pass" || scenario == "stale-final-guard" || scenario == "changed-control-final-guard" {
 				g02Check(t, err)
-				if scenario == "stale-final-guard" {
+				if scenario == "changed-control-final-guard" {
+					policy := recording.DefaultRetentionPolicy()
+					policy.MaxJobs = 32
+					_, _, err := s.applyRecordingControl(t.Context(), "owner", recording.ControlRequest{RunnerID: s.runnerID, RequestID: "new-policy", Kind: "configure", Policy: &policy})
+					g02Check(t, err)
+					if guard(t.Context()) == nil || observations != 0 {
+						t.Fatal("changed policy reached Start")
+					}
+				} else if scenario == "stale-final-guard" {
 					g02Check(t, s.runtimeUpdate(op.InstanceID, op.ID, state))
 					if guard(t.Context()) == nil || observations != 0 {
 						t.Fatal("stale final journal state reached live probe/Start")

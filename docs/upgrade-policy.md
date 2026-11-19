@@ -1475,3 +1475,14 @@ or native effect. Actual64 writer/refusal, original fixture migration, matching
 artifacts and installed/active-worker upgrade gates are required before deployment.
 Source control storage alone does not qualify deletion, automatic retention or
 pressure recovery. Never relabel or remove history to run an older manager.
+
+
+M701's actual64 writer/current65 source gate and pinned fixture now pass; see
+[the scoped report](diagnostics/2026-11-18-recording-schema65-source-upgrade.json).
+M702 adds intent2 within development schema65, binding each new launch to its
+selected control revision/digest. Intent1 encoding and historical receipts stay
+unchanged; historical reads/replay do not check current settings or grant fresh
+Start authority. New fresh authority requires the exact current control head.
+Old readers that cannot understand an intent must refuse without repairing or
+stripping it. Frozen native pilot2d028197 predates controls and their APIs; final
+matching artifacts and actual active-worker/native upgrades remain mandatory.

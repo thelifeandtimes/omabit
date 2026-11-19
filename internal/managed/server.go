@@ -20,6 +20,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/ownerhost"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/recording"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
 
@@ -66,6 +67,8 @@ type Server struct {
 	executableSHA256          string
 	hostCompatibility         hostCompatibilityCache
 	recording                 func(protocol.Operation) runtimequalify.ManagedRecordingLifecycle
+	recordingPreflight        func(context.Context, protocol.Operation) error
+	recordingCapacity         func(context.Context, string) (recording.Capacity, error)
 }
 
 func New(dir string) (*Server, error) { return newServer(dir, realBackend{}, 10*time.Second) }
@@ -299,7 +302,12 @@ func (r *Server) launch(op protocol.Operation) {
 		state, observation := instance.Runtime, runtimequalify.ManagedObservation{}
 		if r.recording != nil && (actual.Kind == "start" || actual.Kind == "startup-resume" || actual.Kind == "stop") {
 			if b, ok := r.b.(recordingBackend); ok {
-				state, observation, err = b.ApplyWithRecording(r.ctx, actual.Kind, state, persist, r.recording(actual))
+				if r.recordingPreflight != nil {
+					err = r.recordingPreflight(r.ctx, actual)
+				}
+				if err == nil {
+					state, observation, err = b.ApplyWithRecording(r.ctx, actual.Kind, state, persist, r.recording(actual))
+				}
 			} else {
 				err = errors.New("selected backend does not support recording lifecycle")
 			}
@@ -371,7 +379,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if _, ok := r.b.(recordingReadBackend); ok {
 			features = append(features, protocol.RecordingReadFeature)
 		}
-		features = append(features, "maintenance-schedules")
+		features = append(features, "maintenance-schedules", protocol.RecordingControlFeature)
 		features = append(features, protocol.RunnerBuildIdentityFeature, protocol.ProjectStopRecoveryFeature, protocol.CreationReplayFeature, protocol.ProjectInventoryFeature, protocol.ProjectStatusFeature, protocol.ProjectRecoveryCheckpointFeature, protocol.ProjectRecoverySourceFeature, protocol.ProjectRegistrationFeature, protocol.PrivateChainRegistrationFeature, protocol.PrivateChainInventoryFeature)
 		features = append(features, r.projectActionFeatures()...)
 		if _, ok := r.b.(projectDependenciesBackend); ok {
@@ -531,6 +539,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		respond(w, http.StatusOK, inventory)
+		return
+	}
+	if req.Method == http.MethodPost && (req.URL.Path == protocol.RecordingControlStatusPath || req.URL.Path == protocol.RecordingControlApplyPath || req.URL.Path == protocol.RecordingControlLookupPath) {
+		r.serveRecordingControls(w, req, actor, role)
 		return
 	}
 	if req.Method == http.MethodPost && (req.URL.Path == protocol.RecordingCatalogPath || req.URL.Path == protocol.RecordingPagePath) {

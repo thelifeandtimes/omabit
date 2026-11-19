@@ -1,6 +1,10 @@
 package recording
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"reflect"
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
@@ -113,4 +117,112 @@ type ControlState struct {
 type ControlReceipt struct {
 	Event ControlEvent `json:"event"`
 	State ControlState `json:"state"`
+}
+
+type ControlReadRequest struct {
+	RunnerID           string `json:"runner_id"`
+	IncludePrivateData bool   `json:"include_private_data"`
+}
+
+func (r ControlReadRequest) Validate() error {
+	if !protocol.ValidID(r.RunnerID) || !r.IncludePrivateData {
+		return ErrSelection
+	}
+	return nil
+}
+
+type ControlLookupRequest struct {
+	RunnerID           string `json:"runner_id"`
+	RequestID          string `json:"request_id"`
+	IncludePrivateData bool   `json:"include_private_data"`
+}
+
+func (r ControlLookupRequest) Validate() error {
+	if !protocol.ValidID(r.RunnerID) || !protocol.ValidID(r.RequestID) || !r.IncludePrivateData {
+		return ErrSelection
+	}
+	return nil
+}
+
+type ControlStatus struct {
+	Version        int          `json:"version"`
+	State          ControlState `json:"state"`
+	Capacity       *Capacity    `json:"capacity,omitempty"`
+	CapacityStatus string       `json:"capacity_status"`
+	PilotEnabled   bool         `json:"pilot_enabled"`
+	ReadAt         time.Time    `json:"read_at"`
+	Basis          string       `json:"basis"`
+}
+type ControlApplyResult struct {
+	Receipt  ControlReceipt `json:"receipt"`
+	Replayed bool           `json:"replayed"`
+}
+type ControlLookupResult struct {
+	Version   int             `json:"version"`
+	RunnerID  string          `json:"runner_id"`
+	RequestID string          `json:"request_id"`
+	Found     bool            `json:"found"`
+	Receipt   *ControlReceipt `json:"receipt,omitempty"`
+}
+
+func (s ControlState) Validate() error {
+	if s.Version != 1 || !protocol.ValidID(s.RunnerID) || s.Revision > 4096 || s.Revision == 0 && s.Digest != "" || s.Revision > 0 && !APIHex(s.Digest, 64) || s.Policy.Validate() != nil || s.Pins == nil || len(s.Pins) > 256 {
+		return ErrSelection
+	}
+	last := ""
+	for _, p := range s.Pins {
+		if !APIHex(p.JobID, 32) || !APIHex(p.JobSHA256, 64) || p.JobID <= last || p.Reason != "incident" && p.Reason != "owner" || p.PinnedAt.IsZero() {
+			return ErrSelection
+		}
+		last = p.JobID
+	}
+	return nil
+}
+
+// Validate binds a returned receipt to its exact request and predecessor. The
+// full historical chain and authenticated actor remain runner responsibilities.
+func (r ControlReceipt) Validate() error {
+	e := r.Event
+	if e.Version != 1 || !protocol.ValidID(e.ID) || e.Request.Validate() != nil || e.RunnerID != e.Request.RunnerID || e.Actor == "" || len(e.Actor) > 128 || e.CreatedAt.Before(time.Unix(0, 1)) || r.State.Validate() != nil || r.State.RunnerID != e.RunnerID || r.State.Revision != e.Request.ExpectedRevision+1 {
+		return ErrSelection
+	}
+	for _, b := range e.Actor {
+		if b < 33 || b > 126 {
+			return ErrSelection
+		}
+	}
+	switch e.Request.Kind {
+	case "configure":
+		if !reflect.DeepEqual(r.State.Policy, *e.Request.Policy) {
+			return ErrSelection
+		}
+	case "pin":
+		found := false
+		for _, p := range r.State.Pins {
+			if p.JobID == e.Request.JobID {
+				found = p.JobSHA256 == e.Request.JobSHA256 && p.Reason == e.Request.PinReason && p.PinnedAt.Equal(e.CreatedAt)
+			}
+		}
+		if !found {
+			return ErrSelection
+		}
+	case "unpin":
+		for _, p := range r.State.Pins {
+			if p.JobID == e.Request.JobID {
+				return ErrSelection
+			}
+		}
+	}
+	e.CreatedAt = e.CreatedAt.UTC()
+	raw, err := json.Marshal(struct {
+		Domain   string       `json:"domain"`
+		Ordinal  uint64       `json:"ordinal"`
+		Previous string       `json:"previous_digest"`
+		Event    ControlEvent `json:"event"`
+	}{"omabit-recording-control-v1", r.State.Revision, e.Request.ExpectedDigest, e})
+	digest := sha256.Sum256(raw)
+	if err != nil || hex.EncodeToString(digest[:]) != r.State.Digest {
+		return ErrSelection
+	}
+	return nil
 }

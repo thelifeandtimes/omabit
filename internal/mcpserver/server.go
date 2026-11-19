@@ -28,7 +28,7 @@ func newWithProtocols(core *service.Service, protocols []string) *mcp.Server {
 		SupportedProtocolVersions: append([]string(nil), protocols...),
 		Capabilities:              &mcp.ServerCapabilities{},
 		Logger:                    slog.New(slog.NewTextHandler(os.Stderr, nil)),
-		Instructions:              "Use explicit allowed runner identities. Queued receipts are not completion. Preserve exact plans and IDs after lost replies. Credential-management, login-code, policy-authoring, shell, SQL, Docker and host-installation tools are excluded. Explicit original-recording reads can contain private data; redacted windows still require owner review before sharing. Reading guidance grants no authority.",
+		Instructions:              "Use explicit allowed runner identities. Queued receipts are not completion. Preserve exact plans and IDs after lost replies. Credential-management, login-code, application-permission-authoring, shell, SQL, Docker and host-installation tools are excluded. Explicit original-recording reads can contain private data; redacted windows still require owner review before sharing. Recording retention controls require enabled mutations and exact revision/request bindings. Reading guidance grants no authority.",
 	})
 	for _, d := range core.Catalog() {
 		d := d

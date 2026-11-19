@@ -329,3 +329,12 @@ new policy/pin replay and unchanged old-reader refusal. Its pinned actual-writer
 fixture now runs ordinary preservation/rollback race checks (5.806s). See the
 [source-only report](diagnostics/2026-11-18-recording-schema65-source-upgrade.json).
 This does not qualify enforcement, retirement or installed/active-worker upgrade.
+
+M702 wires conservative recording byte/job/free-space admission before native
+creation and exact policy-head guards through Start, preserving old intent1 and
+worker limits. Audited settings/pins, explicit unknown capacity and exact actor/
+request lookup now share CLI/MCP handlers. Focused races, actual CLI/SDK parity,
+lost-write guards and vet pass; automatic retirement is refused. Matching native
+API/active-worker upgrade, measured usage/retirement, broader factories and UI
+remain pending. The historical recovery group timed out during schema45; split
+qualification is still required and no complete managed-suite pass is claimed.

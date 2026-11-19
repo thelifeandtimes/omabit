@@ -43,6 +43,8 @@ type recordingIntent struct {
 	ExecutableSHA256      string    `json:"executable_sha256"`
 	AdmissionSHA256       string    `json:"admission_sha256"`
 	CreatedAt             time.Time `json:"created_at"`
+	ControlRevision       uint64    `json:"control_revision,omitempty"`
+	ControlDigest         string    `json:"control_digest,omitempty"`
 }
 
 func recordingHex(s string, size int) bool {
@@ -58,7 +60,7 @@ func recordingHex(s string, size int) bool {
 }
 
 func (i recordingIntent) bytes() ([]byte, error) {
-	if i.Version != 1 || !recordingHex(i.JobID, 32) || !recordingHex(i.JobSHA256, 64) || !protocol.ValidID(i.RunnerID) || i.Mode != mode && i.Mode != DevelopmentMode || i.Actor == "" || len(i.Actor) > 128 || !protocol.ValidID(i.OperationID) || !protocol.ValidID(i.RequestID) || !protocol.ValidID(i.InstanceID) || !recordingHex(i.RuntimeID, 32) || i.ConfigurationRevision == 0 || i.RuntimeRevision == 0 || !recordingHex(i.StateSHA256, 64) || !recordingHex(i.ContainerID, 64) || !recordingHex(i.ExecutableSHA256, 64) || !recordingHex(i.AdmissionSHA256, 64) || i.CreatedAt.Before(time.Unix(0, 1)) || i.CreatedAt.After(time.Unix(0, 1<<63-1)) {
+	if (i.Version != 1 && i.Version != 2) || i.Version == 1 && (i.ControlRevision != 0 || i.ControlDigest != "") || i.Version == 2 && (i.ControlRevision > 4096 || i.ControlRevision == 0 && i.ControlDigest != "" || i.ControlRevision > 0 && !recordingHex(i.ControlDigest, 64)) || !recordingHex(i.JobID, 32) || !recordingHex(i.JobSHA256, 64) || !protocol.ValidID(i.RunnerID) || i.Mode != mode && i.Mode != DevelopmentMode || i.Actor == "" || len(i.Actor) > 128 || !protocol.ValidID(i.OperationID) || !protocol.ValidID(i.RequestID) || !protocol.ValidID(i.InstanceID) || !recordingHex(i.RuntimeID, 32) || i.ConfigurationRevision == 0 || i.RuntimeRevision == 0 || !recordingHex(i.StateSHA256, 64) || !recordingHex(i.ContainerID, 64) || !recordingHex(i.ExecutableSHA256, 64) || !recordingHex(i.AdmissionSHA256, 64) || i.CreatedAt.Before(time.Unix(0, 1)) || i.CreatedAt.After(time.Unix(0, 1<<63-1)) {
 		return nil, errRecordingHistory
 	}
 	for _, r := range i.Actor {
@@ -206,6 +208,12 @@ func recordingOperationAncestry(i recordingIntent, op protocol.Operation) bool {
 }
 
 func recordingLiveAuthority(q querier, i recordingIntent, runner, selectedMode string) error {
+	if i.Version == 2 {
+		control, _, err := loadRecordingControl(q)
+		if err != nil || control.Revision != i.ControlRevision || control.Digest != i.ControlDigest {
+			return errRecordingControl
+		}
+	}
 	op, err := loadOperation(q, i.OperationID)
 	if err != nil || !recordingOperationAncestry(i, op) || op.Status != "running" || i.RunnerID != runner || i.Mode != selectedMode {
 		return errRecordingHistory

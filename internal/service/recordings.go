@@ -49,7 +49,7 @@ func (in RecordingPageInput) Validate() error {
 func (s *Service) registerRecordings() error {
 	effects := []string{"local-metadata-read", "saved-runner-read", "private-runtime-read"}
 	caps := []string{protocol.RecordingReadFeature}
-	return errors.Join(
+	return errors.Join(s.registerRecordingControls(),
 		selected(s, description("runtime.recordings.v1", "Read bounded operator-private saved recording launch history with include_private_data=true. No live probe, worker action, retention change or health claim.", nil, effects, caps, "operator", "explicit enrolled runner/instance and exact immutable job/digest descriptors", "read next catalog window with its exact after_job_id; never starts or adopts capture"), func(ctx context.Context, _ *collection.Registry, e collection.Connection, in RecordingCatalogInput) (recording.Catalog, error) {
 			c := e.Client(true)
 			defer c.Close()

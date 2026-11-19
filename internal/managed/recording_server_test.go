@@ -116,3 +116,41 @@ func TestRecordingServerConfigurationFailureStartsNoWorkersAndClosesStore(t *tes
 	g02Check(t, err)
 	g02Check(t, s.close())
 }
+
+func TestRecordingServerPreflightRefusalDispatchesNoNativeApply(t *testing.T) {
+	b := &recordingSelectionBackend{selected: make(chan string, 1)}
+	r, err := newServerConfigured(privateDir(t), b, time.Hour, true, "", func(r *Server) error {
+		b.configured.Store(true)
+		r.recording = func(protocol.Operation) runtimequalify.ManagedRecordingLifecycle {
+			return runtimequalify.ManagedRecordingLifecycle{}
+		}
+		r.recordingPreflight = func(context.Context, protocol.Operation) error { return errors.New("recording capacity exhausted") }
+		return nil
+	})
+	g02Check(t, err)
+	defer r.Close()
+	_, _, err = r.s.register("owner", registration("one", "register", 18087))
+	g02Check(t, err)
+	op, _, err := r.s.accept("owner", "one", protocol.OperationRequest{Kind: "start", RequestID: "start", ExpectedRevision: 1})
+	g02Check(t, err)
+	r.mu.Lock()
+	r.launch(op)
+	r.mu.Unlock()
+	deadline := time.Now().Add(3 * time.Second)
+	for {
+		saved, err := loadOperation(r.s.db, op.ID)
+		g02Check(t, err)
+		if saved.Status == "failed" {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Fatal("preflight refusal did not finish original operation", saved)
+		}
+		time.Sleep(time.Millisecond)
+	}
+	select {
+	case <-b.selected:
+		t.Fatal("refused recording reached native Apply/create")
+	default:
+	}
+}

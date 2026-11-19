@@ -233,3 +233,30 @@ func (s *store) applyRecordingControl(ctx context.Context, actor string, in reco
 	}
 	return receipts[len(receipts)-1], false, nil
 }
+
+func (s *store) lookupRecordingControl(ctx context.Context, actor string, in recording.ControlLookupRequest) (recording.ControlLookupResult, error) {
+	out := recording.ControlLookupResult{Version: 1, RunnerID: s.runnerID, RequestID: in.RequestID}
+	if in.Validate() != nil || in.RunnerID != s.runnerID {
+		return out, recording.ErrSelection
+	}
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return out, err
+	}
+	defer tx.Rollback()
+	if validateRecordingHistory(tx) != nil {
+		return out, errRecordingHistory
+	}
+	_, receipts, err := loadRecordingControl(tx)
+	if err != nil {
+		return out, err
+	}
+	for _, r := range receipts {
+		if r.Event.Actor == actor && r.Event.Request.RequestID == in.RequestID {
+			out.Found = true
+			out.Receipt = &r
+			break
+		}
+	}
+	return out, ctx.Err()
+}

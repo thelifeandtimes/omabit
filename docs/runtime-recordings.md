@@ -760,3 +760,50 @@ are not yet wired to manager enforcement, retirement or UI. Source controls and
 original63 gates pass; actual64 writer/refusal, broader/native/installed and
 active-worker gates remain pending. The source-only format support is not a
 production upgrade or authorization to prune existing user evidence.
+
+
+## Recording controls and admission commitments
+
+M702 wires the saved schema65 controls into the explicit development pilot. The
+operator-private shared operations below use the same CLI and MCP handlers:
+
+- `runtime.recording-controls.v1`: read settings, exact control head, pins and
+  conservative capacity commitments, with `include_private_data=true`.
+- `runtime.recording-control-apply.v1`: configure bounded limits or pin/unpin an
+  exact catalog job/digest, using an original request ID and prior revision/digest.
+- `runtime.recording-control-lookup.v1`: read that authenticated actor's original
+  request receipt after a lost response. Lookup never writes or resubmits.
+
+MCP writes require `--enable-mutations`; enrolled target allowlists, selected
+capability and operator role still apply. Recording limits do not grant application
+permissions. Automatic retirement requests are refused. Age settings are retained
+for later retirement review; changing them currently deletes nothing.
+
+The default remains16jobs,64MiB per session,8MiB segments,1GiB host and256MiB per
+instance, with a2GiB free-space floor. Explicit per-instance overrides are bounded
+by the host maximum. Each retained job charges its full immutable session maximum,
+including closed, unclaimed and uncertain jobs. This is a conservative commitment,
+not measured disk usage. Metadata, executable caches and unrelated filesystem use
+remain separate. Free bytes are the minimum observed on both recording roots;
+this read is not an exclusive reservation against other filesystem users.
+
+Before native Apply/create, the pilot checks saved controls and all job/session
+attribution. It checks again before job creation, freezes the selected limits in
+the new job, and binds intent2 to the exact control revision/digest through the
+final Start guard. Existing intent1 bytes remain unchanged and historical replay
+never gains fresh launch authority. The single management work gate serializes
+launches; new control writes wait while management workers are active, while
+lookup and exact saved replay remain usable. Existing capture workers keep their
+original limits after settings change or manager reopen.
+
+Unknown, partial or foreign jobs and unattributed session directories refuse new
+admission. Saved controls still remain readable with `capacity_status="unknown"`.
+A failed capacity check does not authorize deletion, adoption, restart or data
+repair. Pins are retained as exact audited protection selections; all data remains
+retained until the separate retirement implementation is qualified.
+
+Source tests cover host/instance/job/free-space limits, unknown storage, no native
+dispatch on preflight refusal, changed-policy final guards, original-history
+reopen/replay, authenticated actor lookup, client reply binding and actual CLI/
+SDK stdio parity/lost-write behavior. Matching native APIs, active-worker binary
+upgrade, measured usage, retirement, pressure recovery and UI remain pending.

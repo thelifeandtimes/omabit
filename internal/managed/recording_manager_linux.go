@@ -18,14 +18,14 @@ import (
 // Configurable retention, running/project/utility factories and native/installed
 // qualification must precede advertising comprehensive recording support.
 type recordingManager struct {
-	opts    runtimequalify.RecordingWorkerOptions
-	limits  runtimequalify.RecordingJobLimits
-	prepare func(context.Context, runtimequalify.ManagedState, runtimequalify.RecordingOperation) (recording.Metadata, error)
-	freeze  func(context.Context) (runtimequalify.RecordingExecutable, error)
-	submit  func(context.Context, runtimequalify.ManagedRecordingJob, func(context.Context) error) (runtimequalify.RecordingJobReady, error)
-	status  func(context.Context, string, string) (runtimequalify.RecordingWorkerStatus, error)
-	observe func(context.Context, runtimequalify.ManagedRecordingJob, runtimequalify.RecordingWorkerIdentity) (runtimequalify.RecordingSupervisorState, error)
-	drain   func(context.Context, string, string) (runtimequalify.RecordingJobResult, error)
+	opts     runtimequalify.RecordingWorkerOptions
+	capacity func(context.Context, string) (recording.Capacity, error)
+	prepare  func(context.Context, runtimequalify.ManagedState, runtimequalify.RecordingOperation) (recording.Metadata, error)
+	freeze   func(context.Context) (runtimequalify.RecordingExecutable, error)
+	submit   func(context.Context, runtimequalify.ManagedRecordingJob, func(context.Context) error) (runtimequalify.RecordingJobReady, error)
+	status   func(context.Context, string, string) (runtimequalify.RecordingWorkerStatus, error)
+	observe  func(context.Context, runtimequalify.ManagedRecordingJob, runtimequalify.RecordingWorkerIdentity) (runtimequalify.RecordingSupervisorState, error)
+	drain    func(context.Context, string, string) (runtimequalify.RecordingJobResult, error)
 }
 
 func configureRecordingServer(r *Server) error {
@@ -34,6 +34,14 @@ func configureRecordingServer(r *Server) error {
 	}
 	m, err := newRecordingManager(r.s.directory)
 	if err != nil {
+		return err
+	}
+	r.recordingCapacity = m.capacity
+	r.recordingPreflight = func(ctx context.Context, op protocol.Operation) error {
+		if op.Kind != "start" && op.Kind != "startup-resume" {
+			return nil
+		}
+		_, err := m.admission(ctx, r.s, op.InstanceID)
 		return err
 	}
 	r.recording = func(op protocol.Operation) runtimequalify.ManagedRecordingLifecycle { return m.lifecycle(r.s, op) }
@@ -48,7 +56,9 @@ func newRecordingManager(dir string) (*recordingManager, error) {
 	// Sixteen64MiB sessions bound pilot raw storage to1GiB plus metadata;
 	// there is no automatic pruning or silent eviction. Leave2GiB free.
 	opts.MaxJobs, opts.JobReserveFreeBytes = 16, 2<<30
-	return &recordingManager{opts: opts, limits: runtimequalify.RecordingJobLimits{MaxSessionBytes: 64 << 20, MaxSegmentBytes: 8 << 20, ReserveFreeBytes: 2 << 30},
+	return &recordingManager{opts: opts, capacity: func(ctx context.Context, runner string) (recording.Capacity, error) {
+		return runtimequalify.RecordingCapacity(ctx, opts, runner)
+	},
 		prepare: func(ctx context.Context, state runtimequalify.ManagedState, op runtimequalify.RecordingOperation) (recording.Metadata, error) {
 			m, _, err := runtimequalify.PrepareManagedRecording(ctx, state, op, func(recording.Metadata) error { return nil })
 			return m, err
@@ -63,6 +73,10 @@ func (m *recordingManager) lifecycle(s *store, op protocol.Operation) runtimequa
 			if err != nil || op.Kind != "start" && op.Kind != "startup-resume" {
 				return nil, errRecordingHistory
 			}
+			control, err := m.admission(ctx, s, op.InstanceID)
+			if err != nil {
+				return nil, err
+			}
 			selected := runtimequalify.RecordingOperation{RunnerID: s.runnerID, Mode: s.mode, RuntimeID: snapshot.ID, Target: apppolicy.Target{InstanceID: op.InstanceID}, ConfigurationRevision: op.ConfigRevision, OperationID: op.ID, RequestID: op.RequestID, ContainerID: container}
 			metadata, err := m.prepare(ctx, snapshot, selected)
 			if err != nil {
@@ -72,7 +86,7 @@ func (m *recordingManager) lifecycle(s *store, op protocol.Operation) runtimequa
 			if err != nil {
 				return nil, err
 			}
-			job, err := runtimequalify.NewManagedRecordingJob(snapshot, selected, metadata, image.SHA256, op.Actor, time.Now(), m.limits)
+			job, err := runtimequalify.NewManagedRecordingJob(snapshot, selected, metadata, image.SHA256, op.Actor, time.Now(), runtimequalify.RecordingJobLimits{MaxSessionBytes: control.Policy.MaxSessionBytes, MaxSegmentBytes: control.Policy.MaxSegmentBytes, ReserveFreeBytes: control.Policy.ReserveFreeBytes})
 			if err != nil {
 				return nil, err
 			}
@@ -80,7 +94,7 @@ func (m *recordingManager) lifecycle(s *store, op protocol.Operation) runtimequa
 			if err != nil {
 				return nil, err
 			}
-			jobs, err := runtimequalify.OpenRecordingJobs(m.opts.JobsRoot, m.opts.MaxJobs, m.opts.JobReserveFreeBytes)
+			jobs, err := runtimequalify.OpenRecordingJobs(m.opts.JobsRoot, control.Policy.MaxJobs, control.Policy.ReserveFreeBytes)
 			if err != nil {
 				return nil, err
 			}
@@ -89,7 +103,7 @@ func (m *recordingManager) lifecycle(s *store, op protocol.Operation) runtimequa
 			if err != nil {
 				return nil, err
 			}
-			i := recordingIntent{Version: 1, JobID: job.ID, JobSHA256: digest, RunnerID: s.runnerID, Mode: s.mode, Actor: op.Actor, OperationID: op.ID, RequestID: op.RequestID, InstanceID: op.InstanceID, RuntimeID: snapshot.ID, ConfigurationRevision: op.ConfigRevision, RuntimeRevision: v.RuntimeRevision, StateSHA256: stateDigest, ContainerID: container, ExecutableSHA256: image.SHA256, AdmissionSHA256: job.AdmissionSHA256, CreatedAt: job.CreatedAt}
+			i := recordingIntent{Version: 2, ControlRevision: control.Revision, ControlDigest: control.Digest, JobID: job.ID, JobSHA256: digest, RunnerID: s.runnerID, Mode: s.mode, Actor: op.Actor, OperationID: op.ID, RequestID: op.RequestID, InstanceID: op.InstanceID, RuntimeID: snapshot.ID, ConfigurationRevision: op.ConfigRevision, RuntimeRevision: v.RuntimeRevision, StateSHA256: stateDigest, ContainerID: container, ExecutableSHA256: image.SHA256, AdmissionSHA256: job.AdmissionSHA256, CreatedAt: job.CreatedAt}
 			_, replay, err := s.admitRecordingIntent(i)
 			if err != nil || replay {
 				return nil, errRecordingHistory // orphan files stay retained, never submitted/replayed
@@ -184,4 +198,19 @@ func recordingStatusMatchesIntent(status runtimequalify.RecordingWorkerStatus, i
 
 func recordingStatusPrepared(status runtimequalify.RecordingWorkerStatus, ready runtimequalify.RecordingJobReady) bool {
 	return status.JobID == ready.JobID && status.JobSHA256 == ready.JobSHA256 && status.Ready != nil && *status.Ready == ready && status.Worker != nil && status.Allocation != nil && status.Allocation.JobID == ready.JobID && status.Allocation.JobSHA256 == ready.JobSHA256 && status.Allocation.SessionID == ready.SessionID && status.SessionID == ready.SessionID && status.SessionStorage == "header-available" && status.Metadata != nil && status.Metadata.SessionID == ready.SessionID && status.WriterPresent && status.PrefixStatus == "snapshot-eof" && status.Result == nil
+}
+
+func (m *recordingManager) admission(ctx context.Context, s *store, instance string) (recording.ControlState, error) {
+	control, err := s.recordingControls(ctx)
+	if err != nil {
+		return control, err
+	}
+	if m.capacity == nil {
+		return control, recording.ErrCapacity
+	}
+	capacity, err := m.capacity(ctx, s.runnerID)
+	if err != nil {
+		return control, err
+	}
+	return control, capacity.Admit(control.Policy, instance)
 }
