@@ -12416,3 +12416,27 @@ that image untouched. Instead remove only classified, hash/inode-checked
 regenerable task Go cache objects, preserving source and frozen executables.
 Private manifests retain exact storage and archive identity evidence. No installed
 service, manual-review state, existing ship or production artifact changed.
+
+## M696 — First native recording pilot exceeded fixture scratch (2026-11-18)
+
+Frozen2d028197 binaries install in the fresh offline VM and schema64 admits one
+original Start/recording intent. The real retained runner image claims with2,
+allocates a session and saves attachment readiness; the original native launch
+is observed alive at `waiting-for-identity`. At about1.35GB allocated root plus
+payload/init, the capsule exceeds its declared1536MiB scratch. The supervisor
+terminates only that new VM, below the aggregate48GiB cap. No final capture,
+runtime readiness, management lifetime, drain, replacement or clean-stop gate
+passes. Preserve the running Start and absent final result as incomplete evidence.
+
+Read-only,noload,noexec kernel extraction preserves exact SQLite/WAL/SHM,
+job/claim/allocation/readiness, recording header/prefix and logs. Full disk and
+backing hashes stay unchanged. Retain the full failure image losslessly with
+decode verification; never replay or repair its journal to advance a test.
+The [failure report](diagnostics/2026-11-18-recording-pilot-vm01-scratch-failure.json)
+records artifact/input/store pins and qualified-gates=[] explicitly.
+
+Revise only the fixture to declare2GiB scratch and periodically trim blocks already
+freed in its fresh guest root, using the existing discard-enabled QEMU disk. The
+production Go/embedded inputs remain byte-identical to2d028197. Four refusal
+guards still pass. A new capsule must be admitted before retry; no native pass or
+installed/manual DEV change is implied by these harness changes.

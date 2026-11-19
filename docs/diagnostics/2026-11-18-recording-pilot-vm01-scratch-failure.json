@@ -1,0 +1,65 @@
+{
+  "format": 1,
+  "passed": false,
+  "scope": "fresh offline Linux/amd64 ordinary recording-pilot VM; scratch-limited interruption; not native recording qualification",
+  "source_commit": "2d0281971cca0285e5aabc4b91279830a04ab9b1",
+  "artifacts": {
+    "managed.test": "d5a62b057238fe64aa83445a7e4f065b9e9d35fcf50ea850cf900e931c05b74b",
+    "omabit": "5ed8fe62e818056891033a2f598b42a1593677e85d171abd9e74d020ff2ab698",
+    "urbit-collector": "7e086318c104d3c0f1234811ac1568658a4c851e1fb779a2dd7bdbaf77ca5f57",
+    "urbit-runner": "98bfa21634dce830076f49b0b05a2422944fe55476734bd8e961b68c1ee60e6c"
+  },
+  "source_image_sha256": "3c69dae8525a5fa82c5c4548980541cbd5ecd448af509e3929de923581e1ea3e",
+  "payload_sha256": "8fe7946f9ff727b8c1d36859ceef4cabde3400f461fea6b3fce9bdf0028f2bc7",
+  "declared_scratch_bytes": 1610612736,
+  "observed_root_allocated_bytes": 1348210688,
+  "interruption": "RuntimeError: recording pilot VM storage/log/deadline exceeded; preserve failure capsule",
+  "schema": 64,
+  "saved_start_status": "running",
+  "saved_runtime_stage": "waiting-for-identity",
+  "saved_recording_intents": 1,
+  "claim2_saved": true,
+  "allocation_saved": true,
+  "attachment_ready_saved": true,
+  "result_saved": false,
+  "store_files": {
+    "runner.sqlite-shm": {
+      "bytes": 32768,
+      "sha256": "eb1609fed2f794a5929f6d610b536d38536c52e6f4336fc338dd84c7ef88dddd"
+    },
+    "runner.sqlite-wal": {
+      "bytes": 358472,
+      "sha256": "34580b1900a1a8d2f33ad984588983b4fefac268211baf37c4091709f76c047e"
+    },
+    "runner.sqlite": {
+      "bytes": 569344,
+      "sha256": "b9fbc77255793fd21c94c1e79d5acc3d787de42a3c1aa065b046237bdfe3f317"
+    }
+  },
+  "recording_prefix_files": [
+    {
+      "name": "metadata.json",
+      "bytes": 1204,
+      "sha256": "fbc0d31e1b8b6fd3c38bfca65f1438a33a5f2ebfb550ce7a2504e87b2d5e86b1"
+    },
+    {
+      "name": "frames.obr",
+      "bytes": 6528,
+      "sha256": "40454f04e21dbe8f5777f1e27b3a1fb02f2ad2d54ee60c54fb910aaa6ae24879"
+    }
+  ],
+  "read_only_extraction": {
+    "passed": true,
+    "journal_replayed": false,
+    "source_services_started": false,
+    "source_image_unchanged": true
+  },
+  "qualified_gates": [],
+  "pending_gates": [
+    "completed initial runtime readiness",
+    "manager stop/reopen lifetime",
+    "terminal drain and clean stop",
+    "same-pier replacement and original recording preservation"
+  ],
+  "retry": "fresh VM only;2GiB declared scratch and periodic guest-only discard; original failure remains retained"
+}

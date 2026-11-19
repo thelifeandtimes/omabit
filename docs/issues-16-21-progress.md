@@ -285,3 +285,10 @@ checks and vet pass. Native execution has not yet qualified the pilot. Ended tas
 COW roots retain exact full bytes in verified archives; the pending app VM remains
 raw and untouched. Classified regenerable cache consolidation makes room under
 the approved cap without discarding source or runtime evidence.
+
+M696's first installed recording VM saves one exact intent, claim2, session and
+attachment readiness before its1536MiB fixture scratch limit is exceeded. The
+whole gate fails; no final capture or clean stop is claimed. Exact SQLite and
+receipt/header/log evidence is extracted without journal replay and the full
+failure is retained. The revised2GiB/guest-discard harness keeps the frozen Go
+inputs unchanged and passes refusal guards; a fresh admitted native retry remains.

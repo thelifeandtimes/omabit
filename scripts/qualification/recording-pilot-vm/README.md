@@ -13,11 +13,15 @@ and fresh `/tmp/omabit-issues-recording-vm-NN` `--output` inputs. Every binary,
 base, pill and image is rehashed. The helper only observes saved recording data;
 the actual installed runner and detached worker own the native lifecycle.
 
-The capsule declares1536MiB scratch, holds the shared experiment lock and measures
+The capsule declares2GiB scratch, holds the shared experiment lock and measures
 aggregate/scratch usage every five seconds. It has no NIC/external route or host
 HOME/run/engine/desktop mounts. Its QEMU scope caps10GiB memory, no swap, one CPU
 and512 tasks; the guest receives8GiB. A separate bounded supervisor records
 interruption and preserves failure evidence. The deadline is2500seconds.
+The first1536MiB attempt exceeded its scratch reservation during boot and failed;
+its full image and original evidence are retained. The revised guest periodically
+trims only blocks already freed in its own disposable root, with QEMU discard
+enabled. This changes no live pier bytes or receipt and operates on no host mount.
 
 Inside the fresh guest, explicitly opt into `--record-runtime`. Create one new
 fake, verify pre-start output capture and the exact notify worker outside its

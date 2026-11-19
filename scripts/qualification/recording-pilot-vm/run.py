@@ -26,7 +26,7 @@ util = budget.util
 GIB = 1024**3
 # One fresh ordinary fake, immutable payload and bounded private recordings.
 # The host cap includes all retained evidence and shared build caches.
-SCRATCH = 1536*1024**2
+SCRATCH = 2*GIB
 
 
 def ordinary(path, directory=False):

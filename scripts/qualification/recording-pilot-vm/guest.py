@@ -7,12 +7,32 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import threading
 
 I=Path('/opt/omabit-release-input')
 O=Path('/opt/omabit-issues-results')
 HOME=Path('/home/review')
 report={'format':1,'passed':False,'scope':'one fresh offline fake; installed ordinary recording pilot only; not comprehensive recording or upgrade qualification'}
 common=None
+trim_stop=threading.Event()
+trim_thread=None
+
+def start_guest_trim():
+    # The caller has verified QEMU, the exact fresh scenario and pristine root.
+    # Reclaim only blocks the guest filesystem has already freed. No host path
+    # or device is visible, and no journal/pier bytes are edited or repaired.
+    global trim_thread
+    report['guest_trim']={'runs':0,'failures':0}
+    def trim():
+        while not trim_stop.wait(5):
+            try:
+                result=subprocess.run(['/usr/bin/fstrim','/'],capture_output=True,timeout=10)
+                report['guest_trim']['runs']+=1
+                report['guest_trim']['failures']+=int(result.returncode!=0)
+            except subprocess.TimeoutExpired:
+                report['guest_trim']['failures']+=1
+    trim_thread=threading.Thread(target=trim,daemon=True)
+    trim_thread.start()
 
 def sha(path):
     with Path(path).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
@@ -74,6 +94,7 @@ def main():
     common.run([I/'candidate/urbit-collector','enroll','local','--socket',common.SOCK],True)
     common.docker('load','--input',I/'runtime.oci.tar')
     if common.db_projection()['schema']!=64:raise RuntimeError('wrong installed schema')
+    start_guest_trim()
     common.unit('stop')
     override=HOME/'.config/systemd/user/urbit-runner.service.d'
     override.mkdir(mode=0o700,parents=True)
@@ -117,6 +138,8 @@ if __name__=='__main__':
     try:main()
     except BaseException as error:report['error']=type(error).__name__+': '+str(error)
     finally:
+        trim_stop.set()
+        if trim_thread is not None:trim_thread.join(timeout=12)
         if common is not None:
             try:
                 report['manager_unit']=common.run(['systemctl','--user','show','urbit-runner.service','-p','ActiveState,SubState,Result,ExecMainStatus'],True,ok=False).stdout
