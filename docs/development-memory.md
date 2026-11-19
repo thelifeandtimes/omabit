@@ -12341,3 +12341,30 @@ Tests retain moved raw data, exclude private multiline output from status, and
 preserve incomplete/legacy facts without backfill. All worker/native seams are
 inert. Normal manager integration, native service/capture, retention, API/UI and
 installed/active-worker qualification remain pending; installed state is unchanged.
+
+## M693 — Compose actual operation journal with recorder preparation/drain (2026-11-18)
+
+Prepare a private manager adapter deriving actor, request, target, mode, runner,
+revision and native container exclusively from its actual running operation and
+exact saved driver snapshot. Native admission/executable retention precede one
+private job; commit its immutable intent before submission. A returned guard
+rechecks current journal, exact saved readiness/writer and live supervisor before
+Start. Lost replies are never resubmitted; refused/orphan job files remain retained.
+
+Before terminal removal, resolve recording history by exact runner/instance/
+runtime/container, preserving its original mode across fake-only→development
+promotion. Recheck current operation/state after drain. A durably closed incomplete
+capture with exact retained header/result does not indefinitely block native Stop
+cleanup: its original gap/failure remains visible. Pending, unclosed, remapped or
+missing evidence refuses. Older unrecorded containers are not retroactively adopted.
+The normal server still does not select this adapter. Its fixed bounded pilot is
+sixteen64MiB sessions plus metadata, eight retained executable images and2GiB free
+reserve; configurable retention/pressure recovery remain required before readiness.
+
+Admitted manager/lookup/fresh-fence race checks pass in4.797s, extended cleanup
+cases in7.266s, using real SQLite/private files and inert native/supervisor adapters.
+They cover wrong actor/snapshot, state changes before intent/final guard, journal
+ordering, one-shot uncertainty, historical mode and unchanged cleanup history.
+No binary is launched, native lifecycle action performed, or installed state
+changed. Normal server selection, native worker/capture and active/installed
+upgrade, retention and public interface gates remain pending.

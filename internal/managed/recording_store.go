@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
 
 var errRecordingHistory = errors.New("recording launch history is incomplete or changed; preserve original jobs and operation receipts")
@@ -257,6 +258,75 @@ func (s *store) checkRecordingIntent(ctx context.Context, i recordingIntent) err
 		return errRecordingHistory
 	}
 	return nil
+}
+
+func (s *store) recordingSnapshotAuthority(ctx context.Context, expected protocol.Operation, snapshot runtimequalify.ManagedState) (storedInstance, error) {
+	if ctx.Err() != nil || expected.ProjectID != "" || expected.Kind != "start" && expected.Kind != "startup-resume" && expected.Kind != "stop" {
+		return storedInstance{}, errRecordingHistory
+	}
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return storedInstance{}, errRecordingHistory
+	}
+	defer tx.Rollback()
+	op, err := loadOperation(tx, expected.ID)
+	if err != nil || !reflect.DeepEqual(op, expected) || op.Status != "running" {
+		return storedInstance{}, errRecordingHistory
+	}
+	v, err := loadInstance(tx, op.InstanceID)
+	actual, e1 := recordingStateDigest(v.Runtime)
+	want, e2 := recordingStateDigest(snapshot)
+	if err != nil || e1 != nil || e2 != nil || actual != want || v.Runtime.ID != snapshot.ID || v.Public.ActiveOperationID != op.ID || ctx.Err() != nil {
+		return storedInstance{}, errRecordingHistory
+	}
+	return v, nil
+}
+
+func (s *store) recordingIntentForContainer(ctx context.Context, instance, runtime, container string) (*recordingIntent, error) {
+	if ctx.Err() != nil || !protocol.ValidID(instance) || !recordingHex(runtime, 32) || !recordingHex(container, 64) {
+		return nil, errRecordingHistory
+	}
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, errRecordingHistory
+	}
+	defer tx.Rollback()
+	if validateRecordingHistory(tx) != nil {
+		return nil, errRecordingHistory
+	}
+	rows, err := tx.Query("SELECT id FROM runtime_recording_intents ORDER BY ordinal")
+	if err != nil {
+		return nil, errRecordingHistory
+	}
+	var ids []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			rows.Close()
+			return nil, errRecordingHistory
+		}
+		ids = append(ids, id)
+	}
+	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+		return nil, errRecordingHistory
+	}
+	var selected *recordingIntent
+	for _, id := range ids {
+		i, err := loadRecordingIntent(tx, id)
+		if err != nil {
+			return nil, errRecordingHistory
+		}
+		if i.InstanceID == instance && i.RuntimeID == runtime && i.ContainerID == container && i.RunnerID == s.runnerID {
+			if selected != nil {
+				return nil, errRecordingHistory
+			}
+			selected = &i
+		}
+	}
+	if ctx.Err() != nil {
+		return nil, errRecordingHistory
+	}
+	return selected, nil
 }
 
 // admitRecordingIntent commits once before service submission. An exact saved

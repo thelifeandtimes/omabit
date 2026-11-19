@@ -266,3 +266,9 @@ source race/vet checks. Raw output is excluded, moved/missing data is preserved,
 legacy omissions stay unknown, and incomplete/timeouts cannot become successful
 drain or removal authority. Manager integration and native/retention/API/UI/
 installed-worker gates remain open.
+
+M693 composes actual operation/snapshot authority, job/intent order, one submission
+and fresh final guard in a private manager adapter. Cleanup preserves original
+mode/history and distinguishes closed incomplete from pending/unclosed evidence.
+Admitted source race gates pass with inert adapters; normal server selection,
+native service/capture, retention, interfaces and active/installed upgrades remain.

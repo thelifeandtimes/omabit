@@ -663,3 +663,20 @@ This grants no native removal permission and sends no signal or lifecycle action
 the caller still verifies its exact terminal/native and journal bindings. Source
 race/vet checks pass with inert worker/native seams. Normal manager, native,
 retention, public API/UI and installed-worker upgrade gates remain pending.
+
+## Prepared manager adapter
+
+The source manager adapter now derives capture inputs from its actual running
+operation and exact saved snapshot, commits the private job/intent before one
+submission, and returns a fresh journal/readiness/live-worker guard. Cleanup finds
+the exact historical capture even across a management-mode promotion, rechecks
+current state after drain, and keeps the original failure/gap for a durably closed
+incomplete capture. Pending/unclosed/remapped evidence cannot permit cleanup;
+older unrecorded containers are not adopted into new capture history.
+
+Source race/vet checks use SQLite/private files and inert adapters, launching no
+binary or runtime. The adapter is not selected by normal server construction.
+Its bounded pilot has sixteen64MiB sessions plus metadata, eight retained images
+and a2GiB free-space floor, with no automatic pruning. Configurable retention,
+pressure recovery, actual service/native capture and interface/upgrade gates
+remain required before comprehensive recording readiness.
