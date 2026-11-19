@@ -403,3 +403,12 @@ eight guards. Original SQLite/WAL/SHM and19 bounded files are extracted read-onl
 and an independent copy checks schema65/integrity. The original failed VM06 stays
 retained. Genuine old-reader/final-reopen and a fresh full case remain pending;
 no installed namespace changes.
+
+M711 records the later [retry lessons](diagnostics/2026-11-19-recording-upgrade-retry-lessons.md)
+and prepares corrected VM07 without launching it. Automatic approval review
+rejects retirement of the older full recording VM05 because prior user permission
+covered03/04 only; a separate explicit approval is pending and both05 disk files
+remain unchanged. Exact compact evidence and newer full recording VM06 remain,
+as does the unrelated pending app VM05. Safe derived boot-copy/compiler-cache
+cleanup finishes; all eight fixture guards pass again. Native retry still needs
+approval-dependent storage admission. No installed namespace changes.

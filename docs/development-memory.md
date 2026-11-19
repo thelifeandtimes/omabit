@@ -12830,3 +12830,29 @@ source/backing hashes unchanged. A separate analysis copy is schema65/quick_chec
 ok; all original exports remain exact. Preserve original VM06; a corrected fresh
 native retry is still required. No installed service/plugin or existing ship is
 changed, and the acknowledged app VM05 remains excluded.
+
+## M711 — Preserve the latest failure and request separate older-fixture retirement (2026-11-19)
+
+Record [retry lessons](diagnostics/2026-11-19-recording-upgrade-retry-lessons.md)
+and prepare a fresh corrected VM07 using unchanged703de9f2 artifacts. The eight
+inert fixture guards pass again (0.026s). No new runtime is launched: its2GiB
+reservation does not fit the remaining48GiB aggregate budget.
+
+Classify only the older recording VM05 root/input (1,564,676,096allocated bytes)
+as superseded by the retained newer full VM06 and the reproduced/fixed source
+regression. Verify six exact ended units, no open users, original file/backing
+bindings and65 retained evidence/artifact files, including the unrelated pending
+app VM05. Automatic approval review rejects irreversible unlink: the user's
+specific disposal approval covered03/04, not this newer05. No unlink runs and no
+retention authorization is inferred from that earlier permission. Request separate
+explicit authorization; the classified two-file plan remains pending.
+
+Finish unaffected cleanup: evict48,807,936bytes of validated regenerated compiler
+cache with current reader/artifacts/images unchanged. Remove222 verified redundant
+boot archive/module copies from four ended read-only utilities and the two already
+disposed capsules, freeing84,811,776bytes. Every exact init and canonical module
+byte remains retained, along with original SQL/receipts/logs and all remaining VM
+images. These are derived reproducible boot copies, not the blocked disks or a
+workaround for their rejection. Reuse the preserved frozen boot helper for the
+next case; regenerate utility boot archives only in a new utility. Production,
+preserved DEV and existing/protected/tmux ships remain unchanged.
