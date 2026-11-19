@@ -12284,3 +12284,18 @@ on failed admission, and use only the admitted rerun for this checkpoint. Classi
 regenerable task-test cache now keeps one newest version per package; frozen
 binaries/source/receipts/SQLite/logs and all VM disks remain retained. No installed
 state, production/manual DEV, actual runtime or existing ship changes.
+
+## M690 — Prepare recording roots only for the verified manager home (2026-11-18)
+
+Add explicit recording-home preparation bound to the exact selected owner's
+managed directory. Arbitrary temporary server roots refuse before account/storage
+probes. Pin the existing owner base; create only recording-jobs, recordings and
+recording-images as0700 children, verify object bindings and sync child/parent.
+Existing content is preserved; exposed, linked or non-directory objects refuse
+without chmod, repair, replacement or cleanup. A partial failed setup remains.
+
+Admitted focused root/service/image race checks pass in1.034s; vet passes. Tests
+operate fresh private filesystem fixtures and contact no engine/unit. Normal
+server construction does not select this preparation yet. Actual manager handoff,
+terminal drain/outcome handling, native capture and installed/active-worker
+upgrades remain pending. Production/manual DEV and existing ships stay untouched.

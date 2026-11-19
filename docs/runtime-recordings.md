@@ -628,3 +628,9 @@ failed saves/handoffs/guards, snapshot isolation and the one-signal continuation
 The normal server does not select these hooks. Actual recorder preparation,
 terminal drain/outcome handling and native service/upgrade integration remain;
 projects, utilities and existing-running attachments need separate factories.
+
+The explicit root provisioner now binds setup to the verified selected manager
+directory and creates only the three private recording children. It preserves
+existing content and refuses unsafe objects without repair/replacement. Source
+race/vet checks pass with fresh private filesystem fixtures. Normal server
+construction does not call this provisioner yet.

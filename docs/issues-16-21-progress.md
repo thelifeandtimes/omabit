@@ -250,3 +250,8 @@ checks/vet pass for refusal, independent snapshots, terminal preservation and a
 one-signal stopped continuation. Normal server launch remains unchanged; real
 preparation/drain handling, projects/utilities/running capture and native upgrades
 remain pending.
+
+M690 prepares exact selected-owner recording roots with private inode checks and
+durable setup, preserving existing contents and refusing unsafe objects. Admitted
+source race/vet gates pass; normal server setup remains unwired and no installed
+namespace is touched.
