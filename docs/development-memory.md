@@ -13295,3 +13295,37 @@ change after freeze. Original usage COW01 remains failed and intact. Commit the
 correction before launching a fresh COW02; actual worker admission rechecks and
 full native success are still required. No guest starts at this checkpoint and
 all production/manual DEV/existing/protected/tmux ship exclusions remain.
+
+## M729 — Closed native recording allocation passes with independent preservation (2026-11-19)
+
+The fresh corrected COW02 passes with unchanged frozen f37b32d4 runtime/helper
+and e0af21ae standalone boot artifacts. Actual CLI and official-SDK stdio usage
+match independent filesystem stat:19files,6directories,29,495logical bytes and
+94,208inode allocated bytes, split into86,016instance and8,192shared allocated
+bytes. Original capture/job bytes and policy head stay exact. Guest/helper/QEMU
+all finish successfully; the exact VM/supervisor scopes are inactive and empty.
+
+A separate64MiB-admitted read-only kernel utility exports8 fixed evidence files,
+including original/current SQLite. It executes no source-disk code and leaves
+all whole images, inputs and pristine/original backings unchanged. Independent
+analysis on separate SQL copies verifies both schema65 quick checks, the exact
+original logical-row digest and every original row/value except the one explicitly
+allowed later UTC observation timestamp and runtime revision75→76. The retained
+raw SQL/export bytes remain unchanged. Native proof SHA256 is
+1d070f4f406a4b2ee27d5d3d1efe74d24bb919d48e922b3d2c3ce288fa3e9bbd.
+
+This supersedes M728's pending retry only; M727's earlier whole failure remains
+failed and retained. The [scoped evidence](diagnostics/2026-11-19-recording-allocation-native.json)
+qualifies stationary closed captures after reboot. Active growth/pressure,
+retirement, complete exports, other factories, installed stable upgrade and DEV
+are still open. No installed namespace, existing ship or production state changes.
+
+## M730 — Generated help matches the current frozen tools (2026-11-19)
+
+After the reader scope ends, admit64MiB scratch under48GiB and regenerate then
+check all179 public help entries from the three frozen f37b32d4 tools. Both
+networkless Bubblewrap passes succeed with a private empty HOME and no installed
+registry, engine or desktop socket. Refresh the MCP HTTP and exact private report
+startup flags in generated omabit/runner references. Collector help is unchanged.
+The reference reflects available commands, not native workflow qualification;
+named execution/actual provider clients and the final upgrade/DEV gates remain.

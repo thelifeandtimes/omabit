@@ -7,8 +7,12 @@ recordings, receipts, policy or schema65. New clients accept older omission as
 unavailable, and an actual frozen703de9f2 CLI ignores newer measured/unknown
 fields while preserving its old settings/commitments. Source race/API/SDK/UI and
 reply-bound checks pass; see the [evidence and limits](diagnostics/2026-11-19-recording-usage-source.json).
-New matching native/installed artifacts still require qualification. The earlier
-703de9f2 native pass is not evidence for this later measurement implementation.
+Matching frozen f37 tools now pass the [closed-capture native measurement case](diagnostics/2026-11-19-recording-allocation-native.json): actual CLI/stdio measurements
+match independent filesystem counts, with original captures, controls, history
+and stopped intent preserved. Only one fresh observation timestamp/revision is
+permitted. Active capture growth, pressure/retirement, installed upgrades and
+preserved DEV still require qualification. The earlier703de9f2 native pass is not
+evidence for those later measurement behaviors.
 
 ## Development: recording policy/API native64→65 gate
 

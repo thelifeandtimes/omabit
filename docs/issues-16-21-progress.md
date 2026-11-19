@@ -548,3 +548,16 @@ cache, preserving157 named evidence/artifact/disk files exact. Corrected320MiB
 admission fits under48GiB; failed COW01 and original07 remain intact, with all
 product/helper/boot pins unchanged. Commit the exact-observation fixture correction
 before a fresh COW02; native success is still pending.
+
+M729 passes the corrected closed-native allocation case with unchanged f37 tools.
+Actual CLI/stdio/stat counts match; independent read-only SQL comparison preserves
+all history/intent/value rows except one fresh observation timestamp and75→76
+revision. All original capture/control/backing bytes remain unchanged. The
+[scoped evidence](diagnostics/2026-11-19-recording-allocation-native.json) does not
+qualify active growth, pressure/retirement, complete exports or installed/DEV
+upgrades. Earlier COW01 stays failed/retained; all native/reader scopes are empty.
+
+M730 regenerates and checks all179 public help entries from matching f37 tools in
+networkless private HOME scopes under a64MiB admission. Current HTTP/report flags
+are reflected; installed state is untouched. Named execution/provider clients and
+the remaining issue/upgrade gates remain open.

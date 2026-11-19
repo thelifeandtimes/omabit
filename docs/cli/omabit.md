@@ -36,6 +36,10 @@ bounded to 128 KiB. The version1 JSON envelope contains data or a structured err
 Use operations to discover schemas. Existing command JSON formats are unchanged.
 Select name and runner_id explicitly for live operations. Save complete plans and
 original IDs before mutation; read receipts after uncertainty. No automatic retry.
+Named tests.plans/plan reads never execute tests. Optional --allow-test-report
+NAME:SHA256:/absolute/report.json selects an owner-private historical snapshot for
+tests.reports/report reads. Tool inputs contain no file paths; reported outcomes
+are not independently attested execution or source evidence.
 ```
 
 ## copy-code
@@ -403,17 +407,27 @@ Reconcile generated docket changes with source ownership before the next commit.
 ## mcp
 
 ```text
-Usage: omabit [--config-dir DIR] mcp serve --transport stdio [--allow-runner NAME:ID ...] [--enable-mutations]
-Serve the shared core with the official pinned Go SDK. Stdout is MCP only.
-An empty allowlist denies all live targets; only offline discovery remains usable.
+Usage: omabit [--config-dir DIR] mcp serve --transport stdio|http [--allow-runner NAME:ID ...] [--enable-mutations]
+       omabit mcp create-http-token --output /absolute/private/new-file.json
+Serve the shared core with the official pinned Go SDK. Stdio stdout is MCP only.
+HTTP requires --listen NUMERIC_LOOPBACK_IP:PORT --token-file PRIVATE_FILE.
+Create a new eight-hour owner-private credential first; its secret is never printed.
+HTTP reports its local URL on stderr, rechecks credentials on every request and
+refuses browser origins. This local manual-bearer mode provides no OAuth discovery.
+An empty allowlist denies all live targets. Offline plans/guidance and explicitly
+selected local source/report snapshots have separate startup authority.
+Optional --allow-test-report NAME:SHA256:/absolute/report.json selects a private
+historical snapshot for tests.reports/report. Those tools execute no tests and
+cannot attest caller-written outcomes or missing source/environment provenance.
 Mutation tools require explicit startup enablement and still enforce operator role,
 runner capability, exact reviewed bindings and saved policy. Every call selects its
-own target. No secrets, policy authoring, shell, SQL, Docker or host installation.
+own target. No runner-credential, login-code, policy-authoring, shell, SQL, Docker or host-installation tools.
+Explicit original recordings can contain private data; review derived views before sharing.
 Cancelling a call or closing this subprocess never cancels runner-owned work.
 Optional global --skills-bundle DIR --skills-manifest-sha256 SHA exposes the exact
 verified bundle guidance through resources and bounded ordinary tool reads. Both
 BUILD and SKILLS provenance must match. Reading guidance installs nothing.
-Streamable HTTP and actual named-client qualification remain separate work.
+Actual named-client/provider connection qualification remains separate work.
 ```
 
 ## operations
