@@ -20,8 +20,12 @@ var ProtocolVersions = []string{"2025-11-25", "2025-06-18", "2025-03-26", "2024-
 // New restricts negotiation to session protocols exercised by conformance tests.
 // The SDK's newer2026 per-request model is not advertised until separately tested.
 func New(core *service.Service) *mcp.Server {
+	return newWithProtocols(core, ProtocolVersions)
+}
+
+func newWithProtocols(core *service.Service, protocols []string) *mcp.Server {
 	s := mcp.NewServer(&mcp.Implementation{Name: "omabit", Version: "development"}, &mcp.ServerOptions{
-		SupportedProtocolVersions: ProtocolVersions,
+		SupportedProtocolVersions: append([]string(nil), protocols...),
 		Capabilities:              &mcp.ServerCapabilities{},
 		Logger:                    slog.New(slog.NewTextHandler(os.Stderr, nil)),
 		Instructions:              "Use explicit allowed runner identities. Queued receipts are not completion. Preserve exact plans and IDs after lost replies. Credential-management, login-code, policy-authoring, shell, SQL, Docker and host-installation tools are excluded. Explicit original-recording reads can contain private data; redacted windows still require owner review before sharing. Reading guidance grants no authority.",

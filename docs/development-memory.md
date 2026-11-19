@@ -12497,3 +12497,34 @@ These interfaces postdate M697's frozen native artifacts. Matching native API,
 installed/active-worker upgrades, indexed search, retention/pins, full export and
 UI remain unqualified. No installed service, preserved manual-review state,
 production namespace, existing ship or tmux surface changed.
+
+## M699 — Serve the shared core over explicit local authenticated HTTP (2026-11-18)
+
+Add foreground `mcp serve --transport http` with mandatory numeric-loopback
+listen/credential selections, existing runner/source allowlists and optional
+mutation enablement. The same typed handler catalog serves both transports.
+Fresh credential creation writes one new0600 file with a random32-byte token and
+8hour expiry; stdout returns only path/expiry. Never replace a prior file.
+Each request rechecks exact file owner/mode/inode/content, expiry and constant-time
+token equality. Revocation never becomes reauthorization and session IDs cannot
+bypass credentials. Error text is fixed; secrets never enter tool/output metadata.
+
+Reject foreign Host/peer/Origin, query/cookie credentials, ambiguous auth and
+unsupported versions. Bind token identity to SDK sessions. Bound16sessions/
+requests,32connections, headers/bodies and idle lifetime. Use JSON Streamable POST,
+authenticated DELETE and405 standalone GET, with clean shutdown that signals no
+runner action. Test CLI children now use signal-aware contexts to verify their
+own endpoint shutdown. No current client configuration or persistent service is
+edited or started.
+
+Admitted race gates pass three2025 HTTP negotiations, shared discovery/allowlist
+refusal, expiry/ownership/symlink/hardlink/content/revocation/privacy, framing and
+concurrent-auth limits. Actual CLI credential generation/start/discovery/empty-
+allowlist refusal/clean shutdown passes; stdio recording parity remains passing.
+The latest focused HTTP/CLI gates pass in6.429s/4.270s. Vet passes.
+
+This is explicitly local manual-bearer auth, with primary transport/authorization/
+pinned-SDK sources linked in [the HTTP guide](mcp-http.md). It does not claim
+OAuth discovery, grants, public remote/TLS or named-provider qualification.
+Those and remaining operation/test-report coverage stay open. No installed runner,
+plugin, production, preserved DEV, existing ship or tmux surface changes.

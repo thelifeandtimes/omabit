@@ -11,17 +11,23 @@ bounded to 128 KiB. The version1 JSON envelope contains data or a structured err
 Use operations to discover schemas. Existing command JSON formats are unchanged.
 Select name and runner_id explicitly for live operations. Save complete plans and
 original IDs before mutation; read receipts after uncertainty. No automatic retry.`,
-	"mcp": `Usage: omabit [--config-dir DIR] mcp serve --transport stdio [--allow-runner NAME:ID ...] [--enable-mutations]
-Serve the shared core with the official pinned Go SDK. Stdout is MCP only.
+	"mcp": `Usage: omabit [--config-dir DIR] mcp serve --transport stdio|http [--allow-runner NAME:ID ...] [--enable-mutations]
+       omabit mcp create-http-token --output /absolute/private/new-file.json
+Serve the shared core with the official pinned Go SDK. Stdio stdout is MCP only.
+HTTP requires --listen NUMERIC_LOOPBACK_IP:PORT --token-file PRIVATE_FILE.
+Create a new eight-hour owner-private credential first; its secret is never printed.
+HTTP reports its local URL on stderr, rechecks credentials on every request and
+refuses browser origins. This local manual-bearer mode provides no OAuth discovery.
 An empty allowlist denies all live targets; only offline discovery remains usable.
 Mutation tools require explicit startup enablement and still enforce operator role,
 runner capability, exact reviewed bindings and saved policy. Every call selects its
-own target. No secrets, policy authoring, shell, SQL, Docker or host installation.
+own target. No runner-credential, login-code, policy-authoring, shell, SQL, Docker or host-installation tools.
+Explicit original recordings can contain private data; review derived views before sharing.
 Cancelling a call or closing this subprocess never cancels runner-owned work.
 Optional global --skills-bundle DIR --skills-manifest-sha256 SHA exposes the exact
 verified bundle guidance through resources and bounded ordinary tool reads. Both
 BUILD and SKILLS provenance must match. Reading guidance installs nothing.
-Streamable HTTP and actual named-client qualification remain separate work.`,
+Actual named-client/provider connection qualification remains separate work.`,
 	"app-preflight": `Usage: omabit [--config-dir DIR] app-preflight --runner NAME --expected-runner-id ID --workflow gall|grubbery [--instance INSTANCE --desk DESK] [--effects create-desk,commit,publish]
 
 Read only the selected runner's actual Hello and saved application policy before

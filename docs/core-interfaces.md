@@ -1,4 +1,4 @@
-# Shared CLI and stdio MCP interfaces
+# Shared CLI and MCP interfaces
 
 Issue19's development slice adds one typed service catalog over existing
 `collection`, `client`, `protocol`, project and desk libraries. Run
@@ -140,8 +140,10 @@ journal or require optional protocol task extensions.
 The server uses pinned official Go SDK1.8.0. Its tested negotiated revisions are
 2024-11-05,2025-03-26,2025-06-18 and2025-11-25; the SDK's newer2026 protocol is
 not advertised yet. The stdio input frame is bounded. Stdout carries only protocol
-messages; diagnostics use stderr. HTTP deployment and actual T3 Code, Claude Code,
-Codex/ChatGPT and OpenCode connection qualification are separate pending gates.
+messages; diagnostics use stderr. The [local authenticated HTTP mode](mcp-http.md)
+uses the same core with the three2025 protocol revisions and an explicit
+owner-private expiring bearer credential. Remote OAuth/TLS deployment and actual
+T3 Code, Claude Code, Codex/ChatGPT and OpenCode connection qualification remain.
 SDK fixture interoperability does not establish those clients' installed support.
 
 Queued/running receipts are operation handles, not completion. Read saved status

@@ -47,13 +47,37 @@ func coreCommand(ctx context.Context, command string, args []string, config, ski
 	var id string
 	var input []byte
 	var sources sourceDirectories
+	var httpOptions *mcpserver.HTTPOptions
 	if command == "mcp" {
+		if len(args) > 0 && args[0] == "create-http-token" {
+			f := flag.NewFlagSet("omabit mcp create-http-token", flag.ContinueOnError)
+			path := f.String("output", "", "new owner-private credential file in an existing physical directory")
+			if err := f.Parse(args[1:]); err != nil {
+				if errors.Is(err, flag.ErrHelp) {
+					return 0
+				}
+				return 2
+			}
+			if f.NArg() != 0 || *path == "" {
+				return 2
+			}
+			info, err := mcpserver.CreateHTTPToken(*path)
+			if err != nil {
+				return fail(err)
+			}
+			if err = json.NewEncoder(os.Stdout).Encode(info); err != nil {
+				return fail(err)
+			}
+			return 0
+		}
 		if len(args) == 0 || args[0] != "serve" {
 			return 2
 		}
 		args = args[1:]
 		f := flag.NewFlagSet("omabit mcp serve", flag.ContinueOnError)
-		transport := f.String("transport", "stdio", "stdio only; HTTP is not implemented")
+		transport := f.String("transport", "stdio", "stdio or explicit local authenticated http")
+		listen := f.String("listen", "", "HTTP only: explicit numeric loopback IP:port")
+		tokenFile := f.String("token-file", "", "HTTP only: existing private credential created by create-http-token")
 		mutations := f.Bool("enable-mutations", false, "expose typed mutation tools; runner role/policy still apply")
 		var allowed allowedRunners
 		f.Var(&allowed, "allow-runner", "explicit NAME:ID target allowlist; repeat for each runner")
@@ -64,8 +88,19 @@ func coreCommand(ctx context.Context, command string, args []string, config, ski
 			}
 			return 2
 		}
-		if f.NArg() != 0 || *transport != "stdio" {
-			return fail(errors.New("only local stdio is supported"))
+		if f.NArg() != 0 || *transport != "stdio" && *transport != "http" {
+			return fail(errors.New("select stdio or explicit local authenticated http"))
+		}
+		if *transport == "stdio" && (*listen != "" || *tokenFile != "") {
+			return fail(errors.New("HTTP options require transport http"))
+		}
+		if *transport == "http" {
+			if *listen == "" || *tokenFile == "" {
+				return fail(errors.New("HTTP requires explicit --listen and --token-file"))
+			}
+			httpOptions = &mcpserver.HTTPOptions{Listen: *listen, TokenFile: *tokenFile, Ready: func(url string) {
+				json.NewEncoder(os.Stderr).Encode(map[string]string{"transport": "http", "url": url})
+			}}
 		}
 		options.RequireAllowed = true
 		options.Allowed = allowed
@@ -135,6 +170,12 @@ func coreCommand(ctx context.Context, command string, args []string, config, ski
 		return fail(err)
 	}
 	if command == "mcp" {
+		if httpOptions != nil {
+			if err = mcpserver.ServeHTTP(ctx, core, *httpOptions); err != nil && !errors.Is(err, context.Canceled) {
+				return fail(errors.New("authenticated local HTTP MCP server failed"))
+			}
+			return 0
+		}
 		if err = mcpserver.Serve(ctx, core); err != nil && !errors.Is(err, context.Canceled) {
 			return fail(errors.New("MCP stdio session failed"))
 		}

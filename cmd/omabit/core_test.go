@@ -8,8 +8,10 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"sync/atomic"
+	"syscall"
 	"testing"
 	"time"
 
@@ -31,7 +33,9 @@ func TestCoreAdapterProcess(t *testing.T) {
 	if json.Unmarshal([]byte(os.Getenv("OMABIT_CORE_TEST_ARGS")), &args) != nil {
 		os.Exit(99)
 	}
-	os.Exit(run(context.Background(), args))
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer cancel()
+	os.Exit(run(ctx, args))
 }
 func coreTestCommand(t *testing.T, args ...string) *exec.Cmd {
 	t.Helper()
