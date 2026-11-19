@@ -22,7 +22,9 @@ responses with an independent stat census of the two recording roots. It checks
 logical bytes, allocated inode blocks, file/directory counts, shared overhead and
 per-instance attribution. Original job/session bytes and control heads must stay
 exact; the guest also compares every original logical table row and stopped
-instance intent before/after. It launches no capture/runtime, changes no policy,
+instance intent before/after. Only the one stopped instance's fresh observed_at
+and exactly one runtime_revision increment may differ; every other instance value
+and history/table cell remains exact. It launches no capture/runtime, changes no policy,
 and retires nothing. Source helpers cannot execute against a host/user runner.
 
 The scope is stationary closed native captures after copying/rebooting a fixed
@@ -40,7 +42,7 @@ supervisor bounds. The Go helper has a2min context,150s test and180s process
 deadline. No host HOME, run sockets, engine, credentials or user pier is exposed.
 One actual runtime experiment only; no host Go builds/tests while it is active.
 
-Ten inert Python guards and the Go fixed-VM identity/refusal guard pass. These
+Eleven inert Python guards and the Go fixed-VM identity/refusal guard pass. These
 cover no-run/no effects, output binding, forbidden runtime/embedded changes,
 wrong boot bytes, actual generated-unit deadline nesting, guest identity/schema/
 source fixture selection, SQLite reader closure, finite decompression and an
@@ -54,3 +56,13 @@ candidate tmpfs binary before startup; its condition still requires the guest's
 explicit readiness marker. A guard inspects this actual emitted override and
 refuses implicit resume. The separately frozen PID1 must include this ordering
 fix; the earlier prepared boot is not eligible after its source changes.
+
+The first native helper passes independent allocated/logical/count/shared/instance
+comparisons through actual CLI/stdio, with unchanged capture bytes/control heads.
+The whole first case fails because its table comparison also rejects the fresh
+observation timestamp and revision75→76. An independent read-only export of both
+databases proves those are the only changes; all other values/rows are exact and
+the original row digest matches the pre-service snapshot. Preserve that failed
+whole image/evidence. The corrected comparator permits only this exact refresh,
+rejecting changed intent/storage/history, missing values, extra rows/tables,
+stale time and additional revisions. A fresh full native retry is still required.

@@ -1,4 +1,5 @@
 import configparser
+import copy
 import contextlib
 import gzip
 import importlib.util
@@ -22,6 +23,31 @@ def module(name):
 
 
 class UsageGuards(unittest.TestCase):
+    def test_only_one_fresh_observation_can_differ_from_original_rows(self):
+        guest = module('guest')
+        state = {'public': {'id': 'recording-zod', 'ship': '~zod', 'desired_state': 'stopped', 'observed_at': '2026-11-19T10:00:00.000000001Z'}, 'runtime_revision': 75, 'runtime': {'storage': {'fixture': 'same-pier'}, 'initialized': True}}
+        before = {'instances': [('recording-zod', json.dumps(state))], 'history': [('original', b'unchanged')]}
+        fresh = copy.deepcopy(state); fresh['public']['observed_at'] = '2026-11-19T11:00:00.000000001Z'; fresh['runtime_revision'] = 76
+        after = {'instances': [('recording-zod', json.dumps(fresh))], 'history': [('original', b'unchanged')]}
+        original = copy.deepcopy(before)
+        self.assertNotEqual(before, after)  # reproduces the first whole-case assertion failure
+        self.assertTrue(guest.verify_preserved_rows(before, after)['fresh_observation_only'])
+        self.assertEqual(before, original)
+        for change in ('intent', 'storage', 'missing-field', 'revision', 'stale-time', 'history', 'extra-row', 'extra-table'):
+            with self.subTest(change=change):
+                changed = copy.deepcopy(after); body = copy.deepcopy(fresh)
+                if change == 'intent': body['public']['desired_state'] = 'running'
+                elif change == 'storage': body['runtime']['storage'] = {'fixture': 'other-pier'}
+                elif change == 'missing-field': del body['runtime']['initialized']
+                elif change == 'revision': body['runtime_revision'] = 77
+                elif change == 'stale-time': body['public']['observed_at'] = state['public']['observed_at']
+                elif change == 'history': changed['history'] = [('original', b'changed')]
+                elif change == 'extra-row': changed['history'].append(('new', b'not-allowed'))
+                elif change == 'extra-table': changed['new-table'] = []
+                changed['instances'] = [('recording-zod', json.dumps(body))]
+                with self.assertRaises(RuntimeError):
+                    guest.verify_preserved_rows(before, changed)
+
     def test_no_run_has_no_source_storage_or_process_effect(self):
         host = module('run')
         with patch.object(sys, 'argv', ['run.py']), patch.object(host.subprocess, 'check_output', side_effect=AssertionError('no process')), patch.object(host.budget, 'charge', side_effect=AssertionError('no admission')), contextlib.redirect_stdout(io.StringIO()):

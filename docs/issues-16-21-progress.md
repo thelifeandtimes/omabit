@@ -535,3 +535,16 @@ M726 pins the separately frozen corrected e0af21ae PID1 and verifies its actual
 binary/source/clean provenance, with all four f37b32d4 tools unchanged. Ten inert
 guards pass. Full320MiB admission fits under48GiB; actual launch/worker rechecks
 and native measurement remain required. No guest starts at this checkpoint.
+
+M727's actual native allocation helper passes independent CLI/stdio/stat totals
+and unchanged capture/control gates. The whole first case fails its literal
+instance-row assertion. Read-only original/current SQLite evidence proves only a
+fresh observation timestamp and revision75→76 changed; all other rows/values are
+exact. Preserve the whole failed fixture. The corrected exact comparator and11
+inert guards pass; unchanged binaries still need a fresh full native retry.
+
+M728 evicts only100,954,112bytes of newly validated regenerable compiler/index
+cache, preserving157 named evidence/artifact/disk files exact. Corrected320MiB
+admission fits under48GiB; failed COW01 and original07 remain intact, with all
+product/helper/boot pins unchanged. Commit the exact-observation fixture correction
+before a fresh COW02; native success is still pending.

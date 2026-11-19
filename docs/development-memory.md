@@ -13249,3 +13249,49 @@ kernel128MiB root and bounded input/log limits retain the full capsule boundary.
 No guest has started yet and no native measurement pass is claimed. Current
 production, preserved DEV, existing/protected/tmux ships, successful/failed whole
 fixtures and original recording07 backing remain unchanged.
+
+## M727 — Native allocation helper passes; isolate overbroad observation-row assertion (2026-11-19)
+
+First usage COW01 runs exact f37b32d4 tools and corrected e0af21ae boot. Its
+actual CLI/official-SDK helper passes independent stat allocation/attribution and
+unchanged capture/control-head gates:19files/6directories,29,495logical and
+94,208allocated bytes, including8,192shared bytes. The whole case fails its final
+literal all-table comparison; helper0/QEMU0 are not a whole pass. Preserve root
+9d2b724355a1b7391bb44cb85bb157a01626408898071688ec31daeaaa3da8cd and
+input1179039efe15e81d22e0b2af74ee52bb146af57efda0517a6ae6942452e7ea5b.
+
+After VM/supervisor end, an offline kernel utility mounts current/original07/
+inputs read-only,noload,nodev,nosuid,noexec and exports8 bounded files, executing
+no disk code. Separate65 SQLite copies both check ok. The independently exported
+original table digest matches the guest's pre-service snapshot. Only instances.
+body changes: public.observed_at refreshes and runtime_revision75→76. Every other
+table cell and instance value, including stopped intent/storage, is identical.
+All raw files, roots/backings remain unchanged. See the
+[failed whole-case evidence](diagnostics/2026-11-19-recording-allocation-native-fixture-failure.json).
+
+Correct only the fixture comparator: allow that one later UTC observation and
+exactly one revision increment; preserve every other value/row/table. A regression
+reproduces the original equality failure, verifies the actual extracted rows,
+and refuses changed intent/storage, missing values, extra history/rows/tables,
+stale time and additional revisions. All11 inert guards pass(0.047s). Product/
+helper/boot binaries stay unchanged. The ended case remains failed; a fresh full
+retry/admission is required. No original image, policy, runtime/capture, installed
+namespace, existing ship or production state is changed.
+
+## M728 — Preserve failed allocation evidence and admit corrected retry (2026-11-19)
+
+After all task/native/reader/build scopes end, evict only270 newly classified
+Go1.27.3 compiler/index cache files(100,954,112bytes). Verify content hash, archive/
+index format, owner/physical single-link bindings, and157 preserved files before/
+after, including both failed allocation disks, exact original/current SQLite/
+proofs, all matching f37b32d4 tools/e0af21ae boot and prior full references. No
+unique image, source/module download, recording, SQL, log or retained evidence
+is retired. This does not reuse prior user disk-removal permissions.
+
+Admit the fresh corrected320MiB case:51,161,755,648charged plus335,544,320 is
+51,497,299,968, below51,539,607,552. The product/helper/boot artifacts remain exact;
+only the fixture's exact single-observation comparison and inert regression
+change after freeze. Original usage COW01 remains failed and intact. Commit the
+correction before launching a fresh COW02; actual worker admission rechecks and
+full native success are still required. No guest starts at this checkpoint and
+all production/manual DEV/existing/protected/tmux ship exclusions remain.

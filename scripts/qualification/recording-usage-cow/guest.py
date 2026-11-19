@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 """Observe exact copied closed native recordings; no launch/control writes."""
 import contextlib
+import copy
+import datetime
 import gzip
 import hashlib
 import importlib.util
@@ -61,6 +63,32 @@ def saved_rows():
         return rows
 
 
+def verify_preserved_rows(before, after):
+    # A fresh manager reobserves the one stopped instance once. This is current
+    # observation evidence, not a rewrite of immutable capture/control history.
+    # Permit exactly that timestamp and its single revision increment. Every
+    # other instance value, row/cell and table remains exact.
+    original, current = copy.deepcopy(before), copy.deepcopy(after)
+    if set(original) != set(current) or len(original.get('instances', [])) != 1 or len(current.get('instances', [])) != 1:
+        raise RuntimeError('original logical inventory changed')
+    old_row, new_row = original['instances'][0], current['instances'][0]
+    if len(old_row) != 2 or len(new_row) != 2 or old_row[0] != new_row[0]:
+        raise RuntimeError('original instance binding changed')
+    old, new = json.loads(old_row[1]), json.loads(new_row[1])
+    old_time, new_time = old['public'].pop('observed_at'), new['public'].pop('observed_at')
+    old_revision, new_revision = old.pop('runtime_revision'), new.pop('runtime_revision')
+    if type(old_revision) is not int or type(new_revision) is not int or old_revision < 1 or new_revision != old_revision+1:
+        raise RuntimeError('not exactly one fresh instance observation')
+    if not isinstance(old_time, str) or not isinstance(new_time, str) or not old_time.endswith('Z') or not new_time.endswith('Z') or datetime.datetime.fromisoformat(new_time[:-1]+'+00:00') <= datetime.datetime.fromisoformat(old_time[:-1]+'+00:00'):
+        raise RuntimeError('fresh observation timestamp not established')
+    if old != new:
+        raise RuntimeError('original instance intent/configuration/runtime values changed')
+    del original['instances'], current['instances']
+    if original != current:
+        raise RuntimeError('saved original history/table rows changed')
+    return {'fields': ['public.observed_at', 'runtime_revision'], 'before_revision': old_revision, 'after_revision': new_revision, 'fresh_observation_only': True}
+
+
 def inflate(scenario):
     if R.exists() or R.is_symlink():
         raise RuntimeError('fresh tmpfs executables required')
@@ -114,9 +142,8 @@ def main():
     value = json.loads(proof.read_text())
     if value.get('passed') is not True or not all(value.get(key) is True for key in ('original_recording_bytes_unchanged', 'policy_head_unchanged', 'actual_cli_and_stdio_measurements')):
         raise RuntimeError('not every native allocation/read gate passed')
-    if saved_rows() != before:
-        raise RuntimeError('saved original rows/intent changed during read qualification')
-    report.update(product=value, proof_sha256=sha(proof), original_rows_preserved=True, passed=True)
+    observation = verify_preserved_rows(before, saved_rows())
+    report.update(product=value, proof_sha256=sha(proof), original_rows_preserved_except_one_observation=True, observation_refresh=observation, passed=True)
 
 
 if __name__ == '__main__':
