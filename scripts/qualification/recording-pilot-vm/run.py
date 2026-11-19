@@ -41,7 +41,7 @@ def terminate(number, frame):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ('portable', 'candidate', 'rootless', 'runtime', 'helper', 'output'):
+    for name in ('portable', 'candidate', 'predecessor', 'rootless', 'runtime', 'helper', 'output'):
         parser.add_argument('--'+name, type=Path)
     parser.add_argument('--storage-budget-gib', type=int, choices=(40, 48), default=40)
     parser.add_argument('--artifact-source', help='exact frozen artifact commit when only harness/documentation changed')
@@ -51,7 +51,7 @@ def main():
     if not args.run:
         parser.print_help()
         return
-    names = ('portable', 'candidate', 'rootless', 'runtime', 'helper', 'output')
+    names = ('portable', 'candidate', 'predecessor', 'rootless', 'runtime', 'helper', 'output')
     if os.geteuid() == 0 or any(getattr(args, name) is None for name in names):
         parser.error('ordinary owner and every explicit input required')
     out = args.output
@@ -84,6 +84,12 @@ def main():
         elif '\tvcs.revision='+commit not in info or '\tvcs.modified=false' not in info:
             raise RuntimeError('candidate source identity differs')
         builds[name] = {'sha256': util.digest(path), 'bytes': path.stat().st_size, 'build_info': info}
+    predecessor=ordinary(args.predecessor)
+    if util.digest(predecessor)!='98bfa21634dce830076f49b0b05a2422944fe55476734bd8e961b68c1ee60e6c':
+        raise RuntimeError('exact previously qualified schema64 recording runner required')
+    prior_info=subprocess.check_output(['go','version','-m',predecessor],text=True)
+    if '\tvcs.revision=2d0281971cca0285e5aabc4b91279830a04ab9b1' not in prior_info or '\tvcs.modified=false' not in prior_info:
+        raise RuntimeError('predecessor source identity differs')
     runtime = ordinary(args.runtime, True)
     if util.digest(ordinary(runtime/'boot.pill')) != budget.PILL or util.digest(ordinary(runtime/'runtime.oci.tar')) != budget.OCI:
         raise RuntimeError('frozen runtime/pill differs')
@@ -144,16 +150,19 @@ def main():
     for name in ('omabit', 'urbit-collector', 'urbit-runner'):
         shutil.copy2(args.candidate/name, payload/'candidate'/name)
         (payload/'candidate'/name).chmod(0o755)
+    shutil.copy2(predecessor,payload/'predecessor-runner')
+    (payload/'predecessor-runner').chmod(0o755)
     shutil.copytree(args.rootless, payload/'previous/rootless-bundle')
     for name in ('boot.pill', 'runtime.oci.tar'):
         util.stage_immutable(runtime/name, payload/name)
     shutil.copy2(args.helper, payload/'managed.test')
     shutil.copy2(Path(__file__).with_name('guest.py'), payload/'guest.py')
     shutil.copy2(ROOT/'scripts/qualification/issues-recovery/guest.py', payload/'issues-common.py')
-    scenario = {'kind': 'issues20-recording-pilot-v1', 'development_snapshot': True,
-                'source_commit': commit, 'harness_commit':harness_commit,'target_schema': 64, 'candidate': builds,
+    scenario = {'kind': 'issues20-recording-policy-upgrade-v1', 'development_snapshot': True,
+                'source_commit': commit, 'harness_commit':harness_commit,'target_schema': 65, 'candidate': builds,
                 'pill_sha256': budget.PILL, 'oci_sha256': budget.OCI,
-                'case': 'ordinary-capture-manager-restart-stop-v1'}
+                'case': 'ordinary-capture-active-worker-upgrade-policy-api-v1',
+                'predecessor':{'source':'2d0281971cca0285e5aabc4b91279830a04ab9b1','runner_sha256':util.digest(predecessor),'state_schema':64}}
     (payload/'scenario.json').write_text(json.dumps(scenario, indent=2)+'\n')
     disk = out/'payload.ext4'
     with disk.open('xb') as stream:

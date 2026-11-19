@@ -36,3 +36,17 @@ existing-running adoption, projects, maintenance, or recording API/CLI/UI/export
 The inert pipe/PTY/script/tmux comparison remains separate evidence. Failure or
 forced VM termination is never a clean native lifecycle pass. Retain the capsule
 and exact source/binary/input identities for diagnosis.
+
+
+The current source advances this harness to the explicit schema64→65 policy/API
+upgrade case (`issues20-recording-policy-upgrade-v1`). Supply `--predecessor` with
+the frozen previously qualified2d028197 runner, SHA98bfa21634dce830076f49b0b05a2422944fe55476734bd8e961b68c1ee60e6c.
+The guest installs that old writer, starts one captured ordinary fake, then installs
+the matching candidate while preserving the exact worker, container, engine,
+identity, original operation history and old64MiB job limits. It compares API
+windows against an independent full raw decoder, configures32MiB limits through
+the real typed CLI, checks exact replay/lookup and an incident pin, then starts the
+same pier again with new immutable limits. This case is prepared, not yet a pass.
+A later report must state actual results; old M697 evidence remains tied to its
+unchanged frozen harness/artifacts. Retention/deletion, pressure, host reboot,
+other factories and UI remain outside this case.

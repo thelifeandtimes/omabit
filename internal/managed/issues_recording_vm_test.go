@@ -28,8 +28,9 @@ func TestIssuesRecordingSnapshotDisposableVM(t *testing.T) {
 	var scenario struct {
 		Kind   string `json:"kind"`
 		Source string `json:"source_commit"`
+		Schema int    `json:"target_schema"`
 	}
-	if e1 != nil || e2 != nil || e3 != nil || json.Unmarshal(raw, &scenario) != nil || scenario.Kind != "issues20-recording-pilot-v1" || len(issuesVMSourceRevision) != 40 || scenario.Source != issuesVMSourceRevision || strings.TrimSpace(string(vendor)) != "QEMU" || !strings.Contains(" "+string(cmdline)+" ", " omabit.disposable-guest=release-upgrade-v1 ") || os.Geteuid() != 1000 || os.Getenv("HOME") != "/home/review" || os.Getenv("OMABIT_RECORDING_PILOT_VM") != "snapshot" {
+	if e1 != nil || e2 != nil || e3 != nil || json.Unmarshal(raw, &scenario) != nil || scenario.Kind != "issues20-recording-policy-upgrade-v1" || scenario.Schema != 65 || len(issuesVMSourceRevision) != 40 || scenario.Source != issuesVMSourceRevision || strings.TrimSpace(string(vendor)) != "QEMU" || !strings.Contains(" "+string(cmdline)+" ", " omabit.disposable-guest=release-upgrade-v1 ") || os.Geteuid() != 1000 || os.Getenv("HOME") != "/home/review" || os.Getenv("OMABIT_RECORDING_PILOT_VM") != "snapshot" {
 		t.Fatal("refused outside exact frozen recording guest")
 	}
 	base := "/home/review/.local/share/urbit-runner"

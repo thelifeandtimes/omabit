@@ -338,3 +338,10 @@ lost-write guards and vet pass; automatic retirement is refused. Matching native
 API/active-worker upgrade, measured usage/retirement, broader factories and UI
 remain pending. The historical recovery group timed out during schema45; split
 qualification is still required and no complete managed-suite pass is claimed.
+
+M703 prepares the explicit old64→candidate65 native recording/API upgrade case,
+including exact active-worker/process/history preservation, independent raw API
+comparison, policy replay/lookup/pin, immutable old/new job limits and unchanged
+old-reader refusal. Five inert guards and the host-inert Go helper pass; actual
+native execution is pending. Two historical recovery groups pass; the remaining
+13 require a smaller split after their deadline. No installed deployment changed.

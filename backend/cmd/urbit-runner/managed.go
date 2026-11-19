@@ -64,7 +64,10 @@ initialized ships whose persisted desired state is running. Each ship gets at mo
 one journaled attempt per host boot. Nonzero exits require a recorded healthy prior
 boot; intentionally stopped, interrupted and independently uncertain ships are skipped.
 With --record-runtime, new ordinary launches use the private recording pilot:
-at most sixteen 64 MiB sessions, a 2 GiB free-space floor, and no automatic pruning.
+defaults of sixteen 64 MiB sessions and a 2 GiB free-space floor. Audited recording
+controls configure new-launch limits and incident pins; existing workers retain
+their immutable limits. Capacity charges retained jobs conservatively. There is
+no automatic pruning; age-based retirement is not implemented.
 Recording workers outlive management. This pilot does not adopt running containers
 or record project and maintenance runtimes. Native and upgrade qualification is pending.
 `)

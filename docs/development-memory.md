@@ -12610,3 +12610,27 @@ limit during active schema45 validation after advancing through earlier cases;
 this is still not a whole-group pass. Split gates remain required. Matching native
 API/active-worker upgrade, measured usage, retirement/pressure recovery, other
 factories and UI remain open. No installed namespace or existing runtime changed.
+
+## M703 — Prepare a frozen recording policy/API active-worker upgrade case (2026-11-18)
+
+Advance only the fresh recording VM harness to an explicit schema64→65 case.
+Pin the previously qualified2d028197 runner and its actual executable SHA.
+Install/start that old writer and independent recorder in the fresh guest, then
+install the candidate and compare runner identity, original history, engine,
+container and exact worker process. Compare typed API raw windows to an independent
+full-prefix decoder. Configure new limits, verify exact replay/actor lookup,
+pin the original incident, and require a new same-pier job to use new limits while
+the old job retains its original maximum. Finally require the real old executable
+to refuse the closed65 database unchanged. Preserve all failure capsules.
+
+Five inert/refusal/actual JSON-shape harness guards pass. Python syntax passes;
+the exact Go helper stays inert outside its marked guest (0.006s). Update CLI
+help to describe configurable defaults and unsupported age/automatic retirement.
+Its guard first required the prior explicit no-pruning wording; preserve that
+wording and the CLI opt-in/refusal guard passes0.006s.
+This is prepared qualification only; no native pass is claimed. M697's old frozen
+pilot evidence stays unchanged. Its ended full reference may be losslessly
+archived with full inflate/hash verification; never touch the pending app VM.
+The first two historical recovery groups pass25.853s/40.471s. The remaining13
+again hit the bound during schema45 and need smaller groups; no whole-suite pass.
+Production, manual DEV, protected/tmux ships and existing services stay excluded.
