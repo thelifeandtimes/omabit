@@ -454,3 +454,7 @@ the reviewed/applied runtime audit have passed; source reconciliation and comple
 two-version/state/restart qualification are still running. See the
 [current report](diagnostics/2026-11-19-current65-grubbery-recovery-native.json).
 No installed/DEV/production change or complete native pass is claimed.
+
+The [remaining gate map](issues-16-21-next-gates.md) summarizes each issue's
+implemented scope, evidence boundary and next work, including the separate
+project-containment and final stable-to-candidate/DEV qualification tracks.
