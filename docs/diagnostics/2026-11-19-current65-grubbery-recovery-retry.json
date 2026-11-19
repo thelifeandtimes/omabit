@@ -1,7 +1,7 @@
 {
   "format": 1,
-  "status": "running",
-  "passed": null,
+  "status": "passed-scoped-native",
+  "passed": true,
   "case": "cow-recover-pending-zod-v1",
   "original_schema": 62,
   "target_schema": 65,
@@ -47,8 +47,71 @@
   "earlier_whole_failure": "2026-11-19-current65-grubbery-recovery-native.json",
   "earlier_failure_retained": true,
   "limits": [
-    "Running is not a passed qualification.",
+    "Pass covers this exact copied pending-app recovery/two-version/state/restart/clean-Stop case at frozen12f78952 only.",
     "Same12f78952 runtime artifacts and exact read-only original predecessor; only separately frozen boot deadline/harness differ.",
-    "Not installed stable59-to65, preserved DEV, full peers/permits/routes/assets or complete workflow qualification."
-  ]
+    "Not installed stable59-to65, preserved DEV, full peers/permits/routes/assets or complete workflow qualification.",
+    "Later M721 named plan/report source edits are absent from these binaries and are not qualified by this result."
+  ],
+  "helper_seconds": 2819.46,
+  "helper_exit": 0,
+  "host_exit": 0,
+  "final_clean_stop": true,
+  "original_predecessor_unchanged": true,
+  "product": {
+    "audited_replacement": true,
+    "boundary": "fixed disposable pending app only; no full permits/routes/assets/peers, process-death auth cleanup, installed upgrade or DEV/production qualification",
+    "manager_restart_audit_and_original_replay": true,
+    "one_durable_dispatch_per_original_phase": true,
+    "original_source_completed": true,
+    "second_same_pier_replacement_state": true,
+    "second_source_state_and_code": true,
+    "unknown_phase_observed_without_redispatch": true
+  },
+  "proof_sha256": "f1341b7c3dba6623bbc95fc825b5d55261462ef811d3371423b84b8444aa6260",
+  "retained_pins": {
+    "root.qcow2": {
+      "sha256": "0c28d526285e5b4e055e209e9021e5c683505ddabb5f0ce661678052949d141c",
+      "bytes": 333316096,
+      "allocated_bytes": 281350144
+    },
+    "payload.ext4": {
+      "sha256": "333b83305068a98371537373471c884b52dc0742dbfd9bc9af2a42b212f87135",
+      "bytes": 67108864,
+      "allocated_bytes": 29974528
+    },
+    "result.json": {
+      "sha256": "c9963e6c649345c89198da2c2293729777e2c7f2aec8e31bccd896819dd437a2",
+      "bytes": 10224,
+      "allocated_bytes": 12288
+    },
+    "host.json": {
+      "sha256": "2b8dc42e36a2da857766d6f537bf0517f6a66392ab077cda2ef840986b3ccb65",
+      "bytes": 439992,
+      "allocated_bytes": 442368
+    },
+    "serial.log": {
+      "sha256": "3ad69118a2471342629b6da4fbb4ada7dc6b2096856b98e617cf32a3f7d5869f",
+      "bytes": 66466,
+      "allocated_bytes": 69632
+    }
+  },
+  "independent_read_only_extraction": {
+    "passed": true,
+    "files": 58,
+    "source_and_base_and_predecessor_unchanged": true,
+    "executed_source_disk_code": false,
+    "mounts": "read-only,noload,nodev,nosuid,noexec",
+    "original_schema": 62,
+    "current_schema": 65,
+    "original_header_and17_events_preserved": true,
+    "original_pier_storage_binding_preserved": true,
+    "current_app_operations": 2,
+    "current_app_events": 63,
+    "current_leases": 0,
+    "saved_desired_state": "stopped",
+    "quick_check": "ok on separate analysis copies",
+    "raw_evidence_unchanged": true,
+    "proof_sha256_matches_guest": true,
+    "native_and_supervisor_and_reader_scopes_empty": true
+  }
 }

@@ -59,9 +59,15 @@ Frozen framework metadata and exact local source verification are offline shared
 operations; see the [versioned Grubbery contract](grubbery-adapter.md). They do not
 install the framework or establish live adapter readiness.
 Ship routes are read-only. Sanitized snapshot/watch/log exports, broader private
-projects, named qualification, credentials, policy authoring, destructive
+projects, named qualification execution, credentials, policy authoring, destructive
 maintenance and host installation remain explicit exclusions or later slices.
 This is not a claim of complete issue19 parity.
+
+The [named checkpoint/report contract](named-checkpoints.md) adds finite metadata
+plans and explicit startup-selected historical report summaries. Focused source,
+actual CLI/SDK, frozen-predecessor and four-protocol checks pass. It exposes no executor and cannot attest caller-written
+outcomes or a missing source/environment binding. Report authority is distinct
+from source roots and enrolled runners; arbitrary tool-supplied paths refuse.
 
 `project.stop-diagnostic-bundle.v1` derives a bounded shareable view from the exact
 saved operator diagnosis. Its fixed categories/messages omit private bindings,

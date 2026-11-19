@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"time"
 
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/checkplan"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/client"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/guidance"
@@ -48,6 +49,7 @@ type Options struct {
 	EnableMutations bool
 	Guidance        *guidance.Bundle
 	Sources         []*SourceRoot
+	TestReports     []*checkplan.Report
 }
 type Descriptor struct {
 	ID             string             `json:"id"`
@@ -105,6 +107,17 @@ func New(options Options) (*Service, error) {
 	}
 	options.Allowed = slices.Clone(options.Allowed)
 	options.Sources = slices.Clone(options.Sources)
+	options.TestReports = slices.Clone(options.TestReports)
+	if len(options.TestReports) > checkplan.MaxReports {
+		return nil, errors.New("too many selected checkpoint reports")
+	}
+	seenReports := map[string]bool{}
+	for _, report := range options.TestReports {
+		if report == nil || report.Name() == "" || seenReports[report.Name()] {
+			return nil, errors.New("invalid or duplicate checkpoint report")
+		}
+		seenReports[report.Name()] = true
+	}
 	seenSources := map[string]bool{}
 	for _, source := range options.Sources {
 		if source == nil || source.root == nil || !protocol.ValidID(source.Name) || seenSources[source.Name] {

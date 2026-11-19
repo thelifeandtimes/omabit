@@ -13085,3 +13085,93 @@ original17-event uncertainty; remaining lifecycle/source/state/restart/final
 clean Stop gates are running. The [retry report](diagnostics/2026-11-19-current65-grubbery-recovery-retry.json)
 is explicitly unqualified until full completion. No host Go builds/tests run
 while this native experiment is active.
+
+## M721 — Draft named checkpoint metadata and explicit historical-report reads (2026-11-19)
+
+While COW05 runs its frozen12f78952 app code, draft later issue19 interface work
+without host Go builds/tests. Extract the existing runtime-plan/http-plan
+constructors into checkplan; a source-text comparison to12f78952 proves both
+bodies unchanged except exported function/call names. Legacy wrappers remain.
+Add typed, digest-bound `tests.plans.v1`/`tests.plan.v1` metadata. They execute
+nothing and cannot grant local-owner qualifier authority or production readiness.
+
+Add separate startup `--allow-test-report NAME:SHA256:/absolute/report.json`
+snapshots, bounded to32 owner-private ordinary single-link files/1MiB each.
+Require exact complete bytes, physical path, no links/FIFO/devices and unchanged
+bindings; close before serving. `tests.reports.v1`/`tests.report.v1` require
+explicit private-data consent and exact name/plan/digest. Source roots, runner
+enrollment and tool-supplied paths cannot grant file access. Summaries omit raw
+output/errors/names/paths/container IDs and distinguish reported outcomes/pin
+matches from actual execution/source attestation. Support only the two existing
+legacy runtime/HTTP report profiles; no arbitrary check executor is introduced.
+No stored report, runner schema65 or runtime/recording format changes.
+
+Prepare meaningful private-file/format/privacy/immutable snapshot tests, exact
+actual frozen12f CLI metadata comparison, shared catalog/refusal checks, actual
+CLI/SDK stdio parity and all four previously supported MCP protocol revisions.
+These tests are **not run yet**: the native experiment retains exclusive runtime/
+Go-test admission. The [draft contract](named-checkpoints.md) and
+[prepared source record](diagnostics/2026-11-19-named-checkpoint-interfaces-source.json)
+claim no source/packaging/native qualification. Later source edits are absent
+from COW05's immutable inputs, and its eventual result cannot qualify them.
+Focused tests/vet, generated help/reference, matching final artifacts and the
+remaining named executor/client and issue tracks remain required. No installed
+client, namespace, service, provider session or production state is changed.
+
+## M722 — Corrected Grubbery recovery/two-version/restart case passes (2026-11-19)
+
+COW05 completes the whole fixed native case at frozen12f78952 with separately
+pinned bf3e5f83 PID1. The helper passes in2819.46seconds. Supported lifecycle,
+CLI-reviewed/MCP-applied linked runtime audit, read-only original unknown-phase
+observation, both completed source versions, retained/new application state,
+second same-pier replacement, manager restart, historical audit/original replay
+and exactly one durable dispatch per phase all pass. The outer parent remains
+alive past the old2400s cutoff and completes the final supported clean Stop.
+The guest reports passed/helper0; QEMU exits0 with no interruption. This supersedes
+M720's running deferral, not M718's preserved failed whole run.
+
+Retain the full successful root/input and58 read-only extracted files. Root SHA
+0c28d526285e5b4e055e209e9021e5c683505ddabb5f0ce661678052949d141c;
+input333b83305068a98371537373471c884b52dc0742dbfd9bc9af2a42b212f87135;
+proof f1341b7c3dba6623bbc95fc825b5d55261462ef811d3371423b84b8444aa6260.
+Independent SQLite/WAL/SHM analysis copies verify schema62→65 preserves the exact
+original header/all17 events and original pier storage binding. The current store
+has two app operations/63events/zero leases and stopped intent; both integrity
+checks pass. Original raw evidence, predecessor and pristine base remain exact.
+Native/supervisor/reader cgroups end empty. See the
+[scoped passed report](diagnostics/2026-11-19-current65-grubbery-recovery-retry.json).
+
+This qualifies the fixed app recovery/state/restart/clean-Stop scenario only;
+full peers/permits/routes/assets, broader cleanup failures, stable59→65 and
+preserved DEV/production remain separate. Later M721 plan/report edits are not
+inside these binaries. Source tests can resume after the reader ends; no installed
+client, plugin, service, existing/protected/tmux ship or production state changed.
+
+## M723 — Named plan/report source and CLI/MCP compatibility pass (2026-11-19)
+
+After M722's native/reader units end, admit768MiB under48GiB and run the prepared
+focused checks sequentially in4GiB/no-swap/one-CPU source scopes. Checkplan races
+and real frozen12f78952 predecessor runtime-plan/http-plan equality pass(1.091s),
+shared offline/catalog/selection/authority guards pass(2.622s), official SDK
+four-protocol parity passes(7.201s), actual CLI/stdio parity passes(10.695s),
+legacy qualifier plan/help/acknowledgement regressions pass(1.017s), and focused
+vet passes on all five packages. No engine, existing runner or client profile is
+used. Post-test charge51,052,326,912 remains below51,539,607,552; measured growth
+577,810,432bytes stays within the805,306,368-byte reserve.
+
+Retain one initial CLI fixture failure(8.649s): every result already matches, but
+the final assertion incorrectly rejects the SDK's normal stderr lifecycle logs.
+The stdio contract reserves stdout for protocol and explicitly allows stderr
+diagnostics. Correct only that test to allow them while rejecting private report
+content/path leakage. The product is unchanged to pass the corrected assertion.
+Known reported phase categories remain useful without copying arbitrary names;
+snapshot time/basis and missing source/execution provenance remain explicit.
+
+This supersedes M721's pending source-check status only. The
+[source record](diagnostics/2026-11-19-named-checkpoint-interfaces-source.json)
+separates these later interfaces from M722's native12f app qualification. No
+persistent format/schema65 changes or generic/named test executor are introduced.
+Generated help/reference, matching final artifacts, actual named-client/provider
+connections, the remaining issue tracks and stable-to-candidate/preserved DEV
+qualification remain open. No installed namespace, service, existing ship or
+production state changes.

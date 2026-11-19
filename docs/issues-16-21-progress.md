@@ -488,3 +488,30 @@ unit deadlines; all four runtime hashes remain12f78952. Its
 [running report](diagnostics/2026-11-19-current65-grubbery-recovery-retry.json)
 does not claim completion. Host Go builds/tests wait until the one native case
 ends; no installed namespace or existing ship changes.
+
+M721 drafts finite shared runtime/HTTP plan metadata and exact startup-selected
+private historical report summaries. Legacy constructors are text-equivalent to
+12f78952; no executor, source-root/path bypass or independent attestation is
+exposed. Source/file/privacy/actual old CLI/current CLI/SDK/four-protocol checks
+are prepared but **not run** while COW05 is active. Its frozen native inputs
+exclude these later edits. See the [draft contract](named-checkpoints.md);
+source validation, generated reference and matching artifacts remain pending.
+
+M722 passes corrected COW05's entire fixed native app recovery/two-version/state/
+same-pier/manager-restart/replay/single-dispatch/final clean-Stop case at12f78952
+(helper2819.46s, guest/helper/QEMU success). Independent read-only extraction of58
+files verifies original header/17events/pier binding, stopped intent and zero app
+leases, with original backing/evidence bytes unchanged. See the
+[scoped passed report](diagnostics/2026-11-19-current65-grubbery-recovery-retry.json).
+Earlier COW04 remains failed/retained. Full peers/permits/routes/assets and
+stable-to-candidate/preserved DEV remain separate, as do M721's later untested
+interfaces. All native/reader scopes are empty; focused source testing resumes.
+
+M723 passes the later named plan/report slice's focused races, real12f predecessor
+metadata equality, actual CLI/official-SDK stdio parity, four protocol revisions,
+legacy qualifier regressions and vet. An initial test wrongly rejected documented
+stderr lifecycle diagnostics; correcting only its fixture preserves product
+behavior and checks private-data leakage. Storage growth remains within reserve.
+[Evidence](diagnostics/2026-11-19-named-checkpoint-interfaces-source.json) qualifies
+source interfaces only; generated reference, matching artifacts, named execution/
+actual clients, remaining issue tracks and preserved DEV qualification stay open.
