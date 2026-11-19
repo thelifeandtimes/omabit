@@ -634,3 +634,17 @@ directory and creates only the three private recording children. It preserves
 existing content and refuses unsafe objects without repair/replacement. Source
 race/vet checks pass with fresh private filesystem fixtures. Normal server
 construction does not call this provisioner yet.
+
+## Session allocation before attachment
+
+The worker now durably links the original job/claim to a fresh session ID before
+opening capture storage. This preserves lookup through a failed opening or
+attachment without pretending a header or capture exists. Allocation has its own
+observed time; it is not a process-start or capture epoch. Current live readiness
+requires the unchanged link. Existing readiness/results validate it when present;
+older jobs without a sidecar remain unknown and unchanged.
+
+Source race checks pass for allocation-only lookup, storage failure, duplicate/
+malformed/rebound/linked files, changed claims, late changes and unchanged actual
+claim1 bytes. This is source/filesystem qualification only. Read-only status/drain,
+normal manager integration and native/installed worker gates remain pending.

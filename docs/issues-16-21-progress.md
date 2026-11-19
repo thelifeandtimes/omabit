@@ -255,3 +255,8 @@ M690 prepares exact selected-owner recording roots with private inode checks and
 durable setup, preserving existing contents and refusing unsafe objects. Admitted
 source race/vet gates pass; normal server setup remains unwired and no installed
 namespace is touched.
+
+M691 retains a durable claim-bound job/session allocation before capture storage
+or attachment. Admitted source race gates preserve failed/opening lookup, exact
+live readiness and legacy unknown omissions without backfill. Status/drain,
+normal manager wiring and actual worker/native/installed gates remain open.

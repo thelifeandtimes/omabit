@@ -93,7 +93,7 @@ func submitRecordingWorker(ctx context.Context, opts RecordingWorkerOptions, job
 		return RecordingJobReady{}, ErrRecordingWorker
 	}
 	savedBytes, err := saved.Bytes()
-	if err != nil || !bytes.Equal(raw, savedBytes) || !recordingJobHasNoFiles(jobs, job.ID, "claim.json", "ready.json", "result.json") || fence(ctx) != nil || ctx.Err() != nil {
+	if err != nil || !bytes.Equal(raw, savedBytes) || !recordingJobHasNoFiles(jobs, job.ID, "claim.json", "session.json", "ready.json", "result.json") || fence(ctx) != nil || ctx.Err() != nil {
 		return RecordingJobReady{}, ErrRecordingWorker
 	}
 	if err := submit(ctx, saved); err != nil {
@@ -106,6 +106,10 @@ func submitRecordingWorker(ctx context.Context, opts RecordingWorkerOptions, job
 	// job files. It must be followed by exact live identity and metadata checks.
 	ready, err := jobs.ReadReady(job.ID, digest)
 	if err != nil || !recordingJobHasNoFiles(jobs, job.ID, "result.json") {
+		return RecordingJobReady{}, ErrRecordingWorker
+	}
+	allocation, err := jobs.ReadSession(job.ID, digest)
+	if err != nil || allocation.SessionID != ready.SessionID {
 		return RecordingJobReady{}, ErrRecordingWorker
 	}
 	worker, err := jobs.ReadWorker(job.ID, digest)
@@ -128,7 +132,8 @@ func submitRecordingWorker(ctx context.Context, opts RecordingWorkerOptions, job
 	}
 	finalReady, err := jobs.ReadReady(job.ID, digest)
 	finalWorker, workerErr := jobs.ReadWorker(job.ID, digest)
-	if err != nil || workerErr != nil || finalReady != ready || finalWorker != worker || !recordingJobHasNoFiles(jobs, job.ID, "result.json") || recordingReadyMetadata(ctx, opts, job, ready, worker) != nil || fence(ctx) != nil || ctx.Err() != nil {
+	finalAllocation, allocationErr := jobs.ReadSession(job.ID, digest)
+	if err != nil || workerErr != nil || allocationErr != nil || finalAllocation != allocation || finalReady != ready || finalWorker != worker || !recordingJobHasNoFiles(jobs, job.ID, "result.json") || recordingReadyMetadata(ctx, opts, job, ready, worker) != nil || fence(ctx) != nil || ctx.Err() != nil {
 		return RecordingJobReady{}, ErrRecordingWorker
 	}
 	return ready, nil

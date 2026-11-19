@@ -87,6 +87,9 @@ func checkOriginalRecordingClaim(t *testing.T, root string) (ManagedRecordingJob
 		if err != nil || ready.SessionID != strings.Repeat("2", 32) || ready.JobSHA256 != digest {
 			t.Fatal("original saved readiness changed", err)
 		}
+		if _, err := s.ReadSession(job.ID, digest); !errors.Is(err, ErrRecordingSessionUnknown) {
+			t.Fatal("legacy omission was backfilled or became session authority", err)
+		}
 		current := worker
 		current.StartTicks, current.InvocationID = 123, strings.Repeat("a", 32)
 		if _, err = s.Claim(job.ID, digest, current); !errors.Is(err, ErrRecordingJobClaimed) {

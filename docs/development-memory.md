@@ -12299,3 +12299,22 @@ operate fresh private filesystem fixtures and contact no engine/unit. Normal
 server construction does not select this preparation yet. Actual manager handoff,
 terminal drain/outcome handling, native capture and installed/active-worker
 upgrades remain pending. Production/manual DEV and existing ships stay untouched.
+
+## M691 — Retain the job/session link before capture can fail (2026-11-18)
+
+Add an immutable claim-bound session allocation sidecar before the worker opens
+capture storage or attaches. It records only allocation, not a recording header,
+readiness, successful capture or process start. Current coordinator admission
+requires its exact stable link; readiness/results cross-check it when present.
+Missing legacy sidecars remain unknown and are never backfilled. Allocation,
+claim and job bindings are canonical/private and never overwritten or repaired.
+
+Admitted focused session/worker/coordinator/job/actual-claim-fixture race checks
+pass in3.432s. They cover storage failure after allocation, lookup after claim
+closure, duplicate allocation refusal, changed/partial/linked/rebound originals,
+late allocation changes, and refusal to turn old readiness into current authority.
+The original five-file claim1 fixture stays exact, with an explicitly unknown
+allocation. The optional sidecar changes no old metadata/frame or job1 bytes;
+it is not a live/installed upgrade gate. Read-only status/drain composition,
+normal manager integration and actual worker/native capture remain pending.
+No production/manual DEV, existing runtime, ship or installed state changes.

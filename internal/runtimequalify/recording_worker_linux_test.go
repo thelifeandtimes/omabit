@@ -102,6 +102,10 @@ func TestRecordingWorkerAcknowledgesAfterSyncedMetadataAndRetainsRawExit(t *test
 		t.Fatal(err)
 	}
 	defer jobs.Close()
+	allocation, allocationErr := jobs.ReadSession(job.ID, digest)
+	if allocationErr != nil || allocation.SessionID != out.Capture.SessionID {
+		t.Fatal("capture cannot be found through its original job", allocationErr)
+	}
 	saved, err := jobs.ReadResult(job.ID, digest)
 	if err != nil || !reflect.DeepEqual(saved, out) {
 		t.Fatal("saved result rebound", err)
@@ -196,6 +200,15 @@ func TestRecordingWorkerRefusesChangedAdmissionAndDoesNotPromoteVisibleReadyFile
 				t.Fatal(openErr)
 			}
 			defer jobs.Close()
+			if scenario == "recording-storage" {
+				allocation, e := jobs.ReadSession(job.ID, digest)
+				if e != nil || allocation.SessionID == "" || out.Capture.SessionID != "" {
+					t.Fatal("storage failure lost allocated session or invented capture", e)
+				}
+				if _, e := jobs.ReadReady(job.ID, digest); !errors.Is(e, ErrRecordingJobNotReady) {
+					t.Fatal("allocation became successful readiness", e)
+				}
+			}
 			if scenario == "ack-failed" {
 				if _, e := jobs.ReadReady(job.ID, digest); e != nil {
 					t.Fatal("test did not retain visible but unacknowledged marker", e)

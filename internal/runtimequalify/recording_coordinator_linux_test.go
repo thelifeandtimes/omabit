@@ -18,7 +18,7 @@ import (
 )
 
 func TestRecordingCoordinatorComposesExactSavedReadyAndLiveFencesWithoutStartOrRetry(t *testing.T) {
-	for _, scenario := range []string{"pass", "pre-fence", "final-fence", "already-claimed", "lost-ack", "no-ready", "saved-result", "late-result", "closed-writer", "unexpected-output", "partial-frame", "changed-metadata", "changed-claim", "wrong-unit", "changed-unit", "worker-gone", "native-changed"} {
+	for _, scenario := range []string{"pass", "pre-fence", "final-fence", "already-claimed", "lost-ack", "no-ready", "no-allocation", "saved-result", "late-result", "closed-writer", "unexpected-output", "partial-frame", "changed-metadata", "changed-claim", "changed-allocation", "wrong-unit", "changed-unit", "worker-gone", "native-changed"} {
 		t.Run(scenario, func(t *testing.T) {
 			f, opts, job, digest, worker, _ := recordingWorkerFixture(t)
 			worker.InvocationID = strings.Repeat("a", 32)
@@ -66,6 +66,11 @@ func TestRecordingCoordinatorComposesExactSavedReadyAndLiveFencesWithoutStartOrR
 				m, err := prepare(selected)
 				if err != nil {
 					t.Fatal(err)
+				}
+				if scenario != "no-allocation" {
+					if err := lease.AllocateSession(m.SessionID, time.Now()); err != nil {
+						t.Fatal(err)
+					}
 				}
 				s, err := recording.OpenStore(opts.RecordingsRoot, recording.Limits{MaxSessionBytes: job.Limits.MaxSessionBytes, MaxSegmentBytes: job.Limits.MaxSegmentBytes, ReserveFreeBytes: job.Limits.ReserveFreeBytes})
 				if err != nil {
@@ -145,6 +150,22 @@ func TestRecordingCoordinatorComposesExactSavedReadyAndLiveFencesWithoutStartOrR
 				}
 				if observations == 2 && scenario == "late-result" {
 					if err := os.WriteFile(filepath.Join(opts.JobsRoot, job.ID, "result.json"), []byte("partial result"), 0600); err != nil {
+						t.Fatal(err)
+					}
+				}
+				if observations == 2 && scenario == "changed-allocation" {
+					path := filepath.Join(opts.JobsRoot, job.ID, "session.json")
+					raw, err := os.ReadFile(path)
+					if err != nil {
+						t.Fatal(err)
+					}
+					var allocation RecordingJobSession
+					if json.Unmarshal(raw, &allocation) != nil {
+						t.Fatal("invalid fixture allocation")
+					}
+					allocation.AllocatedAt = allocation.AllocatedAt.Add(time.Second)
+					raw, _ = json.Marshal(allocation)
+					if err := os.WriteFile(path, raw, 0600); err != nil {
 						t.Fatal(err)
 					}
 				}

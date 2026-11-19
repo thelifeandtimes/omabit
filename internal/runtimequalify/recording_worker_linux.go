@@ -153,6 +153,9 @@ func runManagedRecordingWorker(ctx context.Context, opts RecordingWorkerOptions,
 	if m.Identity.HostBootID != worker.HostBootID || m.Identity.RecorderNamespaces != worker.Namespaces {
 		return finish("admission-refused", recording.CaptureResult{}, ErrRecordingWorker)
 	}
+	if err := lease.AllocateSession(m.SessionID, time.Now()); err != nil {
+		return finish("storage-unavailable", recording.CaptureResult{}, err)
+	}
 	store, err := recording.OpenStore(opts.RecordingsRoot, recording.Limits{MaxSessionBytes: job.Limits.MaxSessionBytes, MaxSegmentBytes: job.Limits.MaxSegmentBytes, ReserveFreeBytes: job.Limits.ReserveFreeBytes})
 	if err != nil {
 		return finish("storage-unavailable", recording.CaptureResult{}, err)

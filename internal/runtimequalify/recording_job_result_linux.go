@@ -67,6 +67,9 @@ func (l *RecordingJobLease) RecordResult(code string, capture recording.CaptureR
 			return RecordingJobResult{}, ErrRecordingJobStorage
 		}
 	}
+	if l.store.checkSession(l.job.ID, l.digest, capture.SessionID) != nil {
+		return RecordingJobResult{}, ErrRecordingJobStorage
+	}
 	if err = l.store.admit(8192); err != nil {
 		return RecordingJobResult{}, err
 	}
@@ -108,6 +111,9 @@ func (s *RecordingJobs) ReadResult(id, digest string) (RecordingJobResult, error
 		if err != nil || ready.SessionID != result.Capture.SessionID {
 			return RecordingJobResult{}, ErrRecordingJobStorage
 		}
+	}
+	if s.checkSession(id, digest, result.Capture.SessionID) != nil {
+		return RecordingJobResult{}, ErrRecordingJobStorage
 	}
 	return result, nil
 }

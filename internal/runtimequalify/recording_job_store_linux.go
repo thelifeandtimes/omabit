@@ -511,5 +511,8 @@ func (s *RecordingJobs) ReadReady(id, digest string) (RecordingJobReady, error) 
 	if !bytes.Equal(canonical, claimData) {
 		return RecordingJobReady{}, ErrRecordingJobStorage
 	}
+	if s.checkSession(id, digest, ready.SessionID) != nil {
+		return RecordingJobReady{}, ErrRecordingJobStorage
+	}
 	return ready, nil
 }
