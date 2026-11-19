@@ -1,0 +1,51 @@
+{
+  "format": 1,
+  "status": "completed",
+  "authorization_date": "2026-11-19",
+  "cases": [
+    "recording-upgrade-03",
+    "recording-upgrade-04"
+  ],
+  "archived": false,
+  "full_disks_retained": false,
+  "disposed_files": [
+    {
+      "case": "omabit-issues-recording-vm-03",
+      "name": "root.qcow2",
+      "original_sha256": "f4272d40be723306ddae515dd1b7f3a1b2cb7ebfbbcf1b42f25debc454b9b776",
+      "bytes": 1576599552,
+      "allocated_bytes": 1205211136
+    },
+    {
+      "case": "omabit-issues-recording-vm-03",
+      "name": "payload.ext4",
+      "original_sha256": "718c6705c9c47ffbd85c49a6d1c39d7dc28cde6e8ae6b27c202ea2e066b28e2b",
+      "bytes": 536870912,
+      "allocated_bytes": 334884864
+    },
+    {
+      "case": "omabit-issues-recording-vm-04",
+      "name": "root.qcow2",
+      "original_sha256": "bf1409c592ec956575e8523856e971cbd9fba98f79e8cb9d1eba65ca0ab7ba8a",
+      "bytes": 1575026688,
+      "allocated_bytes": 1204097024
+    },
+    {
+      "case": "omabit-issues-recording-vm-04",
+      "name": "payload.ext4",
+      "original_sha256": "baac2096b7907733a53ab735aeaa54ef3bdc4a8419cb444a5f26aee722aed3ec",
+      "bytes": 536870912,
+      "allocated_bytes": 334888960
+    }
+  ],
+  "freed_allocated_bytes": 3079081984,
+  "lessons": "2026-11-19-recording-upgrade-fixture-lessons.md",
+  "compact_evidence_and_frozen_artifacts_verified": 41,
+  "charged_before": 50966265856,
+  "charged_after": 47887331328,
+  "supersedes_raw_retention_in": [
+    "M705",
+    "M706"
+  ],
+  "scope": "explicitly authorized permanent disposal of four ended disposable fixture disk files after retaining lessons. Historical test failures remain failures. Compact SQLite/receipts/logs/source/binaries/init and shared backing retained; pending app VM, production, manual DEV, protected/existing/tmux ships excluded."
+}

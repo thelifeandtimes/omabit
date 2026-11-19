@@ -12741,3 +12741,31 @@ Matching native API/upgrade and full desktop/packaging gates remain required.
 The public MCP catalog still has an obsolete HTTP-not-implemented label; prepare
 its narrow correction privately for after the frozen native gate. No Go source
 or282c3b3 candidate bytes change while that qualification remains pending.
+
+## M708 — Dispose of the two understood recording fixtures after retaining lessons (2026-11-19)
+
+The user explicitly replaces the pending lossless-archive proposal: write down
+insights/learnings, then dispose of recording-upgrade VMs03/04 and input disks.
+This supersedes M705/M706's raw/full-image retention and pending authorization
+for those exact four disk files only. No archive is requested or created.
+[Durable lessons and disposition](diagnostics/2026-11-19-recording-upgrade-fixture-lessons.md)
+distinguish the correct override refusal from the missing online-listener fixture
+precondition, preserve both failed outcomes and describe the corrected sequence.
+Seven inert guards pass; a fresh native retry remains required.
+
+Before unlink, verify all six exact VM/supervisor/extraction units are inactive
+with empty cgroups, the four original SHA/inode/owner bindings and their pristine
+backing relationships. Preserve the compact extracted original SQLite, receipts,
+logs, source/binary identities and frozen boot helper; record a removal manifest
+and capsule tombstones. Whole images/input disks become intentionally unavailable.
+The pending app VM, shared base, production/manual DEV and existing/protected/tmux
+ships remain untouched. Historical failure reports are not rewritten into passes.
+
+Disposal completes with four exact disk files removed and no archive created,
+freeing3,079,081,984allocated bytes (about2.87GiB). Reverify41 retained compact
+files/artifacts and the shared backing; all remain unchanged. Per-capsule
+DISPOSED.json tombstones prohibit resume. The original archive plan is explicitly
+superseded. The [disposal record](diagnostics/2026-11-19-recording-upgrade-fixture-disposal.json)
+records original hashes and the new retention state; measured aggregate usage is
+47,887,331,328bytes after removal. Seven fixture guards pass again before preparing
+a fresh recording-upgrade VM05; the unrelated pending app VM05 is excluded.

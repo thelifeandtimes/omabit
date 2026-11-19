@@ -373,3 +373,15 @@ profile/revocation controls pass the inert offscreen test (seven reads) and QML
 registry check. The synthetic view is inspected. No plugin is deployed. Settings
 remain read-only; retirement/complete exports and matching native/desktop gates
 stay open. Two-VM lossless archive permission remains pending; no raw copy changes.
+
+M708 records the user's explicit disposal authorization for the two understood
+recording-upgrade fixture failures03/04 and their input disks, replacing archival.
+Durable lessons preserve the product guards and corrected online sequence. Retain
+compact original evidence/source/binaries and tombstones, verify exact stopped
+units/file/dependency bindings, then remove only four disk files. No archive or
+native pass is claimed; the pending app VM and installed deployments are excluded.
+
+The authorized M708 disposal is complete: four files removed, no archive,
+3,079,081,984allocated bytes freed,41 retained evidence/artifact files verified.
+Both capsules carry no-resume tombstones. Aggregate usage is47,887,331,328bytes,
+leaving room to admit the corrected fresh recording qualification under48GiB.
