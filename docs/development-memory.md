@@ -12528,3 +12528,31 @@ pinned-SDK sources linked in [the HTTP guide](mcp-http.md). It does not claim
 OAuth discovery, grants, public remote/TLS or named-provider qualification.
 Those and remaining operation/test-report coverage stay open. No installed runner,
 plugin, production, preserved DEV, existing ship or tmux surface changes.
+
+## M700 — Retain canonical recording policy/pin control receipts (2026-11-18)
+
+Model bounded host/per-instance byte/age limits, session/segment/reserve/job limits
+and incident pins. Schema65 adds empty independent event/head tables; opening
+preserves prior rows and performs no filesystem/native effect. Canonical control
+receipts bind original actor/request, runner and expected revision/digest. Chain/
+head and exact request replay survive reopen without rewriting original intent,
+operation, app or access history. Missing tails, altered/oversized bodies, mixed
+schema, stale CAS, foreign jobs and failed head writes refuse/roll back.
+This is control storage only: manager enforcement, usage, retirement, pressure
+recovery and UI are not yet selected or qualified.
+
+Admitted focused controls/original63/intent/manifest race checks pass in24.381s.
+The development manifest still named62 despite later work; explicitly update only
+its current development target to65, preserving frozen release targets/fixtures.
+The broader managed suite fails: three endpoint fixtures exceed Unix socket paths
+because Go1.27's T.TempDir uses GOTMPDIR, then the eight-minute whole-suite bound
+expires during active schema38 historical validation. No product deadlock is
+established. Failed setup had leaked fixture pollers. Add short owned socket
+paths and early idempotent runner cleanup; corrected socket/control/original63
+gates pass in11.663s even under the long build root. Vet passes. The broad suite
+is not a pass; split historical/remaining gates are still required.
+
+Prepare a separate frozen actual64-writer/current65 migration and old-reader
+refusal harness; three no-run/root/source refusal guards pass. Actual execution,
+installed/active-worker upgrade and final artifact support remain pending. No raw
+recording, pier, installed namespace, production/manual DEV or tmux state changes.

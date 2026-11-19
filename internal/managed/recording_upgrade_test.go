@@ -60,7 +60,7 @@ func TestRecordingStoreActualOriginal63Qualification(t *testing.T) {
 	if replay || !reflect.DeepEqual(got, i) {
 		t.Fatal("new intent rebound original63 operation")
 	}
-	after := appAllRows(t, s.db)
+	after := rowsWithoutEmptyRecordingControl(appAllRows(t, s.db))
 	delete(after, "@schema")
 	delete(after, "runtime_recording_intents")
 	delete(after, "runtime_recording_head")

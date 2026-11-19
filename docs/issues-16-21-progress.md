@@ -315,3 +315,11 @@ startup/discovery/clean shutdown race gates pass; stdio parity and vet pass.
 See [the local HTTP contract](mcp-http.md). Remote OAuth/TLS, actual named-provider
 connections and remaining operation/test-report coverage are still pending; no
 client profile, persistent endpoint or installed service is changed.
+
+M700 prepares schema65 canonical recording policy/pin receipts with bounded
+host/per-instance settings and exact linked CAS/replay. Focused controls,
+original63, corruption/refusal and manifest race checks/vet pass. The broader
+managed suite exposes socket-fixture setup leaks and reaches its whole-run
+deadline; its affected tests now pass with short sockets/early cleanup, but the
+whole suite is not qualified. Actual64 writer/refusal is prepared. Enforcement,
+usage/retirement, pressure recovery, native/installed upgrades and UI remain open.

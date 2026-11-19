@@ -750,3 +750,13 @@ selections and actual CLI/official-SDK stdio parity, including revisions above
 2^53. These read APIs are newer than M697's frozen native pilot. Matching native
 API/installed upgrade, indexed search, retention/pins, complete export packaging
 and UI qualification remain pending.
+
+M700 prepares an independently audited retention-control model and schema65
+storage. Policy and incident-pin receipts use exact head/revision CAS and original
+actor/request replay; they change no existing job/recording/native state. The
+settings include bounded host/per-instance bytes/age and job/session/segment/
+reserve limits. Opening writes no policy event and retires nothing. These controls
+are not yet wired to manager enforcement, retirement or UI. Source controls and
+original63 gates pass; actual64 writer/refusal, broader/native/installed and
+active-worker gates remain pending. The source-only format support is not a
+production upgrade or authorization to prune existing user evidence.

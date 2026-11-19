@@ -53,6 +53,7 @@ func omitEmptyRuntimeRecoverySuccessorForSyntheticFixture(t *testing.T, s *store
 
 func omitEmptyRecordingSuccessorForSyntheticFixture(t *testing.T, s *store) {
 	t.Helper()
+	omitEmptyRecordingControlForSyntheticFixture(t, s)
 	var count int
 	g02Check(t, s.db.QueryRow("SELECT count(*) FROM runtime_recording_intents").Scan(&count))
 	if count != 0 {
@@ -64,5 +65,15 @@ func omitEmptyRecordingSuccessorForSyntheticFixture(t *testing.T, s *store) {
 		t.Fatal("synthetic fixture has recording job authority")
 	}
 	_, err = s.db.Exec("DROP TABLE runtime_recording_intents; DROP TABLE runtime_recording_head")
+	g02Check(t, err)
+}
+
+func omitEmptyRecordingControlForSyntheticFixture(t *testing.T, s *store) {
+	t.Helper()
+	all := appAllRows(t, s.db)
+	if _, ok := rowsWithoutEmptyRecordingControl(all)["runtime_recording_control_events"]; ok {
+		t.Fatal("synthetic fixture has recording controls or changed empty contract")
+	}
+	_, err := s.db.Exec("DROP TABLE runtime_recording_control_events; DROP TABLE runtime_recording_control_head")
 	g02Check(t, err)
 }

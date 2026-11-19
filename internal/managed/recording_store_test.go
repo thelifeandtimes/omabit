@@ -275,10 +275,20 @@ func TestRecordingIntentProcessExitAfterCommitPreservesExactReplay(t *testing.T)
 }
 
 func rowsWithoutEmptyRecordingSuccessor(all map[string][]string) map[string][]string {
+	all = rowsWithoutEmptyRecordingControl(all)
 	rows, head := all["runtime_recording_intents"], all["runtime_recording_head"]
 	if len(rows) == 1 && rows[0] == recordingIntentDDL && len(head) == 2 && head[0] == recordingHeadDDL && head[1] == `[1,0,""]` {
 		delete(all, "runtime_recording_intents")
 		delete(all, "runtime_recording_head")
+	}
+	return all
+}
+
+func rowsWithoutEmptyRecordingControl(all map[string][]string) map[string][]string {
+	rows, head := all["runtime_recording_control_events"], all["runtime_recording_control_head"]
+	if len(rows) == 1 && rows[0] == recordingControlDDL && len(head) == 2 && head[0] == recordingControlHeadDDL && head[1] == `[1,0,""]` {
+		delete(all, "runtime_recording_control_events")
+		delete(all, "runtime_recording_control_head")
 	}
 	return all
 }

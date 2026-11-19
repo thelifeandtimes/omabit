@@ -1464,3 +1464,14 @@ files survive repeated new-reader cursor/reopen, new legacy capture is refused,
 and the actual original reader refuses metadata2 unchanged. The retained original
 fixture covers subsequent source reads. This resolves only the earlier pending
 original-writer rehearsal; all integration/native/installed requirements remain.
+
+## Development: recording retention controls, schema65 — gates pending
+
+Schema65 adds empty recording control event/head tables. Policy and exact incident
+pin changes use canonical original actor/request receipts, a bounded hash chain
+and a revision/digest CAS. Earlier managers must refuse rather than ignore these
+storage controls. Opening preserves every prior row and performs no raw retirement
+or native effect. Actual64 writer/refusal, original fixture migration, matching
+artifacts and installed/active-worker upgrade gates are required before deployment.
+Source control storage alone does not qualify deletion, automatic retention or
+pressure recovery. Never relabel or remove history to run an older manager.

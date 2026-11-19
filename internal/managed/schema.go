@@ -47,4 +47,6 @@ package managed
 // per-operation heads; original plan/event/lease bytes remain unchanged.
 // Schema64 fences immutable recording-job intents bound to the original Start
 // actor, revision, runtime and created container. Opening dispatches nothing.
-const StateSchemaVersion = 64
+// Schema65 fences canonical retention policy and incident-pin audit history;
+// older managers must refuse rather than ignore recording storage controls.
+const StateSchemaVersion = 65

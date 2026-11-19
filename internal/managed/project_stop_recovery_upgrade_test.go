@@ -70,6 +70,12 @@ func stopUpgradeRows(t *testing.T, db *sql.DB) map[string][]string {
 	g02Check(t, rows.Close())
 	out := map[string][]string{}
 	for _, table := range tables {
+		if table == "runtime_recording_control_events" || table == "runtime_recording_control_head" {
+			all := rowsWithoutEmptyRecordingControl(appAllRows(t, db))
+			if _, ok := all[table]; !ok {
+				continue
+			}
+		}
 		if table == "runtime_recording_intents" || table == "runtime_recording_head" {
 			var count int
 			var ddl, headDDL string

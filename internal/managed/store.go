@@ -188,6 +188,9 @@ CREATE TABLE operations (id TEXT PRIMARY KEY, actor TEXT NOT NULL, request_id TE
 	if err := initializeRecordingIntents(tx, version); err != nil {
 		return err
 	}
+	if err := initializeRecordingControl(tx, version); err != nil {
+		return err
+	}
 	if err := initializeDeskOperations(tx, version); err != nil {
 		return err
 	}
