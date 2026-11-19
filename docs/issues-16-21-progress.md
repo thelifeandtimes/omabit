@@ -292,3 +292,11 @@ whole gate fails; no final capture or clean stop is claimed. Exact SQLite and
 receipt/header/log evidence is extracted without journal replay and the full
 failure is retained. The revised2GiB/guest-discard harness keeps the frozen Go
 inputs unchanged and passes refusal guards; a fresh admitted native retry remains.
+
+M697 passes the fresh installed ordinary recording pilot with unchanged2d028197
+binaries: pre-Start capture, exact independent notify worker, management lifetime,
+single submission, clean terminal drain/removal, same-pier new session and exact
+original recording preservation. Both captures close with one exit/no gaps. See
+the [scoped native report](diagnostics/2026-11-18-recording-pilot-native.json).
+Broader lifecycle/pressure/retention, interfaces and active-worker/final installed
+upgrade remain pending. Production and manual-review state stay untouched.

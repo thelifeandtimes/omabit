@@ -691,3 +691,13 @@ without fabricating an exit. Otherwise the existing drain barrier applies.
 Focused synthetic manager/server/CLI race gates and vet pass. Actual native
 service/capture, retention, interfaces and installed/active-worker upgrades are
 still required. This is not qualified comprehensive recording support.
+
+The [M697 installed native pilot](diagnostics/2026-11-18-recording-pilot-native.json)
+now passes pre-start ordinary capture, exact independent notify-service lifetime
+through manager stop/reopen, terminal drain before ephemeral removal, and two
+same-pier launches with unchanged first-session bytes. Each retains one observed
+exit and no gap. Frozen2d028197 artifacts remain unchanged and both test units end.
+This supersedes only the ordinary service/lifecycle deferral above. Real burst,
+pressure/recovery, host restart, active-worker binary upgrade, other factories,
+retention and public interfaces remain separate requirements. No preserved DEV
+or production deployment was changed.

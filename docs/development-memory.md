@@ -12440,3 +12440,27 @@ freed in its fresh guest root, using the existing discard-enabled QEMU disk. The
 production Go/embedded inputs remain byte-identical to2d028197. Four refusal
 guards still pass. A new capsule must be admitted before retry; no native pass or
 installed/manual DEV change is implied by these harness changes.
+
+## M697 — Installed ordinary recorder lifecycle passes in a fresh VM (2026-11-18)
+
+The fresh retry uses the same frozen2d028197 runner/collector/CLI/helper, with only
+dff389c's declared2GiB scratch and guest-discard harness changes. Actual installed
+capture precedes native Start. Exact notify/main PID/start/image/invocation and
+native container processes survive management stop/reopen without redispatch.
+Two clean Stops retain one exit each and no gaps before removing their ephemeral
+containers. Same-pier replacement creates a distinct recording; all first-session
+bytes stay exact. Both saved captures finish/close durably, and both host units
+end inactive with empty cgroups. All frozen Go/embedded inputs/binaries stay exact.
+
+The [native report](diagnostics/2026-11-18-recording-pilot-native.json) pins the full
+disk/payload/private result and eight scoped gates. Captures retain218/32 frames,
+3148/1190 original output bytes, independently checked prefixes and separate exit
+evidence. Eighteen guest-only trims succeed. Final aggregate50,888,048,640bytes
+is below the approved51,539,607,552byte cap. Retain this full successful reference
+and the first failure's exact archived bytes/evidence; production, manual DEV,
+pending app VM, tmux and existing ships remain untouched.
+
+This supersedes only the ordinary native service/lifecycle deferral. Burst and
+pressure recovery, host reboot, active-worker binary upgrades, existing-running,
+project/utility factories, retention and public recording interfaces remain open.
+It is not comprehensive recording support or final release qualification.
