@@ -359,3 +359,10 @@ product guard is preserved. The exact fresh-fixture withdraw/restore correction
 passes six guards and reuses a pinned boot helper, with unchanged candidate
 binaries. Raw failure evidence remains retained after automatic archival rejection;
 standard regenerable cache is classified instead. Fresh native retry remains.
+
+M706 retains the second fixture failure: exact override handling passed, but the
+online installer correctly required a live original listener. The corrected
+sequence passes seven inert guards without changing product refusals or frozen
+binaries. Both ended raw images and read-only extracted evidence stay retained.
+Separate lossless-archive authorization is pending for space under48GiB; a fresh
+native upgrade/API retry remains required. No installed deployment changed.

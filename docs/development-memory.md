@@ -12686,3 +12686,32 @@ raw VM bytes. Standard Go1.27.3 compiler/assembly objects and module-index-v2 ca
 are regenerable; later builds may recompile. The scoped manifest pins all frozen
 artifacts and failure bytes. This is distinct from runtime evidence retirement.
 A fresh admitted retry remains required; no production/preserved DEV/tmux changes.
+
+## M706 — Restore the online update precondition in the recording fixture (2026-11-18)
+
+The second recording upgrade VM verifies its exact fixture override was withdrawn
+and restored, but fails with partial=false because the old management listener
+was deliberately stopped. Normal activation requires that listener for online
+quiescence; the schema19 offline bridge is not appropriate. Preserve both product
+refusals. Reopen the old manager under its stock invocation, run normal activation,
+then reselect the fixture pilot. The exact recorder/container must still survive
+all management transitions. Seven inert guards pass, including sequencing the
+live listener before install and restoring the exact file on installer failure.
+
+The [second failure](diagnostics/2026-11-18-recording-policy-online-listener-fixture-failure.json)
+and its full raw image, payload and read-only extracted evidence remain retained.
+A pinned kernel utility is reused, with no source-disk code execution or Go build.
+The new image/backing hashes are unchanged after12 bounded file exports. No native
+upgrade, API/second-session or old-reader pass is claimed; candidate282c3b3
+binaries remain unchanged. The pending app VM and installed namespaces stay
+untouched.
+
+After standard regenerable compiler/index eviction, retaining both new raw disks
+leaves insufficient room for another2GiB native admission. Automatic review had
+rejected raw-to-lossless archival of the first failed copy. Request separate user
+authorization to losslessly archive only recording VMs03/04 and input disks,
+fully verifying every original SHA before removing redundant raw encodings. The
+complete original bytes, SQLite, receipts, logs, source and binaries would remain.
+Do not execute that dependent action while authorization is pending. Continue
+source/harness work; the48GiB cap, one-runtime limit and production exclusions
+remain unchanged.

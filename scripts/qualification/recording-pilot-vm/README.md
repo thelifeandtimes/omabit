@@ -66,3 +66,11 @@ The launcher copies it and performs no Go build. This permits eviction of standa
 rebuildable compiler/index cache while preserving all named binaries, module
 sources and runtime evidence under the aggregate cap. Native execution still
 requires every source build/test to have ended and one experiment only.
+
+
+The second attempt verifies exact override withdrawal/restoration but is also a
+fixture failure: normal management activation requires the original listener for
+online quiescence. Reopen the old manager under the stock invocation before the
+normal installer, preserving its independent recording worker. Do not use the
+historical schema19 offline bridge for a schema64 manager. The revised helper has
+an inert ordering/failure-restoration regression test; native execution is pending.

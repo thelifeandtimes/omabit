@@ -1,0 +1,23 @@
+{
+  "format": 1,
+  "passed": false,
+  "artifact_source": "282c3b372d0289858c3ea7e3ceb1296808a97420",
+  "harness_source": "50db2f26118797c16aae3f5dc2999a64bc0ac6a4",
+  "case": "ordinary-capture-active-worker-upgrade-policy-api-v1",
+  "root_sha256": "bf1409c592ec956575e8523856e971cbd9fba98f79e8cb9d1eba65ca0ab7ba8a",
+  "payload_sha256": "baac2096b7907733a53ab735aeaa54ef3bdc4a8419cb444a5f26aee722aed3ec",
+  "result_sha256": "bde6ecf8a08877ea9485c712b359cde70be013102be68d5df6390c5ecee8c354",
+  "failure_stage": "normal management update requires live original listener",
+  "installer_partial": false,
+  "installer_message": "installed runner has no verifiable managed listener; use install-host --offline-upgrade for stopped historical schema19 (docs/management-offline-upgrade.md)",
+  "fixture_override": {
+    "exact_content_sha256": "0e5b8f38dbeb0c940d6785d646320dc96f8f21b6ef0344adb830b71bf69d340a",
+    "withdrawn": true,
+    "restored": true,
+    "scope": "only this fresh fixture file; generic user overrides remain unsupported and protected"
+  },
+  "read_only_extraction_passed": true,
+  "source_and_backing_unchanged": true,
+  "raw_image_retained": true,
+  "scope": "fresh offline fixture only; withdrawing/restoring the exact temporary override passed, but the fixture left the original manager stopped during an online update. No schema65/native API or old-reader qualification. Product guard remains unchanged; all failure bytes and bounded evidence retained."
+}

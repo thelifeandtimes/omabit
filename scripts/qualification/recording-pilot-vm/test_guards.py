@@ -8,6 +8,7 @@ from pathlib import Path
 import sys
 import unittest
 import tempfile
+from types import SimpleNamespace
 from unittest.mock import patch
 
 
@@ -65,6 +66,30 @@ class RecordingGuards(unittest.TestCase):
                 self.assertEqual(file.read_text(),'exact fixture');self.assertEqual(file.stat().st_mode&0o777,mode)
                 with self.assertRaises(FileExistsError):guest.restore_fixture_override(directory,'replacement',mode)
                 self.assertEqual(file.read_text(),'exact fixture')
+
+    def test_upgrade_requires_live_old_listener_and_restores_only_fixture(self):
+        guest=module('guest')
+        for fail in (False,True):
+            with tempfile.TemporaryDirectory(prefix='omabit-recording-online-')as root:
+                home=Path(root);directory=home/'.config/systemd/user/urbit-runner.service.d';directory.mkdir(mode=0o700,parents=True);file=directory/'recording-pilot.conf';file.write_text('exact fixture')
+                calls=[]
+                def unit(action):
+                    calls.append(action)
+                    if len(calls)>1 and action=='start':self.assertEqual(file.read_text(),'exact fixture')
+                def install(version):
+                    self.assertEqual(calls,['start']);self.assertFalse(directory.exists());self.assertEqual(version,'candidate')
+                    calls.append('install')
+                    if fail:raise RuntimeError('preserved installer failure')
+                    return {'runner_id':'original'}
+                common=SimpleNamespace(unit=unit,install=install,run=lambda *args,**kwargs:None)
+                with patch.object(guest,'HOME',home),patch.object(guest,'common',common):
+                    if fail:
+                        with self.assertRaises(RuntimeError):guest.upgrade_with_fixture_override(directory,'exact fixture')
+                        self.assertEqual(calls,['start','install'])
+                    else:
+                        self.assertEqual(guest.upgrade_with_fixture_override(directory,'exact fixture'),{'runner_id':'original'})
+                        self.assertEqual(calls,['start','install','stop','start'])
+                    self.assertEqual(file.read_text(),'exact fixture')
 
     def test_api_prefix_checks_actual_original_export_shape(self):
         guest=module('guest')

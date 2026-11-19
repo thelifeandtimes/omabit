@@ -118,6 +118,26 @@ def restore_fixture_override(directory,expected,mode):
     os.chmod(file,mode)
     for path in (directory,file):os.chown(path,1000,1000)
 
+def upgrade_with_fixture_override(override,override_content):
+    # The installer deliberately preserves/refuses all user overrides. This
+    # exact file is created by this fresh fixture; it is not a user deployment.
+    override_mode=withdraw_fixture_override(override,override_content)
+    report['fixture_override']={'exact_content_sha256':hashlib.sha256(override_content.encode()).hexdigest(),'withdrawn':True,'restored':False,'scope':'only this fresh fixture file; generic user overrides remain unsupported and protected'}
+    common.run(['systemctl','--user','daemon-reload'],True)
+    try:
+        # Normal management updates require the original live listener for
+        # online quiescence. Reopen the old manager under its stock invocation;
+        # the independently supervised recorder remains unchanged.
+        common.unit('start')
+        upgraded=common.install('candidate')
+        common.unit('stop')
+    finally:
+        restore_fixture_override(override,override_content,override_mode)
+        report['fixture_override']['restored']=True
+        common.run(['systemctl','--user','daemon-reload'],True)
+    common.unit('start')
+    return upgraded
+
 def main():
     global common
     scenario=guard()
@@ -166,19 +186,7 @@ def main():
     common.unit('stop')
     detached=snapshot('manager-stopped')
     if worker(detached[0])!=original_worker or detached[0]['status']['worker']!=original_claim or common.inspect(original_container)['State']!=original_native:raise RuntimeError('manager stop changed native/recorder process')
-    # The installer deliberately preserves/refuses all user overrides. This
-    # exact file is created by this fresh fixture; it is not a user deployment.
-    override_mode=withdraw_fixture_override(override,override_content)
-    report['fixture_override']={'exact_content_sha256':hashlib.sha256(override_content.encode()).hexdigest(),'withdrawn':True,'restored':False,'scope':'only this fresh fixture file; generic user overrides remain unsupported and protected'}
-    common.run(['systemctl','--user','daemon-reload'],True)
-    try:
-        upgraded=common.install('candidate')
-        common.unit('stop')
-    finally:
-        restore_fixture_override(override,override_content,override_mode)
-        report['fixture_override']['restored']=True
-        common.run(['systemctl','--user','daemon-reload'],True)
-    common.unit('start')
+    upgraded=upgrade_with_fixture_override(override,override_content)
     if upgraded['runner_id']!=report['runner_id'] or common.db_projection()['schema']!=65:raise RuntimeError('upgrade changed runner or schema')
     if common.projection('candidate')!=old_projection or common.runtime('candidate')!=old_runtime:raise RuntimeError('upgrade changed history, engine or native process')
     if common.hello()['build']['sha256']!=scenario['candidate']['urbit-runner']['sha256']:raise RuntimeError('candidate not activated')
