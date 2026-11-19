@@ -13003,3 +13003,16 @@ runtime audit; original uncertain source reconciliation and both-version/restart
 checks remain in progress. The original acknowledged app VM05 is mounted only
 read-only and never resumed writable. Production, preserved DEV, existing ships,
 tmux and `~/temp-ur` remain excluded.
+
+## M717 — Current65 native recovery completes its original source workflow (2026-11-19)
+
+COW04 observes the exact retained unknown phase without another dispatch, then
+completes the original source workflow at guest1750seconds. Advances that return
+without final observation are followed by exact saved-step reconciliation; the
+test does not mint a replacement request or resubmit an observed effect. Initial
+state and the state-update checks pass before the second source review starts.
+The [running checkpoint](diagnostics/2026-11-19-current65-grubbery-recovery-native.json)
+stays explicitly unqualified as a whole case. Version two, subsequent same-pier
+replacement/state, manager restart/original audit lookup, single-dispatch/prefix
+verification and final clean completion remain pending. Frozen12f78952 inputs and
+all production/manual DEV/original-backing exclusions remain unchanged.

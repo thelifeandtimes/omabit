@@ -458,3 +458,9 @@ No installed/DEV/production change or complete native pass is claimed.
 The [remaining gate map](issues-16-21-next-gates.md) summarizes each issue's
 implemented scope, evidence boundary and next work, including the separate
 project-containment and final stable-to-candidate/DEV qualification tracks.
+
+M717 records a running COW04 checkpoint: exact original-phase observation and
+full original source completion, followed by passing initial/state-update checks.
+The second source review has begun. Some advances require saved-step read-only
+reconciliation instead of another dispatch. Whole-case version-two/replacement/
+manager-restart/prefix/single-dispatch/clean-completion gates remain pending.

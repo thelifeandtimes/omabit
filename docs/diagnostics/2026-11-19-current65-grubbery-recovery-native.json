@@ -40,5 +40,21 @@
     "Running is not a passed qualification",
     "Not installed59-to65 upgrade, preserved DEV, peers/permits/routes/assets, full workflow readiness or stable release",
     "Native scoped recording allocation observation remains a separate gate"
+  ],
+  "observed_checkpoints": {
+    "copied_original62_to65_opening": true,
+    "first_same_pier_replacement": true,
+    "cli_runtime_review_and_mcp_linked_audit": true,
+    "original_unknown_phase_observed_without_redispatch": true,
+    "original_source_workflow_completed": true,
+    "initial_state_and_state_update_checks": true,
+    "second_source_review_started": true
+  },
+  "remaining_in_this_case": [
+    "second source workflow and retained state/new code",
+    "another same-pier replacement with state preservation",
+    "manager restart and original audit/receipt lookup",
+    "final original-row/prefix and single-dispatch verification",
+    "clean whole-case completion and unchanged original backing checks"
   ]
 }
