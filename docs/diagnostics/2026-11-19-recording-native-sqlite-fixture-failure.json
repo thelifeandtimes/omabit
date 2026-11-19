@@ -1,0 +1,54 @@
+{
+  "format": 1,
+  "passed": false,
+  "artifact_source": "703de9f257b6f67296c8ed6551d845d2754182af",
+  "harness_source": "703de9f257b6f67296c8ed6551d845d2754182af",
+  "case": "ordinary-capture-active-worker-upgrade-policy-api-v1",
+  "root_sha256": "b8f0043973c200cafa6d2b1bbd871809d42e052db774706112e0e935981df708",
+  "payload_sha256": "255a49d9bd878d503f576997c8cbd43f64f918d0a316431e5cdfa37ffbb25bd3",
+  "result_sha256": "8477d52c15860be94b39ebda3840fedbde1b2ca704a0745204015d2f03e70f03",
+  "commands_sha256": "41f6de0fdae59b2c6985db62c40b7e3f0b3d079622e07713a888f291933e289c",
+  "failure_stage": "closed database precondition immediately before genuine old-reader refusal",
+  "failure": "closed database not checkpointed for old-reader gate",
+  "core_calls_succeeded": {
+    "runtime.recording-controls.v1": 2,
+    "runtime.recordings.v1": 1,
+    "runtime.recording-page.v1": 4,
+    "runtime.recording-control-apply.v1": 3,
+    "runtime.recording-control-lookup.v1": 1
+  },
+  "earlier_native_checks_reached_and_passed": {
+    "schema64_to65_active_worker_upgrade": true,
+    "engine_container_worker_history_preserved": true,
+    "both_native_original_recording_windows_match_independent_raw_decoder": true,
+    "control_replay_lookup_and_incident_pin": true,
+    "same_pier_two_sessions_and_clean_stops": true,
+    "old_job_keeps_64MiB_new_job_uses_32MiB_4MiB_segments": true,
+    "final_committed_bytes": 100663296
+  },
+  "sidecar_bytes": {
+    "runner.sqlite-shm": 32768,
+    "runner.sqlite-wal": 1557392,
+    "runner.sqlite": 569344
+  },
+  "analysis_copy": {
+    "schema": 65,
+    "quick_check": "ok",
+    "recording_table_counts": {
+      "runtime_recording_control_events": 2,
+      "runtime_recording_control_head": 1,
+      "runtime_recording_head": 1,
+      "runtime_recording_intents": 2
+    },
+    "original_exports_unchanged": true
+  },
+  "fixture_cause": "The shared Python db_projection helper used sqlite3.Connection as a transaction context without closing it. A deterministic real SQLite regression reproduces that leaked reader; explicit contextlib.closing now closes it on success and error. This is a fixture correction, not evidence of a product checkpoint defect.",
+  "unreached": [
+    "genuine old reader refusal",
+    "final manager reopen after old-reader refusal"
+  ],
+  "read_only_extraction_passed": true,
+  "source_and_base_unchanged": true,
+  "raw_image_retained": true,
+  "scope": "Fresh offline recording VM06 only; all prior native assertions passed before the fixture closed-file precondition failed. Preserve failed whole-case outcome and exact original SQLite/WAL/SHM. No production or preserved DEV update; no whole-case or stable release claim."
+}

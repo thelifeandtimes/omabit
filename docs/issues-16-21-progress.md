@@ -393,3 +393,13 @@ array). Correct the mapping and extend actual CLI/SDK parity to nonempty origina
 and redacted data with exact bytes/times/digests/large revisions. Service races,
 focused CLI/control parity and vet pass. Matching new artifacts and a fresh full
 native retry remain required; no installed namespace is changed.
+
+M710 freezes matching703de9f2 artifacts and passes native original-byte windows,
+policy replay/lookup/pin, immutable old/new limits and both same-pier clean Stops
+after actual64→65 process-preserving activation. The whole case fails at the
+old-reader precondition because the fixture leaked read-only SQLite connections.
+A deterministic SQLite test reproduces the leak; explicit closure passes all
+eight guards. Original SQLite/WAL/SHM and19 bounded files are extracted read-only,
+and an independent copy checks schema65/integrity. The original failed VM06 stays
+retained. Genuine old-reader/final-reopen and a fresh full case remain pending;
+no installed namespace changes.

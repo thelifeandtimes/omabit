@@ -12797,3 +12797,36 @@ failed native case into a pass. Freeze new matching binaries and repeat the full
 native upgrade/API/control case before claiming qualification; the282c3b3
 artifacts remain the preserved failed candidate. No installed DEV or production
 deployment changes.
+
+## M710 — Native recording reads/controls pass before a leaked fixture reader (2026-11-19)
+
+Freeze four clean703de9f257b6f67296c8ed6551d845d2754182af artifacts after M709:
+CLI18233722802d816310c8abf96aa93d28fd7f9e47dd907eb47285ccd786e4ec92,
+collectorbc3c6807c697baf4e09c56b029dedd490ba0dea0b586a50ad3dded153a655ff6,
+runner8d29f129de334793bbe3ef988c536815fd8baeec8f06137f026f8f88f00260f9,
+helper3560ac9e7fc37acb5e8ede06c717278c60dceed7a3384ac01467180cec18e619.
+Retain sixteen superseded generated executables losslessly compressed with full
+inflated hash verification, freeing205,635,584bytes; evict878,153,728bytes of
+validated regenerable Go compiler/index cache. Named current artifacts, module
+source/zips and both distinct VM05 images remain unchanged at this checkpoint.
+Admit the fresh VM06 with2GiB scratch under48GiB.
+
+The [pinned native result](diagnostics/2026-11-19-recording-native-sqlite-fixture-failure.json)
+passes actual64→65 activation and exact process/history preservation, independent
+raw-byte API comparison for both cleanly stopped same-pier sessions, control
+apply/replay/lookup, incident pin, unchanged old64MiB worker limits and new32MiB/
+4MiB limits, and96MiB conservative commitments. The case remains failed at the
+closed-database precondition before genuine old-reader refusal/final manager
+reopen. Retain that failure; no whole-case pass is claimed.
+
+The fixture's read-only db_projection used sqlite3.Connection as a transaction
+context, which does not close its connection. A deterministic real SQLite test
+reproduces the retained reader and now verifies explicit closure on success and
+injected read failure, followed by ordinary writer checkpoint/sidecar removal.
+Use contextlib.closing; all eight inert fixture guards pass (0.027s). This corrects
+fixture lifetime, not product checkpoint behavior. Read-only kernel extraction
+retains19 original files including SQLite/WAL/SHM and both recordings, with full
+source/backing hashes unchanged. A separate analysis copy is schema65/quick_check
+ok; all original exports remain exact. Preserve original VM06; a corrected fresh
+native retry is still required. No installed service/plugin or existing ship is
+changed, and the acknowledged app VM05 remains excluded.

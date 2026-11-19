@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Exact development snapshot/real Stop gate; root only in the fresh offline VM."""
 import hashlib
+import contextlib
 import json
 import os
 from pathlib import Path
@@ -132,7 +133,10 @@ def runtime(version):
 
 
 def db_projection():
-    with sqlite3.connect('file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro',uri=True) as db:
+    # sqlite3.Connection's context manager ends a transaction; it does not
+    # close the handle. A leaked fixture reader can keep WAL/SHM alive across
+    # manager Stop and invalidate the subsequent closed-file downgrade gate.
+    with contextlib.closing(sqlite3.connect('file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro',uri=True)) as db:
         return {'schema':db.execute('pragma user_version').fetchone()[0], 'sha256':hashlib.sha256('\n'.join(db.iterdump()).encode()).hexdigest()}
 
 

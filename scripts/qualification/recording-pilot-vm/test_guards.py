@@ -4,6 +4,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import sqlite3
 from pathlib import Path
 import sys
 import unittest
@@ -20,6 +21,47 @@ def module(name):
 
 
 class RecordingGuards(unittest.TestCase):
+    def test_database_projection_closes_its_read_connection(self):
+        spec = importlib.util.spec_from_file_location('projection_common', Path(__file__).parents[1]/'issues-recovery/guest.py')
+        common = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(common)
+        connect = sqlite3.connect
+        for broken in (False, True):
+            with tempfile.TemporaryDirectory(prefix='omabit-recording-projection-') as root:
+                path = Path(root)/'fixture.sqlite'
+                writer = connect(path)
+                self.addCleanup(writer.close)
+                writer.execute('pragma journal_mode=wal')
+                writer.execute('pragma user_version=65')
+                writer.execute('create table history(value text)')
+                writer.execute('insert into history values (?)', ('original',))
+                writer.commit()
+                readers = []
+                class ReadConnection:
+                    def __init__(self):
+                        self.db = connect('file:'+str(path)+'?mode=ro', uri=True)
+                        readers.append(self.db)
+                    def execute(self, sql): return self.db.execute(sql)
+                    def iterdump(self):
+                        if broken: raise RuntimeError('injected fixture read failure')
+                        return self.db.iterdump()
+                    def close(self): self.db.close()
+                    def __enter__(self): return self
+                    def __exit__(self, *args): return self.db.__exit__(*args)
+                def read_only(filename, **kwargs):
+                    self.assertEqual(filename, 'file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro')
+                    self.assertEqual(kwargs, {'uri':True})
+                    return ReadConnection()
+                with patch.object(common.sqlite3, 'connect', side_effect=read_only):
+                    if broken:
+                        with self.assertRaisesRegex(RuntimeError, 'injected fixture read failure'): common.db_projection()
+                    else:
+                        self.assertEqual(common.db_projection()['schema'], 65)
+                self.assertEqual(len(readers), 1)
+                with self.assertRaises(sqlite3.ProgrammingError): readers[0].execute('select 1')
+                writer.close()
+                self.assertFalse(Path(str(path)+'-wal').exists())
+
     def test_no_run_has_no_io_or_process_effect(self):
         host = module('run')
         with patch.object(sys, 'argv', ['run.py']), patch.object(host.subprocess, 'check_output', side_effect=AssertionError('no process permitted')), patch.object(host.budget, 'charge', side_effect=AssertionError('no storage admission permitted')), contextlib.redirect_stdout(io.StringIO()):
