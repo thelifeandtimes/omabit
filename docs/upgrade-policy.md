@@ -1,5 +1,18 @@
 # Stable-release upgrade requirement
 
+## Development: original recording exports, schema65 unchanged
+
+The new original manifest/part reads and private CLI ZIP writer change no stored
+recording, job, receipt, control or schema. Operator/selected adapter and explicit
+original/private choice remain required; older runners lacking the new feature
+refuse. Source tests preserve stationary original bytes and report verified
+prefix/torn-tail evidence separately from whole retained files. The source
+[evidence](diagnostics/2026-11-19-recording-original-export-source.json) includes
+actual CLI/SDK parity, role/path/hash/privacy and archive failure checks. Matching
+native export, installed stable upgrade, preserved DEV and a final support window
+remain pending. Earlier f37 allocation evidence is not qualification of this
+later export code; no installed or production change is implied.
+
 ## Development: optional recording storage observations, schema65 unchanged
 
 `capacity.usage` adds transient read evidence without changing stored jobs,

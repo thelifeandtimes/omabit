@@ -6,10 +6,47 @@ import (
 	"encoding/hex"
 	"errors"
 	"reflect"
+	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/recording"
 )
+
+func (c *Client) RecordingExportManifest(ctx context.Context, in recording.ExportRequest) (recording.ExportManifestResult, error) {
+	var out recording.ExportManifestResult
+	if err := in.Validate(); err != nil {
+		return out, err
+	}
+	hc := *c.httpClient
+	hc.Timeout = protocol.RecordingExportTimeout + 2*time.Second
+	scoped := *c
+	scoped.httpClient = &hc
+	if err := scoped.do(ctx, "POST", protocol.RecordingExportManifestPath, in, &out, true); err != nil {
+		return recording.ExportManifestResult{}, err
+	}
+	if err := out.Validate(in); err != nil {
+		return recording.ExportManifestResult{}, err
+	}
+	return out, nil
+}
+
+func (c *Client) RecordingExportPart(ctx context.Context, in recording.ExportPartRequest) (recording.ExportPart, error) {
+	var out recording.ExportPart
+	if err := in.Validate(); err != nil {
+		return out, err
+	}
+	hc := *c.httpClient
+	hc.Timeout = protocol.RecordingExportTimeout + 2*time.Second
+	scoped := *c
+	scoped.httpClient = &hc
+	if err := scoped.do(ctx, "POST", protocol.RecordingExportPartPath, in, &out, true); err != nil {
+		return recording.ExportPart{}, err
+	}
+	if out.Request != in || out.Validate() != nil {
+		return recording.ExportPart{}, recording.ErrSelection
+	}
+	return out, nil
+}
 
 func (c *Client) RecordingCatalog(ctx context.Context, in recording.CatalogRequest) (recording.Catalog, error) {
 	var out recording.Catalog

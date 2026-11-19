@@ -885,6 +885,63 @@ pass; the [synthetic view](diagnostics/2026-11-19-recording-usage-source.png) is
 visually inspected. The first size fixture used unsupported128-character IDs;
 correct it to the existing64-character limit without weakening validation.
 Schema65 and persisted job/recording/control encodings are unchanged. New matching
-artifacts/native/installed qualification are required; the earlier703de9f2 native
-pass does not qualify these later source changes. Retirement, pressure recovery,
-oldest-output indexing and complete export packaging remain separate work.
+artifacts/installed qualification are required. The later frozen f37 tools pass
+the [closed-native allocation case](diagnostics/2026-11-19-recording-allocation-native.json)
+with independent CLI/stdio/stat and history/intent preservation. That does not
+qualify active growth or pressure. Retirement, pressure recovery and oldest-output
+indexing remain separate work.
+
+## Original encoded-file exports — source qualified
+
+The [source checks](diagnostics/2026-11-19-recording-original-export-source.json)
+cover an explicit original-only export of one closed saved recording job. Select
+its immutable job ID/digest from `runtime.recordings.v1`. The shared
+`runtime.recording-export-manifest.v1` and `runtime.recording-export-part.v1`
+operations require operator access, the selected runner's
+`runtime-recording-export-v1` adapter, exact runner/instance/job bindings,
+`include_private_data=true` and `representation=original`. A redacted request
+refuses rather than falling through to originals. No model-supplied filesystem
+root, retention change, capture adoption, retry or runtime effect is exposed.
+
+The manifest describes every retained metadata/encoded segment file with its
+length, whole-file hash and256KiB chunk hashes. Reads exclude an active writer
+and verify physical owned single-link private files. Changed storage or an exact
+part mismatch refuses. Each part fits the existing1MiB runner transport. A client
+must save one manifest, fetch its exact chunks in order and verify both chunk and
+whole-file hashes; separate reads do not grant permission to substitute another
+manifest or session. Hashes detect changes; they are not independent execution
+or source attestation. Only an actually closed saved job is eligible; a missing
+result is not inferred closure.
+
+`retained_files_complete` refers to all encoded files in that stationary snapshot.
+Verified prefix counts, wall times, output bytes, gaps, exit and incomplete/corrupt
+tail stay separate. A saved successful worker outcome cannot conceal later file
+corruption. Original torn/corrupt bytes remain exportable and are never repaired.
+`runtime_complete` remains false: neither EOF nor a saved exit proves capture of
+output before attachment. These observations do not qualify active captures,
+host-pressure recovery or retention.
+
+The CLI streams the same operations into an owner-private ZIP:
+
+```sh
+omabit --config-dir PROFILE recording-export \
+  --runner NAME --expected-runner-id ID --instance INSTANCE \
+  --job JOB_ID --job-sha256 JOB_SHA256 \
+  --original --include-private-data --output /absolute/private/new.zip
+```
+
+The existing physical parent must be owned by the caller and mode0700. The ZIP
+and its entries are0600. It contains `manifest.json`, the exact `metadata.json`
+and every `frames*.obr` file, plus `timing-format.txt`. Codec1 retains each frame's
+wall/receive/epoch timing, stream, sequence and original octets without rendering
+terminal controls. No raw bytes enter normal CLI progress or stderr. Failed
+transfers keep `.partial`; the final name appears through a no-overwrite link
+only after verified ZIP completion and file sync. This is a local artifact write,
+not publication. MCP clients obtain the same manifest/parts without arbitrary
+local destination paths. The shared writer has no filesystem access itself.
+
+A separate searchable timestamp index and complete redacted bundle remain open;
+the existing bounded derived redacted windows remain available privately. Review
+exports before sharing. No persistence/schema65 change occurs. Matching clean
+artifacts, generated reference and a new native export rehearsal remain required;
+the earlier allocation-only/native recording passes do not qualify this code.

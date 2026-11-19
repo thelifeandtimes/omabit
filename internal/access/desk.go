@@ -35,9 +35,12 @@ func deskStageFraming(req *http.Request) error {
 }
 
 // Match the public client's existing bounds. Header/ordinary-body framing keeps
-// the short SSH progress deadline; only an authorized, framed desk RPC receives
-// its longer application deadline. Other RPCs keep their previous limits.
+// the short SSH progress deadline; only an authorized, framed desk/export RPC
+// receives its longer application deadline. Other RPCs keep their previous limits.
 func deskRequestTimeout(path string) time.Duration {
+	if path == protocol.RecordingExportManifestPath || path == protocol.RecordingExportPartPath {
+		return protocol.RecordingExportTimeout + time.Second
+	}
 	if protocol.GrubberyAppSourceEndpoint(http.MethodPost, path) || protocol.GrubberyRuntimeLiveEndpoint(http.MethodPost, path) {
 		return protocol.GrubberyAppTimeout
 	}

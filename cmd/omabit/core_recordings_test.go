@@ -1,11 +1,13 @@
 package main
 
 import (
+	"archive/zip"
 	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"io"
 	"net"
 	"net/http"
 	"os"
@@ -68,6 +70,19 @@ func TestCLIAndMCPPrivateRecordingHistoryAndExactPage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	hashBytes := func(data []byte) string { h := sha256.Sum256(data); return hex.EncodeToString(h[:]) }
+	// An inert encoded-file fixture checks transport/selection parity; the real
+	// storage codec and worker fixtures independently verify actual OBR files.
+	exportFiles := map[string][]byte{"metadata.json": metadataBytes, "frames.obr": payload}
+	exportManifest := recording.ExportManifest{Version: 1, Metadata: metadata, MetadataSHA256: metadataDigest, Representation: "original", ChunkBytes: recording.ExportChunkBytes, Coverage: recording.ExportCoverage{VerifiedFrames: 1, OutputBytes: uint64(len(payload)), FirstUnixNano: frame.UnixNano, LastUnixNano: frame.UnixNano, Tail: "corrupt"}, RetainedFilesComplete: true, ReadAt: descriptor.CreatedAt, Basis: "inert CLI/SDK original export transport fixture"}
+	for _, name := range []string{"metadata.json", "frames.obr"} {
+		data := exportFiles[name]
+		exportManifest.Files = append(exportManifest.Files, recording.ExportFile{Name: name, Bytes: int64(len(data)), SHA256: hashBytes(data), Chunks: []string{hashBytes(data)}})
+	}
+	exportDigest, err := exportManifest.Digest()
+	if err != nil {
+		t.Fatal(err)
+	}
 	var variant atomic.Value
 	variant.Store("ok")
 	var reads atomic.Int32
@@ -75,7 +90,7 @@ func TestCLIAndMCPPrivateRecordingHistoryAndExactPage(t *testing.T) {
 		w.Header().Set(protocol.Header, "1")
 		v := variant.Load().(string)
 		if q.Method == "GET" && q.URL.Path == "/hello" {
-			h := protocol.Hello{ProtocolVersion: 1, RunnerID: "runner", Mode: "simulation", AccessRole: "operator", Features: []string{protocol.RecordingReadFeature}}
+			h := protocol.Hello{ProtocolVersion: 1, RunnerID: "runner", Mode: "simulation", AccessRole: "operator", Features: []string{protocol.RecordingReadFeature, protocol.RecordingExportFeature}}
 			if v == "observer" {
 				h.AccessRole = "observer"
 			}
@@ -93,6 +108,32 @@ func TestCLIAndMCPPrivateRecordingHistoryAndExactPage(t *testing.T) {
 				return
 			}
 			conn.Close()
+			return
+		}
+		if q.Method == "POST" && q.URL.Path == protocol.RecordingExportManifestPath {
+			var in recording.ExportRequest
+			if json.NewDecoder(q.Body).Decode(&in) != nil || in.Validate() != nil || in.JobID != descriptor.JobID {
+				w.WriteHeader(400)
+				return
+			}
+			out := recording.ExportManifestResult{Session: descriptor, Status: recording.SavedStatus{State: "capture-incomplete", ResultCode: "capture-incomplete", SessionID: metadata.SessionID, SessionStorage: "header-available"}, Manifest: exportManifest, ManifestSHA256: exportDigest}
+			if v == "wrong-reply" {
+				out.Session.InstanceID = "other"
+			}
+			json.NewEncoder(w).Encode(out)
+			return
+		}
+		if q.Method == "POST" && q.URL.Path == protocol.RecordingExportPartPath {
+			var in recording.ExportPartRequest
+			if json.NewDecoder(q.Body).Decode(&in) != nil || in.Validate() != nil || in.JobID != descriptor.JobID {
+				w.WriteHeader(400)
+				return
+			}
+			out := recording.ExportPart{Version: 1, Request: in, Data: exportFiles[in.FileName], ReadAt: descriptor.CreatedAt}
+			if v == "wrong-reply" {
+				out.Request.InstanceID = "other"
+			}
+			json.NewEncoder(w).Encode(out)
 			return
 		}
 		if q.Method == "POST" && q.URL.Path == protocol.RecordingCatalogPath {
@@ -143,13 +184,20 @@ func TestCLIAndMCPPrivateRecordingHistoryAndExactPage(t *testing.T) {
 	}
 	defer session.Close()
 	target := service.Target{Name: "dev", RunnerID: "runner"}
-	for _, selection := range []struct{ operation, representation string }{{"runtime.recordings.v1", ""}, {"runtime.recording-page.v1", "original"}, {"runtime.recording-page.v1", "redacted"}} {
+	for _, selection := range []struct{ operation, representation string }{{"runtime.recordings.v1", ""}, {"runtime.recording-page.v1", "original"}, {"runtime.recording-page.v1", "redacted"}, {"runtime.recording-export-manifest.v1", "original"}, {"runtime.recording-export-part.v1", "original"}} {
 		operation := selection.operation
 		for _, name := range []string{"ok", "observer", "missing-capability", "no-consent", "wrong-reply", "transport-lost"} {
 			variant.Store(name)
 			var in any = service.RecordingCatalogInput{Target: target, InstanceID: "alpha", IncludePrivateData: name != "no-consent"}
 			if operation == "runtime.recording-page.v1" {
 				in = service.RecordingPageInput{Target: target, InstanceID: "alpha", JobID: descriptor.JobID, JobSHA256: descriptor.JobSHA256, Representation: selection.representation, IncludePrivateData: name != "no-consent"}
+			}
+			exportInput := service.RecordingExportInput{Target: target, InstanceID: "alpha", JobID: descriptor.JobID, JobSHA256: descriptor.JobSHA256, Representation: "original", IncludePrivateData: name != "no-consent"}
+			if operation == "runtime.recording-export-manifest.v1" {
+				in = exportInput
+			}
+			if operation == "runtime.recording-export-part.v1" {
+				in = service.RecordingExportPartInput{RecordingExportInput: exportInput, SessionID: metadata.SessionID, MetadataSHA256: metadataDigest, FileName: "frames.obr", FileBytes: int64(len(payload)), ChunkSHA256: hashBytes(payload)}
 			}
 			raw, _ := json.Marshal(in)
 			before := reads.Load()
@@ -159,8 +207,16 @@ func TestCLIAndMCPPrivateRecordingHistoryAndExactPage(t *testing.T) {
 				t.Fatal("CLI/MCP recording mismatch", operation, name, err, string(cli), tool)
 			}
 			if name == "ok" {
-				if cliErr != nil || tool.IsError || reads.Load() != before+2 || !bytes.Contains(cli, []byte("9007199254740993")) {
+				if cliErr != nil || tool.IsError || reads.Load() != before+2 || operation != "runtime.recording-export-part.v1" && !bytes.Contains(cli, []byte("9007199254740993")) {
 					t.Fatal("bounded exact read failed", operation, name, cliErr, string(cli))
+				}
+				if operation == "runtime.recording-export-part.v1" {
+					var decoded struct {
+						Data recording.ExportPart `json:"data"`
+					}
+					if json.Unmarshal(cli, &decoded) != nil || decoded.Data.Validate() != nil || !bytes.Equal(decoded.Data.Data, payload) {
+						t.Fatal("exact exported chunk changed")
+					}
 				}
 				if operation == "runtime.recording-page.v1" {
 					var decoded struct {
@@ -198,5 +254,41 @@ func TestCLIAndMCPPrivateRecordingHistoryAndExactPage(t *testing.T) {
 				}
 			}
 		}
+	}
+	variant.Store("ok")
+	outputDir := t.TempDir()
+	if err := os.Chmod(outputDir, 0700); err != nil {
+		t.Fatal(err)
+	}
+	output := filepath.Join(outputDir, "original.zip")
+	args := []string{"--config-dir", config, "recording-export", "--runner", "dev", "--expected-runner-id", "runner", "--instance", "alpha", "--job", descriptor.JobID, "--job-sha256", descriptor.JobSHA256, "--original", "--include-private-data", "--output", output}
+	if raw, err := coreTestCommand(t, args...).CombinedOutput(); err != nil || !bytes.Contains(raw, []byte(`"status":"exported"`)) || !bytes.Contains(raw, []byte(`"runtime_complete":false`)) {
+		t.Fatal("CLI archive failed", err, string(raw))
+	}
+	file, err := os.Stat(output)
+	if err != nil || file.Mode().Perm() != 0600 {
+		t.Fatal("archive is not private", err)
+	}
+	archive, err := zip.OpenReader(output)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer archive.Close()
+	for _, file := range archive.File {
+		if expected, ok := exportFiles[file.Name]; ok {
+			r, err := file.Open()
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := io.ReadAll(r)
+			r.Close()
+			if err != nil || !bytes.Equal(got, expected) {
+				t.Fatal("CLI archive changed original", file.Name, err)
+			}
+		}
+	}
+	before := reads.Load()
+	if raw, err := coreTestCommand(t, args...).CombinedOutput(); err == nil || reads.Load() != before {
+		t.Fatal("existing output was overwritten or contacted runner", err, string(raw))
 	}
 }

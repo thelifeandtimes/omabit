@@ -66,3 +66,17 @@ the original row digest matches the pre-service snapshot. Preserve that failed
 whole image/evidence. The corrected comparator permits only this exact refresh,
 rejecting changed intent/storage/history, missing values, extra rows/tables,
 stale time and additional revisions. A fresh full native retry is still required.
+
+The corrected allocation-only COW02 passes at frozen f37 tools with independent
+read-only SQL/capture/control/intent preservation(M729). Earlier COW01 remains a
+failed fixture; the older pending-retry wording above is historical.
+
+The current source adds `require_original_exports=true` as a mandatory scenario
+flag checked by guest/helper guards. On a fresh overlay it also requires both
+original closed jobs' CLI/SDK export manifests and every chunk to match independent
+original file hashes/bytes, plus actual private CLI ZIPs to contain every exact
+encoded file. Bounded private proof retains ZIP bytes and hashes. The PID1 and
+fixed predecessor/case/isolation remain unchanged; source/artifact pins distinguish
+this later assertion set from M729. No capture, retention or policy write occurs.
+These later native assertions are prepared, not yet qualified. They do not cover
+redacted complete bundles, a separate searchable timestamp index or installed DEV.

@@ -561,3 +561,20 @@ M730 regenerates and checks all179 public help entries from matching f37 tools i
 networkless private HOME scopes under a64MiB admission. Current HTTP/report flags
 are reflected; installed state is untouched. Named execution/provider clients and
 the remaining issue/upgrade gates remain open.
+
+M731 adds original-only manifest/part reads and a private streaming CLI ZIP over
+shared core operations. Source storage/worker/API/SSH/client/catalog and actual
+CLI/official-SDK parity pass, preserving raw timing/streams and explicit damaged
+prefix evidence. Initial internal-command inventory and0700 test-directory
+failures remain documented. [Source evidence](diagnostics/2026-11-19-recording-original-export-source.json)
+does not qualify redacted complete bundles, a separate timestamp index or native
+exports. No persisted format or installed state changes.
+
+M732 records an initial source-cache overshoot of the48GiB cap and restores it
+using only classified regenerable cache/work files.170 artifact/evidence pins and
+all original data remain exact. New allocation monitoring stops a further compiler
+reservation overrun before the cap; its completed pinned helper passes the pure
+host guard directly. Focused vet passes and the post-check charge is below48GiB.
+The fixed native helper now requires actual CLI/SDK original manifests/parts and
+CLI ZIP byte comparisons for both retained recording sessions. Those native gates,
+matching clean builds, reference regeneration and admission remain pending.

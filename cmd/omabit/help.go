@@ -2,6 +2,16 @@ package main
 
 // Commands with no ordinary flag parser still expose side-effect-free help.
 var desktopCommandHelp = map[string]string{
+	"recording-export": `Usage: omabit [--config-dir DIR] recording-export --runner NAME --expected-runner-id ID --instance INSTANCE --job JOB_ID --job-sha256 SHA256 --original --include-private-data --output /absolute/private/new.zip
+
+Export a closed saved recording job through the shared manifest/part operations.
+The ZIP preserves exact metadata and encoded segments, original timing/streams,
+and explicit verified-prefix/gap coverage. Original output may contain private
+values and terminal controls; inspect it as data before sharing. No publication
+or runtime completeness is implied. Redacted export packaging remains separate.
+The existing output directory must be physical, owned by you and mode0700.
+The final file is mode0600 and never overwritten. Failure retains .partial output;
+it does not substitute another session, retry capture or change recording policy.`,
 	"operations": `Usage: omabit operations
 Read the offline shared operation catalog, inferred JSON schemas, effects, target
 bindings, replay rules and explicit legacy CLI exclusions. Creates no state.`,

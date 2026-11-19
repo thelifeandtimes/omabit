@@ -20,7 +20,7 @@ CASE = 'closed-native-capture-allocation-v1'
 PIN = 'e3a728a4b1dcc090a10560481dd8414e801c4ef12632164fb05e0f4db5d022d9'
 HELPER_SECONDS = 150
 HELPER_PROCESS_SECONDS = 180
-report = {'format': 1, 'passed': False, 'scope': 'closed native recording allocation on one fresh offline COW overlay; no runtime launch/control write, installed upgrade, DEV or production qualification'}
+report = {'format': 1, 'passed': False, 'scope': 'closed native recording allocation on one fresh offline COW overlay; complete original encoded-file export/byte verification only; no runtime launch/control write, redacted export/indexed search, installed upgrade, DEV or production qualification'}
 
 
 def sha(path):
@@ -34,7 +34,7 @@ def guard():
     if Path('/sys/class/dmi/id/sys_vendor').read_text().strip() != 'QEMU' or 'omabit.disposable-guest=release-upgrade-v1' not in Path('/proc/cmdline').read_text().split():
         raise RuntimeError('not isolated guest')
     value = json.loads((I/'scenario.json').read_text())
-    if value.get('kind') != 'issues20-recording-usage-v1' or value.get('case') != CASE or value.get('predecessor_root_sha256') != PIN or value.get('original_schema') != 65 or value.get('target_schema') != 65 or value.get('development_snapshot') is not True:
+    if value.get('kind') != 'issues20-recording-usage-v1' or value.get('case') != CASE or value.get('predecessor_root_sha256') != PIN or value.get('original_schema') != 65 or value.get('target_schema') != 65 or value.get('development_snapshot') is not True or value.get('require_original_exports') is not True:
         raise RuntimeError('wrong exact closed-recording fixture')
     return value
 
@@ -140,7 +140,7 @@ def main():
     report['helper_exit'] = helper.returncode
     proof = Path('/home/review/omabit-recording-usage-proof/proof.json')
     value = json.loads(proof.read_text())
-    if value.get('passed') is not True or not all(value.get(key) is True for key in ('original_recording_bytes_unchanged', 'policy_head_unchanged', 'actual_cli_and_stdio_measurements')):
+    if value.get('passed') is not True or not all(value.get(key) is True for key in ('original_recording_bytes_unchanged', 'policy_head_unchanged', 'actual_cli_and_stdio_measurements', 'actual_original_export_manifest_part_cli_mcp', 'actual_original_zip_matches_files')):
         raise RuntimeError('not every native allocation/read gate passed')
     observation = verify_preserved_rows(before, saved_rows())
     report.update(product=value, proof_sha256=sha(proof), original_rows_preserved_except_one_observation=True, observation_refresh=observation, passed=True)

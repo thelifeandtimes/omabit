@@ -1,0 +1,181 @@
+{
+  "format": 1,
+  "status": "passed-scoped-source",
+  "passed": true,
+  "scope": "inert storage/worker/HTTP/SSH/client/catalog/actual CLI/official SDK stdio checks only; no native export, installed upgrade, DEV or production qualification",
+  "operations": [
+    "runtime.recording-export-manifest.v1",
+    "runtime.recording-export-part.v1"
+  ],
+  "cli": "omabit recording-export",
+  "runner_feature": "runtime-recording-export-v1",
+  "persistent_formats_changed": false,
+  "runner_schema": 65,
+  "export_contract": {
+    "representation": "explicit original only; redacted choices refuse",
+    "closed_saved_job_required": true,
+    "active_writer_refused": true,
+    "chunk_bytes": 262144,
+    "max_manifest_bytes": 921600,
+    "per_chunk_and_whole_file_sha256": true,
+    "complete_retained_files_separate_from_verified_prefix_and_runtime": true,
+    "partial_and_corrupt_original_tails_retained": true,
+    "zip_metadata_and_all_encoded_segments": true,
+    "zip_and_entries_mode": "0600",
+    "destination_parent": "existing physical owner-private0700",
+    "partial_suffix_and_no_overwrite_publication": true,
+    "timing": "original codec wall/receive/epoch/stream/sequence bytes retained; timing-format.txt documents encoding",
+    "separate_searchable_timestamp_index": false,
+    "redacted_complete_bundle": false,
+    "retention_or_runtime_mutation": false
+  },
+  "checks": [
+    {
+      "scope": "source-04",
+      "package": "internal/recording",
+      "race": true,
+      "passed": true,
+      "seconds": 1.13
+    },
+    {
+      "scope": "source-04",
+      "package": "internal/runtimequalify",
+      "race": true,
+      "passed": true,
+      "seconds": 1.235
+    },
+    {
+      "scope": "source-04",
+      "package": "internal/managed",
+      "race": true,
+      "passed": true,
+      "seconds": 1.603
+    },
+    {
+      "scope": "source-04",
+      "package": "internal/client",
+      "race": true,
+      "passed": true,
+      "seconds": 1.012
+    },
+    {
+      "scope": "source-04",
+      "package": "internal/service",
+      "race": true,
+      "passed": true,
+      "seconds": 3.043
+    },
+    {
+      "scope": "source-06",
+      "package": "internal/recording",
+      "race": true,
+      "passed": true,
+      "seconds": 1.138
+    },
+    {
+      "scope": "source-06",
+      "package": "internal/access",
+      "race": true,
+      "passed": true,
+      "seconds": 1.315
+    },
+    {
+      "scope": "source-06",
+      "package": "internal/client",
+      "race": true,
+      "passed": true,
+      "seconds": 1.011
+    },
+    {
+      "scope": "source-06",
+      "package": "cmd/omabit",
+      "race": true,
+      "actual_argument_dispatcher_and_official_sdk": true,
+      "passed": true,
+      "seconds": 21.853
+    },
+    {
+      "scope": "source-07-direct",
+      "check": "pure guarded helper refusal; native case and unfrozen build identity skip",
+      "passed": true,
+      "binary_sha256": "587970076c1260f09b2833755dcb26ede5ee716bea2543d0c94329180802c2f7"
+    },
+    {
+      "scope": "source-08",
+      "check": "vet seven changed Go packages",
+      "passed": true
+    },
+    {
+      "check": "inert fixed guest/PID1/source/SQLite/limits Python guards",
+      "passed": true,
+      "count": 11,
+      "seconds": 0.038
+    }
+  ],
+  "earlier_failures": [
+    {
+      "scope": "source-03",
+      "reason": "newly generated internal recording-worker reference lacked an explicit catalog exclusion; add internal-only entry"
+    },
+    {
+      "scope": "source-04",
+      "reason": "archive CLI fixture directory used broader permissions; explicitly chmod its new disposable directory0700, retaining product refusal",
+      "seconds": 19.44
+    },
+    {
+      "scope": "source-07",
+      "reason": "new allocation monitor stopped compiler scope before cap; test had not run through Go driver, so execute its completed pinned binary separately; whole compiler invocation remains interrupted"
+    }
+  ],
+  "storage": {
+    "initial_reserve_bytes": 268435456,
+    "initial_observed_post_test_charge": 51724771328,
+    "budget_bytes": 51539607552,
+    "initial_observed_excess_bytes": 185163776,
+    "within_initial_reserve": false,
+    "cache37_38_freed_bytes": 805879808,
+    "all170_artifact_and_evidence_pins_unchanged": true,
+    "source07_monitor_last_observed_charge": 51484127232,
+    "source07_monitor_stopped_before_cap": true,
+    "source07_generated_scratch_removed_bytes": 269180928,
+    "completed_source_guard_binary_retained": true,
+    "after_vet_charge": 51245133824,
+    "after_vet_below_cap": true
+  },
+  "remaining": [
+    "matching clean tools/reference/native closed original export rehearsal",
+    "redacted complete exports",
+    "separate timestamp index and search",
+    "active growth/pressure and retirement",
+    "other runtime factories",
+    "previous-stable installed upgrade and preserved DEV"
+  ],
+  "source_inputs_sha256": {
+    "cmd/omabit/core_recordings_test.go": "57e16b934ae931917079a2d2baa0ca5d7dc89fd43f887f54c268eb03075ea5c0",
+    "cmd/omabit/help.go": "8d4ec91021aa25c6b76446f4e0b1156a196cb76bde9073c25d16657cda24424f",
+    "cmd/omabit/main.go": "570becd7ecb46d824a545321cc57e8e887f2c73b787c638ebfe7eb1cd3374634",
+    "cmd/omabit/recording_export.go": "1fcfb28fbd5b42b4d4ceba227448a6665028ea0259516b4438f1050751b8390c",
+    "cmd/omabit/recording_export_test.go": "4ce0bdc5833a9fea80e4ebdc5bf10acf8a0d03cc0b51ed70a0063ce83f7d07ba",
+    "internal/access/desk.go": "f8936922378675c91cdbd9b0bc3ad486b96dcf10539d3b1c0041c97e711cf216",
+    "internal/access/recording_export_test.go": "a54ffca806e07d4745c257be24f9f839f7c6b8a75bf2aa97086b56958bc6d470",
+    "internal/client/recording_export_test.go": "ddf821cc15df2aad4d386cb297955014c68da1ab9e144785aa5748f2879fe8bd",
+    "internal/client/recordings.go": "b904af96db690b64f9adc2e0aecf47098b78c109058a6b50c4f892790e8c7724",
+    "internal/managed/issues_recording_export_vm_test.go": "cd6acd2c44bf7c5c7475763ce0ba207d999ef1bf48240368376260871b68b4ee",
+    "internal/managed/issues_recording_usage_vm_test.go": "42ee20280f0216e9065ff89f8926365146dc403cb6520366021a18b9ebaa77ba",
+    "internal/managed/recording_export.go": "d0e772f396290a407ffa3c6ec569f44a2361a08ab9196811d3bfaaacc54e8d9d",
+    "internal/managed/recording_export_test.go": "f7faa5b3f4a4ec106d4c7c0faa52751563f240609598900a1372615892bbf826",
+    "internal/managed/recording_read_linux.go": "dd51baff2aa1ce9e92d6771605aa72b99e36464ab0dec04278b4440dec808c02",
+    "internal/managed/server.go": "41f16e9f43635acdc7dfb7c3143ecbb0b12fd8b9fc7fd7f47c34b67d9d943595",
+    "internal/protocol/recordings.go": "eb1492cf55ba60538f2442f4e68e2d0aaa59e6a419a75388d249331a8ea72235",
+    "internal/recording/bundle.go": "75bd1d5192e0d90392f6443798be06e44e8d2836de78f8a82529c9e490486b1c",
+    "internal/recording/bundle_archive.go": "1167cb291c6c239348e2a305b2d288be04ad2797c78163a05baed81d19293ba0",
+    "internal/recording/bundle_linux.go": "44c23c091952feeea43c06eea8ea593fb227ae356b5fda4d51cc5ae36f4c3aab",
+    "internal/recording/bundle_linux_test.go": "aac73bb7482bed0489a59ca5c72e963d3a2f078313e3b730e0cd3e23368017fa",
+    "internal/runtimequalify/recording_export_linux.go": "527feb6218822c7b119aa5fae5e67e96eaa73f7a281d209fb529b0debffd363e",
+    "internal/runtimequalify/recording_export_linux_test.go": "d95155f88a9fad1928294a1b6dad583d13a45e48c241e8a87e0ac5a41aecd1b1",
+    "internal/service/legacy-inventory.json": "d67625d33d5c4f096562437a50f6151bdd3d7a7d9bed6d469656ea9c93888d8e",
+    "internal/service/recording_bundle.go": "e3fb7b0f2ed1669f149b764e5e97c3de72c75665fab5bf7f93acc2d3c3381507",
+    "internal/service/recording_export.go": "461dd72080ff46cfea4b81dfe3e19759cd86f6c1481d380c1351783cfcd5dfdd",
+    "internal/service/recordings.go": "60eff68178dcfb70e3f4b874ce57f7b7324ffb002fd6a6f06bd119ad9f503f3d"
+  }
+}

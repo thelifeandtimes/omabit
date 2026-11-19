@@ -1282,6 +1282,25 @@
         "policy-edit-or-configuration-write"
       ],
       "exclusion_reason": "Setup authoring and its internal helper interface remain separate; ordinary MCP tools cannot grant or retry policy edits."
+    },
+    {
+      "cli": "omabit recording-export",
+      "effects": [
+        "local-metadata-read",
+        "saved-runner-read",
+        "private-runtime-read",
+        "local-private-file-write"
+      ],
+      "exclusion_reason": "Only the owner-selected local archive destination is CLI-specific. The writer composes runtime.recording-export-manifest.v1 and runtime.recording-export-part.v1; both exact reads are shared CLI/MCP operations. MCP inputs cannot select arbitrary local output paths."
+    },
+    {
+      "cli": "urbit-runner recording-worker",
+      "effects": [
+        "private-recording-job-read",
+        "runner-owned-recording-write",
+        "native-runtime-attachment"
+      ],
+      "exclusion_reason": "Internal entry only for the exact main process of its owner-private notify service and existing immutable job. Ordinary shell invocation and general-purpose MCP execution are refused."
     }
   ]
 }

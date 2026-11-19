@@ -379,6 +379,9 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if _, ok := r.b.(recordingReadBackend); ok {
 			features = append(features, protocol.RecordingReadFeature)
 		}
+		if _, ok := r.b.(recordingExportBackend); ok {
+			features = append(features, protocol.RecordingExportFeature)
+		}
 		features = append(features, "maintenance-schedules", protocol.RecordingControlFeature)
 		features = append(features, protocol.RunnerBuildIdentityFeature, protocol.ProjectStopRecoveryFeature, protocol.CreationReplayFeature, protocol.ProjectInventoryFeature, protocol.ProjectStatusFeature, protocol.ProjectRecoveryCheckpointFeature, protocol.ProjectRecoverySourceFeature, protocol.ProjectRegistrationFeature, protocol.PrivateChainRegistrationFeature, protocol.PrivateChainInventoryFeature)
 		features = append(features, r.projectActionFeatures()...)
@@ -543,6 +546,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if req.Method == http.MethodPost && (req.URL.Path == protocol.RecordingControlStatusPath || req.URL.Path == protocol.RecordingControlApplyPath || req.URL.Path == protocol.RecordingControlLookupPath) {
 		r.serveRecordingControls(w, req, actor, role)
+		return
+	}
+	if req.Method == http.MethodPost && (req.URL.Path == protocol.RecordingExportManifestPath || req.URL.Path == protocol.RecordingExportPartPath) {
+		r.serveRecordingExport(w, req, role)
 		return
 	}
 	if req.Method == http.MethodPost && (req.URL.Path == protocol.RecordingCatalogPath || req.URL.Path == protocol.RecordingPagePath) {

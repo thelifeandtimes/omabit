@@ -13329,3 +13329,58 @@ registry, engine or desktop socket. Refresh the MCP HTTP and exact private repor
 startup flags in generated omabit/runner references. Collector help is unchanged.
 The reference reflects available commands, not native workflow qualification;
 named execution/actual provider clients and the final upgrade/DEV gates remain.
+
+## M731 — Exact original recording exports pass source/CLI/MCP checks (2026-11-19)
+
+Add typed owner-private original export manifest/part reads and a shared streaming
+ZIP assembler. Closed saved jobs bind exact runner/instance/job/session/metadata;
+active writers, missing results, unsafe files and changed hashes refuse.256KiB
+parts fit existing RPC replies; complete file hashes are verified before ZIP
+completion. All retained encoded originals, including torn/corrupt tails, remain
+separate from verified-prefix timing/gap/exit coverage and runtime completeness.
+No schema65, job, control, history or original file changes. The CLI writes a fresh
+0600 archive in an existing physical0700 directory, syncs and publishes with a
+no-overwrite link, and retains failed output as.partial. Archive entries are0600.
+MCP receives the same exact reads without model-selected local output paths.
+
+Focused recording/worker/API/client/catalog races pass. Final storage/access/
+client/actual CLI+official-SDK stdio checks pass(1.138/1.315/1.011/21.853s).
+Retain two initial fixture failures: generated recording-worker help lacked an
+explicit internal-only catalog exclusion; the CLI fixture's temporary directory
+was not0700. Add that inventory entry and chmod only the new test directory,
+preserving product privacy checks. Source review also extends only the exact
+export RPC client/server/SSH deadlines; prefix variants retain ordinary bounds.
+The [source report](diagnostics/2026-11-19-recording-original-export-source.json)
+records results and limits. This is complete original encoded-file packaging,
+not a redacted bundle or separate searchable timestamp index. Matching native
+export, final stable upgrade/preserved DEV and remaining issue gates stay open.
+
+## M732 — Bound compiler storage; prepare native original-byte checks (2026-11-19)
+
+The first source admission reserves256MiB, but post-test charge is51,724,771,328,
+185,163,776bytes above the approved51,539,607,552-byte cap. Do not claim the
+source checks stayed within reserve. Pause new builds/native launches; classify
+and evict only1168 regenerable compiler/index files in cache37/38, freeing
+805,879,808bytes while170 named artifact/whole-VM/compact evidence pins remain
+exact. No unique VM or original capture/database/log/source is retired.
+
+A new fast cache/temp/build allocation monitor retains the fixed full aggregate
+charge and sets a stop threshold at least64MiB below the cap. Normal-mode source07 compilation
+rebuilds older cache entries and crosses its512MiB reservation; the monitor
+terminates only that scope at an estimated51,484,127,232bytes, below the cap.
+The whole Go invocation remains interrupted. Its completed SHA-pinned test binary
+passes the pure host/foreign-scenario guard directly; actual native and unfrozen
+build-identity tests skip. Retain that binary unchanged, and remove only its895
+classified regenerable compiler work files(269,180,928bytes), preserving older
+historical test directories. Focused seven-package vet then passes under a new
+256MiB monitored admission. Full post-vet charge51,245,133,824 is below48GiB.
+
+Prepare additive source-bound native export assertions on a fresh read-only-backed
+recording07 overlay. A required scenario flag prevents omission. The helper must
+compare both closed jobs' actual CLI/SDK manifests and every part with independent
+original hashes/files, and real CLI ZIPs with those exact encoded originals.
+Private bounded proof retains ZIP bytes/hashes for independent analysis. All
+capture/control/history/intent preservation and previous observation-only rules
+remain. Eleven inert Python guards and the pure Go VM guard pass; matching clean
+builds, admission and actual execution remain pending. The separately frozen
+PID1 source is unchanged. No installed namespace, production or existing ship changes.
