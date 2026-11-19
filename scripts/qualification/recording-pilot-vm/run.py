@@ -172,7 +172,9 @@ def main():
     (out/'preparation.json').write_text(json.dumps({'source_commit':commit,'harness_commit':harness_commit,
         'phase':'payload-built','guest_created':False,'candidate':builds,'admission':admission},indent=2)+'\n')
     init = out/'init'
-    util.run(['go', 'build', '-trimpath', '-o', init, './scripts/qualification/release-upgrade/init'], cwd=ROOT, env={**os.environ, 'CGO_ENABLED': '0','GOPROXY':'off','GOTELEMETRY':'off'})
+    go_tmp=out/'go-tmp'
+    go_tmp.mkdir(mode=0o700)
+    util.run(['go', 'build', '-trimpath', '-o', init, './scripts/qualification/release-upgrade/init'], cwd=ROOT, env={**os.environ, 'CGO_ENABLED': '0','GOPROXY':'off','GOTELEMETRY':'off','GOTMPDIR':str(go_tmp),'TMPDIR':str(go_tmp)})
     boot = out/'boot'
     boot.mkdir()
     util.run(['bsdtar', '-xf', portable/'boot/initramfs.cpio', '-C', boot, 'guest-modules', 'modules'])

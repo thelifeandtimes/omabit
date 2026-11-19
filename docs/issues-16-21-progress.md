@@ -345,3 +345,10 @@ comparison, policy replay/lookup/pin, immutable old/new job limits and unchanged
 old-reader refusal. Five inert guards and the host-inert Go helper pass; actual
 native execution is pending. Two historical recovery groups pass; the remaining
 13 require a smaller split after their deadline. No installed deployment changed.
+
+M704 completes all39 historical interrupted-operation fixture race checks in
+bounded groups, including schema45. Earlier timed-out runs remain failures and
+this is not a whole-package pass. The source report records exact coverage and
+source boundaries. Matching282c3b3 upgrade binaries are frozen; verified lossless
+reference archival and task-only cache consolidation admit2GiB native scratch
+under48GiB. The pending app VM remains untouched; native execution is next.

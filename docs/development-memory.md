@@ -12634,3 +12634,28 @@ archived with full inflate/hash verification; never touch the pending app VM.
 The first two historical recovery groups pass25.853s/40.471s. The remaining13
 again hit the bound during schema45 and need smaller groups; no whole-suite pass.
 Production, manual DEV, protected/tmux ships and existing services stay excluded.
+
+## M704 — Complete split historical recovery and bound native build scratch (2026-11-18)
+
+All39 original historical interrupted-operation fixtures pass race checks in
+four bounded groups (25.853s,40.471s,73.735s,198.555s). Preserve exact stopped
+intent, uncertainty, original receipts and replay across three opens. See the
+[scoped source report](diagnostics/2026-11-18-historical-interrupted-recording65-source.json).
+This supersedes the uncompleted-group deferral, not prior deadline failures or
+whole-managed-suite/native qualification. The report records its two source
+commits; intervening changes affect only VM observer guards and CLI help.
+
+Freeze matching282c3b3 CLI/collector/runner/helper artifacts for the next fresh
+upgrade case. The ended successful M697 full image is now losslessly archived:
+full inflate yields the original SHA before the redundant raw encoding is removed,
+freeing788,455,424bytes; its report/base/original full bytes remain retained. The
+pending app VM remains raw and untouched. Classified regenerable cache24/25 frees
+another313,462,784bytes without changing sources, SQLite or named binaries.
+Admission charges49,353,854,976bytes plus2GiB scratch, totaling51,501,338,624 under
+the approved51,539,607,552byte cap. No native guest is launched yet.
+
+Place the harness's pre-VM Go init-build temporaries inside its already charged
+fresh output, so source-build scratch is included too. Python refusal guards
+remain required before execution. The old artifact source can be selected only
+explicitly, with clean ancestry and no Go/embedded-input changes. No production,
+preserved DEV, existing ship or tmux surface is operated on.
