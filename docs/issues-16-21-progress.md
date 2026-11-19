@@ -436,3 +436,11 @@ to current65 and closes both fixture SQLite readers deterministically. The exact
 original62 pending-app backing, original-row preservation and strict isolation/
 artifact/file-size limits stay unchanged. Nine inert guards pass; new matching
 artifacts and a fresh full native two-version/restart case remain required.
+
+M715 freezes the current COW PID1 input and requires exact hash/source/provenance
+verification through explicit `--init`; preparation performs no Go build. Ten
+guards and actual frozen-input verification pass. Regenerable compiler cache is
+consolidated, but matching builds plus the next native reservation still need
+space. A separate two-file recording VM06 retirement plan is classified and
+explicit permission requested; its disks remain intact, with full successful07
+and pending app05 preserved. No new native/installed/DEV change is claimed.

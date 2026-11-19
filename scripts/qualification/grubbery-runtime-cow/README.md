@@ -56,3 +56,11 @@ SQLite lifetime regression covers this. This prepares a fresh corrected retry
 after the earlier case completed both app versions but failed manager-restart
 readiness. New matching artifacts, storage admission and full native execution
 are still required; original VM05 is bound read-only and never resumed writable.
+
+Supply `--init` with the separately frozen current-schema PID1 executable, SHA
+aa4992d292a925986caa64ea64e0173506119f9d44933a0d00b262b34eab17a9.
+The launcher verifies its unchanged source hash and clean bf5b6c1 provenance, then
+copies it. It performs no Go build during preparation or native execution. This
+allows regenerable compiler cache eviction without changing named artifacts or
+requiring compilation inside the constrained staging supervisor. The64MiB host
+reserve remains available for preparation. Existing capsules never resume.

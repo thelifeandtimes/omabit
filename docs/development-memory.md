@@ -12945,3 +12945,30 @@ read-only backing and never boots writable; production/manual DEV and existing
 ships remain excluded. Matching new binaries and full native execution remain
 required. Earlier two-version progress/readiness failure stays historical; no
 whole Grubbery workflow pass is claimed.
+
+## M715 — Freeze COW65 boot input and prepare separate VM06 retirement (2026-11-19)
+
+Compile the unexecuted PID1 helper from clean
+bf5b6c1c12d7e57715b5faf7cd3b119bac4a7214 under a256MiB build reservation.
+Its exact binary SHA is
+aa4992d292a925986caa64ea64e0173506119f9d44933a0d00b262b34eab17a9;
+the unchanged Go source SHA is
+bfa53c26aa0c08266520df8d1b9186be04468df5416efea7769e7ac8a7df9eb8.
+Require explicit `--init`, verify both hashes and clean original provenance,
+then copy it. COW preparation no longer builds Go; the64MiB reserve remains for
+preparation. Ten inert guards pass (0.050s), and actual frozen input verification
+passes without executing PID1 on the host. New matching three binaries/managed
+helper and full native case remain required.
+
+Evict496,758,784bytes of validated regenerable compiler/index cache after source
+checks, with all named artifacts and current VM06/07/app05 images unchanged.
+The conservative1GiB matching-build reserve plus960MiB native capsule/preparation
+cannot fit current storage. Prepare a separate read-only classified retirement
+plan for only obsolete recording VM06 root/input (1,594,851,328allocated bytes).
+Its fixture failure is explained and newer VM07 passes the complete native case.
+Verify stopped units, original identity/backing/no-open-user bindings and65
+retained compact/artifact/reference files. Request explicit authorization because
+prior permissions name03/04/05 only; no VM06 unlink or new native launch occurs.
+The original SQLite/WAL/SHM, receipts, raw frames, logs/source/binaries remain,
+as do full successful VM07 and the separate pending app VM05. All production,
+preserved DEV and existing/protected/tmux ship exclusions remain in force.

@@ -36,6 +36,9 @@ VM_DEADLINE_SECONDS = 6100
 SUPERVISOR_DEADLINE_SECONDS = 6300
 PREDECESSOR = Path('/tmp/omabit-issues-app-vm-05/root.qcow2')
 PREDECESSOR_SHA = 'a23f10ddc89657489d8e55eaf5e4362603848366a447dbf9f51ce192837a08f9'
+BOOT_SHA = 'aa4992d292a925986caa64ea64e0173506119f9d44933a0d00b262b34eab17a9'
+BOOT_SOURCE_SHA = 'bfa53c26aa0c08266520df8d1b9186be04468df5416efea7769e7ac8a7df9eb8'
+BOOT_SOURCE_COMMIT = 'bf5b6c1c12d7e57715b5faf7cd3b119bac4a7214'
 
 
 def artifact_change_allowed(path):
@@ -60,9 +63,19 @@ def terminate(number, frame):
     raise InterruptedError('product VM supervisor terminated: '+str(number))
 
 
+def frozen_boot(path):
+    ordinary(path)
+    if util.digest(path) != BOOT_SHA or util.digest(ROOT/'scripts/qualification/grubbery-runtime-cow/init/main.go') != BOOT_SOURCE_SHA:
+        raise RuntimeError('frozen COW boot helper or source differs')
+    info = subprocess.check_output(['go','version','-m',path],text=True)
+    if '\tvcs.revision='+BOOT_SOURCE_COMMIT not in info or '\tvcs.modified=false' not in info:
+        raise RuntimeError('frozen COW boot helper provenance differs')
+    return {'sha256':BOOT_SHA,'source_sha256':BOOT_SOURCE_SHA,'source_commit':BOOT_SOURCE_COMMIT,'build_info':info}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ('portable', 'candidate', 'rootless', 'runtime', 'helper', 'output'):
+    for name in ('portable', 'candidate', 'rootless', 'runtime', 'helper', 'init', 'output'):
         parser.add_argument('--'+name, type=Path)
     parser.add_argument('--storage-budget-gib', type=int, choices=(40, 48), default=40)
     parser.add_argument('--artifact-source', help='exact frozen artifact commit when only harness/documentation changed')
@@ -72,7 +85,7 @@ def main():
     if not args.run:
         parser.print_help()
         return
-    names = ('portable', 'candidate', 'rootless', 'runtime', 'helper', 'output')
+    names = ('portable', 'candidate', 'rootless', 'runtime', 'helper', 'init', 'output')
     if os.geteuid() == 0 or any(getattr(args, name) is None for name in names):
         parser.error('ordinary owner and every explicit input required')
     out = args.output
@@ -119,6 +132,7 @@ def main():
     if util.digest(ordinary(runtime/'boot.pill')) != budget.PILL or util.digest(ordinary(runtime/'runtime.oci.tar')) != budget.OCI:
         raise RuntimeError('frozen runtime/pill differs')
     ordinary(args.rootless, True)
+    boot_helper = frozen_boot(args.init)
     if not args.worker:
         # This unit owns only the host-side supervisor. The fresh QEMU scope is
         # separate and has its own stronger memory/CPU/no-swap boundary.
@@ -184,6 +198,7 @@ def main():
                 'source_commit': commit, 'harness_commit':harness_commit,'original_schema': 62, 'target_schema': 65, 'candidate': builds,
                 'pill_sha256': budget.PILL, 'oci_sha256': budget.OCI,
                 'case': 'cow-recover-pending-zod-v1','predecessor_root_sha256':PREDECESSOR_SHA}
+    scenario['boot_helper'] = boot_helper
     (payload/'scenario.json').write_text(json.dumps(scenario, indent=2)+'\n')
     disk = out/'payload.ext4'
     with disk.open('xb') as stream:
@@ -193,7 +208,10 @@ def main():
     (out/'preparation.json').write_text(json.dumps({'source_commit':commit,'harness_commit':harness_commit,
         'phase':'payload-built','guest_created':False,'candidate':builds,'admission':admission},indent=2)+'\n')
     init = out/'init'
-    util.run(['go', 'build', '-trimpath', '-o', init, './scripts/qualification/grubbery-runtime-cow/init'], cwd=ROOT, env={**os.environ, 'CGO_ENABLED': '0','GOPROXY':'off','GOTELEMETRY':'off'})
+    shutil.copy2(args.init, init)
+    init.chmod(0o755)
+    if util.digest(init) != BOOT_SHA:
+        raise RuntimeError('frozen boot helper copy changed')
     boot = out/'boot'
     boot.mkdir()
     util.run(['bsdtar', '-xf', portable/'boot/initramfs.cpio', '-C', boot, 'guest-modules', 'modules'])

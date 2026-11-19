@@ -19,6 +19,13 @@ def module(name):
 
 
 class RecoveryGuards(unittest.TestCase):
+    def test_frozen_boot_refuses_wrong_bytes_before_provenance_probe(self):
+        host=module('run')
+        with tempfile.TemporaryDirectory(prefix='omabit-cow-boot-pin-') as root:
+            init=Path(root)/'init';init.write_bytes(b'unqualified')
+            with patch.object(host.subprocess,'check_output',side_effect=AssertionError('wrong bytes must refuse first')):
+                with self.assertRaisesRegex(RuntimeError,'boot helper or source differs'):host.frozen_boot(init)
+
     def test_cloned_store_readers_close_on_success_and_schema_refusal(self):
         guest=module('guest')
         connect=sqlite3.connect
@@ -54,7 +61,7 @@ class RecoveryGuards(unittest.TestCase):
     def test_changed_embedded_inventory_refuses_before_artifact_reads_or_admission(self):
         host = module('run')
         args = ['run.py', '--run', '--artifact-source', 'a'*40, '--output', '/tmp/omabit-issues-runtime-cow-99']
-        for key in ('portable', 'candidate', 'rootless', 'runtime', 'helper'):
+        for key in ('portable', 'candidate', 'rootless', 'runtime', 'helper', 'init'):
             args += ['--'+key, '/missing']
 
         def git(command, **kwargs):
