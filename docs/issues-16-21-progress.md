@@ -352,3 +352,10 @@ this is not a whole-package pass. The source report records exact coverage and
 source boundaries. Matching282c3b3 upgrade binaries are frozen; verified lossless
 reference archival and task-only cache consolidation admit2GiB native scratch
 under48GiB. The pending app VM remains untouched; native execution is next.
+
+M705 retains the failed first native recording/API upgrade case: install-host
+correctly refuses its temporary fixture override before schema migration. The
+product guard is preserved. The exact fresh-fixture withdraw/restore correction
+passes six guards and reuses a pinned boot helper, with unchanged candidate
+binaries. Raw failure evidence remains retained after automatic archival rejection;
+standard regenerable cache is classified instead. Fresh native retry remains.

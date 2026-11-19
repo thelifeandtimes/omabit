@@ -41,7 +41,7 @@ def terminate(number, frame):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ('portable', 'candidate', 'predecessor', 'rootless', 'runtime', 'helper', 'output'):
+    for name in ('portable', 'candidate', 'predecessor', 'init', 'rootless', 'runtime', 'helper', 'output'):
         parser.add_argument('--'+name, type=Path)
     parser.add_argument('--storage-budget-gib', type=int, choices=(40, 48), default=40)
     parser.add_argument('--artifact-source', help='exact frozen artifact commit when only harness/documentation changed')
@@ -51,7 +51,7 @@ def main():
     if not args.run:
         parser.print_help()
         return
-    names = ('portable', 'candidate', 'predecessor', 'rootless', 'runtime', 'helper', 'output')
+    names = ('portable', 'candidate', 'predecessor', 'init', 'rootless', 'runtime', 'helper', 'output')
     if os.geteuid() == 0 or any(getattr(args, name) is None for name in names):
         parser.error('ordinary owner and every explicit input required')
     out = args.output
@@ -90,6 +90,12 @@ def main():
     prior_info=subprocess.check_output(['go','version','-m',predecessor],text=True)
     if '\tvcs.revision=2d0281971cca0285e5aabc4b91279830a04ab9b1' not in prior_info or '\tvcs.modified=false' not in prior_info:
         raise RuntimeError('predecessor source identity differs')
+    frozen_init=ordinary(args.init)
+    if util.digest(frozen_init)!='63a86300f9ba7ca08bf7df1fe28eb8b1b070d93ab67e868c7a51194e6bce1ec7' or util.digest(ROOT/'scripts/qualification/release-upgrade/init/main.go')!='1327c9480aab4a0d6287ec6a2cf86609e6d8182045e59abc811ffaebe2baf643':
+        raise RuntimeError('exact frozen boot helper and source required')
+    init_info=subprocess.check_output(['go','version','-m',frozen_init],text=True)
+    if '\tvcs.revision=d2bb3ba6c152396c9938c44a28cf90a0c902de72' not in init_info or '\tvcs.modified=false' not in init_info:
+        raise RuntimeError('frozen boot helper source differs')
     runtime = ordinary(args.runtime, True)
     if util.digest(ordinary(runtime/'boot.pill')) != budget.PILL or util.digest(ordinary(runtime/'runtime.oci.tar')) != budget.OCI:
         raise RuntimeError('frozen runtime/pill differs')
@@ -162,6 +168,7 @@ def main():
                 'source_commit': commit, 'harness_commit':harness_commit,'target_schema': 65, 'candidate': builds,
                 'pill_sha256': budget.PILL, 'oci_sha256': budget.OCI,
                 'case': 'ordinary-capture-active-worker-upgrade-policy-api-v1',
+                'boot_helper':{'sha256':util.digest(frozen_init),'source_sha256':util.digest(ROOT/'scripts/qualification/release-upgrade/init/main.go'),'build_info':init_info},
                 'predecessor':{'source':'2d0281971cca0285e5aabc4b91279830a04ab9b1','runner_sha256':util.digest(predecessor),'state_schema':64}}
     (payload/'scenario.json').write_text(json.dumps(scenario, indent=2)+'\n')
     disk = out/'payload.ext4'
@@ -172,9 +179,9 @@ def main():
     (out/'preparation.json').write_text(json.dumps({'source_commit':commit,'harness_commit':harness_commit,
         'phase':'payload-built','guest_created':False,'candidate':builds,'admission':admission},indent=2)+'\n')
     init = out/'init'
-    go_tmp=out/'go-tmp'
-    go_tmp.mkdir(mode=0o700)
-    util.run(['go', 'build', '-trimpath', '-o', init, './scripts/qualification/release-upgrade/init'], cwd=ROOT, env={**os.environ, 'CGO_ENABLED': '0','GOPROXY':'off','GOTELEMETRY':'off','GOTMPDIR':str(go_tmp),'TMPDIR':str(go_tmp)})
+    shutil.copy2(frozen_init,init)
+    init.chmod(0o755)
+    if util.digest(init)!=util.digest(frozen_init):raise RuntimeError('frozen boot helper copy changed')
     boot = out/'boot'
     boot.mkdir()
     util.run(['bsdtar', '-xf', portable/'boot/initramfs.cpio', '-C', boot, 'guest-modules', 'modules'])

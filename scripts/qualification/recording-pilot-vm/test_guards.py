@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import sys
 import unittest
+import tempfile
 from unittest.mock import patch
 
 
@@ -26,7 +27,7 @@ class RecordingGuards(unittest.TestCase):
     def test_bad_output_refuses_before_input_or_process_access(self):
         host = module('run')
         args = ['run.py', '--run', '--output', '/tmp/not-an-omabit-product-capsule']
-        for key in ('portable', 'candidate', 'predecessor', 'rootless', 'runtime', 'helper'):
+        for key in ('portable', 'candidate', 'predecessor', 'init', 'rootless', 'runtime', 'helper'):
             args += ['--'+key, '/missing-fixture']
         with patch.object(sys, 'argv', args), patch.object(host.os, 'geteuid', return_value=1000), patch.object(host.subprocess, 'check_output', side_effect=AssertionError('input/process access before output guard')), contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit) as stopped:
@@ -45,6 +46,25 @@ class RecordingGuards(unittest.TestCase):
             values['/sys/class/dmi/id/sys_vendor'] = 'Physical host'
             with self.assertRaises(RuntimeError):
                 guest.guard()
+
+    def test_only_exact_fixture_override_can_be_withdrawn_and_restored(self):
+        guest=module('guest')
+        with tempfile.TemporaryDirectory(prefix='omabit-recording-override-')as root:
+            home=Path(root);directory=home/'.config/systemd/user/urbit-runner.service.d';directory.mkdir(mode=0o700,parents=True)
+            file=directory/'recording-pilot.conf';file.write_text('exact fixture')
+            with patch.object(guest,'HOME',home):
+                foreign=directory/'other.conf';foreign.write_text('preserve user setting')
+                with self.assertRaises(RuntimeError):guest.withdraw_fixture_override(directory,'exact fixture')
+                self.assertEqual(foreign.read_text(),'preserve user setting');self.assertEqual(file.read_text(),'exact fixture')
+                foreign.unlink()
+                with self.assertRaises(RuntimeError):guest.withdraw_fixture_override(directory,'different fixture')
+                self.assertTrue(file.exists())
+                mode=guest.withdraw_fixture_override(directory,'exact fixture')
+                self.assertFalse(directory.exists())
+                guest.restore_fixture_override(directory,'exact fixture',mode)
+                self.assertEqual(file.read_text(),'exact fixture');self.assertEqual(file.stat().st_mode&0o777,mode)
+                with self.assertRaises(FileExistsError):guest.restore_fixture_override(directory,'replacement',mode)
+                self.assertEqual(file.read_text(),'exact fixture')
 
     def test_api_prefix_checks_actual_original_export_shape(self):
         guest=module('guest')

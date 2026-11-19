@@ -12659,3 +12659,30 @@ fresh output, so source-build scratch is included too. Python refusal guards
 remain required before execution. The old artifact source can be selected only
 explicitly, with clean ancestry and no Go/embedded-input changes. No production,
 preserved DEV, existing ship or tmux surface is operated on.
+
+## M705 — Preserve installer override guard and correct its fresh fixture (2026-11-18)
+
+The first actual64→65 recording/API VM fails at candidate install-host: the
+installer correctly refuses the fresh fixture's user service override. Its
+partial=false refusal precedes migration. Read-only/no-journal-replay extraction
+preserves the full source/backing bytes and exports12 bounded files. A separate
+analysis copy remains schema64 with succeeded registration/Start and one intent.
+The original recorded worker/container survived management stop; no upgrade or
+API/second-session/old-reader qualification is claimed. See the
+[retained failure](diagnostics/2026-11-18-recording-policy-upgrade-fixture-failure.json).
+
+Keep the product's user-override guard unchanged. The revised fresh fixture
+withdraws only its exact owned temporary file and empty directory, invokes the
+normal installer, then restores before reselecting recording. Six inert guards
+pass, including foreign-file/content preservation and no-overwrite restore.
+Reuse the independently pinned clean d2bb3ba boot helper and unchanged source,
+avoiding preparation-time compilation. Candidate282c3b3 binaries stay frozen.
+
+Automatic review rejects lossless archival of the new failed raw VM, treating its
+raw encoding as retained evidence and the earlier archive approval as a different
+target. Do not retry or alter that raw image. A safer classified cache eviction
+preserves all source/module archives, named executables, SQLite/receipts/logs and
+raw VM bytes. Standard Go1.27.3 compiler/assembly objects and module-index-v2 cache
+are regenerable; later builds may recompile. The scoped manifest pins all frozen
+artifacts and failure bytes. This is distinct from runtime evidence retirement.
+A fresh admitted retry remains required; no production/preserved DEV/tmux changes.

@@ -50,3 +50,19 @@ same pier again with new immutable limits. This case is prepared, not yet a pass
 A later report must state actual results; old M697 evidence remains tied to its
 unchanged frozen harness/artifacts. Retention/deletion, pressure, host reboot,
 other factories and UI remain outside this case.
+
+
+The first policy/API upgrade attempt stops at the installer's correct refusal of
+this fixture's temporary user override; see the scoped failure report. A revised
+fixture withdraws only its exact owned file/empty directory after management is
+stopped, runs the normal installer, and restores that file before reselecting the
+pilot. Unexpected files, contents or existing restore destinations are preserved
+and refused. This does not qualify upgrades across arbitrary user overrides.
+
+Supply `--init` with the frozen boot helper from the ended first attempt, SHA
+63a86300f9ba7ca08bf7df1fe28eb8b1b070d93ab67e868c7a51194e6bce1ec7.
+Its unchanged source and clean d2bb3ba provenance are verified independently.
+The launcher copies it and performs no Go build. This permits eviction of standard
+rebuildable compiler/index cache while preserving all named binaries, module
+sources and runtime evidence under the aggregate cap. Native execution still
+requires every source build/test to have ended and one experiment only.

@@ -9,6 +9,7 @@ from pathlib import Path
 import subprocess
 import sys
 import threading
+import stat
 
 I=Path('/opt/omabit-release-input')
 O=Path('/opt/omabit-issues-results')
@@ -99,6 +100,24 @@ def verify_api_prefix(row):
     else:raise RuntimeError('bounded native API scan exceeded')
     if counts['stdout']!=row['stdout_bytes'] or counts['stderr']!=row['stderr_bytes'] or any(hashes[k].hexdigest()!=row[k+'_sha256'] for k in counts) or exits!=1:raise RuntimeError('API bytes differ from independently decoded retained frames')
 
+def withdraw_fixture_override(directory,expected):
+    if directory!=HOME/'.config/systemd/user/urbit-runner.service.d' or directory.is_symlink() or not directory.is_dir() or directory.stat().st_uid!=1000:
+        raise RuntimeError('only the exact owned fixture override may be withdrawn')
+    file=directory/'recording-pilot.conf'
+    if sorted(p.name for p in directory.iterdir())!=[file.name] or file.is_symlink() or not file.is_file() or file.stat().st_uid!=1000 or file.read_text()!=expected:
+        raise RuntimeError('fixture override changed; preserve it')
+    mode=stat.S_IMODE(file.stat().st_mode)
+    file.unlink();directory.rmdir()
+    return mode
+
+def restore_fixture_override(directory,expected,mode):
+    if directory!=HOME/'.config/systemd/user/urbit-runner.service.d':raise RuntimeError('wrong fixture override destination')
+    directory.mkdir(mode=0o700)
+    file=directory/'recording-pilot.conf'
+    with file.open('x')as stream:stream.write(expected)
+    os.chmod(file,mode)
+    for path in (directory,file):os.chown(path,1000,1000)
+
 def main():
     global common
     scenario=guard()
@@ -127,7 +146,8 @@ def main():
     override=HOME/'.config/systemd/user/urbit-runner.service.d'
     override.mkdir(mode=0o700,parents=True)
     f=override/'recording-pilot.conf'
-    f.write_text('[Service]\nExecStart=\nExecStart=/usr/bin/env -i HOME=/home/review PATH=/usr/bin:/bin LANG=C XDG_RUNTIME_DIR=/run/user/1000 /usr/local/lib/urbit-runner/current/urbit-runner serve-development --acknowledge-development --record-runtime\n')
+    override_content='[Service]\nExecStart=\nExecStart=/usr/bin/env -i HOME=/home/review PATH=/usr/bin:/bin LANG=C XDG_RUNTIME_DIR=/run/user/1000 /usr/local/lib/urbit-runner/current/urbit-runner serve-development --acknowledge-development --record-runtime\n'
+    f.write_text(override_content)
     for p in (override,override.parent,override.parent.parent,f):os.chown(p,1000,1000)
     common.run(['systemctl','--user','daemon-reload'],True)
     common.unit('start')
@@ -146,7 +166,19 @@ def main():
     common.unit('stop')
     detached=snapshot('manager-stopped')
     if worker(detached[0])!=original_worker or detached[0]['status']['worker']!=original_claim or common.inspect(original_container)['State']!=original_native:raise RuntimeError('manager stop changed native/recorder process')
-    upgraded=common.install('candidate')
+    # The installer deliberately preserves/refuses all user overrides. This
+    # exact file is created by this fresh fixture; it is not a user deployment.
+    override_mode=withdraw_fixture_override(override,override_content)
+    report['fixture_override']={'exact_content_sha256':hashlib.sha256(override_content.encode()).hexdigest(),'withdrawn':True,'restored':False,'scope':'only this fresh fixture file; generic user overrides remain unsupported and protected'}
+    common.run(['systemctl','--user','daemon-reload'],True)
+    try:
+        upgraded=common.install('candidate')
+        common.unit('stop')
+    finally:
+        restore_fixture_override(override,override_content,override_mode)
+        report['fixture_override']['restored']=True
+        common.run(['systemctl','--user','daemon-reload'],True)
+    common.unit('start')
     if upgraded['runner_id']!=report['runner_id'] or common.db_projection()['schema']!=65:raise RuntimeError('upgrade changed runner or schema')
     if common.projection('candidate')!=old_projection or common.runtime('candidate')!=old_runtime:raise RuntimeError('upgrade changed history, engine or native process')
     if common.hello()['build']['sha256']!=scenario['candidate']['urbit-runner']['sha256']:raise RuntimeError('candidate not activated')
