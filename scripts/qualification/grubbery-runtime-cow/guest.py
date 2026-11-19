@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Fixed read-only-backed pending app fixture, supported lifecycle and audit APIs."""
 import gzip
+import contextlib
 import hashlib
 import importlib.util
 import json
@@ -33,7 +34,7 @@ def guard():
     if Path('/sys/class/dmi/id/sys_vendor').read_text().strip() != 'QEMU' or 'omabit.disposable-guest=release-upgrade-v1' not in Path('/proc/cmdline').read_text().split():
         raise RuntimeError('not isolated guest')
     scenario = json.loads((I/'scenario.json').read_text())
-    if scenario.get('kind') != 'issues18-product-grubbery-runtime-v1' or scenario.get('case') != CASE or scenario.get('predecessor_root_sha256') != PIN or scenario.get('original_schema') != 62 or scenario.get('target_schema') != 63 or scenario.get('development_snapshot') is not True:
+    if scenario.get('kind') != 'issues18-product-grubbery-runtime-v1' or scenario.get('case') != CASE or scenario.get('predecessor_root_sha256') != PIN or scenario.get('original_schema') != 62 or scenario.get('target_schema') != 65 or scenario.get('development_snapshot') is not True:
         raise RuntimeError('wrong source fixture')
     return scenario
 
@@ -41,7 +42,7 @@ def guard():
 def original_rows(schema):
     # Read-only diagnostic, never state repair/admission. Only the cloned fixed
     # task store is present; no host state/pier/socket is mounted in this guest.
-    with sqlite3.connect('file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro', uri=True) as db:
+    with contextlib.closing(sqlite3.connect('file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro', uri=True)) as db:
         db.execute('BEGIN')
         if db.execute('pragma user_version').fetchone()[0] != schema:
             raise RuntimeError('unexpected task store schema')
@@ -49,7 +50,7 @@ def original_rows(schema):
 
 
 def initialized_fixture():
-    with sqlite3.connect('file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro', uri=True) as db:
+    with contextlib.closing(sqlite3.connect('file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro', uri=True)) as db:
         rows = list(db.execute('select body from instances'))
     if len(rows) != 1:
         raise RuntimeError('one fixed disposable instance required')
@@ -113,7 +114,7 @@ def main():
     if hello['build']['sha256'] != scenario['candidate']['urbit-runner']['sha256']:
         raise RuntimeError('wrong actual service executable')
     report['runner_id'] = hello['runner_id']
-    if original_rows(63) != before:
+    if original_rows(65) != before:
         raise RuntimeError('opening/migration rewrote original app uncertainty')
     report['migration_original_app_rows_preserved'] = True
     original_cid = '5ff5f1b73b3baeef0203297e8747202573ca0577918e48bd79b0332201e7b6fa'
@@ -137,7 +138,7 @@ def main():
                 helper.kill()
                 helper.wait()
     report['helper_exit'] = helper.returncode
-    after = original_rows(63)
+    after = original_rows(65)
     # Original header/body/stamp stay exact; its revision and lease may change
     # only through later supported original phase completion. New events append.
     original_header = before['grubbery_app_operations'][0]

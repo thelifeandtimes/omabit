@@ -2,6 +2,7 @@ import contextlib
 import importlib.util
 import io
 import json
+import sqlite3
 from pathlib import Path
 import subprocess
 import sys
@@ -18,6 +19,31 @@ def module(name):
 
 
 class RecoveryGuards(unittest.TestCase):
+    def test_cloned_store_readers_close_on_success_and_schema_refusal(self):
+        guest=module('guest')
+        connect=sqlite3.connect
+        with tempfile.TemporaryDirectory(prefix='omabit-cow-read-lifetime-') as root:
+            path=Path(root)/'fixture.sqlite'
+            with contextlib.closing(connect(path)) as db:
+                db.execute('pragma user_version=65')
+                for table in ('grubbery_app_operations','grubbery_app_events','grubbery_app_leases'):
+                    db.execute('create table '+table+' (id text)')
+                db.execute('create table instances (body text)')
+                db.execute('insert into instances values (?)',(json.dumps({'public':{'id':'grubbery-zod','ship':'~zod'},'runtime':{'prepared':True,'initialized':True,'storage':{'fixture':'only'}}}),))
+                db.commit()
+            readers=[]
+            def read_only(filename,**kwargs):
+                self.assertEqual(filename,'file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro')
+                self.assertEqual(kwargs,{'uri':True})
+                db=connect('file:'+str(path)+'?mode=ro',uri=True);readers.append(db);self.addCleanup(db.close);return db
+            with patch.object(guest.sqlite3,'connect',side_effect=read_only):
+                self.assertEqual(len(guest.original_rows(65)),3)
+                with self.assertRaisesRegex(RuntimeError,'unexpected task store schema'):guest.original_rows(63)
+                self.assertEqual(len(guest.initialized_fixture()),64)
+            self.assertEqual(len(readers),3)
+            for db in readers:
+                with self.assertRaises(sqlite3.ProgrammingError):db.execute('select 1')
+
     def test_artifact_boundary_rejects_embedded_and_other_runtime_inputs(self):
         host = module('run')
         for path in ('internal/service/legacy-inventory.json', 'internal/appdev/samples/grubbery-state-v2/nex/state.hoon', 'contents/ui/Panel.qml', 'go.mod', 'go.sum', 'internal/managed/server.go', 'docs/example.go', 'docs/../internal/service/legacy-inventory.json', '/docs/result.json'):
@@ -73,11 +99,11 @@ class RecoveryGuards(unittest.TestCase):
         with patch.object(guest.os, 'geteuid', return_value=1000), patch.object(Path, 'read_text', side_effect=AssertionError('host read forbidden')):
             with self.assertRaises(RuntimeError):
                 guest.guard()
-        scenario = {'kind': 'issues18-product-grubbery-runtime-v1', 'case': guest.CASE, 'predecessor_root_sha256': guest.PIN, 'original_schema': 62, 'target_schema': 63, 'development_snapshot': True}
+        scenario = {'kind': 'issues18-product-grubbery-runtime-v1', 'case': guest.CASE, 'predecessor_root_sha256': guest.PIN, 'original_schema': 62, 'target_schema': 65, 'development_snapshot': True}
         values = {'/sys/class/dmi/id/sys_vendor': 'QEMU', '/proc/cmdline': 'omabit.disposable-guest=release-upgrade-v1', '/opt/omabit-release-input/scenario.json': json.dumps(scenario)}
         with patch.object(guest.os, 'geteuid', return_value=0), patch.object(sys, 'argv', ['guest.py']), patch.object(Path, 'read_text', lambda path, **kwargs: values[str(path)]):
             self.assertEqual(guest.guard(), scenario)
-            for change in ({'predecessor_root_sha256': '0'*64}, {'case': 'cow-fresh-nec-v1'}, {'original_schema': 63}, {'target_schema': 62}, {'development_snapshot': False}):
+            for change in ({'predecessor_root_sha256': '0'*64}, {'case': 'cow-fresh-nec-v1'}, {'original_schema': 63}, {'target_schema': 62}, {'target_schema': 63}, {'development_snapshot': False}):
                 values['/opt/omabit-release-input/scenario.json'] = json.dumps({**scenario, **change})
                 with self.assertRaises(RuntimeError):
                     guest.guard()

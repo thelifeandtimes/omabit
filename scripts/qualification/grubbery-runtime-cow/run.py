@@ -181,7 +181,7 @@ def main():
     shutil.copy2(Path(__file__).with_name('guest.py'), payload/'guest.py')
     shutil.copy2(ROOT/'scripts/qualification/issues-recovery/guest.py', payload/'issues-common.py')
     scenario = {'kind': 'issues18-product-grubbery-runtime-v1', 'development_snapshot': True,
-                'source_commit': commit, 'harness_commit':harness_commit,'original_schema': 62, 'target_schema': 63, 'candidate': builds,
+                'source_commit': commit, 'harness_commit':harness_commit,'original_schema': 62, 'target_schema': 65, 'candidate': builds,
                 'pill_sha256': budget.PILL, 'oci_sha256': budget.OCI,
                 'case': 'cow-recover-pending-zod-v1','predecessor_root_sha256':PREDECESSOR_SHA}
     (payload/'scenario.json').write_text(json.dumps(scenario, indent=2)+'\n')

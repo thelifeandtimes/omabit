@@ -86,7 +86,7 @@ func main() {
 		Predecessor string `json:"predecessor_root_sha256"`
 	}
 	must(json.Unmarshal(scenarioRaw, &scenario))
-	if scenario.Kind != "issues18-product-grubbery-runtime-v1" || scenario.Case != "cow-recover-pending-zod-v1" || scenario.Original != 62 || scenario.Target != 63 || scenario.Predecessor != "a23f10ddc89657489d8e55eaf5e4362603848366a447dbf9f51ce192837a08f9" {
+	if scenario.Kind != "issues18-product-grubbery-runtime-v1" || scenario.Case != "cow-recover-pending-zod-v1" || scenario.Original != 62 || scenario.Target != 65 || scenario.Predecessor != "a23f10ddc89657489d8e55eaf5e4362603848366a447dbf9f51ce192837a08f9" {
 		panic("wrong reviewed recovery fixture")
 	}
 

@@ -12920,3 +12920,28 @@ exclusive physical accounting, complete coverage or a reservation. Original
 frames/receipts and installed namespaces stay untouched. M712's native pass stays
 tied to703de9f2; new matching/native/installed qualification, retirement/pressure,
 indexing/full exports and the other issue tracks remain required.
+
+## M714 — Prepare the current-schema Grubbery recovery retry (2026-11-19)
+
+The fixed read-only-backed pending-app case still hardcoded target63 in host,
+PID1 and guest checks although the current managed helper requires65. Update
+those explicit target markers and post-migration observations to65; preserve the
+exact original62/17-event predecessor hash, no-auto-resume boundary, separate
+overlay, supported lifecycle/audited recovery and original-row checks. Old63 and
+foreign target markers remain refused. This changes the qualification fixture,
+not a user database or format; the Go PID1 input requires a new artifact freeze.
+
+Both independent guest SQLite helpers had transaction contexts without explicit
+close. Apply deterministic closure, preserving read-only transactions and exact
+logical-row comparison. A real SQLite lifetime test checks successful reads,
+wrong-schema refusal and initialized-fixture inspection with closed handles.
+All nine fixture guards pass (0.045s), including immutable artifact boundaries,
+wrong targets, finite decompression and the actual kernel file-size cap.
+
+The [case contract](../scripts/qualification/grubbery-runtime-cow/README.md)
+retains896MiB capsule scratch plus64MiB preparation reserve, a768MiB root hard
+bound and one offline experiment. The original acknowledged app VM05 is only a
+read-only backing and never boots writable; production/manual DEV and existing
+ships remain excluded. Matching new binaries and full native execution remain
+required. Earlier two-version progress/readiness failure stays historical; no
+whole Grubbery workflow pass is claimed.

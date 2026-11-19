@@ -430,3 +430,9 @@ compatibility, vet and the private ten-read UI pass; small allocations use KiB/B
 [Evidence and scope](diagnostics/2026-11-19-recording-usage-source.json) distinguish
 this additive schema65 source slice from the earlier native703 pass. New matching
 native/installed qualification and remaining retention/export/issue tracks remain.
+
+M714 updates the prepared read-only-backed Grubbery recovery case from target63
+to current65 and closes both fixture SQLite readers deterministically. The exact
+original62 pending-app backing, original-row preservation and strict isolation/
+artifact/file-size limits stay unchanged. Nine inert guards pass; new matching
+artifacts and a fresh full native two-version/restart case remain required.

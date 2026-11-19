@@ -8,7 +8,7 @@ credential, service or user pier is exposed. Original VM05 never boots writable.
 PID1 validates the exact old failure and new scenario before systemd, then
 suppresses manager startup/resume. The guest checks original62 app rows, inflates
 hash/size-verified compressed executables into guest `/run` tmpfs, starts only the
-matching source service and verifies migration to63 leaves original app rows
+matching source service and verifies migration to65 leaves original app rows
 exact. This is source-service qualification; it exercises no installer override.
 
 The fixed Go helper uses supported Stop/Start on this copied disposable~zod's
@@ -47,3 +47,12 @@ An explicit older `--artifact-source` permits only non-Go documentation and the
 four named host/guest/Python-test/README harness files to differ. Embedded JSON,
 source samples, QML, modules and all Go changes require new matching artifacts;
 the launcher refuses them before artifact reads or storage admission.
+
+The next case targets current schema65 in the host scenario, PID1 guard, guest
+checks and current managed helper. Old63/foreign markers refuse; the original
+schema62/17-event predecessor pin is unchanged. All Python read-only database
+helpers explicitly close their handles, including schema-refusal paths; a real
+SQLite lifetime regression covers this. This prepares a fresh corrected retry
+after the earlier case completed both app versions but failed manager-restart
+readiness. New matching artifacts, storage admission and full native execution
+are still required; original VM05 is bound read-only and never resumed writable.
