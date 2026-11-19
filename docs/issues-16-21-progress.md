@@ -278,3 +278,10 @@ M694 selects the ordinary-runtime pilot only with explicit development
 operation. Admitted manager/server/CLI race checks and vet pass, including strict
 never-started cleanup after uncertain submission. Native service/capture and
 active/installed upgrade remain unqualified; no installed state changed.
+
+M695 prepares a bounded fresh-offline installed ordinary recording test and
+read-only full-prefix observer. Four refusal guards, focused manager/server race
+checks and vet pass. Native execution has not yet qualified the pilot. Ended task
+COW roots retain exact full bytes in verified archives; the pending app VM remains
+raw and untouched. Classified regenerable cache consolidation makes room under
+the approved cap without discarding source or runtime evidence.

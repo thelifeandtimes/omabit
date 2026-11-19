@@ -12391,3 +12391,28 @@ state and inert native/supervision adapters. This supersedes M693's server-wirin
 deferral only. Actual service/capture, native and active/installed upgrades,
 retention and public recording interfaces remain pending. No installed namespace,
 service, ship or production artifact was changed.
+
+## M695 — Prepare the installed ordinary recording VM gate (2026-11-18)
+
+Add an explicit fresh-offline VM launcher and guarded read-only test observer.
+The real installed runner/worker must capture before Start, preserve exact worker
+and native processes through management stop/reopen, drain a clean exit before
+container removal, then retain the original bytes through same-pier replacement.
+Full raw-prefix checks return hashes/counts only. No test helper owns lifecycle
+effects. Pin every source/artifact/input and retain failed capsules unchanged.
+The launcher enforces one experiment,1536MiB declared scratch, aggregate budget,
+memory/CPU/no-swap limits and a deadline. Existing capsules cannot resume.
+
+Four host/guest refusal guards pass. The guarded observer skips ordinary host
+execution; focused manager/server race checks pass in6.961s and vet passes. This
+is harness preparation, not native qualification. Burst/pressure/host reboot,
+active-worker upgrade, projects/utilities and public interfaces remain required.
+
+To fit the authorized budget, losslessly archive the three ended task COW roots;
+fully decode/hash-check each before retiring its redundant raw copy. Original
+bytes/backing dependencies, SQL, receipts and logs remain retained. Automatic
+review refused the corresponding pending app-VM raw-image consolidation; leave
+that image untouched. Instead remove only classified, hash/inode-checked
+regenerable task Go cache objects, preserving source and frozen executables.
+Private manifests retain exact storage and archive identity evidence. No installed
+service, manual-review state, existing ship or production artifact changed.
