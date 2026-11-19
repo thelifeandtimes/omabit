@@ -8,10 +8,7 @@ original/private choice remain required; older runners lacking the new feature
 refuse. Source tests preserve stationary original bytes and report verified
 prefix/torn-tail evidence separately from whole retained files. The source
 [evidence](diagnostics/2026-11-19-recording-original-export-source.json) includes
-actual CLI/SDK parity, role/path/hash/privacy and archive failure checks. Matching
-native export, installed stable upgrade, preserved DEV and a final support window
-remain pending. Earlier f37 allocation evidence is not qualification of this
-later export code; no installed or production change is implied.
+actual CLI/SDK parity, role/path/hash/privacy and archive failure checks. Matching3fc6 [native closed original exports](diagnostics/2026-11-19-recording-original-export-native.json) now pass, including independent original/ZIP/chain/SQL preservation checks. Installed stable upgrade, preserved DEV and a final support window remain pending. This does not qualify active capture/pressure/retirement or redacted bundles; no installed or production change is implied.
 
 ## Development: optional recording storage observations, schema65 unchanged
 

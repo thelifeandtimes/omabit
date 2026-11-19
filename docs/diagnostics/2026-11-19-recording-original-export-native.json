@@ -1,0 +1,145 @@
+{
+  "format": 1,
+  "status": "passed-scoped-native",
+  "passed": true,
+  "source_commit": "3fc6eab33b4d323735ed904e81c0e8e2b3a2c5d5",
+  "harness_commit": "7aca0979357c7b2af73030e1ef36d90dd254a477",
+  "artifact_sha256": {
+    "omabit": "a62a58abe16522ce5ad4f1d35d7f65e689dcb639fa25cd1b0e30db4dad1ab00b",
+    "urbit-collector": "a6e6d345e387b46b0967be6791008b861c681a2b7808232d06b9edb478467fbb",
+    "urbit-runner": "1639080feefc54a083cffd1aabc747c5508a640ed0ac376d4992f2b365e90ed3",
+    "managed.test": "495bae80bdbe63975a80d7742f197ed435c349b3bf6dc346004cd2d66e57548d"
+  },
+  "boot": {
+    "source_commit": "e0af21ae13dc781b4e299b1afd48476fb5d41a54",
+    "sha256": "ced164ae56c3ee51dd7675af92431dedbf2def7975c1689d38e4522219f66819"
+  },
+  "guest_passed": true,
+  "helper_exit": 0,
+  "qemu_exit": 0,
+  "exact_vm_and_supervisor_ended": true,
+  "native_checks": {
+    "actual_cli_and_stdio_measurements": true,
+    "actual_original_export_manifest_part_cli_mcp": true,
+    "actual_original_zip_matches_files": true,
+    "original_recording_bytes_unchanged": true,
+    "policy_head_unchanged": true
+  },
+  "independent_analysis": {
+    "format": 1,
+    "passed": true,
+    "exported_evidence_files": 12,
+    "read_only_sources_inputs_backings_unchanged": true,
+    "raw_export_files_unchanged": true,
+    "both_schema65_quick_checks": "ok on separate copies",
+    "original_logical_digest_matches_guest": true,
+    "all_original_rows_values_preserved_except_observation": true,
+    "observation_refresh": {
+      "fields": [
+        "public.observed_at",
+        "runtime_revision"
+      ],
+      "before_revision": 75,
+      "after_revision": 76,
+      "fresh_observation_only": true
+    },
+    "original_recording_files_compared": 4,
+    "archives": [
+      {
+        "files_compared_to_original_read_only_backing": 2,
+        "parts_compared": 2,
+        "zip_sha256": "7ef4bfe3174fc9fca5f413d592d0dcec8d5df22c1e1d53024db45999dbefcf77",
+        "zip_bytes": 13234,
+        "manifest_digest_verified": true,
+        "metadata_and_all_encoded_bytes_exact": true,
+        "zip_entries_mode0600": true,
+        "independent_python_decode": {
+          "frames": 170,
+          "stdout_bytes": 2812,
+          "stderr_bytes": 337,
+          "stdout_sha256": "d21644ccef51502d2215e3483dc764bf4f00e2b395ab344b8a8f5cac011274b4",
+          "stderr_sha256": "3290e36c5688c35ced7936610124de465367252b0788737c8a7b5a07824cf5ae",
+          "last_sequence": 170,
+          "last_digest": "9a37d3d380ccccc7a3f15a91671cb9f1df51d5ed5136cf8b3a09f679e5927342",
+          "tail": "snapshot-eof",
+          "exit_frames": 1,
+          "gap_frames": 0
+        },
+        "exact_prior_native07_counts_streams_timing_chain": true
+      },
+      {
+        "files_compared_to_original_read_only_backing": 2,
+        "parts_compared": 2,
+        "zip_sha256": "3b17ecf637ad0647d0b60989cd69499d5a3ba413aeb368c8204d1c0f8b6069be",
+        "zip_bytes": 5698,
+        "manifest_digest_verified": true,
+        "metadata_and_all_encoded_bytes_exact": true,
+        "zip_entries_mode0600": true,
+        "independent_python_decode": {
+          "frames": 32,
+          "stdout_bytes": 1031,
+          "stderr_bytes": 160,
+          "stdout_sha256": "4fc3af95aea0d8b1f8e94aece4328870b1018e0f538df5535405adfc01e86f96",
+          "stderr_sha256": "70a0e74122b8964de6bc133cf6e48e83f5c7ff0d96661013871481a636cd495a",
+          "last_sequence": 32,
+          "last_digest": "3f02fc47e48d7ec25dcc76864596b628bcbce207cc386157626cf2f8f365d2ee",
+          "tail": "snapshot-eof",
+          "exit_frames": 1,
+          "gap_frames": 0
+        },
+        "exact_prior_native07_counts_streams_timing_chain": true
+      }
+    ],
+    "proof_sha256": "5bb1ee3fdf432ef355b9e25877690c4e3e2ca34799610b91c7f5c40ca5c1ef03",
+    "scope": "two closed original native sessions and original encoded exports only; no active capture/pressure/retirement/redacted export/index/search/installed upgrade or DEV"
+  },
+  "reader": {
+    "source_sha256": "bb0912c85486cc22736161571a786f2e0765c5c5b3997ffeff741ff22650dc8c",
+    "binary_sha256": "e6a956903f306b6f218441b732906252c276ac00509f542a63ba23cad0c9ec51",
+    "fixed_original_recording_files": 4,
+    "read_only_noload_noexec": true,
+    "source_code_executed": false
+  },
+  "retained_pins": {
+    "root.qcow2": {
+      "sha256": "bd693435b3da6349b336d4dbfbc4da56c2e24b7baf584521611a4e73f88cbb9a",
+      "bytes": 16449536,
+      "allocated_bytes": 16388096
+    },
+    "payload.ext4": {
+      "sha256": "b7ae59451ca6cd6e28247ce08ea8541b5978fcdb0b218d7437097305373ad703",
+      "bytes": 67108864,
+      "allocated_bytes": 30302208
+    },
+    "result.json": {
+      "sha256": "c67259d41d63afc22bc6f85a989b1f3b8e6f99e04a33b8b3eab97a3ffcb44820",
+      "bytes": 46033,
+      "allocated_bytes": 49152
+    },
+    "serial.log": {
+      "sha256": "430d9f5fabc0546bd140ccc417f59db2f514b9879f2e548d292a327c2f7dcc46",
+      "bytes": 55241,
+      "allocated_bytes": 57344
+    },
+    "host.json": {
+      "sha256": "58be114e06cc9ea7697a43898958e6478c05dbc67e767961332aaffb6b2ee5c6",
+      "bytes": 477421,
+      "allocated_bytes": 479232
+    }
+  },
+  "scope": "two stationary closed native sessions on a fresh recording07-backed offline overlay; exact original exports, allocation and history/intent preservation only",
+  "remaining": [
+    "redacted complete exports",
+    "separate searchable timestamp index",
+    "active capture and pressure recovery",
+    "retirement and oldest coverage",
+    "other runtime factories",
+    "actual previous-stable installed upgrade",
+    "preserved DEV qualification"
+  ],
+  "production_or_installed_changes": false,
+  "post_run_storage": {
+    "charged_bytes": 50930843648,
+    "budget_bytes": 51539607552
+  }
+}

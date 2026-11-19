@@ -13408,3 +13408,33 @@ The [artifact record](diagnostics/2026-11-19-recording-original-export-artifacts
 keeps frozen hashes and native requirements. The unchanged separately frozen
 PID1 may be reused; a fresh native export case, admission and preservation evidence
 remain required. No installed namespace, existing ship or production changes.
+
+## M734 — Native original exports match exact retained bytes and original07 chains (2026-11-19)
+
+Admit320MiB and run fresh COW03 with matching3fc6eab3 tools and unchanged e0af21ae
+PID1. Actual CLI/official-SDK manifests and every part match both original closed
+sessions, and actual private CLI ZIPs match their encoded files. Allocation counts,
+original capture/control/history and stopped intent pass. Guest/helper/QEMU all
+finish successfully; exact VM/supervisor scopes are inactive/empty. Proof SHA256
+is5bb1ee3fdf432ef355b9e25877690c4e3e2ca34799610b91c7f5c40ca5c1ef03.
+
+After those scopes end, a16MiB-admitted reader refinement adds only the four exact
+original recording07 files named in the frozen result. The source/kind/required-
+export-bound reader mounts source/input/original read-only/noload/noexec; no source
+code or services run. Under64MiB admission it exports12 fixed evidence files,
+leaving every root/input/pristine/original backing hash unchanged. Independent
+Python ZIP/hash analysis compares both archives byte-for-byte with all four raw
+original metadata/segment files, verifies manifest/chunk/whole-file hashes and0600
+entries, and decodes every frame with independent struct/SHA256 logic. The170/32
+frame counts, stdout/stderr sizes/hashes and final timing/digest chains match the
+original703de9f2 native07 report exactly. No reconstructed terminal output is run
+or printed. Both archives and raw extraction remain private and retained.
+
+Independent schema65 quick checks on separate SQL copies pass, original logical
+digest matches the guest and all original rows/values are exact except the one
+later observed_at and runtime revision75→76. Raw exported SQL/proof/capture bytes
+remain unchanged. The [native report](diagnostics/2026-11-19-recording-original-export-native.json)
+supersedes M733's pending native original-export gate only. Complete redacted
+bundles, a separate timestamp/search index, active growth/pressure, retirement,
+other factories, previous-stable installed upgrades and preserved DEV remain
+separate. No production, installed service, existing ship or manual-review state changes.

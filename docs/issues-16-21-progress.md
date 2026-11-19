@@ -586,3 +586,14 @@ classified regenerable cache consolidation. Source-bound read-only reader and
 all180 networkless generated help entries pass under a64MiB allowance. See the
 [artifact record](diagnostics/2026-11-19-recording-original-export-artifacts.json).
 The later native original-export assertions remain pending; no installed changes.
+
+M734 passes fresh COW03's whole native closed original-export case at3fc6eab3:
+actual CLI/SDK manifest/parts, actual ZIP bytes, allocation and capture/control/
+history/intent preservation. Read-only12-file extraction and independent Python
+analysis verify all four original files, both ZIPs and exact original07 timing/
+frame/stream digest chains(170/32frames). Independent SQL checks preserve every
+row/value except one fresh timestamp and75→76 observation revision. The
+[native evidence](diagnostics/2026-11-19-recording-original-export-native.json)
+qualifies these closed original exports only; redacted exports/index/pressure/
+retirement, other factories and stable-to-candidate/preserved DEV remain open.
+All native/reader scopes end; production and installed/manual-review state are unchanged.
