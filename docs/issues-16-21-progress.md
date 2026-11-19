@@ -464,3 +464,13 @@ full original source completion, followed by passing initial/state-update checks
 The second source review has begun. Some advances require saved-step read-only
 reconciliation instead of another dispatch. Whole-case version-two/replacement/
 manager-restart/prefix/single-dispatch/clean-completion gates remain pending.
+
+M718 completes the actual native helper's two-version/state/same-pier/manager-
+restart/replay/single-dispatch gates (2879.43s), plus independent exact original
+header/17-event preservation. The whole COW04 case fails: the generated oneshot
+unit retained a2400s startup timeout, outer logging stops at that boundary and
+final clean Stop/report are absent. Only the fresh VM is terminated; its whole
+failure disk and59 extracted files remain, with original backings unchanged.
+The actual-unit regression fails before correction and all11 guards pass after
+the6000s/30s fix. A new boot freeze and fresh full case remain required; no
+installed/DEV/production change is claimed.

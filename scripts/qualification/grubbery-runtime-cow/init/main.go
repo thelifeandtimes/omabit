@@ -111,7 +111,8 @@ Type=oneshot
 ExecStart=/usr/bin/python3 -B /opt/omabit-release-input/guest.py
 StandardOutput=journal+console
 StandardError=journal+console
-TimeoutStartSec=2400
+TimeoutStartSec=6000
+TimeoutStopSec=30
 [Install]
 WantedBy=multi-user.target
 `

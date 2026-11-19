@@ -1,7 +1,9 @@
 import contextlib
+import configparser
 import importlib.util
 import io
 import json
+import re
 import sqlite3
 from pathlib import Path
 import subprocess
@@ -85,6 +87,21 @@ class RecoveryGuards(unittest.TestCase):
         self.assertGreater(guest.HELPER_DEADLINE_SECONDS, guest.HELPER_PROCESS_TIMEOUT_SECONDS)
         self.assertGreater(host.VM_DEADLINE_SECONDS, guest.HELPER_DEADLINE_SECONDS+120)
         self.assertGreater(host.SUPERVISOR_DEADLINE_SECONDS, host.VM_DEADLINE_SECONDS+120)
+
+    def test_actual_guest_service_deadline_encloses_helper_and_final_checks(self):
+        host, guest = module('run'), module('guest')
+        source = (Path(__file__).parent/'init/main.go').read_text()
+        # Inspect the actual emitted systemd unit, not another Python copy of
+        # its bound. An earlier 2400s unit killed the parent while its runuser
+        # helper continued in a separate guest user session and later passed.
+        unit = re.search(r'service := `([^`]+)`', source)
+        self.assertIsNotNone(unit)
+        config = configparser.ConfigParser(interpolation=None)
+        config.read_string(unit.group(1))
+        self.assertEqual(config['Service']['Type'], 'oneshot')
+        start = config.getint('Service', 'TimeoutStartSec')
+        self.assertGreater(start, guest.HELPER_DEADLINE_SECONDS+120)
+        self.assertGreater(host.VM_DEADLINE_SECONDS, start+60)
 
     def test_no_run_has_no_source_storage_or_process_effect(self):
         host = module('run')

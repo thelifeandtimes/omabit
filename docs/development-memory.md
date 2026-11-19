@@ -13016,3 +13016,34 @@ stays explicitly unqualified as a whole case. Version two, subsequent same-pier
 replacement/state, manager restart/original audit lookup, single-dispatch/prefix
 verification and final clean completion remain pending. Frozen12f78952 inputs and
 all production/manual DEV/original-backing exclusions remain unchanged.
+
+## M718 — Grubbery helper passes; obsolete outer unit deadline prevents whole completion (2026-11-19)
+
+COW04's actual helper passes in2879.43seconds: both complete source versions,
+retained/new application state, two supported same-pier replacements, manager
+restart, historical audit/original receipt replay and one durable dispatch per
+phase. This supersedes M717's pending helper gates only. The whole case fails:
+outer guest logging ends at2401.78seconds and no final guest report/clean Stop is
+produced. Inspect the actual frozen PID1 unit: its oneshot
+`TimeoutStartSec=2400` was missed by the Python helper/host deadline comparison.
+This exact timing is consistent with that obsolete service timeout; retained
+journal exit evidence is unavailable, so do not assert a confirmed parent exit
+status. A runuser helper can continue in the guest's independent user session.
+
+After preserving milestones, terminate only the exact fresh COW04 scope with
+TERM; its host exit is-15. Do not call that a clean runtime shutdown. Preserve
+the whole failure root/input, source and all artifacts. Both original backings
+remain read-only/unchanged. A new offline kernel utility mounts the ended disks
+read-only,noload,nodev,nosuid,noexec and extracts59 bounded files, executing no
+disk code. On separate SQLite/WAL/SHM analysis copies, schema62's original header
+and all17 events remain exact in schema65's two operations/63events/zero leases;
+both integrity checks pass. All raw evidence remains unchanged. Native VM,
+supervisor and reader cgroups are empty. See the updated
+[failed whole-case report](diagnostics/2026-11-19-current65-grubbery-recovery-native.json).
+
+Add a regression reading the actual generated unit rather than another timeout
+constant: it fails at2400 versus the required5870seconds. Correct that standalone
+PID1 unit to6000seconds with30seconds for stopping; all11 inert guards pass
+(0.052s). New frozen boot input and a fresh corrected native case remain required.
+This does not qualify installed59→65, preserved DEV, full permits/routes/assets/
+peers or production. No installed service/plugin or existing ship is touched.

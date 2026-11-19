@@ -64,3 +64,15 @@ copies it. It performs no Go build during preparation or native execution. This
 allows regenerable compiler cache eviction without changing named artifacts or
 requiring compilation inside the constrained staging supervisor. The64MiB host
 reserve remains available for preparation. Existing capsules never resume.
+
+M718's current65 COW04 helper passes both source versions/state, same-pier and
+manager restarts, original audit/replay and single dispatch. Independent read-only
+extraction preserves the original header and17 events. The whole case still
+fails: this generated oneshot unit retained a2400s startup timeout, outer logging
+ends at that boundary and final clean Stop/report are absent. Its ended full disk
+and compact evidence stay retained. The actual-unit regression now covers this
+previously missed layer. The corrected unit allows6000s, with30s to stop, inside
+the6100s host bound. Its Go input requires a new separately frozen boot artifact;
+the older boot pin above is historical and cannot satisfy the changed source.
+A fresh corrected whole case is required; do not promote the helper pass into
+whole-case or installed/DEV qualification.
