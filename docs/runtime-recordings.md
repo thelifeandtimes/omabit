@@ -590,3 +590,18 @@ Argument/namespace race checks and vet pass without executing a launcher. Normal
 launch remains unwired. The coordinator must compose durable job/journal checks,
 post-sync readiness and exact live/native fences before Start; actual service and
 native/installed upgrade gates remain pending.
+
+## Prepared readiness coordinator
+
+Source composition now requires an exact durable unclaimed job and fresh trusted
+launch fence before one submission. After notify acknowledgement it binds two
+matching live-worker observations, immutable saved readiness/claim, an open
+empty recording with exact metadata, and fresh native created-container admission.
+Changed files, saved results, partial/output frames, closed writers, stale unit/
+native identity or final fence refusal cannot authorize Start. The coordinator
+sends no container lifecycle command; lost acknowledgement remains uncertain and
+is never retried. Historical receipt replay cannot invoke this coordinator.
+
+Focused race tests pass with inert submit/supervisor/native seams and real private
+files. No launcher is executed and normal managed launch remains unwired. Actual
+service/native and installed/active-worker upgrade gates remain required.

@@ -232,3 +232,9 @@ M686 prepares fixed detached notify-service submission with explicit verified DE
 forwarding, literal arguments, bounded resources and typed uncertain submission.
 Source argument/namespace race checks and vet pass; no launcher is executed or
 normal launch enabled. The coordinator and actual service/native gates remain.
+
+M687 composes source job/fence admission, one submission, saved readiness, two
+matching live checks, exact open empty metadata and fresh native admission.
+Focused race checks pass for uncertainty/stale/partial/closed/refused cases without
+executing a launcher or any native lifecycle action. Normal launch integration
+and actual service/native/upgrade gates remain open.

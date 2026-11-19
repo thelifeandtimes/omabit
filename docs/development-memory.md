@@ -12221,3 +12221,25 @@ boundaries only: they execute no launcher command. The submission primitive is
 not called by normal launch. Durable job/intent checks, synced readiness, exact
 live/native fence composition and actual service/native qualification remain
 required. No installed configuration, production/manual DEV or ship changes.
+
+## M687 — Compose saved job, notify, live worker and native readiness (2026-11-18)
+
+Prepare a trusted coordinator requiring an exact precommitted unclaimed job and
+original-operation fence. Submit once, then bind synced readiness/claim to two
+matching live notify/main observations, exact open writer metadata and fresh
+created-container native admission. Pre-Start storage must contain no output,
+gap/exit or partial frame. Recheck readiness/identity/result absence and the fresh
+operation fence before returning; the caller still owns normal fenced Start.
+Readable files alone never grant authority. Lost submission acknowledgement stays
+typed uncertain without retry, automatic Start/Stop or receipt rewrite.
+
+Focused source race tests pass in1.975s (extended from1.819s) with inert supervisor/submission seams,
+real private recording/job files and the existing inert native engine. They cover
+stale fences, previously claimed jobs, missing/changed readiness, closed/partial/
+nonempty writers, saved failures, lost replies, changed unit/process and native
+admission, including a late changed claim or partial result. Vet passes for the
+coordinator implementation. No launcher is executed. The budget guard refused a scratch reservation
+before any test began; two classified obsolete task-test cache objects were then
+retired with exact pins and the check admitted within48GiB. All disks remain.
+Normal launch integration, actual recorder service/native capture and installed/
+active-worker upgrades remain required; no production/manual DEV or ship changes.
