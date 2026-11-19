@@ -44,9 +44,12 @@ and `~/temp-ur` remain excluded. This case does not qualify full permits/routes/
 assets/peers, process-death owner cleanup, installed upgrades or a stable release.
 
 An explicit older `--artifact-source` permits only non-Go documentation and the
-four named host/guest/Python-test/README harness files to differ. Embedded JSON,
-source samples, QML, modules and all Go changes require new matching artifacts;
-the launcher refuses them before artifact reads or storage admission.
+four named host/guest/Python-test/README harness files to differ, plus the exact
+standalone PID1 Go path with its separately verified binary/source/clean-VCS
+freeze. That package is not linked into the product executables or managed.test.
+Embedded JSON, source samples, QML, modules and every other Go change require
+new matching artifacts; the launcher refuses them before artifact reads or
+storage admission. The PID1 exception does not cover sibling Go files.
 
 The next case targets current schema65 in the host scenario, PID1 guard, guest
 checks and current managed helper. Old63/foreign markers refuse; the original
@@ -57,9 +60,11 @@ after the earlier case completed both app versions but failed manager-restart
 readiness. New matching artifacts, storage admission and full native execution
 are still required; original VM05 is bound read-only and never resumed writable.
 
-Supply `--init` with the separately frozen current-schema PID1 executable, SHA
-aa4992d292a925986caa64ea64e0173506119f9d44933a0d00b262b34eab17a9.
-The launcher verifies its unchanged source hash and clean bf5b6c1 provenance, then
+Supply `--init` with the separately frozen corrected current-schema PID1, SHA
+04d8cfbeac56e9524355ed4cc4f7e7ec837cb983ff2d9a34f240b7bbfa7f10ee.
+The launcher verifies source SHA
+9e28db77697f9bd7c870905c9cd86d80d571428815c6205d5a87424259ab3fcc
+and clean bf3e5f83 provenance, then
 copies it. It performs no Go build during preparation or native execution. This
 allows regenerable compiler cache eviction without changing named artifacts or
 requiring compilation inside the constrained staging supervisor. The64MiB host
@@ -72,7 +77,17 @@ fails: this generated oneshot unit retained a2400s startup timeout, outer loggin
 ends at that boundary and final clean Stop/report are absent. Its ended full disk
 and compact evidence stay retained. The actual-unit regression now covers this
 previously missed layer. The corrected unit allows6000s, with30s to stop, inside
-the6100s host bound. Its Go input requires a new separately frozen boot artifact;
-the older boot pin above is historical and cannot satisfy the changed source.
+the6100s host bound. Its Go input has the new separate freeze above; the earlier
+bf5b6c1 boot remains historical and cannot satisfy the changed source.
 A fresh corrected whole case is required; do not promote the helper pass into
 whole-case or installed/DEV qualification.
+
+M719 makes this one standalone Go-input exception explicit. All3931 remaining
+tracked frozen inputs are unchanged; six allowed documentation/harness inputs
+differ from12f78952. All350 listed product/managed-test dependency entries exclude
+the standalone PID1. Its exact new binary/source/clean-VCS pins are checked before
+admission, while the four runtime artifacts remain frozen at12f78952. Twelve
+inert guards cover changed embedded/other Go inputs, wrong boot bytes/source/
+provenance, and the actual emitted unit's full timeout nesting. This exception
+supersedes only the previous blanket Go-harness rebuild rule for that path; it
+does not qualify a runtime change or the fresh corrected native retry.

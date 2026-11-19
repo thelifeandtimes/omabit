@@ -474,3 +474,10 @@ failure disk and59 extracted files remain, with original backings unchanged.
 The actual-unit regression fails before correction and all11 guards pass after
 the6000s/30s fix. A new boot freeze and fresh full case remain required; no
 installed/DEV/production change is claimed.
+
+M719 separately freezes the corrected standalone PID1 at clean bf3e5f83. Its
+exact binary/source/provenance checks allow only that one independent Go path to
+differ; all runtime/UI/embedded/sample/module and sibling Go changes still refuse.
+Actual350-entry dependency graphs exclude PID1 and3931 other original inputs
+remain exact. The four12f78952 runtime/helper artifacts are reused unchanged.
+Twelve inert guards pass; a fresh corrected full native case remains required.

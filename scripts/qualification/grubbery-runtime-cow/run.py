@@ -36,13 +36,19 @@ VM_DEADLINE_SECONDS = 6100
 SUPERVISOR_DEADLINE_SECONDS = 6300
 PREDECESSOR = Path('/tmp/omabit-issues-app-vm-05/root.qcow2')
 PREDECESSOR_SHA = 'a23f10ddc89657489d8e55eaf5e4362603848366a447dbf9f51ce192837a08f9'
-BOOT_SHA = 'aa4992d292a925986caa64ea64e0173506119f9d44933a0d00b262b34eab17a9'
-BOOT_SOURCE_SHA = 'bfa53c26aa0c08266520df8d1b9186be04468df5416efea7769e7ac8a7df9eb8'
-BOOT_SOURCE_COMMIT = 'bf5b6c1c12d7e57715b5faf7cd3b119bac4a7214'
+BOOT_SHA = '04d8cfbeac56e9524355ed4cc4f7e7ec837cb983ff2d9a34f240b7bbfa7f10ee'
+BOOT_SOURCE_SHA = '9e28db77697f9bd7c870905c9cd86d80d571428815c6205d5a87424259ab3fcc'
+BOOT_SOURCE_COMMIT = 'bf3e5f83a7202f369dd6c8cdde80c80121656959'
+BOOT_SOURCE_PATH = 'scripts/qualification/grubbery-runtime-cow/init/main.go'
 
 
 def artifact_change_allowed(path):
     relative = Path(path)
+    # This standalone PID1 is not linked into the three product executables or
+    # managed.test. It has its own mandatory binary/source/clean-VCS freeze,
+    # verified by frozen_boot before storage admission or process creation.
+    if path == BOOT_SOURCE_PATH:
+        return True
     if relative.is_absolute() or '..' in relative.parts or path.endswith('.go'):
         return False
     return path.startswith('docs/') or path in {
@@ -65,7 +71,7 @@ def terminate(number, frame):
 
 def frozen_boot(path):
     ordinary(path)
-    if util.digest(path) != BOOT_SHA or util.digest(ROOT/'scripts/qualification/grubbery-runtime-cow/init/main.go') != BOOT_SOURCE_SHA:
+    if util.digest(path) != BOOT_SHA or util.digest(ROOT/BOOT_SOURCE_PATH) != BOOT_SOURCE_SHA:
         raise RuntimeError('frozen COW boot helper or source differs')
     info = subprocess.check_output(['go','version','-m',path],text=True)
     if '\tvcs.revision='+BOOT_SOURCE_COMMIT not in info or '\tvcs.modified=false' not in info:

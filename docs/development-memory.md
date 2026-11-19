@@ -13047,3 +13047,27 @@ PID1 unit to6000seconds with30seconds for stopping; all11 inert guards pass
 (0.052s). New frozen boot input and a fresh corrected native case remain required.
 This does not qualify installed59→65, preserved DEV, full permits/routes/assets/
 peers or production. No installed service/plugin or existing ship is touched.
+
+## M719 — Independently freeze the corrected standalone boot helper (2026-11-19)
+
+Build only the standalone PID1 from clean
+bf3e5f83a7202f369dd6c8cdde80c80121656959 after all native/reader cgroups end,
+with256MiB admitted under48GiB. Binary SHA is
+04d8cfbeac56e9524355ed4cc4f7e7ec837cb983ff2d9a34f240b7bbfa7f10ee;
+source SHA is
+9e28db77697f9bd7c870905c9cd86d80d571428815c6205d5a87424259ab3fcc.
+Keep the three product executables and managed.test frozen at12f78952. All350
+actual product/test dependency entries exclude this standalone package;3931
+tracked original inputs are unchanged and six differences are documentation/
+harness only. No product Go, embedded data, QML, module or sample input changes.
+
+Explicitly allow only this separately frozen Go path in the native harness
+boundary. Its mandatory binary/source/clean-VCS pin check still precedes storage
+admission and process creation; other Go files, including siblings, still refuse.
+This supersedes M714/M715's blanket Go-harness rebuild requirement only for this
+independently compiled PID1. It is not an exemption for runtime or release inputs.
+All12 inert guards pass, including wrong boot bytes/source/provenance and the
+actual unit's6000s startup/30s stop inside the6100s host bound. A fresh corrected
+native case and final clean Stop remain required. COW04 stays a retained failed
+whole run with its independently passing helper evidence; original app VM05,
+production and manual-review state remain untouched.

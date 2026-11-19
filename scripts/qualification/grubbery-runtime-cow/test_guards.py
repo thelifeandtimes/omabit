@@ -28,6 +28,22 @@ class RecoveryGuards(unittest.TestCase):
             with patch.object(host.subprocess,'check_output',side_effect=AssertionError('wrong bytes must refuse first')):
                 with self.assertRaisesRegex(RuntimeError,'boot helper or source differs'):host.frozen_boot(init)
 
+    def test_standalone_boot_source_and_clean_identity_remain_mandatory(self):
+        host = module('run')
+        with tempfile.TemporaryDirectory(prefix='omabit-cow-boot-freeze-') as root:
+            init = Path(root)/'init'; init.write_bytes(b'fixed inert fixture')
+            def digest(path):
+                return host.BOOT_SHA if path == init else '0'*64
+            with patch.object(host.util, 'digest', side_effect=digest), patch.object(host.subprocess, 'check_output', side_effect=AssertionError('source must refuse first')):
+                with self.assertRaisesRegex(RuntimeError, 'boot helper or source differs'):
+                    host.frozen_boot(init)
+            def digest(path):
+                return host.BOOT_SHA if path == init else host.BOOT_SOURCE_SHA
+            for info in ('\tvcs.revision='+'a'*40+'\n\tvcs.modified=false', '\tvcs.revision='+host.BOOT_SOURCE_COMMIT+'\n\tvcs.modified=true'):
+                with patch.object(host.util, 'digest', side_effect=digest), patch.object(host.subprocess, 'check_output', return_value=info):
+                    with self.assertRaisesRegex(RuntimeError, 'provenance differs'):
+                        host.frozen_boot(init)
+
     def test_cloned_store_readers_close_on_success_and_schema_refusal(self):
         guest=module('guest')
         connect=sqlite3.connect
@@ -55,9 +71,9 @@ class RecoveryGuards(unittest.TestCase):
 
     def test_artifact_boundary_rejects_embedded_and_other_runtime_inputs(self):
         host = module('run')
-        for path in ('internal/service/legacy-inventory.json', 'internal/appdev/samples/grubbery-state-v2/nex/state.hoon', 'contents/ui/Panel.qml', 'go.mod', 'go.sum', 'internal/managed/server.go', 'docs/example.go', 'docs/../internal/service/legacy-inventory.json', '/docs/result.json'):
+        for path in ('internal/service/legacy-inventory.json', 'internal/appdev/samples/grubbery-state-v2/nex/state.hoon', 'contents/ui/Panel.qml', 'go.mod', 'go.sum', 'internal/managed/server.go', 'scripts/qualification/grubbery-runtime-cow/init/other.go', 'scripts/qualification/grubbery-runtime-cow/init/main.go/../other.go', 'docs/example.go', 'docs/../internal/service/legacy-inventory.json', '/docs/result.json'):
             self.assertFalse(host.artifact_change_allowed(path), path)
-        for path in ('docs/diagnostics/result.json', 'docs/development-memory.md', 'scripts/qualification/grubbery-runtime-cow/run.py', 'scripts/qualification/grubbery-runtime-cow/guest.py', 'scripts/qualification/grubbery-runtime-cow/test_guards.py', 'scripts/qualification/grubbery-runtime-cow/README.md'):
+        for path in ('docs/diagnostics/result.json', 'docs/development-memory.md', 'scripts/qualification/grubbery-runtime-cow/run.py', 'scripts/qualification/grubbery-runtime-cow/guest.py', 'scripts/qualification/grubbery-runtime-cow/test_guards.py', 'scripts/qualification/grubbery-runtime-cow/README.md', host.BOOT_SOURCE_PATH):
             self.assertTrue(host.artifact_change_allowed(path), path)
 
     def test_changed_embedded_inventory_refuses_before_artifact_reads_or_admission(self):
@@ -100,8 +116,10 @@ class RecoveryGuards(unittest.TestCase):
         config.read_string(unit.group(1))
         self.assertEqual(config['Service']['Type'], 'oneshot')
         start = config.getint('Service', 'TimeoutStartSec')
+        stop = config.getint('Service', 'TimeoutStopSec')
         self.assertGreater(start, guest.HELPER_DEADLINE_SECONDS+120)
-        self.assertGreater(host.VM_DEADLINE_SECONDS, start+60)
+        self.assertEqual(stop, 30)
+        self.assertGreater(host.VM_DEADLINE_SECONDS, start+stop+60)
 
     def test_no_run_has_no_source_storage_or_process_effect(self):
         host = module('run')
