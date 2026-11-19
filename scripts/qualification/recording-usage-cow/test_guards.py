@@ -1,0 +1,125 @@
+import configparser
+import contextlib
+import gzip
+import importlib.util
+import io
+import json
+from pathlib import Path
+import re
+import sqlite3
+import subprocess
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+
+def module(name):
+    spec = importlib.util.spec_from_file_location('usage_cow_'+name, Path(__file__).with_name(name+'.py'))
+    value = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(value)
+    return value
+
+
+class UsageGuards(unittest.TestCase):
+    def test_no_run_has_no_source_storage_or_process_effect(self):
+        host = module('run')
+        with patch.object(sys, 'argv', ['run.py']), patch.object(host.subprocess, 'check_output', side_effect=AssertionError('no process')), patch.object(host.budget, 'charge', side_effect=AssertionError('no admission')), contextlib.redirect_stdout(io.StringIO()):
+            host.main()
+
+    def test_only_fresh_specific_output_is_accepted(self):
+        host = module('run')
+        args = ['run.py', '--run', '--output', '/tmp/omabit-issues-recording-vm-07']
+        for name in ('portable', 'candidate', 'rootless', 'runtime', 'helper', 'init'):
+            args += ['--'+name, '/missing']
+        with patch.object(sys, 'argv', args), patch.object(host.os, 'geteuid', return_value=1000), patch.object(host.subprocess, 'check_output', side_effect=AssertionError('no source read')), contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit) as result:
+                host.main()
+            self.assertEqual(result.exception.code, 2)
+
+    def test_product_or_embedded_changes_are_not_harness_exceptions(self):
+        host = module('run')
+        for path in ('internal/service/legacy-inventory.json', 'internal/managed/issues_recording_usage_vm_test.go', 'internal/runtimequalify/recording_usage_linux.go', 'go.mod', 'go.sum', 'plugins/omabit/Recordings.js', 'docs/example.go', host.BOOT_SOURCE_PATH+'/../other.go'):
+            self.assertFalse(host.artifact_change_allowed(path), path)
+        for path in ('docs/diagnostics/result.json', host.BOOT_SOURCE_PATH, 'scripts/qualification/recording-usage-cow/guest.py'):
+            self.assertTrue(host.artifact_change_allowed(path), path)
+
+    def test_wrong_boot_bytes_refuse_before_provenance_or_admission(self):
+        host = module('run')
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/'init'; path.write_bytes(b'unqualified')
+            with patch.object(host.subprocess, 'check_output', side_effect=AssertionError('must refuse first')):
+                with self.assertRaisesRegex(RuntimeError, 'boot helper or source differs'):
+                    host.frozen_boot(path)
+
+    def test_actual_unit_deadline_and_hard_scratch_bounds(self):
+        host, guest = module('run'), module('guest')
+        source = (Path(__file__).parent/'init/main.go').read_text()
+        config = configparser.ConfigParser(interpolation=None)
+        config.read_string(re.search(r'service := `([^`]+)`', source).group(1))
+        self.assertEqual(config['Service']['Type'], 'oneshot')
+        self.assertGreater(guest.HELPER_SECONDS, 120)
+        self.assertGreater(guest.HELPER_PROCESS_SECONDS, guest.HELPER_SECONDS)
+        self.assertGreater(config.getint('Service', 'TimeoutStartSec'), guest.HELPER_PROCESS_SECONDS+60)
+        self.assertGreater(host.VM_DEADLINE_SECONDS, config.getint('Service', 'TimeoutStartSec')+config.getint('Service', 'TimeoutStopSec')+60)
+        self.assertGreater(host.SUPERVISOR_DEADLINE_SECONDS, host.VM_DEADLINE_SECONDS+120)
+        self.assertLess(host.ROOT_FILE_MAX+64*1024**2+32*1024**2+16*1024**2, host.SCRATCH)
+        self.assertEqual(host.SCRATCH+host.HOST_BUILD_RESERVE, 320*1024**2)
+
+    def test_guest_refuses_host_and_wrong_original_schema_or_case(self):
+        guest = module('guest')
+        with patch.object(guest.os, 'geteuid', return_value=1000), patch.object(Path, 'read_text', side_effect=AssertionError('host read forbidden')):
+            with self.assertRaises(RuntimeError):
+                guest.guard()
+        scenario = {'kind': 'issues20-recording-usage-v1', 'case': guest.CASE, 'predecessor_root_sha256': guest.PIN, 'original_schema': 65, 'target_schema': 65, 'development_snapshot': True}
+        values = {'/sys/class/dmi/id/sys_vendor': 'QEMU', '/proc/cmdline': 'omabit.disposable-guest=release-upgrade-v1', '/opt/omabit-release-input/scenario.json': json.dumps(scenario)}
+        with patch.object(guest.os, 'geteuid', return_value=0), patch.object(sys, 'argv', ['guest.py']), patch.object(Path, 'read_text', lambda path, **kwargs: values[str(path)]):
+            self.assertEqual(guest.guard(), scenario)
+            for change in ({'case': 'other'}, {'predecessor_root_sha256': '0'*64}, {'original_schema': 64}, {'target_schema': 64}, {'development_snapshot': False}):
+                values['/opt/omabit-release-input/scenario.json'] = json.dumps({**scenario, **change})
+                with self.assertRaises(RuntimeError):
+                    guest.guard()
+
+    def test_sqlite_readers_close_and_preserve_rows_on_refusal(self):
+        guest = module('guest'); connect = sqlite3.connect
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/'fixture.sqlite'
+            with contextlib.closing(connect(path)) as db:
+                db.execute('pragma user_version=65')
+                db.execute('create table instances (body text)')
+                db.execute('insert into instances values (?)', (json.dumps({'public': {'id': 'recording-zod', 'ship': '~zod', 'desired_state': 'stopped'}}),))
+                db.commit()
+            readers = []
+            def readonly(filename, **kwargs):
+                self.assertEqual(filename, 'file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro')
+                self.assertEqual(kwargs, {'uri': True})
+                db = connect('file:'+str(path)+'?mode=ro', uri=True); readers.append(db); self.addCleanup(db.close); return db
+            with patch.object(guest.sqlite3, 'connect', side_effect=readonly):
+                self.assertEqual(list(guest.saved_rows()), ['instances'])
+                with contextlib.closing(connect(path)) as db:
+                    db.execute('pragma user_version=64')
+                with self.assertRaisesRegex(RuntimeError, 'wrong original/candidate schema'):
+                    guest.saved_rows()
+            for db in readers:
+                with self.assertRaises(sqlite3.ProgrammingError):
+                    db.execute('select 1')
+
+    def test_inflation_is_bounded_and_hash_verified(self):
+        guest = module('guest')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); (root/'input/candidate').mkdir(parents=True)
+            (root/'input/candidate/omabit.gz').write_bytes(gzip.compress(b'wrong'))
+            with patch.object(guest, 'I', root/'input'), patch.object(guest, 'R', root/'runtime'):
+                with self.assertRaisesRegex(RuntimeError, 'executable differs'):
+                    guest.inflate({'candidate': {'omabit': {'bytes': 5, 'sha256': '0'*64}}})
+
+    def test_actual_kernel_file_limit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/'bounded-output'
+            code = "import errno,pathlib,sys; p=pathlib.Path(sys.argv[1]); f=p.open('xb',buffering=0); f.write(b'A'*1048576)\ntry: f.write(b'B')\nexcept OSError as e: assert e.errno==errno.EFBIG\nelse: raise RuntimeError('file bound ignored')\nf.close(); assert p.read_bytes()==b'A'*1048576"
+            result = subprocess.run(['/usr/bin/prlimit', '--fsize=1048576:1048576', '--', sys.executable, '-B', '-c', code, str(path)], capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+
+if __name__ == '__main__':
+    unittest.main()

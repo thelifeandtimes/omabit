@@ -515,3 +515,11 @@ behavior and checks private-data leakage. Storage growth remains within reserve.
 [Evidence](diagnostics/2026-11-19-named-checkpoint-interfaces-source.json) qualifies
 source interfaces only; generated reference, matching artifacts, named execution/
 actual clients, remaining issue tracks and preserved DEV qualification stay open.
+
+M724 consolidates269,217,792bytes of validated regenerable compiler/index cache,
+preserving137 named evidence/artifact/VM files unchanged. Prepare a small offline
+read-only-backed recording07 allocation observer: independent stat versus actual
+CLI/stdio, with original capture/control/table/intent preservation. Its pure Go
+guard and nine inert Python guards pass; boot/matching artifacts, admission and
+native execution remain pending. The320MiB total reservation and128MiB root bound
+avoid a fresh bootstrap. No installed namespace or original image is changed.

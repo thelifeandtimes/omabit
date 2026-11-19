@@ -13175,3 +13175,32 @@ Generated help/reference, matching final artifacts, actual named-client/provider
 connections, the remaining issue tracks and stable-to-candidate/preserved DEV
 qualification remain open. No installed namespace, service, existing ship or
 production state changes.
+
+## M724 — Prepare bounded native recording allocation observation (2026-11-19)
+
+After source scopes end, classify and evict only299 validated regenerable
+Go1.27.3 compiler/index cache files, freeing269,217,792bytes. Full owner/path/
+single-link/archive/content-hash checks and before/after hashes preserve137
+named artifact, whole-VM and compact evidence files, including successful
+recording07/current app COW05, failed COW04 and original pending app05. No source,
+module download, recording, SQLite, log or image is retired. This is bounded cache
+consolidation for matching builds under48GiB; prior unique-disk permissions are
+not reused.
+
+Prepare a separate fixed read-only-backed recording07 allocation case. Its
+observer uses actual CLI/official-SDK stdio and independent filesystem stat to
+compare logical/allocated/count/shared/per-instance measurements. All recording
+bytes, control heads, logical database rows and stopped intent must stay exact.
+It creates no runtime/capture, policy write, retirement or full pier copy. Its
+pure host/foreign-case Go guard passes(0.004s); nine inert Python guards pass
+(0.044s), covering actual unit deadline nesting, bounded inputs/output, exact
+fixture/schema and explicitly closed SQLite readers.
+
+The [prepared contract](../scripts/qualification/recording-usage-cow/README.md)
+declares256MiB capsule/64MiB preparation,128MiB root hard file bound,2GiB guest/
+3GiB QEMU/no swap/one CPU and420s host/600s supervisor deadlines. Boot pins remain
+deliberately unfrozen: matching clean artifacts and independently pinned PID1,
+fresh storage admission and native execution are still required. No qualification
+is claimed yet. This tests stationary closed native captures only; active growth,
+pressure/retirement/full exports and installed/preserved DEV remain separate.
+All production, existing/protected/tmux ship and original-backing exclusions hold.
