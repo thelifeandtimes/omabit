@@ -35,10 +35,17 @@ supervisor bounds. The Go helper has a2min context,150s test and180s process
 deadline. No host HOME, run sockets, engine, credentials or user pier is exposed.
 One actual runtime experiment only; no host Go builds/tests while it is active.
 
-Nine inert Python guards and the Go fixed-VM identity/refusal guard pass. These
+Ten inert Python guards and the Go fixed-VM identity/refusal guard pass. These
 cover no-run/no effects, output binding, forbidden runtime/embedded changes,
 wrong boot bytes, actual generated-unit deadline nesting, guest identity/schema/
 source fixture selection, SQLite reader closure, finite decompression and an
 actual kernel file-size cap. Matching artifact/boot verification, admission and
 native execution remain required. A timeout or forced shutdown remains failure
 with retained evidence; an acknowledged result is not completion.
+
+The inherited original recording-pilot.conf is preserved. The new global
+zzzz-issues-recording-usage.conf sorts after it and resets ExecStart to the
+candidate tmpfs binary before startup; its condition still requires the guest's
+explicit readiness marker. A guard inspects this actual emitted override and
+refuses implicit resume. The separately frozen PID1 must include this ordering
+fix; the earlier prepared boot is not eligible after its source changes.

@@ -66,6 +66,18 @@ class UsageGuards(unittest.TestCase):
         self.assertLess(host.ROOT_FILE_MAX+64*1024**2+32*1024**2+16*1024**2, host.SCRATCH)
         self.assertEqual(host.SCRATCH+host.HOST_BUILD_RESERVE, 320*1024**2)
 
+    def test_candidate_override_sorts_after_original_without_removing_it(self):
+        source = (Path(__file__).parent/'init/main.go').read_text()
+        path = re.search(r'os.WriteFile\("(/newroot/etc/systemd/user/urbit-runner.service.d/[^"/]+)"', source).group(1)
+        self.assertGreater(Path(path).name, 'recording-pilot.conf')
+        override = re.search(r'override := `([^`]+)`', source).group(1)
+        self.assertIn('ConditionPathExists=/run/omabit-runtime-runner-ready', override)
+        self.assertIn('ExecStart=\nExecStart=/usr/bin/env -i', override)
+        self.assertIn('/run/omabit-runtime-candidate/candidate/urbit-runner', override)
+        self.assertIn('--record-runtime', override)
+        self.assertNotIn('--resume-running', override)
+        self.assertNotIn('os.Remove', source)
+
     def test_guest_refuses_host_and_wrong_original_schema_or_case(self):
         guest = module('guest')
         with patch.object(guest.os, 'geteuid', return_value=1000), patch.object(Path, 'read_text', side_effect=AssertionError('host read forbidden')):

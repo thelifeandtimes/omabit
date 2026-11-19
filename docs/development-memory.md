@@ -13204,3 +13204,29 @@ fresh storage admission and native execution are still required. No qualificatio
 is claimed yet. This tests stationary closed native captures only; active growth,
 pressure/retirement/full exports and installed/preserved DEV remain separate.
 All production, existing/protected/tmux ship and original-backing exclusions hold.
+
+## M725 — Matching current artifacts freeze; strengthen inherited override ordering (2026-11-19)
+
+Freeze clean f37b32d4f60d5b2e915ad86186caa12c5b853bc2 and verify3960 tracked
+inputs after building all four current tools with Go1.27.3/CGO0/trimpath/stripped.
+CLI SHA8b12850184e232241fb800e91520df6f5a5660f5878b2c8aa73f0f47fc5f98b2;
+collector705646950713a865d2d8de77faa9494450468c91edd976f01a417ee0583c7726;
+runner ea0508ee09d9d31586c25bb91157f9ff0e8d63c01efb7e5c8d030dfd437995cb;
+managed.test fb8db26a5921d19a6b2882a87f20d1235c41be1645961b855823ed5db9c4c70a.
+Actual buildinfo reports the clean source for three tools; the helper's exact
+link-time source binding is exercised and matches. Builds use sequential bounded
+source scopes with512MiB initial and256MiB helper-phase admission. No runtime or
+installed deployment is updated.
+
+Before native launch, inspect the inherited fixture contract: recording07 retains
+recording-pilot.conf. The prepared global99-zz override sorts before that name,
+so its ExecStart can lose the merge. Preserve the original file and change only
+the fresh-overlay standalone PID1 filename to zzzz-issues-recording-usage.conf.
+A new actual-template guard verifies ordering, exact candidate ExecStart reset,
+readiness condition, recording selection, no resume and no original removal.
+All10 inert Python guards pass(0.042s). No native failure is manufactured; boot
+pins remain deliberately unfrozen and admission refuses launch until correction
+is separately frozen. The four product/helper inputs stay at f37b32d4; the known
+standalone-PID1 exception permits only its separately verified source/binary/
+clean-VCS correction. New boot, fresh320MiB admission and full native measurement
+remain required. No unique VM, recording, SQL/history or existing ship changes.

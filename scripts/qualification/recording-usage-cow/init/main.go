@@ -100,7 +100,10 @@ ConditionPathExists=/run/omabit-runtime-runner-ready
 ExecStart=
 ExecStart=/usr/bin/env -i "HOME=%h" PATH=/usr/bin:/bin LANG=C "XDG_RUNTIME_DIR=%t" /run/omabit-runtime-candidate/candidate/urbit-runner serve-development --acknowledge-development --record-runtime
 `
-	must(os.WriteFile("/newroot/etc/systemd/user/urbit-runner.service.d/99-zz-issues-recording-usage.conf", []byte(override), 0644))
+	// Drop-ins with different names merge lexically across user/global roots.
+	// The original task fixture retains recording-pilot.conf; preserve it and
+	// place this fresh-overlay-only override after it, before manager startup.
+	must(os.WriteFile("/newroot/etc/systemd/user/urbit-runner.service.d/zzzz-issues-recording-usage.conf", []byte(override), 0644))
 	// Only the newly created overlay receives this service. No networking or
 	// host device/service is mounted into the guest.
 	service := `[Unit]

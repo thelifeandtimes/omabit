@@ -523,3 +523,10 @@ CLI/stdio, with original capture/control/table/intent preservation. Its pure Go
 guard and nine inert Python guards pass; boot/matching artifacts, admission and
 native execution remain pending. The320MiB total reservation and128MiB root bound
 avoid a fresh bootstrap. No installed namespace or original image is changed.
+
+M725 freezes all four current tools from clean f37b32d4 with3960 tracked inputs
+verified and exact source identities. Before launch, correct the standalone
+PID1's override filename to sort after inherited recording-pilot.conf, preserving
+the original. Ten inert guards pass; the four artifacts remain unchanged. The
+separate corrected boot freeze,320MiB admission and native allocation case are
+pending. No installed deployment or unique evidence is changed.
