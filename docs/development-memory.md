@@ -13071,3 +13071,17 @@ actual unit's6000s startup/30s stop inside the6100s host bound. A fresh correcte
 native case and final clean Stop remain required. COW04 stays a retained failed
 whole run with its independently passing helper evidence; original app VM05,
 production and manual-review state remain untouched.
+
+## M720 — Fresh corrected Grubbery whole-case retry starts (2026-11-19)
+
+After all prior task units end, admit960MiB scratch/preparation under48GiB:
+50,121,469,952charged plus1,006,632,960 is51,128,102,912, below51,539,607,552.
+Launch one fresh offline COW05 with harness55d6464 and the independently frozen
+bf3e5f83 boot. Verify all four runtime/helper hashes still equal clean12f78952.
+The original pending app VM05 and pristine base remain read-only; ended failed
+COW04 and successful recording VM07 stay intact. No installed/DEV/production or
+existing/protected/tmux ship is changed. The new helper observes the exact
+original17-event uncertainty; remaining lifecycle/source/state/restart/final
+clean Stop gates are running. The [retry report](diagnostics/2026-11-19-current65-grubbery-recovery-retry.json)
+is explicitly unqualified until full completion. No host Go builds/tests run
+while this native experiment is active.

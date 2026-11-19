@@ -481,3 +481,10 @@ differ; all runtime/UI/embedded/sample/module and sibling Go changes still refus
 Actual350-entry dependency graphs exclude PID1 and3931 other original inputs
 remain exact. The four12f78952 runtime/helper artifacts are reused unchanged.
 Twelve inert guards pass; a fresh corrected full native case remains required.
+
+M720 admits and starts the corrected fresh COW05, retaining COW04's whole failure
+and unchanged original app05/recording07. The separately frozen boot has corrected
+unit deadlines; all four runtime hashes remain12f78952. Its
+[running report](diagnostics/2026-11-19-current65-grubbery-recovery-retry.json)
+does not claim completion. Host Go builds/tests wait until the one native case
+ends; no installed namespace or existing ship changes.
