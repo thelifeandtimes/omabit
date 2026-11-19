@@ -222,3 +222,8 @@ and genuine old-reader refusal. A compact actual63 fixture keeps the pending Sta
 and all earlier app/Stop uncertainty, with ordinary race preservation/rollback
 checks. Normal submission, active-worker/native continuity and installed upgrades
 remain open; no production/manual DEV or existing ship changes.
+
+M685 prepares bounded hash-addressed retention of the exact running worker image,
+passing immutable/reuse/refusal/pressure/locking race gates and vet with inert
+bytes. It remains unwired; service submission and native/active-worker upgrades
+are still required.

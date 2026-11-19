@@ -12182,3 +12182,21 @@ actual writer/reader gate. No job file/service is submitted and no native proces
 is observed or rebound by this metadata-only rehearsal. Active worker continuity,
 normal-launch integration, native/installed upgrade and final artifacts remain
 required. Production/manual DEV, existing ships and all VM disks stay unchanged.
+
+## M685 — Prepare exact worker executable retention (2026-11-18)
+
+Add a fixed-root preparation that copies only the kernel-selected current
+executable into the selected owner's existing private recording-images cache.
+Hash-addressed originals become mode0500 only after complete matching bytes and
+successful sync. Reuse re-verifies image/inode/owner/mode/hash and syncs without
+replacement; partial, linked, exposed or changed images refuse and remain retained.
+Bound copies to128MiB each/eight images, serialize admission, and reserve the
+image bytes plus64MiB. Unknown storage failures do not become measured pressure.
+No image, cache root or unit is installed by normal managed launch yet.
+
+Focused image/job/original-claim race checks pass in1.605s. A further typed-storage
+refusal check passes with the image gates in1.021s; vet passes. Tests use inert
+bytes which are never executed. The extracted private-root opener preserves job
+and actual legacy claim behavior. Actual worker image/service submission, native
+capture and installed/active-worker upgrade qualification remain pending; no
+production/manual DEV, existing runtime or ship is touched.

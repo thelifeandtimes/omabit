@@ -561,3 +561,16 @@ reader refuses populated64 without changing it. The compact actual63 SQL fixture
 also passes ordinary race checks for preservation and rollback on missing original
 ancestry. This closes the source database gate only. It does not qualify normal
 worker submission, active-worker/native continuity or installed upgrade.
+
+## Prepared executable retention
+
+Source preparation now copies only the running process's kernel-selected image
+to an existing private `recording-images` cache below the selected owner's state
+home. Exact hash-addressed complete images become0500 after sync; verified reuse
+does not replace original bytes. Partial, changed, exposed or linked originals
+refuse without repair. Eight images/128MiB each, exclusive admission and a64MiB
+space reserve bound this cache; no automatic image deletion is implemented.
+
+Focused race/vet checks use inert bytes and launch nothing. This preparation is
+not invoked by normal managed launch and does not qualify active-worker upgrade
+continuity. The independent service handoff and native capture gates remain.

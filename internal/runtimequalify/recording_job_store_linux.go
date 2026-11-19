@@ -40,6 +40,17 @@ func OpenRecordingJobs(path string, maxJobs int, reserve uint64) (*RecordingJobs
 	if !recordingJobPath(path) || maxJobs < 1 || maxJobs > 4096 || reserve == 0 {
 		return nil, ErrRecordingJobStorage
 	}
+	root, err := openRecordingPrivateRoot(path)
+	if err != nil {
+		return nil, err
+	}
+	return &RecordingJobs{root: root, maxJobs: maxJobs, reserve: reserve, free: recordingJobSpace}, nil
+}
+
+func openRecordingPrivateRoot(path string) (*os.Root, error) {
+	if !recordingJobPath(path) {
+		return nil, ErrRecordingJobStorage
+	}
 	before, err := os.Lstat(path)
 	if err != nil || !recordingJobDirectory(before) {
 		return nil, ErrRecordingJobStorage
@@ -59,7 +70,7 @@ func OpenRecordingJobs(path string, maxJobs int, reserve uint64) (*RecordingJobs
 		root.Close()
 		return nil, ErrRecordingJobStorage
 	}
-	return &RecordingJobs{root: root, maxJobs: maxJobs, reserve: reserve, free: recordingJobSpace}, nil
+	return root, nil
 }
 
 func (s *RecordingJobs) Close() error { return s.root.Close() }
