@@ -300,3 +300,10 @@ original recording preservation. Both captures close with one exit/no gaps. See
 the [scoped native report](diagnostics/2026-11-18-recording-pilot-native.json).
 Broader lifecycle/pressure/retention, interfaces and active-worker/final installed
 upgrade remain pending. Production and manual-review state stay untouched.
+
+M698 adds saved operator-private recording catalog/page HTTP and shared CLI/MCP
+reads. Exact history/job/digest/cursor and representation choices gate access;
+base64 originals and derived escaped windows never claim a complete export.
+Admitted historical/read/privacy races, actual CLI/stdio parity and vet pass.
+Matching native API, retention/indexing/pins, full exports, UI and final upgrade
+remain pending. No installed namespace or existing runtime is changed.

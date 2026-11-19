@@ -12464,3 +12464,36 @@ This supersedes only the ordinary native service/lifecycle deferral. Burst and
 pressure recovery, host reboot, active-worker binary upgrades, existing-running,
 project/utility factories, retention and public recording interfaces remain open.
 It is not comprehensive recording support or final release qualification.
+
+## M698 — Read exact retained history/windows through HTTP/CLI/stdio (2026-11-18)
+
+Add saved-only operator-private catalog/page RPCs and shared typed CLI/MCP
+operations. Exact immutable job/runner/instance/digest ancestry gates filesystem
+access, and is rechecked after the read. History survives interruption, later
+configuration and mode promotion without gaining launch authority. Require an
+explicit private-data choice and redacted/original representation. Return raw
+octets only as base64, or derived escaped spans with omissions/timing/digests.
+No effect, engine attachment, job claim, retention action or data repair occurs.
+
+Bound catalogs32, frame windows64/128KiB and encoded replies below the existing
+1MiB local/SSH limit. Cross-window cursors retain exact segment/frame identity;
+missing/foreign cursors refuse rather than rewind. Read-time EOF, saved exit,
+writer and storage facts stay separate. A missing/moved header preserves receipt
+facts, not an assertion of non-creation. Every window explicitly disclaims a
+complete export. Shared schemas now use platform-neutral cursor/page/storage
+types; encoded/persistent formats remain unchanged.
+
+Admitted historical HTTP/store race gates pass, preserving all rows and refusing
+observer/foreign/different replies before releasing content. Multi-window inert
+capture restores the full original payload and one exit; derived windows remove
+credential values while retaining diagnostic atoms. Focused format/privacy/
+window/client races pass in1.208s/1.024s/1.251s. Actual CLI/official-SDK stdio parity
+passes in8.867s for exact >2^53 revisions, consent/role/capability/refusal and lost
+read replies; reads never become uncertain mutations or automatic retries. Vet
+passes across changed packages. One initial fixture used the wrong Docker stream
+label and another exceeded the Unix socket path length; corrected fixtures pass.
+
+These interfaces postdate M697's frozen native artifacts. Matching native API,
+installed/active-worker upgrades, indexed search, retention/pins, full export and
+UI remain unqualified. No installed service, preserved manual-review state,
+production namespace, existing ship or tmux surface changed.

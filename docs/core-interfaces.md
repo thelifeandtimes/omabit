@@ -36,6 +36,15 @@ sanitized preview is not comprehensive session history or a durable cursor. Lega
 log watch remains separately excluded. A transport failure on a read-only POST
 is a failed read, not an uncertain mutation merely because its method is POST.
 
+`runtime.recordings.v1` lists bounded private immutable recording launch history;
+`runtime.recording-page.v1` reads an exact job/digest/cursor with an explicit
+`redacted` or `original` representation. Both require operator access and
+`include_private_data=true`. They read saved evidence only, including interrupted
+and historical operations, and never start/adopt/attach capture or change retention.
+Raw originals are base64; derived text is escaped plain text. Neither is a
+complete session export or current health claim. See [recording reads and their
+limits](runtime-recordings.md#operator-private-saved-recording-reads).
+
 See [client setup recipes](mcp-clients.md) for primary-source-checked Codex,
 Claude Code and OpenCode configuration and the separate T3 provider connection
 gate. Recipes do not establish an actual named-client connection pass.

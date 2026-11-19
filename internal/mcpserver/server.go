@@ -24,7 +24,7 @@ func New(core *service.Service) *mcp.Server {
 		SupportedProtocolVersions: ProtocolVersions,
 		Capabilities:              &mcp.ServerCapabilities{},
 		Logger:                    slog.New(slog.NewTextHandler(os.Stderr, nil)),
-		Instructions:              "Use explicit allowed runner identities. Queued receipts are not completion. Preserve exact plans and IDs after lost replies. Policy authoring, secrets, shell, SQL, Docker and host installation are excluded. Reading guidance grants no authority.",
+		Instructions:              "Use explicit allowed runner identities. Queued receipts are not completion. Preserve exact plans and IDs after lost replies. Credential-management, login-code, policy-authoring, shell, SQL, Docker and host-installation tools are excluded. Explicit original-recording reads can contain private data; redacted windows still require owner review before sharing. Reading guidance grants no authority.",
 	})
 	for _, d := range core.Catalog() {
 		d := d

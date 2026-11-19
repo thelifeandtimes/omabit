@@ -701,3 +701,52 @@ This supersedes only the ordinary service/lifecycle deferral above. Real burst,
 pressure/recovery, host restart, active-worker binary upgrade, other factories,
 retention and public interfaces remain separate requirements. No preserved DEV
 or production deployment was changed.
+
+## Operator-private saved recording reads
+
+The development shared operations `runtime.recordings.v1` and
+`runtime.recording-page.v1` expose saved history and bounded windows through the
+same `omabit call` and stdio MCP handlers. They require operator role, an allowed
+selected runner advertising `runtime-recording-read-v1`, and explicit
+`include_private_data=true`. Catalog entries are immutable launch intents; an
+entry does not prove that capture started or that its bytes remain available.
+History remains readable after the original operation is interrupted or its
+instance/configuration changes. No read claims/submits a worker, opens an engine
+stream, signals a runtime, repairs data or changes retention.
+
+```sh
+omabit --config-dir REGISTRY call runtime.recordings.v1 --input-json \
+  '{"name":"DEV","runner_id":"RUNNER_ID","instance_id":"INSTANCE","include_private_data":true}'
+```
+
+Use the catalog's exact `job_id`/`job_sha256` with
+`runtime.recording-page.v1`. Explicitly select `representation="redacted"` or
+`"original"`; neither is inferred. A private JSON input file can retain the
+selection and the exact returned cursor. Catalog windows contain at most32
+entries. Frame windows contain at most64frames/128KiB original payload; encoded
+replies must fit the existing1MiB local/SSH bound. A view that cannot fit refuses
+without silently truncating a frame or changing representation.
+
+Derived redacted windows preserve original timing/digests and account for omitted
+ranges. `escaped_text` is an ASCII escaped literal for plain-text rendering; do
+not interpret it as HTML, terminal commands or executable escape sequences.
+Leading context after a cursor/gap and incomplete trailing lines may be withheld.
+Finite credential-field rules preserve diagnostic atoms such as `0w...`; they
+cannot identify every private application value. Owner review is still required
+before sharing. This transformation never edits stored originals.
+
+Original windows return unmodified octets only as explicit base64 fields. They
+remain private operator data. Every response marks `complete_export=false`:
+this interface does not package a complete session export. Keep original receipts
+and partial/gap evidence. `snapshot-eof` describes only this read's prefix; it is
+not a process exit or completeness claim. Polling the exact cursor follows saved
+bytes without attaching again. A foreign/missing cursor refuses rather than
+rewinding. Saved result, writer-lock and header-availability facts are separate;
+a missing header never establishes that its bytes never existed or are disposable.
+
+Source gates pass byte-exact multi-window output/exit reads, derived redaction,
+historical SQLite/HTTP access without row changes, changed/private/refused
+selections and actual CLI/official-SDK stdio parity, including revisions above
+2^53. These read APIs are newer than M697's frozen native pilot. Matching native
+API/installed upgrade, indexed search, retention/pins, complete export packaging
+and UI qualification remain pending.

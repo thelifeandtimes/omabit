@@ -218,5 +218,6 @@ func (s *Service) register() error {
 	errs = append(errs, s.registerFrameworks())
 	errs = append(errs, s.registerGuidance())
 	errs = append(errs, s.registerRuntimeReads())
+	errs = append(errs, s.registerRecordings())
 	return errors.Join(errs...)
 }

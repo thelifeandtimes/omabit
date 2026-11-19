@@ -368,6 +368,9 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if r.recording != nil {
 			features = append(features, "runtime-recording-pilot-v1")
 		}
+		if _, ok := r.b.(recordingReadBackend); ok {
+			features = append(features, protocol.RecordingReadFeature)
+		}
 		features = append(features, "maintenance-schedules")
 		features = append(features, protocol.RunnerBuildIdentityFeature, protocol.ProjectStopRecoveryFeature, protocol.CreationReplayFeature, protocol.ProjectInventoryFeature, protocol.ProjectStatusFeature, protocol.ProjectRecoveryCheckpointFeature, protocol.ProjectRecoverySourceFeature, protocol.ProjectRegistrationFeature, protocol.PrivateChainRegistrationFeature, protocol.PrivateChainInventoryFeature)
 		features = append(features, r.projectActionFeatures()...)
@@ -528,6 +531,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		respond(w, http.StatusOK, inventory)
+		return
+	}
+	if req.Method == http.MethodPost && (req.URL.Path == protocol.RecordingCatalogPath || req.URL.Path == protocol.RecordingPagePath) {
+		r.serveRecordings(w, req, role)
 		return
 	}
 	if req.Method == http.MethodGet && req.URL.Path == "/v1/snapshot" {
