@@ -34,7 +34,7 @@ Window {
   readonly property var cpu: Model.cpuView(connection,instance,service.now,service.observing)
   readonly property var epochs: Model.epochDisplay(instance,service ? service.now : Date.now())
   readonly property var roll: Model.lastRoll(instance)
-  readonly property bool shipPage: page === "overview" || page === "maintenance" || page === "urls"
+  readonly property bool shipPage: page === "overview" || page === "maintenance" || page === "urls" || page === "recordings"
   title: "Omabit"+(service && service.profileName!=="default" ? " · "+service.profileName.toUpperCase() : "")+" · Monitor & maintenance"
   color: Design.background
   width: Style.space(1100)
@@ -193,9 +193,11 @@ Window {
               RowLayout {
                 ActionButton { text: "Overview"; primary: root.page === "overview"; onClicked: root.page = "overview" }
                 ActionButton { objectName: "ship-urls-tab"; text: "Ship URLs"; primary: root.page === "urls"; onClicked: root.page = "urls" }
+                ActionButton {objectName:"recordings-tab";text:"Recordings";primary:root.page==="recordings";onClicked:root.page="recordings"}
                 ActionButton { text: "Maintenance"; primary: root.page === "maintenance"; onClicked: root.page = "maintenance" }
                 ActionButton { text: "Ship activity ↗"; quiet: true; onClicked: { activity.runnerFilter = root.connection.runner_id; activity.shipFilter = root.selected.key; root.page = "activity" } }
               }
+              RecordingsPane {width:parent.width;visible:root.page==="recordings";active:root.visible && root.visibility!==Window.Minimized && visible;service:root.service;connection:root.connection;instance:root.instance}
               Column {
                 width: parent.width; spacing: Style.space(16); visible: root.page === "overview"
                 RuntimePane { width:parent.width;service:root.service;connection:root.connection;instance:root.instance;active:root.visible&&root.visibility!==Window.Minimized&&root.page==="overview" }

@@ -12715,3 +12715,29 @@ complete original bytes, SQLite, receipts, logs, source and binaries would remai
 Do not execute that dependent action while authorization is pending. Continue
 source/harness work; the48GiB cap, one-runtime limit and production exclusions
 remain unchanged.
+
+## M707 — Add private saved recording UI with bound read lifetimes (2026-11-18)
+
+While the explicit two-VM archival request is pending, add a source-only monitor
+Recordings tab/controller/model. No request on opening; explicit selection-bound
+private consent precedes history/settings. Separate redacted/original buttons,
+exact job/digest/cursor validation, finite reply sizes and literal plain-text
+rendering preserve raw/derived distinctions. Display receive times, stream/frame
+identity, omissions/gaps and separate unknown exit/writer/storage facts; every
+window disclaims full export. Read-only settings distinguish commitments from
+measured usage and preserve explicit unknown capacity.
+
+Use the existing typed CLI and tracked reader lifecycle. Clear consent/data and
+reject late replies across profile/transport/target/role/admission changes; revoke
+consent without a runtime action. No policy mutation, retention effect or hidden
+engine/Dojo/shell/SQL channel. The initial offscreen fixture changed transport
+identity along with server behavior and timed out; make only actual profile changes
+invalidate its transport. Corrected inert checks pass seven explicit reads,
+including original-only consent, plain text, unknown storage, foreign reply,
+stale profile and revocation. QML registry coverage passes; inspect the synthetic
+screenshot. No installed plugin/deployment or real runner is used.
+
+Matching native API/upgrade and full desktop/packaging gates remain required.
+The public MCP catalog still has an obsolete HTTP-not-implemented label; prepare
+its narrow correction privately for after the frozen native gate. No Go source
+or282c3b3 candidate bytes change while that qualification remains pending.

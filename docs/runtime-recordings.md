@@ -807,3 +807,32 @@ dispatch on preflight refusal, changed-policy final guards, original-history
 reopen/replay, authenticated actor lookup, client reply binding and actual CLI/
 SDK stdio parity/lost-write behavior. Matching native APIs, active-worker binary
 upgrade, measured usage, retirement, pressure recovery and UI remain pending.
+
+
+## Source-only recording view
+
+M707 adds a monitor **Recordings** tab for saved history, bounded windows and
+read-only retention settings. Opening it makes no recording request. Enable the
+private-read choice for the current selection, then request history and select
+an exact saved job. Redacted windows and base64 originals have separate explicit
+buttons. Derived text stays literal plain text, including markup/control escape
+spellings. Receive times and stream/frame identity remain visible; unknown exit,
+writer/storage facts, omitted spans, gaps and snapshot EOF stay distinct. Every
+window states that it is not a complete export.
+
+The view clears private data/consent when profile, transport, target, role or
+admission changes. Late replies cannot cross those bindings; a foreign reply
+cannot replace accepted evidence. Revoking consent clears displayed data and
+cancels only the UI reader. Reads use the same typed `omabit call` operations;
+no shell/Dojo/SQL/Docker channel, live attachment or runtime signal is exposed.
+Settings show immutable maximum commitments and explicit unknown capacity. This
+initial view does not author policy/pins, retire data or produce a full export.
+
+An inert private offscreen check passes seven explicit reads covering consent,
+representation, plain-text markup/escape rendering, unknown capacity, foreign
+replies, late profile responses and revocation; the QML registry check passes.
+The [synthetic view](diagnostics/2026-11-18-recording-ui-source.png) is visually
+inspected. An initial fixture accidentally changed its transport identity when
+changing simulated server behavior; correct that fixture before the passing runs.
+This is source UI qualification, with no installed plugin or preserved DEV change.
+Matching native API/upgrade and final desktop qualification remain required.

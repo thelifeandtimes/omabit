@@ -366,3 +366,10 @@ sequence passes seven inert guards without changing product refusals or frozen
 binaries. Both ended raw images and read-only extracted evidence stay retained.
 Separate lossless-archive authorization is pending for space under48GiB; a fresh
 native upgrade/API retry remains required. No installed deployment changed.
+
+M707 adds source-only private recording history/windows/settings in the monitor.
+Explicit consent/representation, plain text, receive times, gaps/unknowns and stale
+profile/revocation controls pass the inert offscreen test (seven reads) and QML
+registry check. The synthetic view is inspected. No plugin is deployed. Settings
+remain read-only; retirement/complete exports and matching native/desktop gates
+stay open. Two-VM lossless archive permission remains pending; no raw copy changes.
