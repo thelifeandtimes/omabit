@@ -37,6 +37,7 @@ func omitEmptyAppSuccessorForSyntheticFixture(t *testing.T, s *store) {
 // stores never contain these tables; any populated history must refuse omission.
 func omitEmptyRuntimeRecoverySuccessorForSyntheticFixture(t *testing.T, s *store) {
 	t.Helper()
+	omitEmptyRecordingSuccessorForSyntheticFixture(t, s)
 	for _, table := range []string{"grubbery_app_runtime_recoveries", "grubbery_app_runtime_heads"} {
 		var count int
 		g02Check(t, s.db.QueryRow("SELECT count(*) FROM "+table).Scan(&count))
@@ -48,4 +49,20 @@ func omitEmptyRuntimeRecoverySuccessorForSyntheticFixture(t *testing.T, s *store
 		_, err := s.db.Exec("DROP TABLE " + table)
 		g02Check(t, err)
 	}
+}
+
+func omitEmptyRecordingSuccessorForSyntheticFixture(t *testing.T, s *store) {
+	t.Helper()
+	var count int
+	g02Check(t, s.db.QueryRow("SELECT count(*) FROM runtime_recording_intents").Scan(&count))
+	if count != 0 {
+		t.Fatal("synthetic fixture has recording job history")
+	}
+	head, digest, err := recordingHead(s.db)
+	g02Check(t, err)
+	if head != 0 || digest != "" {
+		t.Fatal("synthetic fixture has recording job authority")
+	}
+	_, err = s.db.Exec("DROP TABLE runtime_recording_intents; DROP TABLE runtime_recording_head")
+	g02Check(t, err)
 }

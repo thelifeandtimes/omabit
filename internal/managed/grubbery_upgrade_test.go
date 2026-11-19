@@ -92,6 +92,7 @@ func loadOriginal60AppFixture(t *testing.T, dir string) {
 	g02Check(t, db.Close())
 }
 func appOriginalRows(all map[string][]string) map[string][]string {
+	all = rowsWithoutEmptyRecordingSuccessor(all)
 	out := map[string][]string{}
 	for name, rows := range all {
 		if name != "@schema" && !strings.HasPrefix(name, "grubbery_app_") {

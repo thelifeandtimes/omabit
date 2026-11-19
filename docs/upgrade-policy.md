@@ -1,5 +1,22 @@
 # Stable-release upgrade requirement
 
+## Development: recording launch intents, schema64 — gates pending
+
+Schema64 adds empty private recording intent/head tables without rewriting older
+instances, operations, app journals, leases, audits or access. New intents bind the
+authenticated original Start operation and exact saved runtime/configuration state
+to one job, executable and admission digest. Insertion and independent count/digest
+head advancement commit atomically; a missing tail or original ancestry refuses.
+Saved replay is historical and cannot authorize another worker submission. Opening
+performs no job claim, service submission or native effect.
+
+Focused source/race gates preserve original59/60/61/62 and synthetic11–63 stores,
+and cover concurrent admission, process exit after committed/no-response intent,
+head-write rollback, corruption and mixed-schema refusal. Actual frozen63 writer/
+reader refusal, relevant native/installed upgrades, final matching artifacts and
+support window remain required. Normal launch still submits no recording jobs.
+Never lower markers or remove recording history to run an older manager.
+
 ## Development: explicit recording bootstrap identity, metadata4 — gates pending
 
 New comet creation has no ship name before mining, and a first launch need not

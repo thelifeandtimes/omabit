@@ -70,6 +70,18 @@ func stopUpgradeRows(t *testing.T, db *sql.DB) map[string][]string {
 	g02Check(t, rows.Close())
 	out := map[string][]string{}
 	for _, table := range tables {
+		if table == "runtime_recording_intents" || table == "runtime_recording_head" {
+			var count int
+			var ddl, headDDL string
+			g02Check(t, db.QueryRow("SELECT count(*) FROM runtime_recording_intents").Scan(&count))
+			g02Check(t, db.QueryRow("SELECT sql FROM sqlite_master WHERE type='table' AND name='runtime_recording_intents'").Scan(&ddl))
+			g02Check(t, db.QueryRow("SELECT sql FROM sqlite_master WHERE type='table' AND name='runtime_recording_head'").Scan(&headDDL))
+			head, digest, err := recordingHead(db)
+			g02Check(t, err)
+			if count == 0 && ddl == recordingIntentDDL && headDDL == recordingHeadDDL && head == 0 && digest == "" {
+				continue // only the exact empty successor is absent in original59
+			}
+		}
 		if table == "project_stop_reconciliations" || strings.HasPrefix(table, "grubbery_app_") {
 			continue
 		}

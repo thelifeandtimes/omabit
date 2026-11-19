@@ -45,4 +45,6 @@ package managed
 // pre-effect refusal. Legacy plan1 receipts stay read-only and byte-preserved.
 // Schema63 retains separate immutable app runtime recovery receipts and exact
 // per-operation heads; original plan/event/lease bytes remain unchanged.
-const StateSchemaVersion = 63
+// Schema64 fences immutable recording-job intents bound to the original Start
+// actor, revision, runtime and created container. Opening dispatches nothing.
+const StateSchemaVersion = 64

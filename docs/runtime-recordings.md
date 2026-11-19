@@ -532,3 +532,18 @@ cannot be reused. The genuine old reader refuses claim2 unchanged. A compact
 five-file fixture, unchanged source manifest and declared helper run in ordinary
 tests. This closes only the source-format gate, not independent live-worker,
 database/installed upgrade, power-loss or native recording qualification.
+
+## Prepared launch journal guard
+
+Schema64 adds private immutable recording intents and a separate bounded count/
+digest head. Each binds the original running Start actor/request, target/revision,
+exact runtime state and created container to the job/executable/admission digests.
+Admission and head advancement commit together. Exact replay returns historical
+evidence; it cannot authorize another worker submission. Opening validates ancestry
+and detects missing tails without claiming, submitting or replaying a job.
+
+Focused source/race SQLite gates pass for stale authority/state, concurrent jobs,
+head-update rollback, process exit after commit and corruption. Original59–62 and
+synthetic11–63 migration preservation pass. Actual frozen63 writer/reader refusal,
+installed/native upgrade and authenticated normal-launch integration remain
+required. Normal launch still creates/submits no recording jobs.

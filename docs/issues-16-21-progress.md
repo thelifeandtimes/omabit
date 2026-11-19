@@ -210,3 +210,9 @@ M680–M681 pass actual frozen claim1 writer/current claim2 lookup and old-reade
 refusal, with all original bytes retained and a compact ordinary fixture gate.
 Legacy omitted process facts remain unknown and cannot authorize a new claim.
 Active-job database guard, launch binding and actual worker/native gates remain.
+
+M682 prepares schema64 recording launch intents with original-operation/state CAS,
+one job per operation and an independent count/digest chain. SQLite race tests
+pass for competing admission, committed/no-response replay, rollback, missing
+history and original59–62/synthetic11–63 preservation. No normal-launch submission
+is enabled. Actual63 writer/reader, installed upgrade and native worker gates remain.

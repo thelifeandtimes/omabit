@@ -62,6 +62,7 @@ func runtimeStoreFixture(t *testing.T) (*store, grubbery.Record, string) {
 	return s, record, dir
 }
 func rowsWithoutRuntimeRecovery(all map[string][]string) map[string][]string {
+	all = rowsWithoutEmptyRecordingSuccessor(all)
 	delete(all, "grubbery_app_runtime_heads")
 	delete(all, "grubbery_app_runtime_recoveries")
 	return all

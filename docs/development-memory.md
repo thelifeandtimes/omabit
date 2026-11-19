@@ -12127,3 +12127,25 @@ pass in2.449s. This supersedes M680's pending actual-writer gate and M675's
 synthetic-only compatibility boundary. It does not qualify live worker continuity,
 power loss, database/installed upgrade or native capture. Production/manual DEV
 and existing ships remain untouched.
+
+## M682 — Fence recording jobs with immutable launch receipts, schema64 (2026-11-18)
+
+Prepare private metadata-only recording intents bound to the original running
+Start/startup-resume actor, request, public target/configuration revision, exact
+runtime revision/state digest and one created container. Retain job, executable
+and native admission digests without copying raw output, paths or credential
+bodies. A transaction inserts one intent per operation and CAS-advances an
+independent bounded count/digest chain. Missing tails/heads, changed ancestry,
+mixed schemas, malformed/oversized bytes and unexpected DDL/triggers refuse;
+opening never repairs, claims, submits or dispatches anything.
+
+Exact saved replay is historical even after interruption and cannot authorize
+another submission. Live admission checks the current original operation and
+runtime state. Source/race SQLite tests pass in65.082s, covering competing jobs,
+head-commit rollback, process exit after committed/no-response intent, corruption
+and original59/60/61/62 plus synthetic11–63 preservation. Original-format helpers
+omit only the exact empty successor contracts; populated history is never hidden.
+Vet passes for managed, runtimequalify and the runner command.
+Schema64 fences older readers before normal launch can use recording authority.
+Actual frozen63 writer/reader rehearsal, installed/native upgrade, normal launch
+integration and native worker capture remain pending. No installed state changed.

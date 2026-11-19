@@ -72,6 +72,7 @@ func TestGrubberyOriginal61MigrationPreservesLegacyPlanAndOriginalUncertainty(t 
 		// original operation; keep every original table/row in the comparison.
 		delete(after, "grubbery_app_runtime_recoveries")
 		delete(after, "grubbery_app_runtime_heads")
+		after = rowsWithoutEmptyRecordingSuccessor(after)
 		var count, ordinal int
 		var headDigest string
 		g02Check(t, s.db.QueryRow("SELECT count(*) FROM grubbery_app_runtime_recoveries").Scan(&count))
