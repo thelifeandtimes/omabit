@@ -1,0 +1,48 @@
+package managed
+
+// Declared metadata-only helper for unchanged actual schema64 source/tests.
+// All runtime evidence is synthetic; no native input, unit, engine or user store.
+import (
+ "bytes"
+ "encoding/json"
+ "os"
+ "path/filepath"
+ "reflect"
+ "strings"
+ "testing"
+ "time"
+)
+
+func originalControlRoot(t *testing.T)string{
+ t.Helper();root:=os.Getenv("OMABIT_RECORDING_CONTROL_UPGRADE_ROOT")
+ if !filepath.IsAbs(root) || filepath.Clean(root)!=root || !strings.HasPrefix(root,"/tmp/omabit-recording-control-upgrade-"){t.Fatal("explicit fresh source fixture required")};return root
+}
+
+func TestOriginal64RecordingControlPredecessor(t *testing.T){
+ root:=originalControlRoot(t);dir:=filepath.Join(root,"original")
+ if StateSchemaVersion!=64{t.Fatal("actual64 writer required")}
+ g02Check(t,os.Mkdir(dir,0700));loadOriginal63RecordingFixture(t,dir)
+ s,err:=testOpenStore(dir);g02Check(t,err)
+ var opID string;g02Check(t,s.db.QueryRow("SELECT id FROM operations WHERE actor='recording-actor' AND request_id='recording-start'").Scan(&opID))
+ op,err:=loadOperation(s.db,opID);g02Check(t,err)
+ v,err:=loadInstance(s.db,op.InstanceID);g02Check(t,err)
+ i:=recordingIntent{Version:1,JobID:strings.Repeat("1",32),JobSHA256:strings.Repeat("2",64),RunnerID:s.runnerID,Mode:s.mode,Actor:op.Actor,OperationID:op.ID,RequestID:op.RequestID,InstanceID:op.InstanceID,RuntimeID:v.Runtime.ID,ConfigurationRevision:op.ConfigRevision,RuntimeRevision:v.RuntimeRevision,StateSHA256:mustRecordingStateDigest(t,v.Runtime),ContainerID:strings.Repeat("a",64),ExecutableSHA256:strings.Repeat("3",64),AdmissionSHA256:strings.Repeat("4",64),CreatedAt:time.Unix(1700000000,123).UTC()}
+ saved,replay,err:=s.admitRecordingIntent(i);g02Check(t,err)
+ if replay || !reflect.DeepEqual(saved,i){t.Fatal("old writer changed intent")}
+ before:=appAllRows(t,s.db);g02Check(t,s.close());s,err=testOpenStore(dir);g02Check(t,err)
+ if !reflect.DeepEqual(before,appAllRows(t,s.db)){t.Fatal("actual64 reopen changed ancestry or recording intent")};g02Check(t,s.close())
+ raw,err:=json.MarshalIndent(map[string]any{"schema":64,"all_original_rows":before,"pending_operation":op,"recording_intent":i,"scope":"actual64 writer, original59/60/62/63 ancestry and recording intent; synthetic metadata only, no native capture"},"","  ");g02Check(t,err)
+ g02Check(t,os.WriteFile(filepath.Join(root,"original-report.json"),append(raw,'\n'),0600))
+}
+
+func TestOriginal64ReaderRefusesRecording65Unchanged(t *testing.T){
+ root:=originalControlRoot(t);dir:=filepath.Join(root,"successor")
+ if StateSchemaVersion!=64{t.Fatal("actual64 reader required")}
+ db:=g02RawDB(t,dir);var schema,controls,intents int
+ g02Check(t,db.QueryRow("PRAGMA user_version").Scan(&schema));g02Check(t,db.QueryRow("SELECT count(*) FROM runtime_recording_control_events").Scan(&controls));g02Check(t,db.QueryRow("SELECT count(*) FROM runtime_recording_intents").Scan(&intents));g02Check(t,db.Close())
+ if schema!=65 || controls!=2 || intents!=1{t.Fatal("populated65 successor required")}
+ before,err:=os.ReadFile(filepath.Join(dir,"runner.sqlite"));g02Check(t,err)
+ if opened,err:=testOpenStore(dir);err==nil{opened.close();t.Fatal("actual64 reader ignored new controls")}
+ after,err:=os.ReadFile(filepath.Join(dir,"runner.sqlite"));g02Check(t,err)
+ if !bytes.Equal(before,after){t.Fatal("old reader modified refused successor")}
+}

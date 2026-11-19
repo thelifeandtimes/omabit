@@ -12556,3 +12556,22 @@ Prepare a separate frozen actual64-writer/current65 migration and old-reader
 refusal harness; three no-run/root/source refusal guards pass. Actual execution,
 installed/active-worker upgrade and final artifact support remain pending. No raw
 recording, pier, installed namespace, production/manual DEV or tmux state changes.
+
+## M701 — Qualify actual64 recording controls and retain its fixture (2026-11-18)
+
+The frozen cc557070 original64 writer and bc482030 candidate65 reader pass the
+[source-only upgrade gate](diagnostics/2026-11-18-recording-schema65-source-upgrade.json).
+Three opens preserve all original DDL/rows/access, the original intent, linked
+app audit and pending Start; new policy/pin receipts preserve those rows. Exact
+control replay survives reopen. The unchanged old64 executable refuses the
+populated65 successor without changing closed database bytes.
+
+Retain a compact pinned SQL fixture exported from that actual closed64 writer,
+with its helper/source manifest. The first export omitted SQLite's user_version
+pragma (iterdump does not include it); regenerate it from the actual writer's
+queried64 marker. The ordinary preservation/failed-ancestry rollback race tests
+then pass in5.806s. This corrects the export, not the historical writer.
+
+This supersedes M700's actual source-writer deferral only. Broad historical gates,
+installed/active-worker upgrade, policy enforcement/usage/retirement and UI remain
+open. No job is submitted and no installed/user runtime state changes.

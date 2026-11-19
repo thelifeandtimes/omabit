@@ -323,3 +323,9 @@ managed suite exposes socket-fixture setup leaks and reaches its whole-run
 deadline; its affected tests now pass with short sockets/early cleanup, but the
 whole suite is not qualified. Actual64 writer/refusal is prepared. Enforcement,
 usage/retirement, pressure recovery, native/installed upgrades and UI remain open.
+
+M701 passes actual64→65 migration, original rows/intent/pending-Start preservation,
+new policy/pin replay and unchanged old-reader refusal. Its pinned actual-writer
+fixture now runs ordinary preservation/rollback race checks (5.806s). See the
+[source-only report](diagnostics/2026-11-18-recording-schema65-source-upgrade.json).
+This does not qualify enforcement, retirement or installed/active-worker upgrade.

@@ -1,0 +1,13 @@
+{
+  "format": 1,
+  "schema": 64,
+  "original_source": "cc55707090061885a75fd144c2e2d6648d8d6292",
+  "original_writer_sha256": "0de8c3d179434c2c68530f134d5c2279a9d41f71d6bad682628c7ec728eb65a1",
+  "candidate_reader_source": "bc482030d0ce07eba83d3c0a3c7f5894dddc7587",
+  "candidate_reader_sha256": "d921d8b4816e547dcd61ad7f537d5e5a66bc20e6948c5cac2391b51ae9b04dc1",
+  "gzip_sha256": "cb377e86d6f26bc5659c5f0c1711d2bd37ffc9eeb50dad9e693f10d6b06e3a69",
+  "raw_sql_sha256": "4b80d49d6abd6dad2512f748ce94b188721249ae07247b0a6e79766ba8c471d6",
+  "declared_helper_sha256": "49422d5cf3cba6e1595a6493e0681fe6465081f04c7adb542b6a17e6929c6719",
+  "original_source_manifest_sha256": "03e2b57dd21f05605a8a48cce79063cf8a2faf1018a40725afa47022ef55d98e",
+  "scope": "synthetic actual64 writer over actual original63/62/60/59 ancestry; includes original recording intent and pending Start; no native/installed or real-user state"
+}
