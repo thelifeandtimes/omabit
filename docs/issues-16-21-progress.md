@@ -227,3 +227,8 @@ M685 prepares bounded hash-addressed retention of the exact running worker image
 passing immutable/reuse/refusal/pressure/locking race gates and vet with inert
 bytes. It remains unwired; service submission and native/active-worker upgrades
 are still required.
+
+M686 prepares fixed detached notify-service submission with explicit verified DEV
+forwarding, literal arguments, bounded resources and typed uncertain submission.
+Source argument/namespace race checks and vet pass; no launcher is executed or
+normal launch enabled. The coordinator and actual service/native gates remain.

@@ -12200,3 +12200,24 @@ bytes which are never executed. The extracted private-root opener preserves job
 and actual legacy claim behavior. Actual worker image/service submission, native
 capture and installed/active-worker upgrade qualification remain pending; no
 production/manual DEV, existing runtime or ship is touched.
+
+## M686 — Prepare fixed detached recorder service submission (2026-11-18)
+
+Prepare one fixed systemd-run notify/main service command using the exact retained
+image and job digest. Forward only the already verified process-local DEV root;
+HOME/XDG never selects it. Disable systemd argument expansion so literal dollar
+paths cannot become substitutions. No shell, terminal, caller-owned scope or
+automatic restart is requested. Bound worker memory/swap/CPU/tasks, startup and
+submission; stdin/stdout/stderr are null. No raw data or actor enters arguments.
+After attempted submission, lost/canceled acknowledgement is explicitly uncertain
+and never retried or treated as proof of non-submission. The user manager owns
+the service lifetime, separately from the Omabit manager/client.
+
+Primary [systemd262 launcher semantics](https://www.freedesktop.org/software/systemd/man/latest/systemd-run.html)
+were checked; disabling expansion requires systemd254 or later and unsupported
+launchers must refuse. Focused source race checks pass for ownerhost in1.009s and
+runtimequalify in1.980s; vet passes. These tests build/inspect arguments and inert
+boundaries only: they execute no launcher command. The submission primitive is
+not called by normal launch. Durable job/intent checks, synced readiness, exact
+live/native fence composition and actual service/native qualification remain
+required. No installed configuration, production/manual DEV or ship changes.

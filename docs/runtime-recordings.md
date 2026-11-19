@@ -574,3 +574,19 @@ space reserve bound this cache; no automatic image deletion is implemented.
 Focused race/vet checks use inert bytes and launch nothing. This preparation is
 not invoked by normal managed launch and does not qualify active-worker upgrade
 continuity. The independent service handoff and native capture gates remain.
+
+## Prepared detached service command
+
+The source command uses only the exact retained image/job digest and explicitly
+forwards the verified DEV selection. It requests notify/main with no automatic
+restart, terminal or caller-owned scope, null standard streams and fixed worker
+resource limits. Literal arguments use `--expand-environment=no`; the
+[systemd launcher documentation](https://www.freedesktop.org/software/systemd/man/latest/systemd-run.html)
+requires254 or later for that option. Unsupported launchers refuse. A lost
+submission acknowledgement is uncertain and must lead to exact job/unit lookup,
+never automatic resubmission.
+
+Argument/namespace race checks and vet pass without executing a launcher. Normal
+launch remains unwired. The coordinator must compose durable job/journal checks,
+post-sync readiness and exact live/native fences before Start; actual service and
+native/installed upgrade gates remain pending.

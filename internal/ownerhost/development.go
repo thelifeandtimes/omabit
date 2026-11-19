@@ -43,6 +43,12 @@ func developmentRuntimeName(root string) string {
 	return "omabit-dev" + strings.TrimPrefix(root, "/srv/dev/urbit")
 }
 func Development() bool { return developmentRoot != "" }
+
+// DevelopmentRoot returns only the already verified process-local selection.
+// Child worker services must receive it explicitly rather than infer a namespace
+// from HOME/XDG or fall back to the installed production profile.
+func DevelopmentRoot() string { return developmentRoot }
+
 func selectedProfilePath() string {
 	if Development() {
 		return filepath.Join(developmentRoot, "owner.json")
