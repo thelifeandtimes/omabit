@@ -1,0 +1,92 @@
+package managed
+
+// Declared source/SQLite helper for unchanged schema63 runtime/test sources.
+// All runtime/process evidence is synthetic. No engine, unit, native operation
+// or existing user store is opened.
+import (
+	"bytes"
+	"encoding/json"
+	"os"
+	"path/filepath"
+	"reflect"
+	"strings"
+	"testing"
+
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
+)
+
+func originalRecordingStoreRoot(t *testing.T) string {
+	t.Helper()
+	root := os.Getenv("OMABIT_RECORDING_STORE_UPGRADE_ROOT")
+	if !filepath.IsAbs(root) || filepath.Clean(root) != root || !strings.HasPrefix(root, "/tmp/omabit-recording-store-upgrade-") {
+		t.Fatal("explicit disposable source fixture required")
+	}
+	return root
+}
+
+func TestOriginal63RecordingStorePredecessor(t *testing.T) {
+	root := originalRecordingStoreRoot(t)
+	dir := filepath.Join(root, "original")
+	if StateSchemaVersion != 63 {
+		t.Fatal("wrong original writer")
+	}
+	g02Check(t, os.Mkdir(dir, 0700))
+	loadOriginal62AppFixture(t, dir)
+	s, err := testOpenStore(dir)
+	g02Check(t, err)
+	var originalID string
+	g02Check(t, s.db.QueryRow("SELECT id FROM grubbery_app_operations").Scan(&originalID))
+	original, err := loadGrubberyRecord(s.db, originalID)
+	g02Check(t, err)
+	review := runtimeReviewFixture(t, original, nil)
+	_, err = (grubberyRuntimeJournal{s}).Apply(t.Context(), originalID, strings.Repeat("5", 64), review, review.ObservedAt)
+	g02Check(t, err)
+	_, _, err = s.register("recording-actor", registration("recording-instance", "recording-register", 18089))
+	g02Check(t, err)
+	op, _, err := s.accept("recording-actor", "recording-instance", protocol.OperationRequest{Kind: "start", RequestID: "recording-start", ExpectedRevision: 1})
+	g02Check(t, err)
+	op, v, err := s.beginOperation(op.ID)
+	g02Check(t, err)
+	v.Runtime.Prepared = true
+	v.Runtime.Runtime.Containers = []runtimequalify.ContainerRecord{{ID: strings.Repeat("a", 64), Kind: "http-boot", CreateDispatched: true}}
+	g02Check(t, s.runtimeUpdate(op.InstanceID, op.ID, v.Runtime))
+	before := appAllRows(t, s.db)
+	g02Check(t, s.close())
+	s, err = testOpenStore(dir)
+	g02Check(t, err)
+	if !reflect.DeepEqual(before, appAllRows(t, s.db)) {
+		t.Fatal("original63 reopen changed ancestry or pending runtime")
+	}
+	g02Check(t, s.close())
+	raw, err := json.MarshalIndent(map[string]any{"schema": 63, "all_original_rows": before, "pending_operation": op, "scope": "actual63 writer, original59/60/62 app/Stop ancestry, linked app recovery and synthetic pre-Start metadata; no native qualification"}, "", "  ")
+	g02Check(t, err)
+	g02Check(t, os.WriteFile(filepath.Join(root, "original-report.json"), append(raw, '\n'), 0600))
+}
+
+func TestOriginal63ReaderRefusesRecording64Unchanged(t *testing.T) {
+	root := originalRecordingStoreRoot(t)
+	dir := filepath.Join(root, "successor")
+	if StateSchemaVersion != 63 {
+		t.Fatal("wrong actual old reader")
+	}
+	db := g02RawDB(t, dir)
+	var schema, count int
+	g02Check(t, db.QueryRow("PRAGMA user_version").Scan(&schema))
+	g02Check(t, db.QueryRow("SELECT count(*) FROM runtime_recording_intents").Scan(&count))
+	g02Check(t, db.Close())
+	if schema != 64 || count != 1 {
+		t.Fatal("populated64 successor required")
+	}
+	before, err := os.ReadFile(filepath.Join(dir, "runner.sqlite"))
+	g02Check(t, err)
+	if opened, err := testOpenStore(dir); err == nil {
+		opened.close()
+		t.Fatal("actual63 reader admitted64 recording authority")
+	}
+	after, err := os.ReadFile(filepath.Join(dir, "runner.sqlite"))
+	g02Check(t, err)
+	if !bytes.Equal(before, after) {
+		t.Fatal("old reader changed closed successor database")
+	}
+}

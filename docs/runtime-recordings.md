@@ -547,3 +547,9 @@ head-update rollback, process exit after commit and corruption. Original59–62 
 synthetic11–63 migration preservation pass. Actual frozen63 writer/reader refusal,
 installed/native upgrade and authenticated normal-launch integration remain
 required. Normal launch still creates/submits no recording jobs.
+
+`scripts/test-recording-store-upgrade.py` prepares the actual frozen63 writer /
+populated64 reader-refusal rehearsal. It preserves earlier Stop/app uncertainty
+and linked recovery ancestry, then tests one synthetic pre-Start recording intent.
+Fresh output, clean source, explicit `--run` and storage admission are required.
+Its actual result is pending; no job service or native runtime is submitted.

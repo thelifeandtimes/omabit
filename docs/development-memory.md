@@ -12149,3 +12149,18 @@ Vet passes for managed, runtimequalify and the runner command.
 Schema64 fences older readers before normal launch can use recording authority.
 Actual frozen63 writer/reader rehearsal, installed/native upgrade, normal launch
 integration and native worker capture remain pending. No installed state changed.
+
+## M683 — Prepare actual63→64 recording-journal rehearsal (2026-11-18)
+
+Freeze a fresh-path source/SQLite launcher using unchanged1589158b schema63
+runtime, embedded files, tests and original fixtures plus a declared helper. It
+retains original59/60/62 app/Stop ancestry, writes a linked63 app runtime audit,
+and saves a synthetic pending ordinary Start at the created-container boundary.
+Candidate64 must migrate/reopen with every original row/DDL unchanged, add one
+exact recording intent/head, and preserve saved replay. The genuine63 reader
+must refuse that populated64 store without changing closed database bytes.
+
+Three input guards pass; the gated candidate helper compiles/skips without its
+explicit fresh root. Actual writer/reader results remain pending until this
+frozen source rehearsal runs. It submits no job/unit and operates no engine,
+native runtime, existing store, production or manual DEV state.
