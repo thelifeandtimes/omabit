@@ -612,3 +612,19 @@ generation. It refuses extra live containers and uncertain creation history.
 Historical replay remains available after interruption and cannot grant this
 authority. Focused SQLite/fixture race gates pass without changing original rows;
 normal launch still does not invoke the coordinator.
+
+## Prepared ordinary lifecycle hooks
+
+An opt-in driver variant now requires both recording preparation and terminal
+removal callbacks. Preparation follows durable native creation/stage save; a
+fresh bounded guard runs immediately before Start. Terminal state/log evidence
+is saved before a bounded pre-removal barrier. Refusal keeps the stopped container
+and pier, and a subsequent Stop can finish removal without repeating its signal.
+Callbacks receive independent snapshots and do not replace native ownership or
+containment checks.
+
+Admitted source race checks and vet pass with inert native effects, including
+failed saves/handoffs/guards, snapshot isolation and the one-signal continuation.
+The normal server does not select these hooks. Actual recorder preparation,
+terminal drain/outcome handling and native service/upgrade integration remain;
+projects, utilities and existing-running attachments need separate factories.

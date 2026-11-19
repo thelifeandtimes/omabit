@@ -243,3 +243,10 @@ M688 adds the fresh read-only store fence, distinct from historical replay.
 Recording journal/original63 fixture race checks pass for interruption, generation
 changes, cancellation and extra/uncertain containers, with no row changes. The
 normal Start hook and actual worker/native/installed gates remain open.
+
+M689 prepares opt-in ordinary driver lifecycle hooks: durable pre-Start preparation,
+an immediate fresh guard, and a terminal-removal barrier. Admitted source race
+checks/vet pass for refusal, independent snapshots, terminal preservation and a
+one-signal stopped continuation. Normal server launch remains unchanged; real
+preparation/drain handling, projects/utilities/running capture and native upgrades
+remain pending.

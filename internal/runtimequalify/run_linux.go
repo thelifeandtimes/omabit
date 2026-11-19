@@ -62,6 +62,7 @@ type dependencies struct {
 	pillSHA          string
 	pillBytes        int64
 	times            timings
+	recording        *ManagedRecordingLifecycle
 }
 
 type qualifier struct {
@@ -72,6 +73,8 @@ type qualifier struct {
 	progress                    func(string)
 	engineEvidence              hostcompat.Engine
 	restrictedEngine            bool
+	beforeRuntimeStart          func(context.Context) error
+	beforeRuntimeRemove         func(context.Context, string) error
 }
 
 // Run has no runtime, image, identity, pier, shell or endpoint overrides. All

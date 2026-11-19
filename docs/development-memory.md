@@ -12260,3 +12260,27 @@ containers and unchanged historical replay. Existing journal CAS, rollback,
 process-exit and actual63 preservation gates remain passing. The store check
 dispatches nothing. Normal launch wiring, actual worker/native capture and
 installed/active-worker upgrade gates remain open; installed state is unchanged.
+
+## M689 — Add opt-in native lifecycle handoff and terminal-removal barrier (2026-11-18)
+
+Prepare an ordinary Start/startup-resume/Stop driver variant requiring both trusted
+recording callbacks. Snapshot independently after durable created-container/stage
+save; run preparation before Start and a fresh bounded guard after final native
+checks, immediately before dispatch. Before non-probe removal, save terminal
+state/log evidence and run a bounded recorder barrier. Refusal retains the stopped
+container and pier; a repeated Stop can continue removal without another signal.
+Normal server launch does not select this variant. Actual capture preparation,
+terminal drain/outcome handling, projects, utilities and existing-running capture
+still need their qualified manager integration.
+
+Successfully admitted focused lifecycle/default-driver race checks pass in1.305s;
+vet passes. Cases include fake/comet ordering, save/prepare/guard refusals, lost
+submission uncertainty, snapshot alias isolation, terminal preservation and one
+Stop signal across refused/successful removal. All native effects are inert seams.
+An earlier tool sequence mistakenly started the source check after its scratch
+reservation failed. It had already ended when inspected; measured actual usage
+remained below48GiB. Retain the private incident record, require conditional exit
+on failed admission, and use only the admitted rerun for this checkpoint. Classified
+regenerable task-test cache now keeps one newest version per package; frozen
+binaries/source/receipts/SQLite/logs and all VM disks remain retained. No installed
+state, production/manual DEV, actual runtime or existing ship changes.

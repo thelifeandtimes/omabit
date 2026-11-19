@@ -77,6 +77,10 @@ func ApplyManaged(context.Context, string, ManagedState, func(ManagedState) erro
 	return ManagedState{}, ManagedObservation{}, errors.New("managed runner requires linux/amd64")
 }
 
+func ApplyManagedWithRecording(context.Context, string, ManagedState, func(ManagedState) error, ManagedRecordingLifecycle) (ManagedState, ManagedObservation, error) {
+	return ManagedState{}, ManagedObservation{}, errors.New("managed recording requires linux/amd64")
+}
+
 func ObserveManaged(context.Context, ManagedState) (ManagedState, ManagedObservation, error) {
 	return ManagedState{}, ManagedObservation{}, errors.New("managed runner requires linux/amd64")
 }

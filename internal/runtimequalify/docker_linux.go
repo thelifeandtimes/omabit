@@ -580,6 +580,14 @@ func (q *qualifier) control(ctx context.Context, index int, timeout time.Duratio
 		command = append(command, "--timeout", "300")
 	}
 	command = append(command, c.ID)
+	if verb == "start" && q.beforeRuntimeStart != nil {
+		guardCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		err := q.beforeRuntimeStart(guardCtx)
+		cancel()
+		if err != nil {
+			return "", err
+		}
+	}
 	out, err := q.docker(ctx, timeout, append(command, args...)...)
 	if err != nil && verb == "start" {
 		if actual, inspectErr := q.inspect(ctx, index); inspectErr == nil {
@@ -615,6 +623,11 @@ func (q *qualifier) remove(ctx context.Context, index int) error {
 	}
 	if err := q.save(); err != nil {
 		return err
+	}
+	if q.beforeRuntimeRemove != nil && q.r.Containers[index].Kind != "probe" {
+		if err := q.beforeRuntimeRemove(ctx, c.ID); err != nil {
+			return err
+		}
 	}
 	if _, err := q.docker(ctx, q.d.times.command, "container", "rm", c.ID); err != nil {
 		return err
