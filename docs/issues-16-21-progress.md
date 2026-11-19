@@ -260,3 +260,9 @@ M691 retains a durable claim-bound job/session allocation before capture storage
 or attachment. Admitted source race gates preserve failed/opening lookup, exact
 live readiness and legacy unknown omissions without backfill. Status/drain,
 normal manager wiring and actual worker/native/installed gates remain open.
+
+M692 adds saved-only status and bounded terminal-drain lookup, passing admitted
+source race/vet checks. Raw output is excluded, moved/missing data is preserved,
+legacy omissions stay unknown, and incomplete/timeouts cannot become successful
+drain or removal authority. Manager integration and native/retention/API/UI/
+installed-worker gates remain open.

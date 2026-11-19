@@ -12318,3 +12318,26 @@ allocation. The optional sidecar changes no old metadata/frame or job1 bytes;
 it is not a live/installed upgrade gate. Read-only status/drain composition,
 normal manager integration and actual worker/native capture remain pending.
 No production/manual DEV, existing runtime, ship or installed state changes.
+
+## M692 — Read saved recording status and bound terminal-drain lookup (2026-11-18)
+
+Add read-only saved status distinguishing job, claim, allocation, readiness,
+result, header availability and writer-lock facts. No raw frames or private
+exceptions are returned. Metadata prefix observation is explicitly not a full
+integrity scan or live worker/process-health claim. Preserve legacy unknown
+allocation and inspect saved failures even when capture storage is unavailable.
+Missing headers report observed absence, never non-creation or disposal.
+
+Add bounded saved-outcome polling for terminal drain. A finished/closed saved
+capture and exit with available header can be observed; incomplete, missing or
+pending evidence never becomes successful drain or removal permission. Timeout
+races remain pending, not false storage corruption. These helpers signal, submit,
+remove and repair nothing; native terminal/journal ownership remains the caller's
+separate duty.
+
+Admitted focused status/service/allocation/actual-claim-fixture race checks pass
+in1.504s; the deadline-race correction passes status gates in1.308s. Vet passes.
+Tests retain moved raw data, exclude private multiline output from status, and
+preserve incomplete/legacy facts without backfill. All worker/native seams are
+inert. Normal manager integration, native service/capture, retention, API/UI and
+installed/active-worker qualification remain pending; installed state is unchanged.

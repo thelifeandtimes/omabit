@@ -41,13 +41,21 @@ func runRecordingService(ctx context.Context, id, digest string, d dependencies,
 }
 
 func recordingServiceOptions(d dependencies) (RecordingWorkerOptions, error) {
+	return recordingRootOptions(d, true)
+}
+
+func recordingRootOptions(d dependencies, requireRecordings bool) (RecordingWorkerOptions, error) {
 	q := &qualifier{d: d}
 	if !recordingJobPath(d.home) || d.home == "/" || q.accountBoundary(false) != nil {
 		return RecordingWorkerOptions{}, ErrRecordingWorker
 	}
 	base := filepath.Join(d.home, ".local/share/urbit-runner")
 	opts := RecordingWorkerOptions{JobsRoot: filepath.Join(base, "recording-jobs"), RecordingsRoot: filepath.Join(base, "recordings"), MaxJobs: 1024, JobReserveFreeBytes: 64 << 20}
-	for _, path := range []string{opts.JobsRoot, opts.RecordingsRoot} {
+	paths := []string{opts.JobsRoot}
+	if requireRecordings {
+		paths = append(paths, opts.RecordingsRoot)
+	}
+	for _, path := range paths {
 		if q.ancestors(path, true) != nil || q.owned(path, os.ModeDir, true) != nil {
 			return RecordingWorkerOptions{}, ErrRecordingWorker
 		}

@@ -648,3 +648,18 @@ Source race checks pass for allocation-only lookup, storage failure, duplicate/
 malformed/rebound/linked files, changed claims, late changes and unchanged actual
 claim1 bytes. This is source/filesystem qualification only. Read-only status/drain,
 normal manager integration and native/installed worker gates remain pending.
+
+## Saved status and terminal-drain observation
+
+Source status now distinguishes saved job/claim/allocation/readiness/result facts,
+header availability and the writer lock. It returns no raw frames or exceptions.
+The observed prefix does not certify full raw integrity or current process health.
+Missing/moved headers remain observed absence with the original receipt retained;
+legacy missing allocations remain unknown. Storage failures remain inspectable.
+
+Bounded drain polling observes a closed saved finished capture/exit receipt with
+an available header. Incomplete, missing and timed-out evidence remain distinct.
+This grants no native removal permission and sends no signal or lifecycle action;
+the caller still verifies its exact terminal/native and journal bindings. Source
+race/vet checks pass with inert worker/native seams. Normal manager, native,
+retention, public API/UI and installed-worker upgrade gates remain pending.
