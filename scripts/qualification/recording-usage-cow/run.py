@@ -36,9 +36,9 @@ VM_DEADLINE_SECONDS = 420
 SUPERVISOR_DEADLINE_SECONDS = 600
 PREDECESSOR = Path('/tmp/omabit-issues-recording-vm-07/root.qcow2')
 PREDECESSOR_SHA = 'e3a728a4b1dcc090a10560481dd8414e801c4ef12632164fb05e0f4db5d022d9'
-BOOT_SHA = 'unfrozen-usage-boot'
-BOOT_SOURCE_SHA = 'unfrozen-usage-source'
-BOOT_SOURCE_COMMIT = 'unfrozen-usage-commit'
+BOOT_SHA = 'ced164ae56c3ee51dd7675af92431dedbf2def7975c1689d38e4522219f66819'
+BOOT_SOURCE_SHA = 'cbd497447962bf8ca949288bc602c87d5f4eadf6e4812517a2f90878eccccfb3'
+BOOT_SOURCE_COMMIT = 'e0af21ae13dc781b4e299b1afd48476fb5d41a54'
 BOOT_SOURCE_PATH = 'scripts/qualification/recording-usage-cow/init/main.go'
 
 

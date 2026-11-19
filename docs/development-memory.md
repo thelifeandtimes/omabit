@@ -13230,3 +13230,22 @@ is separately frozen. The four product/helper inputs stay at f37b32d4; the known
 standalone-PID1 exception permits only its separately verified source/binary/
 clean-VCS correction. New boot, fresh320MiB admission and full native measurement
 remain required. No unique VM, recording, SQL/history or existing ship changes.
+
+## M726 — Corrected allocation boot pins and storage admission pass (2026-11-19)
+
+Build only the corrected standalone PID1 from clean
+e0af21ae13dc781b4e299b1afd48476fb5d41a54; binary SHA
+ced164ae56c3ee51dd7675af92431dedbf2def7975c1689d38e4522219f66819,
+source cbd497447962bf8ca949288bc602c87d5f4eadf6e4812517a2f90878eccccfb3.
+Pin and exercise the actual boot hash/source/clean-VCS verification. All10 inert
+guards pass(0.043s). Verify every other original f37b32d4 tracked input still
+matches or is an explicit documentation/Python harness change; all four runtime/
+helper binaries remain frozen unchanged. This uses only the existing separately
+pinned standalone-PID1 exception, not an exemption for product or embedded inputs.
+
+The full320MiB reservation fits:51,179,536,384charged plus335,544,320 is
+51,515,080,704, below51,539,607,552. Actual launch/worker admission must recheck;
+kernel128MiB root and bounded input/log limits retain the full capsule boundary.
+No guest has started yet and no native measurement pass is claimed. Current
+production, preserved DEV, existing/protected/tmux ships, successful/failed whole
+fixtures and original recording07 backing remain unchanged.

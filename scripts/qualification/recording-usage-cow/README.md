@@ -1,7 +1,12 @@
 # Closed native recording allocation observation
 
-Prepared, not native-qualified. Boot pins deliberately refuse real launch until
-the standalone PID1 and matching current product/helper artifacts are frozen.
+Prepared, not native-qualified. Matching product/helper artifacts are frozen at
+f37b32d4f60d5b2e915ad86186caa12c5b853bc2. The corrected standalone PID1 is
+separately frozen at e0af21ae13dc781b4e299b1afd48476fb5d41a54, binary SHA
+ced164ae56c3ee51dd7675af92431dedbf2def7975c1689d38e4522219f66819,
+source SHA cbd497447962bf8ca949288bc602c87d5f4eadf6e4812517a2f90878eccccfb3.
+Actual hash/source/clean-VCS verification and ten inert guards pass. Fresh
+admission and native execution still gate qualification.
 
 This case uses only the exact successful ended recording VM07 root, SHA
 e3a728a4b1dcc090a10560481dd8414e801c4ef12632164fb05e0f4db5d022d9,

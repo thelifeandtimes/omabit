@@ -530,3 +530,8 @@ PID1's override filename to sort after inherited recording-pilot.conf, preservin
 the original. Ten inert guards pass; the four artifacts remain unchanged. The
 separate corrected boot freeze,320MiB admission and native allocation case are
 pending. No installed deployment or unique evidence is changed.
+
+M726 pins the separately frozen corrected e0af21ae PID1 and verifies its actual
+binary/source/clean provenance, with all four f37b32d4 tools unchanged. Ten inert
+guards pass. Full320MiB admission fits under48GiB; actual launch/worker rechecks
+and native measurement remain required. No guest starts at this checkpoint.
