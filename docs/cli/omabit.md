@@ -8,7 +8,7 @@ Global options precede the command. Command options follow its positional argume
 
 ```text
 Usage: omabit [--format text] [--config-dir DIR] [--state-dir DIR] COMMAND
-Commands: operations, call, mcp, app-preflight, ship-routes, ship-routes-configure, desk-review-frontend, desk-plan-frontend, desk-upload-frontend, desk-receiver-status, desk-review-install, desk-plan-install, desk-install, desk-review-adoption, desk-plan-adoption, desk-adopt, desk-review-release, desk-plan-release, desk-release, desk-app-status, desk-review-commit, desk-plan-commit, desk-commit, desk-plan-stage, desk-stage, desk-stage-status, desk-stage-discard, desk-source-status, desk-settings, desk-list, desk-inspect, desk-plan-create, desk-create, desk-operation, desk-reconcile, setup, setup-status, service-upgrade-status, service-upgrade --expected-runner-id ID --target-sha256 SHA --acknowledge-host-changes, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID
+Commands: operations, call, mcp, recording-export, app-preflight, ship-routes, ship-routes-configure, desk-review-frontend, desk-plan-frontend, desk-upload-frontend, desk-receiver-status, desk-review-install, desk-plan-install, desk-install, desk-review-adoption, desk-plan-adoption, desk-adopt, desk-review-release, desk-plan-release, desk-release, desk-app-status, desk-review-commit, desk-plan-commit, desk-commit, desk-plan-stage, desk-stage, desk-stage-status, desk-stage-discard, desk-source-status, desk-settings, desk-list, desk-inspect, desk-plan-create, desk-create, desk-operation, desk-reconcile, setup, setup-status, service-upgrade-status, service-upgrade --expected-runner-id ID --target-sha256 SHA --acknowledge-host-changes, remote-setup --host SSH_ALIAS [--name NAME], remote-setup-start --host SSH_ALIAS [--name NAME], remote-setup-prepare --host SSH_ALIAS, remote-setup-status [--id ID], remote-setup-run --id ID, theme-preview, theme-status, theme-sync, theme-auto NAME --expected-ship-id ID --enabled=true|false, theme-publish NAME --expected-ship-id ID, theme-migrate [--apply --expected-digest DIGEST] [--legacy-dir DIR], copy-code --runner NAME --expected-runner-id ID --instance INSTANCE --revision N --container-id FULL_ID
 ```
 
 ## app-preflight
@@ -436,6 +436,21 @@ Actual named-client/provider connection qualification remains separate work.
 Usage: omabit operations
 Read the offline shared operation catalog, inferred JSON schemas, effects, target
 bindings, replay rules and explicit legacy CLI exclusions. Creates no state.
+```
+
+## recording-export
+
+```text
+Usage: omabit [--config-dir DIR] recording-export --runner NAME --expected-runner-id ID --instance INSTANCE --job JOB_ID --job-sha256 SHA256 --original --include-private-data --output /absolute/private/new.zip
+
+Export a closed saved recording job through the shared manifest/part operations.
+The ZIP preserves exact metadata and encoded segments, original timing/streams,
+and explicit verified-prefix/gap coverage. Original output may contain private
+values and terminal controls; inspect it as data before sharing. No publication
+or runtime completeness is implied. Redacted export packaging remains separate.
+The existing output directory must be physical, owned by you and mode0700.
+The final file is mode0600 and never overwritten. Failure retains .partial output;
+it does not substitute another session, retry capture or change recording policy.
 ```
 
 ## remote-setup

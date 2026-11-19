@@ -943,5 +943,5 @@ local destination paths. The shared writer has no filesystem access itself.
 A separate searchable timestamp index and complete redacted bundle remain open;
 the existing bounded derived redacted windows remain available privately. Review
 exports before sharing. No persistence/schema65 change occurs. Matching clean
-artifacts, generated reference and a new native export rehearsal remain required;
+artifacts and all180 generated reference entries now pass their [build/reference gate](diagnostics/2026-11-19-recording-original-export-artifacts.json). A new native export rehearsal remains required;
 the earlier allocation-only/native recording passes do not qualify this code.

@@ -13384,3 +13384,27 @@ capture/control/history/intent preservation and previous observation-only rules
 remain. Eleven inert Python guards and the pure Go VM guard pass; matching clean
 builds, admission and actual execution remain pending. The separately frozen
 PID1 source is unchanged. No installed namespace, production or existing ship changes.
+
+## M733 — Freeze matching original-export tools and180 help entries (2026-11-19)
+
+The larger cache classification finds insufficient eligible files and refuses
+without eviction. Classify the available744MiB subset instead:822 hash/inode/
+archive-verified regenerable files free781,938,688bytes; all174 named artifacts,
+whole images and compact/source-check evidence pins remain exact. Do not retire
+any original VM or use a unique-disk permission for this cache work.
+
+Freeze all four CGO-disabled, trimpath/stripped tools at clean3fc6eab3, checking
+3978 tracked input hashes before/after, actual clean product VCS and the helper's
+explicit source identity. Its host guard passes; actual native execution skips.
+The single consistent build mode uses an896MiB admission and monitored source
+scopes. Peak fast estimate50,960,588,800 and full final charge50,843,561,984 stay
+below51,539,607,552. No compiler reservation or cap interruption occurs.
+
+Under a separate64MiB admission, build the exact source/kind/required-export-bound
+read-only reader and regenerate/check all180 help entries from these tools in
+networkless private HOME scopes. Both pass. The actual updated command is now in
+the generated reference, with explicit internal-worker exclusion in discovery.
+The [artifact record](diagnostics/2026-11-19-recording-original-export-artifacts.json)
+keeps frozen hashes and native requirements. The unchanged separately frozen
+PID1 may be reused; a fresh native export case, admission and preservation evidence
+remain required. No installed namespace, existing ship or production changes.

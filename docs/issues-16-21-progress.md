@@ -578,3 +578,11 @@ host guard directly. Focused vet passes and the post-check charge is below48GiB.
 The fixed native helper now requires actual CLI/SDK original manifests/parts and
 CLI ZIP byte comparisons for both retained recording sessions. Those native gates,
 matching clean builds, reference regeneration and admission remain pending.
+
+M733 freezes all four matching CGO-disabled tools at clean3fc6eab3, with3978 inputs,
+actual clean product/helper source pins and passing host refusal guard. A single
+consistent build mode stays inside its896MiB reservation and48GiB cap after
+classified regenerable cache consolidation. Source-bound read-only reader and
+all180 networkless generated help entries pass under a64MiB allowance. See the
+[artifact record](diagnostics/2026-11-19-recording-original-export-artifacts.json).
+The later native original-export assertions remain pending; no installed changes.
