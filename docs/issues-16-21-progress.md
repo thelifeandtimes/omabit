@@ -697,3 +697,13 @@ pin and original/reference/failure VM. [Pins and storage](diagnostics/2026-11-19
 record the scope. Current native indexed/redacted exports remain pending fresh
 admission and independent verification. Installed/manual DEV and production stay
 unchanged.
+
+
+M742 preserves the failed whole native derived-export COW04. Guest assertions
+report success, but the large proof copied into serial status is split by
+journald and the host parser fails; independent verification/retry remain open.
+The corrected harness emits only a compact required-gate summary, retaining the
+complete separate private proof and its hash. Twelve inert guards pass, including
+the actual oversized-proof regression. Matching4c0b16e Go tools/PID1 remain frozen;
+only allowed Python/docs changed. No production, installed DEV or existing ships
+are changed.

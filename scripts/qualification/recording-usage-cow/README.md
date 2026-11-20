@@ -94,3 +94,11 @@ coverage. Private proof retains archives, queries and hashes for independent
 read-only decoding. This adds no capture, policy, retention or runtime action.
 Matching current artifacts and a fresh native case are required before claiming
 these new checks pass. Existing native cases remain pinned to their older tools.
+
+
+The first current derived-export COW04 fails as a whole despite reported guest
+assertion success: the entire private proof made the serial JSON exceed journald
+line framing. Preserve that failed image/input/proof. Corrected status includes
+only an allowlisted boolean/count summary and proof SHA-256. All complete private
+proof bytes remain on disk for independent reading; twelve inert guards include
+the oversized-proof regression. Fresh retry and verification remain required.

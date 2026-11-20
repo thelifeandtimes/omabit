@@ -118,6 +118,22 @@ class UsageGuards(unittest.TestCase):
                 with self.assertRaises(RuntimeError):
                     guest.guard()
 
+    def test_large_private_proof_never_enters_serial_status(self):
+        guest = module('guest')
+        proof = {'passed': True, **{key: True for key in guest.PROOF_GATES}, 'original_exports': [{'private_archive': 'x'*131072}, {'private_query': 'y'*131072}]}
+        summary = guest.product_summary(proof)
+        self.assertLess(len(json.dumps(summary)), 2048)
+        self.assertNotIn('original_exports', summary)
+        self.assertEqual(summary['closed_jobs'], 2)
+        self.assertTrue(summary['complete_private_proof_retained'])
+        self.assertEqual(len(proof['original_exports'][0]['private_archive']), 131072)
+        for key in ('passed', *guest.PROOF_GATES):
+            with self.assertRaises(RuntimeError):
+                guest.product_summary({**proof, key: False})
+        for value in (None, [], [{}], [{}, {}, {}]):
+            with self.assertRaises(RuntimeError):
+                guest.product_summary({**proof, 'original_exports': value})
+
     def test_sqlite_readers_close_and_preserve_rows_on_refusal(self):
         guest = module('guest'); connect = sqlite3.connect
         with tempfile.TemporaryDirectory() as directory:

@@ -21,6 +21,16 @@ PIN = 'e3a728a4b1dcc090a10560481dd8414e801c4ef12632164fb05e0f4db5d022d9'
 HELPER_SECONDS = 150
 HELPER_PROCESS_SECONDS = 180
 report = {'format': 1, 'passed': False, 'scope': 'closed native recording allocation on one fresh offline COW overlay; complete original/indexed exports, shared timing query and derived redacted manifest/parts/ZIP; no runtime launch/control write, installed upgrade, DEV or production qualification'}
+PROOF_GATES = ('original_recording_bytes_unchanged', 'policy_head_unchanged', 'actual_cli_and_stdio_measurements', 'actual_original_export_manifest_part_cli_mcp', 'actual_original_zip_matches_files', 'actual_indexed_zip_preserves_originals', 'actual_timing_query_cli_mcp', 'actual_redacted_manifest_part_cli_mcp', 'actual_redacted_cli_zip_matches_parts')
+
+
+def product_summary(value):
+    # Never serialize private archives or timing rows through journald/serial.
+    # Its line framing may split a large JSON object. The exact complete proof
+    # remains on the guest disk and is independently read with its SHA-256.
+    if value.get('passed') is not True or not all(value.get(key) is True for key in PROOF_GATES) or not isinstance(value.get('original_exports'), list) or len(value['original_exports']) != 2:
+        raise RuntimeError('not every native allocation/read gate passed')
+    return {'passed': True, **{key: True for key in PROOF_GATES}, 'closed_jobs': 2, 'complete_private_proof_retained': True}
 
 
 def sha(path):
@@ -140,10 +150,9 @@ def main():
     report['helper_exit'] = helper.returncode
     proof = Path('/home/review/omabit-recording-usage-proof/proof.json')
     value = json.loads(proof.read_text())
-    if value.get('passed') is not True or not all(value.get(key) is True for key in ('original_recording_bytes_unchanged', 'policy_head_unchanged', 'actual_cli_and_stdio_measurements', 'actual_original_export_manifest_part_cli_mcp', 'actual_original_zip_matches_files', 'actual_indexed_zip_preserves_originals', 'actual_timing_query_cli_mcp', 'actual_redacted_manifest_part_cli_mcp', 'actual_redacted_cli_zip_matches_parts')):
-        raise RuntimeError('not every native allocation/read gate passed')
+    product = product_summary(value)
     observation = verify_preserved_rows(before, saved_rows())
-    report.update(product=value, proof_sha256=sha(proof), original_rows_preserved_except_one_observation=True, observation_refresh=observation, passed=True)
+    report.update(product=product, proof_sha256=sha(proof), original_rows_preserved_except_one_observation=True, observation_refresh=observation, passed=True)
 
 
 if __name__ == '__main__':

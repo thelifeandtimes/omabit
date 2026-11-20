@@ -13689,3 +13689,21 @@ source and whole reference/failure VM. The matching build uses a measured512MiB
 reserve and monitoring; preparation uses64MiB. All final scopes end. Fresh native
 admission/execution and independent verification still gate the new exports.
 No production, existing ship, installed DEV or manual-review state changes.
+
+
+## M742 — Preserve failed derived-export status framing and require compact retry (2026-11-19)
+
+The4c0b16e guest reports every new native assertion passed, but the whole COW04
+case fails: copying the entire private proof into serial status exceeds journald
+line framing, so the host parser raises unterminated JSON. Do not promote the
+fragment's passed flag into native qualification. Both exact scopes end; retain
+the whole failed root/input and private proof for independent reading. See
+[failure and pins](diagnostics/2026-11-19-recording-derived-serial-failure.json).
+
+The guest now allowlists only required booleans/count and complete-proof-retained
+status. Exact complete archives/queries stay in the separate private proof with
+SHA-256; no proof bytes are discarded. Twelve inert Python guards pass, including
+an oversized private-proof regression and refusal for every missing/false gate or
+wrong job count. Product/helper Go and the separately frozen PID1 are unchanged;
+a fresh measured native retry plus independent verification is still required.
+Production, existing ships and installed/manual-review DEV stay unchanged.
