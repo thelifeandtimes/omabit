@@ -1,6 +1,6 @@
 # Issues16–21: implementation boundaries and next gates
 
-Status at M778,2026-11-20. These are development changes on release/0.5.0
+Status at M779,2026-11-20. These are development changes on release/0.5.0
 under the [finite release checklist](release-0.5.0-plan.md). Published stable artifacts and production deployments are unchanged.
 Source fixtures, a native test with frozen artifacts, installed upgrades and
 preserved DEV review are separate evidence. The detailed history and original
@@ -14,7 +14,8 @@ Matching native pressure (M775) and Grubbery recovery/two-version/state/restart
 with independent preservation (M776) now pass.
 Matching exact native Stop and independent receipt/pier/peer/history preservation
 also pass (M777). Closed original/indexed/redacted exports and independent raw
-frame/archive/SQL preservation pass (M778). Preserved DEV remains a gate;
+frame/archive/SQL preservation pass (M778). The preserved DEV manager and desktop
+update passes (M779); its fresh minimal app workflow remains a gate;
 earlier candidate passes retain their exact source identity. The table below
 preserves those completed milestones and the remaining feature boundaries.
 

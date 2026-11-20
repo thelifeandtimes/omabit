@@ -14609,3 +14609,44 @@ durable compressed original and metadata. The [retirement record](diagnostics/20
 retains the receipt hash and original pins. Full aggregate charge46,503,624,704bytes
 remains under48GiB. All original transition fixtures and manual DEV state remain.
 Preserved DEV, final release pins/checks/review and publication are still required.
+
+## M779 — Preserved DEV manager and matching desktop update pass (2026-11-20)
+
+After M774–M778 pass on the exact candidate, update only review040 under the
+user's DEV authorization. The original manual `review-zod` already has desired
+running, unknown observation and recovery-required with a stopped exit1 container.
+Preserve this state; do not repair, start or use that ship as a test fixture.
+
+The [DEV upgrade record](diagnostics/2026-11-20-preserved-dev050-upgrade.json)
+binds exact59d83aa helpers and schema59→65. Stop only management, retain complete
+offline state, old binaries and desktop preferences, install matching tools and
+start only management without resume-running. Verify all45 original non-instance
+tables, original configuration/intent/recovery/history, engine/container state,
+owner, access registry and pier object identity unchanged. The actual dedicated
+engine server reports29.9.2. The old backup remains in
+`/srv/dev/urbit-040/state/upgrade-050-20261120`.
+
+Two conservative backup guards exposed harness assumptions: the DEV parent is
+root-owned, so the first mkdir refused before mutation; the second attempt found
+original empty Docker-config directories after manager stop. Preserve those
+folders and continue the exact saved checkpoint with original binaries/runtime
+verified, rather than rerunning or resetting state. These are qualification-driver
+corrections; frozen product artifacts did not change.
+
+Complete UI staging retains the inner bundle, three helper hashes and skill pins,
+with only the isolated review wrapper/DEV button overlay. Normal rescan keeps the
+old keepLoaded service. A targeted DEV disable/enable destroys it, but Quickshell
+then reports File name case mismatch for newly introduced filenames at the cached
+old path. Move the complete candidate atomically to the fresh versioned directory
+`~/.config/omarchy/plugins/thelifeandtimes.omabit.review040-v050`, keeping the same
+review040 plugin ID, IPC, profile and state. It loads0.5.0 with the exact matching
+helper paths and selected original runner. No shell restart occurs; the only
+normalization added by the shell toggle (an empty tray key) is reverted under an
+exact-value guard, preserving original shell configuration bytes. The original
+plugin tree remains outside the watched directory in the upgrade evidence root.
+
+This supersedes M575's installed-version/path statement only. Manual state remains
+protected. A new private declared-API client was built after every VM ended under
+a2GiB scratch admission; no release artifact was rebuilt. Fresh app creation,
+scoped app-policy decisions and workflow evidence are still pending. Production,
+protected ships and the earlier DEV namespace remain excluded.
