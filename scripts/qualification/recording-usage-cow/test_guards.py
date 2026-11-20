@@ -67,7 +67,7 @@ class UsageGuards(unittest.TestCase):
         host = module('run')
         for path in ('internal/service/legacy-inventory.json', 'internal/managed/issues_recording_usage_vm_test.go', 'internal/runtimequalify/recording_usage_linux.go', 'go.mod', 'go.sum', 'plugins/omabit/Recordings.js', 'docs/example.go', host.BOOT_SOURCE_PATH+'/../other.go'):
             self.assertFalse(host.artifact_change_allowed(path), path)
-        for path in ('docs/diagnostics/result.json', host.BOOT_SOURCE_PATH, 'scripts/qualification/recording-usage-cow/guest.py'):
+        for path in ('docs/diagnostics/result.json', host.BOOT_SOURCE_PATH, 'scripts/qualification/recording-usage-cow/guest.py', 'scripts/qualification/recording-usage-cow/status.py'):
             self.assertTrue(host.artifact_change_allowed(path), path)
 
     def test_wrong_boot_bytes_refuse_before_provenance_or_admission(self):
@@ -133,6 +133,53 @@ class UsageGuards(unittest.TestCase):
         for value in (None, [], [{}], [{}, {}, {}]):
             with self.assertRaises(RuntimeError):
                 guest.product_summary({**proof, 'original_exports': value})
+
+    def test_entire_status_is_bounded_and_contains_no_private_report(self):
+        guest, status = module('guest'), module('status')
+        proof = {'passed': True, **{key: True for key in status.GATES}, 'original_exports': [{'private_archive': 'x'*131072}, {'private_query': 'y'*131072}]}
+        report = {'passed': True, 'source_commit': 'a'*40, 'proof_sha256': 'b'*64, 'helper_exit': 0, 'original_rows_preserved_except_one_observation': True, 'product': guest.product_summary(proof), 'inputs': {'candidate': {'build_info': 'private-input-marker'*131072}}, 'error': 'private-error-marker'*131072}
+        raw = status.serialize(report)
+        self.assertLessEqual(len(raw.encode('ascii')), status.MAX_BYTES)
+        self.assertLess(len(('OMABIT_RECORDING_USAGE_VM_RESULT '+raw+'\n').encode('ascii')), 4096)
+        self.assertTrue(status.parse(raw, 'a'*40)['passed'])
+        self.assertNotIn('private-', raw)
+        self.assertNotIn('inputs', json.loads(raw))
+        self.assertGreater(len(report['inputs']['candidate']['build_info']), 1<<20)
+        for key in ('passed', *status.GATES):
+            changed = copy.deepcopy(report)
+            if key == 'passed': changed[key] = False
+            else: changed['product'][key] = False
+            self.assertFalse(status.parse(status.serialize(changed), 'a'*40)['passed'])
+        for key, value in (('helper_exit', False), ('helper_exit', 1), ('proof_sha256', 'bad'), ('source_commit', 'private-source-marker'*131072), ('original_rows_preserved_except_one_observation', False)):
+            changed = {**report, key: value}
+            self.assertFalse(status.parse(status.serialize(changed), 'a'*40)['passed'])
+
+    def test_compact_parser_refuses_legacy_foreign_incomplete_or_extra_fields(self):
+        status = module('status')
+        report = {'passed': True, 'source_commit': 'a'*40, 'proof_sha256': 'b'*64, 'helper_exit': 0, 'original_rows_preserved_except_one_observation': True, 'product': {'passed': True, 'closed_jobs': 2, 'complete_private_proof_retained': True, **{key: True for key in status.GATES}}}
+        valid = status.parse(status.serialize(report), 'a'*40)
+        for change in ({'kind': 'legacy'}, {'passed': 1}, {'source_commit': 'c'*40}, {'proof_sha256': ''}, {'helper_exit': False}, {'original_rows_preserved_except_one_observation': False}, {'product': {}}, {'private_report': 'never-accept'}, {'error': 'unverified'}):
+            with self.assertRaises(RuntimeError):
+                status.parse(json.dumps({**valid, **change}), 'a'*40)
+        with self.assertRaises(RuntimeError):
+            status.parse(json.dumps(report), 'a'*40)
+        with self.assertRaises(RuntimeError):
+            status.parse('x'*(status.MAX_BYTES+1), 'a'*40)
+        with self.assertRaises((ValueError, RuntimeError)):
+            status.parse(status.serialize(report)[:409], 'a'*40)
+
+    def test_console_reader_refuses_duplicate_or_fragmented_results(self):
+        status = module('status')
+        report = {'passed': True, 'source_commit': 'a'*40, 'proof_sha256': 'b'*64, 'helper_exit': 0, 'original_rows_preserved_except_one_observation': True, 'product': {'passed': True, 'closed_jobs': 2, 'complete_private_proof_retained': True, **{key: True for key in status.GATES}}}
+        raw = status.serialize(report)
+        marker = 'OMABIT_RECORDING_USAGE_VM_RESULT '
+        line = '[12.0] python3[245]: '+marker+raw+'\n'
+        self.assertTrue(status.read_log('unrelated\n'+line+'other output\n', 'a'*40)['passed'])
+        self.assertIsNone(status.read_log('no result', 'a'*40))
+        with self.assertRaises(RuntimeError):
+            status.read_log(line+line, 'a'*40)
+        with self.assertRaises((ValueError, RuntimeError)):
+            status.read_log(marker+raw[:200]+'\n[other writer]: '+raw[200:], 'a'*40)
 
     def test_sqlite_readers_close_and_preserve_rows_on_refusal(self):
         guest = module('guest'); connect = sqlite3.connect

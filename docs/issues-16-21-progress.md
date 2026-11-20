@@ -757,3 +757,12 @@ and check in a private networkless sandbox, completing the explicit new export
 option/reference correction. [Pins](diagnostics/2026-11-19-recording-output-coverage-artifacts.json)
 record50,020,380,672-byte full charge under48GiB. Fresh native output-summary and
 independent original-frame verification remain pending; no installed state changed.
+
+
+M750 preserves the failed whole output-coverage COW06 and corrects fixture status
+framing. The prior fix bounded a subsection; full input metadata still exceeded
+console framing. A shared protocol now bounds the entire wire message to2048bytes
+and emits it atomically below4096bytes; all complete reports/proof stay on disk.
+Fifteen inert guards pass for whole-message/private-data and strict log parsing.
+Matching5344c5c Go tools/PID1 stay unchanged. Fresh native/independent verification
+remains open; no production, installed DEV or existing ship is changed.

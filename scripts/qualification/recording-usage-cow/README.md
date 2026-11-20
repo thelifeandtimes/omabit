@@ -110,3 +110,13 @@ latest wall times from every exact indexed original, independent of match filter
 The native helper retains these responses for independent raw-frame comparison.
 Twelve inert guards pass; matching new Go products/helper and a fresh native case
 are still required. The separately frozen standalone PID1 remains unchanged.
+
+
+The first output-coverage COW06 fails whole-case serial framing: bounding only
+the product subsection left full input/build metadata in the console message.
+The shared `status.py` protocol now bounds the entire allowlisted wire message to
+2048bytes and uses one write below4096bytes. Full report/inputs/private proof stay
+on disk. Host parsing refuses wrong/extra/missing/duplicate/fragmented success and
+saves process/backing completion before parsing. Fifteen inert guards pass,
+including multi-MiB full-report fixtures. The frozen5344c5c Go products/helper and
+standalone PID1 are unchanged; fresh retry/independent verification remain gates.

@@ -13864,3 +13864,27 @@ full post-preparation charge50,020,380,672. All source/build/preparation scopes
 end. Fresh native output-summary/independent-frame verification remains required;
 4c0b16e's earlier export evidence is not transferred to these later tools. No
 production, existing ship, installed DEV or manual-review state changes.
+
+
+## M750 — Bound the entire native wire status, preserve full private reports (2026-11-19)
+
+The first5344c5c native output-summary COW06 remains failed as a whole: its full
+status is interrupted/truncated at column4088 and the host parser refuses. M742
+bounded only the product-proof subsection; input/build metadata still went to
+serial. Preserve the ended root/input and independently read complete disk
+reports before evaluating assertions. Do not promote any console fragment.
+
+A shared pure Python protocol now emits only exact source/proof hashes, bounded
+helper exit and allowlisted boolean gates, with an enforced2048-byte maximum.
+One os.write emits the entire marker under4096bytes. Full inputs, private proof,
+full report and detailed errors remain on disk; no evidence is discarded. Host
+parsing requires the exact kind/source/proof/gates and refuses legacy, foreign,
+incomplete, extra-field, duplicate or fragmented success. Actual process/backing
+completion is saved before result parsing. Stage/hash the new status module with
+the explicit Python harness allowlist; Go products/helper/PID1 remain frozen.
+
+Fifteen inert guards pass, including multiple-MiB private input/error fixtures,
+whole-message bounds, false/missing gates, typed values and real log framing.
+See [failure and correction](diagnostics/2026-11-19-recording-output-status-failure.json).
+Independent COW06 proof reading and a fresh native retry are still required.
+All production/manual DEV/user-ship exclusions remain; no installed change.

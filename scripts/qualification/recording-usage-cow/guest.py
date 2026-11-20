@@ -21,7 +21,10 @@ PIN = 'e3a728a4b1dcc090a10560481dd8414e801c4ef12632164fb05e0f4db5d022d9'
 HELPER_SECONDS = 150
 HELPER_PROCESS_SECONDS = 180
 report = {'format': 1, 'passed': False, 'scope': 'closed native recording allocation on one fresh offline COW overlay; complete original/indexed exports, shared timing query and derived redacted manifest/parts/ZIP; no runtime launch/control write, installed upgrade, DEV or production qualification'}
-PROOF_GATES = ('original_recording_bytes_unchanged', 'policy_head_unchanged', 'actual_cli_and_stdio_measurements', 'actual_original_export_manifest_part_cli_mcp', 'actual_original_zip_matches_files', 'actual_indexed_zip_preserves_originals', 'actual_timing_query_cli_mcp', 'actual_retained_output_coverage_cli_mcp', 'actual_redacted_manifest_part_cli_mcp', 'actual_redacted_cli_zip_matches_parts')
+_status_spec = importlib.util.spec_from_file_location('recording_usage_status', Path(__file__).with_name('status.py'))
+status = importlib.util.module_from_spec(_status_spec)
+_status_spec.loader.exec_module(status)
+PROOF_GATES = status.GATES
 
 
 def product_summary(value):
@@ -166,7 +169,9 @@ if __name__ == '__main__':
                 (O/'result.json').write_text(json.dumps(report, indent=2)+'\n')
             except OSError as error:
                 report['result_persistence_error'] = type(error).__name__
-        print('OMABIT_RECORDING_USAGE_VM_RESULT '+json.dumps(report, separators=(',', ':')), flush=True)
+        wire = ('OMABIT_RECORDING_USAGE_VM_RESULT '+status.serialize(report)+'\n').encode('ascii')
+        if len(wire) >= 4096 or os.write(1, wire) != len(wire):
+            raise RuntimeError('short/oversized compact status write')
         try:
             guard()
             subprocess.run(['fstrim', '/'], timeout=15, check=False)

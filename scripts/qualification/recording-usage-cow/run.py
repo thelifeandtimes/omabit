@@ -23,6 +23,9 @@ spec = importlib.util.spec_from_file_location('issues_budget', ROOT/'scripts/qua
 budget = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(budget)
 util = budget.util
+_status_spec = importlib.util.spec_from_file_location('recording_usage_status', Path(__file__).with_name('status.py'))
+status = importlib.util.module_from_spec(_status_spec)
+_status_spec.loader.exec_module(status)
 GIB = 1024**3
 # Share only the exact successful ended recording fixture read-only. Observe
 # copied closed capture storage through public CLI/stdio and independent stat.
@@ -54,6 +57,7 @@ def artifact_change_allowed(path):
     return path.startswith('docs/') or path in {
         'scripts/qualification/recording-usage-cow/run.py',
         'scripts/qualification/recording-usage-cow/guest.py',
+        'scripts/qualification/recording-usage-cow/status.py',
         'scripts/qualification/recording-usage-cow/test_guards.py',
         'scripts/qualification/recording-usage-cow/README.md',
     }
@@ -199,6 +203,7 @@ def main():
         if hashlib.sha256(gzip.decompress(target.read_bytes())).hexdigest()!=builds[name]['sha256']:
             raise RuntimeError('compressed exact input differs')
     shutil.copy2(Path(__file__).with_name('guest.py'), payload/'guest.py')
+    shutil.copy2(Path(__file__).with_name('status.py'), payload/'status.py')
     shutil.copy2(ROOT/'scripts/qualification/issues-recovery/guest.py', payload/'issues-common.py')
     scenario = {'kind': 'issues20-recording-usage-v1', 'development_snapshot': True,
                 'source_commit': commit, 'harness_commit':harness_commit,'original_schema': 65, 'target_schema': 65, 'candidate': builds,
@@ -256,7 +261,7 @@ def main():
     report = {'scenario': scenario, 'admission': admission, 'scratch_limit': scratch, 'root_logical_file_max': ROOT_FILE_MAX, 'host_build_reserve': HOST_BUILD_RESERVE, 'staged_allocated_bytes': staged_bytes,
               'host_mounts': 'readonly OS/QEMU/pristine base/fixed task-only predecessor plus fresh COW capsule; no host HOME/run/sockets',
               'network': 'none', 'command': command, 'memory_available_before': available,
-              'predecessor_root_sha256':PREDECESSOR_SHA, 'harness_sha256': {str(p.relative_to(ROOT)): util.digest(p) for p in (Path(__file__), Path(__file__).with_name('guest.py'), Path(__file__).with_name('init')/'main.go', ROOT/'scripts/qualification/issues-recovery/guest.py', ROOT/'internal/managed/issues_recording_usage_vm_test.go')}}
+              'predecessor_root_sha256':PREDECESSOR_SHA, 'harness_sha256': {str(p.relative_to(ROOT)): util.digest(p) for p in (Path(__file__), Path(__file__).with_name('guest.py'), Path(__file__).with_name('status.py'), Path(__file__).with_name('init')/'main.go', ROOT/'scripts/qualification/issues-recovery/guest.py', ROOT/'internal/managed/issues_recording_usage_vm_test.go')}}
 
     def save():
         (out/'host.json').write_text(json.dumps(report, indent=2)+'\n')
@@ -282,10 +287,14 @@ def main():
     if util.digest(PREDECESSOR) != PREDECESSOR_SHA:
         raise RuntimeError('original predecessor changed; retain all evidence')
     report['original_predecessor_unchanged'] = True
+    # Persist actual process/backing completion even if result framing refuses.
+    save()
     result = None
-    for line in (out/'serial.log').read_text(errors='replace').splitlines():
-        if 'OMABIT_RECORDING_USAGE_VM_RESULT ' in line:
-            result = json.loads(line.split('OMABIT_RECORDING_USAGE_VM_RESULT ', 1)[1])
+    try:
+        result = status.read_log((out/'serial.log').read_text(errors='replace'), commit)
+    except (ValueError, RuntimeError) as error:
+        report['result_parse_error'] = type(error).__name__+': '+str(error)
+        result = None
     report['after'] = budget.charge(0, cap)
     (out/'result.json').write_text(json.dumps(result, indent=2)+'\n')
     save()
