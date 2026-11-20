@@ -1,5 +1,17 @@
 # Stable-release upgrade requirement
 
+## Development: closed indexed/query/redacted native gate, schema65 unchanged
+
+Matching4c0b16e tools pass the [closed original/index/timing/redacted export case](diagnostics/2026-11-19-recording-derived-export-native.json)
+with actual CLI/stdio, independent raw-frame/archive/span/hash checks and exact
+original capture/control/table/intent preservation except one fresh observation.
+No persistent format, schema65, admission or lifecycle change is introduced.
+The failed earlier whole case is retained; its framing correction passes a fresh
+retry. This qualifies these closed development reads only. Active/retention/
+pressure, final previous-stable59 upgrade, plugin packaging and preserved DEV
+still require evidence; no production service change is implied.
+
+
 ## Development: original recording exports, schema65 unchanged
 
 The new original manifest/part reads and private CLI ZIP writer change no stored

@@ -13707,3 +13707,31 @@ an oversized private-proof regression and refusal for every missing/false gate o
 wrong job count. Product/helper Go and the separately frozen PID1 are unchanged;
 a fresh measured native retry plus independent verification is still required.
 Production, existing ships and installed/manual-review DEV stay unchanged.
+
+
+## M743 — Native indexed originals, timing queries and complete redacted exports pass (2026-11-19)
+
+Supersede M738–742's native deferrals only for closed copied recordings at matching
+4c0b16e tools, e0af standalone PID1 and d794846 corrected Python harness. Fresh
+COW05 passes every helper assertion and host completion without interruption;
+all actual CLI/official-SDK timing/manifest/part/ZIP operations pass. Both original
+encoded sessions remain byte-exact. Read-only kernel evidence exports fixed paths
+without executing source-disk code; independent Python decoding checks170/32 raw
+frames against every index offset/length/time/sequence/chain, query filters/pages/
+context, all derived ZIP/chunk hashes, exact escaped span bytes/ranges, omitted
+counts, technical manifest whitelist, exit aliases and final coverage hashes.
+See [native evidence and limits](diagnostics/2026-11-19-recording-derived-export-native.json).
+
+Both separately copied SQL databases quick_check; every original row/control/head,
+stopped intent, recording and backing/input remains exact except the one allowed
+fresh observed_at and revision75→76. Independently read the failed COW04 proof too:
+all data/assertions pass and complete redacted manifests match across both copied
+boots. Its original whole-case status remains failed due to serial framing; keep
+the full failure root/input/evidence. The fresh retry supplies the whole-case pass.
+
+A further137 older compiler archives alone reclaim67,194,880bytes with252 retained
+pins exact. Final full charge51,266,838,528 stays below48GiB. All six exact native/
+reader scopes end empty, and all matching artifact/case hashes recheck. Active
+capture/pressure/oldest coverage/retirement/other factories, static help choice
+visibility and final previous-stable/native-plugin/preserved DEV gates remain.
+This is no production, existing-ship or installed/manual-review state change.

@@ -1,0 +1,135 @@
+{
+  "format": 1,
+  "status": "passed-scoped-closed-native-derived-exports",
+  "candidate_source_commit": "4c0b16e9d81311269db57664aa6906187eb23cc1",
+  "harness_commit": "d794846aa4cb53589ea8555f204b7303d79c8ae9",
+  "schema": 65,
+  "boot_source_commit": "e0af21ae13dc781b4e299b1afd48476fb5d41a54",
+  "boot_sha256": "ced164ae56c3ee51dd7675af92431dedbf2def7975c1689d38e4522219f66819",
+  "scope": "fresh offline COW of exact stopped native recording07; closed original/indexed exports, shared timing query and complete derived redacted exports only",
+  "guest_and_host_passed": true,
+  "proof_sha256": "59d4dc2355453bec82422e4e0d2e7a37b5a45d7abf30e1d6b3e8a459761bd450",
+  "retained_root_sha256": "3b5c57124de27ea552bb69105dbae0acc337526907eb37a5a756a863446be653",
+  "retained_input_sha256": "152165628a577dfc92ab3544872becdd3cc953ba329795b89a96d684952f777c",
+  "independent_read_only_export_files": 12,
+  "independent_original_recording_files_compared": 4,
+  "independent_python_decoding": [
+    {
+      "derived": {
+        "index_rows_independently_match_raw_headers_offsets_lengths_times_chain": true,
+        "timing_query_pages_filters_context_match_independent_rows": true,
+        "source_and_index_sha256_verified": true,
+        "redacted_archive_and_all_chunk_hashes_verified": true,
+        "redacted_spans_preserve_original_offsets_lengths_and_escaped_octets": true,
+        "redacted_manifest_whitelist_and_exit_alias_verified": true,
+        "redacted_final_counts_hash_coverage_verified": true,
+        "redacted_windows": 3,
+        "omitted_stream_bytes": 48,
+        "exit_bindings_aliased": 1,
+        "indexed_zip_sha256": "695b985d3165f4e7dd366933a4ee9561918326201e593d7ff94d4318c9f4cf0b",
+        "redacted_zip_sha256": "9b958e0552cb671391b48fa3ac7b8826ad0a55e373e767fb15718a2a66daf23b"
+      },
+      "files_compared_to_original_read_only_backing": 2,
+      "parts_compared": 2,
+      "zip_sha256": "a1ac65836f3c117b453149ed039ec816e38011beb5497ca7130c8ddf98531a2f",
+      "zip_bytes": 13237,
+      "manifest_digest_verified": true,
+      "metadata_and_all_encoded_bytes_exact": true,
+      "zip_entries_mode0600": true,
+      "independent_python_decode": {
+        "frames": 170,
+        "stdout_bytes": 2812,
+        "stderr_bytes": 337,
+        "stdout_sha256": "d21644ccef51502d2215e3483dc764bf4f00e2b395ab344b8a8f5cac011274b4",
+        "stderr_sha256": "3290e36c5688c35ced7936610124de465367252b0788737c8a7b5a07824cf5ae",
+        "last_sequence": 170,
+        "last_digest": "9a37d3d380ccccc7a3f15a91671cb9f1df51d5ed5136cf8b3a09f679e5927342",
+        "tail": "snapshot-eof",
+        "exit_frames": 1,
+        "gap_frames": 0
+      },
+      "exact_prior_native07_counts_streams_timing_chain": true
+    },
+    {
+      "derived": {
+        "index_rows_independently_match_raw_headers_offsets_lengths_times_chain": true,
+        "timing_query_pages_filters_context_match_independent_rows": true,
+        "source_and_index_sha256_verified": true,
+        "redacted_archive_and_all_chunk_hashes_verified": true,
+        "redacted_spans_preserve_original_offsets_lengths_and_escaped_octets": true,
+        "redacted_manifest_whitelist_and_exit_alias_verified": true,
+        "redacted_final_counts_hash_coverage_verified": true,
+        "redacted_windows": 1,
+        "omitted_stream_bytes": 24,
+        "exit_bindings_aliased": 1,
+        "indexed_zip_sha256": "2b10c95b03f46ec4ba5f796bf4204566fb453a80f1724af6a3a19d5e36df8481",
+        "redacted_zip_sha256": "ab5174d1db2bab24d92646de5c4397d3fad57d5a438c14343caf5fcd5ab8b490"
+      },
+      "files_compared_to_original_read_only_backing": 2,
+      "parts_compared": 2,
+      "zip_sha256": "17aad0c0bff905807c1ec6ce809b8159b8434d699a84995736910b5c4e4f6464",
+      "zip_bytes": 5703,
+      "manifest_digest_verified": true,
+      "metadata_and_all_encoded_bytes_exact": true,
+      "zip_entries_mode0600": true,
+      "independent_python_decode": {
+        "frames": 32,
+        "stdout_bytes": 1031,
+        "stderr_bytes": 160,
+        "stdout_sha256": "4fc3af95aea0d8b1f8e94aece4328870b1018e0f538df5535405adfc01e86f96",
+        "stderr_sha256": "70a0e74122b8964de6bc133cf6e48e83f5c7ff0d96661013871481a636cd495a",
+        "last_sequence": 32,
+        "last_digest": "3f02fc47e48d7ec25dcc76864596b628bcbce207cc386157626cf2f8f365d2ee",
+        "tail": "snapshot-eof",
+        "exit_frames": 1,
+        "gap_frames": 0
+      },
+      "exact_prior_native07_counts_streams_timing_chain": true
+    }
+  ],
+  "original_rows_values_preserved_except_one_observation": true,
+  "observation_refresh": {
+    "fields": [
+      "public.observed_at",
+      "runtime_revision"
+    ],
+    "before_revision": 75,
+    "after_revision": 76,
+    "fresh_observation_only": true
+  },
+  "original_inputs_backings_recordings_and_control_heads_unchanged": true,
+  "both_copied_sqlite_quick_checks": "ok",
+  "actual_cli_and_official_sdk_timing_query_and_redacted_manifest_all_parts_passed": true,
+  "private_indexed_cli_zip_all_original_encoded_bytes_preserved": true,
+  "private_redacted_cli_zip_matches_exact_shared_parts": true,
+  "complete_redacted_manifests_stable_across_two_separate_copied_fixture_boots": true,
+  "earlier_case": {
+    "whole_status": "failed-serial-framing-preserved",
+    "independent_data_and_export_assertions_verified": true,
+    "scope": "its original whole-case failure remains; corrected fresh retry supplies the whole-case pass"
+  },
+  "verification_source_sha256": {
+    "omabit-issues-verify-recording-derived.py": "e1a054c5ac9bff2154e8c987be76f53131d2aa53f4f066b1f65361a436dd879b",
+    "omabit-issues-analyze-recording-derived05.py": "dc49fe51dd51bd018c00730a72d87edc91702896569fdf151eb348823e48a28e",
+    "omabit-issues-extract-recording-derived05.py": "8341870061da79b112e713d54b5c8fbc8f7244a20faaaa605b5cadb84f1db549"
+  },
+  "storage": {
+    "budget_bytes": 51539607552,
+    "retry_admission_bytes": 335544320,
+    "retry_initial_charge": 51165790208,
+    "retry_end_full_charge": 51228762112,
+    "independent_final_full_charge": 51266838528,
+    "additional_regenerable_compiler_archives_removed": 137,
+    "additional_compiler_bytes_reclaimed": 67194880,
+    "retained_pins_exact": 252
+  },
+  "all_six_exact_native_reader_scopes_inactive_empty": true,
+  "not_qualified": [
+    "active recording growth or full runtime coverage",
+    "pressure, oldest-output summary, age enforcement or retirement",
+    "other runtime factories/adoption",
+    "static help discoverability of the new choices; next source checkpoint",
+    "previous stable59 upgrade/final native plugin packaging/QML",
+    "installed/preserved DEV or production"
+  ]
+}

@@ -707,3 +707,18 @@ complete separate private proof and its hash. Twelve inert guards pass, includin
 the actual oversized-proof regression. Matching4c0b16e Go tools/PID1 remain frozen;
 only allowed Python/docs changed. No production, installed DEV or existing ships
 are changed.
+
+
+M743 qualifies matching4c0b16e indexed original exports, shared timing query and
+complete derived redacted manifest/parts/CLI ZIPs on both closed native sessions.
+The corrected fresh COW05 passes; independent read-only Python decoding verifies
+170/32 raw frames against every index/timing/digest and redacted byte-range/span/
+ZIP/coverage result. SQL/control/recording/intent preservation permits only the
+one fresh observation/revision75→76. Failed COW04 remains a whole-case failure;
+its retained proof independently passes and complete derived manifests are stable
+across the two copied boots. [Evidence](diagnostics/2026-11-19-recording-derived-export-native.json)
+records all six scopes ended and51,266,838,528-byte full charge under48GiB. Only
+regenerable compiler archives were additionally removed. Active/oldest/pressure/
+retirement/factories, static help visibility and final stable/plugin/preserved DEV
+qualification remain open. Production, installed DEV and existing ships stay
+untouched.

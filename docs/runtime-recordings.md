@@ -1090,3 +1090,12 @@ privacy assertion matched that retained digest. Distinct fixture hashes preserve
 both the omission check and technical metadata policy. Matching frozen/native
 export, generated reference and installed/preserved DEV qualification remain
 separate gates. Retention, pressure and other runtime factories are separate work.
+
+
+The matching4c0b16e [closed native indexed/query/redacted qualification](diagnostics/2026-11-19-recording-derived-export-native.json)
+now passes on a fresh read-only-backed stopped fixture. Independent raw-frame,
+archive/span/hash and SQL preservation checks pass; the earlier failed whole case
+is retained with its serial-framing diagnosis. This supersedes the matching native
+export deferral only for this exact closed-source scope. Static command-help
+choice visibility, active capture, oldest-output summary, pressure/retirement,
+other factories and installed/preserved DEV remain separate gates.

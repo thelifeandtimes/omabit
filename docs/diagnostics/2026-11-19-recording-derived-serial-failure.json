@@ -16,5 +16,11 @@
     "includes_large_private_proof_and_every_gate_refusal": true
   },
   "retry_pending": true,
-  "production_and_installed_dev_unchanged": true
+  "production_and_installed_dev_unchanged": true,
+  "follow_up": {
+    "independent_retained_proof_and_preservation_checks_passed": true,
+    "fresh_corrected_whole_retry_passed": true,
+    "evidence": "2026-11-19-recording-derived-export-native.json",
+    "original_whole_status_remains_failed": true
+  }
 }
