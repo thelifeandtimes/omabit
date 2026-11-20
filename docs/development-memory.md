@@ -14406,3 +14406,20 @@ This reclaims1,723,985,920bytes; full charge46,756,741,120bytes is below48GiB.
 Original app62/current65 and recording transition fixtures remain. Read-only DEV
 inventory separately confirms the expected review runner identity and schema59;
 no DEV update or ship action has occurred.
+
+## M772 — Explicit user pause and reboot-safe preservation (2026-11-20)
+
+The user paused to restart/update the machine. Gracefully power off only the
+active disposable stable-upgrade guest through its own QMP socket; its scope is
+inactive/empty and host exits0. No completed guest result exists, so the upgrade
+remains interrupted/unqualified. Retain its whole partial capsule and pause receipt;
+never resume that overlay. Production and both manual DEV installations are unchanged.
+
+Because /tmp is volatile tmpfs, move the generated Omabit temporary files into
+private durable evidence with a complete pre-move SHA256 manifest and verified
+transfers, then independently verify all50,638 retained regular files. Ended
+ephemeral sockets/pipes are listed separately. The full post-move charge is
+46,809,341,952bytes, below48GiB. The original app/recording fixtures, tools, source
+and compact evidence are preserved. [Resume checkpoint](release-0.5.0-resume.md)
+records exact paths, final artifacts, completed gates, interrupted upgrade and
+remaining work. Goal is paused at the user's request; no release is published.
