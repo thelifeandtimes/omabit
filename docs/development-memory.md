@@ -14337,3 +14337,25 @@ original ZIPs and those ZIPs' h1 content hashes. Removing only these reproducibl
 extracts reclaims1,893,773,312bytes; current/previous-stable declared dependencies,
 original ZIP archives and all frozen executables remain. Exact inventory and
 verification are retained in /tmp/omabit-050-handoff/module-cache-retirement-result.json.
+
+## M769 — Freeze0.5.0 assets and pass desktop/interface qualification (2026-11-20)
+
+Freeze product/UI/skill/packaging inputs at bdf43978e1d0ea858c3349b787e2ff8eaa1252ad.
+The isolated Go1.27.3 packager builds all six0.5.0 assets, schema65 and the unchanged
+pinned Recommended Apps pill. Every asset hash matches its manifest. Plain and
+qualification-tagged helpers carry that source identity; three separately pinned
+read-only inspectors refuse host execution. No artifact is rebuilt after pinning.
+
+Actual0.4.0→0.5.0 desktop activation in a private compositor preserves preferences
+and recovers from a synthetic failed candidate. Private Recordings UI, persistent
+Agent Help and old two-skill compatibility pass. Full selected service/MCP/guidance/
+CLI source-race suites pass, as do all180 networkless help entries. Separately,
+actual packaged CLI/collector and official-SDK stdio pass three lost-reply/exact
+saved-lookup/reopen cases against real managed API/SQLite with inert native
+observations. These distinct evidence types are recorded explicitly in
+[frozen validation](diagnostics/2026-11-20-release050-frozen-validation.json).
+
+Full release-head CI and matching native Stop/app/recording/upgrade cases remain
+gates. The final stable59→65 service rehearsal, preserved DEV and protected
+review/publication have not occurred. The existing production and DEV services,
+plugins, piers, preferences and history remain unchanged.
