@@ -390,6 +390,13 @@ func (s ProjectExpansion) NewMember(member projectnetwork.MemberRequest, runtime
 // Lifecycle uses the selected full container ID and an explicit request. A
 // successor is created only after a confirmed clean exit and exact pier check.
 func RunProjectShipAction(ctx context.Context, s *ProjectExpansion, id, action, operation string, save func(ProjectExpansion) error) error {
+	return runProjectShipActionWithDependencies(ctx, s, id, action, operation, save, defaults())
+}
+
+// Keep the ordinary entry on identical defaults. Private qualification callers
+// can control the timing of native reads without changing journal callbacks or
+// the ownership/process/pier/namespace checks inside the actual action.
+func runProjectShipActionWithDependencies(ctx context.Context, s *ProjectExpansion, id, action, operation string, save func(ProjectExpansion) error, d dependencies) error {
 	index := -1
 	for i, m := range s.Members {
 		if m.Member.InstanceID == id {
@@ -399,7 +406,7 @@ func RunProjectShipAction(ctx context.Context, s *ProjectExpansion, id, action, 
 	if index < 0 {
 		return errors.New("project member is missing")
 	}
-	e, snap, err := expansionSnapshot(ctx, *s)
+	e, snap, err := expansionSnapshotWithDependencies(ctx, *s, d)
 	if err != nil {
 		return err
 	}
@@ -444,7 +451,7 @@ func RunProjectShipAction(ctx context.Context, s *ProjectExpansion, id, action, 
 		defer cancel()
 		var after projectMemberSnapshot
 		for {
-			_, after, err = expansionSnapshot(deadline, *s)
+			_, after, err = expansionSnapshotWithDependencies(deadline, *s, d)
 			if err != nil {
 				return err
 			}

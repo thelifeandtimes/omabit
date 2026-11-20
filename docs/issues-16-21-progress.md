@@ -785,3 +785,12 @@ compact proof are retained. Four image/input files are removed with1481 exact
 retained pins, leaving50,090,250,240bytes charged below48GiB. Required full
 state/version fixtures remain. This follows the user's broader cleanup authority;
 no further per-test disposal permission is needed for documented unneeded cases.
+
+
+M753 prepares issue16's native transition gate with a private dependency-taking
+project action. Ordinary entry/defaults and strict contract/save checks remain;
+focused races and vet pass journal-before-single-signal, save/cancellation refusal,
+changed-process refusal, peer preservation and existing observer/recovery cases.
+No native timing hook is implemented yet. [Source evidence](diagnostics/2026-11-19-project-action-dependencies-source.json)
+records50,127,073,280bytes charged below48GiB. Matching native injection and final
+upgrade/installed gates remain pending; all installed/user state stays unchanged.

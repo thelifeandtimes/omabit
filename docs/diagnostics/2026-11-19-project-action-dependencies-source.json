@@ -1,0 +1,43 @@
+{
+  "format": 1,
+  "status": "passed-focused-source-native-fixture-pending",
+  "scope": "private dependency-taking project ship action; ordinary public entry supplies default dependencies",
+  "source_sha256": {
+    "internal/runtimequalify/project_expansion_linux.go": "44e14106cde2ed2807aea80db7ac37671cf8b353f8df513bc20c839ed88b49ff",
+    "internal/runtimequalify/project_action_dependencies_linux_test.go": "b0be0f11ddce4c8d24acb0a5253a96df2c906d0ea1d972e2e471a410cb4cbbe6"
+  },
+  "checks": [
+    {
+      "unit": "omabit-issues-project-action-dependencies-source-01.scope",
+      "exit": 0,
+      "output": "Running as unit: omabit-issues-project-action-dependencies-source-01.scope; invocation ID: 01248b2697c543dc85157bd202191cf8\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify\t4.930s\n",
+      "wall_seconds": 17.51
+    },
+    {
+      "unit": "omabit-issues-project-action-dependencies-source-01-vet.scope",
+      "exit": 0,
+      "output": "Running as unit: omabit-issues-project-action-dependencies-source-01-vet.scope; invocation ID: 5641462f3a564decb862dbaf041a7fc4\n",
+      "wall_seconds": 2.06
+    }
+  ],
+  "covered": [
+    "same private dependencies reach initial and post-Stop bracketed observations",
+    "persist exact operation/container/StartedAt stop intent before one SIGTERM",
+    "no signal after refused save or cancelled admission",
+    "changed process after the one signal refuses stopped completion and does not signal again",
+    "unselected peer bytes unchanged",
+    "existing first/second bracket, namespace-read transition and strict mismatch tests",
+    "existing exact retained Stop recovery remains observation-only"
+  ],
+  "persistent_format_or_public_api_changes": false,
+  "native_pause_or_signal_hook_implemented": false,
+  "pending": [
+    "guarded qualification-only native timing fixture",
+    "matching artifacts and actual native preliminary-to-bracket exit injection",
+    "final installed/non-destructive upgrade gates"
+  ],
+  "storage": {
+    "full_after": 50127073280,
+    "budget_bytes": 51539607552
+  }
+}

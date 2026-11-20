@@ -13944,3 +13944,26 @@ removed under the broader user authorization. All1481 retained pins match;
 Full charge50,090,250,240 stays below48GiB. Original app62/recording64 and current
 app65/recording65 full transition fixtures, every exact compact store/proof/source/
 binary/log, and all production/manual DEV/user-ship exclusions remain preserved.
+
+
+## M753 — Keep project-action dependencies through both native observation boundaries (2026-11-19)
+
+Prepare the remaining native issue16 transition gate by factoring the existing
+public action through a private dependency-taking implementation. The public
+entry supplies ordinary defaults; the same dependencies reach initial and
+post-Stop snapshots. All existing ownership/process/pier/namespace checks and
+manager save callbacks remain. No public override, fixture signal mechanism,
+format/schema65 or deployment change is introduced at this checkpoint.
+
+Focused races(4.930s) and vet pass. The test verifies serialized stop-dispatched
+intent binds the original operation/full container/StartedAt before the single
+signal, save refusal/cancellation dispatch nothing, a changed process after the
+signal refuses completion without repeating it, and unselected peer bytes stay
+exact. Existing real observer transition/mismatch and read-only retained recovery
+source tests also pass. [Evidence](diagnostics/2026-11-19-project-action-dependencies-source.json)
+records50,127,073,280-byte full post-charge under48GiB.
+
+A guarded qualification-only helper and matching native injection remain pending.
+Do not claim this source refactor proves the actual incident predicate or transfer
+5344c5c's older recording qualification to later artifacts. Production/manual DEV,
+existing/protected/tmux ships and needed transition fixtures remain untouched.
