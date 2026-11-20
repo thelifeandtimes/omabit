@@ -13769,3 +13769,47 @@ help or claim current parity from the earlier180-entry check. See
 [source status](diagnostics/2026-11-19-recording-export-help-source.json).
 The proposed old recording VM01 disposal is still pending; no unique image/input
 has been removed. Production/manual DEV and existing ships remain untouched.
+
+
+## M746 — Approved VM01 removal and broader test-archive retention authority (2026-11-19)
+
+The user specifically approved VM01 archive/input removal. Revalidate exact
+ordinary single-link file identity/hash and68 retained pins before/after, hold
+the one-runtime lock and verify exact scopes ended. Remove only the two approved
+files,807,198,720allocated bytes; preserve compact SQL/WAL/SHM/job/raw recording,
+commands/source/binaries and all protected full references. A DISPOSED marker
+prevents following old restoration instructions. Full charge50,460,041,216 stays
+below48GiB. This supersedes M744–745's pending decision only, not historical failure.
+
+The user then expressly permits removing other unneeded VM archives after noting
+lessons and retaining needed state/version transition fixtures. Routine classified
+obsolete test disks no longer need repeated permission. This does not authorize
+production, user ships, installed/manual-review DEV or removal of required test
+state. Preserve original pending app05, full successful app COW05, original
+recording07 and actual successful schema64 recording02 archive/input.
+
+## M747 — Classify nine superseded COWs with compact transition evidence (2026-11-19)
+
+Before removal, record lessons for failed app COW01–04: acknowledged creation
+without final observation; whole-context expiry during version two; missing
+read-only startup readiness retry after manager restart; and obsolete generated
+PID1 unit deadline despite helper success. Corrected app COW05 supplies the
+whole successful same-pier/two-version/state/restart/replay/final Stop evidence.
+All original failed statuses remain failed. Exact independently exported stores,
+headers/events, compiled source, receipts and logs remain pinned.
+
+For recording usage/export COW01–05, retain the observed_at/revision comparator
+failure, corrected allocation pass, original-export pass, oversized-serial-proof
+failure and corrected indexed/redacted whole pass. Exact SQL/WAL/SHM when present,
+raw original bytes, complete private ZIP/query/proof evidence, source and frozen
+binaries stay; recording07 remains the full backing for fresh read cases. The
+closed read COWs add no required state transition beyond retained compact stores
+and the immutable original; the app failed COWs are superseded by preserved
+original62 pending/current65 full app fixtures and compact intermediate63/65 stores.
+
+Classify only18 image/input files(795,537,408allocated bytes), verify1272 retained
+pins and all exact task scopes ended. This is classified, not yet removed. See
+[consolidation and lessons](diagnostics/2026-11-19-obsolete-test-vm-consolidation.json).
+The user's new authority supersedes prior whole-copy retention requirements for
+these exact obsolete cases only. Needed transition inputs/backings and production/
+manual DEV/user-ship exclusions remain. Do not silently promote any failed case.

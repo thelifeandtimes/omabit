@@ -729,3 +729,12 @@ original-only timing index, finite redaction/review and private partial-output
 rules. Formatting passes. Current matching CLI compilation and generated help
 remain required; the prior4c0b16e native evidence stays bound to its actual tools.
 The old VM01 proposal remains pending approval, with no disk removal performed.
+
+
+M746 completes the specifically authorized old VM01 removal(807,198,720allocated
+bytes) with68 exact retained pins. The user's broader permission permits routine
+removal of documented unneeded VM archives while preserving needed transition
+fixtures. M747 classifies nine superseded app/recording COWs(18 image/input files),
+recording each failure/pass lesson and retaining1272 compact evidence, source,
+binary and required full-transition pins. Removal of that batch is still pending
+execution; no production, installed DEV or existing-ship change is authorized.

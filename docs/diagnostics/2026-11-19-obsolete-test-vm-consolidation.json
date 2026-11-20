@@ -1,0 +1,105 @@
+{
+  "format": 1,
+  "status": "vm01-specific-disposal-completed-other-obsolete-cows-classified",
+  "authorization": "User explicitly allowed old VM01 disks, then allowed other unneeded VM archives after recording lessons and preserving needed state/version transition fixtures",
+  "vm01": {
+    "files_removed": 2,
+    "allocated_bytes_reclaimed": 807198720,
+    "retained_pins_exact": 68,
+    "full_charge_after": 50460041216
+  },
+  "other_obsolete_cows": {
+    "status": "classified-not-yet-removed",
+    "files": 18,
+    "allocated_bytes_reclaimable": 795537408,
+    "retained_pins_verified": 1272,
+    "lessons": [
+      {
+        "case": "runtime-cow-01",
+        "lesson": "desk creation acknowledged once; final observation not saved; no second-version qualification",
+        "compact_evidence_files": 59,
+        "exact_sqlite_files": 3,
+        "source_image_sha256": "bc601623733d11212a339c3eaa7270464057738fa096d66e0ee0c87d43a13056",
+        "replacement": "corrected whole Grubbery COW05"
+      },
+      {
+        "case": "runtime-cow-02",
+        "lesson": "30-minute whole context expired during first version-two advance",
+        "compact_evidence_files": 76,
+        "exact_sqlite_files": 1,
+        "source_image_sha256": "78b216df0b46853c7fe19f4b0f14d86fa02039c21b2752c74de5fe1ec01125b3",
+        "replacement": "corrected whole Grubbery COW05"
+      },
+      {
+        "case": "runtime-cow-03",
+        "lesson": "both source/state/same-pier checks reached; immediate post-manager-restart snapshot returned ENOENT; readiness retry and clean shutdown were missing",
+        "compact_evidence_files": 97,
+        "exact_sqlite_files": 3,
+        "source_image_sha256": "bc441563af4825a74d8b586b06256faf848f4176a7f9792e1bfb618c91e3402e",
+        "replacement": "corrected whole Grubbery COW05"
+      },
+      {
+        "case": "runtime-cow-04",
+        "lesson": "both source versions/state/restart/one-dispatch helper passed; obsolete PID1 2400-second unit prevented final clean whole completion",
+        "compact_evidence_files": 99,
+        "exact_sqlite_files": 3,
+        "source_image_sha256": "12ca7c7fc5852aa3e5377018a54eb6293fe0e55dc54658c2eac0492a479bc47b",
+        "replacement": "corrected whole Grubbery COW05"
+      },
+      {
+        "case": "recording-usage-cow-01",
+        "lesson": "native stat usage passed; fixture over-rejected one valid observed_at/revision refresh",
+        "compact_evidence_files": 48,
+        "exact_sqlite_files": 2,
+        "source_image_sha256": "9d2b724355a1b7391bb44cb85bb157a01626408898071688ec31daeaaa3da8cd",
+        "replacement": "qualified compact derived-export05 evidence plus immutable recording07 full fixture"
+      },
+      {
+        "case": "recording-usage-cow-02",
+        "lesson": "corrected closed-allocation whole case passed; later current closed-export case includes these allocation assertions",
+        "compact_evidence_files": 48,
+        "exact_sqlite_files": 2,
+        "source_image_sha256": "8aa479bc84566efbbec867bf308e2a9dce6221e79b0cacd31f88b0e0e88444f9",
+        "replacement": "qualified compact derived-export05 evidence plus immutable recording07 full fixture"
+      },
+      {
+        "case": "recording-usage-cow-03",
+        "lesson": "closed original exports passed with independent frame/ZIP/SQL checks; later indexed/redacted case includes original exports",
+        "compact_evidence_files": 52,
+        "exact_sqlite_files": 2,
+        "source_image_sha256": "bd693435b3da6349b336d4dbfbc4da56c2e24b7baf584521611a4e73f88cbb9a",
+        "replacement": "qualified compact derived-export05 evidence plus immutable recording07 full fixture"
+      },
+      {
+        "case": "recording-usage-cow-04",
+        "lesson": "complete export helper passed; oversized proof in serial was split by journald; corrected fresh05 passed",
+        "compact_evidence_files": 52,
+        "exact_sqlite_files": 2,
+        "source_image_sha256": "43408feeb568ab4fa45493d68fc28ec2a335b62751637b8a935af5701ca15c9b",
+        "replacement": "qualified compact derived-export05 evidence plus immutable recording07 full fixture"
+      },
+      {
+        "case": "recording-usage-cow-05",
+        "lesson": "corrected closed indexed/redacted whole case passed; complete independent proof/archives/SQL are retained and immutable recording07 backing remains for new cases",
+        "compact_evidence_files": 52,
+        "exact_sqlite_files": 2,
+        "source_image_sha256": "3b5c57124de27ea552bb69105dbae0acc337526907eb37a5a756a863446be653",
+        "replacement": "qualified compact derived-export05 evidence plus immutable recording07 full fixture"
+      }
+    ]
+  },
+  "preserved_transitions": [
+    "original pending app05 schema62",
+    "actual successful original recording02 schema64",
+    "successful recording07 schema65",
+    "successful Grubbery COW05 schema65; original62 SQL/event prefix preserved"
+  ],
+  "boundaries": [
+    "all source and frozen binaries retained",
+    "all exact compact SQLite/WAL/SHM, recording/receipt/log and failure evidence retained",
+    "original pending app05 never altered",
+    "current app COW05 and original recording07 full backings retained",
+    "original successful recording02 schema64 archive/input retained",
+    "no production, installed DEV, existing ship or tmux inspection/operation"
+  ]
+}
