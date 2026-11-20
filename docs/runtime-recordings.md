@@ -1,5 +1,63 @@
 # Runtime recording development contract
 
+## Current candidate contract — 2026-11-20
+
+The unreleased0.5.0 candidate includes an **opt-in development pilot**. Ordinary
+service startup leaves recording disabled. Selecting
+`serve-development --acknowledge-development --record-runtime` enables capture
+for supported ordinary managed launches; it does not adopt running processes or
+enable project, maintenance or other runtime factories. Publication alone must
+not change an installed service invocation.
+
+The pilot attaches an independently supervised output-only worker before Start.
+It retains immutable original stream bytes, receive timing, source/process/job
+bindings and explicit incomplete coverage. Manager/desktop lifetime is separate
+from capture lifetime. The frame format is1, new attachment metadata is4, and
+runner state is65. Existing metadata and historical intent bytes are read using
+their original versions; opening history does not rewrite or restart it.
+
+Default policy admits at most16 retained jobs,64MiB per session and8MiB per
+segment, with1GiB host and256MiB instance commitments and a2GiB observed free-space
+floor. Closed jobs retain their full immutable maximum commitment. These bounds
+cover recording data; metadata, retained executables and unrelated filesystem
+writers are separate. The free-space check is not an exclusive reservation.
+Policy changes apply to new jobs; existing jobs keep their original limits.
+
+On limit/write/transport failure, capture closes its output attachment and retains
+the verified prefix and incomplete status. It records a gap when space permits;
+a status can report a gap even when a gap frame could not be saved. It neither
+signals the ship nor silently reconnects, repairs or deletes original history.
+Native Stop can clean up a verified terminal container after a durably closed
+incomplete capture while preserving that failure. Unknown or still-open capture
+evidence continues to block cleanup. New capture requires a separately admitted
+launch, not an automatic resumption of a failed recording.
+
+Private CLI/API/MCP reads provide saved catalogs, bounded original/redacted
+windows, storage observations, timing queries and explicit original or derived
+redacted exports. Optional timing indexes are derived ZIP entries. The desktop
+Recordings view provides consent-bound reads and settings; it does not edit
+policy, retire history or export a complete archive. These operations preserve
+the selected runner/actor/capability boundaries described below.
+
+There is **no automatic deletion, age enforcement or retirement workflow**.
+Stored age settings and incident pins do not delete anything. Full capacity
+refuses new admission; it is not permission to remove a pier or recording.
+Host/session-wide oldest-output inventory remains follow-up work.
+
+Earlier native passes qualify their recorded artifacts and scenarios: ordinary
+capture/lifetime at2d028197, active-worker64→65 at703de9f2, and selected closed
+exports/timing at5344c5c. Burst/pressure/retention behavior, final combined
+artifacts, stable59→65, plugin packaging and preserved DEV remain gates in the
+[0.5.0 checklist](release-0.5.0-plan.md). This candidate is not yet a qualified
+stable release.
+
+## Development history
+
+The sections below preserve the implementation sequence and evidence limits.
+Labels such as “source-only,” “unwired” and “planned” describe those checkpoints;
+the dated current contract above describes the candidate as a whole. A later
+scoped pass supersedes only the specific earlier gate it names.
+
 Issue20's recorder is in development. Current installed log behavior is unchanged.
 The initial [inert lifecycle comparison](diagnostics/2026-11-17-recording-backend-inert.json)
 supports proceeding with a runner-owned stream recorder outside the container.

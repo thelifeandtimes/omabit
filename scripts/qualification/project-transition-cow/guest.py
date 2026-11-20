@@ -100,6 +100,27 @@ def process(container):
     return {k: data['State'][k] for k in ('Pid', 'StartedAt', 'Running')}
 
 
+def saved_stop_receipt(project, terminal):
+    # project-status is a summary: it omits ProjectID and the message. Preserve
+    # the complete original stored operation before reopening the manager, then
+    # require replay to return every field of that original receipt unchanged.
+    with contextlib.closing(sqlite3.connect('file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro', uri=True)) as db:
+        rows = list(db.execute('select body from operations where id=?', (terminal['id'],)))
+    if len(rows) != 1:
+        raise RuntimeError('one original saved Stop receipt required')
+    receipt = json.loads(rows[0][0])
+    fields = {'id', 'request_id', 'instance_id', 'kind', 'actor', 'status', 'config_revision', 'created_at', 'finished_at'}
+    if set(terminal) != fields or receipt.get('project_id') != project or {key: receipt.get(key) for key in fields} != terminal or terminal['kind'] != 'stop-project-ship' or terminal['status'] != 'succeeded':
+        raise RuntimeError('saved Stop receipt differs from its exact project summary')
+    return receipt
+
+
+def save_proof(proof):
+    path = O/'proof.json'
+    path.write_text(json.dumps(proof, indent=2)+'\n')
+    report['proof_sha256'] = sha(path)
+
+
 def anchor_id():
     with contextlib.closing(sqlite3.connect('file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro', uri=True)) as db:
         # The saved ledger is diagnostic only. Its path is never supplied by a caller.
@@ -190,6 +211,7 @@ def main():
     terminal = common.project_done('issues-race-stop')
     if terminal['id'] != stop['operation']['id']:
         raise RuntimeError('terminal Stop lost original operation binding')
+    original_receipt = saved_stop_receipt(report['project_id'], terminal)
     report['terminal_stop_succeeded'] = True
     names = ('pause-intent', 'paused', 'term-dispatched', 'preliminary-running', 'continued', 'exited-before-bracket')
     traces = [json.loads((CONTROL/f'race-{n:02d}-{step}.json').read_text()) for n, step in enumerate(names, 1)]
@@ -204,12 +226,21 @@ def main():
     if [dict(SIGSTOP='19', SIGTERM='15', SIGCONT='18').get(x, x) for x in kills] != ['19', '15', '18']:
         raise RuntimeError('unexpected native signal sequence; no repeat TERM or force-kill permitted')
     report['single_sigterm'] = True
+    proof = {'completed': False, 'traces': traces, 'original_target': target,
+             'native_before': native_before, 'native_stopped': stopped,
+             'terminal_stop': terminal, 'original_stop_receipt': original_receipt,
+             'peer': {'container_id': peer_id, 'state': peer_process},
+             'anchor': {'container_id': anchor, 'state': anchor_process},
+             'kill_signals': kills, 'retained_before': before}
+    save_proof(proof)
     report['helper_exit'] = common.stop_helper(signal.SIGTERM)
     common.unit('start')
     if next(x for x in common.project_status()['operations'] if x['id'] == terminal['id']) != terminal:
         raise RuntimeError('exact terminal receipt changed across manager/store reopen')
     replay = collector('candidate', *stop_args, '--replay-only', pin=True)
-    if replay['operation'] != terminal or common.inspect(target_id)['State'] != stopped:
+    proof['replay'] = replay
+    save_proof(proof)
+    if replay['operation'] != original_receipt or common.inspect(target_id)['State'] != stopped:
         raise RuntimeError('same-request replay changed receipt or native state')
     report['receipt_replay_after_restart'] = True
     common.project_action('member-start', 'issues-race-bud', 'issues-race-resume', target_id)
@@ -232,13 +263,13 @@ def main():
         raise RuntimeError('not every fixture fake is cleanly stopped')
     report['final_clean_stops'] = True
     after = retained_state()
-    if after['apps'] != before['apps'] or after['base'] != before['base'] or after['base_runtime'] != before['base_runtime'] or after['instance_count'] != 3:
+    # Project members live in project ledgers and are composed into snapshots;
+    # they do not add ordinary rows to the inherited instances table.
+    if after != before:
         raise RuntimeError('inherited stopped app/pier/history changed')
     report['base_stopped_app_preserved'] = True
-    proof = {'traces': traces, 'original_target': target, 'native_before': native_before, 'native_stopped': stopped, 'terminal_stop': terminal, 'replay': replay, 'resumed': resumed, 'peer': {'container_id': peer_id, 'state': peer_process}, 'anchor': {'container_id': anchor, 'state': anchor_process}, 'kill_signals': kills, 'retained_before': before, 'retained_after': after}
-    path = O/'proof.json'
-    path.write_text(json.dumps(proof, indent=2)+'\n')
-    report['proof_sha256'] = sha(path)
+    proof.update(completed=True, resumed=resumed, retained_after=after)
+    save_proof(proof)
     report['passed'] = True
 
 

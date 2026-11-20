@@ -103,6 +103,33 @@ class TransitionGuards(unittest.TestCase):
                     with self.assertRaises(RuntimeError):
                         guest.inflate({'candidate': candidates})
 
+    def test_stop_replay_binds_status_projection_to_exact_full_receipt(self):
+        import sqlite3
+        guest = module('guest')
+        terminal = {'id': 'op-stop', 'request_id': 'original-stop',
+                    'instance_id': 'issues-race-bud', 'kind': 'stop-project-ship',
+                    'actor': 'local-uid:1000', 'status': 'succeeded',
+                    'config_revision': 1, 'created_at': '2026-11-20T17:32:26Z',
+                    'finished_at': '2026-11-20T17:32:31Z'}
+        original = {'project_id': 'project-one', 'message': 'Project member stopped', **terminal}
+        connect = sqlite3.connect
+        def fixture(receipt):
+            db = connect(':memory:')
+            db.execute('create table operations (id text, body blob)')
+            if receipt is not None:
+                db.execute('insert into operations values (?,?)', ('op-stop', json.dumps(receipt)))
+            return db
+        with patch.object(guest.sqlite3, 'connect', return_value=fixture(original)):
+            self.assertEqual(guest.saved_stop_receipt('project-one', terminal), original)
+        for change in ({'project_id': 'other'}, {'status': 'running'},
+                       {'request_id': 'new-stop'}, {'finished_at': '2026-11-20T17:32:32Z'}):
+            with patch.object(guest.sqlite3, 'connect', return_value=fixture({**original, **change})):
+                with self.assertRaises(RuntimeError):
+                    guest.saved_stop_receipt('project-one', terminal)
+        with patch.object(guest.sqlite3, 'connect', return_value=fixture(None)):
+            with self.assertRaises(RuntimeError):
+                guest.saved_stop_receipt('project-one', terminal)
+
     def test_whole_status_bounded_private_input_free(self):
         status = module('status')
         report = {k: True for k in status.GATES}

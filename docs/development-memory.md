@@ -14091,3 +14091,39 @@ additional GiB over the failed setup. Add prompt hard-ceiling detection and a
 regression so a live QEMU process cannot hide this setup failure until deadline.
 All eleven inert guards pass. The fresh retry, exact native transition, final
 stable upgrade, preserved DEV and release gates remain pending.
+
+
+## M759 — Native transition passes; fix receipt-projection assumptions (2026-11-20)
+
+Fresh transition COW02 with unchanged68bf233 tools completes the actual six-step
+preliminary-running/bracketed-exited interleaving, one native TERM, clean exit,
+terminal Stop success and helper0/QEMU0. Whole qualification fails at the next
+harness comparison, so same-pier Start and final clean Stops remain unqualified.
+
+Independent read-only extraction proves the actual post-restart lookup equals
+the complete original saved SQLite operation exactly. The harness mistakenly
+compares a ProjectOperationSummary with the full protocol.Operation: summary
+omits project_id and message. Capture the full original stored receipt before
+manager reopen, validate its project/summary binding and compare every replay
+field against that saved receipt. Also correct the unfinished harness's expected
+ordinary-instance count: project members are composed from project ledgers, and
+the original instances table must remain at one, not grow to three. Preserve the
+complete inherited projection unchanged. Save partial proof before later gates
+so a subsequent failure retains its complete native observations.
+
+All twelve inert guards pass, including actual summary/full-receipt shape and
+foreign/missing/changed saved receipt refusals. Independent SQLite integrity,
+six ordered operation/container/start bindings and all23 original app/recording
+tables pass; the original stopped instance/runtime and backing hashes remain
+unchanged. [Evidence and cleanup classification](diagnostics/2026-11-20-project-stop-native-replay-harness.json)
+retains exact SQL, logs, traces and source/input pins. Under the existing test-image
+retention authorization, retire only COW02's diagnosed images and redundant boot
+archives after verifying ended scopes and absent holders. Needed original
+app62/current65/recording transition fixtures remain intact. No product/runtime
+binary changes or installed/DEV/production actions occur. A fresh complete retry
+is still required; the historical incident predicate remains unproven.
+
+The recording guide now leads with the dated current candidate contract and
+labels earlier source-only sections as historical checkpoints. It preserves the
+explicit pilot/default-off behavior, incomplete-capture limits and remaining
+final qualification gates rather than treating older milestones as current claims.

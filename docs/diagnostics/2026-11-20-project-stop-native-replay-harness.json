@@ -1,0 +1,183 @@
+{
+  "memory": "M759",
+  "status": "native-transition-and-exact-receipt-pass; whole-case-failed-by-harness",
+  "source_commit": "68bf2336e565edf411453683fb9e92d3fd6238a5",
+  "harness_commit": "6298cef77a67f5e75e8680b25e82b0bd65c11ca1",
+  "native": {
+    "qemu_exit": 0,
+    "helper_exit": 0,
+    "six_exact_ordered_trace_bindings": true,
+    "one_SIGTERM": true,
+    "terminal_stop_succeeded": true,
+    "actual_original_full_receipt_lookup_unchanged": true,
+    "original_backings_unchanged": true
+  },
+  "failure": {
+    "reason": "RuntimeError: same-request replay changed receipt or native state",
+    "cause": "Harness compared ProjectOperationSummary to protocol.Operation. Summary intentionally omits project_id and message; actual lookup matches the complete saved original operation exactly.",
+    "secondary_draft_correction": "Project members live in project ledgers, not ordinary instances rows. Compare the complete inherited projection unchanged, retaining instance_count1.",
+    "next": "Fresh complete run with original receipt captured before reopen and incremental proof retention; no product runtime or frozen binary change."
+  },
+  "inherited_tables": {
+    "app_development_policy": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "app_development_policy_history": {
+      "rows": 2,
+      "unchanged": true
+    },
+    "desk_operations": {
+      "rows": 4,
+      "unchanged": true
+    },
+    "desk_operation_history": {
+      "rows": 14,
+      "unchanged": true
+    },
+    "desk_settings": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "desk_settings_history": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "desk_source_baselines": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "desk_adoptions": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "desk_deployments": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "desk_source_ownership": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "desk_releases": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "desk_receivers": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "desk_frontends": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "grubbery_app_clock": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "grubbery_app_operations": {
+      "rows": 2,
+      "unchanged": true
+    },
+    "grubbery_app_events": {
+      "rows": 63,
+      "unchanged": true
+    },
+    "grubbery_app_leases": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "runtime_recording_intents": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "runtime_recording_head": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "runtime_recording_control_events": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "runtime_recording_control_head": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "grubbery_app_runtime_recoveries": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "grubbery_app_runtime_heads": {
+      "rows": 2,
+      "unchanged": true
+    }
+  },
+  "ordinary_instances_preserved": 1,
+  "evidence": {
+    "/tmp/omabit-050-stop-evidence-02/files/commands.jsonl": "6532dde4e9d6c92d24b0e1958e564041df2acaf3762658ba266a891ff88f1095",
+    "/tmp/omabit-050-stop-evidence-02/files/native-race-helper.log": "78c139492e84b2f95ec2f65004ca0a1d22ac379947549fb36abeeda269ef20ef",
+    "/tmp/omabit-050-stop-evidence-02/files/race-01-pause-intent.json": "59fb7766d902eed61795df2e5c8a0f2e02c3900c9e23f3a2cb8ed5949284ae8d",
+    "/tmp/omabit-050-stop-evidence-02/files/race-02-paused.json": "15e9866fc1bb904099a6af2c5706a917beb48e09467e52c029c8bab5a6b51b67",
+    "/tmp/omabit-050-stop-evidence-02/files/race-03-term-dispatched.json": "cdd2b54590b08b2f0c707151f1ce8b476644ff90f75f76c93539701dbbfad377",
+    "/tmp/omabit-050-stop-evidence-02/files/race-04-preliminary-running.json": "827760ffa7fe12fa1f5a9124e3c878e769cc5861f999cf2e62c7fab8bbfd7559",
+    "/tmp/omabit-050-stop-evidence-02/files/race-05-continued.json": "7b1597180319c255a6fca56a03a5fa2b7bec9089b0c7429cace53f9b866ebcb0",
+    "/tmp/omabit-050-stop-evidence-02/files/race-06-exited-before-bracket.json": "92b78b874e6d3072656c2dff11c350f9dc85e79848bee79f6eb2d2ee882b3a63",
+    "/tmp/omabit-050-stop-evidence-02/files/result.json": "9931e2e33ceceb64b32af2b4a318a9df2c710f5d4f5b92106bc368ccb284afee",
+    "/tmp/omabit-050-stop-evidence-02/files/runner.sqlite": "276f976051e20b787ef8c4dca4204c867e9f05f7d1bc4d5621c87ca8448b7033",
+    "/tmp/omabit-050-stop-evidence-02/files/runner.sqlite-shm": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+    "/tmp/omabit-050-stop-evidence-02/files/runner.sqlite-wal": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/tmp/omabit-050-stop-evidence-02/result.json": "911f616f9e292af30c580b852ada0a838cf11db1aab2da88a7bceba0c9fcc982",
+    "/tmp/omabit-050-stop-evidence-02/command.json": "25b1eb32f5cc9044bf4bf8b612d29f3e81ce5452f0e56bfb406e8c96568d536e",
+    "/tmp/omabit-issues-project-transition-cow-02/host.json": "bc0359804373bd44999adb16e7b48c1d617c70690f1872127a6f62b06546b7cd",
+    "/tmp/omabit-issues-project-transition-cow-02/result.json": "223fd3131891c1b68083b1c8a629c8633ff0bfc52db976ded8600dffb201b4c7",
+    "/tmp/omabit-issues-project-transition-cow-02/serial.log": "3f12390fc30eadca1fb5ff11fa53a3c9d6e33fdb71af524214d121b7afa86e71",
+    "/tmp/omabit-050-handoff/extract-stop02.py": "817fd4ef818dd75cd95e1498cbbf1d39a21a05945a54f47846b804925ac251ee",
+    "/tmp/omabit-050-handoff/verify-stop02.py": "78dcab075fac7b5021a666f641cf2b77b1fba2cdd5cc80beab2eeb615bf7f32f"
+  },
+  "retirement": {
+    "status": "removed-after-independent-verification",
+    "reason": "Compact exact SQL, six traces, commands, helper log, input/source identities and read-only verification preserve this diagnosed harness failure. It adds no required original migration fixture; original app/current65 backings remain. Repeated boot archives are reproducible from retained exact PID1 binaries and immutable module inputs. Never resume the ended case.",
+    "files": [
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-02/root.qcow2",
+        "sha256": "2a5e193566b46bb0af9ebb1b9fa71e1b8f640865c98a2cfb62107cca60b7b0e9",
+        "allocated_bytes": 1651838976
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-02/payload.ext4",
+        "sha256": "8ec80bf090acb6d05e5b81b4c7a6053e630b77d4230082f7c393b310b2668223",
+        "allocated_bytes": 30547968
+      },
+      {
+        "path": "/tmp/omabit-050-stop-evidence-01/initramfs.cpio",
+        "sha256": "adde3f8b40e5ed9f3ddeaf725dd187affa745281840d19ec649afcf2433aec1b",
+        "allocated_bytes": 7839744
+      },
+      {
+        "path": "/tmp/omabit-050-stop-evidence-02/initramfs.cpio",
+        "sha256": "adde3f8b40e5ed9f3ddeaf725dd187affa745281840d19ec649afcf2433aec1b",
+        "allocated_bytes": 7839744
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-01/initramfs.cpio",
+        "sha256": "76928ddec47ee1e73ecf25017b58f4471587153fe16d41c736146dc3a43e95d1",
+        "allocated_bytes": 7639040
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-01/init",
+        "sha256": "4b9cca98112adba9f694f9c5e1f2eabe32b381c72902cf69c0f5e8e17ae0883d",
+        "allocated_bytes": 2633728
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-02/initramfs.cpio",
+        "sha256": "76928ddec47ee1e73ecf25017b58f4471587153fe16d41c736146dc3a43e95d1",
+        "allocated_bytes": 7639040
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-02/init",
+        "sha256": "4b9cca98112adba9f694f9c5e1f2eabe32b381c72902cf69c0f5e8e17ae0883d",
+        "allocated_bytes": 2633728
+      }
+    ]
+  }
+}
