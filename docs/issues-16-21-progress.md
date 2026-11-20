@@ -687,3 +687,13 @@ CLI/SDK timing queries and complete derived redacted manifests/parts/CLI ZIPs fo
 both original closed jobs. Eleven inert guards pass. Current matching builds,
 Go refusal guard, fresh measured native execution and independent read-only
 verification still gate these source changes; no new native pass is claimed.
+
+
+M741 freezes matching4c0b16e tools/helper and a separately guarded read-only reader;
+180 generated help entries check in a private networkless sandbox. Source inputs,
+actual clean VCS pins and helper host refusals pass. Classified regenerable
+compiler outputs alone are consolidated, preserving every named artifact/evidence
+pin and original/reference/failure VM. [Pins and storage](diagnostics/2026-11-19-recording-derived-export-artifacts.json)
+record the scope. Current native indexed/redacted exports remain pending fresh
+admission and independent verification. Installed/manual DEV and production stay
+unchanged.

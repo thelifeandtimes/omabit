@@ -1,0 +1,60 @@
+{
+  "format": 1,
+  "status": "frozen-verified-native-pending",
+  "source_commit": "4c0b16e9d81311269db57664aa6906187eb23cc1",
+  "go": "go1.27.3",
+  "cgo_enabled": false,
+  "trimpath": true,
+  "artifact_sha256": {
+    "omabit": "5c2e3464451b3b675c6a4263c8f4b3b98ab37d9b77a244c03683825420cf88cd",
+    "urbit-collector": "950de706e77cdd4895f3a6ad7a44c1306d603f5a54105036ceb6f9206827946a",
+    "urbit-runner": "fa8e2406bbafdb2d8eadc70fb7ef3767d8cebd3047c1a1481baacd5bddbbe668",
+    "managed.test": "6173a0de77ec0a606d8d7918c8346fa24b02c620c4419321ebafe0b933de2026"
+  },
+  "artifact_bytes": {
+    "omabit": 18538656,
+    "urbit-collector": 9089184,
+    "urbit-runner": 21442720,
+    "managed.test": 30482592
+  },
+  "tracked_inputs_verified": 4018,
+  "product_clean_vcs_and_helper_explicit_source_pin_verified": true,
+  "helper_host_guard_passed_native_skipped": true,
+  "generated_help_entries": 180,
+  "networkless_generation_and_check_passed": true,
+  "reader": {
+    "source_sha256": "3db4b0696ebe0a6052b8b9d52f1f94834def2d3da8f148a3a1817ce10fed30a2",
+    "binary_sha256": "5948df4f1944a9c56fe5337455c03a84cc4628deec95f725893ac91c736b7d34",
+    "host_refusal_exit": 80,
+    "scope": "fixed ended4c0b16e derived recording export fixture and original07; read-only/noload fixed-path evidence only; no source-disk code execution"
+  },
+  "storage": {
+    "cache_removals": [
+      {
+        "files": 114,
+        "bytes": 342069248,
+        "retained_pins_exact": 234
+      },
+      {
+        "files": 55,
+        "bytes": 123293696,
+        "retained_pins_exact": 244
+      }
+    ],
+    "build_admission_bytes": 536870912,
+    "build_initial_charge": 50955366400,
+    "build_peak_fast_estimated_charge": 51353137152,
+    "build_end_full_charge": 51285184512,
+    "preflight_end_full_charge": 51288547328,
+    "budget_bytes": 51539607552
+  },
+  "scope": "matching development tools, generated help and fixed read-only utility only; native indexed/redacted exports, installed stable upgrade and preserved DEV remain unqualified",
+  "native_requirements": [
+    "fresh read-only recording07-backed COW only",
+    "mandatory original and derived export flags with matching source-bound helper",
+    "actual CLI/SDK timing manifest/part parity, index/raw-file agreement and redacted complete ZIP agreement",
+    "independent read-only codec/SQL/capture/control/intent preservation except one exact fresh observation",
+    "no capture/runtime launch, policy writes or retention"
+  ],
+  "help_limitation": "Generation/check preserves existing static help, which still describes only original exports. Add redacted and optional index choices in the next source checkpoint and regenerate final matching help; this checkpoint does not qualify discoverability."
+}

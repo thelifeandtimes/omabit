@@ -13667,3 +13667,25 @@ case and independent verification remain required. The frozen standalone PID1,
 read-only predecessor, one-runtime lock, measured48GiB admission, no source-build
 concurrency and all production/manual-review exclusions remain unchanged. See
 [prepared assertions](diagnostics/2026-11-19-recording-derived-native-preparation.json).
+
+
+## M741 — Freeze matching derived-export tools, reader and generated help (2026-11-19)
+
+Build the three products and explicitly source-bound managed helper from clean
+4c0b16e9d81311269db57664aa6906187eb23cc1, preserving4018 tracked input hashes
+before/after. All products report exact clean VCS identity, CGO0 and trimpath;
+helper source/refusal guard passes with actual native case skipped. Build a
+separate source/required-flags-bound read-only evidence utility; its host refusal
+returns80. Networkless generation/check of180 help entries passes with no HOME
+state. Inspection then finds static export help still describes only original
+choice; next source checkpoint must add redacted/index choices and regenerate
+final help. Do not equate regeneration parity with complete discoverability. See
+[artifact pins](diagnostics/2026-11-19-recording-derived-export-artifacts.json).
+
+Remove only114+55 hash/inode/format-verified regenerable Omabit compiler archives,
+reclaiming342,069,248+123,293,696bytes with234 then244 named pins unchanged.
+Keep standard/dependency caches, every frozen executable, database/capture/log,
+source and whole reference/failure VM. The matching build uses a measured512MiB
+reserve and monitoring; preparation uses64MiB. All final scopes end. Fresh native
+admission/execution and independent verification still gate the new exports.
+No production, existing ship, installed DEV or manual-review state changes.
