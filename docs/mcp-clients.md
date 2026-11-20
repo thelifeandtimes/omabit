@@ -1,5 +1,10 @@
 # MCP client setup recipes
 
+These named-client recipes remain **experimental in0.5.0** until an actual
+connection is recorded for that client/version. Release support covers the
+qualified CLI and pinned-SDK stdio contract; it does not imply that a particular
+client or T3 provider loads these settings.
+
 These examples connect a local client to Omabit's stdio server. Replace all
 `/ABS/PATH` values and `RUNNER_ID` with an already enrolled, explicitly selected
 DEV target. Merge a named entry into existing configuration; do not replace the

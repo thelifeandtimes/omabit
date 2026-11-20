@@ -1,5 +1,9 @@
 # Local authenticated HTTP MCP
 
+This transport remains **experimental in0.5.0**. Source/SDK protocol checks do not
+establish an installed named-client deployment. Stdio is the release's primary
+MCP transport; remote OAuth/TLS service deployment is outside this release.
+
 The development CLI serves the same typed core over Streamable HTTP:
 
 ```sh

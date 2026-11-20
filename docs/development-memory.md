@@ -14275,3 +14275,35 @@ and commitment check are still pending a fresh whole pass. The second case remai
 failed; [independent evidence](diagnostics/2026-11-20-recording-pressure-native-second.json)
 preserves its exact compact proof and classified ended-image retention. Original
 transition fixtures and installed/manual-review state remain unchanged.
+
+## M766 — Prepare0.5.0 component versions and finite support claims (2026-11-20)
+
+Set root, component and UI versions to0.5.0. Add candidate release notes with the
+explicit intended stable0.4/schema59→65 window and unchanged default-off recording
+service behavior. Mark named-client recipes and local HTTP experimental; retain
+catalog exclusions and the finite app/source/restart scope. No issue-wide closure,
+production deployment or final qualification follows from a version bump.
+
+Native plugin, skill packaging/shared guidance, release-policy, JavaScript models
+and snapshot installer fixtures pass. [Preparation record](diagnostics/2026-11-20-release050-scope-preparation.json)
+binds the reviewed inputs and limits. Existing0.4 distribution pins remain until
+matching frozen assets and upgrade evidence pass. The final source/race/QML,
+packaging/native workflows, preserved DEV and reviewed publication gates remain.
+
+## M767 — Preserve fail-closed storage accounting during runtime qualification (2026-11-20)
+
+The third recording pressure attempt is interrupted by complete-storage accounting
+when a concurrently run snapshot-installer fixture removes its temporary output
+between root enumeration and measurement. The monitor correctly rejects the
+incomplete measurement and terminates only the disposable VM. This is an experiment
+scheduling error; no product/pressure pass is inferred. Keep all temporary-output
+fixture suites, as well as Go builds, idle during a VM. Do not weaken measurement
+to bypass disappearing paths.
+
+[Exact interruption](diagnostics/2026-11-20-recording-pressure-interruption.json)
+retains host/source/log evidence. Retire only its four classified fresh-fake
+images/boot copies after scope/holder/backing checks, reclaiming1,547,980,800bytes.
+No original app/recording transition fixture is removed; no successful tmpfs
+recording export is claimed. Standard Go compilation-cache cleanup separately
+reclaims789,917,696bytes while preserving module sources and every frozen tool.
+A new whole run remains required with no concurrent fixture activity.

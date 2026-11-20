@@ -1,0 +1,54 @@
+{
+  "memory": "M767",
+  "status": "whole-case-interrupted-by-concurrent-fixture-accounting",
+  "source_commit": "c88784cc490294067aaac786a2af89ace1e95c27",
+  "harness_commit": "64678bab075d164978fe3ed9e52757df5e0ab208",
+  "cause": "RuntimeError: storage measurement unavailable: /tmp/omabit-snapshot-recovery-8gcbqnl9",
+  "passed": false,
+  "lesson": "Run no concurrent temporary-output fixture suites during any VM; a changing root inventory must never be treated as a completed measurement. Keep fail-closed measurement. No product or pressure assertion outcome is inferred.",
+  "last_complete_charged_bytes": 50669551616,
+  "evidence": {
+    "/tmp/omabit-issues-recording-pressure-vm-03/host.json": "10b1d0a4ca6991a28586fe7463c517a056e96daba3a1adaef4b19186eee49f01",
+    "/tmp/omabit-issues-recording-pressure-vm-03/preparation.json": "d91fc6cde3609840f18b3402f6367045765c0d87f3c72d210d229e71a9a63e4b",
+    "/tmp/omabit-issues-recording-pressure-vm-03/serial.log": "5b67e6304e7907ae3f43be32bb17beed3a89df6e56c6c58e46f037ed28864011",
+    "/tmp/omabit-issues-recording-pressure-vm-supervisor-8840b1576bd742c68c3f4e2b27e19af9.json": "79298946e30d7ccc876d40ec76b89d0268c08a9f1c0c440c8435c7154d0db341",
+    "/tmp/omabit-issues-recording-pressure-vm-supervisor-8840b1576bd742c68c3f4e2b27e19af9.log": "97181d629592caa8cc3d2a490ae4138d22855a24967881412e6e4a025b1228d9"
+  },
+  "retirement": {
+    "status": "removed-after-independent-verification",
+    "reason": "Interrupted fresh offline fake only, no original migration fixture or inherited application state. No successful recording qualification or final tmpfs export is claimed. Exact host failure/trace/input pins retained; original app62/current65 and recording transition fixtures remain.",
+    "files": [
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-03/root.qcow2",
+        "sha256": "a4de95f192f89f7745a45f91c144ab895172dcaee6d9d35e6947accaf015d59a",
+        "allocated_bytes": 1219301376
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-03/payload.ext4",
+        "sha256": "c62472b77f322ceffc6a30c307fe9e9b5e4e2cd962ff773393123a63740c809b",
+        "allocated_bytes": 315482112
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-03/init",
+        "sha256": "63a86300f9ba7ca08bf7df1fe28eb8b1b070d93ab67e868c7a51194e6bce1ec7",
+        "allocated_bytes": 4096000
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-pressure-vm-03/initramfs.cpio",
+        "sha256": "04c117a7edfd613a3088298887213049f5b0a6314f601989642ce69c93285eda",
+        "allocated_bytes": 9101312
+      }
+    ],
+    "reclaimed_bytes": 1547980800,
+    "after": {
+      "charged_bytes": 49128013824,
+      "budget_bytes": 51539607552,
+      "additional_scratch_bytes": 0,
+      "total_with_reserves": 49128013824
+    },
+    "full_charge_record": {
+      "path": "/tmp/omabit-050-pressure-retirement03-charge.json",
+      "sha256": "236f877c86218fb1af2f1536610a5811f096d7cee86da94bfc17ea17b672ae0a"
+    }
+  }
+}
