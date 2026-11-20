@@ -597,3 +597,22 @@ row/value except one fresh timestamp and75→76 observation revision. The
 qualifies these closed original exports only; redacted exports/index/pressure/
 retirement, other factories and stable-to-candidate/preserved DEV remain open.
 All native/reader scopes end; production and installed/manual-review state are unchanged.
+
+
+M735 adds read-only current expanded-project allocation and server-held monotonic
+net growth to the shared API/CLI/MCP. Explicit root identities/exclusions, unknown
+shared allowance and incomplete budget prevent action authority. Unsafe/changed/
+incomplete scans withhold partial totals. Creation/ledger/mount/pier bindings,
+private consent/role/capability/identity, unsigned integers, one census and32
+cloned volatile baselines are bounded. All rows/original interrupted receipts and
+fences stay unchanged. Focused ordinary and final split races plus seven-package
+vet pass; actual CLI/official-SDK parity includes values above2^53. The initial
+combined race invocation remains interrupted at its compiler reservation; full
+post-charge stays below48GiB. Only verified regenerable compiler scratch/cache is
+retired, with retained artifact/evidence hashes exact. Final51,145,261,056-byte
+charge and empty exact source scopes are recorded in the
+[source evidence](diagnostics/2026-11-19-project-allocation-source.json).
+Native project measurement, original/recovered adapters, complete shared/budget
+and event evidence, incident latching/reviewed resume/journaled containment and
+matching installed/preserved DEV upgrades remain open. No persistent schema or
+installed/production/existing-ship/manual-review state changes.

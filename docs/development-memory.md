@@ -13438,3 +13438,47 @@ supersedes M733's pending native original-export gate only. Complete redacted
 bundles, a separate timestamp/search index, active growth/pressure, retirement,
 other factories, previous-stable installed upgrades and preserved DEV remain
 separate. No production, installed service, existing ship or manual-review state changes.
+
+
+## M735 — Bound current project allocation and server-held net growth (2026-11-19)
+
+Implement an operator-private, exact revision/plan/ledger-bound read for current
+expanded members. Validate creation contracts and saved mount/pier objects without
+engine/process/HTTP probes. Metadata-only pinned-root walking separates sparse
+logical length from inode blocks, counts internal hardlinks once, inspects pipes/
+sockets without reading them, bounds entries/depth, and refuses unsafe/changed or
+incomplete trees without partial totals. Current mounts/runtime/project caches
+remain distinct from explicit historical/shared/journal/staging exclusions. No
+shared allowance or full budget is invented. No measured file contents are read.
+
+A single census releases the manager lock during the scan and brackets the exact
+raw saved ledger. Reads remain available with mutation admission fenced and leave
+every SQL row, original interrupted receipt and pending fence unchanged. At most32
+cloned volatile baselines use monotonic completion times and exact root bindings;
+fast polls preserve a comparable baseline, unknown/binding changes invalidate it,
+and one-second to five-minute windows emit exact unsigned directions/deltas.
+The API/client/restricted SSH and shared CLI/official SDK enforce private consent,
+role/capability/identity, exact deadlines, no retry and integers above2^53.
+
+Focused ordinary checks pass. The first combined race build reaches its compiler
+reservation; stop only that source scope at sampled51,454,492,672bytes, with full
+post-charge51,454,816,256 below the51,539,607,552-byte cap. Only its filesystem
+package passed; the combined invocation remains interrupted. Retain that report.
+Classify/remove only776 regenerable scratch files(308,461,568bytes), including an
+incomplete zero-header linker output; an initial completed-ELF classification
+correctly refuses without removal.331+551 verified older compiler/index files
+free489,988,096bytes, preserving205/209 named evidence/artifact pins. Larger
+classification and a temporary classifier typo refuse without deleting anything.
+No unique VM, original capture/database/log/source or frozen artifact is retired.
+
+Smaller final races pass: runtime adapter2.426s, manager9.533s, filesystem1.100s,
+client1.013s, SSH1.165s, catalog2.620s and actual CLI/SDK8.284s. Seven-package vet
+passes using the same race cache. Final full charge51,145,261,056 is below48GiB;
+all final exact source scopes are inactive/empty. See the
+[source report](diagnostics/2026-11-19-project-allocation-source.json).
+This supersedes M734's pending first resource-read implementation only. Native
+project census, original/recovered adapters, complete/shared budget and event
+payload evidence, durable incident/reviewed resume/journaled containment, matching
+artifacts and installed/preserved DEV gates remain open. Schema65 is unchanged;
+there is no new persistent authority, guard, threshold or pruning. Production,
+existing ships, installed services/plugins and manual-review state are unchanged.

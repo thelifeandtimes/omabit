@@ -11,6 +11,9 @@ import (
 // room for the selected-connection identity/capability handshakes around a long
 // RPC. The authoritative runner/transport retains its own shorter native bound.
 func catalogTimeout(id string, capabilities []string) time.Duration {
+	if slices.Contains(capabilities, protocol.ProjectAllocationFeature) {
+		return protocol.ProjectAllocationTimeout + 15*time.Second
+	}
 	if slices.Contains(capabilities, protocol.DeskStageFeature) {
 		return protocol.DeskStageTimeout + 15*time.Second
 	}

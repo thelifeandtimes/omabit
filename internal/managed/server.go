@@ -69,6 +69,8 @@ type Server struct {
 	recording                 func(protocol.Operation) runtimequalify.ManagedRecordingLifecycle
 	recordingPreflight        func(context.Context, protocol.Operation) error
 	recordingCapacity         func(context.Context, string) (recording.Capacity, error)
+	projectAllocations        map[string]projectAllocationSample
+	projectAllocationActive   bool
 }
 
 func New(dir string) (*Server, error) { return newServer(dir, realBackend{}, 10*time.Second) }
@@ -383,6 +385,7 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			features = append(features, protocol.RecordingExportFeature)
 		}
 		features = append(features, "maintenance-schedules", protocol.RecordingControlFeature)
+		features = append(features, r.projectAllocationFeatures()...)
 		features = append(features, protocol.RunnerBuildIdentityFeature, protocol.ProjectStopRecoveryFeature, protocol.CreationReplayFeature, protocol.ProjectInventoryFeature, protocol.ProjectStatusFeature, protocol.ProjectRecoveryCheckpointFeature, protocol.ProjectRecoverySourceFeature, protocol.ProjectRegistrationFeature, protocol.PrivateChainRegistrationFeature, protocol.PrivateChainInventoryFeature)
 		features = append(features, r.projectActionFeatures()...)
 		if _, ok := r.b.(projectDependenciesBackend); ok {
@@ -542,6 +545,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		respond(w, http.StatusOK, inventory)
+		return
+	}
+	if req.Method == http.MethodPost && req.URL.Path == protocol.ProjectAllocationPath {
+		r.serveProjectAllocation(w, req, role)
 		return
 	}
 	if req.Method == http.MethodPost && (req.URL.Path == protocol.RecordingControlStatusPath || req.URL.Path == protocol.RecordingControlApplyPath || req.URL.Path == protocol.RecordingControlLookupPath) {

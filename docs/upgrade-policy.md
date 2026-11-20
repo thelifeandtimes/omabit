@@ -1523,3 +1523,16 @@ Start authority. New fresh authority requires the exact current control head.
 Old readers that cannot understand an intent must refuse without repairing or
 stripping it. Frozen native pilot2d028197 predates controls and their APIs; final
 matching artifacts and actual active-worker/native upgrades remain mandatory.
+
+## Development: read-only project allocation — persistent formats unchanged
+
+`project-allocation-read-v1` and shared `project.allocation.v1` add bounded,
+operator-private current expanded-member storage observations. Schema65 and
+original rows/receipts remain unchanged. Growth samples are bounded volatile
+memory with monotonic completion times, discarded on manager restart. Missing
+capability or an unsupported project phase refuses explicitly. A census never
+resolves an operation fence, reserves free space or supplies containment authority.
+See the [contract and exclusions](project-allocation.md). Source fixtures do not
+qualify matching native measurements or an installed/preserved DEV upgrade. A
+future durable incident latch or guard requires its own persistent contract,
+old-reader refusal and non-destructive upgrade evidence before deployment.

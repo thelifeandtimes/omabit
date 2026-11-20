@@ -38,6 +38,9 @@ func deskStageFraming(req *http.Request) error {
 // the short SSH progress deadline; only an authorized, framed desk/export RPC
 // receives its longer application deadline. Other RPCs keep their previous limits.
 func deskRequestTimeout(path string) time.Duration {
+	if path == protocol.ProjectAllocationPath {
+		return protocol.ProjectAllocationTimeout + time.Second
+	}
 	if path == protocol.RecordingExportManifestPath || path == protocol.RecordingExportPartPath {
 		return protocol.RecordingExportTimeout + time.Second
 	}

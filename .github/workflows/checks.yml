@@ -31,7 +31,7 @@ jobs:
           TZ=UTC python3 -B scripts/ci-go-tests.py -timeout=30m ./...
           go vet ./...
       - name: Stateful transport and runtime race checks
-        run: python3 -B scripts/ci-go-tests.py -race -timeout=30m ./internal/projectnetwork ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy ./internal/pierstore ./internal/piermeta ./internal/hostinstall ./internal/hostsetup ./internal/onboarding ./internal/remotesetup ./internal/omabittheme ./backend/cmd/urbit-collector ./backend/cmd/urbit-runner
+        run: python3 -B scripts/ci-go-tests.py -race -timeout=30m ./internal/projectnetwork ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy ./internal/pierstore ./internal/projectusage ./internal/piermeta ./internal/hostinstall ./internal/hostsetup ./internal/onboarding ./internal/remotesetup ./internal/omabittheme ./backend/cmd/urbit-collector ./backend/cmd/urbit-runner
       - name: Offline application recovery fixture checks
         run: |
           python3 -B -m unittest discover -s scripts/qualification/imports -p 'test_runner_app_*.py'
