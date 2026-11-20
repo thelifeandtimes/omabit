@@ -13652,3 +13652,18 @@ independent native indexed/redacted exports and preservation, oldest coverage/
 retirement/pressure/other factories, resource containment and final installed/
 preserved DEV gates remain open. Production, existing ships and installed/
 manual-review state remain unchanged; the failed fixture run remains retained.
+
+
+## M740 — Require complete derived exports in the fixed native helper (2026-11-19)
+
+Prepare, without qualifying, the native assertions for M738–739. Both guest and
+Go identity/source guards require the separate derived-export scenario flag.
+For each exact closed job, retain default original checks and additionally compare
+indexed ZIP originals, every timing row, time/kind/continuation/context results,
+redacted CLI/SDK manifests and every part, and actual redacted CLI ZIP bytes.
+Private proof preserves archives/queries/manifests for independent decoding.
+Eleven inert Python guards pass; matching clean artifacts, Go guard, actual native
+case and independent verification remain required. The frozen standalone PID1,
+read-only predecessor, one-runtime lock, measured48GiB admission, no source-build
+concurrency and all production/manual-review exclusions remain unchanged. See
+[prepared assertions](diagnostics/2026-11-19-recording-derived-native-preparation.json).

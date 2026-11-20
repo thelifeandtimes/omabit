@@ -203,7 +203,7 @@ def main():
     scenario = {'kind': 'issues20-recording-usage-v1', 'development_snapshot': True,
                 'source_commit': commit, 'harness_commit':harness_commit,'original_schema': 65, 'target_schema': 65, 'candidate': builds,
                 'pill_sha256': budget.PILL, 'oci_sha256': budget.OCI,
-                'case': 'closed-native-capture-allocation-v1','predecessor_root_sha256':PREDECESSOR_SHA,'require_original_exports':True}
+                'case': 'closed-native-capture-allocation-v1','predecessor_root_sha256':PREDECESSOR_SHA,'require_original_exports':True,'require_derived_exports':True}
     scenario['boot_helper'] = boot_helper
     (payload/'scenario.json').write_text(json.dumps(scenario, indent=2)+'\n')
     disk = out/'payload.ext4'

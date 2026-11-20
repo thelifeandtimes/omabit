@@ -80,3 +80,17 @@ fixed predecessor/case/isolation remain unchanged; source/artifact pins distingu
 this later assertion set from M729. No capture, retention or policy write occurs.
 These later native assertions are prepared, not yet qualified. They do not cover
 redacted complete bundles, a separate searchable timestamp index or installed DEV.
+
+
+The later original-only native case passed at3fc6eab3 (M734). The current
+prepared helper additionally requires `require_derived_exports=true` in both
+VM guards. For each of the same two closed jobs, actual original indexed CLI ZIPs
+must retain all raw files byte-for-byte. Actual CLI/SDK timing queries must agree
+with every index row, inclusive time/exit filters, continuation and preceding
+context cursors. Derived redacted manifests and every ZIP part must agree across
+both adapters, and the actual private redacted CLI ZIP must match those parts
+exactly. It contains only the three declared derived entries and explicit final
+coverage. Private proof retains archives, queries and hashes for independent
+read-only decoding. This adds no capture, policy, retention or runtime action.
+Matching current artifacts and a fresh native case are required before claiming
+these new checks pass. Existing native cases remain pinned to their older tools.

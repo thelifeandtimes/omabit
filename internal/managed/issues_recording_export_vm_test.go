@@ -136,7 +136,8 @@ func recordingUsageOriginalExports(t *testing.T, ctx context.Context, session *m
 		archiveBytes, err := os.ReadFile(path)
 		g02Check(t, err)
 		hash := sha256.Sum256(archiveBytes)
-		summaries = append(summaries, map[string]any{"manifest": cliManifest, "parts_compared_both_interfaces": parts, "zip_sha256": hex.EncodeToString(hash[:]), "zip_bytes": len(archiveBytes), "zip_base64": base64.StdEncoding.EncodeToString(archiveBytes), "zip_matches_independent_original_files": true})
+		derived := recordingUsageDerivedExports(t, ctx, read, binary, config, proofRoot, in, manifest, expected)
+		summaries = append(summaries, map[string]any{"manifest": cliManifest, "parts_compared_both_interfaces": parts, "zip_sha256": hex.EncodeToString(hash[:]), "zip_bytes": len(archiveBytes), "zip_base64": base64.StdEncoding.EncodeToString(archiveBytes), "zip_matches_independent_original_files": true, "derived": derived})
 	}
 	return summaries
 }

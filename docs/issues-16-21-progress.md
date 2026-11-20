@@ -680,3 +680,10 @@ below48GiB. Exact scopes end with no additional data retirement. Matching curren
 native exports/reference/artifacts, oldest coverage/pressure/retirement and final
 installed/preserved DEV remain open. Production/installed/existing-ship/manual
 review state remain unchanged.
+
+
+M740 prepares the fixed native helper to require indexed original ZIPs, shared
+CLI/SDK timing queries and complete derived redacted manifests/parts/CLI ZIPs for
+both original closed jobs. Eleven inert guards pass. Current matching builds,
+Go refusal guard, fresh measured native execution and independent read-only
+verification still gate these source changes; no new native pass is claimed.
