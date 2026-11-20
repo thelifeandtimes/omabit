@@ -14307,3 +14307,33 @@ No original app/recording transition fixture is removed; no successful tmpfs
 recording export is claimed. Standard Go compilation-cache cleanup separately
 reclaims789,917,696bytes while preserving module sources and every frozen tool.
 A new whole run remains required with no concurrent fixture activity.
+
+## M768 — Complete the recording job-layout regression and require measured storage (2026-11-20)
+
+The fourth case reaches the inventory check after all three native capture cases,
+but the new strict file allowlist omits each job's empty worker.lock. This is
+another harness defect: the independent content export intentionally omitted
+empty lock files, so copying its JSON-only inventory was insufficient. Review the
+actual job writer and usage inventory; a closed job has five JSON files plus
+worker.lock. Require that complete six-file set, an empty regular lock and exact
+hashes of every entry. The regression now models the real complete closed layout,
+including malformed locks. Nine inert guards pass.
+
+[Fourth-case evidence](diagnostics/2026-11-20-recording-pressure-native-fourth.json)
+independently verifies all original recording content, three jobs and the earlier
+ordinary Stops. Capacity/final Stop did not run; the whole case remains failed.
+Retire only its classified ended images after preserving compact evidence and
+checking original fixture hashes. The next native case must complete with final
+matching0.5.0 artifacts rather than promoting any partial pass.
+
+The shared issues-goal budget now rejects the older storage helper's estimated
+unreadable-directory fallback: every DEV namespace measurement must complete.
+This enforces the user's current no-incomplete-measurement rule without altering
+the older general launcher's contract. The new regression refuses estimated
+admission before passing any data to the budget calculator.
+
+Separately,40 unused public Go module extracts match every byte in their retained
+original ZIPs and those ZIPs' h1 content hashes. Removing only these reproducible
+extracts reclaims1,893,773,312bytes; current/previous-stable declared dependencies,
+original ZIP archives and all frozen executables remain. Exact inventory and
+verification are retained in /tmp/omabit-050-handoff/module-cache-retirement-result.json.

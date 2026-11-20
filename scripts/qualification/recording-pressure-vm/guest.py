@@ -146,11 +146,11 @@ def job_inventory(directory):
         if not stat.S_ISDIR(mode) or len(entry.name) != 32 or any(c not in '0123456789abcdef' for c in entry.name):
             raise RuntimeError('unexpected recording job entry')
         files = list(entry.iterdir())
-        if not 1 <= len(files) <= 8 or not (entry/'job.json').is_file():
+        if {p.name for p in files} != {'job.json', 'worker.lock', 'claim.json', 'session.json', 'ready.json', 'result.json'}:
             raise RuntimeError('incomplete recording job inventory')
         out['jobs'][entry.name] = {}
         for path in files:
-            if not stat.S_ISREG(path.lstat().st_mode) or not path.name.endswith('.json') or path.stat().st_size > MIB:
+            if not stat.S_ISREG(path.lstat().st_mode) or path.stat().st_size > MIB or (path.name == 'worker.lock' and path.stat().st_size != 0):
                 raise RuntimeError('unexpected recording job file')
             out['jobs'][entry.name][path.name] = sha(path)
     if out['admission_lock_sha256'] is None:

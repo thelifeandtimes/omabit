@@ -67,7 +67,10 @@ def charge(additional, cap):
             raise RuntimeError('missing physical shared build cache')
         if not any(p == root or p.is_relative_to(root) for root in roots):
             roots.append(p)
-    return storage.admit(additional, [storage.measure(p) for p in roots], budget_bytes=cap)
+    measurements = [storage.measure(p) for p in roots]
+    if any(row.get('unmeasured_reserve', 0) for row in measurements):
+        raise RuntimeError('issues qualification requires complete namespace measurement; estimated reserves are not admission')
+    return storage.admit(additional, measurements, budget_bytes=cap)
 
 
 def verify_upgrade_section(prior,commit,builds):

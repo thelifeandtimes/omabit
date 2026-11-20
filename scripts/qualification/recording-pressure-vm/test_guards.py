@@ -74,16 +74,28 @@ class PressureGuards(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='omabit-pressure-inventory-') as d:
             root = Path(d); (root/'admission.lock').touch()
             for name in ('1'*32, '2'*32, '3'*32):
-                (root/name).mkdir(); (root/name/'job.json').write_text('{}')
+                (root/name).mkdir(); (root/name/'worker.lock').touch()
+                for leaf in ('job.json', 'claim.json', 'session.json', 'ready.json', 'result.json'):
+                    (root/name/leaf).write_text('{}')
             before = guest.job_inventory(root)
             self.assertEqual(len(before['jobs']), 3)
             self.assertEqual(before['admission_lock_sha256'], hashlib.sha256(b'').hexdigest())
+            self.assertEqual(before['jobs']['1'*32]['worker.lock'], hashlib.sha256(b'').hexdigest())
+            (root/('1'*32)/'worker.lock').write_text('invalid')
+            with self.assertRaisesRegex(RuntimeError, 'unexpected recording job file'): guest.job_inventory(root)
+            (root/('1'*32)/'worker.lock').write_bytes(b'')
             (root/('1'*32)/'job.json').write_text('{"changed":true}')
             self.assertNotEqual(guest.job_inventory(root), before)
             (root/'admission.lock').write_text('bad')
             with self.assertRaisesRegex(RuntimeError, 'admission lock'): guest.job_inventory(root)
             (root/'admission.lock').unlink(); (root/'admission.lock').symlink_to(root/('1'*32)/'job.json')
             with self.assertRaisesRegex(RuntimeError, 'admission lock'): guest.job_inventory(root)
+
+    def test_issues_budget_refuses_estimated_measurement(self):
+        budget = module('run').budget
+        with patch.object(budget.storage, 'roots', return_value=[]), patch.object(budget, 'worktree_build_roots', return_value=[budget.ROOT/'build']), patch.object(Path, 'is_dir', return_value=True), patch.object(Path, 'is_symlink', return_value=False), patch.object(budget.storage, 'measure', return_value={'allocated_bytes': 0, 'unmeasured_reserve': 1024**3}), patch.object(budget.storage, 'admit', side_effect=AssertionError('incomplete admission')):
+            with self.assertRaisesRegex(RuntimeError, 'complete namespace measurement'):
+                budget.charge(0, 48*1024**3)
 
     def test_native_limits_and_final_storage_are_bounded(self):
         guest = module('guest'); host = Path(__file__).with_name('run.py').read_text(); source = Path(__file__).with_name('guest.py').read_text()
