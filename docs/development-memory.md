@@ -13523,3 +13523,32 @@ resume/journaled stops and final matching/preserved DEV upgrades stay open.
 Production, installed services/plugins, existing ships and manual-review state
 remain unchanged. M735's original scope/results and interrupted build remain
 retained rather than relabeled as later qualification.
+
+
+## M737 — Retire obsolete project compiler variants without evicting std/dependency cache (2026-11-19)
+
+A64MiB-admitted dependency inventory uses `go list -export -test`, which can
+compile test exports instead of merely reading cache metadata. Its monitored
+scope reaches the reservation and is stopped: no completed dependency inventory
+or product test result is claimed. The sampled peak51,425,955,840 and retained
+post-inventory full measurement51,426,308,096 are below48GiB. Keep the interrupted
+report; all implementation races/vet from M735–736 remain passed separately.
+
+The exact scope is inactive/empty. Remove only its21 hash/inode/owner-verified
+regenerable compiler archives/importcfg files(49,586,176bytes), preserving210
+named pins. Inventory older Omabit archive variants by module-path evidence in
+__.PKGDEF. A fresh192MiB classification selects63 complete Go1.27.3 archives
+whose content hashes match their cache names and whose mtimes predate source10;
+standard-library/dependency and fresh cache entries are excluded. Removal frees
+206,110,720bytes, preserving221 VM/SQL/recording/log/source-result/frozen-artifact
+pins exactly. No unique image or original evidence is retired. Full post-cleanup
+charge51,170,893,824 leaves368,713,728bytes under the51,539,607,552-byte cap.
+
+Prefer this narrow obsolete-variant classification to evicting currently reused
+standard/dependency archives. Treat export/dependency discovery as an admitted
+compiler action unless demonstrated otherwise. The
+[cleanup record](diagnostics/2026-11-19-obsolete-compiler-variants.json) is storage
+accounting, not product/native/installed qualification. Product code stays at
+M736; all final source scopes end. Production, existing ships and installed/
+manual-review state remain unchanged. Recording timestamp/index and complete
+derived export implementation remain next; no new capability is claimed here.

@@ -1,6 +1,6 @@
 # Issues16–21: implementation boundaries and next gates
 
-Status at M736,2026-11-19. These are development changes on an isolated topic
+Status at M737,2026-11-19. These are development changes on an isolated topic
 branch. Published stable artifacts and production deployments are unchanged.
 Source fixtures, a native test with frozen artifacts, installed upgrades and
 preserved DEV review are separate evidence. The detailed history and original

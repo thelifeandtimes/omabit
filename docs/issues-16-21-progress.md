@@ -634,3 +634,15 @@ only M735's pending original read adapter. Native current project measurements,
 remaining original history adapters, complete budgets/event evidence, incident
 containment and final matching/preserved DEV upgrades stay open. Schema65 and
 production/installed/existing-ship/manual-review state remain unchanged.
+
+
+M737's64MiB dependency inventory is interrupted at its compiler reservation;
+`go list -export -test` can compile exports. It is not a completed cache inventory
+or product test result. After the exact scope ends, retire only21 regenerable
+scratch files and63 verified older Omabit archive variants, retaining standard/
+dependency/fresh caches and221 named evidence/artifact pins. Full51,170,893,824-byte
+post-charge stays below48GiB, with no unique VM or original evidence removed.
+[Accounting](diagnostics/2026-11-19-obsolete-compiler-variants.json) preserves the
+failure and cleanup limits. M736 product source/tests remain unchanged; recording
+index/derived exports and the remaining native/installed gates stay open. No
+production, existing ship or installed/manual-review changes occur.
