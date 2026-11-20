@@ -59,6 +59,16 @@ class PressureGuards(unittest.TestCase):
             guest.common = SimpleNamespace(instance=lambda *args: row, cid=lambda value: 'foreign', docker=lambda *a, **k: self.fail('foreign exec'))
             with self.assertRaises(RuntimeError): guest.emit('selected')
 
+    def test_capacity_refusal_uses_native_inventory_and_exact_failed_request(self):
+        guest = module('guest')
+        receipt = {'status': 'failed', 'request_id': 'pressure-capacity-refusal', 'message': 'runtime action failed: recording admission budget is exhausted or cannot be established; preserve saved jobs and inspect recording capacity'}
+        jobs = ['one', 'two', 'three']
+        self.assertTrue(guest.capacity_refusal_preserved(jobs, jobs, [], [], receipt))
+        self.assertFalse(guest.capacity_refusal_preserved(jobs, jobs+['new'], [], [], receipt))
+        self.assertFalse(guest.capacity_refusal_preserved(jobs, jobs, [], ['unexpected'], receipt))
+        self.assertFalse(guest.capacity_refusal_preserved(jobs, jobs, [], [], {**receipt, 'message': 'transport unavailable'}))
+        self.assertFalse(guest.capacity_refusal_preserved(jobs, jobs, [], [], {**receipt, 'request_id': 'other'}))
+
     def test_native_limits_and_final_storage_are_bounded(self):
         guest = module('guest'); host = Path(__file__).with_name('run.py').read_text(); source = Path(__file__).with_name('guest.py').read_text()
         self.assertEqual(len(guest.STDOUT), 1572921)

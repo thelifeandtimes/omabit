@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """Offline published-binary upgrade check, only in the guarded release guest."""
-import hashlib,json,os,sqlite3,subprocess,sys,time,shutil,base64
+import contextlib,hashlib,json,os,sqlite3,subprocess,sys,time,shutil,base64
 from pathlib import Path
 I=Path('/opt/omabit-release-input'); O=Path('/opt/omabit-release-results')
 SOCK='/run/user/1000/urbit-runner/runner.sock'
@@ -59,8 +59,20 @@ def runtime(v):
  return {'engine':run(['systemctl','--user','show','urbit-docker.service','-p','MainPID,InvocationID'],True).stdout,
  'containers':run(['docker','--host','unix:///run/user/1000/urbit-docker.sock','inspect','--format','{{.Id}} {{.State.Pid}} {{.State.StartedAt}}',*ids],True).stdout if ids else ''}
 def db_projection():
- with sqlite3.connect('file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro',uri=True) as db:
+ with contextlib.closing(sqlite3.connect('file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro',uri=True)) as db:
   return {'schema':db.execute('pragma user_version').fetchone()[0], 'dump':hashlib.sha256('\n'.join(db.iterdump()).encode()).hexdigest()}
+def app_projection(names=None):
+ with contextlib.closing(sqlite3.connect('file:/home/review/.local/share/urbit-runner/managed/runner.sqlite?mode=ro',uri=True)) as db:
+  db.execute('BEGIN')
+  existing={name:ddl for name,ddl in db.execute("select name,sql from sqlite_master where type='table'") if name.startswith(('app_development','desk_','gall_','grubbery_'))}
+  if names is None:names=sorted(existing)
+  if not names or any(name not in existing for name in names):raise RuntimeError('original application tables missing')
+  result={}
+  for name in names:
+   rows=db.execute('select * from "'+name+'"').fetchall()
+   encoded=json.dumps(sorted([[{'bytes_hex':x.hex()} if isinstance(x,bytes) else x for x in row] for row in rows],key=repr),separators=(',',':')).encode()
+   result[name]={'ddl':existing[name],'rows':len(rows),'sha256':hashlib.sha256(encoded).hexdigest()}
+  return result
 def install(v):
  result=run([tool(v,'urbit-runner'),'install-host','--owner','review','--bundle',I/v/'rootless-bundle','--public-key','/home/review/release-operator.pub','--acknowledge-host-changes'],timeout=600)
  wait(lambda:collector(v,'hello'))
@@ -154,6 +166,12 @@ def main():
   assert large_new['source']['bytes']>=large_size and large_new['ship']=='~nec',large_new
   assert project(PREVIOUS)==large_inventory_before,'preview enrolled or changed a ship'
   report['large_local_preview']={'previous_rejected':bool(large_old.returncode),'target_collector_with_previous_runner_passed':True,'fixture_logical_bytes':large_size,'fixture_allocated_bytes':large_fixture.stat().st_blocks*512,'source_logical_bytes':large_new['source']['bytes'],'full_large_copy_tested':False}
+ if scenario.get('app_workflow'):
+  import desk_guest
+  report['app_development_before']=desk_guest.exercise(run,tool,PREVIOUS,host['runner_id'],label='stable-before-upgrade')
+  original_apps=app_projection()
+  if not any(value['rows'] for name,value in original_apps.items() if name=='desk_operations'):raise RuntimeError('original stable app history was not populated')
+  report['original_app_tables']=original_apps
  before=project(PREVIOUS); runtime_before=runtime(PREVIOUS)
  report['baseline']=before;report['runtime_before']=runtime_before;report['schema_before']=db_projection()['schema']
  # Import and verify actual release bundles with the native desktop loader.
@@ -212,6 +230,9 @@ def main():
   assert before==project(TARGET),'fleet configuration/history changed'
   assert runtime_before==runtime(TARGET),'engine or live ship restarted'
   assert original_access==access_hashes(),'desktop access changed'
+  if scenario.get('app_workflow'):
+   assert app_projection(original_apps)==original_apps,'original app policy/source/receipt history changed'
+   report['original_app_history_preserved']=True
   report['upgraded']={'state':state,'schema_after':db_projection()['schema'],'ship_continuity':True,'access_preserved':True}
   control('pressCheck');state=wait(lambda:settled())
   assert not state['status']['available']
@@ -239,6 +260,7 @@ def main():
  wait(lambda:collector(TARGET,'hello'))
  assert before==project(TARGET) and runtime_before==runtime(TARGET)
  report['manager_restart_preserved_runtime']=True
+ if scenario.get('app_workflow'):assert app_projection(original_apps)==original_apps,'manager restart changed original app history'
  if large_preview_test:
   large_upgraded=json.loads(storage(TARGET,'preview-pier','--source',import_source,'--storage-root','default').stdout)
   assert large_upgraded['source']['bytes']==large_new['source']['bytes'] and large_upgraded['ship']=='~nec'
@@ -264,6 +286,9 @@ def main():
  assert ready(TARGET,'upgrade-nec','stopped')
  report['macos_import'].update(passed=True,identity=preview['ship'],stayed_stopped=True,metadata_preserved=True,unrelated_runtime_preserved=True)
 
+ if scenario.get('app_workflow'):
+  import desk_guest
+  report['app_development_after']=desk_guest.exercise(run,tool,TARGET,host['runner_id'],label='candidate-after-upgrade')
  if scenario.get('fleet'):
   import fleet_guest
   report['fleet']=fleet_guest.exercise(run,tool,TARGET,host['runner_id'],host['host_public_key'])

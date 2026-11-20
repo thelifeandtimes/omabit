@@ -14206,3 +14206,53 @@ existing read-only observer accepts only this additional exact frozen scenario;
 no product fault switch or runtime permission is added. Raw tmpfs evidence is
 copied into bounded private output before shutdown, including failed cases.
 Matching clean artifacts, native completion and independent extraction are next.
+
+
+## M763 — Native recording pressure passes selected gates; correct capacity observation check (2026-11-20)
+
+Frozen c88784c tools complete all three native recording sessions: exact1.5MiB
+original line and64 stderr messages, encoded1MiB ceiling, and actual separate
+filesystem free space below512MiB. Captures close durably; limit failure retains a
+gap, free-space refusal explicitly reports an unsaved gap, and each native process
+continues until ordinary Stop. Earlier bytes remain immutable. Independent
+read-only extraction/raw decoding matches all original segments, metadata, hashes
+and saved jobs. The content-free writer.lock is represented by its empty-file
+hash in the saved proof rather than exported.
+
+The whole case fails at the final capacity assertion. The original failed Start
+receipt correctly reports exhausted recording admission; exactly three jobs
+remain. Generic failed-Start completion publishes unknown/recovery_required with
+the requested running intent until observation/cleanup. The harness incorrectly
+requires its public row to already say stopped as proof of no new process. Compare
+actual full container inventory and immutable job inventory, bind the exact saved
+capacity refusal, then perform the already planned explicit final Stop. Seven
+inert guards pass, including foreign receipt/new-job/new-container refusals.
+No product behavior is changed to satisfy the harness.
+
+[Exact failed-case evidence](diagnostics/2026-11-20-recording-pressure-native-first.json)
+retains compact SQL/raw/job/command/source proof. Classify only this ended
+disposable root/payload and redundant boot copies for retirement under the user's
+existing rule; original transition fixtures remain. A fresh whole pass, final
+combined release, stable59 upgrade and preserved DEV remain required.
+
+M763 cleanup execution: five classified completed/failed-case images and redundant
+boot copies are removed after evidence/scope/holder/pin checks, reclaiming
+1,563,996,160allocated bytes. Full charge49,105,166,336 remains below48GiB. Exact
+compact recording/job/SQL evidence and every original transition fixture remain.
+
+## M764 — Strengthen final stable upgrade rehearsal before artifact freeze (2026-11-20)
+
+The inherited release-upgrade launcher counted evidence roots but omitted retained
+worktree builds/caches. Reuse the complete issues-goal charge, acquire its shared
+runtime lock, select a separately frozen host-refusing boot helper, and remove
+in-launch compilation. Require clean candidate ancestry and the release-policy
+post-freeze allowlist. Keep4GiB scratch with an explicit hard root-file ceiling,
+one CPU and no swap. Nothing is launched by these edits.
+
+Add an explicit app-workflow option independent of Theme/DMS. The previous stable
+CLI creates a source desk plus policy/settings/receipt history before upgrade.
+Verify original table DDL and row digests through actual migration and manager
+restart, then use a distinct candidate desk. Close SQLite read handles explicitly,
+including errors. Three inert guards pass for no-run, wrong boot-image refusal,
+original table selection/digest changes and connection closure. Actual final
+0.4.0/schema59 to0.5.0/schema65 qualification remains pending.
