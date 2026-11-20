@@ -663,3 +663,20 @@ scope/limits. Native indexed exports, matching reference/artifacts, complete
 redacted bundles, oldest coverage/pressure/retirement, other factories and final
 installed/preserved DEV remain open. No schema65, production, existing ship or
 installed/manual-review state changes.
+
+
+M739 adds complete derived redacted ZIP manifests/parts and explicit CLI choice,
+using the same private verified source scanner as timing. Only technical metadata,
+escaped span/omission/timing/exit/gap evidence and final coverage are included;
+exact bindings/raw files remain omitted and originals unchanged. Finite rules
+require owner review. Every part re-verifies/re-derives exact source/ZIP hashes;
+no persistent cache, new endpoint, schema65 or runtime/retention authority is added.
+The first interface run stays failed due to a fixture container/image hash reuse;
+distinct hashes preserve the omission check. Final codec/derived/original/index
+races, actual CLI/official-SDK manifest/part/ZIP checks, catalog and vet pass.
+[Source evidence](diagnostics/2026-11-19-recording-redacted-export-source.json)
+records bounds, expensive repeated-scan limitation and51,297,136,640-byte post-charge
+below48GiB. Exact scopes end with no additional data retirement. Matching current
+native exports/reference/artifacts, oldest coverage/pressure/retirement and final
+installed/preserved DEV remain open. Production/installed/existing-ship/manual
+review state remain unchanged.

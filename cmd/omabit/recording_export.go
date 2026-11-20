@@ -29,6 +29,7 @@ func recordingExport(ctx context.Context, args []string, config string) int {
 	f.StringVar(&in.JobSHA256, "job-sha256", "", "exact saved job digest")
 	f.BoolVar(&in.IncludePrivateData, "include-private-data", false, "explicit owner-private recording access")
 	original := f.Bool("original", false, "explicit original bytes export choice")
+	redacted := f.Bool("redacted", false, "explicit derived escaped/redacted ZIP choice; exact bindings and originals omitted, finite rules still require owner review before sharing")
 	timingIndex := f.Bool("timing-index", false, "add a separate verified payload-free timing-index.jsonl; re-reads hash-pinned originals and refuses incomplete/oversized index output")
 	output := f.String("output", "", "fresh absolute ZIP path in an existing owner-private physical directory")
 	if err := f.Parse(args); err != nil {
@@ -37,8 +38,13 @@ func recordingExport(ctx context.Context, args []string, config string) int {
 		}
 		return 2
 	}
-	if f.NArg() != 0 || !*original || in.Validate() != nil || *output == "" {
-		return fail(errors.New("require an exact saved job, --original, --include-private-data and a fresh private --output path"))
+	derived := service.RecordingRedactedExportInput{Target: in.Target, InstanceID: in.InstanceID, JobID: in.JobID, JobSHA256: in.JobSHA256, Representation: "redacted", IncludePrivateData: in.IncludePrivateData}
+	valid := in.Validate() == nil
+	if *redacted {
+		valid = derived.Validate() == nil
+	}
+	if f.NArg() != 0 || *original == *redacted || !valid || *output == "" || *redacted && *timingIndex {
+		return fail(errors.New("require an exact saved job, exactly one of --original or --redacted, --include-private-data and a fresh private --output path; --timing-index is an original-only option"))
 	}
 	if config == "" {
 		var err error
@@ -52,7 +58,13 @@ func recordingExport(ctx context.Context, args []string, config string) int {
 		return fail(err)
 	}
 	var index recording.TimingIndexSummary
+	var redaction recording.RedactedBundleSummary
 	digest, err := writeRecordingExport(*output, func(output io.Writer) error {
+		if *redacted {
+			var err error
+			redaction, err = core.WriteRedactedRecordingBundle(ctx, derived, output)
+			return err
+		}
 		if *timingIndex {
 			var err error
 			index, err = core.WriteRecordingBundleWithTimingIndex(ctx, in, output)
@@ -64,6 +76,9 @@ func recordingExport(ctx context.Context, args []string, config string) int {
 		return fail(err)
 	}
 	result := map[string]any{"status": "exported", "output": *output, "sha256": digest, "representation": "original", "retained_files_complete": true, "runtime_complete": false}
+	if *redacted {
+		result = map[string]any{"status": "exported", "output": *output, "sha256": digest, "representation": "redacted", "verified_prefix_transformed": true, "runtime_complete": false, "redaction": redaction}
+	}
 	if *timingIndex {
 		result["timing_index"] = index
 	}

@@ -1556,3 +1556,12 @@ read timestamp and binds exact immutable content; continuation refuses changes.
 Focused source/interface checks do not qualify current native indexed exports,
 matching artifacts, installed upgrades or preserved DEV. Complete redacted
 bundles and pressure/retirement remain separate work.
+
+M739 adds complete derived redacted ZIPs through distinct shared manifest/part
+operations and an explicit `--redacted` CLI choice. Both derived representations
+use the same bounded original-frame verifier; original/index regression checks
+remain required after refactoring. Exact binding/body omissions and escaped
+views never rewrite raw storage. No sidecar/cache, persistence schema or new
+retention/runtime authority is added. Every derived part re-verifies/re-derives
+the source and exact ZIP. Earlier callers remain usable; matching current
+tools/reference/native export and installed/preserved DEV gates remain required.

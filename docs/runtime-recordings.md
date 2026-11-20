@@ -941,7 +941,7 @@ not publication. MCP clients obtain the same manifest/parts without arbitrary
 local destination paths. The shared writer has no filesystem access itself.
 
 The later source-qualified optional timestamp index/query is described below;
-a complete redacted bundle remains open.
+the later complete derived redacted contract is also described below.
 The existing bounded derived redacted windows remain available privately. Review
 exports before sharing. No persistence/schema65 change occurs. Matching clean
 artifacts and all180 generated reference entries now pass their [build/reference gate](diagnostics/2026-11-19-recording-original-export-artifacts.json). The [matching native export rehearsal](diagnostics/2026-11-19-recording-original-export-native.json) now passes for both closed original sessions, with independent raw original/ZIP/SQL checks and exact original07 timing/digest chains. This qualifies closed original exports only; the remaining gates above stay open.
@@ -1012,3 +1012,81 @@ artifacts, generated flag reference, independent native indexed export and final
 installed/preserved DEV qualification remain pending. This source addition changes
 no persisted recording/job/control format or schema65, and does not update an
 installed namespace or existing ship.
+
+## Complete derived redacted export — development contract
+
+`recording-export --redacted` is a distinct explicit choice from `--original`.
+Both still require operator access, exact saved job/digest, private-data consent
+and a fresh0600 ZIP in an existing physical owner-private0700 directory. Selecting
+both choices, neither, or combining `--redacted` with the original-only
+`--timing-index` option refuses before source access. Redacted output never falls
+through to publishing original metadata or encoded recording files.
+
+The derived ZIP contains only:
+
+- `manifest.json`: fixed transformation policy, technical runtime/image/transport
+  facts, revision/attachment time, original content hashes and the owner-review
+  requirement. Exact runner/instance/container/operation/request identities,
+  addresses, storage paths and the original attachment-identity body are omitted.
+- `redacted-frames.jsonl`: escaped literal spans and explicit omission reasons,
+  original timing/sequence/stream/offset/length/digest metadata, typed gap evidence
+  and technical exit/OOM/error flags. An exit container binding becomes the
+  explicit alias `container-1`; it is not a real target for an action.
+- `coverage.json`: final verified-prefix/source checks, transformed frame count,
+  original frame-payload bytes, omitted stream bytes, aliased exit bindings and
+  derived content size. Content size excludes this final coverage record to avoid
+  a self-referential count; the record still counts toward the output limit.
+
+Finite credential-label rules retain ordinary diagnostic atoms such as `0w...`.
+Frames are transformed in bounded windows of at most64frames/128KiB raw payload;
+partial leading/trailing lines are omitted with reasons, verified prior newline
+context is carried per stream and gaps reset it. The Go formatter can additionally
+accept ephemeral selected single-line literals; they are not stored in metadata,
+and literals containing CR/LF refuse. The shared CLI/MCP preset uses credential
+rules without an arbitrary secret-file selector. This is finite payload redaction,
+not a guarantee that every secret/private application value was identified.
+Technical strings, timing and hashes can still be sensitive. The artifact remains
+owner-private for preview/review before any separately authorized sharing.
+
+The formatter uses the same verified original-frame scanner as timing queries.
+It verifies every selected original file/chunk/header/chain and coverage before
+writing final coverage or ZIP completion. Original files remain unchanged. Damaged
+unparsed tails are hashed and reported but never copied into a redacted artifact.
+`verified_prefix_transformed` is separate from original retained-file coverage;
+`runtime_complete` stays false. Derived content is bounded to256MiB, records to
+4MiB and frames to the same finite verified-scan limit. Limits and read/write/
+source/transform errors keep incomplete output under `.partial`, with no raw
+fallback or automatic repair.
+
+The CLI streams the shared operations:
+
+```sh
+omabit --config-dir PROFILE recording-export \
+  --runner NAME --expected-runner-id ID --instance INSTANCE \
+  --job JOB_ID --job-sha256 JOB_SHA256 \
+  --redacted --include-private-data --output /absolute/private/redacted.zip
+```
+
+MCP and `omabit call` expose
+`runtime.recording-redacted-export-manifest.v1` and
+`runtime.recording-redacted-export-part.v1`, both requiring
+`representation=redacted` and `include_private_data=true`. They use the existing
+original-read adapter privately to perform the transformation; they publish only
+the derived manifest or requested ZIP chunk. The manifest fixes source/whole-ZIP
+size/hash and256KiB chunk hashes. Every part request re-verifies and re-derives the
+whole closed source/ZIP before returning that exact chunk. A changed source,
+formatter/policy or ZIP refuses. This first implementation avoids a persistent
+derived cache or new retention authority at the cost of repeated scans; large or
+slow exports can be expensive and may hit each operation's six-minute bound.
+Earlier caller deadlines still apply. There are no model-supplied local paths,
+worker/runtime effects, background jobs or publication actions.
+
+This changes no persisted recording/job/control format or schema65.
+[Focused codec, original/index/timing/redaction regressions and actual CLI/official
+SDK manifest/part/ZIP checks](diagnostics/2026-11-19-recording-redacted-export-source.json)
+pass with race instrumentation; focused vet passes. The first interface run stays
+failed: its fixture reused a container hash as the technical image digest and the
+privacy assertion matched that retained digest. Distinct fixture hashes preserve
+both the omission check and technical metadata policy. Matching frozen/native
+export, generated reference and installed/preserved DEV qualification remain
+separate gates. Retention, pressure and other runtime factories are separate work.

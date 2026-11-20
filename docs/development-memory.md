@@ -13601,3 +13601,54 @@ source or frozen artifact is retired. Final full charge51,136,983,040 stays belo
 complete redacted bundles, oldest coverage/retirement/pressure/other factories,
 resource containment and final installed/preserved DEV gates remain open.
 Production, existing ships and installed/manual-review state remain unchanged.
+
+
+## M739 — Complete derived redacted ZIP with shared manifest/parts and explicit choice (2026-11-19)
+
+Supersede M738's pending complete redacted export implementation only. Factor
+original metadata/chunk/whole-file/codec/coverage verification into one private
+bounded scanner shared by timing and redacted output. Never rewrite originals.
+Transform at most64frames/128KiB per window through the existing escaped-literal
+credential rules, carrying only independently verified newline context per stream
+and resetting it at gaps. Withhold leading/trailing partial lines. Optional Go
+formatter literals are ephemeral and single-line; the shared default exposes no
+secret-file selector. Finite rules still require owner review before sharing.
+
+A private ZIP contains only technical manifest, escaped frame windows with full
+timing/digest/omission reasons and final verified coverage. Exact identities,
+paths/attachment body, raw metadata and encoded originals are omitted. Exit137/
+OOM/status facts remain typed; container ID becomes an explicit alias/omission.
+Counters distinguish all verified frame-payload bytes, omitted stream bytes and
+aliased exit bindings. Content-size excludes the self-referential coverage record,
+which still counts toward its limit. Damaged tail bytes are hashed/reported but
+not copied. No final coverage/ZIP directory appears before full verification.
+Derived content/ZIP is bounded256MiB, records4MiB and verified frames1,048,576.
+
+Shared `runtime.recording-redacted-export-{manifest,part}.v1` retain exact operator/
+job/private consent and explicit representation=redacted. The deterministic
+manifest binds source/ZIP/size/256KiB hashes; each part rederives/verifies the whole
+source before returning one chunk. This avoids persistent derived cache/retention
+authority but can be expensive for large exports; each operation has a trusted
+six-minute bound. CLI `--redacted` uses these same handlers and existing private
+partial/no-overwrite publication. Ambiguous/no choices, original choice through
+the derived API, or the original-only index flag refuse without raw fallback.
+
+Library races first pass1.683s. Source02's interface run remains failed: its
+fixture reused c*64 as both container ID and technical image digest. The omission
+assertion therefore matched the intentionally retained image hash in manifest.
+Use a distinct9*64 container fixture without weakening omission/metadata rules;
+also make lifecycle alias/stream omission counters and manifest checks explicit.
+Final codec/redaction/index/timing/segment/default-export races pass1.775s, actual
+CLI/official-SDK manifest/part/real ZIP plus original/index regressions40.469s,
+catalog2.247s and three-package vet. Independent chunk-boundary hashes, whole ZIP
+assembly/read-time stability, source/request/choice/consent/hash/writer failures,
+split literal/line/gap omissions,0w diagnostics and original byte preservation
+pass. See the [source report](diagnostics/2026-11-19-recording-redacted-export-source.json).
+
+No further cache/scratch/image retirement occurs. Final full charge51,297,136,640
+stays below51,539,607,552; final exact scopes are inactive/empty. Schema65 and raw
+capture/job/control formats are unchanged. Matching clean artifacts/reference,
+independent native indexed/redacted exports and preservation, oldest coverage/
+retirement/pressure/other factories, resource containment and final installed/
+preserved DEV gates remain open. Production, existing ships and installed/
+manual-review state remain unchanged; the failed fixture run remains retained.

@@ -25,7 +25,7 @@ import (
 )
 
 func TestCLIAndMCPTimingQueryAndExplicitIndexedExport(t *testing.T) {
-	ctx, cancel := context.WithTimeout(t.Context(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
 	defer cancel()
 	config := filepath.Join(t.TempDir(), "registry")
 	registry, err := collection.Open(config)
@@ -52,7 +52,7 @@ func TestCLIAndMCPTimingQueryAndExplicitIndexedExport(t *testing.T) {
 	}
 	const revision = uint64(9007199254740993)
 	meta.RunnerID, meta.Mode, meta.InstanceID, meta.ConfigurationRevision = "runner", "simulation", "alpha", revision
-	meta.ContainerID, meta.OperationID, meta.RequestID = strings.Repeat("c", 64), "op-timing", "start-timing"
+	meta.ContainerID, meta.OperationID, meta.RequestID = strings.Repeat("9", 64), "op-timing", "start-timing"
 	metadataRaw, err = meta.Bytes()
 	if err != nil {
 		t.Fatal(err)
@@ -72,14 +72,14 @@ func TestCLIAndMCPTimingQueryAndExplicitIndexedExport(t *testing.T) {
 		if i%2 != 0 {
 			kind = recording.Stderr
 		}
-		if _, err = encoder.Append(kind, []byte("private-payload-marker\x00\x1b[2K\xff\n"), wall-int64(i), uint64(i)); err != nil {
+		if _, err = encoder.Append(kind, []byte("private-payload-marker Authorization: secret-hidden-unique\x00\x1b[2K\xff\n"), wall-int64(i), uint64(i)); err != nil {
 			t.Fatal(err)
 		}
 	}
 	files := map[string][]byte{"metadata.json": metadataRaw, "frames.obr": encoded.Bytes()}
 	digest := func(data []byte) string { h := sha256.Sum256(data); return hex.EncodeToString(h[:]) }
 	in := service.RecordingTimingInput{RecordingExportInput: service.RecordingExportInput{Target: service.Target{Name: "dev", RunnerID: "runner"}, InstanceID: "alpha", JobID: strings.Repeat("d", 32), JobSHA256: strings.Repeat("e", 64), Representation: "original", IncludePrivateData: true}, Query: recording.TimingQuery{Kind: recording.Stdout, Limit: 2, ContextBefore: 1}}
-	manifest := recording.ExportManifest{Version: 1, Metadata: meta, MetadataSHA256: digest(metadataRaw), Representation: "original", ChunkBytes: recording.ExportChunkBytes, Coverage: recording.ExportCoverage{VerifiedFrames: 8, OutputBytes: uint64(8 * len("private-payload-marker\x00\x1b[2K\xff\n")), FirstUnixNano: wall, LastUnixNano: wall - 7, Tail: "snapshot-eof"}, RetainedFilesComplete: true, ReadAt: time.Now().UTC(), Basis: "real-codec private CLI/official-SDK fixture; no live runtime"}
+	manifest := recording.ExportManifest{Version: 1, Metadata: meta, MetadataSHA256: digest(metadataRaw), Representation: "original", ChunkBytes: recording.ExportChunkBytes, Coverage: recording.ExportCoverage{VerifiedFrames: 8, OutputBytes: uint64(8 * len("private-payload-marker Authorization: secret-hidden-unique\x00\x1b[2K\xff\n")), FirstUnixNano: wall, LastUnixNano: wall - 7, Tail: "snapshot-eof"}, RetainedFilesComplete: true, ReadAt: time.Now().UTC(), Basis: "real-codec private CLI/official-SDK fixture; no live runtime"}
 	for _, name := range []string{"metadata.json", "frames.obr"} {
 		data := files[name]
 		manifest.Files = append(manifest.Files, recording.ExportFile{Name: name, Bytes: int64(len(data)), SHA256: digest(data), Chunks: []string{digest(data)}})
@@ -243,4 +243,112 @@ func TestCLIAndMCPTimingQueryAndExplicitIndexedExport(t *testing.T) {
 	if !found {
 		t.Fatal("indexed ZIP omitted index")
 	}
+	// Both explicit derived operations use the same authenticated original source
+	// while publishing only transformed ZIP bytes and sanitized technical summaries.
+	var derivedManifest recording.RedactedExportManifest
+	for _, operation := range []string{"runtime.recording-redacted-export-manifest.v1", "runtime.recording-redacted-export-part.v1"} {
+		for _, name := range []string{"ok", "observer", "missing-capability", "no-consent", "original-choice", "wrong-reply", "bad-part", "transport-lost"} {
+			variant.Store(name)
+			selected := service.RecordingRedactedExportInput{Target: in.Target, InstanceID: in.InstanceID, JobID: in.JobID, JobSHA256: in.JobSHA256, Representation: "redacted", IncludePrivateData: name != "no-consent"}
+			if name == "original-choice" {
+				selected.Representation = "original"
+			}
+			var request any = selected
+			if operation == "runtime.recording-redacted-export-part.v1" {
+				request = service.RecordingRedactedExportPartInput{RecordingRedactedExportInput: selected, SourceSHA256: derivedManifest.SourceSHA256, ZIPBytes: derivedManifest.ZIPBytes, ZIPSHA256: derivedManifest.ZIPSHA256, ChunkSHA256: derivedManifest.Chunks[0]}
+			}
+			raw, _ := json.Marshal(request)
+			before := reads.Load()
+			cli, cliErr := coreTestCommand(t, "--config-dir", config, "call", operation, "--input-json", string(raw)).CombinedOutput()
+			tool, err := session.CallTool(ctx, &mcp.CallToolParams{Name: "omabit." + operation, Arguments: json.RawMessage(raw)})
+			if err != nil || len(tool.Content) != 1 || !bytes.Equal(bytes.TrimSpace(cli), []byte(tool.Content[0].(*mcp.TextContent).Text)) {
+				t.Fatal("redacted CLI/MCP mismatch", operation, name, err, string(cli), tool)
+			}
+			if name == "ok" {
+				if cliErr != nil || tool.IsError || reads.Load() != before+6 {
+					t.Fatal("derived operation failed", operation, cliErr, string(cli))
+				}
+				if operation == "runtime.recording-redacted-export-manifest.v1" {
+					var out struct {
+						Data recording.RedactedExportManifest `json:"data"`
+					}
+					if json.Unmarshal(cli, &out) != nil || out.Data.Validate() != nil {
+						t.Fatal("invalid derived manifest")
+					}
+					derivedManifest = out.Data
+				} else {
+					var out struct {
+						Data recording.RedactedExportPart `json:"data"`
+					}
+					if json.Unmarshal(cli, &out) != nil || out.Data.Validate() != nil {
+						t.Fatal("invalid derived part")
+					}
+					h := sha256.Sum256(out.Data.Data)
+					if hex.EncodeToString(h[:]) != derivedManifest.Chunks[0] {
+						t.Fatal("derived part bytes differ")
+					}
+				}
+			} else {
+				expected := int32(2)
+				if name == "observer" || name == "missing-capability" || name == "no-consent" || name == "original-choice" {
+					expected = 0
+				}
+				if name == "bad-part" {
+					expected = 6
+				}
+				if cliErr == nil || !tool.IsError || reads.Load() != before+expected || bytes.Contains(cli, []byte("secret-hidden-unique")) || bytes.Contains(cli, []byte("op-timing")) {
+					t.Fatal("derived refusal leaked or retried", operation, name, cliErr, string(cli), reads.Load()-before)
+				}
+			}
+		}
+	}
+	variant.Store("ok")
+	redactedPath := filepath.Join(outputDir, "redacted.zip")
+	args := []string{"--config-dir", config, "recording-export", "--runner", "dev", "--expected-runner-id", "runner", "--instance", "alpha", "--job", in.JobID, "--job-sha256", in.JobSHA256, "--redacted", "--include-private-data", "--output", redactedPath}
+	redactedRaw, err := coreTestCommand(t, args...).CombinedOutput()
+	if err != nil || !bytes.Contains(redactedRaw, []byte(`"representation":"redacted"`)) {
+		t.Fatal("actual redacted CLI export failed", err, string(redactedRaw))
+	}
+	derived, err := zip.OpenReader(redactedPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer derived.Close()
+	if len(derived.File) != 3 {
+		t.Fatal("derived ZIP has raw or missing entries")
+	}
+	var rendered []byte
+	for _, f := range derived.File {
+		r, err := f.Open()
+		if err != nil {
+			t.Fatal(err)
+		}
+		data, err := io.ReadAll(r)
+		r.Close()
+		if err != nil || f.Mode().Perm() != 0600 {
+			t.Fatal("derived ZIP entry unsafe", err)
+		}
+		if f.Name == "metadata.json" || f.Name == "frames.obr" {
+			t.Fatal("redacted choice exported originals")
+		}
+		for _, excluded := range []string{meta.ContainerID, meta.OperationID, meta.RequestID, "secret-hidden-unique"} {
+			if bytes.Contains(data, []byte(excluded)) {
+				t.Fatal("derived ZIP leaked exact bindings/credential", f.Name)
+			}
+		}
+		if f.Name == "redacted-frames.jsonl" {
+			rendered = data
+		}
+	}
+	if !bytes.Contains(rendered, []byte("private-payload-marker")) || !bytes.Contains(rendered, []byte("credential-field-value")) {
+		t.Fatal("derived diagnostic/omission evidence missing")
+	}
+	before := reads.Load()
+	for _, extra := range [][]string{{"--original"}, {"--timing-index"}} {
+		bad := append(append([]string(nil), args...), extra...)
+		if raw, err := coreTestCommand(t, bad...).CombinedOutput(); err == nil || reads.Load() != before {
+			t.Fatal("ambiguous choice read source", err, string(raw))
+		}
+	}
+
 }

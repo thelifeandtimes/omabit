@@ -70,19 +70,31 @@ type viewStream struct {
 // spans frames or stdout/stderr are interleaved. Gap/exit payloads remain typed.
 func RenderRedactedFrames(frames []Frame, options RedactionOptions) (RedactedView, error) {
 	var out RedactedView
-	if len(frames) == 0 || len(frames) > 256 || len(options.KnownSecrets) > 32 || len(options.VerifiedLineStarts) > 3 {
+	if len(frames) == 0 || len(frames) > 256 || validateRedactionOptions(options) != nil {
 		return out, ErrInvalid
+	}
+	return renderRedactedFrames(frames, options)
+}
+
+func validateRedactionOptions(options RedactionOptions) error {
+	if len(options.KnownSecrets) > 32 || len(options.VerifiedLineStarts) > 3 {
+		return ErrInvalid
 	}
 	secretBytes := 0
 	for _, secret := range options.KnownSecrets {
 		if len(secret) < 4 || len(secret) > 4096 {
-			return out, ErrInvalid
+			return ErrInvalid
 		}
 		secretBytes += len(secret)
 	}
 	if secretBytes > 64<<10 {
-		return out, ErrInvalid
+		return ErrInvalid
 	}
+	return nil
+}
+
+func renderRedactedFrames(frames []Frame, options RedactionOptions) (RedactedView, error) {
+	var out RedactedView
 	streams := map[Kind]*viewStream{Stdout: {}, Stderr: {}, PTYCombined: {}}
 	for _, kind := range options.VerifiedLineStarts {
 		stream := streams[kind]
