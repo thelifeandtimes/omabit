@@ -14,6 +14,7 @@ import (
 	"syscall"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/collection"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/recording"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/service"
 )
 
@@ -28,6 +29,7 @@ func recordingExport(ctx context.Context, args []string, config string) int {
 	f.StringVar(&in.JobSHA256, "job-sha256", "", "exact saved job digest")
 	f.BoolVar(&in.IncludePrivateData, "include-private-data", false, "explicit owner-private recording access")
 	original := f.Bool("original", false, "explicit original bytes export choice")
+	timingIndex := f.Bool("timing-index", false, "add a separate verified payload-free timing-index.jsonl; re-reads hash-pinned originals and refuses incomplete/oversized index output")
 	output := f.String("output", "", "fresh absolute ZIP path in an existing owner-private physical directory")
 	if err := f.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -49,11 +51,23 @@ func recordingExport(ctx context.Context, args []string, config string) int {
 	if err != nil {
 		return fail(err)
 	}
-	digest, err := writeRecordingExport(*output, func(output io.Writer) error { return core.WriteRecordingBundle(ctx, in, output) })
+	var index recording.TimingIndexSummary
+	digest, err := writeRecordingExport(*output, func(output io.Writer) error {
+		if *timingIndex {
+			var err error
+			index, err = core.WriteRecordingBundleWithTimingIndex(ctx, in, output)
+			return err
+		}
+		return core.WriteRecordingBundle(ctx, in, output)
+	})
 	if err != nil {
 		return fail(err)
 	}
-	if err := json.NewEncoder(os.Stdout).Encode(map[string]any{"status": "exported", "output": *output, "sha256": digest, "representation": "original", "retained_files_complete": true, "runtime_complete": false}); err != nil {
+	result := map[string]any{"status": "exported", "output": *output, "sha256": digest, "representation": "original", "retained_files_complete": true, "runtime_complete": false}
+	if *timingIndex {
+		result["timing_index"] = index
+	}
+	if err := json.NewEncoder(os.Stdout).Encode(result); err != nil {
 		return fail(err)
 	}
 	return 0

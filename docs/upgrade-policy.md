@@ -1543,3 +1543,16 @@ preserves all stored rows and does not create an expansion or change a phase.
 Matching development tools are required; no persistent schema or downgrade
 contract changes. Original replacement/recovery adapters and native project
 measurement/installed-upgrade qualification remain pending.
+
+## Development: derived timing index/query — persistent formats unchanged
+
+The optional `recording-export --timing-index` writes a separate derived JSONL
+entry in a private ZIP; it does not place a sidecar in immutable recording storage.
+The default original exporter retains its existing one-pass behavior. Shared
+`runtime.recording-timing.v1` queries use the existing original manifest/part
+capability and authorization, with no new runner endpoint, background job,
+retention effect or schema65 migration. Stable source identity excludes a volatile
+read timestamp and binds exact immutable content; continuation refuses changes.
+Focused source/interface checks do not qualify current native indexed exports,
+matching artifacts, installed upgrades or preserved DEV. Complete redacted
+bundles and pressure/retirement remain separate work.

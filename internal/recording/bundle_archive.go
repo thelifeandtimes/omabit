@@ -14,6 +14,20 @@ import (
 // destination. On failure the output is partial and must never be published as
 // a completed bundle. fetch must not retry with a different manifest/session.
 func WriteOriginalBundle(ctx context.Context, selected ExportRequest, result ExportManifestResult, fetch func(context.Context, ExportPartRequest) (ExportPart, error), output io.Writer) error {
+	return writeOriginalBundle(ctx, selected, result, fetch, output, nil)
+}
+
+// WriteOriginalBundleWithTimingIndex explicitly adds a separate payload-free
+// index. The default exporter keeps its original one-pass behavior. Indexing
+// re-reads exact hash-pinned parts; no completed archive/summary is returned if
+// any source, codec, coverage, output or finite index limit check fails.
+func WriteOriginalBundleWithTimingIndex(ctx context.Context, selected ExportRequest, result ExportManifestResult, fetch func(context.Context, ExportPartRequest) (ExportPart, error), output io.Writer) (TimingIndexSummary, error) {
+	var summary TimingIndexSummary
+	err := writeOriginalBundle(ctx, selected, result, fetch, output, &summary)
+	return summary, err
+}
+
+func writeOriginalBundle(ctx context.Context, selected ExportRequest, result ExportManifestResult, fetch func(context.Context, ExportPartRequest) (ExportPart, error), output io.Writer, timing *TimingIndexSummary) error {
 	if result.Validate(selected) != nil || fetch == nil || output == nil || ctx.Err() != nil {
 		return ErrSelection
 	}
@@ -71,5 +85,24 @@ func WriteOriginalBundle(ctx context.Context, selected ExportRequest, result Exp
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	return z.Close()
+	var summary TimingIndexSummary
+	if timing != nil {
+		header := &zip.FileHeader{Name: "timing-index.jsonl", Method: zip.Deflate}
+		header.SetMode(0600)
+		entry, err := z.CreateHeader(header)
+		if err != nil {
+			return err
+		}
+		summary, err = WriteTimingIndex(ctx, selected, result, fetch, entry)
+		if err != nil {
+			return err
+		}
+	}
+	if err := z.Close(); err != nil {
+		return err
+	}
+	if timing != nil {
+		*timing = summary
+	}
+	return nil
 }

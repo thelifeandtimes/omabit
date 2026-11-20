@@ -13552,3 +13552,52 @@ accounting, not product/native/installed qualification. Product code stays at
 M736; all final source scopes end. Production, existing ships and installed/
 manual-review state remain unchanged. Recording timestamp/index and complete
 derived export implementation remain next; no new capability is claimed here.
+
+
+## M738 — Verified payload-free timing index, query and optional ZIP entry (2026-11-19)
+
+Supersede M737's pending first timestamp-index/query implementation only. Add a
+portable bounded original-part reader verifying metadata, each chunk and complete
+file SHA, then decode exact segment/sequence/digest, receive epoch, stream and
+exit/gap rules. Index only the complete verified prefix; still drain/hash corrupt
+tails and later unparsed files and compare every manifest coverage field before
+emitting an end record. Never write or repair originals. JSONL exposes source
+bindings, filenames/offsets/lengths, wall/receive timing, stream/payload lengths
+and digests, with no payload contents. The stable content digest excludes volatile
+read time.1,048,576frames/256MiB total/256KiB line limits fail without completion.
+Retained/raw/verified-prefix completeness never establishes runtime completeness.
+
+Typed `runtime.recording-timing.v1` uses the same original export authority with
+operator/private consent and no new runner endpoint or filesystem selector. Filter
+inclusive wall ranges/stream, order by sequence, require exact source digest for
+continuation, and return a separately authorized cursor to surrounding original
+context. No matches escape before complete verification. Six-minute trusted
+catalog timeout preserves earlier caller deadlines. `recording-export
+--timing-index` explicitly adds a0600 payload-free index and re-reads pinned parts;
+default export keeps its one-pass entries/behavior. Failed second-pass reads do
+not close/publish an archive. No persistent schema/capture/control change occurs.
+
+The first source invocation fails only a test int64-versus-int comparison before
+execution; retain its report and correct the explicit cast. Focused races then
+pass exact raw-byte offsets/digests, reversed wall time, rotation/restart and
+corrupt-tail gaps, incomplete/corrupt/empty/exit/extra-after-exit, source changes,
+hash/coverage mismatch, cancellation/fetch/short writes and no payload leakage.
+Query continuation/time filters and original context cursor are checked against
+actual stored payload. Indexed ZIP retains every raw file/mode/hash and has no
+completion directory after an injected second-pass failure.
+
+Final codec/default-export/segment races pass1.609s. Actual CLI/official-SDK query
+and real-codec optional ZIP plus existing default/private-history interface races
+pass29.863s; catalog2.262s and three-package vet pass. Exact integers above2^53,
+operation/session bindings and all private role/capability/consent/target/source/
+part/transport refusals remain. See the
+[source report](diagnostics/2026-11-19-recording-timing-index-source.json).
+
+Before those checks, remove only28 hash/inode/format-verified pre-index Omabit
+compiler archive variants(143,446,016bytes), preserving current index and std/
+dependency cache and227 named pins. No unique VM, original capture/database/log/
+source or frozen artifact is retired. Final full charge51,136,983,040 stays below
+48GiB; all final source scopes end. Matching clean tools/reference/native index,
+complete redacted bundles, oldest coverage/retirement/pressure/other factories,
+resource containment and final installed/preserved DEV gates remain open.
+Production, existing ships and installed/manual-review state remain unchanged.

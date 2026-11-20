@@ -646,3 +646,20 @@ post-charge stays below48GiB, with no unique VM or original evidence removed.
 failure and cleanup limits. M736 product source/tests remain unchanged; recording
 index/derived exports and the remaining native/installed gates stay open. No
 production, existing ship or installed/manual-review changes occur.
+
+
+M738 adds a bounded verified payload-free JSONL timing index, optional private ZIP
+entry and shared `runtime.recording-timing.v1` CLI/MCP query. Stable source hashes,
+sequence order despite reversed wall time and an exact cursor to separately
+chosen original/redacted context preserve association. Complete metadata/chunk/
+whole-file/codec/coverage verification precedes matches/end records. Failed reads
+or limits never complete an index/archive. Default original export stays one-pass.
+The initial test-only integer-comparison build failure remains retained; final
+codec/default-export/segment and actual CLI/official-SDK/real-codec indexed ZIP
+races, catalog and vet pass. Only28 older Omabit compiler variants are retired,
+with227 named pins exact. Full51,136,983,040-byte post-charge remains below48GiB;
+[source evidence](diagnostics/2026-11-19-recording-timing-index-source.json) records
+scope/limits. Native indexed exports, matching reference/artifacts, complete
+redacted bundles, oldest coverage/pressure/retirement, other factories and final
+installed/preserved DEV remain open. No schema65, production, existing ship or
+installed/manual-review state changes.

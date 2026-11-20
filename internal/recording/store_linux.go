@@ -148,10 +148,6 @@ type SessionWriter struct {
 	terminal         bool
 }
 
-func transportKind(m Metadata, kind Kind) bool {
-	return kind == Gap || kind == Exit || m.Transport == "docker-multiplex" && (kind == Stdout || kind == Stderr) || m.Transport == "pty-combined" && kind == PTYCombined
-}
-
 // Create never reuses an existing session directory or repairs a partial one.
 // Metadata/header and directory entries sync before returning an attachment.
 // A failed create leaves its original incomplete files for explicit diagnosis.

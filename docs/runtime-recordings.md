@@ -940,7 +940,75 @@ only after verified ZIP completion and file sync. This is a local artifact write
 not publication. MCP clients obtain the same manifest/parts without arbitrary
 local destination paths. The shared writer has no filesystem access itself.
 
-A separate searchable timestamp index and complete redacted bundle remain open;
-the existing bounded derived redacted windows remain available privately. Review
+The later source-qualified optional timestamp index/query is described below;
+a complete redacted bundle remains open.
+The existing bounded derived redacted windows remain available privately. Review
 exports before sharing. No persistence/schema65 change occurs. Matching clean
 artifacts and all180 generated reference entries now pass their [build/reference gate](diagnostics/2026-11-19-recording-original-export-artifacts.json). The [matching native export rehearsal](diagnostics/2026-11-19-recording-original-export-native.json) now passes for both closed original sessions, with independent raw original/ZIP/SQL checks and exact original07 timing/digest chains. This qualifies closed original exports only; the remaining gates above stay open.
+
+## Optional timing index and query — development source
+
+The development CLI can add `--timing-index` to the original export command.
+This adds a separate0600 `timing-index.jsonl` entry while retaining every original
+encoded file unchanged. The default original exporter keeps its one-pass behavior.
+Indexing re-reads the exact selected parts, verifies chunk and whole-file hashes,
+metadata/header/segment links, receive-clock epochs, stream kind, terminal/gap
+rules and the manifest's complete verified-prefix coverage. Corrupt/torn tail and
+later unparsed files are still hashed, never repaired. Failed indexing prevents
+ZIP completion/publication and leaves the private `.partial` file.
+
+The bounded JSONL has one source header, ordered frame metadata rows and a final
+verified-coverage record. Rows contain the original encoded filename/uncompressed
+byte offset/length, sequence, wall Unix nanoseconds, receive epoch/elapsed time,
+stream, payload length and linked digest. They contain no payload bytes. The
+source identity hashes immutable job/session/metadata/file identities and coverage,
+excluding the export's volatile read timestamp. Identical source content therefore
+has the same index despite a later manifest read. Hashes detect changes, not source
+authenticity. These identities/times remain operator-private even without payloads.
+
+At most1,048,576frames and256MiB of uncompressed index, with256KiB maximum lines,
+are supported by this first index version. Hitting a limit fails without a final
+index record or completed summary. Original export without an index remains
+available. Complete verified prefix, all selected raw files and runtime coverage
+are separate: `runtime_complete` remains false, including after a saved exit.
+
+The same verified producer supplies the typed CLI/MCP query:
+
+```sh
+omabit --config-dir PROFILE call runtime.recording-timing.v1 --input-json \
+  '{"name":"NAME","runner_id":"ID","instance_id":"INSTANCE","job_id":"JOB_ID","job_sha256":"JOB_SHA256","representation":"original","include_private_data":true,"query":{"limit":64,"context_before":8}}'
+```
+
+Replace the example values with an exact saved descriptor. MCP exposes
+`omabit.runtime.recording-timing.v1`. The selected runner must support the existing
+original export adapter; all manifest/part reads retain operator/private-consent
+and exact job/session/hash checks. The query adds no runner endpoint, arbitrary
+filesystem selector, worker action or background job. It returns no payload text.
+
+Optional `from_unix_nano` and `through_unix_nano` are inclusive wall-time bounds;
+`kind` is0(all),1(stdout),2(stderr),3(combined PTY),4(gap) or5(exit). Results remain
+ordered by sequence because wall time can reverse. `limit` is1–256 and
+`context_before` is0–32. If `has_more`, use `next_after_sequence` as
+`after_sequence` and preserve `index.source_sha256` in `expected_source_sha256`.
+A changed source refuses continuation. Every query scans and verifies the bounded
+source before returning any matches; no partial matches escape a failed read.
+The shared operation has a six-minute trusted bound and honors earlier caller
+deadlines. Slow transports or larger sources may refuse rather than return an
+unverified result.
+
+With matches, `context_from` selects the original page before the first match;
+null means the retained beginning. Use the exact returned job/session/metadata
+bindings with `runtime.recording-page.v1`, explicitly choosing original or
+redacted and private-data consent again. This makes surrounding original context
+accessible without treating an index as new read/action authority. Operation and
+session associations remain in the exact selected source descriptor; catalog
+selection can choose a different historical job. This is timestamp/stream
+filtering, not payload text search, full-runtime coverage or a retention policy.
+
+[Focused codec/segment/offset/epoch/gap/exit/source-change races, actual CLI/official
+SDK query/indexed ZIP parity and default-export regressions](diagnostics/2026-11-19-recording-timing-index-source.json)
+pass. Matching clean
+artifacts, generated flag reference, independent native indexed export and final
+installed/preserved DEV qualification remain pending. This source addition changes
+no persisted recording/job/control format or schema65, and does not update an
+installed namespace or existing ship.

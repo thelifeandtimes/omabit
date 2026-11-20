@@ -18,6 +18,7 @@ func TestCatalogTimeoutsCoverLongRPCAndIdentityHandshakeBounds(t *testing.T) {
 	want["app.review-runtime-recovery.v1"] = protocol.GrubberyAppTimeout + 15*time.Second
 	want["app.apply-runtime-recovery.v1"] = protocol.GrubberyAppTimeout + 15*time.Second
 	want["project.allocation.v1"] = protocol.ProjectAllocationTimeout + 15*time.Second
+	want["runtime.recording-timing.v1"] = 6 * time.Minute
 	for _, d := range s.Catalog() {
 		if d.TimeoutMillis < 1 || d.TimeoutMillis > (16*time.Minute).Milliseconds() {
 			t.Fatal("unbounded operation", d.ID)

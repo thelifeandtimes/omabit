@@ -11,6 +11,16 @@ import (
 // WriteRecordingBundle composes the same public operations used by CLI/MCP. It
 // grants no extra authority and writes only to its caller-supplied stream.
 func (s *Service) WriteRecordingBundle(ctx context.Context, in RecordingExportInput, output io.Writer) error {
+	return s.writeRecordingBundle(ctx, in, output, nil)
+}
+
+func (s *Service) WriteRecordingBundleWithTimingIndex(ctx context.Context, in RecordingExportInput, output io.Writer) (recording.TimingIndexSummary, error) {
+	var summary recording.TimingIndexSummary
+	err := s.writeRecordingBundle(ctx, in, output, &summary)
+	return summary, err
+}
+
+func (s *Service) writeRecordingBundle(ctx context.Context, in RecordingExportInput, output io.Writer, timing *recording.TimingIndexSummary) error {
 	if in.Validate() != nil {
 		return invalid()
 	}
@@ -23,7 +33,7 @@ func (s *Service) WriteRecordingBundle(ctx context.Context, in RecordingExportIn
 	if !ok {
 		return recording.ErrSelection
 	}
-	return recording.WriteOriginalBundle(ctx, in.request(), manifest, func(ctx context.Context, part recording.ExportPartRequest) (recording.ExportPart, error) {
+	fetch := func(ctx context.Context, part recording.ExportPartRequest) (recording.ExportPart, error) {
 		request := RecordingExportPartInput{RecordingExportInput: in, SessionID: part.SessionID, MetadataSHA256: part.MetadataSHA256, FileName: part.FileName, FileBytes: part.FileBytes, ChunkIndex: part.ChunkIndex, ChunkSHA256: part.ChunkSHA256}
 		raw, _ := json.Marshal(request)
 		result := s.Call(ctx, "runtime.recording-export-part.v1", raw)
@@ -35,5 +45,13 @@ func (s *Service) WriteRecordingBundle(ctx context.Context, in RecordingExportIn
 			return recording.ExportPart{}, recording.ErrSelection
 		}
 		return value, nil
-	}, output)
+	}
+	if timing != nil {
+		summary, err := recording.WriteOriginalBundleWithTimingIndex(ctx, in.request(), manifest, fetch, output)
+		if err == nil {
+			*timing = summary
+		}
+		return err
+	}
+	return recording.WriteOriginalBundle(ctx, in.request(), manifest, fetch, output)
 }

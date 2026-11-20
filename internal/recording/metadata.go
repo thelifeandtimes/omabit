@@ -144,3 +144,7 @@ func (m Metadata) CheckHeader(h Header) error {
 	}
 	return nil
 }
+
+func transportKind(m Metadata, kind Kind) bool {
+	return kind == Gap || kind == Exit || m.Transport == "docker-multiplex" && (kind == Stdout || kind == Stderr) || m.Transport == "pty-combined" && kind == PTYCombined
+}
