@@ -1181,3 +1181,18 @@ complete redacted manifests remain equal to the earlier4c source; new chronology
 is a derived response summary. This supersedes the matching native deferral for
 the selected closed prefix only; broader inventory, active pressure/retention,
 factories and installed/preserved DEV remain separate gates.
+
+### Final0.5.0 bounded pressure qualification (M770)
+
+The actual frozen bdf4397 release binaries pass the whole native pressure case:
+finite synthetic burst/long-line Docker transport, session ceiling, actual private
+filesystem reserve refusal, explicit incomplete coverage, continued native runtime,
+same-pier sessions, unchanged earlier recordings, no-eviction job-capacity refusal
+and final clean Stop. Independent original frame decoding, all job-content hashes
+and saved SQLite receipts agree with the guest proof. See
+[exact evidence](diagnostics/2026-11-20-recording-pressure-final.json).
+
+This qualifies the opt-in ordinary fake runtime path only. Automatic retirement,
+age enforcement, host-wide pressure recovery, other runtime factories and active
+worker upgrades remain outside this evidence. Closed exports and final stable
+upgrade/DEV qualification are separate gates.

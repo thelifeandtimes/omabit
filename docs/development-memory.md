@@ -14359,3 +14359,26 @@ Full release-head CI and matching native Stop/app/recording/upgrade cases remain
 gates. The final stable59→65 service rehearsal, preserved DEV and protected
 review/publication have not occurred. The existing production and DEV services,
 plugins, piers, preferences and history remain unchanged.
+
+## M770 — Final0.5.0 native recording pressure and capacity gate passes (2026-11-20)
+
+The fifth whole case uses the actual frozen bdf4397 release binaries and passes
+all nine gates. Independently decode all three original session exports and hash
+every content file plus all five JSON files per job. SQLite preserves the exact
+failed capacity receipt; complete native inventories remain empty, all three jobs
+remain byte-identical, and the final ordinary Stop leaves desired/observed stopped.
+Commitments remain17MiB for three retained jobs. Empty lock hashes are guest-proof
+evidence, explicitly distinguished from independently exported content.
+
+[Final pressure evidence](diagnostics/2026-11-20-recording-pressure-final.json)
+qualifies finite synthetic burst/long-line Docker transport, a1MiB session ceiling,
+and actual isolated-filesystem free-space refusal with explicit incomplete coverage.
+It does not establish automatic retirement, age enforcement, host-wide pressure
+recovery, other factories or active-worker upgrades. M763/M765/M768 partial cases
+remain failed; this fresh whole pass supersedes their pending retry requirement.
+
+Retire only five classified ended images/boot copies after independent verification,
+no-holder/scope checks and unchanged original backing hashes, reclaiming1,611,563,008
+allocated bytes. Full aggregate charge46,739,451,904bytes remains below48GiB.
+Original app/recording transition fixtures, compact evidence and all installed/DEV
+state remain. Final native Stop/app/export and stable59→65/DEV/release gates remain.
