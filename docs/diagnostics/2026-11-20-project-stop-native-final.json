@@ -1,0 +1,188 @@
+{
+  "memory": "M771",
+  "status": "passed",
+  "source_commit": "bdf43978e1d0ea858c3349b787e2ff8eaa1252ad",
+  "harness_commit": "a4f2544b251b86a22ff736f5fe0083fa370e53c3",
+  "native": {
+    "qemu_exit": 0,
+    "helper_exit": 0,
+    "six_exact_ordered_trace_bindings": true,
+    "one_SIGTERM": true,
+    "terminal_stop_succeeded": true,
+    "actual_original_full_receipt_lookup_unchanged": true,
+    "same_pier_new_container_start": true,
+    "peer_and_anchor_processes_unchanged": true,
+    "final_three_fakes_stopped": true,
+    "original_backings_unchanged": true
+  },
+  "inherited_tables": {
+    "app_development_policy": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "app_development_policy_history": {
+      "rows": 2,
+      "unchanged": true
+    },
+    "desk_operations": {
+      "rows": 4,
+      "unchanged": true
+    },
+    "desk_operation_history": {
+      "rows": 14,
+      "unchanged": true
+    },
+    "desk_settings": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "desk_settings_history": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "desk_source_baselines": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "desk_adoptions": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "desk_deployments": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "desk_source_ownership": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "desk_releases": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "desk_receivers": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "desk_frontends": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "grubbery_app_clock": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "grubbery_app_operations": {
+      "rows": 2,
+      "unchanged": true
+    },
+    "grubbery_app_events": {
+      "rows": 63,
+      "unchanged": true
+    },
+    "grubbery_app_leases": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "runtime_recording_intents": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "runtime_recording_head": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "runtime_recording_control_events": {
+      "rows": 0,
+      "unchanged": true
+    },
+    "runtime_recording_control_head": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "grubbery_app_runtime_recoveries": {
+      "rows": 1,
+      "unchanged": true
+    },
+    "grubbery_app_runtime_heads": {
+      "rows": 2,
+      "unchanged": true
+    },
+    "instances": {
+      "rows": 1,
+      "identity_intent_runtime_configuration_unchanged": true,
+      "allowed_refresh_fields": {
+        "runtime_revision_before": 511,
+        "runtime_revision_after": 539,
+        "observed_at_before": "2026-11-19T21:27:14.783109446Z",
+        "observed_at_after": "2026-11-20T18:51:39.269911365Z"
+      }
+    }
+  },
+  "proof_sha256": "44f485c79f9612b8d360ef01b7348964c19b26ec8137bb8f27ef93ee2d00a151",
+  "limits": "This exact guarded native Stop interleaving at frozen bdf4397 release binaries is qualified. It does not prove the historical incident predicate or stable59 upgrade or preserved DEV. Production, installed and preserved manual DEV remain unchanged.",
+  "evidence": {
+    "/tmp/omabit-050-stop-evidence-04/files/commands.jsonl": "b49f6747ec18d9d0b2819412b02bc55e99cdbcec486a6f0b3954333a910d03d7",
+    "/tmp/omabit-050-stop-evidence-04/files/native-race-helper.log": "4b08d9d7e2739edb373dc216063c1fd2a23a321d274748c558f449ce6ab90c4f",
+    "/tmp/omabit-050-stop-evidence-04/files/proof.json": "44f485c79f9612b8d360ef01b7348964c19b26ec8137bb8f27ef93ee2d00a151",
+    "/tmp/omabit-050-stop-evidence-04/files/race-01-pause-intent.json": "3419a6fa0a5b218cb2399d4d58034440efc223f90e149e714bf83246e16e9f2b",
+    "/tmp/omabit-050-stop-evidence-04/files/race-02-paused.json": "c20c7c84ce2fa401443e8cb441cc9426c4204147bcc523d86c5c8195b4396451",
+    "/tmp/omabit-050-stop-evidence-04/files/race-03-term-dispatched.json": "9ad0da214aaa1ed414c520a89096f6b6e49bc1c9e6ba2059d1b539017fecb87e",
+    "/tmp/omabit-050-stop-evidence-04/files/race-04-preliminary-running.json": "c97288eb61c8c3c15886c61f623bd6cbf59bbcedadf041aba447c1616d0d9977",
+    "/tmp/omabit-050-stop-evidence-04/files/race-05-continued.json": "87c2d27c30f5f1e13037fe148a049140b27f1850648d46b6bd067c54a53453d8",
+    "/tmp/omabit-050-stop-evidence-04/files/race-06-exited-before-bracket.json": "61801f38eef3e6f324a26c8e05f66c69f85195e499fe87355ed32ba22945febc",
+    "/tmp/omabit-050-stop-evidence-04/files/result.json": "673e51ec1967ae6cb38d57f30ab96bbefaddd3604b3aa99ae20fe336669bef81",
+    "/tmp/omabit-050-stop-evidence-04/files/runner.sqlite": "d34d5f201add8b28dded0db463881c100859f701296027336714bed2f5a732dd",
+    "/tmp/omabit-050-stop-evidence-04/files/runner.sqlite-shm": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb",
+    "/tmp/omabit-050-stop-evidence-04/files/runner.sqlite-wal": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/tmp/omabit-050-stop-evidence-04/result.json": "66c6a1134d00c20510737c4bd1e1769811834f7f301376ed6821efeff095c195",
+    "/tmp/omabit-050-stop-evidence-04/command.json": "95161ecb0753b100239bfd192348c9513ef1a12adb95ea4bac2273f13fc45e40",
+    "/tmp/omabit-issues-project-transition-cow-04/host.json": "9fbdd61e14eecc8fb872885d1363b1b320ae22a710eb2ce8715fcc63b5191066",
+    "/tmp/omabit-issues-project-transition-cow-04/result.json": "77243fe165a0f7d7eb389446e931351837a0c4487af90c1c7bd3ceff27b6b73c",
+    "/tmp/omabit-issues-project-transition-cow-04/serial.log": "72c568daf3ec3bc7b1ed338ad9ac298931fcbbab4fbeb5be4aa94775f21dd772",
+    "/tmp/omabit-050-handoff/extract-stop04.py": "471f0e89a77fb363811750e0641181ce6562b8d18a819da4fa9fd3a74fc76789",
+    "/tmp/omabit-050-handoff/verify-stop04.py": "bd194aefc6ec5f4b6289c8b81b790fb711ecfbbbd348772998b10f33671b4be7"
+  },
+  "retirement": {
+    "status": "removed-after-independent-verification",
+    "reason": "Completed disposable transition adds no original migration fixture. Exact compact database, WAL/SHM, six traces, full proof, commands, logs and source/input hashes remain. Immutable app62/current65/recording transition fixtures remain. Redundant boot archives are reproducible from retained exact binary/modules. Never resume ended capsules.",
+    "files": [
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-04/root.qcow2",
+        "sha256": "90775e050a847ecc278757ee99366ca70ce2f915b9501d67edb311b83f9d3283",
+        "allocated_bytes": 1657671680
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-04/payload.ext4",
+        "sha256": "dc68367e3d23f45b0abf7262445a689253d845681842860913d7519bc2814848",
+        "allocated_bytes": 48201728
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-04/initramfs.cpio",
+        "sha256": "76928ddec47ee1e73ecf25017b58f4471587153fe16d41c736146dc3a43e95d1",
+        "allocated_bytes": 7639040
+      },
+      {
+        "path": "/tmp/omabit-issues-project-transition-cow-04/init",
+        "sha256": "4b9cca98112adba9f694f9c5e1f2eabe32b381c72902cf69c0f5e8e17ae0883d",
+        "allocated_bytes": 2633728
+      },
+      {
+        "path": "/tmp/omabit-050-stop-evidence-04/initramfs.cpio",
+        "sha256": "0180e9c45dc1f5d14b6ecb20caa11d194acfac149fbec3482d71525cfa376eaa",
+        "allocated_bytes": 7839744
+      }
+    ],
+    "reclaimed_bytes": 1723985920,
+    "after": {
+      "charged_bytes": 46756741120,
+      "budget_bytes": 51539607552,
+      "additional_scratch_bytes": 0,
+      "total_with_reserves": 46756741120
+    },
+    "full_charge_record": {
+      "path": "/tmp/omabit-050-stop-retirement04-charge.json",
+      "sha256": "92416ec7158e3a490d49ba2371e857f2df55dca2ae48efd2580106512bf3f944"
+    }
+  }
+}

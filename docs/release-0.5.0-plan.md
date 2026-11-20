@@ -1,6 +1,6 @@
 # 0.5.0 release completion plan
 
-Status: preparation, not a qualified release. The user authorized completing the
+Status: frozen candidate with partial final qualification, not a qualified release. The user authorized completing the
 issues16–21 work on2026-11-20, including a preserved DEV update and the protected
 release process. Production deployment and issue22 are outside this goal.
 
@@ -46,8 +46,8 @@ Stop or deletion authority. No issue is closed merely because code is included.
 ## Required release evidence
 
 1. Native Stop capsule and independent receipt/pier/peer/history verification pass
-   at frozen68bf233 (M760). Preserve that exact evidence; repeat the required
-   behavior against the final combined release artifacts.
+   at frozen68bf233 (M760) and final bdf4397 release binaries (M771). Preserve
+   both exact records; final stable upgrade and DEV remain separate gates.
 2. Audit all exposed capabilities and documentation against the scope above.
    Complete the scoped runtime checks and correct discovered product defects.
 3. Set all component/UI versions to0.5.0, freeze the complete runtime/UI/skill/

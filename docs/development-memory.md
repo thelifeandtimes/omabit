@@ -14382,3 +14382,27 @@ no-holder/scope checks and unchanged original backing hashes, reclaiming1,611,56
 allocated bytes. Full aggregate charge46,739,451,904bytes remains below48GiB.
 Original app/recording transition fixtures, compact evidence and all installed/DEV
 state remain. Final native Stop/app/export and stable59→65/DEV/release gates remain.
+
+## M771 — Final0.5.0 native Stop transition and preservation pass (2026-11-20)
+
+Fresh COW04 uses the actual frozen bdf4397 release binaries and matching tagged
+helper. All eight whole-case gates pass, followed by clean guest/host completion.
+Independent read-only exports verify six exact ordered timing bindings, one TERM,
+the exact saved original Stop receipt after reopen, same-pier Start in a distinct
+container, unchanged peer/anchor processes and final clean Stops. All23 inherited
+app/recording tables remain exact; the original ordinary instance differs only by
+its expected observation timestamp/runtime revision refresh.
+
+[Final Stop evidence](diagnostics/2026-11-20-project-stop-native-final.json)
+supersedes M760's final-artifact retry requirement for this exact interleaving.
+It does not establish the historical incident's exact predicate or qualify the
+stable59 upgrade, preserved DEV or publication. The first invocation refused an
+incorrect runtime input path before creating any output; the verified retained
+runtime path was then used. No product/harness edits were needed.
+
+Retire five classified ended images/boot copies only after retaining independent
+SQL/proof/traces/commands and checking empty scopes, holders and original hashes.
+This reclaims1,723,985,920bytes; full charge46,756,741,120bytes is below48GiB.
+Original app62/current65 and recording transition fixtures remain. Read-only DEV
+inventory separately confirms the expected review runner identity and schema59;
+no DEV update or ship action has occurred.
