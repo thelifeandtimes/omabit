@@ -1,0 +1,16 @@
+{
+  "memory": "M778",
+  "status": "temporary-restoration-retired-original-archive-verified",
+  "reason": "Final closed-export case and independent original/raw/index/redacted/SQL verification passed. Only restored temporary raw image and duplicate metadata are removed. Exact original compressed image and all qualification evidence retained.",
+  "reclaimed_bytes": 1268256768,
+  "charged_bytes": 46503624704,
+  "receipt": {
+    "path": "/tmp/omabit-050-retired-recording07.json",
+    "sha256": "bd6a22ab838aa370f45d17b676e95cac49dfb7e11f0639062b2b66070d4b9670"
+  },
+  "preserved": {
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp/omabit-issues-recording-vm-07/host.json": "d70ee02b19059fa3a32af41c0514023503221b5e01693f912852fdcab3301a46",
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp/omabit-issues-recording-vm-07/result.json": "29b659f6aad864f9cc6e0c4aba915f5b25420004d079c78f90f509b8d803f28f",
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/reboot-preservation-20261120-050/tmp/omabit-issues-recording-vm-07/root.qcow2.gz": "c0d3e80589a17f51f881a50277b05dbfae4f514edd8cf911151fa99744e2b1ed"
+  }
+}

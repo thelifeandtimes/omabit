@@ -57,8 +57,9 @@ history/pier/audit verification also pass
 ([M776 evidence](../../diagnostics/2026-11-20-grubbery-candidate02.json)). Exact native
 Stop and independent trace/receipt/pier/peer/history verification pass
 ([M777 evidence](../../diagnostics/2026-11-20-project-stop-candidate02.json)).
-Closed original/indexed/redacted exports remain pending, followed by the
-preserved review040 DEV update and fresh minimal app.
+Closed original/indexed/redacted exports and independent raw frame/archive/SQL
+verification pass ([M778 evidence](../../diagnostics/2026-11-20-recording-exports-candidate02.json)).
+The preserved review040 DEV update and fresh minimal app remain pending.
 Candidate source/core, all four managed-race shards, QML and aggregate source
 checks pass ([CI rollup](../../diagnostics/2026-11-20-candidate02-source-ci.json)).
 The release-policy check currently refuses the intentionally unchanged0.4.0

@@ -52,9 +52,11 @@ qualification are recorded. Matching
 [artifact/interface/desktop validation](../../diagnostics/2026-11-20-release050-candidate02-frozen-validation.json),
 [stable upgrade](../../diagnostics/2026-11-20-release050-final-upgrade.json), and
 [recording pressure](../../diagnostics/2026-11-20-recording-pressure-candidate02.json),
-and [Grubbery recovery/state/restart](../../diagnostics/2026-11-20-grubbery-candidate02.json)
-pass. Remaining native and preserved DEV gates are listed in
-[preparation](preparation.md); do not infer them from these earlier results.
+[Grubbery recovery/state/restart](../../diagnostics/2026-11-20-grubbery-candidate02.json),
+[native Stop](../../diagnostics/2026-11-20-project-stop-candidate02.json), and
+[closed recording exports](../../diagnostics/2026-11-20-recording-exports-candidate02.json)
+pass. The preserved DEV gate remains in [preparation](preparation.md); do not
+infer installed qualification from these disposable-runtime results.
 
 Legacy task help still contains older app-policy wording. The typed operation
 catalog and matching bundled workflow references define the supported commands;

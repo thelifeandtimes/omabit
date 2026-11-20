@@ -14583,3 +14583,29 @@ another1,766,367,232bytes while rechecking every exact durable original.
 the classifications and full-record hashes. Aggregate charge46,487,318,528bytes
 remains below48GiB. Final closed exports, preserved DEV, review/checks and release
 publication remain; no production or manual-ship operation occurred.
+
+## M778 — Candidate02 closed recording exports independently verified (2026-11-20)
+
+Fresh closed-export08 uses the exact frozen59d83aa products and matching helper.
+The whole host/guest case passes all ten product checks: original bytes/policy,
+CLI/SDK measurements, original manifest/parts/ZIP, indexed ZIP, timing queries,
+selected-prefix coverage and complete redacted manifest/parts/ZIP. Host exit0 has
+no interruption. This is the final matching-artifact repeat of M751's bounded case.
+
+[Candidate02 export evidence](diagnostics/2026-11-20-recording-exports-candidate02.json)
+retains the proof. A fixed read-only inspector exports12 files without executing
+source-disk code and leaves all source/backing/payload hashes unchanged. Independent
+Python analysis compares all four retained files byte for byte against the original
+recording backing, verifies ZIP manifests/chunks/modes and both complete frame
+chains (170 and32 frames), and checks indexed/redacted content against the previous
+qualified exports. Both SQLite copies pass; every original logical row remains,
+except the one permitted observation refresh. No automatic retention, active-worker
+upgrade, other runtime factory or broader incident behavior is inferred.
+
+After proof and ended-scope/holder checks, retire only five ended scratch files,
+reclaiming88,170,496bytes. Then remove the three verified temporary recording07
+restoration duplicates, reclaiming1,268,256,768bytes, while rechecking the exact
+durable compressed original and metadata. The [retirement record](diagnostics/2026-11-20-recording-input-retirement.json)
+retains the receipt hash and original pins. Full aggregate charge46,503,624,704bytes
+remains under48GiB. All original transition fixtures and manual DEV state remain.
+Preserved DEV, final release pins/checks/review and publication are still required.

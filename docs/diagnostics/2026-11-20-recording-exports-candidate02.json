@@ -1,0 +1,199 @@
+{
+  "memory": "M778",
+  "status": "passed",
+  "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+  "harness_commit": "abb1f8e5b886a4760a3ca282a913c4618c7a3ea5",
+  "native": {
+    "format": 1,
+    "kind": "issues20-recording-compact-status-v1",
+    "passed": true,
+    "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+    "proof_sha256": "e0337c7b2e4bc94e802e337819d72d8a6761c2c9207f37a3bb5ed280138a1278",
+    "helper_exit": 0,
+    "original_rows_preserved_except_one_observation": true,
+    "product": {
+      "original_recording_bytes_unchanged": true,
+      "policy_head_unchanged": true,
+      "actual_cli_and_stdio_measurements": true,
+      "actual_original_export_manifest_part_cli_mcp": true,
+      "actual_original_zip_matches_files": true,
+      "actual_indexed_zip_preserves_originals": true,
+      "actual_timing_query_cli_mcp": true,
+      "actual_retained_output_coverage_cli_mcp": true,
+      "actual_redacted_manifest_part_cli_mcp": true,
+      "actual_redacted_cli_zip_matches_parts": true
+    },
+    "error": ""
+  },
+  "independent": {
+    "format": 1,
+    "passed": true,
+    "index_files_and_complete_redacted_manifests_equal_to_prior4c_source": true,
+    "exported_evidence_files": 12,
+    "read_only_sources_inputs_backings_unchanged": true,
+    "raw_export_files_unchanged": true,
+    "both_schema65_quick_checks": "ok on separate copies",
+    "original_logical_digest_matches_guest": true,
+    "all_original_rows_values_preserved_except_observation": true,
+    "observation_refresh": {
+      "fields": [
+        "public.observed_at",
+        "runtime_revision"
+      ],
+      "before_revision": 75,
+      "after_revision": 76,
+      "fresh_observation_only": true
+    },
+    "original_recording_files_compared": 4,
+    "archives": [
+      {
+        "derived": {
+          "retained_output_first_last_sequence_and_earliest_latest_wall_times_match_originals": true,
+          "index_rows_independently_match_raw_headers_offsets_lengths_times_chain": true,
+          "timing_query_pages_filters_context_match_independent_rows": true,
+          "source_and_index_sha256_verified": true,
+          "redacted_archive_and_all_chunk_hashes_verified": true,
+          "redacted_spans_preserve_original_offsets_lengths_and_escaped_octets": true,
+          "redacted_manifest_whitelist_and_exit_alias_verified": true,
+          "redacted_final_counts_hash_coverage_verified": true,
+          "redacted_windows": 3,
+          "omitted_stream_bytes": 48,
+          "exit_bindings_aliased": 1,
+          "indexed_zip_sha256": "68bb43799d532283aa00fa3a4771ddec08f2f993a23361bb1e734a165292c357",
+          "redacted_zip_sha256": "9b958e0552cb671391b48fa3ac7b8826ad0a55e373e767fb15718a2a66daf23b"
+        },
+        "files_compared_to_original_read_only_backing": 2,
+        "parts_compared": 2,
+        "zip_sha256": "dd0b10aa2e43f4ff5e88113907100d1470b15e716ad6a604eeb6dff462cce47d",
+        "zip_bytes": 13236,
+        "manifest_digest_verified": true,
+        "metadata_and_all_encoded_bytes_exact": true,
+        "zip_entries_mode0600": true,
+        "independent_python_decode": {
+          "frames": 170,
+          "stdout_bytes": 2812,
+          "stderr_bytes": 337,
+          "stdout_sha256": "d21644ccef51502d2215e3483dc764bf4f00e2b395ab344b8a8f5cac011274b4",
+          "stderr_sha256": "3290e36c5688c35ced7936610124de465367252b0788737c8a7b5a07824cf5ae",
+          "last_sequence": 170,
+          "last_digest": "9a37d3d380ccccc7a3f15a91671cb9f1df51d5ed5136cf8b3a09f679e5927342",
+          "tail": "snapshot-eof",
+          "exit_frames": 1,
+          "gap_frames": 0
+        },
+        "exact_prior_native07_counts_streams_timing_chain": true
+      },
+      {
+        "derived": {
+          "retained_output_first_last_sequence_and_earliest_latest_wall_times_match_originals": true,
+          "index_rows_independently_match_raw_headers_offsets_lengths_times_chain": true,
+          "timing_query_pages_filters_context_match_independent_rows": true,
+          "source_and_index_sha256_verified": true,
+          "redacted_archive_and_all_chunk_hashes_verified": true,
+          "redacted_spans_preserve_original_offsets_lengths_and_escaped_octets": true,
+          "redacted_manifest_whitelist_and_exit_alias_verified": true,
+          "redacted_final_counts_hash_coverage_verified": true,
+          "redacted_windows": 1,
+          "omitted_stream_bytes": 24,
+          "exit_bindings_aliased": 1,
+          "indexed_zip_sha256": "3598cb48a0721564e739b839db214d6de0f5112291cf568b0f009f347e8984da",
+          "redacted_zip_sha256": "ab5174d1db2bab24d92646de5c4397d3fad57d5a438c14343caf5fcd5ab8b490"
+        },
+        "files_compared_to_original_read_only_backing": 2,
+        "parts_compared": 2,
+        "zip_sha256": "b554c7c812ad7af40faf07527aad29b5cd83c3ba6db53b988c6d933d71311954",
+        "zip_bytes": 5701,
+        "manifest_digest_verified": true,
+        "metadata_and_all_encoded_bytes_exact": true,
+        "zip_entries_mode0600": true,
+        "independent_python_decode": {
+          "frames": 32,
+          "stdout_bytes": 1031,
+          "stderr_bytes": 160,
+          "stdout_sha256": "4fc3af95aea0d8b1f8e94aece4328870b1018e0f538df5535405adfc01e86f96",
+          "stderr_sha256": "70a0e74122b8964de6bc133cf6e48e83f5c7ff0d96661013871481a636cd495a",
+          "last_sequence": 32,
+          "last_digest": "3f02fc47e48d7ec25dcc76864596b628bcbce207cc386157626cf2f8f365d2ee",
+          "tail": "snapshot-eof",
+          "exit_frames": 1,
+          "gap_frames": 0
+        },
+        "exact_prior_native07_counts_streams_timing_chain": true
+      }
+    ],
+    "proof_sha256": "e0337c7b2e4bc94e802e337819d72d8a6761c2c9207f37a3bb5ed280138a1278",
+    "scope": "two closed original native sessions, original/indexed/derived redacted complete exports and retained output timing/coverage evidence only; no active capture/pressure/retirement/installed upgrade or DEV"
+  },
+  "limits": "Two exact closed native65 recordings and current read/query/original/indexed/redacted exports only. No new capture, automatic retention/deletion, active-worker upgrade or broader factory qualification is inferred.",
+  "evidence": {
+    "/tmp/omabit-issues-recording-output08-evidence-01/files/cli-status.json": "f2fb83c25e685f89ec1a438d94a569ed3c4a7ab40d7afd34478e5980bccf010d",
+    "/tmp/omabit-issues-recording-output08-evidence-01/files/commands.jsonl": "b203e3165d3d08b829062d90d486ea83e40a60a379d2cb7440c723dee66dcf59",
+    "/tmp/omabit-issues-recording-output08-evidence-01/files/mcp-status.json": "f12473fb915bf160bf26c60fd266b77d463bc06a8dd1524f02e791a34361dfea",
+    "/tmp/omabit-issues-recording-output08-evidence-01/files/mcp-stderr.log": "ea99b431c6f646308b5b0d20913343682af120eeec205184eff5c585960ff814",
+    "/tmp/omabit-issues-recording-output08-evidence-01/files/original-recording-5818ee752fa769abcb1c2b965c1ca4f3-frames.obr": "75be782d0a65d8f051302f23f560cf1d8ec73f9fb1a6999570081bb7ee4213e5",
+    "/tmp/omabit-issues-recording-output08-evidence-01/files/original-recording-5818ee752fa769abcb1c2b965c1ca4f3-metadata.json": "ca990051abb5e914c39ed0291857d6ab9a3d3c61182145cb8b7ef362f8457145",
+    "/tmp/omabit-issues-recording-output08-evidence-01/files/original-recording-cf547b6eb2e9a771f441cf3961041575-frames.obr": "c2ab39a9ded77bad7b827f29cb4f0cc47d00d527140a37a1ef80a33f60270fd3",
+    "/tmp/omabit-issues-recording-output08-evidence-01/files/original-recording-cf547b6eb2e9a771f441cf3961041575-metadata.json": "74d71dc1ad9b20ec914d30ed4e6111cdc118f8775ffcee718484854654a31aec",
+    "/tmp/omabit-issues-recording-output08-evidence-01/files/original-runner.sqlite": "74ff7b414a27294332ec56136a5406208b020a428d9ef0db9c45ec1854887dff",
+    "/tmp/omabit-issues-recording-output08-evidence-01/files/proof.json": "e0337c7b2e4bc94e802e337819d72d8a6761c2c9207f37a3bb5ed280138a1278",
+    "/tmp/omabit-issues-recording-output08-evidence-01/files/result.json": "06fbbceed1896f892f970a3f4e10678a9aba81b635350dc0024a73de46f7ab21",
+    "/tmp/omabit-issues-recording-output08-evidence-01/files/runner.sqlite": "7b814c81e5d17ddc7561af5da6d063cc8205714702e51ab3d63fcae7cdd40de4",
+    "/tmp/omabit-issues-recording-output08-analysis-01/analysis.json": "276ec4767394c886762bdc820b066a63c866da4b2eb4a9ad2cb225db36879c90",
+    "/tmp/omabit-issues-recording-output08-analysis-01/indexed-5818ee752fa769abcb1c2b965c1ca4f3.zip": "3598cb48a0721564e739b839db214d6de0f5112291cf568b0f009f347e8984da",
+    "/tmp/omabit-issues-recording-output08-analysis-01/indexed-cf547b6eb2e9a771f441cf3961041575.zip": "68bb43799d532283aa00fa3a4771ddec08f2f993a23361bb1e734a165292c357",
+    "/tmp/omabit-issues-recording-output08-analysis-01/original-5818ee752fa769abcb1c2b965c1ca4f3.zip": "b554c7c812ad7af40faf07527aad29b5cd83c3ba6db53b988c6d933d71311954",
+    "/tmp/omabit-issues-recording-output08-analysis-01/original-cf547b6eb2e9a771f441cf3961041575.zip": "dd0b10aa2e43f4ff5e88113907100d1470b15e716ad6a604eeb6dff462cce47d",
+    "/tmp/omabit-issues-recording-output08-analysis-01/redacted-5818ee752fa769abcb1c2b965c1ca4f3.zip": "ab5174d1db2bab24d92646de5c4397d3fad57d5a438c14343caf5fcd5ab8b490",
+    "/tmp/omabit-issues-recording-output08-analysis-01/redacted-cf547b6eb2e9a771f441cf3961041575.zip": "9b958e0552cb671391b48fa3ac7b8826ad0a55e373e767fb15718a2a66daf23b",
+    "/tmp/omabit-issues-recording-usage-cow-08/host.json": "ae695eca91791e1e92cec70f4cabb5c429074f6d187813c193659cda5db56991",
+    "/tmp/omabit-issues-recording-usage-cow-08/result.json": "67cc6834e23dd2499f9e5cf34cfd52c2888d5a9576bb1b11efc7d93963523911",
+    "/tmp/omabit-issues-recording-usage-cow-08/serial.log": "609702b18bacabea025e8c505ca5e484f86d1011a7c5437fd9527f0dc3c49838",
+    "/tmp/omabit-issues-recording-output08-evidence-01/result.json": "9718d814bb95dcc2109af408165c592a7a1983268338ccba176e0e32e0ff74cc",
+    "/tmp/omabit-issues-recording-output08-evidence-01/command.json": "8711db200ffabb43735a04a59c26cb9e9c05ce4033ee2d791d5ef0547b9529b1",
+    "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/qualification050-candidate02/extract-recording08.py": "26e796fd8a17636b218339750eb7dcaef820bfcc95c8ba337cae14a776fb5221",
+    "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/qualification050-candidate02/analyze-recording08.py": "f80fddea0ab87e9a215054ed87487d1e666ef30c65fadbdc0cd93318b879eddf",
+    "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/qualification050-candidate02/record-recording08.py": "c2b68b4714bdffbab87eaeb63541a760142cccd27e12e92ce0b84f7cadca96cc"
+  },
+  "retirement": {
+    "status": "removed-after-independent-verification",
+    "reason": "Independent full raw recording bytes, ZIP/index/redacted verification, SQL, proof and exact artifacts retained; durable original recording64/65 archives remain. Never resume ended overlays.",
+    "files": [
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-08/root.qcow2",
+        "sha256": "361de9e2b44a795128ad65327fd05cf7fe63bb6982fd03e53d1624dce50c3a9d",
+        "allocated_bytes": 21893120
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-08/payload.ext4",
+        "sha256": "228ec31d9f3b5f7e600ecb3bc9b36fb86fc78fee7ddddd87d878aeeffb691885",
+        "allocated_bytes": 48160768
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-08/init",
+        "sha256": "ced164ae56c3ee51dd7675af92431dedbf2def7975c1689d38e4522219f66819",
+        "allocated_bytes": 2633728
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-usage-cow-08/initramfs.cpio",
+        "sha256": "8d95b3ec2ad8048017a4198ea67a249779e8322bbf57a5c909425f00a9706bec",
+        "allocated_bytes": 7639040
+      },
+      {
+        "path": "/tmp/omabit-issues-recording-output08-evidence-01/initramfs.cpio",
+        "sha256": "014a9a2086ed3a42f599e9c4ccba47112c3cdae2fe460e3ac94bdf3c7d3385dd",
+        "allocated_bytes": 7843840
+      }
+    ],
+    "reclaimed_bytes": 88170496,
+    "after": {
+      "charged_bytes": 47771795456,
+      "budget_bytes": 51539607552,
+      "additional_scratch_bytes": 0,
+      "total_with_reserves": 47771795456
+    },
+    "full_charge_record": {
+      "path": "/tmp/omabit-050-recording-retirement08-charge.json",
+      "sha256": "9ce847dc73726155e7c0378933a387642853fec0758fd7ac3d2e51944fedcc6c"
+    }
+  }
+}
