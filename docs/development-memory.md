@@ -14256,3 +14256,22 @@ restart, then use a distinct candidate desk. Close SQLite read handles explicitl
 including errors. Three inert guards pass for no-run, wrong boot-image refusal,
 original table selection/digest changes and connection closure. Actual final
 0.4.0/schema59 to0.5.0/schema65 qualification remains pending.
+
+## M765 — Native capacity refusal preserves jobs; correct admission-lock counting (2026-11-20)
+
+The second pressure case again passes all three capture/pressure cases but fails
+its whole-case inventory assertion. Independent read-only extraction confirms
+exact original recordings and three saved jobs, the original failed capacity
+receipt, and empty complete Docker inventories before and after that Start.
+The harness counts every recording-jobs entry, including the writer's empty
+admission.lock, as a job. This is a fixture assertion defect, not evidence of a
+fourth job or a new container. No product code changes to satisfy the test.
+
+Inventory the lock separately and require every saved job-file hash to remain
+unchanged. Save before/after inventories before asserting, so failures retain the
+exact inputs. Eight inert guards pass, including the actual three-directory plus
+lock layout, changed job bytes and malformed/symlink lock refusal. The final Stop
+and commitment check are still pending a fresh whole pass. The second case remains
+failed; [independent evidence](diagnostics/2026-11-20-recording-pressure-native-second.json)
+preserves its exact compact proof and classified ended-image retention. Original
+transition fixtures and installed/manual-review state remain unchanged.

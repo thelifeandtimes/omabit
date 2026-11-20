@@ -1,6 +1,6 @@
 # Guided patch and review-candidate upgrades
 
-Explicit `--portable`, `--previous`, `--candidate`, `--rootless`, `--output` and
+Explicit `--portable`, `--previous`, `--candidate`, `--rootless`, `--init`, `--output` and
 `--run` are required. The previous and candidate paths contain exact published
 and frozen release assets, respectively. Their verified manifests supply the
 versions, including immutable `-rc.N` review candidates. `--rootless` supplies the verified
@@ -28,10 +28,8 @@ guided identity discovery and a complete stopped import with the new runner.
 All companion bytes survive and the unrelated running fake retains its process.
 No production pier or prior manual review state is used.
 
-If owner-only accounting cannot descend into rootless overlay work directories,
-the launcher records that limitation and reserves an additional 4 GiB. Any other
-measurement failure refuses the run. Reported charged usage includes this reserve;
-it is not a claim that inaccessible directories were fully measured.
+Storage accounting must complete through the shared namespace-aware inventory.
+An incomplete measurement refuses admission; it is not replaced by an estimate.
 
 For targets starting at 0.3.6, the guest adds a sparse file of 100 GB + 1 byte
 to that disposable stopped source. It demonstrates the 0.3.5 collector rejection,

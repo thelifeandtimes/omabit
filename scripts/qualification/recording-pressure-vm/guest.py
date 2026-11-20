@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import stat
 import struct
 import subprocess
 import sys
@@ -129,11 +130,39 @@ def incomplete(label, container):
     return row
 
 
+def job_inventory(directory):
+    """Preserve the root's lock separately from its three immutable jobs."""
+    out = {'jobs': {}, 'admission_lock_sha256': None}
+    entries = list(directory.iterdir())
+    if len(entries) > 4:
+        raise RuntimeError('unexpected recording job inventory')
+    for entry in entries:
+        mode = entry.lstat().st_mode
+        if entry.name == 'admission.lock':
+            if not stat.S_ISREG(mode) or entry.stat().st_size != 0:
+                raise RuntimeError('invalid recording admission lock')
+            out['admission_lock_sha256'] = sha(entry)
+            continue
+        if not stat.S_ISDIR(mode) or len(entry.name) != 32 or any(c not in '0123456789abcdef' for c in entry.name):
+            raise RuntimeError('unexpected recording job entry')
+        files = list(entry.iterdir())
+        if not 1 <= len(files) <= 8 or not (entry/'job.json').is_file():
+            raise RuntimeError('incomplete recording job inventory')
+        out['jobs'][entry.name] = {}
+        for path in files:
+            if not stat.S_ISREG(path.lstat().st_mode) or not path.name.endswith('.json') or path.stat().st_size > MIB:
+                raise RuntimeError('unexpected recording job file')
+            out['jobs'][entry.name][path.name] = sha(path)
+    if out['admission_lock_sha256'] is None:
+        raise RuntimeError('recording admission lock missing')
+    return out
+
+
 def capacity_refusal_preserved(before_jobs, after_jobs, before_containers, after_containers, receipt):
     # A failed Start conservatively publishes unknown observation until a fresh
     # native observation. That public status is not a new process. Require the
     # actual full engine inventory and immutable job inventory instead.
-    return (len(before_jobs) == 3 and before_jobs == after_jobs and
+    return (len(before_jobs['jobs']) == 3 and before_jobs == after_jobs and
             before_containers == after_containers == [] and
             receipt.get('status') == 'failed' and
             receipt.get('request_id') == 'pressure-capacity-refusal' and
@@ -229,7 +258,7 @@ def main():
             if pilot.retained_session(old['snapshot']) != old['original_files']: raise RuntimeError('later session changed earlier bytes')
         report['cases'] = proofs; (O/'partial.json').write_text(json.dumps(report, indent=2)+'\n')
     # Retained jobs consume their immutable commitments; no silent eviction.
-    before = sorted(p.name for p in (BASE/'recording-jobs').iterdir())
+    before = job_inventory(BASE/'recording-jobs')
     native_before = common.docker('ps', '--all', '--quiet', '--no-trunc').stdout.splitlines()
     row = common.instance('candidate', 'recording-zod', 'stopped')
     common.collector('candidate', 'operate', 'recording-zod', 'start', '--revision', str(row['config_revision']), '--request-id', 'pressure-capacity-refusal')
@@ -240,8 +269,9 @@ def main():
     if refusal['status'] != 'failed': raise RuntimeError('full job capacity accepted Start')
     report['capacity_refusal_receipt'] = refusal
     native_after = common.docker('ps', '--all', '--quiet', '--no-trunc').stdout.splitlines()
-    if not capacity_refusal_preserved(before, sorted(p.name for p in (BASE/'recording-jobs').iterdir()), native_before, native_after, refusal): raise RuntimeError('capacity refusal changed jobs/native inventory or lost its reason')
-    report['capacity_inventory'] = {'jobs_before': before, 'jobs_after': sorted(p.name for p in (BASE/'recording-jobs').iterdir()), 'containers_before': native_before, 'containers_after': native_after}
+    after = job_inventory(BASE/'recording-jobs')
+    report['capacity_inventory'] = {'jobs_before': before, 'jobs_after': after, 'containers_before': native_before, 'containers_after': native_after}
+    if not capacity_refusal_preserved(before, after, native_before, native_after, refusal): raise RuntimeError('capacity refusal changed jobs/native inventory or lost its reason')
     common.operation('candidate', 'recording-zod', 'stop', 'pressure-capacity-final-stop')
     final = common.instance('candidate', 'recording-zod', 'stopped')
     if final['desired_state'] != 'stopped': raise RuntimeError('final saved intent not stopped')

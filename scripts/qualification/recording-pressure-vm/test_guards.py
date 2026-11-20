@@ -62,12 +62,28 @@ class PressureGuards(unittest.TestCase):
     def test_capacity_refusal_uses_native_inventory_and_exact_failed_request(self):
         guest = module('guest')
         receipt = {'status': 'failed', 'request_id': 'pressure-capacity-refusal', 'message': 'runtime action failed: recording admission budget is exhausted or cannot be established; preserve saved jobs and inspect recording capacity'}
-        jobs = ['one', 'two', 'three']
+        jobs = {'jobs': {'one': {}, 'two': {}, 'three': {}}}
         self.assertTrue(guest.capacity_refusal_preserved(jobs, jobs, [], [], receipt))
-        self.assertFalse(guest.capacity_refusal_preserved(jobs, jobs+['new'], [], [], receipt))
+        self.assertFalse(guest.capacity_refusal_preserved(jobs, {'jobs': {**jobs['jobs'], 'new': {}}}, [], [], receipt))
         self.assertFalse(guest.capacity_refusal_preserved(jobs, jobs, [], ['unexpected'], receipt))
         self.assertFalse(guest.capacity_refusal_preserved(jobs, jobs, [], [], {**receipt, 'message': 'transport unavailable'}))
         self.assertFalse(guest.capacity_refusal_preserved(jobs, jobs, [], [], {**receipt, 'request_id': 'other'}))
+
+    def test_real_job_layout_separates_lock_and_preserves_contents(self):
+        guest = module('guest')
+        with tempfile.TemporaryDirectory(prefix='omabit-pressure-inventory-') as d:
+            root = Path(d); (root/'admission.lock').touch()
+            for name in ('1'*32, '2'*32, '3'*32):
+                (root/name).mkdir(); (root/name/'job.json').write_text('{}')
+            before = guest.job_inventory(root)
+            self.assertEqual(len(before['jobs']), 3)
+            self.assertEqual(before['admission_lock_sha256'], hashlib.sha256(b'').hexdigest())
+            (root/('1'*32)/'job.json').write_text('{"changed":true}')
+            self.assertNotEqual(guest.job_inventory(root), before)
+            (root/'admission.lock').write_text('bad')
+            with self.assertRaisesRegex(RuntimeError, 'admission lock'): guest.job_inventory(root)
+            (root/'admission.lock').unlink(); (root/'admission.lock').symlink_to(root/('1'*32)/'job.json')
+            with self.assertRaisesRegex(RuntimeError, 'admission lock'): guest.job_inventory(root)
 
     def test_native_limits_and_final_storage_are_bounded(self):
         guest = module('guest'); host = Path(__file__).with_name('run.py').read_text(); source = Path(__file__).with_name('guest.py').read_text()
