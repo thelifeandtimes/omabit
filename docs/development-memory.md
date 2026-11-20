@@ -13755,3 +13755,17 @@ match their original manifests. This would remove the only complete image of
 that older failed fixture and requires specific authorization; no removal has
 occurred. Do not extend earlier recording03–06 permissions to these files. The
 48GiB cap, one-runtime rule and production/manual-review exclusions remain.
+
+
+## M745 — Correct export help choices in source; final generation remains open (2026-11-19)
+
+Fix the static command help missed by M738–739: show exactly one original/redacted
+choice, the original-only optional timing index, shared timing-query context,
+derived omission/finite-rule privacy limits and private output/partial rules.
+This changes only help text; formatting/diff checks pass. The prior4c0b16e native
+export evidence remains scoped to its actual frozen tools. A new matching CLI
+build and generated reference are still required; do not hand-edit generated
+help or claim current parity from the earlier180-entry check. See
+[source status](diagnostics/2026-11-19-recording-export-help-source.json).
+The proposed old recording VM01 disposal is still pending; no unique image/input
+has been removed. Production/manual DEV and existing ships remain untouched.

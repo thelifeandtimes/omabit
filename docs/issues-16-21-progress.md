@@ -722,3 +722,10 @@ regenerable compiler archives were additionally removed. Active/oldest/pressure/
 retirement/factories, static help visibility and final stable/plugin/preserved DEV
 qualification remain open. Production, installed DEV and existing ships stay
 untouched.
+
+
+M745 corrects static export help in source for explicit original/redacted choice,
+original-only timing index, finite redaction/review and private partial-output
+rules. Formatting passes. Current matching CLI compilation and generated help
+remain required; the prior4c0b16e native evidence stays bound to its actual tools.
+The old VM01 proposal remains pending approval, with no disk removal performed.
