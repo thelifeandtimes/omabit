@@ -1,18 +1,18 @@
 # Issues16–21: implementation boundaries and next gates
 
-Status at M773,2026-11-20. These are development changes on release/0.5.0
+Status at M774,2026-11-20. These are development changes on release/0.5.0
 under the [finite release checklist](release-0.5.0-plan.md). Published stable artifacts and production deployments are unchanged.
 Source fixtures, a native test with frozen artifacts, installed upgrades and
 preserved DEV review are separate evidence. The detailed history and original
 failures remain in [progress](issues-16-21-progress.md) and development memory.
 
-Candidate01 bdf4397 now passes the actual stable0.4/schema59→65 upgrade with
-original app history, running/stopped intent, manager restart and old-reader
-refusal (M773). The corrected packaged Grubbery preflight guidance and CI audit
-test deadline require a new frozen candidate and matching qualification before
-DEV installation or publication; earlier candidate passes retain their exact
-source identity. The table below preserves those completed milestones and the
-remaining feature boundaries.
+Candidate02 is frozen at59d83aab49384d2f26531320bb5ab68e1257aeb5 after the packaged
+Grubbery guidance and CI test corrections. Matching desktop/interface validation
+and the actual stable0.4/schema59→65 upgrade now pass (M774), preserving original
+app history, running/stopped intent, manager restart and old-reader refusal.
+Matching native pressure/Stop/Grubbery/closed-export and preserved DEV gates remain;
+earlier candidate passes retain their exact source identity. The table below
+preserves those completed milestones and the remaining feature boundaries.
 
 | Issue | Implemented direction and evidence | Next required gate |
 | --- | --- | --- |

@@ -1,5 +1,13 @@
 # 0.5.0 pause checkpoint and resumption — 2026-11-20
 
+Current checkpoint: M774 selects source59d83aab49384d2f26531320bb5ab68e1257aeb5,
+assets `build/release050-candidate02/0.5.0` and helpers `build/release050-helpers02`.
+Matching desktop/interface and stable59→65 upgrade gates pass. The next native
+cases are pressure06, Grubbery COW06, Stop COW05 and closed recording COW08, with
+original backings restored only after verified full-budget admission. Preserved
+DEV and reviewed publication remain pending. No VM remains from upgrade03; its
+compact independently verified evidence is retained and classified images retired.
+
 The user explicitly resumed after the machine update on2026-11-20. M773
 supersedes the paused status below. Fresh `patch-upgrade-050-final02` passed with
 candidate01 bdf4397, including original app history, stable59→65 migration,

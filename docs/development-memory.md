@@ -14466,3 +14466,38 @@ artifacts/qualification. M769–M771 and this upgrade qualify bdf4397 only; they
 not qualify the next candidate. No runtime product behavior, installed DEV,
 production service or distribution pin changes here. Final app/export/upgrade,
 preserved DEV, required PR checks, protected merge and publication remain gates.
+
+## M774 — Freeze candidate02 and pass matching desktop, interfaces and stable upgrade (2026-11-20)
+
+Freeze corrected product/UI/skill/test/packaging source at
+59d83aab49384d2f26531320bb5ab68e1257aeb5 and publish that checkpoint to draft PR23.
+Build all six immutable0.5.0 assets in an isolated clean Git-blob export with
+Go1.27.3, schema65 and the same pinned Recommended Apps pill. Backend source digest
+is494115a0837095352b1c27dede8e5c65b63319ec08e76d093f633993308b1a13.
+This supersedes M769's source selection for the intended release; retain all
+candidate01 artifacts/evidence under their original identity.
+
+[Candidate02 validation](diagnostics/2026-11-20-release050-candidate02-frozen-validation.json)
+passes all asset hashes, matching plain/tagged helpers and host-refusing read-only
+inspectors. Four full selected interface race suites and all180 offline help
+entries pass. Three actual packaged CLI/collector and official-SDK lost-reply,
+exact saved-lookup and manager-reopen cases pass with inert native observations.
+Actual private desktop cold/hot activation, preferences, failed-candidate recovery,
+Recordings UI, persistent Agent Help and legacy two-skill compatibility pass.
+
+Fresh `patch-upgrade-050-final03` then passes the actual published0.4/schema59 to
+candidate02/schema65 upgrade. [Final matching upgrade evidence](diagnostics/2026-11-20-release050-final-upgrade.json)
+retains original stable app history/DDL through migration and manager restart,
+running/stopped intent, original runtime/engine processes, identities, access,
+authorization denial/retry, actual old-reader refusal unchanged, the candidate
+desk workflow and final ordinary Stop. Independent read-only extraction matches
+the full report and verifies schema65, all13 original app table definitions, all
+five original runtime-operation receipts, final successful Stop and stopped intent
+for all three fresh instances. No source-disk code executes in the inspector.
+
+After complete evidence, empty-scope/holder and original-backing verification,
+retire only five classified ended image/boot files, reclaiming2,481,082,368bytes.
+Full charge47,193,726,976bytes remains below48GiB; original fixtures and all installed
+state remain. Final matching native pressure, Stop, Grubbery and closed exports,
+full release-head CI, preserved DEV and reviewed publication are still required.
+No production deployment or issue-wide completion is implied.

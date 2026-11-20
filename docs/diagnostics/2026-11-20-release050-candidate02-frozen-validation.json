@@ -1,0 +1,108 @@
+{
+  "memory": "M774",
+  "status": "frozen-artifacts-and-scoped-validation-passed",
+  "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+  "release": {
+    "version": "0.5.0",
+    "prerelease": false,
+    "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+    "platform": "linux/amd64",
+    "go_version": "go version go1.27.4 linux/amd64",
+    "schema": 65,
+    "execution_model": "owner-user",
+    "default_pier_root": "/srv/urbit/piers",
+    "runtime": "4.6-5a7614f",
+    "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+    "engine": "distribution-native",
+    "pill": {
+      "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+      "default_url": "https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill",
+      "application_inventory": "not_asserted",
+      "name": "omabit-recommended-apps-0.5.0.pill",
+      "bytes": 59351751
+    },
+    "engine_policy": {
+      "id": "docker-rootless-v1",
+      "stable_minimum_inclusive": "27.2.0",
+      "stable_maximum_exclusive": "30.0.0",
+      "required_api": "1.47",
+      "native_providers": [
+        "pacman",
+        "deb"
+      ],
+      "rootless_launcher_version": "29.7.2",
+      "qualification": "exact-stack-evidence-required"
+    },
+    "backend_source_sha256": "494115a0837095352b1c27dede8e5c65b63319ec08e76d093f633993308b1a13",
+    "source_tree": "1d91874624e0c5ba2a28002dd5bd69118ae474f2",
+    "source_epoch": 1795210887,
+    "source_inputs": "git-commit-blobs-v1",
+    "build_environment": "isolated-go-v1",
+    "assets": [
+      {
+        "name": "omabit-0.5.0-linux-amd64.tar.gz",
+        "bytes": 36908843,
+        "sha256": "0851b3f830a297ab8073bc31fd27503811195e4d45c5268ff4a021f08ada548e"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 26821913,
+        "sha256": "c7ec141df5cc27b2e53f01c2cceca838336bc66be7b232454cce7d4e49d21a1d"
+      },
+      {
+        "name": "omabit-recommended-apps-0.5.0.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.5.0.tar.gz",
+        "bytes": 73892,
+        "sha256": "d93625d272db66c497824eef38d8ba36e3f99397c5431bc988671450f10f99e5"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 13205230,
+        "sha256": "81ea1990acafb847e14a5093fabc67dc15fed3370ad4f5bf9b9043c3fdcf5be5"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 30142544,
+        "sha256": "5a995481fae3e0642c2eb254e37bd439abc2dd02a40e1d2a7509db3dabd094b4"
+      }
+    ]
+  },
+  "checks": {
+    "isolated_package_and_all_asset_hashes": true,
+    "matching_plain_and_tagged_native_helpers": true,
+    "host_refusing_fixed_readonly_inspectors": true,
+    "private_actual_desktop_040_to_050_preferences_failed_candidate_recovery": true,
+    "private_recording_ui": true,
+    "agent_help_session_lifetime": true,
+    "legacy_two_skill_compatibility": true,
+    "service_mcp_guidance_cli_source_races": true,
+    "offline_help_entries": 180,
+    "actual_packaged_cli_collector_sdk_saved_lookup_manager_restart_cases": 3,
+    "actual_previous_stable59_to65_upgrade": true
+  },
+  "evidence": {
+    "/tmp/omabit-050-final-package02.json": "ac76430b98821000b3a28d26482687e669371984ed722626d2b82603d9f759e9",
+    "/tmp/omabit-050-final-helpers02.json": "83373b025bd264ef2af43ae20ab9ba5edd93d693e66fa73b99efd9692d3e226b",
+    "/tmp/omabit-050-final-readers02.json": "78fab3e3938c20ec214f6b2d5f508e6829731169276099f3eb388110fe8fa231",
+    "/tmp/omabit-050-final-recording-reader02.json": "4b8e3828ea615531b47fffae04f564a661431bdf697b58b969d0740c750d767c",
+    "/tmp/omabit-050-final-ui02.json": "82134602f3e536e147adbf4aaca4630b5a4c7ea35f47c9cc6b0a73ea3b9a19bc",
+    "/tmp/omabit-050-final-interfaces02.json": "0d42ddfbf970a2fa23b6c413afad1312cd67337851fc193a7bb98f2b730125a8",
+    "/tmp/omabit-050-final-native-clients02.json": "931c3acc441b0d8ef0ba1bb086431b25a67dbdc868e0cd29ded64d102e18bb48",
+    "/home/thelifeandtimes/.t3/worktrees/omabit/release-0.5.0-2c091e9e02450d4c/build/upgrade-reader-build02.json": "cc330c372e5821c1491e40d8c2c597a66b874016966f79684e0dfeedc69f1332"
+  },
+  "limits": [
+    "Full source/race CI still required at the release PR head.",
+    "Final native Stop, recording pressure/exports and scoped app workflows remain gates.",
+    "Preserved DEV update and fresh minimal app workflow remain pending; matching stable59-to65 rehearsal passes separately.",
+    "Private desktop fixtures do not change installed plugins or validate production service upgrades.",
+    "CLI source-race tests use the argument-dispatcher process; the separate three lost-reply checks explicitly execute the packaged binaries. Named coding-client interoperability remains experimental."
+  ],
+  "stable_upgrade_evidence": {
+    "path": "docs/diagnostics/2026-11-20-release050-final-upgrade.json",
+    "sha256": "db8c6d522381ddfb5bed0153855da360ef69ee12c74892800e6e40fd95041dc7"
+  }
+}
