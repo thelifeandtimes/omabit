@@ -1,0 +1,44 @@
+{
+  "memory": "M761",
+  "status": "passed",
+  "base_commit": "92e6880520b5d3699b3bb5b617d191d901f94434",
+  "working_diff_sha256": "5c5fa8d739f9d6d2869ee001ee67b856afad92b6fcd481811725598f8b840065",
+  "scope": "bounded Grubbery source-and-restart capability and saved-policy preflight; no general app readiness claim",
+  "checks": [
+    {
+      "command": [
+        "go",
+        "test",
+        "-race",
+        "-p=1",
+        "-count=1",
+        "-timeout=3m",
+        "./internal/collection",
+        "-run=^TestAppPreflightSelectedRunnerReadOnlyAndTypedFailures$"
+      ],
+      "exit": 0,
+      "seconds": 2.01,
+      "output": "Running as unit: omabit-050-preflight-race-03.scope; invocation ID: 28c742994d51418d884e6b31cf20cb8d\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/collection\t1.069s\n"
+    },
+    {
+      "command": [
+        "go",
+        "vet",
+        "-p=1",
+        "./internal/appdev",
+        "./internal/collection"
+      ],
+      "exit": 0,
+      "seconds": 20.07,
+      "output": "Running as unit: omabit-050-preflight-vet-03.scope; invocation ID: f91d8436266b4ea6807b2932e38c330c\n"
+    }
+  ],
+  "inputs_unchanged": true,
+  "charged_bytes_after": 48523718656,
+  "inert_native_Stop_guards": 12,
+  "skill_validation": "passed with /usr/bin/python3; synchronized guidance check passed",
+  "test_environment_failures": "First two attempts refused Unix socket bind because Go1.27 t.TempDir uses GOTMPDIR. Both GOTMPDIR and TMPDIR now select the short, fully charged /tmp/omabit-t. No product assertion was bypassed.",
+  "evidence": {
+    "/tmp/omabit-050-preflight-source-03.json": "f13fe59e62512963617d9ad630916d96ddc707ed9ff089f5076c4c22c25c6ed1"
+  }
+}

@@ -6,13 +6,16 @@ exercise revision `ff2b66b58d1ed15f4aecbe7a065559028eb1fb7b` is evidence for tha
 exercise only. The proposed newer single-release candidate is a separate input;
 neither revision establishes a timeless endpoint or compatible installed runtime.
 
-Run `app-preflight --workflow grubbery` before app-specific project boot. The
-current development preflight still reports `missing-workflow-adapter`: full
-workflow qualification is pending. Separate typed source APIs exist and have a
-narrow native gate using synthetic lifecycle/direct owner HTTP. Their presence
-does not establish product Docker/curl or complete app readiness. Author source
-and tests while that gap is open; do not substitute a private installer or raw
-Dojo/Eyre write for an unavailable policy-enforced Omabit operation.
+Run `app-preflight --workflow grubbery` before app-specific project boot. Its
+`source-and-restart` scope requires the pinned source adapter, restart recovery
+adapter and both saved-receipt APIs on the selected runner, alongside the requested
+desk effects and current policy. Missing capabilities refuse before project boot.
+Compatibility is a capability/policy assessment, not framework installation or
+complete app readiness. Matching native source/state/restart checkpoints exist;
+the final release and installed environment still need their own qualification.
+Peer discovery, permits, routes and served assets remain separate workflow gates.
+Do not substitute a private installer or raw Dojo/Eyre write for an unavailable
+policy-enforced Omabit operation.
 
 Current shared offline operations `app.framework.v1` and
 `app.verify-framework-source.v1` provide the frozen `grubbery-7f7701d-v1` source

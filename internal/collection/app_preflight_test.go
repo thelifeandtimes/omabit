@@ -15,11 +15,12 @@ import (
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/appdev"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/apppolicy"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/grubbery"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
 func TestAppPreflightSelectedRunnerReadOnlyAndTypedFailures(t *testing.T) {
-	features := []string{protocol.AppPolicyFeature, protocol.DeskSettingsFeature, protocol.DeskStageFeature, protocol.DeskDiscoveryFeature, protocol.DeskCreateFeature, protocol.DeskCommitFeature, protocol.DeskApplicationFeature, protocol.DeskReleaseFeature}
+	features := []string{protocol.AppPolicyFeature, protocol.DeskSettingsFeature, protocol.DeskStageFeature, protocol.DeskDiscoveryFeature, protocol.DeskCreateFeature, protocol.DeskCommitFeature, protocol.DeskApplicationFeature, protocol.DeskReleaseFeature, protocol.GrubberyAppReceiptsFeature, protocol.GrubberyRuntimeReceiptsFeature, protocol.GrubberyAppSourceFeature, protocol.GrubberyRuntimeRecoveryFeature}
 	for _, tc := range []struct {
 		name, status, omit, workflow, role, scope string
 		target, wrongID, unresolved, knownBuild   bool
@@ -28,7 +29,14 @@ func TestAppPreflightSelectedRunnerReadOnlyAndTypedFailures(t *testing.T) {
 		{name: "missing-policy-api", status: "missing-runner-api", omit: protocol.AppPolicyFeature},
 		{name: "missing-stage-api", status: "missing-runner-api", omit: protocol.DeskStageFeature},
 		{name: "missing-operation-adapter", status: "missing-operation-adapter", omit: protocol.DeskCommitFeature},
-		{name: "workflow-adapter", status: "missing-workflow-adapter", workflow: "grubbery"},
+		{name: "grubbery-source-restart", status: "environment-compatible", workflow: "grubbery"},
+		{name: "grubbery-missing-source", status: "missing-operation-adapter", workflow: "grubbery", omit: protocol.GrubberyAppSourceFeature},
+		{name: "grubbery-missing-recovery", status: "missing-operation-adapter", workflow: "grubbery", omit: protocol.GrubberyRuntimeRecoveryFeature},
+		{name: "grubbery-missing-source-receipts", status: "missing-runner-api", workflow: "grubbery", omit: protocol.GrubberyAppReceiptsFeature},
+		{name: "grubbery-missing-runtime-receipts", status: "missing-runner-api", workflow: "grubbery", omit: protocol.GrubberyRuntimeReceiptsFeature},
+		{name: "grubbery-policy-block", status: "policy-denied", workflow: "grubbery", target: true, scope: "ship"},
+		{name: "grubbery-allowed-generation", status: "saved-policy-compatible", workflow: "grubbery", target: true},
+		{name: "gall-does-not-require-grubbery", status: "environment-compatible", omit: protocol.GrubberyAppSourceFeature},
 		{name: "observer", status: "operator-role-required", role: "observer"},
 		{name: "global-block", status: "policy-denied", target: true, scope: "global"},
 		{name: "runner-block", status: "policy-denied", target: true, scope: "runner"},
@@ -151,6 +159,12 @@ func TestAppPreflightSelectedRunnerReadOnlyAndTypedFailures(t *testing.T) {
 				}
 				if out.Assurance != "capability-and-saved-policy-only" {
 					t.Fatal("assurance changed")
+				}
+				if req.Workflow == "grubbery" && (out.WorkflowAdapter != grubbery.HTTPContract || out.WorkflowScope != "source-and-restart" || !out.WorkflowAdapterAvailable) {
+					t.Fatal("bounded Grubbery contract lost")
+				}
+				if req.Workflow == "gall" && out.WorkflowScope != "selected-desk-effects" {
+					t.Fatal("Gall effect scope changed")
 				}
 				if out.Status == "saved-policy-compatible" && out.Policy.Effective.Publish.Value != apppolicy.Block {
 					t.Fatal("unrequested publication grant changed")

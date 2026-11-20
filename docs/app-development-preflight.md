@@ -9,8 +9,13 @@ source transfer, policy edit or installation. Generic project creation is unchan
 
 Use `--workflow gall|grubbery` from inspected source and explicit effects
 `create-desk,commit,publish` (default `create-desk,commit`). Gall uses native desk
-primitives. Grubbery reports its adapter as unavailable until that separate work
-is qualified. No missing capability is an invitation to use a raw command bypass.
+primitives. Grubbery selects the pinned `grubbery-darts-7f7701d-v1` adapter with
+`workflow_scope="source-and-restart"`. It additionally requires both source and
+runtime receipt APIs, the source adapter and the restart recovery adapter. An old
+runner exposing only desk operations or part of that contract refuses before
+app-specific project creation. This scope does not include peer discovery,
+permits, routes or served-asset readiness. No missing capability is an invitation
+to use a raw command bypass.
 
 Without a target, success means environment compatibility, not a future ship's
 permission. With `--instance` and `--desk`, policy reads resolve the current project

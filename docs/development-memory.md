@@ -14127,3 +14127,56 @@ The recording guide now leads with the dated current candidate contract and
 labels earlier source-only sections as historical checkpoints. It preserves the
 explicit pilot/default-off behavior, incomplete-capture limits and remaining
 final qualification gates rather than treating older milestones as current claims.
+
+
+## M760 — Complete exact native Stop transition and independent verification (2026-11-20)
+
+Fresh COW03 with frozen68bf233 tools and92e6880 harness passes all eight native
+gates: six exact timing traces, one TERM, terminal Stop success, original full
+receipt replay after reopen, same-pier Start with a distinct container, unchanged
+peer/anchor processes, inherited stopped app preservation and final clean Stops.
+A separately pinned read-only inspector exports complete proof/SQL/traces without
+executing source-disk programs. Independent checks confirm original receipt,
+mounts, signals, final state and all23 inherited app/recording tables. Only normal
+ordinary-instance observed_at/runtime_revision refresh differs; identity, intent,
+configuration and runtime binding remain exact. The initial verifier's stronger
+whole-row assumption is corrected explicitly, not treated as a product failure.
+
+The first admission attempt refuses before creating an output. Losslessly archive
+four superseded generated qualification executables, verifying full decoded hashes
+before removing raw copies, to reclaim48,529,408bytes. Preserve original worktree
+source/pending changes and all historical executable bytes. The fresh native
+admission fits48GiB with3GiB scratch plus64MiB overhead. After independent success,
+classify only the ended COW03 root/payload and redundant boot archives for removal;
+retain exact compact evidence and original app62/current65/recording fixtures.
+[Full evidence and classification](diagnostics/2026-11-20-project-stop-native-complete.json)
+records identities, limits and cleanup.
+
+This supersedes M759's whole-case deferral for this exact development Stop case.
+It does not prove the historical incident predicate or qualify the final combined
+0.5.0 artifacts, stable59 upgrade, preserved DEV or production deployment.
+
+M760 cleanup execution: the five classified ended images/boot copies are removed
+after scope/holder/hash checks, reclaiming1,706,594,304allocated bytes. Full charge
+48,266,706,944bytes remains below48GiB. Compact evidence and all needed original
+transition fixtures remain.
+
+## M761 — Expose bounded Grubbery source/restart compatibility (2026-11-20)
+
+Replace the stale unconditional missing-workflow-adapter result with the explicitly
+scoped versioned source/restart contract. Require both Grubbery source/recovery
+adapters and their independent receipt APIs alongside desk effects, operator role
+and exact current target policy. Old or partial runners still refuse before
+app-specific creation. The result includes workflow_scope; this does not claim
+peer/permit/route/asset readiness or authorize a native effect. Align packaged
+guidance with this finite release scope.
+
+Focused selected-runner race cases and vet pass, including each missing API or
+adapter, read-only behavior, current-generation policy denial and Gall independence.
+Twelve inert native Stop guards, packaged skill validation and shared-guidance
+synchronization also pass. Two initial test invocations fail at Unix socket bind
+because their GOTMPDIR makes paths too long; a short fully counted Go test directory
+resolves the environment problem. [Evidence](diagnostics/2026-11-20-grubbery-bounded-preflight-source.json)
+records48,523,718,656bytes after testing. Matching final artifacts and native/DEV
+qualification remain required. Correct the PR template's superseded minor-only
+wording to the existing release/X.Y.Z and tested-upgrade policy.

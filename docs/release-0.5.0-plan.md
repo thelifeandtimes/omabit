@@ -45,9 +45,9 @@ Stop or deletion authority. No issue is closed merely because code is included.
 
 ## Required release evidence
 
-1. Finish and commit the native Stop capsule, verify its clean source/binary pins,
-   satisfy storage admission, and retain a successful native run plus independent
-   receipt, pier, peer and inherited-state verification.
+1. Native Stop capsule and independent receipt/pier/peer/history verification pass
+   at frozen68bf233 (M760). Preserve that exact evidence; repeat the required
+   behavior against the final combined release artifacts.
 2. Audit all exposed capabilities and documentation against the scope above.
    Complete the scoped runtime checks and correct discovered product defects.
 3. Set all component/UI versions to0.5.0, freeze the complete runtime/UI/skill/

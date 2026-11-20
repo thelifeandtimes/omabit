@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/apppolicy"
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/grubbery"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
@@ -65,6 +66,7 @@ type Preflight struct {
 	MissingAPIs              []string                  `json:"missing_apis"`
 	MissingOperationAdapters []string                  `json:"missing_operation_adapters"`
 	WorkflowAdapter          string                    `json:"workflow_adapter"`
+	WorkflowScope            string                    `json:"workflow_scope"`
 	WorkflowAdapterAvailable bool                      `json:"workflow_adapter_available"`
 	Policy                   *PolicyCheck              `json:"policy,omitempty"`
 	NextSteps                []string                  `json:"next_steps"`
@@ -99,6 +101,19 @@ func Assess(req PreflightRequest, h protocol.Hello, policy *protocol.AppPolicySt
 			adapters = append(adapters, protocol.DeskReleaseFeature)
 		}
 	}
+	p.WorkflowAdapter = "gall-desk-v1"
+	p.WorkflowScope = "selected-desk-effects"
+	p.WorkflowAdapterAvailable = true
+	if req.Workflow == "grubbery" {
+		// This is the implemented source/restart workflow, not general app
+		// readiness or support for peer/permit/route/asset management. Require
+		// both native adapters and independent saved-receipt access before boot.
+		p.WorkflowAdapter = grubbery.HTTPContract
+		p.WorkflowScope = "source-and-restart"
+		apis = append(apis, protocol.GrubberyAppReceiptsFeature, protocol.GrubberyRuntimeReceiptsFeature)
+		adapters = append(adapters, protocol.GrubberyAppSourceFeature, protocol.GrubberyRuntimeRecoveryFeature)
+		p.NextSteps = append(p.NextSteps, "This preflight covers versioned Grubbery source and restart recovery only; inspect the pinned framework and each app effect separately. Peer discovery, permits, routes and served assets require their own supported workflow and evidence.")
+	}
 	for _, feature := range apis {
 		if !slices.Contains(h.Features, feature) {
 			p.MissingAPIs = append(p.MissingAPIs, feature)
@@ -108,11 +123,6 @@ func Assess(req PreflightRequest, h protocol.Hello, policy *protocol.AppPolicySt
 		if !slices.Contains(h.Features, feature) {
 			p.MissingOperationAdapters = append(p.MissingOperationAdapters, feature)
 		}
-	}
-	p.WorkflowAdapter = "gall-desk-v1"
-	p.WorkflowAdapterAvailable = req.Workflow == "gall"
-	if req.Workflow == "grubbery" {
-		p.WorkflowAdapter = "grubbery-v1"
 	}
 	p.EnvironmentCompatible = p.Operator && len(p.MissingAPIs) == 0 && len(p.MissingOperationAdapters) == 0 && p.WorkflowAdapterAvailable
 	p.Status = "environment-compatible"

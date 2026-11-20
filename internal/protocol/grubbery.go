@@ -15,7 +15,8 @@ const GrubberyAppReceiptsFeature = "grubbery-app-receipts-v1"
 const GrubberyAppOperationsPath = "/v1/grubbery-app-operations"
 
 // This denotes typed source API support, not a qualified complete application
-// workflow. The independent preflight adapter gate remains authoritative.
+// workflow. Preflight requires the complete bounded source/restart capability
+// set and reports that scope; every native effect retains its own admission.
 const GrubberyAppSourceFeature = "grubbery-app-source-v1"
 const GrubberyAppReviewPath = "/v1/grubbery-app-review"
 const GrubberyAppRequestBytes = 96 << 10
