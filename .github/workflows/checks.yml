@@ -40,6 +40,7 @@ jobs:
           python3 -B scripts/ci-go-tests.py -race -timeout=5m -tags=omabit_disposable_qualification -run '^(TestProjectStopRaceQualification.*|TestProjectShipActionDependenciesKeepJournalBeforeSignalAndExactProcess|TestIssuesProjectRaceBackendRefusesUnselectedAction|TestIssuesProjectRaceDisposableVM)$' ./internal/runtimequalify ./internal/managed
           go vet -tags=omabit_disposable_qualification ./internal/runtimequalify ./internal/managed
           python3 -B -m unittest discover -s scripts/qualification/project-transition-cow -p test_guards.py -v
+          python3 -B -m unittest discover -s scripts/qualification/recording-pressure-vm -p test_guards.py -v
           python3 -c 'import json,subprocess; p=json.loads(subprocess.check_output(["go","list","-json","./internal/runtimequalify"])); assert "project_stop_race_qualification_linux.go" not in p["GoFiles"]'
       - name: Offline application recovery fixture checks
         run: |

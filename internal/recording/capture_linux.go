@@ -59,7 +59,7 @@ type CaptureResult struct {
 // metadata before attaching and acknowledges readiness only after attachment.
 // It never starts, signals, waits for, removes or retries a container. The
 // independently supervised worker supplies its own lifetime and trusted source.
-// This coordinator is not yet wired into installed runtime launch.
+// Ordinary launch selects this coordinator only through the explicit recording pilot.
 //
 // Raw bytes are unchanged and fsynced. Cancel closes only this attachment, which
 // interrupts a blocked read. Failure preserves the exact partial session; when

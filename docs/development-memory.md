@@ -14180,3 +14180,29 @@ resolves the environment problem. [Evidence](diagnostics/2026-11-20-grubbery-bou
 records48,523,718,656bytes after testing. Matching final artifacts and native/DEV
 qualification remain required. Correct the PR template's superseded minor-only
 wording to the existing release/X.Y.Z and tested-upgrade policy.
+
+
+## M762 — Prepare bounded native recording pressure qualification (2026-11-20)
+
+Prepare a separate fresh offline capsule for the remaining recording pilot gates.
+Install the matching candidate, create one new fake, and exercise three same-pier
+sessions: bounded synthetic binary-line/stderr output through the native Docker
+pipes, an encoded1MiB session ceiling, and actual free space below a512MiB reserve
+on a640MiB guest-only recording filesystem. Job/state/pier storage remains separate
+so incomplete capture can persist its explicit result. Require unchanged native
+process identity, saved original prefixes, ordinary Stop/drain, no implicit capture
+resume after freeing space, and retained-job capacity refusal without eviction.
+
+Six inert capsule guards and eight existing recording-harness guards pass; focused
+capture/refusal races and the default-skipped native observer pass. An independent
+bounded raw decoder verifies segment/frame identity, links, hashes and timing,
+including corruption/torn-tail refusal. Fix an inert expected-length arithmetic
+typo before the clean guard pass. [Source evidence](diagnostics/2026-11-20-recording-pressure-capsule-source.json)
+records48,698,540,032charged bytes. No native pressure VM has run.
+
+The launcher reserves2304MiB with a1664MiB hard root-file ceiling, checks complete
+aggregate storage, and retains the one-runtime/no-concurrent-build boundary. The
+existing read-only observer accepts only this additional exact frozen scenario;
+no product fault switch or runtime permission is added. Raw tmpfs evidence is
+copied into bounded private output before shutdown, including failed cases.
+Matching clean artifacts, native completion and independent extraction are next.

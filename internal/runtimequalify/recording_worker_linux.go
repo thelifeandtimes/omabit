@@ -22,7 +22,7 @@ var ErrRecordingWorker = errors.New("recording worker did not finish its verifie
 
 // RecordingWorkerOptions comes from trusted local runner configuration, never
 // an RPC or a model-visible tool's arbitrary filesystem parameters. This source
-// worker is not installed, supervised or wired into ordinary launch yet.
+// worker is supervised independently when ordinary launch explicitly selects the pilot.
 type RecordingWorkerOptions struct {
 	JobsRoot            string
 	RecordingsRoot      string
