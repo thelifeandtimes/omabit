@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "status": "proposed-not-removed-specific-user-approval-required",
+  "scope": "obsolete failed disposable recording VM01 compressed whole image and input disk only",
+  "source_commit": "2d0281971cca0285e5aabc4b91279830a04ab9b1",
+  "files": [
+    {
+      "name": "root.qcow2.gz",
+      "sha256": "d0725eaca2ea8d53d6879751c7b7688bf714e0363e640f81a929cda561aeffff",
+      "bytes": 494422930,
+      "allocated_bytes": 494424064
+    },
+    {
+      "name": "payload.ext4",
+      "sha256": "8fe7946f9ff727b8c1d36859ceef4cabde3400f461fea6b3fce9bdf0028f2bc7",
+      "bytes": 536870912,
+      "allocated_bytes": 312774656
+    }
+  ],
+  "retained_evidence_pins_verified": 68,
+  "insights": {
+    "whole_result": "failed generic storage/log/deadline interruption; exact limiting predicate not established",
+    "schema": 64,
+    "saved_start": "running; not terminal completion",
+    "recording_intents": 1,
+    "exact_sql_wal_shm_job_and_recording_bytes_retained": true,
+    "raw_recording_bytes": 6528,
+    "later_evidence": "same-source successful native VM02 whole archive remains, plus native07 recording upgrade and matching4c closed export qualification; this failed fixture is not qualified upgrade evidence"
+  },
+  "retained_full_references": [
+    "same-source successful recording VM02 archive",
+    "successful recording07 upgrade fixture",
+    "pending original app VM05",
+    "successful corrected app COW05"
+  ],
+  "risk": "Only full image of this older failed VM would be lost. Exact SQLite/WAL/SHM, command receipts, raw recording/job metadata, logs, source and binaries remain. The partial disposable pier is not retained separately.",
+  "authorization": "awaiting specific user approval; no file removal performed"
+}

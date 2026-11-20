@@ -13735,3 +13735,23 @@ reader scopes end empty, and all matching artifact/case hashes recheck. Active
 capture/pressure/oldest coverage/retirement/other factories, static help choice
 visibility and final previous-stable/native-plugin/preserved DEV gates remain.
 This is no production, existing-ship or installed/manual-review state change.
+
+
+## M744 — Classify obsolete failed recording VM01; disposal awaits approval (2026-11-19)
+
+Document this older failed fixture before requesting its unique whole-image
+removal. Source2d028197's VM01 ends under a generic storage/log/deadline guard;
+the exact limiting predicate is unproven. SQLite64 preserves registration success,
+Start still running and one recording intent, so it is not terminal/upgrade
+qualification. Exact DB/WAL/SHM, job claim/readiness/session metadata,6528 raw
+recording bytes, commands, source and binaries remain under68 verified pins.
+Its partial disposable pier exists only in the whole archive. The same-source
+successful VM02 whole archive and newer recording07/pending app05/corrected app
+COW05 remain intact. See [insights and proposed disposal](diagnostics/2026-11-19-recording-vm01-disposal-proposal.json).
+
+Only the494,424,064-byte allocated gzip and312,774,656-byte allocated input disk
+are proposed,807,198,720bytes total. Both ordinary/single-link owner file hashes
+match their original manifests. This would remove the only complete image of
+that older failed fixture and requires specific authorization; no removal has
+occurred. Do not extend earlier recording03–06 permissions to these files. The
+48GiB cap, one-runtime rule and production/manual-review exclusions remain.
