@@ -1,4 +1,15 @@
-# 0.5.0 pause checkpoint — 2026-11-20
+# 0.5.0 pause checkpoint and resumption — 2026-11-20
+
+The user explicitly resumed after the machine update on2026-11-20. M773
+supersedes the paused status below. Fresh `patch-upgrade-050-final02` passed with
+candidate01 bdf4397, including original app history, stable59→65 migration,
+runtime continuity, manager restart and old-reader refusal. Independent compact
+results/SQL are retained; the two ended upgrade capsules' classified images were
+retired. A corrected packaged preflight reference and a CI test deadline now
+require a new clean source freeze, matching artifacts and qualification. Do not
+treat candidate01's passes as qualification of that next candidate.
+
+The remaining text records the original pause checkpoint, not a renewed pause.
 
 The user explicitly paused for a machine restart/update. Do not resume until the
 user asks. No production deployment or existing ship operation is authorized.

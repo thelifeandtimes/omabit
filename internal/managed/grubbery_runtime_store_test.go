@@ -297,12 +297,16 @@ func TestAppRuntimeStoreRetainsBoundedAuditHistoryAndRefusesOverflow(t *testing.
 	s, record, _ := runtimeStoreFixture(t)
 	j := grubberyRuntimeJournal{s}
 	var previous *grubbery.RuntimeRecoveryReceipt
-	ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
+	// Validate the full bounded audit chain under race instrumentation without
+	// treating a busy CI runner's filesystem latency as a history failure.
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Minute)
 	defer cancel()
 	for i := 0; i < grubbery.MaxRuntimeRecoveries; i++ {
 		review := runtimeReviewFixture(t, record, previous)
 		receipt, err := j.Apply(ctx, record.Plan.RequestID, stopEvidenceDigest([]byte("bounded-runtime-recovery-"+strconv.Itoa(i))), review, review.ObservedAt.Add(time.Second))
-		g02Check(t, err)
+		if err != nil {
+			t.Fatalf("recovery %d: %v (context: %v)", i, err, ctx.Err())
+		}
 		previous = &receipt
 	}
 	before := appAllRows(t, s.db)

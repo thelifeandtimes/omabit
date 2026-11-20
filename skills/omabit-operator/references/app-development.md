@@ -31,8 +31,11 @@ Choose the workflow from the actual source (Gall or Grubbery), not from the user
 wording alone. This check contacts only that enrollment. Missing runner APIs,
 missing operation/framework adapters and policy denials are distinct. Do not boot
 an app project to discover that its intended operation is unsupported. Generic
-project creation is still available for other purposes. Grubbery currently reports
-its missing versioned adapter; do not bypass it with raw commands.
+project creation is still available for other purposes. Grubbery checks the pinned
+`grubbery-darts-7f7701d-v1` adapter's `source-and-restart` scope, including source
+and restart recovery adapters and both saved-receipt APIs. This scope does not
+establish peer discovery, permits, routes or served-asset readiness. An older or
+incomplete runner refuses; do not bypass a missing capability with raw commands.
 
 After selecting a ship/desk, repeat with `--instance INSTANCE --desk DESK` and the
 effects actually requested, adding `publish` only when needed. A policy denial

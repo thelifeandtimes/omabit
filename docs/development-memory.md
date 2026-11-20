@@ -14423,3 +14423,46 @@ ephemeral sockets/pipes are listed separately. The full post-move charge is
 and compact evidence are preserved. [Resume checkpoint](release-0.5.0-resume.md)
 records exact paths, final artifacts, completed gates, interrupted upgrade and
 remaining work. Goal is paused at the user's request; no release is published.
+
+## M773 — Resume, qualify candidate01 stable upgrade and correct two release inputs (2026-11-20)
+
+The user explicitly resumed after the machine update, superseding M772's paused
+status. Verify the preserved manifest and required input hashes, then launch a
+fresh offline upgrade guest from the pristine base; never resume the interrupted
+overlay. Actual published0.4/schema59 tools create source/policy/settings/receipt
+history before candidate01 bdf4397 upgrades to65. The whole guest and host pass:
+original app table rows/DDL survive migration and manager restart; running
+container/engine, stopped intent, identities, access and history remain preserved;
+authorization denial/retry and actual old-reader refusal leave state intact.
+A separate candidate desk workflow and final ordinary Stop also pass.
+
+[Exact candidate01 upgrade evidence](diagnostics/2026-11-20-release050-candidate01-upgrade.json)
+includes independently extracted report, commands and SQLite. The exported report
+matches the complete serial result; schema65, all13 original app table definitions,
+all five original runtime-operation receipts and the final successful Stop are
+verified independently. All three fresh instances finish with stopped intent.
+Retain compact evidence from both capsules; the original pause remains interrupted
+and unqualified. Retire only ten classified ended image/boot files after empty
+scope, holder and backing checks, reclaiming3,329,003,520bytes. Original app62,
+current65, recording fixtures and both manual DEV roots remain unchanged.
+
+Review finds stale packaged guidance claiming the Grubbery adapter is missing.
+Correct both synchronized references to the actual bounded source-and-restart
+preflight contract; peer/permits/routes/assets remain separate. Seven packaging
+tests, shared-reference synchronization and both skill validators pass.
+
+The exact bdf4397 source CI run44792728375 passes every source/race/QML job. Its
+duplicate run44792713306 fails only the64-recovery history test at93.05seconds
+under a90-second context; the other run passes it in60.83seconds. Timing is
+consistent with deadline expiration, but the old diagnostic did not preserve
+context.Err(), so do not claim that cause proven. Extend only this test's context
+to5minutes and report the iteration/context on failure, retaining all64 recoveries,
+overflow refusal and exact row/latest-binding assertions. The focused race test
+passes in66.32seconds. [Correction evidence](diagnostics/2026-11-20-release050-resumed-corrections.json)
+retains both original logs and the local result.
+
+These packaged skill/test changes require a new clean freeze and matching
+artifacts/qualification. M769–M771 and this upgrade qualify bdf4397 only; they do
+not qualify the next candidate. No runtime product behavior, installed DEV,
+production service or distribution pin changes here. Final app/export/upgrade,
+preserved DEV, required PR checks, protected merge and publication remain gates.
