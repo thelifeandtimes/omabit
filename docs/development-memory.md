@@ -14042,3 +14042,24 @@ worktrees, preventing the handoff from omitting843,911,168bytes of retained tool
 All six admission tests pass, including the new cross-worktree/symlink case.
 Full measured charge50,273,591,296bytes leaves insufficient native scratch; no
 native transition test or deployment has run at this checkpoint.
+
+
+## M757 — Preserve recording fixtures losslessly and freeze Stop qualification tools (2026-11-20)
+
+Archive the ended recording07 root/input and recording02 input with full decoded
+SHA256 verification before removing their uncompressed copies. Retain all compact
+proof, original state and pristine dependencies; restore exact bytes under storage
+admission before later read-only/COW use, never resume an ended capsule. This
+reclaims1,220,263,936allocated bytes. The initial unsupported fuser option refused
+before writes; a256MiB compression scope then failed by OOM with original intact.
+Its incomplete output was discarded after rehashing the source, and the bounded
+1GiB retry passed. [Archive record](diagnostics/2026-11-20-release050-fixture-archives.json)
+preserves these distinctions and exact original/archive identities.
+
+Clean68bf233 builds matching CLI/collector/runner, explicitly tagged test manager
+and separately frozen boot helper. All4043 tracked input hashes remain unchanged;
+ordinary builds omit the timing hook, source/host-refusal checks pass, and PID1
+refuses host execution with80. [Artifact pins](diagnostics/2026-11-20-project-stop-native-artifacts.json)
+record49,235,075,072charged bytes after the monitored build, under48GiB. The native
+transition run and independent checks remain pending; no final release, installed
+upgrade, preserved DEV or production qualification is claimed.

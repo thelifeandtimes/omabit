@@ -3,8 +3,8 @@
 This is a development qualification capsule for issue16. It is not an installed
 runner, a public fault switch or proof of the original incident's exact predicate.
 No work occurs without `run.py --run` and every explicit input. Host execution of
-the PID1 binary exits80 before mounting anything. Initial boot pins intentionally
-refuse until a clean source/binary freeze supplies their exact values.
+the PID1 binary exits80 before mounting anything. Boot pins bind the independently
+verified clean68bf233 source and its exact binary; a changed helper refuses.
 
 The fixed successful current-app65 overlay and its original pending-app62/pristine
 backings are read-only. The fresh root backs `/current-app.qcow2`; its dependency
