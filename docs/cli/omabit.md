@@ -441,13 +441,22 @@ bindings, replay rules and explicit legacy CLI exclusions. Creates no state.
 ## recording-export
 
 ```text
-Usage: omabit [--config-dir DIR] recording-export --runner NAME --expected-runner-id ID --instance INSTANCE --job JOB_ID --job-sha256 SHA256 --original --include-private-data --output /absolute/private/new.zip
+Usage: omabit [--config-dir DIR] recording-export --runner NAME --expected-runner-id ID --instance INSTANCE --job JOB_ID --job-sha256 SHA256 (--original [--timing-index] | --redacted) --include-private-data --output /absolute/private/new.zip
 
 Export a closed saved recording job through the shared manifest/part operations.
-The ZIP preserves exact metadata and encoded segments, original timing/streams,
-and explicit verified-prefix/gap coverage. Original output may contain private
-values and terminal controls; inspect it as data before sharing. No publication
-or runtime completeness is implied. Redacted export packaging remains separate.
+Choose exactly one representation. --original preserves exact metadata and
+encoded segments, timing/streams and verified-prefix/gap coverage. Optional
+--timing-index adds a separate verified payload-free JSONL index; it re-reads the
+hash-pinned originals and refuses incomplete or oversized output. The shared
+runtime.recording-timing.v1 operation filters timing and returns context cursors.
+It separates first/last output in sequence from earliest/latest retained output
+wall times; coverage covers this verified prefix, not earlier or other sessions.
+--redacted exports only derived escaped spans, omission reasons, technical
+metadata and coverage, omitting exact bindings and original encoded files.
+Finite credential rules require owner review before sharing; technical strings,
+hashes, timing and application text can remain private. --timing-index cannot be
+combined with --redacted. Original output may contain secrets and terminal
+controls; inspect it as data. No publication or runtime completeness is implied.
 The existing output directory must be physical, owned by you and mode0700.
 The final file is mode0600 and never overwritten. Failure retains .partial output;
 it does not substitute another session, retry capture or change recording policy.

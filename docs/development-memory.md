@@ -13846,3 +13846,21 @@ encoding, endpoint, capability, admission, policy, retention or lifecycle change
 Static help describes the new explicit output scope. Full post-charge49,830,883,328
 stays below48GiB. Matching clean tools/helper/reference and fresh native/independent
 verification remain required; production/manual DEV/user ships stay unchanged.
+
+
+## M749 — Matching output-coverage tools and corrected generated help pass (2026-11-19)
+
+Freeze all three tools plus explicit-source managed helper at clean
+5344c5cd2816623b69450f638ee44966a31b9ee4. All4025 tracked hashes match before/after;
+actual product VCS/CGO0/trimpath pins and helper host/source guards pass. Build a
+separate required-flags/source-bound read-only utility; it refuses host execution
+with80. Networkless generation and independent check of180 help entries pass,
+including explicit original/redacted/index options and retained output scope.
+This supersedes M745's help-generation deferral only. See
+[matching artifact pins](diagnostics/2026-11-19-recording-output-coverage-artifacts.json).
+
+Build/preparation stay below48GiB with measured512/64MiB reserves and monitoring;
+full post-preparation charge50,020,380,672. All source/build/preparation scopes
+end. Fresh native output-summary/independent-frame verification remains required;
+4c0b16e's earlier export evidence is not transferred to these later tools. No
+production, existing ship, installed DEV or manual-review state changes.

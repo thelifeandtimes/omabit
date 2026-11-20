@@ -749,3 +749,11 @@ records49,830,883,328-byte full charge below48GiB and no persisted schema65/inde
 original/redacted format or runtime change. Matching tools/reference and native
 output-summary verification remain pending; host-wide oldest inventory and
 pressure/retirement/factory/final installed gates remain open.
+
+
+M749 freezes matching5344c5c products/helper and the source/flag-bound read-only
+utility. Exact VCS/input/helper host guards pass. All180 help entries generate
+and check in a private networkless sandbox, completing the explicit new export
+option/reference correction. [Pins](diagnostics/2026-11-19-recording-output-coverage-artifacts.json)
+record50,020,380,672-byte full charge under48GiB. Fresh native output-summary and
+independent original-frame verification remain pending; no installed state changed.

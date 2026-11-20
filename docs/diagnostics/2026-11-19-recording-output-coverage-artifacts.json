@@ -1,0 +1,47 @@
+{
+  "format": 1,
+  "status": "matching-frozen-help-verified-native-output-coverage-pending",
+  "source_commit": "5344c5cd2816623b69450f638ee44966a31b9ee4",
+  "go": "go1.27.3",
+  "cgo_enabled": false,
+  "trimpath": true,
+  "artifact_sha256": {
+    "omabit": "63ee3f30fdad4c846fc0773f1b09800f1f491a236d1852a75fb2f62f8afa9cae",
+    "urbit-collector": "2b3617de54f45258cf1794f21c52b05f8caae0857684cb389bddb80dc4a089e4",
+    "urbit-runner": "8d33bdfa54138bd30ba47c2f9b2208383f4da2661017188c5df1847423240ec8",
+    "managed.test": "5ff7444bbd66193e49e8530012750374b23b1989acc04f715077844730f75822"
+  },
+  "artifact_bytes": {
+    "omabit": 18542752,
+    "urbit-collector": 9089184,
+    "urbit-runner": 21442720,
+    "managed.test": 30486688
+  },
+  "tracked_source_inputs_verified_before_after": 4025,
+  "actual_product_clean_vcs_and_helper_source_identity_verified": true,
+  "helper_host_refusal_guard_passed_native_case_skipped": true,
+  "generated_help_entries": 180,
+  "networkless_generation_and_check_passed": true,
+  "generated_help_sha256": "c0b792e72b6e7de7dacbd0f93ff3623097416a5000e7f3cea3055cec8ff7ce8e",
+  "explicit_original_redacted_index_and_output_coverage_help_present": true,
+  "reader": {
+    "binary_sha256": "2869737ffeb86827140d3265e81db17fbecb2d424de775613f5a3dd57a6ff0bd",
+    "source_sha256": "69e500a07f364156dcfc32c5585b0463b8b71fea888903d9db92ad913458fae6",
+    "host_refusal_exit": 80,
+    "scope": "fixed ended5344c5c output coverage/export fixture and original07; read-only/noload fixed-path evidence only; no source-disk code execution"
+  },
+  "storage": {
+    "build_admission_bytes": 536870912,
+    "build_initial_charge": 49831084032,
+    "build_fast_peak_charge": 50052169728,
+    "build_full_charge_after": 50017009664,
+    "preflight_full_charge_after": 50020380672,
+    "budget_bytes": 51539607552
+  },
+  "native_gate": "fresh offline recording07-backed COW; require original/derived/output-coverage flags, matching actual CLI/SDK queries/exports and independent raw-frame/SQLite verification",
+  "not_qualified": [
+    "new native output coverage until execution",
+    "host/session-wide oldest inventory, retention/pressure and other factories",
+    "previous-stable/native-plugin/installed/preserved DEV or production"
+  ]
+}
