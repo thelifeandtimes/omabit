@@ -32,6 +32,14 @@ jobs:
           go vet ./...
       - name: Stateful transport and runtime race checks
         run: python3 -B scripts/ci-go-tests.py -race -timeout=30m ./internal/projectnetwork ./internal/runtimequalify ./internal/client ./internal/access ./internal/collection ./internal/piercopy ./internal/pierstore ./internal/projectusage ./internal/piermeta ./internal/hostinstall ./internal/hostsetup ./internal/onboarding ./internal/remotesetup ./internal/omabittheme ./backend/cmd/urbit-collector ./backend/cmd/urbit-runner
+      - name: Disposable Stop timing helper safety (inert fixtures only)
+        env:
+          GOFLAGS: ""
+          OMABIT_PROJECT_RACE_VM: ""
+        run: |
+          python3 -B scripts/ci-go-tests.py -race -timeout=5m -tags=omabit_disposable_qualification -run '^(TestProjectStopRaceQualification.*|TestProjectShipActionDependenciesKeepJournalBeforeSignalAndExactProcess|TestIssuesProjectRaceBackendRefusesUnselectedAction|TestIssuesProjectRaceDisposableVM)$' ./internal/runtimequalify ./internal/managed
+          go vet -tags=omabit_disposable_qualification ./internal/runtimequalify ./internal/managed
+          python3 -c 'import json,subprocess; p=json.loads(subprocess.check_output(["go","list","-json","./internal/runtimequalify"])); assert "project_stop_race_qualification_linux.go" not in p["GoFiles"]'
       - name: Offline application recovery fixture checks
         run: |
           python3 -B -m unittest discover -s scripts/qualification/imports -p 'test_runner_app_*.py'

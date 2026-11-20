@@ -13967,3 +13967,38 @@ A guarded qualification-only helper and matching native injection remain pending
 Do not claim this source refactor proves the actual incident predicate or transfer
 5344c5c's older recording qualification to later artifacts. Production/manual DEV,
 existing/protected/tmux ships and needed transition fixtures remain untouched.
+
+
+## M754 — Guarded qualification-only native Stop timing helper source passes (2026-11-20)
+
+Prepare the real-engine injection without a product fault switch. Only the
+explicit `omabit_disposable_qualification` build tag includes the guarded runtime
+helper and test-manager backend. Ordinary Go file selection proves the runtime
+hook absent. The test backend preserves real queued operation/save/terminal
+receipt behavior, refusing other projects/members/actions. Complete VM/source/
+uid/home/runtime/required-flag guards precede opening a store/socket; only two
+fixed newly created fake members in the current65 fixture are accepted.
+
+The test-only interceptor binds the durable exact original Stop intent before
+holding the selected process with SIGSTOP and delivering one real SIGTERM. It
+captures the real preliminary running response, rechecks process identity before
+SIGCONT, waits for exact clean exit, then returns the unchanged earlier response
+so the real bracket observes exited. Fresh bounded failure cleanup releases only
+the same process; changed processes, other mutations/execs and repeated SIGTERM
+refuse. No ownership/pier/container/namespace validation is removed. This is a
+fixture breakpoint, not a proposed runtime pause feature.
+
+Tagged runtime races(1.834s), manager refusal/host-skip races(1.015s) and both-package
+vet pass with inert engines. Coverage includes lost TERM/CONT replies, inspection
+failure, replacement, cancellation, trace failure, journal refusal and peer
+preservation. The first read-only file-list check fails its Go template quoting;
+retain it and use the corrected range/println form. Corrected ordinary/tagged
+selection passes with ambient GOFLAGS cleared. CI adds these inert safety/vet and
+ordinary omission gates. [Source evidence](diagnostics/2026-11-20-project-stop-native-timing-helper-source.json)
+records50,273,107,968-byte post-charge below48GiB.
+
+No native timing fault has run. A fresh launcher/guest/separately frozen PID1,
+matching normal products plus explicitly tagged/source-pinned helper, storage
+admission and independent actual native receipt/pier/peer checks remain required.
+Do not claim this proves the original incident predicate. Needed transition
+fixtures and all production/manual DEV/user/tmux ship exclusions remain intact.

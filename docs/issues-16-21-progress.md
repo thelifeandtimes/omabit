@@ -794,3 +794,14 @@ changed-process refusal, peer preservation and existing observer/recovery cases.
 No native timing hook is implemented yet. [Source evidence](diagnostics/2026-11-19-project-action-dependencies-source.json)
 records50,127,073,280bytes charged below48GiB. Matching native injection and final
 upgrade/installed gates remain pending; all installed/user state stays unchanged.
+
+
+M754 prepares the qualification-only real-engine Stop timing helper and test
+manager. An explicit build tag, complete fixed-VM/source guard and exact fresh
+added-member selection prevent ordinary product/host entry. Inert races/vet cover
+one durable SIGTERM, controlled preliminary/bracket transition, same-process
+release, failures/cancellation and foreign effects. Corrected actual file selection
+proves normal builds omit the hook; the initial template quoting failure remains
+retained. CI adds inert gates. [Source evidence](diagnostics/2026-11-20-project-stop-native-timing-helper-source.json)
+records50,273,107,968bytes below48GiB. Native launcher/guards, matching tagged helper
+and actual transition/pier/peer/receipt qualification still remain pending.
