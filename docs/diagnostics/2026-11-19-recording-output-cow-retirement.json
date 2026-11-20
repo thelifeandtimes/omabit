@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "status": "classified-user-authorized-not-yet-removed",
+  "status": "completed-user-authorized",
   "scope": "only four finished output-coverage test COW image/input files",
   "allocated_bytes_reclaimable": 95027200,
   "retained_pins_verified": 1481,
@@ -54,5 +54,9 @@
       "sha256": "665a47924d5ec99174e1386c6b22220deead34bd8e6f01158963b8c7b430b30c",
       "allocated_bytes": 30507008
     }
-  ]
+  ],
+  "files_removed": 4,
+  "allocated_bytes_reclaimed": 95027200,
+  "retained_pins_verified_before_after": 1481,
+  "full_charge_after": 50090250240
 }

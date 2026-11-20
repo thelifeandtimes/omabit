@@ -13936,3 +13936,11 @@ applied. This follows the user's broader cleanup authorization and supersedes
 whole-copy retention for these two exact disposable read overlays only. See
 [notes and classification](diagnostics/2026-11-19-recording-output-cow-retirement.json).
 Production/manual DEV/user/tmux ships remain excluded.
+
+
+M752 execution update: the four classified output-read image/input files are
+removed under the broader user authorization. All1481 retained pins match;
+95,027,200allocated bytes are reclaimed. DISPOSED markers prevent old-case reuse.
+Full charge50,090,250,240 stays below48GiB. Original app62/recording64 and current
+app65/recording65 full transition fixtures, every exact compact store/proof/source/
+binary/log, and all production/manual DEV/user-ship exclusions remain preserved.

@@ -778,3 +778,10 @@ with independently verified retained assertions. [Evidence](diagnostics/2026-11-
 records all six scopes ended and50,184,650,752-byte full charge below48GiB. Broader
 inventory/pressure/retirement/factories and final issue/stable/plugin/preserved DEV
 gates remain open; installed/production/existing ships are untouched.
+
+
+M752 consolidates the finished output-read overlays after their lessons and full
+compact proof are retained. Four image/input files are removed with1481 exact
+retained pins, leaving50,090,250,240bytes charged below48GiB. Required full
+state/version fixtures remain. This follows the user's broader cleanup authority;
+no further per-test disposal permission is needed for documented unneeded cases.
