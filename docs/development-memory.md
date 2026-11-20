@@ -13918,3 +13918,21 @@ production, protected/existing ships and tmux remain unchanged. The completed
 read-only overlays add no required state/version transition; compact exact SQL/
 proof/archives/source/logs suffice, with immutable recording07 and original app/
 recording transition fixtures kept for future runs under the user's cleanup rule.
+
+
+## M752 — Consolidate completed output-read overlays under the user retention rule (2026-11-19)
+
+COW06 remains the whole status-framing failure, with complete independently
+verified product/SQL/frame proof and the whole-message correction. COW07 supplies
+the corrected whole/native/independent pass. Keep every compact exact database,
+recording/query/ZIP proof, source, binary and log. Neither copied closed-read
+overlay adds a required state/version transition: immutable original recording07
+retains the same source, and original app62, actual recording64 and current app65
+full fixtures remain. Earlier failed/passed statuses remain historically unchanged.
+
+Classify only their four image/input files(95,027,200allocated bytes), verify1481
+retained pins and exact native/reader/supervisor scopes ended. Removal is not yet
+applied. This follows the user's broader cleanup authorization and supersedes
+whole-copy retention for these two exact disposable read overlays only. See
+[notes and classification](diagnostics/2026-11-19-recording-output-cow-retirement.json).
+Production/manual DEV/user/tmux ships remain excluded.
