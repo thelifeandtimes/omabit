@@ -4,6 +4,7 @@ import io
 from pathlib import Path
 import unittest
 import copy
+import tempfile
 from unittest.mock import patch
 from types import SimpleNamespace
 
@@ -16,6 +17,24 @@ def load(name):
 
 
 class AdmissionTests(unittest.TestCase):
+    def test_handoff_keeps_retained_worktree_builds_in_storage_charge(self):
+        host = load('run')
+        with tempfile.TemporaryDirectory() as d:
+            base = Path(d)
+            current, earlier, empty = (base / n for n in ('release', 'earlier checkout', 'unused'))
+            for p in (current / 'build', earlier / 'build', empty):
+                p.mkdir(parents=True)
+            records = ''.join('worktree ' + str(p) + '\0HEAD ignored\0\0' for p in (current, earlier, empty))
+            with patch.object(host, 'ROOT', current), patch.object(host.subprocess, 'check_output', return_value=records):
+                self.assertEqual(host.worktree_build_roots(), [current / 'build', earlier / 'build'])
+                # A symlink must not hide an unmeasured alternate artifact root.
+                (empty / 'build').symlink_to(earlier / 'build', target_is_directory=True)
+                with self.assertRaisesRegex(RuntimeError, 'unsafe worktree build'):
+                    host.worktree_build_roots()
+            with patch.object(host, 'ROOT', current), patch.object(host.subprocess, 'check_output', return_value=''):
+                with self.assertRaisesRegex(RuntimeError, 'missing from worktree inventory'):
+                    host.worktree_build_roots()
+
     def test_recovery_prerequisite_binds_exact_artifacts_without_promoting_whole_scenario(self):
         host=load('run'); builds={n:{'sha256':n+'-frozen'} for n in ('omabit','urbit-collector','urbit-runner','managed.test')}
         prior={'source_commit':'frozen','schema_before':59,'passed':False,'inputs':{'candidate':copy.deepcopy(builds)},'installed_upgrade':{k:True for k in ('passed','running_stopped_intent_and_history_preserved','engine_and_container_processes_preserved','access_preserved','old_reader_refused_unchanged')}}

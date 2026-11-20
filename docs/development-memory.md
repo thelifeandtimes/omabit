@@ -14002,3 +14002,43 @@ matching normal products plus explicitly tagged/source-pinned helper, storage
 admission and independent actual native receipt/pier/peer checks remain required.
 Do not claim this proves the original incident predicate. Needed transition
 fixtures and all production/manual DEV/user/tmux ship exclusions remain intact.
+
+
+## M755 — Prepare isolated native project-transition capsule (2026-11-20)
+
+Ten inert launcher/guest guards pass for no-run/host/foreign-case refusal, frozen
+source boundary, ordinary-versus-tagged products, bounded input inflation and
+whole serial status. The fresh offline COW has a distinct current-app backing
+name, with exact original pending-app/pristine dependencies read-only. It creates
+two new fake members and preserves the inherited stopped app/pier/journals. The
+case requires actual Stop terminal success, six exact timing traces, one TERM,
+lookup-only receipt replay after reopen, same-pier Start, peer/anchor preservation
+and final clean stops. See [capsule scope](../scripts/qualification/project-transition-cow/README.md).
+
+No VM has run and initial boot pins deliberately refuse pending a separate clean
+PID1/binary freeze. Matching products/tagged helper, storage admission and actual
+native plus independent checks remain pending. The storage check requires the
+host's established read-only DEV user-namespace authority; the sandbox-only read
+cannot see that PID and correctly refuses. Full measured charge50,273,296,384
+leaves insufficient space for the declared2GiB native scratch. Apply the user's
+broader obsolete-test retention authority after lessons and needed transition
+state are retained. Human-review disks containing credentials remain preserved,
+as do all production/installed DEV/protected/tmux exclusions.
+
+
+## M756 — Resume bounded0.5.0 release completion (2026-11-20)
+
+The user authorized finishing the reviewed release plan. Continue on
+release/0.5.0 from4856f15, preserving the original topic worktree and importing
+its pending M755 changes through a hash-verified snapshot. The
+[release checklist](release-0.5.0-plan.md) identifies finite delivery scope and
+explicit remaining issue work; issue22 and production deployment stay excluded.
+
+Review finds M755's predecessor path accidentally names a nonexistent transition
+capsule. Correct it to the exact retained successful runtime COW05 and extend the
+existing backing-chain regression to pin that input. All ten inert capsule guards
+pass. Storage admission now counts existing build directories across registered
+worktrees, preventing the handoff from omitting843,911,168bytes of retained tools.
+All six admission tests pass, including the new cross-worktree/symlink case.
+Full measured charge50,273,591,296bytes leaves insufficient native scratch; no
+native transition test or deployment has run at this checkpoint.

@@ -41,9 +41,28 @@ def ordinary(path):
     return path
 
 
+def worktree_build_roots():
+    # A release continuation may move worktrees while retaining its earlier
+    # frozen executables. Count every existing checkout's build directory so
+    # changing ROOT cannot make those retained artifacts disappear from budget.
+    records = subprocess.check_output(
+        ['git', 'worktree', 'list', '--porcelain', '-z'], cwd=ROOT, text=True)
+    paths = []
+    for field in records.split('\0'):
+        if field.startswith('worktree '):
+            path = Path(field.removeprefix('worktree ')) / 'build'
+            if path.is_symlink() or (path.exists() and not path.is_dir()):
+                raise RuntimeError('unsafe worktree build directory')
+            if path.is_dir():
+                paths.append(path)
+    if ROOT / 'build' not in paths:
+        raise RuntimeError('current physical build directory missing from worktree inventory')
+    return paths
+
+
 def charge(additional, cap):
     roots = storage.roots()
-    for p in (Path.home()/'.cache/go-build', Path.home()/'go/pkg/mod', ROOT/'build'):
+    for p in (Path.home()/'.cache/go-build', Path.home()/'go/pkg/mod', *worktree_build_roots()):
         if p.is_symlink() or not p.is_dir():
             raise RuntimeError('missing physical shared build cache')
         if not any(p == root or p.is_relative_to(root) for root in roots):
