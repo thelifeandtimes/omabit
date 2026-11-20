@@ -30,9 +30,9 @@ GIB = 1024**3
 # Two new fake piers; the inherited fake stays stopped. This is a fresh
 # offline overlay, never the manual DEV fixture. A hard image bound plus staged
 # inputs/log/report bounds must fit the entire declared scratch before launch.
-SCRATCH = 2*GIB
+SCRATCH = 3*GIB
 HOST_BUILD_RESERVE = 64*1024**2
-ROOT_FILE_MAX = 1920*1024**2
+ROOT_FILE_MAX = SCRATCH-128*1024**2
 VM_DEADLINE_SECONDS = 6100
 SUPERVISOR_DEADLINE_SECONDS = 6300
 ORIGINAL = Path('/tmp/omabit-issues-app-vm-05/root.qcow2')
@@ -71,6 +71,12 @@ def ordinary(path, directory=False):
 
 def terminate(number, frame):
     raise InterruptedError('product VM supervisor terminated: '+str(number))
+
+
+def root_limit_reached(path):
+    # QEMU can stay alive after the host refuses image growth, while the guest
+    # receives I/O errors. End that failed capsule promptly, not at its deadline.
+    return path.stat().st_size >= ROOT_FILE_MAX
 
 
 def frozen_boot(path):
@@ -294,6 +300,8 @@ def main():
         try:
             while child.poll() is None:
                 time.sleep(1)
+                if root_limit_reached(out/'root.qcow2'):
+                    raise RuntimeError('root image hard ceiling reached; preserve failed capsule')
                 report['latest_storage'] = budget.charge(0, cap)
                 if budget.storage.measure(out)['allocated_bytes'] > scratch or (out/'serial.log').stat().st_size > 32*1024**2 or time.monotonic()-started > VM_DEADLINE_SECONDS:
                     raise RuntimeError('product VM storage/log/deadline exceeded; preserve failure capsule')

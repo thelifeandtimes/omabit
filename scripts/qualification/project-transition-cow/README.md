@@ -31,9 +31,13 @@ clean stops. Full proof/SQL/logs stay private on disk. Only a strictly bounded
 whole-message status reaches serial; duplicate, fragmented or foreign status
 refuses. Host process completion and unchanged backings are saved before parsing.
 
-Admission reserves2GiB scratch plus64MiB preparation under the explicitly approved
-48GiB aggregate cap. The new image has a1920MiB kernel file bound; staged inputs,
-32MiB logs and8MiB reports must fit the declared scratch before launch. The sole
+Admission reserves3GiB scratch plus64MiB preparation under the explicitly approved
+48GiB aggregate cap. The new image has a2944MiB kernel file bound; staged inputs,
+32MiB logs and8MiB reports must fit the declared scratch before launch. Reaching
+the root-image ceiling ends the failed capsule promptly even if QEMU stays alive.
+The first2GiB setup exhausted its root bound while adding the second fake; it
+did not reach the native Stop test. Its independent database/log extraction and
+failure record are retained. The sole
 8GiB guest runs in a10GiB/no-swap/one-CPU scope. Its supervisor is separately
 bounded; one global experiment lock excludes other VM/readers and source builds.
 Never run Go builds/tests during this VM. An interrupted or partial case remains

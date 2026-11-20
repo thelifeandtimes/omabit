@@ -1,0 +1,151 @@
+{
+  "status": "failed-precondition-before-native-Stop",
+  "memory": "M758",
+  "source_commit": "68bf2336e565edf411453683fb9e92d3fd6238a5",
+  "harness_commit": "857e6c83b12ac2eabb5be9384b33f34947007682",
+  "failure": "The1920MiB root-file limit caused guest ext4 EIO while adding the second fresh fake. The native Stop transition was not reached. Only the owned disposable VM scope was terminated.",
+  "limits": {
+    "scratch_bytes": 2147483648,
+    "root_file_max": 2013265920
+  },
+  "native_exit": -15,
+  "read_only_evidence": {
+    "directory": "/tmp/omabit-050-stop-evidence-01",
+    "passed": true,
+    "no_source_code_executed": true,
+    "files": {
+      "result.json": "a1eddc04127e3bb03b881d791d3e549d5ce8de74686c2d0c86ac6ca7fa9a1c80",
+      "serial.log": "7277dc5f76bad26d0dc9e81c6452f43bcabe802f992ef361a47418057f1e866b",
+      "command.json": "6bdbe66932da571cbc6863902185b80cea4a9f5c394e8a555c5bae7bb270c4ae",
+      "files/commands.jsonl": "f5256d34fdddd6cf2793c7fd7fac7391e469ee0ef0c4a698cea80c361fdba058",
+      "files/runner.sqlite-shm": "2e9324621562df299386b7dcfe53c97b61ccd6800da24a0ede97050bcc54dbbd",
+      "files/runner.sqlite-wal": "8e4adcc6457081129a644104c3faee37e481420234fd1f33d0ccaf537a8c0827",
+      "files/runner.sqlite": "e94faaa5042fb7d04d0fd511522e3efb6ca7958a43726d7eeda29436f02dc64c"
+    }
+  },
+  "inherited_rows": {
+    "app_development_policy": {
+      "rows": 1,
+      "exact_rows_preserved": true
+    },
+    "app_development_policy_history": {
+      "rows": 2,
+      "exact_rows_preserved": true
+    },
+    "desk_operations": {
+      "rows": 4,
+      "exact_rows_preserved": true
+    },
+    "desk_operation_history": {
+      "rows": 14,
+      "exact_rows_preserved": true
+    },
+    "desk_settings": {
+      "rows": 0,
+      "exact_rows_preserved": true
+    },
+    "desk_settings_history": {
+      "rows": 0,
+      "exact_rows_preserved": true
+    },
+    "desk_source_baselines": {
+      "rows": 0,
+      "exact_rows_preserved": true
+    },
+    "desk_adoptions": {
+      "rows": 1,
+      "exact_rows_preserved": true
+    },
+    "desk_deployments": {
+      "rows": 1,
+      "exact_rows_preserved": true
+    },
+    "desk_source_ownership": {
+      "rows": 1,
+      "exact_rows_preserved": true
+    },
+    "desk_releases": {
+      "rows": 1,
+      "exact_rows_preserved": true
+    },
+    "desk_receivers": {
+      "rows": 0,
+      "exact_rows_preserved": true
+    },
+    "desk_frontends": {
+      "rows": 0,
+      "exact_rows_preserved": true
+    },
+    "grubbery_app_clock": {
+      "rows": 1,
+      "exact_rows_preserved": true
+    },
+    "grubbery_app_operations": {
+      "rows": 2,
+      "exact_rows_preserved": true
+    },
+    "grubbery_app_events": {
+      "rows": 63,
+      "exact_rows_preserved": true
+    },
+    "grubbery_app_leases": {
+      "rows": 0,
+      "exact_rows_preserved": true
+    },
+    "runtime_recording_intents": {
+      "rows": 0,
+      "exact_rows_preserved": true
+    },
+    "runtime_recording_head": {
+      "rows": 1,
+      "exact_rows_preserved": true
+    },
+    "runtime_recording_control_events": {
+      "rows": 0,
+      "exact_rows_preserved": true
+    },
+    "runtime_recording_control_head": {
+      "rows": 1,
+      "exact_rows_preserved": true
+    },
+    "grubbery_app_runtime_recoveries": {
+      "rows": 1,
+      "exact_rows_preserved": true
+    },
+    "grubbery_app_runtime_heads": {
+      "rows": 2,
+      "exact_rows_preserved": true
+    }
+  },
+  "root_sha256": "f6c5c4e953efcfdd552acbc0e283956b79633517c2e865fc47939f10e2f0f59e",
+  "root_allocated_bytes": 2005733376,
+  "retained_capsule_files": {
+    "result.json": "38e0b9de817f645c4bec37c0d4a3e58baecccb040f5718dc069a72c7385a0bed",
+    "host-interruption.json": "0d338dceb814902d5ff8aafae4c0eac49a09c1d12e394c8e5b825abc52dc7444",
+    "serial.log": "b52e774f06f6a0190d16e4e7ef827d39a21ec42a2c6d4a522a97ce040d28f1ac",
+    "host.json": "03e27cf8f0636b58c1d04c0d5e4969e1de7dde1f91d4a525e9e545958d5dd8e9",
+    "initramfs.cpio": "76928ddec47ee1e73ecf25017b58f4471587153fe16d41c736146dc3a43e95d1",
+    "init": "4b9cca98112adba9f694f9c5e1f2eabe32b381c72902cf69c0f5e8e17ae0883d",
+    "payload.ext4": "172894c5932da941dc1d82b2de59e546f8d263b4d4d4522fed80dfdaef6834b6",
+    "preparation.json": "2f9ab0cc0e7f41bd25ab4968b30631530e0650e27143f4d5a196c7ec9976cd30"
+  },
+  "retirement_plan": {
+    "path": "/tmp/omabit-issues-project-transition-cow-01/root.qcow2",
+    "reason": "failed disposable setup adds no required successful migration/transition fixture; retain exact SQLite, all available command records, serial/error, source/artifact/input identities and immutable three-level original chain",
+    "status": "removed-after-independent-extraction"
+  },
+  "retry": "Fresh capsule with3GiB declared scratch (one additional GiB above failed setup), same frozen products/helper/backings. Do not repair or resume the ended case. Fail promptly if the root hard ceiling is reached.",
+  "retention_review": {
+    "rejected_action": "archive and remove superseded runtime-input directories02/04/06",
+    "automatic_review_reason": "Outside clearly authorized obsolete test-image retirement; potentially private inputs.",
+    "executed": false,
+    "alternative": "Retain those directories; clear reproducible Go compilation cache only, keep module cache and frozen binaries, and admit a3GiB retry."
+  },
+  "payload_retirement": {
+    "path": "/tmp/omabit-issues-project-transition-cow-01/payload.ext4",
+    "sha256": "172894c5932da941dc1d82b2de59e546f8d263b4d4d4522fed80dfdaef6834b6",
+    "allocated_bytes": 30547968,
+    "reason": "Generated input disk of failed setup only; exact frozen binaries, source/harness commits, scenario and input pins retained in host.json and build/native-stop-01. Contains no runtime state or original migration fixture.",
+    "status": "removed"
+  }
+}

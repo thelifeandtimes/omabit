@@ -14063,3 +14063,31 @@ refuses host execution with80. [Artifact pins](diagnostics/2026-11-20-project-st
 record49,235,075,072charged bytes after the monitored build, under48GiB. The native
 transition run and independent checks remain pending; no final release, installed
 upgrade, preserved DEV or production qualification is claimed.
+
+
+## M758 — Native Stop setup exhausts scratch before the transition (2026-11-20)
+
+The first fresh transition capsule reaches its1920MiB root-file ceiling while
+adding the second fake. Guest ext4 reports I/O errors; QEMU remains alive. End
+only that owned disposable scope and record native exit-15, never a clean Stop
+or transition pass. The first project member was created, but the intended
+Stop interleaving was not reached. All original backing hashes remain exact.
+
+A separately pinned host-refusing read-only kernel exports the ended SQLite,
+WAL/SHM and eight command records without running any source-disk program.
+SQLite integrity passes, and all23 inherited app/recording tables match the
+original current65 fixture exactly. Preserve the compact database/log/source/
+input evidence and [failed-case record](diagnostics/2026-11-20-project-stop-native-scratch-failure.json).
+The failed root and its generated input image add no required transition fixture;
+retire just those two images after verifying ended scopes, absent holders and
+pins. Original app62/current65/recording fixtures remain intact.
+
+Automatic approval review rejects the proposed lossless archive/removal of older
+runtime-input trees02/04/06 as outside clearly authorized test-image retirement.
+That script is not executed; all three directories remain untouched. Instead,
+clear only the reproducible Go compilation cache, preserving module downloads,
+frozen binaries and original inputs. A3GiB fresh scratch reservation supplies one
+additional GiB over the failed setup. Add prompt hard-ceiling detection and a
+regression so a live QEMU process cannot hide this setup failure until deadline.
+All eleven inert guards pass. The fresh retry, exact native transition, final
+stable upgrade, preserved DEV and release gates remain pending.

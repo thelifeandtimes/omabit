@@ -126,6 +126,19 @@ class TransitionGuards(unittest.TestCase):
         self.assertGreater(host.VM_DEADLINE_SECONDS, 6000+30+60)
         self.assertNotIn('--resume-running', source)
 
+    def test_root_ceiling_detects_live_qemu_io_failure(self):
+        host = module('run')
+        with tempfile.TemporaryDirectory() as d, patch.object(host, 'ROOT_FILE_MAX', 128):
+            root = Path(d)/'root.qcow2'
+            root.write_bytes(b'x'*127)
+            self.assertFalse(host.root_limit_reached(root))
+            with root.open('ab') as stream:
+                stream.write(b'x')
+            self.assertTrue(host.root_limit_reached(root))
+            with root.open('ab') as stream:
+                stream.write(b'x')
+            self.assertTrue(host.root_limit_reached(root))
+
 
 if __name__ == '__main__':
     unittest.main()
