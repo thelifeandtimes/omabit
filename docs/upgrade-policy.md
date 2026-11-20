@@ -1527,7 +1527,7 @@ matching artifacts and actual active-worker/native upgrades remain mandatory.
 ## Development: read-only project allocation — persistent formats unchanged
 
 `project-allocation-read-v1` and shared `project.allocation.v1` add bounded,
-operator-private current expanded-member storage observations. Schema65 and
+operator-private current member storage observations. Schema65 and
 original rows/receipts remain unchanged. Growth samples are bounded volatile
 memory with monotonic completion times, discarded on manager restart. Missing
 capability or an unsupported project phase refuses explicitly. A census never
@@ -1536,3 +1536,10 @@ See the [contract and exclusions](project-allocation.md). Source fixtures do not
 qualify matching native measurements or an installed/preserved DEV upgrade. A
 future durable incident latch or guard requires its own persistent contract,
 old-reader refusal and non-destructive upgrade evidence before deployment.
+
+M736 adds `ledger_kind` to this unshipped read contract, distinguishing an exact
+saved expansion from a bounded original-ready history projection. Derivation
+preserves all stored rows and does not create an expansion or change a phase.
+Matching development tools are required; no persistent schema or downgrade
+contract changes. Original replacement/recovery adapters and native project
+measurement/installed-upgrade qualification remain pending.

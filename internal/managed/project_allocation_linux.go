@@ -83,8 +83,13 @@ func (s *store) projectAllocationSelection(ctx context.Context, in projectusage.
 		return zero, binding, conflict("project_allocation_selection_changed", "project revision or plan changed; select saved status again")
 	}
 	state, err := loadProjectExpansion(tx, in.ProjectID)
+	kind := projectusage.ExpandedLedger
+	var body []byte
 	if errors.Is(err, sql.ErrNoRows) {
-		return zero, binding, conflict("project_allocation_unsupported_phase", "this allocation adapter requires a saved expanded-member ledger; no storage is inferred from a reservation")
+		state, body, err = projectOriginalAllocationSelection(ctx, tx, p, s.runnerID)
+		kind = projectusage.OriginalHistory
+	} else if err == nil {
+		err = tx.QueryRowContext(ctx, "SELECT body FROM project_expansions WHERE project_id=?", in.ProjectID).Scan(&body)
 	}
 	if err != nil {
 		return zero, binding, err
@@ -96,11 +101,7 @@ func (s *store) projectAllocationSelection(ctx context.Context, in projectusage.
 	if err != nil || plan != digest {
 		return zero, binding, conflict("project_allocation_selection_changed", "saved member plan changed")
 	}
-	var body []byte
-	if err = tx.QueryRowContext(ctx, "SELECT body FROM project_expansions WHERE project_id=?", in.ProjectID).Scan(&body); err != nil {
-		return zero, binding, err
-	}
-	binding = projectusage.Binding{RunnerID: s.runnerID, Mode: s.mode, ProjectID: in.ProjectID, Revision: p.Revision, Generation: state.Project.Generation, PlanDigest: digest, LedgerSHA256: stopEvidenceDigest(body)}
+	binding = projectusage.Binding{RunnerID: s.runnerID, Mode: s.mode, ProjectID: in.ProjectID, Revision: p.Revision, Generation: state.Project.Generation, PlanDigest: digest, LedgerKind: kind, LedgerSHA256: stopEvidenceDigest(body)}
 	if binding.Validate() != nil {
 		return zero, binding, bad("invalid saved project allocation binding")
 	}

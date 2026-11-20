@@ -12,7 +12,7 @@ func modelObservation() Observation {
 	id := pierstore.DirectoryIdentity{Device: 1, Inode: 2, Birth: "1:1"}
 	r := Root{ID: "root", Kind: "member-mount", InstanceID: "member", RuntimeID: strings.Repeat("a", 32), Path: "/private/fixture", Expected: id}
 	totals := Totals{Directories: 1, RegularFiles: 1, UniqueFileInodes: 1, LogicalBytes: 100, AllocatedBytes: 4096}
-	return Observation{Version: 1, Binding: Binding{RunnerID: "runner", Mode: "development-managed", ProjectID: "project", Revision: 1, Generation: 1, PlanDigest: strings.Repeat("a", 64), LedgerSHA256: strings.Repeat("b", 64)}, Scope: Scope, Status: "measured", DeclaredRoots: []Root{r}, Roots: []RootUsage{{r, id, totals}}, Totals: &totals, ExcludedComponents: Exclusions(), SharedAllowanceStatus: "not-configured", StartedAt: time.Unix(100, 0).UTC(), ReadAt: time.Unix(101, 0).UTC(), Basis: "inert model fixture"}
+	return Observation{Version: 1, Binding: Binding{RunnerID: "runner", Mode: "development-managed", ProjectID: "project", Revision: 1, Generation: 1, PlanDigest: strings.Repeat("a", 64), LedgerKind: ExpandedLedger, LedgerSHA256: strings.Repeat("b", 64)}, Scope: Scope, Status: "measured", DeclaredRoots: []Root{r}, Roots: []RootUsage{{r, id, totals}}, Totals: &totals, ExcludedComponents: Exclusions(), SharedAllowanceStatus: "not-configured", StartedAt: time.Unix(100, 0).UTC(), ReadAt: time.Unix(101, 0).UTC(), Basis: "inert model fixture"}
 }
 
 func TestAllocationGrowthUsesExactBindingsAndUnsignedDeltas(t *testing.T) {
@@ -26,11 +26,14 @@ func TestAllocationGrowthUsesExactBindingsAndUnsignedDeltas(t *testing.T) {
 	if got.Validate() != nil || got.Status != "measured" || got.Allocated.Direction != "decreased" || got.Allocated.Bytes != 3584 || got.Logical.Direction != "increased" || got.Logical.Bytes != ^uint64(0)-100 || got.ElapsedNanos != int64(time.Minute) {
 		t.Fatal("exact growth delta lost", got)
 	}
-	for _, variant := range []string{"binding", "root", "unknown", "short", "expired", "first"} {
+	for _, variant := range []string{"binding", "ledger-kind", "root", "unknown", "short", "expired", "first"} {
 		a, b := before.Clone(), after.Clone()
 		elapsed := time.Minute
 		want := ""
 		switch variant {
+		case "ledger-kind":
+			b.Binding.LedgerKind = OriginalHistory
+			want = "binding-changed"
 		case "binding":
 			b.Binding.LedgerSHA256 = strings.Repeat("c", 64)
 			want = "binding-changed"
@@ -67,9 +70,11 @@ func TestAllocationModelRejectsUnsafeClaimsAndOverflow(t *testing.T) {
 	if err := base.Validate(); err != nil {
 		t.Fatal(err)
 	}
-	for _, change := range []string{"complete", "zero-shared", "missing-exclusion", "partial-unknown", "unknown-growth", "wrong-sum", "wrong-root", "zero-directory", "bad-runtime"} {
+	for _, change := range []string{"complete", "zero-shared", "missing-exclusion", "partial-unknown", "unknown-growth", "wrong-sum", "wrong-root", "zero-directory", "bad-runtime", "unknown-ledger-kind"} {
 		b := base.Clone()
 		switch change {
+		case "unknown-ledger-kind":
+			b.Binding.LedgerKind = "unknown"
 		case "complete":
 			b.FullProjectBudgetKnown = true
 		case "zero-shared":

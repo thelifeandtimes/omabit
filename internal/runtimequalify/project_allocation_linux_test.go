@@ -25,6 +25,12 @@ func allocationAdapterFixture(t *testing.T) (*memberStopFixture, ProjectExpansio
 	if err != nil {
 		t.Fatal(err)
 	}
+	return bindAllocationFixture(t, f, state, projectusage.ExpandedLedger)
+}
+
+func bindAllocationFixture(t *testing.T, f *memberStopFixture, state ProjectExpansion, kind string) (*memberStopFixture, ProjectExpansion, projectusage.Binding) {
+	t.Helper()
+	var err error
 	for i := range state.Members {
 		m := &state.Members[i]
 		m.Initialized = m.Creator.Storage
@@ -42,8 +48,26 @@ func allocationAdapterFixture(t *testing.T) (*memberStopFixture, ProjectExpansio
 		t.Fatal(err)
 	}
 	h := sha256.Sum256(body)
-	binding := projectusage.Binding{RunnerID: state.Project.RunnerID, Mode: "development-managed", ProjectID: state.Project.ProjectID, Revision: state.Project.Revision, Generation: state.Project.Generation, PlanDigest: digest, LedgerSHA256: hex.EncodeToString(h[:])}
+	binding := projectusage.Binding{RunnerID: state.Project.RunnerID, Mode: "development-managed", ProjectID: state.Project.ProjectID, Revision: state.Project.Revision, Generation: state.Project.Generation, PlanDigest: digest, LedgerKind: kind, LedgerSHA256: hex.EncodeToString(h[:])}
 	return f, state, binding
+}
+
+func TestExpandedProjectAllocationOriginalBootContractsNeedNoEngine(t *testing.T) {
+	f := memberStopAdapterFixture(t)
+	state, err := SeedProjectExpansion(ProjectCurrentReadinessSelection{Project: f.selection.Project, Launches: f.selection.Launches})
+	if err != nil {
+		t.Fatal(err)
+	}
+	f, state, binding := bindAllocationFixture(t, f, state, projectusage.OriginalHistory)
+	calls := len(f.f.calls)
+	f.f.d.execute = func(context.Context, []string, []string) (string, error) {
+		t.Error("original allocation invoked engine")
+		return "", errors.New("forbidden")
+	}
+	out, err := readExpandedProjectAllocation(t.Context(), state, binding, f.f.d)
+	if err != nil || out.Validate() != nil || out.Status != "measured" || out.Binding.LedgerKind != projectusage.OriginalHistory || len(f.f.calls) != calls {
+		t.Fatal("original filesystem binding failed", err, out)
+	}
 }
 
 // All engine adapters are inert, with real disposable filesystem objects. This

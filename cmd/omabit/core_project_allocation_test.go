@@ -42,7 +42,7 @@ func TestCLIAndMCPProjectAllocationPrivateBindingsAndUnknowns(t *testing.T) {
 	const revision = uint64(9007199254740993)
 	r := projectusage.Root{ID: "mount-0", Kind: "member-mount", InstanceID: "alpha", RuntimeID: strings.Repeat("b", 32), Path: "/private/fixture/mount", Expected: pierstore.DirectoryIdentity{Device: 1, Inode: 2, Birth: "1:1"}}
 	totals := projectusage.Totals{Directories: 1, RegularFiles: 1, UniqueFileInodes: 1, LogicalBytes: revision, AllocatedBytes: 4096}
-	base := projectusage.Observation{Version: 1, Binding: projectusage.Binding{RunnerID: "runner", Mode: "simulation", ProjectID: "project", Revision: revision, Generation: 1, PlanDigest: strings.Repeat("c", 64), LedgerSHA256: strings.Repeat("d", 64)}, Scope: projectusage.Scope, Status: "measured", DeclaredRoots: []projectusage.Root{r}, Roots: []projectusage.RootUsage{{Root: r, Observed: r.Expected, Totals: totals}}, Totals: &totals, ExcludedComponents: projectusage.Exclusions(), SharedAllowanceStatus: "not-configured", StartedAt: time.Now().UTC(), ReadAt: time.Now().UTC(), Basis: "inert CLI/SDK source interface fixture; no native filesystem scan"}
+	base := projectusage.Observation{Version: 1, Binding: projectusage.Binding{RunnerID: "runner", Mode: "simulation", ProjectID: "project", Revision: revision, Generation: 1, PlanDigest: strings.Repeat("c", 64), LedgerKind: projectusage.ExpandedLedger, LedgerSHA256: strings.Repeat("d", 64)}, Scope: projectusage.Scope, Status: "measured", DeclaredRoots: []projectusage.Root{r}, Roots: []projectusage.RootUsage{{Root: r, Observed: r.Expected, Totals: totals}}, Totals: &totals, ExcludedComponents: projectusage.Exclusions(), SharedAllowanceStatus: "not-configured", StartedAt: time.Now().UTC(), ReadAt: time.Now().UTC(), Basis: "inert CLI/SDK source interface fixture; no native filesystem scan"}
 	g := projectusage.Compare(projectusage.Observation{}, base, 0)
 	base.Growth = &g
 	var variant atomic.Value
@@ -85,6 +85,8 @@ func TestCLIAndMCPProjectAllocationPrivateBindingsAndUnknowns(t *testing.T) {
 		}
 		out := base.Clone()
 		switch v {
+		case "original-history":
+			out.Binding.LedgerKind = projectusage.OriginalHistory
 		case "unknown":
 			out.Status, out.Reason, out.UnknownRootID, out.Totals, out.Roots = "unknown", "changed", r.ID, nil, nil
 			growth := projectusage.Compare(projectusage.Observation{}, out, 0)
@@ -109,7 +111,7 @@ func TestCLIAndMCPProjectAllocationPrivateBindingsAndUnknowns(t *testing.T) {
 	}
 	defer session.Close()
 	const operation = "project.allocation.v1"
-	for _, name := range []string{"ok", "unknown", "observer", "missing-capability", "no-consent", "wrong-reply", "wrong-mode", "partial", "transport-lost"} {
+	for _, name := range []string{"ok", "original-history", "unknown", "observer", "missing-capability", "no-consent", "wrong-reply", "wrong-mode", "partial", "transport-lost"} {
 		variant.Store(name)
 		in := service.ProjectAllocationInput{ProjectInput: service.ProjectInput{Target: service.Target{Name: "dev", RunnerID: "runner"}, ProjectID: "project"}, ExpectedRevision: revision, ReviewDigest: base.Binding.PlanDigest, IncludePrivateData: name != "no-consent"}
 		raw, _ := json.Marshal(in)
@@ -119,7 +121,7 @@ func TestCLIAndMCPProjectAllocationPrivateBindingsAndUnknowns(t *testing.T) {
 		if err != nil || len(tool.Content) != 1 || !bytes.Equal(bytes.TrimSpace(cli), []byte(tool.Content[0].(*mcp.TextContent).Text)) {
 			t.Fatal("CLI/MCP allocation mismatch", name, err, string(cli), tool)
 		}
-		if name == "ok" || name == "unknown" {
+		if name == "ok" || name == "original-history" || name == "unknown" {
 			var envelope struct {
 				Data projectusage.Observation `json:"data"`
 			}

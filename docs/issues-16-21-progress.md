@@ -616,3 +616,21 @@ Native project measurement, original/recovered adapters, complete shared/budget
 and event evidence, incident latching/reviewed resume/journaled containment and
 matching installed/preserved DEV upgrades remain open. No persistent schema or
 installed/production/existing-ship/manual-review state changes.
+
+
+M736 reads complete original boot/readiness histories without persisting an
+expansion or changing phases. Explicit ledger kinds distinguish the derived
+projection from a saved expanded ledger. Exact initialized identities and raw
+selected readiness/operation/mirror/fingerprint bytes are bounded before decode;
+concurrent changes withhold results. Reservations, incomplete original histories,
+retirement/replacement/recovery and active original work refuse without adoption.
+Every row remains exact. Oversized invalid-body admission, legitimate refusal
+fixtures, original Linux creation contracts and both source kinds pass focused
+seven-package races and actual CLI/official-SDK parity; catalog and vet pass.
+[Source evidence](diagnostics/2026-11-19-project-allocation-original-source.json)
+retains exact limits and measured51,326,320,640-byte post-charge below48GiB. All
+final scopes end; no additional artifact or VM retirement occurs. This supersedes
+only M735's pending original read adapter. Native current project measurements,
+remaining original history adapters, complete budgets/event evidence, incident
+containment and final matching/preserved DEV upgrades stay open. Schema65 and
+production/installed/existing-ship/manual-review state remain unchanged.

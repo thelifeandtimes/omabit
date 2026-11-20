@@ -14,7 +14,9 @@ import (
 	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
-// This observes filesystem metadata for a saved expansion. It never opens an
+// This observes filesystem metadata for current saved member contracts. The
+// manager may derive the selection from complete original journals without
+// persisting an expansion; Binding.LedgerKind distinguishes that source. It never opens an
 // engine/process transport, dispatches a lifecycle action or creates a path.
 // Canonical project/ledger selection and before/after store bracketing belong to
 // the authenticated manager; a matching observation grants no action authority.

@@ -20,6 +20,8 @@ const MaxEntries = 65536
 const MaxRoots = 65
 const MaxDepth = 64
 const Scope = "current-member-mounts-and-private-caches-v1"
+const ExpandedLedger = "expanded-ledger-v1"
+const OriginalHistory = "original-ready-history-v1"
 
 var ErrInvalid = errors.New("invalid project allocation observation or exact selection")
 
@@ -65,11 +67,12 @@ type Binding struct {
 	Revision     uint64 `json:"revision"`
 	Generation   uint64 `json:"generation"`
 	PlanDigest   string `json:"plan_digest"`
+	LedgerKind   string `json:"ledger_kind"`
 	LedgerSHA256 string `json:"ledger_sha256"`
 }
 
 func (b Binding) Validate() error {
-	if !protocol.ValidID(b.RunnerID) || !protocol.ValidID(b.Mode) || !protocol.ValidID(b.ProjectID) || b.Revision == 0 || b.Generation == 0 || !hash(b.PlanDigest) || !hash(b.LedgerSHA256) {
+	if !protocol.ValidID(b.RunnerID) || !protocol.ValidID(b.Mode) || !protocol.ValidID(b.ProjectID) || b.Revision == 0 || b.Generation == 0 || !hash(b.PlanDigest) || !hash(b.LedgerSHA256) || b.LedgerKind != ExpandedLedger && b.LedgerKind != OriginalHistory {
 		return ErrInvalid
 	}
 	return nil

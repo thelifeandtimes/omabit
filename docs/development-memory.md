@@ -13482,3 +13482,44 @@ payload evidence, durable incident/reviewed resume/journaled containment, matchi
 artifacts and installed/preserved DEV gates remain open. Schema65 is unchanged;
 there is no new persistent authority, guard, threshold or pruning. Production,
 existing ships, installed services/plugins and manual-review state are unchanged.
+
+
+## M736 — Read complete original project journals without creating expansion (2026-11-19)
+
+Supersede M735's pending original/nonexpanded read adapter only. Add an explicit
+`ledger_kind` for exact raw expanded-ledger binding versus a derived original-ready
+member/storage projection. Complete each original boot/readiness chain through
+existing validated context selectors, preserving initialized pier/mount identity.
+Bind exact selected observed readiness bytes and every selected-project operation,
+runtime mirror and fingerprint, with1024rows and4MiB per source group admitted
+before decoding. Missing proof, any original retirement/replacement/anchor-recovery
+history or active original work remains unsupported; no historical creator is
+adopted. A reservation never becomes a zero-usage result. No expansion row, member
+phase or other persistent data is created/changed by the read.
+
+The actual authenticated API fixture preserves every original row. Independent
+raw-readiness whitespace and operation-fingerprint changes with an unchanged
+member projection both withhold the census. A deliberately oversized invalid
+private-fixture body refuses at byte admission before decode. Legitimate retired
+and recovering original journals refuse without backend scans. A real disposable
+Linux original-contract filesystem fixture reads without engine commands. Both
+binding kinds pass actual CLI/official-SDK transport and strict model validation;
+changing source kind invalidates a prior growth baseline.
+
+Focused seven-package races pass: filesystem1.081s, runtime2.446s, manager20.595s,
+client1.014s, SSH1.163s, actual CLI/SDK9.672s and catalog2.648s. Updated catalog
+wording passes its separate2.213s race check; seven-package vet passes. There is
+no monitor interruption: source10's fast sampled peak51,471,007,744 is below its
+51,472,498,688 stop threshold, and final full charge51,326,320,640 is below the
+approved51,539,607,552-byte cap. Exact final scopes are inactive/empty. No further
+cache/scratch/VM retirement occurs. See the
+[source report](diagnostics/2026-11-19-project-allocation-original-source.json).
+
+This remains a non-atomic current-root census with incomplete historical/shared
+budget and no event-payload or containment authority. Schema65 is unchanged.
+Original replacement/recovery histories, matching native measurement/independent
+stat/history checks, explicit budgets/shared allowances, durable incident/reviewed
+resume/journaled stops and final matching/preserved DEV upgrades stay open.
+Production, installed services/plugins, existing ships and manual-review state
+remain unchanged. M735's original scope/results and interrupted build remain
+retained rather than relabeled as later qualification.

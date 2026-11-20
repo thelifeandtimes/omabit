@@ -17,7 +17,7 @@ import (
 )
 
 func testBinding() Binding {
-	return Binding{RunnerID: "runner", Mode: "development-managed", ProjectID: "project", Revision: 1, Generation: 1, PlanDigest: strings.Repeat("a", 64), LedgerSHA256: strings.Repeat("b", 64)}
+	return Binding{RunnerID: "runner", Mode: "development-managed", ProjectID: "project", Revision: 1, Generation: 1, PlanDigest: strings.Repeat("a", 64), LedgerKind: ExpandedLedger, LedgerSHA256: strings.Repeat("b", 64)}
 }
 
 func testRoot(t *testing.T, kind string) Root {

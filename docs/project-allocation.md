@@ -1,7 +1,7 @@
 # Project allocation observations
 
 The development contract `project-allocation-read-v1` adds an operator-private,
-read-only census for a saved expanded project. It does not change persistent
+read-only census for a saved current project. It does not change persistent
 formats or confer lifecycle authority. Source/interface tests and matching native
 qualification are separate; see the [issue gates](issues-16-21-next-gates.md).
 
@@ -18,13 +18,24 @@ Its runner endpoint is `POST /v1/projects/allocation`. The selected Hello must
 advertise the capability and operator role. Calls require explicit private-data
 consent because results include exact storage paths and inode identities. No
 request path, shell command, Docker command or caller-provided prior measurement
-is accepted. A reservation without an expanded-member ledger is explicitly
-unsupported by this first adapter; it is never an empty project measurement.
+is accepted. A current expanded-member ledger supplies one supported binding.
+Projects with complete original boot/readiness journals can be measured without
+creating an expansion ledger. Reservations, unfinished original boot, and original
+histories containing retirement, replacement or anchor recovery remain explicitly
+unsupported; their missing coverage is never an empty project measurement.
 
-The server loads and hashes the saved ledger, validates current member creation
-contracts, then checks the same ledger again after the filesystem read. The
+The server loads and hashes the saved binding, validates current member creation
+contracts, then checks the same binding again after the filesystem read. The
 response binds runner/mode, project, revision, generation, plan and ledger digest.
-Concurrent ledger changes withhold the result. An interrupted operation remains
+`ledger_kind` distinguishes `expanded-ledger-v1` (the exact raw saved expansion)
+from `original-ready-history-v1` (a derived immutable member/storage projection
+plus the exact raw observed readiness bodies and all selected-project operation,
+runtime-mirror and fingerprint bytes). The latter is bounded to1024 readiness
+rows and1024 operations, each source group at most4MiB before body decoding.
+It checks each member's initialized original proof and never chooses among
+conflicting storage identities. Deriving this read neither persists an expansion
+nor changes a member phase. Historical readiness is not current runtime health.
+Concurrent bound-history changes withhold the result. An interrupted operation remains
 interrupted, retaining its original receipt and fence. The census neither probes
 the engine/process/HTTP endpoint nor starts, stops or repairs anything.
 
