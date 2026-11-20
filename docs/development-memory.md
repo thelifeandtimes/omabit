@@ -14501,3 +14501,24 @@ Full charge47,193,726,976bytes remains below48GiB; original fixtures and all ins
 state remain. Final matching native pressure, Stop, Grubbery and closed exports,
 full release-head CI, preserved DEV and reviewed publication are still required.
 No production deployment or issue-wide completion is implied.
+
+## M775 — Candidate02 recording pressure and independent preservation pass (2026-11-20)
+
+Fresh pressure06 uses the exact frozen59d83aa release binaries and matching helper.
+All nine whole-case gates pass, including exact burst/long-line capture, the1MiB
+session bound, actual isolated-filesystem pressure refusal, explicit incomplete
+coverage, same-pier sessions, immutable earlier recordings, capacity refusal
+without eviction and final clean Stop. Independent read-only extraction verifies
+all three original recordings, three saved jobs totaling17MiB of commitments,
+the exact saved failed-admission receipt, no new container and stopped intent.
+
+[Candidate02 pressure evidence](diagnostics/2026-11-20-recording-pressure-candidate02.json)
+supersedes M770's final-artifact retry requirement for this bounded transport.
+It does not qualify automatic retirement, age enforcement, host-wide pressure
+recovery, other factories or active-worker upgrades. Preserve these scope limits.
+
+After complete compact evidence, empty-scope/holder and original-backing checks,
+retire only five ended image/boot files, reclaiming1,611,763,712bytes. Full aggregate
+charge47,209,918,464bytes is below48GiB. Durable original app62/current65/recording
+fixtures and both manual DEV roots remain unchanged. Matching Grubbery, Stop,
+closed exports, preserved DEV, required checks and reviewed publication remain.
