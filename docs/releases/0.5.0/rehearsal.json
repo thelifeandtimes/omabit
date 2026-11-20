@@ -1,0 +1,39 @@
+{
+  "version": "0.5.0",
+  "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+  "previous_version": "0.4.0",
+  "previous_source_commit": "a9623329a538ebf83d63365053d2d1011ade091e",
+  "passed": true,
+  "non_destructive": true,
+  "runner_schema_before": 59,
+  "runner_schema_after": 65,
+  "service_result": "docs/diagnostics/2026-11-20-release050-final-upgrade-result.json",
+  "service_result_sha256": "316f864b9ef0eb3ee85c67c2f1390f4e34fcfa701df6485581cd715b410068d0",
+  "independent_evidence": "docs/diagnostics/2026-11-20-release050-final-upgrade.json",
+  "independent_evidence_sha256": "db8c6d522381ddfb5bed0153855da360ef69ee12c74892800e6e40fd95041dc7",
+  "desktop_and_packaged_interfaces": "docs/diagnostics/2026-11-20-release050-candidate02-frozen-validation.json",
+  "desktop_and_packaged_interfaces_sha256": "512f2f55f15ea0b57c43707edf4990f8e9f420a952fbe5eb1900536f3b25fab0",
+  "harness": "scripts/qualification/patch-upgrade",
+  "frozen_harness_sha256": {
+    "run.py": "4304e78078fd84b331c83a26956fece5d4e39ded1136e8702b4723b9ca432460",
+    "guest.py": "c3c0495a99770c1bb554cb570a2d05636f69b75f486af839454c00ba6db26bf7",
+    "desktop.py": "59cbce196ca5eb17d3af9f8a1a92913dda809a22182e52c2337011f8ac5a8b21",
+    "shell.qml": "1e39e0090b6dd717393ac6f163b7cd6106a5cbd615dfc6bfe2263f8bcc306b46"
+  },
+  "checks": [
+    "Published0.4.0 binaries produce original schema59 state; exact0.5.0 tools migrate to65.",
+    "Authorization denial preserves state; retained retry succeeds; repeated update is a no-op.",
+    "Original identities, access, settings, running/stopped intent, engine/containers, runtime receipts and13 app table definitions are retained.",
+    "Manager restart preserves original application history and runtime state.",
+    "Actual old manager refuses new schema without changing it.",
+    "Candidate desk workflow and final ordinary Stop pass.",
+    "Actual private desktop cold/hot activation, preferences and failed-candidate recovery pass separately."
+  ],
+  "isolation": "Fresh offline owner-user Linux/AMD64 VM and separately private native desktop; fixed immutable inputs and read-only evidence extraction. No installed or production service deployment.",
+  "limits": [
+    "Exact candidate02 source only; remaining native app/recording/Stop gates, preserved DEV and reviewed publication are separate.",
+    "No installed DEV or production update. No remote upgrade, power-loss, active recording worker, complete Gall/Grubbery or peer/routes/assets qualification.",
+    "Large import preview is sparse; actual import uses a small fresh fake with synthetic metadata.",
+    "This record qualifies the stable upgrade and desktop boundary only. Final matching feature checks, preserved DEV, draft downloads, protected reviewed merge and publication remain separate gates."
+  ]
+}

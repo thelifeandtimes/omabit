@@ -14522,3 +14522,34 @@ retire only five ended image/boot files, reclaiming1,611,763,712bytes. Full aggr
 charge47,209,918,464bytes is below48GiB. Durable original app62/current65/recording
 fixtures and both manual DEV roots remain unchanged. Matching Grubbery, Stop,
 closed exports, preserved DEV, required checks and reviewed publication remain.
+
+## M776 — Candidate02 Grubbery recovery, two versions and restart pass (2026-11-20)
+
+Fresh offline COW06 uses frozen59d83aa product binaries and its matching helper,
+with original app62 as a read-only backing. The whole guest and host pass: original
+uncertain-phase observation without redispatch, explicit audited replacement,
+completion of original source through CLI, second-version source through MCP,
+retained app state and changed code, same-pier replacement, manager restart,
+original/audit receipt replay, one dispatch per phase and final clean Stop.
+
+[Candidate02 Grubbery evidence](diagnostics/2026-11-20-grubbery-candidate02.json)
+records the exact source and retained proof. The separate read-only reader exports
+58 fixed files without executing source-disk code; all original images remain
+unchanged. Independent SQLite/proof checks preserve the original header prefix,
+all17 original events and pier binding. Current schema65 has two app operations,
+63 events and zero leases; the saved runtime audit matches exactly and final
+intent/observation are stopped. This resolves the matching final-artifact repeat
+for the previously qualified12f case, not broader peers/permits/routes/assets or
+process-death cleanup.
+
+After complete evidence and ended-scope/holder/backing checks, retire only five
+classified image/boot files, reclaiming345,944,064bytes. Full charge at this point
+is48,996,470,784bytes under48GiB. Preserve both physical temporary backings until
+the remaining Stop case has finished, and retain their durable originals.
+
+Compiler provenance correction: M774's prose incorrectly names Go1.27.3 for
+candidate02. Its immutable release.json, recorded validation and all three binary
+build-info records identify Go1.27.4. That compiler statement is superseded here;
+source59d83aa and all artifact hashes are unchanged. Older standalone boot helpers
+keep their separately pinned source/compiler records. Matching Stop, closed
+exports, preserved DEV and protected reviewed publication remain required.

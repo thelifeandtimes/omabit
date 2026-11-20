@@ -1,6 +1,6 @@
 # Issues16–21: implementation boundaries and next gates
 
-Status at M775,2026-11-20. These are development changes on release/0.5.0
+Status at M776,2026-11-20. These are development changes on release/0.5.0
 under the [finite release checklist](release-0.5.0-plan.md). Published stable artifacts and production deployments are unchanged.
 Source fixtures, a native test with frozen artifacts, installed upgrades and
 preserved DEV review are separate evidence. The detailed history and original
@@ -10,8 +10,9 @@ Candidate02 is frozen at59d83aab49384d2f26531320bb5ab68e1257aeb5 after the packa
 Grubbery guidance and CI test corrections. Matching desktop/interface validation
 and the actual stable0.4/schema59→65 upgrade now pass (M774), preserving original
 app history, running/stopped intent, manager restart and old-reader refusal.
-Matching native pressure and independent preservation now pass (M775).
-Matching Stop/Grubbery/closed-export and preserved DEV gates remain;
+Matching native pressure (M775) and Grubbery recovery/two-version/state/restart
+with independent preservation (M776) now pass.
+Matching Stop/closed-export and preserved DEV gates remain;
 earlier candidate passes retain their exact source identity. The table below
 preserves those completed milestones and the remaining feature boundaries.
 
