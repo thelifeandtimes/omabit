@@ -28,7 +28,7 @@ func timingIndexFixture(t *testing.T, variant string) (*Store, string, ExportReq
 	if err != nil {
 		t.Fatal(err)
 	}
-	if variant != "empty" {
+	if variant != "empty" && variant != "exit-only" {
 		for i := 0; i < 12; i++ {
 			payload := append([]byte("private-payload-marker cookie=never-in-index\x00\x1b[2K\xff\n"), bytes.Repeat([]byte{'x'}, 60<<10)...)
 			kind := Stdout
@@ -107,7 +107,7 @@ func timingIndexFixture(t *testing.T, variant string) (*Store, string, ExportReq
 }
 
 func TestTimingIndexMatchesEncodedOffsetsEpochsAndCompleteVerifiedPrefix(t *testing.T) {
-	for _, variant := range []string{"pass", "empty", "incomplete", "corrupt", "restart", "partial-restart", "exit", "exit-extra"} {
+	for _, variant := range []string{"pass", "empty", "incomplete", "corrupt", "restart", "partial-restart", "exit", "exit-only", "exit-extra"} {
 		t.Run(variant, func(t *testing.T) {
 			s, root, in, result := timingIndexFixture(t, variant)
 			before := fileSnapshot(t, root)
@@ -170,7 +170,7 @@ func TestTimingIndexMatchesEncodedOffsetsEpochsAndCompleteVerifiedPrefix(t *test
 				}
 				last = row
 			}
-			if count != summary.Frames || last.Type != "end" || variant != "empty" && !seenReverse {
+			if count != summary.Frames || last.Type != "end" || variant != "empty" && variant != "exit-only" && !seenReverse {
 				t.Fatal("prefix/order incomplete")
 			}
 			if !reflect.DeepEqual(before, fileSnapshot(t, root)) {
@@ -185,6 +185,41 @@ func TestTimingIndexMatchesEncodedOffsetsEpochsAndCompleteVerifiedPrefix(t *test
 			other, err := WriteTimingIndex(t.Context(), in, result, s.ExportPart, &again)
 			if err != nil || other.SourceSHA256 != summary.SourceSHA256 || !bytes.Equal(output.Bytes(), again.Bytes()) {
 				t.Fatal("volatile read timestamp changed content index", err)
+			}
+		})
+	}
+}
+
+func TestTimingOutputCoverageSeparatesRetainedOutputOrderWallClockAndLifecycle(t *testing.T) {
+	for _, variant := range []string{"pass", "exit", "exit-only", "empty", "corrupt"} {
+		t.Run(variant, func(t *testing.T) {
+			s, root, in, result := timingIndexFixture(t, variant)
+			before := fileSnapshot(t, root)
+			// Limit/filter affect matches only. Earliest output is computed from
+			// the complete verified source, including matches not in this page.
+			query, err := QueryTiming(t.Context(), in, result, TimingQuery{Kind: Exit, Limit: 1}, s.ExportPart)
+			if err != nil || query.Index.OutputCoverage == nil {
+				t.Fatal("missing retained output coverage", err)
+			}
+			c := query.Index.OutputCoverage
+			if c.Version != 1 || c.Basis == "" || query.Index.RuntimeComplete {
+				t.Fatal("coverage lost scope")
+			}
+			if variant == "empty" || variant == "exit-only" {
+				if c.Status != "no-output-in-verified-prefix" || c.Frames != 0 || c.Bytes != 0 || c.FirstSequence != 0 || c.LastSequence != 0 || c.FirstUnixNano != 0 || c.LastUnixNano != 0 || c.EarliestUnixNano != 0 || c.LatestUnixNano != 0 {
+					t.Fatal("lifecycle-only/empty prefix invented output", c)
+				}
+			} else {
+				first := result.Manifest.Metadata.AttachedAt.UnixNano()
+				if c.Status != "verified-output-prefix" || c.Frames != 12 || c.Bytes != result.Manifest.Coverage.OutputBytes || c.FirstSequence != 1 || c.LastSequence != 12 || c.FirstUnixNano != first || c.LastUnixNano != first-11 || c.EarliestUnixNano != first-11 || c.LatestUnixNano != first {
+					t.Fatal("output chronology conflated sequence/wall/lifecycle time", c)
+				}
+			}
+			if variant == "exit-only" && (!query.Index.Coverage.ExitSaved || query.Index.Frames != 1) || variant == "exit" && (query.Index.Coverage.LastUnixNano <= c.LatestUnixNano || query.Index.Frames <= c.Frames) || variant == "corrupt" && query.Index.Coverage.Tail != "corrupt" {
+				t.Fatal("output summary erased lifecycle or damaged-tail evidence")
+			}
+			if !reflect.DeepEqual(before, fileSnapshot(t, root)) {
+				t.Fatal("coverage read changed retained originals")
 			}
 		})
 	}

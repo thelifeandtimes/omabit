@@ -29,29 +29,30 @@ const recordingUsageVMCase = "closed-native-capture-allocation-v1"
 const recordingUsageVMPredecessor = "e3a728a4b1dcc090a10560481dd8414e801c4ef12632164fb05e0f4db5d022d9"
 
 type recordingUsageVMScenario struct {
-	Kind           string `json:"kind"`
-	Case           string `json:"case"`
-	Source         string `json:"source_commit"`
-	Predecessor    string `json:"predecessor_root_sha256"`
-	Original       int    `json:"original_schema"`
-	Target         int    `json:"target_schema"`
-	RequireExports bool   `json:"require_original_exports"`
-	RequireDerived bool   `json:"require_derived_exports"`
+	Kind            string `json:"kind"`
+	Case            string `json:"case"`
+	Source          string `json:"source_commit"`
+	Predecessor     string `json:"predecessor_root_sha256"`
+	Original        int    `json:"original_schema"`
+	Target          int    `json:"target_schema"`
+	RequireExports  bool   `json:"require_original_exports"`
+	RequireDerived  bool   `json:"require_derived_exports"`
+	RequireCoverage bool   `json:"require_output_coverage"`
 }
 
 func recordingUsageVMGuard(raw []byte, env string, uid int, home, vendor, cmdline, source string) bool {
 	var scenario recordingUsageVMScenario
-	return json.Unmarshal(raw, &scenario) == nil && scenario.RequireExports && scenario.RequireDerived && scenario.Kind == recordingUsageVMKind && scenario.Case == recordingUsageVMCase && scenario.Source == source && len(source) == 40 && scenario.Predecessor == recordingUsageVMPredecessor && scenario.Original == 65 && scenario.Target == StateSchemaVersion && uid == 1000 && home == "/home/review" && strings.TrimSpace(vendor) == "QEMU" && strings.Contains(" "+strings.TrimSpace(cmdline)+" ", " omabit.disposable-guest=release-upgrade-v1 ") && env == recordingUsageVMCase
+	return json.Unmarshal(raw, &scenario) == nil && scenario.RequireExports && scenario.RequireDerived && scenario.RequireCoverage && scenario.Kind == recordingUsageVMKind && scenario.Case == recordingUsageVMCase && scenario.Source == source && len(source) == 40 && scenario.Predecessor == recordingUsageVMPredecessor && scenario.Original == 65 && scenario.Target == StateSchemaVersion && uid == 1000 && home == "/home/review" && strings.TrimSpace(vendor) == "QEMU" && strings.Contains(" "+strings.TrimSpace(cmdline)+" ", " omabit.disposable-guest=release-upgrade-v1 ") && env == recordingUsageVMCase
 }
 
 func TestIssuesRecordingUsageVMGuardRejectsHostAndForeignCase(t *testing.T) {
 	source := strings.Repeat("a", 40)
-	scenario := recordingUsageVMScenario{Kind: recordingUsageVMKind, Case: recordingUsageVMCase, Source: source, Predecessor: recordingUsageVMPredecessor, Original: 65, Target: StateSchemaVersion, RequireExports: true, RequireDerived: true}
+	scenario := recordingUsageVMScenario{Kind: recordingUsageVMKind, Case: recordingUsageVMCase, Source: source, Predecessor: recordingUsageVMPredecessor, Original: 65, Target: StateSchemaVersion, RequireExports: true, RequireDerived: true, RequireCoverage: true}
 	raw, _ := json.Marshal(scenario)
 	if !recordingUsageVMGuard(raw, recordingUsageVMCase, 1000, "/home/review", "QEMU\n", "quiet omabit.disposable-guest=release-upgrade-v1", source) {
 		t.Fatal("fixed synthetic guard refused")
 	}
-	for _, alter := range []func(*recordingUsageVMScenario){func(s *recordingUsageVMScenario) { s.RequireExports = false }, func(s *recordingUsageVMScenario) { s.RequireDerived = false }, func(s *recordingUsageVMScenario) { s.Kind = "other" }, func(s *recordingUsageVMScenario) { s.Case = "other" }, func(s *recordingUsageVMScenario) { s.Source = strings.Repeat("b", 40) }, func(s *recordingUsageVMScenario) { s.Predecessor = strings.Repeat("b", 64) }, func(s *recordingUsageVMScenario) { s.Original = 64 }, func(s *recordingUsageVMScenario) { s.Target = 64 }} {
+	for _, alter := range []func(*recordingUsageVMScenario){func(s *recordingUsageVMScenario) { s.RequireExports = false }, func(s *recordingUsageVMScenario) { s.RequireDerived = false }, func(s *recordingUsageVMScenario) { s.RequireCoverage = false }, func(s *recordingUsageVMScenario) { s.Kind = "other" }, func(s *recordingUsageVMScenario) { s.Case = "other" }, func(s *recordingUsageVMScenario) { s.Source = strings.Repeat("b", 40) }, func(s *recordingUsageVMScenario) { s.Predecessor = strings.Repeat("b", 64) }, func(s *recordingUsageVMScenario) { s.Original = 64 }, func(s *recordingUsageVMScenario) { s.Target = 64 }} {
 		changed := scenario
 		alter(&changed)
 		body, _ := json.Marshal(changed)
@@ -213,7 +214,7 @@ func TestIssuesRecordingUsageDisposableVM(t *testing.T) {
 	if !reflect.DeepEqual(before, after) || !reflect.DeepEqual(policies[0], policies[1]) {
 		t.Fatal("saved recording/control evidence changed during reads")
 	}
-	proof := map[string]any{"passed": true, "independent_totals": expected, "independent_shared": shared, "independent_instances": instances, "original_recording_bytes_unchanged": true, "policy_head_unchanged": true, "actual_cli_and_stdio_measurements": true, "actual_original_export_manifest_part_cli_mcp": true, "actual_original_zip_matches_files": true, "actual_indexed_zip_preserves_originals": true, "actual_timing_query_cli_mcp": true, "actual_redacted_manifest_part_cli_mcp": true, "actual_redacted_cli_zip_matches_parts": true, "original_exports": exports, "scope": "closed native captures, complete original/indexed exports, shared timing query and derived redacted manifest/parts/ZIP after copied fixture reboot only; no running capture, pressure/retirement, installed upgrade, DEV or production qualification"}
+	proof := map[string]any{"passed": true, "independent_totals": expected, "independent_shared": shared, "independent_instances": instances, "original_recording_bytes_unchanged": true, "policy_head_unchanged": true, "actual_cli_and_stdio_measurements": true, "actual_original_export_manifest_part_cli_mcp": true, "actual_original_zip_matches_files": true, "actual_indexed_zip_preserves_originals": true, "actual_timing_query_cli_mcp": true, "actual_retained_output_coverage_cli_mcp": true, "actual_redacted_manifest_part_cli_mcp": true, "actual_redacted_cli_zip_matches_parts": true, "original_exports": exports, "scope": "closed native captures, complete original/indexed exports, shared timing query and derived redacted manifest/parts/ZIP after copied fixture reboot only; no running capture, pressure/retirement, installed upgrade, DEV or production qualification"}
 	body, err := json.MarshalIndent(proof, "", "  ")
 	g02Check(t, err)
 	g02Check(t, os.WriteFile(filepath.Join(proofRoot, "proof.json"), body, 0600))

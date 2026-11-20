@@ -86,6 +86,22 @@ func recordingUsageDerivedExports(t *testing.T, ctx context.Context, read func(s
 	if len(entries) < 18 || len(entries) > 256 || uint64(len(entries)) != original.Coverage.VerifiedFrames || end.Type != "end" || end.End == nil || !end.End.AllSourceFilesVerified || !end.End.VerifiedPrefixComplete || end.End.RuntimeComplete || end.End.Coverage != original.Coverage {
 		t.Fatal("native index lacks full verified completion")
 	}
+	var outputEntries []recording.TimingEntry
+	var outputBytes uint64
+	var earliest, latest int64
+	for _, entry := range entries {
+		if entry.Kind == recording.Stdout || entry.Kind == recording.Stderr || entry.Kind == recording.PTYCombined {
+			if len(outputEntries) == 0 {
+				earliest, latest = entry.UnixNano, entry.UnixNano
+			}
+			outputEntries = append(outputEntries, entry)
+			outputBytes += uint64(entry.PayloadBytes)
+			earliest, latest = min(earliest, entry.UnixNano), max(latest, entry.UnixNano)
+		}
+	}
+	if len(outputEntries) == 0 || outputBytes != original.Coverage.OutputBytes {
+		t.Fatal("fixed native fixture lacks original stream output")
+	}
 	var queries []recording.TimingQueryResult
 	for _, query := range []recording.TimingQuery{
 		{Limit: 256, ContextBefore: 2},
@@ -99,6 +115,11 @@ func recordingUsageDerivedExports(t *testing.T, ctx context.Context, read func(s
 			g02Check(t, json.Unmarshal(read(adapter, "runtime.recording-timing.v1", service.RecordingTimingInput{RecordingExportInput: in, Query: query}), &response))
 			if response.Index.SourceSHA256 != header.SourceSHA256 || response.Index.Coverage != original.Coverage || !response.Index.AllSourceFilesVerified || !response.Index.VerifiedPrefixComplete || response.Index.RuntimeComplete || !reflect.DeepEqual(response.Source, *header.Source) {
 				t.Fatal("native shared query lost exact verified source")
+			}
+			coverage := response.Index.OutputCoverage
+			firstOutput, lastOutput := outputEntries[0], outputEntries[len(outputEntries)-1]
+			if coverage == nil || coverage.Version != 1 || coverage.Status != "verified-output-prefix" || coverage.Basis == "" || coverage.Frames != uint64(len(outputEntries)) || coverage.Bytes != outputBytes || coverage.FirstSequence != firstOutput.Sequence || coverage.LastSequence != lastOutput.Sequence || coverage.FirstUnixNano != firstOutput.UnixNano || coverage.LastUnixNano != lastOutput.UnixNano || coverage.EarliestUnixNano != earliest || coverage.LatestUnixNano != latest {
+				t.Fatal("native retained output times differ from exact indexed originals")
 			}
 			var want []recording.TimingEntry
 			for _, entry := range entries {

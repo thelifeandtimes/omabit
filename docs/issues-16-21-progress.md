@@ -738,3 +738,14 @@ fixtures. M747 classifies nine superseded app/recording COWs(18 image/input file
 recording each failure/pass lesson and retaining1272 compact evidence, source,
 binary and required full-transition pins. Removal of that batch is still pending
 execution; no production, installed DEV or existing-ship change is authorized.
+
+
+M748 adds source-tested retained output coverage to completed shared timing/index
+summaries: first/last sequence times separate from earliest/latest output wall
+times, independent of match filters. Empty/exit-only prefixes are explicit and
+failed reads withhold the summary. Full recording races, actual CLI/SDK/export/
+help tests, service races and vet pass. [Source evidence](diagnostics/2026-11-19-recording-output-coverage-source.json)
+records49,830,883,328-byte full charge below48GiB and no persisted schema65/index/
+original/redacted format or runtime change. Matching tools/reference and native
+output-summary verification remain pending; host-wide oldest inventory and
+pressure/retirement/factory/final installed gates remain open.

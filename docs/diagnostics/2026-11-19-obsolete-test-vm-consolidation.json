@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "status": "vm01-specific-disposal-completed-other-obsolete-cows-classified",
+  "status": "completed-user-authorized",
   "authorization": "User explicitly allowed old VM01 disks, then allowed other unneeded VM archives after recording lessons and preserving needed state/version transition fixtures",
   "vm01": {
     "files_removed": 2,
@@ -9,7 +9,7 @@
     "full_charge_after": 50460041216
   },
   "other_obsolete_cows": {
-    "status": "classified-not-yet-removed",
+    "status": "removed-user-authorized",
     "files": 18,
     "allocated_bytes_reclaimable": 795537408,
     "retained_pins_verified": 1272,
@@ -86,7 +86,11 @@
         "source_image_sha256": "3b5c57124de27ea552bb69105dbae0acc337526907eb37a5a756a863446be653",
         "replacement": "qualified compact derived-export05 evidence plus immutable recording07 full fixture"
       }
-    ]
+    ],
+    "files_removed": 18,
+    "allocated_bytes_reclaimed": 795537408,
+    "retained_pins_verified_before_after": 1272,
+    "full_charge_after": 49665126400
   },
   "preserved_transitions": [
     "original pending app05 schema62",

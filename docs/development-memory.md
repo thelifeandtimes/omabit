@@ -13813,3 +13813,36 @@ pins and all exact task scopes ended. This is classified, not yet removed. See
 The user's new authority supersedes prior whole-copy retention requirements for
 these exact obsolete cases only. Needed transition inputs/backings and production/
 manual DEV/user-ship exclusions remain. Do not silently promote any failed case.
+
+
+M747 execution update: all18 classified obsolete image/input files are removed
+under the user's broader authorization, reclaiming795,537,408allocated bytes.
+All1272 retained pins match before/after and required full transition fixtures
+remain. Each retired capsule has a DISPOSED marker; do not follow old whole-image
+retention/restoration instructions. Full charge49,665,126,400 remains below48GiB.
+This changes retention only; earlier whole failures remain failed and passing
+historical assertions remain bound to their original source/evidence.
+
+
+## M748 — Separate retained output sequence coverage from wall-clock extrema (2026-11-19)
+
+Add optional version1 `output_coverage` to the completed timing summary. Accumulate
+only stdout/stderr/combined output from the same exact verified source scan;
+exclude lifecycle/gap timestamps. First/last sequence/time and earliest/latest
+wall time stay distinct when the wall clock reverses. Filters and match limits do
+not truncate this complete-prefix summary. Empty/exit-only prefixes explicitly
+report no verified output; absent older fields are unavailable, never zero. Return
+no summary after failed source/hash/output checks. This says nothing about output
+before attachment, another session, host-wide oldest coverage or full runtime.
+
+[Focused source evidence](diagnostics/2026-11-19-recording-output-coverage-source.json)
+passes full recording races(1.933s), actual CLI/official-SDK timing/derived/indexed
+ZIP and existing no-state help tests(19.424s), service races(7.912s) and vet.
+Tests preserve original bytes, reverse time/sequence distinction, lifecycle-only
+and damaged-tail semantics, exact integers above2^53 and authority/failure
+withholding. Twelve inert guards require the new native flag and prevent private
+proofs entering serial status. No recording/index file or persisted schema65
+encoding, endpoint, capability, admission, policy, retention or lifecycle changes.
+Static help describes the new explicit output scope. Full post-charge49,830,883,328
+stays below48GiB. Matching clean tools/helper/reference and fresh native/independent
+verification remain required; production/manual DEV/user ships stay unchanged.

@@ -181,6 +181,10 @@ func TestCLIAndMCPTimingQueryAndExplicitIndexedExport(t *testing.T) {
 			if cliErr != nil || tool.IsError || json.Unmarshal(cli, &out) != nil || len(out.Data.Entries) != 2 || out.Data.Entries[0].Sequence != 1 || out.Data.Entries[1].Sequence != 3 || out.Data.Entries[0].UnixNano != wall || out.Data.Source.Session.ConfigurationRevision != revision || out.Data.Source.Session.OperationID != "op-timing" || !out.Data.HasMore || out.Data.NextAfterSequence != 3 || reads.Load() != before+6 || bytes.Contains(cli, []byte("private-payload-marker")) {
 				t.Fatal("timing metadata/authority lost", cliErr, string(cli))
 			}
+			coverage := out.Data.Index.OutputCoverage
+			if coverage == nil || coverage.Status != "verified-output-prefix" || coverage.Frames != 8 || coverage.Bytes != manifest.Coverage.OutputBytes || coverage.FirstSequence != 1 || coverage.LastSequence != 8 || coverage.FirstUnixNano != wall || coverage.LastUnixNano != wall-7 || coverage.EarliestUnixNano != wall-7 || coverage.LatestUnixNano != wall {
+				t.Fatal("actual CLI/SDK lost unfiltered output coverage or exact large timestamps", coverage)
+			}
 		} else {
 			expected := int32(2)
 			if name == "observer" || name == "missing-capability" || name == "no-consent" || name == "redacted" {
@@ -189,7 +193,7 @@ func TestCLIAndMCPTimingQueryAndExplicitIndexedExport(t *testing.T) {
 			if name == "bad-part" {
 				expected = 6
 			}
-			if cliErr == nil || !tool.IsError || reads.Load() != before+expected || bytes.Contains(cli, []byte("op-timing")) || bytes.Contains(cli, []byte("private-payload-marker")) {
+			if cliErr == nil || !tool.IsError || reads.Load() != before+expected || bytes.Contains(cli, []byte("op-timing")) || bytes.Contains(cli, []byte("private-payload-marker")) || bytes.Contains(cli, []byte("earliest_unix_nano")) {
 				t.Fatal("timing refusal leaked or retried", name, cliErr, string(cli), reads.Load()-before)
 			}
 			if name == "transport-lost" {
@@ -213,6 +217,9 @@ func TestCLIAndMCPTimingQueryAndExplicitIndexedExport(t *testing.T) {
 	}
 	if err != nil || json.Unmarshal(raw, &exported) != nil || exported.Status != "exported" || exported.Index.Frames != 8 || !exported.Index.VerifiedPrefixComplete || exported.Index.RuntimeComplete {
 		t.Fatal("actual indexed export failed", err, string(raw))
+	}
+	if c := exported.Index.OutputCoverage; c == nil || c.Frames != 8 || c.Bytes != manifest.Coverage.OutputBytes || c.FirstUnixNano != wall || c.LastUnixNano != wall-7 || c.EarliestUnixNano != wall-7 || c.LatestUnixNano != wall {
+		t.Fatal("actual indexed CLI summary lost retained output chronology", c)
 	}
 	z, err := zip.OpenReader(output)
 	if err != nil {

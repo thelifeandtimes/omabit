@@ -21,7 +21,7 @@ PIN = 'e3a728a4b1dcc090a10560481dd8414e801c4ef12632164fb05e0f4db5d022d9'
 HELPER_SECONDS = 150
 HELPER_PROCESS_SECONDS = 180
 report = {'format': 1, 'passed': False, 'scope': 'closed native recording allocation on one fresh offline COW overlay; complete original/indexed exports, shared timing query and derived redacted manifest/parts/ZIP; no runtime launch/control write, installed upgrade, DEV or production qualification'}
-PROOF_GATES = ('original_recording_bytes_unchanged', 'policy_head_unchanged', 'actual_cli_and_stdio_measurements', 'actual_original_export_manifest_part_cli_mcp', 'actual_original_zip_matches_files', 'actual_indexed_zip_preserves_originals', 'actual_timing_query_cli_mcp', 'actual_redacted_manifest_part_cli_mcp', 'actual_redacted_cli_zip_matches_parts')
+PROOF_GATES = ('original_recording_bytes_unchanged', 'policy_head_unchanged', 'actual_cli_and_stdio_measurements', 'actual_original_export_manifest_part_cli_mcp', 'actual_original_zip_matches_files', 'actual_indexed_zip_preserves_originals', 'actual_timing_query_cli_mcp', 'actual_retained_output_coverage_cli_mcp', 'actual_redacted_manifest_part_cli_mcp', 'actual_redacted_cli_zip_matches_parts')
 
 
 def product_summary(value):
@@ -44,7 +44,7 @@ def guard():
     if Path('/sys/class/dmi/id/sys_vendor').read_text().strip() != 'QEMU' or 'omabit.disposable-guest=release-upgrade-v1' not in Path('/proc/cmdline').read_text().split():
         raise RuntimeError('not isolated guest')
     value = json.loads((I/'scenario.json').read_text())
-    if value.get('kind') != 'issues20-recording-usage-v1' or value.get('case') != CASE or value.get('predecessor_root_sha256') != PIN or value.get('original_schema') != 65 or value.get('target_schema') != 65 or value.get('development_snapshot') is not True or value.get('require_original_exports') is not True or value.get('require_derived_exports') is not True:
+    if value.get('kind') != 'issues20-recording-usage-v1' or value.get('case') != CASE or value.get('predecessor_root_sha256') != PIN or value.get('original_schema') != 65 or value.get('target_schema') != 65 or value.get('development_snapshot') is not True or value.get('require_original_exports') is not True or value.get('require_derived_exports') is not True or value.get('require_output_coverage') is not True:
         raise RuntimeError('wrong exact closed-recording fixture')
     return value
 

@@ -10,6 +10,8 @@ encoded segments, timing/streams and verified-prefix/gap coverage. Optional
 --timing-index adds a separate verified payload-free JSONL index; it re-reads the
 hash-pinned originals and refuses incomplete or oversized output. The shared
 runtime.recording-timing.v1 operation filters timing and returns context cursors.
+It separates first/last output in sequence from earliest/latest retained output
+wall times; coverage covers this verified prefix, not earlier or other sessions.
 --redacted exports only derived escaped spans, omission reasons, technical
 metadata and coverage, omitting exact bindings and original encoded files.
 Finite credential rules require owner review before sharing; technical strings,

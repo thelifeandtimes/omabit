@@ -46,14 +46,49 @@ type TimingEntry struct {
 }
 
 type TimingIndexSummary struct {
-	SourceSHA256           string         `json:"source_sha256"`
-	IndexSHA256            string         `json:"index_sha256"`
-	Bytes                  uint64         `json:"bytes"`
-	Frames                 uint64         `json:"frames"`
-	Coverage               ExportCoverage `json:"coverage"`
-	AllSourceFilesVerified bool           `json:"all_source_files_verified"`
-	VerifiedPrefixComplete bool           `json:"verified_prefix_complete"`
-	RuntimeComplete        bool           `json:"runtime_complete"`
+	SourceSHA256           string                `json:"source_sha256"`
+	IndexSHA256            string                `json:"index_sha256"`
+	Bytes                  uint64                `json:"bytes"`
+	Frames                 uint64                `json:"frames"`
+	Coverage               ExportCoverage        `json:"coverage"`
+	AllSourceFilesVerified bool                  `json:"all_source_files_verified"`
+	VerifiedPrefixComplete bool                  `json:"verified_prefix_complete"`
+	RuntimeComplete        bool                  `json:"runtime_complete"`
+	OutputCoverage         *TimingOutputCoverage `json:"output_coverage,omitempty"`
+}
+
+// OutputCoverage describes only retained, hash-verified output frames. The first
+// frame in sequence and earliest wall timestamp can differ after a clock change.
+// Older responses may omit it. No timestamp establishes coverage before capture
+// attachment, across absent sessions, or outside the verified retained prefix.
+type TimingOutputCoverage struct {
+	Version          int    `json:"version"`
+	Status           string `json:"status"`
+	Frames           uint64 `json:"frames"`
+	Bytes            uint64 `json:"bytes"`
+	FirstSequence    uint64 `json:"first_sequence,omitempty"`
+	LastSequence     uint64 `json:"last_sequence,omitempty"`
+	FirstUnixNano    int64  `json:"first_unix_nano,omitempty"`
+	LastUnixNano     int64  `json:"last_unix_nano,omitempty"`
+	EarliestUnixNano int64  `json:"earliest_unix_nano,omitempty"`
+	LatestUnixNano   int64  `json:"latest_unix_nano,omitempty"`
+	Basis            string `json:"basis"`
+}
+
+func (c *TimingOutputCoverage) observe(e TimingEntry) {
+	if e.Kind != Stdout && e.Kind != Stderr && e.Kind != PTYCombined {
+		return
+	}
+	if c.Frames == 0 {
+		c.FirstSequence, c.FirstUnixNano = e.Sequence, e.UnixNano
+		c.EarliestUnixNano, c.LatestUnixNano = e.UnixNano, e.UnixNano
+	}
+	c.Status = "verified-output-prefix"
+	c.Frames++
+	c.Bytes += uint64(e.PayloadBytes)
+	c.LastSequence, c.LastUnixNano = e.Sequence, e.UnixNano
+	c.EarliestUnixNano = min(c.EarliestUnixNano, e.UnixNano)
+	c.LatestUnixNano = max(c.LatestUnixNano, e.UnixNano)
 }
 
 type TimingIndexRecord struct {
@@ -82,6 +117,7 @@ func WriteTimingIndex(ctx context.Context, in ExportRequest, result ExportManife
 		return zero, ErrSelection
 	}
 	var summary TimingIndexSummary
+	outputCoverage := TimingOutputCoverage{Version: 1, Status: "no-output-in-verified-prefix", Basis: "exact retained verified source prefix, stdout/stderr/combined output only; first/last follow sequence, earliest/latest follow wall time which may reverse; excludes gap/exit timestamps and proves no coverage before attachment or across other sessions"}
 	indexHash := sha256.New()
 	emit := func(record TimingIndexRecord) error {
 		if err := ctx.Err(); err != nil {
@@ -104,7 +140,10 @@ func WriteTimingIndex(ctx context.Context, in ExportRequest, result ExportManife
 	}
 	verified, err := scanExportFrames(ctx, in, result, fetch, func(source TimingSource, sourceSHA string) error {
 		return emit(TimingIndexRecord{Type: "header", Source: &source, SourceSHA256: sourceSHA})
-	}, func(entry TimingEntry, _ Frame) error { return emit(TimingIndexRecord{Type: "frame", Entry: &entry}) })
+	}, func(entry TimingEntry, _ Frame) error {
+		outputCoverage.observe(entry)
+		return emit(TimingIndexRecord{Type: "frame", Entry: &entry})
+	})
 	if err != nil {
 		return zero, err
 	}
@@ -117,5 +156,6 @@ func WriteTimingIndex(ctx context.Context, in ExportRequest, result ExportManife
 	summary.Frames = verified.coverage.VerifiedFrames
 	summary.Coverage = verified.coverage
 	summary.AllSourceFilesVerified, summary.VerifiedPrefixComplete = true, true
+	summary.OutputCoverage = &outputCoverage
 	return summary, nil
 }

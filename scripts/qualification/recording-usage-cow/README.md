@@ -102,3 +102,11 @@ line framing. Preserve that failed image/input/proof. Corrected status includes
 only an allowlisted boolean/count summary and proof SHA-256. All complete private
 proof bytes remain on disk for independent reading; twelve inert guards include
 the oversized-proof regression. Fresh retry and verification remain required.
+
+
+The current source also requires `require_output_coverage=true`. Actual CLI/SDK
+timing responses must derive stream-only first/last sequence times and earliest/
+latest wall times from every exact indexed original, independent of match filters.
+The native helper retains these responses for independent raw-frame comparison.
+Twelve inert guards pass; matching new Go products/helper and a fresh native case
+are still required. The separately frozen standalone PID1 remains unchanged.

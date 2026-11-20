@@ -109,11 +109,11 @@ class UsageGuards(unittest.TestCase):
         with patch.object(guest.os, 'geteuid', return_value=1000), patch.object(Path, 'read_text', side_effect=AssertionError('host read forbidden')):
             with self.assertRaises(RuntimeError):
                 guest.guard()
-        scenario = {'kind': 'issues20-recording-usage-v1', 'case': guest.CASE, 'predecessor_root_sha256': guest.PIN, 'original_schema': 65, 'target_schema': 65, 'development_snapshot': True, 'require_original_exports': True, 'require_derived_exports': True}
+        scenario = {'kind': 'issues20-recording-usage-v1', 'case': guest.CASE, 'predecessor_root_sha256': guest.PIN, 'original_schema': 65, 'target_schema': 65, 'development_snapshot': True, 'require_original_exports': True, 'require_derived_exports': True, 'require_output_coverage': True}
         values = {'/sys/class/dmi/id/sys_vendor': 'QEMU', '/proc/cmdline': 'omabit.disposable-guest=release-upgrade-v1', '/opt/omabit-release-input/scenario.json': json.dumps(scenario)}
         with patch.object(guest.os, 'geteuid', return_value=0), patch.object(sys, 'argv', ['guest.py']), patch.object(Path, 'read_text', lambda path, **kwargs: values[str(path)]):
             self.assertEqual(guest.guard(), scenario)
-            for change in ({'case': 'other'}, {'predecessor_root_sha256': '0'*64}, {'original_schema': 64}, {'target_schema': 64}, {'development_snapshot': False}, {'require_original_exports': False}, {'require_derived_exports': False}):
+            for change in ({'case': 'other'}, {'predecessor_root_sha256': '0'*64}, {'original_schema': 64}, {'target_schema': 64}, {'development_snapshot': False}, {'require_original_exports': False}, {'require_derived_exports': False}, {'require_output_coverage': False}):
                 values['/opt/omabit-release-input/scenario.json'] = json.dumps({**scenario, **change})
                 with self.assertRaises(RuntimeError):
                     guest.guard()

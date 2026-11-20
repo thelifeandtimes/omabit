@@ -1,5 +1,16 @@
 # Stable-release upgrade requirement
 
+## Development: optional derived output coverage, persisted schema65 unchanged
+
+The current core adds optional completed `output_coverage` to timing/index
+summaries. Original/index/redacted files, metadata, jobs, controls, endpoints and
+schema65 stay unchanged. Older omission is unavailable, not zero; current values
+cover only the exact verified retained prefix. First/last sequence time differs
+from earliest/latest wall time when clocks reverse. [Focused races/interfaces](diagnostics/2026-11-19-recording-output-coverage-source.json)
+pass; matching artifacts/reference and current native verification remain gates.
+This adds no retention, runtime or installed upgrade authority.
+
+
 ## Development: closed indexed/query/redacted native gate, schema65 unchanged
 
 Matching4c0b16e tools pass the [closed original/index/timing/redacted export case](diagnostics/2026-11-19-recording-derived-export-native.json)

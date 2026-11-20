@@ -1099,3 +1099,18 @@ is retained with its serial-framing diagnosis. This supersedes the matching nati
 export deferral only for this exact closed-source scope. Static command-help
 choice visibility, active capture, oldest-output summary, pressure/retirement,
 other factories and installed/preserved DEV remain separate gates.
+
+
+A completed current-source timing/index summary additionally includes optional
+`output_coverage`. It counts retained stdout/stderr/combined frames and bytes,
+reports their first/last sequence and corresponding wall times, and separately
+reports earliest/latest output wall timestamps. The clock may reverse; earliest
+wall time must not replace sequence order. Lifecycle/gap timestamps are excluded.
+The complete source is verified even when the match filter/limit returns fewer
+entries. Empty or exit-only verified prefixes report
+`status=no-output-in-verified-prefix`; absence from an older core is unavailable,
+not a measured zero. This covers only the selected retained verified prefix, not
+before attachment, other sessions, a host-wide oldest timestamp or full runtime.
+[Source race/interface evidence](diagnostics/2026-11-19-recording-output-coverage-source.json)
+passes; matching current native verification remains pending. No persisted/index
+file format or retention authority changes.
