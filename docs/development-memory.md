@@ -13888,3 +13888,33 @@ whole-message bounds, false/missing gates, typed values and real log framing.
 See [failure and correction](diagnostics/2026-11-19-recording-output-status-failure.json).
 Independent COW06 proof reading and a fresh native retry are still required.
 All production/manual DEV/user-ship exclusions remain; no installed change.
+
+
+## M751 — Native output coverage and bounded whole-status retry pass (2026-11-19)
+
+Supersede M748–750's native deferrals only for matching5344c5c closed retained
+recordings, e0af PID1 and e2b545e status harness. Fresh COW07 passes actual CLI/
+official-SDK output coverage, original/indexed/redacted exports, helper0/QEMU0 and
+strict compact-status parsing with no interruption. Independent read-only kernel
+exports execute no source-disk code. Python decodes170/32 original frames and
+checks stream-only169/31frames(3149/1191bytes), first/last output sequence/time,
+earliest/latest wall time, every index row/offset/chain, filters/cursors, ZIP/chunk
+hashes, escaped spans and final coverage. New output fields change neither JSONL
+index file bytes nor complete redacted manifests compared with prior4c0b16e.
+See [native evidence and limits](diagnostics/2026-11-19-recording-output-coverage-native.json).
+
+Both independent SQLite copies check ok; original controls/history/intent/rows,
+raw files, roots/inputs/backings remain exact except one fresh observed_at and
+revision75→76. COW06's complete retained proof independently passes too; its old
+whole status remains failed. The corrected bounded serializer accepts that exact
+full report without exposing its inputs. Fresh COW07 supplies whole completion.
+All six exact native/reader scopes end empty and frozen artifacts/cases recheck.
+Final full charge50,184,650,752 stays below48GiB.
+
+This qualifies only the selected retained closed prefix. Host/session-wide oldest
+inventory, active capture/pressure/age/retirement/other factories, remaining issue
+tracks and final59/native-plugin/preserved DEV gates remain. Installed/manual DEV,
+production, protected/existing ships and tmux remain unchanged. The completed
+read-only overlays add no required state/version transition; compact exact SQL/
+proof/archives/source/logs suffice, with immutable recording07 and original app/
+recording transition fixtures kept for future runs under the user's cleanup rule.

@@ -1,0 +1,144 @@
+{
+  "format": 1,
+  "status": "passed-scoped-native-retained-output-coverage-and-exports",
+  "candidate_source_commit": "5344c5cd2816623b69450f638ee44966a31b9ee4",
+  "harness_source_commit": "e2b545e05013f15d5b38f66a26d635fe07b95f57",
+  "schema": 65,
+  "artifact_evidence": "2026-11-19-recording-output-coverage-artifacts.json",
+  "boot_source_commit": "e0af21ae13dc781b4e299b1afd48476fb5d41a54",
+  "boot_sha256": "ced164ae56c3ee51dd7675af92431dedbf2def7975c1689d38e4522219f66819",
+  "scope": "two closed retained native recording jobs on a fresh offline recording07-backed COW only",
+  "actual_cli_official_sdk_and_whole_host_case_passed": true,
+  "strict_compact_status_protocol_passed": true,
+  "strict_status_max_bytes": 2048,
+  "proof_sha256": "9b1dd98efe144c0da8b7e362e47a3221cfd84b36491fd2dc6576c5123eb8d2de",
+  "retained_root_sha256": "2d9fdbd8cc16862cd148e18ad7a2d83f1ae3ba7d67b26710496e98c817db299a",
+  "retained_input_sha256": "665a47924d5ec99174e1386c6b22220deead34bd8e6f01158963b8c7b430b30c",
+  "independent_read_only_fixed_path_exports": 12,
+  "sessions": [
+    {
+      "decoded_original": {
+        "frames": 170,
+        "stdout_bytes": 2812,
+        "stderr_bytes": 337,
+        "stdout_sha256": "d21644ccef51502d2215e3483dc764bf4f00e2b395ab344b8a8f5cac011274b4",
+        "stderr_sha256": "3290e36c5688c35ced7936610124de465367252b0788737c8a7b5a07824cf5ae",
+        "last_sequence": 170,
+        "last_digest": "9a37d3d380ccccc7a3f15a91671cb9f1df51d5ed5136cf8b3a09f679e5927342",
+        "tail": "snapshot-eof",
+        "exit_frames": 1,
+        "gap_frames": 0
+      },
+      "independent_checks": {
+        "retained_output_first_last_sequence_and_earliest_latest_wall_times_match_originals": true,
+        "index_rows_independently_match_raw_headers_offsets_lengths_times_chain": true,
+        "timing_query_pages_filters_context_match_independent_rows": true,
+        "source_and_index_sha256_verified": true,
+        "redacted_archive_and_all_chunk_hashes_verified": true,
+        "redacted_spans_preserve_original_offsets_lengths_and_escaped_octets": true,
+        "redacted_manifest_whitelist_and_exit_alias_verified": true,
+        "redacted_final_counts_hash_coverage_verified": true,
+        "redacted_windows": 3,
+        "omitted_stream_bytes": 48,
+        "exit_bindings_aliased": 1,
+        "indexed_zip_sha256": "4830cc87e40a0a2b91061fdb70a799652647ef358f837984d6ecc743fe77ee11",
+        "redacted_zip_sha256": "9b958e0552cb671391b48fa3ac7b8826ad0a55e373e767fb15718a2a66daf23b"
+      },
+      "output_coverage": {
+        "version": 1,
+        "status": "verified-output-prefix",
+        "frames": 169,
+        "bytes": 3149,
+        "first_sequence": 1,
+        "last_sequence": 169,
+        "first_unix_nano": 1795106171714796796,
+        "last_unix_nano": 1795106250046298274,
+        "earliest_unix_nano": 1795106171714796796,
+        "latest_unix_nano": 1795106250046298274,
+        "basis": "exact retained verified source prefix, stdout/stderr/combined output only; first/last follow sequence, earliest/latest follow wall time which may reverse; excludes gap/exit timestamps and proves no coverage before attachment or across other sessions"
+      }
+    },
+    {
+      "decoded_original": {
+        "frames": 32,
+        "stdout_bytes": 1031,
+        "stderr_bytes": 160,
+        "stdout_sha256": "4fc3af95aea0d8b1f8e94aece4328870b1018e0f538df5535405adfc01e86f96",
+        "stderr_sha256": "70a0e74122b8964de6bc133cf6e48e83f5c7ff0d96661013871481a636cd495a",
+        "last_sequence": 32,
+        "last_digest": "3f02fc47e48d7ec25dcc76864596b628bcbce207cc386157626cf2f8f365d2ee",
+        "tail": "snapshot-eof",
+        "exit_frames": 1,
+        "gap_frames": 0
+      },
+      "independent_checks": {
+        "retained_output_first_last_sequence_and_earliest_latest_wall_times_match_originals": true,
+        "index_rows_independently_match_raw_headers_offsets_lengths_times_chain": true,
+        "timing_query_pages_filters_context_match_independent_rows": true,
+        "source_and_index_sha256_verified": true,
+        "redacted_archive_and_all_chunk_hashes_verified": true,
+        "redacted_spans_preserve_original_offsets_lengths_and_escaped_octets": true,
+        "redacted_manifest_whitelist_and_exit_alias_verified": true,
+        "redacted_final_counts_hash_coverage_verified": true,
+        "redacted_windows": 1,
+        "omitted_stream_bytes": 24,
+        "exit_bindings_aliased": 1,
+        "indexed_zip_sha256": "6b1128fae896cd62b7b7fdb94a3062feba500d79710ea50458f935eb3def907a",
+        "redacted_zip_sha256": "ab5174d1db2bab24d92646de5c4397d3fad57d5a438c14343caf5fcd5ab8b490"
+      },
+      "output_coverage": {
+        "version": 1,
+        "status": "verified-output-prefix",
+        "frames": 31,
+        "bytes": 1191,
+        "first_sequence": 1,
+        "last_sequence": 31,
+        "first_unix_nano": 1795106263617277145,
+        "last_unix_nano": 1795106269078738015,
+        "earliest_unix_nano": 1795106263617277145,
+        "latest_unix_nano": 1795106269078738015,
+        "basis": "exact retained verified source prefix, stdout/stderr/combined output only; first/last follow sequence, earliest/latest follow wall time which may reverse; excludes gap/exit timestamps and proves no coverage before attachment or across other sessions"
+      }
+    }
+  ],
+  "index_files_and_complete_redacted_manifests_equal_to_prior4c_source": true,
+  "all_original_recordings_controls_history_intent_and_rows_preserved_except_one_observation": true,
+  "observation_refresh": {
+    "fields": [
+      "public.observed_at",
+      "runtime_revision"
+    ],
+    "before_revision": 75,
+    "after_revision": 76,
+    "fresh_observation_only": true
+  },
+  "both_independent_sqlite_quick_checks": "ok",
+  "original_sources_inputs_backings_unchanged": true,
+  "all_six_exact_native_reader_scopes_inactive_empty": true,
+  "earlier_case06": {
+    "whole_result": "failed-status-framing-remains-failed",
+    "independent_data_and_all_assertions_passed": true,
+    "corrected_serializer_checked_against_actual_complete_report": true,
+    "evidence": "2026-11-19-recording-output-status-failure.json"
+  },
+  "verification_source_sha256": {
+    "omabit-issues-verify-recording-output-coverage.py": "cb56d4bcbb0f689e2491b10424ed4587295c02669697d363131373fb4068ce57",
+    "omabit-issues-analyze-recording-output07.py": "60045a03f6378de25b707100714d9de8f2e397e5d0fa2572ab4c5f86447f80b9",
+    "omabit-issues-extract-recording-output07.py": "d7120c4e3d5d6b7c099c971dfffaf626128e0688c57176dd93b1e4a76e1f05ce"
+  },
+  "storage": {
+    "budget_bytes": 51539607552,
+    "admission_bytes": 335544320,
+    "initial_full_charge": 50102329344,
+    "native_full_charge_after": 50165895168,
+    "independent_final_full_charge": 50184650752
+  },
+  "pending": [
+    "host/session-wide oldest inventory",
+    "active capture pressure, age enforcement and explicit retirement",
+    "other runtime factories/adoption",
+    "remaining issue16-19 tracks",
+    "final previous-stable59 upgrade/native-plugin packaging/QML/preserved DEV"
+  ],
+  "production_installed_dev_existing_ships_unchanged": true
+}

@@ -766,3 +766,15 @@ and emits it atomically below4096bytes; all complete reports/proof stay on disk.
 Fifteen inert guards pass for whole-message/private-data and strict log parsing.
 Matching5344c5c Go tools/PID1 stay unchanged. Fresh native/independent verification
 remains open; no production, installed DEV or existing ship is changed.
+
+
+M751 qualifies matching5344c5c native retained output coverage and all closed
+original/indexed/redacted exports through actual CLI/SDK. The bounded status
+protocol passes the fresh whole COW07. Independent raw-frame/archive/span/SQL
+checks verify170/32 total frames, stream-only169/31frames, all output chronology
+fields and unchanged index/redacted formats versus4c. Original state permits only
+one fresh observed_at/revision75→76. Earlier COW06 remains a whole framing failure,
+with independently verified retained assertions. [Evidence](diagnostics/2026-11-19-recording-output-coverage-native.json)
+records all six scopes ended and50,184,650,752-byte full charge below48GiB. Broader
+inventory/pressure/retirement/factories and final issue/stable/plugin/preserved DEV
+gates remain open; installed/production/existing ships are untouched.

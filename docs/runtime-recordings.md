@@ -1114,3 +1114,12 @@ before attachment, other sessions, a host-wide oldest timestamp or full runtime.
 [Source race/interface evidence](diagnostics/2026-11-19-recording-output-coverage-source.json)
 passes; matching current native verification remains pending. No persisted/index
 file format or retention authority changes.
+
+
+The matching5344c5c [native closed-output coverage and export gate](diagnostics/2026-11-19-recording-output-coverage-native.json)
+now passes with actual CLI/official SDK and independent original-frame/SQLite
+checks. The fresh bounded-status retry completes cleanly. JSONL index bytes and
+complete redacted manifests remain equal to the earlier4c source; new chronology
+is a derived response summary. This supersedes the matching native deferral for
+the selected closed prefix only; broader inventory, active pressure/retention,
+factories and installed/preserved DEV remain separate gates.

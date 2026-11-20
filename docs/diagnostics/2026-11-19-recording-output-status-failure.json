@@ -27,5 +27,11 @@
   },
   "independent_retained_proof_verification_pending": true,
   "fresh_retry_pending": true,
-  "production_installed_dev_and_existing_ships_unchanged": true
+  "production_installed_dev_and_existing_ships_unchanged": true,
+  "follow_up": {
+    "earlier_case_independent_full_proof_and_preservation_passed": true,
+    "fresh_corrected_whole_case_passed": true,
+    "earlier_whole_status_remains_failed": true,
+    "evidence": "2026-11-19-recording-output-coverage-native.json"
+  }
 }

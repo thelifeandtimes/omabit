@@ -1,5 +1,15 @@
 # Stable-release upgrade requirement
 
+## Development: native closed output-coverage response, schema65 unchanged
+
+Matching5344c5c [native output coverage/export](diagnostics/2026-11-19-recording-output-coverage-native.json)
+passes actual CLI/SDK and independent raw-frame/SQL checks. The new summary does
+not change JSONL index files or complete redacted manifests versus4c. No original
+recording/job/control/schema65 encoding, admission or lifecycle change is made.
+This selected closed-prefix gate does not qualify active pressure/retirement,
+other factories, final59 upgrade, plugin packaging or preserved DEV.
+
+
 ## Development: optional derived output coverage, persisted schema65 unchanged
 
 The current core adds optional completed `output_coverage` to timing/index
