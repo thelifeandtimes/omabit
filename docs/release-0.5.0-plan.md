@@ -47,8 +47,9 @@ Stop or deletion authority. No issue is closed merely because code is included.
 
 1. Native Stop capsule and independent receipt/pier/peer/history verification pass
    at frozen68bf233 (M760) and final bdf4397 release binaries (M771). Preserve
-   both exact records. Corrected candidate02 at59d83aa needs its matching native
-   Stop repeat; its actual stable59→65 upgrade passes at M774. DEV remains separate.
+   both exact records. Corrected candidate02 at59d83aa now passes matching native
+   Stop and independent preservation at M777; its actual stable59→65 upgrade
+   passes at M774. DEV remains separate.
 2. Audit all exposed capabilities and documentation against the scope above.
    Complete the scoped runtime checks and correct discovered product defects.
 3. Set all component/UI versions to0.5.0, freeze the complete runtime/UI/skill/

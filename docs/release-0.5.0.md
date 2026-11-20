@@ -1,8 +1,8 @@
 # Omabit 0.5.0 — project recovery and bounded app workflows
 
 Candidate preparation: final artifacts are frozen at59d83aa. Matching desktop,
-interface, stable0.4→0.5 upgrade, recording-pressure and Grubbery gates pass
-(M774–M776); native Stop/closed exports, preserved DEV, review and publication
+interface, stable0.4→0.5 upgrade, recording-pressure, Grubbery and native Stop gates
+pass (M774–M777); closed exports, preserved DEV, review and publication
 are pending. This
 document describes the finite delivery scope; it does not announce a qualified
 release or authorize a production update.

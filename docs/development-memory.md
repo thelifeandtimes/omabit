@@ -14553,3 +14553,33 @@ build-info records identify Go1.27.4. That compiler statement is superseded here
 source59d83aa and all artifact hashes are unchanged. Older standalone boot helpers
 keep their separately pinned source/compiler records. Matching Stop, closed
 exports, preserved DEV and protected reviewed publication remain required.
+
+## M777 — Candidate02 exact native Stop and independent preservation pass (2026-11-20)
+
+Fresh transition05 uses frozen59d83aa products and its separately tagged helper.
+All eight whole-case gates pass: the guarded native inspection transition, one
+SIGTERM, successful terminal Stop, original receipt replay after manager restart,
+ordinary same-pier Start, unchanged peer/anchor processes, inherited stopped app
+preservation and clean final Stops. The host exits0 with no interruption.
+
+[Candidate02 Stop evidence](diagnostics/2026-11-20-project-stop-candidate02.json)
+supersedes M771's matching-artifact repeat requirement. A fixed read-only reader
+exports11 files and leaves all source/backing images unchanged. Independent
+verification checks six ordered traces with one original operation/container/start
+binding, exact original full receipt equality, one SIGTERM, a different resumed
+container on the same pier, unchanged peer/anchor state and23 inherited tables.
+Only the original stopped app's permitted fresh observation fields change.
+All three disposable fakes end stopped. This bounded interleaving does not establish
+the historical incident's exact failing predicate.
+
+To fit the declared3GiB plus64MiB reservation, first retire only the previously
+authorized standard Go compiler cache,764,129,280bytes across5955 files, verifying
+all named release artifacts/helpers unchanged. No Go build runs during the VM.
+After independent evidence and ended-scope/holder checks, retire five ended Stop
+image/boot files, reclaiming1,734,213,632bytes. Both COW consumers have now finished,
+so retire the six verified temporary physical backing/metadata duplicates, freeing
+another1,766,367,232bytes while rechecking every exact durable original.
+[Retirement evidence](diagnostics/2026-11-20-native-input-retirement.json) retains
+the classifications and full-record hashes. Aggregate charge46,487,318,528bytes
+remains below48GiB. Final closed exports, preserved DEV, review/checks and release
+publication remain; no production or manual-ship operation occurred.
