@@ -1,7 +1,8 @@
 # 0.5.0 release completion plan
 
-Status: frozen candidate passes the bounded qualification; draft verification,
-final release-head checks, review, protected merge and publication remain. The user authorized completing the
+Status: frozen candidate passes the bounded qualification and draft verification;
+exact pins are recorded. Final release-head checks, review, protected merge and
+publication remain. The user authorized completing the
 issues16–21 work on2026-11-20, including a preserved DEV update and the protected
 release process. Production deployment and issue22 are outside this goal.
 

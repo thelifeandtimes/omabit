@@ -1,7 +1,8 @@
 # 0.5.0 release preparation
 
-Status: bounded candidate qualification passed; draft verification, final checks,
-review and protected publication remain pending. Product, UI, skills and packaging are frozen at
+Status: bounded candidate qualification and all nine draft downloads passed;
+exact distribution pins are recorded. Final checks, review and protected publication
+remain pending. Product, UI, skills and packaging are frozen at
 `59d83aab49384d2f26531320bb5ab68e1257aeb5`. Subsequent documentation and distribution
 pins must refer to these exact artifacts. Do not rebuild them after pinning.
 
@@ -70,7 +71,8 @@ grants close before restart; Publish stays blocked and manual state is preserved
 Candidate source/core, all four managed-race shards, QML and aggregate source
 checks pass ([CI rollup](../../diagnostics/2026-11-20-candidate02-source-ci.json)).
 The [qualification record](qualification.json) binds all seven final evidence
-records and the actual stable upgrade. Required final release-head CI, review, verified draft downloads,
+records and the actual stable upgrade. [Draft downloads](../../diagnostics/2026-11-20-release050-draft-downloads.json)
+match every exact qualified byte/hash. Required final release-head CI, review,
 protected merge and stable publication remain gates. No current pending gate is represented as passed.
 
 Broader peers, permits, routes, assets and application failure combinations remain

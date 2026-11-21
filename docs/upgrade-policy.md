@@ -1,5 +1,20 @@
 # Stable-release upgrade requirement
 
+## 0.5.0: qualified local0.4.0→0.5.0 support window
+
+The [exact qualification](releases/0.5.0/qualification.json) binds frozen59d83aa
+artifacts and the actual published0.4.0/schema59→0.5.0/schema65 owner-user upgrade.
+It preserves identities, piers, access, settings, intent and original operation/app
+history; manager restart, denial/retry and actual older-reader refusal pass.
+Separate native desktop and preserved review040 DEV evidence pass, including a
+fresh Gall sample's reload/restart state and final Stop after closing temporary
+permissions. This supersedes historical pending final-artifact/DEV statements
+only for the linked scenarios. Active recording-worker upgrades, remote service
+upgrades, power-loss durability and arbitrary development snapshots remain outside
+this window. Earlier stable versions follow their documented path to0.4.0 first.
+Never downgrade markers, reset piers or discard history to update a manager.
+Final protected publication remains separate and authorizes no production update.
+
 ## Development: native closed output-coverage response, schema65 unchanged
 
 Matching5344c5c [native output coverage/export](diagnostics/2026-11-19-recording-output-coverage-native.json)

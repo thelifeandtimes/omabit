@@ -3,7 +3,7 @@
 Candidate preparation: final artifacts are frozen at59d83aa. Matching desktop,
 interface, stable0.4→0.5 upgrade, recording-pressure, Grubbery, native Stop and
 closed-export gates pass (M774–M778). Preserved DEV and fresh app reload/restart
-pass (M779–M780); draft verification, final checks, review and publication
+pass (M779–M780). Exact draft downloads and distribution pins pass (M781); final checks, review and publication
 are pending. This
 document describes the finite delivery scope; it does not announce a qualified
 release or authorize a production update.

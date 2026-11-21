@@ -2,8 +2,9 @@
 
 Review target: frozen product source
 `59d83aab49384d2f26531320bb5ab68e1257aeb5`, compared with protected master
-`10962196a19c349e540c9b980d4d4da53c8657b6`. Final distribution pins and release-head
-checks remain pending. This record is not release approval.
+`10962196a19c349e540c9b980d4d4da53c8657b6`. Final distribution pins and all nine
+draft downloads are verified at M781. Required final release-head checks and the
+protected merge remain pending. This record does not waive either gate.
 
 ## Contract review
 
@@ -67,8 +68,11 @@ Peers, permits, routes, assets, broader failure combinations, host-wide recordin
 inventory and retirement are explicit exclusions, not completed issue claims.
 Issue22 runtime pins remains outside this release.
 
-Final review must verify that all post-freeze changes are permitted documentation
-or exact distribution pins, that draft downloads match the qualified bytes, and
-that required checks pass on the final PR head. Protected merge must preserve the
+Distribution review confirms all post-freeze changes are permitted documentation
+or exact distribution pins. All nine authenticated draft downloads match the
+qualified bytes and GitHub digests; the pins name those exact bundle/helpers and
+the original source/backend identity. The final qualification record binds seven
+scoped evidence records and the unchanged actual stable-upgrade rehearsal.
+Required checks must pass on the final PR head. Protected merge must preserve the
 frozen source with a merge commit. Publication does not authorize a production
 service update.

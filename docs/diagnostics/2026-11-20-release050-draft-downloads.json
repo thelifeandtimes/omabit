@@ -1,0 +1,64 @@
+{
+  "status": "passed",
+  "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+  "date": "2026-11-20",
+  "release_id": 453321091,
+  "tag": "v0.5.0",
+  "draft": true,
+  "prerelease": false,
+  "target_commitish": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+  "assets": {
+    "omabit-0.5.0-linux-amd64.tar.gz": {
+      "bytes": 36908843,
+      "sha256": "0851b3f830a297ab8073bc31fd27503811195e4d45c5268ff4a021f08ada548e",
+      "asset_id": 773862554
+    },
+    "omabit-linux-amd64": {
+      "bytes": 26821913,
+      "sha256": "c7ec141df5cc27b2e53f01c2cceca838336bc66be7b232454cce7d4e49d21a1d",
+      "asset_id": 773862550
+    },
+    "omabit-recommended-apps-0.5.0.pill": {
+      "bytes": 59351751,
+      "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+      "asset_id": 773862549
+    },
+    "omabit-skills-0.5.0.tar.gz": {
+      "bytes": 73892,
+      "sha256": "d93625d272db66c497824eef38d8ba36e3f99397c5431bc988671450f10f99e5",
+      "asset_id": 773862551
+    },
+    "urbit-collector-linux-amd64": {
+      "bytes": 13205230,
+      "sha256": "81ea1990acafb847e14a5093fabc67dc15fed3370ad4f5bf9b9043c3fdcf5be5",
+      "asset_id": 773862555
+    },
+    "urbit-runner-linux-amd64": {
+      "bytes": 30142544,
+      "sha256": "5a995481fae3e0642c2eb254e37bd439abc2dd02a40e1d2a7509db3dabd094b4",
+      "asset_id": 773862615
+    },
+    "release.json": {
+      "bytes": 2365,
+      "sha256": "04d32d3dfddce8b2f6423c0cdce71364ccc16f10b9455acb49e8a44b44029937",
+      "asset_id": 773862654
+    },
+    "SHA256SUMS": {
+      "bytes": 641,
+      "sha256": "53977699edd6bab37e5e951adeeb2b285ddfbca0fdb9cf1f8ae7e9f0a5e0fdea",
+      "asset_id": 773862673
+    },
+    "qualification.json": {
+      "bytes": 6444,
+      "sha256": "fc4bd8426a65630564bd79ab0163cb082ebb45834570d43a63796e537df397fe",
+      "asset_id": 773862674
+    }
+  },
+  "checks": {
+    "all_nine_downloads_byte_exact": true,
+    "github_digests_match": true,
+    "stable_latest_unchanged": "v0.4.0"
+  },
+  "complete_charge_bytes": 47976513536,
+  "limits": "Draft verification only. Final protected PR merge and public download/native startup verification remain required."
+}

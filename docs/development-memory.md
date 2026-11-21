@@ -14684,3 +14684,19 @@ scratch reservation and48GiB cap, with final charge47,809,650,688bytes. Earlier 
 qualification predates the move. This changes only the private qualification
 adapter, not frozen product inputs. Draft verification, final pins/checks/review,
 protected merge and publication remain gates. Production is unchanged.
+
+## M781 — Exact0.5.0 draft downloads and distribution pins verified (2026-11-20)
+
+Create draft release453321091 at frozen59d83aa with the six original assets,
+original release.json/SHA256SUMS and the completed qualification record. Authenticated
+downloads match every local size/hash and GitHub SHA256 digest. No asset is rebuilt
+or replaced. The public tag lookup returns404 for the unpublished draft; continue
+verification using the unique saved release ID, without repeating creation.
+
+[Draft verification](diagnostics/2026-11-20-release050-draft-downloads.json) binds
+all nine assets. Latest stable remains0.4.0. Install only the matching distribution
+pins on release/0.5.0; all post-freeze changes are documentation or those pins.
+Complete corrected storage charge47,976,513,536bytes stays below48GiB.
+Final trusted release-policy/source/QML checks and review, protected merge-commit
+publication, public downloads and private cold native startup remain required.
+No production deployment or issue-wide completion is claimed.
