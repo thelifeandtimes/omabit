@@ -1,6 +1,7 @@
 # 0.5.0 release completion plan
 
-Status: frozen candidate with partial final qualification, not a qualified release. The user authorized completing the
+Status: frozen candidate passes the bounded qualification; draft verification,
+final release-head checks, review, protected merge and publication remain. The user authorized completing the
 issues16–21 work on2026-11-20, including a preserved DEV update and the protected
 release process. Production deployment and issue22 are outside this goal.
 
@@ -49,7 +50,7 @@ Stop or deletion authority. No issue is closed merely because code is included.
    at frozen68bf233 (M760) and final bdf4397 release binaries (M771). Preserve
    both exact records. Corrected candidate02 at59d83aa now passes matching native
    Stop and independent preservation at M777; its actual stable59→65 upgrade
-   passes at M774. DEV remains separate.
+   passes at M774. Preserved DEV and fresh app workflow pass at M779–M780.
 2. Audit all exposed capabilities and documentation against the scope above.
    Complete the scoped runtime checks and correct discovered product defects.
 3. Set all component/UI versions to0.5.0, freeze the complete runtime/UI/skill/

@@ -55,8 +55,10 @@ qualification are recorded. Matching
 [Grubbery recovery/state/restart](../../diagnostics/2026-11-20-grubbery-candidate02.json),
 [native Stop](../../diagnostics/2026-11-20-project-stop-candidate02.json), and
 [closed recording exports](../../diagnostics/2026-11-20-recording-exports-candidate02.json)
-pass. The preserved DEV gate remains in [preparation](preparation.md); do not
-infer installed qualification from these disposable-runtime results.
+pass. Separate [preserved DEV](../../diagnostics/2026-11-20-preserved-dev050-upgrade.json)
+and [fresh app workflow](../../diagnostics/2026-11-20-dev050-app-workflow.json)
+evidence pass, including original manual history/intent/pier/runtime preservation,
+closed temporary grants before restart and final clean Stop.
 
 Legacy task help still contains older app-policy wording. The typed operation
 catalog and matching bundled workflow references define the supported commands;

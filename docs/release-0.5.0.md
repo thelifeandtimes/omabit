@@ -2,7 +2,8 @@
 
 Candidate preparation: final artifacts are frozen at59d83aa. Matching desktop,
 interface, stable0.4→0.5 upgrade, recording-pressure, Grubbery, native Stop and
-closed-export gates pass (M774–M778); preserved DEV, review and publication
+closed-export gates pass (M774–M778). Preserved DEV and fresh app reload/restart
+pass (M779–M780); draft verification, final checks, review and publication
 are pending. This
 document describes the finite delivery scope; it does not announce a qualified
 release or authorize a production update.
@@ -37,7 +38,7 @@ The [completion checklist](release-0.5.0-plan.md) tracks the remaining gates.
 
 ## Intended upgrade and support window
 
-The release must qualify **0.4.0/schema59 → 0.5.0/schema65** with matching
+The tested upgrade is **0.4.0/schema59 → 0.5.0/schema65** with matching
 Linux/AMD64 desktop, collector and owner-user runner artifacts. Older stable
 installations should first follow their documented path to0.4.0. No broader
 direct migration or remote operating-system upgrade is claimed by this path.
@@ -65,10 +66,10 @@ retirement workflow. See [recording bounds and limits](runtime-recordings.md).
 
 Earlier isolated native passes are linked from the [next-gates record](issues-16-21-next-gates.md).
 They identify their actual source and artifacts and do not qualify this combined
-candidate. Final evidence must identify the exact frozen source, assets, source
-and race checks, QML/package/bootstrap checks, native workflows and actual
-non-destructive upgrade. The stable qualification record will be added only
-after those checks pass.
+candidate. The [qualification record](releases/0.5.0/qualification.json) identifies
+the exact frozen source, assets, source/race/QML/package/bootstrap checks, native
+workflows, preserved DEV and actual non-destructive upgrade. Final PR checks,
+review and verified publication remain separate requirements.
 
 The offline upgrade rehearsal uses disposable fakes and an exact-program
 authorization denial/retry fixture. Human password entry, power-loss durability,

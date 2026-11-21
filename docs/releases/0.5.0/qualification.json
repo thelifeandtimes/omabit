@@ -1,0 +1,126 @@
+{
+  "version": "0.5.0",
+  "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+  "source_tree": "1d91874624e0c5ba2a28002dd5bd69118ae474f2",
+  "backend_source_sha256": "494115a0837095352b1c27dede8e5c65b63319ec08e76d093f633993308b1a13",
+  "platform": "linux/amd64",
+  "channel": "stable",
+  "pill_sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+  "runner_schema": 65,
+  "desktop_state_format": 1,
+  "bootstrap_api": 1,
+  "stable_upgrade": {
+    "passed": true,
+    "non_destructive": true,
+    "paths": [
+      {
+        "versions": [
+          "0.4.0",
+          "0.5.0"
+        ],
+        "scope": "Linux/AMD64 owner-user native desktop and local service upgrade, with the exact tested schema59 starting state",
+        "evidence": "docs/releases/0.5.0/rehearsal.json",
+        "evidence_sha256": "142e628ff2a9539ff3b68bb374cf93d97cd7a6f4398b79178c2851350f5c9422"
+      }
+    ],
+    "evidence": "docs/releases/0.5.0/rehearsal.json",
+    "evidence_sha256": "142e628ff2a9539ff3b68bb374cf93d97cd7a6f4398b79178c2851350f5c9422"
+  },
+  "validation": {
+    "passed": true,
+    "evidence": {
+      "frozen_validation": {
+        "path": "docs/diagnostics/2026-11-20-release050-candidate02-frozen-validation.json",
+        "sha256": "512f2f55f15ea0b57c43707edf4990f8e9f420a952fbe5eb1900536f3b25fab0",
+        "passed": true
+      },
+      "recording_pressure": {
+        "path": "docs/diagnostics/2026-11-20-recording-pressure-candidate02.json",
+        "sha256": "1519f70233c68d39d9db9ad9ab8f3a072acab676d62754cee703f7cee5f6dc09",
+        "passed": true
+      },
+      "grubbery": {
+        "path": "docs/diagnostics/2026-11-20-grubbery-candidate02.json",
+        "sha256": "e2e8bb515de28451144926bb477d70c86ff45909e3ded395809a84ad3ae99c76",
+        "passed": true
+      },
+      "native_stop": {
+        "path": "docs/diagnostics/2026-11-20-project-stop-candidate02.json",
+        "sha256": "175821acf6d6663632d5aa01b54fd556f3e029723e49d82976ef685f9a165706",
+        "passed": true
+      },
+      "recording_exports": {
+        "path": "docs/diagnostics/2026-11-20-recording-exports-candidate02.json",
+        "sha256": "34efe8168f9d5ac7bcc9308fac679ad6d015678ca90a3e3f9566698f6883a772",
+        "passed": true
+      },
+      "preserved_dev_upgrade": {
+        "path": "docs/diagnostics/2026-11-20-preserved-dev050-upgrade.json",
+        "sha256": "0d8199763ad84e0090de6750891249b25e038d925a9049b8c9f79e5495ba9b99",
+        "passed": true
+      },
+      "fresh_dev_app": {
+        "path": "docs/diagnostics/2026-11-20-dev050-app-workflow.json",
+        "sha256": "1a48d4b452e73e036ad62e5fa63d36b2a0cf7306574e0ae05ee0ae1312328cf7",
+        "passed": true
+      }
+    },
+    "frozen_source_ci": {
+      "path": "docs/diagnostics/2026-11-20-candidate02-source-ci.json",
+      "sha256": "1fee191285e3a0f3a6cf60e86f1c9bbe0f734f1f0aac69f6ae65a0b057617574"
+    },
+    "merge_gate": "Required source, qml-offscreen and release-policy checks must pass on the final release PR head, with review and a protected merge commit. Draft download verification and publication are separate.",
+    "archive_checksums_and_provenance": true,
+    "offline_help_entries": 180,
+    "actual_packaged_cli_collector_official_sdk_saved_lookup_cases": 3,
+    "preserved_dev": true,
+    "fresh_gall_sample_reload_restart_state_and_clean_stop": true
+  },
+  "frozen_artifacts": {
+    "assets": [
+      {
+        "name": "omabit-0.5.0-linux-amd64.tar.gz",
+        "bytes": 36908843,
+        "sha256": "0851b3f830a297ab8073bc31fd27503811195e4d45c5268ff4a021f08ada548e"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 26821913,
+        "sha256": "c7ec141df5cc27b2e53f01c2cceca838336bc66be7b232454cce7d4e49d21a1d"
+      },
+      {
+        "name": "omabit-recommended-apps-0.5.0.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.5.0.tar.gz",
+        "bytes": 73892,
+        "sha256": "d93625d272db66c497824eef38d8ba36e3f99397c5431bc988671450f10f99e5"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 13205230,
+        "sha256": "81ea1990acafb847e14a5093fabc67dc15fed3370ad4f5bf9b9043c3fdcf5be5"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 30142544,
+        "sha256": "5a995481fae3e0642c2eb254e37bd439abc2dd02a40e1d2a7509db3dabd094b4"
+      }
+    ],
+    "go_version": "go version go1.27.4 linux/amd64",
+    "runtime": "4.6-5a7614f",
+    "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd"
+  },
+  "scope_limits": [
+    "Exact Linux/AMD64 published0.4.0/schema59 to0.5.0/schema65 owner-user path. Earlier stable versions follow their documented path to0.4.0. No arbitrary old development snapshot or remote OS/service upgrade is qualified.",
+    "Authorization denial/retry in the offline service rehearsal uses an exact-program fixture. Human password entry and power-loss durability are outside that rehearsal. Native desktop cold/hot activation and failed-candidate recovery run in a separate private compositor.",
+    "Stop qualification covers the guarded native interleaving, original receipt replay, same-pier Start and peer/history preservation. It does not establish the historical incident\u2019s exact predicate.",
+    "App qualification covers the bounded Gall sample and original Grubbery recovery/two-version/state/restart contract. Broader peers, permits, routes, served assets, publication and failure combinations remain separate.",
+    "The CLI/MCP catalog has explicit exclusions. Official SDK stdio evidence does not establish every named coding client or complete legacy parity. Named test execution is unavailable; local HTTP recipes remain experimental and remote OAuth/TLS is excluded.",
+    "Recording is an opt-in ordinary managed-launch pilot. Active-worker upgrades, existing-process adoption, other factories, host-wide oldest-output inventory, automatic deletion, age enforcement and retirement/pressure recovery are not qualified.",
+    "Resource allocation observations remain incomplete and grant no automatic containment, Stop or deletion authority. Issues16\u201321 retain these follow-ups; issue22 is excluded.",
+    "Only authorized DEV was updated, preserving existing manual state. Publication does not authorize any production service update."
+  ]
+}

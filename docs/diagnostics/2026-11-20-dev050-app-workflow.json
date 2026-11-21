@@ -1,0 +1,95 @@
+{
+  "status": "passed",
+  "source_commit": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+  "date": "2026-11-20",
+  "memory": "M780",
+  "scope": "Fresh local DEV Gall sample with the matching installed0.5.0 tools; existing manual state preserved.",
+  "runner_schema": 65,
+  "instance": "release050-app-zod",
+  "desk": "releasecheck",
+  "project_id": "project-9debb163394214f544e43c56bd479cc2",
+  "checks": {
+    "temporary_grants_closed_before_restart": true,
+    "publish_always_blocked": true,
+    "original_manual_state_preserved": true,
+    "original_eight_operation_receipts_preserved": true,
+    "original_engine_and_container_unchanged": true,
+    "original_pier_objects_preserved": true,
+    "fresh_project_creation": true,
+    "sample_stage_commit_activation_observed": true,
+    "authenticated_watch_poke_and_refusals": true,
+    "source_reload_marker_and_state_preserved": true,
+    "same_session_and_state_after_same_pier_restart": true,
+    "original_stop_receipt_replay": true,
+    "own_session_removed": true,
+    "final_clean_stop": true
+  },
+  "policy": {
+    "explicit_user_approval": true,
+    "create_scope": "fresh ship only",
+    "commit_scope": "releasecheck desk only",
+    "publish_blocked": true,
+    "grant_revisions": [
+      1,
+      2
+    ],
+    "closure_revisions": [
+      3,
+      4
+    ],
+    "final_entries": []
+  },
+  "app_state": {
+    "initial": {
+      "revision": 1,
+      "entries": [
+        "omabit-release050-dev-first"
+      ]
+    },
+    "after_reload": {
+      "revision": 1,
+      "entries": [
+        "omabit-release050-dev-first"
+      ]
+    },
+    "after_restart": {
+      "revision": 2,
+      "entries": [
+        "omabit-release050-dev-first",
+        "omabit-release050-dev-after-restart"
+      ]
+    }
+  },
+  "private_evidence": {
+    "path": "/home/thelifeandtimes/Documents/ChatGPT/omabit-qualification-evidence/dev050-preserved-upgrade-20261120/app-workflow-completed",
+    "file_count": 427,
+    "manifest_sha256": "95e7f2bb9d393c5ac9be1eb885df7214f2ee62d9742265ef5549764a7f815789",
+    "selected_sha256": {
+      "operator-approval": "6c862f952f44760633bef5b31e94be18286a61c8090a97567b1f857c9af0ca28",
+      "grant-policy-result": "37c05e46379595f203a691d1e502bd2e887450ec8529323524bc69d7855e9ed3",
+      "close-policy-result": "486d71797ab49f1d9258040d8f2c212384ff8bb3c812bdf88f1ad38050516ad8",
+      "client-initial": "e1ba2d9fc995a5316f7d9c101d4fc85558a6b1ee74a9f65cff3cb5a381055bf5",
+      "client-after-reload": "96d54cc404d296f2c6c288cd6d9ef2f35ed87682cb1ec67b7ef3f98ae001638e",
+      "client-after-restart": "f269b26c057f089c9924076e3f1be41a209e661c6a6d040c239589b425f0da6e",
+      "client-logout": "e9a36da7ac560db9018849bf36e50bf1de5d70c0dd631809859a4ca309e9d1d4",
+      "reload-marker-proof": "791945140723dd7e3414664a566e3c2ea0a5d30a28ecc7c3bb60684292b761a0",
+      "member-stop-verified": "f98df99b45d72962a781a0b8baa47aee18aa099afc74089e4010c6dea4abb60b",
+      "member-start-verified": "e9f83d84bda1ad12b0ead278d629f02fcfdd8cb918ae12345bfb9c5f11e1cf9a",
+      "member-final-stop-verified": "335a8f5bde3d1ba1d4e5638127d9faa23994ddfc6bf19765afca2186bddbe37e",
+      "final-workflow-verification": "b6dd7a66f5c3768e48a0a6143f1e6a6f76494b374b852ebdf3abf259cb1ff374",
+      "fresh-plugin-charge-correction": "af8942d1af924c2cd59a66aef11a9efc67fb5e0d6d41a7f05c5c082c0c5c54ee"
+    }
+  },
+  "storage": {
+    "cap_bytes": 51539607552,
+    "final_complete_charge_bytes": 47809650688,
+    "versioned_plugin_correction_bytes": 71323648,
+    "correction": "After the installed DEV plugin moved to review040-v050, the frozen generic enumerator omitted its new path. All subsequent admission explicitly adds this measured path. Earlier post-move totals undercounted71323648 bytes; corrected charge stayed within the original scratch reservation and48GiB cap. Earlier VM qualification predates the move."
+  },
+  "limits": [
+    "No publication, peers, permits, routes or served assets were qualified.",
+    "Existing manual review-zod remained in its original running-intent/unknown/recovery-required state with its original stopped exit1 container; no repair or lifecycle action targeted it.",
+    "The fresh member ends stopped with pier and app history retained. Its project anchor remains unchanged.",
+    "No production or protected ship operation occurred; publication remains a separate release gate."
+  ]
+}

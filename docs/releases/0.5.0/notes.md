@@ -1,6 +1,7 @@
 # Omabit 0.5.0
 
-Draft release notes. Qualification and publication are still in progress.
+Prepared release notes. Bounded qualification is complete; publication follows
+verified draft downloads, final checks and the protected reviewed merge.
 
 This release improves recovery of interrupted project-member Stops, adds a shared
 typed CLI/MCP interface and app-development guidance, and introduces an opt-in
@@ -54,6 +55,6 @@ workflow. Derived redacted exports still need owner review before sharing.
 Issues 16–21 retain these follow-ups; issue 22 runtime pins is outside this release.
 
 Frozen product source: `59d83aab49384d2f26531320bb5ab68e1257aeb5`.
-Exact artifact hashes, test evidence and support limits will be included in the
-final qualification record. Publishing this release does not deploy it to any
+Exact artifact hashes, test evidence and support limits are included in the
+attached qualification record. Publishing this release does not deploy it to any
 production service.

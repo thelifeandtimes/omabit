@@ -14650,3 +14650,37 @@ protected. A new private declared-API client was built after every VM ended unde
 a2GiB scratch admission; no release artifact was rebuilt. Fresh app creation,
 scoped app-policy decisions and workflow evidence are still pending. Production,
 protected ships and the earlier DEV namespace remain excluded.
+
+## M780 — Fresh DEV app, closed permissions and preserved restart pass (2026-11-20)
+
+The [fresh DEV workflow](diagnostics/2026-11-20-dev050-app-workflow.json) passes
+with exact frozen59d83aa installed tools. Create only `release050-app-zod`, then
+use the user's explicit temporary approval for Create on that new ship and Commit
+only on its `releasecheck` desk. Publish remains blocked and unrelated policy
+unchanged. Observe desk creation, staged sample source, commit and local activation
+through the saved original operations; never substitute a retry request.
+
+The declared Gall sample APIs pass authenticated watch/poke, duplicate/nontext
+refusal and state checks. A source reload adds an on-load marker and preserves the
+first entry and session. Close Commit and Create grants at policy revisions3/4
+before ordinary Stop/Start. The new container uses the same pier, the original
+Stop receipt replays exactly, and the same session retains the first entry and
+accepts a second. Revoke the test session and finish with a clean exit0 Stop.
+The fresh pier/history remain; its project anchor is unchanged.
+
+Independent final observations preserve all eight original manual operation
+receipts, original manual intent/configuration/recovery, engine invocation,
+container state and pier object identity. The existing `review-zod` stays in its
+original running-intent/unknown/recovery-required state with its stopped exit1
+container; no repair or lifecycle action targets it. Retain427 exact private
+evidence files after removing credentials. M779's pending-app statement is now
+superseded by this bounded pass; broader app capabilities remain excluded.
+
+Storage accounting correction: the frozen generic enumerator lists the old DEV
+plugin path and missed the fresh versioned directory after M779's move. Explicitly
+measure and add its71,323,648bytes for all remaining admissions; earlier post-move
+totals undercounted that amount. Corrected measurement remains within the original
+scratch reservation and48GiB cap, with final charge47,809,650,688bytes. Earlier VM
+qualification predates the move. This changes only the private qualification
+adapter, not frozen product inputs. Draft verification, final pins/checks/review,
+protected merge and publication remain gates. Production is unchanged.
