@@ -81,10 +81,11 @@ reproduction separately from the pending native gates. The broader historical
 race matrix exceeded its eight-minute deadline; it is not recorded as a pass.
 Complete storage accounting currently charges48,533,643,264bytes (about45.2GiB),
 including shared build caches, other worktree outputs and the existing manual
-DEV plugin. The original42GiB estimate omitted some of those outputs. A temporary
-48GiB cap needs explicit renewal for#22 and at least1,289,003,008bytes reclaimed
-before admitting the four-GiB upgrade rehearsal. An inventory of older generated
-build outputs is prepared; no retained ship or prior-goal output has been removed.
+DEV plugin. The original42GiB estimate omitted some of those outputs. The user
+approved the temporary48GiB cap for#22 on2026-11-21. The recorded count requires
+at least1,289,003,008bytes reclaimed before admitting the four-GiB upgrade
+rehearsal. Revalidate the inventory and charge at admission; only classified
+redundant generated outputs may be removed, with source and ship state preserved.
 
 ## Manual update sequence once qualified
 

@@ -45,6 +45,16 @@ production and existing ships. This replaces only the40GiB ceiling for this goal
 the normal cap and all retention/isolation requirements remain in force. Retire
 only classified redundant outputs from this goal with manifests when finished.
 
+## Issue22 temporary budget exception —2026-11-21
+
+The user explicitly approved “Allow 48 GiB for issue #22”. This extends the temporary
+48GiB aggregate cap to the runtime-profile review and upgrade qualification.
+Keep one disposable runtime experiment active at a time and declare scratch
+before admission. Preserve every existing ship and manual DEV installation.
+Classify and manifest redundant generated build outputs before reclaiming space;
+retain source, compact evidence and required immutable qualification inputs.
+All production exclusions and other isolation/retention requirements remain.
+
 ## Experimental desktop contract
 
 Use separate experimental plugin IDs and visible labels; also isolate every state,

@@ -14769,3 +14769,37 @@ there are removed. These include generated source/logs as well as binaries, so
 never delete the directories wholesale. Preserve source, compact evidence,
 required immutable inputs and manual-review state. Approval to extend the
 previous48GiB exception to#22 remains pending; no native qualification is admitted.
+
+## M784 — Issue22 budget authorized; complete source CI passed (2026-11-21)
+
+The user explicitly answers the pending request: “Allow 48 GiB for issue #22”. This
+supersedes the pending-authorization statements in M782/M783. Keep one disposable
+runtime experiment active; remeasure the complete charge, declare scratch, and
+preserve all existing ships and manual DEV state. Reclaim only verified redundant
+generated outputs with a manifest; never remove the older build directories
+wholesale because they also contain source and compact evidence.
+
+PR#24 at f4cd2ee passes core, all four managed-race shards, QML and the aggregate
+source gate in GitHub run44882786180. This supplies the full source/race result
+that the earlier locally time-limited historical run could not establish.
+The protected release-policy check correctly refuses this unqualified rc topic;
+do not bypass it. Native runtime and published0.5.0 service-upgrade evidence,
+matching distribution pins and owner-operated installation guidance remain gates.
+
+## M785 — Redundant build outputs retired; upgrade scratch admitted (2026-11-21)
+
+Revalidate hashes, regular-file ownership and exact paths before unlinking97
+classified obsolete Go executables, compressed executables, one superseded
+candidate package and byte-identical published-release download duplicates.
+Preserve all directories, scripts, source, logs and manifests, final0.5.0
+candidate02/helper02, the separately frozen PID1, immutable OS/runtime/pill
+inputs, public0.5.0 and frozen0.6.0-rc.1 assets, and all ship/manual DEV state.
+The [complete retirement and admission record](diagnostics/2026-11-21-runtime-profiles-build-retirement.json)
+binds every removed path and retained duplicate. No runtime process is touched.
+
+The corrected full charge is47,162,642,432bytes; reserving4GiB produces
+51,457,609,728bytes under the approved51,539,607,552-byte cap. Remeasure at launch
+and throughout the guest; the earlier incomplete enumerator must additionally
+charge the versioned manual DEV plugin. Use one fresh isolated guest and retain
+compact evidence before retiring only its newly generated outputs. Admission
+does not qualify an artifact or authorize a live installation.
