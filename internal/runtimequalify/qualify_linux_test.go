@@ -219,6 +219,14 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 	}
 	switch args[0] {
 	case "image":
+		if args[1] == "load" && f.d.runtimeProfile == candidate.JSONFixProfile {
+			expected := filepath.Join(f.d.home, ".local/share/urbit-runner/runtime-profiles", candidate.JSONFixProfile, "image.tar.gz")
+			if !reflect.DeepEqual(args, []string{"image", "load", "--input", expected}) {
+				t.Fatal("wrong archive load", args)
+			}
+			f.events = append(f.events, "load-reviewed")
+			return "Loaded image", nil
+		}
 		if args[1] == "pull" {
 			f.events = append(f.events, "pull")
 			if !reflect.DeepEqual(args, []string{"image", "pull", "--platform", "linux/amd64", candidate.Image}) {
@@ -226,11 +234,22 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 			}
 			return "", nil
 		}
-		if !reflect.DeepEqual(args, []string{"image", "inspect", candidate.Image}) {
+		profile, err := candidate.Resolve(f.d.runtimeProfile)
+		if err != nil {
+			t.Fatal(err)
+		}
+		reference := profile.Image
+		if profile.Kind == "reviewed" {
+			reference = profile.ConfigDigest
+		}
+		if !reflect.DeepEqual(args, []string{"image", "inspect", reference}) {
 			t.Fatalf("unexpected image command: %q", args)
 		}
 		f.events = append(f.events, "image-inspect")
 		image := map[string]any{"Id": f.imageID, "Os": "linux", "Architecture": "amd64", "RepoDigests": []string{strings.TrimPrefix(candidate.Image, "docker.io/")}}
+		if profile.Kind == "reviewed" {
+			image["RepoDigests"] = []string{}
+		}
 		if f.editImage != nil {
 			f.editImage(image)
 		}
@@ -339,6 +358,16 @@ func (f *fakeEngine) execute(ctx context.Context, full, env []string) (string, e
 			t.Fatal("exec in stopped container")
 		}
 		switch args[3] {
+		case "/usr/bin/sha256sum":
+			if !reflect.DeepEqual(args[3:], []string{"/usr/bin/sha256sum", "/bin/urbit"}) {
+				t.Fatal("unexpected checksum target")
+			}
+			profile, err := candidate.Resolve(f.d.runtimeProfile)
+			if err != nil || profile.Kind != "reviewed" {
+				t.Fatal("unexpected checksum profile", err)
+			}
+			f.events = append(f.events, "binary-checksum")
+			return profile.BinarySHA256 + "  /bin/urbit\n", nil
 		case "/bin/cat":
 			if !reflect.DeepEqual(args[3:], []string{"/bin/cat", "/sys/fs/cgroup/memory.max", "/sys/fs/cgroup/memory.swap.max", "/sys/fs/cgroup/pids.max", "/sys/fs/cgroup/cpu.max"}) {
 				t.Fatal("cgroup evidence command changed")
@@ -466,6 +495,9 @@ func (f *fakeEngine) create(args []string, config string) (string, error) {
 		t.Fatal("create was not preceded by persisted intent")
 	}
 	intent := report.Containers[len(report.Containers)-1]
+	if intent.RuntimeProfile != f.d.runtimeProfile || report.RuntimeProfile != f.d.runtimeProfile {
+		t.Fatal("create lost immutable runtime binding")
+	}
 	if !intent.CreateDispatched || !intent.CreateUncertain || intent.Removed {
 		t.Fatal("dispatch uncertainty was not persisted before create")
 	}

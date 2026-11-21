@@ -1301,6 +1301,20 @@
         "native-runtime-attachment"
       ],
       "exclusion_reason": "Internal entry only for the exact main process of its owner-private notify service and existing immutable job. Ordinary shell invocation and general-purpose MCP execution are refused."
+    },
+    {
+      "cli": "urbit-runner runtime-profile-install",
+      "effects": [
+        "local-runtime-artifact-install"
+      ],
+      "exclusion_reason": "Local pier-owner archive installation only; no remote executable-upload or MCP installation authority."
+    },
+    {
+      "cli": "urbit-runner runtime-profiles",
+      "effects": [
+        "local-metadata-read"
+      ],
+      "exclusion_reason": "Offline immutable runtime catalogue; selected-runner artifact checks use runtime.profile-preflight.v1."
     }
   ]
 }

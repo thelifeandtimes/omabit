@@ -137,13 +137,13 @@ func (r *Server) serveStorageActions(w http.ResponseWriter, req *http.Request, a
 			r.respondError(w, err)
 			return
 		}
-		source, err := b.InspectExternalPier(ctx, body.Source)
+		source, err := r.inspectExternalForProfile(ctx, b, body.Source, body.RuntimeProfile)
 		if err != nil {
 			r.respondError(w, conflict("source_unavailable", err.Error()))
 			return
 		}
 		if body.StorageRoot != "" {
-			preview, err := r.previewImport(ctx, b, source, body.StorageRoot)
+			preview, err := r.previewImport(ctx, b, source, body.StorageRoot, body.RuntimeProfile)
 			if err != nil {
 				r.respondError(w, err)
 			} else {
@@ -229,7 +229,7 @@ func (r *Server) serveStorageActions(w http.ResponseWriter, req *http.Request, a
 		r.respondError(w, err)
 		return
 	}
-	source, err := b.InspectExternalPier(req.Context(), body.Source)
+	source, err := r.inspectExternalForProfile(req.Context(), b, body.Source, body.RuntimeProfile)
 	if err != nil {
 		r.respondError(w, conflict("source_unavailable", err.Error()))
 		return
@@ -239,12 +239,12 @@ func (r *Server) serveStorageActions(w http.ResponseWriter, req *http.Request, a
 		return
 	}
 	if body.Identify {
-		g, ok := r.b.(guidedImportBackend)
+		_, ok := r.b.(guidedImportBackend)
 		if !ok {
 			r.respondError(w, bad("automatic identification is unavailable"))
 			return
 		}
-		identity, err := g.InspectPierIdentity(req.Context(), body.Source)
+		identity, err := r.inspectIdentityForProfile(req.Context(), body.Source, body.RuntimeProfile)
 		if err != nil || identity.Ship != body.Ship || identity.Kind != kind {
 			r.respondError(w, conflict("identity_changed", "pier identity or network differs from the import review"))
 			return

@@ -15,6 +15,7 @@ import (
 // Only validated qualified-fake provenance can seed an imported initialized pier;
 // it is not an API for arbitrary filesystem paths or Docker resources.
 type ManagedState struct {
+	RuntimeProfile       string                 `json:"runtime_profile,omitempty"`
 	MemoryGiB            uint8                  `json:"memory_gib,omitempty"`
 	CPUCores             uint8                  `json:"cpu_cores,omitempty"`
 	ImportRestore        *ManagedImportRestore  `json:"import_restore,omitempty"`
@@ -225,6 +226,7 @@ type ManagedPruneIntent struct {
 }
 
 type ManagedMaintenance struct {
+	RuntimeProfile     string     `json:"runtime_profile,omitempty"`
 	Kind               string     `json:"kind"`
 	BeforePierBytes    int64      `json:"before_pier_bytes"`
 	AfterPierBytes     int64      `json:"after_pier_bytes"`

@@ -27,6 +27,7 @@ func runPiers(ctx context.Context, command string, args []string, dir, socket, r
 		f.StringVar(&req.RequestID, "request-id", "", "required actor-scoped request identity")
 		f.Uint64Var(&req.ExpectedRevision, "revision", 0, "selected instance revision for move/relink")
 		if command == "enroll-pier" {
+			f.StringVar(&req.RuntimeProfile, "runtime-profile", "", "immutable reviewed runtime profile; omission retains official Vere 4.6")
 			f.StringVar(&req.Ship, "ship", "", "expected public Urbit identity")
 			f.StringVar(&req.Fingerprint, "fingerprint", "", "fingerprint from current discovery")
 			f.StringVar(&req.Label, "label", "", "instance label")

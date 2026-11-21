@@ -14700,3 +14700,49 @@ Complete corrected storage charge47,976,513,536bytes stays below48GiB.
 Final trusted release-policy/source/QML checks and review, protected merge-commit
 publication, public downloads and private cold native startup remain required.
 No production deployment or issue-wide completion is claimed.
+
+## M782 — Issue audit and per-ship runtime profile source review (2026-11-20)
+
+The owner requested an issue audit against published0.5.0, issue#22, newcomer
+documentation and a later safe manual production review update. No permission
+was given to install this candidate or operate on live ships. Work starts from
+origin/master ca5f788 on topic codex/issue-22-runtime-profiles; master is unchanged.
+Use the0.6.0 minor line for the coordinated runner/collector/schema change.
+
+Close#16 using the bounded native Stop/recovery/receipt/same-pier Start evidence.
+Leave#17–20 open for their broader acceptance. Reopen#21 after correcting its
+initial overbroad closure: copied pending-Grubbery recovery and a fresh Gall
+sample do not establish its fresh Grubbery bootstrap requirement. Keep#22 open.
+See [the issue audit](issues-0.5.0-audit.md).
+
+The candidate retains finite immutable per-ship runtime profiles through ordinary
+managed imports, starts, recovery, maintenance, recording helpers and signed
+handoffs. Omitted legacy metadata remains the exact historical official runtime.
+The reviewed#1145 backport is separately staged and verified; no mutable image,
+arbitrary command or default fallback is accepted. Schema66 adds an older-reader
+fence without rewriting existing ship rows. A change to an already enrolled
+ship's runtime is explicitly refused pending a separately qualified transition.
+
+Package the exact approved native binary as a deterministic Docker/OCI archive
+without executing it or contacting Docker. Rebuilding from verified cached base
+blobs reproduces archive SHA256
+c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510.
+The [source evidence](diagnostics/2026-11-20-runtime-profiles-source-review.json)
+records source, focused race, preflight boundary, UI and packaging fixtures.
+The broad historical race matrix timed out after8minutes; its ordinary test run
+passed. Neither result is native runtime or service-upgrade qualification.
+
+The [review guide](runtime-profiles-review.md) records exact provenance and the
+owner-operated update/import prerequisites, including preserved state, stopped
+native ownership, loom34, independent resource/network settings and replay
+hazards. README now explains Urbit, the components, default Agent Help, CLI/MCP,
+shipped skills and development entry points. No review installation is offered
+as production-ready until real disposable runtime and published0.5.0 upgrade
+gates pass. Protected ships, tmux, production services and manual DEV are untouched.
+
+The existing experiment charge was45,098,889,216bytes before this task's build
+outputs. The normal limit is40GiB; the earlier48GiB exception covers issues16–21
+only. An extension for#22 has been requested but is not yet approved. Do not run
+dependent runtime qualification or treat elapsed time as approval. Preserve all
+existing manual DEV and retained ship state. Source builds and inert fixtures
+are not a substitute for this pending native evidence.

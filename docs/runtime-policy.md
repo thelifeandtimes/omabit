@@ -1,105 +1,114 @@
-# Runtime policy: official releases, reliable ships
+# Runtime policy: immutable choices per ship
 
-Omabit uses the published Vere runtime in the pinned `tloncorp/vere` image. The
-current version is `4.6-5a7614f`; image and pill digests are defined in
-`internal/runtimecandidate/metadata.go`. Updates to that release pin are deliberate.
+The official default remains Vere `4.6-5a7614f` from the frozen `tloncorp/vere`
+image. Omabit's release channel and a ship's Vere runtime are separate choices.
+A manager update never changes the meaning of an existing runtime selection.
 
-## Keep the running experience simple
+## Review development for issue #22
 
-The supported development surface is ship creation/resume, start/stop, HTTP identity
-and health, Docker resource monitoring, pack/meld/roll, confirmed epoch pruning,
-UTC maintenance schedules, qualified fake import, SSH access and Eyre sessions.
-All use the released runtime. Existing managed instances already use this binary.
+This branch adds a finite reviewed catalogue. **Native qualification and the
+0.5.0→review upgrade rehearsal are still pending. This source is not yet a
+production install recommendation.** Follow the [review guide](runtime-profiles-review.md)
+for evidence status and the prerequisites for an eventual owner-operated import.
 
-Vere's control socket stays disabled by default with `--no-conn`. The owner can
-explicitly opt in for any ship class through the [runtime settings](development-runtime.md).
-The all-ship source revision advertises `native-control-all-ships`; older deployed
-fake-only runners require an update. The pinned release predates the upstream
-4.6 disconnect fix. Opt-in carries that availability risk. Existing managed-fake
-acceptance does not establish livenet runtime qualification.
+| Profile | Contract |
+| --- | --- |
+| omitted, or `vere-4.6-5a7614f` | The same immutable official artifact used by 0.5.0 |
+| `vere-4.6-jsonfix-0774857c` | Reviewed same-base #1145 JSON decoder backport; exact binary, image and archive pins |
 
-The socket is primarily a development tool. Leave it disabled for routine ship
-management, where it is unnecessary and adds risk. This recommendation does not
-restrict the owner's choice by ship class.
+The authoritative metadata is in `internal/runtimeprofile/profiles.go` and the
+runner's offline `runtime-profiles` output. The catalogue binds Linux/AMD64,
+Vere's banner, executable SHA256, OCI manifest/config digests, source base, patch
+revision, review URL, and the retained distribution archive. Arbitrary paths,
+shell commands, Docker tags and automatic PR builds are not runtime choices.
+The official default has not been replaced globally.
 
-Live loom-internal counters, utilization percentages and pressure-based maintenance
-advice remain deferred. The UI shows container RAM, limits, tasks and measurement
-freshness. Configured loom address space is not a measured utilization denominator.
+Choose a profile when registering or importing a pier. Guided import binds the
+preview and submission to the same selection and checks artifact availability
+before inspecting the source. An existing managed pier's binding is immutable in
+this first implementation. A proposed different runtime returns
+`runtime_transition_required`; a stock downgrade from the JSON fix returns
+`runtime_incompatible`. An old client's omitted setting preserves the pin.
 
-The experimental patched-runtime build, executable overlays, socket client,
-qualification commands, custom upgrade plan and report-review exceptions have been
-removed. There is no custom runtime catalogue, build pipeline or adoption API.
+A selection follows the stable managed identity through Start, replacement,
+manager restart, host startup resume, maintenance, recovery and stopped-pier
+handoff. Container intents and recording jobs retain it before execution.
+Runtime details distinguish requested metadata, recorded launch metadata and the
+last observed container image ID. A saved request is not proof of a live process.
 
-## Periodic snapshots
+## Patched JSON decoding and replay compatibility
 
-Omabit's default is **60 minutes**, passed as `--snap-time 60` to long-running Vere
-boot/resume processes. Vere 4.6's main CLI accepts minutes and converts them to
-seconds internally; its omitted-flag default is 120 seconds. Offline utilities
-(`pack`, `meld`, `roll`, `play`) keep their own parsers and command contracts.
+The backport is based on Vere commit
+`5a7614f69bbc783736b08965fdc0a2534bb42e82` and
+[PR #1145](https://github.com/urbit/vere/pull/1145) revision
+`fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47`. Its compatibility requirement is
+`vere-json-array-error-1145-v1`. The banner `4.6-82f4558` alone is not provenance.
 
-Each container intent records its snapshot argument before creation. Containment
-checks require that exact command. An existing process launched without the option
-remains verifiable as a two-minute runtime until an explicit stop/start replaces
-it. A manager update alone does not alter running process arguments. Runtime status
-reports both the recorded container interval and the current new-start default.
+Once this runtime commits an event that exercises the corrected malformed-JSON
+path, stock Vere 4.6 can crash replay. A numerically newer official version is
+not an eligible successor until inclusion of the correction and compatibility
+are reviewed. Reverting to a pre-patch backup is a separate recovery with loss
+of subsequent events, not an ordinary binary downgrade.
 
-This changes periodic checkpoints, not event-log durability. Normal event logging
-continues, and explicit maintenance/shutdown may also write state. An unclean exit
-can require replaying a longer event-log interval. No drive-lifetime multiplier is
-inferred solely from the lower checkpoint frequency.
+The latest imported epoch must already match the selected runtime. A version
+transition with a checkpoint behind the event log is refused before Vere is
+executed. The diagnostic requires a reviewed checkpoint/preparation plan; it
+never follows Vere's generic “downgrade” wording, edits epoch metadata, disables
+mug validation, or tries another runtime. The incident's approved offline
+`play --yolo` procedure is specific to its source revision and is not automated.
 
-## Future channels, only when needed
+## Artifact installation and retention
 
-If multiple runtime choices become useful, follow the simple Groundseg-style model:
+The local owner command `urbit-runner runtime-profile-install --profile ID
+--archive FILE` validates the exact compiled archive hash, stages it atomically,
+and loads its immutable image into the runner's own rootless engine. It opens no
+pier or management database and selects no ship. Run it as the installed
+pier-owning user, in that runner's namespace. A collector cannot upload an
+arbitrary executable through this interface.
 
-- **`live`**: the latest upstream release; the normal/default choice.
-- **`edge`**: an upstream `urbit/vere` `develop` build; explicit opt-in for development.
+Retain `.local/share/urbit-runner/runtime-profiles/ID/image.tar.gz` under the
+runner's home and its Docker image while any active pier or supported recovery
+requires it. Start verifies the archive, daemon image/platform, and custom binary
+checksum before executing Vere against a pier. Missing or corrupt artifacts fail;
+there is no pull of a replacement stock runtime. Existing Stop remains available
+if an archive is lost. No new cleanup command removes these artifacts.
 
-A channel should resolve to a concrete artifact/version for reporting and
-repeatable execution. Do not grow a collection of local patches or arbitrary
-executable paths. Channel selection is not implemented now; the current release
-pin remains the sole runtime.
+The `runtime-profiles-v1` capability advertises exact catalogue metadata. The
+shared `runtime.profile-preflight.v1` operation (CLI/MCP) verifies the selected
+runner and available image without opening a pier. Signed handoff v3 includes
+profile and correction requirement. A capable matching destination must pass
+artifact preflight before the collector fences the source; the destination checks
+again before reservation. Metadata does not transfer or authorize a binary.
+Legacy handoff v1/v2 signatures remain unchanged.
 
-## Development data
+## Persistence and upgrade boundaries
 
-This project has not shipped a production version. Disposable qualification reports
-are development artifacts, not a backwards-compatible API. Removed experiment
-profiles and older report layouts are unsupported; there are no conversion or
-ignore-failure shims. Standalone qualification still refuses unknown/unresolved
-reports rather than interpreting them as success. Old scratch reports may need
-manual cleanup before running new disposable qualifications.
+Schema66 adds optional profile fields and an older-reader fence. Original
+instance, operation, permission and recording rows are preserved during migration.
+An omitted field always resolves to the frozen official 4.6 artifact, even if a
+future release adds other choices. Historical receipts are not relabeled.
 
-Managed storage uses the permanent mount-root/pier layout; source version 0.22
-adds schema-12 handoff fencing through an additive upgrade from schema 11. Snapshot
-interval policy updates preserve the piers and operation history; the recorded
-per-container launch interval distinguishes existing and replacement processes.
-Source version 0.23 adds schema-13 bootstrap-selection metadata, preserving all
-older runtime records. New registrations can choose canonical bare bootstrap or
-a supplied Recommended Apps pill; initialized starts never reapply a pill.
-Management does not run the standalone prior-qualification gate. No cleanup command
-automatically removes piers, qualifications or installed system artifacts.
+Older runners must refuse schema66. Do not lower a schema marker, reset state or
+re-enroll ships to make an older binary run. The tested previous-stable support
+window remains [0.4.0→0.5.0](releases/0.5.0/qualification.json) until a matching
+review upgrade rehearsal is recorded. Source tests are not installed-upgrade
+qualification. See [upgrade policy](upgrade-policy.md).
 
-## Management service
+## Existing runtime settings
 
-The native build is `build/urbit-runner`, installed at
-`/usr/local/lib/urbit-runner/current/urbit-runner`. The dedicated-account management
-service and dedicated SSH service replace foreground terminal sessions. The selected
-startup policy resumes initialized, previously running ships only after verified
-clean shutdown, with one journaled attempt per host boot. See [services.md](services.md)
-for installation, controlled restart, reboot verification and operational commands.
+Vere's control socket stays disabled by default with `--no-conn`. Explicit owner
+opt-in is described in [runtime settings](development-runtime.md); the reviewed
+JSON patch does not claim to fix unrelated control-socket issues.
 
-Ships continue running across a management-only restart. The existing SSH bridge
-and panel use the same management socket, runner identity and operation journal.
-Service handoff, management-only restart, controlled engine restart and a full clean
-host reboot have passed live checks on the current development fleet.
+Long-running processes use `--snap-time 60` (minutes in Vere 4.6), and each launch
+records that argument. Existing two-minute launches remain verifiable until an
+explicit replacement. Offline utilities have separate command contracts.
+Configured loom is virtual address space, separate from container RAM limits.
+No loom-utilization estimate is inferred from container memory measurements.
 
-## Next priorities
-
-1. Clear lifecycle/error recovery and predictable scheduled maintenance on the
-   released runtime, including resource-exhaustion and interruption behavior.
-2. A straightforward real-ship setup/import path with explicit identity handling.
-3. Useful fleet health and actionable UI feedback using the metrics already available.
-
-Peer systems, gateways, social features, richer telemetry and runtime-channel
-selection follow a reliable core ship-running experience; they are not prerequisites
-for finishing it.
+The management service owns durable operations and can restart without replacing
+running containers. Startup resume still requires its verified clean-shutdown
+policy and one journaled attempt per boot. See [services](services.md).
+Standalone qualification reports, private-chain factories and project factories
+retain their own official-only contracts; the new profile is for ordinary managed
+ships. They cannot adopt a custom-runtime pier through a report conversion.

@@ -30,21 +30,35 @@ func (c *Client) AddStorageRoot(ctx context.Context, req protocol.StorageRootReq
 	}
 	return op, err
 }
-func (c *Client) PreviewPierImport(ctx context.Context, path string) (pierstore.ExternalSource, error) {
+func (c *Client) PreviewPierImport(ctx context.Context, path string, profiles ...string) (pierstore.ExternalSource, error) {
 	var source pierstore.ExternalSource
-	err := c.storageRequest(ctx, "/v1/pier-import-preview", protocol.ImportPierPreviewRequest{Source: path}, &source)
+	profile := ""
+	if len(profiles) > 0 {
+		profile = profiles[0]
+	}
+	if err := c.requireRuntimeProfile(ctx, profile); err != nil {
+		return source, err
+	}
+	err := c.storageRequest(ctx, "/v1/pier-import-preview", protocol.ImportPierPreviewRequest{RuntimeProfile: profile, Source: path}, &source)
 	if err == nil && source.Path != path {
 		err = errors.New("import preview source changed")
 	}
 	return source, err
 }
-func (c *Client) PreviewGuidedPierImport(ctx context.Context, runner, path, root string) (protocol.PierImportPreview, error) {
+func (c *Client) PreviewGuidedPierImport(ctx context.Context, runner, path, root string, profiles ...string) (protocol.PierImportPreview, error) {
 	var preview protocol.PierImportPreview
-	err := c.storageRequest(ctx, "/v1/pier-import-preview", protocol.ImportPierPreviewRequest{Source: path, StorageRoot: root}, &preview)
+	profile := ""
+	if len(profiles) > 0 {
+		profile = profiles[0]
+	}
+	if err := c.requireRuntimeProfile(ctx, profile); err != nil {
+		return preview, err
+	}
+	err := c.storageRequest(ctx, "/v1/pier-import-preview", protocol.ImportPierPreviewRequest{RuntimeProfile: profile, Source: path, StorageRoot: root}, &preview)
 	if err != nil {
 		return preview, err
 	}
-	if preview.RunnerID != runner || preview.Source.Path != path || preview.StorageRoot != root {
+	if preview.RunnerID != runner || preview.Source.Path != path || preview.StorageRoot != root || preview.RuntimeProfile != profile {
 		return preview, errors.New("guided import preview does not match the selected source, runner and location; inspect the pier again")
 	}
 	if !protocol.ValidID(preview.InstanceID) || !protocol.ValidFakeShip(preview.Ship) || !epochs.ValidDigest(preview.Source.Fingerprint) ||
@@ -66,6 +80,9 @@ func (c *Client) PreviewGuidedPierImport(ctx context.Context, runner, path, root
 	return preview, err
 }
 func (c *Client) ImportPier(ctx context.Context, req protocol.ImportPierRequest) (protocol.Operation, error) {
+	if err := c.requireRuntimeProfile(ctx, req.RuntimeProfile); err != nil {
+		return protocol.Operation{}, err
+	}
 	var op protocol.Operation
 	err := c.storageRequest(ctx, "/v1/pier-import", req, &op)
 	if err == nil && (op.Kind != "import-pier" || op.InstanceID != req.ID || op.RequestID != req.RequestID) {

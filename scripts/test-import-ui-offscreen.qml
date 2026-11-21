@@ -36,7 +36,7 @@ ApplicationWindow {
   function runner(){return {name:"import-lab",runner_id:"runner-import-lab",status:"available",access_role:"operator",checked_at:new Date(svc.now).toISOString(),features:["guided-pier-import","import-pier","recover-import","pier-storage","storage-locations"],snapshot:{instances:[],operations:[],piers:{roots:[{id:"default",path:"/fixture/piers"},{id:"disk",path:"/fixture/disk"}]}}}}
   function replyPreview(inPlace){
     var pending=svc.pendingExternalPreview,source={path:pending.path,fingerprint:"a".repeat(64),files:3,bytes:100}
-    svc.reply(0,{runner_id:pending.runner,source:source,storage_root:pending.storageRoot,instance_id:"friendly",destination:(pending.storageRoot==="default"?"":"@"+pending.storageRoot+"/")+"fakeships/friendly/zod",ship:"~zod",network:"fakenet",kind:"fake",http_port:18090,in_place:!!inPlace})
+    svc.reply(0,{runtime_profile:pending.runtimeProfile || "",runner_id:pending.runner,source:source,storage_root:pending.storageRoot,instance_id:"friendly",destination:(pending.storageRoot==="default"?"":"@"+pending.storageRoot+"/")+"fakeships/friendly/zod",ship:"~zod",network:"fakenet",kind:"fake",http_port:18090,in_place:!!inPlace})
   }
   function snapshot(status,stage,request,kind,revision){
     var c=copy(connection),stamp=new Date(svc.now).toISOString()
@@ -66,6 +66,12 @@ ApplicationWindow {
         var locations=control(form,"storage-location-selector");locations.currentIndex=1;locations.activated(1)
         check(!consent.checked && !form.current,"storage selection retained consent")
         inspect();replyPreview(false);check(form.current && control(form,"import-pier-plan").text.indexOf("/fixture/disk/fakeships/friendly/zod")>=0,"custom root display missing")
+        var capable=copy(connection);capable.features.push("runtime-profiles-v1");svc.connections=[capable]
+        consent.checked=true
+        var profiles=control(form,"import-runtime-profile");check(profiles.enabled,"capable runner cannot select profile");profiles.currentIndex=1
+        check(!consent.checked&&!form.current,"changed runtime retained previous import consent")
+        inspect();replyPreview(false)
+        check(form.current&&form.plan.runtime_profile==="vere-4.6-jsonfix-0774857c","review lost runtime selection")
         consent.checked=true;svc.now+=300001
         var c=copy(connection);c.checked_at=new Date(svc.now).toISOString();svc.connections=[c]
         check(!form.current && !submit.enabled,"expired preview can submit")

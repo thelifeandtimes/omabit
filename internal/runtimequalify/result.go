@@ -29,6 +29,7 @@ const (
 // EngineVersion records original provisioning/qualification evidence and is
 // never rewritten when a newer daemon observes or resumes this runtime.
 type Result struct {
+	RuntimeProfile     string                `json:"runtime_profile,omitempty"`
 	Stage              string                `json:"stage,omitempty"`
 	RetainedLogs       *protocol.RuntimeLogs `json:"retained_logs,omitempty"`
 	Profile            string                `json:"profile,omitempty"`
@@ -196,8 +197,9 @@ type Phase struct {
 // Dispatched intent remains uncertain until authenticated inspection, regardless
 // of empty inventories. A canceled client does not cancel a daemon-side create.
 type ContainerRecord struct {
-	MemoryGiB uint8 `json:"memory_gib,omitempty"`
-	CPUCores  uint8 `json:"cpu_cores,omitempty"`
+	RuntimeProfile string `json:"runtime_profile,omitempty"`
+	MemoryGiB      uint8  `json:"memory_gib,omitempty"`
+	CPUCores       uint8  `json:"cpu_cores,omitempty"`
 	// Empty on historical records; never infer it from the current daemon.
 	EngineVersion        string          `json:"engine_version,omitempty"`
 	Loom                 uint8           `json:"loom,omitempty"`
@@ -219,6 +221,7 @@ type ContainerRecord struct {
 // Only authenticated Docker state, never container logs or response bodies.
 // ExitCode alone is not proof of a particular signal; host evidence may be needed.
 type ContainerState struct {
+	ImageID     string    `json:"image_id,omitempty"`
 	LaunchError string    `json:"launch_error,omitempty"`
 	ObservedAt  time.Time `json:"observed_at"`
 	Running     bool      `json:"running"`

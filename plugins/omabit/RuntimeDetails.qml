@@ -11,6 +11,11 @@ Column {
   readonly property var operation: diagnostic.last_operation || null
   spacing: Style.space(8)
   CardTitle { text: "Runtime details" }
+  Label {
+    objectName:"runtime-profile-details";width:parent.width;caption:true;secondary:true
+    text:"Requested runtime: "+(root.diagnostic.requested_runtime ? root.diagnostic.requested_runtime.id : "unavailable")+"\nRecorded launch: "+(root.diagnostic.launch_runtime ? root.diagnostic.launch_runtime.id : "none recorded")+"\nObserved image: "+(root.diagnostic.observed_image_id || "unavailable")
+  }
+  Label { width:parent.width;caption:true;color:Design.warning;visible:!!root.diagnostic.requested_runtime&&!!root.diagnostic.requested_runtime.requirement;text:"This pier requires the reviewed JSON decoder fix. Stock Vere can crash replay; retain the runtime artifact and recovery backups." }
   Label { objectName: "runtime-status-detail"; width: parent.width; text: Model.runtimeDetail(root.instance); caption: true; secondary: true }
   Label {
     width: parent.width; caption: true; secondary: true; visible: !!root.operation

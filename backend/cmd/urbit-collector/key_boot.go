@@ -73,6 +73,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	f.StringVar(&req.PierPath, "pier-path", "", "convention-relative livenet destination")
 	f.StringVar(&req.RequestID, "request-id", "", "actor-scoped request identity")
 	f.StringVar(&req.Label, "label", "", "instance label")
+	f.StringVar(&req.Config.RuntimeProfile, "runtime-profile", "", "immutable reviewed runtime; omission retains official Vere 4.6")
 	f.StringVar(&file, "key-file", "", "private local boot key file; contents never enter command arguments")
 	f.BoolVar(&keyStdin, "key-stdin", false, "read a pasted boot key privately from standard input")
 	f.BoolVar(&secureKeyFile, "secure-key-file", false, "make the selected owned regular key file private before reading it")
@@ -207,7 +208,7 @@ func runKeyBoot(ctx context.Context, args []string, dir, socket, runner, expecte
 	if err != nil {
 		return fail(err, 1)
 	}
-	req.Config = protocol.Configuration{HTTPPort: uint16(port), AmesPort: uint16(ames), Loom: uint8(loom), NativeControl: native, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}
+	req.Config = protocol.Configuration{RuntimeProfile: req.Config.RuntimeProfile, HTTPPort: uint16(port), AmesPort: uint16(ames), Loom: uint8(loom), NativeControl: native, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}
 	op, err := c.CreateShip(ctx, req)
 	req.Key = ""
 	if err != nil {

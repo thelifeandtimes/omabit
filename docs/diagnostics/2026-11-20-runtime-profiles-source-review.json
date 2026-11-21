@@ -1,0 +1,123 @@
+{
+  "format": 1,
+  "date": "2026-11-20",
+  "status": "source_review_only_not_production_qualified",
+  "candidate_version": "0.6.0-rc.1",
+  "issue": "https://github.com/thelifeandtimes/omabit/issues/22",
+  "baseline_commit": "ca5f788",
+  "working_branch": "codex/issue-22-runtime-profiles",
+  "runtime_artifact": {
+    "approval": "https://github.com/nisfeb/talon/issues/112#issuecomment-6997450705",
+    "archive": "vere-4.6-jsonfix-0774857c.tar.gz",
+    "archive_bytes": 54750277,
+    "archive_sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+    "base_image_config_sha256": "d6cc5107ed7fa92174e336af9c7f25ee433073bd9961e1c3ed23a225b866b245",
+    "base_image_manifest_sha256": "47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+    "binary_sha256": "0774857cdb4460fc288bfa55e778249456a7d8bd7b6203922455d887a92fc96c",
+    "format": 1,
+    "image_config_sha256": "9aff0a010f4bfecff2233cc5508a0a6deec078239038456c94bbe0666b7a6f58",
+    "image_manifest_sha256": "2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d",
+    "patch_revision": "fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47",
+    "platform": "linux/amd64",
+    "qualification": "packaging only; no executable or runtime lifecycle test performed",
+    "source_base": "5a7614f69bbc783736b08965fdc0a2534bb42e82",
+    "stock_binary_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+    "vere_version": "4.6-82f4558"
+  },
+  "reproduction": {
+    "reproduced_archive_sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+    "bytes": 54750277,
+    "wrong_binary_refused_before_output": true,
+    "runtime_executed": false,
+    "duplicate_output": "temporary-copy-removed-by-owning-test"
+  },
+  "checks": {
+    "source-tests-final.log": {
+      "sha256": "82e08e2c9fb1ae6a52d7e03c17223b9578559165b013354b5fe57fb9623999fb",
+      "bytes": 660,
+      "output": "ok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile\t0.002s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol\t0.009s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify\t75.011s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/managed\t306.187s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/client\t1.039s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/service\t0.868s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/backend/cmd/urbit-collector\t7.684s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/backend/cmd/urbit-runner\t1.007s\n"
+    },
+    "profile-race-focused.log": {
+      "sha256": "3a04e29d1bf8bd9396e73498ba07fb16b7fc48c52a7e501f09b1c186a6d05687",
+      "bytes": 676,
+      "output": "ok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile\t1.005s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol\t1.017s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify\t3.435s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/managed\t32.046s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/client\t1.049s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/service\t1.016s [no tests to run]\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/backend/cmd/urbit-collector\t1.029s\nok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/backend/cmd/urbit-runner\t1.019s\n"
+    },
+    "profile-server-tests.log": {
+      "sha256": "d62e78d4a1699de0146b1263abeecaa74a2b6be2ebc0b3cef7609694192404b2",
+      "bytes": 78,
+      "output": "ok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/managed\t2.444s\n"
+    },
+    "profile-runtime-tests.log": {
+      "sha256": "ad924650d3b079c950c781e465166f77e0fe60076f86ad210af3db3ab6e1abbf",
+      "bytes": 85,
+      "output": "ok  \tgit.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify\t0.343s\n"
+    },
+    "ui-model-tests.log": {
+      "sha256": "57948e06390f306bd02e0bfc7f0261a5f91c5b54dfad536d09b1fab532b5c4d2",
+      "bytes": 3918,
+      "output": "PASS: local setup progress is bounded and ready state binds the local development runner\nPASS: registration validates current names and both configured/observed host ports, and separates fake identity from local names\nPASS: bare bootstrap ignores recommendations; Recommended Apps requires its own configured HTTPS source\nPASS: compact status preserves recorded loom and recovery; priority logs retain timestamps, order and surrounding context\nPASS: runtime diagnostics show the failure/exit/OOM cause, and logs bind identity/revision with bounded narration\nPASS: custom storage paths preserve layout; deletion and external-import reviews reject running, fenced, replaced, stale and observer selections\nPASS: panel model preserves runner identity/revision and disables unsafe or stale actions\nPASS: host moves bind both runners and source revision, retain destination on retry, and fence ordinary actions\nPASS: notifications suppress initial history and deduplicate unchanged connection failures\nPASS: maintenance requires live capability, operator, stopped/recovery state, and original revision\nPASS: prefix review preserves uint64 names and exact deletion evidence; stale, replaced, altered or protected selections fail closed\nPASS: missing resource readings remain unknown, real zero is displayed, and old samples become stale\nPASS: fleet status, remote browser routing, activity filters and sample discontinuities preserve identity and freshness\nPASS: connection edits bind original enrollment revision and code access requires a fresh operator selection\nPASS: import reviews retain runner/source/digest binding and reject stale or claimed sources\nPASS: comet compaction and routine controls require their capability; retention and stale confirmations stay gated\nPASS: comet epoch controls are capability-bound and cannot inherit fake-pier deletion permission\nPASS: confirmed comet pruning additionally requires its own capability, exact preview and fresh operator review\nPASS: routine drafts bind revisions and require explicit timing/downtime policy\nPASS: fleet grouping follows ship rank, distinguishes fakes, and activity resolves @p within the correct runner\nPASS: confirmed stopped resources are N/A, stale/offline resources remain unknown, and policy summaries expose timing and downtime\nPASS: roll evidence supersedes stale prune summaries, dates are sourced honestly, and inspection completion binds request, runner and current inventory\nPASS: CPU preserves true zero and sample gaps, replacement resets history, and axes use real times plus explicit units\nPASS: convention paths exclude archive/traversal and discovery selections bind runner, fingerprint and freshness\nPASS: key boot derives names/tier paths and accepts optional, validated port overrides\nPASS: guided import binds identity/network/destination and progress uses the exact operation/revision without another polling connection\nPASS: import recovery binds runner/revision/location/evidence and requires fresh operator capability and backend eligibility\nPASS RC11-03/28: immutable move target, external/inventory invalidation, dispatch recheck and synchronized root/path argv\nPASS RC11-25: real toggle/command round trip changes only enabled, including running stopped-only policies\nPASS RC11-26: actual finish/dispatch distinguishes refusals from lost ack and retains per-target journal reconciliation\nPASS RC11-27: per-request imports survive unrelated actions/other forms; only resolved requests unlock review\nPASS RC11-27 follow-up: exact success is terminal across revision/delete/recreate changes; unrelated receipts and histories never unlock new requests\nPASS: restoration authority, paths, stale reviews, explicit approval, actor/request/revision receipts, uncertainty, retirement and continuation\nPASS: import navigation requires the exact successful receipt and current matching ship; no stale, failed or reused-name redirection\n"
+    },
+    "native-bootstrap-fixtures.log": {
+      "sha256": "13a80f6b34131569743a6ce9e97207cbd20d53b7349e12fc6f609c728749ac35",
+      "bytes": 1384,
+      "output": "test_canonical_manifest_launchers_and_release_pins_match (__main__.NativePluginTests.test_canonical_manifest_launchers_and_release_pins_match) ... ok\ntest_concurrent_startup_downloads_once_and_offline_cache_is_verified (__main__.NativePluginTests.test_concurrent_startup_downloads_once_and_offline_cache_is_verified) ... ok\ntest_download_enforces_hash_length_and_https_redirect (__main__.NativePluginTests.test_download_enforces_hash_length_and_https_redirect) ... ok\ntest_generation_refuses_tampered_release (__main__.NativePluginTests.test_generation_refuses_tampered_release) ... ok\ntest_generation_uses_frozen_ui_and_executable_launchers (__main__.NativePluginTests.test_generation_uses_frozen_ui_and_executable_launchers) ... ok\ntest_partial_download_is_not_published_and_can_be_retried (__main__.NativePluginTests.test_partial_download_is_not_published_and_can_be_retried) ... ok\ntest_qml_registry_covers_every_shipped_component (__main__.NativePluginTests.test_qml_registry_covers_every_shipped_component) ... ok\ntest_symlinked_cache_and_lock_are_refused (__main__.NativePluginTests.test_symlinked_cache_and_lock_are_refused) ... ok\ntest_unrecognized_platform_or_manifest_cannot_download (__main__.NativePluginTests.test_unrecognized_platform_or_manifest_cannot_download) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 0.330s\n\nOK\n"
+    },
+    "skill-package-fixtures.log": {
+      "sha256": "46f05af99b22dfedb182a4b733f5ca22359ca7d4b617917975c84ed5c88d83ee",
+      "bytes": 105,
+      "output": ".......\n----------------------------------------------------------------------\nRan 7 tests in 0.039s\n\nOK\n"
+    },
+    "release-source-fixtures.log": {
+      "sha256": "e0928d99cc2e92f3a774f42b76891a482b5e1729548c25d6cb02538e26bf10ef",
+      "bytes": 1535,
+      "output": "test_dirty_and_untracked_source_refused (__main__.SourceTests.test_dirty_and_untracked_source_refused) ... ok\ntest_environment_is_allowlisted_and_local_module_replacements_refused (__main__.SourceTests.test_environment_is_allowlisted_and_local_module_replacements_refused) ... ok\ntest_export_excludes_ignored_files_and_checkout_attributes (__main__.SourceTests.test_export_excludes_ignored_files_and_checkout_attributes) ... ok\ntest_full_reproduction_with_negative_environment_and_existing_smoke (__main__.SourceTests.test_full_reproduction_with_negative_environment_and_existing_smoke) ... skipped 'use --build for independent binary builds and package smoke'\ntest_go_telemetry_disabled_in_private_build_config (__main__.SourceTests.test_go_telemetry_disabled_in_private_build_config) ... ok\ntest_hosted_toolcache_selected_before_environment_is_sanitized (__main__.SourceTests.test_hosted_toolcache_selected_before_environment_is_sanitized) ... ok\ntest_missing_or_invalid_selected_toolchain_is_refused (__main__.SourceTests.test_missing_or_invalid_selected_toolchain_is_refused) ... ok\ntest_non_release_channel_cannot_publish (__main__.SourceTests.test_non_release_channel_cannot_publish) ... skipped 'publishable source is covered by full reproduction'\ntest_reviewed_runtime_archive_requires_compiled_content_and_safe_name (__main__.SourceTests.test_reviewed_runtime_archive_requires_compiled_content_and_safe_name) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 3.715s\n\nOK (skipped=2)\n"
+    }
+  },
+  "other_checks": {
+    "go_vet_affected_packages": "passed",
+    "qml_import_offscreen": "passed; /tmp/omabit-import-ui-runtime-profiles-03; selected reviewed profile bound through submission",
+    "git_diff_check": "passed"
+  },
+  "incomplete_checks": [
+    {
+      "check": "Broad race run including all historical G02 migrations",
+      "result": "timeout after eight minutes during TestG02HistoricalInterruptedOperationsReconcileOnce/schema45",
+      "note": "The complete historical matrix passed without race instrumentation. Focused runtime/profile/handoff race checks passed. This is not a full race-suite pass."
+    }
+  ],
+  "qualification_pending": [
+    "Real Docker image loading and executable verification",
+    "Two fresh disposable ships using different pinned artifacts across lifecycle/recovery/maintenance",
+    "Malformed-JSON negative control that detects the stock decoder",
+    "Checkpoint transition/interruption qualification",
+    "Published 0.5.0 to candidate upgrade with original state and actual old-reader refusal",
+    "Frozen matching bundle, distribution pins and installed desktop activation"
+  ],
+  "live_scope": {
+    "installed": false,
+    "runtime_executed": false,
+    "docker_images_loaded": false,
+    "live_piers_read_or_modified": false
+  },
+  "storage": {
+    "baseline_charged_bytes": 45098889216,
+    "ordinary_cap_gib": 40,
+    "prior_48_gib_exception": "Issues16\u201321 only",
+    "extension_requested": true,
+    "extension_approved": false
+  },
+  "issue_audit": {
+    "closed": [
+      "16"
+    ],
+    "left_open": [
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22"
+    ],
+    "correction": "21 was reopened after checking its fresh Grubbery bootstrap acceptance item."
+  }
+}

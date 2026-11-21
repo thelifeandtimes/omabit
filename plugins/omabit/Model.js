@@ -317,7 +317,8 @@ function currentImportRecovery(connection,instance,target,now) {
   var current=importRecoveryTarget(connection,instance)
   return ["runner","connection","instance","revision","path","ship","source","holding"].every(function(key){return target[key]===current[key]})
 }
-function validatePierImportPreview(v,runner,path,root) {
+function validatePierImportPreview(v,runner,path,root,profile) {
+  if (String(v && v.runtime_profile || "")!==String(profile || "")) throw new Error("Import runtime changed. Inspect again with the intended immutable runtime.")
   if (!v || v.runner_id!==runner || !v.source || v.source.path!==path || !validDigest(v.source.fingerprint) || !Number.isSafeInteger(v.source.bytes) || v.source.bytes<0 || v.source.bytes>8796093022208 || !Number.isInteger(v.source.files) || v.source.files<0 || v.source.files>8192 || v.storage_root!==root || !validId(v.instance_id) || !validPierPath(v.destination) || typeof v.ship!=="string" || !/^~[a-z-]+$/.test(v.ship) || ["livenet","fakenet"].indexOf(v.network)<0 || !Number.isInteger(v.http_port) || v.http_port<1024 || v.http_port>65535 || typeof v.in_place!=="boolean") throw new Error("Import review does not match the selected source, host and storage location.")
   var parts=v.destination.split("/"),location=parts[0][0]==="@" ? parts.shift().slice(1) : "default"
   if (location!==root || parts[parts.length-1]!==v.ship.slice(1) || parts[parts.length-2]!==v.instance_id || (v.network==="fakenet" ? v.kind!=="fake" || parts[0]!=="fakeships" : parts[0]!=="livenet" || parts[1]!==({galaxy:"galaxies",star:"stars",planet:"planets",moon:"moons",comet:"comets"})[v.kind])) throw new Error("Import identity and destination classification disagree.")

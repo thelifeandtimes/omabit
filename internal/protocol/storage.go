@@ -17,8 +17,9 @@ type ImportPierRequest struct {
 }
 
 type ImportPierPreviewRequest struct {
-	Source      string `json:"source"`
-	StorageRoot string `json:"storage_root,omitempty"`
+	RuntimeProfile string `json:"runtime_profile,omitempty"`
+	Source         string `json:"source"`
+	StorageRoot    string `json:"storage_root,omitempty"`
 }
 
 type PierIdentity struct {
@@ -28,8 +29,9 @@ type PierIdentity struct {
 }
 
 type PierImportPreview struct {
-	RunnerID string                   `json:"runner_id"`
-	Source   pierstore.ExternalSource `json:"source"`
+	RuntimeProfile string                   `json:"runtime_profile,omitempty"`
+	RunnerID       string                   `json:"runner_id"`
+	Source         pierstore.ExternalSource `json:"source"`
 	PierIdentity
 	StorageRoot string `json:"storage_root"`
 	InstanceID  string `json:"instance_id"`

@@ -7,7 +7,7 @@ import "Model.js" as Model
 Item {
   id: root
   readonly property int bootstrapAPI: 1
-  readonly property string applicationVersion: "0.5.0"
+  readonly property string applicationVersion: "0.6.0-rc.1"
   readonly property string distributionChannel: bootstrap && bootstrap.manifest && bootstrap.manifest.releaseChannel || manifest && manifest.releaseChannel || "stable"
   readonly property string releaseLabel: bootstrap && bootstrap.active && bootstrap.active.development ? "DEVELOPMENT" : distributionChannel === "develop" ? "UNQUALIFIED DEVELOPMENT" : distributionChannel === "edge" || applicationVersion.indexOf("-edge.") >= 0 ? "EDGE · NOT STABLE" : applicationVersion.indexOf("-") >= 0 ? "PRERELEASE" : "STABLE"
   property var shell: null
@@ -641,26 +641,32 @@ Item {
     storageOutcome={runner:c.runner_id,instance:"",path:path,request:requestIdentity,kind:"storage-root",status:"submitting",message:"Adding storage location…"}
     return submit(Model.selection(c).concat(["storage-root-add",name,"--path",path,"--request-id",requestIdentity]),"storage-root-add")
   }
-  function previewExternalPier(connection,path,storageRoot) {
+  function previewExternalPier(connection,path,storageRoot,runtimeProfile) {
     if (busy) return false
     var c=storageConnection(connection,"guided-pier-import")
     storageRoot=storageRoot===undefined ? "default" : storageRoot
     if (!c || !Model.hostPath(path) || !Model.storageRoots(c).some(function(r){return r.id===storageRoot})) {lastError="Enter the absolute existing pier directory and choose a storage location on the selected runner host.";return false}
     externalImportPreview=null
-    pendingExternalPreview={runner:c.runner_id,connection:c.name,path:path,storageRoot:storageRoot}
-    return submit(Model.selection(c).concat(["preview-pier","--source",path,"--storage-root",pendingExternalPreview.storageRoot]),"preview-pier")
+    runtimeProfile=runtimeProfile || ""
+    if (runtimeProfile && !Model.hasFeature(c,"runtime-profiles-v1")) {lastError="Update this runner before selecting a reviewed runtime.";return false}
+    pendingExternalPreview={runner:c.runner_id,connection:c.name,path:path,storageRoot:storageRoot,runtimeProfile:runtimeProfile}
+    var args=["preview-pier","--source",path,"--storage-root",pendingExternalPreview.storageRoot]
+    if (runtimeProfile) args.push("--runtime-profile",runtimeProfile)
+    return submit(Model.selection(c).concat(args),"preview-pier")
   }
   function importExternalPier(connection,review,confirmed) {
     if (busy) return false
     var c=storageConnection(connection,"guided-pier-import")
     if (!c || !confirmed || !Model.externalReviewCurrent(c,review,review && review.source.path,now) || !review.plan) {lastError="Inspect the source and confirm the reviewed import.";return false}
     var plan=review.plan
-    try { Model.validatePierImportPreview(plan,c.runner_id,review.source.path,plan.storage_root) } catch(e) {lastError=e.message;return false}
+    try { Model.validatePierImportPreview(plan,c.runner_id,review.source.path,plan.storage_root,review.runtimeProfile) } catch(e) {lastError=e.message;return false}
     if (Object.keys(importOutcomes).some(function(key){var o=importOutcomes[key];return o.runner===c.runner_id && o.source===review.source.path && Model.importProgress(connections,o,now).active})) {lastError="This source already has an unresolved import request. Wait for its receipt.";return false}
     requestIdentity=Model.requestId()
     var target=Object.freeze({runner:c.runner_id,connection:c.name,instance:plan.instance_id,source:review.source.path,path:plan.destination,ship:plan.ship,request:requestIdentity,kind:"import-pier",status:"submitting",message:"Submitting reviewed pier import…"})
     storageOutcome=target
-    if (!submit(Model.selection(c).concat(["import-pier",plan.instance_id,"--source",review.source.path,"--path",plan.destination,"--ship",plan.ship,"--fingerprint",review.source.fingerprint,"--http-port",String(plan.http_port),"--request-id",requestIdentity,"--confirm-stopped","--identify"]),"import-pier")) return false
+    var args=["import-pier",plan.instance_id,"--source",review.source.path,"--path",plan.destination,"--ship",plan.ship,"--fingerprint",review.source.fingerprint,"--http-port",String(plan.http_port),"--request-id",requestIdentity,"--confirm-stopped","--identify"]
+    if (plan.runtime_profile) args.push("--runtime-profile",plan.runtime_profile)
+    if (!submit(Model.selection(c).concat(args),"import-pier")) return false
     rememberImport(target)
     return target
   }
@@ -766,8 +772,8 @@ Item {
           var preview=pendingExternalPreview
           pendingExternalPreview=null
           if (!preview) throw new Error("Missing import selection")
-          Model.validatePierImportPreview(result,preview.runner,preview.path,preview.storageRoot)
-          externalImportPreview={runner:preview.runner,connection:preview.connection,source:result.source,plan:result,loadedAt:now}
+          Model.validatePierImportPreview(result,preview.runner,preview.path,preview.storageRoot,preview.runtimeProfile)
+          externalImportPreview={runner:preview.runner,connection:preview.connection,source:result.source,plan:result,runtimeProfile:preview.runtimeProfile,loadedAt:now}
         }
         if (hostMove) {
           if (result.source_runner!==hostMove.runner || result.source_instance!==hostMove.instance || result.destination_runner!==hostMove.destination || result.destination_instance!==hostMove.name || result.state!=="complete" || result.direction!=="in") throw new Error("Unverified host move receipt")

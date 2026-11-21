@@ -51,12 +51,16 @@ func (s ManagedState) UndispatchedInitialBoot() bool {
 	if storageKind == "" || pierstore.Kind(s.Storage.Path) != storageKind {
 		return false
 	}
+	selected, err := candidate.Resolve(s.RuntimeProfile)
+	if err != nil {
+		return false
+	}
 	r := s.Runtime
 	if r.RunID != s.ID || r.Profile != profile || !filepath.IsAbs(r.Directory) || filepath.Clean(r.Directory) != r.Directory || filepath.Base(r.Directory) != s.ID ||
 		r.Stage != "preparing-runtime" && r.Stage != "preparing-pill" ||
-		r.Platform != candidate.Platform || r.Image != candidate.Image || r.VereVersion != candidate.VereVersion ||
-		(r.ImageID != candidate.ConfigDigest && r.ImageID != candidate.ManifestDigest) ||
-		(r.RepoDigest != candidate.Image && r.RepoDigest != strings.TrimPrefix(candidate.Image, "docker.io/")) ||
+		r.Platform != candidate.Platform || r.RuntimeProfile != s.RuntimeProfile || r.Image != selected.Image || r.VereVersion != selected.VereVersion ||
+		!selected.AcceptsImageID(r.ImageID) ||
+		(r.RepoDigest != selected.Image && r.RepoDigest != strings.TrimPrefix(selected.Image, "docker.io/")) ||
 		!hostcompat.ValidateRecordedEngineVersion(r.EngineVersion) || !r.LimitsObserved || r.PierMetadataSeen || r.CheckpointPassed || r.RuntimeQualified ||
 		r.ReportPath != "" || r.CleanupComplete || r.Failure != "" || len(r.Phases) != 0 || r.RetainedLogs != nil ||
 		r.Meld != nil || r.Prune != nil || r.Recovery != nil || r.EpochLifecycle != nil || len(r.PrefixPrunes) != 0 || r.PierImport != nil || r.Comet != nil ||
@@ -75,7 +79,7 @@ func (s ManagedState) UndispatchedInitialBoot() bool {
 		last == nil || last.ObservedAt.IsZero() || last.Running || last.Paused || last.Restarting || last.Dead || last.OOMKilled || last.LaunchError != "" {
 		return false
 	}
-	return boot.Kind == kind && boot.Name == prefix+s.ID+"-"+kind && !boot.Removed &&
+	return probe.RuntimeProfile == s.RuntimeProfile && boot.RuntimeProfile == s.RuntimeProfile && boot.Kind == kind && boot.Name == prefix+s.ID+"-"+kind && !boot.Removed &&
 		hostcompat.ValidateRecordedEngineVersion(boot.EngineVersion) && containerCreateUndispatched(boot) &&
 		boot.SnapshotMinutes == DefaultSnapshotMinutes && boot.Loom == protocol.EffectiveLoom(s.Loom) && boot.NativeControl == s.NativeControl
 }

@@ -1,5 +1,22 @@
 # Stable-release upgrade requirement
 
+## Review development: immutable per-ship runtimes, schema66
+
+Issue#22 introduces additive runtime-profile fields and a schema66 older-reader
+fence. An omitted historical profile keeps the exact official Vere4.6 artifact;
+migration does not rewrite original instance, operation, permission, recording or
+handoff bodies. Existing clients that omit a runtime setting preserve the stored
+selection. The JSON-fix correction requirement prevents an incompatible stock
+downgrade; changes of runtime need a separate reviewed checkpoint/replay plan.
+
+Source fixtures now cover preservation, per-ship bindings and signed handoffs.
+These do not qualify an installed0.5.0→0.6.0-rc.1 upgrade. The actual previous
+stable writer, matching frozen artifacts, native runtime/upgrade and desktop
+activation rehearsals remain required. Do not install this development branch
+on production until the [review guide](runtime-profiles-review.md) records those
+gates. No marker editing, state reset, re-enrollment or protected-pier testing is
+part of the procedure. Preserve runtime-profile archives alongside runner state.
+
 ## 0.5.0: qualified local0.4.0→0.5.0 support window
 
 The [exact qualification](releases/0.5.0/qualification.json) binds frozen59d83aa

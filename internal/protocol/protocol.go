@@ -2,6 +2,7 @@
 package protocol
 
 import (
+	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
 	"time"
 
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/epochs"
@@ -15,23 +16,25 @@ const (
 )
 
 type Hello struct {
-	Build           *ExecutableBuild `json:"build,omitempty"`
-	StateSchema     int              `json:"state_schema,omitempty"`
-	ProtocolVersion int              `json:"protocol_version"`
-	RunnerID        string           `json:"runner_id"`
-	Mode            string           `json:"mode"`
-	Features        []string         `json:"features"`
-	Actor           string           `json:"actor,omitempty"`
-	AccessRole      string           `json:"access_role,omitempty"`
+	RuntimeProfiles []candidate.Profile `json:"runtime_profiles,omitempty"`
+	Build           *ExecutableBuild    `json:"build,omitempty"`
+	StateSchema     int                 `json:"state_schema,omitempty"`
+	ProtocolVersion int                 `json:"protocol_version"`
+	RunnerID        string              `json:"runner_id"`
+	Mode            string              `json:"mode"`
+	Features        []string            `json:"features"`
+	Actor           string              `json:"actor,omitempty"`
+	AccessRole      string              `json:"access_role,omitempty"`
 }
 
 type Configuration struct {
-	MemoryGiB     uint8  `json:"memory_gib,omitempty"`
-	CPUCores      uint8  `json:"cpu_cores,omitempty"`
-	HTTPPort      uint16 `json:"http_port"`
-	AmesPort      uint16 `json:"ames_port"`
-	Loom          uint8  `json:"loom"`
-	NativeControl bool   `json:"native_control,omitempty"`
+	RuntimeProfile string `json:"runtime_profile,omitempty"`
+	MemoryGiB      uint8  `json:"memory_gib,omitempty"`
+	CPUCores       uint8  `json:"cpu_cores,omitempty"`
+	HTTPPort       uint16 `json:"http_port"`
+	AmesPort       uint16 `json:"ames_port"`
+	Loom           uint8  `json:"loom"`
+	NativeControl  bool   `json:"native_control,omitempty"`
 }
 
 type Instance struct {
@@ -108,6 +111,7 @@ type ResourceMetrics struct {
 }
 
 type MaintenanceReport struct {
+	RuntimeProfile     string     `json:"runtime_profile,omitempty"`
 	Kind               string     `json:"kind"`
 	BeforePierBytes    int64      `json:"before_pier_bytes"`
 	AfterPierBytes     int64      `json:"after_pier_bytes"`
@@ -246,6 +250,7 @@ type OperationRequest struct {
 }
 
 type EnrollPierRequest struct {
+	RuntimeProfile   string `json:"runtime_profile,omitempty"`
 	ID               string `json:"id"`
 	Label            string `json:"label"`
 	Ship             string `json:"ship"`

@@ -44,6 +44,9 @@ func (q *qualifier) engine(ctx context.Context) error {
 }
 
 func (q *qualifier) image(ctx context.Context) error {
+	if q.runtimeProfile().Kind != "official" {
+		return errors.New("reviewed runtime image missing; install its exact archive; stock fallback is forbidden")
+	}
 	if _, err := q.docker(ctx, q.d.times.pull, "image", "pull", "--platform", candidate.Platform, candidate.Image); err != nil {
 		return err
 	}
@@ -53,7 +56,15 @@ func (q *qualifier) image(ctx context.Context) error {
 var errImageUnavailable = errors.New("candidate image inspection unavailable")
 
 func (q *qualifier) inspectImage(ctx context.Context) error {
-	out, err := q.docker(ctx, q.d.times.command, "image", "inspect", candidate.Image)
+	p := q.runtimeProfile()
+	if err := q.verifyProfileArchive(); err != nil {
+		return err
+	}
+	reference := p.Image
+	if p.Kind == "reviewed" {
+		reference = p.ConfigDigest
+	}
+	out, err := q.docker(ctx, q.d.times.command, "image", "inspect", reference)
 	if err != nil {
 		return errors.Join(errImageUnavailable, err)
 	}
@@ -68,11 +79,16 @@ func (q *qualifier) inspectImage(ctx context.Context) error {
 	i := images[0]
 	knownDigest := ""
 	for _, digest := range i.RepoDigests {
-		if digest == candidate.Image || digest == strings.TrimPrefix(candidate.Image, "docker.io/") {
+		if digest == p.Image || digest == strings.TrimPrefix(p.Image, "docker.io/") {
 			knownDigest = digest
 		}
 	}
-	if i.Os != "linux" || i.Architecture != "amd64" || knownDigest == "" || !acceptedImageID(i.ID) {
+	// A locally loaded archive has no registry RepoDigests. The retained archive
+	// authenticates its OCI manifest and config independently of mutable tags.
+	if p.Kind == "reviewed" {
+		knownDigest = p.Image
+	}
+	if i.Os != "linux" || i.Architecture != "amd64" || knownDigest == "" || !p.AcceptsImageID(i.ID) {
 		return errors.New("candidate image identity, platform or repository digest mismatch")
 	}
 	// Docker's legacy backend reports the config digest; containerd reports
@@ -163,11 +179,17 @@ func (q *qualifier) probe(ctx context.Context) error {
 		return errors.New("live CPU quota does not match the recorded container limit")
 	}
 	q.r.LimitsObserved = true
+	if q.runtimeProfile().Kind == "reviewed" {
+		sum, err := q.control(ctx, i, q.d.times.command, "exec", "/usr/bin/sha256sum", "/bin/urbit")
+		if err != nil || strings.TrimSpace(sum) != q.runtimeProfile().BinarySHA256+"  /bin/urbit" {
+			return errors.New("reviewed runtime executable checksum mismatch; pier execution refused")
+		}
+	}
 	out, err = q.control(ctx, i, q.d.times.command, "exec", "/bin/urbit", "-R")
 	if err != nil {
 		return err
 	}
-	if strings.SplitN(out, "\n", 2)[0] != "urbit "+candidate.VereVersion {
+	if strings.SplitN(out, "\n", 2)[0] != "urbit "+q.runtimeProfile().VereVersion {
 		return errors.New("live Vere version mismatch")
 	}
 	return q.stop(ctx, i, false)
