@@ -126,6 +126,9 @@ func (s *store) choosePort(q querier, id, kind string, wanted uint16) (uint16, e
 }
 
 func validateOwnedConfig(c protocol.Configuration) error {
+	if err := validateRuntimeProfile(c.RuntimeProfile); err != nil {
+		return err
+	}
 	if err := validateContainerResources(c); err != nil {
 		return err
 	}

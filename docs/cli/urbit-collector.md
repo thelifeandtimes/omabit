@@ -485,6 +485,8 @@ Results are indented JSON; watch commands emit compact newline-delimited JSON (N
         trusted expected byte count for a custom pill; requires --pill-sha256
   -request-id string
         required caller-chosen idempotency key
+  -runtime-profile string
+        immutable reviewed runtime; omission retains official Vere 4.6
 ```
 
 ## create-fake
@@ -531,6 +533,8 @@ Results are indented JSON; watch commands emit compact newline-delimited JSON (N
         trusted expected byte count for a custom pill; requires --pill-sha256
   -request-id string
         required caller-chosen idempotency key
+  -runtime-profile string
+        immutable reviewed runtime; omission retains official Vere 4.6
   -ship string
         fake Urbit identity, e.g. ~bus (no real keys or Ames) (default "~zod")
 ```
@@ -578,6 +582,8 @@ Instance name and tier path are derived; omitted ports are allocated atomically.
         trusted expected byte count for a custom pill; requires --pill-sha256
   -request-id string
         actor-scoped request identity
+  -runtime-profile string
+        immutable reviewed runtime; omission retains official Vere 4.6
   -secure-key-file
         make the selected owned regular key file private before reading it
   -ship string
@@ -636,6 +642,8 @@ Usage: urbit-collector --runner NAME --expected-runner-id ID enroll-pier [INSTAN
         required actor-scoped request identity
   -revision uint
         selected instance revision for move/relink
+  -runtime-profile string
+        immutable reviewed runtime profile; omission retains official Vere 4.6
   -ship string
         expected public Urbit identity
 ```
@@ -1017,6 +1025,8 @@ Usage: urbit-collector --runner NAME --expected-runner-id ID import-pier [NAME] 
         host storage root (add) or convention-relative destination (import)
   -request-id string
         actor-scoped request ID; no automatic retries
+  -runtime-profile string
+        immutable runtime profile bound to preview and import
   -ship string
         expected Urbit identity
   -source string
@@ -1155,6 +1165,8 @@ Usage: urbit-collector --runner NAME --expected-runner-id ID preview-import-rest
 
 ```text
 Usage: urbit-collector --runner NAME --expected-runner-id ID preview-pier [NAME] [flags]
+  -runtime-profile string
+        immutable runtime profile bound to preview and import
   -source string
         absolute existing pier path on the selected runner host
   -storage-root string

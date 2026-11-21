@@ -21,6 +21,7 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/recording"
+	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimequalify"
 )
 
@@ -449,7 +450,12 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		if r.keys != "" {
 			features = append(features, "ssh-key-grants")
 		}
-		respond(w, 200, protocol.Hello{Build: buildmeta.Current(r.executableSHA256), StateSchema: StateSchemaVersion, ProtocolVersion: protocol.Version, RunnerID: r.s.runnerID, Mode: r.s.mode, Features: features, Actor: actor, AccessRole: role})
+		var profiles []candidate.Profile
+		if _, ok := r.b.(runtimeProfilesBackend); ok {
+			features = append(features, protocol.RuntimeProfilesFeature)
+			profiles = candidate.Catalogue()
+		}
+		respond(w, 200, protocol.Hello{RuntimeProfiles: profiles, Build: buildmeta.Current(r.executableSHA256), StateSchema: StateSchemaVersion, ProtocolVersion: protocol.Version, RunnerID: r.s.runnerID, Mode: r.s.mode, Features: features, Actor: actor, AccessRole: role})
 		return
 	}
 	if req.Header.Get(protocol.Header) != strconv.Itoa(protocol.Version) {
@@ -561,6 +567,10 @@ func (r *Server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	}
 	if req.Method == http.MethodPost && (req.URL.Path == protocol.RecordingCatalogPath || req.URL.Path == protocol.RecordingPagePath) {
 		r.serveRecordings(w, req, role)
+		return
+	}
+	if strings.HasPrefix(req.URL.Path, "/v1/runtime-profiles/") {
+		r.serveRuntimeProfile(w, req, role)
 		return
 	}
 	if req.Method == http.MethodGet && req.URL.Path == "/v1/snapshot" {

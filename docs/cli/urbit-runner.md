@@ -11,7 +11,8 @@ Usage: urbit-runner COMMAND
        urbit-runner --development-root /srv/dev/urbit COMMAND
 
 The separate development root requires its own root-owned owner.json. Only
-serve-development, resource-policy, state-schema and the internal recording-worker
+serve-development, resource-policy, state-schema, runtime-profiles,
+runtime-profile-install and the internal recording-worker
 are allowed in that mode.
 It never uses the installed host's state, Docker socket or SSH grants.
 
@@ -91,6 +92,9 @@ Commands:
                              Serve development management; optional resolved startup resume.
   demo --socket /private/directory/runner.sock [--operation-delay 2s]
                              Run the checkpoint 1 in-memory simulator.
+  runtime-profiles           List immutable reviewed runtime metadata (offline).
+  runtime-profile-install --profile ID --archive FILE
+                             Verify and retain a reviewed image; never opens a pier.
 
 install-host performs explicitly authorized host setup for an existing Unix user.
 Qualification commands create new disposable ships and runtime resources.
@@ -575,6 +579,22 @@ checks without restarting the runner. Stop remains available with a bad policy.
 Usage: urbit-runner runtime-plan [--format json|text]
 
 Prints pinned candidate and checkpoint scope without inspecting the host or contacting Docker.
+```
+
+## runtime-profile-install
+
+```text
+Usage of runtime-profile-install:
+  -archive string
+        exact checksummed archive; never a pier or executable path
+  -profile string
+        reviewed immutable runtime ID
+```
+
+## runtime-profiles
+
+```text
+Usage of runtime-profiles:
 ```
 
 ## serve-development

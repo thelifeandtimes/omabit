@@ -468,6 +468,9 @@ func instances(q querier) ([]storedInstance, error) {
 }
 
 func validateConfig(c protocol.Configuration) error {
+	if err := validateRuntimeProfile(c.RuntimeProfile); err != nil {
+		return err
+	}
 	if err := validateContainerResources(c); err != nil {
 		return err
 	}
@@ -661,7 +664,7 @@ func (s *store) registerKindReplay(actor string, req protocol.CreateFakeRequest,
 	if err != nil {
 		return protocol.Operation{}, false, err
 	}
-	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: revision, Mode: "fake", Ship: "~zod", DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: uuid, Port: req.Config.HTTPPort, Loom: req.Config.Loom, NativeControl: req.Config.NativeControl, MemoryGiB: req.Config.MemoryGiB, CPUCores: req.Config.CPUCores}}
+	v := storedInstance{Public: protocol.Instance{ID: req.ID, Label: req.Label, Config: req.Config, ConfigRevision: revision, Mode: "fake", Ship: "~zod", DesiredState: "stopped", ObservedState: "uninitialized", Health: "unknown"}, Runtime: runtimequalify.ManagedState{ID: uuid, Port: req.Config.HTTPPort, RuntimeProfile: req.Config.RuntimeProfile, Loom: req.Config.Loom, NativeControl: req.Config.NativeControl, MemoryGiB: req.Config.MemoryGiB, CPUCores: req.Config.CPUCores}}
 	v.Runtime.Fake = fake
 	if source == nil {
 		v.Runtime.Bootstrap = req.Bootstrap
@@ -726,6 +729,13 @@ func (s *store) configure(actor, id string, req protocol.ConfigureRequest) (prot
 	defer tx.Rollback()
 	v, err := loadInstance(tx, id)
 	if err != nil {
+		return v.Public, err
+	}
+	// Omitted settings from old clients must never reset a runtime pin.
+	if req.Config.RuntimeProfile == "" {
+		req.Config.RuntimeProfile = v.Public.Config.RuntimeProfile
+	}
+	if err := validateRuntimeChange(v.Public.Config.RuntimeProfile, req.Config.RuntimeProfile); err != nil {
 		return v.Public, err
 	}
 	// Omitted limits from old clients must never reset a selected limit.
@@ -1141,6 +1151,9 @@ func (s *store) beginOperation(opID string) (protocol.Operation, storedInstance,
 		if !protocol.ValidRecordedLoom(v.Public.Config.Loom) {
 			return op, v, bad("invalid runtime settings for this ship mode")
 		}
+		if v.Runtime.RuntimeProfile != v.Public.Config.RuntimeProfile {
+			return op, v, bad("runtime profile differs from the retained pier binding")
+		}
 		v.Runtime.Loom, v.Runtime.NativeControl = v.Public.Config.Loom, v.Public.Config.NativeControl
 		v.Runtime.MemoryGiB, v.Runtime.CPUCores = v.Public.Config.MemoryGiB, v.Public.Config.CPUCores
 	}
@@ -1336,7 +1349,7 @@ func applyObservation(v *storedInstance, observation runtimequalify.ManagedObser
 		}
 	}
 	if m := v.Runtime.Maintenance; m != nil {
-		v.Public.Maintenance = &protocol.MaintenanceReport{Kind: m.Kind, BeforePierBytes: m.BeforePierBytes, AfterPierBytes: m.AfterPierBytes, StartedAt: m.StartedAt, FinishedAt: m.FinishedAt, MemAvailableBytes: m.MemAvailableBytes, DiskAvailableBytes: m.DiskAvailableBytes, EpochsBefore: m.EpochsBefore, EpochsAfter: m.EpochsAfter, CreatedEpoch: m.CreatedEpoch}
+		v.Public.Maintenance = &protocol.MaintenanceReport{RuntimeProfile: m.RuntimeProfile, Kind: m.Kind, BeforePierBytes: m.BeforePierBytes, AfterPierBytes: m.AfterPierBytes, StartedAt: m.StartedAt, FinishedAt: m.FinishedAt, MemAvailableBytes: m.MemAvailableBytes, DiskAvailableBytes: m.DiskAvailableBytes, EpochsBefore: m.EpochsBefore, EpochsAfter: m.EpochsAfter, CreatedEpoch: m.CreatedEpoch}
 	}
 	if p := v.Runtime.Runtime.Prune; p != nil {
 		report := &protocol.PruningReport{Cutoff: p.Cutoff, StartedAt: p.StartedAt, FinishedAt: p.FinishedAt, RemovedFiles: len(p.RemovedFiles), ExpectedFiles: len(p.Files), EpochRemoved: p.EpochRemoved, Uncertain: p.Uncertain}

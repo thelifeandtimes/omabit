@@ -21,6 +21,7 @@ func MoveStopped(ctx context.Context, source, destination *Client, sourceRunner,
 	}
 	settingsHandoff := true
 	resourcesHandoff := true
+	profilesHandoff := true
 	for _, endpoint := range []struct {
 		c  *Client
 		id string
@@ -32,6 +33,7 @@ func MoveStopped(ctx context.Context, source, destination *Client, sourceRunner,
 		if h.RunnerID != endpoint.id || h.AccessRole != "operator" || !slices.Contains(h.Features, "host-handoff") {
 			return zero, errors.New("both selected runners must provide operator host-handoff access")
 		}
+		profilesHandoff = profilesHandoff && slices.Contains(h.Features, protocol.RuntimeProfilesFeature)
 		settingsHandoff = settingsHandoff && slices.Contains(h.Features, protocol.RuntimeSettingsHandoffFeature)
 		resourcesHandoff = resourcesHandoff && slices.Contains(h.Features, protocol.ContainerResourcesFeature)
 	}
@@ -55,6 +57,19 @@ func MoveStopped(ctx context.Context, source, destination *Client, sourceRunner,
 		return zero, errors.New("source configuration changed; refresh the selected ship")
 	}
 	settings := selected.Config.HandoffRuntimeSettings()
+	req.DestinationRuntimeProfiles = false
+	if settings.RuntimeProfile != "" {
+		if !profilesHandoff {
+			return zero, errors.New("update both runners for runtime-profiles-v1 before moving this ship")
+		}
+		if err := source.requireRuntimeProfile(ctx, settings.RuntimeProfile); err != nil {
+			return zero, err
+		}
+		if _, err := destination.RuntimeProfilePreflight(ctx, settings.RuntimeProfile); err != nil {
+			return zero, err
+		}
+		req.DestinationRuntimeProfiles = true
+	}
 	req.DestinationContainerResources = false
 	if protocol.NondefaultContainerResources(settings.MemoryGiB, settings.CPUCores) {
 		if !resourcesHandoff {

@@ -148,7 +148,7 @@ function review(c,name="zod") {
   return {runner:c.runner_id,connection:c.name,source,loadedAt:now,plan:{runner_id:c.runner_id,source,storage_root:"default",instance_id:name,destination:"fakeships/"+name+"/"+name,ship:"~"+name,network:"fakenet",kind:"fake",http_port:18090,in_place:false}};
 }
 function importPane(s,c,r) {
-  const pane=scope("PierImportPane.qml",{service:s,connection:c,review:r,current:true,submission:null,visible:true,consent:{checked:true}},["clearReview","reviewAnother","submitImport"]);
+  const pane=scope("PierImportPane.qml",{service:s,connection:c,review:r,current:true,submission:null,visible:true,consent:{checked:true},runtimeChoice:{currentIndex:0}},["clearReview","reviewAnother","submitImport"]);
   for(const [name,type] of [["submitted","bool"],["outcome","var"],["progress","var"]])binding(pane,"PierImportPane.qml",name,type);
   return pane;
 }

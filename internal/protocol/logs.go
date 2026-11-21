@@ -1,31 +1,37 @@
 package protocol
 
-import "time"
+import (
+	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimeprofile"
+	"time"
+)
 
 const MaxLogBytes = 64 << 10
 const MaxLogLines = 200
 
 type RuntimeStatus struct {
-	LaunchMemoryGiB         *uint8     `json:"launch_memory_gib,omitempty"`
-	LaunchCPUCores          *uint8     `json:"launch_cpu_cores,omitempty"`
-	ImportRestoreAvailable  bool       `json:"import_restore_available,omitempty"`
-	ImportRestoreStage      string     `json:"import_restore_stage,omitempty"`
-	LaunchLoom              *uint8     `json:"launch_loom,omitempty"`
-	LaunchNativeControl     *bool      `json:"launch_native_control,omitempty"`
-	NativeControlSocket     string     `json:"native_control_socket,omitempty"`
-	ImportRecoveryAvailable bool       `json:"import_recovery_available,omitempty"`
-	LaunchError             string     `json:"launch_error,omitempty"`
-	Stage                   string     `json:"stage,omitempty"`
-	Initialized             bool       `json:"initialized"`
-	ContainerID             string     `json:"container_id,omitempty"`
-	ContainerKind           string     `json:"container_kind,omitempty"`
-	Running                 *bool      `json:"running,omitempty"`
-	ExitCode                *int       `json:"exit_code,omitempty"`
-	OOMKilled               *bool      `json:"oom_killed,omitempty"`
-	ObservedAt              *time.Time `json:"observed_at,omitempty"`
-	LastOperation           *Operation `json:"last_operation,omitempty"`
-	DefaultSnapshotMinutes  uint32     `json:"default_snapshot_minutes"`
-	SnapshotMinutes         *uint32    `json:"snapshot_minutes,omitempty"`
+	RequestedRuntime        *runtimeprofile.Profile `json:"requested_runtime,omitempty"`
+	LaunchRuntime           *runtimeprofile.Profile `json:"launch_runtime,omitempty"`
+	ObservedImageID         string                  `json:"observed_image_id,omitempty"`
+	LaunchMemoryGiB         *uint8                  `json:"launch_memory_gib,omitempty"`
+	LaunchCPUCores          *uint8                  `json:"launch_cpu_cores,omitempty"`
+	ImportRestoreAvailable  bool                    `json:"import_restore_available,omitempty"`
+	ImportRestoreStage      string                  `json:"import_restore_stage,omitempty"`
+	LaunchLoom              *uint8                  `json:"launch_loom,omitempty"`
+	LaunchNativeControl     *bool                   `json:"launch_native_control,omitempty"`
+	NativeControlSocket     string                  `json:"native_control_socket,omitempty"`
+	ImportRecoveryAvailable bool                    `json:"import_recovery_available,omitempty"`
+	LaunchError             string                  `json:"launch_error,omitempty"`
+	Stage                   string                  `json:"stage,omitempty"`
+	Initialized             bool                    `json:"initialized"`
+	ContainerID             string                  `json:"container_id,omitempty"`
+	ContainerKind           string                  `json:"container_kind,omitempty"`
+	Running                 *bool                   `json:"running,omitempty"`
+	ExitCode                *int                    `json:"exit_code,omitempty"`
+	OOMKilled               *bool                   `json:"oom_killed,omitempty"`
+	ObservedAt              *time.Time              `json:"observed_at,omitempty"`
+	LastOperation           *Operation              `json:"last_operation,omitempty"`
+	DefaultSnapshotMinutes  uint32                  `json:"default_snapshot_minutes"`
+	SnapshotMinutes         *uint32                 `json:"snapshot_minutes,omitempty"`
 }
 
 type LogsRequest struct {

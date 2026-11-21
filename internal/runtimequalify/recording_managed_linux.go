@@ -21,7 +21,6 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/apppolicy"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/pierstore"
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/recording"
-	candidate "git.thechristophgroup.org/thelifeandtimes/omabit/internal/runtimecandidate"
 )
 
 var errRecordingSelection = errors.New("recording selection unavailable or changed; inspect the original launch receipt and retained coverage")
@@ -173,7 +172,7 @@ func prepareManagedRecording(ctx context.Context, state ManagedState, op Recordi
 		}
 		return nil
 	}
-	if checkPrepared(ctx) != nil || q.r.RepoDigest != candidate.Image && q.r.RepoDigest != strings.TrimPrefix(candidate.Image, "docker.io/") || q.r.VereVersion != candidate.VereVersion {
+	if checkPrepared(ctx) != nil || q.r.RepoDigest != q.runtimeProfile().Image && q.r.RepoDigest != strings.TrimPrefix(q.runtimeProfile().Image, "docker.io/") || q.r.VereVersion != q.runtimeProfile().VereVersion {
 		return refuse()
 	}
 	contractDigest, err := recordingDigest("omabit-recording-managed-launch-v1", struct {
@@ -194,7 +193,7 @@ func prepareManagedRecording(ctx context.Context, state ManagedState, op Recordi
 		return refuse()
 	}
 	endpoint := sha256.Sum256([]byte(q.socket))
-	m := recording.Metadata{Version: recording.CurrentMetadataVersion, SessionID: session, PreviousSessionID: op.PreviousSessionID, RunnerID: op.RunnerID, Mode: op.Mode, InstanceID: op.Target.InstanceID, ConfigurationRevision: op.ConfigurationRevision, OperationID: op.OperationID, RequestID: op.RequestID, ContainerID: op.ContainerID, LaunchContractSHA256: contractDigest, ImageManifestDigest: candidate.ManifestDigest, RuntimeVersion: q.r.VereVersion, Transport: "docker-multiplex", AttachedAt: time.Now().UTC(), Identity: &recording.AttachmentIdentity{Target: op.Target, NativeShip: ship, NativeShipStatus: status, PierBinding: pierBasis, PierContinuitySHA256: storageDigest, EngineID: engine, EngineEndpointSHA256: hex.EncodeToString(endpoint[:]), HostBootID: boot, RecorderNamespaces: namespaces}}
+	m := recording.Metadata{Version: recording.CurrentMetadataVersion, SessionID: session, PreviousSessionID: op.PreviousSessionID, RunnerID: op.RunnerID, Mode: op.Mode, InstanceID: op.Target.InstanceID, ConfigurationRevision: op.ConfigurationRevision, OperationID: op.OperationID, RequestID: op.RequestID, ContainerID: op.ContainerID, LaunchContractSHA256: contractDigest, ImageManifestDigest: q.runtimeProfile().ManifestDigest, RuntimeVersion: q.r.VereVersion, Transport: "docker-multiplex", AttachedAt: time.Now().UTC(), Identity: &recording.AttachmentIdentity{Target: op.Target, NativeShip: ship, NativeShipStatus: status, PierBinding: pierBasis, PierContinuitySHA256: storageDigest, EngineID: engine, EngineEndpointSHA256: hex.EncodeToString(endpoint[:]), HostBootID: boot, RecorderNamespaces: namespaces}}
 	if m.Validate() != nil {
 		return refuse()
 	}

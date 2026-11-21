@@ -21,7 +21,13 @@ func RegisterStorageRoot(id, path string) (pierstore.StorageRoot, error) {
 	return pierstore.RegisterRoot(defaults().home, id, path)
 }
 func InspectExternalPier(ctx context.Context, path string) (pierstore.ExternalSource, error) {
-	return inspectExternalPier(ctx, path, defaults())
+	return InspectExternalPierWithProfile(ctx, path, "")
+}
+
+func InspectExternalPierWithProfile(ctx context.Context, path, profile string) (pierstore.ExternalSource, error) {
+	d := defaults()
+	d.runtimeProfile = profile
+	return inspectExternalPier(ctx, path, d)
 }
 
 // Validate every import route, including the legacy CLI without --identify,
@@ -289,6 +295,7 @@ func deletionTreeBoundary(ctx context.Context, state *ManagedState, mount, leaf 
 }
 
 func applyExternalImport(ctx context.Context, state ManagedState, persist func(ManagedState) error, d dependencies, destinationSync ...func(string) error) (ManagedState, ManagedObservation, error) {
+	d.runtimeProfile = state.RuntimeProfile
 	unknown := ManagedObservation{State: "unknown", Health: "unknown", RecoveryRequired: true}
 	intent := state.ExternalImport
 	if persist == nil || intent == nil || intent.Stage != "reviewed" || state.Prepared || state.Storage == nil || state.Adoption == nil {
@@ -308,7 +315,7 @@ func applyExternalImport(ctx context.Context, state ManagedState, persist func(M
 		return state, unknown, errors.New("source changed or became inaccessible since import review; nothing was moved")
 	}
 	if intent.Identify {
-		identity, e := InspectPierIdentity(ctx, source.Path)
+		identity, e := InspectPierIdentityWithProfile(ctx, source.Path, state.RuntimeProfile)
 		ship, kind := "~zod", "fake"
 		if state.Fake != nil {
 			ship = state.Fake.Ship

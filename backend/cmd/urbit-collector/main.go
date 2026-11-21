@@ -334,6 +334,7 @@ Use COMMAND --help for command flags and constraints.
 	var label string
 	var fakeShip, pierName string
 	var bootstrap, pillSource string
+	var runtimeProfile string
 	var pillSHA string
 	var pillSize int64
 	var pierPath string
@@ -355,6 +356,7 @@ Use COMMAND --help for command flags and constraints.
 	case "projects":
 		usage += "\n\nRead saved project identities and port reservations only; no live runtime probe or resource changes. Requires project-reservations-v1."
 	case "create-fake", "create-comet":
+		flags.StringVar(&runtimeProfile, "runtime-profile", "", "immutable reviewed runtime; omission retains official Vere 4.6")
 		flags.UintVar(&memoryGiB, "memory-gib", 0, "container RAM ceiling in GiB (1..16); omitted=4")
 		flags.UintVar(&cpuCores, "cpus", 0, "container CPU quota in whole cores (1..16); omitted=2")
 		flags.UintVar(&loom, "loom", protocol.DefaultLoom, "loom byte exponent 30..34: 30=1 GiB, 31=2 GiB, 34=16 GiB address space; not resident memory or the separate container RAM limit (4 GiB by default)")
@@ -682,7 +684,7 @@ Use COMMAND --help for command flags and constraints.
 		if !slices.Contains(hello.Features, "create-fake") {
 			return fail(errors.New("this runner does not support create-fake"), 1)
 		}
-		req := protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}}
+		req := protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{RuntimeProfile: runtimeProfile, HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}}
 		if fakeOptions {
 			if !slices.Contains(hello.Features, "fake-ship-options") {
 				return fail(errors.New("update this runner to choose a fake identity and pier directory"), 1)
@@ -694,7 +696,7 @@ Use COMMAND --help for command flags and constraints.
 		if hello.Mode != "development-managed" || hello.AccessRole != "operator" || !slices.Contains(hello.Features, "create-comet") {
 			return fail(errors.New("comet creation requires an operator and the explicit development-managed mode/capability"), 1)
 		}
-		result, err = c.CreateComet(ctx, protocol.CreateCometRequest{CreateFakeRequest: protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}}, ConfirmNetwork: confirmNetwork})
+		result, err = c.CreateComet(ctx, protocol.CreateCometRequest{CreateFakeRequest: protocol.CreateFakeRequest{Bootstrap: boot, ID: instanceID, Label: label, RequestID: requestID, PierPath: pierPath, Config: protocol.Configuration{RuntimeProfile: runtimeProfile, HTTPPort: uint16(httpPort), AmesPort: 34343, Loom: uint8(loom), NativeControl: nativeControl, MemoryGiB: uint8(memoryGiB), CPUCores: uint8(cpuCores)}}, ConfirmNetwork: confirmNetwork})
 	case "configure":
 		result, err = c.Configure(ctx, instanceID, protocol.ConfigureRequest{
 			ExpectedRevision:      revision,

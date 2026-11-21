@@ -239,12 +239,12 @@ func (q *qualifier) inspect(ctx context.Context, index int) (container, error) {
 	if c.State == nil || c.State.Running == nil || c.State.OOMKilled == nil || c.State.ExitCode == nil {
 		return c, errUntrustedContainer
 	}
-	if !acceptedImageID(q.r.ImageID) || !containerIDPattern.MatchString(c.ID) || c.Name != "/"+r.Name || c.Image != q.r.ImageID || c.Config.Image != q.r.ImageID || c.Config.Labels[q.resourceLabel()] != "true" || c.Config.Labels[q.resourceRunLabel()] != q.r.RunID || (r.ID != "" && r.ID != c.ID) {
+	if !q.runtimeProfile().AcceptsImageID(q.r.ImageID) || !containerIDPattern.MatchString(c.ID) || c.Name != "/"+r.Name || c.Image != q.r.ImageID || c.Config.Image != q.r.ImageID || c.Config.Labels[q.resourceLabel()] != "true" || c.Config.Labels[q.resourceRunLabel()] != q.r.RunID || (r.ID != "" && r.ID != c.ID) {
 		return c, errUntrustedContainer
 	}
 	r.ID = c.ID
 	r.CreateUncertain = false
-	r.LastState = &ContainerState{ObservedAt: time.Now().UTC(), Running: *c.State.Running, Paused: c.State.Paused, Restarting: c.State.Restarting, Dead: c.State.Dead, OOMKilled: *c.State.OOMKilled, ExitCode: *c.State.ExitCode, LaunchError: launchReason(c.State.Error)}
+	r.LastState = &ContainerState{ImageID: c.Image, ObservedAt: time.Now().UTC(), Running: *c.State.Running, Paused: c.State.Paused, Restarting: c.State.Restarting, Dead: c.State.Dead, OOMKilled: *c.State.OOMKilled, ExitCode: *c.State.ExitCode, LaunchError: launchReason(c.State.Error)}
 	return c, nil
 }
 
@@ -449,11 +449,11 @@ func (q *qualifier) createWithDispatchIntent(ctx context.Context, kind string, b
 		}
 		network = n.ID
 	}
-	if !acceptedImageID(q.r.ImageID) || q.r.RepoDigest == "" {
+	if !q.runtimeProfile().AcceptsImageID(q.r.ImageID) || q.r.RepoDigest == "" {
 		return index, errors.New("verified backend image identity required before create")
 	}
 	name := q.resourceName(kind)
-	record := ContainerRecord{Name: name, Kind: kind, EngineVersion: q.engineEvidence.Version}
+	record := ContainerRecord{RuntimeProfile: q.d.runtimeProfile, Name: name, Kind: kind, EngineVersion: q.engineEvidence.Version}
 	baseEntry, baseArgs := baseCommand(kind)
 	if baseEntry == "/bin/urbit" {
 		record.Loom = protocol.EffectiveLoom(q.d.loom)

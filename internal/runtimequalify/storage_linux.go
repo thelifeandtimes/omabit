@@ -120,7 +120,7 @@ func applyPierEnrollment(ctx context.Context, state ManagedState, persist func(M
 // storage, provision a pill/key, or dispatch a runtime.
 func (q *qualifier) enrollmentRuntime(id string) Result {
 	dir := filepath.Join(q.base, id)
-	return Result{Profile: q.d.profile, RunID: id, Directory: dir, Image: candidate.Image, Platform: candidate.Platform, VereVersion: candidate.VereVersion, PillURL: q.pillSource(), PillSHA256: q.d.pillSHA, PillBytes: q.d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
+	return Result{RuntimeProfile: q.d.runtimeProfile, Profile: q.d.profile, RunID: id, Directory: dir, Image: q.runtimeProfile().Image, Platform: candidate.Platform, VereVersion: q.runtimeProfile().VereVersion, PillURL: q.pillSource(), PillSHA256: q.d.pillSHA, PillBytes: q.d.pillBytes, PillPath: filepath.Join(dir, candidate.PillName), Containers: []ContainerRecord{}}
 }
 
 // applyLegacyImportCompletionRecovery handles the historical split write:

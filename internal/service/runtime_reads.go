@@ -9,6 +9,19 @@ import (
 	"git.thechristophgroup.org/thelifeandtimes/omabit/internal/protocol"
 )
 
+// RuntimeProfileInput selects an enrolled runner and a finite reviewed artifact.
+type RuntimeProfileInput struct {
+	Target
+	RuntimeProfile string `json:"runtime_profile"`
+}
+
+func (in RuntimeProfileInput) Validate() error {
+	if in.Target.Validate() != nil || !protocol.ValidID(in.RuntimeProfile) {
+		return invalid()
+	}
+	return nil
+}
+
 // LogTailInput opts into the selected operator-private preview. It does not
 // grant original-recording access, publish an export or enable following.
 type LogTailInput struct {
@@ -28,6 +41,11 @@ func (in LogTailInput) Validate() error {
 
 func (s *Service) registerRuntimeReads() error {
 	return errors.Join(
+		selected(s, description("runtime.profile-preflight.v1", "Verify an immutable runtime profile and its staged image on the selected runner without opening a pier.", nil, []string{"local-metadata-read", "live-probe"}, []string{protocol.RuntimeProfilesFeature}, "operator", "pinned runner and exact reviewed profile metadata", "read-only artifact preflight; never installs, selects or starts a runtime"), func(ctx context.Context, _ *collection.Registry, e collection.Connection, in RuntimeProfileInput) (protocol.RuntimeProfilePreflight, error) {
+			c := e.Client(true)
+			defer c.Close()
+			return c.RuntimeProfilePreflight(ctx, in.RuntimeProfile)
+		}),
 		selected(s, description("runner.snapshot.v1", "Read the selected runner fleet snapshot, including bounded current project/storage probes; no lifecycle action or polling.", []string{"urbit-collector snapshot"}, []string{"local-metadata-read", "saved-runner-read", "live-probe"}, []string{"snapshot"}, "authenticated", "explicit enrolled runner name and pinned runner ID/mode, also checked on the snapshot response", "one bounded read; no automatic watch or mutation"), func(ctx context.Context, _ *collection.Registry, e collection.Connection, _ Target) (protocol.Snapshot, error) {
 			c := e.Client(true)
 			defer c.Close()

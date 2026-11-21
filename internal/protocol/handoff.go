@@ -49,6 +49,9 @@ func (h Handoff) CommitmentBytes() []byte {
 	if h.RuntimeSettings != nil {
 		fields[0] = "omabit-stopped-handoff-v2"
 		fields = append(fields, *h.RuntimeSettings)
+		if h.RuntimeSettings.RuntimeProfile != "" || h.RuntimeSettings.RuntimeRequirement != "" {
+			fields[0] = "omabit-stopped-handoff-v3"
+		}
 	}
 	b, _ := json.Marshal(fields)
 	return b
@@ -72,6 +75,7 @@ type PrepareHandoffRequest struct {
 	// The authenticated collector checks the pinned destination's capability
 	// before allowing the source to fence a nondefault runtime configuration.
 	DestinationContainerResources bool `json:"destination_container_resources,omitempty"`
+	DestinationRuntimeProfiles    bool `json:"destination_runtime_profiles,omitempty"`
 	DestinationRuntimeSettings    bool `json:"destination_runtime_settings,omitempty"`
 }
 

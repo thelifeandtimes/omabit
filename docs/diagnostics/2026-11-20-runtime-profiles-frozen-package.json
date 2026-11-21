@@ -1,0 +1,147 @@
+{
+  "format": 1,
+  "status": "frozen_source_review_only_not_production_qualified",
+  "release": {
+    "version": "0.6.0-rc.1",
+    "prerelease": true,
+    "source_commit": "94bc33f4f69d3c257d3beca8ce13f5050e6b3dd4",
+    "platform": "linux/amd64",
+    "go_version": "go version go1.27.4 linux/amd64",
+    "schema": 66,
+    "execution_model": "owner-user",
+    "default_pier_root": "/srv/urbit/piers",
+    "runtime": "4.6-5a7614f",
+    "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+    "engine": "distribution-native",
+    "pill": {
+      "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62",
+      "default_url": "https://urbit-foundation.s3.us-east-2.amazonaws.com/omabit.pill",
+      "application_inventory": "not_asserted",
+      "name": "omabit-recommended-apps-0.6.0-rc.1.pill",
+      "bytes": 59351751
+    },
+    "runtime_profiles": [
+      {
+        "format": 1,
+        "id": "vere-4.6-5a7614f",
+        "kind": "official",
+        "platform": "linux/amd64",
+        "vere_version": "4.6-5a7614f",
+        "image": "docker.io/tloncorp/vere@sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+        "manifest_digest": "sha256:47fbcf0710ded939931ce3c6408864cee5e8848c5765da0b51a90ca0b1ab1afd",
+        "config_digest": "sha256:d6cc5107ed7fa92174e336af9c7f25ee433073bd9961e1c3ed23a225b866b245",
+        "binary_sha256": "b5c54439ae5b9f0ff94d75319e67e04f04369776fa5e2180a5ab1a5ebd4c2ff0",
+        "source_base": "5a7614f69bbc783736b08965fdc0a2534bb42e82"
+      },
+      {
+        "format": 1,
+        "id": "vere-4.6-jsonfix-0774857c",
+        "kind": "reviewed",
+        "platform": "linux/amd64",
+        "vere_version": "4.6-82f4558",
+        "image": "omabit/vere@sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d",
+        "manifest_digest": "sha256:2b6b7939b09aa0be68bf5a80b796f89382040aeb0d3469c032063a4c93fb5b1d",
+        "config_digest": "sha256:9aff0a010f4bfecff2233cc5508a0a6deec078239038456c94bbe0666b7a6f58",
+        "binary_sha256": "0774857cdb4460fc288bfa55e778249456a7d8bd7b6203922455d887a92fc96c",
+        "source_base": "5a7614f69bbc783736b08965fdc0a2534bb42e82",
+        "patch_revision": "fcc9dd214ae4af07e683490a6cc3f2ded1ab7d47",
+        "requirement": "vere-json-array-error-1145-v1",
+        "review_url": "https://github.com/nisfeb/talon/issues/112#issuecomment-6997450705",
+        "archive_sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510",
+        "archive_bytes": 54750277
+      }
+    ],
+    "engine_policy": {
+      "id": "docker-rootless-v1",
+      "stable_minimum_inclusive": "27.2.0",
+      "stable_maximum_exclusive": "30.0.0",
+      "required_api": "1.47",
+      "native_providers": [
+        "pacman",
+        "deb"
+      ],
+      "rootless_launcher_version": "29.7.2",
+      "qualification": "exact-stack-evidence-required"
+    },
+    "backend_source_sha256": "bd306d76263ebdd37dfb7195c55f702e406fd9429e40fa04082e07fbb99eb03e",
+    "source_tree": "64c9311328527de98b7328d3338ca5f246514f0d",
+    "source_epoch": 1795247740,
+    "source_inputs": "git-commit-blobs-v1",
+    "build_environment": "isolated-go-v1",
+    "assets": [
+      {
+        "name": "omabit-0.6.0-rc.1-linux-amd64.tar.gz",
+        "bytes": 36975413,
+        "sha256": "4a92849d68845136490be60334327d1cd6785d62763b2c2241f8deecab948bb5"
+      },
+      {
+        "name": "omabit-linux-amd64",
+        "bytes": 26869577,
+        "sha256": "d3735b3cba47c0647b2965962beaeebb6a198dbdd1ede8072fcd658857edcc77"
+      },
+      {
+        "name": "omabit-recommended-apps-0.6.0-rc.1.pill",
+        "bytes": 59351751,
+        "sha256": "85635c0b17a138a6473580ca362475faadf281e09cc9fa3746cfc698cc054f62"
+      },
+      {
+        "name": "omabit-skills-0.6.0-rc.1.tar.gz",
+        "bytes": 73900,
+        "sha256": "5dcb3d736f4314a326334e1615d84811a2adac8b4c4dd8e26ff514cae7b54d77"
+      },
+      {
+        "name": "urbit-collector-linux-amd64",
+        "bytes": 13229180,
+        "sha256": "e6acc55408a8369313ad0ceede8b97673d09a10ff65178cbc57702d11dd59f57"
+      },
+      {
+        "name": "urbit-runner-linux-amd64",
+        "bytes": 30274052,
+        "sha256": "bad93a807e834128ba38dba417fa5b0b2c5d99f74d6d0086f3fc333051a5983b"
+      },
+      {
+        "name": "vere-4.6-jsonfix-0774857c.tar.gz",
+        "bytes": 54750277,
+        "sha256": "c8a412c42d53fa0c9a8c97aa55a580ddf2864bbdf32f80074dfb6bdfd837f510"
+      }
+    ]
+  },
+  "asset_directory": "/tmp/omabit-runtime-profiles-review-assets/0.6.0-rc.1",
+  "smoke_result": "PASS: asset/archive checksums, provenance, executable smoke checks, installer dependencies, fresh install, replacement and customization refusal",
+  "sha256sums_sha256": "42c73e0e1f8062c96063b170ca1ef2ff8440a91f3d8f741cea8a8440d2884b1f",
+  "native_runtime_qualification": "pending",
+  "published_050_upgrade_qualification": "pending",
+  "production_installation_performed": false,
+  "storage": {
+    "charged_bytes": 48533643264,
+    "budget_bytes": 51539607552,
+    "additional_scratch_bytes": 0,
+    "total_with_reserves": 48533643264,
+    "proposed_upgrade_scratch_bytes": 4294967296,
+    "proposed_total_bytes": 52828610560,
+    "budget_extension_approved": false
+  },
+  "storage_correction": "The earlier 45,098,889,216-byte subtotal omitted shared Go caches and older worktree build outputs. This count also includes the versioned manual DEV plugin omitted by the old enumerator.",
+  "cache_retirement": {
+    "format": 1,
+    "removed": [
+      {
+        "path": "/tmp/omabit-runtime-profile-build/go-cache",
+        "allocated_bytes": 3548065792,
+        "classification": "regenerable Go build cache created by this issue-22 source test run"
+      }
+    ],
+    "preserved": [
+      "all source",
+      "all test logs",
+      "runtime archive and provenance",
+      "verified immutable base cache",
+      "all existing experiment roots and ships"
+    ]
+  },
+  "prior_build_inventory": {
+    "path": "/tmp/omabit-runtime-profile-build/prior-build-inventory.json",
+    "sha256": "a69bc3fcacf416ea40bbefa95acd4768d461f163548e5b949fda2e0aa8bf5194",
+    "status": "read-only inventory; no previous-goal outputs removed"
+  }
+}

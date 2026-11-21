@@ -25,6 +25,7 @@ import (
 
 type timings struct{ command, pull, download, ready, poll, stop, cleanup, pack, cleanupCommand time.Duration }
 type dependencies struct {
+	runtimeProfile   string
 	memoryGiB        uint8
 	cpuCores         uint8
 	loom             uint8
