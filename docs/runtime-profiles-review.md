@@ -18,6 +18,14 @@ The [runtime policy](runtime-policy.md) explains the supported ordinary-managed
 factory and explicit transition refusals. This is not a generic version-switcher
 or a change to project/private-chain runtimes.
 
+The first local review bundle is built from clean source
+`94bc33f4f69d3c257d3beca8ce13f5050e6b3dd4`. Its
+[package evidence](diagnostics/2026-11-20-runtime-profiles-frozen-package.json)
+records the seven assets, exact hashes and passing isolated installer/provenance
+checks. It is not yet published or qualified for production. The checkout's native
+bootstrap pins still select stable0.5.0; checking out this topic branch is not an
+installation procedure for the new helpers.
+
 ## Exact reviewed artifact
 
 | Item | Value |
@@ -71,6 +79,12 @@ The [source-review evidence](diagnostics/2026-11-20-runtime-profiles-source-revi
 records passing source fixtures, focused race checks, UI checks and archive
 reproduction separately from the pending native gates. The broader historical
 race matrix exceeded its eight-minute deadline; it is not recorded as a pass.
+Complete storage accounting currently charges48,533,643,264bytes (about45.2GiB),
+including shared build caches, other worktree outputs and the existing manual
+DEV plugin. The original42GiB estimate omitted some of those outputs. A temporary
+48GiB cap needs explicit renewal for#22 and at least1,289,003,008bytes reclaimed
+before admitting the four-GiB upgrade rehearsal. An inventory of older generated
+build outputs is prepared; no retained ship or prior-goal output has been removed.
 
 ## Manual update sequence once qualified
 

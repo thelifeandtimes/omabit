@@ -14746,3 +14746,26 @@ only. An extension for#22 has been requested but is not yet approved. Do not run
 dependent runtime qualification or treat elapsed time as approval. Preserve all
 existing manual DEV and retained ship state. Source builds and inert fixtures
 are not a substitute for this pending native evidence.
+
+## M783 — Frozen0.6.0-rc.1 package and corrected qualification admission (2026-11-20)
+
+Commit94bc33f4f69d3c257d3beca8ce13f5050e6b3dd4 freezes the issue#22 source review.
+Build the coordinated seven-asset review set into
+`/tmp/omabit-runtime-profiles-review-assets/0.6.0-rc.1`, including the reviewed
+runtime archive. Exact-source build stamps, checksums, offline helper smoke,
+isolated installer replacement and customization refusal pass. Retire only this
+task's3,548,065,792-byte regenerable Go build cache with a manifest. No candidate
+installation, runtime execution, Docker load or ship access occurs. Native pins
+remain stable0.5.0; the topic checkout is not a working production update route.
+The [frozen package evidence](diagnostics/2026-11-20-runtime-profiles-frozen-package.json)
+identifies the exact local outputs and remaining qualification gates.
+
+Correct M782's storage subtotal: full accounting also charges shared Go caches
+and build outputs in older T3 worktrees. Add the documented versioned manual DEV
+plugin directory explicitly. Total48,533,643,264bytes (about45.2GiB) means a4GiB
+upgrade rehearsal requires at least1,289,003,008bytes reclaimed even under48GiB.
+Inventory247 files in the two prior-goal build directories with hashes; no files
+there are removed. These include generated source/logs as well as binaries, so
+never delete the directories wholesale. Preserve source, compact evidence,
+required immutable inputs and manual-review state. Approval to extend the
+previous48GiB exception to#22 remains pending; no native qualification is admitted.
