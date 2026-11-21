@@ -77,15 +77,25 @@ Experiment authorization is subject to [isolation and storage limits](experiment
 Protected ships and the existing manual DEV installations are not test fixtures.
 The [source-review evidence](diagnostics/2026-11-20-runtime-profiles-source-review.json)
 records passing source fixtures, focused race checks, UI checks and archive
-reproduction separately from the pending native gates. The broader historical
-race matrix exceeded its eight-minute deadline; it is not recorded as a pass.
-Complete storage accounting currently charges48,533,643,264bytes (about45.2GiB),
-including shared build caches, other worktree outputs and the existing manual
-DEV plugin. The original42GiB estimate omitted some of those outputs. The user
-approved the temporary48GiB cap for#22 on2026-11-21. The recorded count requires
-at least1,289,003,008bytes reclaimed before admitting the four-GiB upgrade
-rehearsal. Revalidate the inventory and charge at admission; only classified
-redundant generated outputs may be removed, with source and ship state preserved.
+reproduction separately from the pending native gates. The local historical race run exceeded its eight-minute deadline; all four
+managed-race shards subsequently passed in GitHub run44882786180, together with
+core, QML and the aggregate source gate.
+
+The [published0.5.0 upgrade rehearsal](diagnostics/2026-11-21-runtime-profiles-upgrade.json)
+passed with fresh disposable ships, including schema65→66, unchanged original
+ship configuration/history, access and running processes, manager reopen and
+genuine0.5.0 writer refusal. The host's console report was incomplete; an
+independent guarded read-only extraction recovered the complete report and
+database, verified their checksums and checked the preserved rows. This qualifies
+the upgrade scenario, not the separately pending patched-runtime scenarios.
+
+The user approved the temporary48GiB cap for#22 on2026-11-21. Full accounting
+includes shared build caches, every worktree's build outputs and the versioned
+manual DEV plugin. The original42GiB estimate omitted some of those outputs.
+Classified obsolete binaries and the completed disposable upgrade VM's generated
+disks were retired with manifests after retaining compact evidence. Revalidate
+the full charge and reserve scratch before every new experiment; all existing
+ships, manual DEV state and immutable reference inputs remain preserved.
 
 ## Manual update sequence once qualified
 

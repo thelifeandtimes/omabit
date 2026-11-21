@@ -1,0 +1,96 @@
+{
+  "format": 1,
+  "status": "passed_with_independent_report_recovery",
+  "passed": true,
+  "versions": [
+    "0.5.0",
+    "0.6.0-rc.1"
+  ],
+  "source_commit": "94bc33f4f69d3c257d3beca8ce13f5050e6b3dd4",
+  "sources": {
+    "0.5.0": "59d83aab49384d2f26531320bb5ab68e1257aeb5",
+    "0.6.0-rc.1": "94bc33f4f69d3c257d3beca8ce13f5050e6b3dd4"
+  },
+  "schema_before": 65,
+  "schema_after": 66,
+  "scenario": "Published stable service update through native QML update flow in one fresh offline VM",
+  "guest_assertions": {
+    "upgraded": {
+      "state": {
+        "busy": false,
+        "status": {
+          "version": 1,
+          "runner_id": "runner-383c18f57acc9ef591d34a2ed97b3abc",
+          "target_sha256": "bad93a807e834128ba38dba417fa5b0b2c5d99f74d6d0086f3fc333051a5983b",
+          "installed_sha256": "bad93a807e834128ba38dba417fa5b0b2c5d99f74d6d0086f3fc333051a5983b",
+          "target_build": "94bc33f4f69d",
+          "installed_build": "94bc33f4f69d",
+          "available": false,
+          "pending": false,
+          "message": "Local services match this desktop bundle."
+        },
+        "error": "",
+        "message": "Service update completed. Your fleet is ready.",
+        "commands": 4,
+        "refreshes": 1,
+        "apply_text": "Update services"
+      },
+      "schema_after": 66,
+      "ship_continuity": true,
+      "access_preserved": true
+    },
+    "denied_authorization": {
+      "error": "Host setup was not authorized. Your existing installation was preserved; try again when ready.",
+      "preserved": true
+    },
+    "recheck_noop": true,
+    "older_writer_refused_without_state_change": true,
+    "manager_restart_preserved_runtime": true,
+    "original_app_history_preserved": true
+  },
+  "independent_database_checks": {
+    "schema": 66,
+    "original_operations_unchanged": 5,
+    "original_instance_identity_config_paths_unchanged": 2,
+    "all_three_disposable_instances_stopped": true,
+    "original_app_table_definitions_unchanged": 19,
+    "original_app_rows_checked_inside_guest_before_new_app_work": 38
+  },
+  "harness_failure": {
+    "description": "VM exited successfully, but the host serial report JSON was incomplete and json.loads failed. The launcher result is not claimed as a pass.",
+    "resolution": "Separately frozen guarded read-only reader exported full report, operation log and database from ended VM; every exported checksum and input-disk immutability verified.",
+    "source_and_base_unchanged": true
+  },
+  "evidence": {
+    "/tmp/omabit-060-upgrade-evidence-01/files/results/report.json": {
+      "sha256": "a538f732212cfcef3af7da044b93f96fc5fb510bec330a08c235eecc1c2b069f",
+      "bytes": 70614
+    },
+    "/tmp/omabit-060-upgrade-evidence-01/files/results/commands.jsonl": {
+      "sha256": "e484c237e481ca3f3545026ebcadefa5e6736f48f1ec83059083b8514e5d9c49",
+      "bytes": 2957233
+    },
+    "/tmp/omabit-060-upgrade-evidence-01/files/managed/runner.sqlite": {
+      "sha256": "5355a66325b8cec3533d7170ca59866f19c19ed9736bc5b2f7cf6fe0b8e7000b",
+      "bytes": 794624
+    },
+    "/tmp/omabit-060-upgrade-evidence-01/result.json": {
+      "sha256": "ac6482c594e4f003bfe75849c33daabce7bbc6ccf9ea1e4345a4c2025be9fb98",
+      "bytes": 87476
+    },
+    "/home/thelifeandtimes/Documents/ChatGPT/omabit-private-docker-labs/patch-upgrade-060-profiles01/host.json": {
+      "sha256": "aa098a72346e0c673b4a53f93bf3f28fca1fcf41508e8977f980458542c174e5",
+      "bytes": 84947
+    },
+    "/tmp/omabit-060-qualification-driver/audit-upgrade.py": {
+      "sha256": "e019837d9cba7e0e14c128129268edf3000f74ea3e742b918c16a63a2bf49a84",
+      "bytes": 4680
+    }
+  },
+  "limits": [
+    "Only fresh disposable fake ships; no production or manual DEV state accessed.",
+    "Ships use original official runtime; patched runtime qualification remains separate.",
+    "App-history contents were verified inside the guest before subsequent candidate app work; independent final-DB check covers original receipts, identities/config/paths and table definitions.",
+    "Matching native distribution pins and a production review installation route remain pending."
+  ]
+}

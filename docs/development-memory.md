@@ -14803,3 +14803,30 @@ and throughout the guest; the earlier incomplete enumerator must additionally
 charge the versioned manual DEV plugin. Use one fresh isolated guest and retain
 compact evidence before retiring only its newly generated outputs. Admission
 does not qualify an artifact or authorize a live installation.
+
+## M786 — Published0.5.0 upgrade passed; console-report failure recovered (2026-11-21)
+
+The frozen candidate completes the native QML service-upgrade rehearsal in one
+fresh offline VM. Schema65→66 preserves original ship identities, configuration,
+pier paths, operation history, access, engine/container processes and original
+app history (19tables,38rows). Manager reopen preserves runtime; the genuine
+published0.5.0 writer refuses schema66 without changing state. The guest then
+performs app work and stopped disposable-pier import and gracefully stops its
+remaining fake. No production, protected ship or manual DEV is inspected.
+
+The VM exits0, but the host's long JSON console line is incomplete and parsing
+fails. Preserve this harness failure rather than reporting the launcher passed.
+A separately frozen guarded reader mounts the ended VM and input disks read-only,
+exports the full report, commands and SQLite database, and verifies unchanged
+source/base hashes. Independent database checks confirm schema66, all5original
+operation records, both original ship identities/configuration/paths,19table
+schemas and all3disposable instances stopped. See the
+[upgrade evidence](diagnostics/2026-11-21-runtime-profiles-upgrade.json).
+
+After verifying both transient scopes inactive, retain all compact evidence and
+retire77 newly generated VM disk/boot-copy files with checksum/inode guards and
+`/tmp/omabit-runtime-profile-build/upgrade-generated-retirement.json`.
+Retired allocation is2,398,052,352bytes; complete charge is47,167,893,504bytes,
+leaving declared4GiB scratch within the approved48GiB ceiling. Immutable bases,
+inputs, originals and all existing ships remain untouched. This supersedes only
+the pending upgrade gate in M784, not the pending native patched-runtime gate.
